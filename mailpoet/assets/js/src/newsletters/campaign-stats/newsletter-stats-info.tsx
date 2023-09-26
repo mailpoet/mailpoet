@@ -3,7 +3,7 @@ import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
 import { Button, SegmentTags } from 'common';
-import { NewsletterType } from './newsletter_type';
+import { NewsletterType } from './newsletter-type';
 
 type Props = {
   newsletter: NewsletterType;

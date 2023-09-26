@@ -1,5 +1,5 @@
 import { ComponentType, ReactNode } from 'react';
-import { FieldType } from './fieldType';
+import { FieldType } from './field-type';
 
 export type Segment = unknown; // @TODO: add properties
 

@@ -1,6 +1,6 @@
 import Backbone from 'backbone';
-import { App } from 'newsletter_editor/App';
-import { SocialBlock } from 'newsletter_editor/blocks/social';
+import { App } from 'newsletter-editor/app';
+import { SocialBlock } from 'newsletter-editor/blocks/social';
 
 const expect = global.expect;
 const sinon = global.sinon;

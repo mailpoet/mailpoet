@@ -3,14 +3,14 @@ import {
   SETTINGS_DEFAULTS,
   store as blockEditorStore,
 } from '@wordpress/block-editor';
-import { blocksToFormBodyFactory } from './blocks_to_form_body';
-import { mapFormDataBeforeSaving } from './map_form_data_before_saving';
+import { blocksToFormBodyFactory } from './blocks-to-form-body';
+import { mapFormDataBeforeSaving } from './map-form-data-before-saving';
 import {
   CustomFieldStartedAction,
   ToggleAction,
   ToggleBlockInserterAction,
-} from './actions_types';
-import { BlockInsertionPoint } from './state_types';
+} from './actions-types';
+import { BlockInsertionPoint } from './state-types';
 import { FONT_SIZES, storeName } from './constants';
 
 export function toggleSidebar(toggleTo): ToggleAction {

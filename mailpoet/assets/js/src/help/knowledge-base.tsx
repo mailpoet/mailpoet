@@ -1,6 +1,6 @@
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
-import { AutomationsInfoNotice } from 'notices/automations_info_notice';
+import { AutomationsInfoNotice } from 'notices/automations-info-notice';
 
 export function KnowledgeBase() {
   return (

@@ -6,9 +6,9 @@ import { useGlobalContextValue } from 'context';
 
 import { StatsHeading } from './stats/heading';
 import { Summary } from './stats/summary';
-import { WoocommerceRevenues } from './stats/woocommerce_revenues';
-import { OpenedEmailsStats } from './stats/opened_email_stats';
-import { EngagementSummary } from './stats/engagement_summary';
+import { WoocommerceRevenues } from './stats/woocommerce-revenues';
+import { OpenedEmailsStats } from './stats/opened-email-stats';
+import { EngagementSummary } from './stats/engagement-summary';
 import { StatsType } from './types';
 
 export function SubscriberStats(): JSX.Element {

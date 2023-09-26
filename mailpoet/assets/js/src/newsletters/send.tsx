@@ -11,13 +11,13 @@ import { Background } from 'common/background/background';
 import { Button, ErrorBoundary } from 'common';
 import { Form } from 'form/form.jsx';
 import { Grid } from 'common/grid';
-import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
+import { ListingHeadingStepsRoute } from 'newsletters/listings/heading-steps-route';
 import { MailPoet } from 'mailpoet';
 import { StandardNewsletterFields } from 'newsletters/send/standard';
 import { NotificationNewsletterFields } from 'newsletters/send/notification.jsx';
 import { WelcomeNewsletterFields } from 'newsletters/send/welcome.jsx';
 import { AutomaticEmailFields } from 'newsletters/send/automatic.jsx';
-import { ReEngagementNewsletterFields } from 'newsletters/send/re_engagement';
+import { ReEngagementNewsletterFields } from 'newsletters/send/re-engagement';
 import { Tooltip } from 'help-tooltip.jsx';
 import { fromUrl } from 'common/thumbnail';
 import { GlobalContext } from 'context';
@@ -25,8 +25,8 @@ import { GlobalContext } from 'context';
 import { extractEmailDomain } from 'common/functions';
 import { NewsLetter, NewsletterType } from 'common/newsletter';
 import { mapFilterType } from '../analytics';
-import { PremiumModal } from '../common/premium_modal';
-import { PendingNewsletterMessage } from './send/pending_newsletter_message';
+import { PremiumModal } from '../common/premium-modal';
+import { PendingNewsletterMessage } from './send/pending-newsletter-message';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
 

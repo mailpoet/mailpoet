@@ -13,7 +13,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
 import { Selection } from './selection.jsx';
-import { FormTitle } from '../form_title';
+import { FormTitle } from '../form-title';
 import { storeName } from '../../store';
 
 function BasicSettingsPanel({ onToggle, isOpened }) {

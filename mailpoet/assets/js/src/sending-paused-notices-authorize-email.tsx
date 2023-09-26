@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { MailPoet } from 'mailpoet';
 import { extractPageNameFromUrl } from 'common/functions';
-import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize_sender_email_and_domain_modal';
+import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize-sender-email-and-domain-modal';
 
 const trackEvent = (data) => {
   const page = `${extractPageNameFromUrl() || 'some other'} page`;

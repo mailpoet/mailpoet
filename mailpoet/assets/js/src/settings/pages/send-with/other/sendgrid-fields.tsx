@@ -2,7 +2,7 @@ import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
 import { Input } from 'common/form/input/input';
 import { useSetting, useSelector } from 'settings/store/hooks';
-import { SendingFrequency } from './sending_frequency';
+import { SendingFrequency } from './sending-frequency';
 
 export function SendGridFields() {
   const [apiKey, setApiKey] = useSetting('mta', 'api_key');

@@ -6,9 +6,9 @@ import { Actions } from './actions';
 import { locale } from '../../../../../../config';
 import { Cell } from './cell';
 import { formattedPrice } from '../../../formatter';
-import { openTab } from '../../../navigation/open_tab';
-import { calculatePercentage } from '../../../formatter/calculate_percentage';
-import { Badge } from '../../email_click_badge';
+import { openTab } from '../../../navigation/open-tab';
+import { calculatePercentage } from '../../../formatter/calculate-percentage';
+import { Badge } from '../../email-click-badge';
 import { MailPoet } from '../../../../../../../mailpoet';
 
 const percentageFormatter = Intl.NumberFormat(locale.toString(), {

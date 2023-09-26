@@ -2,12 +2,12 @@ import { SelectControl } from '@wordpress/components';
 import { ErrorBoundary } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { useState } from 'react';
-import { ExistingCoupons } from './existingCoupons';
+import { ExistingCoupons } from './existing-coupons';
 import { General } from './general';
-import { SettingsHeader, SettingsTabs } from './settings_header';
+import { SettingsHeader, SettingsTabs } from './settings-header';
 import { GetValueCallback, SetValueCallback } from './types';
-import { UsageRestriction } from './usage_restriction';
-import { UsageLimits } from './usage_limits';
+import { UsageRestriction } from './usage-restriction';
+import { UsageLimits } from './usage-limits';
 
 type Props = {
   availableDiscountTypes: SelectControl.Option[];

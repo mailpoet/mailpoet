@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { dispatch, select, useSelect } from '@wordpress/data';
-import { TopBarWithBeamer } from '../../../../common/top_bar/top_bar';
+import { TopBarWithBeamer } from '../../../../common/top-bar/top-bar';
 import { Notices } from '../../../listing/components/notices';
 import { Header } from './components/header';
 import { Overview } from './components/overview';
@@ -13,7 +13,7 @@ import { initializeApi } from './api';
 import { initialize as initializeCoreIntegration } from '../../core';
 import { initialize as initializeMailPoetIntegration } from '../index';
 import { initialize as initializeWooCommerceIntegration } from '../../woocommerce';
-import { PremiumModal } from '../../../../common/premium_modal';
+import { PremiumModal } from '../../../../common/premium-modal';
 
 function Analytics(): JSX.Element {
   const premiumModal = useSelect((s) => s(storeName).getPremiumModal());

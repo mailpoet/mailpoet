@@ -3,7 +3,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import PropTypes from 'prop-types';
 
 import { MailPoet } from 'mailpoet';
-import { CodemirrorWrap } from './codemirror_wrap.jsx';
+import { CodemirrorWrap } from './codemirror-wrap.jsx';
 import { storeName } from '../../store';
 
 function CustomCssPanel({ onToggle, isOpened }) {

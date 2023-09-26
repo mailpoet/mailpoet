@@ -2,11 +2,11 @@ import { useHistory, useParams } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 import { MailPoet } from 'mailpoet';
 import { Heading } from 'common';
-import { KeyActivationButton } from 'common/premium_key/key_activation_button';
-import { KeyInput } from 'common/premium_key/key_input';
+import { KeyActivationButton } from 'common/premium-key/key-activation-button';
+import { KeyInput } from 'common/premium-key/key-input';
 import { useEffect } from 'react';
 import { useSelector } from 'settings/store/hooks';
-import { OwnEmailServiceNote } from './own_email_service_note';
+import { OwnEmailServiceNote } from './own-email-service-note';
 
 function MSSStepSecondPart(): JSX.Element {
   const history = useHistory();

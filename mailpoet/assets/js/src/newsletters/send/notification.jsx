@@ -2,8 +2,8 @@ import _ from 'underscore';
 import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { NotificationScheduling } from 'newsletters/types/notification/scheduling.jsx';
-import { SenderField } from 'newsletters/send/sender_address_field.jsx';
-import { GATrackingField } from 'newsletters/send/ga_tracking';
+import { SenderField } from 'newsletters/send/sender-address-field.jsx';
+import { GATrackingField } from 'newsletters/send/ga-tracking';
 import { withBoundary } from 'common';
 
 let fields = [

@@ -1,5 +1,5 @@
-import { DetailsPanel } from './details_panel';
-import { EmailTypeInfo } from './email_type_info';
+import { DetailsPanel } from './details-panel';
+import { EmailTypeInfo } from './email-type-info';
 
 /**
  * Component for rendering the sidebar in the email editor

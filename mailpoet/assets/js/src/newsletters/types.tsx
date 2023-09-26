@@ -5,14 +5,14 @@ import { Hooks } from 'wp-js-hooks';
 import _ from 'underscore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-import { AutomaticEmailEventsList } from 'newsletters/types/automatic_emails/events_list.jsx';
-import { AutomaticEmailEventGroupLogos } from 'newsletters/types/automatic_emails/event_group_logos.jsx';
+import { AutomaticEmailEventsList } from 'newsletters/types/automatic-emails/events-list.jsx';
+import { AutomaticEmailEventGroupLogos } from 'newsletters/types/automatic-emails/event-group-logos.jsx';
 import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
-import { modalCloseIcon } from 'common/modal/close_icon';
-import { EditorSelectModal } from 'newsletters/editor_select_modal';
-import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
-import { APIErrorsNotice } from '../notices/api_errors_notice';
+import { modalCloseIcon } from 'common/modal/close-icon';
+import { EditorSelectModal } from 'newsletters/editor-select-modal';
+import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
+import { APIErrorsNotice } from '../notices/api-errors-notice';
 import { isErrorResponse } from '../ajax';
 
 interface Props {

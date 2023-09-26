@@ -10,15 +10,15 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
-import { convertAlignmentToMargin } from '../convert_alignment_to_margin';
-import { CustomFieldSettings } from '../custom_text/custom_field_settings.jsx';
-import { formatLabel } from '../label_formatter.jsx';
+import { convertAlignmentToMargin } from '../convert-alignment-to-margin';
+import { CustomFieldSettings } from '../custom-text/custom-field-settings.jsx';
+import { formatLabel } from '../label-formatter.jsx';
 import {
   inputStylesPropTypes,
   InputStylesSettings,
-} from '../input_styles_settings';
-import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
-import { ParagraphEdit } from '../paragraph_edit.jsx';
+} from '../input-styles-settings';
+import { mapCustomFieldFormData } from '../map-custom-field-form-data.jsx';
+import { ParagraphEdit } from '../paragraph-edit.jsx';
 import { storeName } from '../../store/constants';
 
 function CustomTextAreaEdit({ name, attributes, setAttributes, clientId }) {

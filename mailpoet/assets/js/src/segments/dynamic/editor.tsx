@@ -5,7 +5,7 @@ import { Link, useRouteMatch } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { Background } from 'common/background/background';
 import { Heading } from 'common/typography/heading/heading';
-import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
+import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { Form } from './form';
 
 import { storeName } from './store';

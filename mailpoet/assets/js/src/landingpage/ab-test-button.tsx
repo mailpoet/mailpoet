@@ -10,7 +10,7 @@ import { Button } from 'common';
 import {
   MailPoetTrackEvent,
   CacheEventOptionSaveInStorage,
-} from '../analytics_event';
+} from '../analytics-event';
 import { redirectToWelcomeWizard } from './util';
 
 const EXPERIMENT_NAME = 'landing_page_cta_display';

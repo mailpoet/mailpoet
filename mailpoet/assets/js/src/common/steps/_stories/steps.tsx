@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '../../button/button';
 import { Heading } from '../../typography/heading/heading';
 import { Steps } from '../steps';
-import { StepsContent } from '../steps_content';
+import { StepsContent } from '../steps-content';
 
 export default {
   title: 'Steps',

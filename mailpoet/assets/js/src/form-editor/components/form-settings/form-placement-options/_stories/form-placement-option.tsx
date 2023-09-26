@@ -1,6 +1,6 @@
 import { action } from '_storybook/action';
-import { FormPlacementOption } from '../form_placement_option';
-import { SidebarIcon } from '../icons/sidebar_icon';
+import { FormPlacementOption } from '../form-placement-option';
+import { SidebarIcon } from '../icons/sidebar-icon';
 
 export default {
   title: 'FormEditor/Form Placement Options',

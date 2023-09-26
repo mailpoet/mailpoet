@@ -1,10 +1,10 @@
 import { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
-import { PremiumRequired } from 'common/premium_required/premium_required';
+import { PremiumRequired } from 'common/premium-required/premium-required';
 import { Button } from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
-import { PremiumMessageWithModal } from 'common/premium_key/key_messages';
+import { PremiumMessageWithModal } from 'common/premium-key/key-messages';
 
 type Props = {
   message: ReactNode;

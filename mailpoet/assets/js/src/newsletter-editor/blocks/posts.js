@@ -17,11 +17,11 @@ import Radio from 'backbone.radio';
 import _ from 'underscore';
 import jQuery from 'jquery';
 import { MailPoet } from 'mailpoet';
-import { App } from 'newsletter_editor/App';
-import { CommunicationComponent } from 'newsletter_editor/components/communication';
-import { BaseBlock } from 'newsletter_editor/blocks/base';
-import { ButtonBlock } from 'newsletter_editor/blocks/button';
-import { DividerBlock } from 'newsletter_editor/blocks/divider';
+import { App } from 'newsletter-editor/app';
+import { CommunicationComponent } from 'newsletter-editor/components/communication';
+import { BaseBlock } from 'newsletter-editor/blocks/base';
+import { ButtonBlock } from 'newsletter-editor/blocks/button';
+import { DividerBlock } from 'newsletter-editor/blocks/divider';
 import 'select2';
 import { __ } from '@wordpress/i18n';
 

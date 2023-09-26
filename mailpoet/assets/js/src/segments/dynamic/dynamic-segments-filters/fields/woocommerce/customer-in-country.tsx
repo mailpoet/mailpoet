@@ -4,7 +4,7 @@ import { filter } from 'lodash/fp';
 import { Grid } from 'common/grid';
 import { Select } from 'common/form/select/select';
 import { MailPoet } from 'mailpoet';
-import { ReactSelect } from 'common/form/react_select/react_select';
+import { ReactSelect } from 'common/form/react-select/react-select';
 import { storeName } from '../../../store';
 import {
   AnyValueTypes,

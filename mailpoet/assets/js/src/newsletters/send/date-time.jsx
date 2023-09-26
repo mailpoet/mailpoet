@@ -2,8 +2,8 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { Grid } from 'common/grid';
-import { DateText } from 'newsletters/send/date_text';
-import { TimeSelect } from 'newsletters/send/time_select.jsx';
+import { DateText } from 'newsletters/send/date-text';
+import { TimeSelect } from 'newsletters/send/time-select.jsx';
 import { ErrorBoundary } from '../../common';
 
 class DateTime extends Component {

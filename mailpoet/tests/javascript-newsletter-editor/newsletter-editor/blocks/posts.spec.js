@@ -1,7 +1,7 @@
-import { App } from 'newsletter_editor/App';
-import { CommunicationComponent } from 'newsletter_editor/components/communication';
-import { PostsBlock } from 'newsletter_editor/blocks/posts';
-import { ContainerBlock } from 'newsletter_editor/blocks/container';
+import { App } from 'newsletter-editor/app';
+import { CommunicationComponent } from 'newsletter-editor/components/communication';
+import { PostsBlock } from 'newsletter-editor/blocks/posts';
+import { ContainerBlock } from 'newsletter-editor/blocks/container';
 
 const expect = global.expect;
 const sinon = global.sinon;

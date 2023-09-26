@@ -6,8 +6,8 @@ import { addQueryArgs } from '@wordpress/url';
 import { AutomationFlowSection, storeName } from '../../../store';
 import { locale } from '../../../config';
 import { Step } from '../../../../../../editor/components/automation/types';
-import { openTab } from '../../../navigation/open_tab';
-import { isTransactional } from '../../../../steps/send_email/helper/is_transactional';
+import { openTab } from '../../../navigation/open-tab';
+import { isTransactional } from '../../../../steps/send-email/helper/is-transactional';
 
 const compactFormatter = Intl.NumberFormat(locale.toString(), {
   notation: 'compact',

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
-import { MSSUserSuccess } from './success_for_mss_users.jsx';
-import { PitchMss } from './success_pitch_mss.tsx';
+import { MSSUserSuccess } from './success-for-mss-users.jsx';
+import { PitchMss } from './success-pitch-mss.tsx';
 
 function Success(props) {
   if (!window.has_mss_key_specified) {

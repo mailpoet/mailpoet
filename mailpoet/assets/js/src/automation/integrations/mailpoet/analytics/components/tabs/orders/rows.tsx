@@ -3,7 +3,7 @@ import { OrderCell } from './cells/order';
 import { CustomerCell } from './cells/customer';
 import { ProductsCell } from './cells/products';
 import { EmailCell } from './cells/email';
-import { OrderStatusCell } from './cells/order_status';
+import { OrderStatusCell } from './cells/order-status';
 import { formattedPrice } from '../../../formatter';
 import { MailPoet } from '../../../../../../../mailpoet';
 

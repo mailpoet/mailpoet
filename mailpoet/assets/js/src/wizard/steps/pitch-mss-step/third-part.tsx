@@ -1,7 +1,7 @@
 import { Heading } from 'common/typography/heading/heading';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common';
-import { finishWizard } from '../../finishWizard';
+import { finishWizard } from '../../finish-wizard';
 
 function MSSStepThirdPart(): JSX.Element {
   return (

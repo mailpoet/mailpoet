@@ -3,7 +3,7 @@ import { useSelect } from '@wordpress/data';
 import { storeName as editorStoreName } from '../../../../../../../editor/store';
 import { ColoredIcon } from '../../../../../../../editor/components/icons';
 import { Step } from '../../../../../../../editor/components/automation/types';
-import { LockedBadge } from '../../../../../../../../common/premium_modal/locked_badge';
+import { LockedBadge } from '../../../../../../../../common/premium-modal/locked-badge';
 
 export function StepCell({
   name,

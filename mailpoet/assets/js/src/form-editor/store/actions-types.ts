@@ -1,5 +1,5 @@
-import { BlockInsertionPoint } from './state_types';
-import { CustomField } from './form_data_types';
+import { BlockInsertionPoint } from './state-types';
+import { CustomField } from './form-data-types';
 
 export type ToggleAction = {
   type: string;

@@ -5,7 +5,7 @@ import {
   GradientDefinition,
   InputBlockStyles,
   InputBlockStylesServerData,
-} from 'form_editor/store/form_data_types';
+} from 'form-editor/store/form-data-types';
 
 export const defaultBlockStyles: InputBlockStyles = {
   fullWidth: true,

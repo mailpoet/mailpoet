@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { partial, isEmpty, isUndefined } from 'lodash';
-import { formBodyToBlocksFactory } from '../../../../assets/js/src/form_editor/store/form_body_to_blocks.jsx';
+import { formBodyToBlocksFactory } from '../../../../assets/js/src/form-editor/store/form-body-to-blocks.jsx';
 
 import {
   emailInput,
@@ -20,13 +20,13 @@ import {
   headingInput,
   paragraphInput,
   image,
-} from './form_to_block_test_data';
+} from './form-to-block-test-data';
 
 import {
   fontSizeDefinitions,
   colorDefinitions,
   gradientDefinitions,
-} from './editor_settings';
+} from './editor-settings';
 
 const getMapper = partial(
   formBodyToBlocksFactory,

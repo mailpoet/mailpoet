@@ -5,9 +5,9 @@ import {
   Redirect,
   useParams,
 } from 'react-router-dom';
-import { MSSStepFirstPart } from './pitch_mss_step/first_part';
-import { MSSStepSecondPart } from './pitch_mss_step/second_part';
-import { MSSStepThirdPart } from './pitch_mss_step/third_part';
+import { MSSStepFirstPart } from './pitch-mss-step/first-part';
+import { MSSStepSecondPart } from './pitch-mss-step/second-part';
+import { MSSStepThirdPart } from './pitch-mss-step/third-part';
 
 function WelcomeWizardPitchMSSStep(): JSX.Element {
   const { path } = useRouteMatch();

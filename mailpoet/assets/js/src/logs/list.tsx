@@ -5,7 +5,7 @@ import { parseISO } from 'date-fns';
 
 import { Datepicker } from '../common/datepicker/datepicker';
 import { Button, ErrorBoundary, Input } from '../common';
-import { Icon } from '../listing/assets/search_icon';
+import { Icon } from '../listing/assets/search-icon';
 
 type LogData = {
   id: number;

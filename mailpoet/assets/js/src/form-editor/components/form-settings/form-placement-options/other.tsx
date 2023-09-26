@@ -1,7 +1,7 @@
 import { MailPoet } from 'mailpoet';
 import { useDispatch } from '@wordpress/data';
-import { SidebarIcon } from './icons/sidebar_icon';
-import { FormPlacementOption } from './form_placement_option';
+import { SidebarIcon } from './icons/sidebar-icon';
+import { FormPlacementOption } from './form-placement-option';
 import { storeName } from '../../../store';
 
 export function Other(): JSX.Element {

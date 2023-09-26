@@ -1,9 +1,9 @@
 import { Hooks } from 'wp-js-hooks';
 import { Step as StepData } from '../../../../../../../editor/components/automation/types';
-import { StepFooter } from '../step_footer';
-import { SendEmailPanel } from '../steps/send_email';
-import { StatisticSeparator } from '../statistic_separator';
-import { moreControls } from './more_controls';
+import { StepFooter } from '../step-footer';
+import { SendEmailPanel } from '../steps/send-email';
+import { StatisticSeparator } from '../statistic-separator';
+import { moreControls } from './more-controls';
 
 export function initHooks() {
   Hooks.addFilter(

@@ -1,5 +1,5 @@
 import { action } from '_storybook/action';
-import { ReactSelect as Select } from '../react_select';
+import { ReactSelect as Select } from '../react-select';
 import { Heading } from '../../../typography/heading/heading';
 import { Icon } from './assets/icon';
 

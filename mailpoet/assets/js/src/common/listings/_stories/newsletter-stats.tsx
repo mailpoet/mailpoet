@@ -1,4 +1,4 @@
-import { NewsletterStats } from '../newsletter_stats';
+import { NewsletterStats } from '../newsletter-stats';
 import { Heading } from '../../typography/heading/heading';
 
 export default {

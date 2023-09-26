@@ -5,8 +5,8 @@ import { __ } from '@wordpress/i18n';
 import { PlainBodyTitle } from '../../../../../editor/components';
 import { PanelBody } from '../../../../../editor/components/panel/panel-body';
 import { storeName } from '../../../../../editor/store';
-import { PremiumModal } from '../../../../../../common/premium_modal';
-import { getOrderStatusOptions, COMPLETED_ORDER_STATUS } from './order_status';
+import { PremiumModal } from '../../../../../../common/premium-modal';
+import { getOrderStatusOptions, COMPLETED_ORDER_STATUS } from './order-status';
 import { OrderStatusOptions } from '../../../../../types/filters';
 
 type OrderStatusPanelProps = {

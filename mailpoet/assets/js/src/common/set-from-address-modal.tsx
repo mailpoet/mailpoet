@@ -7,7 +7,7 @@ import { Modal } from 'common/modal/modal';
 import { GlobalContext } from 'context';
 import { noop } from 'lodash';
 import { ErrorResponse, isErrorResponse } from '../ajax';
-import { AuthorizeSenderEmailModal } from './authorize_sender_email_modal';
+import { AuthorizeSenderEmailModal } from './authorize-sender-email-modal';
 import { Button } from './button/button';
 
 /**

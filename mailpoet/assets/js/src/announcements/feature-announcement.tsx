@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
-import { withFeatureAnnouncement } from './with_feature_announcement';
+import { withFeatureAnnouncement } from './with-feature-announcement';
 
 type Props = {
   hasNews: boolean;

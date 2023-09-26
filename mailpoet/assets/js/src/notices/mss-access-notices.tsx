@@ -1,8 +1,8 @@
 import { ErrorBoundary } from 'common';
 import { MailPoet } from 'mailpoet';
-import { SubscribersLimitNotice } from './subscribers_limit_notice';
-import { EmailVolumeLimitNotice } from './email_volume_limit_notice';
-import { InvalidMssKeyNotice } from './invalid_mss_key_notice';
+import { SubscribersLimitNotice } from './subscribers-limit-notice';
+import { EmailVolumeLimitNotice } from './email-volume-limit-notice';
+import { InvalidMssKeyNotice } from './invalid-mss-key-notice';
 
 /**
  * This component handles notices for exceeded limits and invalid MSS key.

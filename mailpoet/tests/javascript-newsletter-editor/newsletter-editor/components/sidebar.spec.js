@@ -1,4 +1,4 @@
-import { SidebarComponent } from 'newsletter_editor/components/sidebar';
+import { SidebarComponent } from 'newsletter-editor/components/sidebar';
 
 const expect = global.expect;
 const Backbone = global.Backbone;

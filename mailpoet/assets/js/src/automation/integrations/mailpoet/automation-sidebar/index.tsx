@@ -1,6 +1,6 @@
 import { Hooks } from 'wp-js-hooks';
 import { AutomationSettingElements } from '../../../types/filters';
-import { RunAutomationOnce, showRunOnlyOnce } from './run_automation_once';
+import { RunAutomationOnce, showRunOnlyOnce } from './run-automation-once';
 
 export function registerAutomationSidebar() {
   Hooks.addFilter(

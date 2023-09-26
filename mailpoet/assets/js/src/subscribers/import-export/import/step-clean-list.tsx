@@ -1,5 +1,5 @@
 import { RouteComponentProps } from 'react-router-dom';
-import { CleanList } from './clean_list';
+import { CleanList } from './clean-list';
 
 function StepCleanList({ history }: RouteComponentProps): JSX.Element {
   return (

@@ -3,54 +3,54 @@ import { FilterProps, WooCommerceFormItem } from '../types';
 import {
   DateFieldsDefaultBefore,
   validateDateField,
-} from './fields/date_fields';
+} from './fields/date-fields';
 import { storeName } from '../store';
-import { WooCommerceActionTypes } from './woocommerce_options';
+import { WooCommerceActionTypes } from './woocommerce-options';
 import {
   PurchasedProductFields,
   validatePurchasedProduct,
-} from './fields/woocommerce/purchased_product';
+} from './fields/woocommerce/purchased-product';
 import {
   PurchasedCategoryFields,
   validatePurchasedCategory,
-} from './fields/woocommerce/purchased_category';
+} from './fields/woocommerce/purchased-category';
 import {
   CustomerInCountryFields,
   validateCustomerInCountry,
-} from './fields/woocommerce/customer_in_country';
+} from './fields/woocommerce/customer-in-country';
 import {
   NumberOfOrdersFields,
   validateNumberOfOrders,
-} from './fields/woocommerce/number_of_orders';
+} from './fields/woocommerce/number-of-orders';
 import {
   SingleOrderValueFields,
   validateSingleOrderValue,
-} from './fields/woocommerce/single_order_value';
+} from './fields/woocommerce/single-order-value';
 import {
   TotalSpentFields,
   validateTotalSpent,
-} from './fields/woocommerce/total_spent';
+} from './fields/woocommerce/total-spent';
 import {
   AverageSpentFields,
   validateAverageSpent,
-} from './fields/woocommerce/average_spent';
+} from './fields/woocommerce/average-spent';
 import {
   UsedPaymentMethodFields,
   validateUsedPaymentMethod,
-} from './fields/woocommerce/used_payment_method';
+} from './fields/woocommerce/used-payment-method';
 import {
   UsedShippingMethodFields,
   validateUsedShippingMethod,
-} from './fields/woocommerce/used_shipping_method';
-import { TextField, validateTextField } from './fields/text_field';
+} from './fields/woocommerce/used-shipping-method';
+import { TextField, validateTextField } from './fields/text-field';
 import {
   NumberOfReviewsFields,
   validateNumberOfReviews,
-} from './fields/woocommerce/number_of_reviews';
+} from './fields/woocommerce/number-of-reviews';
 import {
   UsedCouponCodeFields,
   validateUsedCouponCode,
-} from './fields/woocommerce/used_coupon_code';
+} from './fields/woocommerce/used-coupon-code';
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (

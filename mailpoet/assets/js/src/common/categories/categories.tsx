@@ -1,4 +1,4 @@
-import { CategoriesItem, Category } from './categories_item';
+import { CategoriesItem, Category } from './categories-item';
 
 type Props = {
   onSelect: (name: string) => void;

@@ -2,7 +2,7 @@ import {
   ColorDefinition,
   FontSizeDefinition,
   GradientDefinition,
-} from '../../../../assets/js/src/form_editor/store/form_data_types';
+} from '../../../../assets/js/src/form-editor/store/form-data-types';
 
 export const colorDefinitions: ColorDefinition[] = [
   {

@@ -1,4 +1,4 @@
-import { State } from './state_types';
+import { State } from './state-types';
 
 const findBlockPath = (blocks, id, path = []) =>
   blocks.reduce((result, block) => {

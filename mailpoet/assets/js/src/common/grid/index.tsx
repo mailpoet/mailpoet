@@ -1,9 +1,9 @@
-import { CenteredRow } from './centered_row';
+import { CenteredRow } from './centered-row';
 import { Column } from './column';
-import { TwoColumns } from './two_columns';
-import { TwoColumnsList } from './two_columns_list';
-import { ThreeColumns } from './three_columns';
-import { SpaceBetween } from './space_between';
+import { TwoColumns } from './two-columns';
+import { TwoColumnsList } from './two-columns-list';
+import { ThreeColumns } from './three-columns';
+import { SpaceBetween } from './space-between';
 
 export const Grid = {
   CenteredRow,

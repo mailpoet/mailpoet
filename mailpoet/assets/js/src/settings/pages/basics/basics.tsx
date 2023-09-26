@@ -1,14 +1,14 @@
 import { SaveButton } from 'settings/components';
 import { t } from 'common/functions';
-import { DefaultSender } from './default_sender';
-import { SubscribeOn } from './subscribe_on';
-import { ManageSubscription } from './manage_subscription';
-import { UnsubscribePage } from './unsubscribe_page';
-import { StatsNotifications } from './stats_notifications';
-import { NewSubscriberNotifications } from './new_subscriber_notifications';
+import { DefaultSender } from './default-sender';
+import { SubscribeOn } from './subscribe-on';
+import { ManageSubscription } from './manage-subscription';
+import { UnsubscribePage } from './unsubscribe-page';
+import { StatsNotifications } from './stats-notifications';
+import { NewSubscriberNotifications } from './new-subscriber-notifications';
 import { Shortcode } from './shortcode';
-import { GdprCompliant } from './gdpr_compliant';
-import { ReEngagementPage } from './re_engagement_page';
+import { GdprCompliant } from './gdpr-compliant';
+import { ReEngagementPage } from './re-engagement-page';
 
 export function Basics() {
   return (

@@ -5,7 +5,7 @@ import { noop } from 'lodash';
 import { ModalFrame } from './frame';
 import { ModalHeader } from './header';
 import { ModalOverlay } from './overlay';
-import { modalCloseIcon } from './close_icon';
+import { modalCloseIcon } from './close-icon';
 
 type Props = {
   title?: string;

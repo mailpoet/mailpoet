@@ -3,10 +3,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Grid } from 'common/grid';
 import { Select } from 'common';
-import { ReactSelect } from 'common/form/react_select/react_select';
+import { ReactSelect } from 'common/form/react-select/react-select';
 import { MailPoet } from 'mailpoet';
 import { filter, uniqBy, debounce } from 'lodash/fp';
-import { APIErrorsNotice } from '../../../../../notices/api_errors_notice';
+import { APIErrorsNotice } from '../../../../../notices/api-errors-notice';
 import {
   WooCommerceFormItem,
   FilterProps,
@@ -15,7 +15,7 @@ import {
   SelectOption,
 } from '../../../types';
 import { storeName } from '../../../store';
-import { DaysPeriodField, validateDaysPeriod } from '../days_period_field';
+import { DaysPeriodField, validateDaysPeriod } from '../days-period-field';
 import { isInEnum } from '../../../../../utils';
 
 export function validateUsedCouponCode(

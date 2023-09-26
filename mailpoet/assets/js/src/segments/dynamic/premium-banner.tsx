@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { MailPoet } from 'mailpoet';
-import { PremiumBannerWithUpgrade } from 'common/premium_banner_with_upgrade/premium_banner_with_upgrade';
+import { PremiumBannerWithUpgrade } from 'common/premium-banner-with-upgrade/premium-banner-with-upgrade';
 import { Button } from 'common/button/button';
 import ReactStringReplace from 'react-string-replace';
 

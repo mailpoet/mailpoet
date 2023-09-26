@@ -6,10 +6,10 @@ import {
   ToggleControl,
 } from '@wordpress/components';
 import { __, assocPath, compose } from 'lodash/fp';
-import { SizeSettings } from 'form_editor/components/size_settings';
-import { AnimationSettings } from './animation_settings';
-import { PlacementSettings } from './placement_settings';
-import { CookieSettings } from './cookie_settings';
+import { SizeSettings } from 'form-editor/components/size-settings';
+import { AnimationSettings } from './animation-settings';
+import { PlacementSettings } from './placement-settings';
+import { CookieSettings } from './cookie-settings';
 import { storeName } from '../../../../store';
 
 const delayValues = [0, 2, 5, 10, 15, 30, 45, 60, 120, 180, 240];

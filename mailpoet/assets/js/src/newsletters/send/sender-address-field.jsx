@@ -2,15 +2,15 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import { FormFieldText } from 'form/fields/text.jsx';
-import { SenderEmailAddressWarning } from 'common/sender_email_address_warning.jsx';
+import { SenderEmailAddressWarning } from 'common/sender-email-address-warning.jsx';
 import {
   isFieldValid,
   addOrUpdateError,
   resetFieldError,
   validateField,
-} from 'common/functions/parsley_helper_functions';
+} from 'common/functions/parsley-helper-functions';
 import { extractEmailDomain } from 'common/functions';
-import { checkSenderEmailDomainDmarcPolicy } from 'common/check_sender_domain_dmarc_policy';
+import { checkSenderEmailDomainDmarcPolicy } from 'common/check-sender-domain-dmarc-policy';
 
 class SenderField extends Component {
   constructor(props) {

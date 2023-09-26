@@ -6,8 +6,8 @@ import { Step } from '../../../../../../../../editor/components/automation/types
 import { EmailStats, OverviewSection, storeName } from '../../../../../store';
 import { locale } from '../../../../../config';
 import { formattedPrice } from '../../../../../formatter';
-import { openTab } from '../../../../../navigation/open_tab';
-import { Badge } from '../../../../email_click_badge';
+import { openTab } from '../../../../../navigation/open-tab';
+import { Badge } from '../../../../email-click-badge';
 import { MailPoet } from '../../../../../../../../../mailpoet';
 
 type SendEmailPanelSectionProps = {

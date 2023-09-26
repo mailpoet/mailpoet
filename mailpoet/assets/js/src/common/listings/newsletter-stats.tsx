@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
-import { StatsBadge } from './newsletter_stats/stats';
+import { StatsBadge } from './newsletter-stats/stats';
 import { Tooltip } from '../tooltip/tooltip';
 import { Tag } from '../tag/tag';
 

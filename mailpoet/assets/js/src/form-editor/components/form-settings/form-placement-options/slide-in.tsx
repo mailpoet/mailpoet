@@ -1,8 +1,8 @@
 import { MailPoet } from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import { SlideInIcon } from './icons/slide_in_icon';
-import { FormPlacementOption } from './form_placement_option';
+import { SlideInIcon } from './icons/slide-in-icon';
+import { FormPlacementOption } from './form-placement-option';
 import { storeName } from '../../../store';
 
 export function SlideIn(): JSX.Element {

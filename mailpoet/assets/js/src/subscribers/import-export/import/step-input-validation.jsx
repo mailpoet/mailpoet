@@ -2,11 +2,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { CleanList } from 'subscribers/importExport/import/clean_list';
+import { CleanList } from 'subscribers/import-export/import/clean-list';
 import { ErrorBoundary } from 'common';
-import { InitialQuestion } from './step_input_validation/initial_question.jsx';
-import { WrongSourceBlock } from './step_input_validation/wrong_source_block.jsx';
-import { LastSentQuestion } from './step_input_validation/last_sent_question.jsx';
+import { InitialQuestion } from './step-input-validation/initial-question.jsx';
+import { WrongSourceBlock } from './step-input-validation/wrong-source-block.jsx';
+import { LastSentQuestion } from './step-input-validation/last-sent-question.jsx';
 
 function StepInputValidationComponent({ stepMethodSelectionData, history }) {
   const [importSource, setImportSource] = useState(undefined);

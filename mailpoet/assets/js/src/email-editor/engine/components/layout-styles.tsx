@@ -1,6 +1,6 @@
 import { useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
-import { EmailData } from 'email_editor/engine/types';
+import { EmailData } from 'email-editor/engine/types';
 
 export function LayoutStyles() {
   const { emailData } = useSelect((select) => ({

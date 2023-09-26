@@ -4,7 +4,7 @@ import { Input } from 'common/form/input/input';
 import { Radio } from 'common/form/radio/radio';
 import { Select } from 'common/form/select/select';
 import { useSetting } from 'settings/store/hooks';
-import { SendingFrequency } from './sending_frequency';
+import { SendingFrequency } from './sending-frequency';
 
 export function SmtpFields() {
   const [host, setHost] = useSetting('mta', 'host');

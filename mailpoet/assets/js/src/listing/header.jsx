@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
 
 import { Checkbox } from 'common/form/checkbox/checkbox.tsx';
-import { ListingColumn } from './listing_column.jsx';
+import { ListingColumn } from './listing-column.jsx';
 
 class ListingHeader extends Component {
   constructor(props) {

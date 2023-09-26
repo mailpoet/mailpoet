@@ -8,8 +8,8 @@ import Backbone from 'backbone';
 import Marionette from 'backbone.marionette';
 import _ from 'underscore';
 import jQuery from 'jquery';
-import { App } from 'newsletter_editor/App';
-import { BaseBlock } from 'newsletter_editor/blocks/base';
+import { App } from 'newsletter-editor/app';
+import { BaseBlock } from 'newsletter-editor/blocks/base';
 
 var Module = {};
 var base = BaseBlock;

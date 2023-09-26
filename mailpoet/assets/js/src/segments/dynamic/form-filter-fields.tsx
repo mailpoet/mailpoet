@@ -2,12 +2,12 @@ import { useSelect } from '@wordpress/data';
 
 import { FilterProps, SegmentTypes, WordpressRoleFormItem } from './types';
 
-import { EmailFields } from './dynamic_segments_filters/email';
-import { SubscriberFields } from './dynamic_segments_filters/subscriber';
-import { WooCommerceFields } from './dynamic_segments_filters/woocommerce';
-import { AutomationsFields } from './dynamic_segments_filters/automations';
-import { WooCommerceMembershipFields } from './dynamic_segments_filters/fields/woocommerce/woocommerce_membership';
-import { WooCommerceSubscriptionFields } from './dynamic_segments_filters/fields/woocommerce/woocommerce_subscription';
+import { EmailFields } from './dynamic-segments-filters/email';
+import { SubscriberFields } from './dynamic-segments-filters/subscriber';
+import { WooCommerceFields } from './dynamic-segments-filters/woocommerce';
+import { AutomationsFields } from './dynamic-segments-filters/automations';
+import { WooCommerceMembershipFields } from './dynamic-segments-filters/fields/woocommerce/woocommerce-membership';
+import { WooCommerceSubscriptionFields } from './dynamic-segments-filters/fields/woocommerce/woocommerce-subscription';
 import { storeName } from './store';
 
 const filterFieldsMap = {

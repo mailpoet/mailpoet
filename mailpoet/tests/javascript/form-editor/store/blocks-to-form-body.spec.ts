@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { partial, isEmpty, isUndefined } from 'lodash';
-import { blocksToFormBodyFactory } from '../../../../assets/js/src/form_editor/store/blocks_to_form_body';
+import { blocksToFormBodyFactory } from '../../../../assets/js/src/form-editor/store/blocks-to-form-body';
 import {
   emailBlock,
   lastNameBlock,
@@ -18,13 +18,13 @@ import {
   headingBlock,
   paragraphBlock,
   imageBlock,
-} from './block_to_form_test_data';
+} from './block-to-form-test-data';
 
 import {
   fontSizeDefinitions,
   colorDefinitions,
   gradientDefinitions,
-} from './editor_settings';
+} from './editor-settings';
 
 const checkBodyInputBasics = (input) => {
   expect(input.id).to.be.a('string');

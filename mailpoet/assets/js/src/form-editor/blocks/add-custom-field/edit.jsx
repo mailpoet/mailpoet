@@ -5,7 +5,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
 import { Icon } from './icon.jsx';
-import { AddCustomFieldForm } from './add_custom_field_form.jsx';
+import { AddCustomFieldForm } from './add-custom-field-form.jsx';
 import { storeName } from '../../store/constants';
 
 function AddCustomField({ clientId }) {

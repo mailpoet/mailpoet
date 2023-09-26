@@ -3,7 +3,7 @@ import { MailPoet } from 'mailpoet';
 import { BlockFormatControls } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 
-import { FontFamilySettings } from '../components/font_family_settings';
+import { FontFamilySettings } from '../components/font-family-settings';
 
 const name = 'mailpoet-form/font-selection';
 const title = 'Font Selection';

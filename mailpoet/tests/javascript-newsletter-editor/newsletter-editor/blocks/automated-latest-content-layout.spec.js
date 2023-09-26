@@ -1,11 +1,11 @@
-import { App } from 'newsletter_editor/App';
-import { AutomatedLatestContentBlock } from 'newsletter_editor/blocks/automatedLatestContentLayout';
-import { ContainerBlock } from 'newsletter_editor/blocks/container';
-import { CommunicationComponent } from 'newsletter_editor/components/communication';
+import { App } from 'newsletter-editor/app';
+import { AutomatedLatestContentBlock } from 'newsletter-editor/blocks/automated-latest-content-layout';
+import { ContainerBlock } from 'newsletter-editor/blocks/container';
+import { CommunicationComponent } from 'newsletter-editor/components/communication';
 
 /*  (ES6 -> CommonJS transform needed for inject-loader) */
 /* eslint-disable-next-line max-len  */
-import AutomatedLatestContentInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter_editor/blocks/automatedLatestContentLayout';
+import AutomatedLatestContentInjector from 'inject-loader!babel-loader?plugins[]=@babel/plugin-transform-modules-commonjs!newsletter-editor/blocks/automated-latest-content-layout';
 
 const expect = global.expect;
 const sinon = global.sinon;

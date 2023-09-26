@@ -7,7 +7,7 @@ import { addQueryArgs } from '@wordpress/url';
 import { dispatch, useSelect } from '@wordpress/data';
 import { PlainBodyTitle } from '../../../../../editor/components';
 import { storeName } from '../../../../../editor/store';
-import { OrderStatusPanel } from '../../order_status_changed/edit/order_status_panel';
+import { OrderStatusPanel } from '../../order-status-changed/edit/order-status-panel';
 
 type Product = {
   key: string | number;

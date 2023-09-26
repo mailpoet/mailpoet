@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { dispatch, useSelect } from '@wordpress/data';
 import { storeName } from '../../../../../editor/store';
-import { OrderStatusPanel } from './order_status_panel';
+import { OrderStatusPanel } from './order-status-panel';
 
 export function Edit(): JSX.Element {
   const { selectedStep } = useSelect(

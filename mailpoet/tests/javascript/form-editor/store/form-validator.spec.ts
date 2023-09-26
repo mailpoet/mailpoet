@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { isEmpty } from 'lodash';
-import { validateForm as validate } from '../../../../assets/js/src/form_editor/store/form_validator.jsx';
+import { validateForm as validate } from '../../../../assets/js/src/form-editor/store/form-validator.jsx';
 
 const emailBlock = {
   clientId: 'email',

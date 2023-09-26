@@ -2,7 +2,7 @@ import { useLayoutEffect } from 'react';
 import { MailPoet } from 'mailpoet';
 import ReactDOMServer from 'react-dom/server';
 import satismeter from 'satismeter-loader';
-import { ReviewRequest } from 'review_request.jsx';
+import { ReviewRequest } from 'review-request.jsx';
 import { getTrackingData } from 'analytics.js';
 
 const useNpsPoll = () => {

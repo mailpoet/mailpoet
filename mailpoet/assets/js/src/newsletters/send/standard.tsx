@@ -4,9 +4,9 @@ import { Hooks } from 'wp-js-hooks';
 import Moment from 'moment';
 import { __ } from '@wordpress/i18n';
 
-import { DateTime } from 'newsletters/send/date_time.jsx';
-import { SenderField } from 'newsletters/send/sender_address_field.jsx';
-import { GATrackingField } from 'newsletters/send/ga_tracking';
+import { DateTime } from 'newsletters/send/date-time.jsx';
+import { SenderField } from 'newsletters/send/sender-address-field.jsx';
+import { GATrackingField } from 'newsletters/send/ga-tracking';
 import { Toggle } from 'common/form/toggle/toggle';
 import { withBoundary } from 'common';
 import { NewsLetter, NewsletterStatus } from 'common/newsletter';

@@ -1,5 +1,5 @@
-import { App } from 'newsletter_editor/App';
-import { BaseBlock } from 'newsletter_editor/blocks/base';
+import { App } from 'newsletter-editor/app';
+import { BaseBlock } from 'newsletter-editor/blocks/base';
 
 const BlockModel = BaseBlock.BlockModel.extend({
   stale: ['selected'],

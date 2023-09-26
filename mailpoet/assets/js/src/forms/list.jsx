@@ -10,7 +10,7 @@ import { MailPoet } from 'mailpoet';
 import { plusIcon } from 'common/button/icon/plus';
 import { SegmentTags } from 'common/tag/tags';
 import { Toggle } from 'common/form/toggle/toggle';
-import { withNpsPoll } from 'nps_poll.jsx';
+import { withNpsPoll } from 'nps-poll.jsx';
 import { FormsHeading, onAddNewForm } from './heading';
 
 const columns = [

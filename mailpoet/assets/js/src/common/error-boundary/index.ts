@@ -1,3 +1,3 @@
 export * from './utils';
-export * from './error_boundary';
-export * from './with_boundary';
+export * from './error-boundary';
+export * from './with-boundary';

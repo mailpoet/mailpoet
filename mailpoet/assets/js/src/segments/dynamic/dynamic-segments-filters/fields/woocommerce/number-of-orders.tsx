@@ -5,7 +5,7 @@ import { Input, Select } from 'common';
 import { MailPoet } from 'mailpoet';
 import { storeName } from '../../../store';
 import { WooCommerceFormItem, FilterProps } from '../../../types';
-import { DaysPeriodField, validateDaysPeriod } from '../days_period_field';
+import { DaysPeriodField, validateDaysPeriod } from '../days-period-field';
 
 export function validateNumberOfOrders(
   formItems: WooCommerceFormItem,

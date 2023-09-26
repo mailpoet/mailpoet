@@ -3,7 +3,7 @@ import { t, onChange } from 'common/functions';
 import { Input } from 'common/form/input/input';
 import { Select } from 'common/form/select/select';
 import { useSetting, useSelector } from 'settings/store/hooks';
-import { SendingFrequency } from './sending_frequency';
+import { SendingFrequency } from './sending-frequency';
 
 export function AmazonSesFields() {
   const [region, setRegion] = useSetting('mta', 'region');

@@ -1,10 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import { Button } from 'common/index';
-import { Messages } from 'common/premium_key/messages';
+import { Messages } from 'common/premium-key/messages';
 import { MssStatus } from 'settings/store/types';
 import { MailPoet } from 'mailpoet';
 import { select } from '@wordpress/data';
-import { STORE_NAME } from 'settings/store/store_name';
+import { STORE_NAME } from 'settings/store/store-name';
 import { useContext, useState } from 'react';
 import { GlobalContext } from 'context';
 import { useAction, useSelector, useSetting } from 'settings/store/hooks';

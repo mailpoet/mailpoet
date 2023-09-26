@@ -1,4 +1,4 @@
-import { ListPanel } from './list_panel';
+import { ListPanel } from './list-panel';
 
 export function Edit(): JSX.Element {
   return <ListPanel />;

@@ -6,11 +6,11 @@ import { __, _x } from '@wordpress/i18n';
 import { Background } from 'common/background/background';
 import { Categories } from 'common/categories/categories';
 import { GlobalContext } from 'context';
-import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
+import { ListingHeadingStepsRoute } from 'newsletters/listings/heading-steps-route';
 import { Loading } from 'common/loading.jsx';
 import { MailPoet } from 'mailpoet';
-import { TemplateBox } from 'newsletters/templates/template_box.jsx';
-import { ImportTemplate } from 'newsletters/templates/import_template.jsx';
+import { TemplateBox } from 'newsletters/templates/template-box.jsx';
+import { ImportTemplate } from 'newsletters/templates/import-template.jsx';
 import { ErrorBoundary } from '../common';
 
 const getEditorUrl = (id) => {

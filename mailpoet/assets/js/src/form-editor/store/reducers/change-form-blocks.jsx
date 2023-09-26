@@ -1,4 +1,4 @@
-import { validateForm } from '../form_validator.jsx';
+import { validateForm } from '../form-validator.jsx';
 
 export const changeFormBlocks = (state, action) => {
   const newState = {

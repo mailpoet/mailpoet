@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { Hooks } from 'wp-js-hooks';
 import { Icon, plusCircleFilled } from '@wordpress/icons';
-import { PremiumModal } from '../../../common/premium_modal';
+import { PremiumModal } from '../../../common/premium-modal';
 import { Notice } from '../../../notices/notice';
 import { FromScratchHookType } from '../../types/filters';
 

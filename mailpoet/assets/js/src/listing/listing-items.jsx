@@ -4,8 +4,8 @@ import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
 
 import { Grid } from 'common/grid';
-import { ListingBulkActions } from 'listing/bulk_actions.jsx';
-import { ListingItem } from 'listing/listing_item.jsx';
+import { ListingBulkActions } from 'listing/bulk-actions.jsx';
+import { ListingItem } from 'listing/listing-item.jsx';
 
 // eslint-disable-next-line react/prefer-stateless-function, max-len
 class ListingItems extends Component {

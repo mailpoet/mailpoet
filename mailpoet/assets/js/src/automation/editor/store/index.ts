@@ -1,4 +1,4 @@
 export * from './constants';
-export * from './register_step_type';
+export * from './register-step-type';
 export * from './store';
 export * from './types';

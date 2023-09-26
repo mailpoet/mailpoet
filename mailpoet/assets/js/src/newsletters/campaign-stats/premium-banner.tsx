@@ -1,9 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
-import { PremiumRequired } from 'common/premium_required/premium_required';
+import { PremiumRequired } from 'common/premium-required/premium-required';
 import { withBoundary } from '../../common';
-import { PremiumBannerWithUpgrade } from '../../common/premium_banner_with_upgrade/premium_banner_with_upgrade';
+import { PremiumBannerWithUpgrade } from '../../common/premium-banner-with-upgrade/premium-banner-with-upgrade';
 
 function SkipDisplayingDetailedStats() {
   const ctaButton = (

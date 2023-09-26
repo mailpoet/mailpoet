@@ -1,4 +1,4 @@
-import { PremiumRequired } from '../premium_required';
+import { PremiumRequired } from '../premium-required';
 import { Button } from '../../button/button';
 
 export default {

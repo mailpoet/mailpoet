@@ -3,7 +3,7 @@ import { DropdownMenu } from '@wordpress/components';
 import { moreVertical, trash } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
-import { PremiumModal } from 'common/premium_modal';
+import { PremiumModal } from 'common/premium-modal';
 import { Step as StepData } from './types';
 import { StepMoreControlsType } from '../../../types/filters';
 

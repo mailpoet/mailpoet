@@ -1,8 +1,8 @@
 import { MailPoet } from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import { FormPlacementOption } from './form_placement_option';
-import { FixedBarIcon } from './icons/fixed_bar_icon';
+import { FormPlacementOption } from './form-placement-option';
+import { FixedBarIcon } from './icons/fixed-bar-icon';
 import { storeName } from '../../../store';
 
 export function FixedBar(): JSX.Element {

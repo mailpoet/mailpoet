@@ -15,18 +15,18 @@ import {
 } from '@wordpress/block-editor';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 
-import { UnsavedChangesNotice } from 'common/notices/unsaved_changes_notice.jsx';
+import { UnsavedChangesNotice } from 'common/notices/unsaved-changes-notice.jsx';
 import { ErrorBoundary } from 'common';
-import { fetchLinkSuggestions } from '../utils/link_suggestions';
+import { fetchLinkSuggestions } from '../utils/link-suggestions';
 import { Header } from './header.jsx';
 import { Tutorial } from './tutorial';
 import { Sidebar } from './sidebar/sidebar';
 import { Inserter } from './inserter';
 import { Notices } from './notices.jsx';
-import { FormStyles } from './form_styles.jsx';
+import { FormStyles } from './form-styles.jsx';
 import { FormPreview } from './preview/preview';
-import { FormStylingBackground } from './form_styling_background.jsx';
-import { CustomFontsStyleSheetLink } from './font_family_settings';
+import { FormStylingBackground } from './form-styling-background.jsx';
+import { CustomFontsStyleSheetLink } from './font-family-settings';
 import { Fullscreen } from './fullscreen';
 import { FONT_SIZES, storeName } from '../store';
 

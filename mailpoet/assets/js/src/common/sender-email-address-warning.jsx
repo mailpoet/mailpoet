@@ -4,7 +4,7 @@ import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 import { noop } from 'lodash';
 import ReactStringReplace from 'react-string-replace';
-import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize_sender_email_and_domain_modal';
+import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize-sender-email-and-domain-modal';
 
 const userHostDomain = window.location.hostname.replace('www.', '');
 const suggestedEmailAddress = `contact@${userHostDomain}`;

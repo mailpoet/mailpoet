@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
 
-import { ConsentDescription } from './consent_description';
+import { ConsentDescription } from './consent-description';
 
 interface Props {
   newSubscribersStatus: string;

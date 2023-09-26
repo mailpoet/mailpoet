@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
-import { TopBarWithBeamer } from 'common/top_bar/top_bar';
+import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { plusIcon } from 'common/button/icon/plus';
-import { SubscribersInPlan } from 'common/subscribers_in_plan';
-import { MssAccessNotices } from 'notices/mss_access_notices';
-import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
+import { SubscribersInPlan } from 'common/subscribers-in-plan';
+import { MssAccessNotices } from 'notices/mss-access-notices';
+import { SubscribersCacheMessage } from 'common/subscribers-cache-message';
 import * as ROUTES from 'segments/routes';
 
 function ListHeading({ segmentType }): JSX.Element {

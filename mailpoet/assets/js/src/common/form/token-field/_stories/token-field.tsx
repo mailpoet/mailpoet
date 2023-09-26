@@ -1,6 +1,6 @@
 import { action } from '_storybook/action';
 import { FormTokenField } from '@wordpress/components';
-import { TokenField } from '../tokenField';
+import { TokenField } from '../token-field';
 import { Heading } from '../../../typography/heading/heading';
 import { Grid } from '../../../grid';
 

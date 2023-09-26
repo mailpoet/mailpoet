@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Link, withRouter } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
-import { TopBarWithBeamer } from 'common/top_bar/top_bar';
+import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { plusIcon } from 'common/button/icon/plus';
 
 function SubscribersHeadingComponent({ location }) {

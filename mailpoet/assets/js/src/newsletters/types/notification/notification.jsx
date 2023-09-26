@@ -3,7 +3,7 @@ import { Component } from 'react';
 import { __ } from '@wordpress/i18n';
 
 import { MailPoet } from 'mailpoet';
-import { ListingHeadingStepsRoute } from 'newsletters/listings/heading_steps_route';
+import { ListingHeadingStepsRoute } from 'newsletters/listings/heading-steps-route';
 import _ from 'underscore';
 import { NotificationScheduling } from 'newsletters/types/notification/scheduling.jsx';
 import { Background } from 'common/background/background';

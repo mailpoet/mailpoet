@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
-import { SendEventConditions } from 'newsletters/automatic_emails/send_event_conditions.jsx';
-import { GATrackingField } from 'newsletters/send/ga_tracking';
+import { SendEventConditions } from 'newsletters/automatic-emails/send-event-conditions.jsx';
+import { GATrackingField } from 'newsletters/send/ga-tracking';
 import { withBoundary } from 'common';
 
 const emails = window.mailpoet_woocommerce_automatic_emails || [];

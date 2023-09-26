@@ -1,8 +1,8 @@
 import { MailPoet } from 'mailpoet';
 import { select } from '@wordpress/data';
-import { STORE_NAME } from './store_name';
+import { STORE_NAME } from './store-name';
 
-export { callApi as CALL_API } from 'common/controls/call_api';
+export { callApi as CALL_API } from 'common/controls/call-api';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function TRACK_SETTINGS_SAVED() {

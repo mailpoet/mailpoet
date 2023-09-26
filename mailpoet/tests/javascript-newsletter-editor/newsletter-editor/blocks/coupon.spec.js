@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
-import { App } from 'newsletter_editor/App';
-import { ContentComponent } from 'newsletter_editor/components/content';
-import { CouponBlock } from 'newsletter_editor/blocks/coupon';
+import { App } from 'newsletter-editor/app';
+import { ContentComponent } from 'newsletter-editor/components/content';
+import { CouponBlock } from 'newsletter-editor/blocks/coupon';
 
 const expect = global.expect;
 const sinon = global.sinon;

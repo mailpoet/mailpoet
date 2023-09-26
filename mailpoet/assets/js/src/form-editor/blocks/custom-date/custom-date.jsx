@@ -1,4 +1,4 @@
-import { Icon } from '../custom_text/icon.jsx';
+import { Icon } from '../custom-text/icon.jsx';
 import { CustomDateEdit } from './edit.jsx';
 
 export const name = 'mailpoet-form/custom-date';

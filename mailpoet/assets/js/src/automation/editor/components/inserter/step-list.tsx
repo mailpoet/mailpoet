@@ -1,8 +1,8 @@
 import { ComponentProps, ReactNode } from 'react';
 import { Item } from './item';
-import { InserterListItem } from './step_list_item';
-import { InserterListboxGroup } from '../inserter-listbox/listbox_group';
-import { InserterListboxRow } from '../inserter-listbox/listbox_row';
+import { InserterListItem } from './step-list-item';
+import { InserterListboxGroup } from '../inserter-listbox/listbox-group';
+import { InserterListboxRow } from '../inserter-listbox/listbox-row';
 
 // See: https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/block-editor/src/components/block-types-list/index.js
 

@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary, registerTranslations } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context';
-import { TopBarWithBeamer } from 'common/top_bar/top_bar';
+import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { HomepageNotices } from 'homepage/notices';
 import { HomepageSections } from './components/homepage-sections';
 import { createStore } from './store/store';

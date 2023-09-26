@@ -1,7 +1,7 @@
 import { action } from '_storybook/action';
 import { CSSProperties } from 'react';
 import { Heading } from '../../typography/heading/heading';
-import { RoutedTabs } from '../routed_tabs';
+import { RoutedTabs } from '../routed-tabs';
 import { Tab } from '../tab';
 import { Tabs } from '../tabs';
 import { Icon } from './assets/icon';

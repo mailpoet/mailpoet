@@ -6,10 +6,10 @@ import * as actions from './actions';
 import { createReducer } from './reducer.jsx';
 import { selectors } from './selectors';
 import { controls } from './controls';
-import { validateForm } from './form_validator.jsx';
-import { formBodyToBlocksFactory } from './form_body_to_blocks.jsx';
-import { mapFormDataAfterLoading } from './map_form_data_after_loading.jsx';
-import { FormEditorWindow } from './state_types';
+import { validateForm } from './form-validator.jsx';
+import { formBodyToBlocksFactory } from './form-body-to-blocks.jsx';
+import { mapFormDataAfterLoading } from './map-form-data-after-loading.jsx';
+import { FormEditorWindow } from './state-types';
 import { FONT_SIZES, storeName } from './constants';
 
 declare let window: FormEditorWindow;

@@ -1,8 +1,8 @@
 import { select } from '@wordpress/data';
 
-import { STORE_NAME } from 'settings/store/store_name';
+import { STORE_NAME } from 'settings/store/store-name';
 import { Action, ReEngagement } from 'settings/store/types';
-import { updateKeyActivationState } from './key_activation';
+import { updateKeyActivationState } from './key-activation';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function setSetting(path: string[], value: any): Action {

@@ -1,5 +1,5 @@
 import { action } from '_storybook/action';
-import { TopBar } from '../top_bar';
+import { TopBar } from '../top-bar';
 
 export default {
   title: 'Top Bar/No Children',

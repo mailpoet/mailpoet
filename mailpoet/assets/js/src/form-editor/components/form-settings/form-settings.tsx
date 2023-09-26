@@ -1,11 +1,11 @@
 import { useDispatch, useSelect } from '@wordpress/data';
 import { partial } from 'lodash';
 import { ErrorBoundary } from 'common';
-import { BasicSettingsPanel } from './basic_settings_panel';
-import { StylesSettingsPanel } from './styles_settings_panel';
-import { FormPlacementPanel } from './form_placement_panel';
-import { CustomCssPanel } from './custom_css_panel';
-import { TagsPanel } from './tags_panel';
+import { BasicSettingsPanel } from './basic-settings-panel';
+import { StylesSettingsPanel } from './styles-settings-panel';
+import { FormPlacementPanel } from './form-placement-panel';
+import { CustomCssPanel } from './custom-css-panel';
+import { TagsPanel } from './tags-panel';
 import { storeName } from '../../store';
 
 export function FormSettings(): JSX.Element {

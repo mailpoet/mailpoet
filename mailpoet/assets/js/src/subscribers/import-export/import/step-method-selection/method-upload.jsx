@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { Input } from 'common/form/input/input';
-import { PreviousNextStepButtons } from '../previous_next_step_buttons.jsx';
+import { PreviousNextStepButtons } from '../previous-next-step-buttons.jsx';
 
 const kbLink =
   'https://kb.mailpoet.com/article/126-importing-subscribers-with-csv-files';

@@ -2,7 +2,7 @@ import { Label, Inputs } from 'settings/components';
 import { t, onChange } from 'common/functions';
 import { Select } from 'common/form/select/select';
 import { useSetting, useSelector } from 'settings/store/hooks';
-import { SendingFrequency } from './sending_frequency';
+import { SendingFrequency } from './sending-frequency';
 
 export function PHPMailFields() {
   const [hostName, setHostName] = useSetting('web_host');

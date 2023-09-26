@@ -1,10 +1,10 @@
 import { Notices } from 'notices/notices.jsx';
 import { Loading } from 'common/loading';
 import { t } from 'common/functions';
-import { RoutedTabs } from 'common/tabs/routed_tabs';
+import { RoutedTabs } from 'common/tabs/routed-tabs';
 import { Tab } from 'common/tabs/tab';
-import { TopBar } from 'common/top_bar/top_bar';
-import { UnsavedChangesNotice } from 'common/notices/unsaved_changes_notice';
+import { TopBar } from 'common/top-bar/top-bar';
+import { UnsavedChangesNotice } from 'common/notices/unsaved-changes-notice';
 import {
   Advanced,
   Basics,

@@ -5,9 +5,9 @@ import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-import { ParagraphEdit } from '../paragraph_edit.jsx';
-import { CustomFieldSettings } from './custom_field_settings.jsx';
-import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
+import { ParagraphEdit } from '../paragraph-edit.jsx';
+import { CustomFieldSettings } from './custom-field-settings.jsx';
+import { mapCustomFieldFormData } from '../map-custom-field-form-data.jsx';
 import { storeName } from '../../store/constants';
 
 function CustomCheckboxEdit({ attributes, setAttributes, clientId }) {

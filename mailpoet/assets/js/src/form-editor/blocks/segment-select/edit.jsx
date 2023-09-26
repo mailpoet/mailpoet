@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
-import { ParagraphEdit } from '../paragraph_edit.jsx';
+import { ParagraphEdit } from '../paragraph-edit.jsx';
 import { SegmentSelectSettings } from './settings.jsx';
 import { storeName } from '../../store/constants';
 

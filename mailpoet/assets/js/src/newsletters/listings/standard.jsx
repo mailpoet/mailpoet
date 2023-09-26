@@ -5,10 +5,10 @@ import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 
-import { confirmAlert } from 'common/confirm_alert.jsx';
+import { confirmAlert } from 'common/confirm-alert.jsx';
 import { SegmentTags } from 'common/tag/tags';
 import { Listing } from 'listing/listing.jsx';
-import { QueueStatus } from 'newsletters/listings/queue_status';
+import { QueueStatus } from 'newsletters/listings/queue-status';
 import { Statistics } from 'newsletters/listings/statistics.jsx';
 import {
   addStatsCTAAction,

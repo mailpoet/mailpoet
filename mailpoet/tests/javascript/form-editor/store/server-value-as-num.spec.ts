@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { asNum } from '../../../../assets/js/src/form_editor/store/server_value_as_num';
+import { asNum } from '../../../../assets/js/src/form-editor/store/server-value-as-num';
 
 describe('Server value as num', () => {
   it('Converts string to number', () => {

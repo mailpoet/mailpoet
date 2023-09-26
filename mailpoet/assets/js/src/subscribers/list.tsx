@@ -8,10 +8,10 @@ import { Listing } from 'listing/listing.jsx';
 import { MailPoet } from 'mailpoet';
 import { Modal } from 'common/modal/modal';
 import { Selection } from 'form/fields/selection.jsx';
-import { MssAccessNotices } from 'notices/mss_access_notices';
-import { SubscribersCacheMessage } from 'common/subscribers_cache_message';
-import { SubscribersInPlan } from 'common/subscribers_in_plan';
-import { ListingsEngagementScore } from './listings_engagement_score';
+import { MssAccessNotices } from 'notices/mss-access-notices';
+import { SubscribersCacheMessage } from 'common/subscribers-cache-message';
+import { SubscribersInPlan } from 'common/subscribers-in-plan';
+import { ListingsEngagementScore } from './listings-engagement-score';
 import { SubscribersHeading } from './heading';
 
 type Segment = {

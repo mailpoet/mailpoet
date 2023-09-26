@@ -2,8 +2,8 @@
 /**
  * Coupon content block
  */
-import { App } from 'newsletter_editor/App';
-import { BaseBlock } from 'newsletter_editor/blocks/base';
+import { App } from 'newsletter-editor/app';
+import { BaseBlock } from 'newsletter-editor/blocks/base';
 import ReactDOM from 'react-dom';
 import _ from 'underscore';
 import jQuery from 'jquery';

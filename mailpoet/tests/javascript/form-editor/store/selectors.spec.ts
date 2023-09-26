@@ -1,10 +1,10 @@
 import { expect } from 'chai';
-import { selectors } from '../../../../assets/js/src/form_editor/store/selectors';
+import { selectors } from '../../../../assets/js/src/form-editor/store/selectors';
 import {
   createBlocksMock,
   createFormDataMock,
   createStateMock,
-} from './mocks/partialMocks';
+} from './mocks/partial-mocks';
 
 describe('Selectors', () => {
   describe('getClosestParentAttribute', () => {

@@ -1,4 +1,4 @@
-import { asNum } from './server_value_as_num';
+import { asNum } from './server-value-as-num';
 import * as defaults from './defaults';
 
 export function mapFormDataAfterLoading(data) {

@@ -2,11 +2,11 @@ import { Panel, PanelBody } from '@wordpress/components';
 import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 
-import { BelowPages as FormPlacementOptionBelowPages } from './form_placement_options/below_pages';
-import { Popup as FormPlacementOptionPopup } from './form_placement_options/popup';
-import { FixedBar as FormPlacementOptionFixedBar } from './form_placement_options/fixed_bar';
-import { SlideIn as FormPlacementOptionSlideIn } from './form_placement_options/slide_in';
-import { Other as FormPlacementOptionOther } from './form_placement_options/other';
+import { BelowPages as FormPlacementOptionBelowPages } from './form-placement-options/below-pages';
+import { Popup as FormPlacementOptionPopup } from './form-placement-options/popup';
+import { FixedBar as FormPlacementOptionFixedBar } from './form-placement-options/fixed-bar';
+import { SlideIn as FormPlacementOptionSlideIn } from './form-placement-options/slide-in';
+import { Other as FormPlacementOptionOther } from './form-placement-options/other';
 
 function FormPlacementPanel({ onToggle, isOpened }) {
   return (

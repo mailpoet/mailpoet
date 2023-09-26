@@ -1,4 +1,4 @@
-import { SizeDefinition } from '../components/size_settings';
+import { SizeDefinition } from '../components/size-settings';
 
 type PlacementStyles = {
   width: SizeDefinition;

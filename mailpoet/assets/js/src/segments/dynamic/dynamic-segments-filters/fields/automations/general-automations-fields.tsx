@@ -4,7 +4,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
 import { Grid } from 'common/grid';
-import { ReactSelect } from 'common/form/react_select/react_select';
+import { ReactSelect } from 'common/form/react-select/react-select';
 
 import {
   AnyValueTypes,

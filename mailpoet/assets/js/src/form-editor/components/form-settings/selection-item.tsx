@@ -1,8 +1,8 @@
 import { ReactNode, useState } from 'react';
 import classnames from 'classnames';
 
-import { SettingsIcon } from './form_placement_options/icons/settings_icon';
-import { CheckboxIcon } from './form_placement_options/icons/checkbox_icon';
+import { SettingsIcon } from './form-placement-options/icons/settings-icon';
+import { CheckboxIcon } from './form-placement-options/icons/checkbox-icon';
 
 type Props = {
   label: string;

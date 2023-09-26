@@ -5,7 +5,7 @@ import { registerTranslations } from 'common';
 import { automationTemplates } from './config';
 import { TemplateListItem } from './components/template-list-item';
 import { initializeApi } from '../api';
-import { TopBarWithBeamer } from '../../common/top_bar/top_bar';
+import { TopBarWithBeamer } from '../../common/top-bar/top-bar';
 import {
   FromScratchButton,
   FromScratchListItem,

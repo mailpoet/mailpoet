@@ -5,7 +5,7 @@
  */
 import Marionette from 'backbone.marionette';
 import 'spectrum'; // eslint-disable-line func-names
-import { BehaviorsLookup } from 'newsletter_editor/behaviors/BehaviorsLookup';
+import { BehaviorsLookup } from 'newsletter-editor/behaviors/behaviors-lookup';
 import { _x } from '@wordpress/i18n';
 
 var BL = BehaviorsLookup;

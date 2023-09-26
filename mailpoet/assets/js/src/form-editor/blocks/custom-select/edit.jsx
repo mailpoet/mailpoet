@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
-import { convertAlignmentToMargin } from '../convert_alignment_to_margin';
-import { CustomFieldSettings } from '../custom_radio/custom_field_settings.jsx';
-import { formatLabel } from '../label_formatter.jsx';
-import { ParagraphEdit } from '../paragraph_edit.jsx';
-import { mapCustomFieldFormData } from '../map_custom_field_form_data.jsx';
+import { convertAlignmentToMargin } from '../convert-alignment-to-margin';
+import { CustomFieldSettings } from '../custom-radio/custom-field-settings.jsx';
+import { formatLabel } from '../label-formatter.jsx';
+import { ParagraphEdit } from '../paragraph-edit.jsx';
+import { mapCustomFieldFormData } from '../map-custom-field-form-data.jsx';
 import { storeName } from '../../store/constants';
 
 function CustomSelectEdit({ attributes, setAttributes, clientId }) {

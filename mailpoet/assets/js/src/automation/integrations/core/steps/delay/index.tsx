@@ -2,7 +2,7 @@ import { __, _x } from '@wordpress/i18n';
 import { Icon } from './icon';
 import { Edit } from './edit';
 import { StepType } from '../../../../editor/store/types';
-import { DelayTypeOptions } from './types/delayTypes';
+import { DelayTypeOptions } from './types/delay-types';
 
 const getDelayInformation = (delayTypeValue: string, value: number): string =>
   DelayTypeOptions.reduce((previousValue, current): string => {

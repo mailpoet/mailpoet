@@ -1,7 +1,7 @@
 import { useSelect } from '@wordpress/data';
 import { BaseControl } from '@wordpress/components';
 
-import { SelectionItem } from './form_settings/selection_item';
+import { SelectionItem } from './form-settings/selection-item';
 import { storeName } from '../store';
 
 type CloseButtonProps = {

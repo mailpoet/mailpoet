@@ -1,6 +1,6 @@
 /* eslint-disable func-names */
-import { App } from 'newsletter_editor/App';
-import { CommunicationComponent } from 'newsletter_editor/components/communication';
+import { App } from 'newsletter-editor/app';
+import { CommunicationComponent } from 'newsletter-editor/components/communication';
 import { MailPoet } from 'mailpoet';
 import Marionette from 'backbone.marionette';
 import $ from 'jquery';

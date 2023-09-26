@@ -2,7 +2,7 @@ import { Panel, PanelBody } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { isEqual } from 'lodash';
 import { storeName } from '../../store';
-import { TokenField } from '../../../common/form/tokenField/tokenField';
+import { TokenField } from '../../../common/form/token-field/token-field';
 import { MailPoet } from '../../../mailpoet';
 
 export function TagsPanel({ onToggle, isOpened }) {

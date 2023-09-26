@@ -1,10 +1,10 @@
 import { BlockInstance } from '@wordpress/blocks';
-import { State } from '../../../../../assets/js/src/form_editor/store/state_types';
+import { State } from '../../../../../assets/js/src/form-editor/store/state-types';
 import {
   CustomField,
   FormData,
   FormSettingsType,
-} from '../../../../../assets/js/src/form_editor/store/form_data_types';
+} from '../../../../../assets/js/src/form-editor/store/form-data-types';
 
 export const createStateMock = (data: Partial<State>): State => data as State;
 

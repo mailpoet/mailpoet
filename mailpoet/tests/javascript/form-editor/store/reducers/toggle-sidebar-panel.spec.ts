@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import { toggleSidebarPanel as reducer } from '../../../../../assets/js/src/form_editor/store/reducers/toggle_sidebar_panel';
-import { ToggleSidebarPanelAction } from '../../../../../assets/js/src/form_editor/store/actions_types';
-import { createStateMock } from '../mocks/partialMocks';
+import { toggleSidebarPanel as reducer } from '../../../../../assets/js/src/form-editor/store/reducers/toggle-sidebar-panel';
+import { ToggleSidebarPanelAction } from '../../../../../assets/js/src/form-editor/store/actions-types';
+import { createStateMock } from '../mocks/partial-mocks';
 
 describe('Toggle Sidebar Panel Reducer', () => {
   let initialState = createStateMock(null);

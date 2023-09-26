@@ -1,5 +1,5 @@
 /* eslint-disable func-names */
-import { App } from 'newsletter_editor/App';
+import { App } from 'newsletter-editor/app';
 import _ from 'underscore';
 import { MailPoet } from 'mailpoet';
 import 'ajax';

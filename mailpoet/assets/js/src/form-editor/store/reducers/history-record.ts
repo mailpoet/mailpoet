@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash';
-import { HistoryRecord, State } from '../state_types';
+import { HistoryRecord, State } from '../state-types';
 
 const HISTORY_LENGTH = 100;
 const HISTORY_DEBOUNCE = 1000; // 1 second

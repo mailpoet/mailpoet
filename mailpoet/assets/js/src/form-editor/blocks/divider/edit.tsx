@@ -2,7 +2,7 @@ import { CSSProperties } from 'react';
 import classnames from 'classnames';
 import { MailPoet } from 'mailpoet';
 import { InspectorControls } from '@wordpress/block-editor';
-import { ColorGradientSettings } from 'form_editor/components/color_gradient_settings';
+import { ColorGradientSettings } from 'form-editor/components/color-gradient-settings';
 import {
   Panel,
   PanelBody,
@@ -10,7 +10,7 @@ import {
   SelectControl,
   ToggleControl,
 } from '@wordpress/components';
-import { Attributes, defaultAttributes, Style, Types } from './divider_types';
+import { Attributes, defaultAttributes, Style, Types } from './divider-types';
 
 type Props = {
   attributes: Attributes;

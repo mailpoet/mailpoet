@@ -1,4 +1,4 @@
-import { SelectionItem } from '../selection_item';
+import { SelectionItem } from '../selection-item';
 
 type Props = {
   label: string;

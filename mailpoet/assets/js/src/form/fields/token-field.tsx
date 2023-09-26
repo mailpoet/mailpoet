@@ -1,4 +1,7 @@
-import { TokenFieldProps, TokenField } from 'common/form/tokenField/tokenField';
+import {
+  TokenFieldProps,
+  TokenField,
+} from 'common/form/token-field/token-field';
 import { FormTokenItem } from '../../automation/editor/components';
 
 interface TokenFormFieldProps {

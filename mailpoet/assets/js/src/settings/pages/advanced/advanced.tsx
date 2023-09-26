@@ -1,16 +1,16 @@
 import { SaveButton } from 'settings/components';
-import { TaskScheduler } from './task_scheduler';
+import { TaskScheduler } from './task-scheduler';
 import { Roles } from './roles';
-import { EngagementTracking } from './engagement_tracking';
+import { EngagementTracking } from './engagement-tracking';
 import { Transactional } from './transactional';
-import { InactiveSubscribers } from './inactive_subscribers';
-import { ShareData } from './share_data';
-import { Libs3rdParty } from './libs_3rd_party';
+import { InactiveSubscribers } from './inactive-subscribers';
+import { ShareData } from './share-data';
+import { Libs3rdParty } from './libs-3rd-party';
 import { Captcha } from './captcha';
 import { Reinstall } from './reinstall';
-import { RecalculateSubscriberScore } from './recalculate_subscriber_score';
+import { RecalculateSubscriberScore } from './recalculate-subscriber-score';
 import { Logging } from './logging';
-import { BounceAddress } from './bounce_address';
+import { BounceAddress } from './bounce-address';
 
 export function Advanced() {
   return (

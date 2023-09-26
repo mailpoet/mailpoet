@@ -9,9 +9,9 @@ import {
   TabPanel,
 } from '@wordpress/components';
 import { Badge } from '@woocommerce/components';
-import { HideScreenOptions } from 'common/hide_screen_options/hide_screen_options';
-import { TopBarWithBeamer } from 'common/top_bar/top_bar';
-import { TemplateListItem } from 'segments/dynamic/templates/components/template_list_item';
+import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
+import { TopBarWithBeamer } from 'common/top-bar/top-bar';
+import { TemplateListItem } from 'segments/dynamic/templates/components/template-list-item';
 import {
   templates,
   templateCategories,
@@ -19,7 +19,7 @@ import {
 import * as ROUTES from 'segments/routes';
 import { useSelect } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
-import { APIErrorsNotice } from 'notices/api_errors_notice';
+import { APIErrorsNotice } from 'notices/api-errors-notice';
 import { MailPoet } from 'mailpoet';
 
 const tabs = [

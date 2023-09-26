@@ -1,4 +1,4 @@
-import { callApi } from 'common/controls/call_api';
+import { callApi } from 'common/controls/call-api';
 
 export function saveTaskListDismissed() {
   return callApi({

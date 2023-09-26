@@ -4,8 +4,8 @@ import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 
 import { Button } from 'common/button/button';
-import { TemplateBox as TemplateBoxWrap } from 'common/template_box/template_box';
-import { confirmAlert } from 'common/confirm_alert.jsx';
+import { TemplateBox as TemplateBoxWrap } from 'common/template-box/template-box';
+import { confirmAlert } from 'common/confirm-alert.jsx';
 import { GlobalContext } from 'context';
 
 /**

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Grid } from 'common/grid';
 import { Select } from 'common';
 import { MailPoet } from 'mailpoet';
-import { ReactSelect } from 'common/form/react_select/react_select';
+import { ReactSelect } from 'common/form/react-select/react-select';
 import { filter } from 'lodash/fp';
 import {
   WooCommerceFormItem,
@@ -13,7 +13,7 @@ import {
   SelectOption,
 } from '../../../types';
 import { storeName } from '../../../store';
-import { DaysPeriodField, validateDaysPeriod } from '../days_period_field';
+import { DaysPeriodField, validateDaysPeriod } from '../days-period-field';
 
 export function validateUsedPaymentMethod(
   formItems: WooCommerceFormItem,

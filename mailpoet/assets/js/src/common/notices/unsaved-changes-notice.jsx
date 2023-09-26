@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { withBoundary } from '../error_boundary';
+import { withBoundary } from '../error-boundary';
 
 function UnsavedChangesNotice({ storeName }) {
   const hasUnsavedChanges = useSelect(

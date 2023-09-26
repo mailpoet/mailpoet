@@ -1,5 +1,5 @@
-import { App } from 'newsletter_editor/App';
-import WCContentBlock from 'newsletter_editor/blocks/woocommerceContent';
+import { App } from 'newsletter-editor/app';
+import WCContentBlock from 'newsletter-editor/blocks/woocommerce-content';
 
 const expect = global.expect;
 const sinon = global.sinon;

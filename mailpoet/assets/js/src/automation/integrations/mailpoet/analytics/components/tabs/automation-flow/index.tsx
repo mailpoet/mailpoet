@@ -3,7 +3,7 @@ import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { Automation } from '../../../../../../editor/components/automation';
 import { storeName } from '../../../store';
-import { AutomationPlaceholder } from './automation_placeholder';
+import { AutomationPlaceholder } from './automation-placeholder';
 import { initHooks } from './hooks';
 
 initHooks();

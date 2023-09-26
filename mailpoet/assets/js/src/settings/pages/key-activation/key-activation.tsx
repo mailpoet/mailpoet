@@ -2,10 +2,10 @@ import { useAction, useSelector, useSetting } from 'settings/store/hooks';
 import { t } from 'common/functions';
 import { MssStatus } from 'settings/store/types';
 import { Inputs, Label } from 'settings/components';
-import { SetFromAddressModal } from 'common/set_from_address_modal';
+import { SetFromAddressModal } from 'common/set-from-address-modal';
 import ReactStringReplace from 'react-string-replace';
-import { KeyActivationButton } from 'common/premium_key/key_activation_button';
-import { KeyInput } from 'common/premium_key/key_input';
+import { KeyActivationButton } from 'common/premium-key/key-activation-button';
+import { KeyInput } from 'common/premium-key/key-input';
 
 type Props = {
   subscribersCount: number;

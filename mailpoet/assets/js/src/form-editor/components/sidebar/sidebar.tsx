@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { DefaultSidebar } from './default_sidebar';
-import { PlacementSettingsSidebar } from './placement_settings_sidebar';
+import { DefaultSidebar } from './default-sidebar';
+import { PlacementSettingsSidebar } from './placement-settings-sidebar';
 import { storeName } from '../../store';
 
 function Sidebar(): JSX.Element {

@@ -1,4 +1,4 @@
-import { getAvailableFilters } from './all_available_filters';
+import { getAvailableFilters } from './all-available-filters';
 import {
   SegmentConnectTypes,
   SegmentFormDataWindow,

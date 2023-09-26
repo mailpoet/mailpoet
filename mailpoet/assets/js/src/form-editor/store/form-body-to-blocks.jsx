@@ -1,14 +1,14 @@
 /* eslint-disable camelcase */
 import { has } from 'lodash';
-import { asNum } from './server_value_as_num';
+import { asNum } from './server-value-as-num';
 import {
   mapInputBlockStyles,
   mapColorSlug,
   mapFontSizeSlug,
   mapGradientSlug,
-} from './mapping/to_blocks/styles_mapper';
-import { formatCustomFieldBlockName } from '../blocks/format_custom_field_block_name.jsx';
-import { defaultAttributes as dividerDefaultAttributes } from '../blocks/divider/divider_types';
+} from './mapping/to-blocks/styles-mapper';
+import { formatCustomFieldBlockName } from '../blocks/format-custom-field-block-name.jsx';
+import { defaultAttributes as dividerDefaultAttributes } from '../blocks/divider/divider-types';
 
 const generateId = () => `${Math.random().toString()}-${Date.now()}`;
 

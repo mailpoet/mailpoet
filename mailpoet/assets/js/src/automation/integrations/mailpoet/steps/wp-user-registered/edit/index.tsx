@@ -1,4 +1,4 @@
-import { RolePanel } from './role_panel';
+import { RolePanel } from './role-panel';
 
 export function Edit(): JSX.Element {
   return <RolePanel />;

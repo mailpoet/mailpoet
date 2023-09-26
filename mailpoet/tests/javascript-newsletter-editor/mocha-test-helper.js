@@ -28,7 +28,7 @@ if (!global.document || !global.window) {
   global.window = global.document.defaultView;
   global.navigator = global.window.navigator;
 }
-const testHelpers = require('./loadHelpers.js');
+const testHelpers = require('./load-helpers.js');
 global.testHelpers = testHelpers;
 
 const jQuery = require('jquery');

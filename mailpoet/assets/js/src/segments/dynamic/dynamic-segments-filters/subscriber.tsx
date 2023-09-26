@@ -6,34 +6,34 @@ import {
   WordpressRoleFormItem,
 } from '../types';
 import { storeName } from '../store';
-import { WordpressRoleFields } from './fields/subscriber/subscriber_wordpress_role';
+import { WordpressRoleFields } from './fields/subscriber/subscriber-wordpress-role';
 import {
   SubscriberScoreFields,
   validateSubscriberScore,
-} from './fields/subscriber/subscriber_score';
+} from './fields/subscriber/subscriber-score';
 import {
   DateFieldsDefaultBefore,
   DateFieldsDefaultInTheLast,
   DateOperator,
   validateDateField,
-} from './fields/date_fields';
+} from './fields/date-fields';
 import {
   MailPoetCustomFields,
   validateMailPoetCustomField,
-} from './fields/subscriber/subscriber_mailpoet_custom_field';
+} from './fields/subscriber/subscriber-mailpoet-custom-field';
 import {
   SubscribedToList,
   validateSubscribedToList,
-} from './fields/subscriber/subscriber_subscribed_to_list';
+} from './fields/subscriber/subscriber-subscribed-to-list';
 import {
   SubscriberTag,
   validateSubscriberTag,
-} from './fields/subscriber/subscriber_tag';
-import { TextField, validateTextField } from './fields/text_field';
+} from './fields/subscriber/subscriber-tag';
+import { TextField, validateTextField } from './fields/text-field';
 import {
   SubscribedViaForm,
   validateSubscribedViaForm,
-} from './fields/subscriber/subscribed_via_form';
+} from './fields/subscriber/subscribed-via-form';
 
 export function validateSubscriber(formItems: WordpressRoleFormItem): boolean {
   if (

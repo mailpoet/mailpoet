@@ -6,8 +6,8 @@ import { extractEmailDomain, extractPageNameFromUrl } from 'common/functions';
 import { Tabs } from './tabs/tabs';
 import { Tab } from './tabs/tab';
 import { Modal } from './modal/modal';
-import { AuthorizeSenderEmailModal } from './authorize_sender_email_modal';
-import { AuthorizeSenderDomainModal } from './authorize_sender_domain_modal';
+import { AuthorizeSenderEmailModal } from './authorize-sender-email-modal';
+import { AuthorizeSenderDomainModal } from './authorize-sender-domain-modal';
 
 const trackEvent = (type: 'email' | 'domain') => {
   const page = `${extractPageNameFromUrl() || 'some other'} page`;

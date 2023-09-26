@@ -1,4 +1,4 @@
-import { updateSettings } from './updateSettings';
+import { updateSettings } from './update-settings';
 
 export async function finishWizard(redirect_url = null) {
   await updateSettings({

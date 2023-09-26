@@ -1,5 +1,5 @@
 import { BlockInstance } from '@wordpress/blocks';
-import { FormData, CustomField } from './form_data_types';
+import { FormData, CustomField } from './form-data-types';
 
 export type BlockInsertionPoint = {
   rootClientId: string | undefined;

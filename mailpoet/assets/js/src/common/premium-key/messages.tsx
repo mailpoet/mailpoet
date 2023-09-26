@@ -12,7 +12,7 @@ import {
   PremiumMessages,
   ServiceUnavailableMessage,
   AccessRestrictedMessages,
-} from './key_messages';
+} from './key-messages';
 import { getLinkRegex } from '../utils';
 
 export function Messages(

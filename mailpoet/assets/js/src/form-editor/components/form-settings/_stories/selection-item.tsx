@@ -1,5 +1,5 @@
 import { action } from '_storybook/action';
-import { SelectionItem } from '../selection_item';
+import { SelectionItem } from '../selection-item';
 
 export default {
   title: 'FormEditor/Selection Item',

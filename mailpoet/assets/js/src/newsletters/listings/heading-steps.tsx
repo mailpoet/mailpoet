@@ -2,10 +2,10 @@ import { ReactNode } from 'react';
 import { Location } from 'history';
 import { Icon, video } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
-import { HideScreenOptions } from '../../common/hide_screen_options/hide_screen_options';
-import { MailPoetLogoResponsive } from '../../common/top_bar/mailpoet_logo_responsive';
+import { HideScreenOptions } from '../../common/hide-screen-options/hide-screen-options';
+import { MailPoetLogoResponsive } from '../../common/top-bar/mailpoet-logo-responsive';
 import { Steps } from '../../common/steps/steps';
-import { displayTutorial } from '../../newsletter_editor/tutorial';
+import { displayTutorial } from '../../newsletter-editor/tutorial';
 
 export const mapPathToSteps = (
   location: Location,

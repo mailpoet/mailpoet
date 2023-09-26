@@ -1,6 +1,6 @@
 import { MailPoet } from 'mailpoet';
 import _ from 'underscore';
-import { CopyToClipboardButton } from 'common/button/copy_to_clipboard_button';
+import { CopyToClipboardButton } from 'common/button/copy-to-clipboard-button';
 
 function handleFocus(event) {
   event.target.select();

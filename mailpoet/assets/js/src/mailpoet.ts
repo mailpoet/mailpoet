@@ -1,5 +1,5 @@
-import { FeaturesController } from './features_controller';
-import { MailPoetComUrlFactory } from './mailpoet_com_url_factory';
+import { FeaturesController } from './features-controller';
+import { MailPoetComUrlFactory } from './mailpoet-com-url-factory';
 import { MailPoetI18n } from './i18n';
 import { MailPoetDate } from './date';
 import { MailPoetAjax } from './ajax';
@@ -9,7 +9,7 @@ import {
   initializeMixpanelWhenLoaded,
   MailPoetForceTrackEvent,
   MailPoetTrackEvent,
-} from './analytics_event';
+} from './analytics-event';
 import { MailPoetNum } from './num';
 import { MailPoetHelpTooltip } from './help-tooltip-helper';
 import { MailPoetIframe } from './iframe';
