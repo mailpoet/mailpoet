@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use MailPoet\API\JSON\API;
 use MailPoet\Config\Env;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
@@ -111,6 +112,25 @@ class EmailEditor {
       Env::$assetsUrl . '/dist/js/email-editor/email_editor.css',
       [],
       $assetsParams['version']
+    );
+
+    // Enqueue inline script with MailPoet specific editor settings
+    $jsonAPIRoot = rtrim($this->wp->escUrlRaw(admin_url('admin-ajax.php')), '/');
+    $token = $this->wp->wpCreateNonce('mailpoet_token');
+    $apiVersion = API::CURRENT_VERSION;
+    $inlineScript = <<<EOL
+var mailpoet_json_api_root = '%s';
+var mailpoet_token = '%s';
+var mailpoet_api_version = '%s';
+EOL;
+    $this->wp->wpAddInlineScript(
+      'mailpoet_email_editor',
+      sprintf(
+        $inlineScript,
+        esc_js($jsonAPIRoot),
+        esc_js($token),
+        esc_js($apiVersion)
+      )
     );
   }
 
