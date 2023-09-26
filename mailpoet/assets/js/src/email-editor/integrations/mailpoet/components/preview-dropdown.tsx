@@ -14,10 +14,12 @@ import { Icon, external, check, mobile, desktop } from '@wordpress/icons';
 import { SendPreviewEmail } from './send-preview-email';
 
 type PreviewDropdownProps = {
+  newsletterId: number | null;
   newsletterPreviewUrl: string | null;
 };
 
 export function PreviewDropdown({
+  newsletterId,
   newsletterPreviewUrl,
 }: PreviewDropdownProps) {
   // We use WP store at this moment, but if we use our own store in combination with our canvas
@@ -100,6 +102,7 @@ export function PreviewDropdown({
       <SendPreviewEmail
         isOpen={isModalOpen}
         closeCallback={() => setIsModalOpen(false)}
+        newsletterId={newsletterId}
       />
     </>
   );

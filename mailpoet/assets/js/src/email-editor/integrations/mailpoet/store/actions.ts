@@ -1,5 +1,12 @@
 import { apiFetch } from '@wordpress/data-controls';
 
+export function updatePreviewToEmail(previewToEmail: string) {
+  return {
+    type: 'UPDATE_PREVIEW_TO_EMAIL',
+    previewToEmail,
+  };
+}
+
 export function sendNewsletterPreview(newsletterId: number) {
   return {
     type: 'SEND_NEWSLETTER_PREVIEW',
