@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.2
 Tested up to: 6.3
-Stable tag: 4.28.0
+Stable tag: 4.29.0
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,16 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.29.0 - 2023-09-26 =
+* Added: a filter to remove restrictions on Woo Express;
+* Added: "buys from a category" trigger in automations;
+* Added: "buys a product" trigger in automations;
+* Improved: more robust migrations for automation tables;
+* Improved: skip migration of WooCommerce-related tables, if WooCommerce is no installed;
+* Improved: the premium plugin is now downloaded and installed instead of downloading a .zip file;
+* Fixed: deleting newsletters with relations to WooCommerce purchase stats;
+* Fixed: email editor breaks when the store has many coupons.
 
 = 4.28.0 - 2023-09-18 =
 * Fixed: in Styles section in email editor, titles overflow to 2nd line;
