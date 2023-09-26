@@ -36,7 +36,7 @@ describe('Spacer', function () {
 
     it('has a background color', function () {
       expect(model.get('styles.block.backgroundColor')).to.match(
-        /^(#[abcdef0-9]{6})|transparent$/,
+        /^rgba\(\d+, \d+, \d+, \d+\)$/,
       );
     });
 
