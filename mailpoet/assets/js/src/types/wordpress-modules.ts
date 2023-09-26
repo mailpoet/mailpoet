@@ -48,9 +48,11 @@ declare module '@wordpress/edit-post' {
 // there are no @types/wordpress__interface yet
 declare module '@wordpress/interface' {
   import { StoreDescriptor } from '@wordpress/data/build-types/types';
+  import * as interfaceActions from '@wordpress/interface/src/store/actions';
 
   export const store: { name: 'core/interface' } & StoreDescriptor<{
     reducer: () => unknown;
+    actions: typeof interfaceActions;
     selectors: {
       getActiveComplementaryArea: (
         state: unknown,
