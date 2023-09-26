@@ -218,6 +218,31 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     expect($statisticsPurchase->getNewsletter())->null();
   }
 
+  public function testItDeletesMultipleNewslettersWithPurchaseStatsAndKeepsStats() {
+    $standardNewsletter1 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
+    $statisticsPurchase1 = $this->createPurchaseStatsForNewsletter($standardNewsletter1);
+    $standardNewsletter2 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
+    $statisticsPurchase2 = $this->createPurchaseStatsForNewsletter($standardNewsletter2);
+
+    // Delete
+    $this->repository->bulkDelete([$standardNewsletter1->getId(), $standardNewsletter2->getId()]);
+
+    // Clear entity manager to forget all entities
+    $this->entityManager->clear();
+
+    // Check Newsletters were deleted
+    expect($this->repository->findOneById($standardNewsletter1->getId()))->null();
+    expect($this->repository->findOneById($standardNewsletter2->getId()))->null();
+
+    // Check purchase stats were not deleted
+    $statisticsPurchase1 = $this->entityManager->find(StatisticsWooCommercePurchaseEntity::class, $statisticsPurchase1->getId());
+    $statisticsPurchase2 = $this->entityManager->find(StatisticsWooCommercePurchaseEntity::class, $statisticsPurchase2->getId());
+    $this->assertNotNull($statisticsPurchase1);
+    expect($statisticsPurchase1->getNewsletter())->null();
+    $this->assertNotNull($statisticsPurchase2);
+    expect($statisticsPurchase2->getNewsletter())->null();
+  }
+
   public function testItDeletesWpPostsBulkDelete() {
     $newsletter1 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENDING);
     $post1Id = $this->wp->wpInsertPost(['post_title' => 'Post 1']);
@@ -436,5 +461,22 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($statistics);
     $this->entityManager->flush();
     return $statistics;
+  }
+
+  private function createPurchaseStatsForNewsletter(NewsletterEntity $newsletter): StatisticsWooCommercePurchaseEntity {
+    $queue = $this->createQueueWithTaskAndSegmentAndSubscribers($newsletter, NewsletterEntity::STATUS_SENT); // Null for scheduled task being processed
+    $segment = $newsletter->getNewsletterSegments()->first();
+    $this->assertInstanceOf(NewsletterSegmentEntity::class, $segment);
+    $scheduledTask = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $scheduledTaskSubscriber = $this->taskSubscribersRepository->findOneBy(['task' => $scheduledTask]);
+    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $scheduledTaskSubscriber);
+    $link = $this->createNewsletterLink($newsletter, $queue);
+    $this->assertInstanceOf(NewsletterLinkEntity::class, $link);
+    $subscriber = $scheduledTaskSubscriber->getSubscriber();
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $statisticsClick = $this->createClickStatistics($newsletter, $queue, $subscriber, $link);
+    $this->assertInstanceOf(StatisticsClickEntity::class, $statisticsClick);
+    return $this->createPurchaseStatistics($newsletter, $queue, $statisticsClick, $subscriber);
   }
 }
