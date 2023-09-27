@@ -70,13 +70,10 @@
   animation: mailpoet-automation-activate-panel-animation 0.1s forwards;
   background: #fff;
   border-left: 1px solid #ddd;
-  bottom: 0;
   height: 100%;
-  left: auto;
+  inset: 0 0 0 auto;
   overflow: auto;
   position: fixed;
-  right: 0;
-  top: 0;
   transform: translateX(100%);
   width: 281px;
   z-index: 999999;

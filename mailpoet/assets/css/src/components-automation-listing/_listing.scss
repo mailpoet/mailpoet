@@ -26,13 +26,10 @@
   width: 100%;
 
   > a:only-child {
-    bottom: 2px;
     display: flex;
-    left: 0;
+    inset: 0 0 2px;
     padding: 16px 24px;
     position: absolute;
-    right: 0;
-    top: 0;
   }
 }
 
