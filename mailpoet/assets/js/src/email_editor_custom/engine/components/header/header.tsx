@@ -3,26 +3,36 @@ import { PinnedItems } from '@wordpress/interface';
 import { Button, ToolbarItem } from '@wordpress/components';
 import { NavigableToolbar } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
+import { useEntityProp, store as coreDataStore } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
-import { plus, listView } from '@wordpress/icons';
+import { plus, listView, undo, redo } from '@wordpress/icons';
 import { MailPoetEmailData, storeName } from '../../store';
 
 export function Header() {
   const inserterButton = useRef();
   const listviewButton = useRef();
+  const undoButton = useRef();
+  const redoButton = useRef();
 
   const { toggleInserterSidebar, toggleListviewSidebar, saveEditedEmail } =
     useDispatch(storeName);
-  const { isInserterSidebarOpened, isListviewSidebarOpened, hasEdits } =
-    useSelect(
-      (select) => ({
-        isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
-        isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
-        hasEdits: select(storeName).hasEdits(),
-      }),
-      [],
-    );
+  const { undo: undoAction, redo: redoAction } = useDispatch(coreDataStore);
+  const {
+    isInserterSidebarOpened,
+    isListviewSidebarOpened,
+    hasEdits,
+    hasUndo,
+    hasRedo,
+  } = useSelect(
+    (select) => ({
+      isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
+      isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
+      hasEdits: select(storeName).hasEdits(),
+      hasUndo: select(coreDataStore).hasUndo(),
+      hasRedo: select(coreDataStore).hasRedo(),
+    }),
+    [],
+  );
   const [mailpoetEmailDa] = useEntityProp(
     'postType',
     'mailpoet_email',
@@ -71,6 +81,32 @@ export function Header() {
               label={__('List view', 'mailpoet')}
               showTooltip
               aria-expanded={isInserterSidebarOpened}
+            />
+            <ToolbarItem
+              ref={undoButton}
+              as={Button}
+              className="editor-history__undo"
+              variant="tertiary"
+              isPressed={false}
+              onMouseDown={preventDefault}
+              onClick={undoAction}
+              disabled={!hasUndo}
+              icon={undo}
+              label={__('Undo')}
+              showTooltip
+            />
+            <ToolbarItem
+              ref={redoButton}
+              as={Button}
+              className="editor-history__redo"
+              variant="tertiary"
+              isPressed={false}
+              onMouseDown={preventDefault}
+              onClick={redoAction}
+              disabled={!hasRedo}
+              icon={redo}
+              label={__('Redo')}
+              showTooltip
             />
           </div>
         </NavigableToolbar>
