@@ -111,6 +111,7 @@ describe('Spacer', function () {
 
     it('rerenders if model attributes change', function () {
       view.render();
+      expect(view.$('.mailpoet_spacer').css('height')).to.equal('40px');
 
       model.set('styles.block.height', '71px');
 
