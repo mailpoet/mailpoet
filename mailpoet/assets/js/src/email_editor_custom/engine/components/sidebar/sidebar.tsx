@@ -1,9 +1,19 @@
 import { createSlotFill, Panel } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { ComplementaryArea } from '@wordpress/interface';
+import { useSelect } from '@wordpress/data';
+import {
+  ComplementaryArea,
+  store as interfaceStore,
+} from '@wordpress/interface';
 import { ComponentProps } from 'react';
-import { storeName, mainSidebarKey } from 'email_editor_custom/engine/store';
 import { drawerRight } from '@wordpress/icons';
+import {
+  storeName,
+  mainSidebarEmailKey,
+  mainSidebarBlockKey,
+} from '../../store';
+import { Header } from './header';
+import { EmailSettings } from './email_settings';
 
 const { Slot: InspectorSlot, Fill: InspectorFill } = createSlotFill(
   'EmailEditorBlockInspector',
@@ -12,20 +22,29 @@ const { Slot: InspectorSlot, Fill: InspectorFill } = createSlotFill(
 type Props = ComponentProps<typeof ComplementaryArea>;
 
 export function Sidebar(props: Props): JSX.Element {
+  const { sidebarKey } = useSelect((select) => ({
+    sidebarKey:
+      select(interfaceStore).getActiveComplementaryArea(storeName) ??
+      mainSidebarEmailKey,
+  }));
+
   return (
     <ComplementaryArea
-      identifier={mainSidebarKey}
+      identifier={sidebarKey}
       className="edit-post-sidebar"
-      header={<h2>Todo header</h2>}
+      header={<Header sidebarKey={sidebarKey} />}
       icon={drawerRight}
       scope={storeName}
       smallScreenTitle={__('No title', 'mailpoet')}
       isActiveByDefault
       {...props}
     >
-      <Panel header={__('Inspector')}>
-        <InspectorSlot bubblesVirtually />
-      </Panel>
+      {sidebarKey === mainSidebarEmailKey && <EmailSettings />}
+      {sidebarKey === mainSidebarBlockKey && (
+        <Panel>
+          <InspectorSlot bubblesVirtually />
+        </Panel>
+      )}
     </ComplementaryArea>
   );
 }
