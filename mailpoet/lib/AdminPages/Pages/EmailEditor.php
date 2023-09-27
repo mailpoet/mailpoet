@@ -30,6 +30,12 @@ class EmailEditor {
       $assetsParams['version'],
       true
     );
+    $this->wp->wpEnqueueStyle(
+      'mailpoet_email_editor',
+      Env::$assetsUrl . '/dist/js/email_editor_custom/email_editor.css',
+      [],
+      $assetsParams['version']
+    );
     $this->wp->wpEnqueueStyle('wp-components');
     $this->wp->wpEnqueueStyle('wp-block-editor');
     $this->wp->wpEnqueueStyle('wp-block-editor-content');
