@@ -12,15 +12,17 @@ export function Header() {
   const inserterButton = useRef();
   const listviewButton = useRef();
 
-  const { toggleInserterSidebar, toggleListviewSidebar } =
+  const { toggleInserterSidebar, toggleListviewSidebar, saveEditedEmail } =
     useDispatch(storeName);
-  const { isInserterSidebarOpened, isListviewSidebarOpened } = useSelect(
-    (select) => ({
-      isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
-      isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
-    }),
-    [],
-  );
+  const { isInserterSidebarOpened, isListviewSidebarOpened, hasEdits } =
+    useSelect(
+      (select) => ({
+        isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
+        isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
+        hasEdits: select(storeName).hasEdits(),
+      }),
+      [],
+    );
   const [mailpoetEmailDa] = useEntityProp(
     'postType',
     'mailpoet_email',
@@ -75,6 +77,9 @@ export function Header() {
         <div className="edit-post-header__center">Todo Email Name</div>
       </div>
       <div className="edit-post-header__settings">
+        <Button variant="link" disabled={!hasEdits} onClick={saveEditedEmail}>
+          {__('Save Draft', 'mailpoet')}
+        </Button>
         <Button
           variant="primary"
           onClick={() => {
