@@ -36,8 +36,8 @@ export function BlockEditor() {
   // We can alter these to emulate different preview modes.
   const previewStyles = {
     height: '100%',
-    width: '100%',
-    margin: '0px',
+    width: '660px',
+    margin: '0 auto',
     display: 'flex',
     flexFlow: 'column',
     background: 'white',
