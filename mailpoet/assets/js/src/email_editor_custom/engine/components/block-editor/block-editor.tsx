@@ -21,9 +21,10 @@ import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 
 export function BlockEditor() {
-  const { postId } = useSelect(
+  const { postId, initialSettings } = useSelect(
     (select) => ({
       postId: select(storeName).getEmailPostId(),
+      initialSettings: select(storeName).getInitialEditorSettings(),
     }),
     [],
   );
@@ -51,7 +52,7 @@ export function BlockEditor() {
             value={blocks}
             onInput={onInput}
             onChange={onChange}
-            settings={{}}
+            settings={initialSettings}
           >
             <Sidebar.InspectorFill>
               <BlockInspector />

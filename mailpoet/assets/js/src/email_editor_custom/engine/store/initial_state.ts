@@ -11,5 +11,14 @@ export function getInitialState(): State {
       isOpened: false,
     },
     postId,
+    editorSettings: {
+      allowedBlockTypes: [
+        'core/paragraph',
+        'core/heading',
+        'core/column',
+        'core/columns',
+        'core/image',
+      ],
+    },
   };
 }

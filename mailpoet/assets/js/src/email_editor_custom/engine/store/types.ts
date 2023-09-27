@@ -6,6 +6,9 @@ export type State = {
     isOpened: boolean;
   };
   postId: number;
+  editorSettings: {
+    allowedBlockTypes: string[];
+  };
 };
 
 export type MailPoetEmailData = {
