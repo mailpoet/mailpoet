@@ -1,4 +1,4 @@
-import { dispatch } from '@wordpress/data';
+import { dispatch, select } from '@wordpress/data';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { storeName } from './constants';
@@ -24,11 +24,12 @@ export const closeSidebar = () => {
 };
 
 export function* saveEditedEmail() {
+  const postId = select(storeName).getEmailPostId();
   // This returns a promise
   yield dispatch(coreDataStore).saveEditedEntityRecord(
     'postType',
     'mailpoet_email',
-    75,
+    postId,
     {},
   );
   // Todo Notice when promise is resolved

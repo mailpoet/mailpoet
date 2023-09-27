@@ -14,15 +14,20 @@ import { ListviewSidebar } from './components/listview-sidebar/listview-sidebar'
 import { createStore, storeName } from './store';
 
 function Editor() {
-  const { isSidebarOpened, isInserterSidebarOpened, isListviewSidebarOpened } =
-    useSelect(
-      (select) => ({
-        isSidebarOpened: select(storeName).isSidebarOpened(),
-        isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
-        isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
-      }),
-      [],
-    );
+  const {
+    isSidebarOpened,
+    isInserterSidebarOpened,
+    isListviewSidebarOpened,
+    postId,
+  } = useSelect(
+    (select) => ({
+      isSidebarOpened: select(storeName).isSidebarOpened(),
+      isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
+      isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
+      postId: select(storeName).getEmailPostId(),
+    }),
+    [],
+  );
 
   const className = classnames('interface-interface-skeleton', {
     'is-sidebar-opened': isSidebarOpened,
@@ -32,7 +37,7 @@ function Editor() {
     <StrictMode>
       <ShortcutProvider>
         <SlotFillProvider>
-          <EntityProvider kind="postType" type="mailpoet_email" id={75}>
+          <EntityProvider kind="postType" type="mailpoet_email" id={postId}>
             <Sidebar />
             <InterfaceSkeleton
               className={className}

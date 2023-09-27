@@ -9,14 +9,18 @@ export const isSidebarOpened = createRegistrySelector(
     !!select(interfaceStore).getActiveComplementaryArea(storeName),
 );
 
-export const hasEdits = createRegistrySelector(
-  (select) => (): boolean =>
-    !!select(coreDataStore).hasEditsForEntityRecord(
-      'postType',
-      'mailpoet_email',
-      75,
-    ),
-);
+export const hasEdits = createRegistrySelector((select) => (): boolean => {
+  const postId = select(storeName).getEmailPostId();
+  return !!select(coreDataStore).hasEditsForEntityRecord(
+    'postType',
+    'mailpoet_email',
+    postId,
+  );
+});
+
+export function getEmailPostId(state: State): number {
+  return state.postId;
+}
 
 export function isInserterSidebarOpened(state: State): boolean {
   return state.inserterSidebar.isOpened;

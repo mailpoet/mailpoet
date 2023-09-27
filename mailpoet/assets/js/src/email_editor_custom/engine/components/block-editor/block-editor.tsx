@@ -11,6 +11,8 @@ import {
   __experimentalListView as ListView,
   __experimentalLibrary as Library,
 } from '@wordpress/block-editor';
+import { useSelect } from '@wordpress/data';
+import { storeName } from 'email_editor_custom/engine/store';
 import { useEntityBlockEditor } from '@wordpress/core-data';
 
 import { Sidebar } from '../sidebar/sidebar';
@@ -19,10 +21,16 @@ import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 
 export function BlockEditor() {
+  const { postId } = useSelect(
+    (select) => ({
+      postId: select(storeName).getEmailPostId(),
+    }),
+    [],
+  );
   const [blocks, onInput, onChange] = useEntityBlockEditor(
     'postType',
     'mailpoet_email',
-    { id: '75' },
+    { id: postId.toString() },
   );
 
   // We can alter these to emulate different preview modes.
