@@ -6,3 +6,7 @@ export type State = {
     isOpened: boolean;
   };
 };
+
+export type MailPoetEmailData = {
+  id: number;
+};
