@@ -1,4 +1,3 @@
-
 .selection-item {
   background-color: #fff;
   border: solid $selection-item-active-border $selection-item-base-color;
@@ -15,7 +14,7 @@
 }
 
 .selection-item-overlay {
-  background-color: rgba(0, 0, 0, .3);
+  background-color: rgba(0, 0, 0, 0.3);
   border-radius: 2px;
   height: 100%;
   left: 0;
@@ -28,7 +27,7 @@
 
 .selection-item-active {
   border: solid $selection-item-active-border $gutenberg-control-active-color;
-  box-shadow: 0 4px 8px 0 rgba(156, 166, 204, .5);
+  box-shadow: 0 4px 8px 0 rgba(156, 166, 204, 0.5);
 }
 
 .selection-item-settings {

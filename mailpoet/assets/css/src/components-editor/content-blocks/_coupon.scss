@@ -4,7 +4,7 @@
   }
 
   .mailpoet_editor_coupon_overlay {
-    background: rgba(255, 255, 255, .5);
+    background: rgba(255, 255, 255, 0.5);
     color: #000;
     cursor: pointer;
     display: none;
@@ -18,7 +18,7 @@
 
   :hover {
     .mailpoet_editor_coupon {
-      opacity: .5;
+      opacity: 0.5;
     }
 
     .mailpoet_editor_coupon_overlay {
@@ -84,7 +84,8 @@
     border-right: none;
   }
 
-  .components-search-control input[type=search].components-search-control__input {
+  .components-search-control
+    input[type='search'].components-search-control__input {
     background: $color-white;
   }
 }

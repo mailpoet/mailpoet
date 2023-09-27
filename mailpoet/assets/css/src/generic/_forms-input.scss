@@ -42,7 +42,8 @@
     width: $form-control-icon;
 
     &:first-child {
-      margin: 0 (-$form-control-spacing - $form-control-icon) 0 $form-control-spacing;
+      margin: 0 (-$form-control-spacing - $form-control-icon) 0
+        $form-control-spacing;
     }
 
     + input,
@@ -61,7 +62,8 @@
     margin-top: $grid-gap;
   }
 
-  &:not(.mailpoet-full-width) + .mailpoet-form-input:not(.mailpoet-full-width):not(.mailpoet-form-select),
+  &:not(.mailpoet-full-width)
+    + .mailpoet-form-input:not(.mailpoet-full-width):not(.mailpoet-form-select),
   &:not(.mailpoet-full-width) + .mailpoet-button:not(.mailpoet-full-width) {
     margin-left: $grid-gap;
   }

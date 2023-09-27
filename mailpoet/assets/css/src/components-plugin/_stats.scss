@@ -184,7 +184,8 @@ a.mailpoet-stats-product {
 
   &:hover,
   &:focus {
-    box-shadow: 0 2px 4px 0 rgba($color-tertiary-light, .4), 0 10px 30px 0 $color-tertiary-light;
+    box-shadow: 0 2px 4px 0 rgba($color-tertiary-light, 0.4),
+      0 10px 30px 0 $color-tertiary-light;
     color: $color-text;
     text-decoration: none;
 

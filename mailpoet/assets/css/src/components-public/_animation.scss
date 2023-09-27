@@ -1,5 +1,5 @@
 .mailpoet_form_overlay_animation {
-  animation: fade-in-overlay 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: fade-in-overlay 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @keyframes fade-in-overlay {
@@ -8,16 +8,16 @@
   }
 
   100% {
-    opacity: .7;
+    opacity: 0.7;
   }
 }
 
 .mailpoet_form_animation_slideup {
-  animation: slide-up 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: slide-up 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .mailpoet_form_popup.mailpoet_form_animation_slideup {
-  animation: slide-up-popup 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: slide-up-popup 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @keyframes slide-up-popup {
@@ -45,7 +45,7 @@
 }
 
 .mailpoet_form_animation_fadein {
-  animation: fade-in 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: fade-in 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @keyframes fade-in {
@@ -59,11 +59,11 @@
 }
 
 .mailpoet_form_animation_slideright {
-  animation: slide-right 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: slide-right 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .mailpoet_form_popup.mailpoet_form_animation_slideright {
-  animation: slide-right-popup 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: slide-right-popup 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @keyframes slide-right {
@@ -91,11 +91,11 @@
 }
 
 .mailpoet_form_animation_slideleft {
-  animation: slide-left 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: slide-left 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .mailpoet_form_popup.mailpoet_form_animation_slideleft {
-  animation: slide-left-popup 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: slide-left-popup 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @keyframes slide-left {
@@ -123,11 +123,11 @@
 }
 
 .mailpoet_form_animation_slidedown {
-  animation: slide-down 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: slide-down 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .mailpoet_form_popup.mailpoet_form_animation_slidedown {
-  animation: slide-down-popup 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: slide-down-popup 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @keyframes slide-down {
@@ -155,11 +155,11 @@
 }
 
 .mailpoet_form_animation_zoomout {
-  animation: zoom-out 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: zoom-out 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .mailpoet_form_popup.mailpoet_form_animation_zoomout {
-  animation: zoom-out-popup 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: zoom-out-popup 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @keyframes zoom-out {
@@ -185,17 +185,17 @@
 }
 
 .mailpoet_form_animation_zoomin {
-  animation: zoom-in 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: zoom-in 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .mailpoet_form_popup.mailpoet_form_animation_zoomin {
-  animation: zoom-in-popup 1s 1 cubic-bezier(.77, 0, .175, 1);
+  animation: zoom-in-popup 1s 1 cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @keyframes zoom-in {
   0% {
     opacity: 0;
-    transform: scale(.8);
+    transform: scale(0.8);
   }
 
   100% {
@@ -206,7 +206,7 @@
 
 @keyframes zoom-in-popup {
   0% {
-    transform: scale(.8) translate(-60%, -60%);
+    transform: scale(0.8) translate(-60%, -60%);
   }
 
   100% {

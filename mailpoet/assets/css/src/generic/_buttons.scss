@@ -31,8 +31,12 @@
     width: 10px;
   }
 
-  &.mailpoet-full-width + .mailpoet-button.mailpoet-full-width { margin-top: $grid-gap; }
-  &:not(.mailpoet-full-width) + .mailpoet-button:not(.mailpoet-full-width) { margin-left: $grid-gap; }
+  &.mailpoet-full-width + .mailpoet-button.mailpoet-full-width {
+    margin-top: $grid-gap;
+  }
+  &:not(.mailpoet-full-width) + .mailpoet-button:not(.mailpoet-full-width) {
+    margin-left: $grid-gap;
+  }
 }
 
 .mailpoet-button-with-spinner {
@@ -40,7 +44,7 @@
   touch-action: none;
 
   &:after {
-    background: rgba(#fff, .8) no-repeat center;
+    background: rgba(#fff, 0.8) no-repeat center;
     background-size: 24px 24px;
     border-radius: 2px;
     content: '';

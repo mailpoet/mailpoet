@@ -84,7 +84,9 @@ div.mailpoet-premium-page-section {
 }
 
 .mailpoet-premium-page-intro {
-  @include full-width-background(linear-gradient(to top, $color-white, $color-secondary-light));
+  @include full-width-background(
+    linear-gradient(to top, $color-white, $color-secondary-light)
+  );
   align-items: center;
 
   img {
@@ -98,7 +100,9 @@ div.mailpoet-premium-page-section {
 }
 
 .mailpoet-premium-page-get-started {
-  @include full-width-background(linear-gradient(to top, $color-white, $color-secondary-light));
+  @include full-width-background(
+    linear-gradient(to top, $color-white, $color-secondary-light)
+  );
 }
 
 .mailpoet-premium-page-bullet-list {

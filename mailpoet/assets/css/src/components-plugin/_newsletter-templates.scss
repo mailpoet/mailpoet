@@ -13,7 +13,7 @@
 
 .mailpoet-template-preview-overlay {
   align-items: center;
-  background: rgba(#fff, .96);
+  background: rgba(#fff, 0.96);
   border-radius: $grid-border-radius;
   display: none;
   height: 100%;
@@ -25,7 +25,9 @@
   width: 100%;
   z-index: 1;
 
-  .mailpoet-template-preview:hover & { display: flex; }
+  .mailpoet-template-preview:hover & {
+    display: flex;
+  }
 }
 
 .mailpoet-template-info {

@@ -26,8 +26,12 @@
     }
   }
 
-  &.mailpoet-full-width + .mailpoet-form-radio.mailpoet-full-width { margin-top: $grid-gap; }
-  &:not(.mailpoet-full-width) + .mailpoet-form-radio:not(.mailpoet-full-width) { margin-left: $grid-gap; }
+  &.mailpoet-full-width + .mailpoet-form-radio.mailpoet-full-width {
+    margin-top: $grid-gap;
+  }
+  &:not(.mailpoet-full-width) + .mailpoet-form-radio:not(.mailpoet-full-width) {
+    margin-left: $grid-gap;
+  }
 }
 
 .mailpoet-form-radio-control {
@@ -53,5 +57,7 @@
     width: 16px;
   }
 
-  input:checked + &:before { display: block; }
+  input:checked + &:before {
+    display: block;
+  }
 }

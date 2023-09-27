@@ -26,7 +26,9 @@
   width: 100%;
 }
 
-.block-editor .block-editor-inserter .block-editor-button-block-appender.block-list-appender__toggle {
+.block-editor
+  .block-editor-inserter
+  .block-editor-button-block-appender.block-list-appender__toggle {
   align-items: center;
   box-shadow: inset 0 0 0 1px #1e1e1e;
   display: flex;
@@ -37,7 +39,7 @@
   width: 100%;
 
   &:hover {
-    box-shadow: inset 0 0 0 1px var(--wp-admin-theme-color)
+    box-shadow: inset 0 0 0 1px var(--wp-admin-theme-color);
   }
 }
 
@@ -101,7 +103,8 @@ h2 {
 // Adjustments for family-font-select in popover
 .mailpoet_toolbar_item {
   .mailpoet-font-family-select {
-    .components-input-control__container .components-custom-select-control__button {
+    .components-input-control__container
+      .components-custom-select-control__button {
       height: 48px;
       width: 200px;
     }
@@ -138,9 +141,10 @@ h2 {
 }
 
 // Close button animation
-.edit-post-header-toolbar.edit-post-header-toolbar__left > .edit-post-header-toolbar__inserter-toggle {
+.edit-post-header-toolbar.edit-post-header-toolbar__left
+  > .edit-post-header-toolbar__inserter-toggle {
   svg {
-    transition: transform cubic-bezier(.165, .84, .44, 1) .2s;
+    transition: transform cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s;
   }
 
   &.is-pressed svg {

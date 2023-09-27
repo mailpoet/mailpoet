@@ -37,15 +37,19 @@ body.mailpoet_modal_opened {
 }
 
 .mailpoet_popup {
-  animation: mailpoet_popup_fadein .5s;
+  animation: mailpoet_popup_fadein 0.5s;
   margin: auto;
   max-width: 100%;
   z-index: 25;
 }
 
 @keyframes mailpoet_popup_fadein {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .mailpoet_popup_wrapper {
@@ -149,7 +153,7 @@ body.mailpoet_modal_opened {
   z-index: 2;
 
   svg {
-    opacity: .5;
+    opacity: 0.5;
     stroke: #979797;
 
     &:hover {
@@ -245,7 +249,7 @@ body.mailpoet_modal_opened {
 }
 
 .mailpoet_modal_loading_2 {
-  animation-delay: .5s;
+  animation-delay: 0.5s;
 }
 
 .mailpoet_modal_loading_3 {
@@ -254,8 +258,12 @@ body.mailpoet_modal_opened {
 
 @keyframes bounce_mailpoet_modal_loading {
   20%,
-  90% { background-color: $color-secondary-light; }
-  50% { background-color: $color-secondary; }
+  90% {
+    background-color: $color-secondary-light;
+  }
+  50% {
+    background-color: $color-secondary;
+  }
 }
 
 .mailpoet_modal_progress {
@@ -275,16 +283,20 @@ body.mailpoet_modal_opened {
   animation-iteration-count: infinite;
   animation-name: bounce_mailpoet_modal_progress;
   background-color: $color-secondary;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
   height: 100%;
   line-height: inherit;
   position: absolute;
-  transition: width .4s ease-in-out;
+  transition: width 0.4s ease-in-out;
 }
 
 @keyframes bounce_mailpoet_modal_progress {
-  50% { background-color: $color-secondary-middle; }
-  100% { background-color: $color-secondary; }
+  50% {
+    background-color: $color-secondary-middle;
+  }
+  100% {
+    background-color: $color-secondary;
+  }
 }
 
 .mailpoet_modal_progress_text {

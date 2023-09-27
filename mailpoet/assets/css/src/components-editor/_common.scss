@@ -15,7 +15,9 @@ span.select2-container--open > span.select2-dropdown {
   min-width: 150px;
 }
 
-span.select2-container--open > span.select2-dropdown li.select2-results__option {
+span.select2-container--open
+  > span.select2-dropdown
+  li.select2-results__option {
   font-size: 13px;
   margin: 0 !important;
 
@@ -28,7 +30,7 @@ span.select2-container--open > span.select2-dropdown li.select2-results__option 
     font-size: 13px;
     padding-left: 15px;
 
-    &[aria-selected=true] {
+    &[aria-selected='true'] {
       background-color: #eee;
       color: #444;
     }
@@ -51,7 +53,9 @@ span.select2-container--open > span.select2-dropdown li.select2-results__option 
   ul {
     list-style-type: circle;
 
-    ul { list-style-type: square; }
+    ul {
+      list-style-type: square;
+    }
   }
 }
 

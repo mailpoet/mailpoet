@@ -15,8 +15,12 @@
   }
 
   &.mailpoet-form-input-small > svg {
-    &:first-child { margin-right: -($form-control-icon-small + $form-control-spacing); }
-    + select { padding-left: $form-control-icon-small + 2 * $form-control-spacing; }
+    &:first-child {
+      margin-right: -($form-control-icon-small + $form-control-spacing);
+    }
+    + select {
+      padding-left: $form-control-icon-small + 2 * $form-control-spacing;
+    }
 
     ~ .mailpoet-form-react-select .mailpoet-form-react-select__value-container {
       padding-left: $form-control-icon-small + 2 * $form-control-spacing !important;
@@ -24,7 +28,8 @@
   }
 
   &:after {
-    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAQCAYAAAAMJL+VAAAAqklEQVR4AWOAAS75Ak922byr7DK5/ynBHDJ5j0FmMaADkARCIeWWYLEg9xG1LACFBKYFcvlxVPOBXF4sAzbAIZs7n1LDQWYw4AJSxg1clEQ0SC/IDAZ8gEcuVwuo+CsZFnwF6WUgBgDDMJ6McI8naDBmfFAe7oTjg/JwJxwflIY74figPNwJxwfF4U44PnKvwAwHsWHhTjlAlLaSQIN7gJHax62YL84wWAAANkMq0+UYHGkAAAAASUVORK5CYII=') no-repeat center;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAQCAYAAAAMJL+VAAAAqklEQVR4AWOAAS75Ak922byr7DK5/ynBHDJ5j0FmMaADkARCIeWWYLEg9xG1LACFBKYFcvlxVPOBXF4sAzbAIZs7n1LDQWYw4AJSxg1clEQ0SC/IDAZ8gEcuVwuo+CsZFnwF6WUgBgDDMJ6McI8naDBmfFAe7oTjg/JwJxwflIY74figPNwJxwfF4U44PnKvwAwHsWHhTjlAlLaSQIN7gJHax62YL84wWAAANkMq0+UYHGkAAAAASUVORK5CYII=')
+      no-repeat center;
     background-size: contain;
     content: '';
     height: 8px;
@@ -50,10 +55,7 @@
 }
 
 .mailpoet-form-react-select__value-container {
-  padding:
-    2px
-    $form-control-icon-small + 2 * $form-control-spacing
-    2px
+  padding: 2px $form-control-icon-small + 2 * $form-control-spacing 2px
     $form-control-spacing-horizontal !important;
 }
 
@@ -61,7 +63,9 @@
   color: $color-text !important;
   grid-area: 1 / 1 / 2 / 3;
   margin-left: 2px;
-  max-width: calc(100% - 8px); // leave space for narrow input to search another value
+  max-width: calc(
+    100% - 8px
+  ); // leave space for narrow input to search another value
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -83,14 +87,14 @@
   cursor: pointer;
 
   svg {
-    fill: rgba($color-text, .4) !important;
+    fill: rgba($color-text, 0.4) !important;
     height: 18px;
     width: 18px;
   }
 
   &:hover,
   &:focus {
-    background: rgba($color-tertiary, .1) !important;
+    background: rgba($color-tertiary, 0.1) !important;
     outline: none;
   }
 }
@@ -153,7 +157,7 @@
 }
 
 .mailpoet-form-react-select-count {
-  background: rgba($color-text-light, .5);
+  background: rgba($color-text-light, 0.5);
   border-radius: 10px;
   box-sizing: border-box;
   color: $color-text;

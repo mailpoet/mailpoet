@@ -26,7 +26,7 @@
 }
 
 .mailpoet_stat_link_small {
-  font-size: .75rem;
+  font-size: 0.75rem;
   text-decoration: underline !important;
 }
 
@@ -34,7 +34,7 @@
   border-radius: 3px;
   color: white;
   cursor: pointer;
-  font-size: .5625rem;
+  font-size: 0.5625rem;
   font-weight: 400;
   letter-spacing: 1px;
   margin-right: 4px;
@@ -278,7 +278,9 @@ h1.title.mailpoet-newsletter-listing-heading {
   display: flex;
   line-height: 22px;
 
-  + div { margin-top: 4px; }
+  + div {
+    margin-top: 4px;
+  }
 }
 
 .mailpoet-listing-stats-percentages {

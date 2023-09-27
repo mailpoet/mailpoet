@@ -112,7 +112,9 @@
     margin: 0 0 40px;
 
     + p,
-    + ul { margin-top: -20px; }
+    + ul {
+      margin-top: -20px;
+    }
   }
 }
 
@@ -141,7 +143,7 @@
   line-height: 1.14;
 
   span {
-    background-color: rgba($color-tertiary-light, .7);
+    background-color: rgba($color-tertiary-light, 0.7);
     border-radius: 2px;
     color: $color-tertiary;
     font-size: $font-size-extra-small;

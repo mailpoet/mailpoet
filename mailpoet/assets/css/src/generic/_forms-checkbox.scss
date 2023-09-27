@@ -26,8 +26,13 @@
     }
   }
 
-  &.mailpoet-full-width + .mailpoet-form-checkbox.mailpoet-full-width { margin-top: $grid-gap; }
-  &:not(.mailpoet-full-width) + .mailpoet-form-checkbox:not(.mailpoet-full-width) { margin-left: $grid-gap; }
+  &.mailpoet-full-width + .mailpoet-form-checkbox.mailpoet-full-width {
+    margin-top: $grid-gap;
+  }
+  &:not(.mailpoet-full-width)
+    + .mailpoet-form-checkbox:not(.mailpoet-full-width) {
+    margin-left: $grid-gap;
+  }
 }
 
 .mailpoet-form-checkbox-control {
@@ -49,5 +54,7 @@
     display: none;
   }
 
-  input:checked + &:before { display: block; }
+  input:checked + &:before {
+    display: block;
+  }
 }

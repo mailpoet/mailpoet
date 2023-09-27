@@ -117,17 +117,21 @@ $form-line-height: 1.4;
 }
 
 .mailpoet_form_loading .mailpoet_bounce1 {
-  animation-delay: -.32s;
+  animation-delay: -0.32s;
 }
 
 .mailpoet_form_loading .mailpoet_bounce2 {
-  animation-delay: -.16s;
+  animation-delay: -0.16s;
   margin: 0 7px;
 }
 
 .mailpoet_captcha_form {
-  .mailpoet_validate_success { color: #468847; }
-  .mailpoet_validate_error { color: #b94a48; }
+  .mailpoet_validate_success {
+    color: #468847;
+  }
+  .mailpoet_validate_error {
+    color: #b94a48;
+  }
 }
 
 .mailpoet_captcha_update {
@@ -178,8 +182,12 @@ $form-line-height: 1.4;
 @keyframes mailpoet-bouncedelay {
   0%,
   80%,
-  100% { transform: scale(0); }
-  40% { transform: scale(1); }
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
 }
 
 // Form columns
@@ -198,7 +206,9 @@ $form-line-height: 1.4;
 
 .mailpoet_form_fixed_bar {
   @include breakpoint-min-width($form-break-small-width) {
-    .mailpoet_form_columns .mailpoet_form_column .mailpoet_paragraph:last-child {
+    .mailpoet_form_columns
+      .mailpoet_form_column
+      .mailpoet_paragraph:last-child {
       margin-bottom: 0;
     }
   }
@@ -216,7 +226,9 @@ div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
 @mixin maxWidthColumns() {
   flex-wrap: wrap;
 
-  &.mailpoet_column_with_background .mailpoet_form_column:last-child .mailpoet_paragraph:last-child {
+  &.mailpoet_column_with_background
+    .mailpoet_form_column:last-child
+    .mailpoet_paragraph:last-child {
     margin-bottom: 0 !important;
   }
 }
@@ -248,7 +260,7 @@ div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
   }
 
   &.mailpoet_stack_on_mobile {
-    @include breakpoint-max-width(#{ ($form-break-small-width - 1) }) {
+    @include breakpoint-max-width(#{($form-break-small-width - 1)}) {
       @include maxWidthColumns;
     }
   }
@@ -277,13 +289,16 @@ div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
   }
 
   @include breakpoint-min-width($form-break-small-width) {
-    .mailpoet_form_form:not(.mailpoet_form_tight_container) .mailpoet_column_with_background & .mailpoet_paragraph:last-child {
+    .mailpoet_form_form:not(.mailpoet_form_tight_container)
+      .mailpoet_column_with_background
+      &
+      .mailpoet_paragraph:last-child {
       margin-bottom: 0 !important;
     }
   }
 
   .mailpoet_stack_on_mobile & {
-    @include breakpoint-max-width(#{ ($form-break-small-width - 1) }) {
+    @include breakpoint-max-width(#{($form-break-small-width - 1)}) {
       @include maxWidthColumn;
     }
   }
@@ -324,7 +339,7 @@ div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
   left: 0;
   margin: 0;
   max-width: 100% !important;
-  opacity: .7;
+  opacity: 0.7;
   position: fixed;
   top: 0;
   width: 100% !important;
@@ -334,7 +349,7 @@ div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
 div.mailpoet_form_popup {
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
+  box-shadow: 0 4px 35px 0 rgba(195, 65, 2, 0.2);
   display: none;
   left: 50%;
   max-height: calc(100vh - 60px);
@@ -360,7 +375,7 @@ div.mailpoet_form_popup {
 
 div.mailpoet_form_fixed_bar {
   background-color: white;
-  box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
+  box-shadow: 0 4px 35px 0 rgba(195, 65, 2, 0.2);
   box-sizing: border-box;
   display: none;
   left: 0;
@@ -388,7 +403,7 @@ div.mailpoet_form_fixed_bar {
 div.mailpoet_form_slide_in {
   background-color: white;
   bottom: 0;
-  box-shadow: 0 4px 35px 0 rgba(195, 65, 2, .2);
+  box-shadow: 0 4px 35px 0 rgba(195, 65, 2, 0.2);
   display: none;
   max-height: calc(100vh - 60px);
   overflow-y: auto;
@@ -498,7 +513,8 @@ div.mailpoet_form_slide_in.active {
   @include breakpoint-max-width($form-break-small-width - 1) {
     font-size: $form-mobile-low-level-heading-font-size !important;
     line-height: $form-line-height !important;
-    margin: $form-mobile-low-level-heading-font-size * math.div($form-line-height, 2) 0 !important;
+    margin: $form-mobile-low-level-heading-font-size *
+      math.div($form-line-height, 2) 0 !important;
   }
 }
 
@@ -506,7 +522,8 @@ h1.mailpoet-heading {
   @include breakpoint-max-width($form-break-small-width - 1) {
     font-size: $form-mobile-level1-heading-font-size !important;
     line-height: $form-line-height !important;
-    margin: $form-mobile-level1-heading-font-size * math.div($form-line-height, 2) 0 !important;
+    margin: $form-mobile-level1-heading-font-size *
+      math.div($form-line-height, 2) 0 !important;
   }
 }
 
@@ -514,7 +531,8 @@ h2.mailpoet-heading {
   @include breakpoint-max-width($form-break-small-width - 1) {
     font-size: $form-mobile-level2-heading-font-size !important;
     line-height: $form-line-height !important;
-    margin: $form-mobile-level2-heading-font-size * math.div($form-line-height, 2) 0 !important;
+    margin: $form-mobile-level2-heading-font-size *
+      math.div($form-line-height, 2) 0 !important;
   }
 
   &:before {

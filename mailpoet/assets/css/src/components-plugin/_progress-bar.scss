@@ -21,7 +21,7 @@
   background-color: #34c2e3;
   background-image: linear-gradient(to bottom, #34c2e3, darken(#34c2e3, 20%));
   border-radius: 3px;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
   display: inline-block;
   height: 100%;
   position: absolute;
@@ -30,7 +30,11 @@
 .mailpoet_progress_complete {
   .mailpoet_progress_bar {
     background-color: hsla(191, 78%, 80%, 1);
-    background-image: linear-gradient(to bottom, hsla(191, 78%, 80%, 1), hsla(191, 76%, 67%, 1));
+    background-image: linear-gradient(
+      to bottom,
+      hsla(191, 78%, 80%, 1),
+      hsla(191, 76%, 67%, 1)
+    );
   }
 }
 
@@ -70,7 +74,9 @@
     flex-grow: 0;
     width: 18px;
 
-    &:after { display: none; }
+    &:after {
+      display: none;
+    }
   }
 
   &.active:before,
@@ -80,7 +86,11 @@
   }
 
   &.current {
-    &:before { background-color: #fff; }
-    &:after { background-color: #dbdbdb; }
+    &:before {
+      background-color: #fff;
+    }
+    &:after {
+      background-color: #dbdbdb;
+    }
   }
 }

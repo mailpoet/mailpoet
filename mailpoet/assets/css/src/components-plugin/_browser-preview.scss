@@ -24,7 +24,7 @@
   }
 
   .mailpoet_preview_icon_fill {
-    fill: rgba($color-text, .3);
+    fill: rgba($color-text, 0.3);
   }
 
   &.mailpoet_active {
@@ -44,7 +44,7 @@
   height: 100%;
   margin: auto;
   padding: 20px;
-  transition: width .5s;
+  transition: width 0.5s;
 }
 
 .mailpoet_browser_preview_container_desktop {
@@ -58,13 +58,15 @@
 
 .mailpoet_browser_preview_container_mobile .mailpoet_preview_send_to_email,
 .mailpoet_browser_preview_container_desktop .mailpoet_preview_send_to_email,
-.mailpoet_browser_preview_container_send_to_email .mailpoet_browser_preview_border {
+.mailpoet_browser_preview_container_send_to_email
+  .mailpoet_browser_preview_border {
   display: none;
 }
 
 .mailpoet_browser_preview_container_mobile .mailpoet_browser_preview_border,
 .mailpoet_browser_preview_container_desktop .mailpoet_browser_preview_border,
-.mailpoet_browser_preview_container_send_to_email .mailpoet_preview_send_to_email {
+.mailpoet_browser_preview_container_send_to_email
+  .mailpoet_preview_send_to_email {
   display: block;
 }
 
