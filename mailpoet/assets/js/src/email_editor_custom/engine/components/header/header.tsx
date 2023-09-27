@@ -53,7 +53,7 @@ export function Header() {
               ref={listviewButton}
               as={Button}
               className="edit-post-header-toolbar__document-overview-toggle"
-              variant="secondary"
+              variant="tertiary"
               isPressed={isListviewSidebarOpened}
               onMouseDown={preventDefault}
               onClick={toggleListviewSidebar}

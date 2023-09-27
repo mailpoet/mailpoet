@@ -8,10 +8,14 @@ import {
   BlockList,
   ObserveTyping,
   WritingFlow,
+  __experimentalListView as ListView,
+  __experimentalLibrary as Library,
 } from '@wordpress/block-editor';
 import { useState } from '@wordpress/element';
 
 import { Sidebar } from '../sidebar/sidebar';
+import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
+import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 
 export function BlockEditor() {
   const [documentBlocks, updateBlocks] = useState([]);
@@ -39,6 +43,17 @@ export function BlockEditor() {
             <Sidebar.InspectorFill>
               <BlockInspector />
             </Sidebar.InspectorFill>
+            <ListviewSidebar.ListviewFill>
+              <ListView />
+            </ListviewSidebar.ListviewFill>
+            <InserterSidebar.InserterFill>
+              <Library
+                showMostUsedBlocks
+                showInserterHelpPanel={false}
+                rootClientId={undefined}
+                __experimentalInsertionIndex={undefined}
+              />
+            </InserterSidebar.InserterFill>
             <div className="editor-styles-wrapper">
               {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
               {/* @ts-ignore BlockEditorKeyboardShortcuts.Register has no types */}

@@ -1,8 +1,11 @@
 import { useDispatch } from '@wordpress/data';
 import { close } from '@wordpress/icons';
-import { Button } from '@wordpress/components';
-import { __experimentalLibrary as Library } from '@wordpress/block-editor';
+import { Button, createSlotFill } from '@wordpress/components';
 import { storeName } from '../../store';
+
+const { Slot: InserterSlot, Fill: InserterFill } = createSlotFill(
+  'EmailEditorInserter',
+);
 
 export function InserterSidebar() {
   const { toggleInserterSidebar } = useDispatch(storeName);
@@ -12,13 +15,10 @@ export function InserterSidebar() {
         <Button icon={close} onClick={toggleInserterSidebar} />
       </div>
       <div className="edit-post-editor__inserter-panel-content">
-        <Library
-          showMostUsedBlocks
-          showInserterHelpPanel={false}
-          rootClientId={undefined}
-          __experimentalInsertionIndex={undefined}
-        />
+        <InserterSlot bubblesVirtually />
       </div>
     </div>
   );
 }
+
+InserterSidebar.InserterFill = InserterFill;
