@@ -1,7 +1,7 @@
 import { dispatch, select } from '@wordpress/data';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as coreDataStore } from '@wordpress/core-data';
-import { storeName } from './constants';
+import { storeName, mainSidebarEmailKey } from './constants';
 
 export function toggleInserterSidebar() {
   return {
@@ -15,9 +15,9 @@ export function toggleListviewSidebar() {
   } as const;
 }
 
-export const openSidebar = () => {
-  dispatch(interfaceStore).enableComplementaryArea(storeName);
-};
+export function* openSidebar(key = mainSidebarEmailKey) {
+  yield dispatch(interfaceStore).enableComplementaryArea(storeName, key);
+}
 
 export const closeSidebar = () => {
   dispatch(interfaceStore).disableComplementaryArea(storeName);
