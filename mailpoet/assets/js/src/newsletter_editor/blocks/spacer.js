@@ -70,6 +70,7 @@ Module.SpacerBlockView = base.BlockView.extend({
     this.$('.mailpoet_resize_handle_text').text(
       this.model.get('styles.block.height'),
     );
+    this.render();
   },
   onBeforeDestroy: function onBeforeDestroy() {
     this.stopListening(this.model);
