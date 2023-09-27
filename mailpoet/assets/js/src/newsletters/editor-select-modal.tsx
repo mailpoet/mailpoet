@@ -55,7 +55,7 @@ export function EditorSelectModal({
           type="button"
           variant="primary"
           onClick={() => {
-            window.location.href = 'post-new.php?post_type=mailpoet_email';
+            window.location.href = 'admin.php?page=mailpoet-email-editor';
           }}
         >
           {__('Continue', 'mailpoet')}
