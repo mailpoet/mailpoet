@@ -31,7 +31,8 @@
     margin: 0;
   }
 
-  .components-search-control input[type=search].components-search-control__input {
+  .components-search-control
+    input[type='search'].components-search-control__input {
     background: $color-white;
     height: 36px;
   }
@@ -72,13 +73,13 @@
 
   &:hover {
     background: #fff;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, .1), 0 3px 6px rgba(0, 0, 0, .15);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.15);
     color: inherit;
   }
 
   &:focus {
     border-color: #2271b1;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, .15);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
     color: inherit;
   }
 }

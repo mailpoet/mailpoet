@@ -34,11 +34,15 @@
  */
 .mailpoet-form-select {
   svg {
-    ~ .select2 .select2-selection__rendered { padding-left: $form-control-icon + 2 * $form-control-spacing !important; }
+    ~ .select2 .select2-selection__rendered {
+      padding-left: $form-control-icon + 2 * $form-control-spacing !important;
+    }
   }
 
   &.mailpoet-form-input-small svg {
-    ~ .select2 .select2-selection__rendered { padding-left: $form-control-icon-small + 2 * $form-control-spacing !important; }
+    ~ .select2 .select2-selection__rendered {
+      padding-left: $form-control-icon-small + 2 * $form-control-spacing !important;
+    }
   }
 
   .select2-container {
@@ -78,7 +82,7 @@
   }
 
   .select2-selection__choice__remove {
-    color: rgba($color-text, .4) !important;
+    color: rgba($color-text, 0.4) !important;
     font-size: 22px;
     height: 24px;
     line-height: 20px;
@@ -122,8 +126,12 @@
   font-size: $font-size;
   margin-left: -1px;
 
-  &.select2-dropdown--below { margin-top: -4px; }
-  &.select2-dropdown--above { margin-bottom: -4px; }
+  &.select2-dropdown--below {
+    margin-top: -4px;
+  }
+  &.select2-dropdown--above {
+    margin-bottom: -4px;
+  }
 
   .select2-search--dropdown {
     padding: 6px 8px;
@@ -151,12 +159,12 @@
     display: flex;
     padding: 12px $form-control-spacing-horizontal;
 
-    &[aria-selected=true] {
+    &[aria-selected='true'] {
       background-color: $color-secondary-light;
       color: $color-text;
     }
 
-    &[role=group] {
+    &[role='group'] {
       align-items: stretch;
       flex-direction: column;
     }
@@ -165,7 +173,7 @@
   .select2-results__option--highlighted {
     background-color: $color-tertiary-light;
 
-    &[aria-selected=true] {
+    &[aria-selected='true'] {
       background-color: $color-secondary-light-hover;
     }
   }
@@ -209,7 +217,7 @@
 }
 
 .mailpoet-form-select2-count {
-  background: rgba($color-text-light, .5);
+  background: rgba($color-text-light, 0.5);
   border-radius: 10px;
   box-sizing: border-box;
   color: $color-text;

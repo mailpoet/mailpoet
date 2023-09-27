@@ -4,9 +4,13 @@ $editor-line-height: 1.6em;
 
 $editor-column-margin: 20px;
 $editor-column-width-one: $grid-editor-width - (2 * $editor-column-margin);
-$editor-column-width-two: math.div($grid-editor-width, 2) - (2 * $editor-column-margin);
-$editor-column-width-two-wider: (math.div($grid-editor-width, 3) - $editor-column-margin) * 2;
-$editor-column-width-three: math.div($grid-editor-width, 3) - (2 * $editor-column-margin);
+$editor-column-width-two: math.div($grid-editor-width, 2) -
+  (2 * $editor-column-margin);
+$editor-column-width-two-wider: (
+    math.div($grid-editor-width, 3) - $editor-column-margin
+  ) * 2;
+$editor-column-width-three: math.div($grid-editor-width, 3) -
+  (2 * $editor-column-margin);
 
 $editor-divider-background-color: #daebf2;
 $editor-divider-border-color: #adadad;

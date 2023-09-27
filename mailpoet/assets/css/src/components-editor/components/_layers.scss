@@ -1,6 +1,6 @@
 .mailpoet_container_layer_active {
   .mailpoet_block {
-    opacity: .4;
+    opacity: 0.4;
     pointer-events: none;
   }
 
@@ -19,7 +19,7 @@
 }
 
 .mailpoet_layer_overlay {
-  background-color: rgba(0, 0, 0, .6);
+  background-color: rgba(0, 0, 0, 0.6);
   height: 100%;
   left: 0;
   margin: 0 !important;

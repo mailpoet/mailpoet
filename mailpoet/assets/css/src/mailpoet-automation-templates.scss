@@ -46,18 +46,18 @@ ul.mailpoet-automation-templates {
     &:hover {
       background: #fff;
       border: 1px solid #dcdcde;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, .15);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
       color: inherit;
     }
 
     &:focus {
       border-color: #2271b1;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, .15);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
       color: inherit;
     }
 
-    >* {
-      width: 100%
+    > * {
+      width: 100%;
     }
   }
 

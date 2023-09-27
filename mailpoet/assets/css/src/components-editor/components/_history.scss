@@ -19,5 +19,7 @@
 .mailpoet_history_arrow_inactive {
   cursor: not-allowed;
 
-  svg { stroke: $color-primary-inactive; }
+  svg {
+    stroke: $color-primary-inactive;
+  }
 }

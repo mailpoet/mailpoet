@@ -1,5 +1,4 @@
 *.hbs
-*.scss
 .mp_svn
 _generated
 _output

@@ -11,7 +11,7 @@
     padding: $content-padding;
 
     @include respond-to(small-screen) {
-      padding: $mobile-content-padding
+      padding: $mobile-content-padding;
     }
   }
 
@@ -19,7 +19,7 @@
     padding: $content-padding;
 
     @include respond-to(small-screen) {
-      padding: $mobile-content-padding
+      padding: $mobile-content-padding;
     }
   }
 
@@ -70,7 +70,7 @@
       }
 
       @include respond-to(small-screen) {
-        padding: $mobile-content-padding
+        padding: $mobile-content-padding;
       }
     }
 
@@ -151,12 +151,14 @@
       padding: 20px 5px;
       position: relative;
 
-      &::-webkit-details-marker {   // remove default marker
+      &::-webkit-details-marker {
+        // remove default marker
         content: '';
         display: none;
       }
 
-      &::marker {                   // remove default marker
+      &::marker {
+        // remove default marker
         content: '';
         display: none;
       }
@@ -169,7 +171,7 @@
         top: 0;
         transform: rotate(90deg);
         transform-origin: center;
-        transition: .2s transform ease;
+        transition: 0.2s transform ease;
       }
 
       @include respond-to(small-screen) {
@@ -183,19 +185,19 @@
       max-height: 0;
       overflow: hidden;
       padding: 10px 5px;
-      transition: max-height .3s ease;
+      transition: max-height 0.3s ease;
     }
 
     // when accordion is opened
     &[open] {
       summary:after {
         transform: rotate(-90deg);
-        transition: .5s transform ease;
+        transition: 0.5s transform ease;
       }
 
       .content {
         max-height: 400px;
-        transition: max-height .5s ease-in;
+        transition: max-height 0.5s ease-in;
       }
     }
   }

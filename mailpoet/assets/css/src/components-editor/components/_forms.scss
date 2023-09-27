@@ -20,7 +20,7 @@
 
   .mailpoet_form_field_optional {
     color: $color-primary-inactive;
-    font-size: .8em;
+    font-size: 0.8em;
   }
 
   .mailpoet_form_field_radio_option,
@@ -38,11 +38,11 @@
   .mailpoet_form_field_input_option {
     display: inline-block;
 
-    input[type=checkbox] {
+    input[type='checkbox'] {
       vertical-align: top;
     }
 
-    input[type=text] {
+    input[type='text'] {
       vertical-align: middle;
     }
   }

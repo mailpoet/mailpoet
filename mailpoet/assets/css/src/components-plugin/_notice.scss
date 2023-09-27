@@ -2,7 +2,9 @@
   clear: both;
   position: relative;
 
-  p:empty { display: none; }
+  p:empty {
+    display: none;
+  }
 
   .button {
     overflow: initial;

@@ -14,7 +14,7 @@
     position: absolute;
     right: 0;
     top: 0;
-    transition: .3s;
+    transition: 0.3s;
     z-index: 1;
   }
 
@@ -29,7 +29,9 @@
     top: -2px;
   }
 
-  &.mailpoet_highlight > .mailpoet_container_horizontal ~ .mailpoet_block_highlight {
+  &.mailpoet_highlight
+    > .mailpoet_container_horizontal
+    ~ .mailpoet_block_highlight {
     border: 2px solid $color-editor-background-column !important;
   }
 }
@@ -47,7 +49,7 @@
     font-style: normal;
     font-weight: normal;
     line-height: $editor-line-height;
-    margin: 0 0 .3em;
+    margin: 0 0 0.3em;
     padding: 0;
   }
 

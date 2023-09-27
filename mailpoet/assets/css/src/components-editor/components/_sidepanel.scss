@@ -43,7 +43,7 @@
 
 .mailpoet_sidepanel_field_optional {
   color: $color-primary-inactive;
-  font-size: .8em;
+  font-size: 0.8em;
 }
 
 .mailpoet_sidepanel_radio_option,
@@ -61,11 +61,11 @@
 .mailpoet_sidepanel_input_option {
   display: inline-block;
 
-  input[type=checkbox] {
+  input[type='checkbox'] {
     vertical-align: top;
   }
 
-  input[type=text] {
+  input[type='text'] {
     vertical-align: middle;
   }
 }

@@ -4,7 +4,7 @@
   margin: 1em 0;
 
   .block-editor-rich-text__editable {
-    font-size: .875em;
+    font-size: 0.875em;
     line-height: inherit;
     vertical-align: middle;
   }
@@ -16,6 +16,8 @@
   }
 }
 
-.wc-block-checkout__additional_fields .block-editor-inner-blocks .block-editor-block-list__layout {
+.wc-block-checkout__additional_fields
+  .block-editor-inner-blocks
+  .block-editor-block-list__layout {
   padding-left: 0;
 }

@@ -34,8 +34,7 @@
 .mailpoet-automation-field__error {
   position: relative;
 
-  input:not([type='radio'])
-  select,
+  input:not([type='radio']) select,
   textarea,
   input[type='text'].components-form-token-field__input {
     background: right top/26px no-repeat url('../../img/icons/alert.svg');
@@ -43,7 +42,7 @@
   }
 
   select,
-  input[type=number] {
+  input[type='number'] {
     background-position-x: calc(100% - 26px);
     padding-right: 8px !important;
   }

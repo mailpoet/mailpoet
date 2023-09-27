@@ -23,10 +23,14 @@
   font-size: $font-size-small;
   grid-column: 1 / span 1;
 
-  > *:first-child { margin-top: 0; }
+  > *:first-child {
+    margin-top: 0;
+  }
 
   @include respond-to(not-small-screen) {
-    > *:last-child { margin-bottom: 0; }
+    > *:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 
