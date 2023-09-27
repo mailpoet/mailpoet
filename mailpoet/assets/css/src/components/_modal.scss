@@ -8,13 +8,10 @@
   align-items: center;
   animation: mailpoet-modal-screen-overlay-fadein-animation 0.1s ease-out;
   background-color: rgba(#000, 0.7);
-  bottom: 0;
   display: flex;
+  inset: 0;
   justify-content: center;
-  left: 0;
   position: fixed;
-  right: 0;
-  top: 0;
   z-index: $modal-screen-overlay-z-index;
 }
 

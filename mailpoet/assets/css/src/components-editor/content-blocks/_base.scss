@@ -8,12 +8,9 @@
 
   > .mailpoet_block_highlight {
     border: 2px solid $color-transparent;
-    bottom: 0;
-    left: 0;
+    inset: 0;
     pointer-events: none;
     position: absolute;
-    right: 0;
-    top: 0;
     transition: 0.3s;
     z-index: 1;
   }
@@ -23,10 +20,7 @@
   }
 
   > .mailpoet_container_horizontal ~ .mailpoet_block_highlight {
-    bottom: -2px;
-    left: -2px;
-    right: -2px;
-    top: -2px;
+    inset: -2px;
   }
 
   &.mailpoet_highlight

@@ -345,11 +345,8 @@ a.mailpoet-listing-title {
   }
 
   @include respond-to(small-screen) {
-    bottom: 10px;
     display: flex;
-    left: 2px;
-    right: 10px;
-    top: auto;
+    inset: auto 10px 10px 2px;
     width: auto;
 
     a {
