@@ -113,7 +113,7 @@ const confirmEdit = (newsletter) => {
     MailPoet.FeaturesController.isSupported('gutenberg_email_editor') &&
     newsletter.wp_post_id
   ) {
-    editorHref = `post.php?post=${newsletter.wp_post_id}&action=edit`;
+    editorHref = `admin.php?page=mailpoet-email-editor&postId=${newsletter.wp_post_id}`;
   }
 
   if (
