@@ -3,9 +3,10 @@ import { PinnedItems } from '@wordpress/interface';
 import { Button, ToolbarItem } from '@wordpress/components';
 import { NavigableToolbar } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
+import { useEntityProp } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
 import { plus, listView } from '@wordpress/icons';
-import { storeName } from '../../store';
+import { MailPoetEmailData, storeName } from '../../store';
 
 export function Header() {
   const inserterButton = useRef();
@@ -20,6 +21,12 @@ export function Header() {
     }),
     [],
   );
+  const [mailpoetEmailDa] = useEntityProp(
+    'postType',
+    'mailpoet_email',
+    'mailpoet_data',
+  );
+  const mailpoetEmailData: MailPoetEmailData = mailpoetEmailDa;
 
   const preventDefault = (event) => {
     event.preventDefault();
@@ -68,6 +75,14 @@ export function Header() {
         <div className="edit-post-header__center">Todo Email Name</div>
       </div>
       <div className="edit-post-header__settings">
+        <Button
+          variant="primary"
+          onClick={() => {
+            window.location.href = `admin.php?page=mailpoet-newsletters#/send/${mailpoetEmailData.id}`;
+          }}
+        >
+          {__('Send', 'mailpoet')}
+        </Button>
         <PinnedItems.Slot scope={storeName} />
       </div>
     </div>
