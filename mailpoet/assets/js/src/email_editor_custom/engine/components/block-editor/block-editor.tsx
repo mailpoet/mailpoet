@@ -11,14 +11,19 @@ import {
   __experimentalListView as ListView,
   __experimentalLibrary as Library,
 } from '@wordpress/block-editor';
-import { useState } from '@wordpress/element';
+import { useEntityBlockEditor } from '@wordpress/core-data';
 
 import { Sidebar } from '../sidebar/sidebar';
 import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
+
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 
 export function BlockEditor() {
-  const [documentBlocks, updateBlocks] = useState([]);
+  const [blocks, onInput, onChange] = useEntityBlockEditor(
+    'postType',
+    'mailpoet_email',
+    { id: '75' },
+  );
 
   // We can alter these to emulate different preview modes.
   const previewStyles = {
@@ -35,9 +40,9 @@ export function BlockEditor() {
       <div className="edit-post-visual-editor__content-area">
         <div style={previewStyles}>
           <BlockEditorProvider
-            value={documentBlocks}
-            onInput={(blocks) => updateBlocks(blocks)}
-            onChange={(blocks) => updateBlocks(blocks)}
+            value={blocks}
+            onInput={onInput}
+            onChange={onChange}
             settings={{}}
           >
             <Sidebar.InspectorFill>

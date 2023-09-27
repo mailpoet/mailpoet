@@ -5,6 +5,7 @@ import { StrictMode, createRoot } from '@wordpress/element';
 import { registerCoreBlocks } from '@wordpress/block-library';
 import { Popover, SlotFillProvider } from '@wordpress/components';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
+import { EntityProvider } from '@wordpress/core-data';
 import { Header } from './components/header';
 import { BlockEditor } from './components/block-editor';
 import { Sidebar } from './components/sidebar/sidebar';
@@ -31,18 +32,20 @@ function Editor() {
     <StrictMode>
       <ShortcutProvider>
         <SlotFillProvider>
-          <Sidebar />
-          <InterfaceSkeleton
-            className={className}
-            header={<Header />}
-            content={<BlockEditor />}
-            sidebar={<ComplementaryArea.Slot scope={storeName} />}
-            secondarySidebar={
-              (isInserterSidebarOpened && <InserterSidebar />) ||
-              (isListviewSidebarOpened && <ListviewSidebar />)
-            }
-          />
-          <Popover.Slot />
+          <EntityProvider kind="postType" type="mailpoet_email" id={75}>
+            <Sidebar />
+            <InterfaceSkeleton
+              className={className}
+              header={<Header />}
+              content={<BlockEditor />}
+              sidebar={<ComplementaryArea.Slot scope={storeName} />}
+              secondarySidebar={
+                (isInserterSidebarOpened && <InserterSidebar />) ||
+                (isListviewSidebarOpened && <ListviewSidebar />)
+              }
+            />
+            <Popover.Slot />
+          </EntityProvider>
         </SlotFillProvider>
       </ShortcutProvider>
     </StrictMode>

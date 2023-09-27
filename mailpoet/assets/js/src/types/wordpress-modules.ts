@@ -126,3 +126,26 @@ declare module '@wordpress/notices' {
     };
   }>;
 }
+
+declare module '@wordpress/core-data' {
+  import { BlockInstance } from '@wordpress/blocks';
+
+  export function useEntityBlockEditor(
+    kind: string,
+    name: string,
+    {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      id: _id,
+    }?: {
+      id?: string | undefined;
+    },
+  ): [
+    WPBlock[],
+    (blocks: BlockInstance[]) => void,
+    (blocks: BlockInstance[]) => void,
+  ];
+  export type WPBlock = any;
+
+  export * from '@wordpress/core-data/build-types';
+}
