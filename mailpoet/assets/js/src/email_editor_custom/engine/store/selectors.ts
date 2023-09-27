@@ -29,3 +29,9 @@ export function isInserterSidebarOpened(state: State): boolean {
 export function isListviewSidebarOpened(state: State): boolean {
   return state.listviewSidebar.isOpened;
 }
+
+export function getInitialEditorSettings(
+  state: State,
+): State['editorSettings'] {
+  return state.editorSettings;
+}
