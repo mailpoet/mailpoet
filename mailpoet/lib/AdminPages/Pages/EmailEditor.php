@@ -4,6 +4,7 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Env;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
@@ -22,6 +23,21 @@ class EmailEditor {
   }
 
   public function render() {
+    $postId = isset($_GET['postId']) ? intval($_GET['postId']) : 0;
+    $post = $this->wp->getPost($postId);
+    if (!$post instanceof \WP_Post || $post->post_type !== EditorInitController::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $postId = wp_insert_post([
+        'post_title' => 'New Email',
+        'post_content' => '',
+        'post_status' => 'draft',
+        'post_author' => $this->wp->getCurrentUserId(),
+        'post_type' => EditorInitController::MAILPOET_EMAIL_POST_TYPE,
+      ]);
+      return wp_safe_redirect(
+        $this->wp->adminUrl('admin.php?page=mailpoet-email-editor&postId=' . $postId)
+      );
+    }
+
     $assetsParams = require_once Env::$assetsPath . '/dist/js/email_editor_custom/email_editor.asset.php';
     $this->wp->wpEnqueueScript(
       'mailpoet_email_editor',
