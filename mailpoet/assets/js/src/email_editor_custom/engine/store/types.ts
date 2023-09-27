@@ -5,6 +5,7 @@ export type State = {
   listviewSidebar: {
     isOpened: boolean;
   };
+  postId: number;
 };
 
 export type MailPoetEmailData = {
