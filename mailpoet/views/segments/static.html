@@ -6,11 +6,10 @@
   <script type="text/javascript">
     var mailpoet_listing_per_page = <%= items_per_page %>;
   </script>
-<% endblock %>
 
-<% block translations %>
   <% include 'segments/translations.html' %>
 <% endblock %>
+
 
 <% block after_translations %>
   <%= do_action('mailpoet_segments_translations_after') %>

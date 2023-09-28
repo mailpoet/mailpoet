@@ -11,9 +11,7 @@
     var mailpoet_date_formats = <%= json_encode(date_formats) %>;
     var mailpoet_max_confirmation_emails = <%= max_confirmation_emails %>;
   </script>
-<% endblock %>
 
-<% block translations %>
   <%= localize({
     'pageTitle': __('Subscribers'),
     'searchLabel': __('Search'),

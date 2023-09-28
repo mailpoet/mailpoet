@@ -21,10 +21,7 @@
     mailpoetColumns = JSON.parse("<%=subscriberFields|escape('js')%>"),
     mailpoetSegments = JSON.parse("<%=segments|escape('js')%>");
 </script>
-<% endblock %>
 
-
-<% block translations %>
 <%= localize({
 'noMailChimpLists': __('No active lists found'),
 'serverError': __('Server error:'),
@@ -129,6 +126,5 @@
 'assignTagsLabel': __('Assign tags'),
 'assignTagsDescription': __('Pick a tag or create a new one to assign to these subscribers.'),
 'addNewTag': __('Add new tag'),
-
 }) %>
 <% endblock %>
