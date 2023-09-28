@@ -9,6 +9,7 @@ import {
   StateType,
   SetPreviousPageActionType,
 } from '../types';
+import { getSegmentInitialState } from './initial-state';
 
 function setSegment(state: StateType, action: SetSegmentActionType): StateType {
   return {
@@ -20,7 +21,7 @@ function setSegment(state: StateType, action: SetSegmentActionType): StateType {
 function resetSegmentAndErrors(state: StateType): StateType {
   return {
     ...state,
-    segment: { filters: [] },
+    segment: getSegmentInitialState(),
     errors: [],
   };
 }
