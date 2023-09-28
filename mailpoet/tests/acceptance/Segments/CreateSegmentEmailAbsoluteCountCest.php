@@ -64,7 +64,7 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->fillField('[data-automation-id="segment-number-of-days"]', 3);
     $i->waitForText('This segment has 2 subscribers');
     $i->click('Save');
-    $i->waitForNoticeAndClose('Segment successfully updated!');
+    $i->waitForNoticeAndClose('Segment successfully added!');
 
     $i->wantTo('Edit the segment');
     $i->amOnMailpoetPage('Segments');

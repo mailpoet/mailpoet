@@ -92,7 +92,7 @@ class ManageSegmentsCest {
     $i->waitForText('This segment has 3 subscribers');
     $i->waitForElementClickable('button[type="submit"]');
     $i->click('Save');
-    $i->waitForNoticeAndClose('Segment successfully updated!');
+    $i->waitForNoticeAndClose('Segment successfully added!');
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Edit existing segment');

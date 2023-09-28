@@ -27,7 +27,7 @@ import {
 } from './types';
 
 interface Props {
-  segmentId?: number;
+  isNewSegment: boolean;
 }
 
 const FiltersBefore = Hooks.applyFilters(
@@ -43,7 +43,7 @@ const FilterAfter = Hooks.applyFilters(
   (): JSX.Element => <div className="mailpoet-gap" />,
 );
 
-export function Form({ segmentId }: Props): JSX.Element {
+export function Form({ isNewSegment }: Props): JSX.Element {
   const segment: Segment = useSelect(
     (select) => select(storeName).getSegment(),
     [],
@@ -194,7 +194,7 @@ export function Form({ segmentId }: Props): JSX.Element {
             type="submit"
             onClick={(e): void => {
               e.preventDefault();
-              void handleSave(segmentId);
+              void handleSave(isNewSegment);
             }}
             isDisabled={
               !isFormValid(segment.filters) ||
