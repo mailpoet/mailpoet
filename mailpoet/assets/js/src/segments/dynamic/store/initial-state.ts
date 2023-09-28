@@ -9,6 +9,18 @@ import {
 
 declare let window: SegmentFormDataWindow;
 
+export function getSegmentInitialState() {
+  return {
+    filters_connect: SegmentConnectTypes.AND,
+    filters: [
+      {
+        segmentType: SegmentTypes.WordPressRole,
+        action: SubscriberActionTypes.WORDPRESS_ROLE,
+      },
+    ],
+  };
+}
+
 export const getInitialState = (): StateType => ({
   automations: window.mailpoet_automations,
   products: window.mailpoet_products,
@@ -27,15 +39,7 @@ export const getInitialState = (): StateType => ({
   customFieldsList: window.mailpoet_custom_fields,
   tags: window.mailpoet_tags,
   signupForms: window.mailpoet_signup_forms,
-  segment: {
-    filters_connect: SegmentConnectTypes.AND,
-    filters: [
-      {
-        segmentType: SegmentTypes.WordPressRole,
-        action: SubscriberActionTypes.WORDPRESS_ROLE,
-      },
-    ],
-  },
+  segment: getSegmentInitialState(),
   subscriberCount: {
     loading: false,
   },
