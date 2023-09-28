@@ -2,6 +2,7 @@
 
 namespace MailPoet\AdminPages\Pages;
 
+use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
@@ -40,7 +41,11 @@ class Settings {
   /** @var AuthorizedSenderDomainController */
   private $senderDomainController;
 
+  /** @var AssetsController */
+  private $assetsController;
+
   public function __construct(
+    AssetsController $assetsController,
     PageRenderer $pageRenderer,
     SettingsController $settings,
     WPFunctions $wp,
@@ -50,6 +55,7 @@ class Settings {
     Bridge $bridge,
     AuthorizedSenderDomainController $senderDomainController
   ) {
+    $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
     $this->settings = $settings;
     $this->wp = $wp;
@@ -107,6 +113,8 @@ class Settings {
       ));
       $notice->displayWPNotice();
     }
+
+    $this->assetsController->setupSettingsDependencies();
     $this->pageRenderer->displayPage('settings.html', $data);
   }
 }
