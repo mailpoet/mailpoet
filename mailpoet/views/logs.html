@@ -14,20 +14,17 @@
   </script>
 </div>
 
-<% endblock %>
+<%= localize({
+  'pageTitle': __('Logs'),
+  'tableHeaderName': __('Name'),
+  'tableHeaderMessage': __('Message'),
+  'tableHeaderCreatedOn': __('Created On'),
+  'searchLabel': __('Search'),
+  'offsetLabel': __('Offset'),
+  'limitLabel': __('Limit'),
+  'from': _x('From', 'date from'),
+  'to': _x('To', 'date to'),
+  'filter': __('Filter'),
+}) %>
 
-<% block translations %>
-  <%= localize({
-    'pageTitle': __('Logs'),
-    'tableHeaderName': __('Name'),
-    'tableHeaderMessage': __('Message'),
-    'tableHeaderCreatedOn': __('Created On'),
-    'searchLabel': __('Search'),
-    'offsetLabel': __('Offset'),
-    'limitLabel': __('Limit'),
-    'from': _x('From', 'date from'),
-    'to': _x('To', 'date to'),
-    'filter': __('Filter'),
-  }) %>
 <% endblock %>
-
