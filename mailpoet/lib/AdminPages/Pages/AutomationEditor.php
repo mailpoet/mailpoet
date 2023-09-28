@@ -2,6 +2,7 @@
 
 namespace MailPoet\AdminPages\Pages;
 
+use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Automation\Engine\Control\SubjectTransformerHandler;
 use MailPoet\Automation\Engine\Data\Automation;
@@ -10,7 +11,6 @@ use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Mappers\AutomationMapper;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
-use MailPoet\Form\AssetsController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 
