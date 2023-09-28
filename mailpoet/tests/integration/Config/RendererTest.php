@@ -9,6 +9,9 @@ use MailPoet\Config\Renderer;
 use MailPoet\Config\RendererFactory;
 use MailPoetVendor\Twig\Environment as TwigEnvironment;
 use MailPoetVendor\Twig\Loader\FilesystemLoader as TwigFileSystem;
+use MailPoetVendor\Twig\Source;
+use MailPoetVendor\Twig\Template as TwigTemplate;
+use MailPoetVendor\Twig\TemplateWrapper;
 
 class RendererTest extends \MailPoetTest {
   /** @var Renderer */
@@ -81,6 +84,31 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItDelegatesRenderingToTwig() {
+    $env = Stub::makeEmpty(TwigEnvironment::class);
+    $template = new class($env) extends TwigTemplate {
+      public function getTemplateName() {
+        return 'non-existing-template.html';
+      }
+
+      public function render(array $context) {
+        return 'test render';
+      }
+
+      public function getDebugInfo() {
+        // must be implemented (abstract in parent)
+        return [];
+      }
+
+      public function getSourceContext() {
+        // must be implemented (abstract in parent)
+        return new Source('', '');
+      }
+
+      protected function doDisplay(array $context, array $blocks = []) {
+        // must be implemented (abstract in parent)
+      }
+    };
+
     $renderer = Stub::construct(
       $this->renderer,
       [
@@ -91,16 +119,16 @@ class RendererTest extends \MailPoetTest {
       [
         'renderer' => Stub::makeEmpty(TwigEnvironment::class,
           [
-            'render' => Expected::atLeastOnce(function() {
-              return 'test render';
-            }),
+            'load' => Expected::atLeastOnce(
+              new TemplateWrapper($env, $template)
+            ),
           ],
           $this
         ),
       ]
     );
 
-    expect($renderer->render('non-existing-template.html', ['somekey' => 'someval']))->equals('test render');
+    expect($renderer->render(['somekey' => 'someval']))->equals('test render');
   }
 
   public function _after() {
