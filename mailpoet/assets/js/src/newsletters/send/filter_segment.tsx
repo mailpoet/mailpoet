@@ -1,9 +1,10 @@
 import { NewsLetter } from 'common/newsletter';
 import { Field } from 'form/types';
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Selection } from 'form/fields/selection';
 import { Toggle } from 'common';
+import { premiumValidAndActive } from 'common/premium_modal';
 import { Tooltip } from 'common/tooltip/tooltip';
 import { Icon, help } from '@wordpress/icons';
 
@@ -24,14 +25,9 @@ export function FilterSegment({
   field,
 }: FilterSegmentProps) {
   const currentFilterSegmentId = item?.options.filterSegmentId;
-  const premiumFeaturesAvailable: boolean = useMemo(
-    () =>
-      window.mailpoet_premium_active && window.mailpoet_has_valid_premium_key,
-    [],
-  );
 
   const [isFilterSegmentEnabled, setIsFilterSegmentEnabled] = useState<boolean>(
-    premiumFeaturesAvailable && !!currentFilterSegmentId,
+    premiumValidAndActive && !!currentFilterSegmentId,
   );
 
   const updateFilterSegmentId = useCallback(
@@ -49,10 +45,10 @@ export function FilterSegment({
   );
 
   useEffect(() => {
-    if (!premiumFeaturesAvailable && currentFilterSegmentId !== '') {
+    if (!premiumValidAndActive && currentFilterSegmentId !== '') {
       updateFilterSegmentId('');
     }
-  }, [premiumFeaturesAvailable, updateFilterSegmentId, currentFilterSegmentId]);
+  }, [updateFilterSegmentId, currentFilterSegmentId]);
 
   const handleToggle = useCallback(
     (checked: boolean) => {

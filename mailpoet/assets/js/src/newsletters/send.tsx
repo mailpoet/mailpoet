@@ -25,7 +25,7 @@ import { GlobalContext } from 'context';
 import { extractEmailDomain } from 'common/functions';
 import { NewsLetter, NewsletterType } from 'common/newsletter';
 import { mapFilterType } from '../analytics';
-import { PremiumModal } from '../common/premium-modal';
+import { PremiumModal, premiumValidAndActive } from '../common/premium-modal';
 import { PendingNewsletterMessage } from './send/pending-newsletter-message';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
@@ -228,12 +228,6 @@ class NewsletterSendComponent extends Component<
 
   getThumbnailPromise = (url) => this.state?.thumbnailPromise ?? fromUrl(url);
 
-  get premiumFeaturesAvailable() {
-    return (
-      window.mailpoet_premium_active && window.mailpoet_has_valid_premium_key
-    );
-  }
-
   isValid = () => jQuery('#mailpoet_newsletter').parsley().isValid();
 
   isValidFromAddress = async () => {
@@ -284,7 +278,7 @@ class NewsletterSendComponent extends Component<
             },
           );
         }
-        if (!item.ga_campaign && this.premiumFeaturesAvailable) {
+        if (!item.ga_campaign && premiumValidAndActive) {
           item.ga_campaign = generateGaTrackingCampaignName(
             item.id,
             item.subject,
@@ -704,7 +698,7 @@ class NewsletterSendComponent extends Component<
   };
 
   disableGAIfPremiumInactive = () => (field) => {
-    if (this.premiumFeaturesAvailable || field.name !== 'ga_campaign') {
+    if (premiumValidAndActive || field.name !== 'ga_campaign') {
       return field;
     }
 
@@ -731,10 +725,7 @@ class NewsletterSendComponent extends Component<
     }
     const newField = { ...field };
     newField.fields = newField.fields.map((subField) => {
-      if (
-        subField.name !== 'filter-segment-toggle' ||
-        this.premiumFeaturesAvailable
-      ) {
+      if (subField.name !== 'filter-segment-toggle' || premiumValidAndActive) {
         return subField;
       }
       const onWrapperClick = (event) => {
