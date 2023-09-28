@@ -26,9 +26,9 @@ export function setSegment(segment: AnyFormItem): SetSegmentActionType {
   };
 }
 
-function unsetSegment(): ActionType {
+function resetSegmentAndErrors(): ActionType {
   return {
-    type: Actions.UNSET_SEGMENT,
+    type: Actions.RESET_SEGMENT_AND_ERRORS,
   };
 }
 
@@ -115,7 +115,7 @@ export function* pageLoaded(segmentId?: number | string): Generator<{
 }
 
 export function* pageUnloaded() {
-  yield unsetSegment();
+  yield resetSegmentAndErrors();
 }
 
 const messages = {
