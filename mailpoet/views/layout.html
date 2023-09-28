@@ -108,13 +108,6 @@
   <% endif %>
 </script>
 
-<!-- javascripts -->
-<%= javascript(
-  'runtime.js',
-  'vendor.js',
-  'mailpoet.js'
-)%>
-
 <%= localize({
   'topBarLogoTitle': __('Back to section root'),
   'topBarUpdates': __('Updates'),
@@ -187,9 +180,6 @@
 <% block translations %><% endblock %>
 
 <% block after_translations %><% endblock %>
-<%= javascript(
-  'admin_vendor.js'
-)%>
 
 <%= do_action('mailpoet_scripts_admin_before') %>
 

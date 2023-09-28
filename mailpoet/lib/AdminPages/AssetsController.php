@@ -4,6 +4,7 @@ namespace MailPoet\AdminPages;
 
 use MailPoet\Config\Env;
 use MailPoet\Config\Renderer;
+use MailPoet\InvalidStateException;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AssetsController {
@@ -22,79 +23,36 @@ class AssetsController {
   }
 
   public function setupAdminPagesDependencies(): void {
-    $this->wp->wpPrintScripts('wp-i18n');
-    $this->addAdminCommons();
-    $this->wp->wpEnqueueScript(
-      'mailpoet_admin_pages',
-      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('admin.js'),
-      [],
-      Env::$version,
-      true
-    );
-    $this->wp->wpSetScriptTranslations('mailpoet_admin_pages', 'mailpoet');
+    $this->registerAdminDeps();
+    $this->wp->wpEnqueueScript('mailpoet_admin');
   }
 
   public function setupNewsletterEditorDependencies(): void {
-    $this->wp->wpRegisterScript(
-      'newsletter_editor',
-      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('newsletter_editor.js'),
-      [],
-      Env::$version,
-      true
-    );
+    $this->enqueueJsEntrypoint('newsletter_editor');
+  }
 
-    $this->wp->wpPrintScripts('wp-i18n');
-    $this->wp->wpSetScriptTranslations('newsletter_editor', 'mailpoet');
+  public function setupFormEditorDependencies(): void {
+    $this->enqueueJsEntrypoint('form_editor');
+  }
 
-    /**
-     * The js file needs to be added immediately since the mailpoet_newsletters_editor_initialize hook is dispatched in template files
-     * Update and remove this line in MAILPOET-4930
-     */
-    \wp_scripts()->do_item('newsletter_editor');
+  public function setupSettingsDependencies(): void {
+    $this->enqueueJsEntrypoint('settings');
   }
 
   public function setupAutomationListingDependencies(): void {
-    $this->wp->wpEnqueueScript(
-      'automation',
-      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('automation.js'),
-      [],
-      Env::$version,
-      true
-    );
-    $this->wp->wpSetScriptTranslations('automation', 'mailpoet');
+    $this->enqueueJsEntrypoint('automation');
   }
 
   public function setupAutomationTemplatesDependencies(): void {
-    $this->wp->wpEnqueueScript(
-      'automation_templates',
-      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('automation_templates.js'),
-      [],
-      Env::$version,
-      true
-    );
-    $this->wp->wpSetScriptTranslations('automation_templates', 'mailpoet');
+    $this->enqueueJsEntrypoint('automation_templates');
   }
 
   public function setupAutomationEditorDependencies(): void {
-    $this->wp->wpEnqueueScript(
-      'automation_editor',
-      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('automation_editor.js'),
-      ['wp-date'],
-      Env::$version,
-      true
-    );
-    $this->wp->wpSetScriptTranslations('automation_editor', 'mailpoet');
+    $this->enqueueJsEntrypoint('automation_editor', ['wp-date']);
   }
 
   public function setupAutomationAnalyticsDependencies(): void {
-    $this->wp->wpEnqueueScript(
-      'automation_analytics',
-      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('automation_analytics.js'),
-      [],
-      Env::$version,
-      true
-    );
-    $this->wp->wpSetScriptTranslations('automation_analytics', 'mailpoet');
+    $this->enqueueJsEntrypoint('automation_analytics');
 
     $this->wp->wpEnqueueStyle(
       'automation_analytics',
@@ -102,21 +60,62 @@ class AssetsController {
     );
   }
 
-  private function addAdminCommons(): void {
-    $this->wp->wpRegisterScript(
-      'mailpoet_admin_commons',
-      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('commons.js'),
-      [],
+  private function enqueueJsEntrypoint(string $asset, array $dependencies = []): void {
+    $name = 'mailpoet_entrypoint';
+    if (isset(\wp_scripts()->registered[$name])) {
+      throw new InvalidStateException('JS entrypoint can be enqueued only once');
+    }
+
+    $this->registerAdminDeps();
+    $this->wp->wpEnqueueScript(
+      $name,
+      Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset("$asset.js"),
+      array_merge($dependencies, ['mailpoet_admin']),
       Env::$version,
       true
     );
+    $this->wp->wpSetScriptTranslations($name, 'mailpoet');
+  }
+
+  private function registerAdminDeps(): void {
+    // runtime
+    $this->registerFooterScript('mailpoet_runtime', $this->getScriptUrl('runtime.js'));
+
+    // vendor
+    $this->registerFooterScript('mailpoet_vendor', $this->getScriptUrl('vendor.js'));
+
+    // commons
+    $this->registerFooterScript('mailpoet_admin_commons', $this->getScriptUrl('commons.js'));
     $this->wp->wpSetScriptTranslations('mailpoet_admin_commons', 'mailpoet');
 
+    // mailpoet
+    $this->registerFooterScript('mailpoet_mailpoet', $this->getScriptUrl('mailpoet.js'));
+    $this->wp->wpSetScriptTranslations('mailpoet_mailpoet', 'mailpoet');
 
-    /**
-     * The js file needs to be added immediately since the mailpoet_newsletters_editor_initialize hook is dispatched in template files
-     * Update and remove this line in MAILPOET-4930
-     */
-    \wp_scripts()->do_item('mailpoet_admin_commons');
+    // admin_vendor
+    $this->registerFooterScript('mailpoet_admin_vendor', $this->getScriptUrl('admin_vendor.js'));
+
+    // admin
+    $this->registerFooterScript(
+      'mailpoet_admin',
+      $this->getScriptUrl('admin.js'),
+      [
+        'wp-i18n',
+        'mailpoet_runtime',
+        'mailpoet_vendor',
+        'mailpoet_admin_commons',
+        'mailpoet_mailpoet',
+        'mailpoet_admin_vendor',
+      ]
+    );
+    $this->wp->wpSetScriptTranslations('mailpoet_admin', 'mailpoet');
+  }
+
+  private function getScriptUrl(string $name): string {
+    return Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset($name);
+  }
+
+  private function registerFooterScript(string $handle, string $src, array $deps = []): void {
+    $this->wp->wpRegisterScript($handle, $src, $deps, Env::$version, true);
   }
 }
