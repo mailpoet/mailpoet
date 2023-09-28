@@ -18,7 +18,7 @@ class Helper {
   }
 
   public function isWooCommerceActive() {
-    return class_exists('WooCommerce');
+    return class_exists('WooCommerce') && $this->wp->isPluginActive('woocommerce/woocommerce.php');
   }
 
   public function getWooCommerceVersion() {
@@ -148,7 +148,7 @@ class Helper {
   }
 
   public function getCustomersCount(): int {
-    if (!class_exists(Query::class)) {
+    if (!$this->isWooCommerceActive() || !class_exists(Query::class)) {
       return 0;
     }
     $query = new Query([
