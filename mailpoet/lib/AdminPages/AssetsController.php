@@ -75,6 +75,9 @@ class AssetsController {
       true
     );
     $this->wp->wpSetScriptTranslations($name, 'mailpoet');
+
+    // append Parsley validation string translations
+    $this->wp->wpAddInlineScript($name, $this->renderer->render('parsley-translations.html'));
   }
 
   private function registerAdminDeps(): void {
