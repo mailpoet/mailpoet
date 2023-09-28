@@ -50,14 +50,11 @@ class I18n extends AbstractExtension {
     $args = func_get_args();
     $translations = array_shift($args);
     $output = [];
-
-    $output[] = '<script type="text/javascript">';
     foreach ($translations as $key => $translation) {
       $output[] =
         'MailPoet.I18n.add("' . $key . '", "' . str_replace(['"', "\n", "\r"], ['\"', " ", ""], $translation ?? '') . '");';
     }
-    $output[] = '</script>';
-    return join("\n", $output);
+    WPFunctions::get()->wpAddInlineScript('mailpoet_mailpoet', join("\n", $output));
   }
 
   public function translate() {
