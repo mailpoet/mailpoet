@@ -131,7 +131,7 @@ const messages = {
   },
 };
 
-export function* handleSave(segmentId?: number): Generator<{
+export function* handleSave(isNewSegment: boolean): Generator<{
   type: string;
   segment?: AnyFormItem;
 }> {
@@ -147,10 +147,10 @@ export function* handleSave(segmentId?: number): Generator<{
   if (success) {
     window.location.href = 'admin.php?page=mailpoet-segments#/segments';
 
-    if (segmentId !== undefined) {
-      messages.onUpdate();
-    } else {
+    if (isNewSegment) {
       messages.onCreate(segment);
+    } else {
+      messages.onUpdate();
     }
   } else {
     yield setErrors(error as string[]);

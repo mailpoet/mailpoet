@@ -27,6 +27,9 @@ export function Editor(): JSX.Element {
     };
   }, [match.params.id, pageLoaded, pageUnloaded]);
 
+  const isNewSegment =
+    match.params.id === undefined || Number.isNaN(Number(match.params.id));
+
   return (
     <>
       <Background color="#fff" />
@@ -42,7 +45,7 @@ export function Editor(): JSX.Element {
         </Link>
       </Heading>
 
-      <Form segmentId={Number(match.params.id)} />
+      <Form isNewSegment={isNewSegment} />
     </>
   );
 }
