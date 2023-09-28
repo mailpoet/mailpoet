@@ -138,7 +138,7 @@ export function Form({ isNewSegment }: Props): JSX.Element {
           title={__('Conditions', 'mailpoet')}
           description={__('Set your segment constraints', 'mailpoet')}
         >
-          <FieldWrapper slug="conditions">
+          <FieldWrapper>
             <div className="mailpoet-segments-segments-section">
               <FiltersBefore />
               {Array.isArray(filterRows) &&

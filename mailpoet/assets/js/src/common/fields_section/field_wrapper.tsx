@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 
 type Props = {
   children: ReactNode;
-  slug: string;
+  slug?: string;
   title?: string;
   description?: string;
 };
