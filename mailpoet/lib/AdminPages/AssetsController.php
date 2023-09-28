@@ -109,6 +109,10 @@ class AssetsController {
       ]
     );
     $this->wp->wpSetScriptTranslations('mailpoet_admin', 'mailpoet');
+
+    if ($this->wp->didAction('mailpoet_scripts_admin_before') === 0) {
+      $this->wp->doAction('mailpoet_scripts_admin_before');
+    }
   }
 
   private function getScriptUrl(string $name): string {
