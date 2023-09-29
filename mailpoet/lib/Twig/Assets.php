@@ -36,11 +36,6 @@ class Assets extends AbstractExtension {
         ['is_safe' => ['all']]
       ),
       new TwigFunction(
-        'javascript',
-        [$this, 'generateJavascript'],
-        ['is_safe' => ['all']]
-      ),
-      new TwigFunction(
         'getJavascriptScriptUrl',
         [$this, 'getJavascriptScriptUrl'],
         ['is_safe' => ['all']]
@@ -89,20 +84,6 @@ class Assets extends AbstractExtension {
       return 'en';
     }
     return (string)$this->wp->getBlogInfo('language');
-  }
-
-  public function generateJavascript() {
-    $scripts = func_get_args();
-    $output = [];
-
-    foreach ($scripts as $script) {
-      $output[] = sprintf(
-        '<script type="text/javascript" src="%s"></script>',
-        $this->getJavascriptScriptUrl($script)
-      );
-    }
-
-    return join("\n", $output);
   }
 
   public function getJavascriptScriptUrl($script) {
