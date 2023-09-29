@@ -31,11 +31,6 @@ class Assets extends AbstractExtension {
   public function getFunctions() {
     return [
       new TwigFunction(
-        'stylesheet',
-        [$this, 'generateStylesheet'],
-        ['is_safe' => ['all']]
-      ),
-      new TwigFunction(
         'getJavascriptScriptUrl',
         [$this, 'getJavascriptScriptUrl'],
         ['is_safe' => ['all']]
@@ -56,21 +51,6 @@ class Assets extends AbstractExtension {
         ['is_safe' => ['all']]
       ),
     ];
-  }
-
-  public function generateStylesheet() {
-    $stylesheets = func_get_args();
-    $output = [];
-
-    foreach ($stylesheets as $stylesheet) {
-      $output[] = sprintf(
-        '<link rel="stylesheet" type="text/css" href="%s/dist/css/%s" />',
-        $this->globals['assets_url'],
-        $this->getAssetFilename($this->globals['assets_manifest_css'], $stylesheet)
-      );
-    }
-
-    return join("\n", $output);
   }
 
   /**

@@ -18,42 +18,10 @@ class AssetsTest extends \MailPoetTest {
     $this->assetsExtension = new Assets(
       [
         'assets_url' => $this->assetsUrl,
-        'assets_manifest_css' => false,
         'version' => $this->version,
       ],
       WPFunctions::get(),
       new CdnAssetUrl('')
-    );
-  }
-
-  public function testItGeneratesStylesheetTagsForAssetsUsingManifestFile() {
-    $manifest = [
-      'style1.css' => 'style1.hash.css',
-      'style2.css' => 'style2.hash.css',
-    ];
-
-    $assetsExtension = new Assets(
-      [
-        'assets_url' => $this->assetsUrl,
-        'assets_manifest_css' => $manifest,
-        'version' => $this->version,
-      ],
-      WPFunctions::get(),
-      new CdnAssetUrl('')
-    );
-
-    expect($assetsExtension->generateStylesheet('style1.css', 'style2.css'))->equals(
-      '<link rel="stylesheet" type="text/css" href="' . $this->assetsUrl . '/dist/css/style1.hash.css" />'
-      . "\n"
-      . '<link rel="stylesheet" type="text/css" href="' . $this->assetsUrl . '/dist/css/style2.hash.css" />'
-    );
-  }
-
-  public function testItGeneratesStylesheetTagsWhenManifestFileDoesNotExist() {
-    expect($this->assetsExtension->generateStylesheet('style1.css', 'style2.css'))->equals(
-      '<link rel="stylesheet" type="text/css" href="' . $this->assetsUrl . '/dist/css/style1.css" />'
-      . "\n"
-      . '<link rel="stylesheet" type="text/css" href="' . $this->assetsUrl . '/dist/css/style2.css" />'
     );
   }
 

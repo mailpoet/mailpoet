@@ -63,7 +63,7 @@
     </style>
     <% set allowedHtml = {'link': {'href': [], 'rel': []}} %>
     <%= fonts_link | wpKses(allowedHtml) %>
-    <%= stylesheet('mailpoet-public.css') %>
+    <link rel="stylesheet" type="text/css" href="<%= mailpoet_public_css_url %>" />
     <%= scripts | raw %>
   </head>
   <body>
