@@ -3,7 +3,6 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
-import { Grid } from 'common/grid';
 import { ReactSelect } from 'common/form/react-select/react-select';
 
 import {
@@ -53,43 +52,36 @@ export function SubscribedViaForm({ filterIndex }: FilterProps): JSX.Element {
 
   return (
     <>
-      <Grid.CenteredRow>
-        <Select
-          key="select"
-          isFullWidth
-          value={segment.operator}
-          onChange={(e) => {
-            void updateSegmentFilterFromEvent('operator', filterIndex, e);
-          }}
-        >
-          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-          <option value={AnyValueTypes.NONE}>
-            {MailPoet.I18n.t('noneOf')}
-          </option>
-        </Select>
-      </Grid.CenteredRow>
-      <Grid.CenteredRow>
-        <ReactSelect
-          dimension="small"
-          isFullWidth
-          isMulti
-          placeholder={MailPoet.I18n.t('searchForms')}
-          options={options}
-          value={options.filter((option) => {
-            if (!segment.form_ids) {
-              return undefined;
-            }
-            const formId = option.value;
-            return segment.form_ids.indexOf(formId) !== -1;
-          })}
-          onChange={(selectOptions: SelectOption[]): void => {
-            void updateSegmentFilter(
-              { form_ids: selectOptions.map((option) => option.value) },
-              filterIndex,
-            );
-          }}
-        />
-      </Grid.CenteredRow>
+      <Select
+        key="select"
+        isMinWidth
+        value={segment.operator}
+        onChange={(e) => {
+          void updateSegmentFilterFromEvent('operator', filterIndex, e);
+        }}
+      >
+        <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+        <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+      </Select>
+      <ReactSelect
+        dimension="small"
+        isMulti
+        placeholder={MailPoet.I18n.t('searchForms')}
+        options={options}
+        value={options.filter((option) => {
+          if (!segment.form_ids) {
+            return undefined;
+          }
+          const formId = option.value;
+          return segment.form_ids.indexOf(formId) !== -1;
+        })}
+        onChange={(selectOptions: SelectOption[]): void => {
+          void updateSegmentFilter(
+            { form_ids: selectOptions.map((option) => option.value) },
+            filterIndex,
+          );
+        }}
+      />
     </>
   );
 }
