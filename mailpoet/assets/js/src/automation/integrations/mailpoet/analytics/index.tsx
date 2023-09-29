@@ -1,19 +1,26 @@
+import classNames from 'classnames';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { dispatch, select, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { TopBarWithBeamer } from '../../../../common/top-bar/top-bar';
 import { Notices } from '../../../listing/components/notices';
 import { Header } from './components/header';
 import { Overview } from './components/overview';
 import { Tabs } from './components/tabs';
 import { createStore, Section, storeName } from './store';
-import { createStore as editorStoreCreate } from '../../../editor/store';
+import {
+  createStore as editorStoreCreate,
+  storeName as editorStoreName,
+} from '../../../editor/store';
 import { registerApiErrorHandler } from '../../../listing/api-error-handler';
 import { initializeApi } from './api';
 import { initialize as initializeCoreIntegration } from '../../core';
 import { initialize as initializeMailPoetIntegration } from '../index';
 import { initialize as initializeWooCommerceIntegration } from '../../woocommerce';
 import { PremiumModal } from '../../../../common/premium-modal';
+import { AutomationStatus } from '../../../listing/automation';
+import { MailPoet } from '../../../../mailpoet';
 
 function Analytics(): JSX.Element {
   const premiumModal = useSelect((s) => s(storeName).getPremiumModal());
@@ -38,10 +45,41 @@ function Analytics(): JSX.Element {
   );
 }
 
+function TopBarWithBreadcrumb(): JSX.Element {
+  const { automation } = useSelect((s) => ({
+    automation: s(editorStoreName).getAutomationData(),
+  }));
+
+  let status = __('Draft', 'mailpoet');
+  let statusClass = '';
+  if (automation.status === AutomationStatus.ACTIVE) {
+    status = __('Active', 'mailpoet');
+    statusClass = 'mailpoet-analytics-badge-success';
+  }
+  if (automation.status === AutomationStatus.DEACTIVATING) {
+    status = __('Deactivating', 'mailpoet');
+    statusClass = 'mailpoet-analytics-badge-warning';
+  }
+
+  return (
+    <TopBarWithBeamer>
+      <p className="mailpoet-automation-analytics-title">
+        <a href={MailPoet.urls.automationListing}>
+          {__('Automations', 'mailpoet')}
+        </a>{' '}
+        › <strong>{automation.name}</strong>
+        <div className={classNames('mailpoet-analytics-badge', statusClass)}>
+          <span className="mailpoet-analytics-badge-text">{status}</span>
+        </div>
+      </p>
+    </TopBarWithBeamer>
+  );
+}
+
 function App(): JSX.Element {
   return (
     <BrowserRouter>
-      <TopBarWithBeamer />
+      <TopBarWithBreadcrumb />
       <Notices />
       <Analytics />
     </BrowserRouter>
