@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Twig;
 
-use MailPoet\Config\Env;
 use MailPoet\Twig\Assets;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
@@ -19,51 +18,11 @@ class AssetsTest extends \MailPoetTest {
     $this->assetsExtension = new Assets(
       [
         'assets_url' => $this->assetsUrl,
-        'assets_manifest_js' => false,
         'assets_manifest_css' => false,
         'version' => $this->version,
       ],
       WPFunctions::get(),
       new CdnAssetUrl('')
-    );
-  }
-
-  public function testItGeneratesJavascriptTagsForAssetsUsinManifestFile() {
-    $manifest = [
-      'script1.js' => 'script1.hash.js',
-      'script2.js' => 'script2.hash.js',
-    ];
-
-    $assetsExtension = new Assets(
-      [
-        'assets_url' => $this->assetsUrl,
-        'assets_manifest_js' => $manifest,
-        'version' => $this->version,
-      ],
-      WPFunctions::get(),
-      new CdnAssetUrl('')
-    );
-
-    expect($assetsExtension->generateJavascript('script1.js', 'script2.js'))->equals(
-      sprintf(
-        '<script type="text/javascript" src="' . $this->assetsUrl . '/dist/js/script1.hash.js?ver=%s"></script>'
-        . "\n"
-        . '<script type="text/javascript" src="' . $this->assetsUrl . '/dist/js/script2.hash.js?ver=%s"></script>',
-        Env::$version,
-        Env::$version
-      )
-    );
-  }
-
-  public function testItGeneratesJavascriptTagsForAssetsWhenManifestFileDoesNotExist() {
-    expect($this->assetsExtension->generateJavascript('lib/script1.js', 'script2.js'))->equals(
-      sprintf(
-        '<script type="text/javascript" src="' . $this->assetsUrl . '/js/lib/script1.js?ver=%s"></script>'
-        . "\n"
-        . '<script type="text/javascript" src="' . $this->assetsUrl . '/dist/js/script2.js?ver=%s"></script>',
-        Env::$version,
-        Env::$version
-      )
     );
   }
 
