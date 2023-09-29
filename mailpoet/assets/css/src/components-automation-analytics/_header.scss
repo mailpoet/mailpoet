@@ -1,3 +1,23 @@
+@import 'colors';
+
+.mailpoet-automation-analytics-title {
+  color: $color-gutenberg-grey-700;
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  font-size: 16px;
+
+  strong {
+    color: $color-gutenberg-grey-900;
+  }
+
+  .mailpoet-analytics-badge {
+    display: inline-block;
+    margin-left: 8px;
+  }
+}
+
 .mailpoet-analytics-header {
   align-items: end;
   display: flex;
