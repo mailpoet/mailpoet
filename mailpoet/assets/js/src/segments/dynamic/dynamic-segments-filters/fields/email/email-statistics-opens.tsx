@@ -5,7 +5,6 @@ import { useSelect, useDispatch } from '@wordpress/data';
 
 import { ReactSelect } from 'common/form/react-select/react-select';
 import { Select } from 'common/form/select/select';
-import { Grid } from 'common/grid';
 import {
   AnyValueTypes,
   EmailActionTypes,
@@ -62,46 +61,41 @@ export function EmailOpenStatisticsFields({
 
   return (
     <>
-      <Grid.CenteredRow>
-        <Select
-          key="select"
-          isFullWidth
-          automationId="segment-email-opens-condition"
-          value={segment.operator}
-          onChange={(e) => {
-            void updateSegmentFilterFromEvent('operator', filterIndex, e);
-          }}
-        >
-          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-          {segment.action !== EmailActionTypes.MACHINE_OPENED ? (
-            <option value={AnyValueTypes.NONE}>
-              {MailPoet.I18n.t('noneOf')}
-            </option>
-          ) : null}
-        </Select>
-      </Grid.CenteredRow>
-      <Grid.CenteredRow>
-        <ReactSelect
-          dimension="small"
-          isFullWidth
-          isMulti
-          placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
-          options={newsletterOptions}
-          automationId="segment-email"
-          value={filter((option) => {
-            if (!segment.newsletters) return undefined;
-            const newsletterId = option.value;
-            return segment.newsletters.indexOf(newsletterId) !== -1;
-          }, newsletterOptions)}
-          onChange={(options: SelectOption[]): void => {
-            void updateSegmentFilter(
-              { newsletters: map(parseInt(10), map('value', options)) },
-              filterIndex,
-            );
-          }}
-        />
-      </Grid.CenteredRow>
+      <Select
+        key="select"
+        isMinWidth
+        automationId="segment-email-opens-condition"
+        value={segment.operator}
+        onChange={(e) => {
+          void updateSegmentFilterFromEvent('operator', filterIndex, e);
+        }}
+      >
+        <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+        <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+        {segment.action !== EmailActionTypes.MACHINE_OPENED ? (
+          <option value={AnyValueTypes.NONE}>
+            {MailPoet.I18n.t('noneOf')}
+          </option>
+        ) : null}
+      </Select>
+      <ReactSelect
+        dimension="small"
+        isMulti
+        placeholder={MailPoet.I18n.t('selectNewsletterPlaceholder')}
+        options={newsletterOptions}
+        automationId="segment-email"
+        value={filter((option) => {
+          if (!segment.newsletters) return undefined;
+          const newsletterId = option.value;
+          return segment.newsletters.indexOf(newsletterId) !== -1;
+        }, newsletterOptions)}
+        onChange={(options: SelectOption[]): void => {
+          void updateSegmentFilter(
+            { newsletters: map(parseInt(10), map('value', options)) },
+            filterIndex,
+          );
+        }}
+      />
     </>
   );
 }

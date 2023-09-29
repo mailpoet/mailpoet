@@ -3,7 +3,6 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
-import { Grid } from 'common/grid';
 import { ReactSelect } from 'common/form/react-select/react-select';
 
 import {
@@ -57,44 +56,37 @@ export function GeneralAutomationsFields({
 
   return (
     <>
-      <Grid.CenteredRow>
-        <Select
-          key="select"
-          isFullWidth
-          value={segment.operator}
-          onChange={(e) => {
-            void updateSegmentFilterFromEvent('operator', filterIndex, e);
-          }}
-        >
-          <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
-          <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
-          <option value={AnyValueTypes.NONE}>
-            {MailPoet.I18n.t('noneOf')}
-          </option>
-        </Select>
-      </Grid.CenteredRow>
-      <Grid.CenteredRow>
-        <ReactSelect
-          dimension="small"
-          isFullWidth
-          isMulti
-          placeholder={MailPoet.I18n.t('searchAutomations')}
-          options={options}
-          value={options.filter((option) => {
-            if (!segment.automation_ids) {
-              return undefined;
-            }
-            const automationId = option.value;
-            return segment.automation_ids.indexOf(automationId) !== -1;
-          })}
-          onChange={(selectOptions: SelectOption[]): void => {
-            void updateSegmentFilter(
-              { automation_ids: selectOptions.map((option) => option.value) },
-              filterIndex,
-            );
-          }}
-        />
-      </Grid.CenteredRow>
+      <Select
+        key="select"
+        value={segment.operator}
+        onChange={(e) => {
+          void updateSegmentFilterFromEvent('operator', filterIndex, e);
+        }}
+        isMinWidth
+      >
+        <option value={AnyValueTypes.ANY}>{MailPoet.I18n.t('anyOf')}</option>
+        <option value={AnyValueTypes.ALL}>{MailPoet.I18n.t('allOf')}</option>
+        <option value={AnyValueTypes.NONE}>{MailPoet.I18n.t('noneOf')}</option>
+      </Select>
+      <ReactSelect
+        dimension="small"
+        isMulti
+        placeholder={MailPoet.I18n.t('searchAutomations')}
+        options={options}
+        value={options.filter((option) => {
+          if (!segment.automation_ids) {
+            return undefined;
+          }
+          const automationId = option.value;
+          return segment.automation_ids.indexOf(automationId) !== -1;
+        })}
+        onChange={(selectOptions: SelectOption[]): void => {
+          void updateSegmentFilter(
+            { automation_ids: selectOptions.map((option) => option.value) },
+            filterIndex,
+          );
+        }}
+      />
     </>
   );
 }
