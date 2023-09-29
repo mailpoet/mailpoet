@@ -105,26 +105,31 @@ class AssetsController {
     $this->wp->wpSetScriptTranslations('mailpoet_mailpoet', 'mailpoet');
 
     // admin_vendor
-    $this->registerFooterScript('mailpoet_admin_vendor', $this->getScriptUrl('admin_vendor.js'));
-
-    // admin
     $this->registerFooterScript(
-      'mailpoet_admin',
-      $this->getScriptUrl('admin.js'),
+      'mailpoet_admin_vendor',
+      $this->getScriptUrl('admin_vendor.js'),
       [
         'wp-i18n',
         'mailpoet_runtime',
         'mailpoet_vendor',
         'mailpoet_admin_commons',
         'mailpoet_mailpoet',
-        'mailpoet_admin_vendor',
       ]
     );
-    $this->wp->wpSetScriptTranslations('mailpoet_admin', 'mailpoet');
 
+    // enqueue "mailpoet_admin_vendor" so the hook fires after it, but before "mailpoet_admin"
+    $this->wp->wpEnqueueScript('mailpoet_admin_vendor');
     if ($this->wp->didAction('mailpoet_scripts_admin_before') === 0) {
       $this->wp->doAction('mailpoet_scripts_admin_before');
     }
+
+    // admin
+    $this->registerFooterScript(
+      'mailpoet_admin',
+      $this->getScriptUrl('admin.js'),
+      ['mailpoet_admin_vendor']
+    );
+    $this->wp->wpSetScriptTranslations('mailpoet_admin', 'mailpoet');
   }
 
   private function getScriptUrl(string $name): string {
