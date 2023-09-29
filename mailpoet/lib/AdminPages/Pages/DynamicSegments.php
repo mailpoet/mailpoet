@@ -2,6 +2,7 @@
 
 namespace MailPoet\AdminPages\Pages;
 
+use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\ResponseBuilders\CustomFieldsResponseBuilder;
 use MailPoet\Automation\Engine\Data\Automation;
@@ -21,6 +22,9 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 
 class DynamicSegments {
+  /** @var AssetsController */
+  private $assetsController;
+
   /** @var PageRenderer */
   private $pageRenderer;
 
@@ -58,6 +62,7 @@ class DynamicSegments {
   private $automationStorage;
 
   public function __construct(
+    AssetsController $assetsController,
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
     WPFunctions $wp,
@@ -71,6 +76,7 @@ class DynamicSegments {
     FormsRepository $formsRepository,
     AutomationStorage $automationStorage
   ) {
+    $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
     $this->wp = $wp;
@@ -170,6 +176,7 @@ class DynamicSegments {
       ];
     }, $this->automationStorage->getAutomations());
 
+    $this->assetsController->setupDynamicSegmentsDependencies();
     $this->pageRenderer->displayPage('segments/dynamic.html', $data);
   }
 

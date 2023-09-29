@@ -27,37 +27,46 @@ class AssetsController {
     $this->wp->wpEnqueueScript('mailpoet_admin');
   }
 
+  public function setupHomepageDependencies(): void {
+    $this->wp->wpEnqueueStyle('mailpoet_homepage', $this->getCssUrl('mailpoet-homepage.css'));
+  }
+
   public function setupNewsletterEditorDependencies(): void {
     $this->enqueueJsEntrypoint('newsletter_editor');
+    $this->wp->wpEnqueueStyle('mailpoet_newsletter_editor', $this->getCssUrl('mailpoet-editor.css'));
   }
 
   public function setupFormEditorDependencies(): void {
     $this->enqueueJsEntrypoint('form_editor');
+    $this->wp->wpEnqueueStyle('mailpoet_form_editor', $this->getCssUrl('mailpoet-form-editor.css'));
   }
 
   public function setupSettingsDependencies(): void {
     $this->enqueueJsEntrypoint('settings');
   }
 
+  public function setupDynamicSegmentsDependencies(): void {
+    $this->wp->wpEnqueueStyle('mailpoet_templates', $this->getCssUrl('mailpoet-templates.css'));
+  }
+
   public function setupAutomationListingDependencies(): void {
     $this->enqueueJsEntrypoint('automation');
+    $this->wp->wpEnqueueStyle('mailpoet_automation', $this->getCssUrl('mailpoet-automation.css'));
   }
 
   public function setupAutomationTemplatesDependencies(): void {
     $this->enqueueJsEntrypoint('automation_templates');
+    $this->wp->wpEnqueueStyle('mailpoet_automation_templates', $this->getCssUrl('mailpoet-automation-templates.css'));
   }
 
   public function setupAutomationEditorDependencies(): void {
     $this->enqueueJsEntrypoint('automation_editor', ['wp-date']);
+    $this->wp->wpEnqueueStyle('mailpoet_automation_editor', $this->getCssUrl('mailpoet-automation-editor.css'));
   }
 
   public function setupAutomationAnalyticsDependencies(): void {
     $this->enqueueJsEntrypoint('automation_analytics');
-
-    $this->wp->wpEnqueueStyle(
-      'automation_analytics',
-      Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-automation-analytics.css')
-    );
+    $this->wp->wpEnqueueStyle('mailpoet_automation_analytics', $this->getCssUrl('mailpoet-automation-analytics.css'));
   }
 
   private function enqueueJsEntrypoint(string $asset, array $dependencies = []): void {
@@ -120,6 +129,10 @@ class AssetsController {
 
   private function getScriptUrl(string $name): string {
     return Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset($name);
+  }
+
+  private function getCssUrl(string $name): string {
+    return Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset($name);
   }
 
   private function registerFooterScript(string $handle, string $src, array $deps = []): void {
