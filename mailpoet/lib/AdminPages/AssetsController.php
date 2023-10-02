@@ -84,9 +84,6 @@ class AssetsController {
       true
     );
     $this->wp->wpSetScriptTranslations($name, 'mailpoet');
-
-    // append Parsley validation string translations
-    $this->wp->wpAddInlineScript($name, $this->renderer->render('parsley-translations.html'));
   }
 
   private function registerAdminDeps(): void {
@@ -116,6 +113,9 @@ class AssetsController {
         'mailpoet_mailpoet',
       ]
     );
+
+    // append Parsley validation string translations
+    $this->wp->wpAddInlineScript('mailpoet_admin_vendor', $this->renderer->render('parsley-translations.html'));
 
     // enqueue "mailpoet_admin_vendor" so the hook fires after it, but before "mailpoet_admin"
     $this->wp->wpEnqueueScript('mailpoet_admin_vendor');
