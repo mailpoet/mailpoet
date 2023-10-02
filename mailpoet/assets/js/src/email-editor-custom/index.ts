@@ -1,4 +1,4 @@
-import { initialize } from 'email_editor_custom/engine/editor';
+import { initialize } from 'email-editor-custom/engine/editor';
 
 window.addEventListener('DOMContentLoaded', () => {
   initialize('mailpoet-email-editor');

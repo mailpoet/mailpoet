@@ -12,7 +12,7 @@ import {
   __experimentalLibrary as Library,
 } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
-import { storeName } from 'email_editor_custom/engine/store';
+import { storeName } from 'email-editor-custom/engine/store';
 import { useEntityBlockEditor } from '@wordpress/core-data';
 
 import { Sidebar } from '../sidebar/sidebar';

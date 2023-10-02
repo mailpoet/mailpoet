@@ -13,7 +13,7 @@ import {
   mainSidebarBlockKey,
 } from '../../store';
 import { Header } from './header';
-import { EmailSettings } from './email_settings';
+import { EmailSettings } from './email-settings';
 
 const { Slot: InspectorSlot, Fill: InspectorFill } = createSlotFill(
   'EmailEditorBlockInspector',
