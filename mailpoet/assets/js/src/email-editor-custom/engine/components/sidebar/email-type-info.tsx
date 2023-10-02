@@ -3,7 +3,8 @@ import { __ } from '@wordpress/i18n';
 import { Icon, megaphone } from '@wordpress/icons';
 
 export function EmailTypeInfo() {
-  return <Panel className="mailpoet-email-sidebar__email-type-info">
+  return (
+    <Panel className="mailpoet-email-sidebar__email-type-info">
       <PanelBody>
         <PanelRow>
           <span className="mailpoet-email-type-info__icon">
@@ -20,5 +21,6 @@ export function EmailTypeInfo() {
           </div>
         </PanelRow>
       </PanelBody>
-    </Panel>;
+    </Panel>
+  );
 }

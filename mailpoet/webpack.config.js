@@ -458,11 +458,11 @@ const emailEditor = Object.assign({}, wpScriptConfig, {
 const emailEditorCustom = Object.assign({}, wpScriptConfig, {
   name: 'email_editor_custom',
   entry: {
-    email_editor: 'email_editor_custom/index.ts',
+    email_editor: 'email-editor-custom/index.ts',
   },
   output: {
     filename: '[name].js',
-    path: path.join(__dirname, 'assets/dist/js/email_editor_custom'),
+    path: path.join(__dirname, 'assets/dist/js/email-editor-custom'),
   },
   resolve: {
     ...wpScriptConfig.resolve,
