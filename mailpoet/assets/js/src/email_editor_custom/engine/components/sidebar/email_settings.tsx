@@ -1,9 +1,12 @@
 import { Panel } from '@wordpress/components';
+import { DetailsPanel } from './details-panel';
+import { EmailTypeInfo } from './email-type-info';
 
 export function EmailSettings() {
   return (
     <Panel>
-      <h1>TODO Email Settings</h1>
+      <EmailTypeInfo />
+      <DetailsPanel />
     </Panel>
   );
 }
