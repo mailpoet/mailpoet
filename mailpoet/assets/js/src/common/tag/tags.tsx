@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { Tag, TagVariant } from './tag';
 import { Tooltip } from '../tooltip/tooltip';
 import { NewsLetter } from '../newsletter';
-import { NewsletterType } from '../../newsletters/campaign_stats/newsletter_type';
+import { NewsletterType } from '../../newsletters/campaign-stats/newsletter-type';
 
 type SharedTagProps = {
   children?: ReactNode;
