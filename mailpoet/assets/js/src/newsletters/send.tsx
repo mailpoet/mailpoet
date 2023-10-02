@@ -27,7 +27,7 @@ import { NewsLetter, NewsletterType } from 'common/newsletter';
 import { mapFilterType } from '../analytics';
 import { PremiumModal, premiumValidAndActive } from '../common/premium-modal';
 import { PendingNewsletterMessage } from './send/pending-newsletter-message';
-import { SendContext } from './send_context';
+import { SendContext } from './send-context';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
 

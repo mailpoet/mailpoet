@@ -14,7 +14,7 @@ import { premiumValidAndActive } from 'common/premium-modal';
 import { Tooltip } from 'common/tooltip/tooltip';
 import { Icon, help } from '@wordpress/icons';
 import ReactStringReplace from 'react-string-replace';
-import { SendContext } from '../send_context';
+import { SendContext } from '../send-context';
 
 type FilterSegmentProps = {
   item?: NewsLetter;
