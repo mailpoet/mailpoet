@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.2
 Tested up to: 6.3
-Stable tag: 4.29.0
+Stable tag: 4.30.0
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.30.0 - 2023-10-02 =
+* Updated: npm dependencies;
+* Fixed: typo in message when creating a segment;
+* Fixed: The automation filter for products works now also with variable products;
+* Fixed: in some themes, pop-up form on mobiles is larger than the screen;
+* Fixed: occasionally, when a different plugin is installed, website redirects to MailPoet landing page.
 
 = 4.29.0 - 2023-09-26 =
 * Added: a filter to remove restrictions on Woo Express;
