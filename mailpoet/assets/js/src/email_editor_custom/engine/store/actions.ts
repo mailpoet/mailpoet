@@ -34,3 +34,27 @@ export function* saveEditedEmail() {
   );
   // Todo Notice when promise is resolved
 }
+
+export function* updateEmailProperty(name: string, subject: string) {
+  const postId = select(storeName).getEmailPostId();
+  // There can be a better way how to get the edited post data
+  const editedPost = select(coreDataStore).getEditedEntityRecord(
+    'postType',
+    'mailpoet_email',
+    postId
+  );
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const mailpoetData = editedPost?.mailpoet_data || {};
+  yield dispatch(coreDataStore).editEntityRecord(
+    'postType',
+    'mailpoet_email',
+    postId,
+    {
+      mailpoet_data: {
+        ...mailpoetData,
+        [name]: subject,
+      }
+    },
+  );
+}
