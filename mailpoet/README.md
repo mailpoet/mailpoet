@@ -160,35 +160,58 @@ Dependencies handled by PHP-Scoper are configured in extra configuration files `
 
 ### i18n
 
-We use functions `__()`, `_n()` and `_x()` with domain `mailpoet` to translate strings.
+We use functions `__()`, `_n()`, `_x()`, and `_nx()` with domain `mailpoet` to translate strings.
 
 **in PHP code**
 
 ```php
 __('text to translate', 'mailpoet');
 _n('single text', 'plural text', $number, 'mailpoet');
-_x('text to translate', 'context for translators', 'mailpoet');
+_x('text to translate', 'context', 'mailpoet');
+_xn('single text', 'plural text', $number, 'context', 'mailpoet');
 ```
 
-**in Twig views**
+**in JavaScript/TypeScript code**
 
-```html
-<%= __('text to translate') %> <%= _n('single text', 'plural text', $number) %>
-<%= _x('text to translate', 'context for translators') %>
+```ts
+import { __, _n, _x, _xn } from '@wordpress/i18n';
+
+__('text to translate', 'mailpoet');
+_n('single text', 'plural text', number, 'mailpoet');
+_x('text to translate', 'context', 'mailpoet');
+_nx('single text', 'plural text', number, 'context', 'mailpoet');
 ```
 
-The domain `mailpoet` will be added automatically by the Twig functions.
+To replace placeholders in translated strings, use `sprintf`:
 
-**in Javascript code**
+```ts
+import { sprintf } from '@wordpress/i18n';
 
-First add the string to the translations block in the Twig view:
-
-```html
-<% block translations %> <%= localize({ 'key': __('string to translate'), ... })
-%> <% endblock %>
+sprintf(__('Hello %s', 'mailpoet'), 'John');
 ```
 
-Then use `MailPoet.I18n.t('key')` to get the translated string on your Javascript code.
+To replace React elements use `createInterpolateElement`:
+
+```tsx
+import { __ } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
+import { CustomComponent } from '../custom-component.js';
+
+const translatedString = createInterpolateElement(
+  __(
+    'This is a <span>string</span> with a <a>link</a> and a self-closing <custom_component/>.',
+  ),
+  {
+    span: <span class="special-text" />,
+    a: <a href="https://make.wordpress.org" />,
+    custom_component: <CustomComponent />,
+  },
+);
+```
+
+For more information, see the [@wordpress/i18n](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/)
+and the [createInterpolateElement](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-element/#createinterpolateelement)
+guides.
 
 ### Acceptance testing
 
