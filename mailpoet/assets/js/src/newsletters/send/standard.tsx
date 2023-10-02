@@ -11,7 +11,7 @@ import { Toggle } from 'common/form/toggle/toggle';
 import { withBoundary } from 'common';
 import { NewsLetter, NewsletterStatus } from 'common/newsletter';
 import { Field } from 'form/types';
-import { SendToFieldWithCount } from './send_to_field';
+import { SendToFieldWithCount } from './send-to-field';
 
 const currentTime = window.mailpoet_current_time || '00:00';
 const tomorrowDateTime = `${window.mailpoet_tomorrow_date} 08:00:00`;

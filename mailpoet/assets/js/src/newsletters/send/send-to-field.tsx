@@ -1,8 +1,8 @@
 import { Field, Segment } from 'form/types';
 import { __ } from '@wordpress/i18n';
 import { withBoundary } from '../../common';
-import { FilterSegment } from './filter_segment';
-import { RecipientCount } from './recipient_count';
+import { FilterSegment } from './filter-segment';
+import { RecipientCount } from './recipient-count';
 
 const baseFields: Field[] = [
   {

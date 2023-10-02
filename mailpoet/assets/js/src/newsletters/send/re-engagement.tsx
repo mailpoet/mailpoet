@@ -5,7 +5,7 @@ import { MailPoet } from 'mailpoet';
 import { Scheduling } from '../types/re-engagement/scheduling';
 import { GATrackingField } from './ga-tracking';
 import { SenderField } from './sender-address-field';
-import { SendToField } from './send_to_field';
+import { SendToField } from './send-to-field';
 
 interface OnValueChangeParam {
   target: {

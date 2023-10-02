@@ -4,7 +4,7 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Selection } from 'form/fields/selection';
 import { Toggle } from 'common';
-import { premiumValidAndActive } from 'common/premium_modal';
+import { premiumValidAndActive } from 'common/premium-modal';
 import { Tooltip } from 'common/tooltip/tooltip';
 import { Icon, help } from '@wordpress/icons';
 
