@@ -4,7 +4,6 @@ namespace MailPoet\AdminPages;
 
 use MailPoet\Config\Env;
 use MailPoet\Config\Renderer;
-use MailPoet\InvalidStateException;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AssetsController {
@@ -70,12 +69,9 @@ class AssetsController {
   }
 
   private function enqueueJsEntrypoint(string $asset, array $dependencies = []): void {
-    $name = 'mailpoet_entrypoint';
-    if (isset(\wp_scripts()->registered[$name])) {
-      throw new InvalidStateException('JS entrypoint can be enqueued only once');
-    }
-
     $this->registerAdminDeps();
+
+    $name = "mailpoet_$asset";
     $this->wp->wpEnqueueScript(
       $name,
       Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset("$asset.js"),
