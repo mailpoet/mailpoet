@@ -4,7 +4,7 @@ import { NotificationScheduling } from 'newsletters/types/notification/schedulin
 import { SenderField } from 'newsletters/send/sender-address-field.jsx';
 import { GATrackingField } from 'newsletters/send/ga-tracking';
 import { withBoundary } from 'common';
-import { SendToFieldWithCount } from './send_to_field';
+import { SendToFieldWithCount } from 'newsletters/send/send-to-field';
 
 let fields = [
   {
