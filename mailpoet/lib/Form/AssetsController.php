@@ -86,28 +86,12 @@ class AssetsController {
       true
     );
 
+    $ajaxFailedErrorMessage = __('An error has happened while performing a request, please try again later.', 'mailpoet');
     $this->wp->wpLocalizeScript('mailpoet_public', 'MailPoetForm', [
       'ajax_url' => $this->wp->adminUrl('admin-ajax.php'),
       'is_rtl' => (function_exists('is_rtl') ? (bool)is_rtl() : false),
+      'ajax_common_error_message' => esc_js($ajaxFailedErrorMessage),
     ]);
-
-    $ajaxFailedErrorMessage = __('An error has happened while performing a request, please try again later.', 'mailpoet');
-
-    $inlineScript = <<<EOL
-function initMailpoetTranslation() {
-  if (typeof MailPoet !== 'undefined') {
-    MailPoet.I18n.add('ajaxFailedErrorMessage', '%s')
-  } else {
-    setTimeout(initMailpoetTranslation, 250);
-  }
-}
-setTimeout(initMailpoetTranslation, 250);
-EOL;
-    $this->wp->wpAddInlineScript(
-      'mailpoet_public',
-      sprintf($inlineScript, esc_js($ajaxFailedErrorMessage)),
-      'after'
-    );
   }
 
   public function setupAdminWidgetPageDependencies() {
