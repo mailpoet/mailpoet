@@ -10,6 +10,9 @@ import {
   WritingFlow,
   __experimentalListView as ListView,
   __experimentalLibrary as Library,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore No types for this exist yet.
+  __experimentalUseResizeCanvas as useResizeCanvas,
 } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import { storeName } from 'email-editor-custom/engine/store';
@@ -21,10 +24,11 @@ import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 
 export function BlockEditor() {
-  const { postId, initialSettings } = useSelect(
+  const { postId, initialSettings, previewDeviceType } = useSelect(
     (select) => ({
       postId: select(storeName).getEmailPostId(),
       initialSettings: select(storeName).getInitialEditorSettings(),
+      previewDeviceType: select(storeName).getPreviewDeviceType(),
     }),
     [],
   );
@@ -34,20 +38,23 @@ export function BlockEditor() {
     { id: postId.toString() },
   );
 
-  // We can alter these to emulate different preview modes.
-  const previewStyles = {
-    height: '100%',
-    width: '660px',
-    margin: '0 auto',
-    display: 'flex',
-    flexFlow: 'column',
-    background: 'white',
-  };
+  let inlineStyles = useResizeCanvas(previewDeviceType);
+  // UseResizeCanvas returns null if the previewDeviceType is not Desktop.
+  if (!inlineStyles) {
+    inlineStyles = {
+      height: '100%',
+      width: '660px',
+      margin: '0 auto',
+      display: 'flex',
+      flexFlow: 'column',
+      background: 'white',
+    };
+  }
 
   return (
     <div className="edit-post-visual-editor">
       <div className="edit-post-visual-editor__content-area">
-        <div style={previewStyles}>
+        <div style={inlineStyles}>
           <BlockEditorProvider
             value={blocks}
             onInput={onInput}

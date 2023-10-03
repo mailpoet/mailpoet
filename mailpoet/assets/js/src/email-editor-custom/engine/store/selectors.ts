@@ -43,3 +43,7 @@ export function getInitialEditorSettings(
 ): State['editorSettings'] {
   return state.editorSettings;
 }
+
+export function getPreviewDeviceType(state: State): string {
+  return state.previewDeviceType;
+}

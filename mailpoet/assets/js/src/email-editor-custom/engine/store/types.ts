@@ -9,10 +9,12 @@ export type State = {
   editorSettings: {
     allowedBlockTypes: string[];
   };
+  previewDeviceType: string;
 };
 
 export type MailPoetEmailData = {
   id: number;
   subject: string;
   preheader: string;
+  preview_url: string;
 };

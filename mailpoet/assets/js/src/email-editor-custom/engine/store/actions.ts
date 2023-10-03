@@ -15,6 +15,13 @@ export function toggleListviewSidebar() {
   } as const;
 }
 
+export function changePreviewDeviceType(previewDeviceType: string) {
+  return {
+    type: 'CHANGE_PREVIEW_DEVICE_TYPE',
+    previewDeviceType,
+  } as const;
+}
+
 export function* openSidebar(key = mainSidebarEmailKey) {
   yield dispatch(interfaceStore).enableComplementaryArea(storeName, key);
 }
