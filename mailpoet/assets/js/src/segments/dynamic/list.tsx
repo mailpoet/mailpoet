@@ -9,6 +9,7 @@ import * as ROUTES from 'segments/routes';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { ListingHeader } from 'segments/dynamic/list/listing-header';
+import { ListingTable } from './list/listing-table';
 
 type ColumnType = {
   name: string;
@@ -258,6 +259,7 @@ function DynamicSegmentListComponent(
     <>
       <TopBarWithBeamer hideScreenOptions />
       <ListingHeader />
+      <ListingTable />
       <Listing
         limit={window.mailpoet_listing_per_page}
         location={props.location}
