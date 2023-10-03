@@ -7,6 +7,7 @@ import { useEntityProp, store as coreDataStore } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
 import { plus, listView, undo, redo } from '@wordpress/icons';
 import { MailPoetEmailData, storeName } from '../../store';
+import { MoreMenu } from './more-menu';
 
 export function Header() {
   const inserterButton = useRef();
@@ -125,6 +126,7 @@ export function Header() {
           {__('Send', 'mailpoet')}
         </Button>
         <PinnedItems.Slot scope={storeName} />
+        <MoreMenu />
       </div>
     </div>
   );

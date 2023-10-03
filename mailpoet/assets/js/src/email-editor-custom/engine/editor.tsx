@@ -1,6 +1,10 @@
 import classnames from 'classnames';
 import { useSelect } from '@wordpress/data';
-import { InterfaceSkeleton, ComplementaryArea } from '@wordpress/interface';
+import {
+  InterfaceSkeleton,
+  ComplementaryArea,
+  FullscreenMode,
+} from '@wordpress/interface';
 import { StrictMode, createRoot } from '@wordpress/element';
 import { registerCoreBlocks } from '@wordpress/block-library';
 import { Popover, SlotFillProvider } from '@wordpress/components';
@@ -15,12 +19,14 @@ import { createStore, storeName } from './store';
 
 function Editor() {
   const {
+    isFullscreenActive,
     isSidebarOpened,
     isInserterSidebarOpened,
     isListviewSidebarOpened,
     postId,
   } = useSelect(
     (select) => ({
+      isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
       isSidebarOpened: select(storeName).isSidebarOpened(),
       isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
       isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
@@ -38,6 +44,7 @@ function Editor() {
       <ShortcutProvider>
         <SlotFillProvider>
           <EntityProvider kind="postType" type="mailpoet_email" id={postId}>
+            <FullscreenMode isActive={isFullscreenActive} />
             <Sidebar />
             <InterfaceSkeleton
               className={className}

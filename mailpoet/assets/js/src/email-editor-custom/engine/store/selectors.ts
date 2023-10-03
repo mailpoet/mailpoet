@@ -1,8 +1,16 @@
 import { createRegistrySelector } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { store as interfaceStore } from '@wordpress/interface';
+import { store as preferencesStore } from '@wordpress/preferences';
+import { Feature } from '../../../automation/editor/store';
 import { storeName } from './constants';
 import { State } from './types';
+
+export const isFeatureActive = createRegistrySelector(
+  (select) =>
+    (_, feature: Feature): boolean =>
+      !!select(preferencesStore).get(storeName, feature),
+);
 
 export const isSidebarOpened = createRegistrySelector(
   (select) => (): boolean =>
