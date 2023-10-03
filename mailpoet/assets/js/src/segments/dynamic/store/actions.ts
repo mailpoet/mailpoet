@@ -16,6 +16,7 @@ import {
   Segment,
   SegmentTemplate,
   SetPreviousPageActionType,
+  DynamicSegment,
 } from '../types';
 import { storeName } from './constants';
 
@@ -221,4 +222,35 @@ export function setPreviousPage(data: string): SetPreviousPageActionType {
     type: Actions.SET_PREVIOUS_PAGE,
     previousPage: data,
   };
+}
+
+export async function loadDynamicSegments() {
+  let data: DynamicSegment[] = [];
+
+  await MailPoet.Ajax.post({
+    api_version: 'v1',
+    endpoint: 'dynamic_segments',
+    action: 'listing',
+    data: {
+      offset: 0,
+      limit: 20,
+      filter: {},
+      search: '',
+      sort_by: 'name',
+      sort_order: 'desc',
+    },
+  })
+    .done((response) => {
+      data = response.data || [];
+    })
+    .fail((response) => {
+      if (response.errors.length > 0) {
+        // TODO: handle errors
+      }
+    });
+
+  return {
+    type: 'SET_DYNAMIC_SEGMENTS',
+    dynamicSegments: data,
+  } as const;
 }
