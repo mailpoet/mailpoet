@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
+use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Engine\Renderer\BlocksRenderer;
 use MailPoet\EmailEditor\Engine\StylesController;
 
@@ -42,6 +43,7 @@ class ColumnsTest extends \MailPoetTest {
   ];
 
   public function _before() {
+    $this->diContainer->get(EmailEditor::class)->initialize();
     $this->blocksRenderer = $this->diContainer->get(BlocksRenderer::class);
     $this->columnsRenderer = new Columns();
   }
