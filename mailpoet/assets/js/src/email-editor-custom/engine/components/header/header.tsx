@@ -8,6 +8,7 @@ import { __ } from '@wordpress/i18n';
 import { plus, listView, undo, redo } from '@wordpress/icons';
 import { MailPoetEmailData, storeName } from '../../store';
 import { MoreMenu } from './more-menu';
+import { PreviewDropdown } from './preview-dropdown';
 
 export function Header() {
   const inserterButton = useRef();
@@ -117,6 +118,7 @@ export function Header() {
         <Button variant="link" disabled={!hasEdits} onClick={saveEditedEmail}>
           {__('Save Draft', 'mailpoet')}
         </Button>
+        <PreviewDropdown />
         <Button
           variant="primary"
           onClick={() => {

@@ -20,5 +20,6 @@ export function getInitialState(): State {
         'core/image',
       ],
     },
+    previewDeviceType: 'Desktop',
   };
 }
