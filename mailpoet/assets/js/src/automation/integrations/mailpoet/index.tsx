@@ -9,8 +9,8 @@ import { step as RemoveFromListStep } from './steps/remove-from-list';
 import { step as UpdateSubscriberStep } from './steps/update-subscriber';
 import { step as UnsubscribeStep } from './steps/unsubscribe';
 import { step as NotificationEmail } from './steps/notification-email';
-import { step as CustomTriggerStep } from './steps/custom_trigger';
-import { step as CustomActionStep } from './steps/custom_action';
+import { step as CustomTriggerStep } from './steps/custom-trigger';
+import { step as CustomActionStep } from './steps/custom-action';
 import { registerStepControls } from './step-controls';
 import { registerAutomationSidebar } from './automation-sidebar';
 

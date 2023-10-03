@@ -1,8 +1,8 @@
 import { __ } from '@wordpress/i18n';
 import { code } from '@wordpress/icons';
 import { StepType } from '../../../../editor/store/types';
-import { PremiumModalForStepEdit } from '../../../../../common/premium_modal';
-import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';
+import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
+import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';
 
 const keywords = [
   __('custom', 'mailpoet'),
