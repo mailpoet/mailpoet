@@ -53,8 +53,8 @@ class AddStep {
 
     $imports = "import { StepType } from '../../../../editor/store';";
     if ($this->isPremium) {
-      $imports .= PHP_EOL . "import { LockedBadge } from '../../../../../common/premium_modal/locked_badge';";
-      $imports .= PHP_EOL . "import { PremiumModalForStepEdit } from '../../../../../common/premium_modal';";
+      $imports .= PHP_EOL . "import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';";
+      $imports .= PHP_EOL . "import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';";
     }
     $keywords = "'" . implode("'," . PHP_EOL . "  '", $this->keywords) . "',";
     $template = str_replace('%imports%', $imports, $template);
