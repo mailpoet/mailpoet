@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Engine\Control;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\Step as StepData;
 use MailPoet\Automation\Engine\Data\Subject;
+use MailPoet\Automation\Engine\Integration\SubjectTransformer;
 use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Registry;
 
@@ -74,7 +75,11 @@ class SubjectTransformerHandler {
       foreach ($transformerMap[$key] ?? [] as $transformer) {
           $newKey = $transformer->returns();
         if (!isset($all[$newKey])) {
-          $all[$newKey] = $transformer->transform($all[$key]);
+          $newSubject = $transformer->transform($all[$key]);
+          if (!$newSubject) {
+            continue;
+          }
+          $all[$newKey] = $newSubject;
           $queue[] = $newKey;
         }
       }
@@ -82,6 +87,9 @@ class SubjectTransformerHandler {
     return array_values($all);
   }
 
+  /**
+   * @return SubjectTransformer[][]
+   */
   private function getTransformerMap(): array {
     $transformerMap = [];
     foreach ($this->registry->getSubjectTransformers() as $transformer) {
