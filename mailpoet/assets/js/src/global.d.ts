@@ -154,6 +154,7 @@ interface Window {
   grecaptcha?: any;
   MailPoetForm?: {
     ajax_url: string;
+    ajax_common_error_message: string;
   };
   mailpoet_authorized_emails?: string[];
   mailpoet_verified_sender_domains?: string[];

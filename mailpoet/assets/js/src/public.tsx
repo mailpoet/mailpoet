@@ -9,6 +9,13 @@ const exitIntentEvent = 'mouseleave.mailpoet.form-exit-intent';
 const startingClassName = 'starting-to-show';
 
 jQuery(($) => {
+  // Initialize Ajax Error message
+  MailPoet.I18n.add(
+    'ajaxFailedErrorMessage',
+    window.MailPoetForm.ajax_common_error_message,
+  );
+
+  // Initialize Parsley validation
   Parsley.addValidator('names', {
     requirementType: ['string', 'string'],
     validateString: (value, errorBrackets, errorURL) => {
