@@ -78,12 +78,23 @@ class AssetsController {
       Env::$assetsUrl . '/dist/css/' . $this->renderer->getCssAsset('mailpoet-public.css')
     );
 
+    $enqueuePlacementParams = [
+      'in_footer' => true,
+      'strategy' => 'defer',
+    ];
+
+    // BC for WP < 6.3 - Can be removed after we drop support for WP 6.2
+    global $wp_version;
+    if (version_compare($wp_version, '6.3', '<')) {
+      $enqueuePlacementParams = true;
+    }
+    
     $this->wp->wpEnqueueScript(
       'mailpoet_public',
       Env::$assetsUrl . '/dist/js/' . $this->renderer->getJsAsset('public.js'),
       ['jquery'],
       Env::$version,
-      true
+      $enqueuePlacementParams
     );
 
     $ajaxFailedErrorMessage = __('An error has happened while performing a request, please try again later.', 'mailpoet');
