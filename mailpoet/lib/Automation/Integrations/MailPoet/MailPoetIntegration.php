@@ -10,6 +10,7 @@ use MailPoet\Automation\Integrations\MailPoet\Hooks\AutomationEditorLoadingHooks
 use MailPoet\Automation\Integrations\MailPoet\Hooks\CreateAutomationRunHook;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
+use MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\CommentSubjectToSubscriberSubjectTransformer;
 use MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\OrderSubjectToSegmentSubjectTransformer;
 use MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\OrderSubjectToSubscriberSubjectTransformer;
 use MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\SubscriberSubjectToWordPressUserSubjectTransformer;
@@ -51,6 +52,9 @@ class MailPoetIntegration implements Integration {
   /** @var SubscriberSubjectToWordPressUserSubjectTransformer */
   private $subscriberToWordPressUserTransformer;
 
+  /** @var CommentSubjectToSubscriberSubjectTransformer */
+  private $commentToSubscriberTransformer;
+
   /** @var TemplatesFactory */
   private $templatesFactory;
 
@@ -64,6 +68,7 @@ class MailPoetIntegration implements Integration {
     OrderSubjectToSubscriberSubjectTransformer $orderToSubscriberTransformer,
     OrderSubjectToSegmentSubjectTransformer $orderToSegmentTransformer,
     SubscriberSubjectToWordPressUserSubjectTransformer $subscriberToWordPressUserTransformer,
+    CommentSubjectToSubscriberSubjectTransformer $commentToSubscriberTransformer,
     SomeoneSubscribesTrigger $someoneSubscribesTrigger,
     UserRegistrationTrigger $userRegistrationTrigger,
     SendEmailAction $sendEmailAction,
@@ -78,6 +83,7 @@ class MailPoetIntegration implements Integration {
     $this->orderToSubscriberTransformer = $orderToSubscriberTransformer;
     $this->orderToSegmentTransformer = $orderToSegmentTransformer;
     $this->subscriberToWordPressUserTransformer = $subscriberToWordPressUserTransformer;
+    $this->commentToSubscriberTransformer = $commentToSubscriberTransformer;
     $this->someoneSubscribesTrigger = $someoneSubscribesTrigger;
     $this->userRegistrationTrigger = $userRegistrationTrigger;
     $this->sendEmailAction = $sendEmailAction;
@@ -100,6 +106,7 @@ class MailPoetIntegration implements Integration {
     $registry->addSubjectTransformer($this->orderToSubscriberTransformer);
     $registry->addSubjectTransformer($this->orderToSegmentTransformer);
     $registry->addSubjectTransformer($this->subscriberToWordPressUserTransformer);
+    $registry->addSubjectTransformer($this->commentToSubscriberTransformer);
 
     foreach ($this->templatesFactory->createTemplates() as $template) {
       $registry->addTemplate($template);
