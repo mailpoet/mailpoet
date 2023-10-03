@@ -52,4 +52,5 @@ export const getInitialState = (): StateType => ({
     window.mailpoet_can_use_woocommerce_memberships,
   ),
   previousPage: '',
+  dynamicSegments: [],
 });

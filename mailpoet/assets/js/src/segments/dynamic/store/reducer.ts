@@ -2,6 +2,7 @@ import { assign } from 'lodash/fp';
 import {
   Actions,
   ActionType,
+  SetDynamicSegmentsActionType,
   SetSegmentActionType,
   SetErrorsActionType,
   SetSegmentFilerActionType,
@@ -10,6 +11,16 @@ import {
   SetPreviousPageActionType,
 } from '../types';
 import { getSegmentInitialState } from './initial-state';
+
+function setDynamicSegments(
+  state: StateType,
+  action: SetDynamicSegmentsActionType,
+): StateType {
+  return {
+    ...state,
+    dynamicSegments: action.dynamicSegments,
+  };
+}
 
 function setSegment(state: StateType, action: SetSegmentActionType): StateType {
   return {
@@ -87,6 +98,11 @@ export const createReducer =
     action: ActionType,
   ): StateType => {
     switch (action.type) {
+      case Actions.SET_DYNAMIC_SEGMENTS:
+        return setDynamicSegments(
+          state,
+          action as SetDynamicSegmentsActionType,
+        );
       case Actions.SET_SEGMENT:
         return setSegment(state, action as SetSegmentActionType);
       case Actions.RESET_SEGMENT_AND_ERRORS:

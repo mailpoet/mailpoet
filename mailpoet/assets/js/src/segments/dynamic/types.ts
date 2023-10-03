@@ -185,6 +185,17 @@ export interface EmailFormItem extends FormItem {
   clicks?: string;
 }
 
+export type DynamicSegment = {
+  id: number;
+  name: string;
+  description?: string;
+  status?: string;
+  stats: string;
+  count_all: string;
+  count_subscribed: string;
+  updated_at: string;
+};
+
 export type Segment = {
   id?: number;
   name?: string;
@@ -342,9 +353,11 @@ export interface StateType {
   signupForms: SignupForm[];
   automations: Automation[];
   previousPage: string;
+  dynamicSegments: DynamicSegment[];
 }
 
 export enum Actions {
+  SET_DYNAMIC_SEGMENTS = 'SET_DYNAMIC_SEGMENTS',
   SET_SEGMENT = 'SET_SEGMENT',
   SET_ERRORS = 'SET_ERRORS',
   SET_PREVIOUS_PAGE = 'SET_PREVIOUS_PAGE',
@@ -364,6 +377,10 @@ export type UpdateSegmentActionData =
   | { description: string }
   | { filters: AnyFormItem[] }
   | { filters_connect: SegmentConnectTypes };
+
+export interface SetDynamicSegmentsActionType extends ActionType {
+  dynamicSegments: DynamicSegment[];
+}
 
 export interface SetSegmentActionType extends ActionType {
   segment: UpdateSegmentActionData;
