@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
+use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Engine\StylesController;
 
 require_once __DIR__ . '/DummyBlockRenderer.php';
@@ -15,6 +16,7 @@ class RendererTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    $this->diContainer->get(EmailEditor::class)->initialize();
     $this->renderer = $this->diContainer->get(Renderer::class);
     $this->emailPost = new \WP_Post((object)[
       'post_content' => '<!-- wp:paragraph --><p>Hello!</p><!-- /wp:paragraph -->',
