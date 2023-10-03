@@ -1,0 +1,76 @@
+.mailpoet-filter-tab-panel {
+  background-color: #fff;
+
+  .components-card {
+    box-shadow: none;
+  }
+
+  .components-tab-panel__tabs {
+    box-shadow: inset 0 -1px 0 0 #dcdcde;
+  }
+
+  .components-tab-panel__tabs-item:focus {
+    box-shadow: none;
+  }
+
+  .components-tab-panel__tabs-item.is-active {
+    box-shadow: inset 0 -4px 0 0 var(--wp-admin-theme-color);
+  }
+
+  .components-tab-panel__tabs-item:focus-visible {
+    box-shadow: inset 0 0 0 var(--wp-admin-border-width-focus)
+    var(--wp-admin-theme-color);
+  }
+
+  .components-tab-panel__tabs-item.is-active:focus-visible {
+    box-shadow: inset 0 0 0 var(--wp-admin-border-width-focus)
+    var(--wp-admin-theme-color),
+    inset 0 -4px 0 0 var(--wp-admin-theme-color);
+  }
+
+  .count {
+    background-color: #f0f0f1;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 400;
+    margin-left: 6px;
+    padding: 2px 5px;
+  }
+}
+
+.woocommerce-table__table {
+  .mailpoet-listing-name a {
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    text-decoration: none;
+  }
+
+  .mailpoet-listing-name a:hover {
+    color: #2271b1;
+  }
+
+  .mailpoet-listing-checkbox {
+    width: 16px;
+
+    input {
+      margin-top: 0;
+    }
+  }
+
+  .mailpoet-listing-modified-date {
+    width: 188px;
+  }
+
+  .mailpoet-listing-text-right-align {
+    text-align: right !important;
+  }
+
+  .mailpoet-listing-actions-cell {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+}

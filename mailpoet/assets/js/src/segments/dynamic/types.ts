@@ -193,7 +193,9 @@ export type DynamicSegment = {
   stats: string;
   count_all: string;
   count_subscribed: string;
-  updated_at: string;
+  created_at: string;
+  deleted_at: string;
+  subscribers_url: string;
 };
 
 export type Segment = {
