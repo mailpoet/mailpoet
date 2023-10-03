@@ -76,12 +76,12 @@ class EmailEditor {
 
   /**
    * @param string[]|bool $allowedBlockTypes
-   * @param \WP_Block_Editor_Context $blockEditorContext
+   * @param \WP_Block_Editor_Context|null $blockEditorContext
    * @return array|bool
    */
-  public function setAllowedBlocksInEmails($allowedBlockTypes, \WP_Block_Editor_Context $blockEditorContext) {
+  public function setAllowedBlocksInEmails($allowedBlockTypes, ?\WP_Block_Editor_Context $blockEditorContext = null) {
     $emailPostTypes = array_column($this->getPostTypes(), 'name');
-    if (!$blockEditorContext->post || !in_array($blockEditorContext->post->post_type, $emailPostTypes, true)) {
+    if ($blockEditorContext === null || !$blockEditorContext->post || !in_array($blockEditorContext->post->post_type, $emailPostTypes, true)) {
       return $allowedBlockTypes;
     }
     return self::ALLOWED_BLOCK_TYPES;
@@ -104,9 +104,9 @@ class EmailEditor {
     ]);
   }
 
-  public function updateBlockEditorSettings(array $settings, \WP_Block_Editor_Context $blockEditorContext): array {
+  public function updateBlockEditorSettings(array $settings, ?\WP_Block_Editor_Context $blockEditorContext = null): array {
     $emailPostTypes = array_column($this->getPostTypes(), 'name');
-    if (!$blockEditorContext->post || !in_array($blockEditorContext->post->post_type, $emailPostTypes, true)) {
+    if ($blockEditorContext === null || !$blockEditorContext->post || !in_array($blockEditorContext->post->post_type, $emailPostTypes, true)) {
       return $settings;
     }
     $settings['enableCustomUnits'] = ['px', '%']; // Allow only units we can support in email renderer

@@ -2,6 +2,8 @@
 
 namespace MailPoet\EmailEditor\Engine;
 
+use MailPoet\WP\Functions;
+
 class EmailEditorTest extends \MailPoetTest {
   /** @var EmailEditor */
   private $emailEditor;
@@ -40,6 +42,29 @@ class EmailEditorTest extends \MailPoetTest {
     expect($blockTypes)->contains('core/columns');
     expect($blockTypes)->contains('core/column');
     expect(count((array)$blockTypes))->equals(4);
+  }
+
+  public function testItWorksWithEmptyEditorContext() {
+    $settings = [
+      'test' => 1,
+    ];
+    $blockTypes = [
+      'core/paragraph',
+    ];
+    $wp = $this->diContainer->get(Functions::class);
+    $wp->removeAllFilters('block_editor_settings_all');
+    $wp->removeAllFilters('allowed_block_types_all');
+    $this->emailEditor->initialize();
+    // Test without the context argument
+    $filteredSettings = $wp->applyFilters('block_editor_settings_all', $settings);
+    $filteredBlockTypes = $wp->applyFilters('allowed_block_types_all', $blockTypes);
+    expect($filteredSettings)->equals($settings);
+    expect($filteredBlockTypes)->equals($blockTypes);
+    // Test with the context argument as null
+    $filteredSettings = $wp->applyFilters('block_editor_settings_all', $settings, null);
+    $filteredBlockTypes = $wp->applyFilters('allowed_block_types_all', $blockTypes, null);
+    expect($filteredSettings)->equals($settings);
+    expect($filteredBlockTypes)->equals($blockTypes);
   }
 
   public function _after() {
