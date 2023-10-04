@@ -2,6 +2,10 @@
 
 namespace MailPoet\WPCOM;
 
+/**
+ * Plan detection documentation:
+ * https://github.com/Automattic/wc-calypso-bridge#active-plan-detection
+ */
 class DotcomHelperFunctions {
   /**
    * Returns true if in the context of WordPress.com Atomic platform.
@@ -20,20 +24,8 @@ class DotcomHelperFunctions {
     return $this->isAtomicPlatform() ;
   }
 
-  /**
-   * Returns true if the site has an ecommerce-related plans on WordPress.com.
-   * See https://github.com/Automattic/wc-calypso-bridge#active-plan-detection
-   */
-  public function isCommerce(): bool {
-    return function_exists('wc_calypso_bridge_has_ecommerce_features') && wc_calypso_bridge_has_ecommerce_features() ;
-  }
-
-  /**
-   * Returns true if the site has a business plan on WordPress.com.
-   * See https://github.com/Automattic/wc-calypso-bridge#active-plan-detection
-   */
-  public function isBusiness(): bool {
-    return function_exists('wc_calypso_bridge_is_business_plan') && wc_calypso_bridge_is_business_plan() ;
+  public function isWooExpressPerformance(): bool {
+    return function_exists('wc_calypso_bridge_is_woo_express_performance_plan') && wc_calypso_bridge_is_woo_express_performance_plan();
   }
 
   /**
@@ -41,13 +33,9 @@ class DotcomHelperFunctions {
    * Empty otherwise.
    */
   public function getDotcomPlan(): string {
-    if ($this->isCommerce()) {
-      return 'commerce';
-    };
-
-    if ($this->isBusiness()) {
-      return 'business';
-    };
+    if ($this->isWooExpressPerformance()) {
+      return 'performance';
+    }
 
     return '';
   }
