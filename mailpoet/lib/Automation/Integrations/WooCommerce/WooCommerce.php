@@ -52,4 +52,8 @@ class WooCommerce {
   public function wcGetOrderStatusName(string $status): string {
     return wc_get_order_status_name($status);
   }
+
+  public function wcReviewRatingsEnabled(): bool {
+    return wc_review_ratings_enabled();
+  }
 }
