@@ -30,4 +30,10 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
     $dotcomHelper->method('isWooExpressPerformance')->willReturn(true);
     expect($dotcomHelper->getDotcomPlan())->equals('performance');
   }
+
+  public function testItReturnsEssentialIfWooExpressEssential() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isWooExpressEssential']);
+    $dotcomHelper->method('isWooExpressEssential')->willReturn(true);
+    expect($dotcomHelper->getDotcomPlan())->equals('essential');
+  }
 }

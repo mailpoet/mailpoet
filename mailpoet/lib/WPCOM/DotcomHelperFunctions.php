@@ -28,6 +28,10 @@ class DotcomHelperFunctions {
     return function_exists('wc_calypso_bridge_is_woo_express_performance_plan') && wc_calypso_bridge_is_woo_express_performance_plan();
   }
 
+  public function isWooExpressEssential(): bool {
+    return function_exists('wc_calypso_bridge_is_woo_express_essential_plan') && wc_calypso_bridge_is_woo_express_essential_plan();
+  }
+
   /**
    * Returns the plan name for the current site if hosted on WordPress.com.
    * Empty otherwise.
@@ -35,6 +39,10 @@ class DotcomHelperFunctions {
   public function getDotcomPlan(): string {
     if ($this->isWooExpressPerformance()) {
       return 'performance';
+    }
+
+    if ($this->isWooExpressEssential()) {
+      return 'essential';
     }
 
     return '';
