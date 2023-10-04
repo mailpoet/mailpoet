@@ -25,19 +25,9 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
     expect($this->dotcomHelper->getDotcomPlan())->equals('');
   }
 
-  public function testItReturnsCommerce() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isCommerce', ]);
-    $dotcomHelper->method('isCommerce')->willReturn(
-      true
-    );
-    expect($dotcomHelper->getDotcomPlan())->equals('commerce');
-  }
-
-  public function testItReturnsBusiness() {
-    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isBusiness', ]);
-    $dotcomHelper->method('isBusiness')->willReturn(
-      true
-    );
-    expect($dotcomHelper->getDotcomPlan())->equals('business');
+  public function testItReturnsPerformanceIfWooExpressPerformance() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isWooExpressPerformance']);
+    $dotcomHelper->method('isWooExpressPerformance')->willReturn(true);
+    expect($dotcomHelper->getDotcomPlan())->equals('performance');
   }
 }
