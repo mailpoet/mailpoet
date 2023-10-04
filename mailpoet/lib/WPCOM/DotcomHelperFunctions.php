@@ -36,6 +36,10 @@ class DotcomHelperFunctions {
     return function_exists('wc_calypso_bridge_is_business_plan') && wc_calypso_bridge_is_business_plan();
   }
 
+  public function isEcommerceTrial(): bool {
+    return function_exists('wc_calypso_bridge_is_ecommerce_trial_plan') && wc_calypso_bridge_is_ecommerce_trial_plan();
+  }
+
   /**
    * Returns the plan name for the current site if hosted on WordPress.com.
    * Empty otherwise.
@@ -51,6 +55,10 @@ class DotcomHelperFunctions {
 
     if ($this->isBusiness()) {
       return 'business';
+    }
+
+    if ($this->isEcommerceTrial()) {
+      return 'ecommerce_trial';
     }
 
     return '';
