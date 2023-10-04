@@ -35,43 +35,43 @@ export function AverageSpentFields({ filterIndex }: FilterProps): JSX.Element {
   }, [updateSegmentFilter, segment, filterIndex]);
   return (
     <>
-      <Grid.CenteredRow>
-        <Select
-          key="select"
-          value={segment.average_spent_type}
-          onChange={(e): void => {
-            void updateSegmentFilterFromEvent(
-              'average_spent_type',
-              filterIndex,
-              e,
-            );
-          }}
-          automationId="select-average-spent-type"
-        >
-          <option value=">">{MailPoet.I18n.t('moreThan')}</option>
-          <option value=">=">{MailPoet.I18n.t('moreThanOrEqual')}</option>
-          <option value="=">{MailPoet.I18n.t('equals')}</option>
-          <option value="!=">{MailPoet.I18n.t('notEquals')}</option>
-          <option value="<=">{MailPoet.I18n.t('lessThanOrEqual')}</option>
-          <option value="<">{MailPoet.I18n.t('lessThan')}</option>
-        </Select>
-        <Input
-          data-automation-id="input-average-spent-amount"
-          type="number"
-          min={0}
-          step={0.01}
-          value={segment.average_spent_amount || ''}
-          placeholder={MailPoet.I18n.t('wooSpentAmount')}
-          onChange={(e): void => {
-            void updateSegmentFilterFromEvent(
-              'average_spent_amount',
-              filterIndex,
-              e,
-            );
-          }}
-        />
-        <div>{wooCurrencySymbol}</div>
-      </Grid.CenteredRow>
+      <Select
+        key="select"
+        value={segment.average_spent_type}
+        isMinWidth
+        onChange={(e): void => {
+          void updateSegmentFilterFromEvent(
+            'average_spent_type',
+            filterIndex,
+            e,
+          );
+        }}
+        automationId="select-average-spent-type"
+      >
+        <option value=">">{MailPoet.I18n.t('moreThan')}</option>
+        <option value=">=">{MailPoet.I18n.t('moreThanOrEqual')}</option>
+        <option value="=">{MailPoet.I18n.t('equals')}</option>
+        <option value="!=">{MailPoet.I18n.t('notEquals')}</option>
+        <option value="<=">{MailPoet.I18n.t('lessThanOrEqual')}</option>
+        <option value="<">{MailPoet.I18n.t('lessThan')}</option>
+      </Select>
+      <Input
+        className="mailpoet-segments-input-small"
+        data-automation-id="input-average-spent-amount"
+        type="number"
+        min={0}
+        step={0.01}
+        value={segment.average_spent_amount || ''}
+        placeholder={MailPoet.I18n.t('wooSpentAmount')}
+        onChange={(e): void => {
+          void updateSegmentFilterFromEvent(
+            'average_spent_amount',
+            filterIndex,
+            e,
+          );
+        }}
+      />
+      <div>{wooCurrencySymbol}</div>
       <Grid.CenteredRow>
         <DaysPeriodField filterIndex={filterIndex} />
       </Grid.CenteredRow>
