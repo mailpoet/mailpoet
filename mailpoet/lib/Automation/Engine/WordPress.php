@@ -164,6 +164,13 @@ class WordPress {
   }
 
   /**
+   * @return mixed
+   */
+  public function getCommentMeta(int $commentId, string $key = '', bool $isSingle = false) {
+    return get_comment_meta($commentId, $key, $isSingle);
+  }
+
+  /**
    * @param int|WP_Term|object $term
    * @param string $taxonomy
    * @param string $output
