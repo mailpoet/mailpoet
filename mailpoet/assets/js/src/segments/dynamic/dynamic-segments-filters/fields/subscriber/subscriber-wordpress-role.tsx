@@ -68,7 +68,6 @@ export function WordpressRoleFields({ filterIndex }: FilterProps): JSX.Element {
       <Grid.CenteredRow>
         <ReactSelect
           dimension="small"
-          isFullWidth
           isMulti
           automationId="segment-wordpress-role"
           placeholder={MailPoet.I18n.t('selectUserRolePlaceholder')}
