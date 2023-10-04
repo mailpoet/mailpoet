@@ -419,9 +419,15 @@ class Initializer {
       $currentDbVersion = null;
     }
 
+    if (version_compare((string)$currentDbVersion, Env::$version) === 0) {
+      return;
+    }
+
     // if current db version and plugin version differ
-    if (version_compare((string)$currentDbVersion, Env::$version) !== 0) {
+    try {
       $this->activator->activate();
+    } catch (InvalidStateException $e) {
+      $this->handleRunningMigration($e);
     }
   }
 
