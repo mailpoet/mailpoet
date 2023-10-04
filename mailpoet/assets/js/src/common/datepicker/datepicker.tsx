@@ -4,6 +4,7 @@ import { MailPoet } from 'mailpoet';
 import { withBoundary } from '../error-boundary';
 
 type Props = ReactDatePickerProps & {
+  className?: string;
   dimension?: 'small';
   isFullWidth?: boolean;
   iconStart?: JSX.Element;
@@ -11,6 +12,7 @@ type Props = ReactDatePickerProps & {
 };
 
 function Datepicker({
+  className,
   dimension,
   isFullWidth,
   iconStart,
@@ -19,11 +21,15 @@ function Datepicker({
 }: Props) {
   return (
     <div
-      className={classnames('mailpoet-datepicker mailpoet-form-input', {
-        [`mailpoet-form-input-${dimension}`]: dimension,
-        'mailpoet-disabled': props.disabled,
-        'mailpoet-full-width': isFullWidth,
-      })}
+      className={classnames(
+        className,
+        'mailpoet-datepicker mailpoet-form-input',
+        {
+          [`mailpoet-form-input-${dimension}`]: dimension,
+          'mailpoet-disabled': props.disabled,
+          'mailpoet-full-width': isFullWidth,
+        },
+      )}
     >
       {iconStart}
       <ReactDatePicker
