@@ -42,4 +42,10 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
     $dotcomHelper->method('isBusiness')->willReturn(true);
     expect($dotcomHelper->getDotcomPlan())->equals('business');
   }
+
+  public function testItReturnsEcommerceTrialIfEcommerceTrial() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isEcommerceTrial']);
+    $dotcomHelper->method('isEcommerceTrial')->willReturn(true);
+    expect($dotcomHelper->getDotcomPlan())->equals('ecommerce_trial');
+  }
 }
