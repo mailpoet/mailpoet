@@ -1,6 +1,5 @@
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useEffect } from 'react';
-import { Grid } from 'common/grid';
 import { Select } from 'common/form/select/select';
 import { Input } from 'common/form/input/input';
 import { MailPoet } from 'mailpoet';
@@ -41,11 +40,12 @@ export function TextField({ filterIndex }: FilterProps): JSX.Element {
   }, [updateSegmentFilter, segment, filterIndex]);
 
   return (
-    <Grid.CenteredRow>
+    <>
       <Select
         key="select"
         automationId="subscriber-text-field-select"
         value={segment.operator}
+        isMinWidth
         onChange={(e) => {
           void updateSegmentFilterFromEvent('operator', filterIndex, e);
         }}
@@ -62,6 +62,7 @@ export function TextField({ filterIndex }: FilterProps): JSX.Element {
         <option value="notEndsWith">{MailPoet.I18n.t('notEndsWith')}</option>
       </Select>
       <Input
+        className="mailpoet-segments-input-medium"
         key="input"
         data-automation-id="text-custom-field-value"
         value={segment.value || ''}
@@ -70,6 +71,6 @@ export function TextField({ filterIndex }: FilterProps): JSX.Element {
         }}
         placeholder={MailPoet.I18n.t('value')}
       />
-    </Grid.CenteredRow>
+    </>
   );
 }
