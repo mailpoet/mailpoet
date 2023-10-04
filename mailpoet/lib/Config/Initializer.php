@@ -420,6 +420,8 @@ class Initializer {
       $this->activator->activate();
     } catch (InvalidStateException $e) {
       $this->handleRunningMigration($e);
+    } catch (\Exception $e) {
+      $this->handleFailedInitialization($e);
     }
   }
 
