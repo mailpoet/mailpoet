@@ -10,7 +10,7 @@ class CommentPayload implements Payload {
   private $commentId;
 
   /** @var WordPress */
-  private $wp;
+  protected $wp;
 
   public function __construct(
     int $commentId,
