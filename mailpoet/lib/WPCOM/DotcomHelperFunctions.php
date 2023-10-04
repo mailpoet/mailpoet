@@ -44,6 +44,10 @@ class DotcomHelperFunctions {
     return function_exists('wc_calypso_bridge_is_wpcom_ecommerce_plan') && wc_calypso_bridge_is_wpcom_ecommerce_plan();
   }
 
+  public function isEcommerce(): bool {
+    return function_exists('wc_calypso_bridge_is_ecommerce_plan') && wc_calypso_bridge_is_ecommerce_plan();
+  }
+
   /**
    * Returns the plan name for the current site if hosted on WordPress.com.
    * Empty otherwise.
@@ -59,6 +63,8 @@ class DotcomHelperFunctions {
       return 'ecommerce_trial';
     } elseif ($this->isEcommerceWPCom()) {
       return 'ecommerce_wpcom';
+    } elseif ($this->isEcommerce()) {
+      return 'ecommerce';
     } else {
       return '';
     }

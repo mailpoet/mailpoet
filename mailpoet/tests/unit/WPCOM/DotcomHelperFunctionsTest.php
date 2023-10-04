@@ -54,4 +54,10 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
     $dotcomHelper->method('isEcommerceWPCom')->willReturn(true);
     expect($dotcomHelper->getDotcomPlan())->equals('ecommerce_wpcom');
   }
+
+  public function testItReturnsEcommerceIfEcommerce() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isEcommerce']);
+    $dotcomHelper->method('isEcommerce')->willReturn(true);
+    expect($dotcomHelper->getDotcomPlan())->equals('ecommerce');
+  }
 }
