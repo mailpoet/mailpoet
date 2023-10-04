@@ -32,6 +32,10 @@ class DotcomHelperFunctions {
     return function_exists('wc_calypso_bridge_is_woo_express_essential_plan') && wc_calypso_bridge_is_woo_express_essential_plan();
   }
 
+  public function isBusiness(): bool {
+    return function_exists('wc_calypso_bridge_is_business_plan') && wc_calypso_bridge_is_business_plan();
+  }
+
   /**
    * Returns the plan name for the current site if hosted on WordPress.com.
    * Empty otherwise.
@@ -43,6 +47,10 @@ class DotcomHelperFunctions {
 
     if ($this->isWooExpressEssential()) {
       return 'essential';
+    }
+
+    if ($this->isBusiness()) {
+      return 'business';
     }
 
     return '';

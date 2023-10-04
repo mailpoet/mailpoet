@@ -36,4 +36,10 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
     $dotcomHelper->method('isWooExpressEssential')->willReturn(true);
     expect($dotcomHelper->getDotcomPlan())->equals('essential');
   }
+
+  public function testItReturnsBusinessIfWooBusiness() {
+    $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isBusiness']);
+    $dotcomHelper->method('isBusiness')->willReturn(true);
+    expect($dotcomHelper->getDotcomPlan())->equals('business');
+  }
 }
