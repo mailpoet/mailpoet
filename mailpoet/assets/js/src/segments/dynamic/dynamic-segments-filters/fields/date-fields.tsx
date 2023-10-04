@@ -5,7 +5,6 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
 import { Select } from 'common/form/select/select';
 import { Datepicker } from 'common/datepicker/datepicker';
-import { Grid } from 'common/grid';
 import { Input } from 'common/form/input/input';
 
 import { DateFormItem, FilterProps } from '../../types';
@@ -99,10 +98,11 @@ function DateFields({
   }, [updateSegmentFilter, segment, filterIndex, defaultOperator]);
 
   return (
-    <Grid.CenteredRow>
+    <>
       <Select
         key="select"
         value={segment.operator}
+        isMinWidth
         onChange={(e) => {
           void updateSegmentFilterFromEvent('operator', filterIndex, e);
         }}
@@ -131,6 +131,7 @@ function DateFields({
         segment.operator === DateOperator.ON_OR_BEFORE ||
         segment.operator === DateOperator.NOT_ON) && (
         <Datepicker
+          className="mailpoet-segments-datepicker-small"
           dateFormat="MMM d, yyyy"
           onChange={(value): void => {
             void updateSegmentFilter(
@@ -145,6 +146,7 @@ function DateFields({
         segment.operator === DateOperator.NOT_IN_THE_LAST) && (
         <>
           <Input
+            className="mailpoet-segments-input-small"
             key="input"
             type="number"
             value={segment.value || ''}
@@ -157,7 +159,7 @@ function DateFields({
           <span>{MailPoet.I18n.t('daysPlaceholder')}</span>
         </>
       )}
-    </Grid.CenteredRow>
+    </>
   );
 }
 
