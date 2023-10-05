@@ -10,6 +10,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use WP_Term;
 
 class WooCommerceCategory implements Filter {
   const ACTION_CATEGORY = 'purchasedCategory';
@@ -142,6 +143,16 @@ class WooCommerceCategory implements Filter {
   }
 
   public function getLookupData(DynamicSegmentFilterData $filterData): array {
-    return [];
+    $lookupData = [
+      'categories' => [],
+    ];
+    $categoryIds = $filterData->getArrayParam('category_ids');
+    $terms = $this->wp->getTerms('product_cat', ['include' => $categoryIds, 'hide_empty' => false]);
+    /** @var WP_Term[] $terms */
+    foreach ($terms as $term) {
+      $lookupData['categories'][$term->term_id] = $term->name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    }
+
+    return $lookupData;
   }
 }
