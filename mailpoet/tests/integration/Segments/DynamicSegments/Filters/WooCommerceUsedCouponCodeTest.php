@@ -284,6 +284,24 @@ class WooCommerceUsedCouponCodeTest extends \MailPoetTest {
     ];
   }
 
+  public function testItRetrievesLookupData(): void {
+    $couponId = $this->tester->createWooCommerceCoupon(['code' => 'coupon1']);
+    $couponId2 = $this->tester->createWooCommerceCoupon(['code' => 'coupon two']);
+
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceUsedCouponCode::ACTION, [
+      'operator' => 'none',
+      'coupon_code_ids' => [$couponId, (string)$couponId2],
+      'days' => 10,
+      'timeframe' => 'allTime',
+    ]);
+
+    $lookupData = $this->filter->getLookupData($filterData);
+    $this->assertEqualsCanonicalizing(['coupons' => [
+      $couponId => 'coupon1',
+      $couponId2 => 'coupon two',
+    ]], $lookupData);
+  }
+
   private function assertFilterReturnsEmails(string $operator, array $couponCodeIds, int $days, string $timeframe, array $expectedEmails): void {
     $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceUsedCouponCode::ACTION, [
       'operator' => $operator,
