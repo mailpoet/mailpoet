@@ -6,6 +6,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Test\DataFactories\Segment;
 use MailPoetVendor\Carbon\CarbonImmutable;
 
 class SubscriberSegmentTest extends \MailPoetTest {
@@ -64,6 +65,17 @@ class SubscriberSegmentTest extends \MailPoetTest {
     $segmentFilterData = $this->getSegmentFilterData(DynamicSegmentFilterData::OPERATOR_NONE, [$this->segment1->getId()]);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->filter);
     $this->assertEqualsCanonicalizing(['a2@example.com', 'a3@example.com'], $emails);
+  }
+
+  public function testItRetrievesLookupData(): void {
+    $segment = (new Segment())->withName('test segment')->create();
+    $data = $this->getSegmentFilterData('all', [$segment->getId(), 293847]);
+    $lookupData = $this->filter->getLookupData($data);
+    $this->assertEqualsCanonicalizing([
+      'segments' => [
+        $segment->getId() => $segment->getName(),
+      ],
+    ], $lookupData);
   }
 
   private function getSegmentFilterData(string $operator, array $segments): DynamicSegmentFilterData {
