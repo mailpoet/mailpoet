@@ -92,6 +92,20 @@ class SubscriberSubscribedViaFormTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing(['subscriber1@example.com'], $matching);
   }
 
+  public function testItRetrievesLookupData(): void {
+    $form = (new Form())->withName('test form')->create();
+    $data = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberSubscribedViaForm::TYPE, [
+      'form_ids' => [$form->getId()],
+      'operator' => 'none',
+    ]);
+    $lookupData = $this->filter->getLookupData($data);
+    $this->assertEqualsCanonicalizing([
+      'forms' => [
+        $form->getId() => $form->getName(),
+      ],
+    ], $lookupData);
+  }
+
   private function getMatchingEmails(string $operator, array $formIds): array {
     $data = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberSubscribedViaForm::TYPE, [
       'form_ids' => $formIds,
