@@ -58,6 +58,25 @@ class UserRoleTest extends \MailPoetTest {
     expect($emails)->count(0);
   }
 
+  public function testItRetrievesLookupData(): void {
+    $data = $this->getSegmentFilterData('editor', 'all');
+    $lookupData = $this->userRoleFilter->getLookupData($data);
+    $this->assertEqualsCanonicalizing([
+      'roles' => [
+        'editor' => 'Editor',
+      ],
+    ], $lookupData);
+
+    $data = $this->getSegmentFilterData(['administrator', 'subscriber', 'nonexistent'], 'all');
+    $lookupData = $this->userRoleFilter->getLookupData($data);
+    $this->assertEqualsCanonicalizing([
+      'roles' => [
+        'administrator' => 'Administrator',
+        'subscriber' => 'Subscriber',
+      ],
+    ], $lookupData);
+  }
+
   /**
    * @param string[]|string $role
    * @param string|null $operator
