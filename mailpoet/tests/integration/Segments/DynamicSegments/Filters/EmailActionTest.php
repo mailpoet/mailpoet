@@ -357,6 +357,38 @@ class EmailActionTest extends \MailPoetTest {
     expect($emails)->contains('3@example.com');
   }
 
+  public function testItRetrievesLookupDataForSentAction(): void {
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_WAS_SENT, [
+      'newsletters' => [$this->newsletter->getId(), $this->newsletter2->getId(), 99999],
+      'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
+    ]);
+    $lookupData = $this->emailAction->getLookupData($segmentFilterData);
+    $this->assertEqualsCanonicalizing([
+      'newsletters' => [
+        $this->newsletter->getId() => $this->newsletter->getSubject(),
+        $this->newsletter2->getId() => $this->newsletter2->getSubject(),
+      ],
+      'links' => [],
+    ], $lookupData);
+  }
+
+  public function testItRetrievesLookupDataForClickedAction(): void {
+    $link = $this->createClickedLink('http://example.com', $this->newsletter, $this->subscriberOpenedClicked);
+    $segmentFilterData = $this->getSegmentFilterData(EmailAction::ACTION_CLICKED, [
+      'newsletter_id' => (int)$this->newsletter->getId(),
+      'link_ids' => [$link->getId(), 99999],
+    ]);
+    $lookupData = $this->emailAction->getLookupData($segmentFilterData);
+    $this->assertEqualsCanonicalizing([
+      'newsletters' => [
+        $this->newsletter->getId() => $this->newsletter->getSubject(),
+      ],
+      'links' => [
+        $link->getId() => $link->getUrl(),
+      ],
+    ], $lookupData);
+  }
+
   private function getSegmentFilterData(string $action, array $data): DynamicSegmentFilterData {
     return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $action, $data);
   }
