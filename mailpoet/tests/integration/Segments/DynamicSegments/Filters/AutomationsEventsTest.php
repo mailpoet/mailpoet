@@ -214,19 +214,37 @@ class AutomationsEventsTest extends \MailPoetTest {
     $this->assertFilterReturnsEmails(AutomationsEvents::EXITED_ACTION, 'none', [$automation1->getId()], []);
   }
 
-  private function assertFilterReturnsEmails(string $action, string $operator, array $automationIds, array $expectedEmails): void {
+  public function testItRetrievesLookupData(): void {
+    $automation1 = $this->createAutomation('a1');
+    $automation2 = $this->createAutomation('a2');
+
+    $data = $this->getSegmentFilterData('enteredAutomation', 'all', [$automation1->getId(), $automation2->getId(), 928374]);
+    $this->assertEqualsCanonicalizing([
+      'automations' => [
+        1 => 'a1',
+        2 => 'a2',
+      ],
+    ], $this->filter->getLookupData($data));
+  }
+
+  private function getSegmentFilterData(string $action, string $operator, array $automationIds): DynamicSegmentFilterData {
     $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_AUTOMATIONS, $action, [
       'action' => $action,
       'operator' => $operator,
       'automation_ids' => $automationIds,
     ]);
+    return $filterData;
+  }
+
+  private function assertFilterReturnsEmails(string $action, string $operator, array $automationIds, array $expectedEmails): void {
+    $filterData = $this->getSegmentFilterData($action, $operator, $automationIds);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
-  private function createAutomation(): Automation {
+  private function createAutomation(string $name = 'test automation'): Automation {
     return (new AutomationFactory())
-      ->withName('test automation')
+      ->withName($name)
       ->withStatusActive()
       ->withSomeoneSubscribesTrigger()
       ->create();
