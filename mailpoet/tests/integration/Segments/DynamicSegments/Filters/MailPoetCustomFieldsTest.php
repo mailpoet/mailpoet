@@ -6,6 +6,7 @@ use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Test\DataFactories\CustomField;
 
 class MailPoetCustomFieldsTest extends \MailPoetTest {
 
@@ -491,6 +492,29 @@ class MailPoetCustomFieldsTest extends \MailPoetTest {
     ]);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($notBlankFilterData, $this->filter);
     $this->assertEqualsCanonicalizing([$subscriber->getEmail()], $emails);
+  }
+
+  public function testItCanRetrieveLookupData(): void {
+    $customField = (new CustomField())->withName('custom field name')->create();
+    $data = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => $customField->getId(),
+      'custom_field_type' => CustomFieldEntity::TYPE_SELECT,
+      'operator' => 'is_blank',
+    ]);
+    $this->assertEqualsCanonicalizing([
+      'customFields' => [$customField->getId() => $customField->getName()],
+    ], $this->filter->getLookupData($data));
+  }
+
+  public function testItCanHandleInvalidLookupData(): void {
+    $data = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_USER_ROLE, MailPoetCustomFields::TYPE, [
+      'custom_field_id' => 12345,
+      'custom_field_type' => CustomFieldEntity::TYPE_SELECT,
+      'operator' => 'is_blank',
+    ]);
+    $this->assertEqualsCanonicalizing([
+      'customFields' => [],
+    ], $this->filter->getLookupData($data));
   }
 
   private function createSubscriber(string $email): SubscriberEntity {
