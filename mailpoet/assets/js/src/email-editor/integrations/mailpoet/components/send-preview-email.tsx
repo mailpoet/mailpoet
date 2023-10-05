@@ -1,8 +1,9 @@
 import { Button, Modal, TextControl } from '@wordpress/components';
+import { dispatch, useSelect } from '@wordpress/data';
+import { Icon, check } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
-import { dispatch, useSelect } from '@wordpress/data';
-import { storeName } from '../store';
+import { SendingPreviewStatus, storeName } from '../store';
 
 type SendPreviewEmailProps = {
   isOpen: boolean;
@@ -15,12 +16,15 @@ export function SendPreviewEmail({
   closeCallback,
   newsletterId,
 }: SendPreviewEmailProps) {
-  const { previewToEmail } = useSelect(
-    (select) => ({
-      previewToEmail: select(storeName).getPreviewToEmail(),
-    }),
-    [],
-  );
+  const { previewToEmail, isSendingPreviewEmail, sendingPreviewStatus } =
+    useSelect(
+      (select) => ({
+        previewToEmail: select(storeName).getPreviewToEmail(),
+        isSendingPreviewEmail: select(storeName).getIsSendingPreviewEmail(),
+        sendingPreviewStatus: select(storeName).getSendingPreviewStatus(),
+      }),
+      [],
+    );
 
   let description = ReactStringReplace(
     __(
@@ -55,9 +59,15 @@ export function SendPreviewEmail({
   );
 
   const handleSendPreviewEmail = () => {
+    // We need to
+    dispatch(storeName).setSendingPreviewStatus(null);
+    dispatch(storeName).setIsSendingPreviewEmail(true);
     dispatch(storeName).requestSendingNewsletterPreview(
       newsletterId,
       previewToEmail,
+      () => {
+        dispatch(storeName).setIsSendingPreviewEmail(false);
+      },
     );
   };
 
@@ -69,6 +79,54 @@ export function SendPreviewEmail({
           title={__('Send a test email', 'mailpoet')}
           onRequestClose={closeCallback}
         >
+          {sendingPreviewStatus === SendingPreviewStatus.ERROR ? (
+            <div className="mailpoet-send-preview-modal-notice-error">
+              {__('Sorry, we were unable to send this email.', 'mailpoet')}
+              <ul>
+                <li>
+                  {ReactStringReplace(
+                    __(
+                      'Please check your [link]sending method configuration[/link] with your hosting provider.',
+                      'mailpoet',
+                    ),
+                    /\[link\](.*?)\[\/link\]/g,
+                    (match) => (
+                      <a
+                        href="admin.php?page=mailpoet-settings#mta"
+                        key="check-sending"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {match}
+                      </a>
+                    ),
+                  )}
+                </li>
+                <li>
+                  {ReactStringReplace(
+                    __(
+                      'Or, sign up for MailPoet Sending Service to easily send emails. [link]Sign up for free[/link]',
+                      'mailpoet',
+                    ),
+                    /\[link\](.*?)\[\/link\]/g,
+                    (match) => (
+                      <a
+                        href={new URL(
+                          'free-plan',
+                          'https://www.mailpoet.com/',
+                        ).toString()}
+                        key="sign-up-for-free"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {match}
+                      </a>
+                    ),
+                  )}
+                </li>
+              </ul>
+            </div>
+          ) : null}
           <p>{description}</p>
           <TextControl
             label={__('Send to', 'mailpoet')}
@@ -77,12 +135,20 @@ export function SendPreviewEmail({
             }}
             value={previewToEmail}
           />
+          {sendingPreviewStatus === SendingPreviewStatus.SUCCESS ? (
+            <p className="mailpoet-send-preview-modal-notice-success">
+              <Icon icon={check} style={{ fill: '#4AB866' }} />
+              {__('Test email sent successfully!', 'mailpoet')}
+            </p>
+          ) : null}
           <div className="mailpoet-send-preview-modal-footer">
             <Button variant="tertiary" onClick={closeCallback}>
               {__('Close', 'mailpoet')}
             </Button>
             <Button variant="primary" onClick={handleSendPreviewEmail}>
-              {__('Send test email', 'mailpoet')}
+              {isSendingPreviewEmail
+                ? __('Sending...', 'mailpoet')
+                : __('Send test email', 'mailpoet')}
             </Button>
           </div>
         </Modal>

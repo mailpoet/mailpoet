@@ -27,7 +27,9 @@
     display: none;
   }
   // Keep the MailPoet "Preview" button in the header
-  .edit-post-header__settings .mailpoet-header-button-preview .block-editor-post-preview__dropdown {
+  .edit-post-header__settings
+    .mailpoet-header-button-preview
+    .block-editor-post-preview__dropdown {
     display: block;
   }
   // Hide the "Preview" button in the dropdown
@@ -44,5 +46,23 @@
     gap: 12px;
     justify-content: flex-end;
     padding-top: 16px;
+  }
+
+  .mailpoet-send-preview-modal-notice-error {
+    background-color: #fcf0f1;
+    gap: 12px;
+    padding: 12px 16px;
+
+    ul {
+      list-style: disc;
+      margin: 0;
+      padding: 5px 0 0 20px;
+    }
+  }
+
+  .mailpoet-send-preview-modal-notice-success {
+    align-items: center;
+    display: flex;
+    padding-top: 2px;
   }
 }
