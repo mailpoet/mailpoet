@@ -6,14 +6,14 @@ import { store as editorStore } from '@wordpress/editor';
 import { HeaderButtonSlot } from 'email-editor/engine/components/header-button-slot';
 import { LayoutStyles } from 'email-editor/engine/components/layout-styles';
 import { useDisableWelcomeGuide } from 'email-editor/engine/hooks';
+import { useState } from 'react';
 import { NextButton } from './components/next-button';
 import { SettingsSidebar } from './components/settings-panel';
 import { PreviewDropdown } from './components/preview-dropdown';
-import { useState } from 'react';
 import { createStore } from './store';
 import { MailPoetEmailData } from './types';
 
-import './email_editor.scss';
+import './email-editor.scss';
 
 // Hack to temporarily disable block patterns
 directSelect(coreStore).getBlockPatterns = () => [];
