@@ -9,6 +9,7 @@ use MailPoet\WooCommerce\Helper;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
+use WC_Payment_Gateway;
 
 class WooCommerceUsedPaymentMethod implements Filter {
   const ACTION = 'usedPaymentMethod';
@@ -139,6 +140,18 @@ class WooCommerceUsedPaymentMethod implements Filter {
   }
 
   public function getLookupData(DynamicSegmentFilterData $filterData): array {
-    return [];
+    $lookupData = [
+      'paymentMethods' => [],
+    ];
+    $paymentMethods = $filterData->getArrayParam('payment_methods');
+    $allGateways = $this->wooHelper->getPaymentGateways()->payment_gateways();
+
+    foreach ($paymentMethods as $paymentMethod) {
+      if (isset($allGateways[$paymentMethod]) && $allGateways[$paymentMethod] instanceof WC_Payment_Gateway) {
+        $lookupData['paymentMethods'][$paymentMethod] = $allGateways[$paymentMethod]->get_method_title();
+      }
+    }
+
+    return $lookupData;
   }
 }

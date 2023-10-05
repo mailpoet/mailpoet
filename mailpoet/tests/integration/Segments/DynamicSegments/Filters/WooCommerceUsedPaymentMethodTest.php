@@ -116,6 +116,21 @@ class WooCommerceUsedPaymentMethodTest extends \MailPoetTest {
     $this->assertFilterReturnsEmails('none', ['cash', 'paypal'], 1, 'allTime', []);
   }
 
+  public function testItRetrievesLookupData(): void {
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceUsedPaymentMethod::ACTION, [
+      'operator' => 'all',
+      'payment_methods' => ['cod', 'cheque', 'nonexistent'],
+      'days' => 4,
+      'timeframe' => 'inTheLast',
+    ]);
+
+    $lookupData = $this->filter->getLookupData($filterData);
+    $this->assertEqualsCanonicalizing(['paymentMethods' => [
+      'cod' => 'Cash on delivery',
+      'paypal' => 'Check payments',
+    ]], $lookupData);
+  }
+
   private function assertFilterReturnsEmails(string $operator, array $paymentMethods, int $days, string $timeframe, array $expectedEmails): void {
     $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceUsedPaymentMethod::ACTION, [
       'operator' => $operator,
