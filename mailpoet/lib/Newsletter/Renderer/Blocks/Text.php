@@ -3,13 +3,27 @@
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Newsletter\Editor\PostContentManager;
+use MailPoet\Newsletter\NewsletterHtmlSanitizer;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 use MailPoet\Util\pQuery\pQuery;
 
 class Text {
+
+  /** @var NewsletterHtmlSanitizer */
+  private $htmlSanitizer;
+
+  /**
+   * @param NewsletterHtmlSanitizer $htmlSanitizer
+   */
+  public function __construct(
+    NewsletterHtmlSanitizer $htmlSanitizer
+  ) {
+    $this->htmlSanitizer = $htmlSanitizer;
+  }
+
   public function render($element) {
-    $html = $element['text'];
+    $html = $this->htmlSanitizer->sanitize($element['text']);
     // replace &nbsp; with spaces
     $html = str_replace('&nbsp;', ' ', $html);
     $html = str_replace('\xc2\xa0', ' ', $html);
@@ -59,7 +73,7 @@ class Text {
               <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
                 <tr>
                   <td class="mailpoet_blockquote">
-                  ' . implode('', $contents) . '
+                  ' . $this->htmlSanitizer->sanitize(implode('', $contents)) . '
                   </td>
                 </tr>
               </table>
@@ -129,7 +143,7 @@ class Text {
       $paragraph->html('
         <tr>
           <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . EHelper::escapeHtmlStyleAttr($style) . '">
-            ' . $contents . $lineBreaks . '
+            ' . $this->htmlSanitizer->sanitize($contents) . $lineBreaks . '
           </td>
         </tr>'
       );
@@ -144,7 +158,7 @@ class Text {
     if (!$lists->count()) return $html;
     foreach ($lists as $list) {
       if ($list->tag === 'li') {
-        $list->setInnertext(str_replace('&', '&amp;', $list->html()));
+        $list->setInnertext($this->htmlSanitizer->sanitize(str_replace('&', '&amp;', $list->html())));
         $list->class = 'mailpoet_paragraph';
       } else {
         $list->class = 'mailpoet_paragraph';
