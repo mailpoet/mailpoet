@@ -88,6 +88,27 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
+  public function testItRetrievesLookupData(): void {
+    $category1name = 'category' . rand();
+    $category2name = 'category' . rand();
+
+    $category1 = wp_insert_term($category1name, 'product_cat');
+    $category2 = wp_insert_term($category2name, 'product_cat');
+
+    $this->assertIsArray($category1);
+    $this->assertIsArray($category2);
+
+    $data = $this->getSegmentFilterData([$category1['term_id'], $category2['term_id']], 'none');
+    $lookupData = $this->wooCommerceCategoryFilter->getLookupData($data);
+
+    $this->assertEqualsCanonicalizing([
+      'categories' => [
+        $category1['term_id'] => $category1name,
+        $category2['term_id'] => $category2name,
+      ],
+    ], $lookupData);
+  }
+
   private function getSegmentFilterData(array $categoryIds, string $operator): DynamicSegmentFilterData {
     $filterData = [
       'category_ids' => $categoryIds,
