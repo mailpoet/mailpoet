@@ -71,4 +71,54 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->wantTo('Confirm the newsletter was received');
     $i->checkEmailWasReceived('Test Subject');
   }
+
+  public function displayNewsletterPreview(\AcceptanceTester $i) {
+    $wordPressVersion = $i->getWordPressVersion();
+    if (version_compare($wordPressVersion, '6.2', '<')) {
+      return;
+    }
+    $settings = new Settings();
+    $settings->withCronTriggerMethod('Action Scheduler');
+    $settings->withSender('John Doe', 'john@doe.com');
+    (new Features())->withFeatureEnabled(FeaturesController::GUTENBERG_EMAIL_EDITOR);
+
+    $i->wantTo('Open standard newsletter using Gutenberg editor');
+    $i->login();
+    $i->amOnMailpoetPage('Emails');
+    $i->click('[data-automation-id="create_standard"]');
+    $i->waitForText('Which editor do you want to use?');
+    $i->click('Gutenberg Editor');
+
+    $i->wantTo('Edit an email');
+    if (version_compare($wordPressVersion, '6.3', '<')) {
+      $i->waitForElement('.wp-block-post-content');
+      $i->click('.wp-block-post-content');
+      $i->type('Hello world!');
+    } else {
+      // Version 6.3 introduced a new Gutenberg editor with an iframe
+      $i->switchToFrame('[name="editor-canvas"]');
+      $i->waitForElement('.wp-block-post-content');
+      $i->click('.wp-block-post-content');
+      $i->type('Hello world!');
+      $i->switchToIFrame();
+    }
+
+    $i->wantTo('Save draft and display preview');
+    $i->click('//button[text()="Save draft"]');
+    $i->click('.mailpoet-preview-dropdown button[aria-label="Preview"]');
+    $i->waitForElementClickable('//button[text()="Preview in new tab"]');
+    $i->click('//button[text()="Preview in new tab"]');
+    $i->switchToNextTab();
+    $i->canSeeInCurrentUrl('endpoint=view_in_browser');
+    $i->canSee('Hello world!');
+    $i->closeTab();
+
+    $i->wantTo('Send preview email and verify it was delivered');
+    $i->click('//span[text()="Send a test email"]'); // MenuItem component renders a button containing span
+    $i->waitForElementClickable('//button[text()="Send test email"]');
+    $i->click('//button[text()="Send test email"]');
+    $i->waitForText('Test email sent successfully!');
+    $i->click('//button[text()="Close"]');
+    $i->waitForElementNotVisible('//button[text()="Send test email"]');
+  }
 }
