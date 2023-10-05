@@ -138,4 +138,8 @@ class WooCommerceSubscription implements Filter {
       "itemmeta.order_item_id=items.order_item_id AND itemmeta.meta_key='_product_id'"
     );
   }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
 }

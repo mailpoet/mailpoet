@@ -79,6 +79,10 @@ class WooCommerceUsedShippingMethod implements Filter {
     return $queryBuilder;
   }
 
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
+
   private function applyForAnyOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $shippingMethodInstanceIds, Carbon $date, bool $isAllTime): void {
     $instanceIdsParam = $this->filterHelper->getUniqueParameterName('instanceIds');
 

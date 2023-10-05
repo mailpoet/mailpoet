@@ -140,4 +140,8 @@ class WooCommerceCategory implements Filter {
     $ids[] = $categoryId;
     return $ids;
   }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
 }

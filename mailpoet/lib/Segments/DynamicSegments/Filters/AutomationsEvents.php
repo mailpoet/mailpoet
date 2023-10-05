@@ -90,4 +90,8 @@ class AutomationsEvents implements Filter {
       ->groupBy('inner_subscriber_id')
       ->having("COUNT(DISTINCT automations.id) = " . count($automationIds));
   }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
 }

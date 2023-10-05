@@ -108,4 +108,8 @@ class WooCommerceUsedCouponCode implements Filter {
       throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
     }
   }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
 }

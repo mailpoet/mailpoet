@@ -168,4 +168,8 @@ class MailPoetCustomFields implements Filter {
 
     return $queryBuilder;
   }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
 }

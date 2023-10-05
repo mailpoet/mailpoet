@@ -137,4 +137,8 @@ class WooCommerceUsedPaymentMethod implements Filter {
     }
     return $ordersAlias;
   }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
 }
