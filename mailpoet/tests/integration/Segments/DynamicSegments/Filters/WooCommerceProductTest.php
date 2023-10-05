@@ -81,6 +81,23 @@ class WooCommerceProductTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
+  public function testItRetrievesLookupData(): void {
+    $productId1 = $this->createProduct('product one');
+    $productId2 = $this->createProduct('product two');
+
+    $this->productIds[] = $productId1;
+    $this->productIds[] = $productId2;
+
+    $data = $this->getSegmentFilterData([$productId1, $productId2, 12345], 'none');
+    $lookupData = $this->wooCommerceProductFilter->getLookupData($data);
+    $this->assertEqualsCanonicalizing([
+      'products' => [
+        $productId1 => 'product one',
+        $productId2 => 'product two',
+      ],
+    ], $lookupData);
+  }
+
   private function getSegmentFilterData(array $productIds, string $operator): DynamicSegmentFilterData {
     $filterData = [
       'product_ids' => $productIds,
@@ -140,8 +157,8 @@ class WooCommerceProductTest extends \MailPoetTest {
   private function cleanUp(): void {
     global $wpdb;
 
-    if (!empty($this->products)) {
-      foreach ($this->products as $productId) {
+    if (!empty($this->productIds)) {
+      foreach ($this->productIds as $productId) {
         wp_delete_post($productId);
       }
     }
