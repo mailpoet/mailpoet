@@ -113,4 +113,8 @@ class WooCommerceNumberOfOrders implements Filter {
 
     return false;
   }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
 }

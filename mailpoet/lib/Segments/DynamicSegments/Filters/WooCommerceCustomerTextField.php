@@ -100,4 +100,8 @@ class WooCommerceCustomerTextField implements Filter {
 
     throw new InvalidFilterException('Invalid action');
   }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
 }

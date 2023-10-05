@@ -126,4 +126,8 @@ class WooCommerceNumberOfReviews implements Filter {
     }
     $this->filterHelper->validateDaysPeriodData($data);
   }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
 }

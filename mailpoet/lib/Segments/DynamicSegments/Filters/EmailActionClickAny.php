@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\StatisticsClickEntity;
@@ -46,5 +47,9 @@ class EmailActionClickAny implements Filter {
     );
 
     return $queryBuilder;
+  }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
   }
 }

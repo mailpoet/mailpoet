@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -21,5 +22,9 @@ class SubscriberTag implements Filter {
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $this->wp->applyFilters('mailpoet_dynamic_segments_filter_subscriber_tag_apply', $queryBuilder, $filter);
     return $queryBuilder;
+  }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
   }
 }

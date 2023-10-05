@@ -2,6 +2,7 @@
 
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
+use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -75,5 +76,9 @@ class WooCommercePurchaseDate implements Filter {
     $queryBuilder->setParameter($dateParam, $date);
 
     return $queryBuilder;
+  }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
   }
 }

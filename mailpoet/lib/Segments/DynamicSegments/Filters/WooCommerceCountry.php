@@ -76,4 +76,8 @@ class WooCommerceCountry implements Filter {
     }
     return join(' OR ', $sqlParts);
   }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
 }

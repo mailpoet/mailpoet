@@ -80,4 +80,8 @@ class WooCommerceProduct implements Filter {
       ->createQueryBuilder()
       ->from($table);
   }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
 }

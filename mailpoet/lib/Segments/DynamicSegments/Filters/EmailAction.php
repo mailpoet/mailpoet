@@ -215,4 +215,8 @@ class EmailAction implements Filter {
 
     return $queryBuilder;
   }
+
+  public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    return [];
+  }
 }
