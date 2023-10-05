@@ -25,6 +25,11 @@ class SubscriberTag implements Filter {
   }
 
   public function getLookupData(DynamicSegmentFilterData $filterData): array {
-    return [];
+    $default = ['tags' => []];
+    $filteredLookupData = $this->wp->applyFilters('mailpoet_dynamic_segments_filter_subscriber_tag_getLookupData', $default, $filterData);
+    if (is_array($filteredLookupData)) {
+      return $filteredLookupData;
+    }
+    return $default;
   }
 }
