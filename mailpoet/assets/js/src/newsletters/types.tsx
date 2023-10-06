@@ -1,5 +1,7 @@
+import { ButtonGroup, Dropdown, MenuItem } from '@wordpress/components';
 import { ComponentType, Fragment, useState } from 'react';
 import { __ } from '@wordpress/i18n';
+import { chevronDown, Icon } from '@wordpress/icons';
 import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
 import _ from 'underscore';
@@ -31,9 +33,6 @@ function NewsletterTypesComponent({
   const [isCreating, setIsCreating] = useState(false);
 
   const [isSelectEditorModalOpen, setIsSelectEditorModalOpen] = useState(false);
-  const [selectLegacyEditorCallback, setSelectLegacyEditorCallback] = useState(
-    () => () => null,
-  );
   const isNewEmailEditorEnabled = MailPoet.FeaturesController.isSupported(
     'gutenberg_email_editor',
   );
@@ -255,15 +254,7 @@ function NewsletterTypesComponent({
       });
   };
 
-  let createStandardNewsletter = _.partial(createNewsletter, 'standard');
-  if (isNewEmailEditorEnabled) {
-    createStandardNewsletter = () => {
-      setSelectLegacyEditorCallback(() =>
-        _.partial(createNewsletter, 'standard'),
-      );
-      setIsSelectEditorModalOpen(true);
-    };
-  }
+  const createStandardNewsletter = _.partial(createNewsletter, 'standard');
   const createNotificationNewsletter = _.partial(
     setupNewsletter,
     'notification',
@@ -274,6 +265,68 @@ function NewsletterTypesComponent({
     're-engagement',
   );
 
+  const standardAction = isNewEmailEditorEnabled ? (
+    <ButtonGroup className="mailpoet-dropdown-button-group">
+      <Button
+        automationId="create_standard"
+        onClick={createStandardNewsletter}
+        tabIndex={0}
+        withSpinner={isCreating}
+        onKeyDown={(event): void => {
+          if (
+            ['keydown', 'keypress'].includes(event.type) &&
+            ['Enter', ' '].includes(event.key)
+          ) {
+            event.preventDefault();
+            createStandardNewsletter();
+          }
+        }}
+      >
+        {__('Create', 'mailpoet')}
+      </Button>
+      <Dropdown
+        focusOnMount={false}
+        className="mailpoet-dropdown-button"
+        contentClassName="mailpoet-dropdown-button-content"
+        popoverProps={{ placement: 'bottom-end' }}
+        renderToggle={({ isOpen, onToggle }) => (
+          <Button
+            className="mailpoet-button-with-wordpress-icon"
+            onClick={onToggle}
+            aria-expanded={isOpen}
+          >
+            <Icon icon={chevronDown} size={24} />
+          </Button>
+        )}
+        renderContent={() => (
+          <MenuItem
+            variant="tertiary"
+            onClick={() => setIsSelectEditorModalOpen(true)}
+          >
+            {__('Create using new editor (Beta)', 'mailpoet')}
+          </MenuItem>
+        )}
+      />
+    </ButtonGroup>
+  ) : (
+    <Button
+      automationId="create_standard"
+      onClick={createStandardNewsletter}
+      tabIndex={0}
+      withSpinner={isCreating}
+      onKeyDown={(event): void => {
+        if (
+          ['keydown', 'keypress'].includes(event.type) &&
+          ['Enter', ' '].includes(event.key)
+        ) {
+          event.preventDefault();
+          createStandardNewsletter();
+        }
+      }}
+    >
+      {__('Create', 'mailpoet')}
+    </Button>
+  );
   const defaultTypes = [
     {
       slug: 'standard',
@@ -282,25 +335,7 @@ function NewsletterTypesComponent({
         'Send a newsletter with images, buttons, dividers, and social bookmarks. Or, just send a basic text email.',
         'mailpoet',
       ),
-      action: (
-        <Button
-          automationId="create_standard"
-          onClick={createStandardNewsletter}
-          tabIndex={0}
-          withSpinner={isCreating}
-          onKeyDown={(event): void => {
-            if (
-              ['keydown', 'keypress'].includes(event.type) &&
-              ['Enter', ' '].includes(event.key)
-            ) {
-              event.preventDefault();
-              createStandardNewsletter();
-            }
-          }}
-        >
-          {__('Create', 'mailpoet')}
-        </Button>
-      ),
+      action: standardAction,
     },
     {
       slug: 'welcome',
@@ -433,7 +468,7 @@ function NewsletterTypesComponent({
 
       <link rel="prefetch" href={templatesGETUrl} as="fetch" />
       <EditorSelectModal
-        legacyEditorCallback={selectLegacyEditorCallback}
+        legacyEditorCallback={() => {}}
         onClose={() => setIsSelectEditorModalOpen(false)}
         isModalOpen={isSelectEditorModalOpen}
       />
