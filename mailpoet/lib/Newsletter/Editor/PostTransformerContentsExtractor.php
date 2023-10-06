@@ -152,7 +152,7 @@ class PostTransformerContentsExtractor {
     $title = '<' . $tag . ' data-post-id="' . $post->ID . '" style="text-align: ' . $alignment . ';">' . $title . '</' . $tag . '>';
     return [
       'type' => 'text',
-      'text' => $title,
+      'text' => wp_kses($title, 'post'),
     ];
   }
 
