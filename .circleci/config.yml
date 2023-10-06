@@ -71,6 +71,12 @@ anchors:
           - trunk
           - release
 
+  only_release: &only_release
+    filters:
+      branches:
+        only:
+          - release
+
   multisite_acceptance_config: &multisite_acceptance_config
     multisite: 1
     requires:
@@ -775,6 +781,11 @@ workflows:
     jobs:
       - build:
           <<: *slack-fail-post-step
+      - build_premium:
+          <<: *slack-fail-post-step
+          <<: *only_release
+          requires:
+            - build
       - unit_tests:
           <<: *slack-fail-post-step
           name: unit_tests
@@ -910,6 +921,24 @@ workflows:
             - static_analysis_php8
             - qa_js
             - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          <<: *only_release
+          name: acceptance_with_premium_latest
+          requires:
+            - build_premium
+      - unit_tests:
+          <<: *slack-fail-post-step
+          <<: *only_release
+          name: unit_with_premium_latest
+          requires:
+            - build_premium
+      - integration_tests:
+          <<: *slack-fail-post-step
+          <<: *only_release
+          name: integration_with_premium_latest
+          requires:
+            - build_premium
       - build_release_zip:
           <<: *slack-fail-post-step
           requires:
