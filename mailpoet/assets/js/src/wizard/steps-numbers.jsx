@@ -3,6 +3,9 @@ export const getStepsCount = () => {
   if (window.mailpoet_woocommerce_active) {
     stepsCount += 1;
   }
+  if (window.mailpoet_has_valid_api_key) {
+    stepsCount -= 1; // skip the MSS step if user already set API key
+  }
   return stepsCount;
 };
 
@@ -25,5 +28,8 @@ export const mapStepNumberToStepName = (stepNumber) => {
   if (window.mailpoet_woocommerce_active && stepNumber === 3) {
     return 'WizardWooCommerceStep';
   }
-  return 'WelcomeWizardPitchMSSStep';
+  if (!window.mailpoet_has_valid_api_key) {
+    return 'WelcomeWizardPitchMSSStep';
+  }
+  return null;
 };
