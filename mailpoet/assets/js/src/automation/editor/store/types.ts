@@ -75,6 +75,7 @@ export type StepType = {
   keywords: string[];
   icon: ComponentType;
   edit: ComponentType;
+  footer?: ComponentType<{ step: Step }>;
   foreground: string;
   background: string;
   createStep?: (step: Step, state: State) => Step;

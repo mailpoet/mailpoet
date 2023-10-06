@@ -6,14 +6,15 @@ import { blockMeta } from '@wordpress/icons';
 import { __, _x } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { AutomationContext, AutomationCompositeContext } from './context';
-import { StepFilters } from './step-filters';
 import { StepMoreMenu } from './step-more-menu';
 import { Step as StepData } from './types';
 import { Chip } from '../chip';
+import { FiltersChip } from '../filters';
 import { ColoredIcon } from '../icons';
 import { stepSidebarKey, storeName } from '../../store';
 import { StepType } from '../../store/types';
 import { RenderStepFooterType, StepMoreType } from '../../../types/filters';
+import { triggerFilterStrings } from './trigger-filters';
 
 const getUnknownStepType = (step: StepData): StepType => {
   const isTrigger = step.type === 'trigger';
@@ -61,10 +62,14 @@ export function Step({ step, isSelected }: Props): JSX.Element {
   const compositeItemId = `step-${step.id}`;
   const stepTypeData = stepType ?? getUnknownStepType(step);
 
+  const Footer = stepType.footer;
   const footer: RenderStepFooterType = Hooks.applyFilters(
     'mailpoet.automation.step.footer',
     <div className="mailpoet-automation-editor-step-footer">
-      <StepFilters step={step} />
+      {Footer && <Footer step={step} />}
+      {step.type === 'trigger' && (
+        <FiltersChip step={step} strings={triggerFilterStrings} />
+      )}
       {error ? (
         <div className="mailpoet-automation-editor-step-error">
           <Chip variant="danger" size="small">

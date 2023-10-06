@@ -2,16 +2,18 @@ import { useMemo } from 'react';
 import { Dropdown } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { Step } from './types';
+import { FiltersList } from './list';
+import { FilterStrings } from './strings';
+import { Step } from '../automation/types';
 import { Chip } from '../chip';
-import { FiltersList } from '../filters';
 import { storeName } from '../../store';
 
 type Props = {
   step: Step;
+  strings: FilterStrings;
 };
 
-export function StepFilters({ step }: Props): JSX.Element | null {
+export function FiltersChip({ step, strings }: Props): JSX.Element | null {
   const { errors } = useSelect(
     (select) => ({
       errors: select(storeName).getStepError(step.id),
@@ -39,15 +41,15 @@ export function StepFilters({ step }: Props): JSX.Element | null {
           onClick={onToggle}
           ariaExpanded={isOpen}
         >
-          {__(`Filters: ${filterCount}`, 'mailpoet')}
+          {__(`${strings.label}: ${filterCount}`, 'mailpoet')}
         </Chip>
       )}
       renderContent={() => (
         <div className="mailpoet-automation-editor-step-filters">
           <span className="mailpoet-automation-editor-step-filters-title">
-            {__('Filters', 'mailpoet')}
+            {strings.title}
           </span>
-          <FiltersList editable={false} />
+          <FiltersList step={step} editable={false} strings={strings} />
         </div>
       )}
     />

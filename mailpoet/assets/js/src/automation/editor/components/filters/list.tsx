@@ -7,23 +7,30 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Icon, closeSmall } from '@wordpress/icons';
 import { ListGroupHeader } from './list-group-header';
 import { Value } from './value';
+import { Step } from '../automation/types';
 import { storeName } from '../../store';
 import { PremiumModal } from '../../../../common/premium-modal';
 import {
   FilterGroupOperatorChangeType,
   FilterWrapperType,
 } from '../../../types/filters';
+import { FilterStrings } from './strings';
 
 type Props = {
   editable?: boolean;
+  step: Step;
+  strings: FilterStrings;
 };
 
-export function FiltersList({ editable = true }: Props): JSX.Element | null {
+export function FiltersList({
+  editable = true,
+  step,
+  strings,
+}: Props): JSX.Element | null {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
-  const { step, fields, filters, errors } = useSelect(
+  const { fields, filters, errors } = useSelect(
     (select) => ({
-      step: select(storeName).getSelectedStep(),
       fields: select(storeName).getRegistry().fields,
       filters: select(storeName).getRegistry().filters,
       errors: select(storeName).getStepError(
@@ -95,7 +102,7 @@ export function FiltersList({ editable = true }: Props): JSX.Element | null {
             utm_campaign: 'automation_premium_filters',
           }}
         >
-          {__('Managing trigger filters is a premium feature.', 'mailpoet')}
+          {strings.premiumMessage}
         </PremiumModal>
       )}
 
@@ -105,6 +112,7 @@ export function FiltersList({ editable = true }: Props): JSX.Element | null {
             editable={editable}
             group={group}
             onOperatorChange={onOperatorChange}
+            strings={strings}
           />
 
           <div className="mailpoet-automation-filters-list">
