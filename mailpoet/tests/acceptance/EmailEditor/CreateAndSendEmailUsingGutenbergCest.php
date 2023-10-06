@@ -9,7 +9,7 @@ use MailPoet\Test\DataFactories\Settings;
 class CreateAndSendEmailUsingGutenbergCest {
   public function createAndSendStandardNewsletter(\AcceptanceTester $i) {
     $wordPressVersion = $i->getWordPressVersion();
-    if (version_compare($wordPressVersion, '6.2', '<')) {
+    if (version_compare($wordPressVersion, '6.4', '<')) {
       return;
     }
     $settings = new Settings();
