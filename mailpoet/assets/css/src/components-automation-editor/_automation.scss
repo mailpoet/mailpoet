@@ -1,13 +1,13 @@
 .mailpoet-automation-editor-automation {
   background: #fbfbfb;
+  display: grid;
   flex-grow: 1;
+  grid-template-rows: auto 1fr;
 }
 
 .mailpoet-automation-editor-automation-wrapper {
-  display: grid;
-  justify-content: center;
-  overflow: hidden;
-  padding: 50px 20px;
+  overflow: scroll;
+  padding: 0 20px 50px;
 }
 
 .mailpoet-automation-editor-automation-flow {
@@ -32,7 +32,7 @@
 }
 
 .mailpoet-automation-editor-stats {
-  margin: 0 auto 32px;
+  margin: 50px auto 32px;
   max-width: 480px;
   width: 100%;
 

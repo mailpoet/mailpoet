@@ -5,8 +5,10 @@ import { Button, Icon, Popover, SlotFillProvider } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
 import { dispatch, select as globalSelect, useSelect } from '@wordpress/data';
 import { getSettings, setSettings } from '@wordpress/date';
+import { Platform } from '@wordpress/element';
 import { wordpress } from '@wordpress/icons';
 import {
+  store as interfaceStore,
   ComplementaryArea,
   FullscreenMode,
   InterfaceSkeleton,
@@ -21,7 +23,7 @@ import { KeyboardShortcuts } from './components/keyboard-shortcuts';
 import { EditorNotices } from './components/notices';
 import { Sidebar } from './components/sidebar';
 import { Automation } from './components/automation';
-import { createStore, storeName } from './store';
+import { automationSidebarKey, createStore, storeName } from './store';
 import { initializeApi } from '../api';
 import { initialize as initializeCoreIntegration } from '../integrations/core';
 import { initialize as initializeMailPoetIntegration } from '../integrations/mailpoet';
@@ -186,6 +188,17 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   createStore();
+
+  // Sync default sidebar state to the interface store before starting rendering,
+  // so that the layout is computed early enough to center the automation scroll.
+  const sidebarActiveByDefault = Platform.select({
+    web: true,
+    native: false,
+  });
+  dispatch(interfaceStore).enableComplementaryArea(
+    storeName,
+    sidebarActiveByDefault ? automationSidebarKey : undefined,
+  );
 
   const root = document.getElementById('mailpoet_automation_editor');
   if (root) {
