@@ -83,6 +83,7 @@ class MenuTest extends \MailPoetTest {
       [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
       [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
       [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
+      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
       [null, $this->anything(), $this->anything(), $this->anything(), Menu::AUTOMATIONS_PAGE_SLUG, $this->anything()]
     )->willReturn(true);
 
@@ -117,6 +118,7 @@ class MenuTest extends \MailPoetTest {
     $accessControlMock->method('validatePermission')->willReturn(true);
 
     $wpMock->expects($this->any())->method('addSubmenuPage')->withConsecutive(
+      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
       [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
       [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
       [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
