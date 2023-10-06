@@ -143,6 +143,9 @@ class WooCommerceUsedPaymentMethod implements Filter {
     $lookupData = [
       'paymentMethods' => [],
     ];
+    if (!$this->wooHelper->isWooCommerceActive()) {
+      return $lookupData;
+    }
     $paymentMethods = $filterData->getArrayParam('payment_methods');
     $allGateways = $this->wooHelper->getPaymentGateways()->payment_gateways();
 

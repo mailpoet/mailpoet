@@ -81,6 +81,9 @@ class WooCommerceUsedShippingMethod implements Filter {
 
   public function getLookupData(DynamicSegmentFilterData $filterData): array {
     $lookupData = ['shippingMethods' => []];
+    if (!$this->wooHelper->isWooCommerceActive()) {
+      return $lookupData;
+    }
     $allMethods = $this->wooHelper->getShippingMethodInstancesData();
     $configuredShippingMethodInstanceIds = $filterData->getArrayParam('shipping_methods');
 

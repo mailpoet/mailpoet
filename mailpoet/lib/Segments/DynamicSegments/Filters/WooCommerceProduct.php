@@ -90,6 +90,9 @@ class WooCommerceProduct implements Filter {
 
   public function getLookupData(DynamicSegmentFilterData $filterData): array {
     $lookupData = ['products' => []];
+    if (!$this->wooHelper->isWooCommerceActive()) {
+      return $lookupData;
+    }
     $productIds = $filterData->getArrayParam('product_ids');
     foreach ($productIds as $productId) {
       $product = $this->wooHelper->wcGetProduct($productId);
