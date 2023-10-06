@@ -52,6 +52,9 @@ class Migration_20230831_143755_Db extends DbMigration {
 
     // add unique index, remove no longer needed index
     if (!$this->indexExists($logsTable, 'automation_run_id_step_id')) {
+      $this->connection->executeStatement(
+        "DELETE t1 FROM $logsTable as t1, $logsTable as t2 WHERE t1.id < t2.id AND t1.automation_run_id = t2.automation_run_id AND t1.step_id=t2.step_id"
+      );
       $this->connection->executeStatement("ALTER TABLE $logsTable ADD UNIQUE automation_run_id_step_id (automation_run_id, step_id)");
     }
     if ($this->indexExists($logsTable, 'automation_run_id')) {
