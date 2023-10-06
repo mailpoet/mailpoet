@@ -164,6 +164,7 @@ class NewslettersResponseBuilder {
     if ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
       $data['segments'] = $this->buildSegments($newsletter);
       $data['queue'] = $latestQueue ? $this->buildQueue($latestQueue) : false; // false for BC
+      $data['options'] = $this->buildOptions($newsletter);
     } elseif (in_array($newsletter->getType(), [NewsletterEntity::TYPE_WELCOME, NewsletterEntity::TYPE_AUTOMATIC], true)) {
       $data['segments'] = [];
       $data['options'] = $this->buildOptions($newsletter);
