@@ -3,13 +3,17 @@ import { Hooks } from 'wp-js-hooks';
 import { Button, PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { plus } from '@wordpress/icons';
-import { __ } from '@wordpress/i18n';
 import { storeName } from '../../store';
 import { FiltersPanelContentType } from '../../../types/filters';
 import { PremiumModal } from '../../../../common/premium-modal';
 import { FiltersList } from './list';
+import { FilterStrings } from './strings';
 
-function FiltersPanelContent(): JSX.Element {
+type ContentProps = {
+  strings: FilterStrings;
+};
+
+function FiltersPanelContent({ strings }: ContentProps): JSX.Element {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   return (
     <>
@@ -23,7 +27,7 @@ function FiltersPanelContent(): JSX.Element {
             utm_campaign: 'automation_premium_filters',
           }}
         >
-          {__('Adding trigger filters is a premium feature.', 'mailpoet')}
+          {strings.premiumMessage}
         </PremiumModal>
       )}
       <Button
@@ -32,13 +36,17 @@ function FiltersPanelContent(): JSX.Element {
         icon={plus}
         onClick={() => setShowPremiumModal(true)}
       >
-        {__('Add trigger filter', 'mailpoet')}
+        {strings.addFilter}
       </Button>
     </>
   );
 }
 
-export function FiltersPanel(): JSX.Element {
+type Props = {
+  strings: FilterStrings;
+};
+
+export function FiltersPanel({ strings }: Props): JSX.Element {
   const selectedStep = useSelect(
     (select) => select(storeName).getSelectedStep(),
     [],
@@ -48,14 +56,15 @@ export function FiltersPanel(): JSX.Element {
     () =>
       Hooks.applyFilters(
         'mailpoet.automation.filters.panel.content',
-        FiltersPanelContent,
+        () => <FiltersPanelContent strings={strings} />,
+        strings,
       ) as FiltersPanelContentType,
-    [],
+    [strings],
   );
 
   return (
-    <PanelBody initialOpen title={__('Trigger filters', 'mailpoet')}>
-      <FiltersList />
+    <PanelBody initialOpen title={strings.title}>
+      <FiltersList step={selectedStep} strings={strings} />
       <div className="mailpoet-automation-filters-panel-content">
         {content(selectedStep)}
       </div>

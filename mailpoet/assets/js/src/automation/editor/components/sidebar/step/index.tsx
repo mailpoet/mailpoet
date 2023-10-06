@@ -1,6 +1,7 @@
 import { Notice, PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { storeName } from '../../../store';
+import { triggerFilterStrings } from '../../automation/trigger-filters';
 import { FiltersPanel } from '../../filters';
 import { StepCard } from '../../step-card';
 
@@ -63,7 +64,9 @@ export function StepSidebar(): JSX.Element {
         key={selectedStep.id}
       />
 
-      {selectedStep.type === 'trigger' && <FiltersPanel />}
+      {selectedStep.type === 'trigger' && (
+        <FiltersPanel strings={triggerFilterStrings} />
+      )}
     </div>
   );
 }

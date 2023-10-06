@@ -3,6 +3,7 @@ import { RadioControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { createInterpolateElement } from '@wordpress/element';
 import { FilterGroup } from '../automation/types';
+import { FilterStrings } from './strings';
 import { storeName } from '../../store';
 
 type Props = {
@@ -13,12 +14,14 @@ type Props = {
     groupId: string,
     operator: 'and' | 'or',
   ) => void;
+  strings: FilterStrings;
 };
 
 export function ListGroupHeader({
   editable,
   group,
   onOperatorChange,
+  strings,
 }: Props): JSX.Element {
   const { step } = useSelect(
     (select) => ({
@@ -31,10 +34,7 @@ export function ListGroupHeader({
     return (
       <>
         <div className="mailpoet-automation-filters-list-group-description">
-          {__(
-            'The automation would only be started if the following trigger conditions are met:',
-            'mailpoet',
-          )}
+          {strings.groupDescription}
         </div>
         {group.filters.length > 1 && (
           <RadioControl
@@ -55,15 +55,7 @@ export function ListGroupHeader({
 
   // read-only
   const description = createInterpolateElement(
-    group.operator === 'and'
-      ? __(
-          'The automation would only be started if <operator>all of</operator> the following trigger conditions are met:',
-          'mailpoet',
-        )
-      : __(
-          'The automation would only be started if <operator>any of</operator> the following trigger conditions are met:',
-          'mailpoet',
-        ),
+    group.operator === 'and' ? strings.andDescription : strings.orDescription,
     {
       operator: (
         <span className="mailpoet-automation-filters-list-group-description-operator" />
