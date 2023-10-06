@@ -14,7 +14,7 @@ import {
   getStepsCount,
   mapStepNumberToStepName,
   redirectToNextStep,
-} from './steps-numbers.jsx';
+} from './steps-numbers';
 import { Steps } from '../common/steps/steps';
 import { StepsContent } from '../common/steps/steps-content';
 import { TopBar } from '../common/top-bar/top-bar';
