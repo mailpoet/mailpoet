@@ -117,6 +117,9 @@ class WooCommerceUsedCouponCode implements Filter {
 
   public function getLookupData(DynamicSegmentFilterData $filterData): array {
     $lookupData = ['coupons' => []];
+    if (!$this->wooHelper->isWooCommerceActive()) {
+      return $lookupData;
+    }
     $couponIds = $filterData->getArrayParam(self::COUPON_CODE_IDS_KEY);
     foreach ($couponIds as $couponId) {
       $couponCode = $this->wooHelper->wcGetCouponCodeById((int)$couponId);
