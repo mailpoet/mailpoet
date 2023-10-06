@@ -296,7 +296,13 @@ class Helper {
       $this->formatShippingMethods($outOfCoverageShippingZone->get_shipping_methods(), $outOfCoverageShippingZone->get_zone_name())
     );
 
-    return $formattedShippingMethodData;
+    $keyedZones = [];
+
+    foreach ($formattedShippingMethodData as $shippingMethodArray) {
+      $keyedZones[$shippingMethodArray['instanceId']] = $shippingMethodArray;
+    }
+
+    return $keyedZones;
   }
 
   protected function formatShippingMethods(array $shippingMethods, string $shippingZoneName): array {

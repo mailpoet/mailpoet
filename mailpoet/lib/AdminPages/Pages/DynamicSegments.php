@@ -167,7 +167,7 @@ class DynamicSegments {
       }
       $data['woocommerce_payment_methods'] = $paymentMethods;
 
-      $data['woocommerce_shipping_methods'] = $this->woocommerceHelper->getShippingMethodInstancesData();
+      $data['woocommerce_shipping_methods'] = array_values($this->woocommerceHelper->getShippingMethodInstancesData());
     }
     $data['automations'] = array_map(function(Automation $automation) {
       return [

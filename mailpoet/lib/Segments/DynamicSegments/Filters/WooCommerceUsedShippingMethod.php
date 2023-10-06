@@ -80,7 +80,18 @@ class WooCommerceUsedShippingMethod implements Filter {
   }
 
   public function getLookupData(DynamicSegmentFilterData $filterData): array {
-    return [];
+    $lookupData = ['shippingMethods' => []];
+    $allMethods = $this->wooHelper->getShippingMethodInstancesData();
+    $configuredShippingMethodInstanceIds = $filterData->getArrayParam('shipping_methods');
+
+    foreach ($configuredShippingMethodInstanceIds as $instanceId) {
+      if (isset($allMethods[$instanceId])) {
+        $data = $allMethods[$instanceId];
+        $lookupData['shippingMethods'][$instanceId] = $data['name'];
+      }
+    }
+
+    return $lookupData;
   }
 
   private function applyForAnyOperator(QueryBuilder $queryBuilder, array $includedStatuses, array $shippingMethodInstanceIds, Carbon $date, bool $isAllTime): void {

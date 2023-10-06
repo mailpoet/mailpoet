@@ -73,7 +73,7 @@ class HelperTest extends \MailPoetTest {
       ],
     ];
 
-    $this->assertEquals($expectedResult, $this->helper->getShippingMethodInstancesData());
+    $this->assertEquals($expectedResult, array_values($this->helper->getShippingMethodInstancesData()));
   }
 
   protected function createShippingZonesWithShippingMethods() {
