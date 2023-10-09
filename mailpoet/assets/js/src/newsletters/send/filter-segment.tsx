@@ -120,6 +120,9 @@ export function FilterSegment({
       />
     );
   }
+
+  const createNewSegmentUrl = `admin.php?page=mailpoet-segments#/new-segment?newsletterId=${item.id}`;
+
   return (
     <>
       <Toggle
@@ -164,10 +167,10 @@ export function FilterSegment({
                 onClick={(event) => {
                   event.preventDefault();
                   context.saveDraftNewsletter(() => {
-                    window.location.href = `admin.php?page=mailpoet-segments#/new-segment?newsletterId=${item.id}`;
+                    window.location.href = createNewSegmentUrl;
                   });
                 }}
-                href={`admin.php?page=mailpoet-segments#/new-segment?newsletterId=${item.id}`}
+                href={createNewSegmentUrl}
               >
                 {match}
               </a>
