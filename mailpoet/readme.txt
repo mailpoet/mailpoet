@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.2
 Tested up to: 6.3
-Stable tag: 4.30.0
+Stable tag: 4.31.0
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.31.0 - 2023-10-09 =
+* Added: show segment filter on email listing and stats pages;
+* Added: automation title on the analytics page;
+* Added: apply segment on top of lists on the send email page;
+* Improved: deferred loading of JS on frontend;
+* Improved: new WordPress-like design when adding or editing a segment;
+* Fixed: plugin conflict with Kubio site builder.
 
 = 4.30.0 - 2023-10-03 =
 * Updated: npm dependencies;
