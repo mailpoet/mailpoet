@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 use MailPoet\Newsletter\Editor\PostContentManager;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\Util\pQuery\pQuery;
+use MailPoet\WP\Functions;
 
 class TextTest extends \MailPoetUnitTest {
 
@@ -16,13 +17,22 @@ class TextTest extends \MailPoetUnitTest {
   /** @var pQuery */
   private $parser;
 
+  /** @var Text */
+  private $text;
+
   public function _before() {
     parent::_before();
     $this->parser = new pQuery;
+    $wp = $this->make(Functions::class, [
+      'wpKsesPost' => function($text) {
+        return $text;
+      },
+    ]);
+    $this->text = (new Text($wp));
   }
 
   public function testItRendersPlainText() {
-    $output = (new Text)->render($this->block);
+    $output = $this->text->render($this->block);
     $expectedResult = '
       <tr>
         <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="word-break:break-word;word-wrap:break-word;">
@@ -34,7 +44,7 @@ class TextTest extends \MailPoetUnitTest {
 
   public function testItRendersParagraph() {
     $this->block['text'] = '<p>Text</p>';
-    $output = (new Text)->render($this->block);
+    $output = $this->text->render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
     $this->assertInstanceOf(pQuery::class, $table);
     $tableElement = $table[0];
@@ -54,7 +64,7 @@ class TextTest extends \MailPoetUnitTest {
       <p class="' . PostContentManager::WP_POST_CLASS . '">First</p>
       <p class="' . PostContentManager::WP_POST_CLASS . '">Second</p>
     ';
-    $output = (new Text)->render($this->block);
+    $output = $this->text->render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
     $this->assertInstanceOf(pQuery::class, $table);
     $tableElement = $table[0];
@@ -84,7 +94,7 @@ class TextTest extends \MailPoetUnitTest {
       <p class="' . PostContentManager::WP_POST_CLASS . '">First</p>
       <h1>Second</h1>
     ';
-    $output = (new Text)->render($this->block);
+    $output = $this->text->render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
     $this->assertInstanceOf(pQuery::class, $table);
     $tableElement = $table[0];
@@ -108,7 +118,7 @@ class TextTest extends \MailPoetUnitTest {
 
   public function testItRendersList() {
     $this->block['text'] = '<ul><li>Item 1</li><li>Item 2</li></ul>';
-    $output = (new Text)->render($this->block);
+    $output = $this->text->render($this->block);
     $ul = $this->parser->parseStr($output)->query('ul');
     $this->assertInstanceOf(pQuery::class, $ul);
     $ulElement = $ul[0];
@@ -120,7 +130,7 @@ class TextTest extends \MailPoetUnitTest {
 
   public function testItRendersBlockquotes() {
     $this->block['text'] = '<blockquote><p>Quote</p></blockquote>';
-    $output = (new Text)->render($this->block);
+    $output = $this->text->render($this->block);
     $table = $this->parser->parseStr($output)->query('table');
     $this->assertInstanceOf(pQuery::class, $table);
     $tableElement = $table[0];
@@ -147,7 +157,7 @@ class TextTest extends \MailPoetUnitTest {
 
   public function testItShouldRemoveEmptyParagraphs() {
     $this->block['text'] = '<p></p><p>Text</p><p></p><p>Text2</p><p></p><p></p>';
-    $output = (new Text)->render($this->block);
+    $output = $this->text->render($this->block);
     $expectedResult = '
       <tr>
         <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="word-break:break-word;word-wrap:break-word;">
@@ -169,20 +179,20 @@ class TextTest extends \MailPoetUnitTest {
 
   public function testItStylesHeadings() {
     $this->block['text'] = '<h1>Heading</h1><h2>Heading 2</h2>';
-    $output = (new Text)->render($this->block);
+    $output = $this->text->render($this->block);
     expect($output)->stringContainsString('<h1 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading</h1>');
     expect($output)->stringContainsString('<h2 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading 2</h2>');
   }
 
   public function testItStylesHeadingsCenter() {
     $this->block['text'] = '<h1 style="text-align: center"><strong>Let\'s Get Started! </strong></h1>';
-    $output = (new Text)->render($this->block);
+    $output = $this->text->render($this->block);
     expect($output)->stringContainsString('<h1 style="text-align: center;padding:0;');
   }
 
   public function testItRemovesLastLineBreak() {
     $this->block['text'] = 'hello<br />';
-    $output = (new Text)->render($this->block);
+    $output = $this->text->render($this->block);
     expect($output)->stringNotContainsString('<br />');
   }
 }

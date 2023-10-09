@@ -40,6 +40,12 @@ class RendererTest extends \MailPoetTest {
 
   const COLUMN_BASE_WIDTH = 660;
 
+  /** @var WPFunctions */
+  private $wp;
+
+  /** @var Text */
+  private $text;
+
   public function _before() {
     parent::_before();
     $this->newsletter = new NewsletterEntity();
@@ -67,6 +73,8 @@ class RendererTest extends \MailPoetTest {
     );
     $this->columnRenderer = new ColumnRenderer();
     $this->dOMParser = new pQuery();
+    $this->wp = $this->diContainer->get(WPFunctions::class);
+    $this->text = (new Text($this->wp));
   }
 
   public function testItRendersCompleteNewsletter() {
@@ -416,7 +424,7 @@ class RendererTest extends \MailPoetTest {
   public function testItRendersText() {
     $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][2];
-    $DOM = $this->dOMParser->parseStr((new Text)->render($template));
+    $DOM = $this->dOMParser->parseStr($this->text->render($template));
     // blockquotes and paragraphs should be converted to spans and placed inside a table
     expect(
       $DOM('tr > td > table > tr > td.mailpoet_paragraph', 0)->html()
@@ -446,7 +454,7 @@ class RendererTest extends \MailPoetTest {
 
     // trailing line breaks should be cut off, but not inside an element
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][8];
-    $DOM = $this->dOMParser->parseStr((new Text)->render($template));
+    $DOM = $this->dOMParser->parseStr($this->text->render($template));
     expect(count($DOM('tr > td > br', 0)))
       ->equals(0);
     expect($DOM('tr > td > h3', 0)->html())

@@ -785,6 +785,10 @@ class Functions {
     return wp_kses($string, $allowedHtml, $allowedProtocols);
   }
 
+  public function wpKsesPost($data) {
+    return wp_kses_post($data);
+  }
+
   public function deprecatedHook(string $hook_name, string $version, string $replacement, string $message) {
     _deprecated_hook(
       esc_html($hook_name),
