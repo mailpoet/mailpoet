@@ -150,9 +150,25 @@ class PostTransformerContentsExtractor {
     $alignment = (in_array($this->args['titleAlignment'], ['left', 'right', 'center'])) ? $this->args['titleAlignment'] : 'left';
 
     $title = '<' . $tag . ' data-post-id="' . $post->ID . '" style="text-align: ' . $alignment . ';">' . $title . '</' . $tag . '>';
+
+    $commonAttributes = [
+      'data-post-id' => [],
+      'style' => [],
+    ];
+
+    $allowedTitleHtml = [
+      'a' => [
+        'href' => [],
+      ],
+      'li' => $commonAttributes,
+      'h1' => $commonAttributes,
+      'h2' => $commonAttributes,
+      'h3' => $commonAttributes,
+    ];
+
     return [
       'type' => 'text',
-      'text' => $title,
+      'text' => wp_kses($title, $allowedTitleHtml),
     ];
   }
 
