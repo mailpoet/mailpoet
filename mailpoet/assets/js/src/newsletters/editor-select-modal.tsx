@@ -1,14 +1,13 @@
 import { Modal, Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { MailPoet } from '../mailpoet';
 
 type EditorSelectModalProps = {
-  legacyEditorCallback: () => void;
   onClose: () => void;
   isModalOpen: boolean;
 };
 
 export function EditorSelectModal({
-  legacyEditorCallback,
   isModalOpen,
   onClose,
 }: EditorSelectModalProps) {
@@ -17,23 +16,41 @@ export function EditorSelectModal({
   }
   return (
     <Modal
-      title={__('Choose an email editor', 'mailpoet')}
+      title={__('New editor', 'mailpoet')}
       onRequestClose={onClose}
+      className="mailpoet-new-editor-modal"
     >
-      <p>{__('Which editor do you want to use?', 'mailpoet')}</p>
+      <div className="mailpoet-new-editor-modal-image">
+        <span className="mailpoet-new-editor-modal-image__beta_label">
+          {__('Beta version', 'mailpoet')}
+        </span>
+        <img
+          src={`${MailPoet.cdnUrl}email-editor/new-editor-modal-header.png`}
+          alt={__('New editor', 'mailpoet')}
+        />
+      </div>
       <p>
+        {__(
+          'Create modern, beautiful emails that embody your brand with advanced customization and editing capabilities.',
+          'mailpoet',
+        )}
+      </p>
+      <p className="mailpoet-new-editor-modal-note">
+        {__(
+          'Emails created in the new editor cannot be reverted to the legacy version.',
+          'mailpoet',
+        )}
+      </p>
+      <div className="mailpoet-new-editor-modal-footer">
         <Button
           type="button"
-          variant="primary"
+          variant="tertiary"
           onClick={() => {
-            legacyEditorCallback();
             onClose();
           }}
         >
-          {__('Legacy editor', 'mailpoet')}
+          {__('Cancel', 'mailpoet')}
         </Button>
-      </p>
-      <p>
         <Button
           type="button"
           variant="primary"
@@ -41,9 +58,9 @@ export function EditorSelectModal({
             window.location.href = 'post-new.php?post_type=mailpoet_email';
           }}
         >
-          {__('Gutenberg Editor', 'mailpoet')}
+          {__('Continue', 'mailpoet')}
         </Button>
-      </p>
+      </div>
     </Modal>
   );
 }

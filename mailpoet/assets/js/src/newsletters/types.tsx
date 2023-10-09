@@ -468,7 +468,6 @@ function NewsletterTypesComponent({
 
       <link rel="prefetch" href={templatesGETUrl} as="fetch" />
       <EditorSelectModal
-        legacyEditorCallback={() => {}}
         onClose={() => setIsSelectEditorModalOpen(false)}
         isModalOpen={isSelectEditorModalOpen}
       />
