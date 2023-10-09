@@ -7,6 +7,9 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
+/**
+ * The filters in this class are primarily intended for the premium plugin
+ */
 class SubscriberTag implements Filter {
   const TYPE = 'subscriberTag';
 
