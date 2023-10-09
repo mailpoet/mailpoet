@@ -294,6 +294,7 @@ function NewsletterTypesComponent({
             className="mailpoet-button-with-wordpress-icon"
             onClick={onToggle}
             aria-expanded={isOpen}
+            automationId="create_standard_email_dropdown"
           >
             <Icon icon={chevronDown} size={24} />
           </Button>
