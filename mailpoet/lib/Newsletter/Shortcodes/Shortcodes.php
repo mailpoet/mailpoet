@@ -5,6 +5,7 @@ namespace MailPoet\Newsletter\Shortcodes;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Newsletter\NewsletterHtmlSanitizer;
 use MailPoet\Newsletter\Shortcodes\Categories\CategoryInterface;
 use MailPoet\Newsletter\Shortcodes\Categories\Date;
 use MailPoet\Newsletter\Shortcodes\Categories\Link;
@@ -44,12 +45,16 @@ class Shortcodes {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var NewsletterHtmlSanitizer */
+  private $newsletterHtmlSanitizer;
+
   public function __construct(
     Date $dateCategory,
     Link $linkCategory,
     Newsletter $newsletterCategory,
     Subscriber $subscriberCategory,
     Site $siteCategory,
+    NewsletterHtmlSanitizer $newsletterHtmlSanitizer,
     WPFunctions $wp
   ) {
     $this->dateCategory = $dateCategory;
@@ -58,6 +63,7 @@ class Shortcodes {
     $this->subscriberCategory = $subscriberCategory;
     $this->siteCategory = $siteCategory;
     $this->wp = $wp;
+    $this->newsletterHtmlSanitizer = $newsletterHtmlSanitizer;
   }
 
   public function setNewsletter(NewsletterEntity $newsletter = null): void {
@@ -189,6 +195,7 @@ class Shortcodes {
       }
 
     }
+
     return $processedShortcodes;
   }
 
@@ -204,7 +211,10 @@ class Shortcodes {
       $shortcodes,
       ($contentSource) ? $contentSource : $content
     );
-    return str_replace($shortcodes, $processedShortcodes, $content);
+    $sanitizedShortcodes = array_map(function($html) {
+      return $this->newsletterHtmlSanitizer->sanitize($html);
+    }, $processedShortcodes);
+    return str_replace($shortcodes, $sanitizedShortcodes, $content);
   }
 
   private function getCategoryObject($category): ?CategoryInterface {

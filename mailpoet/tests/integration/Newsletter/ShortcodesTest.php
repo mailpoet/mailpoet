@@ -163,6 +163,13 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result['0'])->equals($wpPost->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
+  public function testItSanitizesOutput() {
+    $this->wPPost = $this->_createWPPost('Title <script>alert("uh oh");</script>');
+    $content = '<a data-post-id="' . $this->wPPost . '" href="#">latest post</a>';
+    $result = $this->shortcodesObject->process(['[newsletter:post_title]'], $content);
+    expect($result[0])->equals('Title alert("uh oh");');
+  }
+
   public function itCanProcessPostNotificationNewsletterNumberShortcode() {
     // create first post notification
     $postNotificationHistory = $this->_createNewsletter(
@@ -440,9 +447,9 @@ class ShortcodesTest extends \MailPoetTest {
     expect($result[0])->equals($siteUrl);
   }
 
-  public function _createWPPost() {
+  public function _createWPPost($postTitle = 'Sample Post') {
     $data = [
-      'post_title' => 'Sample Post',
+      'post_title' => $postTitle,
       'post_content' => 'contents',
       'post_status' => 'publish',
     ];
