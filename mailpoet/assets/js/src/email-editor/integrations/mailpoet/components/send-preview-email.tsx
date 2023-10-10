@@ -2,7 +2,7 @@ import { Button, Modal, TextControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { Icon, check } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
-import ReactStringReplace from 'react-string-replace';
+import { createInterpolateElement } from '@wordpress/element';
 import { SendingPreviewStatus, storeName } from '../store';
 
 type SendPreviewEmailProps = {
@@ -25,38 +25,6 @@ export function SendPreviewEmail({
       }),
       [],
     );
-
-  let description = ReactStringReplace(
-    __(
-      'Send yourself a test email to test how your email would look like in different email apps. You could also enter your [link1]Mail Tester[/link1] email below to test your spam score. [link2]Learn more[/link2].',
-      'mailpoet',
-    ),
-    /\[link1\](.*?)\[\/link1\]/g,
-    (match, i) => (
-      <a
-        key={i}
-        href="https://www.mail-tester.com/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {match}
-      </a>
-    ),
-  );
-  description = ReactStringReplace(
-    description,
-    /\[link2\](.*?)\[\/link2\]/g,
-    (match, i) => (
-      <a
-        key={i}
-        href="https://kb.mailpoet.com/article/147-test-your-spam-score-with-mail-tester"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {match}
-      </a>
-    ),
-  );
 
   const handleSendPreviewEmail = () => {
     // We need to
@@ -84,50 +52,74 @@ export function SendPreviewEmail({
               {__('Sorry, we were unable to send this email.', 'mailpoet')}
               <ul>
                 <li>
-                  {ReactStringReplace(
+                  {createInterpolateElement(
                     __(
-                      'Please check your [link]sending method configuration[/link] with your hosting provider.',
+                      'Please check your <link>sending method configuration</link> with your hosting provider.',
                       'mailpoet',
                     ),
-                    /\[link\](.*?)\[\/link\]/g,
-                    (match) => (
-                      <a
-                        href="admin.php?page=mailpoet-settings#mta"
-                        key="check-sending"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {match}
-                      </a>
-                    ),
+                    {
+                      link: (
+                        // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+                        <a
+                          href="admin.php?page=mailpoet-settings#mta"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        />
+                      ),
+                    },
                   )}
                 </li>
                 <li>
-                  {ReactStringReplace(
+                  {createInterpolateElement(
                     __(
-                      'Or, sign up for MailPoet Sending Service to easily send emails. [link]Sign up for free[/link]',
+                      'Or, sign up for MailPoet Sending Service to easily send emails. <link>Sign up for free</link>',
                       'mailpoet',
                     ),
-                    /\[link\](.*?)\[\/link\]/g,
-                    (match) => (
-                      <a
-                        href={new URL(
-                          'free-plan',
-                          'https://www.mailpoet.com/',
-                        ).toString()}
-                        key="sign-up-for-free"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {match}
-                      </a>
-                    ),
+                    {
+                      link: (
+                        // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+                        <a
+                          href={new URL(
+                            'free-plan',
+                            'https://www.mailpoet.com/',
+                          ).toString()}
+                          key="sign-up-for-free"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        />
+                      ),
+                    },
                   )}
                 </li>
               </ul>
             </div>
           ) : null}
-          <p>{description}</p>
+          <p>
+            {createInterpolateElement(
+              __(
+                'Send yourself a test email to test how your email would look like in different email apps. You could also enter your <link1>Mail Tester</link1> email below to test your spam score. <link2>Learn more</link2>.',
+                'mailpoet',
+              ),
+              {
+                link1: (
+                  // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+                  <a
+                    href="https://www.mail-tester.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                ),
+                link2: (
+                  // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+                  <a
+                    href="https://kb.mailpoet.com/article/147-test-your-spam-score-with-mail-tester"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                ),
+              },
+            )}
+          </p>
           <TextControl
             label={__('Send to', 'mailpoet')}
             onChange={(email) => {
