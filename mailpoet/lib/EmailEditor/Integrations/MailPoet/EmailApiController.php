@@ -59,7 +59,7 @@ class EmailApiController {
       'id' => Builder::integer()->nullable(),
       'subject' => Builder::string(),
       'preheader' => Builder::string(),
-      'preview_url' => Builder::string()->nullable(),
+      'preview_url' => Builder::string(),
     ])->toArray();
   }
 }
