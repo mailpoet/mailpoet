@@ -21,13 +21,13 @@ export function* requestSendingNewsletterPreview(
   callback: () => void,
 ) {
   try {
-    const url = window.mailpoet_json_api_root;
-    const token = window.mailpoet_token;
+    const url = window.MailPoetEmailEditor.json_api_root;
+    const token = window.MailPoetEmailEditor.api_token;
     const method = 'POST';
     const body = new FormData();
     body.append('token', token);
     body.append('action', 'mailpoet');
-    body.append('api_version', 'v1');
+    body.append('api_version', window.MailPoetEmailEditor.api_version);
     body.append('endpoint', 'newsletters');
     body.append('method', 'sendPreview');
     body.append('data[subscriber]', email);
