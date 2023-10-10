@@ -185,4 +185,39 @@ class TextTest extends \MailPoetUnitTest {
     $output = (new Text)->render($this->block);
     expect($output)->stringNotContainsString('<br />');
   }
+
+  public function htmlEntitiesStrings() {
+    return [
+      'paragraph' => ["<p>Text &lt;script&gt;alert('test');&lt;/script&gt;</p>"],
+      'list' => ["<ul>Text &lt;script&gt;alert('test');&lt;/script&gt;</li></ul>"],
+      'blockquote' => ["<ul>Text &lt;script&gt;alert('test');&lt;/script&gt;</li></ul>"],
+    ];
+  }
+
+  /**
+   * @dataProvider htmlEntitiesStrings
+   */
+  public function testItDoesNotDecodeHtmlEntities($htmlString) {
+    $this->block['text'] = $htmlString;
+    $output = (new Text())->render($this->block);
+    expect($output)->stringNotContainsString('<script>');
+    expect($output)->stringContainsString("&lt;script&gt;alert('test');&lt;/script&gt;");
+  }
+
+  public function childElementStrings(): array {
+    return [
+      'paragraph' => ['<p><a href="https://example.com">Link</a></p>'],
+      'list' => ['<p><ul><li><a href="https://example.com">Link</li></ul></a></p>'],
+      'blockquote' => ['<blockquote><p><a href="https://example.com">Link</a></p></blockquote>'],
+    ];
+  }
+
+  /**
+   * @dataProvider childElementStrings
+   */
+  public function testItMaintainsHtmlInChildElements($htmlString) {
+    $this->block['text'] = $htmlString;
+    $output = (new Text())->render($this->block);
+    expect($output)->stringContainsString('<a href="https://example.com">Link</a>');
+  }
 }
