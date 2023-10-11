@@ -25,6 +25,31 @@ export const hasEdits = createRegistrySelector((select) => (): boolean => {
   );
 });
 
+export const isSaving = createRegistrySelector((select) => (): boolean => {
+  const postId = select(storeName).getEmailPostId();
+  return !!select(coreDataStore).isSavingEntityRecord(
+    'postType',
+    'mailpoet_email',
+    postId,
+  );
+});
+
+export const isEmpty = createRegistrySelector((select) => (): boolean => {
+  const postId = select(storeName).getEmailPostId();
+
+  const post = select(coreDataStore).getEntityRecord(
+    'postType',
+    'mailpoet_email',
+    postId,
+  );
+  if (!post) return true;
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const { content, mailpoet_data: mailpoetData } = post;
+  return !content.raw && !mailpoetData.subject && !mailpoetData.preheader;
+});
+
 export function getEmailPostId(state: State): number {
   return state.postId;
 }
