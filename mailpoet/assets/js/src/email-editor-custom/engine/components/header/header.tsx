@@ -71,24 +71,9 @@ export function Header() {
               aria-expanded={isInserterSidebarOpened}
             />
             <ToolbarItem
-              ref={listviewButton}
-              as={Button}
-              className="edit-post-header-toolbar__document-overview-toggle"
-              variant="tertiary"
-              isPressed={isListviewSidebarOpened}
-              onMouseDown={preventDefault}
-              onClick={toggleListviewSidebar}
-              disabled={false}
-              icon={listView}
-              label={__('List view', 'mailpoet')}
-              showTooltip
-              aria-expanded={isInserterSidebarOpened}
-            />
-            <ToolbarItem
               ref={undoButton}
               as={Button}
               className="editor-history__undo"
-              variant="tertiary"
               isPressed={false}
               onMouseDown={preventDefault}
               onClick={undoAction}
@@ -101,7 +86,6 @@ export function Header() {
               ref={redoButton}
               as={Button}
               className="editor-history__redo"
-              variant="tertiary"
               isPressed={false}
               onMouseDown={preventDefault}
               onClick={redoAction}
@@ -109,6 +93,19 @@ export function Header() {
               icon={redo}
               label={__('Redo')}
               showTooltip
+            />
+            <ToolbarItem
+              ref={listviewButton}
+              as={Button}
+              className="edit-post-header-toolbar__document-overview-toggle"
+              isPressed={isListviewSidebarOpened}
+              onMouseDown={preventDefault}
+              onClick={toggleListviewSidebar}
+              disabled={false}
+              icon={listView}
+              label={__('List view', 'mailpoet')}
+              showTooltip
+              aria-expanded={isInserterSidebarOpened}
             />
           </div>
         </NavigableToolbar>
