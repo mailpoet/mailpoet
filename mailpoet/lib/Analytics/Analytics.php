@@ -91,12 +91,17 @@ class Analytics {
     if (!$this->isEnabled()) {
       return false;
     }
+    $nextSend = $this->getNextSendDate();
+    return $nextSend->isPast();
+  }
+
+  public function getNextSendDate(): Carbon {
     $lastSent = $this->settings->get(Analytics::SETTINGS_LAST_SENT_KEY);
     if (!$lastSent) {
-      return true;
+      return Carbon::now()->subMinute();
     }
-    $lastSentCarbon = Carbon::createFromTimestamp(strtotime($lastSent))->addDays(Analytics::SEND_AFTER_DAYS);
-    return $lastSentCarbon->isPast();
+
+    return Carbon::createFromTimestamp(strtotime($lastSent))->addDays(self::SEND_AFTER_DAYS);
   }
 
   public function recordDataSent() {
