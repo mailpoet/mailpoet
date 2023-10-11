@@ -137,4 +137,11 @@ class AnalyticsTest extends \MailPoetTest {
     expect($this->analytics->isPublicIdNew())->false();
     expect($this->settings->get('new_public_id'))->equals('false');
   }
+
+  public function testGetNextSendDateIsWeekFromLastSend(): void {
+    $this->settings->set('analytics_last_sent', Carbon::now());
+    $weekFromNow = Carbon::now()->addDays(7);
+    $nextSendDate = $this->analytics->getNextSendDate();
+    expect($nextSendDate->getTimestamp())->equals($weekFromNow->getTimestamp());
+  }
 }
