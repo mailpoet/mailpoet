@@ -1,6 +1,7 @@
 {
   "require": {
     "php": ">=7.3",
+    "mixpanel/mixpanel-php": "2.*",
     "mtdowling/cron-expression": "^1.1",
     "woocommerce/action-scheduler": "^3.6"
   },
