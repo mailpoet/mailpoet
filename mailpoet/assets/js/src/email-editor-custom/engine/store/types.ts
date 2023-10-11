@@ -18,3 +18,5 @@ export type MailPoetEmailData = {
   preheader: string;
   preview_url: string;
 };
+
+export type Feature = 'fullscreenMode' | 'showIconLabels';
