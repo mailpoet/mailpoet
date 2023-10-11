@@ -73,3 +73,9 @@ $separator-width: 1px;
     width: calc($width + $separator-width / 2);
   }
 }
+
+.mailpoet-automation-editor-branch-badge {
+  height: 32px;
+  margin: 4px auto;
+  width: 32px;
+}

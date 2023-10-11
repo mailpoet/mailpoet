@@ -3,6 +3,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { blockMeta } from '@wordpress/icons';
 import { Edit } from './edit';
 import { storeName, StepType } from '../../../../editor/store';
+import { BranchBadge } from './branch-badge';
 import { Footer } from './footer';
 
 const keywords = [
@@ -62,6 +63,7 @@ export const step: StepType = {
   ),
   edit: Edit,
   footer: Footer,
+  branchBadge: BranchBadge,
   createStep: (stepData) => {
     const nextSteps = stepData.next_steps;
     return {
