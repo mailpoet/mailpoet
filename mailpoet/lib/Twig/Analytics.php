@@ -16,11 +16,6 @@ class Analytics extends AbstractExtension {
   public function getFunctions() {
     return [
       new TwigFunction(
-        'get_analytics_data',
-        [$this, 'generateAnalytics'],
-        ['is_safe' => ['all']]
-      ),
-      new TwigFunction(
         'is_analytics_enabled',
         [$this, 'isEnabled'],
         ['is_safe' => ['all']]
@@ -47,10 +42,6 @@ class Analytics extends AbstractExtension {
       throw new InvalidStateException('AnalyticsGenerator service was not registered!');
     }
     return $this->analytics;
-  }
-
-  public function generateAnalytics() {
-    return $this->getAnalytics()->generateAnalytics();
   }
 
   public function isEnabled() {
