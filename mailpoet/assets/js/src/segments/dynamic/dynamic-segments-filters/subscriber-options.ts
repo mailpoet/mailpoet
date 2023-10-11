@@ -1,15 +1,16 @@
 import { MailPoet } from 'mailpoet';
+import { sortFilters } from 'segments/dynamic/dynamic-segments-filters/sort-filters';
 import { SegmentTypes, SubscriberActionTypes } from '../types';
 
 export const SubscriberSegmentOptions = [
   {
-    value: SubscriberActionTypes.SUBSCRIBER_SCORE,
-    label: MailPoet.I18n.t('subscriberScore'),
+    value: SubscriberActionTypes.SUBSCRIBER_EMAIL,
+    label: MailPoet.I18n.t('email').toLowerCase(),
     group: SegmentTypes.WordPressRole,
   },
   {
-    value: SubscriberActionTypes.SUBSCRIBER_EMAIL,
-    label: MailPoet.I18n.t('email').toLowerCase(),
+    value: SubscriberActionTypes.SUBSCRIBER_SCORE,
+    label: MailPoet.I18n.t('subscriberScore'),
     group: SegmentTypes.WordPressRole,
   },
   {
@@ -82,4 +83,4 @@ export const SubscriberSegmentOptions = [
     label: MailPoet.I18n.t('segmentsSubscriber'),
     group: SegmentTypes.WordPressRole,
   },
-];
+].sort(sortFilters);

@@ -1,4 +1,5 @@
 import { MailPoet } from 'mailpoet';
+import { sortFilters } from 'segments/dynamic/dynamic-segments-filters/sort-filters';
 import { SegmentTypes } from '../types';
 
 // WooCommerce
@@ -36,6 +37,11 @@ export const WooCommerceOptions = [
     group: SegmentTypes.WooCommerce,
   },
   {
+    value: WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE,
+    label: MailPoet.I18n.t('wooCustomerInPostalCode'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
     value: WooCommerceActionTypes.NUMBER_OF_ORDERS,
     label: MailPoet.I18n.t('wooNumberOfOrders'),
     group: SegmentTypes.WooCommerce,
@@ -43,11 +49,6 @@ export const WooCommerceOptions = [
   {
     value: WooCommerceActionTypes.NUMBER_OF_REVIEWS,
     label: MailPoet.I18n.t('wooNumberOfReviews'),
-    group: SegmentTypes.WooCommerce,
-  },
-  {
-    value: WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE,
-    label: MailPoet.I18n.t('wooCustomerInPostalCode'),
     group: SegmentTypes.WooCommerce,
   },
   {
@@ -90,7 +91,7 @@ export const WooCommerceOptions = [
     label: MailPoet.I18n.t('wooUsedShippingMethod'),
     group: SegmentTypes.WooCommerce,
   },
-];
+].sort(sortFilters);
 
 // WooCommerce Memberships
 export enum WooCommerceMembershipsActionTypes {
@@ -103,7 +104,7 @@ export const WooCommerceMembershipOptions = [
     label: MailPoet.I18n.t('segmentsActiveMembership'),
     group: SegmentTypes.WooCommerceMembership,
   },
-];
+].sort(sortFilters);
 
 // WooCommerce Subscriptions
 export enum WooCommerceSubscriptionsActionTypes {
@@ -116,4 +117,4 @@ export const WooCommerceSubscriptionOptions = [
     label: MailPoet.I18n.t('segmentsActiveSubscription'),
     group: SegmentTypes.WooCommerceSubscription,
   },
-];
+].sort(sortFilters);
