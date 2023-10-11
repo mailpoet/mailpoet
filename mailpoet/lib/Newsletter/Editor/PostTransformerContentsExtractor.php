@@ -151,6 +151,7 @@ class PostTransformerContentsExtractor {
 
     $title = '<' . $tag . ' data-post-id="' . $post->ID . '" style="text-align: ' . $alignment . ';">' . $title . '</' . $tag . '>';
 
+    // The allowed HTML is based on all the possible ways we might construct a $title above
     $commonAttributes = [
       'data-post-id' => [],
       'style' => [],
