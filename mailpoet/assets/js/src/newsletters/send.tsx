@@ -27,7 +27,7 @@ import { NewsLetter, NewsletterType } from 'common/newsletter';
 import { mapFilterType } from '../analytics';
 import { PremiumModal, premiumValidAndActive } from '../common/premium-modal';
 import { PendingNewsletterMessage } from './send/pending-newsletter-message';
-import { SendContext } from './send-context';
+import { SendContext, SendContextType } from './send-context';
 
 const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
 
@@ -56,6 +56,7 @@ type NewsletterSendComponentState = {
   premiumModalMessage?: string;
   validationError?: string | JSX.Element;
   mssKeyPendingApproval: boolean;
+  sendContextValue: SendContextType;
 };
 
 const getTimingValueForTracking = (emailOpts: NewsLetter['options']) =>
@@ -169,6 +170,7 @@ class NewsletterSendComponent extends Component<
 
   constructor(props: Readonly<NewsletterSendComponentProps>) {
     super(props);
+    this.saveDraftNewsletter = this.saveDraftNewsletter.bind(this);
     this.state = {
       fields: [],
       item: {} as NewsLetter,
@@ -176,6 +178,7 @@ class NewsletterSendComponent extends Component<
       thumbnailPromise: null,
       showPremiumModal: false,
       mssKeyPendingApproval: window.mailpoet_mss_key_pending_approval,
+      sendContextValue: { saveDraftNewsletter: this.saveDraftNewsletter },
     };
   }
 
@@ -808,13 +811,7 @@ class NewsletterSendComponent extends Component<
           automationId="newsletter_send_heading"
         />
         <ErrorBoundary>
-          <SendContext.Provider
-            /* not sure how to resolve this in a class component, the suggestion is to use useMemo */
-            /* eslint-disable-next-line react/jsx-no-constructed-context-values */
-            value={{
-              saveDraftNewsletter: this.saveDraftNewsletter,
-            }}
-          >
+          <SendContext.Provider value={this.state.sendContextValue}>
             <Form
               id="mailpoet_newsletter"
               fields={fields}
