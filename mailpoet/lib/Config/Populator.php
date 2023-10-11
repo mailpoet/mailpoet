@@ -7,6 +7,7 @@ use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\BackfillEngagementData;
 use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Cron\Workers\InactiveSubscribers;
+use MailPoet\Cron\Workers\Mixpanel;
 use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
@@ -183,6 +184,7 @@ class Populator {
     $this->scheduleSubscriberLastEngagementDetection();
     $this->scheduleNewsletterTemplateThumbnails();
     $this->scheduleBackfillEngagementData();
+    $this->scheduleMixpanel();
   }
 
   private function createMailPoetPage() {
@@ -679,6 +681,10 @@ class Populator {
       SubscriberLinkTokens::TASK_TYPE,
       Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
     );
+  }
+
+  private function scheduleMixpanel() {
+    $this->scheduleTask(Mixpanel::TASK_TYPE, Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
   }
 
   private function scheduleTask($type, $datetime, $priority = null) {
