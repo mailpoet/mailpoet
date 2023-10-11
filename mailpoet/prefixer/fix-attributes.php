@@ -10,7 +10,7 @@ set_error_handler(function ($severity, $message, $file, $line) {
 $iterator = new RecursiveDirectoryIterator(__DIR__ . '/../vendor-prefixed', RecursiveDirectoryIterator::SKIP_DOTS);
 $files = new RecursiveIteratorIterator($iterator, RecursiveIteratorIterator::SELF_FIRST);
 foreach ($files as $file) {
-  if (substr($file, -3) === 'php') {
+  if (substr($file, -4) === '.php') {
     $data = file_get_contents($file);
     $data = str_replace('use MailPoetVendor\\ReturnTypeWillChange;', 'use ReturnTypeWillChange;', $data);
     file_put_contents($file, $data);
