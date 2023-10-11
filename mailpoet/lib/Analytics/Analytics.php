@@ -87,7 +87,7 @@ class Analytics {
     return false;
   }
 
-  private function shouldSend() {
+  public function shouldSend() {
     if (!$this->isEnabled()) {
       return false;
     }
@@ -99,7 +99,7 @@ class Analytics {
     return $lastSentCarbon->isPast();
   }
 
-  private function recordDataSent() {
+  public function recordDataSent() {
     $this->settings->set(Analytics::SETTINGS_LAST_SENT_KEY, Carbon::now());
   }
 }
