@@ -188,14 +188,14 @@ class ManageSegmentsCest {
     $i->seeNoJSErrors();
   }
 
-  public function createEmailOpenedSegment(\AcceptanceTester $i) {
-    $i->wantTo('Create a new email opened segment');
+  public function createEmailMachineOpenedSegment(\AcceptanceTester $i) {
+    $i->wantTo('Create a new email machine opened segment');
 
-    $emailSubject = 'Segment Email Opened Test';
+    $emailSubject = 'Segment Email Machine Opened Test';
     $newsletter = (new Newsletter())
       ->withSendingQueue()->withSubject($emailSubject)->withSentStatus()->create();
 
-    $segmentTitle = 'Email Segment Opened Test';
+    $segmentTitle = 'Email Segment Machine Opened Test';
     $segmentDesc = 'Lorem ipsum dolor sit amet';
 
     $subscriber1 = (new Subscriber())
@@ -204,8 +204,8 @@ class ManageSegmentsCest {
     $subscriber2 = (new Subscriber())
       ->withEmail('stats_test2@example.com')
       ->create();
-    (new StatisticsOpens($newsletter, $subscriber1))->create();
-    (new StatisticsOpens($newsletter, $subscriber2))->create();
+    (new StatisticsOpens($newsletter, $subscriber1))->withMachineUserAgentType()->create();
+    (new StatisticsOpens($newsletter, $subscriber2))->withMachineUserAgentType()->create();
 
     $i->login();
     $i->amOnMailpoetPage('Segments');
@@ -214,10 +214,8 @@ class ManageSegmentsCest {
     $i->click('[data-automation-id="new-custom-segment"]');
     $i->fillField(['name' => 'name'], $segmentTitle);
     $i->fillField(['name' => 'description'], $segmentDesc);
-    $i->selectOptionInReactSelect('opened', '[data-automation-id="select-segment-action"]');
+    $i->selectOptionInReactSelect('machine-opened', '[data-automation-id="select-segment-action"]');
     $i->selectOptionInReactSelect($emailSubject, '[data-automation-id="segment-email"]');
-    $i->selectOption('[data-automation-id="segment-email-opens-condition"]', 'none of');
-    $i->waitForText('This segment has 0 subscribers');
     $i->selectOption('[data-automation-id="segment-email-opens-condition"]', 'any of');
     $i->waitForText('This segment has 2 subscribers');
     $i->selectOption('[data-automation-id="segment-email-opens-condition"]', 'all of');
