@@ -9,6 +9,7 @@ import { plus, listView, undo, redo } from '@wordpress/icons';
 import { MailPoetEmailData, storeName } from '../../store';
 import { MoreMenu } from './more-menu';
 import { PreviewDropdown } from './preview-dropdown';
+import { SaveButton } from './save-button';
 
 export function Header() {
   const inserterButton = useRef();
@@ -16,25 +17,19 @@ export function Header() {
   const undoButton = useRef();
   const redoButton = useRef();
 
-  const { toggleInserterSidebar, toggleListviewSidebar, saveEditedEmail } =
+  const { toggleInserterSidebar, toggleListviewSidebar } =
     useDispatch(storeName);
   const { undo: undoAction, redo: redoAction } = useDispatch(coreDataStore);
-  const {
-    isInserterSidebarOpened,
-    isListviewSidebarOpened,
-    hasEdits,
-    hasUndo,
-    hasRedo,
-  } = useSelect(
-    (select) => ({
-      isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
-      isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
-      hasEdits: select(storeName).hasEdits(),
-      hasUndo: select(coreDataStore).hasUndo(),
-      hasRedo: select(coreDataStore).hasRedo(),
-    }),
-    [],
-  );
+  const { isInserterSidebarOpened, isListviewSidebarOpened, hasUndo, hasRedo } =
+    useSelect(
+      (select) => ({
+        isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
+        isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
+        hasUndo: select(coreDataStore).hasUndo(),
+        hasRedo: select(coreDataStore).hasRedo(),
+      }),
+      [],
+    );
   const [mailpoetEmailDa] = useEntityProp(
     'postType',
     'mailpoet_email',
@@ -112,9 +107,7 @@ export function Header() {
         <div className="edit-post-header__center">Todo Email Name</div>
       </div>
       <div className="edit-post-header__settings">
-        <Button variant="link" disabled={!hasEdits} onClick={saveEditedEmail}>
-          {__('Save Draft', 'mailpoet')}
-        </Button>
+        <SaveButton />
         <PreviewDropdown />
         <Button
           variant="primary"
