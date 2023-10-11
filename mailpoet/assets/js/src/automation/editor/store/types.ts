@@ -76,6 +76,7 @@ export type StepType = {
   icon: ComponentType;
   edit: ComponentType;
   footer?: ComponentType<{ step: Step }>;
+  branchBadge?: ComponentType<{ step: Step; index: number }>;
   foreground: string;
   background: string;
   createStep?: (step: Step, state: State) => Step;

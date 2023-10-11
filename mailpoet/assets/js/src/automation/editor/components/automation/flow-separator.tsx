@@ -28,7 +28,7 @@ export function FlowSeparator(props: Props): JSX.Element {
                 }
               />
             )}
-            <Separator previousStepId={previousStepData.id} index={index} />
+            <Separator previousStep={previousStepData} index={index} />
           </>
         ),
         context,
