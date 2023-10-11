@@ -774,11 +774,9 @@ class NewsletterSendComponent extends Component<
   updatePendingApprovalState = (mssKeyPendingApproval: boolean): void =>
     this.setState({ mssKeyPendingApproval });
 
-  saveDraftNewsletter = (afterSaveCallback: () => void) => {
+  saveDraftNewsletter = async (): Promise<void> => {
     this.handleSaveDraft();
-    void this.saveNewsletter().done(() => {
-      afterSaveCallback();
-    });
+    await this.saveNewsletter();
   };
 
   render() {

@@ -164,11 +164,10 @@ export function FilterSegment({
                 className="mailpoet-link"
                 key={i}
                 rel="noopener noreferrer"
-                onClick={(event) => {
+                onClick={async (event) => {
                   event.preventDefault();
-                  context.saveDraftNewsletter(() => {
-                    window.location.href = createNewSegmentUrl;
-                  });
+                  await context.saveDraftNewsletter();
+                  window.location.href = createNewSegmentUrl;
                 }}
                 href={createNewSegmentUrl}
               >

@@ -1,11 +1,11 @@
 import React from 'react';
 
 interface SendContextType {
-  saveDraftNewsletter: (afterSaveCallback: () => void) => void;
+  saveDraftNewsletter: () => Promise<void>;
 }
 
 const defaultValue: SendContextType = {
-  saveDraftNewsletter: () => {},
+  saveDraftNewsletter: () => Promise.resolve(),
 };
 
 export const SendContext = React.createContext<SendContextType>(defaultValue);
