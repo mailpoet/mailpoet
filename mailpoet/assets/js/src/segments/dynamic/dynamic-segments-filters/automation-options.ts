@@ -1,4 +1,5 @@
 import { MailPoet } from 'mailpoet';
+import { sortFilters } from 'segments/dynamic/dynamic-segments-filters/sort-filters';
 import { SegmentTypes } from '../types';
 
 export enum AutomationsActionTypes {
@@ -17,4 +18,4 @@ export const AutomationsOptions = [
     label: MailPoet.I18n.t('automationsExitedAutomation'),
     group: SegmentTypes.Automations,
   },
-];
+].sort(sortFilters);
