@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface SendContextType {
+export interface SendContextType {
   saveDraftNewsletter: () => Promise<void>;
 }
 
