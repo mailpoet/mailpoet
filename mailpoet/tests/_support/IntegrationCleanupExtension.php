@@ -34,6 +34,7 @@ class IntegrationCleanupExtension extends Extension {
       FROM information_schema.tables
       WHERE table_name LIKE '{$mpPrefix}%'
       AND table_name != '{$mpPrefix}migrations'
+      AND table_name != '{$mpPrefix}newsletter_option_fields'
     ");
 
     $this->cleanupStatements = 'SET FOREIGN_KEY_CHECKS=0;';

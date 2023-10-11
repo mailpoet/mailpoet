@@ -4,6 +4,7 @@ use Codeception\Stub;
 use MailPoet\Cache\TransientCache;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -38,6 +39,9 @@ $connection = ContainerWrapper::getInstance(WP_DEBUG)->get(Connection::class);
 $entityManager = ContainerWrapper::getInstance(WP_DEBUG)->get(EntityManager::class);
 $entitiesMeta = $entityManager->getMetadataFactory()->getAllMetadata();
 foreach ($entitiesMeta as $entityMeta) {
+  if ($entityMeta->getName() === NewsletterOptionFieldEntity::class) {
+    continue;
+  }
   $tableName = $entityMeta->getTableName();
   $connection->executeQuery('SET FOREIGN_KEY_CHECKS=0');
   $connection->executeStatement("TRUNCATE $tableName");
