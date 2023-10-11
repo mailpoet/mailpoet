@@ -85,11 +85,6 @@ parameters:
 			path: ../../lib/API/JSON/v1/Segments.php
 
 		-
-			message: "#^Method MailPoet\\\\Analytics\\\\Analytics\\:\\:generateAnalytics\\(\\) should return array\\|null but returns mixed\\.$#"
-			count: 1
-			path: ../../lib/Analytics/Analytics.php
-
-		-
 			message: "#^Cannot access offset 'events' on mixed\\.$#"
 			count: 3
 			path: ../../lib/AutomaticEmails/AutomaticEmails.php
