@@ -1,5 +1,5 @@
-import { MailPoet } from 'mailpoet';
 import { sortFilters } from './sort-filters';
+import { __ } from '@wordpress/i18n';
 import { SegmentTypes } from '../types';
 
 // WooCommerce
@@ -23,72 +23,72 @@ export enum WooCommerceActionTypes {
 export const WooCommerceOptions = [
   {
     value: WooCommerceActionTypes.AVERAGE_SPENT,
-    label: MailPoet.I18n.t('wooAverageSpent'),
+    label: __('average order value', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.CUSTOMER_IN_CITY,
-    label: MailPoet.I18n.t('wooCustomerInCity'),
+    label: __('city', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.CUSTOMER_IN_COUNTRY,
-    label: MailPoet.I18n.t('wooCustomerInCountry'),
-    group: SegmentTypes.WooCommerce,
-  },
-  {
-    value: WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE,
-    label: MailPoet.I18n.t('wooCustomerInPostalCode'),
+    label: __('country', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.NUMBER_OF_ORDERS,
-    label: MailPoet.I18n.t('wooNumberOfOrders'),
+    label: __('number of orders', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.NUMBER_OF_REVIEWS,
-    label: MailPoet.I18n.t('wooNumberOfReviews'),
+    label: __('number of reviews', 'mailpoet'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE,
+    label: __('postal code', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.PURCHASED_CATEGORY,
-    label: MailPoet.I18n.t('wooPurchasedCategory'),
+    label: __('purchased in category', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.PURCHASE_DATE,
-    label: MailPoet.I18n.t('wooPurchaseDate'),
+    label: __('purchase date', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.PURCHASED_PRODUCT,
-    label: MailPoet.I18n.t('wooPurchasedProduct'),
+    label: __('purchased product', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.SINGLE_ORDER_VALUE,
-    label: MailPoet.I18n.t('wooSingleOrderValue'),
+    label: __('single order value', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.TOTAL_SPENT,
-    label: MailPoet.I18n.t('wooTotalSpent'),
+    label: __('total spent', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.USED_COUPON_CODE,
-    label: MailPoet.I18n.t('wooUsedCouponCode'),
+    label: __('used coupon code', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.USED_PAYMENT_METHOD,
-    label: MailPoet.I18n.t('wooUsedPaymentMethod'),
+    label: __('used payment method', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
     value: WooCommerceActionTypes.USED_SHIPPING_METHOD,
-    label: MailPoet.I18n.t('wooUsedShippingMethod'),
+    label: __('used shipping method', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
 ].sort(sortFilters);
@@ -101,7 +101,7 @@ export enum WooCommerceMembershipsActionTypes {
 export const WooCommerceMembershipOptions = [
   {
     value: WooCommerceMembershipsActionTypes.MEMBER_OF,
-    label: MailPoet.I18n.t('segmentsActiveMembership'),
+    label: __('is member of', 'mailpoet'),
     group: SegmentTypes.WooCommerceMembership,
   },
 ].sort(sortFilters);
@@ -114,7 +114,7 @@ export enum WooCommerceSubscriptionsActionTypes {
 export const WooCommerceSubscriptionOptions = [
   {
     value: WooCommerceSubscriptionsActionTypes.ACTIVE_SUBSCRIPTIONS,
-    label: MailPoet.I18n.t('segmentsActiveSubscription'),
+    label: __('has active subscription', 'mailpoet'),
     group: SegmentTypes.WooCommerceSubscription,
   },
 ].sort(sortFilters);
