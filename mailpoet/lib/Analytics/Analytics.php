@@ -33,11 +33,15 @@ class Analytics {
   /** @return array|null */
   public function generateAnalytics() {
     if ($this->shouldSend()) {
-      $data = $this->wp->applyFilters(self::ANALYTICS_FILTER, $this->reporter->getData());
+      $data = $this->getAnalyticsData();
       $this->recordDataSent();
       return $data;
     }
     return null;
+  }
+
+  public function getAnalyticsData() {
+    return $this->wp->applyFilters(self::ANALYTICS_FILTER, $this->reporter->getData());
   }
 
   /** @return bool */
