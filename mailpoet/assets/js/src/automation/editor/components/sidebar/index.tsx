@@ -2,7 +2,7 @@ import { ComponentProps } from 'react';
 import { useSelect } from '@wordpress/data';
 import { Platform } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { cog } from '@wordpress/icons';
+import { drawerRight } from '@wordpress/icons';
 import {
   ComplementaryArea,
   store as interfaceStore,
@@ -50,7 +50,7 @@ export function Sidebar(props: Props): JSX.Element {
       closeLabel={__('Close settings', 'mailpoet')}
       headerClassName="edit-site-sidebar-edit-mode__panel-tabs"
       title={__('Settings', 'mailpoet')}
-      icon={cog}
+      icon={drawerRight}
       className="edit-site-sidebar mailpoet-automation-sidebar"
       panelClassName="edit-site-sidebar"
       smallScreenTitle={automationName || __('(no title)', 'mailpoet')}
