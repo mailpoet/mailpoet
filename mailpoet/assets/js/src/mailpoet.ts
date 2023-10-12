@@ -84,6 +84,7 @@ export const MailPoet = {
   mailFunctionEnabled: window.mailpoet_mail_function_enabled,
   corrupt_newsletters: window.corrupt_newsletters ?? [],
   adminPluginsUrl: window.mailpoet_admin_plugins_url,
+  isDotcom: window.mailpoet_is_dotcom,
 } as const;
 
 declare global {
