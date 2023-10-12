@@ -21,7 +21,7 @@ class DotcomHelperFunctions {
    * Returns true if the site is on WordPress.com.
    */
   public function isDotcom(): bool {
-    return $this->isAtomicPlatform() ;
+    return $this->isAtomicPlatform();
   }
 
   public function isWooExpressPerformance(): bool {
