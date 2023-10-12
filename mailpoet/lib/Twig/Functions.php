@@ -2,11 +2,13 @@
 
 namespace MailPoet\Twig;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Referrals\UrlDecorator;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\FreeDomains;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoet\WPCOM\DotcomHelperFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Twig\Extension\AbstractExtension;
 use MailPoetVendor\Twig\TwigFunction;
@@ -44,6 +46,10 @@ class Functions extends AbstractExtension {
       $this->settings = SettingsController::getInstance();
     }
     return $this->settings;
+  }
+
+  private function getDotcomHelperFunctions(): DotcomHelperFunctions {
+    return ContainerWrapper::getInstance()->get(DotcomHelperFunctions::class);
   }
 
   private function getWp(): WPFunctions {
@@ -188,6 +194,11 @@ class Functions extends AbstractExtension {
       new TwigFunction(
         'is_dotcom_ecommerce_plan',
         [$this, 'isDotcomEcommercePlan'],
+        ['is_safe' => ['all']]
+      ),
+      new TwigFunction(
+        'is_dotcom',
+        [$this, 'isDotcom'],
         ['is_safe' => ['all']]
       ),
     ];
@@ -340,5 +351,9 @@ class Functions extends AbstractExtension {
       return wc_calypso_bridge_is_ecommerce_plan();
     }
     return false;
+  }
+
+  public function isDotcom(): bool {
+    return $this->getDotcomHelperFunctions()->isDotcom();
   }
 }
