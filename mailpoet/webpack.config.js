@@ -440,13 +440,13 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
 });
 
 const emailEditorCustom = Object.assign({}, wpScriptConfig, {
-  name: 'email_editor_custom',
+  name: 'email_editor',
   entry: {
-    email_editor: 'email-editor-custom/index.ts',
+    email_editor: 'email-editor/index.ts',
   },
   output: {
     filename: '[name].js',
-    path: path.join(__dirname, 'assets/dist/js/email-editor-custom'),
+    path: path.join(__dirname, 'assets/dist/js/email-editor'),
   },
   resolve: {
     ...wpScriptConfig.resolve,
@@ -469,7 +469,7 @@ module.exports = configs.map((conf) => {
   const config = Object.assign({}, conf);
   if (
     config.name === 'marketing_optin_block' ||
-    config.name === 'email_editor_custom'
+    config.name === 'email_editor'
   ) {
     return config;
   }

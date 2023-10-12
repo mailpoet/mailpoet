@@ -16,9 +16,9 @@ import {
 } from '@wordpress/block-editor';
 import classnames from 'classnames';
 import { useSelect } from '@wordpress/data';
-import { storeName } from 'email-editor-custom/engine/store';
-
 import { useEntityBlockEditor } from '@wordpress/core-data';
+
+import { storeName } from '../../store';
 import { Sidebar } from '../sidebar/sidebar';
 
 import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
