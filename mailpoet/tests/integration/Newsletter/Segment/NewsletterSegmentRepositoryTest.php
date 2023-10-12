@@ -11,6 +11,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\NewsletterOptionField;
 
 class NewsletterSegmentRepositoryTest extends \MailPoetTest {
   /** @var NewsletterSegmentRepository */
@@ -25,8 +26,8 @@ class NewsletterSegmentRepositoryTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->repository = $this->diContainer->get(NewsletterSegmentRepository::class);
-    $this->welcomeEmailSegmentOption = $this->createNewsletterOptionField(NewsletterEntity::TYPE_WELCOME, NewsletterOptionFieldEntity::NAME_SEGMENT);
-    $this->automaticEmailSegmentOption = $this->createNewsletterOptionField(NewsletterEntity::TYPE_AUTOMATIC, NewsletterOptionFieldEntity::NAME_SEGMENT);
+    $this->welcomeEmailSegmentOption = (new NewsletterOptionField())->findOrCreate(NewsletterOptionFieldEntity::NAME_SEGMENT, NewsletterEntity::TYPE_WELCOME);
+    $this->automaticEmailSegmentOption = (new NewsletterOptionField())->findOrCreate(NewsletterOptionFieldEntity::NAME_SEGMENT, NewsletterEntity::TYPE_AUTOMATIC);
   }
 
   public function testItCanGetActiveNewslettersForSegments() {
@@ -124,15 +125,6 @@ class NewsletterSegmentRepositoryTest extends \MailPoetTest {
 
     $this->entityManager->flush();
     return $queue;
-  }
-
-  private function createNewsletterOptionField(string $newsletterType, string $name): NewsletterOptionFieldEntity {
-    $newsletterOptionField = new NewsletterOptionFieldEntity();
-    $newsletterOptionField->setNewsletterType($newsletterType);
-    $newsletterOptionField->setName($name);
-    $this->entityManager->persist($newsletterOptionField);
-    $this->entityManager->flush();
-    return $newsletterOptionField;
   }
 
   private function createNewsletterOption(NewsletterEntity $newsletter, NewsletterOptionFieldEntity $field, $value): NewsletterOptionEntity {

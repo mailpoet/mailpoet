@@ -14,6 +14,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\NewsletterOptionField;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoetVendor\Carbon\Carbon;
@@ -37,14 +38,8 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     // Prepare Newsletter field options for configuring re-engagement emails
-    $this->afterTimeNumberOptionField = new NewsletterOptionFieldEntity();
-    $this->afterTimeNumberOptionField->setName(NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER);
-    $this->afterTimeNumberOptionField->setNewsletterType(NewsletterEntity::TYPE_RE_ENGAGEMENT);
-    $this->entityManager->persist($this->afterTimeNumberOptionField);
-    $this->afterTimeTypeField = new NewsletterOptionFieldEntity();
-    $this->afterTimeTypeField->setName(NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE);
-    $this->afterTimeTypeField->setNewsletterType(NewsletterEntity::TYPE_RE_ENGAGEMENT);
-    $this->entityManager->persist($this->afterTimeTypeField);
+    $this->afterTimeNumberOptionField = (new NewsletterOptionField())->findOrCreate(NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER, NewsletterEntity::TYPE_RE_ENGAGEMENT);
+    $this->afterTimeTypeField = (new NewsletterOptionField())->findOrCreate(NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE, NewsletterEntity::TYPE_RE_ENGAGEMENT);
 
     $this->segment = (new Segment())->withName('Re-engagement test')->create();
     $this->sentStandardNewsletter = (new Newsletter())->withSentStatus()->withSendingQueue()->create();

@@ -21,6 +21,7 @@ use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\NewsletterOptionField;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -150,7 +151,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $notificationHistoryStatsNotificationScheduledTask);
     $standardLink = $this->createNewsletterLink($standardNewsletter, $standardQueue);
     $notificationHistoryLink = $this->createNewsletterLink($notificationHistory, $notificationHistoryQueue);
-    $optionField = $this->createNewsletterOptionField(NewsletterEntity::TYPE_NOTIFICATION, 'option');
+    $optionField = (new NewsletterOptionField())->findOrCreate('name', NewsletterEntity::TYPE_NOTIFICATION);
     $optionValue = $this->createNewsletterOption($notificationHistory, $optionField, 'value');
     $newsletterPost = $this->createNewsletterPost($notification, 1);
 
@@ -398,15 +399,6 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($link);
     $this->entityManager->flush();
     return $link;
-  }
-
-  private function createNewsletterOptionField(string $newsletterType, string $name): NewsletterOptionFieldEntity {
-    $newsletterOptionField = new NewsletterOptionFieldEntity();
-    $newsletterOptionField->setNewsletterType($newsletterType);
-    $newsletterOptionField->setName($name);
-    $this->entityManager->persist($newsletterOptionField);
-    $this->entityManager->flush();
-    return $newsletterOptionField;
   }
 
   private function createNewsletterOption(NewsletterEntity $newsletter, NewsletterOptionFieldEntity $field, $value): NewsletterOptionEntity {
