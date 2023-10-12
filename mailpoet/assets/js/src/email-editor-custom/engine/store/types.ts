@@ -1,3 +1,8 @@
+export enum SendingPreviewStatus {
+  SUCCESS = 'success',
+  ERROR = 'error',
+}
+
 export type State = {
   inserterSidebar: {
     isOpened: boolean;
@@ -9,7 +14,13 @@ export type State = {
   editorSettings: {
     allowedBlockTypes: string[];
   };
-  previewDeviceType: string;
+  preview: {
+    deviceType: string;
+    toEmail: string;
+    isModalOpened: boolean;
+    isSendingPreviewEmail: boolean;
+    sendingPreviewStatus: SendingPreviewStatus | null;
+  };
 };
 
 export type MailPoetEmailData = {

@@ -68,6 +68,6 @@ export function getInitialEditorSettings(
   return state.editorSettings;
 }
 
-export function getPreviewDeviceType(state: State): string {
-  return state.previewDeviceType;
+export function getPreviewState(state: State): State['preview'] {
+  return state.preview;
 }
