@@ -14,13 +14,14 @@ import {
   // @ts-ignore No types for this exist yet.
   __experimentalUseResizeCanvas as useResizeCanvas,
 } from '@wordpress/block-editor';
+import classnames from 'classnames';
 import { useSelect } from '@wordpress/data';
 import { storeName } from 'email-editor-custom/engine/store';
+
 import { useEntityBlockEditor } from '@wordpress/core-data';
-
 import { Sidebar } from '../sidebar/sidebar';
-import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 
+import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 
 export function BlockEditor() {
@@ -38,8 +39,12 @@ export function BlockEditor() {
     { id: postId.toString() },
   );
 
+  // These will be set by the user in the future in email or global styles.
+  const layoutBackground = '#cccccc';
+  const documentBackground = '#ffffff';
+
   let inlineStyles = useResizeCanvas(previewDeviceType);
-  // UseResizeCanvas returns null if the previewDeviceType is not Desktop.
+  // UseResizeCanvas returns null if the previewDeviceType is Desktop.
   if (!inlineStyles) {
     inlineStyles = {
       height: '100%',
@@ -47,14 +52,29 @@ export function BlockEditor() {
       margin: '0 auto',
       display: 'flex',
       flexFlow: 'column',
-      background: 'white',
     };
   }
+  inlineStyles.background = documentBackground;
+  inlineStyles.transition = 'all 0.3s ease 0s';
+
+  const contentAreaStyles = {
+    background:
+      previewDeviceType === 'Desktop' ? layoutBackground : 'transparent',
+  };
 
   return (
     <div className="edit-post-visual-editor">
-      <div className="edit-post-visual-editor__content-area">
-        <div style={inlineStyles}>
+      <div
+        className="edit-post-visual-editor__content-area"
+        style={contentAreaStyles}
+      >
+        <div
+          style={inlineStyles}
+          className={classnames({
+            'is-mobile-preview': previewDeviceType === 'Mobile',
+            'is-desktop-preview': previewDeviceType === 'Desktop',
+          })}
+        >
           <BlockEditorProvider
             value={blocks}
             onInput={onInput}
