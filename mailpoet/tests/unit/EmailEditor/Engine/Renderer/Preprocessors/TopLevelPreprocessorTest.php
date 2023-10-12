@@ -32,7 +32,7 @@ class TopLevelPreprocessorTest extends \MailPoetUnitTest {
 
   public function testItWrapsSingleTopLevelBlockIntoColumns() {
     $parsedDocument = [$this->paragraphBlock];
-    $result = $this->preprocessor->preprocess($parsedDocument);
+    $result = $this->preprocessor->preprocess($parsedDocument, []);
     verify($result[0]['blockName'])->equals('core/columns');
     verify($result[0]['innerBlocks'][0]['blockName'])->equals('core/column');
     verify($result[0]['innerBlocks'][0]['innerBlocks'][0]['blockName'])->equals('core/paragraph');
@@ -41,14 +41,14 @@ class TopLevelPreprocessorTest extends \MailPoetUnitTest {
 
   public function testItDoesntWrapColumns() {
     $parsedDocumentWithMultipleColumns = [$this->columnsBlock, $this->columnsBlock];
-    $result = $this->preprocessor->preprocess($parsedDocumentWithMultipleColumns);
+    $result = $this->preprocessor->preprocess($parsedDocumentWithMultipleColumns, []);
     verify($result)->equals($parsedDocumentWithMultipleColumns);
   }
 
   public function testItWrapsTopLevelBlocksSpreadBetweenColumns() {
     $parsedDocument = [$this->paragraphBlock, $this->columnsBlock, $this->paragraphBlock, $this->paragraphBlock];
     // We expect to wrap top level paragraph blocks into columns so the result should three columns blocks
-    $result = $this->preprocessor->preprocess($parsedDocument);
+    $result = $this->preprocessor->preprocess($parsedDocument, []);
     verify($result)->arrayCount(3);
     // First columns contain columns with one paragraph block
     verify($result[0]['innerBlocks'][0]['blockName'])->equals('core/column');
