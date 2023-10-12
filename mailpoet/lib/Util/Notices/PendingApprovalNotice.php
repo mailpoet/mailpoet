@@ -36,7 +36,7 @@ class PendingApprovalNotice {
     return null;
   }
 
-  private function display(): string {
+  public function getPendingApprovalMessage(): string {
     // translators: %s is the email subject, which will always be in English
     $message = sprintf(__("MailPoet is [link1]reviewing your subscription[/link1]. You can use all MailPoet features and send [link2]email previews[/link2] to your [link3]authorized email addresses[/link3], but sending to your email list contacts is temporarily paused until we review your subscription. If you don't hear from us within 48 hours, please check the inbox and spam folders of your MailPoet account email for follow-up emails with the subject \"%s\" and reply, or [link4]contact us[/link4].", 'mailpoet'), 'Your MailPoet Subscription Review');
     $message = Helpers::replaceLinkTags(
@@ -72,6 +72,11 @@ class PendingApprovalNotice {
       'link4'
     );
 
+    return $message;
+  }
+
+  private function display(): string {
+    $message = $this->getPendingApprovalMessage();
     WPNotice::displayWarning($message, '', self::OPTION_NAME);
     return $message;
   }
