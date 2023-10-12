@@ -16,6 +16,12 @@ class StylesController {
   const EMAIL_BACKGROUND = '#cccccc';
 
   /**
+   * Padding of the email in pixels.
+   * @var int
+   */
+  const EMAIL_PADDING = 10;
+
+  /**
    * Default styles applied to the email. These are going to be replaced by style settings.
    * This is currently more af a proof of concept that we can apply styles to the email.
    * We will gradually replace these hardcoded values with styles saved as global styles or styles saved with the email.
@@ -37,12 +43,18 @@ class StylesController {
   }
 
   /**
-   * @return array{width: int, background: string}
+   * @return array{width: int, background: string, padding: array{bottom: int, left: int, right: int, top: int}}
    */
   public function getEmailLayoutStyles(): array {
     return [
       'width' => self::EMAIL_WIDTH,
       'background' => self::EMAIL_BACKGROUND,
+      'padding' => [
+        'bottom' => self::EMAIL_PADDING,
+        'left' => self::EMAIL_PADDING,
+        'right' => self::EMAIL_PADDING,
+        'top' => self::EMAIL_PADDING,
+      ],
     ];
   }
 }
