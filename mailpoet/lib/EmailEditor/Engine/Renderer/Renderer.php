@@ -42,7 +42,7 @@ class Renderer {
     $parser = new \WP_Block_Parser();
     $parsedBlocks = $parser->parse($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-    $parsedBlocks = $this->preprocessManager->preprocess($parsedBlocks);
+    $parsedBlocks = $this->preprocessManager->preprocess($parsedBlocks, $this->stylesController->getEmailLayoutStyles());
     $renderedBody = $this->blocksRenderer->render($parsedBlocks);
 
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);

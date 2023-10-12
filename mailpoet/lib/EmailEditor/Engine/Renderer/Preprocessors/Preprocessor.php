@@ -3,5 +3,5 @@
 namespace MailPoet\EmailEditor\Engine\Renderer\Preprocessors;
 
 interface Preprocessor {
-  public function preprocess(array $parsedBlocks): array;
+  public function preprocess(array $parsedBlocks, array $layoutStyles): array;
 }
