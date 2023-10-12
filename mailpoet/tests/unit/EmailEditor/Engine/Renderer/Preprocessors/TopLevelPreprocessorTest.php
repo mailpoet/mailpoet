@@ -1,8 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Engine\Renderer;
+namespace unit\EmailEditor\Engine\Renderer\Preprocessors;
 
-class PreprocessorTest extends \MailPoetUnitTest {
+use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TopLevelPreprocessor;
+
+class TopLevelPreprocessorTest extends \MailPoetUnitTest {
 
   private $paragraphBlock = [
     'blockName' => 'core/paragraph',
@@ -20,12 +22,12 @@ class PreprocessorTest extends \MailPoetUnitTest {
     ]],
   ];
 
-  /** @var Preprocessor */
+  /** @var TopLevelPreprocessor */
   private $preprocessor;
 
   public function _before() {
     parent::_before();
-    $this->preprocessor = new Preprocessor();
+    $this->preprocessor = new TopLevelPreprocessor();
   }
 
   public function testItWrapsSingleTopLevelBlockIntoColumns() {

@@ -14,8 +14,8 @@ class Renderer {
   /** @var BlocksRenderer */
   private $blocksRenderer;
 
-  /** @var Preprocessor */
-  private $preprocessor;
+  /** @var PreprocessManager */
+  private $preprocessManager;
 
   /** @var StylesController */
   private $stylesController;
@@ -28,12 +28,12 @@ class Renderer {
    */
   public function __construct(
     \MailPoetVendor\CSS $cssInliner,
-    Preprocessor $preprocessor,
+    PreprocessManager $preprocessManager,
     BlocksRenderer $blocksRenderer,
     StylesController $stylesController
   ) {
     $this->cssInliner = $cssInliner;
-    $this->preprocessor = $preprocessor;
+    $this->preprocessManager = $preprocessManager;
     $this->blocksRenderer = $blocksRenderer;
     $this->stylesController = $stylesController;
   }
@@ -42,7 +42,7 @@ class Renderer {
     $parser = new \WP_Block_Parser();
     $parsedBlocks = $parser->parse($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-    $parsedBlocks = $this->preprocessor->preprocess($parsedBlocks, $this->stylesController->getEmailLayoutStyles());
+    $parsedBlocks = $this->preprocessManager->preprocess($parsedBlocks);
     $renderedBody = $this->blocksRenderer->render($parsedBlocks);
 
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
