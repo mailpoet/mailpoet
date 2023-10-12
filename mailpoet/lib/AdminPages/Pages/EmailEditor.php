@@ -2,23 +2,17 @@
 
 namespace MailPoet\AdminPages\Pages;
 
-use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Env;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
-  /** @var PageRenderer */
-  private $pageRenderer;
-
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
-    PageRenderer $pageRenderer,
     WPFunctions $wp
   ) {
-    $this->pageRenderer = $pageRenderer;
     $this->wp = $wp;
   }
 
@@ -52,6 +46,6 @@ class EmailEditor {
     $this->wp->wpEnqueueStyle('wp-format-library');
     $this->wp->wpEnqueueStyle('wp-interface');
 
-    $this->pageRenderer->displayPage('email_editor.html', []);
+    echo '<div id="mailpoet-email-editor"></div>';
   }
 }
