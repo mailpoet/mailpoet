@@ -48,11 +48,10 @@ function WelcomeWizardStepsController({
 
   const redirect = partial(redirectToNextStep, history, finishWizard);
 
-  const submitTracking = useCallback(
-    async (tracking, libs3rdParty) => {
-      setLoading(true);
+  const updateTracking = useCallback(
+    async (analytics: boolean, libs3rdParty: boolean) => {
       const analyticsData: Settings['analytics'] = {
-        enabled: tracking ? '1' : '',
+        enabled: analytics ? '1' : '',
       };
       const thirdPartyLibsData: Settings['3rd_party_libs'] = {
         enabled: libs3rdParty ? '1' : '',
@@ -64,10 +63,18 @@ function WelcomeWizardStepsController({
       await updateSettings(updateData);
       setAnalytics(analyticsData);
       setThirdPartyLibs(thirdPartyLibsData);
+    },
+    [setAnalytics, setThirdPartyLibs],
+  );
+
+  const submitTracking = useCallback(
+    async (tracking: boolean, libs3rdParty: boolean) => {
+      setLoading(true);
+      await updateTracking(tracking, libs3rdParty);
       redirect(step);
       setLoading(false);
     },
-    [redirect, step, setAnalytics, setThirdPartyLibs],
+    [redirect, step, updateTracking],
   );
 
   const updateSender = useCallback(
