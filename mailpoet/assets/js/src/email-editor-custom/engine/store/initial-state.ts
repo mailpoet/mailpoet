@@ -20,6 +20,12 @@ export function getInitialState(): State {
         'core/image',
       ],
     },
-    previewDeviceType: 'Desktop',
+    preview: {
+      deviceType: 'Desktop',
+      toEmail: '',
+      isModalOpened: false,
+      isSendingPreviewEmail: false,
+      sendingPreviewStatus: null,
+    },
   };
 }

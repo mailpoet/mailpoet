@@ -8,7 +8,7 @@ import { __ } from '@wordpress/i18n';
 import { plus, listView, undo, redo } from '@wordpress/icons';
 import { MailPoetEmailData, storeName } from '../../store';
 import { MoreMenu } from './more-menu';
-import { PreviewDropdown } from './preview-dropdown';
+import { PreviewDropdown } from '../preview';
 import { SaveButton } from './save-button';
 
 export function Header() {

@@ -28,7 +28,7 @@ export function BlockEditor() {
     (select) => ({
       postId: select(storeName).getEmailPostId(),
       initialSettings: select(storeName).getInitialEditorSettings(),
-      previewDeviceType: select(storeName).getPreviewDeviceType(),
+      previewDeviceType: select(storeName).getPreviewState().deviceType,
     }),
     [],
   );

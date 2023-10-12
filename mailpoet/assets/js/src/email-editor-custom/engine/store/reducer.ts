@@ -26,10 +26,10 @@ export function reducer(state: State, action): State {
           isOpened: !state.listviewSidebar.isOpened,
         },
       };
-    case 'CHANGE_PREVIEW_DEVICE_TYPE':
+    case 'CHANGE_PREVIEW_STATE':
       return {
         ...state,
-        previewDeviceType: action.previewDeviceType,
+        preview: { ...state.preview, ...action.state },
       };
     default:
       return state;

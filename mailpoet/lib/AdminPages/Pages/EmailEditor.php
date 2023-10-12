@@ -2,6 +2,7 @@
 
 namespace MailPoet\AdminPages\Pages;
 
+use MailPoet\API\JSON\API;
 use MailPoet\Config\Env;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -37,6 +38,22 @@ class EmailEditor {
       [],
       $assetsParams['version']
     );
+
+    $jsonAPIRoot = rtrim($this->wp->escUrlRaw(admin_url('admin-ajax.php')), '/');
+    $token = $this->wp->wpCreateNonce('mailpoet_token');
+    $apiVersion = API::CURRENT_VERSION;
+    $currentUserEmail = $this->wp->wpGetCurrentUser()->user_email;
+    $this->wp->wpLocalizeScript(
+      'mailpoet_email_editor',
+      'MailPoetEmailEditor',
+      [
+        'json_api_root' => esc_js($jsonAPIRoot),
+        'api_token' => esc_js($token),
+        'api_version' => esc_js($apiVersion),
+        'current_wp_user_email' => esc_js($currentUserEmail),
+      ]
+    );
+
     $this->wp->wpEnqueueStyle('wp-components');
     $this->wp->wpEnqueueStyle('wp-block-editor');
     $this->wp->wpEnqueueStyle('wp-block-editor-content');
