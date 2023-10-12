@@ -178,6 +178,7 @@ interface Window {
   wizard_tracking_illustration_url: string;
   wizard_MSS_pitch_illustration_url: string;
   wizard_woocommerce_illustration_url: string;
+  wizard_has_tracking_settings: boolean;
   mailpoet_account_url: string;
   mailpoet_show_customers_import: boolean;
   mailpoet_installed_days_ago: number;

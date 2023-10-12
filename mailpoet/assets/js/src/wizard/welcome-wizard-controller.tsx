@@ -86,25 +86,41 @@ function WelcomeWizardStepsController({
 
   const submitSender = useCallback(async () => {
     setLoading(true);
+    let currentStep = step;
+    if (window.mailpoet_is_dotcom) {
+      // Skip the next step
+      currentStep += 1;
+      if (!window.wizard_has_tracking_settings) {
+        await updateTracking(true, true);
+      }
+    }
     await updateSettings(createSenderSettings(sender)).then(() =>
-      redirect(step),
+      redirect(currentStep),
     );
     setLoading(false);
-  }, [redirect, sender, step]);
+  }, [redirect, sender, step, updateTracking]);
 
   const skipSenderStep = useCallback(
     async (e) => {
       e.preventDefault();
       setLoading(true);
       const defaultSenderInfo = { address: window.admin_email, name: '' };
+      let currentStep = step;
 
+      if (window.mailpoet_is_dotcom) {
+        // Skip the next step
+        currentStep += 1;
+        if (!window.wizard_has_tracking_settings) {
+          await updateTracking(true, true);
+        }
+      }
       await updateSettings(createSenderSettings(defaultSenderInfo)).then(() => {
         setSender(defaultSenderInfo);
-        redirect(step);
+        redirect(currentStep);
       });
       setLoading(false);
     },
-    [redirect, step, setSender],
+    [redirect, step, setSender, updateTracking],
   );
 
   const stepName = mapStepNumberToStepName(step);

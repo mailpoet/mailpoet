@@ -64,6 +64,7 @@ class WelcomeWizard {
       'settings' => $this->getSettings(),
       'premium_key_valid' => !empty($premiumKeyValid),
       'mss_key_valid' => !empty($mpApiKeyValid),
+      'has_tracking_settings' => $this->settings->hasSavedValue('analytics') && $this->settings->hasSavedValue('3rd_party_libs'),
     ];
     $this->pageRenderer->displayPage('welcome_wizard.html', $data);
   }
