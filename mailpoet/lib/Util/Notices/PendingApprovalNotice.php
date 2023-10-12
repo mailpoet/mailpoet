@@ -37,10 +37,11 @@ class PendingApprovalNotice {
   }
 
   private function display(): string {
-    $message = __('<b>Your subscription is currently [link1]pending approval[/link1]</b>, which means you can only send [link2]email previews[/link2] to your [link3]authorized emails[/link3] at the moment. Please check your mailbox or [link4]contact us[/link4] if you haven’t heard from our team about your subscription status in the past 48 hours.', 'mailpoet');
+    // translators: %s is the email subject, which will always be in English
+    $message = sprintf(__("MailPoet is [link1]reviewing your subscription[/link1]. You can use all MailPoet features and send [link2]email previews[/link2] to your [link3]authorized email addresses[/link3], but sending to your email list contacts is temporarily paused until we review your subscription. If you don't hear from us within 48 hours, please check the inbox and spam folders of your MailPoet account email for follow-up emails with the subject \"%s\" and reply, or [link4]contact us[/link4].", 'mailpoet'), 'Your MailPoet Subscription Review');
     $message = Helpers::replaceLinkTags(
       $message,
-      'https://kb.mailpoet.com/article/350-pending-approval-subscription',
+      'https://kb.mailpoet.com/article/379-our-approval-process',
       [
         'target' => '_blank',
       ],
@@ -56,7 +57,7 @@ class PendingApprovalNotice {
     );
     $message = Helpers::replaceLinkTags(
       $message,
-      'https://kb.mailpoet.com/article/266-how-to-add-an-authorized-email-address-as-the-from-address#authorize',
+      'https://kb.mailpoet.com/article/266-how-to-add-an-authorized-email-address-as-the-from-address#how-to-authorize-an-email-address',
       [
         'target' => '_blank',
       ],
