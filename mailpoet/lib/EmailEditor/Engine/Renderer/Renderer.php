@@ -42,7 +42,7 @@ class Renderer {
     $parser = new \WP_Block_Parser();
     $parsedBlocks = $parser->parse($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-    $parsedBlocks = $this->preprocessor->preprocess($parsedBlocks);
+    $parsedBlocks = $this->preprocessor->preprocess($parsedBlocks, $this->stylesController->getEmailLayoutStyles());
     $renderedBody = $this->blocksRenderer->render($parsedBlocks);
 
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
@@ -54,8 +54,8 @@ class Renderer {
     // Apply layout styles
     $layoutStyles = $this->stylesController->getEmailLayoutStyles();
     $template = str_replace(
-      ['{{width}}', '{{background}}'],
-      [$layoutStyles['width'], $layoutStyles['background']],
+      ['{{width}}', '{{background}}', '{{padding_top}}', '{{padding_right}}', '{{padding_bottom}}', '{{padding_left}}'],
+      [$layoutStyles['width'], $layoutStyles['background'], $layoutStyles['padding']['top'], $layoutStyles['padding']['right'], $layoutStyles['padding']['bottom'], $layoutStyles['padding']['left']],
       $template
     );
 
