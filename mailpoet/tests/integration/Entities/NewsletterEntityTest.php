@@ -7,6 +7,7 @@ use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\NewsletterOptionField;
 
 class NewsletterEntityTest extends \MailPoetTest {
   /** @var NewslettersRepository */
@@ -40,7 +41,7 @@ class NewsletterEntityTest extends \MailPoetTest {
 
   public function testItRemovesOrphanedOptionRelations() {
     $newsletter = $this->createNewsletter();
-    $optionField = $this->createOptionField(NewsletterOptionFieldEntity::NAME_GROUP);
+    $optionField = (new NewsletterOptionField())->findOrCreate(NewsletterOptionFieldEntity::NAME_GROUP);
     $newsletterOption = new NewsletterOptionEntity($newsletter, $optionField);
     $this->entityManager->persist($newsletterOption);
     $this->entityManager->flush();
@@ -59,7 +60,7 @@ class NewsletterEntityTest extends \MailPoetTest {
   public function testGetOptionReturnsCorrectData(): void {
     $optionValue = 'Some Value';
     $newsletter = $this->createNewsletter();
-    $optionField = $this->createOptionField(NewsletterOptionFieldEntity::NAME_EVENT);
+    $optionField = (new NewsletterOptionField())->findOrCreate(NewsletterOptionFieldEntity::NAME_EVENT);
     $newsletterOption = new NewsletterOptionEntity($newsletter, $optionField);
     $newsletterOption->setValue($optionValue);
 
@@ -181,7 +182,7 @@ class NewsletterEntityTest extends \MailPoetTest {
   }
 
   public function testItCanRetrieveFilterSegmentIdOption(): void {
-    $optionField = $this->createOptionField(NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID);
+    $optionField = (new NewsletterOptionField())->findOrCreate(NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID);
     $newsletter = $this->createNewsletter();
     expect($newsletter->getFilterSegmentId())->null();
 
@@ -196,7 +197,7 @@ class NewsletterEntityTest extends \MailPoetTest {
   }
 
   public function testItInheritsFilterSegmentIdFromParent(): void {
-    $optionField = $this->createOptionField(NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID, NewsletterEntity::TYPE_NOTIFICATION);
+    $optionField = (new NewsletterOptionField())->findOrCreate(NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID, NewsletterEntity::TYPE_NOTIFICATION);
     $notificationNewsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION);
     expect($notificationNewsletter->getFilterSegmentId())->null();
 
@@ -225,13 +226,5 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletter->setSubject('Subject');
     $this->entityManager->persist($newsletter);
     return $newsletter;
-  }
-
-  private function createOptionField(string $name, string $type = NewsletterEntity::TYPE_STANDARD): NewsletterOptionFieldEntity {
-    $newsletterOptionField = new NewsletterOptionFieldEntity();
-    $newsletterOptionField->setName($name);
-    $newsletterOptionField->setNewsletterType($type);
-    $this->entityManager->persist($newsletterOptionField);
-    return $newsletterOptionField;
   }
 }

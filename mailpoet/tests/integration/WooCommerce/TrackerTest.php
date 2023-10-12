@@ -13,6 +13,7 @@ use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
+use MailPoet\Test\DataFactories\NewsletterOptionField;
 use MailPoet\Test\DataFactories\StatisticsClicks;
 use MailPoet\Test\DataFactories\StatisticsWooCommercePurchases;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -32,11 +33,7 @@ class TrackerTest extends \MailPoetTest {
     $this->subscriber = (new Subscriber())->create();
     $this->tracker = $this->diContainer->get(Tracker::class);
     // Add dummy option field. This is needed for AUTOMATIC emails analytics
-    $newsletterOptionField = new NewsletterOptionFieldEntity();
-    $newsletterOptionField->setNewsletterType(NewsletterEntity::TYPE_AUTOMATIC);
-    $newsletterOptionField->setName('event');
-    $this->entityManager->persist($newsletterOptionField);
-    $this->entityManager->flush();
+    (new NewsletterOptionField())->findOrCreate('event', NewsletterEntity::TYPE_AUTOMATIC);
   }
 
   public function testItAddsTrackingData(): void {
@@ -46,7 +43,6 @@ class TrackerTest extends \MailPoetTest {
   }
 
   public function testItAddsTheEventOption(): void {
-
     $newsletter1 = (new Newsletter())->withSendingQueue()->withType(NewsletterEntity::TYPE_AUTOMATIC)->create();
     $field = $this->diContainer->get(NewsletterOptionFieldsRepository::class)->findOneBy([
       'name' => NewsletterOptionFieldEntity::NAME_EVENT,
@@ -197,7 +193,6 @@ class TrackerTest extends \MailPoetTest {
   }
 
   public function testItTracksTheRevenueOfDeletedCampaigns(): void {
-
     $newsletter1 = (new Newsletter())->withSendingQueue()->create();
     $newsletter2 = (new Newsletter())->withSendingQueue()->create();
     $newsletter3 = (new Newsletter())->withSendingQueue()->create();

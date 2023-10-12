@@ -5,7 +5,6 @@ namespace MailPoet\Newsletter;
 use Codeception\Util\Fixtures;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
-use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -15,6 +14,7 @@ use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\NewsletterOptionField;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -401,10 +401,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     ];
 
     foreach ($newsletterOptions as $optionName) {
-      $newsletterOptionField = new NewsletterOptionFieldEntity();
-      $newsletterOptionField->setNewsletterType(NewsletterEntity::TYPE_NOTIFICATION);
-      $newsletterOptionField->setName($optionName);
-      $this->entityManager->persist($newsletterOptionField);
+      (new NewsletterOptionField())->findOrCreate($optionName, NewsletterEntity::TYPE_NOTIFICATION);
     }
     $this->entityManager->flush();
   }

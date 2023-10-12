@@ -4,10 +4,10 @@ namespace MailPoet\Newsletter\Listing;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
-use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\Handler;
+use MailPoet\Test\DataFactories\NewsletterOptionField;
 
 class NewsletterListingRepositoryTest extends \MailPoetTest {
   public function testItAppliesGroup() {
@@ -129,10 +129,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
   }
 
   public function testItAppliesAutomaticEmailsGroupParameter() {
-    $newsletterOptionField = new NewsletterOptionFieldEntity();
-    $newsletterOptionField->setName('group');
-    $newsletterOptionField->setNewsletterType(NewsletterEntity::TYPE_AUTOMATIC);
-    $this->entityManager->persist($newsletterOptionField);
+    $newsletterOptionField = (new NewsletterOptionField())->findOrCreate('group', NewsletterEntity::TYPE_AUTOMATIC);
 
     $newsletter1 = new NewsletterEntity();
     $newsletter1->setType(NewsletterEntity::TYPE_AUTOMATIC);
