@@ -8,6 +8,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\ErrorMappers\MailPoetMapper;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Util\License\Features\Subscribers;
+use MailPoet\Util\Notices\PendingApprovalNotice;
 use MailPoet\WP\Functions as WPFunctions;
 
 class MailPoetMapperTest extends \MailPoetUnitTest {
@@ -30,7 +31,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     $this->mapper = new MailPoetMapper(
       Stub::make(ServicesChecker::class),
       Stub::make(Subscribers::class),
-      $wpFunctions
+      $wpFunctions,
+      Stub::make(PendingApprovalNotice::class)
     );
     $this->subscribers = ['a@example.com', 'c d <b@example.com>'];
   }
@@ -195,8 +197,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_PENDING_APPROVAL);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    verify($error->getMessage())->stringContainsString('pending approval');
-    verify($error->getMessage())->stringContainsString("You’ll soon be able to send once our team reviews your account.");
+    verify($error->getMessage())->stringContainsString('reviewing your subscription');
+    verify($error->getMessage())->stringContainsString("If you don't hear from us within 48 hours, please check the inbox and spam folders of your MailPoet account email for follow-up emails with the subject");
   }
 
   public function testGetUnavailableServiceError() {
@@ -242,11 +244,14 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
       'generatePartialApiKey' => 'abc',
     ]);
 
+    $pendingApprovalNotice = Stub::make(PendingApprovalNotice::class);
+
     // Check email volume error when the limit is known
     $this->mapper = new MailPoetMapper(
       $serviceChecker,
       $subscribersWithLimit,
-      $wpFunctions
+      $wpFunctions,
+      $pendingApprovalNotice
     );
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
     verify($error)->instanceOf(MailerError::class);
@@ -259,7 +264,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     $this->mapper = new MailPoetMapper(
       $serviceChecker,
       $subscribersWithoutKnownLimit,
-      $wpFunctions
+      $wpFunctions,
+      $pendingApprovalNotice
     );
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
     verify($error->getMessage())->stringContainsString('You have sent more emails this month than your MailPoet plan includes,');
