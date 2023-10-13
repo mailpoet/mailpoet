@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
+use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\BlocksWidthPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\CleanupPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\Preprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TopLevelPreprocessor;
@@ -12,10 +13,12 @@ class PreprocessManager {
 
   public function __construct(
     CleanupPreprocessor $cleanupPreprocessor,
-    TopLevelPreprocessor $topLevelPreprocessor
+    TopLevelPreprocessor $topLevelPreprocessor,
+    BlocksWidthPreprocessor $blocksWidthPreprocessor
   ) {
     $this->registerPreprocessor($cleanupPreprocessor);
     $this->registerPreprocessor($topLevelPreprocessor);
+    $this->registerPreprocessor($blocksWidthPreprocessor);
   }
 
   /**
