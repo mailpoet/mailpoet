@@ -4,6 +4,7 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\API\JSON\API;
 use MailPoet\Config\Env;
+use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -11,10 +12,15 @@ class EmailEditor {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var SettingsController */
+  private $settingsController;
+
   public function __construct(
-    WPFunctions $wp
+    WPFunctions $wp,
+    SettingsController $settingsController
   ) {
     $this->wp = $wp;
+    $this->settingsController = $settingsController;
   }
 
   public function render() {
@@ -51,6 +57,7 @@ class EmailEditor {
         'api_token' => esc_js($token),
         'api_version' => esc_js($apiVersion),
         'current_wp_user_email' => esc_js($currentUserEmail),
+        'editor_settings' => $this->settingsController->getSettings(),
       ]
     );
 

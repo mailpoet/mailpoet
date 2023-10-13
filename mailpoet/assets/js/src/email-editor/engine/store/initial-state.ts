@@ -1,4 +1,5 @@
 import { State } from './types';
+import { getEditorSettings } from './settings';
 
 export function getInitialState(): State {
   const searchParams = new URLSearchParams(window.location.search);
@@ -11,15 +12,7 @@ export function getInitialState(): State {
       isOpened: false,
     },
     postId,
-    editorSettings: {
-      allowedBlockTypes: [
-        'core/paragraph',
-        'core/heading',
-        'core/column',
-        'core/columns',
-        'core/image',
-      ],
-    },
+    editorSettings: getEditorSettings(),
     preview: {
       deviceType: 'Desktop',
       toEmail: window.MailPoetEmailEditor.current_wp_user_email,
