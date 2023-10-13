@@ -9,7 +9,7 @@ use MailPoet\Test\DataFactories\Settings;
 class CreateAndSendEmailUsingGutenbergCest {
   public function createAndSendStandardNewsletter(\AcceptanceTester $i) {
     $wordPressVersion = $i->getWordPressVersion();
-    if (version_compare($wordPressVersion, '6.4', '<')) {
+    if (version_compare($wordPressVersion, '6.3', '<')) {
       return;
     }
     $settings = new Settings();
@@ -28,39 +28,27 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('//button[text()="Continue"]');
 
     $i->wantTo('Compose an email');
-    if (version_compare($wordPressVersion, '6.3', '<')) {
-      $i->waitForElement('.wp-block-post-content');
-      $i->click('.wp-block-post-content');
-      $i->type('Hello world!');
-    } else {
-      // Version 6.3 introduced a new Gutenberg editor with an iframe
-      $i->switchToFrame('[name="editor-canvas"]');
-      $i->waitForElement('.wp-block-post-content');
-      $i->click('.wp-block-post-content');
-      $i->type('Hello world!');
-      $i->switchToIFrame();
-    }
+    $i->waitForElement('.is-root-container');
+    $i->wait(1);
+    $i->click('.is-root-container');
+    $i->type('Hello world!');
 
-    $i->wantTo('Close fullscreen mode and verify correct WP menu item is highlighted');
-    $i->click('[aria-label="Options"]');
-    $i->waitForText('Fullscreen mode');
-    $i->click('Fullscreen mode');
+    $i->wantTo('Verify correct WP menu item is highlighted');
     $i->waitForText('Emails', 10, '#toplevel_page_mailpoet-homepage .current');
-    $i->wantTo('Close options dropdown');
-    $i->click('[aria-label="Options"]');
 
     $i->wantTo('Change subject and preheader');
-    $i->click('button[data-label="Email"]');
-    $i->click('//button[text()="Details"]');
+    $i->click('[data-automation-id="email_settings_tab"]');
     $i->fillField('[data-automation-id="email_subject"]', 'My New Subject');
     $i->fillField('[data-automation-id="email_preview_text"]', 'My New Preview Text');
 
     $i->wantTo('Send an email and verify it was delivered');
-    $i->click('Next');
-    $i->waitForText('My New Subject');
-    $i->waitForText('My New Preview Text');
+    $i->click('Save Draft');
+    $i->waitForText('Saved');
+    $i->click('Send');
     $i->waitForElement('[name="subject"]');
-    $i->fillField('subject', 'Test Subject');
+    $subject = $i->grabValueFrom('[name="subject"]');
+    expect($subject)->equals('My New Subject');
+    $i->waitForText('My New Preview Text');
     $i->fillField('sender_name', 'John Doe');
     $i->fillField('sender_address', 'john.doe@example.com');
     $i->selectOptionInSelect2($segmentName);
@@ -71,7 +59,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->triggerMailPoetActionScheduler();
 
     $i->wantTo('Confirm the newsletter was received');
-    $i->checkEmailWasReceived('Test Subject');
+    $i->checkEmailWasReceived('My New Subject');
   }
 
   public function displayNewsletterPreview(\AcceptanceTester $i) {
@@ -94,21 +82,14 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('//button[text()="Continue"]');
 
     $i->wantTo('Edit an email');
-    if (version_compare($wordPressVersion, '6.3', '<')) {
-      $i->waitForElement('.wp-block-post-content');
-      $i->click('.wp-block-post-content');
-      $i->type('Hello world!');
-    } else {
-      // Version 6.3 introduced a new Gutenberg editor with an iframe
-      $i->switchToFrame('[name="editor-canvas"]');
-      $i->waitForElement('.wp-block-post-content');
-      $i->click('.wp-block-post-content');
-      $i->type('Hello world!');
-      $i->switchToIFrame();
-    }
+    $i->waitForElement('.is-root-container');
+    $i->wait(1);
+    $i->click('.is-root-container');
+    $i->type('Hello world!');
 
     $i->wantTo('Save draft and display preview');
-    $i->click('//button[text()="Save draft"]');
+    $i->click('Save Draft');
+    $i->waitForText('Saved');
     $i->click('.mailpoet-preview-dropdown button[aria-label="Preview"]');
     $i->waitForElementClickable('//button[text()="Preview in new tab"]');
     $i->click('//button[text()="Preview in new tab"]');

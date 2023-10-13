@@ -25,7 +25,7 @@ export function Header({ sidebarKey }: Props) {
               'components-button edit-post-sidebar__panel-tab',
               { 'is-active': sidebarKey === mainSidebarEmailKey },
             )}
-            data-automation-id="mailpoet_form_settings_tab"
+            data-automation-id="email_settings_tab"
             type="button"
           >
             {__('Email', 'mailpoet')}
