@@ -36,12 +36,24 @@ class PendingApprovalNotice {
     return null;
   }
 
-  public function getPendingApprovalMessage(): string {
-    // translators: %s is the email subject, which will always be in English
-    $message = sprintf(__("MailPoet is [link1]reviewing your subscription[/link1]. You can use all MailPoet features and send [link2]email previews[/link2] to your [link3]authorized email addresses[/link3], but sending to your email list contacts is temporarily paused until we review your subscription. If you don't hear from us within 48 hours, please check the inbox and spam folders of your MailPoet account email for follow-up emails with the subject \"%s\" and reply, or [link4]contact us[/link4].", 'mailpoet'), 'Your MailPoet Subscription Review');
-    $message = Helpers::replaceLinkTags(
+  public function getPendingApprovalTitle(): string {
+    $message = __("MailPoet is [link]reviewing your subscription[/link].", 'mailpoet');
+    return Helpers::replaceLinkTags(
       $message,
       'https://kb.mailpoet.com/article/379-our-approval-process',
+      [
+        'target' => '_blank',
+      ],
+      'link'
+    );
+  }
+
+  public function getPendingApprovalBody(): string {
+    // translators: %s is the email subject, which will always be in English
+    $message = sprintf(__("You can use all MailPoet features and send [link1]email previews[/link1] to your [link2]authorized email addresses[/link2], but sending to your email list contacts is temporarily paused until we review your subscription. If you don't hear from us within 48 hours, please check the inbox and spam folders of your MailPoet account email for follow-up emails with the subject \"%s\" and reply, or [link3]contact us[/link3].", 'mailpoet'), 'Your MailPoet Subscription Review');
+    $message = Helpers::replaceLinkTags(
+      $message,
+      'https://kb.mailpoet.com/article/290-check-your-newsletter-before-sending-it',
       [
         'target' => '_blank',
       ],
@@ -49,7 +61,7 @@ class PendingApprovalNotice {
     );
     $message = Helpers::replaceLinkTags(
       $message,
-      'https://kb.mailpoet.com/article/290-check-your-newsletter-before-sending-it',
+      'https://kb.mailpoet.com/article/266-how-to-add-an-authorized-email-address-as-the-from-address#how-to-authorize-an-email-address',
       [
         'target' => '_blank',
       ],
@@ -57,22 +69,18 @@ class PendingApprovalNotice {
     );
     $message = Helpers::replaceLinkTags(
       $message,
-      'https://kb.mailpoet.com/article/266-how-to-add-an-authorized-email-address-as-the-from-address#how-to-authorize-an-email-address',
+      'https://www.mailpoet.com/support/',
       [
         'target' => '_blank',
       ],
       'link3'
     );
-    $message = Helpers::replaceLinkTags(
-      $message,
-      'https://www.mailpoet.com/support/',
-      [
-        'target' => '_blank',
-      ],
-      'link4'
-    );
 
     return $message;
+  }
+
+  public function getPendingApprovalMessage(): string {
+    return sprintf('%s %s', $this->getPendingApprovalTitle(), $this->getPendingApprovalBody());
   }
 
   private function display(): string {
