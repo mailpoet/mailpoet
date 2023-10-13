@@ -22,7 +22,7 @@ export function getInitialState(): State {
     },
     preview: {
       deviceType: 'Desktop',
-      toEmail: '',
+      toEmail: window.MailPoetEmailEditor.current_wp_user_email,
       isModalOpened: false,
       isSendingPreviewEmail: false,
       sendingPreviewStatus: null,

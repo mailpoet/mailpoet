@@ -122,7 +122,7 @@ export function* requestSendingNewsletterPreview(
   } catch (errorResponse) {
     yield {
       type: 'CHANGE_PREVIEW_STATE',
-      status: {
+      state: {
         sendingPreviewStatus: SendingPreviewStatus.ERROR,
         isSendingPreviewEmail: false,
       },
