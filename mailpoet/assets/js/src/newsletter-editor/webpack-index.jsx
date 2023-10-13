@@ -59,3 +59,9 @@ import 'newsletter-editor/blocks/coupon'; // side effect - calls App.on()
 import { registerTranslations } from 'common';
 
 registerTranslations();
+
+// At this stage, Backbone is loaded and set up for our codebase. We now need to revert it,
+// in case WordPress has already set up its version of Backbone (e.g. via Media Library).
+if (window.Backbone) {
+  window.Backbone.noConflict();
+}
