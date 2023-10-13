@@ -78,8 +78,6 @@ export function DetailsPanel() {
     </>
   );
 
-  // TODO: Add handling toggle to a store
-  // Render email details panel using PluginDocumentSettingPanel component
   return (
     <PanelBody
       title={__('Details', 'mailpoet')}
