@@ -58,9 +58,13 @@
 
     {{#if mssKeyPendingApproval }}
       <div class="mailpoet_error pendindig_approval_error{{#if awaitingKeyCheck}} with-spinner{{/if}}">
-        <%= __('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to [link]your authorized emails[/link].')|replaceLinkTags('https://account.mailpoet.com/authorization', {'target': '_blank', 'rel': 'noopener noreferrer'})|raw %>
+        <p>
+          <%= pending_approval_message() %>
+        </p>
         {{#if mssKeyPendingApprovalRefreshMessage }}
-        <%= __('If you have already received approval email, click [link]here[/link] to update the status.')|replaceLinkTags('#', {'id': 'refresh-mss-key-status'})|raw %>
+        <p>
+          <%= __('If you have already received approval email, click [link]here[/link] to update the status.')|replaceLinkTags('#', {'id': 'refresh-mss-key-status'})|raw %>
+        </p>
         {{/if}}
       </div>
     {{/if}}
