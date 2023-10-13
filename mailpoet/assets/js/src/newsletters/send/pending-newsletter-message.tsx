@@ -1,8 +1,10 @@
-import { __ } from '@wordpress/i18n';
 import { MouseEvent, useCallback, useState } from 'react';
-import ReactStringReplace from 'react-string-replace';
-import { callApi, getLinkRegex, isTruthy, withBoundary } from 'common';
+import { callApi, isTruthy, withBoundary } from 'common';
 import { MailPoet } from 'mailpoet';
+import {
+  ClickToRefresh,
+  PendingApprovalMessage,
+} from '../../common/pending-approval-notice';
 
 function PendingNewsletterMessage({
   toggleLoadingState,
@@ -42,35 +44,14 @@ function PendingNewsletterMessage({
 
   return (
     <div className="mailpoet_error">
-      {ReactStringReplace(
-        __(
-          'You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to [link]your authorized emails[/link].',
-          'mailpoet',
-        ),
-        getLinkRegex(),
-        (match) => (
-          <a
-            href="https://account.mailpoet.com/authorization"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {match}
-          </a>
-        ),
-      )}{' '}
-      {showRefreshButton &&
-        ReactStringReplace(
-          __(
-            'If you have already received approval email, click [link]here[/link] to update the status.',
-            'mailpoet',
-          ),
-          getLinkRegex(),
-          (match) => (
-            <a href="#" onClick={recheckKey}>
-              {match}
-            </a>
-          ),
-        )}
+      <PendingApprovalMessage />
+      {showRefreshButton && (
+        <>
+          <br />
+          <br />
+          <ClickToRefresh onRefreshClick={recheckKey} />
+        </>
+      )}
     </div>
   );
 }
