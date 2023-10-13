@@ -3,6 +3,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { check, Icon } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
+import { isEmail } from '@wordpress/url';
 import { useEntityProp } from '@wordpress/core-data';
 import {
   MailPoetEmailData,
@@ -125,6 +126,8 @@ export function SendPreviewEmail() {
           updateSendPreviewEmail(email);
         }}
         value={previewToEmail}
+        type="email"
+        required
       />
       {sendingPreviewStatus === SendingPreviewStatus.SUCCESS ? (
         <p className="mailpoet-send-preview-modal-notice-success">
@@ -136,7 +139,11 @@ export function SendPreviewEmail() {
         <Button variant="tertiary" onClick={closeCallback}>
           {__('Close', 'mailpoet')}
         </Button>
-        <Button variant="primary" onClick={handleSendPreviewEmail}>
+        <Button
+          variant="primary"
+          onClick={handleSendPreviewEmail}
+          disabled={isSendingPreviewEmail || !isEmail(previewToEmail)}
+        >
           {isSendingPreviewEmail
             ? __('Sending...', 'mailpoet')
             : __('Send test email', 'mailpoet')}
