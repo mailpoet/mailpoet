@@ -123,18 +123,18 @@ class NewsletterCreationCest {
     $i->click('.mailpoet_show_preview');
     $i->waitForElement('[data-automation-id="switch_send_to_email"]');
     $i->click('[data-automation-id="switch_send_to_email"]');
-    $i->waitForText('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to your authorized emails.');
-    $href = $i->grabAttributeFrom('//a[text()="your authorized emails"]', 'href');
-    verify($href)->same('https://account.mailpoet.com/authorization');
+    $i->waitForText('sending to your email list contacts is temporarily paused until we review your subscription');
+    $href = $i->grabAttributeFrom('//a[text()="authorized email addresses"]', 'href');
+    verify($href)->same('https://kb.mailpoet.com/article/266-how-to-add-an-authorized-email-address-as-the-from-address#how-to-authorize-an-email-address');
     $i->click('#mailpoet_modal_close');
     $i->scrollToTop();
     $i->click('Next');
 
     // step 4 - see notice in 'Send preview' with link to authorized emails, 'Send' button must be disabled
     $i->waitForElement('[data-automation-id="newsletter_send_heading"]');
-    $i->waitForText('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to your authorized emails.');
-    $href = $i->grabAttributeFrom('//a[text()="your authorized emails"]', 'href');
-    verify($href)->same('https://account.mailpoet.com/authorization');
+    $i->waitForText('sending to your email list contacts is temporarily paused until we review your subscription');
+    $href = $i->grabAttributeFrom('//a[text()="authorized email addresses"]', 'href');
+    verify($href)->same('https://kb.mailpoet.com/article/266-how-to-add-an-authorized-email-address-as-the-from-address#how-to-authorize-an-email-address');
     $i->seeElement('[data-automation-id="email-submit"]:disabled');
   }
 }

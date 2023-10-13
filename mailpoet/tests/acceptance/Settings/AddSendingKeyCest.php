@@ -56,8 +56,7 @@ class AddSendingKeyCest {
     $settings = new Settings();
     $settings->withMssKeyPendingApproval();
     $i->reloadPage();
-    $i->waitForText('Note: this subscription is currently pending approval by MailPoet.');
-    $i->waitForText('You should receive an email from us about it within 48h. Sending will be paused in the meantime, but you can still send email previews to yourself and explore the plugin features.');
+    $i->waitForText('sending to your email list contacts is temporarily paused until we review your subscription');
     $i->dontSee('A test email was sent to');
 
     // try invalid key
@@ -65,8 +64,8 @@ class AddSendingKeyCest {
     $i->click('Verify');
     $i->waitForText('Your key is not valid for the MailPoet Sending Service');
     $i->waitForText('Your key is not valid for MailPoet Premium');
-    $i->dontSee('Note: this subscription is currently pending approval by MailPoet.');
-    $i->dontSee('You should receive an email from us about it within 48h. Sending will be paused in the meantime, but you can still send email previews to yourself and explore the plugin features.');
+    $i->reloadPage(); // Necessary to clear the banner notice
+    $i->dontSee('sending to your email list contacts is temporarily paused until we review your subscription');
     $i->dontSee('A test email was sent to');
   }
 
