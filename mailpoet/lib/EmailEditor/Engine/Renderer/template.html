@@ -5,16 +5,18 @@
   xmlns:v="urn:schemas-microsoft-com:vml"
   xmlns:o="urn:schemas-microsoft-com:office:office"
 >
-  <title>{{newsletter_subject}}</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="format-detection" content="telephone=no" />
-  {{email_meta_robots}}
+  <head>
+    <title>{{newsletter_subject}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="format-detection" content="telephone=no" />
+    {{email_meta_robots}}
 
-  <style type="text/css">
-    {{email_template_styles}}
-  </style>
+    <style type="text/css">
+      {{email_template_styles}}
+    </style>
+  </head>
   <body style="word-spacing:normal;background:{{background}};">
     <div class="email_layout_wrapper" style="background:{{background}}">
       <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:{{width}}px;" width="{{width}}" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
