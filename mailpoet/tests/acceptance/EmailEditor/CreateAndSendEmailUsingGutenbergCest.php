@@ -87,9 +87,11 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->wantTo('Open standard newsletter using Gutenberg editor');
     $i->login();
     $i->amOnMailpoetPage('Emails');
-    $i->click('[data-automation-id="create_standard"]');
-    $i->waitForText('Which editor do you want to use?');
-    $i->click('Gutenberg Editor');
+    $i->click('[data-automation-id="create_standard_email_dropdown"]');
+    $i->waitForText('Create using new editor (Beta)');
+    $i->click('Create using new editor (Beta)');
+    $i->waitForText('Create modern, beautiful emails that embody your brand with advanced customization and editing capabilities.');
+    $i->click('//button[text()="Continue"]');
 
     $i->wantTo('Edit an email');
     if (version_compare($wordPressVersion, '6.3', '<')) {
