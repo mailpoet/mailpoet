@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   codeception_acceptance:
-    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.0-cli_20220605.0}
+    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.2-cli_20231016.1}
     depends_on:
       - smtp
       - wordpress
@@ -30,7 +30,7 @@ services:
       PHP_IDE_CONFIG: 'serverName=MailPoetTest'
 
   codeception_integration:
-    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.0-cli_20220605.0}
+    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.2-cli_20231016.1}
     depends_on:
       - smtp
       - wordpress
@@ -71,7 +71,7 @@ services:
       - mailhog-data:/mailhog-data
 
   wordpress:
-    image: mailpoet/wordpress:${WORDPRESS_IMAGE_VERSION:-wp-6.3_php8.0_20230811.1}
+    image: mailpoet/wordpress:${WORDPRESS_IMAGE_VERSION:-wp-6.3_php8.2_20230811.1}
     container_name: wordpress_${CIRCLE_NODE_INDEX:-default}
     depends_on:
       smtp:
