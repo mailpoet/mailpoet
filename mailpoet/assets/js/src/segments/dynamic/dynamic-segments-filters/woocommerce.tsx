@@ -94,6 +94,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (formItems.action === WooCommerceActionTypes.USED_COUPON_CODE) {
     return validateUsedCouponCode(formItems);
   }
+  if (formItems.action === WooCommerceActionTypes.FIRST_ORDER) {
+    return validateDateField(formItems);
+  }
   if (
     [
       WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE,
@@ -120,6 +123,7 @@ const componentsMap = {
   [WooCommerceActionTypes.USED_COUPON_CODE]: UsedCouponCodeFields,
   [WooCommerceActionTypes.USED_PAYMENT_METHOD]: UsedPaymentMethodFields,
   [WooCommerceActionTypes.USED_SHIPPING_METHOD]: UsedShippingMethodFields,
+  [WooCommerceActionTypes.FIRST_ORDER]: DateFieldsDefaultBefore,
 };
 
 export function WooCommerceFields({ filterIndex }: FilterProps): JSX.Element {
