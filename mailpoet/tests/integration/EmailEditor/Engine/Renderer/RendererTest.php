@@ -80,6 +80,12 @@ class RendererTest extends \MailPoetTest {
     $stylesControllerMock->method('getEmailLayoutStyles')->willReturn([
       'width' => 123,
       'background' => '#123456',
+      'padding' => [
+        'left' => 1,
+        'right' => 2,
+        'top' => 3,
+        'bottom' => 4,
+      ],
     ]);
     $renderer = $this->getServiceWithOverrides(Renderer::class, [
       'stylesController' => $stylesControllerMock,
