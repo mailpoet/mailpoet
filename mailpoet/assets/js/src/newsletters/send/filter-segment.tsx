@@ -15,6 +15,7 @@ import { Tooltip } from 'common/tooltip/tooltip';
 import { Icon, help } from '@wordpress/icons';
 import ReactStringReplace from 'react-string-replace';
 import { SendContext } from '../send-context';
+import { MailPoet } from '../../mailpoet';
 
 type FilterSegmentProps = {
   item?: NewsLetter;
@@ -72,8 +73,11 @@ export function FilterSegment({
         updateFilterSegmentId('');
       }
       setIsFilterSegmentEnabled(checked);
+      MailPoet.trackEvent('Emails > Filter by segment toggled', {
+        'Email type': item.type,
+      });
     },
-    [field, onValueChange, updateFilterSegmentId],
+    [field, onValueChange, updateFilterSegmentId, item],
   );
 
   let filterSegmentSelect;
@@ -116,6 +120,9 @@ export function FilterSegment({
         field={filterSegmentField}
         onValueChange={(event: ChangeEvent<HTMLInputElement>) => {
           updateFilterSegmentId(event.target.value);
+          MailPoet.trackEvent('Emails > Filter by segment selected', {
+            'Email type': item.type,
+          });
         }}
       />
     );
@@ -166,6 +173,9 @@ export function FilterSegment({
                 rel="noopener noreferrer"
                 onClick={async (event) => {
                   event.preventDefault();
+                  MailPoet.trackEvent('Emails > Create new segment clicked', {
+                    'Email type': item.type,
+                  });
                   await context.saveDraftNewsletter();
                   window.location.href = createNewSegmentUrl;
                 }}
