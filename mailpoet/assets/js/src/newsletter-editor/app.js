@@ -1,15 +1,10 @@
 import Marionette from 'backbone.marionette';
 import BackboneRadio from 'backbone.radio';
 import jQuery from 'jquery';
-import _ from 'underscore'; // eslint-disable-line func-names
 
 var Radio;
 var AppView;
 var EditorApplication;
-
-// newsletter editor requires underscore on window.
-// For other code to be able to use lodash we need to make sure underscore is present on window.
-window._ = _;
 
 Radio = BackboneRadio;
 

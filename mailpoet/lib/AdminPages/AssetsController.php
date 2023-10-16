@@ -31,12 +31,12 @@ class AssetsController {
   }
 
   public function setupNewsletterEditorDependencies(): void {
-    $this->enqueueJsEntrypoint('newsletter_editor');
+    $this->enqueueJsEntrypoint('newsletter_editor', ['underscore']);
     $this->wp->wpEnqueueStyle('mailpoet_newsletter_editor', $this->getCssUrl('mailpoet-editor.css'));
   }
 
   public function setupFormEditorDependencies(): void {
-    $this->enqueueJsEntrypoint('form_editor');
+    $this->enqueueJsEntrypoint('form_editor', ['underscore']);
     $this->wp->wpEnqueueStyle('mailpoet_form_editor', $this->getCssUrl('mailpoet-form-editor.css'));
   }
 
@@ -80,6 +80,15 @@ class AssetsController {
       true
     );
     $this->wp->wpSetScriptTranslations($name, 'mailpoet');
+
+    // Ensure Lodash doesn't override Underscore from WordPress on "window._" global.
+    // Checking for "_.at" detects Lodash (the function doesn't exist in Underscore).
+    $noConflict = 'if (window._ && window._.at && window._.noConflict) window._.noConflict();';
+    $this->wp->wpAddInlineScript('mailpoet_admin_commons', $noConflict);
+    $this->wp->wpAddInlineScript('mailpoet_mailpoet', $noConflict);
+    $this->wp->wpAddInlineScript('mailpoet_admin_vendor', $noConflict);
+    $this->wp->wpAddInlineScript('mailpoet_admin', $noConflict);
+    $this->wp->wpAddInlineScript($name, $noConflict);
   }
 
   private function registerAdminDeps(): void {
