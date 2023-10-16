@@ -152,6 +152,13 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
   perl -pi -e 's/public function getTimestamp\(\) {/public function getTimestamp(): int {/g' /wp-core/wp-content/plugins/woocommerce-memberships/vendor/skyverge/wc-plugin-framework/woocommerce/compatibility/class-sv-wc-datetime.php
   perl -pi -e 's/\t\$this->\$class\_name = wc\_memberships\(\)->load\_class\( \$include\_path, \$class_name \);/\t\@\$this->\$class_name = wc_memberships()->load_class( \$include_path, \$class_name );/g' /wp-core/wp-content/plugins/woocommerce-memberships/src/class-wc-memberships-emails.php
 
+  # WooCommerce Subscriptions generates a few deprecated notices when running with PHP 8.2
+  # The code below omits or fixes the notices. It can be removed when https://github.com/woocommerce/woocommerce-subscriptions/issues/4428 is fixed.
+  echo "Fixing WooCommerce Subscriptions";
+  perl -pi -e 's/class WCS_Retry_Admin \{\s*?$/class WCS_Retry_Admin { public \$setting_id;/g' /wp-core/wp-content/plugins/woocommerce-subscriptions/includes/payment-retry/admin/class-wcs-retry-admin.php
+  perl -pi -e 's/class WCS_Email_Completed_Renewal_Order extends WC_Email_Customer_Completed_Order \{\s*?$/class WCS_Email_Completed_Renewal_Order extends WC_Email_Customer_Completed_Order { public \$heading_downloadable; public \$subject_downloadable;\n/g' /wp-core/wp-content/plugins/woocommerce-subscriptions/vendor/woocommerce/subscriptions-core/includes/emails/class-wcs-email-completed-renewal-order.php
+  perl -pi -e 's/class WCS_Email_Completed_Switch_Order extends WC_Email_Customer_Completed_Order \{\s*?$/class WCS_Email_Completed_Switch_Order extends WC_Email_Customer_Completed_Order { public \$heading_downloadable; public \$subject_downloadable;\n/g' /wp-core/wp-content/plugins/woocommerce-subscriptions/vendor/woocommerce/subscriptions-core/includes/emails/class-wcs-email-completed-switch-order.php
+
   # activate all plugins
   wp plugin activate woocommerce --url=$ACTIVATION_CONTEXT
   wp plugin activate woocommerce-subscriptions --url=$ACTIVATION_CONTEXT
