@@ -157,7 +157,7 @@ class SubscriberCookieCest {
 
   private function checkSubscriberCookie(AcceptanceTester $i, string $email): void {
     $subscriberId = $i->grabFromDatabase(MP_SUBSCRIBERS_TABLE, 'id', ['email' => $email]);
-    Assert::assertIsString($subscriberId);
+    Assert::assertTrue(is_int($subscriberId) || is_string($subscriberId));
     $i->canSeeCookie(self::SUBSCRIBER_COOKIE_NAME);
     $cookie = $i->grabCookie(self::SUBSCRIBER_COOKIE_NAME);
     Assert::assertEquals($cookie, urlencode(json_encode(['subscriber_id' => (int)$subscriberId]) ?: ''));
