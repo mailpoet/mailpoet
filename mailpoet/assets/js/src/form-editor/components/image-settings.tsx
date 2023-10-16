@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { MediaUpload } from '@wordpress/block-editor';
 import { MailPoet } from 'mailpoet';
 import { BaseControl, Button, SelectControl } from '@wordpress/components';
@@ -18,7 +17,6 @@ export function ImageSettings({
   imageDisplay,
   onImageDisplayChange,
 }: Props): JSX.Element {
-  window._ = _; // make sure underscore is available on window – it's required by media manager
   return (
     <div className="mailpoet-styles-settings-image-url">
       <BaseControl.VisualLabel>{name}</BaseControl.VisualLabel>
