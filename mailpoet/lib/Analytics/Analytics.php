@@ -3,6 +3,7 @@
 namespace MailPoet\Analytics;
 
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -63,13 +64,12 @@ class Analytics {
   /** @return string */
   public function getPublicId() {
     $publicId = $this->settings->get('public_id', '');
-    // if we didn't get the user public_id from the shop yet : we create one based on mixpanel distinct_id
-    if (empty($publicId) && !empty($_COOKIE['mixpanel_distinct_id'])) {
-      // the public id has to be diffent that mixpanel_distinct_id in order to be used on different browser
-      $mixpanelDistinctId = md5(sanitize_text_field(wp_unslash($_COOKIE['mixpanel_distinct_id'])));
-      $this->settings->set('public_id', $mixpanelDistinctId);
+    if (empty($publicId)) {
+      // The previous implementation used md5, so this is just to ensure consistency
+      $randomId = md5(Security::generateRandomString(32));
+      $this->settings->set('public_id', $randomId);
       $this->settings->set('new_public_id', 'true');
-      return $mixpanelDistinctId;
+      return $randomId;
     }
     return $publicId;
   }
