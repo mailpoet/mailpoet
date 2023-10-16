@@ -18,6 +18,7 @@ export enum WooCommerceActionTypes {
   USED_COUPON_CODE = 'usedCouponCode',
   USED_PAYMENT_METHOD = 'usedPaymentMethod',
   USED_SHIPPING_METHOD = 'usedShippingMethod',
+  FIRST_ORDER = 'firstOrder',
 }
 
 export const WooCommerceOptions = [
@@ -34,6 +35,11 @@ export const WooCommerceOptions = [
   {
     value: WooCommerceActionTypes.CUSTOMER_IN_COUNTRY,
     label: __('country', 'mailpoet'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.FIRST_ORDER,
+    label: __('first order', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
