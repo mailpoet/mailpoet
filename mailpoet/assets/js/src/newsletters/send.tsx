@@ -529,6 +529,7 @@ class NewsletterSendComponent extends Component<
             );
             MailPoet.trackEvent('Emails > Re-engagement email activated', {
               Inactivity: getTimingValueForTracking(opts),
+              'Segment Applied': !!this.state.item.options.filterSegmentId,
             });
           } else if (response.data.type === 'notification') {
             this.context.notices.success(
@@ -536,6 +537,7 @@ class NewsletterSendComponent extends Component<
             );
             MailPoet.trackEvent('Emails > Post notifications activated', {
               Frequency: opts.intervalType,
+              'Segment Applied': !!this.state.item.options.filterSegmentId,
             });
           }
           MailPoet.Modal.loading(false);
