@@ -146,6 +146,12 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
     ACTIVATION_CONTEXT="$HTTP_HOST/$WP_TEST_MULTISITE_SLUG"
   fi
 
+  # WooCommerce Memberships generates a few deprecated notices when running with PHP 8.2
+  # The code below omits or fixes the notices. It can be removed when https://github.com/woocommerce/woocommerce-memberships/issues/1101 is fixed.
+  echo "Fixing WooCommerce Memberships";
+  perl -pi -e 's/public function getTimestamp\(\) {/public function getTimestamp(): int {/g' /wp-core/wp-content/plugins/woocommerce-memberships/vendor/skyverge/wc-plugin-framework/woocommerce/compatibility/class-sv-wc-datetime.php
+  perl -pi -e 's/\t\$this->\$class\_name = wc\_memberships\(\)->load\_class\( \$include\_path, \$class_name \);/\t\@\$this->\$class_name = wc_memberships()->load_class( \$include_path, \$class_name );/g' /wp-core/wp-content/plugins/woocommerce-memberships/src/class-wc-memberships-emails.php
+
   # activate all plugins
   wp plugin activate woocommerce --url=$ACTIVATION_CONTEXT
   wp plugin activate woocommerce-subscriptions --url=$ACTIVATION_CONTEXT
