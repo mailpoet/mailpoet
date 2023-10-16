@@ -27,7 +27,7 @@ services:
     container_name: mp-wp
     build:
       context: .
-      dockerfile: dev/php81/Dockerfile
+      dockerfile: dev/php82/Dockerfile
       args:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
@@ -65,7 +65,7 @@ services:
     container_name: mp-test-wp
     build:
       context: .
-      dockerfile: dev/php81/Dockerfile
+      dockerfile: dev/php82/Dockerfile
       args:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
