@@ -5,6 +5,7 @@ overrides:
   react-dom: 18.2.0
   '@types/react': 18.0.28
   '@types/react-dom': 18.0.11
+  '@wordpress/hooks': 3.39.0
   typescript: ^5.0.2
 
 patchedDependencies:
@@ -119,8 +120,8 @@ importers:
         specifier: ^4.5.0
         version: 4.5.0(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
       '@wordpress/hooks':
-        specifier: ^3.28.0
-        version: 3.28.0
+        specifier: 3.39.0
+        version: 3.39.0
       '@wordpress/html-entities':
         specifier: ^3.28.0
         version: 3.28.0
@@ -7377,7 +7378,7 @@ packages:
     resolution: {integrity: sha512-qr+yDfTQfI3M4h6oY6IeHWwoHr4jxbILjSlV+Ht6Jjto9Owap6OuzSqR13Ev4xqIoG4C7b5B3gZXVfwVDae1zg==}
     dependencies:
       '@babel/runtime': 7.22.11
-      '@wordpress/hooks': 2.12.3
+      '@wordpress/hooks': 3.39.0
     dev: false
 
   /@wordpress/deprecated@3.39.0:
@@ -7716,19 +7717,6 @@ packages:
       - vite
     dev: false
 
-  /@wordpress/hooks@2.12.3:
-    resolution: {integrity: sha512-LmKiwKldZt6UYqOxV/a6+eUFXdvALFnB/pQx3RmrMvO64sgFhfR6dhrlv+uVbuuezSuv8dce1jx8lUWAT0krMA==}
-    dependencies:
-      '@babel/runtime': 7.22.11
-    dev: false
-
-  /@wordpress/hooks@3.28.0:
-    resolution: {integrity: sha512-u81dqGGhvq9QGjll41hN6vYhQP3UoT06vIls4xhp7Uc+fhQpce3cGyRw9PYjPrL17gK2derJy30edmQR5v7OzQ==}
-    engines: {node: '>=12'}
-    dependencies:
-      '@babel/runtime': 7.22.11
-    dev: false
-
   /@wordpress/hooks@3.39.0:
     resolution: {integrity: sha512-/qdS87k61YAbab8O2gVRqaaX5vjWfCkcbiEK/qwVIJMMI3MjOni/8con5x0NaCAsRQzow9bCi5HMXmUj624w4g==}
     engines: {node: '>=12'}
@@ -7755,7 +7743,7 @@ packages:
     hasBin: true
     dependencies:
       '@babel/runtime': 7.22.11
-      '@wordpress/hooks': 2.12.3
+      '@wordpress/hooks': 3.39.0
       gettext-parser: 1.4.0
       lodash: 4.17.21
       memize: 1.1.0
