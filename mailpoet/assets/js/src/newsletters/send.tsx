@@ -446,23 +446,21 @@ class NewsletterSendComponent extends Component<
           const segments = filters
             .map((filter) => mapFilterType(filter))
             .join(', ');
-          if (response.data.status === 'scheduled') {
+          const wasScheduled = response.data.status === 'scheduled';
+          MailPoet.trackEvent('Emails > Newsletter sent', {
+            scheduled: wasScheduled,
+            'Segment Applied': !!this.state.item.options.filterSegmentId,
+            segments,
+          });
+          if (wasScheduled) {
             this.context.notices.success(
               <p>{__('The newsletter has been scheduled.', 'mailpoet')}</p>,
             );
-            MailPoet.trackEvent('Emails > Newsletter sent', {
-              scheduled: true,
-              segments,
-            });
           } else {
             this.context.notices.success(
               <p>{__('The newsletter is being sent...', 'mailpoet')}</p>,
               { id: 'mailpoet_notice_being_sent' },
             );
-            MailPoet.trackEvent('Emails > Newsletter sent', {
-              scheduled: false,
-              segments,
-            });
           }
           MailPoet.Modal.loading(false);
         });
