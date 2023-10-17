@@ -146,6 +146,12 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
     ACTIVATION_CONTEXT="$HTTP_HOST/$WP_TEST_MULTISITE_SLUG"
   fi
 
+  # WooCommerce core generates a few deprecated notices when running with PHP 8.2
+  # The code below omits or fixes the notices. It can be removed when https://github.com/woocommerce/woocommerce/issues/35763 is fixed.
+  echo "Fixing WooCommerce";
+  perl -pi -e 's/class WC_Order_Item_Product extends WC_Order_Item \{\s*?$/class WC_Order_Item_Product extends WC_Order_Item { public \$legacy_cart_item_key; public \$legacy_values;/g' /wp-core/wp-content/plugins/woocommerce/includes/class-wc-order-item-product.php
+  perl -pi -e 's/\$locale                 = get_user_locale\(\);$/if \( \$specs_group === false \) { \$specs_group = array\(\); } \$locale                 = get_user_locale\(\);/g' /wp-core/wp-content/plugins/woocommerce/src/Admin/DataSourcePoller.php
+
   # WooCommerce Memberships generates a few deprecated notices when running with PHP 8.2
   # The code below omits or fixes the notices. It can be removed when https://github.com/woocommerce/woocommerce-memberships/issues/1101 is fixed.
   echo "Fixing WooCommerce Memberships";
