@@ -84,20 +84,20 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber = Subscriber::create();
     $subscriber->save();
     $errors = $subscriber->getErrors();
-    expect($errors)->contains("Please enter your email address");
+    verify($errors)->arrayContains("Please enter your email address");
 
     // email address should be valid
     $subscriber = Subscriber::create();
     $subscriber->email = 'invalid_email';
     $subscriber->save();
     $errors = $subscriber->getErrors();
-    expect($errors)->contains("Your email address is invalid!");
+    verify($errors)->arrayContains("Your email address is invalid!");
 
     $subscriber = Subscriber::create();
     $subscriber->email = 'tést@éxample.com';
     $subscriber->save();
     $errors = $subscriber->getErrors();
-    expect($errors)->contains("Your email address is invalid!");
+    verify($errors)->arrayContains("Your email address is invalid!");
   }
 
   public function emailMustBeUnique() {

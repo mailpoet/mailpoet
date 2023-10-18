@@ -79,7 +79,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->getId()], [$this->segment3->getId()]);
     verify($subscribers)->arrayCount(1);
-    expect($subscribers)->contains($this->subscriber3->getId());
+    verify($subscribers)->arrayContains($this->subscriber3->getId());
   }
 
   public function testFindSubscribersInSegmentUsingFinderMakesResultUnique() {

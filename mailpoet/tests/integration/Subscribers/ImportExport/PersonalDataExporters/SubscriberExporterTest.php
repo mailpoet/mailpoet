@@ -81,7 +81,7 @@ class SubscriberExporterTest extends \MailPoetTest {
       ->create();
 
     $result = $this->exporter->export($email);
-    expect($result['data'][0]['data'])->contains([
+    verify($result['data'][0]['data'])->arrayContains([
       'name' => "Subscriber's subscription source",
       'value' => 'Subscription via a MailPoet subscription form',
     ]);
@@ -100,8 +100,8 @@ class SubscriberExporterTest extends \MailPoetTest {
       ->create();
 
     $result = $this->exporter->export($email);
-    expect($result['data'][0]['data'])->contains(['name' => 'Subscribed IP', 'value' => 'IP1']);
-    expect($result['data'][0]['data'])->contains(['name' => 'Confirmed IP', 'value' => 'IP2']);
+    verify($result['data'][0]['data'])->arrayContains(['name' => 'Subscribed IP', 'value' => 'IP1']);
+    verify($result['data'][0]['data'])->arrayContains(['name' => 'Confirmed IP', 'value' => 'IP2']);
   }
 
   public function testExportSubscriberWithCustomField() {
@@ -118,6 +118,6 @@ class SubscriberExporterTest extends \MailPoetTest {
       ->create();
 
     $result = $this->exporter->export($email);
-    expect($result['data'][0]['data'])->contains(['name' => 'Custom field1', 'value' => 'Value']);
+    verify($result['data'][0]['data'])->arrayContains(['name' => 'Custom field1', 'value' => 'Value']);
   }
 }

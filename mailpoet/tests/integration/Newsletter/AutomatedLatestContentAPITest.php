@@ -219,14 +219,14 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
 
     $this->loginWithRole("reader");
     verify($result->data)->arrayCount(1);
-    expect($this->getPostTitles($result->data))->contains($publicPost['post_title']);
+    verify($this->getPostTitles($result->data))->arrayContains($publicPost['post_title']);
 
 
     $this->loginWithRole("editor");
     $result = $this->alcAPI->getPosts(['postStatus' => "any", "contentType" => "post"]);
     verify($result->data)->arrayCount(2);
-    expect($this->getPostTitles($result->data))->contains($publicPost["post_title"]);
-    expect($this->getPostTitles($result->data))->contains($privatePost["post_title"]);
+    verify($this->getPostTitles($result->data))->arrayContains($publicPost["post_title"]);
+    verify($this->getPostTitles($result->data))->arrayContains($privatePost["post_title"]);
 
     $user = $this->loginWithRole("administrator");
     if (is_multisite()) {
@@ -235,8 +235,8 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
 
     $result = $this->alcAPI->getPosts(['postStatus' => "any", "contentType" => "post"]);
     verify($result->data)->arrayCount(3);
-    expect($this->getPostTitles($result->data))->contains($publicPost["post_title"]);
-    expect($this->getPostTitles($result->data))->contains($draftPost["post_title"]);
-    expect($this->getPostTitles($result->data))->contains($privatePost["post_title"]);
+    verify($this->getPostTitles($result->data))->arrayContains($publicPost["post_title"]);
+    verify($this->getPostTitles($result->data))->arrayContains($draftPost["post_title"]);
+    verify($this->getPostTitles($result->data))->arrayContains($privatePost["post_title"]);
   }
 }

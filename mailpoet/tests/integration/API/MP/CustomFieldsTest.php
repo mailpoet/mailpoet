@@ -23,7 +23,7 @@ class CustomFieldsTest extends \MailPoetTest {
   public function testItReturnsDefaultSubscriberFields() {
     $response = $this->api->getSubscriberFields();
 
-    expect($response)->contains([
+    verify($response)->arrayContains([
       'id' => 'email',
       'name' => __('Email', 'mailpoet'),
       'type' => 'text',
@@ -31,7 +31,7 @@ class CustomFieldsTest extends \MailPoetTest {
         'required' => '1',
       ],
     ]);
-    expect($response)->contains([
+    verify($response)->arrayContains([
       'id' => 'first_name',
       'name' => __('First name', 'mailpoet'),
       'type' => 'text',
@@ -39,7 +39,7 @@ class CustomFieldsTest extends \MailPoetTest {
         'required' => '',
       ],
     ]);
-    expect($response)->contains([
+    verify($response)->arrayContains([
       'id' => 'last_name',
       'name' => __('Last name', 'mailpoet'),
       'type' => 'text',
@@ -61,7 +61,7 @@ class CustomFieldsTest extends \MailPoetTest {
       'params' => ['required' => ''],
     ]);
     $response = $this->api->getSubscriberFields();
-    expect($response)->contains([
+    verify($response)->arrayContains([
       'id' => 'cf_' . $customField1->getId(),
       'name' => 'text custom field',
       'type' => 'text',
@@ -71,7 +71,7 @@ class CustomFieldsTest extends \MailPoetTest {
         'label' => 'text custom field',
       ],
     ]);
-    expect($response)->contains([
+    verify($response)->arrayContains([
       'id' => 'cf_' . $customField2->getId(),
       'name' => 'checkbox custom field',
       'type' => 'checkbox',

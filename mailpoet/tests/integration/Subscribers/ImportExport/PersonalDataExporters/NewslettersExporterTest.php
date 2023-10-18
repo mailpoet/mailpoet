@@ -91,7 +91,7 @@ class NewslettersExporterTest extends \MailPoetTest {
     verify($result['data'][0])->arrayHasKey('group_label');
     verify($result['data'][0])->arrayHasKey('item_id');
     verify($result['data'][0])->arrayHasKey('data');
-    expect($result['data'][0]['data'])->contains(['name' => 'Email subject', 'value' => 'Email Subject']);
+    verify($result['data'][0]['data'])->arrayContains(['name' => 'Email subject', 'value' => 'Email Subject']);
   }
 
   public function testExportReturnsUrl() {
@@ -203,8 +203,8 @@ class NewslettersExporterTest extends \MailPoetTest {
 
     $result = $this->exporter->export('user21@with.newsletters');
     verify(count($result['data']))->equals(2);
-    expect($result['data'][0]['data'])->contains(['name' => 'Opened', 'value' => 'Yes']);
-    expect($result['data'][0]['data'])->contains(['name' => 'Opened at', 'value' => '2017-01-02 12:23:45']);
-    expect($result['data'][1]['data'])->contains(['name' => 'Opened', 'value' => 'No']);
+    verify($result['data'][0]['data'])->arrayContains(['name' => 'Opened', 'value' => 'Yes']);
+    verify($result['data'][0]['data'])->arrayContains(['name' => 'Opened at', 'value' => '2017-01-02 12:23:45']);
+    verify($result['data'][1]['data'])->arrayContains(['name' => 'Opened', 'value' => 'No']);
   }
 }

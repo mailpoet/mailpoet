@@ -308,8 +308,8 @@ class EmailActionTest extends \MailPoetTest {
 
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
 
-    expect($emails)->contains('1@example.com');
-    expect($emails)->contains('2@example.com');
+    verify($emails)->arrayContains('1@example.com');
+    verify($emails)->arrayContains('2@example.com');
     expect($emails)->notContains('3@example.com');
   }
 
@@ -330,7 +330,7 @@ class EmailActionTest extends \MailPoetTest {
 
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
 
-    expect($emails)->contains('1@example.com');
+    verify($emails)->arrayContains('1@example.com');
     expect($emails)->notContains('2@example.com');
     expect($emails)->notContains('3@example.com');
   }
@@ -354,7 +354,7 @@ class EmailActionTest extends \MailPoetTest {
 
     expect($emails)->notContains('1@example.com');
     expect($emails)->notContains('2@example.com');
-    expect($emails)->contains('3@example.com');
+    verify($emails)->arrayContains('3@example.com');
   }
 
   public function testItRetrievesLookupDataForSentAction(): void {

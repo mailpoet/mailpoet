@@ -57,10 +57,10 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
     verify($result['data'][0])->arrayHasKey('group_label');
     verify($result['data'][0])->arrayHasKey('item_id');
     verify($result['data'][0])->arrayHasKey('data');
-    expect($result['data'][0]['data'])->contains(['name' => 'Email subject', 'value' => 'Email Subject']);
-    expect($result['data'][0]['data'])->contains(['name' => 'URL', 'value' => 'Link url']);
-    expect($result['data'][0]['data'])->contains(['name' => 'Timestamp of the click event', 'value' => '2018-01-02 15:16:17']);
-    expect($result['data'][0]['data'])->contains(['name' => 'User-agent', 'value' => $userAgentName]);
+    verify($result['data'][0]['data'])->arrayContains(['name' => 'Email subject', 'value' => 'Email Subject']);
+    verify($result['data'][0]['data'])->arrayContains(['name' => 'URL', 'value' => 'Link url']);
+    verify($result['data'][0]['data'])->arrayContains(['name' => 'Timestamp of the click event', 'value' => '2018-01-02 15:16:17']);
+    verify($result['data'][0]['data'])->arrayContains(['name' => 'User-agent', 'value' => $userAgentName]);
   }
 
   public function testExportReturnsDataWhenUserAgentIsUnknown() {
