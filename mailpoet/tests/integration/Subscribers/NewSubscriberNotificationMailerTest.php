@@ -83,8 +83,8 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
           expect($newsletter['body'])->hasKey('html');
           expect($newsletter['body'])->hasKey('text');
           expect($newsletter['body'])->count(2);
-          expect($newsletter['body']['text'])->stringContainsString('subscriber@example.com');
-          expect($newsletter['body']['html'])->stringContainsString('subscriber@example.com');
+          verify($newsletter['body']['text'])->stringContainsString('subscriber@example.com');
+          verify($newsletter['body']['html'])->stringContainsString('subscriber@example.com');
           verify($extraParams['meta'])->equals([
             'email_type' => 'new_subscriber_notification',
             'subscriber_status' => 'unknown',
@@ -113,8 +113,8 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
           expect($newsletter['body'])->hasKey('html');
           expect($newsletter['body'])->hasKey('text');
           expect($newsletter['body'])->count(2);
-          expect($newsletter['body']['text'])->stringContainsString('subscriber@example.com');
-          expect($newsletter['body']['html'])->stringContainsString('subscriber@example.com');
+          verify($newsletter['body']['text'])->stringContainsString('subscriber@example.com');
+          verify($newsletter['body']['html'])->stringContainsString('subscriber@example.com');
           verify($extraParams['meta'])->equals([
             'email_type' => 'new_subscriber_notification',
             'subscriber_status' => 'unknown',

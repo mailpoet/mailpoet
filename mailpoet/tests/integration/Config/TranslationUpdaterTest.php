@@ -304,12 +304,12 @@ class TranslationUpdaterTest extends \MailPoetTest {
     $mailpoetFr = $result->translations[2];
     verify($mailpoetFr['slug'])->equals('mailpoet');
     verify($mailpoetFr['language'])->equals('fr_FR');
-    expect($mailpoetFr['package'])->stringContainsString('translate.files.wordpress.com');
+    verify($mailpoetFr['package'])->stringContainsString('translate.files.wordpress.com');
 
     $mailpoetPremiumFr = $result->translations[3];
     verify($mailpoetPremiumFr['slug'])->equals('mailpoet-premium');
     verify($mailpoetPremiumFr['language'])->equals('fr_FR');
-    expect($mailpoetPremiumFr['package'])->stringContainsString('translate.files.wordpress.com');
+    verify($mailpoetPremiumFr['package'])->stringContainsString('translate.files.wordpress.com');
   }
 
   public function testItDoesNotOverrideOtherPluginTranslations(): void {

@@ -66,15 +66,15 @@ class SendPreviewControllerTest extends \MailPoetTest {
           $mailerMetaInfo = new MetaInfo;
 
           verify(is_array($newsletter))->true();
-          expect($newsletter['body']['text'])->stringContainsString('Hello test');
+          verify($newsletter['body']['text'])->stringContainsString('Hello test');
           verify($subscriber)->equals($subscriber);
           verify($extraParams['unsubscribe_url'])->equals(home_url());
           verify($extraParams['meta'])->equals($mailerMetaInfo->getPreviewMetaInfo());
 
           // system links are replaced with hashes
-          expect($newsletter['body']['html'])->stringContainsString('href="' . $viewInBrowserLink . '">View in browser');
-          expect($newsletter['body']['html'])->stringContainsString('href="' . $unsubscribeLink . '">Unsubscribe');
-          expect($newsletter['body']['html'])->stringContainsString('href="' . $manageLink . '">Manage subscription');
+          verify($newsletter['body']['html'])->stringContainsString('href="' . $viewInBrowserLink . '">View in browser');
+          verify($newsletter['body']['html'])->stringContainsString('href="' . $unsubscribeLink . '">Unsubscribe');
+          verify($newsletter['body']['html'])->stringContainsString('href="' . $manageLink . '">Manage subscription');
           return ['response' => true];
         }
       ),
@@ -99,7 +99,7 @@ class SendPreviewControllerTest extends \MailPoetTest {
     $mailer = $this->makeEmpty(Mailer::class, [
       'send' => function ($newsletter, $subscriber) {
         verify(is_array($newsletter))->true();
-        expect($newsletter['body']['text'])->stringContainsString('Hello test');
+        verify($newsletter['body']['text'])->stringContainsString('Hello test');
         verify($subscriber)->equals($subscriber);
         return [
           'response' => false,

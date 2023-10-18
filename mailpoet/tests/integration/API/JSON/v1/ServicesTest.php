@@ -81,7 +81,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['message'])
+    verify($response->data['message'])
       ->stringContainsString($date->format($servicesEndpoint->dateTime->getDateFormat()));
   }
 
@@ -101,7 +101,7 @@ class ServicesTest extends \MailPoetTest {
       $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
     );
     $this->assertIsString($errorMessage);
-    expect($response->errors[0]['message'])->stringContainsString($errorMessage);
+    verify($response->errors[0]['message'])->stringContainsString($errorMessage);
   }
 
   public function testItRespondsWithErrorIfServiceDidNotReturnAResponseCodeDuringMSSCheck() {
@@ -120,7 +120,7 @@ class ServicesTest extends \MailPoetTest {
       $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
     );
     $this->assertIsString($errorMessage);
-    expect($response->errors[0]['message'])->stringContainsString($errorMessage);
+    verify($response->errors[0]['message'])->stringContainsString($errorMessage);
   }
 
   public function testItPrintsErrorCodeIfServiceReturnedAnUnexpectedResponseCodeDuringMSSCheck() {
@@ -135,7 +135,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->stringContainsString('404');
+    verify($response->errors[0]['message'])->stringContainsString('404');
   }
 
   public function testItRespondsWithErrorIfMSSCheckThrowsAnException() {
@@ -291,7 +291,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['message'])
+    verify($response->data['message'])
       ->stringContainsString($date->format($servicesEndpoint->dateTime->getDateFormat()));
   }
 
@@ -311,7 +311,7 @@ class ServicesTest extends \MailPoetTest {
       $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
     );
     $this->assertIsString($errorMessage);
-    expect($response->errors[0]['message'])->stringContainsString($errorMessage);
+    verify($response->errors[0]['message'])->stringContainsString($errorMessage);
   }
 
   public function testItRespondsWithErrorIfServiceDidNotReturnAResponseCodeDuringPremiumCheck() {
@@ -330,7 +330,7 @@ class ServicesTest extends \MailPoetTest {
       $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
     );
     $this->assertIsString($errorMessage);
-    expect($response->errors[0]['message'])->stringContainsString($errorMessage);
+    verify($response->errors[0]['message'])->stringContainsString($errorMessage);
   }
 
   public function testItPrintsErrorCodeIfServiceReturnedAnUnexpectedResponseCodeDuringPremiumCheck() {
@@ -345,7 +345,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->stringContainsString('404');
+    verify($response->errors[0]['message'])->stringContainsString('404');
   }
 
   public function testItRespondsWithErrorIfPremiumCheckThrowsAnException() {
@@ -602,7 +602,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['message'])->stringContainsString(
+    verify($response->data['message'])->stringContainsString(
       'Your Premium key has been successfully validated, but is not valid for MailPoet Sending Service'
     );
   }

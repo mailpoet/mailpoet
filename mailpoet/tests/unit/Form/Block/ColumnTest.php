@@ -40,7 +40,7 @@ class ColumnTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[@class="mailpoet_form_column"]');
     $style = $this->htmlParser->getAttribute($column, 'style');
-    expect($style->textContent)->stringContainsString('flex-basis:30px;');
+    verify($style->textContent)->stringContainsString('flex-basis:30px;');
   }
 
   public function testItShouldNotRenderWidthWhenOnlyUnitIsSet() {
@@ -58,7 +58,7 @@ class ColumnTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[@class="mailpoet_form_column"]');
     $style = $this->htmlParser->getAttribute($column, 'style');
-    expect($style->textContent)->stringContainsString('flex-basis:30%;');
+    verify($style->textContent)->stringContainsString('flex-basis:30%;');
   }
 
   public function testItShouldRenderPadding() {
@@ -67,7 +67,7 @@ class ColumnTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[@class="mailpoet_form_column"]');
     $style = $this->htmlParser->getAttribute($column, 'style');
-    expect($style->textContent)->stringContainsString('padding:10px 20px 30px 40px;');
+    verify($style->textContent)->stringContainsString('padding:10px 20px 30px 40px;');
   }
 
   public function testItShouldRenderVerticalAlignClass() {
@@ -76,7 +76,7 @@ class ColumnTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
-    expect($class->textContent)->stringContainsString('mailpoet_vertically_align_top');
+    verify($class->textContent)->stringContainsString('mailpoet_vertically_align_top');
   }
 
   public function testItShouldRenderCustomClass() {
@@ -85,7 +85,7 @@ class ColumnTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
-    expect($class->textContent)->stringContainsString('my-class');
+    verify($class->textContent)->stringContainsString('my-class');
   }
 
   public function testItShouldRenderCustomBackground() {
@@ -94,7 +94,7 @@ class ColumnTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
-    expect($style->textContent)->stringContainsString('background-color:#ffffff;');
+    verify($style->textContent)->stringContainsString('background-color:#ffffff;');
   }
 
   public function testItShouldRenderCustomTextColor() {
@@ -103,7 +103,7 @@ class ColumnTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
-    expect($style->textContent)->stringContainsString('color:#ffffee;');
+    verify($style->textContent)->stringContainsString('color:#ffffee;');
   }
 
   public function testItShouldGradientBackground() {
@@ -112,6 +112,6 @@ class ColumnTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
-    expect($style->textContent)->stringContainsString('background:linear-gradient(red, yellow);');
+    verify($style->textContent)->stringContainsString('background:linear-gradient(red, yellow);');
   }
 }

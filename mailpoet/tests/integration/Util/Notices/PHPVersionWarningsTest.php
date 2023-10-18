@@ -40,20 +40,20 @@ class PHPVersionWarningsTest extends \MailPoetTest {
 
   public function testItPrintsWarningFor71() {
     $warning = $this->phpVersionWarning->init('7.1.0', true);
-    expect($warning->getMessage())->stringContainsString('Your website is running an outdated version of PHP (7.1.0)');
-    expect($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
+    verify($warning->getMessage())->stringContainsString('Your website is running an outdated version of PHP (7.1.0)');
+    verify($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
   }
 
   public function testItPrintsWarningFor72() {
     $warning = $this->phpVersionWarning->init('7.2.0', true);
-    expect($warning->getMessage())->stringContainsString('Your website is running an outdated version of PHP (7.2.0)');
-    expect($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
+    verify($warning->getMessage())->stringContainsString('Your website is running an outdated version of PHP (7.2.0)');
+    verify($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
   }
 
   public function testItPrintsWarningFor73() {
     $warning = $this->phpVersionWarning->init('7.3.0', true);
-    expect($warning->getMessage())->stringContainsString('Your website is running an outdated version of PHP (7.3.0)');
-    expect($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
+    verify($warning->getMessage())->stringContainsString('Your website is running an outdated version of PHP (7.3.0)');
+    verify($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
   }
 
   public function testItPrintsNoWarningWhenDisabled() {

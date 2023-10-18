@@ -81,7 +81,7 @@ class ModelTest extends \MailPoetTest {
     $model->save();
     $errors = $model->getErrors();
     expect($errors)->hasKey(MPModel::DUPLICATE_RECORD);
-    expect($errors[MPModel::DUPLICATE_RECORD])->stringContainsString('Please specify a different "name".');
+    verify($errors[MPModel::DUPLICATE_RECORD])->stringContainsString('Please specify a different "name".');
   }
 
   public function _after() {

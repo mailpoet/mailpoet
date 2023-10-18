@@ -93,9 +93,9 @@ class LinksTest extends \MailPoetTest {
     // 2 links were hashed
     verify(count($hashedLinks))->equals(2);
     // links in returned content were replaced with hashes
-    expect($updatedContent)
+    verify($updatedContent)
       ->stringContainsString(Links::DATA_TAG_CLICK . '-' . $hashedLinks[0]['hash']);
-    expect($updatedContent)
+    verify($updatedContent)
       ->stringContainsString(Links::DATA_TAG_CLICK . '-' . $hashedLinks[1]['hash']);
     expect($updatedContent)->stringNotContainsString('link');
   }
@@ -127,9 +127,9 @@ class LinksTest extends \MailPoetTest {
 
     expect($replacedLinks)->count(1);
     // links in returned content were replaced with hashes
-    expect($updatedContent)
+    verify($updatedContent)
       ->stringContainsString('replace by this');
-    expect($updatedContent)
+    verify($updatedContent)
       ->stringContainsString('[link:some_link_shortcode]');
     expect($updatedContent)->stringNotContainsString('http://example.com');
   }
@@ -257,8 +257,8 @@ class LinksTest extends \MailPoetTest {
 
     $result = $this->links->convertHashedLinksToShortcodesAndUrls($content, $newsletterLink->getQueue()->getId());
 
-    expect($result)->stringContainsString($newsletterLink->getUrl());
-    expect($result)->stringContainsString('[mailpoet_click_data]-123');
+    verify($result)->stringContainsString($newsletterLink->getUrl());
+    verify($result)->stringContainsString('[mailpoet_click_data]-123');
   }
 
   public function testItCanEnsureThatUnsubscribeLinkIsAmongProcessedLinks() {
@@ -297,7 +297,7 @@ class LinksTest extends \MailPoetTest {
       <a href="[mailpoet_click_data]-123">Some link</a>';
 
     $result = $this->links->convertHashedLinksToShortcodesAndUrls($content, $newsletterLink1->getQueue()->getId(), $convertAll = true);
-    expect($result)->stringContainsString($newsletterLink1->getUrl());
-    expect($result)->stringContainsString($newsletterLink2->getUrl());
+    verify($result)->stringContainsString($newsletterLink1->getUrl());
+    verify($result)->stringContainsString($newsletterLink2->getUrl());
   }
 }

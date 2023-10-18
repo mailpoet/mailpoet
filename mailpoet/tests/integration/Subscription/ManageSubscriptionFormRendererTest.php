@@ -28,14 +28,14 @@ class ManageSubscriptionFormRendererTest extends \MailPoetTest {
   public function testItGeneratesForm() {
     $form = $this->formRenderer->renderForm($this->subscriber);
     expect($form)->regExp('/<form class="mailpoet-manage-subscription" method="post" action="[a-z0-9:\/\._]+wp-admin\/admin-post.php" novalidate>/');
-    expect($form)->stringContainsString('<input type="hidden" name="data[email]" value="subscriber@test.com" />');
+    verify($form)->stringContainsString('<input type="hidden" name="data[email]" value="subscriber@test.com" />');
     expect($form)->regExp('/<input type="text" autocomplete="given-name" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="First name" value="Fname" data-automation-id="form_first_name" data-parsley-names=\'\[&quot;Please specify a valid name.&quot;,&quot;Addresses in names are not permitted, please add your name instead\.&quot;\]\'\/>/');
     expect($form)->regExp('/<input type="text" autocomplete="family-name" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="Last name" value="Lname" data-automation-id="form_last_name" data-parsley-names=\'\[&quot;Please specify a valid name.&quot;,&quot;Addresses in names are not permitted, please add your name instead\.&quot;\]\'\/>/');
     expect($form)->regExp('/<input type="checkbox" class="mailpoet_checkbox" name="data\[[a-zA-Z0-9=_]+\]\[\]" value="' . $this->segment->getId() . '" checked="checked"  \/> Test segment/');
     expect($form)->regExp('/<input type="text" autocomplete="on" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="custom field 1" value="some value"  \/>/');
     expect($form)->regExp('/<input type="text" autocomplete="on" class="mailpoet_text" name="data\[[a-zA-Z0-9=_]+\]" title="custom field 2" value="another value"  \/>/');
 
-    expect($form)->stringContainsString('Need to change your email address? Unsubscribe using the form below, then simply sign up again.');
+    verify($form)->stringContainsString('Need to change your email address? Unsubscribe using the form below, then simply sign up again.');
   }
 
   public function testItAppliesFieldsFilter() {

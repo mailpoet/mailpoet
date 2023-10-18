@@ -170,14 +170,14 @@ class TextTest extends \MailPoetUnitTest {
   public function testItStylesHeadings() {
     $this->block['text'] = '<h1>Heading</h1><h2>Heading 2</h2>';
     $output = (new Text)->render($this->block);
-    expect($output)->stringContainsString('<h1 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading</h1>');
-    expect($output)->stringContainsString('<h2 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading 2</h2>');
+    verify($output)->stringContainsString('<h1 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading</h1>');
+    verify($output)->stringContainsString('<h2 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Heading 2</h2>');
   }
 
   public function testItStylesHeadingsCenter() {
     $this->block['text'] = '<h1 style="text-align: center"><strong>Let\'s Get Started! </strong></h1>';
     $output = (new Text)->render($this->block);
-    expect($output)->stringContainsString('<h1 style="text-align: center;padding:0;');
+    verify($output)->stringContainsString('<h1 style="text-align: center;padding:0;');
   }
 
   public function testItRemovesLastLineBreak() {
@@ -201,7 +201,7 @@ class TextTest extends \MailPoetUnitTest {
     $this->block['text'] = $htmlString;
     $output = (new Text())->render($this->block);
     expect($output)->stringNotContainsString('<script>');
-    expect($output)->stringContainsString("&lt;script&gt;alert('test');&lt;/script&gt;");
+    verify($output)->stringContainsString("&lt;script&gt;alert('test');&lt;/script&gt;");
   }
 
   public function childElementStrings(): array {
@@ -218,6 +218,6 @@ class TextTest extends \MailPoetUnitTest {
   public function testItMaintainsHtmlInChildElements($htmlString) {
     $this->block['text'] = $htmlString;
     $output = (new Text())->render($this->block);
-    expect($output)->stringContainsString('<a href="https://example.com">Link</a>');
+    verify($output)->stringContainsString('<a href="https://example.com">Link</a>');
   }
 }

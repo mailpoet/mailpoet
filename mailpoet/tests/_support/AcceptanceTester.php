@@ -262,7 +262,7 @@ class AcceptanceTester extends \Codeception\Actor {
   public function assertAttributeContains($selector, $attribute, $contains) {
     $i = $this;
     $attributeValue = $i->grabAttributeFrom($selector, $attribute);
-    expect($attributeValue)->stringContainsString($contains);
+    verify($attributeValue)->stringContainsString($contains);
   }
 
   public function assertCssProperty($cssSelector, $cssProperty, $value) {

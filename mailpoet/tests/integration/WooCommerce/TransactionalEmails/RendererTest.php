@@ -48,9 +48,9 @@ class RendererTest extends \MailPoetTest {
     $renderer = $this->getRenderer();
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLBeforeContent();
-    expect($html)->stringContainsString('Some text before heading');
-    expect($html)->stringContainsString('Heading Text');
-    expect($html)->stringContainsString('Some text between heading and content');
+    verify($html)->stringContainsString('Some text before heading');
+    verify($html)->stringContainsString('Heading Text');
+    verify($html)->stringContainsString('Some text between heading and content');
     expect($html)->stringNotContainsString('Some text after content');
   }
 
@@ -61,7 +61,7 @@ class RendererTest extends \MailPoetTest {
     expect($html)->stringNotContainsString('Some text before heading');
     expect($html)->stringNotContainsString('Heading Text');
     expect($html)->stringNotContainsString('Some text between heading and content');
-    expect($html)->stringContainsString('Some text after content');
+    verify($html)->stringContainsString('Some text after content');
   }
 
   public function testRenderHeadingTextWhenHeadingBlockMovedToFooter() {
@@ -78,8 +78,8 @@ class RendererTest extends \MailPoetTest {
     $renderer = $this->getRenderer();
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLAfterContent();
-    expect($html)->stringContainsString('Heading Text');
-    expect($html)->stringContainsString('Some text after content');
+    verify($html)->stringContainsString('Heading Text');
+    verify($html)->stringContainsString('Some text after content');
   }
 
   public function testPrefixCss() {
@@ -91,9 +91,9 @@ class RendererTest extends \MailPoetTest {
         font-weight:bold;
       }
     ');
-    expect($css)->stringContainsString("#mailpoet_woocommerce_container #some_id {\ncolor:black\n}");
-    expect($css)->stringContainsString("#mailpoet_woocommerce_container .some-class {\nheight:50px;\nwidth:30px\n}");
-    expect($css)->stringContainsString("#mailpoet_woocommerce_container h1 {\nfont-weight:700\n}");
+    verify($css)->stringContainsString("#mailpoet_woocommerce_container #some_id {\ncolor:black\n}");
+    verify($css)->stringContainsString("#mailpoet_woocommerce_container .some-class {\nheight:50px;\nwidth:30px\n}");
+    verify($css)->stringContainsString("#mailpoet_woocommerce_container h1 {\nfont-weight:700\n}");
   }
 
   public function testItReplaceShortcodes() {
@@ -118,13 +118,13 @@ class RendererTest extends \MailPoetTest {
     $html = $renderer->getHTMLAfterContent();
 
     $siteName = strval(get_option('blogname'));
-    expect($html)->stringContainsString($siteName); // [site:title]
+    verify($html)->stringContainsString($siteName); // [site:title]
 
     $siteUrl = strval(get_option('home'));
-    expect($html)->stringContainsString($siteUrl); // [site:homepage_url]
+    verify($html)->stringContainsString($siteUrl); // [site:homepage_url]
 
-    expect($html)->stringContainsString(date_i18n('F', WPFunctions::get()->currentTime('timestamp'))); // [date:mtext]
-    expect($html)->stringContainsString(date_i18n('Y', WPFunctions::get()->currentTime('timestamp'))); // [date:y]
+    verify($html)->stringContainsString(date_i18n('F', WPFunctions::get()->currentTime('timestamp'))); // [date:mtext]
+    verify($html)->stringContainsString(date_i18n('Y', WPFunctions::get()->currentTime('timestamp'))); // [date:y]
   }
 
   private function getNewsletterRenderer(): NewsletterRenderer {

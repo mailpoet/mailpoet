@@ -117,7 +117,7 @@ class SendingQueueTest extends \MailPoetTest {
     $response = $sendingQueue->add(['newsletter_id' => $this->newsletter->getId()]);
     $response = $response->getData();
     expect($response['errors'][0])->array();
-    expect($response['errors'][0]['message'])->stringContainsString('some error');
-    expect($response['errors'][0]['error'])->stringContainsString('bad_request');
+    verify($response['errors'][0]['message'])->stringContainsString('some error');
+    verify($response['errors'][0]['error'])->stringContainsString('bad_request');
   }
 }

@@ -144,7 +144,7 @@ class PHPMailTest extends \MailPoetTest {
     );
     verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
-    expect($result['error']->getMessage())->stringContainsString('PHPMail has returned an unknown error.');
+    verify($result['error']->getMessage())->stringContainsString('PHPMail has returned an unknown error.');
   }
 
   public function testItCanSend() {

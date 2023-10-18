@@ -60,10 +60,10 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
     verify($label)->equals('');
 
     $label = $this->rendererHelper->renderLabel($this->block, ['fontSize' => 10]);
-    expect($label)->stringContainsString('style="font-size: 10px;');
+    verify($label)->stringContainsString('style="font-size: 10px;');
 
     $label = $this->rendererHelper->renderLabel($this->block, ['fontSize' => '1.2em']);
-    expect($label)->stringContainsString('style="font-size: 1.2em;');
+    verify($label)->stringContainsString('style="font-size: 1.2em;');
   }
 
   public function testItShouldRenderLegend() {

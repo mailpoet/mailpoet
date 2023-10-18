@@ -33,8 +33,8 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
       ['headersSent' => true]
     );
     $notice = $headersAlreadySentNotice->init(true);
-    expect($notice->getMessage())->stringContainsString('It looks like there\'s an issue with some of the PHP files on your website');
-    expect($notice->getMessage())->stringContainsString('https://kb.mailpoet.com/article/325-the-captcha-image-doesnt-show-up');
+    verify($notice->getMessage())->stringContainsString('It looks like there\'s an issue with some of the PHP files on your website');
+    verify($notice->getMessage())->stringContainsString('https://kb.mailpoet.com/article/325-the-captcha-image-doesnt-show-up');
   }
 
   public function testItPrintsNoWarningWhenHeadersAreNotSent() {
@@ -56,7 +56,7 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
       ['headersSent' => false]
     );
     $notice = $headersAlreadySentNotice->init(true);
-    expect($notice->getMessage())->stringContainsString('It looks like there\'s an issue with some of the PHP files on your website');
+    verify($notice->getMessage())->stringContainsString('It looks like there\'s an issue with some of the PHP files on your website');
     ob_end_clean();
   }
 
@@ -84,14 +84,14 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
   public function testItPrintsCaptchaAndTrackingMessagesIfEnabled() {
     $headersAlreadySentNotice = Stub::make(HeadersAlreadySentNotice::class);
     $notice = $headersAlreadySentNotice->display(true, true);
-    expect($notice->getMessage())->stringContainsString('Inaccurate tracking');
-    expect($notice->getMessage())->stringContainsString('CAPTCHA not rendering');
+    verify($notice->getMessage())->stringContainsString('Inaccurate tracking');
+    verify($notice->getMessage())->stringContainsString('CAPTCHA not rendering');
   }
 
   public function testItPrintsNoCaptchaMessageIfCaptchaDisabled() {
     $headersAlreadySentNotice = Stub::make(HeadersAlreadySentNotice::class);
     $notice = $headersAlreadySentNotice->display(false, true);
-    expect($notice->getMessage())->stringContainsString('Inaccurate tracking');
+    verify($notice->getMessage())->stringContainsString('Inaccurate tracking');
     expect($notice->getMessage())->stringNotContainsString('CAPTCHA not rendering');
   }
 
@@ -99,7 +99,7 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
     $headersAlreadySentNotice = Stub::make(HeadersAlreadySentNotice::class);
     $notice = $headersAlreadySentNotice->display(true, false);
     expect($notice->getMessage())->stringNotContainsString('Inaccurate tracking');
-    expect($notice->getMessage())->stringContainsString('CAPTCHA not rendering');
+    verify($notice->getMessage())->stringContainsString('CAPTCHA not rendering');
   }
 
   public function testItPrintsNoMessagesWhenCaptchaAndTrackingDisabled() {

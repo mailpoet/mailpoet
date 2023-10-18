@@ -69,7 +69,7 @@ class ShortcodesTest extends \MailPoetTest {
     $link = $dom->query('a');
     /** @var string $link */
     $link = $link->attr('href');
-    expect($link)->stringContainsString('endpoint=view_in_browser');
+    verify($link)->stringContainsString('endpoint=view_in_browser');
     $parsedLink = parse_url($link, PHP_URL_QUERY);
     parse_str(html_entity_decode((string)$parsedLink), $data);
     $requestData = $this->newsletterUrl->transformUrlDataObject(
@@ -92,7 +92,7 @@ class ShortcodesTest extends \MailPoetTest {
 
     $result = do_shortcode('[mailpoet_archive start_date="2023-09-04"]');
     expect($result)->stringNotContainsString('Newsletter 1');
-    expect($result)->stringContainsString('Newsletter 2');
+    verify($result)->stringContainsString('Newsletter 2');
   }
 
   public function testArchiveAcceptsEndDate(): void {
@@ -108,7 +108,7 @@ class ShortcodesTest extends \MailPoetTest {
       ->create();
 
     $result = do_shortcode('[mailpoet_archive end_date="2023-09-04"]');
-    expect($result)->stringContainsString('Newsletter 1');
+    verify($result)->stringContainsString('Newsletter 1');
     expect($result)->stringNotContainsString('Newsletter 2');
   }
 
@@ -131,7 +131,7 @@ class ShortcodesTest extends \MailPoetTest {
 
     $result = do_shortcode('[mailpoet_archive start_date="2023-08-02" end_date="2023-08-14"]');
     expect($result)->stringNotContainsString('Newsletter 1');
-    expect($result)->stringContainsString('Newsletter 2');
+    verify($result)->stringContainsString('Newsletter 2');
     expect($result)->stringNotContainsString('Newsletter 3');
   }
 
@@ -153,8 +153,8 @@ class ShortcodesTest extends \MailPoetTest {
       ->create();
 
     $result = do_shortcode('[mailpoet_archive subject_contains="great"]');
-    expect($result)->stringContainsString('Great subject');
-    expect($result)->stringContainsString('Subject that is great');
+    verify($result)->stringContainsString('Great subject');
+    verify($result)->stringContainsString('Subject that is great');
     expect($result)->stringNotContainsString('Good subject');
   }
 
@@ -170,7 +170,7 @@ class ShortcodesTest extends \MailPoetTest {
       ->withSubject('Newsletter 2')
       ->create();
     $result = do_shortcode('[mailpoet_archive in_the_last_days="4"]');
-    expect($result)->stringContainsString('Newsletter 1');
+    verify($result)->stringContainsString('Newsletter 1');
     expect($result)->stringNotContainsString('Newsletter 2');
   }
 
@@ -192,7 +192,7 @@ class ShortcodesTest extends \MailPoetTest {
 
     $result = do_shortcode(sprintf("[mailpoet_archive segments=\"%s\"]", $segment2->getId()));
     expect($result)->stringNotContainsString('Newsletter 1');
-    expect($result)->stringContainsString('Newsletter 2');
+    verify($result)->stringContainsString('Newsletter 2');
   }
 
   public function testArchiveSupportsLimit() {
@@ -213,17 +213,17 @@ class ShortcodesTest extends \MailPoetTest {
       ->create();
 
     $result = do_shortcode('[mailpoet_archive limit="3"]');
-    expect($result)->stringContainsString('Newsletter 1');
-    expect($result)->stringContainsString('Newsletter 2');
-    expect($result)->stringContainsString('Newsletter 3');
+    verify($result)->stringContainsString('Newsletter 1');
+    verify($result)->stringContainsString('Newsletter 2');
+    verify($result)->stringContainsString('Newsletter 3');
 
     $result = do_shortcode('[mailpoet_archive limit="2"]');
-    expect($result)->stringContainsString('Newsletter 1');
-    expect($result)->stringContainsString('Newsletter 2');
+    verify($result)->stringContainsString('Newsletter 1');
+    verify($result)->stringContainsString('Newsletter 2');
     expect($result)->stringNotContainsString('Newsletter 3');
 
     $result = do_shortcode('[mailpoet_archive limit="1"]');
-    expect($result)->stringContainsString('Newsletter 1');
+    verify($result)->stringContainsString('Newsletter 1');
     expect($result)->stringNotContainsString('Newsletter 2');
     expect($result)->stringNotContainsString('Newsletter 3');
   }
@@ -255,7 +255,7 @@ class ShortcodesTest extends \MailPoetTest {
     });
     $result = $shortcodes->getArchive();
     WordPress::releaseFunction('apply_filters');
-    expect((string)$result)->stringContainsString('Hello reader');
+    verify((string)$result)->stringContainsString('Hello reader');
   }
 
   public function testItRendersSubscriberDetailsInSubject() {
@@ -297,7 +297,7 @@ class ShortcodesTest extends \MailPoetTest {
     });
     $result = $shortcodes->getArchive();
     WordPress::releaseFunction('apply_filters');
-    expect((string)$result)->stringContainsString("Hello {$currentUser->first_name} {$currentUser->last_name}");
+    verify((string)$result)->stringContainsString("Hello {$currentUser->first_name} {$currentUser->last_name}");
   }
 
   public function testItDisplaysManageSubscriptionFormForLoggedinExistingUsers() {
@@ -312,8 +312,8 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
-    expect($result)->stringContainsString('form class="mailpoet-manage-subscription" method="post"');
-    expect($result)->stringContainsString($subscriber->getEmail());
+    verify($result)->stringContainsString('form class="mailpoet-manage-subscription" method="post"');
+    verify($result)->stringContainsString($subscriber->getEmail());
   }
 
   public function testItAppliesFilterForManageSubscriptionForm() {
@@ -333,8 +333,8 @@ class ShortcodesTest extends \MailPoetTest {
       return $page . ' MY CUSTOM CONTENT';
     });
     $result = do_shortcode('[mailpoet_manage_subscription]');
-    expect($result)->stringContainsString('form class="mailpoet-manage-subscription" method="post"');
-    expect($result)->stringContainsString('MY CUSTOM CONTENT');
+    verify($result)->stringContainsString('form class="mailpoet-manage-subscription" method="post"');
+    verify($result)->stringContainsString('MY CUSTOM CONTENT');
     $wp->removeAllActions('mailpoet_manage_subscription_page');
   }
 
@@ -347,7 +347,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
-    expect($result)->stringContainsString('Subscription management form is only available to mailing lists subscribers.');
+    verify($result)->stringContainsString('Subscription management form is only available to mailing lists subscribers.');
   }
 
   public function testItDoesNotDisplayManageSubscriptionFormForLoggedOutUsers() {
@@ -357,7 +357,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage_subscription]');
-    expect($result)->stringContainsString('Subscription management form is only available to mailing lists subscribers.');
+    verify($result)->stringContainsString('Subscription management form is only available to mailing lists subscribers.');
   }
 
   public function testItDisplaysLinkToManageSubscriptionPageForLoggedinExistingUsers() {
@@ -372,7 +372,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage]');
-    expect($result)->stringContainsString('Manage your subscription');
+    verify($result)->stringContainsString('Manage your subscription');
   }
 
   public function testItDoesNotDisplayLinkToManageSubscriptionPageForLoggedinNonexistentSubscribers() {
@@ -383,7 +383,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage]');
-    expect($result)->stringContainsString('Link to subscription management page is only available to mailing lists subscribers.');
+    verify($result)->stringContainsString('Link to subscription management page is only available to mailing lists subscribers.');
   }
 
   public function testItDoesNotDisplayManageSubscriptionPageForLoggedOutUsers() {
@@ -393,6 +393,6 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
     $result = do_shortcode('[mailpoet_manage]');
-    expect($result)->stringContainsString('Link to subscription management page is only available to mailing lists subscribers.');
+    verify($result)->stringContainsString('Link to subscription management page is only available to mailing lists subscribers.');
   }
 }

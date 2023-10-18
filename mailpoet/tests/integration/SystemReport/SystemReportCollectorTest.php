@@ -56,35 +56,35 @@ class SystemReportCollectorTest extends \MailPoetTest {
   }
 
   public function testItReturnsWpMemoryLimit() {
-    expect($this->systemInfoData['WP info'])->stringContainsString('WP_MEMORY_LIMIT: ' . WP_MEMORY_LIMIT);
+    verify($this->systemInfoData['WP info'])->stringContainsString('WP_MEMORY_LIMIT: ' . WP_MEMORY_LIMIT);
   }
 
   public function testItReturnsWpMaxMemoryLimit() {
-    expect($this->systemInfoData['WP info'])->stringContainsString('WP_MAX_MEMORY_LIMIT: ' . WP_MAX_MEMORY_LIMIT);
+    verify($this->systemInfoData['WP info'])->stringContainsString('WP_MAX_MEMORY_LIMIT: ' . WP_MAX_MEMORY_LIMIT);
   }
 
   public function testItReturnsWpDebugValue() {
-    expect($this->systemInfoData['WP info'])->stringContainsString('WP_DEBUG: ' . WP_DEBUG);
+    verify($this->systemInfoData['WP info'])->stringContainsString('WP_DEBUG: ' . WP_DEBUG);
   }
 
   public function testItReturnsWpLanguage() {
-    expect($this->systemInfoData['WP info'])->stringContainsString('WordPress language: ' . get_locale());
+    verify($this->systemInfoData['WP info'])->stringContainsString('WordPress language: ' . get_locale());
   }
 
   public function testItReturnsPhpMaxExecutionTime() {
-    expect($this->systemInfoData['PHP info'])->stringContainsString('PHP max_execution_time: ' . ini_get('max_execution_time'));
+    verify($this->systemInfoData['PHP info'])->stringContainsString('PHP max_execution_time: ' . ini_get('max_execution_time'));
   }
 
   public function testItReturnsPhpMemoryLimit() {
-    expect($this->systemInfoData['PHP info'])->stringContainsString('PHP memory_limit: ' . ini_get('memory_limit'));
+    verify($this->systemInfoData['PHP info'])->stringContainsString('PHP memory_limit: ' . ini_get('memory_limit'));
   }
 
   public function testItReturnsPhpUploadMaxFilesize() {
-    expect($this->systemInfoData['PHP info'])->stringContainsString('PHP upload_max_filesize: ' . ini_get('upload_max_filesize'));
+    verify($this->systemInfoData['PHP info'])->stringContainsString('PHP upload_max_filesize: ' . ini_get('upload_max_filesize'));
   }
 
   public function testItReturnsPhpPostMaxSize() {
-    expect($this->systemInfoData['PHP info'])->stringContainsString('PHP post_max_size: ' . ini_get('post_max_size'));
+    verify($this->systemInfoData['PHP info'])->stringContainsString('PHP post_max_size: ' . ini_get('post_max_size'));
   }
 
   public function testItReturnsIfWpIsMultisite() {
@@ -98,8 +98,8 @@ class SystemReportCollectorTest extends \MailPoetTest {
     $this->assertIsString($name);
     $this->assertIsString($version);
     expect($version)->string();
-    expect($this->systemInfoData['Current Theme'])->stringContainsString($name);
-    expect($this->systemInfoData['Current Theme'])->stringContainsString($version);
+    verify($this->systemInfoData['Current Theme'])->stringContainsString($name);
+    verify($this->systemInfoData['Current Theme'])->stringContainsString($version);
   }
 
   public function testItReturnsActivePlugins() {
@@ -111,24 +111,24 @@ class SystemReportCollectorTest extends \MailPoetTest {
   public function testItReturnsSendingMethodDetails() {
     $mta = $this->settings->get('mta');
     verify($this->systemInfoData['Sending Method'])->equals($mta['method']);
-    expect($this->systemInfoData['Sending Frequency'])->stringContainsString($mta['frequency']['emails'] . ' emails');
-    expect($this->systemInfoData['Sending Frequency'])->stringContainsString($mta['frequency']['interval'] . ' minutes');
+    verify($this->systemInfoData['Sending Frequency'])->stringContainsString($mta['frequency']['emails'] . ' emails');
+    verify($this->systemInfoData['Sending Frequency'])->stringContainsString($mta['frequency']['interval'] . ' minutes');
   }
 
   public function testItReturnsSomeSettings() {
-    expect($this->systemInfoData['MailPoet sending info'])->stringContainsString('Task Scheduler method: ' . $this->settings->get('cron_trigger.method'));
-    expect($this->systemInfoData['MailPoet sending info'])->stringContainsString('Default FROM address: ' . $this->settings->get('sender.address'));
-    expect($this->systemInfoData['MailPoet sending info'])->stringContainsString('Default Reply-To address: ' . $this->settings->get('reply_to.address'));
-    expect($this->systemInfoData['MailPoet sending info'])->stringContainsString('Bounce Email Address: ' . $this->settings->get('bounce.address'));
+    verify($this->systemInfoData['MailPoet sending info'])->stringContainsString('Task Scheduler method: ' . $this->settings->get('cron_trigger.method'));
+    verify($this->systemInfoData['MailPoet sending info'])->stringContainsString('Default FROM address: ' . $this->settings->get('sender.address'));
+    verify($this->systemInfoData['MailPoet sending info'])->stringContainsString('Default Reply-To address: ' . $this->settings->get('reply_to.address'));
+    verify($this->systemInfoData['MailPoet sending info'])->stringContainsString('Bounce Email Address: ' . $this->settings->get('bounce.address'));
     verify($this->systemInfoData['Plugin installed at'])->equals($this->settings->get('installed_at'));
   }
 
   public function testItReturnsTransactionalEmailSendingMethod() {
     $this->settings->set('send_transactional_emails', '');
     $systemReportCollector = $this->diContainer->get(SystemReportCollector::class);
-    expect($systemReportCollector->getData()['MailPoet sending info'])->stringContainsString("Send all site's emails with: default WordPress sending method");
+    verify($systemReportCollector->getData()['MailPoet sending info'])->stringContainsString("Send all site's emails with: default WordPress sending method");
     $this->settings->set('send_transactional_emails', '1');
-    expect($systemReportCollector->getData()['MailPoet sending info'])->stringContainsString("Send all site's emails with: current sending method");
+    verify($systemReportCollector->getData()['MailPoet sending info'])->stringContainsString("Send all site's emails with: current sending method");
   }
 
   public function testItReturnsTotalNumberOfSubscribers() {
@@ -147,7 +147,7 @@ class SystemReportCollectorTest extends \MailPoetTest {
   }
 
   public function testItReturnsCronPingUrl() {
-    expect($this->systemInfoData['MailPoet sending info'])->stringContainsString('&action=ping');
+    verify($this->systemInfoData['MailPoet sending info'])->stringContainsString('&action=ping');
     // cron ping URL should react to custom filters
     $filter = function($url) {
       return str_replace(home_url(), 'http://custom_url/', $url);

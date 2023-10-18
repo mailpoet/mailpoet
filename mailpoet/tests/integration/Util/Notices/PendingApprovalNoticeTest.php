@@ -26,8 +26,8 @@ class PendingApprovalNoticeTest extends \MailPoetTest {
 
     $result = $this->notice->init(true);
     // check that the notice is displayed. We cannot check the whole string because it contains HTML tags
-    expect($result)->stringContainsString('Your subscription is currently');
-    expect($result)->stringContainsString('if you haven’t heard from our team about your subscription status in the past 48 hours.');
+    verify($result)->stringContainsString('Your subscription is currently');
+    verify($result)->stringContainsString('if you haven’t heard from our team about your subscription status in the past 48 hours.');
   }
 
   public function testItDoesNotDisplayWhenMSSKeyIsNotValid(): void {

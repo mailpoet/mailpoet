@@ -68,8 +68,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' =>
         Stub\Expected::once(function($email, $subscriber, $extraParams) {
-          expect($email['body']['html'])->stringContainsString('<strong>Test segment</strong>');
-          expect($email['body']['html'])->stringContainsString('<a target="_blank" href="http://example.com">Click here to confirm your subscription.</a>');
+          verify($email['body']['html'])->stringContainsString('<strong>Test segment</strong>');
+          verify($email['body']['html'])->stringContainsString('<a target="_blank" href="http://example.com">Click here to confirm your subscription.</a>');
           verify($extraParams['meta'])->equals([
             'email_type' => 'confirmation',
             'subscriber_status' => 'unconfirmed',
@@ -317,7 +317,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $confirmationNewsletter = $confirmationEmailCustomizer->getNewsletter();
     verify($confirmationNewsletter->getId())->equals($newsletter->getId());
     $confirmationMailBody = $sender->getMailBodyWithCustomizer($this->subscriber, ['test_segment']);
-    expect($confirmationMailBody['body']['html'])->stringContainsString('<a class="mailpoet_button" href="https://example.com"');
+    verify($confirmationMailBody['body']['html'])->stringContainsString('<a class="mailpoet_button" href="https://example.com"');
 
 
     // See MAILPOET-5253
@@ -353,7 +353,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $confirmationNewsletter = $confirmationEmailCustomizer->getNewsletter();
     verify($confirmationNewsletter->getId())->equals($newsletter->getId());
     $confirmationMailBody = $sender->getMailBodyWithCustomizer($this->subscriber, ['test_segment']);
-    expect($confirmationMailBody['body']['html'])->stringContainsString('<a class="mailpoet_button" href="https://example.com"');
+    verify($confirmationMailBody['body']['html'])->stringContainsString('<a class="mailpoet_button" href="https://example.com"');
 
   }
 }

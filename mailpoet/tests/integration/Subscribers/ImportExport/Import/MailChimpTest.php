@@ -65,7 +65,7 @@ class MailChimpTest extends \MailPoetTest {
       $lists = $mailchimp->getLists();
       $this->fail('MailChimp getLists() did not throw an exception');
     } catch (\Exception $e) {
-      expect($e->getMessage())->stringContainsString('Invalid API Key');
+      verify($e->getMessage())->stringContainsString('Invalid API Key');
     }
   }
 
@@ -88,14 +88,14 @@ class MailChimpTest extends \MailPoetTest {
       $this->mailchimp->getSubscribers();
       $this->fail('MailChimp getSubscribers() did not throw an exception');
     } catch (\Exception $e) {
-      expect($e->getMessage())->stringContainsString('Did not find any valid lists');
+      verify($e->getMessage())->stringContainsString('Did not find any valid lists');
     }
 
     try {
       $this->mailchimp->getSubscribers([12]);
       $this->fail('MailChimp getSubscribers() did not throw an exception');
     } catch (\Exception $e) {
-      expect($e->getMessage())->stringContainsString('Did not find any valid lists');
+      verify($e->getMessage())->stringContainsString('Did not find any valid lists');
     }
   }
 
@@ -124,7 +124,7 @@ class MailChimpTest extends \MailPoetTest {
       $subscribers = $mailchimp->getSubscribers($this->lists);
       $this->fail('MailChimp getSubscribers() did not throw an exception');
     } catch (\Exception $e) {
-      expect($e->getMessage())
+      verify($e->getMessage())
         ->stringContainsString('The information received from MailChimp is too large for processing');
     }
   }
