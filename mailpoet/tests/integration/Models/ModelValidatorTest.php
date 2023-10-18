@@ -15,7 +15,7 @@ class ModelValidatorTest extends \MailPoetTest {
   public function testItConfiguresValidators() {
     $configuredValidators = $this->validator->getValidators();
     foreach (array_keys($this->validator->validators) as $validator) {
-      expect($configuredValidators)->contains($validator);
+      verify($configuredValidators)->arrayContains($validator);
     }
   }
 
