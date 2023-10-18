@@ -119,6 +119,9 @@ class WordPress {
     return get_option($optionName, $default);
   }
 
+  /**
+   * @return string[]
+   */
   public function getCommentStatuses(): array {
     return get_comment_statuses();
   }
@@ -149,6 +152,9 @@ class WordPress {
     return post_type_supports($type, $feature);
   }
 
+  /**
+   * @return string[]|\WP_Taxonomy[]
+   */
   public function getTaxonomies(array $args = [], string $output = 'names', string $operator = 'AND'): array {
     return get_taxonomies($args, $output, $operator);
   }
