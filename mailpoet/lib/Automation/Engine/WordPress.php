@@ -158,4 +158,20 @@ class WordPress {
   public function getTaxonomies(array $args = [], string $output = 'names', string $operator = 'AND'): array {
     return get_taxonomies($args, $output, $operator);
   }
+
+  /**
+   * @param int|WP_Term|object $term
+   * @param string $taxonomy
+   * @param string $output
+   * @param string $filter
+   * @return WP_Term|array|WP_Error|null
+   */
+  public function getTerm($term, string $taxonomy = '', string $output = OBJECT, string $filter = 'raw') {
+    return get_term($term, $taxonomy, $output, $filter);
+  }
+
+  /** @return \WP_Taxonomy|false */
+  public function getTaxonomy(string $name) {
+    return get_taxonomy($name);
+  }
 }
