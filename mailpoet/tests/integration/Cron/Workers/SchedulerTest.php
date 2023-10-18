@@ -119,7 +119,7 @@ class SchedulerTest extends \MailPoetTest {
       $scheduler->process(microtime(true) - $this->cronHelper->getDaemonExecutionLimit());
       self::fail('Maximum execution time limit exception was not thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->startsWith('The maximum execution time');
+      verify($e->getMessage())->stringStartsWith('The maximum execution time');
     }
   }
 

@@ -18,7 +18,7 @@ class HeadingTest extends \MailPoetUnitTest {
 
   public function testItShouldRenderHeading() {
     $html = $this->heading->render([]);
-    expect($html)->startsWith('<h2');
+    verify($html)->stringStartsWith('<h2');
   }
 
   public function testItShouldRenderContent() {

@@ -135,7 +135,7 @@ class FormsTest extends \MailPoetTest {
     wp_set_current_user(0);
     $response = $this->endpoint->saveEditor($form);
     verify($response->status)->equals(APIResponse::STATUS_FORBIDDEN);
-    expect($response->errors[0]['message'])->startsWith('Only administrator can');
+    verify($response->errors[0]['message'])->stringStartsWith('Only administrator can');
   }
 
   public function testItCanExtractListsFromListSelectionBlock() {
