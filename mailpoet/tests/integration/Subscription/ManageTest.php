@@ -77,8 +77,8 @@ class ManageTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscriptions = $this->createSegmentsMap($subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($subscriptions)->equals([
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriptions)->equals([
       ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_UNSUBSCRIBED],
       ['segment_id' => $this->segmentB->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
       ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
@@ -91,7 +91,7 @@ class ManageTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscriptions = $this->createSegmentsMap($subscriber);
-    expect($subscriptions)->equals([
+    verify($subscriptions)->equals([
       ['segment_id' => $this->segmentA->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],
       ['segment_id' => $this->segmentB->getId(), 'status' => SubscriberEntity::STATUS_UNSUBSCRIBED],
       ['segment_id' => $this->hiddenSegment->getId(), 'status' => SubscriberEntity::STATUS_SUBSCRIBED],

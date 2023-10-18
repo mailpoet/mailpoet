@@ -47,15 +47,15 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     ];
 
     $newsletter = $this->saveController->save($newsletterData);
-    expect($newsletter->getType())->equals('Updated type');
-    expect($newsletter->getSubject())->equals('Updated subject');
-    expect($newsletter->getPreheader())->equals('Updated preheader');
-    expect($newsletter->getBody())->equals(['value' => 'Updated body']);
-    expect($newsletter->getSenderName())->equals('Updated sender name');
-    expect($newsletter->getSenderAddress())->equals('Updated sender address');
-    expect($newsletter->getReplyToName())->equals('Updated reply-to name');
-    expect($newsletter->getReplyToAddress())->equals('Updated reply-to address');
-    expect($newsletter->getGaCampaign())->equals('Updated GA campaign');
+    verify($newsletter->getType())->equals('Updated type');
+    verify($newsletter->getSubject())->equals('Updated subject');
+    verify($newsletter->getPreheader())->equals('Updated preheader');
+    verify($newsletter->getBody())->equals(['value' => 'Updated body']);
+    verify($newsletter->getSenderName())->equals('Updated sender name');
+    verify($newsletter->getSenderAddress())->equals('Updated sender address');
+    verify($newsletter->getReplyToName())->equals('Updated reply-to name');
+    verify($newsletter->getReplyToAddress())->equals('Updated reply-to address');
+    verify($newsletter->getGaCampaign())->equals('Updated GA campaign');
   }
 
   public function testItDoesNotRerenderPostNotificationsUponUpdate() {
@@ -117,7 +117,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     })->first();
 
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption); // PHPStan
-    expect($scheduleOption->getValue())->equals('0 14 * * 1');
+    verify($scheduleOption->getValue())->equals('0 14 * * 1');
 
     // schedule should be recalculated when options change
     $newsletterData['options']['intervalType'] = PostNotificationScheduler::INTERVAL_IMMEDIATELY;
@@ -129,7 +129,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     })->first();
 
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption); // PHPStan
-    expect($scheduleOption->getValue())->equals('* * * * *');
+    verify($scheduleOption->getValue())->equals('* * * * *');
   }
 
   public function testItCanReschedulePreviouslyScheduledSendingQueueJobs() {
@@ -173,7 +173,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     expect($task1->getScheduledAt())->notEquals($currentTime);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption); // PHPStan
 
-    expect($task1->getScheduledAt())->equals($this->scheduler->getNextRunDate($scheduleOption->getValue()));
+    verify($task1->getScheduledAt())->equals($this->scheduler->getNextRunDate($scheduleOption->getValue()));
     expect($task2->getScheduledAt())->null();
   }
 
@@ -194,12 +194,12 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     ];
 
     $newsletter = $this->saveController->save($newsletterData);
-    expect(count($newsletter->getNewsletterSegments()))->equals(1);
+    verify(count($newsletter->getNewsletterSegments()))->equals(1);
     $newsletterSegment = $newsletter->getNewsletterSegments()->first();
     $this->assertInstanceOf(NewsletterSegmentEntity::class, $newsletterSegment); // PHPStan
     $segment = $newsletterSegment->getSegment();
     $this->assertInstanceOf(SegmentEntity::class, $segment); // PHPStan
-    expect($segment->getName())->equals('Segment 1');
+    verify($segment->getName())->equals('Segment 1');
   }
 
   public function testItDoesNotSaveSegmentsForAutomationEmails() {
@@ -218,7 +218,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     ];
 
     $newsletter = $this->saveController->save($newsletterData);
-    expect(count($newsletter->getNewsletterSegments()))->equals(0);
+    verify(count($newsletter->getNewsletterSegments()))->equals(0);
   }
 
   public function testItDeletesSendingQueueAndSetsNewsletterStatusToDraftWhenItIsUnscheduled() {
@@ -243,7 +243,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     ];
 
     $newsletter = $this->saveController->save($newsletterData);
-    expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
     expect($newsletter->getLatestQueue())->null();
     expect($this->diContainer->get(SendingQueuesRepository::class)->findOneById($queueId))->null();
   }
@@ -307,12 +307,12 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
   public function testItDuplicatesNewsletter() {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
     $duplicate = $this->saveController->duplicate($newsletter);
-    expect($duplicate->getSubject())->equals('Copy of ' . $newsletter->getSubject());
+    verify($duplicate->getSubject())->equals('Copy of ' . $newsletter->getSubject());
     expect($duplicate->getHash())->string();
     expect($duplicate->getHash())->notEmpty();
     expect($duplicate->getHash())->notEquals($newsletter->getHash());
-    expect($duplicate->getBody())->equals($newsletter->getBody());
-    expect($duplicate->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
+    verify($duplicate->getBody())->equals($newsletter->getBody());
+    verify($duplicate->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
   }
 
   public function testItDuplicatesNewsletterWithAssociatedPost() {
@@ -324,7 +324,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $duplicate = $this->saveController->duplicate($newsletter);
     expect($duplicate->getWpPostId())->notEquals($postId);
     $post = $wp->getPost($duplicate->getWpPostId());
-    expect($post->post_content)->equals('newsletter content'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($post->post_content)->equals('newsletter content'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function testItCreatesNewNewsletter() {
@@ -334,8 +334,8 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     ];
 
     $newsletter = $this->saveController->save($data);
-    expect($newsletter->getSubject())->equals($data['subject']);
-    expect($newsletter->getType())->equals($data['type']);
+    verify($newsletter->getSubject())->equals($data['subject']);
+    verify($newsletter->getType())->equals($data['type']);
     expect($newsletter->getHash())->notNull();
     expect($newsletter->getId())->notNull();
   }

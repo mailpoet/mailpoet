@@ -84,7 +84,7 @@ class AnalyticsTest extends \MailPoetTest {
     $this->settings->set('analytics_last_sent', null);
 
     $analytics = new Analytics($reporter, SettingsController::getInstance());
-    expect($analytics->generateAnalytics())->equals(apply_filters(Analytics::ANALYTICS_FILTER, $data));
+    verify($analytics->generateAnalytics())->equals(apply_filters(Analytics::ANALYTICS_FILTER, $data));
   }
 
   public function testGetDataIfEnabledAndSentLongTimeAgo() {
@@ -103,7 +103,7 @@ class AnalyticsTest extends \MailPoetTest {
 
     $analytics = new Analytics($reporter, SettingsController::getInstance());
 
-    expect($analytics->generateAnalytics())->equals(apply_filters(Analytics::ANALYTICS_FILTER, $data));
+    verify($analytics->generateAnalytics())->equals(apply_filters(Analytics::ANALYTICS_FILTER, $data));
   }
 
   public function testSetPublicId() {
@@ -114,8 +114,8 @@ class AnalyticsTest extends \MailPoetTest {
 
     $this->analytics->setPublicId($fakePublicId);
 
-    expect($this->settings->get('public_id'))->equals($fakePublicId);
-    expect($this->settings->get('new_public_id'))->equals('true');
+    verify($this->settings->get('public_id'))->equals($fakePublicId);
+    verify($this->settings->get('new_public_id'))->equals('true');
     expect($this->settings->get(Analytics::SETTINGS_LAST_SENT_KEY, null))->null();
   }
 
@@ -127,21 +127,21 @@ class AnalyticsTest extends \MailPoetTest {
 
     $this->analytics->setPublicId($fakePublicId);
     // When we update public_id it's marked as new
-    expect($this->settings->get('new_public_id'))->equals('true');
+    verify($this->settings->get('new_public_id'))->equals('true');
     expect($this->analytics->isPublicIdNew())->true();
-    expect($this->settings->get('new_public_id'))->equals('false');
+    verify($this->settings->get('new_public_id'))->equals('false');
 
     $this->analytics->setPublicId($fakePublicId);
     // We tried to update public_id with the same value, so it's not marked as new
-    expect($this->settings->get('new_public_id'))->equals('false');
+    verify($this->settings->get('new_public_id'))->equals('false');
     expect($this->analytics->isPublicIdNew())->false();
-    expect($this->settings->get('new_public_id'))->equals('false');
+    verify($this->settings->get('new_public_id'))->equals('false');
   }
 
   public function testGetNextSendDateIsWeekFromLastSend(): void {
     $this->settings->set('analytics_last_sent', Carbon::now());
     $weekFromNow = Carbon::now()->addDays(7);
     $nextSendDate = $this->analytics->getNextSendDate();
-    expect($nextSendDate->getTimestamp())->equals($weekFromNow->getTimestamp());
+    verify($nextSendDate->getTimestamp())->equals($weekFromNow->getTimestamp());
   }
 }

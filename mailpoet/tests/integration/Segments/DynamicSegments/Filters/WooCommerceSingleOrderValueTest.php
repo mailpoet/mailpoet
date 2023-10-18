@@ -30,13 +30,13 @@ class WooCommerceSingleOrderValueTest extends \MailPoetTest {
   public function testItGetsCustomersThatSpentFifteenInAnOrderInTheLastDay(): void {
     $segmentFilterData = $this->getSegmentFilterData('=', 15, 1);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->singleOrderValue);
-    expect($emails)->equals(['customer2@example.com']);
+    verify($emails)->equals(['customer2@example.com']);
   }
 
   public function testItGetsCustomersThatSpentFifteenInAnOrderInTheLastWeek(): void {
     $segmentFilterData = $this->getSegmentFilterData('=', 15, 7);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->singleOrderValue);
-    expect($emails)->equals(['customer2@example.com']);
+    verify($emails)->equals(['customer2@example.com']);
   }
 
   public function testItGetsCustomersThatDidNotSpendFifteenInAnOrderInTheLastDay(): void {
@@ -48,13 +48,13 @@ class WooCommerceSingleOrderValueTest extends \MailPoetTest {
   public function testItGetsCustomersThatSpentMoreThanTwentyInAnOrderInTheLastDay(): void {
     $segmentFilterData = $this->getSegmentFilterData('>', 20, 1);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->singleOrderValue);
-    expect($emails)->equals(['customer3@example.com']);
+    verify($emails)->equals(['customer3@example.com']);
   }
 
   public function testItGetsCustomersThatSpentLessThanTenInAnOrderInTheLastDay(): void {
     $segmentFilterData = $this->getSegmentFilterData('<', 10, 1);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->singleOrderValue);
-    expect($emails)->equals(['customer1@example.com']);
+    verify($emails)->equals(['customer1@example.com']);
   }
 
   public function testItGetsCustomersThatSpentMoreThanTenInAnOrderInTheLastWeek(): void {

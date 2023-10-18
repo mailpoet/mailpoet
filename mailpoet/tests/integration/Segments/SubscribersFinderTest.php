@@ -65,7 +65,7 @@ class SubscribersFinderTest extends \MailPoetTest {
     $deletedSegmentId = 1000; // non-existent segment
     $subscribers = $this->subscribersFinder->findSubscribersInSegments([$this->subscriber2->getId()], [$this->segment1->getId(), $deletedSegmentId]);
     expect($subscribers)->count(1);
-    expect($subscribers[$this->subscriber2->getId()])->equals($this->subscriber2->getId());
+    verify($subscribers[$this->subscriber2->getId()])->equals($this->subscriber2->getId());
   }
 
   public function testFindSubscribersInSegmentUsingFinder() {
@@ -103,9 +103,9 @@ class SubscribersFinderTest extends \MailPoetTest {
         $this->segment2->getId(),
       ]
     );
-    expect($subscribersCount)->equals(1);
+    verify($subscribersCount)->equals(1);
     $subscribersIds = $this->getScheduledTasksSubscribers($this->scheduledTask->getId());
-    expect($subscribersIds)->equals([$this->subscriber2->getId()]);
+    verify($subscribersIds)->equals([$this->subscriber2->getId()]);
   }
 
   public function testItDoesNotAddSubscribersToTaskFromNoSegment() {
@@ -116,7 +116,7 @@ class SubscribersFinderTest extends \MailPoetTest {
         $this->segment3->getId(),
       ]
     );
-    expect($subscribersCount)->equals(0);
+    verify($subscribersCount)->equals(0);
   }
 
   public function testItAddsSubscribersToTaskFromDynamicSegments() {
@@ -135,9 +135,9 @@ class SubscribersFinderTest extends \MailPoetTest {
         $this->segment2->getId(),
       ]
     );
-    expect($subscribersCount)->equals(1);
+    verify($subscribersCount)->equals(1);
     $subscribersIds = $this->getScheduledTasksSubscribers($this->scheduledTask->getId());
-    expect($subscribersIds)->equals([$this->subscriber1->getId()]);
+    verify($subscribersIds)->equals([$this->subscriber1->getId()]);
   }
 
   public function testItAddsSubscribersToTaskFromStaticAndDynamicSegments() {
@@ -159,9 +159,9 @@ class SubscribersFinderTest extends \MailPoetTest {
       ]
     );
 
-    expect($subscribersCount)->equals(1);
+    verify($subscribersCount)->equals(1);
     $subscribersIds = $this->getScheduledTasksSubscribers($this->scheduledTask->getId());
-    expect($subscribersIds)->equals([$this->subscriber2->getId()]);
+    verify($subscribersIds)->equals([$this->subscriber2->getId()]);
   }
 
   public function testItDoesNotAddSubscribersToTaskIfFilteredOutByFilterSegment(): void {
@@ -180,20 +180,20 @@ class SubscribersFinderTest extends \MailPoetTest {
     // Without filtering
     $task = (new ScheduledTaskFactory())->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
     $staticCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [$staticSegment->getId()]);
-    expect($staticCount)->equals(2);
+    verify($staticCount)->equals(2);
 
     $task = (new ScheduledTaskFactory())->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
     $dynamicCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [$dynamicSegment->getId()]);
-    expect($dynamicCount)->equals(4);
+    verify($dynamicCount)->equals(4);
 
     // With filtering
     $task = (new ScheduledTaskFactory())->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
     $staticCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [$staticSegment->getId()], $filterSegment->getId());
-    expect($staticCount)->equals(1);
+    verify($staticCount)->equals(1);
 
     $task = (new ScheduledTaskFactory())->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
     $dynamicCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [$dynamicSegment->getId()], $filterSegment->getId());
-    expect($dynamicCount)->equals(2);
+    verify($dynamicCount)->equals(2);
   }
 
   public function testItCanFilterSubscribersBasedOnDynamicSegment(): void {

@@ -6,7 +6,7 @@ class SubscriberEntityTest extends \MailPoetUnitTest {
   public function testMagicGetterReturnsData() {
     $subscriber = new SubscriberEntity();
     $subscriber->setWpUserId(4);
-    expect($subscriber->wp_user_id)->equals(4);// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($subscriber->wp_user_id)->equals(4);// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function testMagicGetterReturnsNullForUnknown() {

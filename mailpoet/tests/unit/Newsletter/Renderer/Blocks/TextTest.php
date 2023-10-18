@@ -29,7 +29,7 @@ class TextTest extends \MailPoetUnitTest {
           Text
         </td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 
   public function testItRendersParagraph() {
@@ -46,7 +46,7 @@ class TextTest extends \MailPoetUnitTest {
             Text
           </td>
         </tr></table>';
-    expect($paragraphTable)->equals($expectedResult);
+    verify($paragraphTable)->equals($expectedResult);
   }
 
   public function testItRendersNewLinesBetweenWordPressParagraphs(): void {
@@ -66,7 +66,7 @@ class TextTest extends \MailPoetUnitTest {
             First<br /><br />
           </td>
         </tr></table>';
-    expect($paragraphTable)->equals($expectedResult);
+    verify($paragraphTable)->equals($expectedResult);
     $tableElement = $table[1];
     $this->assertInstanceOf(DomNode::class, $tableElement);
     $paragraphTable = $tableElement->toString();
@@ -76,7 +76,7 @@ class TextTest extends \MailPoetUnitTest {
             Second
           </td>
         </tr></table>';
-    expect($paragraphTable)->equals($expectedResult);
+    verify($paragraphTable)->equals($expectedResult);
   }
 
   public function testItRendersNewLinesWordPressParagraphAndHeading(): void {
@@ -96,14 +96,14 @@ class TextTest extends \MailPoetUnitTest {
             First<br /><br />
           </td>
         </tr></table>';
-    expect($paragraphTable)->equals($expectedResult);
+    verify($paragraphTable)->equals($expectedResult);
     $heading = $this->parser->parseStr($output)->query('h1');
     $this->assertInstanceOf(pQuery::class, $heading);
     $headingElement = $heading[0];
     $this->assertInstanceOf(DomNode::class, $headingElement);
     $heading = $headingElement->toString();
     $expectedResult = '<h1 style="text-align:left;padding:0;font-style:normal;font-weight:normal;">Second</h1>';
-    expect($heading)->equals($expectedResult);
+    verify($heading)->equals($expectedResult);
   }
 
   public function testItRendersList() {
@@ -115,7 +115,7 @@ class TextTest extends \MailPoetUnitTest {
     $this->assertInstanceOf(DomNode::class, $ulElement);
     $list = $ulElement->toString();
     $expectedResult = '<ul class="mailpoet_paragraph" style="padding-top:0;padding-bottom:0;margin-top:10px;text-align:left;margin-bottom:10px;"><li class="mailpoet_paragraph" style="text-align:left;margin-bottom:10px;">Item 1</li><li class="mailpoet_paragraph" style="text-align:left;margin-bottom:10px;">Item 2</li></ul>';
-    expect($list)->equals($expectedResult);
+    verify($list)->equals($expectedResult);
   }
 
   public function testItRendersBlockquotes() {
@@ -142,7 +142,7 @@ class TextTest extends \MailPoetUnitTest {
             </td>
           </tr>
         </tbody></table>';
-    expect($blockquoteTable)->equals($expectedResult);
+    verify($blockquoteTable)->equals($expectedResult);
   }
 
   public function testItShouldRemoveEmptyParagraphs() {
@@ -164,7 +164,7 @@ class TextTest extends \MailPoetUnitTest {
         </tr></table>
         </td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 
   public function testItStylesHeadings() {

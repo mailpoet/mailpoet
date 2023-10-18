@@ -33,9 +33,9 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
   }
 
   public function testItCanBeCreated() {
-    expect($this->taskSubscriber->task_id)->equals($this->task->id);
-    expect($this->taskSubscriber->subscriber_id)->equals($this->subscriber->id);
-    expect($this->taskSubscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
+    verify($this->taskSubscriber->task_id)->equals($this->task->id);
+    verify($this->taskSubscriber->subscriber_id)->equals($this->subscriber->id);
+    verify($this->taskSubscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
   }
 
   public function testItCanBeUpdated() {
@@ -44,7 +44,7 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
       'subscriber_id' => $this->subscriber->id,
       'processed' => ScheduledTaskSubscriber::STATUS_PROCESSED,
     ]);
-    expect($taskSubscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_PROCESSED);
+    verify($taskSubscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_PROCESSED);
   }
 
   public function testItCanAddMultipleSubscribers() {
@@ -54,27 +54,27 @@ class ScheduledTaskSubscriberTest extends \MailPoetTest {
     $taskSubscribers = ScheduledTaskSubscriber::where('task_id', $this->task->id)
       ->orderByAsc('subscriber_id')
       ->findMany();
-    expect(count($taskSubscribers))->equals(count($subscriberIds));
-    expect($taskSubscribers[0]->subscriber_id)->equals($subscriberIds[0]);
-    expect($taskSubscribers[1]->subscriber_id)->equals($subscriberIds[1]);
-    expect($taskSubscribers[2]->subscriber_id)->equals($subscriberIds[2]);
+    verify(count($taskSubscribers))->equals(count($subscriberIds));
+    verify($taskSubscribers[0]->subscriber_id)->equals($subscriberIds[0]);
+    verify($taskSubscribers[1]->subscriber_id)->equals($subscriberIds[1]);
+    verify($taskSubscribers[2]->subscriber_id)->equals($subscriberIds[2]);
   }
 
   public function testItCangetUnprocessedCount() {
     $count = ScheduledTaskSubscriber::getUnprocessedCount($this->task->id);
-    expect($count)->equals(1);
+    verify($count)->equals(1);
     $this->taskSubscriber->processed = ScheduledTaskSubscriber::STATUS_PROCESSED;
     $this->taskSubscriber->save();
     $count = ScheduledTaskSubscriber::getUnprocessedCount($this->task->id);
-    expect($count)->equals(0);
+    verify($count)->equals(0);
   }
 
   public function testItCanGetProcessedCount() {
     $count = ScheduledTaskSubscriber::getProcessedCount($this->task->id);
-    expect($count)->equals(0);
+    verify($count)->equals(0);
     $this->taskSubscriber->processed = ScheduledTaskSubscriber::STATUS_PROCESSED;
     $this->taskSubscriber->save();
     $count = ScheduledTaskSubscriber::getProcessedCount($this->task->id);
-    expect($count)->equals(1);
+    verify($count)->equals(1);
   }
 }

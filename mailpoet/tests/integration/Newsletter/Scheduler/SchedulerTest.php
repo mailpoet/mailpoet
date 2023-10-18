@@ -43,7 +43,7 @@ class SchedulerTest extends \MailPoetTest {
     // it accepts cron syntax and returns next run date
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
-    expect($this->testee->getNextRunDate('* * * * *'))
+    verify($this->testee->getNextRunDate('* * * * *'))
       ->equals($currentTime->addMinute()->format('Y-m-d H:i:00'));
     // when invalid CRON expression is used, false response is returned
     expect($this->testee->getNextRunDate('invalid CRON expression'))->false();
@@ -53,14 +53,14 @@ class SchedulerTest extends \MailPoetTest {
     // it accepts cron syntax and returns previous run date
     $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     Carbon::setTestNow($currentTime); // mock carbon to return current time
-    expect($this->testee->getPreviousRunDate('* * * * *'))
+    verify($this->testee->getPreviousRunDate('* * * * *'))
       ->equals($currentTime->subMinute()->format('Y-m-d H:i:00'));
     // when invalid CRON expression is used, false response is returned
     expect($this->testee->getPreviousRunDate('invalid CRON expression'))->false();
   }
 
   public function testItFormatsDatetimeString() {
-    expect($this->testee->formatDatetimeString('April 20, 2016 4pm'))
+    verify($this->testee->formatDatetimeString('April 20, 2016 4pm'))
       ->equals('2016-04-20 16:00:00');
   }
 }

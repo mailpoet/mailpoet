@@ -30,9 +30,9 @@ class EmailApiControllerTest extends \MailPoetTest {
       ->create();
 
     $emailData = $this->emailApiController->getEmailData(['id' => $wpPostId]);
-    expect($emailData['subject'])->equals('New subject');
-    expect($emailData['preheader'])->equals('New preheader');
-    expect($emailData['id'])->equals($newsletter->getId());
+    verify($emailData['subject'])->equals('New subject');
+    verify($emailData['preheader'])->equals('New preheader');
+    verify($emailData['id'])->equals($newsletter->getId());
   }
 
   public function testItSaveEmailDataToNewsletterEntity(): void {
@@ -50,8 +50,8 @@ class EmailApiControllerTest extends \MailPoetTest {
     $this->entityManager->clear();
     $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    expect($newsletter->getSubject())->equals('New subject');
-    expect($newsletter->getPreheader())->equals('New preheader');
+    verify($newsletter->getSubject())->equals('New subject');
+    verify($newsletter->getPreheader())->equals('New preheader');
   }
 
   public function testItThrowsErrorWhenNewsletterDoesNotExist(): void {
@@ -64,7 +64,7 @@ class EmailApiControllerTest extends \MailPoetTest {
 
       $this->fail('Incorrect state exception should have been thrown.');
     } catch (NotFoundException $exception) {
-      expect($exception->getHttpStatusCode())->equals(APIResponse::STATUS_NOT_FOUND);
+      verify($exception->getHttpStatusCode())->equals(APIResponse::STATUS_NOT_FOUND);
       expect($exception->getMessage())->stringContainsString('Newsletter was not found');
     }
   }
@@ -83,7 +83,7 @@ class EmailApiControllerTest extends \MailPoetTest {
 
       $this->fail('Incorrect state exception should have been thrown.');
     } catch (UnexpectedValueException $exception) {
-      expect($exception->getHttpStatusCode())->equals(APIResponse::STATUS_BAD_REQUEST);
+      verify($exception->getHttpStatusCode())->equals(APIResponse::STATUS_BAD_REQUEST);
       expect($exception->getMessage())->stringContainsString('Newsletter ID does not match the post ID');
     }
   }

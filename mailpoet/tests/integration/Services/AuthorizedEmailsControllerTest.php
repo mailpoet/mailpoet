@@ -44,7 +44,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->setMailPoetSendingMethod();
     $controller = $this->getController($authorizedEmailsFromApi = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
-    expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->equals(['invalid_sender_address' => 'invalid@email.com']);
+    verify($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->equals(['invalid_sender_address' => 'invalid@email.com']);
   }
 
   public function testItSetsProperErrorForInvalidDefaultSender() {
@@ -53,7 +53,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->setMailPoetSendingMethod();
     $controller = $this->getController($authorizedEmailsFromApi = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
-    expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->equals(['invalid_sender_address' => 'invalid@email.com']);
+    verify($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->equals(['invalid_sender_address' => 'invalid@email.com']);
   }
 
   public function testItSetEmptyErrorWhenDefaultSenderAddressIsCorrect() {
@@ -175,7 +175,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $error = MailerLog::getError();
     expect(is_array($error));
     if (is_array($error)) {
-      expect($error['operation'])->equals(MailerError::OPERATION_SEND);
+      verify($error['operation'])->equals(MailerError::OPERATION_SEND);
     }
   }
 
@@ -190,7 +190,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $error = MailerLog::getError();
     expect(is_array($error));
     if (is_array($error)) {
-      expect($error['operation'])->equals(MailerError::OPERATION_AUTHORIZATION);
+      verify($error['operation'])->equals(MailerError::OPERATION_AUTHORIZATION);
     }
   }
 
@@ -208,10 +208,10 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $controller = $this->getController($authorizedEmailsFromApi = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
     $error = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
-    expect(count($error['invalid_senders_in_newsletters']))->equals(1);
-    expect($error['invalid_senders_in_newsletters'][0]['newsletter_id'])->equals($newsletter->getId());
-    expect($error['invalid_senders_in_newsletters'][0]['sender_address'])->equals('invalid@email.com');
-    expect($error['invalid_senders_in_newsletters'][0]['subject'])->equals('Subject');
+    verify(count($error['invalid_senders_in_newsletters']))->equals(1);
+    verify($error['invalid_senders_in_newsletters'][0]['newsletter_id'])->equals($newsletter->getId());
+    verify($error['invalid_senders_in_newsletters'][0]['sender_address'])->equals('invalid@email.com');
+    verify($error['invalid_senders_in_newsletters'][0]['subject'])->equals('Subject');
   }
 
   public function testItSetsFromAddressInSettings() {
@@ -340,7 +340,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
     $result = $controller->createAuthorizedEmailAddress('new-authorized@email.com');
-    expect($result)->equals($response);
+    verify($result)->equals($response);
   }
 
   public function testItThrowsAnExceptionForReturnedArrayForCreateNewAuthorizedEmailAddress() {
@@ -367,20 +367,20 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $array = ['authorized@email.com'];
     $controller = $this->getController($array);
     $result = $controller->isEmailAddressAuthorized('authorized@email.com');
-    expect($result)->equals(true);
+    verify($result)->equals(true);
   }
 
   public function testItReturnsFalseWhenNotAuthorizedForIsEmailAddressAuthorized() {
     $array = ['authorized@email.com'];
     $controller = $this->getController($array);
     $result = $controller->isEmailAddressAuthorized('pending@email.com');
-    expect($result)->equals(false);
+    verify($result)->equals(false);
   }
 
   public function testItReturnsFalseWhenNoArrayForIsEmailAddressAuthorized() {
     $controller = $this->getController([]);
     $result = $controller->isEmailAddressAuthorized('pending@email.com');
-    expect($result)->equals(false);
+    verify($result)->equals(false);
   }
 
   private function setMailPoetSendingMethod() {

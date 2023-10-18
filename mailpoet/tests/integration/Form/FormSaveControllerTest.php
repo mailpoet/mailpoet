@@ -17,10 +17,10 @@ class FormSaveControllerTest extends \MailPoetTest {
   public function testItDuplicatesForms() {
     $form = $this->createForm();
     $duplicate = $this->saveController->duplicate($form);
-    expect($duplicate->getName())->equals('Copy of ' . $form->getName());
-    expect($duplicate->getDeletedAt())->equals(null);
-    expect($duplicate->getBody())->equals($form->getBody());
-    expect($duplicate->getStatus())->equals($form->getStatus());
+    verify($duplicate->getName())->equals('Copy of ' . $form->getName());
+    verify($duplicate->getDeletedAt())->equals(null);
+    verify($duplicate->getBody())->equals($form->getBody());
+    verify($duplicate->getStatus())->equals($form->getStatus());
   }
 
   private function createForm(): FormEntity {

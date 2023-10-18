@@ -165,12 +165,12 @@ class CronWorkerRunnerTest extends \MailPoetTest {
       $this->cronWorkerRunner->run($worker);
       $this->fail('An exception should be thrown');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('test error');
+      verify($e->getMessage())->equals('test error');
       $task = $this->scheduledTasksRepository->findOneById($task->getId());
       $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
       expect($task->getScheduledAt())->greaterThan($scheduledAt);
       expect($task->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
-      expect($task->getRescheduleCount())->equals(1);
+      verify($task->getRescheduleCount())->equals(1);
       expect($task->getInProgress())->isEmpty();
     }
   }
@@ -191,9 +191,9 @@ class CronWorkerRunnerTest extends \MailPoetTest {
       expect($e->getCode())->same(CronHelper::DAEMON_EXECUTION_LIMIT_REACHED);
       $task = $this->scheduledTasksRepository->findOneById($task->getId());
       $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-      expect($scheduledAt)->equals($task->getScheduledAt());
+      verify($scheduledAt)->equals($task->getScheduledAt());
       expect($task->getStatus())->null();
-      expect($task->getRescheduleCount())->equals(0);
+      verify($task->getRescheduleCount())->equals(0);
     }
   }
 

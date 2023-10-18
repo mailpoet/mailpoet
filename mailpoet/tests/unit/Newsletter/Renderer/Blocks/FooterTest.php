@@ -32,7 +32,7 @@ class FooterTest extends \MailPoetUnitTest {
           Footer text. <a href="http://example.com" style="color:#689f2c;text-decoration:none">link</a>
         </td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 
   public function testItRendersWithBackgroundColor() {
@@ -44,7 +44,7 @@ class FooterTest extends \MailPoetUnitTest {
           Footer text. <a href="http://example.com" style="color:#689f2c;text-decoration:none">link</a>
         </td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 
   public function testItPrefersInlinedCssForLinks() {

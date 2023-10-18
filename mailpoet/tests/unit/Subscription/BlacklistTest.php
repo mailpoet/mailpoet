@@ -8,12 +8,12 @@ class BlacklistTest extends \MailPoetUnitTest {
     $domain = 'example.com';
     $blacklist = new Blacklist();
     $result = $blacklist->isBlacklisted($email);
-    expect($result)->equals(false);
+    verify($result)->equals(false);
     $blacklist = new Blacklist([$email]);
     $result = $blacklist->isBlacklisted($email);
-    expect($result)->equals(true);
+    verify($result)->equals(true);
     $blacklist = new Blacklist(null, [$domain]);
     $result = $blacklist->isBlacklisted($email);
-    expect($result)->equals(true);
+    verify($result)->equals(true);
   }
 }

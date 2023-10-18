@@ -55,15 +55,15 @@ class BatchIteratorTest extends \MailPoetTest {
       $i++;
 
       if ($i < $iterations) {
-        expect(count($batch))->equals($this->batchSize);
+        verify(count($batch))->equals($this->batchSize);
       } else {
         expect(count($batch))->lessOrEquals($this->batchSize);
       }
     }
-    expect($i)->equals($iterations);
+    verify($i)->equals($iterations);
   }
 
   public function testItCanBeCounted() {
-    expect(count($this->iterator))->equals($this->subscriberCount);
+    verify(count($this->iterator))->equals($this->subscriberCount);
   }
 }

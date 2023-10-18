@@ -25,9 +25,9 @@ class SegmentsExporterTest extends \MailPoetTest {
     $result = $this->exporter->export('email.that@doesnt.exists');
     expect($result)->array();
     expect($result)->hasKey('data');
-    expect($result['data'])->equals([]);
+    verify($result['data'])->equals([]);
     expect($result)->hasKey('done');
-    expect($result['done'])->equals(true);
+    verify($result['done'])->equals(true);
   }
 
   public function testExportWorksForSubscriberWithNoSegments() {
@@ -35,9 +35,9 @@ class SegmentsExporterTest extends \MailPoetTest {
     $result = $this->exporter->export('email.that@has.no.segments');
     expect($result)->array();
     expect($result)->hasKey('data');
-    expect($result['data'])->equals([]);
+    verify($result['data'])->equals([]);
     expect($result)->hasKey('done');
-    expect($result['done'])->equals(true);
+    verify($result['done'])->equals(true);
   }
 
   public function testExportWorksForSubscriberWithSegments() {
@@ -93,7 +93,7 @@ class SegmentsExporterTest extends \MailPoetTest {
     ];
     expect($result['data'])->array();
     expect($result['data'])->count(2);
-    expect($result['done'])->equals(true);
+    verify($result['done'])->equals(true);
     expect($result['data'][0])->hasKey('group_id');
     expect($result['data'][0])->hasKey('group_label');
     expect($result['data'][0])->hasKey('item_id');
@@ -102,6 +102,6 @@ class SegmentsExporterTest extends \MailPoetTest {
     expect($result['data'][1])->hasKey('group_label');
     expect($result['data'][1])->hasKey('item_id');
     expect($result['data'][1])->hasKey('data');
-    expect($result['data'])->equals($expected);
+    verify($result['data'])->equals($expected);
   }
 }

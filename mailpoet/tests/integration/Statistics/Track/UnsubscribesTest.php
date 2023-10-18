@@ -59,8 +59,8 @@ class UnsubscribesTest extends \MailPoetTest {
       StatisticsUnsubscribeEntity::METHOD_ONE_CLICK
     );
     $allStats = $this->statisticsUnsubscribesRepository->findAll();
-    expect(count($allStats))->equals(1);
-    expect($allStats[0]->getMethod())->equals(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
+    verify(count($allStats))->equals(1);
+    verify($allStats[0]->getMethod())->equals(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
   }
 
   public function testItDoesNotTrackRepeatedUnsubscribeEvents() {
@@ -74,6 +74,6 @@ class UnsubscribesTest extends \MailPoetTest {
         (int)$this->queue->id
       );
     }
-    expect(count($this->statisticsUnsubscribesRepository->findAll()))->equals(1);
+    verify(count($this->statisticsUnsubscribesRepository->findAll()))->equals(1);
   }
 }

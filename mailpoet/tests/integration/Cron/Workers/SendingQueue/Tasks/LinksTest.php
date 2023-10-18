@@ -45,10 +45,10 @@ class LinksTest extends \MailPoetTest {
     $newsletterLink = $this->newsletterLinkRepository->findOneBy(['hash' => $links[0]['hash']]);
     $this->assertInstanceOf(NewsletterLinkEntity::class, $newsletterLink);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterLink->getNewsletter());
-    expect($newsletterLink->getNewsletter()->getId())->equals($this->newsletter->getId());
+    verify($newsletterLink->getNewsletter()->getId())->equals($this->newsletter->getId());
     $this->assertInstanceOf(SendingQueueEntity::class, $newsletterLink->getQueue());
-    expect($newsletterLink->getQueue()->getId())->equals($this->queue->getId());
-    expect($newsletterLink->getUrl())->equals($links[0]['link']);
+    verify($newsletterLink->getQueue()->getId())->equals($this->queue->getId());
+    verify($newsletterLink->getUrl())->equals($links[0]['link']);
   }
 
   public function testItCanHashAndReplaceLinks() {
@@ -63,7 +63,7 @@ class LinksTest extends \MailPoetTest {
       ->stringContainsString($processedAndHashedLinks[0]['hash']);
     expect($processedRenderedNewsletterBody['text'])
       ->stringContainsString($processedAndHashedLinks[0]['hash']);
-    expect($processedAndHashedLinks[0]['link'])->equals('http://example.com');
+    verify($processedAndHashedLinks[0]['link'])->equals('http://example.com');
   }
 
   public function testItCanProcessRenderedBody() {
@@ -93,6 +93,6 @@ class LinksTest extends \MailPoetTest {
         'url' => NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
       ]
     );
-    expect($unsubscribeCount)->equals(1);
+    verify($unsubscribeCount)->equals(1);
   }
 }

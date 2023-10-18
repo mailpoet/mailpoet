@@ -16,7 +16,7 @@ class CaptchaPhraseTest extends \MailPoetUnitTest {
         },
         'getCaptchaHash' => false,
         'setCaptchaHash' => Stub\Expected::once(function($data) use ($expectedPhrase) {
-          expect($data['phrase'])->equals($expectedPhrase);
+          verify($data['phrase'])->equals($expectedPhrase);
         }),
       ],
       $this
@@ -24,14 +24,14 @@ class CaptchaPhraseTest extends \MailPoetUnitTest {
     $phraseBuilder = Stub::make(
       PhraseBuilder::class,
       [
-        'build' => Stub\Expected::once(function() use ($expectedPhrase) { return $expectedPhrase; 
+        'build' => Stub\Expected::once(function() use ($expectedPhrase) { return $expectedPhrase;
         }),
       ],
       $this
     );
     $testee = new CaptchaPhrase($session, $phraseBuilder);
     $phrase = $testee->getPhraseForType('type-a', null);
-    expect($phrase)->equals($expectedPhrase);
+    verify($phrase)->equals($expectedPhrase);
   }
 
   public function testItRegeneratesPhraseWhenCalledTwice() {
@@ -48,10 +48,10 @@ class CaptchaPhraseTest extends \MailPoetUnitTest {
           static $count;
           if (!$count) {
             $count = 1;
-            expect($data['phrase'])->equals($expectedFirstPhrase);
+            verify($data['phrase'])->equals($expectedFirstPhrase);
             return;
           }
-          expect($data['phrase'])->equals($expectedSecondPhrase);
+          verify($data['phrase'])->equals($expectedSecondPhrase);
         }),
       ],
       $this
@@ -72,9 +72,9 @@ class CaptchaPhraseTest extends \MailPoetUnitTest {
     );
     $testee = new CaptchaPhrase($session, $phraseBuilder);
     $phrase = $testee->getPhraseForType('type-a', null);
-    expect($phrase)->equals($expectedFirstPhrase);
+    verify($phrase)->equals($expectedFirstPhrase);
     $phrase = $testee->getPhraseForType('type-a', null);
-    expect($phrase)->equals($expectedSecondPhrase);
+    verify($phrase)->equals($expectedSecondPhrase);
   }
 
   public function testItKeepsDifferentTypesInSync() {
@@ -106,7 +106,7 @@ class CaptchaPhraseTest extends \MailPoetUnitTest {
             return;
           }
           $count = 1;
-          expect($storage)->equals($expectedFirstStorage);
+          verify($storage)->equals($expectedFirstStorage);
         }),
       ],
       $this
@@ -114,7 +114,7 @@ class CaptchaPhraseTest extends \MailPoetUnitTest {
     $phraseBuilder = Stub::make(
       PhraseBuilder::class,
       [
-        'build' => Stub\Expected::once(function() use ($phrase) { return $phrase; 
+        'build' => Stub\Expected::once(function() use ($phrase) { return $phrase;
         }),
       ],
       $this
@@ -122,6 +122,6 @@ class CaptchaPhraseTest extends \MailPoetUnitTest {
     $testee = new CaptchaPhrase($session, $phraseBuilder);
     $phraseTypeA = $testee->getPhraseForType('type-a', null);
     $phraseTypeB = $testee->getPhraseForType('type-b', null);
-    expect($phraseTypeA)->equals($phraseTypeB);
+    verify($phraseTypeA)->equals($phraseTypeB);
   }
 }

@@ -64,7 +64,7 @@ class SegmentsTest extends \MailPoetTest {
       $this->getApi()->addList([]);
       $this->fail('List name required exception should have been thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('List name is required.');
+      verify($e->getMessage())->equals('List name is required.');
     }
   }
 
@@ -75,9 +75,9 @@ class SegmentsTest extends \MailPoetTest {
       'type' => 'ignore this field',
     ]);
     expect($result['id'])->greaterThan(0);
-    expect($result['name'])->equals('Test segment123');
-    expect($result['description'])->equals('Description');
-    expect($result['type'])->equals('default');
+    verify($result['name'])->equals('Test segment123');
+    verify($result['description'])->equals('Description');
+    verify($result['type'])->equals('default');
   }
 
   public function testItDoesNotAddExistingList() {
@@ -87,7 +87,7 @@ class SegmentsTest extends \MailPoetTest {
       $this->getApi()->addList(['name' => $segment->getName()]);
       $this->fail('List exists exception should have been thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('This list already exists.');
+      verify($e->getMessage())->equals('This list already exists.');
     }
   }
 
@@ -98,7 +98,7 @@ class SegmentsTest extends \MailPoetTest {
 
     $result = $this->getApi()->addList($segment);
     expect($result['id'])->greaterThan(0);
-    expect($result['name'])->equals($segment['name']);
+    verify($result['name'])->equals($segment['name']);
   }
 
   public function testItRequiresIdToUpdateList(): void {
@@ -106,8 +106,8 @@ class SegmentsTest extends \MailPoetTest {
       $this->getApi()->updateList([]);
       $this->fail('List id required exception should have been thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('List id is required.');
-      expect($e->getCode())->equals(APIException::LIST_ID_REQUIRED);
+      verify($e->getMessage())->equals('List id is required.');
+      verify($e->getCode())->equals(APIException::LIST_ID_REQUIRED);
     }
   }
 
@@ -116,8 +116,8 @@ class SegmentsTest extends \MailPoetTest {
       $this->getApi()->updateList(['id' => 2]);
       $this->fail('List id must be valid exception should have been thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('The list does not exist.');
-      expect($e->getCode())->equals(APIException::LIST_NOT_EXISTS);
+      verify($e->getMessage())->equals('The list does not exist.');
+      verify($e->getCode())->equals(APIException::LIST_NOT_EXISTS);
     }
   }
 
@@ -127,7 +127,7 @@ class SegmentsTest extends \MailPoetTest {
       $this->getApi()->updateList(['id' => $segment->getId()]);
       $this->fail('List name required exception should have been thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('List name is required.');
+      verify($e->getMessage())->equals('List name is required.');
     }
   }
 
@@ -142,7 +142,7 @@ class SegmentsTest extends \MailPoetTest {
       ]);
       $this->fail('List name is already used exception should have been thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('This list already exists.');
+      verify($e->getMessage())->equals('This list already exists.');
     }
   }
 
@@ -159,9 +159,9 @@ class SegmentsTest extends \MailPoetTest {
       'description' => 'updated description',
     ];
     $result = $this->getApi()->updateList($data);
-    expect($result['id'])->equals($data['id']);
-    expect($result['name'])->equals($data['name']);
-    expect($result['description'])->equals($data['description']);
+    verify($result['id'])->equals($data['id']);
+    verify($result['name'])->equals($data['name']);
+    verify($result['description'])->equals($data['description']);
   }
 
   public function testItDoesNotAllowUpdateWPSegment(): void {
@@ -171,8 +171,8 @@ class SegmentsTest extends \MailPoetTest {
       $this->getApi()->updateList(['id' => $wpSegment->getId(), 'name' => 'Test']);
       $this->fail('WP list cannot be updated.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('List of the type \'' . $wpSegment->getType() . '\' is not supported for this action.');
-      expect($e->getCode())->equals(APIException::LIST_TYPE_IS_NOT_SUPPORTED);
+      verify($e->getMessage())->equals('List of the type \'' . $wpSegment->getType() . '\' is not supported for this action.');
+      verify($e->getCode())->equals(APIException::LIST_TYPE_IS_NOT_SUPPORTED);
     }
   }
 
@@ -181,8 +181,8 @@ class SegmentsTest extends \MailPoetTest {
       $this->getApi()->deleteList('');
       $this->fail('List id required exception should have been thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('List id is required.');
-      expect($e->getCode())->equals(APIException::LIST_ID_REQUIRED);
+      verify($e->getMessage())->equals('List id is required.');
+      verify($e->getCode())->equals(APIException::LIST_ID_REQUIRED);
     }
   }
 
@@ -191,8 +191,8 @@ class SegmentsTest extends \MailPoetTest {
       $this->getApi()->updateList(['id' => 2]);
       $this->fail('List id must be valid exception should have been thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('The list does not exist.');
-      expect($e->getCode())->equals(APIException::LIST_NOT_EXISTS);
+      verify($e->getMessage())->equals('The list does not exist.');
+      verify($e->getCode())->equals(APIException::LIST_NOT_EXISTS);
     }
   }
 
@@ -205,8 +205,8 @@ class SegmentsTest extends \MailPoetTest {
       $this->getApi()->deleteList((string)$segment->getId());
       $this->fail('List id cannot not have relation on a form exception should be thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals("List cannot be deleted because it’s used for '" . $form->getName() . "' form");
-      expect($e->getCode())->equals(APIException::LIST_USED_IN_FORM);
+      verify($e->getMessage())->equals("List cannot be deleted because it’s used for '" . $form->getName() . "' form");
+      verify($e->getCode())->equals(APIException::LIST_USED_IN_FORM);
     }
   }
 
@@ -220,8 +220,8 @@ class SegmentsTest extends \MailPoetTest {
       $this->getApi()->deleteList((string)$segment->getId());
       $this->fail('List id cannot not have relation on an email exception should be thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals("List cannot be deleted because it’s used for '" . $newsletter->getSubject() . "' email");
-      expect($e->getCode())->equals(APIException::LIST_USED_IN_EMAIL);
+      verify($e->getMessage())->equals("List cannot be deleted because it’s used for '" . $newsletter->getSubject() . "' email");
+      verify($e->getCode())->equals(APIException::LIST_USED_IN_EMAIL);
     }
   }
 
@@ -232,8 +232,8 @@ class SegmentsTest extends \MailPoetTest {
       $this->getApi()->deleteList((string)$wpSegment->getId());
       $this->fail('WP list cannot be updated.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('List of the type \'' . $wpSegment->getType() . '\' is not supported for this action.');
-      expect($e->getCode())->equals(APIException::LIST_TYPE_IS_NOT_SUPPORTED);
+      verify($e->getMessage())->equals('List of the type \'' . $wpSegment->getType() . '\' is not supported for this action.');
+      verify($e->getCode())->equals(APIException::LIST_TYPE_IS_NOT_SUPPORTED);
     }
   }
 
@@ -245,7 +245,7 @@ class SegmentsTest extends \MailPoetTest {
     $segmentId = (string)$segment->getId();
 
     $result = $this->getApi()->deleteList($segmentId);
-    expect($result)->equals(true);
+    verify($result)->equals(true);
     $this->entityManager->clear();
     expect($this->segmentsRepository->findOneById($segmentId))->null();
     expect($this->subscriberSegmentsRepository->findBy(['segment' => $segmentId]))->count(0);

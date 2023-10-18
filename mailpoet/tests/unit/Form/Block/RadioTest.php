@@ -69,15 +69,15 @@ class RadioTest extends \MailPoetUnitTest {
 
     $radio1 = $this->htmlParser->getElementByXpath($html, "//label[@class='mailpoet_radio_label']", 0);
     $radio2 = $this->htmlParser->getElementByXpath($html, "//label[@class='mailpoet_radio_label']", 1);
-    expect($radio1->textContent)->equals(' Radio 1');
-    expect($radio2->textContent)->equals(' Radio 2');
+    verify($radio1->textContent)->equals(' Radio 1');
+    verify($radio2->textContent)->equals(' Radio 2');
 
     $radio1Input = $this->htmlParser->getChildElement($radio1, 'input');
     $radio2Input = $this->htmlParser->getChildElement($radio2, 'input');
-    expect($this->htmlParser->getAttribute($radio1Input, 'value')->value)->equals('Radio 1');
-    expect($this->htmlParser->getAttribute($radio2Input, 'value')->value)->equals('Radio 2');
+    verify($this->htmlParser->getAttribute($radio1Input, 'value')->value)->equals('Radio 1');
+    verify($this->htmlParser->getAttribute($radio2Input, 'value')->value)->equals('Radio 2');
 
-    expect($this->htmlParser->getAttribute($radio2Input, 'checked')->value)->equals('checked');
+    verify($this->htmlParser->getAttribute($radio2Input, 'checked')->value)->equals('checked');
   }
 
   public function testItShouldRenderErrorContainerWithFormId() {
@@ -90,6 +90,6 @@ class RadioTest extends \MailPoetUnitTest {
 
     $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_1_31']");
     expect($errorContainer)->notEmpty();
-    expect($errorContainer->nodeName)->equals('span');
+    verify($errorContainer->nodeName)->equals('span');
   }
 }

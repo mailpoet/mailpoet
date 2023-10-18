@@ -8,7 +8,7 @@ class HelpersTest extends \MailPoetUnitTest {
   public function testItReplacesLinkTags() {
     $source = '[link]example link[/link]';
     $link = 'http://example.com';
-    expect(Helpers::replaceLinkTags($source, $link))
+    verify(Helpers::replaceLinkTags($source, $link))
       ->equals('<a href="' . $link . '">example link</a>');
   }
 
@@ -19,14 +19,14 @@ class HelpersTest extends \MailPoetUnitTest {
       'class' => 'test class',
       'target' => '_blank',
     ];
-    expect(Helpers::replaceLinkTags($source, $link, $attributes))
+    verify(Helpers::replaceLinkTags($source, $link, $attributes))
       ->equals('<a class="test class" target="_blank" href="' . $link . '">example link</a>');
   }
 
   public function testItAcceptsCustomLinkTag() {
     $source = '[custom_link_tag]example link[/custom_link_tag]';
     $link = 'http://example.com';
-    expect(Helpers::replaceLinkTags($source, $link, [], 'custom_link_tag'))
+    verify(Helpers::replaceLinkTags($source, $link, [], 'custom_link_tag'))
       ->equals('<a href="' . $link . '">example link</a>');
   }
 
@@ -37,10 +37,10 @@ class HelpersTest extends \MailPoetUnitTest {
   }
 
   public function testItTrimStringsRecursively() {
-    expect(Helpers::recursiveTrim('  foo'))->equals('foo');
-    expect(Helpers::recursiveTrim('foo  '))->equals('foo');
-    expect(Helpers::recursiveTrim(123))->equals(123);
-    expect(Helpers::recursiveTrim([
+    verify(Helpers::recursiveTrim('  foo'))->equals('foo');
+    verify(Helpers::recursiveTrim('foo  '))->equals('foo');
+    verify(Helpers::recursiveTrim(123))->equals(123);
+    verify(Helpers::recursiveTrim([
       'name' => '   some text here   ',
       'list' => [
         'string 1',
@@ -60,13 +60,13 @@ class HelpersTest extends \MailPoetUnitTest {
   }
 
   public function testSanitizeSearch() {
-    expect(Helpers::escapeSearch('Hello'))->equals('Hello');
-    expect(Helpers::escapeSearch('Hello '))->equals('Hello');
-    expect(Helpers::escapeSearch(' Hello '))->equals('Hello');
-    expect(Helpers::escapeSearch('%Hello '))->equals('\%Hello');
-    expect(Helpers::escapeSearch('%Hello %'))->equals('\%Hello \%');
-    expect(Helpers::escapeSearch('He%llo'))->equals('He\%llo');
-    expect(Helpers::escapeSearch('He_llo'))->equals('He\_llo');
-    expect(Helpers::escapeSearch('He\\llo'))->equals('He\\\llo');
+    verify(Helpers::escapeSearch('Hello'))->equals('Hello');
+    verify(Helpers::escapeSearch('Hello '))->equals('Hello');
+    verify(Helpers::escapeSearch(' Hello '))->equals('Hello');
+    verify(Helpers::escapeSearch('%Hello '))->equals('\%Hello');
+    verify(Helpers::escapeSearch('%Hello %'))->equals('\%Hello \%');
+    verify(Helpers::escapeSearch('He%llo'))->equals('He\%llo');
+    verify(Helpers::escapeSearch('He_llo'))->equals('He\_llo');
+    verify(Helpers::escapeSearch('He\\llo'))->equals('He\\\llo');
   }
 }

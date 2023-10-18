@@ -59,19 +59,19 @@ class ImportExportRepositoryTest extends \MailPoetTest {
       $data
     );
 
-    expect($count)->equals(2);
+    verify($count)->equals(2);
     $subscribers = $this->subscribersRepository->findAll();
     expect($subscribers)->count(2);
     $user1 = $subscribers[0];
     $this->assertInstanceOf(SubscriberEntity::class, $user1);
-    expect($user1->getEmail())->equals('user1@export-test.com');
-    expect($user1->getFirstName())->equals('One');
-    expect($user1->getLastName())->equals('User');
+    verify($user1->getEmail())->equals('user1@export-test.com');
+    verify($user1->getFirstName())->equals('One');
+    verify($user1->getLastName())->equals('User');
     $user2 = $subscribers[1];
     $this->assertInstanceOf(SubscriberEntity::class, $user2);
-    expect($user2->getEmail())->equals('user2@export-test.com');
-    expect($user2->getFirstName())->equals('Two');
-    expect($user2->getLastName())->equals('User');
+    verify($user2->getEmail())->equals('user2@export-test.com');
+    verify($user2->getFirstName())->equals('Two');
+    verify($user2->getLastName())->equals('User');
   }
 
   public function testItUpdateMultipleSubscribers(): void {
@@ -94,22 +94,22 @@ class ImportExportRepositoryTest extends \MailPoetTest {
       $updatedAt
     );
 
-    expect($count)->equals(2);
+    verify($count)->equals(2);
     $this->entityManager->clear();
     $subscribers = $this->subscribersRepository->findAll();
     expect($subscribers)->count(2);
     $user1 = $subscribers[0];
     $this->assertInstanceOf(SubscriberEntity::class, $user1);
-    expect($user1->getEmail())->equals('user1@export-test.com');
-    expect($user1->getFirstName())->equals('OneOne');
-    expect($user1->getLastName())->equals('UserOne');
-    expect($user1->getUpdatedAt())->equals($updatedAt);
+    verify($user1->getEmail())->equals('user1@export-test.com');
+    verify($user1->getFirstName())->equals('OneOne');
+    verify($user1->getLastName())->equals('UserOne');
+    verify($user1->getUpdatedAt())->equals($updatedAt);
     $user2 = $subscribers[1];
     $this->assertInstanceOf(SubscriberEntity::class, $user2);
-    expect($user2->getEmail())->equals('user2@export-test.com');
-    expect($user2->getFirstName())->equals('TwoTwo');
-    expect($user2->getLastName())->equals('UserTwo');
-    expect($user2->getUpdatedAt())->equals($updatedAt);
+    verify($user2->getEmail())->equals('user2@export-test.com');
+    verify($user2->getFirstName())->equals('TwoTwo');
+    verify($user2->getLastName())->equals('UserTwo');
+    verify($user2->getUpdatedAt())->equals($updatedAt);
   }
 
   public function testItInsertMultipleSubscriberCustomFields(): void {
@@ -131,19 +131,19 @@ class ImportExportRepositoryTest extends \MailPoetTest {
       $data
     );
 
-    expect($count)->equals(2);
+    verify($count)->equals(2);
     $customFields = $this->subscriberCustomFieldRepository->findAll();
     expect($customFields)->count(2);
     $subscriberCustomField1 = $customFields[0];
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField1);
-    expect($subscriberCustomField1->getSubscriber())->equals($subscriber1);
-    expect($subscriberCustomField1->getCustomField())->equals($customField);
-    expect($subscriberCustomField1->getValue())->equals('20');
+    verify($subscriberCustomField1->getSubscriber())->equals($subscriber1);
+    verify($subscriberCustomField1->getCustomField())->equals($customField);
+    verify($subscriberCustomField1->getValue())->equals('20');
     $subscriberCustomField2 = $customFields[1];
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField2);
-    expect($subscriberCustomField2->getSubscriber())->equals($subscriber2);
-    expect($subscriberCustomField2->getCustomField())->equals($customField);
-    expect($subscriberCustomField2->getValue())->equals('25');
+    verify($subscriberCustomField2->getSubscriber())->equals($subscriber2);
+    verify($subscriberCustomField2->getCustomField())->equals($customField);
+    verify($subscriberCustomField2->getValue())->equals('25');
   }
 
   public function testItUpdateMultipleSubscriberCustomFields(): void {
@@ -170,7 +170,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
       $updatedAt
     );
 
-    expect($count)->equals(2);
+    verify($count)->equals(2);
     $this->entityManager->clear();
     $this->subscribersRepository->findAll();
     $this->customFieldsRepository->findAll();
@@ -179,16 +179,16 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField1);
     $resultSubscriber1 = $subscriberCustomField1->getSubscriber();
     $this->assertInstanceOf(SubscriberEntity::class, $resultSubscriber1);
-    expect($resultSubscriber1->getId())->equals($subscriber1->getId());
-    expect($subscriberCustomField1->getCustomField())->equals($customField);
-    expect($subscriberCustomField1->getValue())->equals('20');
+    verify($resultSubscriber1->getId())->equals($subscriber1->getId());
+    verify($subscriberCustomField1->getCustomField())->equals($customField);
+    verify($subscriberCustomField1->getValue())->equals('20');
     $subscriberCustomField2 = $subscriberCustomFields[1];
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField2);
     $resultSubscriber2 = $subscriberCustomField2->getSubscriber();
     $this->assertInstanceOf(SubscriberEntity::class, $resultSubscriber2);
-    expect($resultSubscriber2->getId())->equals($subscriber2->getId());
-    expect($subscriberCustomField2->getCustomField())->equals($customField);
-    expect($subscriberCustomField2->getValue())->equals('25');
+    verify($resultSubscriber2->getId())->equals($subscriber2->getId());
+    verify($subscriberCustomField2->getCustomField())->equals($customField);
+    verify($subscriberCustomField2->getValue())->equals('25');
   }
 
   public function testItGetSubscribersByDefaultSegment(): void {
@@ -210,18 +210,18 @@ class ImportExportRepositoryTest extends \MailPoetTest {
 
     $exported = $this->repository->getSubscribersBatchBySegment($segment1, 100);
     expect($exported)->count(2);
-    expect($exported[0]['first_name'])->equals('One');
-    expect($exported[0]['last_name'])->equals('User');
-    expect($exported[0]['email'])->equals('user1@export-test.com');
-    expect($exported[0]['segment_name'])->equals('First');
-    expect($exported[0]['confirmed_at'])->equals($confirmedAt);
-    expect($exported[0]['created_at'])->equals($user1->getCreatedAt());
-    expect($exported[0]['confirmed_ip'])->equals($confirmedIp);
-    expect($exported[0]['subscribed_ip'])->equals($subscribedIp);
-    expect($exported[1]['first_name'])->equals('Two');
-    expect($exported[1]['last_name'])->equals('User');
-    expect($exported[1]['email'])->equals('user2@export-test.com');
-    expect($exported[1]['segment_name'])->equals('First');
+    verify($exported[0]['first_name'])->equals('One');
+    verify($exported[0]['last_name'])->equals('User');
+    verify($exported[0]['email'])->equals('user1@export-test.com');
+    verify($exported[0]['segment_name'])->equals('First');
+    verify($exported[0]['confirmed_at'])->equals($confirmedAt);
+    verify($exported[0]['created_at'])->equals($user1->getCreatedAt());
+    verify($exported[0]['confirmed_ip'])->equals($confirmedIp);
+    verify($exported[0]['subscribed_ip'])->equals($subscribedIp);
+    verify($exported[1]['first_name'])->equals('Two');
+    verify($exported[1]['last_name'])->equals('User');
+    verify($exported[1]['email'])->equals('user2@export-test.com');
+    verify($exported[1]['segment_name'])->equals('First');
   }
 
   public function testItGetOnlyNodDeletedSubscribersByDefaultSegment(): void {
@@ -238,10 +238,10 @@ class ImportExportRepositoryTest extends \MailPoetTest {
 
     $exported = $this->repository->getSubscribersBatchBySegment($segment1, 100);
     expect($exported)->count(1);
-    expect($exported[0]['first_name'])->equals('One');
-    expect($exported[0]['last_name'])->equals('User');
-    expect($exported[0]['email'])->equals('user1@export-test.com');
-    expect($exported[0]['segment_name'])->equals('First');
+    verify($exported[0]['first_name'])->equals('One');
+    verify($exported[0]['last_name'])->equals('User');
+    verify($exported[0]['email'])->equals('user1@export-test.com');
+    verify($exported[0]['segment_name'])->equals('First');
   }
 
   public function testItGetSubscribersWithoutSegment(): void {
@@ -268,18 +268,18 @@ class ImportExportRepositoryTest extends \MailPoetTest {
 
     $exported = $this->repository->getSubscribersBatchBySegment(null, 100);
     expect($exported)->count(3);
-    expect($exported[0]['first_name'])->equals('Two');
-    expect($exported[0]['last_name'])->equals('User');
-    expect($exported[0]['email'])->equals('user2@export-test.com');
-    expect($exported[0]['segment_name'])->equals('Not In Segment');
-    expect($exported[1]['first_name'])->equals('Four');
-    expect($exported[1]['last_name'])->equals('User');
-    expect($exported[1]['email'])->equals('user4@export-test.com');
-    expect($exported[1]['segment_name'])->equals('Not In Segment');
-    expect($exported[2]['first_name'])->equals('Five');
-    expect($exported[2]['last_name'])->equals('User');
-    expect($exported[2]['email'])->equals('user5@export-test.com');
-    expect($exported[2]['segment_name'])->equals('Not In Segment');
+    verify($exported[0]['first_name'])->equals('Two');
+    verify($exported[0]['last_name'])->equals('User');
+    verify($exported[0]['email'])->equals('user2@export-test.com');
+    verify($exported[0]['segment_name'])->equals('Not In Segment');
+    verify($exported[1]['first_name'])->equals('Four');
+    verify($exported[1]['last_name'])->equals('User');
+    verify($exported[1]['email'])->equals('user4@export-test.com');
+    verify($exported[1]['segment_name'])->equals('Not In Segment');
+    verify($exported[2]['first_name'])->equals('Five');
+    verify($exported[2]['last_name'])->equals('User');
+    verify($exported[2]['email'])->equals('user5@export-test.com');
+    verify($exported[2]['segment_name'])->equals('Not In Segment');
   }
 
   public function testItGetSubscribersByDynamicSegment(): void {
@@ -304,10 +304,10 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(SegmentEntity::class, $segment2);
     $exported = $this->repository->getSubscribersBatchBySegment($segment2, 100);
     expect($exported)->count(2);
-    expect($exported[0]['email'])->equals('user2@export-test.com');
-    expect($exported[0]['segment_name'])->equals('Dynamic Segment');
-    expect($exported[1]['email'])->equals('user3@export-test.com');
-    expect($exported[1]['segment_name'])->equals('Dynamic Segment');
+    verify($exported[0]['email'])->equals('user2@export-test.com');
+    verify($exported[0]['segment_name'])->equals('Dynamic Segment');
+    verify($exported[1]['email'])->equals('user3@export-test.com');
+    verify($exported[1]['segment_name'])->equals('Dynamic Segment');
   }
 
   /**
@@ -353,8 +353,8 @@ class ImportExportRepositoryTest extends \MailPoetTest {
       $exported = $this->repository->getSubscribersBatchBySegment($segment2, 1, $offset);
       $offset += count($exported);
       expect($exported)->count(1);
-      expect($exported[0]['email'])->equals("user{$i}@export-test.com");
-      expect($exported[0]['segment_name'])->equals('Two');
+      verify($exported[0]['email'])->equals("user{$i}@export-test.com");
+      verify($exported[0]['segment_name'])->equals('Two');
     }
   }
 

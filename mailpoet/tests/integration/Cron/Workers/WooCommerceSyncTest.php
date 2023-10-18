@@ -52,6 +52,6 @@ class WooCommerceSyncTest extends \MailPoetTest {
       null,
       Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
     );
-    expect($worker->processTaskStrategy($task, microtime(true)))->equals(true);
+    verify($worker->processTaskStrategy($task, microtime(true)))->equals(true);
   }
 }

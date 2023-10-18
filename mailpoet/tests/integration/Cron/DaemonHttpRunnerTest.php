@@ -46,7 +46,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
         },
       ]
     );
-    expect($daemon->run(false))->equals('Invalid or missing request data.');
+    verify($daemon->run(false))->equals('Invalid or missing request data.');
   }
 
   public function testItDoesNotRunWhenThereIsInvalidOrMissingToken() {
@@ -61,7 +61,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemon->settingsDaemonData = [
       'token' => 123,
     ];
-    expect($daemon->run(['token' => 456]))->equals('Invalid or missing token.');
+    verify($daemon->run(['token' => 456]))->equals('Invalid or missing token.');
   }
 
   public function testItStoresErrorMessageAndContinuesExecutionWhenWorkersThrowException() {
@@ -91,8 +91,8 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemonHttpRunner->__construct($daemon, $this->cronHelper, SettingsController::getInstance(), $this->diContainer->get(WordPress::class));
     $daemonHttpRunner->run($data);
     $updatedDaemon = $this->settings->get(CronHelper::DAEMON_SETTING);
-    expect($updatedDaemon['last_error'][0]['message'])->equals('Message');
-    expect($updatedDaemon['last_error'][1]['message'])->equals('');
+    verify($updatedDaemon['last_error'][0]['message'])->equals('Message');
+    verify($updatedDaemon['last_error'][1]['message'])->equals('');
   }
 
   public function testItCanPauseExecution() {
@@ -156,7 +156,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemonHttpRunner->__construct($daemon, $this->cronHelper, SettingsController::getInstance(), $this->diContainer->get(WordPress::class));
     $daemonHttpRunner->run($data);
     $dataAfterRun = $this->settings->get(CronHelper::DAEMON_SETTING);
-    expect($dataAfterRun['token'])->equals(567);
+    verify($dataAfterRun['token'])->equals(567);
   }
 
   public function testItTerminatesExecutionWhenDaemonIsDeactivated() {
@@ -212,7 +212,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemonHttpRunner->__construct($daemon, $this->cronHelper, SettingsController::getInstance(), $this->diContainer->get(WordPress::class));
     $daemonHttpRunner->run($data);
     $updatedDaemon = $this->settings->get(CronHelper::DAEMON_SETTING);
-    expect($updatedDaemon['token'])->equals($daemonHttpRunner->token);
+    verify($updatedDaemon['token'])->equals($daemonHttpRunner->token);
   }
 
   public function testItUpdatesTimestampsDuringExecution() {
@@ -249,7 +249,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
 
   public function testItCanRun() {
     ignore_user_abort(false);
-    expect(ignore_user_abort())->equals(false);
+    verify(ignore_user_abort())->equals(false);
     $daemonHttpRunner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => null,
       // daemon should call itself
@@ -267,13 +267,13 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemon = new Daemon($this->cronHelper, $cronWorkerRunnerMock, $this->createWorkersFactoryMock(), $this->diContainer->get(LoggerFactory::class));
     $daemonHttpRunner->__construct($daemon, $this->cronHelper, SettingsController::getInstance(), $this->diContainer->get(WordPress::class));
     $daemonHttpRunner->run($data);
-    expect(ignore_user_abort())->equals(true);
+    verify(ignore_user_abort())->equals(true);
   }
 
   public function testItRespondsToPingRequest() {
     $daemon = $this->make(DaemonHttpRunner::class, [
       'terminateRequest' => Expected::exactly(1, function($message) {
-        expect($message)->equals('pong');
+        verify($message)->equals('pong');
       }),
     ]);
     $daemon->ping();

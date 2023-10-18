@@ -60,17 +60,17 @@ class ImportExportFactoryTest extends \MailPoetTest {
 
   public function testItCanGetSegmentsWithSubscriberCount() {
     $segments = $this->importFactory->getSegments();
-    expect(count($segments))->equals(2);
-    expect($segments[0]['name'])->equals('Confirmed Segment');
-    expect($segments[0]['count'])->equals(1);
-    expect($segments[1]['name'])->equals('Unconfirmed Segment');
-    expect($segments[1]['count'])->equals(0);
+    verify(count($segments))->equals(2);
+    verify($segments[0]['name'])->equals('Confirmed Segment');
+    verify($segments[0]['count'])->equals(1);
+    verify($segments[1]['name'])->equals('Unconfirmed Segment');
+    verify($segments[1]['count'])->equals(0);
   }
 
   public function testItCanGetPublicSegmentsForImport() {
     $segments = $this->importFactory->getSegments();
-    expect($segments[0]['count'])->equals(1);
-    expect($segments[1]['count'])->equals(0);
+    verify($segments[0]['count'])->equals(1);
+    verify($segments[1]['count'])->equals(0);
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => 'mike@mailpoet.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
@@ -83,13 +83,13 @@ class ImportExportFactoryTest extends \MailPoetTest {
 
     $this->clearSubscribersCountCache();
     $segments = $this->importFactory->getSegments();
-    expect($segments[0]['count'])->equals(0);
-    expect($segments[1]['count'])->equals(0);
+    verify($segments[0]['count'])->equals(0);
+    verify($segments[1]['count'])->equals(0);
   }
 
   public function testItCanGetPublicSegmentsForExport() {
     $segments = $this->exportFactory->getSegments();
-    expect(count($segments))->equals(2);
+    verify(count($segments))->equals(2);
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => 'john@mailpoet.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
@@ -99,17 +99,17 @@ class ImportExportFactoryTest extends \MailPoetTest {
 
     $this->clearSubscribersCountCache();
     $segments = $this->exportFactory->getSegments();
-    expect(count($segments))->equals(1);
+    verify(count($segments))->equals(1);
   }
 
   public function testItCanGetSegmentsForExport() {
     $segments = $this->exportFactory->getSegments();
-    expect(count($segments))->equals(2);
+    verify(count($segments))->equals(2);
 
-    expect($segments[0]['name'])->equals('Confirmed Segment');
-    expect($segments[0]['count'])->equals(1);
-    expect($segments[1]['name'])->equals('Unconfirmed Segment');
-    expect($segments[1]['count'])->equals(1);
+    verify($segments[0]['name'])->equals('Confirmed Segment');
+    verify($segments[0]['count'])->equals(1);
+    verify($segments[1]['name'])->equals('Unconfirmed Segment');
+    verify($segments[1]['count'])->equals(1);
   }
 
   public function testItCanGetSubscriberFields() {
@@ -160,7 +160,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
     $subscriberCustomFields =
       $this->importFactory
         ->getSubscriberCustomFields();
-    expect($subscriberCustomFields[0]['type'])
+    verify($subscriberCustomFields[0]['type'])
       ->equals('date');
   }
 
@@ -224,12 +224,12 @@ class ImportExportFactoryTest extends \MailPoetTest {
       $importExportFactory->getSubscriberFields(),
       $importExportFactory->getSubscriberCustomFields()
     );
-    expect($formattedFieldsForSelect2)->equals($select2FieldsWithCustomFields);
+    verify($formattedFieldsForSelect2)->equals($select2FieldsWithCustomFields);
     $formattedFieldsForSelect2 = $importExportFactory->formatFieldsForSelect2(
       $importExportFactory->getSubscriberFields(),
       []
     );
-    expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
+    verify($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
   }
 
   public function testItCanFormatFieldsForSelect2Export() {
@@ -274,27 +274,27 @@ class ImportExportFactoryTest extends \MailPoetTest {
       $importExportFactory->getSubscriberFields(),
       $importExportFactory->getSubscriberCustomFields()
     );
-    expect($formattedFieldsForSelect2)->equals($select2FieldsWithCustomFields);
+    verify($formattedFieldsForSelect2)->equals($select2FieldsWithCustomFields);
     $formattedFieldsForSelect2 = $importExportFactory->formatFieldsForSelect2(
       $importExportFactory->getSubscriberFields(),
       []
     );
-    expect($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
+    verify($formattedFieldsForSelect2)->equals($select2FieldsWithoutCustomFields);
   }
 
   public function testItCanBootStrapImport() {
     $import = clone($this->importFactory);
     $importMenu = $import->bootstrap();
-    expect(count((array)json_decode($importMenu['segments'], true)))
+    verify(count((array)json_decode($importMenu['segments'], true)))
       ->equals(2);
     // email, first_name, last_name, subscribed_ip, created_at, confirmed_ip, confirmed_at + 1 custom field
-    expect(count((array)json_decode($importMenu['subscriberFields'], true)))
+    verify(count((array)json_decode($importMenu['subscriberFields'], true)))
       ->equals(8);
     // action, system fields, user fields
-    expect(count((array)json_decode($importMenu['subscriberFieldsSelect2'], true)))
+    verify(count((array)json_decode($importMenu['subscriberFieldsSelect2'], true)))
       ->equals(3);
-    expect($importMenu['maxPostSize'])->equals(ini_get('post_max_size'));
-    expect($importMenu['maxPostSizeBytes'])->equals(
+    verify($importMenu['maxPostSize'])->equals(ini_get('post_max_size'));
+    verify($importMenu['maxPostSizeBytes'])->equals(
       (int)ini_get('post_max_size') * 1048576
     );
   }
@@ -302,10 +302,10 @@ class ImportExportFactoryTest extends \MailPoetTest {
   public function testItCanBootStrapExport() {
     $export = clone($this->importFactory);
     $exportMenu = $export->bootstrap();
-    expect(count((array)json_decode($exportMenu['segments'], true)))
+    verify(count((array)json_decode($exportMenu['segments'], true)))
       ->equals(2);
     // action, system fields, user fields
-    expect(count((array)json_decode($exportMenu['subscriberFieldsSelect2'], true)))
+    verify(count((array)json_decode($exportMenu['subscriberFieldsSelect2'], true)))
       ->equals(3);
   }
 

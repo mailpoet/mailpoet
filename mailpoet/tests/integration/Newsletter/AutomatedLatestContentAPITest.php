@@ -167,21 +167,21 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
     ]);
     expect($result->data)->count(1);
 
-    expect($result->data[0][0]->post_title)->equals($publishedPostTitle);
+    verify($result->data[0][0]->post_title)->equals($publishedPostTitle);
 
     $this->loginWithRole("editor");
     $result = $this->alcAPI->getBulkTransformedPosts([
       "blocks" => [$singleBlockQuery],
     ]);
     expect($result->data)->count(1);
-    expect($result->data[0][0]->post_title)->equals($publishedPostTitle);
+    verify($result->data[0][0]->post_title)->equals($publishedPostTitle);
 
     $this->loginWithRole("administrator");
     $result = $this->alcAPI->getBulkTransformedPosts([
       "blocks" => [$singleBlockQuery],
     ]);
     expect($result->data)->count(1);
-    expect($result->data[0][0]->post_title)->equals($publishedPostTitle);
+    verify($result->data[0][0]->post_title)->equals($publishedPostTitle);
   }
 
   /**

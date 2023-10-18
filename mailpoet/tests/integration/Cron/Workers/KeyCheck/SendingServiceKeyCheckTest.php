@@ -37,7 +37,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
     // normally next run is scheduled at the next day in first six hours
     $nextRun = $this->worker->getNextRunDate();
     $nextDay = Carbon::now()->startOfDay()->addDay()->addHours(6);
-    expect($nextRun->format('Y-m-d'))->equals($nextDay->format('Y-m-d'));
+    verify($nextRun->format('Y-m-d'))->equals($nextDay->format('Y-m-d'));
     expect($nextRun)->lessThan($nextDay);
 
     // when pending key approval, next run is scheduled in an hour
@@ -101,7 +101,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
         $this->equalTo($response)
       );
     $this->setMailPoetSendingMethod();
-    expect($this->worker->checkKey())->equals($response);
+    verify($this->worker->checkKey())->equals($response);
   }
 
   private function setMailPoetSendingMethod() {

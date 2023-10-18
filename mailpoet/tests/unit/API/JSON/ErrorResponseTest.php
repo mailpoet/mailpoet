@@ -19,7 +19,7 @@ class ErrorResponseTest extends \MailPoetUnitTest {
       'another valid error',
     ];
     $errorResponse = new ErrorResponse($errors);
-    expect($errorResponse->getData())->equals(
+    verify($errorResponse->getData())->equals(
       [
         'errors' => [
           [

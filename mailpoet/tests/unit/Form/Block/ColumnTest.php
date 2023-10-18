@@ -31,7 +31,7 @@ class ColumnTest extends \MailPoetUnitTest {
 
   public function testItShouldRenderColumn() {
     $html = $this->columns->render($this->block, 'content');
-    expect($html)->equals('<div class="mailpoet_form_column">content</div>');
+    verify($html)->equals('<div class="mailpoet_form_column">content</div>');
   }
 
   public function testItShouldRenderWidth() {

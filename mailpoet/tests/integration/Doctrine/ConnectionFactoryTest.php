@@ -33,12 +33,12 @@ class ConnectionFactoryTest extends \MailPoetTest {
     expect($connection->getDriver())->isInstanceOf(PDOMySql\Driver::class);
     expect($connection->getDatabasePlatform())->isInstanceOf(MySqlPlatform::class);
     $params = $connection->getParams();
-    expect($params['host'])->equals(Env::$dbHost);
+    verify($params['host'])->equals(Env::$dbHost);
     expect($params)->notContains('unix_socket');
-    expect($params['user'])->equals(Env::$dbUsername);
-    expect($params['password'])->equals(Env::$dbPassword);
-    expect($params['charset'])->equals(Env::$dbCharset);
-    expect($connection->getDatabase())->equals(Env::$dbName);
+    verify($params['user'])->equals(Env::$dbUsername);
+    verify($params['password'])->equals(Env::$dbPassword);
+    verify($params['charset'])->equals(Env::$dbCharset);
+    verify($connection->getDatabase())->equals(Env::$dbName);
 
     expect(Type::getType(JsonType::NAME))->isInstanceOf(JsonType::class);
     expect(Type::getType(JsonOrSerializedType::NAME))->isInstanceOf(JsonOrSerializedType::class);
@@ -50,7 +50,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
       Env::$dbPort = 3456;
       $connectionFactory = new ConnectionFactory();
       $connection = $connectionFactory->createConnection();
-      expect($connection->getParams()['port'])->equals(3456);
+      verify($connection->getParams()['port'])->equals(3456);
     } finally {
       Env::$dbPort = $backup;
     }
@@ -72,7 +72,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     $params = $connection->getParams();
     expect(isset($params['host']))->false();
     expect(isset($params['port']))->false();
-    expect($params['unix_socket'])->equals('socket');
+    verify($params['unix_socket'])->equals('socket');
   }
 
   public function testItSetsUpIpV6() {
@@ -81,12 +81,12 @@ class ConnectionFactoryTest extends \MailPoetTest {
     Env::$dbHost = '::1';
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
-    expect($connection->getParams()['host'])->equals('[::1]');
+    verify($connection->getParams()['host'])->equals('[::1]');
 
     Env::$dbHost = 'b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036';
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
-    expect($connection->getParams()['host'])->equals('[b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036]');
+    verify($connection->getParams()['host'])->equals('[b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036]');
 
     // try to actually connect to the DB over IPv6
     Env::$dbHost = '::ffff:' . gethostbyname($this->envBackup['db_host']);
@@ -112,14 +112,14 @@ class ConnectionFactoryTest extends \MailPoetTest {
     ')->fetchAssociative();
 
     // check timezone, SQL mode, wait timeout
-    expect($result['@@session.time_zone'])->equals(Env::$dbTimezoneOffset);
+    verify($result['@@session.time_zone'])->equals(Env::$dbTimezoneOffset);
     expect($result['@@session.wait_timeout'])->greaterOrEquals(60);
 
     // check "SET NAMES ... COLLATE ..."
-    expect($result['@@session.character_set_client'])->equals(Env::$dbCharset);
-    expect($result['@@session.character_set_connection'])->equals(Env::$dbCharset);
-    expect($result['@@session.character_set_results'])->equals(Env::$dbCharset);
-    expect($result['@@session.collation_connection'])->equals(Env::$dbCollation);
+    verify($result['@@session.character_set_client'])->equals(Env::$dbCharset);
+    verify($result['@@session.character_set_connection'])->equals(Env::$dbCharset);
+    verify($result['@@session.character_set_results'])->equals(Env::$dbCharset);
+    verify($result['@@session.collation_connection'])->equals(Env::$dbCollation);
   }
 
   public function testItSelectivelyUpdatesWaitTimeoutOption() {
@@ -137,7 +137,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     ]);
     $connection = $connectionFactory->createConnection();
     $current = $connection->executeQuery('SELECT @@session.wait_timeout')->fetchColumn();
-    expect($current)->equals(999999);
+    verify($current)->equals(999999);
   }
 
   public function _after() {

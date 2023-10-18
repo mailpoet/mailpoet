@@ -13,14 +13,14 @@ class CronTriggerTest extends \MailPoetUnitTest {
     expect(CronTrigger::METHOD_LINUX_CRON)->same('Linux Cron');
     expect(CronTrigger::METHOD_WORDPRESS)->same('WordPress');
     expect(CronTrigger::METHOD_ACTION_SCHEDULER)->same('Action Scheduler');
-    expect(CronTrigger::METHODS)->equals([
+    verify(CronTrigger::METHODS)->equals([
       'wordpress' => 'WordPress',
       'linux_cron' => 'Linux Cron',
       'action_scheduler' => 'Action Scheduler',
       'none' => 'Disabled',
     ]);
-    expect(CronTrigger::DEFAULT_METHOD)->equals('Action Scheduler');
-    expect(CronTrigger::SETTING_NAME)->equals('cron_trigger');
+    verify(CronTrigger::DEFAULT_METHOD)->equals('Action Scheduler');
+    verify(CronTrigger::SETTING_NAME)->equals('cron_trigger');
   }
 
   public function testItCanInitializeCronTriggerMethod() {

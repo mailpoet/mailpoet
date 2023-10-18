@@ -37,7 +37,7 @@ class SimpleWorkerTest extends \MailPoetTest {
       new $workerClass();
       $this->fail('SimpleWorker did not throw an exception');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('Constant TASK_TYPE is not defined on subclass ' . $workerClass);
+      verify($e->getMessage())->equals('Constant TASK_TYPE is not defined on subclass ' . $workerClass);
     }
   }
 
@@ -49,11 +49,11 @@ class SimpleWorkerTest extends \MailPoetTest {
 
   public function testItDoesNotScheduleTaskTwice() {
     $worker = new MockSimpleWorker();
-    expect(count($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE])))->equals(0);
+    verify(count($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE])))->equals(0);
     $worker->schedule();
-    expect(count($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE])))->equals(1);
+    verify(count($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE])))->equals(1);
     $worker->schedule();
-    expect(count($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE])))->equals(1);
+    verify(count($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE])))->equals(1);
   }
 
   public function testItCalculatesNextRunDateWithinNextWeekBoundaries() {

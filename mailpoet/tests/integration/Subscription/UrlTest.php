@@ -94,7 +94,7 @@ class UrlTest extends \MailPoetTest {
     expect($url)->stringContainsString('action=unsubscribe');
     expect($url)->stringContainsString('endpoint=subscription');
     $data = $this->getUrlData($url);
-    expect($data['preview'])->equals(1);
+    verify($data['preview'])->equals(1);
 
     // actual subscriber
     $subscriber = $this->createSubscriber();
@@ -110,7 +110,7 @@ class UrlTest extends \MailPoetTest {
     expect($url)->stringContainsString('endpoint=subscription');
 
     $data = $this->checkSubscriberData($url);
-    expect($data['queueId'])->equals(10);
+    verify($data['queueId'])->equals(10);
 
     // no subscriber but query id
     $url = $this->url->getUnsubscribeUrl(null, 10);
@@ -119,7 +119,7 @@ class UrlTest extends \MailPoetTest {
 
     $data = $this->getUrlData($url);
     expect(isset($data['data']['queueId']))->false();
-    expect($data['preview'])->equals(1);
+    verify($data['preview'])->equals(1);
   }
 
   public function testItReturnsConfirmUnsubscribeUrl() {
@@ -129,7 +129,7 @@ class UrlTest extends \MailPoetTest {
     expect($url)->stringContainsString('action=confirm_unsubscribe');
     expect($url)->stringContainsString('endpoint=subscription');
     $data = $this->getUrlData($url);
-    expect($data['preview'])->equals(1);
+    verify($data['preview'])->equals(1);
 
     // actual subscriber
     $subscriber = $this->createSubscriber();
@@ -145,7 +145,7 @@ class UrlTest extends \MailPoetTest {
     expect($url)->stringContainsString('endpoint=subscription');
 
     $data = $this->checkSubscriberData($url);
-    expect($data['queueId'])->equals(10);
+    verify($data['queueId'])->equals(10);
 
     // no subscriber but query id
     $url = $this->url->getConfirmUnsubscribeUrl(null, 10);
@@ -154,7 +154,7 @@ class UrlTest extends \MailPoetTest {
 
     $data = $this->getUrlData($url);
     expect(isset($data['data']['queueId']))->false();
-    expect($data['preview'])->equals(1);
+    verify($data['preview'])->equals(1);
   }
 
   private function checkSubscriberData(string $url) {

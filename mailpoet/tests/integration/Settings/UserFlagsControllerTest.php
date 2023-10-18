@@ -46,9 +46,9 @@ class UserFlagsControllerTest extends \MailPoetTest {
   }
 
   public function testItGetsFlagsOfCurrentUser() {
-    expect($this->userFlags->get('flag_1'))->equals('value_1');
-    expect($this->userFlags->get('flag_2'))->equals('default_value_2');
-    expect($this->userFlags->getAll())->equals([
+    verify($this->userFlags->get('flag_1'))->equals('value_1');
+    verify($this->userFlags->get('flag_2'))->equals('default_value_2');
+    verify($this->userFlags->getAll())->equals([
       'flag_1' => 'value_1',
       'flag_2' => 'default_value_2',
       'flag_3' => 'value_3',
@@ -57,27 +57,27 @@ class UserFlagsControllerTest extends \MailPoetTest {
 
   public function testItLoadsDataOnlyOnceWhenNeeded() {
     $this->updateUserFlag($this->currentUserId, 'flag_1', 'new_value_1');
-    expect($this->userFlags->get('flag_1'))->equals('new_value_1');
+    verify($this->userFlags->get('flag_1'))->equals('new_value_1');
     $this->updateUserFlag($this->currentUserId, 'flag_1', 'newer_value_1');
-    expect($this->userFlags->get('flag_1'))->equals('new_value_1');
+    verify($this->userFlags->get('flag_1'))->equals('new_value_1');
   }
 
   public function testItSetsNewFlagValue() {
-    expect($this->userFlags->get('flag_1'))->equals('value_1');
+    verify($this->userFlags->get('flag_1'))->equals('value_1');
     $this->userFlags->set('flag_1', 'updated_value');
-    expect($this->userFlags->get('flag_1'))->equals('updated_value');
+    verify($this->userFlags->get('flag_1'))->equals('updated_value');
     $flag = $this->userFlagsRepository->findOneBy([
       'userId' => $this->currentUserId,
       'name' => 'flag_1',
     ]);
     $this->assertInstanceOf(UserFlagEntity::class, $flag);
-    expect($flag->getValue())->equals('updated_value');
+    verify($flag->getValue())->equals('updated_value');
   }
 
   public function testItDeletesAFlag() {
-    expect($this->userFlags->get('flag_1'))->equals('value_1');
+    verify($this->userFlags->get('flag_1'))->equals('value_1');
     $this->userFlags->delete('flag_1');
-    expect($this->userFlags->get('flag_1'))->equals('default_value_1');
+    verify($this->userFlags->get('flag_1'))->equals('default_value_1');
     $flag = $this->userFlagsRepository->findOneBy([
       'userId' => $this->currentUserId,
       'name' => 'flag_1',

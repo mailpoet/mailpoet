@@ -19,15 +19,15 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldReturnEmptyStringForNoStylesOrUnsupportedStyles() {
-    expect($this->renderer->renderForTextInput([]))->equals('');
-    expect($this->renderer->renderForTextInput(['nonsense' => '10px']))->equals('');
+    verify($this->renderer->renderForTextInput([]))->equals('');
+    verify($this->renderer->renderForTextInput(['nonsense' => '10px']))->equals('');
   }
 
   public function testItShouldRenderSingleTextInputStyles() {
-    expect($this->renderer->renderForTextInput(['border_radius' => 10]))->equals('border-style:solid;border-radius:10px !important;');
-    expect($this->renderer->renderForTextInput(['border_color' => '#fff']))->equals('border-style:solid;border-color:#fff;');
-    expect($this->renderer->renderForTextInput(['border_size' => 10]))->equals('border-style:solid;border-width:10px;');
-    expect($this->renderer->renderForTextInput(['background_color' => '#dddddd']))->equals('background-color:#dddddd;');
+    verify($this->renderer->renderForTextInput(['border_radius' => 10]))->equals('border-style:solid;border-radius:10px !important;');
+    verify($this->renderer->renderForTextInput(['border_color' => '#fff']))->equals('border-style:solid;border-color:#fff;');
+    verify($this->renderer->renderForTextInput(['border_size' => 10]))->equals('border-style:solid;border-width:10px;');
+    verify($this->renderer->renderForTextInput(['background_color' => '#dddddd']))->equals('background-color:#dddddd;');
   }
 
   public function testItShouldCompleteTextInputStyles() {
@@ -53,12 +53,12 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderSingleButtonStyles() {
-    expect($this->renderer->renderForButton(['border_radius' => 10]))->equals('border-style:solid;border-radius:10px !important;border-color:transparent;');
-    expect($this->renderer->renderForButton(['border_color' => '#fff']))->equals('border-style:solid;border-color:#fff;');
-    expect($this->renderer->renderForButton(['border_size' => 10]))->equals('border-style:solid;border-width:10px;border-color:transparent;');
-    expect($this->renderer->renderForButton(['background_color' => '#dddddd']))->equals('background-color:#dddddd;border-color:transparent;');
-    expect($this->renderer->renderForButton(['font_color' => '#aaa']))->equals('color:#aaa;border-color:transparent;');
-    expect($this->renderer->renderForButton(['font_size' => 10]))->equals('font-size:10px;line-height:1.5;height:auto;border-color:transparent;');
+    verify($this->renderer->renderForButton(['border_radius' => 10]))->equals('border-style:solid;border-radius:10px !important;border-color:transparent;');
+    verify($this->renderer->renderForButton(['border_color' => '#fff']))->equals('border-style:solid;border-color:#fff;');
+    verify($this->renderer->renderForButton(['border_size' => 10]))->equals('border-style:solid;border-width:10px;border-color:transparent;');
+    verify($this->renderer->renderForButton(['background_color' => '#dddddd']))->equals('background-color:#dddddd;border-color:transparent;');
+    verify($this->renderer->renderForButton(['font_color' => '#aaa']))->equals('color:#aaa;border-color:transparent;');
+    verify($this->renderer->renderForButton(['font_size' => 10]))->equals('font-size:10px;line-height:1.5;height:auto;border-color:transparent;');
   }
 
   public function testItShouldCompleteButtonStyles() {
@@ -99,14 +99,14 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldRenderSegmentInputStyles() {
-    expect($this->renderer->renderForSelect([], ['input_padding' => 10]))->equals('padding:10px;');
-    expect($this->renderer->renderForSelect([], ['alignment' => 'right']))->equals('margin: 0 0 0 auto;');
-    expect($this->renderer->renderForSelect([], ['alignment' => 'center']))->equals('margin: 0 auto;');
+    verify($this->renderer->renderForSelect([], ['input_padding' => 10]))->equals('padding:10px;');
+    verify($this->renderer->renderForSelect([], ['alignment' => 'right']))->equals('margin: 0 0 0 auto;');
+    verify($this->renderer->renderForSelect([], ['alignment' => 'center']))->equals('margin: 0 auto;');
   }
 
   public function testItShouldRenderPlaceholderStyles() {
-    expect($this->renderer->renderPlaceholderStyles([], 'input'))->equals('');
-    expect($this->renderer->renderPlaceholderStyles(['params' => ['label_within' => '1']], 'input'))->equals('');
+    verify($this->renderer->renderPlaceholderStyles([], 'input'))->equals('');
+    verify($this->renderer->renderPlaceholderStyles(['params' => ['label_within' => '1']], 'input'))->equals('');
     expect($this->renderer->renderPlaceholderStyles([
       'params' => ['label_within' => '1'],
       'styles' => ['font_color' => 'red'],

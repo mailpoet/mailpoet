@@ -13,14 +13,14 @@ class DateTimeTest extends \MailPoetUnitTest {
         return 'H:i';
       },
     ]));
-    expect($dateTime->getTimeFormat())->equals('H:i');
+    verify($dateTime->getTimeFormat())->equals('H:i');
 
     $dateTime = new WPDateTime(Stub::make(new WPFunctions(), [
       'getOption' => function($key) {
         return '';
       },
     ]));
-    expect($dateTime->getTimeFormat())->equals('H:i:s');
+    verify($dateTime->getTimeFormat())->equals('H:i:s');
   }
 
   public function testGetDateFormat() {
@@ -29,14 +29,14 @@ class DateTimeTest extends \MailPoetUnitTest {
         return 'm-d';
       },
     ]));
-    expect($dateTime->getDateFormat())->equals('m-d');
+    verify($dateTime->getDateFormat())->equals('m-d');
 
     $dateTime = new WPDateTime(Stub::make(new WPFunctions(), [
       'getOption' => function($key) {
         return '';
       },
     ]));
-    expect($dateTime->getDateFormat())->equals('Y-m-d');
+    verify($dateTime->getDateFormat())->equals('Y-m-d');
   }
 
   public function testGetCurrentDate() {
@@ -45,7 +45,7 @@ class DateTimeTest extends \MailPoetUnitTest {
         return date($format);
       },
     ]));
-    expect($dateTime->getCurrentDate("Y-m"))->equals(date("Y-m"));
+    verify($dateTime->getCurrentDate("Y-m"))->equals(date("Y-m"));
   }
 
   public function testGetCurrentTime() {
@@ -65,8 +65,8 @@ class DateTimeTest extends \MailPoetUnitTest {
     ]));
     $timestamp = 1234567;
     $format = "H:i:s";
-    expect($dateTime->formatTime($timestamp))->equals(date($dateTime->getTimeFormat(), $timestamp));
-    expect($dateTime->formatTime($timestamp, $format))->equals(date($format, $timestamp));
+    verify($dateTime->formatTime($timestamp))->equals(date($dateTime->getTimeFormat(), $timestamp));
+    verify($dateTime->formatTime($timestamp, $format))->equals(date($format, $timestamp));
   }
 
   public function testFormatDate() {
@@ -77,8 +77,8 @@ class DateTimeTest extends \MailPoetUnitTest {
     ]));
     $timestamp = 1234567;
     $format = "Y-m-d";
-    expect($dateTime->formatDate($timestamp))->equals(date($dateTime->getDateFormat(), $timestamp));
-    expect($dateTime->formatDate($timestamp, $format))->equals(date($format, $timestamp));
+    verify($dateTime->formatDate($timestamp))->equals(date($dateTime->getDateFormat(), $timestamp));
+    verify($dateTime->formatDate($timestamp, $format))->equals(date($format, $timestamp));
   }
 
   public function testTimeInterval() {
@@ -94,7 +94,7 @@ class DateTimeTest extends \MailPoetUnitTest {
     ));
     $oneHourExpected = [
       '00:00:00', '01:00:00', '02:00:00', '03:00:00', '04:00:00'];
-    expect($oneHourInterval)->equals($oneHourExpected);
+    verify($oneHourInterval)->equals($oneHourExpected);
 
     $quarterHourInterval = array_keys($dateTime->getTimeInterval(
       '00:00:00',
@@ -104,7 +104,7 @@ class DateTimeTest extends \MailPoetUnitTest {
     $quarterHourExpected = [
       '00:00:00', '00:15:00', '00:30:00', '00:45:00', '01:00:00',
     ];
-    expect($quarterHourInterval)->equals($quarterHourExpected);
+    verify($quarterHourInterval)->equals($quarterHourExpected);
 
     $offsetStartTimeInterval = array_keys($dateTime->getTimeInterval(
       '03:00:00',
@@ -114,6 +114,6 @@ class DateTimeTest extends \MailPoetUnitTest {
     $offsetStartTimeExpected = [
       '03:00:00', '04:00:00', '05:00:00', '06:00:00', '07:00:00',
     ];
-    expect($offsetStartTimeInterval)->equals($offsetStartTimeExpected);
+    verify($offsetStartTimeInterval)->equals($offsetStartTimeExpected);
   }
 }

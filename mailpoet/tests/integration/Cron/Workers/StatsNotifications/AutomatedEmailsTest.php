@@ -85,7 +85,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
       'automated' => false,
       'address' => 'email@example.com',
     ]);
-    expect($this->statsNotifications->checkProcessingRequirements())->equals(false);
+    verify($this->statsNotifications->checkProcessingRequirements())->equals(false);
   }
 
   public function testItDoesntWorkIfNoEmail() {
@@ -93,16 +93,16 @@ class AutomatedEmailsTest extends \MailPoetTest {
       'automated' => true,
       'address' => '',
     ]);
-    expect($this->statsNotifications->checkProcessingRequirements())->equals(false);
+    verify($this->statsNotifications->checkProcessingRequirements())->equals(false);
   }
 
   public function testItDoesntWorkIfTrackingIsDisabled() {
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
-    expect($this->statsNotifications->checkProcessingRequirements())->equals(false);
+    verify($this->statsNotifications->checkProcessingRequirements())->equals(false);
   }
 
   public function testItDoesWorkIfEnabled() {
-    expect($this->statsNotifications->checkProcessingRequirements())->equals(true);
+    verify($this->statsNotifications->checkProcessingRequirements())->equals(true);
   }
 
   public function testItDoesntRenderIfNoNewslettersFound() {
@@ -113,7 +113,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
 
     $result = $this->cronWorkerRunner->run($this->statsNotifications);
 
-    expect($result)->equals(true);
+    verify($result)->equals(true);
   }
 
   public function testItRenders() {
@@ -131,7 +131,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
 
     $result = $this->cronWorkerRunner->run($this->statsNotifications);
 
-    expect($result)->equals(true);
+    verify($result)->equals(true);
   }
 
   public function testItSends() {
@@ -152,7 +152,7 @@ class AutomatedEmailsTest extends \MailPoetTest {
 
     $result = $this->cronWorkerRunner->run($this->statsNotifications);
 
-    expect($result)->equals(true);
+    verify($result)->equals(true);
   }
 
   public function testItPreparesContext() {

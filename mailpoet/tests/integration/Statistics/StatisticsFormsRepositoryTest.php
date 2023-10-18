@@ -20,8 +20,8 @@ class StatisticsFormsRepositoryTest extends \MailPoetTest {
     $subscriber = $this->createSubscriber();
     $record = $this->repository->record($form, $subscriber);
     $this->assertInstanceOf(StatisticsFormEntity::class, $record);
-    expect($record->getForm())->equals($form);
-    expect($record->getSubscriber())->equals($subscriber);
+    verify($record->getForm())->equals($form);
+    verify($record->getSubscriber())->equals($subscriber);
     expect($this->repository->findOneBy(['form' => $form, 'subscriber' => $subscriber]))->isInstanceOf(StatisticsFormEntity::class);
   }
 
@@ -30,8 +30,8 @@ class StatisticsFormsRepositoryTest extends \MailPoetTest {
     $subscriber = $this->createSubscriber();
     $record = $this->repository->record($form, $subscriber);
     $this->assertInstanceOf(StatisticsFormEntity::class, $record);
-    expect($record->getForm())->equals($form);
-    expect($record->getSubscriber())->equals($subscriber);
+    verify($record->getForm())->equals($form);
+    verify($record->getSubscriber())->equals($subscriber);
 
     $this->repository->record($form, $subscriber);
     expect($this->repository->findAll())->count(1);
@@ -60,8 +60,8 @@ class StatisticsFormsRepositoryTest extends \MailPoetTest {
     // simulate 1 signup for form #2
     $this->repository->record($form2, $subscriber2);
 
-    expect($this->repository->getTotalSignups((int)$form1->getId()))->equals(2);
-    expect($this->repository->getTotalSignups((int)$form2->getId()))->equals(1);
+    verify($this->repository->getTotalSignups((int)$form1->getId()))->equals(2);
+    verify($this->repository->getTotalSignups((int)$form2->getId()))->equals(1);
     expect($this->repository->findAll())->count(3);
   }
 

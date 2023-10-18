@@ -84,8 +84,8 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       'sort_by' => 'created_at',
       'params' => ['id' => $this->newsletter->getId() + 1],
     ]);
-    expect($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($res->errors[0]['message'])
+    verify($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($res->errors[0]['message'])
       ->equals('This email has not been sent yet.');
   }
 
@@ -95,8 +95,8 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       'sort_by' => 'created_at',
       'params' => ['id' => $newsletterWithoutTask->getId()],
     ]);
-    expect($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($res->errors[0]['message'])
+    verify($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($res->errors[0]['message'])
       ->equals('This email has not been sent yet.');
   }
 
@@ -136,8 +136,8 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       'sort_by' => 'subscriber',
       'params' => ['id' => $this->newsletter->getId()],
     ]);
-    expect($res->status)->equals(APIResponse::STATUS_OK);
-    expect($res->data)->equals([
+    verify($res->status)->equals(APIResponse::STATUS_OK);
+    verify($res->data)->equals([
       $sentSubscriberStatus,
       $failedSubscriberStatus,
       $unprocessedSubscriberStatus,
@@ -148,8 +148,8 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       'sort_by' => 'created_at',
       'params' => ['id' => $this->newsletter->getId()],
     ]);
-    expect($res->status)->equals(APIResponse::STATUS_OK);
-    expect($res->data)->equals([
+    verify($res->status)->equals(APIResponse::STATUS_OK);
+    verify($res->data)->equals([
       $sentSubscriberStatus,
     ]);
 
@@ -158,8 +158,8 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       'sort_by' => 'created_at',
       'params' => ['id' => $this->newsletter->getId()],
     ]);
-    expect($res->status)->equals(APIResponse::STATUS_OK);
-    expect($res->data)->equals([
+    verify($res->status)->equals(APIResponse::STATUS_OK);
+    verify($res->data)->equals([
       $failedSubscriberStatus,
     ]);
 
@@ -168,8 +168,8 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       'sort_by' => 'created_at',
       'params' => ['id' => $this->newsletter->getId()],
     ]);
-    expect($res->status)->equals(APIResponse::STATUS_OK);
-    expect($res->data)->equals([
+    verify($res->status)->equals(APIResponse::STATUS_OK);
+    verify($res->data)->equals([
       $unprocessedSubscriberStatus,
     ]);
   }
@@ -179,16 +179,16 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       'taskId' => $this->task->getId() + 1,
       'subscriberId' => $this->sentSubscriber->getId(),
     ]);
-    expect($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($res->errors[0]['message'])
+    verify($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($res->errors[0]['message'])
       ->equals('Failed sending task not found!');
 
     $res = $this->endpoint->resend([
       'taskId' => $this->task->getId(),
       'subscriberId' => $this->sentSubscriber->getId(),
     ]);
-    expect($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($res->errors[0]['message'])
+    verify($res->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($res->errors[0]['message'])
       ->equals('Failed sending task not found!');
   }
 
@@ -197,17 +197,17 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
       'taskId' => $this->task->getId(),
       'subscriberId' => $this->failedSubscriber->getId(),
     ]);
-    expect($res->status)->equals(APIResponse::STATUS_OK);
+    verify($res->status)->equals(APIResponse::STATUS_OK);
 
     $this->entityManager->refresh($this->failedSubscriberTask);
-    expect($this->failedSubscriberTask->getError())->equals(null);
-    expect($this->failedSubscriberTask->getFailed())->equals(0);
-    expect($this->failedSubscriberTask->getProcessed())->equals(0);
+    verify($this->failedSubscriberTask->getError())->equals(null);
+    verify($this->failedSubscriberTask->getFailed())->equals(0);
+    verify($this->failedSubscriberTask->getProcessed())->equals(0);
 
     $this->entityManager->refresh($this->task);
-    expect($this->task->getStatus())->equals(null);
+    verify($this->task->getStatus())->equals(null);
 
     $this->entityManager->refresh($this->newsletter);
-    expect($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+    verify($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 }

@@ -67,9 +67,9 @@ class UpdaterTest extends \MailPoetTest {
     );
     $result = $updater->checkForUpdate($updateTransient);
     expect($result->last_checked)->greaterOrEquals($updateTransient->last_checked); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($result->checked[$this->pluginName])->equals($this->version);
-    expect($result->response[$this->pluginName]->slug)->equals($this->slug);
-    expect($result->response[$this->pluginName]->plugin)->equals($this->pluginName);
+    verify($result->checked[$this->pluginName])->equals($this->version);
+    verify($result->response[$this->pluginName]->slug)->equals($this->slug);
+    verify($result->response[$this->pluginName]->plugin)->equals($this->pluginName);
     expect(version_compare(
       $this->version,
       $result->response[$this->pluginName]->new_version,
@@ -104,9 +104,9 @@ class UpdaterTest extends \MailPoetTest {
     );
     $result = $updater->checkForUpdate($updateTransient);
     expect($result->last_checked)->greaterOrEquals($updateTransient->last_checked); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($result->checked[$this->pluginName])->equals($this->version);
-    expect($result->no_update[$this->pluginName]->slug)->equals($this->slug); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($result->no_update[$this->pluginName]->plugin)->equals($this->pluginName); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($result->checked[$this->pluginName])->equals($this->version);
+    verify($result->no_update[$this->pluginName]->slug)->equals($this->slug); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($result->no_update[$this->pluginName]->plugin)->equals($this->pluginName); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect(version_compare(
       $this->version,
       $result->no_update[$this->pluginName]->new_version, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps

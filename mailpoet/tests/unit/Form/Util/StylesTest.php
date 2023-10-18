@@ -27,13 +27,13 @@ class StylesTest extends \MailPoetUnitTest {
     // 4. each style should be on a separate line
     $expectedResult = "mailpoet input[name=first_name], mailpoet input.some_class, mailpoet .some_class { color: red; background: blue; }" . PHP_EOL
     . "mailpoet .another_style { font-size: 20px; }";
-    expect($extractedAndPrefixedStyles)->equals($expectedResult);
+    verify($extractedAndPrefixedStyles)->equals($expectedResult);
   }
 
   public function testItShouldNotRenderStylesForFormWithoutSettings() {
     $form = Fixtures::get('simple_form_body');
     $styles = $this->styles->renderFormSettingsStyles($this->createForm($form), '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
-    expect($styles)->equals('');
+    verify($styles)->equals('');
   }
 
   public function testItShouldRenderBackgroundColour() {

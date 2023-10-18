@@ -203,7 +203,7 @@ class AutomationStorageTest extends \MailPoetTest {
 
   public function testItCanGetCountOfActiveAutomationsByTriggersAndActionKeys(): void {
     $automation = $this->createEmptyAutomation();
-    expect($this->testee->getCountOfActiveByTriggerKeysAndAction([SomeoneSubscribesTrigger::KEY], SendEmailAction::KEY))
+    verify($this->testee->getCountOfActiveByTriggerKeysAndAction([SomeoneSubscribesTrigger::KEY], SendEmailAction::KEY))
       ->equals(0);
     $triggerStep = new Step('id', Step::TYPE_TRIGGER, SomeoneSubscribesTrigger::KEY, [], []);
     $emailActionStep = new Step('id-2', Step::TYPE_ACTION, SendEmailAction::KEY, [], []);
@@ -211,24 +211,24 @@ class AutomationStorageTest extends \MailPoetTest {
     $automation->setStatus(Automation::STATUS_ACTIVE);
     $this->testee->updateAutomation($automation);
     // Correct trigger and action
-    expect($this->testee->getCountOfActiveByTriggerKeysAndAction([SomeoneSubscribesTrigger::KEY], SendEmailAction::KEY))
+    verify($this->testee->getCountOfActiveByTriggerKeysAndAction([SomeoneSubscribesTrigger::KEY], SendEmailAction::KEY))
       ->equals(1);
     // Incorrect trigger
-    expect($this->testee->getCountOfActiveByTriggerKeysAndAction([UserRegistrationTrigger::KEY], SendEmailAction::KEY))
+    verify($this->testee->getCountOfActiveByTriggerKeysAndAction([UserRegistrationTrigger::KEY], SendEmailAction::KEY))
       ->equals(0);
     // Incorrect action
-    expect($this->testee->getCountOfActiveByTriggerKeysAndAction([SomeoneSubscribesTrigger::KEY], 'mailpoet:send-emai'))
+    verify($this->testee->getCountOfActiveByTriggerKeysAndAction([SomeoneSubscribesTrigger::KEY], 'mailpoet:send-emai'))
       ->equals(0);
     // New version without any send email step
     $automation->setSteps(['id' => $triggerStep]);
     $this->testee->updateAutomation($automation);
-    expect($this->testee->getCountOfActiveByTriggerKeysAndAction([SomeoneSubscribesTrigger::KEY], SendEmailAction::KEY))
+    verify($this->testee->getCountOfActiveByTriggerKeysAndAction([SomeoneSubscribesTrigger::KEY], SendEmailAction::KEY))
       ->equals(0);
     // Draft automation
     $automation->setSteps(['id' => $triggerStep, 'id-2' => $emailActionStep]);
     $automation->setStatus(Automation::STATUS_DRAFT);
     $this->testee->updateAutomation($automation);
-    expect($this->testee->getCountOfActiveByTriggerKeysAndAction([SomeoneSubscribesTrigger::KEY], SendEmailAction::KEY))
+    verify($this->testee->getCountOfActiveByTriggerKeysAndAction([SomeoneSubscribesTrigger::KEY], SendEmailAction::KEY))
       ->equals(0);
   }
 

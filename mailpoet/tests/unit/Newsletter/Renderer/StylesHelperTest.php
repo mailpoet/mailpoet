@@ -60,10 +60,10 @@ class StylesHelperTest extends \MailPoetUnitTest {
       ],
     ];
 
-    expect(StylesHelper::getCustomFontsLinks($stylesWithCustomFonts))
+    verify(StylesHelper::getCustomFontsLinks($stylesWithCustomFonts))
       ->equals('<!--[if !mso]><!-- --><link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i|Source+Sans+Pro:400,400i,700,700i" rel="stylesheet"><!--<![endif]-->');
 
-    expect(StylesHelper::getCustomFontsLinks($stylesWithoutCustomFonts))
+    verify(StylesHelper::getCustomFontsLinks($stylesWithoutCustomFonts))
       ->equals('');
   }
 

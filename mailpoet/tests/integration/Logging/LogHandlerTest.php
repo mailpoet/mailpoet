@@ -40,7 +40,7 @@ class LogHandlerTest extends \MailPoetTest {
     $this->assertInstanceOf(LogEntity::class, $log);
     $createdAt = $log->getCreatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
-    expect($createdAt->format('Y-m-d H:i:s'))->equals($time->format('Y-m-d H:i:s'));
+    verify($createdAt->format('Y-m-d H:i:s'))->equals($time->format('Y-m-d H:i:s'));
   }
 
   public function testItPurgesOldLogs() {
@@ -140,7 +140,7 @@ class LogHandlerTest extends \MailPoetTest {
     $this->assertInstanceOf(LogEntity::class, $log);
     $createdAt = $log->getCreatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
-    expect($createdAt->format('Y-m-d H:i:s'))->equals($time->format('Y-m-d H:i:s'));
+    verify($createdAt->format('Y-m-d H:i:s'))->equals($time->format('Y-m-d H:i:s'));
   }
 
   /**

@@ -61,9 +61,9 @@ class MailerTest extends \MailPoetTest {
   public function testItUpdatesMailerLogSentCount() {
     $mailerTask = $this->diContainer->get(MailerTask::class);
     $mailerLog = $mailerTask->getMailerLog();
-    expect(array_sum($mailerLog['sent']))->equals(0);
+    verify(array_sum($mailerLog['sent']))->equals(0);
     $mailerLog = $mailerTask->updateSentCount();
-    expect(array_sum($mailerLog['sent']))->equals(1);
+    verify(array_sum($mailerLog['sent']))->equals(1);
   }
 
   public function testItGetsProcessingMethod() {
@@ -76,7 +76,7 @@ class MailerTest extends \MailPoetTest {
       ]
     );
     $mailerTask = new MailerTask($this->diContainer->get(MailerFactory::class));
-    expect($mailerTask->getProcessingMethod())->equals('bulk');
+    verify($mailerTask->getProcessingMethod())->equals('bulk');
 
     // when using other methods, newsletters should be processed individually
     $this->settings->set(
@@ -86,7 +86,7 @@ class MailerTest extends \MailPoetTest {
       ]
     );
     $mailerTask = new MailerTask($this->diContainer->get(MailerFactory::class));
-    expect($mailerTask->getProcessingMethod())->equals('individual');
+    verify($mailerTask->getProcessingMethod())->equals('individual');
   }
 
   public function testItCanPrepareSubscriberForSending() {
@@ -97,7 +97,7 @@ class MailerTest extends \MailPoetTest {
     $subscriber->save();
     $mailerTask = $this->diContainer->get(MailerTask::class);
     $preparedSubscriber = $mailerTask->prepareSubscriberForSending($subscriber);
-    expect($preparedSubscriber)->equals('John Doe <test@example.com>');
+    verify($preparedSubscriber)->equals('John Doe <test@example.com>');
   }
 
   public function testItCanSend() {
@@ -118,6 +118,6 @@ class MailerTest extends \MailPoetTest {
     // mock mailer instance and ensure that send method is invoked
     $mailerTask = new MailerTask($mailerFactoryMock);
     // send method should return true
-    expect($mailerTask->send('Newsletter', 'Subscriber'))->equals(['response' => true]);
+    verify($mailerTask->send('Newsletter', 'Subscriber'))->equals(['response' => true]);
   }
 }

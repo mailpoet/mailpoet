@@ -66,7 +66,7 @@ class SegmentTest extends \MailPoetTest {
   }
 
   public function testItCanHaveName() {
-    expect($this->segment->name)->equals($this->segmentData['name']);
+    verify($this->segment->name)->equals($this->segmentData['name']);
   }
 
   public function nameMustBeUnique() {
@@ -76,13 +76,13 @@ class SegmentTest extends \MailPoetTest {
     $errors = $result->getErrors();
 
     expect(is_array($errors))->true();
-    expect($errors[0])->equals(
+    verify($errors[0])->equals(
       'Another record already exists. Please specify a different "name".'
     );
   }
 
   public function testItCanHaveDescription() {
-    expect($this->segment->description)->equals($this->segmentData['description']);
+    verify($this->segment->description)->equals($this->segmentData['description']);
   }
 
   public function testItHasToBeValid() {
@@ -92,7 +92,7 @@ class SegmentTest extends \MailPoetTest {
     $errors = $result->getErrors();
 
     expect(is_array($errors))->true();
-    expect($errors[0])->equals('Please specify a name.');
+    verify($errors[0])->equals('Please specify a name.');
   }
 
   public function testItHasACreatedAtOnCreation() {
@@ -104,7 +104,7 @@ class SegmentTest extends \MailPoetTest {
   public function testItHasAnUpdatedAtOnCreation() {
     $segment = Segment::findOne($this->segment->id);
     $this->assertInstanceOf(Segment::class, $segment);
-    expect($segment->updatedAt)
+    verify($segment->updatedAt)
       ->equals($segment->createdAt);
   }
 
@@ -120,7 +120,7 @@ class SegmentTest extends \MailPoetTest {
 
     $updatedSegment = Segment::findOne($segment->id);
     $this->assertInstanceOf(Segment::class, $updatedSegment);
-    expect($updatedSegment->createdAt)->equals($createdAt);
+    verify($updatedSegment->createdAt)->equals($createdAt);
     $isTimeUpdated = (
       $updatedSegment->updatedAt > $updatedSegment->createdAt
     );
@@ -137,7 +137,7 @@ class SegmentTest extends \MailPoetTest {
     $segment = Segment::where('name', 'new list')
       ->findOne();
     $this->assertInstanceOf(Segment::class, $segment);
-    expect($segment->name)->equals('new list');
+    verify($segment->name)->equals('new list');
 
     $isUpdated = Segment::createOrUpdate(
       [
@@ -147,7 +147,7 @@ class SegmentTest extends \MailPoetTest {
     $segment = Segment::where('name', 'updated list')
       ->findOne();
     $this->assertInstanceOf(Segment::class, $segment);
-    expect($segment->name)->equals('updated list');
+    verify($segment->name)->equals('updated list');
   }
 
   public function testItCanHaveManySubscribers() {
@@ -165,7 +165,7 @@ class SegmentTest extends \MailPoetTest {
     $subscribers = $segment->subscribers()
       ->findArray();
 
-    expect(count($subscribers))->equals(4);
+    verify(count($subscribers))->equals(4);
   }
 
   public function testItCanHaveManyNewsletters() {
@@ -183,6 +183,6 @@ class SegmentTest extends \MailPoetTest {
     $newsletters = $segment->newsletters()
       ->findArray();
 
-    expect(count($newsletters))->equals(2);
+    verify(count($newsletters))->equals(2);
   }
 }

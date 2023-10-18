@@ -24,9 +24,9 @@ class FormMessageControllerTest extends \MailPoetTest {
 
   public function testItReturnsCorrectSuccessMessage(): void {
     $this->settings->set('signup_confirmation.enabled', 1);
-    expect($this->controller->getDefaultSuccessMessage())->equals(__('Check your inbox or spam folder to confirm your subscription.', 'mailpoet'));
+    verify($this->controller->getDefaultSuccessMessage())->equals(__('Check your inbox or spam folder to confirm your subscription.', 'mailpoet'));
     $this->settings->set('signup_confirmation.enabled', 0);
-    expect($this->controller->getDefaultSuccessMessage())->equals(__('You’ve been successfully subscribed to our newsletter!', 'mailpoet'));
+    verify($this->controller->getDefaultSuccessMessage())->equals(__('You’ve been successfully subscribed to our newsletter!', 'mailpoet'));
   }
 
   public function testItUpdatesSuccessMessagesForForms(): void {
@@ -41,7 +41,7 @@ class FormMessageControllerTest extends \MailPoetTest {
     $forms = $this->formsRepository->findAll();
     expect($forms)->count(1);
     foreach ($forms as $form) {
-      expect($form->getSettings()['success_message'] ?? null)->equals(__('You’ve been successfully subscribed to our newsletter!', 'mailpoet'));
+      verify($form->getSettings()['success_message'] ?? null)->equals(__('You’ve been successfully subscribed to our newsletter!', 'mailpoet'));
     }
 
     $this->settings->set('signup_confirmation.enabled', 1);
@@ -49,7 +49,7 @@ class FormMessageControllerTest extends \MailPoetTest {
     $forms = $this->formsRepository->findAll();
     expect($forms)->count(1);
     foreach ($forms as $form) {
-      expect($form->getSettings()['success_message'] ?? null)->equals(__('Check your inbox or spam folder to confirm your subscription.', 'mailpoet'));
+      verify($form->getSettings()['success_message'] ?? null)->equals(__('Check your inbox or spam folder to confirm your subscription.', 'mailpoet'));
     }
   }
 }

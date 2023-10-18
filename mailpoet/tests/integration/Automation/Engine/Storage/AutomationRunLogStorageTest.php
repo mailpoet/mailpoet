@@ -27,7 +27,7 @@ class AutomationRunLogStorageTest extends \MailPoetTest {
     $id = $this->storage->createAutomationRunLog($log);
     $fromDatabase = $this->storage->getAutomationRunLog($id);
     $this->assertInstanceOf(AutomationRunLog::class, $fromDatabase);
-    expect(['id' => $fromDatabase->getId()] + $preSave)->equals($fromDatabase->toArray());
+    verify(['id' => $fromDatabase->getId()] + $preSave)->equals($fromDatabase->toArray());
   }
 
   public function testItCanStoreAnError() {
@@ -38,7 +38,7 @@ class AutomationRunLogStorageTest extends \MailPoetTest {
     $this->assertInstanceOf(AutomationRunLog::class, $log);
     $errors = $log->getError();
     $this->assertIsArray($errors);
-    expect(array_keys($errors))->equals([
+    verify(array_keys($errors))->equals([
       'message',
       'errorClass',
       'code',

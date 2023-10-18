@@ -60,7 +60,7 @@ class SendingTest extends \MailPoetTest {
     $sendings = SendingTask::createManyFromTasks([$this->task]);
     expect($sendings)->notEmpty();
     $queue = $sendings[0]->queue();
-    expect($queue->taskId)->equals($this->task->id);
+    verify($queue->taskId)->equals($this->task->id);
   }
 
   public function testItDeletesInvalidTasksWhenCreatingManyFromTasks() {
@@ -69,32 +69,32 @@ class SendingTest extends \MailPoetTest {
     expect($sendings)->isEmpty();
     $task = ScheduledTask::findOne($this->task->id);
     $this->assertInstanceOf(ScheduledTask::class, $task);
-    expect($task->status)->equals(ScheduledTask::STATUS_INVALID);
+    verify($task->status)->equals(ScheduledTask::STATUS_INVALID);
   }
 
   public function testItCanBeCreatedFromScheduledTask() {
     $sending = SendingTask::createFromScheduledTask($this->task);
     $queue = $sending->queue();
-    expect($queue->taskId)->equals($this->task->id);
+    verify($queue->taskId)->equals($this->task->id);
   }
 
   public function testItCanBeCreatedFromQueue() {
     $sending = SendingTask::createFromQueue($this->queue);
     $task = $sending->task();
-    expect($task->id)->equals($this->queue->task_id);
+    verify($task->id)->equals($this->queue->task_id);
   }
 
   public function testItCanBeInitializedByNewsletterId() {
     $sending = SendingTask::getByNewsletterId($this->newsletter->id);
     $queue = $sending->queue();
     $task = $sending->task();
-    expect($task->id)->equals($queue->taskId);
+    verify($task->id)->equals($queue->taskId);
   }
 
   public function testItCanBeConvertedToArray() {
     $sending = $this->sending->asArray();
-    expect($sending['id'])->equals($this->queue->id);
-    expect($sending['task_id'])->equals($this->task->id);
+    verify($sending['id'])->equals($this->queue->id);
+    verify($sending['task_id'])->equals($this->task->id);
   }
 
   public function testItSavesDataForUnderlyingModels() {
@@ -107,55 +107,55 @@ class SendingTest extends \MailPoetTest {
     $queue = SendingQueue::findOne($this->queue->id);
     $this->assertInstanceOf(ScheduledTask::class, $task);
     $this->assertInstanceOf(SendingQueue::class, $queue);
-    expect($task->status)->equals($status);
-    expect($queue->newsletterRenderedSubject)->equals($newsletterRenderedSubject);
+    verify($task->status)->equals($status);
+    verify($queue->newsletterRenderedSubject)->equals($newsletterRenderedSubject);
   }
 
   public function testItDeletesUnderlyingModels() {
     $this->sending->delete();
-    expect(ScheduledTask::findOne($this->task->id))->equals(false);
-    expect(SendingQueue::findOne($this->queue->id))->equals(false);
+    verify(ScheduledTask::findOne($this->task->id))->equals(false);
+    verify(SendingQueue::findOne($this->queue->id))->equals(false);
     expect(ScheduledTaskSubscriber::where('task_id', $this->task->id)->findMany())->isEmpty();
   }
 
   public function testItGetsSubscribers() {
-    expect($this->sending->getSubscribers())->equals([123, 456]);
+    verify($this->sending->getSubscribers())->equals([123, 456]);
   }
 
   public function testItSetsSubscribers() {
     $subscriberIds = [1, 2, 3];
     $this->sending->setSubscribers($subscriberIds);
-    expect($this->sending->getSubscribers())->equals($subscriberIds);
-    expect($this->sending->count_total)->equals(count($subscriberIds));
+    verify($this->sending->getSubscribers())->equals($subscriberIds);
+    verify($this->sending->count_total)->equals(count($subscriberIds));
   }
 
   public function testItRemovesSubscribers() {
     $subscriberIds = [456];
     $this->sending->removeSubscribers($subscriberIds);
-    expect($this->sending->getSubscribers())->equals([123]);
-    expect($this->sending->count_total)->equals(1);
+    verify($this->sending->getSubscribers())->equals([123]);
+    verify($this->sending->count_total)->equals(1);
   }
 
   public function testItRemovesAllSubscribers() {
     $this->sending->removeAllSubscribers();
-    expect($this->sending->getSubscribers())->equals([]);
-    expect($this->sending->count_total)->equals(0);
+    verify($this->sending->getSubscribers())->equals([]);
+    verify($this->sending->count_total)->equals(0);
   }
 
   public function testItUpdatesProcessedSubscribers() {
     $subscriberId = 456;
     $taskSubscriber = $this->getTaskSubscriber($this->task->id, $subscriberId);
-    expect($taskSubscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
+    verify($taskSubscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_UNPROCESSED);
 
-    expect($this->sending->count_to_process)->equals(2);
-    expect($this->sending->count_processed)->equals(0);
+    verify($this->sending->count_to_process)->equals(2);
+    verify($this->sending->count_processed)->equals(0);
     $subscriberIds = [$subscriberId];
     $this->sending->updateProcessedSubscribers($subscriberIds);
-    expect($this->sending->count_to_process)->equals(1);
-    expect($this->sending->count_processed)->equals(1);
+    verify($this->sending->count_to_process)->equals(1);
+    verify($this->sending->count_processed)->equals(1);
 
     $taskSubscriber = $this->getTaskSubscriber($this->task->id, $subscriberId);
-    expect($taskSubscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_PROCESSED);
+    verify($taskSubscriber->processed)->equals(ScheduledTaskSubscriber::STATUS_PROCESSED);
   }
 
   public function testItGetsScheduledQueues() {
@@ -223,9 +223,9 @@ class SendingTest extends \MailPoetTest {
     $sending3->save();
 
     $tasks = $this->scheduledTaskRepository->findScheduledSendingTasks(3);
-    expect($tasks[0]->getId())->equals($sending1->taskId);
-    expect($tasks[1]->getId())->equals($sending3->taskId);
-    expect($tasks[2]->getId())->equals($sending2->taskId);
+    verify($tasks[0]->getId())->equals($sending1->taskId);
+    verify($tasks[1]->getId())->equals($sending3->taskId);
+    verify($tasks[2]->getId())->equals($sending2->taskId);
   }
 
   public function testItGetsBatchOfScheduledQueuesSortedByUpdatedTime() {
@@ -240,9 +240,9 @@ class SendingTest extends \MailPoetTest {
     $sending3->save();
 
     $tasks = $this->scheduledTaskRepository->findRunningSendingTasks(3);
-    expect($tasks[0]->getId())->equals($sending1->taskId);
-    expect($tasks[1]->getId())->equals($sending3->taskId);
-    expect($tasks[2]->getId())->equals($sending2->taskId);
+    verify($tasks[0]->getId())->equals($sending1->taskId);
+    verify($tasks[1]->getId())->equals($sending3->taskId);
+    verify($tasks[2]->getId())->equals($sending2->taskId);
   }
 
   public function createNewNewsletter() {

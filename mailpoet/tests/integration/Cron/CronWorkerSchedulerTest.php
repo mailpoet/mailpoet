@@ -37,7 +37,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     expect($this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll())->count(1);
 
     $result = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
-    expect($result->getId())->equals($task->getId());
+    verify($result->getId())->equals($task->getId());
     expect($this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll())->count(1);
   }
 
@@ -48,7 +48,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $this->entityManager->flush();
     $immediateTask = $this->cronWorkerScheduler->scheduleImmediatelyIfNotRunning('test');
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
-    expect($immediateTask->getId())->equals($task->getId());
+    verify($immediateTask->getId())->equals($task->getId());
     expect($tasks)->count(1);
     expect($tasks[0]->getType())->same('test');
     expect($tasks[0]->getStatus())->null();
@@ -60,7 +60,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $task = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
     $immediateTask = $this->cronWorkerScheduler->scheduleImmediatelyIfNotRunning('test');
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
-    expect($immediateTask->getId())->equals($task->getId());
+    verify($immediateTask->getId())->equals($task->getId());
     expect($tasks)->count(1);
     expect($tasks[0]->getType())->same('test');
     expect($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
@@ -71,8 +71,8 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $this->cronWorkerScheduler->scheduleImmediatelyIfNotRunning('test');
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
     expect($tasks)->count(1);
-    expect($tasks[0]->getType())->equals('test');
-    expect($tasks[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($tasks[0]->getType())->equals('test');
+    verify($tasks[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $this->tester->assertEqualDateTimes($tasks[0]->getScheduledAt(), Carbon::now(), 1);
   }
 
@@ -94,15 +94,15 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $scheduledAt = $task->getScheduledAt();
 
     $timeout = $this->cronWorkerScheduler->rescheduleProgressively($task);
-    expect($timeout)->equals(ScheduledTaskEntity::BASIC_RESCHEDULE_TIMEOUT);
+    verify($timeout)->equals(ScheduledTaskEntity::BASIC_RESCHEDULE_TIMEOUT);
     expect($scheduledAt < $task->getScheduledAt())->true();
-    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
 
     $timeout = $this->cronWorkerScheduler->rescheduleProgressively($task);
-    expect($timeout)->equals(ScheduledTaskEntity::BASIC_RESCHEDULE_TIMEOUT * 2);
+    verify($timeout)->equals(ScheduledTaskEntity::BASIC_RESCHEDULE_TIMEOUT * 2);
 
     $task->setRescheduleCount(123456); // too many
     $timeout = $this->cronWorkerScheduler->rescheduleProgressively($task);
-    expect($timeout)->equals(ScheduledTaskEntity::MAX_RESCHEDULE_TIMEOUT);
+    verify($timeout)->equals(ScheduledTaskEntity::MAX_RESCHEDULE_TIMEOUT);
   }
 }

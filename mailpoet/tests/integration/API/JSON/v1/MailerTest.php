@@ -20,7 +20,7 @@ class MailerTest extends \MailPoetTest {
     $mailerLog['status'] = MailerLog::STATUS_PAUSED;
     MailerLog::updateMailerLog($mailerLog);
     $mailerLog = MailerLog::getMailerLog();
-    expect($mailerLog['status'])->equals(MailerLog::STATUS_PAUSED);
+    verify($mailerLog['status'])->equals(MailerLog::STATUS_PAUSED);
     $settings = SettingsController::getInstance();
     $authorizedEmailsController = $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::never()]);
     $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
@@ -28,7 +28,7 @@ class MailerTest extends \MailPoetTest {
     $bridge = new Bridge($settings);
     $mailerEndpoint = new Mailer($authorizedEmailsController, $settings, $bridge, $this->diContainer->get(MailerFactory::class), new MetaInfo, $senderDomainController);
     $response = $mailerEndpoint->resumeSending();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $mailerLog = MailerLog::getMailerLog();
     expect($mailerLog['status'])->null();
   }

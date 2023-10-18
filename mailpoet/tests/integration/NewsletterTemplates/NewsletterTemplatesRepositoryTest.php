@@ -18,9 +18,9 @@ class NewsletterTemplatesRepositoryTest extends \MailPoetTest {
       'body' => '{"content": {}, "globalStyles": {}}',
       'thumbnail_data' => 'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
     ]);
-    expect($createdTemplate->getName())->equals('Another template');
-    expect($createdTemplate->getBody())->equals(['content' => [], 'globalStyles' => []]);
-    expect($createdTemplate->getThumbnailData())->equals('data:image/gif;base64,R0lGODlhAQABAAAAACw=');
+    verify($createdTemplate->getName())->equals('Another template');
+    verify($createdTemplate->getBody())->equals(['content' => [], 'globalStyles' => []]);
+    verify($createdTemplate->getThumbnailData())->equals('data:image/gif;base64,R0lGODlhAQABAAAAACw=');
 
     $updatedTemplate = $this->newsletterTemplatesRepository->createOrUpdate([
       'id' => $createdTemplate->getId(),
@@ -28,9 +28,9 @@ class NewsletterTemplatesRepositoryTest extends \MailPoetTest {
       'body' => '{"content": "changed"}',
       'thumbnail_data' => 'data:image/gif;base64,R0lGO==',
     ]);
-    expect($updatedTemplate->getName())->equals('Another template updated');
-    expect($updatedTemplate->getBody())->equals(['content' => 'changed']);
-    expect($updatedTemplate->getThumbnailData())->equals('data:image/gif;base64,R0lGO==');
+    verify($updatedTemplate->getName())->equals('Another template updated');
+    verify($updatedTemplate->getBody())->equals(['content' => 'changed']);
+    verify($updatedTemplate->getThumbnailData())->equals('data:image/gif;base64,R0lGO==');
   }
 
   public function testItCleansRecentlySent() {
@@ -49,8 +49,8 @@ class NewsletterTemplatesRepositoryTest extends \MailPoetTest {
       ['categories' => NewsletterTemplatesRepository::RECENTLY_SENT_CATEGORIES],
       ['id' => 'ASC']
     );
-    expect(count($templates))->equals(NewsletterTemplatesRepository::RECENTLY_SENT_COUNT);
-    expect($templates[0]->getName())->equals('Testing template 5');
+    verify(count($templates))->equals(NewsletterTemplatesRepository::RECENTLY_SENT_COUNT);
+    verify($templates[0]->getName())->equals('Testing template 5');
   }
 
   public function testItCanCreateFromOldDataFormat() {
@@ -59,8 +59,8 @@ class NewsletterTemplatesRepositoryTest extends \MailPoetTest {
       'body' => '{"content": {}, "globalStyles": {}}',
       'thumbnail' => 'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
     ]);
-    expect($createdTemplate->getName())->equals('Another template');
-    expect($createdTemplate->getBody())->equals(['content' => [], 'globalStyles' => []]);
-    expect($createdTemplate->getThumbnailData())->equals('data:image/gif;base64,R0lGODlhAQABAAAAACw=');
+    verify($createdTemplate->getName())->equals('Another template');
+    verify($createdTemplate->getBody())->equals(['content' => [], 'globalStyles' => []]);
+    verify($createdTemplate->getThumbnailData())->equals('data:image/gif;base64,R0lGODlhAQABAAAAACw=');
   }
 }

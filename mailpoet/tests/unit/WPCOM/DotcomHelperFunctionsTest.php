@@ -22,42 +22,42 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
   }
 
   public function testItReturnsEmptyStringIfNoPlan() {
-    expect($this->dotcomHelper->getDotcomPlan())->equals('');
+    verify($this->dotcomHelper->getDotcomPlan())->equals('');
   }
 
   public function testItReturnsPerformanceIfWooExpressPerformance() {
     $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isWooExpressPerformance']);
     $dotcomHelper->method('isWooExpressPerformance')->willReturn(true);
-    expect($dotcomHelper->getDotcomPlan())->equals('performance');
+    verify($dotcomHelper->getDotcomPlan())->equals('performance');
   }
 
   public function testItReturnsEssentialIfWooExpressEssential() {
     $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isWooExpressEssential']);
     $dotcomHelper->method('isWooExpressEssential')->willReturn(true);
-    expect($dotcomHelper->getDotcomPlan())->equals('essential');
+    verify($dotcomHelper->getDotcomPlan())->equals('essential');
   }
 
   public function testItReturnsBusinessIfWooBusiness() {
     $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isBusiness']);
     $dotcomHelper->method('isBusiness')->willReturn(true);
-    expect($dotcomHelper->getDotcomPlan())->equals('business');
+    verify($dotcomHelper->getDotcomPlan())->equals('business');
   }
 
   public function testItReturnsEcommerceTrialIfEcommerceTrial() {
     $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isEcommerceTrial']);
     $dotcomHelper->method('isEcommerceTrial')->willReturn(true);
-    expect($dotcomHelper->getDotcomPlan())->equals('ecommerce_trial');
+    verify($dotcomHelper->getDotcomPlan())->equals('ecommerce_trial');
   }
 
   public function testItReturnsEcommerceWPComIfEcommerceWPCom() {
     $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isEcommerceWPCom']);
     $dotcomHelper->method('isEcommerceWPCom')->willReturn(true);
-    expect($dotcomHelper->getDotcomPlan())->equals('ecommerce_wpcom');
+    verify($dotcomHelper->getDotcomPlan())->equals('ecommerce_wpcom');
   }
 
   public function testItReturnsEcommerceIfEcommerce() {
     $dotcomHelper = $this->createPartialMock(DotcomHelperFunctions::class, ['isEcommerce']);
     $dotcomHelper->method('isEcommerce')->willReturn(true);
-    expect($dotcomHelper->getDotcomPlan())->equals('ecommerce');
+    verify($dotcomHelper->getDotcomPlan())->equals('ecommerce');
   }
 }

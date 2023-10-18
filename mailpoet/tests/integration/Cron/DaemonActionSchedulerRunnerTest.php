@@ -35,7 +35,7 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
     expect($actions)->count(1);
     $action = reset($actions);
     $this->assertInstanceOf(\ActionScheduler_Action::class, $action);
-    expect($action->get_hook())->equals(DaemonTrigger::NAME);
+    verify($action->get_hook())->equals(DaemonTrigger::NAME);
   }
 
   public function testItDeactivateAllTasks(): void {

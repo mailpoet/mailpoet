@@ -34,8 +34,8 @@ class ServicesTest extends \MailPoetTest {
 
   public function testItRespondsWithErrorIfNoMSSKeyIsGiven() {
     $response = $this->diContainer->get(Services::class)->checkMSSKey(['key' => '']);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please specify a key.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Please specify a key.');
   }
 
   public function testItRespondsWithSuccessIfMSSKeyIsValid() {
@@ -49,7 +49,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
   }
 
   public function testItRespondsWithErrorIfMSSKeyIsInvalid() {
@@ -62,7 +62,7 @@ class ServicesTest extends \MailPoetTest {
     );
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
   public function testItRespondsWithErrorIfMSSKeyIsExpiring() {
@@ -80,7 +80,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['message'])
       ->stringContainsString($date->format($servicesEndpoint->dateTime->getDateFormat()));
   }
@@ -96,7 +96,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     $errorMessage = $this->invokeMethod(
       $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
     );
@@ -115,7 +115,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     $errorMessage = $this->invokeMethod(
       $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
     );
@@ -134,7 +134,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->stringContainsString('404');
   }
 
@@ -151,8 +151,8 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->equals('test');
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['message'])->equals('test');
   }
 
   public function testItDoesNotPauseSendingWhenMSSKeyValidAndApproved() {
@@ -172,7 +172,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect(MailerLog::isSendingPaused())->false();
   }
 
@@ -193,7 +193,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect(MailerLog::isSendingPaused())->true();
   }
 
@@ -220,14 +220,14 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect(MailerLog::isSendingPaused())->false();
   }
 
   public function testItRespondsWithErrorIfNoPremiumKeyIsGiven() {
     $response = $response = $this->diContainer->get(Services::class)->checkPremiumKey(['key' => '']);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please specify a key.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Please specify a key.');
   }
 
   public function testItRespondsWithSuccessIfPremiumKeyIsValid() {
@@ -241,7 +241,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     foreach (array_keys(Installer::getPremiumStatus()) as $key) {
       expect(isset($response->meta[$key]))->true();
     }
@@ -258,7 +258,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
   public function testItRespondsWithErrorIfPremiumKeyIsUsed() {
@@ -272,7 +272,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
   public function testItRespondsWithErrorIfPremiumKeyIsExpiring() {
@@ -290,7 +290,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['message'])
       ->stringContainsString($date->format($servicesEndpoint->dateTime->getDateFormat()));
   }
@@ -306,7 +306,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     $errorMessage = $this->invokeMethod(
       $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
     );
@@ -325,7 +325,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     $errorMessage = $this->invokeMethod(
       $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
     );
@@ -344,7 +344,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->errors[0]['message'])->stringContainsString('404');
   }
 
@@ -361,8 +361,8 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->equals('test');
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['message'])->equals('test');
   }
 
   public function testItRespondsWithPublicIdForMSS() {
@@ -384,8 +384,8 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $servicesEndpoint->checkMSSKey($this->data);
 
-    expect($this->settings->get('public_id'))->equals($fakePublicId);
-    expect($this->settings->get('new_public_id'))->equals('true');
+    verify($this->settings->get('public_id'))->equals($fakePublicId);
+    verify($this->settings->get('new_public_id'))->equals('true');
   }
 
   public function testItRespondsWithoutPublicIdForMSS() {
@@ -426,8 +426,8 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
 
-    expect($this->settings->get('public_id'))->equals($fakePublicId);
-    expect($this->settings->get('new_public_id'))->equals('true');
+    verify($this->settings->get('public_id'))->equals($fakePublicId);
+    verify($this->settings->get('new_public_id'))->equals('true');
   }
 
   public function testItRespondsWithoutPublicIdForPremium() {
@@ -465,16 +465,16 @@ class ServicesTest extends \MailPoetTest {
       'congratulatoryEmailController' => $congratulatoryEmailController,
     ]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(['email_address' => 'authorized@email.com']);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(['email_address' => 'authorized@email.com']);
   }
 
   public function testCongratulatoryEmailRespondsWithErrorWhenMssNotActive() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_PHPMAIL]);
     $servicesEndpoint = $this->diContainer->get(Services::class);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('MailPoet Sending Service is not active.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('MailPoet Sending Service is not active.');
   }
 
   public function testCongratulatoryEmailRespondsWithErrorWhenNoEmailAuthorized() {
@@ -486,8 +486,8 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('No FROM email addresses are authorized.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('No FROM email addresses are authorized.');
   }
 
   public function testCongratulatoryEmailRespondsWithDifferentErrorWhenNoEmailAuthorizedButDomainIsVerified() {
@@ -506,10 +506,10 @@ class ServicesTest extends \MailPoetTest {
       'senderDomain' => $senderDomainMock,
     ]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     // when the sender domain is verified, we don't insist the FROM email be authorized
     // we instead get a different error when the sender email is not avaliable
-    expect($response->errors[0]['message'])->equals('Sender email address is not set.');
+    verify($response->errors[0]['message'])->equals('Sender email address is not set.');
   }
 
   public function testCongratulatoryEmailRespondsWithErrorWhenNoSenderSet() {
@@ -521,8 +521,8 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Sender email address is not set.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Sender email address is not set.');
   }
 
   public function testCongratulatoryEmailRespondsWithErrorWhenSenderNotAuthorized() {
@@ -534,8 +534,8 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals("Sender email address 'unauthorized@email.com' is not authorized.");
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals("Sender email address 'unauthorized@email.com' is not authorized.");
   }
 
   public function testCongratulatoryEmailRespondsWithSuccessWhenSenderNotAuthorizedButDomainIsVerified() {
@@ -561,8 +561,8 @@ class ServicesTest extends \MailPoetTest {
     ]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(['email_address' => 'unauthorized@email.com']);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(['email_address' => 'unauthorized@email.com']);
   }
 
   public function testCongratulatoryEmailRespondsWithErrorWhenSendingFails() {
@@ -583,8 +583,8 @@ class ServicesTest extends \MailPoetTest {
       'congratulatoryEmailController' => $congratulatoryEmailController,
     ]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
-    expect($response->status)->equals(APIResponse::STATUS_UNKNOWN);
-    expect($response->errors[0]['message'])->equals('Sending of congratulatory email failed.');
+    verify($response->status)->equals(APIResponse::STATUS_UNKNOWN);
+    verify($response->errors[0]['message'])->equals('Sending of congratulatory email failed.');
   }
 
   public function testItRespondsWithCorrectMessageIfKeyDoesntSupportMSS() {
@@ -601,7 +601,7 @@ class ServicesTest extends \MailPoetTest {
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['message'])->stringContainsString(
       'Your Premium key has been successfully validated, but is not valid for MailPoet Sending Service'
     );

@@ -70,12 +70,12 @@ class BuiltInCaptchaValidatorTest extends \MailPoetTest {
   public function testItRequiresCaptchaForFirstSubscription() {
     $email = 'non-existent-subscriber@example.com';
     $result = $this->testee->isRequired($email);
-    expect($result)->equals(true);
+    verify($result)->equals(true);
   }
 
   public function testItRequiresCaptchaForUnrepeatedIPAddress() {
     $result = $this->testee->isRequired();
-    expect($result)->equals(true);
+    verify($result)->equals(true);
   }
 
   public function testItTakesFilterIntoAccountToDisableCaptcha() {
@@ -87,10 +87,10 @@ class BuiltInCaptchaValidatorTest extends \MailPoetTest {
     $wp->addFilter('mailpoet_subscription_captcha_recipient_limit', $filter);
     $email = 'non-existent-subscriber@example.com';
     $result = $this->testee->isRequired($email);
-    expect($result)->equals(false);
+    verify($result)->equals(false);
 
     $result = $this->testee->isRequired();
-    expect($result)->equals(false);
+    verify($result)->equals(false);
 
     $subscriberFactory = new SubscriberFactory();
     $subscriber = $subscriberFactory
@@ -98,7 +98,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetTest {
       ->create();
 
     $result = $this->testee->isRequired($subscriber->getEmail());
-    expect($result)->equals(true);
+    verify($result)->equals(true);
 
     $ip = new SubscriberIPEntity('127.0.0.1');
     $ip->setCreatedAt(Carbon::now()->subMinutes(1));
@@ -106,7 +106,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetTest {
     $this->entityManager->flush();
     $email = 'non-existent-subscriber@example.com';
     $result = $this->testee->isRequired($email);
-    expect($result)->equals(true);
+    verify($result)->equals(true);
 
     unset($_SERVER['REMOTE_ADDR']);
     $wp->removeFilter('mailpoet_subscription_captcha_recipient_limit', $filter);

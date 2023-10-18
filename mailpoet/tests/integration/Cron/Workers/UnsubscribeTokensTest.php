@@ -47,8 +47,8 @@ class UnsubscribeTokensTest extends \MailPoetTest {
     $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->subscriberWithToken = Subscriber::findOne($this->subscriberWithToken->id);
     $this->subscriberWithoutToken = Subscriber::findOne($this->subscriberWithoutToken->id);
-    expect($this->subscriberWithToken->unsubscribe_token)->equals('aaabbbcccdddeee');
-    expect(strlen($this->subscriberWithoutToken->unsubscribe_token))->equals(15);
+    verify($this->subscriberWithToken->unsubscribe_token)->equals('aaabbbcccdddeee');
+    verify(strlen($this->subscriberWithoutToken->unsubscribe_token))->equals(15);
   }
 
   public function testItAddsTokensToNewsletters() {
@@ -58,7 +58,7 @@ class UnsubscribeTokensTest extends \MailPoetTest {
     $this->newsletterWithoutToken = Newsletter::findOne($this->newsletterWithoutToken->id);
     $this->assertInstanceOf(Newsletter::class, $this->newsletterWithToken);
     $this->assertInstanceOf(Newsletter::class, $this->newsletterWithoutToken);
-    expect($this->newsletterWithToken->unsubscribeToken)->equals('aaabbbcccdddeee');
-    expect(strlen($this->newsletterWithoutToken->unsubscribeToken))->equals(15);
+    verify($this->newsletterWithToken->unsubscribeToken)->equals('aaabbbcccdddeee');
+    verify(strlen($this->newsletterWithoutToken->unsubscribeToken))->equals(15);
   }
 }

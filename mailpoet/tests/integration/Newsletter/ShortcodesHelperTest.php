@@ -15,7 +15,7 @@ class ShortcodesHelperTest extends \MailPoetTest {
 
   public function testGetsShortcodes() {
     $shortcodes = $this->shortcodesHelper->getShortcodes();
-    expect(array_keys($shortcodes))->equals(
+    verify(array_keys($shortcodes))->equals(
       [
         'Subscriber',
         'Newsletter',
@@ -29,17 +29,17 @@ class ShortcodesHelperTest extends \MailPoetTest {
 
   public function testItGetsCustomShortShortcodes() {
     $shortcodes = $this->shortcodesHelper->getShortcodes();
-    expect(count($shortcodes['Subscriber']))->equals(5);
+    verify(count($shortcodes['Subscriber']))->equals(5);
     $customField = new CustomFieldEntity();
     $customField->setName('name');
     $customField->setType('type');
     $this->entityManager->persist($customField);
     $this->entityManager->flush();
     $shortcodes = $this->shortcodesHelper->getShortcodes();
-    expect(count($shortcodes['Subscriber']))->equals(6);
+    verify(count($shortcodes['Subscriber']))->equals(6);
     $customSubscriberShortcode = end($shortcodes['Subscriber']);
-    expect($customSubscriberShortcode['text'])->equals($customField->getName());
-    expect($customSubscriberShortcode['shortcode'])
+    verify($customSubscriberShortcode['text'])->equals($customField->getName());
+    verify($customSubscriberShortcode['shortcode'])
       ->equals('[subscriber:cf_' . $customField->getId() . ']');
   }
 }

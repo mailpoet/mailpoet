@@ -46,7 +46,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
   public function testItGetsEventDetails() {
     $result = $this->event->getEventDetails();
     expect($result)->notEmpty();
-    expect($result['slug'])->equals(PurchasedInCategory::SLUG);
+    verify($result['slug'])->equals(PurchasedInCategory::SLUG);
   }
 
   public function testItDoesNotScheduleEmailWhenOrderDetailsAreNotAvailable() {
@@ -90,7 +90,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
     // We only want to record the ID for the category that triggered the newsletter
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
-    expect($queue->getMeta())->equals(['orderedProductCategories' => ['15']]);
+    verify($queue->getMeta())->equals(['orderedProductCategories' => ['15']]);
     expect($queue->getTask())->notEmpty();
   }
 

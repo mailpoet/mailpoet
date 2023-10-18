@@ -113,7 +113,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     expect($result)->endsWith($renderedForm);
 
     $result2 = $this->hook->contentDisplay('content');
-    expect($result2)->equals('content');
+    verify($result2)->equals('content');
   }
 
   public function testAppendsRenderedFormAfterOnASpecificPost() {
@@ -277,9 +277,9 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->wp->expects($this->never())->method('isSingular');
     $this->repository->expects($this->never())->method('findAll');
     expect($this->hook->contentDisplay(null))->null();
-    expect($this->hook->contentDisplay([1,2,3]))->equals([1,2,3]);
-    expect($this->hook->contentDisplay(1))->equals(1);
-    expect($this->hook->contentDisplay(1.1))->equals(1.1);
+    verify($this->hook->contentDisplay([1,2,3]))->equals([1,2,3]);
+    verify($this->hook->contentDisplay(1))->equals(1);
+    verify($this->hook->contentDisplay(1.1))->equals(1.1);
   }
 
   public function testDoesNotAppendFormIfDisabled() {
@@ -297,7 +297,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
-    expect($result)->equals('content');
+    verify($result)->equals('content');
   }
 
   public function testDoesNotAppendFormIfEnabledAndPlacementIsDisabled() {
@@ -313,14 +313,14 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
-    expect($result)->equals('content');
+    verify($result)->equals('content');
   }
 
   public function testDoesNotAppendFormIfNotOnSinglePage() {
     $this->wp->expects($this->once())->method('isSingle')->willReturn(false);
     $this->repository->expects($this->never())->method('findBy');
     $result = $this->hook->contentDisplay('content');
-    expect($result)->equals('content');
+    verify($result)->equals('content');
   }
 
   public function testDoesNotAppendFormIfNotOnPost() {
@@ -337,7 +337,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
     $result = $this->hook->contentDisplay('content');
-    expect($result)->equals('content');
+    verify($result)->equals('content');
   }
 
   public function testAppendsRenderedFormOnWoocommerceShopListingPage() {
@@ -429,7 +429,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
-    expect($result)->equals('content');
+    verify($result)->equals('content');
   }
 
   public function testItDoesNotAppendFormOnOtherWoocommercePageWhenNotOnListingPage() {
@@ -465,7 +465,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
     $this->repository->expects($this->never())->method('findBy')->willReturn([$form]);
     $result = $this->hook->wooProductListDisplay('content');
-    expect($result)->equals('content');
+    verify($result)->equals('content');
   }
 
   public function testAppendsRenderedFormAfterPageContent() {
@@ -564,7 +564,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ob_start();
     $this->hook->maybeRenderFormsInFooter();
     $renderedFormHtml = ob_get_clean();
-    expect($renderedFormHtml)->equals($formHtml);
+    verify($renderedFormHtml)->equals($formHtml);
   }
 
   public function testItRendersOnlyForSpecificTagArchive(): void {
@@ -594,7 +594,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ob_start();
     $this->hook->maybeRenderFormsInFooter();
     $renderedFormHtml = ob_get_clean();
-    expect($renderedFormHtml)->equals($formHtml);
+    verify($renderedFormHtml)->equals($formHtml);
 
     $form->setSettings([
       'segments' => ['3'],
@@ -607,7 +607,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ob_start();
     $this->hook->maybeRenderFormsInFooter();
     $renderedFormHtml = ob_get_clean();
-    expect($renderedFormHtml)->equals('');
+    verify($renderedFormHtml)->equals('');
   }
 
   public function testItDoesNotDisplayOnTagListingIfNotEnabled(): void {
@@ -628,7 +628,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ob_start();
     $this->hook->maybeRenderFormsInFooter();
     $renderedFormHtml = ob_get_clean();
-    expect($renderedFormHtml)->equals('');
+    verify($renderedFormHtml)->equals('');
   }
 
   public function testDisplayFormOnAllCategoryArchives(): void {
@@ -651,7 +651,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ob_start();
     $this->hook->maybeRenderFormsInFooter();
     $renderedFormHtml = ob_get_clean();
-    expect($renderedFormHtml)->equals($formHtml);
+    verify($renderedFormHtml)->equals($formHtml);
   }
 
   public function testItRendersOnlyForSpecificCategoryArchive(): void {
@@ -677,7 +677,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ob_start();
     $this->hook->maybeRenderFormsInFooter();
     $renderedFormHtml = ob_get_clean();
-    expect($renderedFormHtml)->equals($formHtml);
+    verify($renderedFormHtml)->equals($formHtml);
 
     $form->setSettings([
       'segments' => ['3'],
@@ -690,7 +690,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ob_start();
     $this->hook->maybeRenderFormsInFooter();
     $renderedFormHtml = ob_get_clean();
-    expect($renderedFormHtml)->equals('');
+    verify($renderedFormHtml)->equals('');
   }
 
   public function testItDoesNotDisplayOnCategoryListingIfNotEnabled(): void {
@@ -711,7 +711,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ob_start();
     $this->hook->maybeRenderFormsInFooter();
     $renderedFormHtml = ob_get_clean();
-    expect($renderedFormHtml)->equals('');
+    verify($renderedFormHtml)->equals('');
   }
 
   public function testItDisplaysOnHomepage(): void {
@@ -733,7 +733,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ob_start();
     $this->hook->maybeRenderFormsInFooter();
     $renderedFormHtml = ob_get_clean();
-    expect($renderedFormHtml)->equals($formHtml);
+    verify($renderedFormHtml)->equals($formHtml);
   }
 
   public function testItDisplaysOnSpecificPostsPageWhenAllPagesSelected(): void {
@@ -757,7 +757,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ob_start();
     $this->hook->maybeRenderFormsInFooter();
     $renderedFormHtml = ob_get_clean();
-    expect($renderedFormHtml)->equals($formHtml);
+    verify($renderedFormHtml)->equals($formHtml);
   }
 
   public function testItDisplaysOnSpecificPostsPageWhenConfiguredToMatchThatPage(): void {
@@ -783,7 +783,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     ob_start();
     $this->hook->maybeRenderFormsInFooter();
     $renderedFormHtml = ob_get_clean();
-    expect($renderedFormHtml)->equals($formHtml);
+    verify($renderedFormHtml)->equals($formHtml);
   }
 
   public function testDoesNotAppendPopupFormIfLoggedInAndSubscribed() {
@@ -811,7 +811,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
     $result = $this->hook->contentDisplay('content');
-    expect($result)->equals('content');
+    verify($result)->equals('content');
   }
 
   public function testAppendsPopupFormIfLoggedInAndNotSubscribed() {

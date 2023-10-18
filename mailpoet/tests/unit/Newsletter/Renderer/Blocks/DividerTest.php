@@ -31,6 +31,6 @@ class DividerTest extends \MailPoetUnitTest {
           </table>
         </td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 }

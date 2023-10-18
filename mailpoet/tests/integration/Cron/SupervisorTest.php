@@ -44,13 +44,13 @@ class SupervisorTest extends \MailPoetTest {
   public function testItReturnsDaemonWhenOneExists() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $this->supervisor->init();
-    expect($this->supervisor->getDaemon())->equals($this->supervisor->daemon);
+    verify($this->supervisor->getDaemon())->equals($this->supervisor->daemon);
   }
 
   public function testItDoesNothingWhenDaemonExecutionDurationIsBelowLimit() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $this->supervisor->init();
-    expect($this->supervisor->checkDaemon())
+    verify($this->supervisor->checkDaemon())
       ->equals($this->supervisor->daemon);
   }
 
@@ -61,7 +61,7 @@ class SupervisorTest extends \MailPoetTest {
     $daemon = $this->supervisor->checkDaemon();
     expect(is_int($daemon['updated_at']))->true();
     expect($daemon['updated_at'])->notEquals($this->supervisor->daemon['updated_at']);
-    expect($daemon['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
+    verify($daemon['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
   }
 
   public function testRestartsDaemonWhenItIsInactive() {
@@ -70,6 +70,6 @@ class SupervisorTest extends \MailPoetTest {
     $this->supervisor->daemon['updated_at'] = time();
     $this->supervisor->daemon['status'] = CronHelper::DAEMON_STATUS_INACTIVE;
     $daemon = $this->supervisor->checkDaemon();
-    expect($daemon['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
+    verify($daemon['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
   }
 }

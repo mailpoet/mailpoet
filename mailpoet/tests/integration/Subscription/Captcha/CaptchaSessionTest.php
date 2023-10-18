@@ -19,13 +19,13 @@ class CaptchaSessionTest extends \MailPoetTest {
   public function testItCanStoreAndRetrieveFormData() {
     $formData = ['email' => 'email@example.com'];
     $this->captchaSession->setFormData($formData);
-    expect($this->captchaSession->getFormData())->equals($formData);
+    verify($this->captchaSession->getFormData())->equals($formData);
   }
 
   public function testItCanStoreAndRetrieveCaptchaHash() {
     $hash = '1234';
     $this->captchaSession->setCaptchaHash($hash);
-    expect($this->captchaSession->getCaptchaHash())->equals($hash);
+    verify($this->captchaSession->getCaptchaHash())->equals($hash);
   }
 
   public function testItCanResetSessionData() {
@@ -39,10 +39,10 @@ class CaptchaSessionTest extends \MailPoetTest {
   public function testItAssociatesDataWithSession() {
     $hash = '1234';
     $this->captchaSession->setCaptchaHash($hash);
-    expect($this->captchaSession->getCaptchaHash())->equals($hash);
+    verify($this->captchaSession->getCaptchaHash())->equals($hash);
     $this->captchaSession->init();
     expect($this->captchaSession->getCaptchaHash())->false();
     $this->captchaSession->init(self::SESSION_ID);
-    expect($this->captchaSession->getCaptchaHash())->equals($hash);
+    verify($this->captchaSession->getCaptchaHash())->equals($hash);
   }
 }

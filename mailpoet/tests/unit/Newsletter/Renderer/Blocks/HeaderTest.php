@@ -32,7 +32,7 @@ class HeaderTest extends \MailPoetUnitTest {
           <a href="[link:newsletter_view_in_browser_url]" style="color:#6cb7d4;text-decoration:underline">View this in your browser.</a>
         </td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 
   public function testItRendersBackgroundColorCorrectly() {
@@ -44,7 +44,7 @@ class HeaderTest extends \MailPoetUnitTest {
           <a href="[link:newsletter_view_in_browser_url]" style="color:#6cb7d4;text-decoration:underline">View this in your browser.</a>
         </td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 
   public function testItPrefersInlinedCssForLinks() {

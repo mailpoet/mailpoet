@@ -270,7 +270,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $attributeValue = $i->executeInSelenium(function (\Facebook\WebDriver\WebDriver $webdriver) use ($cssSelector, $cssProperty){
       return $webdriver->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector($cssSelector))->getCSSValue($cssProperty);
     });
-    expect($attributeValue)->equals($value);
+    verify($attributeValue)->equals($value);
   }
 
   public function assertAttributeNotContains($selector, $attribute, $notContains) {

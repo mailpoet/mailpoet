@@ -51,7 +51,7 @@ class NewsletterLinkRepositoryTest extends \MailPoetTest {
     $repository = $this->diContainer->get(NewsletterLinkRepository::class);
     $topLink = $repository->findTopLinkForNewsletter((int)$newsletter->getId());
     $this->assertInstanceOf(NewsletterLinkEntity::class, $topLink);
-    expect($topLink->getUrl())->equals('http://example1.com');
+    verify($topLink->getUrl())->equals('http://example1.com');
 
     $newsletter2 = new NewsletterEntity();
     $newsletter2->setType(NewsletterEntity::TYPE_STANDARD);

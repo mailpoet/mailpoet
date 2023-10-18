@@ -62,63 +62,63 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
     $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts();
     expect($segments)->count(5);
     // Default 1
-    expect($segments[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
-    expect($segments[0]['subscribers'])->equals(1);
+    verify($segments[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
+    verify($segments[0]['subscribers'])->equals(1);
     // Default 2
-    expect($segments[1]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
-    expect($segments[1]['subscribers'])->equals(0);
+    verify($segments[1]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
+    verify($segments[1]['subscribers'])->equals(0);
     // Dynamic
-    expect($segments[2]['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
-    expect($segments[2]['subscribers'])->equals(1);
+    verify($segments[2]['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
+    verify($segments[2]['subscribers'])->equals(1);
     // WooCommerce Users Segment
-    expect($segments[3]['type'])->equals(SegmentEntity::TYPE_WC_USERS);
-    expect($segments[3]['subscribers'])->equals(0);
+    verify($segments[3]['type'])->equals(SegmentEntity::TYPE_WC_USERS);
+    verify($segments[3]['subscribers'])->equals(0);
     // WordPress Users
-    expect($segments[4]['type'])->equals(SegmentEntity::TYPE_WP_USERS);
-    expect($segments[4]['subscribers'])->equals(1);
+    verify($segments[4]['type'])->equals(SegmentEntity::TYPE_WP_USERS);
+    verify($segments[4]['subscribers'])->equals(1);
   }
 
   public function testItReturnsSegmentsWithSubscribedSubscribersCountFilteredBySegmentType(): void {
     $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts([SegmentEntity::TYPE_DEFAULT, SegmentEntity::TYPE_WP_USERS]);
     expect($segments)->count(3);
     // Default 1
-    expect($segments[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
-    expect($segments[0]['subscribers'])->equals(1);
+    verify($segments[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
+    verify($segments[0]['subscribers'])->equals(1);
     // Default 2
-    expect($segments[1]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
-    expect($segments[1]['subscribers'])->equals(0);
+    verify($segments[1]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
+    verify($segments[1]['subscribers'])->equals(0);
     // WordPress Users
-    expect($segments[2]['type'])->equals(SegmentEntity::TYPE_WP_USERS);
-    expect($segments[2]['subscribers'])->equals(1);
+    verify($segments[2]['type'])->equals(SegmentEntity::TYPE_WP_USERS);
+    verify($segments[2]['subscribers'])->equals(1);
   }
 
   public function testItReturnsSegmentsWithAssociatedSubscribersCount(): void {
     $segments = $this->segmentsListRepository->getListWithAssociatedSubscribersCounts();
     expect($segments)->count(5);
     // Default 1
-    expect($segments[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
-    expect($segments[0]['subscribers'])->equals(2);
+    verify($segments[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
+    verify($segments[0]['subscribers'])->equals(2);
     // Default 2
-    expect($segments[1]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
-    expect($segments[1]['subscribers'])->equals(0);
+    verify($segments[1]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
+    verify($segments[1]['subscribers'])->equals(0);
     // Dynamic
-    expect($segments[2]['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
-    expect($segments[2]['subscribers'])->equals(1);
+    verify($segments[2]['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
+    verify($segments[2]['subscribers'])->equals(1);
     // WooCommerce Users Segment
-    expect($segments[3]['type'])->equals(SegmentEntity::TYPE_WC_USERS);
-    expect($segments[3]['subscribers'])->equals(0);
+    verify($segments[3]['type'])->equals(SegmentEntity::TYPE_WC_USERS);
+    verify($segments[3]['subscribers'])->equals(0);
     // WordPress Users
-    expect($segments[4]['type'])->equals(SegmentEntity::TYPE_WP_USERS);
-    expect($segments[4]['subscribers'])->equals(1);
+    verify($segments[4]['type'])->equals(SegmentEntity::TYPE_WP_USERS);
+    verify($segments[4]['subscribers'])->equals(1);
   }
 
   public function testItCanAddSegmentForSubscribersWithoutList(): void {
     $segments = $this->segmentsListRepository->getListWithAssociatedSubscribersCounts();
     $segments = $this->segmentsListRepository->addVirtualSubscribersWithoutListSegment($segments);
     expect($segments)->count(6);
-    expect($segments[5]['type'])->equals(SegmentEntity::TYPE_WITHOUT_LIST);
-    expect($segments[5]['id'])->equals('0');
-    expect($segments[5]['subscribers'])->equals(1);
+    verify($segments[5]['type'])->equals(SegmentEntity::TYPE_WITHOUT_LIST);
+    verify($segments[5]['id'])->equals('0');
+    verify($segments[5]['subscribers'])->equals(1);
   }
 
   private function createSubscriberEntity(): SubscriberEntity {

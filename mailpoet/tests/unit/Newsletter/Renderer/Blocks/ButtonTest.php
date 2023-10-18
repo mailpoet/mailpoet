@@ -61,6 +61,6 @@ class ButtonTest extends \MailPoetUnitTest {
           </div>
         </td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 }

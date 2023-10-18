@@ -8,6 +8,6 @@ class LicenseTest extends \MailPoetUnitTest {
   public function testItGetsLicense() {
     if (defined('MAILPOET_PREMIUM_LICENSE')) return;
     expect(License::getLicense())->false();
-    expect(License::getLicense('valid'))->equals('valid');
+    verify(License::getLicense('valid'))->equals('valid');
   }
 }

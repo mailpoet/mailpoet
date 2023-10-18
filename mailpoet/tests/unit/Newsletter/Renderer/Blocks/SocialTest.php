@@ -56,6 +56,6 @@ class SocialTest extends \MailPoetUnitTest {
         ></a>&nbsp;
         </td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 }

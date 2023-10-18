@@ -30,15 +30,15 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     ];
 
     $segment = $this->saveController->save($segmentData);
-    expect($segment->getName())->equals('Test Segment');
-    expect($segment->getDescription())->equals('Description');
-    expect($segment->getDynamicFilters()->count())->equals(1);
-    expect($segment->getType())->equals(SegmentEntity::TYPE_DYNAMIC);
+    verify($segment->getName())->equals('Test Segment');
+    verify($segment->getDescription())->equals('Description');
+    verify($segment->getDynamicFilters()->count())->equals(1);
+    verify($segment->getType())->equals(SegmentEntity::TYPE_DYNAMIC);
     $filter = $segment->getDynamicFilters()->first();
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filter);
-    expect($filter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
-    expect($filter->getFilterData()->getAction())->equals(UserRole::TYPE);
-    expect($filter->getFilterData()->getData())->equals([
+    verify($filter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    verify($filter->getFilterData()->getAction())->equals(UserRole::TYPE);
+    verify($filter->getFilterData()->getData())->equals([
       'wordpressRole' => 'editor',
       'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
@@ -64,15 +64,15 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     ];
 
     $segment = $this->saveController->save($segmentData);
-    expect($segment->getName())->equals('Test Segment Edited');
-    expect($segment->getDescription())->equals('Description Edited');
-    expect($segment->getDynamicFilters()->count())->equals(1);
-    expect($segment->getType())->equals(SegmentEntity::TYPE_DYNAMIC);
+    verify($segment->getName())->equals('Test Segment Edited');
+    verify($segment->getDescription())->equals('Description Edited');
+    verify($segment->getDynamicFilters()->count())->equals(1);
+    verify($segment->getType())->equals(SegmentEntity::TYPE_DYNAMIC);
     $filter = $segment->getDynamicFilters()->first();
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filter);
-    expect($filter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
-    expect($filter->getFilterData()->getAction())->equals(UserRole::TYPE);
-    expect($filter->getFilterData()->getData())->equals([
+    verify($filter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    verify($filter->getFilterData()->getAction())->equals(UserRole::TYPE);
+    verify($filter->getFilterData()->getData())->equals([
       'wordpressRole' => ['subscriber'],
       'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
       'connect' => DynamicSegmentFilterData::CONNECT_TYPE_OR,
@@ -129,9 +129,9 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $duplicateFilter1);
 
     expect($originalFilter1->getId())->notEquals($duplicateFilter1->getId());
-    expect($duplicateFilter1->getFilterData()->getAction())->equals(UserRole::TYPE);
-    expect($duplicateFilter1->getFilterData()->getParam('wordpressRole'))->equals(['administrator']);
-    expect($duplicateFilter1->getFilterData()->getParam('connect'))->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+    verify($duplicateFilter1->getFilterData()->getAction())->equals(UserRole::TYPE);
+    verify($duplicateFilter1->getFilterData()->getParam('wordpressRole'))->equals(['administrator']);
+    verify($duplicateFilter1->getFilterData()->getParam('connect'))->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
 
     $originalFilter2 = $segment->getDynamicFilters()->get(1);
     $duplicateFilter2 = $duplicate->getDynamicFilters()->get(1);
@@ -140,9 +140,9 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $duplicateFilter2);
 
     expect($originalFilter2->getId())->notEquals($duplicateFilter2->getId());
-    expect($duplicateFilter2->getFilterData()->getAction())->equals(UserRole::TYPE);
-    expect($duplicateFilter2->getFilterData()->getParam('wordpressRole'))->equals(['editor']);
-    expect($duplicateFilter2->getFilterData()->getParam('connect'))->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+    verify($duplicateFilter2->getFilterData()->getAction())->equals(UserRole::TYPE);
+    verify($duplicateFilter2->getFilterData()->getParam('wordpressRole'))->equals(['editor']);
+    verify($duplicateFilter2->getFilterData()->getParam('connect'))->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
   }
 
   private function createSegment(string $name): SegmentEntity {

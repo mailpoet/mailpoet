@@ -66,8 +66,8 @@ class WordPressTest extends \MailPoetTest {
     $currentTime = time();
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $currentTime);
     $this->addQueue(SendingQueueEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->run())->equals(false);
-    expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->equals($currentTime);
+    verify($this->wordpressTrigger->run())->equals(false);
+    verify($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->equals($currentTime);
     WPFunctions::get()->removeAllFilters('mailpoet_cron_trigger_wordpress_run_interval');
   }
 
@@ -162,9 +162,9 @@ class WordPressTest extends \MailPoetTest {
 
   public function testItCanDeactivateRunningDaemon() {
     $this->settings->set(CronHelper::DAEMON_SETTING, ['status' => CronHelper::DAEMON_STATUS_ACTIVE]);
-    expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
+    verify($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
     $this->wordpressTrigger->stop();
-    expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
+    verify($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
   }
 
   public function testItRunsWhenExecutionRequirementsAreMet() {
@@ -178,9 +178,9 @@ class WordPressTest extends \MailPoetTest {
 
   public function testItDeactivatesCronDaemonWhenExecutionRequirementsAreNotMet() {
     $this->settings->set(CronHelper::DAEMON_SETTING, ['status' => CronHelper::DAEMON_STATUS_ACTIVE]);
-    expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
+    verify($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
     $this->wordpressTrigger->run();
-    expect($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
+    verify($this->settings->get(CronHelper::DAEMON_SETTING)['status'])->equals(CronHelper::DAEMON_STATUS_INACTIVE);
   }
 
   public function testItDoesNotTriggerCronWhenFutureStatsReportIsScheduled() {

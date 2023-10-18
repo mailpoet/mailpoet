@@ -115,7 +115,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $task1 = $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
     $task2 = $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, Carbon::now()->addDay());
     $data = $this->repository->getLatestTasks();
-    expect(count($data))->equals(2);
+    verify(count($data))->equals(2);
     $ids = array_map(function ($d){ return $d->getId();
 
     }, $data);
@@ -137,16 +137,16 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
     $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
     $data = $this->repository->getLatestTasks(Bounce::TASK_TYPE);
-    expect(count($data))->equals(1);
-    expect($data[0]->getType())->equals(Bounce::TASK_TYPE);
+    verify(count($data))->equals(1);
+    verify($data[0]->getType())->equals(Bounce::TASK_TYPE);
   }
 
   public function testItCanFilterTasksByStatus() {
     $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
     $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDay());
     $data = $this->repository->getLatestTasks(null, [ScheduledTaskEntity::STATUS_COMPLETED]);
-    expect(count($data))->equals(1);
-    expect($data[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    verify(count($data))->equals(1);
+    verify($data[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
   }
 
   public function testItDoesNotFailForSendingTaskWithoutQueue() {
@@ -156,7 +156,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
       Carbon::now()->addDay()
     );
     $data = $this->repository->getLatestTasks();
-    expect(count($data))->equals(1);
+    verify(count($data))->equals(1);
   }
 
   public function testItTouchesAllScheduledTasksByIds(): void {

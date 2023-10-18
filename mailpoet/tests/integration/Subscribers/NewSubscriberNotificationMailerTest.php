@@ -75,17 +75,17 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' =>
         Expected::once(function($newsletter, $subscriber, $extraParams) {
-          expect($subscriber)->equals('a@b.c');
+          verify($subscriber)->equals('a@b.c');
           expect($newsletter)->hasKey('subject');
           expect($newsletter)->hasKey('body');
           expect($newsletter)->count(2);
-          expect($newsletter['subject'])->equals('New subscriber to List1, List2');
+          verify($newsletter['subject'])->equals('New subscriber to List1, List2');
           expect($newsletter['body'])->hasKey('html');
           expect($newsletter['body'])->hasKey('text');
           expect($newsletter['body'])->count(2);
           expect($newsletter['body']['text'])->stringContainsString('subscriber@example.com');
           expect($newsletter['body']['html'])->stringContainsString('subscriber@example.com');
-          expect($extraParams['meta'])->equals([
+          verify($extraParams['meta'])->equals([
             'email_type' => 'new_subscriber_notification',
             'subscriber_status' => 'unknown',
             'subscriber_source' => 'administrator',
@@ -105,7 +105,7 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' =>
         Expected::once(function($newsletter, $subscriber, $extraParams) {
-          expect($subscriber)->equals('a@b.c');
+          verify($subscriber)->equals('a@b.c');
           expect($newsletter)->hasKey('subject');
           expect($newsletter)->hasKey('body');
           expect($newsletter)->count(2);
@@ -115,7 +115,7 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
           expect($newsletter['body'])->count(2);
           expect($newsletter['body']['text'])->stringContainsString('subscriber@example.com');
           expect($newsletter['body']['html'])->stringContainsString('subscriber@example.com');
-          expect($extraParams['meta'])->equals([
+          verify($extraParams['meta'])->equals([
             'email_type' => 'new_subscriber_notification',
             'subscriber_status' => 'unknown',
             'subscriber_source' => 'administrator',

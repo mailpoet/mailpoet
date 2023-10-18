@@ -25,7 +25,7 @@ class BlocksRegistryTest extends \MailPoetTest {
     $renderer = new Paragraph();
     $this->registry->addBlockRenderer('test', $renderer);
     $storedRenderer = $this->registry->getBlockRenderer('test');
-    expect($storedRenderer)->equals($renderer);
+    verify($storedRenderer)->equals($renderer);
   }
 
   public function testItAllowsToReplaceRendererViaFilter() {
@@ -37,7 +37,7 @@ class BlocksRegistryTest extends \MailPoetTest {
     };
     add_filter('mailpoet_block_renderer_test', $callback);
     $storedRenderer = $this->registry->getBlockRenderer('test');
-    expect($storedRenderer)->equals($dummyRenderer);
+    verify($storedRenderer)->equals($dummyRenderer);
     remove_filter('mailpoet_block_renderer_test', $callback);
   }
 }

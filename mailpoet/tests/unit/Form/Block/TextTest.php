@@ -73,12 +73,12 @@ class TextTest extends \MailPoetUnitTest {
     $modifiers = $this->htmlParser->getAttribute($input, 'modifiers');
     $class = $this->htmlParser->getAttribute($input, 'class');
     $style = $this->htmlParser->getAttribute($input, 'style');
-    expect($name->value)->equals('data[Field name]');
-    expect($type->value)->equals('text');
-    expect($validation->value)->equals('1');
-    expect($value->value)->equals('val');
-    expect($modifiers->value)->equals('mod');
-    expect($class->value)->equals('mailpoet_text');
-    expect($style->value)->equals('border-radius: 10px;');
+    verify($name->value)->equals('data[Field name]');
+    verify($type->value)->equals('text');
+    verify($validation->value)->equals('1');
+    verify($value->value)->equals('val');
+    verify($modifiers->value)->equals('mod');
+    verify($class->value)->equals('mailpoet_text');
+    verify($style->value)->equals('border-radius: 10px;');
   }
 }

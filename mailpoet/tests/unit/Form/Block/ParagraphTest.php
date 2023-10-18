@@ -27,7 +27,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'content' => 'Paragraph',
       ],
     ]);
-    expect($html)->equals('<p class="mailpoet_form_paragraph">Paragraph</p>');
+    verify($html)->equals('<p class="mailpoet_form_paragraph">Paragraph</p>');
   }
 
   public function testItShouldRenderClass() {
@@ -37,7 +37,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'class_name' => 'class1 class2',
       ],
     ]);
-    expect($html)->equals('<p class="mailpoet_form_paragraph class1 class2">Paragraph</p>');
+    verify($html)->equals('<p class="mailpoet_form_paragraph class1 class2">Paragraph</p>');
   }
 
   public function testItShouldRenderAlign() {
@@ -47,7 +47,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'align' => 'right',
       ],
     ]);
-    expect($html)->equals('<p class="mailpoet_form_paragraph" style="text-align: right">Paragraph</p>');
+    verify($html)->equals('<p class="mailpoet_form_paragraph" style="text-align: right">Paragraph</p>');
   }
 
   public function testItShouldRenderTextColor() {
@@ -57,7 +57,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'text_color' => 'red',
       ],
     ]);
-    expect($html)->equals('<p class="mailpoet_form_paragraph" style="color: red">Paragraph</p>');
+    verify($html)->equals('<p class="mailpoet_form_paragraph" style="color: red">Paragraph</p>');
   }
 
   public function testItShouldRenderBackgroundColor() {
@@ -77,7 +77,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'font_size' => '33',
       ],
     ]);
-    expect($html)->equals('<p class="mailpoet_form_paragraph mailpoet-has-font-size" style="font-size: 33px">Paragraph</p>');
+    verify($html)->equals('<p class="mailpoet_form_paragraph mailpoet-has-font-size" style="font-size: 33px">Paragraph</p>');
   }
 
   public function testItShouldRenderFontSizeWithUnit() {
@@ -87,7 +87,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'font_size' => '2.3em',
       ],
     ]);
-    expect($html)->equals('<p class="mailpoet_form_paragraph mailpoet-has-font-size" style="font-size: 2.3em">Paragraph</p>');
+    verify($html)->equals('<p class="mailpoet_form_paragraph mailpoet-has-font-size" style="font-size: 2.3em">Paragraph</p>');
   }
 
   public function testItShouldRenderLineHeight() {
@@ -97,7 +97,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'line_height' => '2.3',
       ],
     ]);
-    expect($html)->equals('<p class="mailpoet_form_paragraph" style="line-height: 2.3">Paragraph</p>');
+    verify($html)->equals('<p class="mailpoet_form_paragraph" style="line-height: 2.3">Paragraph</p>');
   }
 
   public function testItShouldRenderDropCap() {
@@ -107,7 +107,7 @@ class ParagraphTest extends \MailPoetUnitTest {
         'drop_cap' => '1',
       ],
     ]);
-    expect($html)->equals('<p class="mailpoet_form_paragraph has-drop-cap">Paragraph</p>');
+    verify($html)->equals('<p class="mailpoet_form_paragraph has-drop-cap">Paragraph</p>');
   }
 
   public function testItShouldRenderBackgroundClass() {

@@ -32,10 +32,10 @@ class ImportExportTest extends \MailPoetTest {
 
   public function testItSchedulesTaskWhenNoneExists() {
     $response = $this->endpoint->setupWooCommerceInitialImport();
-    expect($response->status)->equals(200);
+    verify($response->status)->equals(200);
     $task = $this->scheduledTasksRepository->findOneBy(['type' => WooCommerceSync::TASK_TYPE]);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $now = time();
     $scheduledAt = new Carbon($task->getScheduledAt());
     expect($scheduledAt->timestamp)->greaterOrEquals($now - 1);
@@ -49,13 +49,13 @@ class ImportExportTest extends \MailPoetTest {
     $this->endpoint->setupWooCommerceInitialImport();
     $task = $this->scheduledTasksRepository->findOneBy(['type' => WooCommerceSync::TASK_TYPE]);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $now = time();
     $scheduledAt = new Carbon($task->getScheduledAt());
     expect($scheduledAt->timestamp)->greaterOrEquals($now - 1);
     expect($scheduledAt->timestamp)->lessOrEquals($now + 1);
     $taskCount = $this->scheduledTasksRepository->countBy(['type' => WooCommerceSync::TASK_TYPE]);
-    expect($taskCount)->equals(1);
+    verify($taskCount)->equals(1);
   }
 
   public function testItDoesNothingForRunningTask() {
@@ -63,9 +63,9 @@ class ImportExportTest extends \MailPoetTest {
     $this->endpoint->setupWooCommerceInitialImport();
     $task = $this->scheduledTasksRepository->findOneBy(['type' => WooCommerceSync::TASK_TYPE]);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getStatus())->equals(null);
+    verify($task->getStatus())->equals(null);
     $taskCount = $this->scheduledTasksRepository->countBy(['type' => WooCommerceSync::TASK_TYPE]);
-    expect($taskCount)->equals(1);
+    verify($taskCount)->equals(1);
   }
 
   public function testItIgnoresCompletedAndPausedTasks() {
@@ -73,7 +73,7 @@ class ImportExportTest extends \MailPoetTest {
     $this->createTask(WooCommerceSync::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED);
     $this->endpoint->setupWooCommerceInitialImport();
     $taskCount = $this->scheduledTasksRepository->countBy(['type' => WooCommerceSync::TASK_TYPE]);
-    expect($taskCount)->equals(3);
+    verify($taskCount)->equals(3);
   }
 
   private function createTask($type, $status = null, $scheduledAt = null) {

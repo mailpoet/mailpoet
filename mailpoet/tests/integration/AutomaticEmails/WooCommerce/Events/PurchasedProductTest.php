@@ -44,7 +44,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $event = new PurchasedProduct();
     $result = $event->getEventDetails();
     expect($result)->notEmpty();
-    expect($result['slug'])->equals(PurchasedProduct::SLUG);
+    verify($result['slug'])->equals(PurchasedProduct::SLUG);
   }
 
   public function testItDoesNotScheduleEmailWhenOrderDetailsAreNotAvailable() {
@@ -150,7 +150,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $sendingQueue = $this->triggerEmailForState('processing', $email, $event);
     expect($sendingQueue)->notEmpty();
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
-    expect($sendingQueue->getMeta())->equals(['orderedProducts' => [1000]]);
+    verify($sendingQueue->getMeta())->equals(['orderedProducts' => [1000]]);
   }
 
   public function testItSchedulesEmailForCompletedOrder() {
@@ -161,7 +161,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $sendingQueue = $this->triggerEmailForState('completed', $email, $event);
     expect($sendingQueue)->notEmpty();
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
-    expect($sendingQueue->getMeta())->equals(['orderedProducts' => [1000]]);
+    verify($sendingQueue->getMeta())->equals(['orderedProducts' => [1000]]);
   }
 
   public function testItOnlySavesMetaDataForProductIdsMatchingTriggerIds() {
@@ -172,7 +172,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $sendingQueue = $this->triggerEmailForState('completed', $email, $event);
     expect($sendingQueue)->notEmpty();
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
-    expect($sendingQueue->getMeta())->equals(['orderedProducts' => [1000]]);
+    verify($sendingQueue->getMeta())->equals(['orderedProducts' => [1000]]);
   }
 
   public function testItDoesNotSaveOtherTriggerIds() {
@@ -183,7 +183,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $sendingQueue = $this->triggerEmailForState('completed', $email, $event);
     expect($sendingQueue)->notEmpty();
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
-    expect($sendingQueue->getMeta())->equals(['orderedProducts' => [1000]]);
+    verify($sendingQueue->getMeta())->equals(['orderedProducts' => [1000]]);
   }
 
   private function createEmailTriggeredByProductIds(array $triggerProductIds): NewsletterEntity {

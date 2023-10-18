@@ -72,11 +72,11 @@ class TextareaTest extends \MailPoetUnitTest {
     $modifiers = $this->htmlParser->getAttribute($textarea, 'modifiers');
     $class = $this->htmlParser->getAttribute($textarea, 'class');
     $style = $this->htmlParser->getAttribute($textarea, 'style');
-    expect($textarea->textContent)->equals('val');
-    expect($name->value)->equals('data[Field name]');
-    expect($validation->value)->equals('1');
-    expect($class->value)->equals('mailpoet_textarea');
-    expect($modifiers->value)->equals('mod');
-    expect($style->value)->equals('border-radius: 10px;');
+    verify($textarea->textContent)->equals('val');
+    verify($name->value)->equals('data[Field name]');
+    verify($validation->value)->equals('1');
+    verify($class->value)->equals('mailpoet_textarea');
+    verify($modifiers->value)->equals('mod');
+    verify($style->value)->equals('border-radius: 10px;');
   }
 }

@@ -51,7 +51,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     ]];
     $result = $this->processor->processCoupons($newsletter, $blocks, true);
 
-    expect($result)->equals($blocks);
+    verify($result)->equals($blocks);
   }
 
   public function testEnsureCouponForBlocks() {
@@ -77,7 +77,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     $this->assertWCCouponReceivesCorrectValues($mockedWCCoupon, self::$saveCouponId, $expiryDay);
 
     $result = $processor->processCoupons($newsletter, $blocks, false);
-    expect($result[0]['blocks'][0]['couponId'])->equals(self::$saveCouponId);
+    verify($result[0]['blocks'][0]['couponId'])->equals(self::$saveCouponId);
   }
 
   public function testEnsureCouponForBlocksSaves() {
@@ -104,7 +104,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
      * If the coupon already is generated for the block, it should not get re-generated
      */
     $result = $processor->processCoupons($newsletter, $blocks, false);
-    expect($result[0]['blocks'][0]['couponId'])->equals(self::$updatingCouponId);
+    verify($result[0]['blocks'][0]['couponId'])->equals(self::$updatingCouponId);
   }
 
   public function testEnsureCouponIsNotGeneratedWhenIsSet(): void {
@@ -134,7 +134,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     $mockedWCCoupon->expects($this->never())->method('set_description');
     $mockedWCCoupon->expects($this->never())->method('save');
     $result = $processor->processCoupons($newsletter, $blocks);
-    expect($result[0]['blocks'][0]['couponId'])->equals(self::$saveCouponId);
+    verify($result[0]['blocks'][0]['couponId'])->equals(self::$saveCouponId);
   }
 
   public function testItThrowsWhenWCIsNotActive() {
@@ -155,7 +155,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     $this->expectException(NewsletterProcessingException::class);
     $this->expectExceptionMessage('WooCommerce is not active');
     $result = $processor->processCoupons($newsletter, $blocks, false);
-    expect($result)->equals($blocks);
+    verify($result)->equals($blocks);
   }
 
   public function testItThrowsWhenCouponClassThrows() {
@@ -189,7 +189,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     });
 
     $mockedWCCoupon->method('set_date_expires')->willReturnCallback(function ($date) use ($expiryDay) {
-      expect(\date('Y-m-d', $date))->equals((new \DateTime("now", new \DateTimeZone('UTC')))->modify("+{$expiryDay} days")->format('Y-m-d'));
+      verify(\date('Y-m-d', $date))->equals((new \DateTime("now", new \DateTimeZone('UTC')))->modify("+{$expiryDay} days")->format('Y-m-d'));
     });
   }
 

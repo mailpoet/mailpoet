@@ -66,17 +66,17 @@ class DateTest extends \MailPoetUnitTest {
     $html = $this->date->render($this->block, []);
     $mothsSelect = $this->htmlParser->getElementByXpath($html, "//select", 0);
     $yearsSelect = $this->htmlParser->getElementByXpath($html, "//select", 1);
-    expect($mothsSelect->childNodes->length)->equals(13); // Months + placeholder
-    expect($yearsSelect->childNodes->length)->equals(101 + 1); // Years + placeholder
+    verify($mothsSelect->childNodes->length)->equals(13); // Months + placeholder
+    verify($yearsSelect->childNodes->length)->equals(101 + 1); // Years + placeholder
 
     $date = Carbon::now();
     $currentMonth = $date->format('F');
     $currentYear = $date->format('Y');
 
     $selectedMonth = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 0);
-    expect($selectedMonth->textContent)->equals($currentMonth);
+    verify($selectedMonth->textContent)->equals($currentMonth);
     $selectedYear = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 1);
-    expect($selectedYear->textContent)->equals($currentYear);
+    verify($selectedYear->textContent)->equals($currentYear);
   }
 
   public function testItShouldRenderYearMonthDayDateFormat() {
@@ -92,9 +92,9 @@ class DateTest extends \MailPoetUnitTest {
     $mothsSelect = $this->htmlParser->getElementByXpath($html, "//select", 0);
     $daysSelect = $this->htmlParser->getElementByXpath($html, "//select", 1);
     $yearsSelect = $this->htmlParser->getElementByXpath($html, "//select", 2);
-    expect($mothsSelect->childNodes->length)->equals(13); // Months + placeholder
-    expect($daysSelect->childNodes->length)->equals(32); // Days + placeholder
-    expect($yearsSelect->childNodes->length)->equals(101 + 1); // Years + placeholder
+    verify($mothsSelect->childNodes->length)->equals(13); // Months + placeholder
+    verify($daysSelect->childNodes->length)->equals(32); // Days + placeholder
+    verify($yearsSelect->childNodes->length)->equals(101 + 1); // Years + placeholder
 
     $date = Carbon::now();
     $currentMonth = $date->format('F');
@@ -102,11 +102,11 @@ class DateTest extends \MailPoetUnitTest {
     $currentDay = $date->format('j');
 
     $selectedMonth = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 0);
-    expect($selectedMonth->textContent)->equals($currentMonth);
+    verify($selectedMonth->textContent)->equals($currentMonth);
     $selectedDay = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 1);
-    expect($selectedDay->textContent)->equals($currentDay);
+    verify($selectedDay->textContent)->equals($currentDay);
     $selectedYear = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 2);
-    expect($selectedYear->textContent)->equals($currentYear);
+    verify($selectedYear->textContent)->equals($currentYear);
   }
 
   public function testItShouldAddValue() {
@@ -123,11 +123,11 @@ class DateTest extends \MailPoetUnitTest {
     $html = $this->date->render($block, []);
 
     $selectedMonth = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 0);
-    expect($selectedMonth->textContent)->equals('February');
+    verify($selectedMonth->textContent)->equals('February');
     $selectedDay = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 1);
-    expect($selectedDay->textContent)->equals('9');
+    verify($selectedDay->textContent)->equals('9');
     $selectedYear = $this->htmlParser->getElementByXpath($html, "//option[@selected='selected']", 2);
-    expect($selectedYear->textContent)->equals('2009');
+    verify($selectedYear->textContent)->equals('2009');
   }
 
   public function testItShouldRenderErrorContainerWithFormId() {
@@ -139,6 +139,6 @@ class DateTest extends \MailPoetUnitTest {
 
     $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_1_44']");
     expect($errorContainer)->notEmpty();
-    expect($errorContainer->nodeName)->equals('span');
+    verify($errorContainer->nodeName)->equals('span');
   }
 }

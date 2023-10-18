@@ -32,7 +32,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $result = $this->segmentsRepository->bulkTrash([$segment1->getId(), $segment2->getId()]);
     $this->entityManager->refresh($segment1);
     $this->entityManager->refresh($segment2);
-    expect($result)->equals(2);
+    verify($result)->equals(2);
     expect($segment1->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
     expect($segment2->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
   }
@@ -44,7 +44,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $result = $this->segmentsRepository->bulkTrash([$segment1->getId(), $segment2->getId()], SegmentEntity::TYPE_DYNAMIC);
     $this->entityManager->refresh($segment1);
     $this->entityManager->refresh($segment2);
-    expect($result)->equals(2);
+    verify($result)->equals(2);
     expect($segment1->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
     expect($segment2->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
   }
@@ -57,7 +57,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $result = $this->segmentsRepository->bulkTrash([$segment1->getId(), $segment2->getId()]);
     $this->entityManager->refresh($segment1);
     $this->entityManager->refresh($segment2);
-    expect($result)->equals(1);
+    verify($result)->equals(1);
     expect($segment1->getDeletedAt())->null();
     expect($segment2->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
   }
@@ -70,7 +70,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $result = $this->segmentsRepository->bulkTrash([$segment1->getId(), $segment2->getId()], SegmentEntity::TYPE_DYNAMIC);
     $this->entityManager->refresh($segment1);
     $this->entityManager->refresh($segment2);
-    expect($result)->equals(1);
+    verify($result)->equals(1);
     expect($segment1->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
     expect($segment2->getDeletedAt())->null();
   }
@@ -78,13 +78,13 @@ class SegmentsRepositoryTest extends \MailPoetTest {
   public function testItReturnsCountsOfSegmentsWithMultipleFilters(): void {
     // No Segments
     $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();
-    expect($count)->equals(0);
+    verify($count)->equals(0);
 
     // Two segments with one filter each
     $segment1 = $this->createDynamicSegmentEntityForEditorUsers();
     $segment2 = $this->createDynamicSegmentEntityForEditorUsers();
     $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();
-    expect($count)->equals(0);
+    verify($count)->equals(0);
 
     // One segment with multiple filters
     $filterData = new DynamicSegmentFilterData(
@@ -97,7 +97,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $segment1->addDynamicFilter($dynamicFilter);
     $this->segmentsRepository->flush();
     $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();
-    expect($count)->equals(1);
+    verify($count)->equals(1);
 
     // Both segments with multiple filters
     $filterData = new DynamicSegmentFilterData(
@@ -110,7 +110,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $segment1->addDynamicFilter($dynamicFilter);
     $this->segmentsRepository->flush();
     $count = $this->segmentsRepository->getSegmentCountWithMultipleFilters();
-    expect($count)->equals(2);
+    verify($count)->equals(2);
   }
 
   public function testItCanCheckForUniqueNames(): void {

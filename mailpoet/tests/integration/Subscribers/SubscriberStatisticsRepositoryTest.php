@@ -53,15 +53,15 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
       ->create();
 
     $lifetimeCount = $this->repository->getStatisticsClickCount($subscriber, null);
-    expect($lifetimeCount)->equals(3);
+    verify($lifetimeCount)->equals(3);
 
     $yearCount = $this->repository->getStatisticsClickCount($subscriber, $yearAgo);
-    expect($yearCount)->equals(2);
+    verify($yearCount)->equals(2);
 
     $monthCount = $this->repository->getStatisticsClickCount($subscriber, $monthAgo);
-    expect($monthCount)->equals(1);
+    verify($monthCount)->equals(1);
 
-    expect($this->repository->getStatisticsClickCount($subscriber, Carbon::now()->subDays(27)))->equals(0);
+    verify($this->repository->getStatisticsClickCount($subscriber, Carbon::now()->subDays(27)))->equals(0);
   }
 
   public function testItFetchesOpenCount(): void {
@@ -71,10 +71,10 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     $open = (new StatisticsOpens($newsletter, $subscriber))->withCreatedAt($yearAgo)->create();
     $newsletterSendStat = (new StatisticsNewsletters($newsletter, $subscriber))->withSentAt($yearAgo)->create();
 
-    expect($this->repository->getStatisticsOpenCount($subscriber, null))->equals(1);
-    expect($this->repository->getStatisticsOpenCount($subscriber, $yearAgo))->equals(1);
-    expect($this->repository->getStatisticsOpenCount($subscriber, Carbon::now()->subMonth()))->equals(0);
-    expect($this->repository->getStatisticsMachineOpenCount($subscriber, null))->equals(0);
+    verify($this->repository->getStatisticsOpenCount($subscriber, null))->equals(1);
+    verify($this->repository->getStatisticsOpenCount($subscriber, $yearAgo))->equals(1);
+    verify($this->repository->getStatisticsOpenCount($subscriber, Carbon::now()->subMonth()))->equals(0);
+    verify($this->repository->getStatisticsMachineOpenCount($subscriber, null))->equals(0);
   }
 
   public function testItFetchesMachineOpenCount(): void {
@@ -84,10 +84,10 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     $open = (new StatisticsOpens($newsletter, $subscriber))->withMachineUserAgentType()->withCreatedAt($yearAgo)->create();
     $newsletterSendStat = (new StatisticsNewsletters($newsletter, $subscriber))->withSentAt($yearAgo)->create();
 
-    expect($this->repository->getStatisticsMachineOpenCount($subscriber, null))->equals(1);
-    expect($this->repository->getStatisticsMachineOpenCount($subscriber, $yearAgo))->equals(1);
-    expect($this->repository->getStatisticsMachineOpenCount($subscriber, Carbon::now()->subMonth()))->equals(0);
-    expect($this->repository->getStatisticsOpenCount($subscriber, null))->equals(0);
+    verify($this->repository->getStatisticsMachineOpenCount($subscriber, null))->equals(1);
+    verify($this->repository->getStatisticsMachineOpenCount($subscriber, $yearAgo))->equals(1);
+    verify($this->repository->getStatisticsMachineOpenCount($subscriber, Carbon::now()->subMonth()))->equals(0);
+    verify($this->repository->getStatisticsOpenCount($subscriber, null))->equals(0);
   }
 
   public function testItFetchesTotalSentCount(): void {
@@ -103,10 +103,10 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     $newsletterSendStat = (new StatisticsNewsletters($newsletter2, $subscriber))->withSentAt($yearAgo)->create();
     $newsletterSendStat = (new StatisticsNewsletters($newsletter3, $subscriber))->withSentAt($monthAgo)->create();
 
-    expect($this->repository->getTotalSentCount($subscriber, $twoYearsAgo))->equals(3);
-    expect($this->repository->getTotalSentCount($subscriber, $yearAgo))->equals(2);
-    expect($this->repository->getTotalSentCount($subscriber, $monthAgo))->equals(1);
-    expect($this->repository->getTotalSentCount($subscriber, Carbon::now()->subDays(27)))->equals(0);
+    verify($this->repository->getTotalSentCount($subscriber, $twoYearsAgo))->equals(3);
+    verify($this->repository->getTotalSentCount($subscriber, $yearAgo))->equals(2);
+    verify($this->repository->getTotalSentCount($subscriber, $monthAgo))->equals(1);
+    verify($this->repository->getTotalSentCount($subscriber, Carbon::now()->subDays(27)))->equals(0);
   }
 
   public function testItFetchesWooCommerceRevenueData(): void {
@@ -138,22 +138,22 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
 
     $twoYearsAgoResult = $this->repository->getWooCommerceRevenue($subscriber, $twoYearsAgo);
     $this->assertInstanceOf(WooCommerceRevenue::class, $twoYearsAgoResult);
-    expect($twoYearsAgoResult->getOrdersCount())->equals(3);
-    expect($twoYearsAgoResult->getValue())->equals(60.00);
+    verify($twoYearsAgoResult->getOrdersCount())->equals(3);
+    verify($twoYearsAgoResult->getValue())->equals(60.00);
 
     $yearAgoResult = $this->repository->getWooCommerceRevenue($subscriber, $yearAgo);
     $this->assertInstanceOf(WooCommerceRevenue::class, $yearAgoResult);
-    expect($yearAgoResult->getOrdersCount())->equals(2);
-    expect($yearAgoResult->getValue())->equals(50.00);
+    verify($yearAgoResult->getOrdersCount())->equals(2);
+    verify($yearAgoResult->getValue())->equals(50.00);
 
     $monthAgoResult = $this->repository->getWooCommerceRevenue($subscriber, $monthAgo);
     $this->assertInstanceOf(WooCommerceRevenue::class, $monthAgoResult);
-    expect($monthAgoResult->getOrdersCount())->equals(1);
-    expect($monthAgoResult->getValue())->equals(30.00);
+    verify($monthAgoResult->getOrdersCount())->equals(1);
+    verify($monthAgoResult->getValue())->equals(30.00);
 
     $daysAgoResult = $this->repository->getWooCommerceRevenue($subscriber, Carbon::now()->subDays(27));
     $this->assertInstanceOf(WooCommerceRevenue::class, $daysAgoResult);
-    expect($daysAgoResult->getOrdersCount())->equals(0);
-    expect($daysAgoResult->getValue())->equals(0.00);
+    verify($daysAgoResult->getOrdersCount())->equals(0);
+    verify($daysAgoResult->getValue())->equals(0.00);
   }
 }

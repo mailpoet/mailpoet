@@ -11,6 +11,6 @@ class BlockRendererHelperTest extends \MailPoetTest {
     $text = '[mailpoet_subscribers_count] [gallery attr="attr"]inside[/gallery][unknown]';
     $rendererHelper = $this->diContainer->get(BlockRendererHelper::class);
     $escaped = $rendererHelper->escapeShortCodes($text);
-    expect($escaped)->equals('&#91;mailpoet_subscribers_count&#93; &#91;gallery attr="attr"&#93;inside&#91;/gallery&#93;[unknown]');
+    verify($escaped)->equals('&#91;mailpoet_subscribers_count&#93; &#91;gallery attr="attr"&#93;inside&#91;/gallery&#93;[unknown]');
   }
 }

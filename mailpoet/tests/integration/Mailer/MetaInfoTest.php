@@ -29,7 +29,7 @@ class MetaInfoTest extends \MailPoetTest {
   }
 
   public function testItGetsMetaInfoForSendingTest() {
-    expect($this->meta->getSendingTestMetaInfo())->equals([
+    verify($this->meta->getSendingTestMetaInfo())->equals([
       'email_type' => 'sending_test',
       'subscriber_status' => 'unknown',
       'subscriber_source' => 'administrator',
@@ -37,7 +37,7 @@ class MetaInfoTest extends \MailPoetTest {
   }
 
   public function testItGetsMetaInfoForPreview() {
-    expect($this->meta->getPreviewMetaInfo())->equals([
+    verify($this->meta->getPreviewMetaInfo())->equals([
       'email_type' => 'preview',
       'subscriber_status' => 'unknown',
       'subscriber_source' => 'administrator',
@@ -45,7 +45,7 @@ class MetaInfoTest extends \MailPoetTest {
   }
 
   public function testItGetsMetaInfoForStatsNotifications() {
-    expect($this->meta->getStatsNotificationMetaInfo())->equals([
+    verify($this->meta->getStatsNotificationMetaInfo())->equals([
       'email_type' => 'email_stats_notification',
       'subscriber_status' => 'unknown',
       'subscriber_source' => 'administrator',
@@ -53,7 +53,7 @@ class MetaInfoTest extends \MailPoetTest {
   }
 
   public function testItGetsMetaInfoForWordPressTransactionalEmails() {
-    expect($this->meta->getWordPressTransactionalMetaInfo())->equals([
+    verify($this->meta->getWordPressTransactionalMetaInfo())->equals([
       'email_type' => 'transactional',
       'subscriber_status' => 'unknown',
       'subscriber_source' => 'unknown',
@@ -63,7 +63,7 @@ class MetaInfoTest extends \MailPoetTest {
       'getStatus' => 'subscribed',
       'getSource' => 'form',
     ]);
-    expect($this->meta->getWordPressTransactionalMetaInfo($subscriber))->equals([
+    verify($this->meta->getWordPressTransactionalMetaInfo($subscriber))->equals([
       'email_type' => 'transactional',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
@@ -77,7 +77,7 @@ class MetaInfoTest extends \MailPoetTest {
       ->withEmail('test@metainfo.com')
       ->create();
 
-    expect($this->meta->getConfirmationMetaInfo($subscriber))->equals([
+    verify($this->meta->getConfirmationMetaInfo($subscriber))->equals([
       'email_type' => 'confirmation',
       'subscriber_status' => 'unconfirmed',
       'subscriber_source' => 'form',
@@ -85,7 +85,7 @@ class MetaInfoTest extends \MailPoetTest {
   }
 
   public function testItGetsMetaInfoForNewSubscriberNotifications() {
-    expect($this->meta->getNewSubscriberNotificationMetaInfo())->equals([
+    verify($this->meta->getNewSubscriberNotificationMetaInfo())->equals([
       'email_type' => 'new_subscriber_notification',
       'subscriber_status' => 'unknown',
       'subscriber_source' => 'administrator',
@@ -101,7 +101,7 @@ class MetaInfoTest extends \MailPoetTest {
       ->withType(NewsletterEntity::TYPE_STANDARD)
       ->create();
 
-    expect($this->meta->getNewsletterMetaInfo($newsletter, $subscriber))->equals([
+    verify($this->meta->getNewsletterMetaInfo($newsletter, $subscriber))->equals([
       'email_type' => 'newsletter',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
@@ -112,7 +112,7 @@ class MetaInfoTest extends \MailPoetTest {
     $newsletter = $this->newsletterFactory
       ->withType(NewsletterEntity::TYPE_WELCOME)
       ->create();
-    expect($this->meta->getNewsletterMetaInfo($newsletter, $this->subscriber))->equals([
+    verify($this->meta->getNewsletterMetaInfo($newsletter, $this->subscriber))->equals([
       'email_type' => 'welcome',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
@@ -127,12 +127,12 @@ class MetaInfoTest extends \MailPoetTest {
       ->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
       ->create();
 
-    expect($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
+    verify($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
       'email_type' => 'post_notification',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
     ]);
-    expect($this->meta->getNewsletterMetaInfo($newsletter2, $this->subscriber))->equals([
+    verify($this->meta->getNewsletterMetaInfo($newsletter2, $this->subscriber))->equals([
       'email_type' => 'post_notification',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
@@ -149,12 +149,12 @@ class MetaInfoTest extends \MailPoetTest {
       ->withAutomaticTypeWooCommerceProductInCategoryPurchased()
       ->create();
 
-    expect($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
+    verify($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
       'email_type' => 'automatic_woocommerce_woocommerce_first_purchase',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
     ]);
-    expect($this->meta->getNewsletterMetaInfo($newsletter2, $this->subscriber))->equals([
+    verify($this->meta->getNewsletterMetaInfo($newsletter2, $this->subscriber))->equals([
       'email_type' => 'automatic_woocommerce_woocommerce_product_purchased_in_category',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
@@ -168,12 +168,12 @@ class MetaInfoTest extends \MailPoetTest {
     $newsletter2 = $this->newsletterFactory
       ->withType(NewsletterEntity::TYPE_RE_ENGAGEMENT)
       ->create();
-    expect($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
+    verify($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
       'email_type' => 're_engagement',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
     ]);
-    expect($this->meta->getNewsletterMetaInfo($newsletter2, $this->subscriber))->equals([
+    verify($this->meta->getNewsletterMetaInfo($newsletter2, $this->subscriber))->equals([
       'email_type' => 're_engagement',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',
@@ -185,7 +185,7 @@ class MetaInfoTest extends \MailPoetTest {
       ->withType('random')
       ->create();
 
-    expect($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
+    verify($this->meta->getNewsletterMetaInfo($newsletter1, $this->subscriber))->equals([
       'email_type' => 'random',
       'subscriber_status' => 'subscribed',
       'subscriber_source' => 'form',

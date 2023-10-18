@@ -79,12 +79,12 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
     $filters = $this->repository->getFilters($this->getListingDefinition());
     expect($filters['segment'])->count(3);
-    expect($filters['segment'][0]['label'])->equals('All Lists');
-    expect($filters['segment'][1]['label'])->equals('Subscribers without a list (3)');
-    expect($filters['segment'][2]['label'])->equals('Segment 2 (2)');
+    verify($filters['segment'][0]['label'])->equals('All Lists');
+    verify($filters['segment'][1]['label'])->equals('Subscribers without a list (3)');
+    verify($filters['segment'][2]['label'])->equals('Segment 2 (2)');
     expect($filters['tag'])->count(2);
-    expect($filters['tag'][0]['label'])->equals('All Tags');
-    expect($filters['tag'][1]['label'])->equals('My Tag (1)');
+    verify($filters['tag'][0]['label'])->equals('All Tags');
+    verify($filters['tag'][1]['label'])->equals('My Tag (1)');
   }
 
   public function testItBuildsGroups() {
@@ -119,26 +119,26 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $groups = $this->repository->getGroups($this->getListingDefinition());
-    expect($groups['0']['name'])->equals('all');
-    expect($groups['0']['count'])->equals(7); // bounced + inactive + unconfirmed + unsubscribed + regular + unsub from a list + without a list
+    verify($groups['0']['name'])->equals('all');
+    verify($groups['0']['count'])->equals(7); // bounced + inactive + unconfirmed + unsubscribed + regular + unsub from a list + without a list
 
-    expect($groups['1']['name'])->equals('subscribed');
-    expect($groups['1']['count'])->equals(3);// without a list + unsub form a list + regular
+    verify($groups['1']['name'])->equals('subscribed');
+    verify($groups['1']['count'])->equals(3);// without a list + unsub form a list + regular
 
-    expect($groups['2']['name'])->equals('unconfirmed');
-    expect($groups['2']['count'])->equals(1);
+    verify($groups['2']['name'])->equals('unconfirmed');
+    verify($groups['2']['count'])->equals(1);
 
-    expect($groups['3']['name'])->equals('unsubscribed');
-    expect($groups['3']['count'])->equals(1);
+    verify($groups['3']['name'])->equals('unsubscribed');
+    verify($groups['3']['count'])->equals(1);
 
-    expect($groups['4']['name'])->equals('inactive');
-    expect($groups['4']['count'])->equals(1);
+    verify($groups['4']['name'])->equals('inactive');
+    verify($groups['4']['count'])->equals(1);
 
-    expect($groups['5']['name'])->equals('bounced');
-    expect($groups['5']['count'])->equals(1);
+    verify($groups['5']['name'])->equals('bounced');
+    verify($groups['5']['count'])->equals(1);
 
-    expect($groups['6']['name'])->equals('trash');
-    expect($groups['6']['count'])->equals(1);
+    verify($groups['6']['name'])->equals('trash');
+    verify($groups['6']['count'])->equals(1);
   }
 
   public function testLoadAllSubscribers() {
@@ -168,7 +168,7 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $data = $this->repository->getData($this->getListingDefinition());
-    expect(count($data))->equals(7);
+    verify(count($data))->equals(7);
   }
 
   public function testLoadSubscribersInDefaultSegment() {
@@ -188,9 +188,9 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->listingData['filter'] = ['segment' => $list->getId()];
     $this->listingData['sort_by'] = 'id';
     $data = $this->repository->getData($this->getListingDefinition());
-    expect(count($data))->equals(2);
-    expect($data[0]->getEmail())->equals($subscriberUnsubscribedFromAList->getEmail());
-    expect($data[1]->getEmail())->equals($regularSubscriber->getEmail());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($subscriberUnsubscribedFromAList->getEmail());
+    verify($data[1]->getEmail())->equals($regularSubscriber->getEmail());
     $this->listingData['sort_by'] = '';
   }
 
@@ -205,8 +205,8 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
 
     $this->listingData['filter'] = ['segment' => $list->getId()];
     $data = $this->repository->getData($this->getListingDefinition());
-    expect(count($data))->equals(1);
-    expect($data[0]->getEmail())->equals($wpUserEmail);
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($wpUserEmail);
     $this->tester->deleteWordPressUser($wpUserEmail);
   }
 
@@ -228,10 +228,10 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->listingData['offset'] = 2;
     $this->listingData['sort_by'] = 'id';
     $data = $this->repository->getData($this->getListingDefinition());
-    expect(count($data))->equals(1);
-    expect($data[0]->getEmail())->equals($wpUserEmail3);
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($wpUserEmail3);
     $count = $this->repository->getCount($this->getListingDefinition());
-    expect($count)->equals(3);
+    verify($count)->equals(3);
     $this->tester->deleteWordPressUser($wpUserEmail1);
     $this->tester->deleteWordPressUser($wpUserEmail2);
     $this->tester->deleteWordPressUser($wpUserEmail3);
@@ -252,10 +252,10 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->listingData['filter'] = ['segment' => $list->getId()];
     $this->listingData['search'] = 'user-role-test2';
     $data = $this->repository->getData($this->getListingDefinition());
-    expect(count($data))->equals(1);
-    expect($data[0]->getEmail())->equals($wpUserEmail2);
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($wpUserEmail2);
     $count = $this->repository->getCount($this->getListingDefinition());
-    expect($count)->equals(1); // Count should be affected by search
+    verify($count)->equals(1); // Count should be affected by search
     $this->tester->deleteWordPressUser($wpUserEmail1);
     $this->tester->deleteWordPressUser($wpUserEmail2);
     $this->listingData['search'] = '';
@@ -285,9 +285,9 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->listingData['filter'] = ['segment' => SubscriberListingRepository::FILTER_WITHOUT_LIST];
     $this->listingData['sort_by'] = 'id';
     $data = $this->repository->getData($this->getListingDefinition());
-    expect(count($data))->equals(2);
-    expect($data[0]->getEmail())->equals($subscriberOnDeletedList->getEmail());
-    expect($data[1]->getEmail())->equals($subscriberWithoutList->getEmail());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($subscriberOnDeletedList->getEmail());
+    verify($data[1]->getEmail())->equals($subscriberWithoutList->getEmail());
     $this->listingData['sort_by'] = '';
   }
 
@@ -305,9 +305,9 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->listingData['filter'] = ['minUpdatedAt' => new Carbon('2022-10-11 12:00:00')];
     $this->listingData['sort_by'] = 'id';
     $data = $this->repository->getData($this->getListingDefinition());
-    expect(count($data))->equals(2);
-    expect($data[0]->getEmail())->equals($subscriber2->getEmail());
-    expect($data[1]->getEmail())->equals($subscriber3->getEmail());
+    verify(count($data))->equals(2);
+    verify($data[0]->getEmail())->equals($subscriber2->getEmail());
+    verify($data[1]->getEmail())->equals($subscriber3->getEmail());
   }
 
   public function testLoadSubscribersInDefaultSegmentConsideringSubscriberStatusPerSegmentAndNotGlobally() {
@@ -328,12 +328,12 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->listingData['sort_by'] = 'id';
     $this->listingData['group'] = SubscriberEntity::STATUS_SUBSCRIBED;
     $data = $this->repository->getData($this->getListingDefinition());
-    expect(count($data))->equals(1);
-    expect($data[0]->getEmail())->equals($regularSubscriber->getEmail());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($regularSubscriber->getEmail());
     $this->listingData['group'] = SubscriberEntity::STATUS_UNSUBSCRIBED;
     $data = $this->repository->getData($this->getListingDefinition());
-    expect(count($data))->equals(1);
-    expect($data[0]->getEmail())->equals($subscriberUnsubscribedFromAList->getEmail());
+    verify(count($data))->equals(1);
+    verify($data[0]->getEmail())->equals($subscriberUnsubscribedFromAList->getEmail());
     $this->listingData['sort_by'] = '';
     $this->listingData['group'] = '';
   }

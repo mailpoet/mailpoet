@@ -25,7 +25,7 @@ class DatabaseTest extends \MailPoetTest {
   }
 
   public function testItConfiguresLogging() {
-    expect(ORM::get_config('logging'))->equals(WP_DEBUG);
+    verify(ORM::get_config('logging'))->equals(WP_DEBUG);
   }
 
   public function testItSetsDBDriverOptions() {
@@ -39,6 +39,6 @@ class DatabaseTest extends \MailPoetTest {
       )
       ->findOne();
     // time zone should be set based on WP's time zone
-    expect($result->timeZone)->equals(Env::$dbTimezoneOffset);
+    verify($result->timeZone)->equals(Env::$dbTimezoneOffset);
   }
 }

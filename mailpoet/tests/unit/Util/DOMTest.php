@@ -21,7 +21,7 @@ class DOMTest extends \MailPoetUnitTest {
     $this->assertInstanceOf(DomNode::class, $aElement);
     DOMUtil::splitOn($this->root, $aElement);
 
-    expect($this->root->html())->equals(
+    verify($this->root->html())->equals(
       '<p><i>italic</i><em>previous text</em></p>' .
       '<a href="#mylink"><img src="#myimage" /></a>' .
       '<p><em>next text</em><b>bolded</b></p>'
@@ -38,6 +38,6 @@ class DOMTest extends \MailPoetUnitTest {
     $this->assertInstanceOf(pQuery::class, $p);
     $paragraph = $p->offsetGet(0);
 
-    expect(DOMUtil::findTopAncestor($image))->equals($paragraph);
+    verify(DOMUtil::findTopAncestor($image))->equals($paragraph);
   }
 }

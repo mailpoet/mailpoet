@@ -9,7 +9,7 @@ class PQueryTest extends \MailPoetUnitTest {
     $html = '<a href="#" title="Escape " this"></a>';
     $domnode = pQuery::parseStr($html);
     $innerText = $domnode->getInnerText();
-    expect($innerText)->equals("");
+    verify($innerText)->equals("");
   }
 
   public function testQuotesAreCorrectlyEscaped() {
@@ -58,7 +58,7 @@ class PQueryTest extends \MailPoetUnitTest {
   public function parseTest($html, $equals = true) {
     $parsedHtml = pQuery::parseStr($html)->getInnerText();
     if ($equals) {
-      expect($parsedHtml)->equals($html);
+      verify($parsedHtml)->equals($html);
     } else {
       expect($parsedHtml)->notEquals($html);
     }

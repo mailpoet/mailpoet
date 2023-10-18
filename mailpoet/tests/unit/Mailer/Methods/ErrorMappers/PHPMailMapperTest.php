@@ -24,21 +24,21 @@ class PHPMailMapperTest extends \MailPoetUnitTest {
 
   public function testGetProperErrorForSubscriber() {
     $error = $this->mapper->getErrorForSubscriber('john@rambo.com');
-    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->equals('PHPMail has returned an unknown error.');
-    expect($error->getSubscriberErrors()[0]->getEmail())->equals('john@rambo.com');
+    verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    verify($error->getMessage())->equals('PHPMail has returned an unknown error.');
+    verify($error->getSubscriberErrors()[0]->getEmail())->equals('john@rambo.com');
   }
 
   public function testGetProperErrorFromException() {
     $error = $this->mapper->getErrorFromException(new \Exception('Some message'), 'john@rambo.com');
-    expect($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->equals('Some message');
-    expect($error->getSubscriberErrors()[0]->getEmail())->equals('john@rambo.com');
+    verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
+    verify($error->getMessage())->equals('Some message');
+    verify($error->getSubscriberErrors()[0]->getEmail())->equals('john@rambo.com');
   }
 
   public function testGetSoftErrorFromExceptionForInvalidEmail() {
     $error = $this->mapper->getErrorFromException(new \Exception('Invalid address. (Add ...'), 'john@rambo.com');
-    expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
+    verify($error->getLevel())->equals(MailerError::LEVEL_SOFT);
   }
 
   public function _after() {

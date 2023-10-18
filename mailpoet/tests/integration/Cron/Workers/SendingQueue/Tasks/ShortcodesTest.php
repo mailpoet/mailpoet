@@ -27,7 +27,7 @@ class ShortcodesTest extends \MailPoetTest {
     $subscriber = (new SubscriberFactory())->withFirstName('John')->withLastName('Doe')->create();
     $renderedBody = '[subscriber:firstname] [subscriber:lastname]';
     $result = Shortcodes::process($renderedBody, null, $newsletter, $subscriber, $queue);
-    expect($result)->equals('John Doe');
+    verify($result)->equals('John Doe');
   }
 
   public function testItCanReplaceShortcodesInOneStringUsingContentsFromAnother() {
@@ -38,10 +38,10 @@ class ShortcodesTest extends \MailPoetTest {
 
     // [newsletter:post_title] depends on the "data-post-id" tag and the shortcode will
     // get replaced with an empty string if that tag is not found
-    expect(trim(Shortcodes::process($content)))->equals('Subject line with one shortcode:');
+    verify(trim(Shortcodes::process($content)))->equals('Subject line with one shortcode:');
 
     // when tag is found, the shortcode will be processed and replaced
-    expect(Shortcodes::process($content, $contentSource))->equals('Subject line with one shortcode: ' . $wpPost->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify(Shortcodes::process($content, $contentSource))->equals('Subject line with one shortcode: ' . $wpPost->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function _after() {

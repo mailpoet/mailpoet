@@ -153,7 +153,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     });
 
     $result = $this->AM->getAutomaticEmailBySlug('email1');
-    expect($result['slug'])->equals('email1');
+    verify($result['slug'])->equals('email1');
 
     $this->wp->removeAllFilters('mailpoet_automatic_email_test');
   }
@@ -208,7 +208,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     });
 
     $result = $this->AM->getAutomaticEmailEventBySlug('email', 'event2_slug');
-    expect($result['slug'])->equals('event2_slug');
+    verify($result['slug'])->equals('event2_slug');
 
     $this->wp->removeAllFilters('mailpoet_automatic_email_test');
   }

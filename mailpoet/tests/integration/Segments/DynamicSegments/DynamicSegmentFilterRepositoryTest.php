@@ -31,8 +31,8 @@ class DynamicSegmentFilterRepositoryTest extends \MailPoetTest {
       WooCommerceTotalSpent::ACTION_TOTAL_SPENT
     );
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $dynamicFilter);
-    expect($dynamicFilter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
-    expect($dynamicFilter->getFilterData()->getAction())->equals(WooCommerceTotalSpent::ACTION_TOTAL_SPENT);
+    verify($dynamicFilter->getFilterData()->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    verify($dynamicFilter->getFilterData()->getAction())->equals(WooCommerceTotalSpent::ACTION_TOTAL_SPENT);
 
     $dynamicFilter = $this->dynamicSegmentFilterRepository->findOnyByFilterTypeAndAction(
       DynamicSegmentFilterData::TYPE_USER_ROLE,

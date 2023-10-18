@@ -25,7 +25,7 @@ class PostsTest extends \MailPoetTest {
     $renderedNewsletter = [
       'html' => 'Sample newsletter',
     ];
-    expect($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(false);
+    verify($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(false);
   }
 
   public function testItCanExtractAndSavePosts() {
@@ -44,7 +44,7 @@ class PostsTest extends \MailPoetTest {
     $renderedNewsletter = [
       'html' => '<a data-post-id="' . $postId . '" href="#">sample post</a>',
     ];
-    expect($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(true);
+    verify($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(true);
     $newsletterPostRepository = ContainerWrapper::getInstance()->get(NewsletterPostsRepository::class);
     $newsletterPost = $newsletterPostRepository->findOneBy(['newsletter' => $parent]);
     $this->assertInstanceOf(NewsletterPostEntity::class, $newsletterPost);
@@ -63,8 +63,8 @@ class PostsTest extends \MailPoetTest {
     $renderedNewsletter = [
       'html' => '<a data-post-id="' . $postId . '" href="#">sample post</a>',
     ];
-    expect($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(false);
+    verify($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(false);
     $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
-    expect($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(false);
+    verify($this->postsTask->extractAndSave($renderedNewsletter, $newsletter))->equals(false);
   }
 }

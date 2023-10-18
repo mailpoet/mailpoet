@@ -51,14 +51,14 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->createCompletedSendingTasksForSubscriber($subscriber2, self::UNOPENED_EMAILS_THRESHOLD - 1, 3);
 
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
-    expect($result)->equals(1);
+    verify($result)->equals(1);
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
-    expect($subscriber2->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
+    verify($subscriber2->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItDeactivatesLimitedAmountOfSubscribers(): void {
@@ -70,7 +70,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
 
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize, $subscriber1->getId());
     $this->entityManager->clear();
-    expect($result)->equals(1);
+    verify($result)->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -80,13 +80,13 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
 
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize, $subscriber2->getId(), self::UNOPENED_EMAILS_THRESHOLD);
     $this->entityManager->clear();
-    expect($result)->equals(1);
+    verify($result)->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
-    expect($subscriber2->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
+    verify($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
+    verify($subscriber2->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
   }
 
   public function testItDoesNotDeactivateNewSubscriberWithUnopenedEmail(): void {
@@ -94,10 +94,10 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->createCompletedSendingTasksForSubscriber($subscriber, self::UNOPENED_EMAILS_THRESHOLD, 3);
 
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
-    expect($result)->equals(0);
+    verify($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItDoesNotDeactivateNewlyResubscribedSubscriberWithUnopenedEmail(): void {
@@ -108,20 +108,20 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->createCompletedSendingTasksForSubscriber($subscriber, self::UNOPENED_EMAILS_THRESHOLD, 3);
 
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
-    expect($result)->equals(0);
+    verify($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItDoesNotDeactivateSubscriberWithoutSentEmail(): void {
     $this->createCompletedSendingTask(3);
     $subscriber = $this->createSubscriber('s1@email.com', 10);
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
-    expect($result)->equals(0);
+    verify($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItDoesNotDeactivateSubscriberWhoRecentlyOpenedEmail(): void {
@@ -131,20 +131,20 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->addEmailOpenedRecord($subscriber, $queue, 2);
     $this->createCompletedSendingTasksForSubscriber($subscriber, self::UNOPENED_EMAILS_THRESHOLD, 3);
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
-    expect($result)->equals(0);
+    verify($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItDoesNotDeactivateSubscriberWhoReceivedEmailRecently(): void {
     $subscriber = $this->createSubscriber('s1@email.com', 10);
     $this->createCompletedSendingTasksForSubscriber($subscriber, self::UNOPENED_EMAILS_THRESHOLD, 0);
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
-    expect($result)->equals(0);
+    verify($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItDoesNotDeactivateSubscriberWithLessEmailsCountThanThreshold(): void {
@@ -152,12 +152,12 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->createCompletedSendingTasksForSubscriber($subscriber1, self::UNOPENED_EMAILS_THRESHOLD, 3);
 
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
-    expect($result)->equals(0);
+    verify($result)->equals(0);
     $this->entityManager->clear();
 
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    expect($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItActivatesSubscriberWhoRecentlyOpenedEmail(): void {
@@ -167,10 +167,10 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->addEmailOpenedRecord($subscriber, $queue, 2);
     $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     $this->entityManager->clear();
-    expect($result)->equals(1);
+    verify($result)->equals(1);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItActivatesLimitedNumberOfSubscribers(): void {
@@ -185,7 +185,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
 
     $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize);
     $this->entityManager->clear();
-    expect($result)->equals(1);
+    verify($result)->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
@@ -195,13 +195,13 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
 
     $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize);
     $this->entityManager->clear();
-    expect($result)->equals(1);
+    verify($result)->equals(1);
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($subscriber2->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber1->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber2->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItDoesNotActivateOldSubscribersWithUnopenedEmail(): void {
@@ -210,10 +210,10 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->addSubscriberToTask($subscriber, $task);
     $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, self::PROCESS_BATCH_SIZE);
     $this->entityManager->clear();
-    expect($result)->equals(0);
+    verify($result)->equals(0);
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_INACTIVE);
   }
 
   public function testItDoesReactivateInactiveSubscribers(): void {
@@ -224,7 +224,7 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   private function createSubscriber(

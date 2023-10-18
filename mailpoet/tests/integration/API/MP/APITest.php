@@ -28,7 +28,7 @@ class APITest extends \MailPoetTest {
         return func_get_args();
       },
     ]);
-    expect($API->subscribeToList(1, 2))->equals(
+    verify($API->subscribeToList(1, 2))->equals(
       [
         1,
         [
@@ -47,7 +47,7 @@ class APITest extends \MailPoetTest {
         return func_get_args();
       },
     ]);
-    expect($API->unsubscribeFromList(1, 2))
+    verify($API->unsubscribeFromList(1, 2))
       ->equals([
         1,
         [

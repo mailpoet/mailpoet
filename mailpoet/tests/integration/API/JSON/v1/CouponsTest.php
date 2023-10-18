@@ -146,13 +146,13 @@ class CouponsTest extends \MailPoetTest {
 
   private function validateResponse($response, $expectedCoupons): void {
     $returnedCoupons = $response->data;
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($returnedCoupons)->count(count($expectedCoupons));
 
     foreach ($expectedCoupons as $key => $coupon) {
-      expect($coupon->get_id())->equals($returnedCoupons[$key]['id']);
-      expect($coupon->get_code())->equals($returnedCoupons[$key]['text']);
-      expect($coupon->get_discount_type())->equals($returnedCoupons[$key]['discountType']);
+      verify($coupon->get_id())->equals($returnedCoupons[$key]['id']);
+      verify($coupon->get_code())->equals($returnedCoupons[$key]['text']);
+      verify($coupon->get_discount_type())->equals($returnedCoupons[$key]['discountType']);
     }
   }
 

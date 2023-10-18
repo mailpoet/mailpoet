@@ -75,7 +75,7 @@ class ShortcodesTest extends \MailPoetTest {
     $requestData = $this->newsletterUrl->transformUrlDataObject(
       Router::decodeRequestData($data['data'])
     );
-    expect($requestData['newsletter_hash'])->equals($this->newsletter->getHash());
+    verify($requestData['newsletter_hash'])->equals($this->newsletter->getHash());
   }
 
   public function testArchiveAcceptsStartDate() {

@@ -26,6 +26,6 @@ class AssetsTest extends \MailPoetTest {
   }
 
   public function testItGeneratesImageUrls() {
-    expect($this->assetsExtension->generateImageUrl('image1.png'))->equals($this->assetsUrl . '/img/image1.png');
+    verify($this->assetsExtension->generateImageUrl('image1.png'))->equals($this->assetsUrl . '/img/image1.png');
   }
 }

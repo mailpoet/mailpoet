@@ -21,36 +21,36 @@ class SendingThrottlingHandlerTest extends \MailPoetTest {
 
   public function testItReturnsDefaultBatchSize(): void {
     $batchSize = $this->throttlingHandler->getBatchSize();
-    expect($batchSize)->equals(SendingThrottlingHandler::BATCH_SIZE);
+    verify($batchSize)->equals(SendingThrottlingHandler::BATCH_SIZE);
   }
 
   public function testItThrottlesBatchSizeToHalf(): void {
     $batchSize = $this->throttlingHandler->getBatchSize();
-    expect($batchSize)->equals(SendingThrottlingHandler::BATCH_SIZE);
-    expect($this->throttlingHandler->throttleBatchSize())->equals($batchSize / 2);
+    verify($batchSize)->equals(SendingThrottlingHandler::BATCH_SIZE);
+    verify($this->throttlingHandler->throttleBatchSize())->equals($batchSize / 2);
   }
 
   public function testItIncreaseSuccessRequestCountInRow(): void {
     $this->throttlingHandler->throttleBatchSize();
     $this->throttlingHandler->processSuccess();
     $throttlingSettings = $this->settings->get(SendingThrottlingHandler::SETTINGS_KEY);
-    expect($throttlingSettings['success_count'])->equals(1);
+    verify($throttlingSettings['success_count'])->equals(1);
   }
 
   public function testItSetsBatchSizeMinimumToOne(): void {
     for ($i = 1; $i <= 10; $i++) {
       $this->throttlingHandler->throttleBatchSize();
     }
-    expect($this->throttlingHandler->getBatchSize())->equals(1);
+    verify($this->throttlingHandler->getBatchSize())->equals(1);
   }
 
   public function testInIncreasesBatchSizeBack(): void {
     $this->settings->set(SendingThrottlingHandler::SETTINGS_KEY, []);
     $this->throttlingHandler->throttleBatchSize();
-    expect($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE / 2);
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE / 2);
     for ($i = 1; $i <= SendingThrottlingHandler::SUCCESS_THRESHOLD_TO_INCREASE; $i++) {
       $this->throttlingHandler->processSuccess();
     }
-    expect($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
+    verify($this->throttlingHandler->getBatchSize())->equals(SendingThrottlingHandler::BATCH_SIZE);
   }
 }

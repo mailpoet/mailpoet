@@ -23,7 +23,7 @@ class ModelTest extends \MailPoetTest {
       $this->fail('Exception was not thrown');
     } catch (\Exception $e) {
       expect($e instanceof \PDOException)->false();
-      expect($e->getMessage())->equals($message);
+      verify($e->getMessage())->equals($message);
     }
   }
 
@@ -31,12 +31,12 @@ class ModelTest extends \MailPoetTest {
     $model = MPModel::create();
     $model->first = 'first';
     $model->last = 'last';
-    expect($model->asArray('first'))->equals(
+    verify($model->asArray('first'))->equals(
       [
         'first' => 'first',
       ]
     );
-    expect($model->asArray('last', 'first'))->equals(
+    verify($model->asArray('last', 'first'))->equals(
       [
         'last' => 'last',
         'first' => 'first',
@@ -48,21 +48,21 @@ class ModelTest extends \MailPoetTest {
     $model = MPModel::create();
     $model->setError('error1');
     $model->setError('error2');
-    expect($model->getErrors())->equals(['error1', 'error2']);
+    verify($model->getErrors())->equals(['error1', 'error2']);
   }
 
   public function testSetErrorsAsArray() {
     $model = MPModel::create();
     $model->setError(['error1']);
     $model->setError(['error2', 'error1']);
-    expect($model->getErrors())->equals(['error1', 'error2']);
+    verify($model->getErrors())->equals(['error1', 'error2']);
   }
 
   public function testSetErrorsWithCode() {
     $model = MPModel::create();
     $model->setError('error1');
     $model->setError('error2', 5);
-    expect($model->getErrors())->equals(['error1', 5 => 'error2']);
+    verify($model->getErrors())->equals(['error1', 5 => 'error2']);
   }
 
   public function testSetErrorCodeForDuplicateRecords() {

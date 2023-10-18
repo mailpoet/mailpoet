@@ -71,7 +71,7 @@ class CustomFieldsTest extends \MailPoetTest {
 
   public function testItCanGetAllCustomFields() {
     $response = $this->endpoint->getAll();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->count(count($this->customFields));
 
     foreach ($response->data as $customField) {
@@ -87,13 +87,13 @@ class CustomFieldsTest extends \MailPoetTest {
     $customFieldId = $customField->getId();
 
     $response = $this->endpoint->delete(['id' => $customFieldId]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     $customField = $this->repository->findOneBy(['type' => 'date']);
     expect($customField)->null();
 
     $response = $this->endpoint->delete(['id' => $customFieldId]);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
   public function testItCanSaveACustomField() {
@@ -104,19 +104,19 @@ class CustomFieldsTest extends \MailPoetTest {
     ];
 
     $response = $this->endpoint->save($newCustomField);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     // missing type
     $response = $this->endpoint->save(['name' => 'New custom field1']);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
     // missing name
     $response = $this->endpoint->save(['type' => 'text']);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
     // missing data
     $response = $this->endpoint->save();
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
   public function testItSanitizesCheckboxValueButKeepsAllowedHTML() {
@@ -134,8 +134,8 @@ class CustomFieldsTest extends \MailPoetTest {
     ];
 
     $response = $this->endpoint->save($newCustomField);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['params']['values'][0]['value'])
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['params']['values'][0]['value'])
       ->equals('"&gt;&lt;img src=e onerror=alert(1) <strong>hello</strong><a href="https://example.com">link</a>');
   }
 
@@ -146,11 +146,11 @@ class CustomFieldsTest extends \MailPoetTest {
 
     $response = $this->endpoint->get(['id' => $customField->getId()]);
 
-    expect($response->data['name'])->equals('CF: text');
-    expect($response->data['type'])->equals('text');
+    verify($response->data['name'])->equals('CF: text');
+    verify($response->data['type'])->equals('text');
     expect($response->data['params'])->notEmpty();
 
     $response = $this->endpoint->get(['id' => 'not_an_id']);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 }

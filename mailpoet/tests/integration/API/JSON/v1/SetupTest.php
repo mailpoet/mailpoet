@@ -36,7 +36,7 @@ class SetupTest extends \MailPoetTest {
     $cronActionScheduler = $this->diContainer->get(ActionScheduler::class);
     $router = new Setup($wpStub, new Activator($this->connection, $settings, $populator, $wpStub, $migrator, $cronActionScheduler));
     $response = $router->reset();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     $settings = SettingsController::getInstance();
     $signupConfirmation = $settings->fetch('signup_confirmation.enabled');
@@ -44,9 +44,9 @@ class SetupTest extends \MailPoetTest {
 
     $captcha = $settings->fetch('captcha');
     $captchaType = $captchaRenderer->isSupported() ? CaptchaConstants::TYPE_BUILTIN : CaptchaConstants::TYPE_DISABLED;
-    expect($captcha['type'])->equals($captchaType);
-    expect($captcha['recaptcha_site_token'])->equals('');
-    expect($captcha['recaptcha_secret_token'])->equals('');
+    verify($captcha['type'])->equals($captchaType);
+    verify($captcha['recaptcha_site_token'])->equals('');
+    verify($captcha['recaptcha_secret_token'])->equals('');
 
     $woocommerceOptinOnCheckout = $settings->fetch('woocommerce.optin_on_checkout');
     expect($woocommerceOptinOnCheckout['enabled'])->true();

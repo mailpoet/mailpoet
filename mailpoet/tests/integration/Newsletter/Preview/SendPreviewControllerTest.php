@@ -67,9 +67,9 @@ class SendPreviewControllerTest extends \MailPoetTest {
 
           expect(is_array($newsletter))->true();
           expect($newsletter['body']['text'])->stringContainsString('Hello test');
-          expect($subscriber)->equals($subscriber);
-          expect($extraParams['unsubscribe_url'])->equals(home_url());
-          expect($extraParams['meta'])->equals($mailerMetaInfo->getPreviewMetaInfo());
+          verify($subscriber)->equals($subscriber);
+          verify($extraParams['unsubscribe_url'])->equals(home_url());
+          verify($extraParams['meta'])->equals($mailerMetaInfo->getPreviewMetaInfo());
 
           // system links are replaced with hashes
           expect($newsletter['body']['html'])->stringContainsString('href="' . $viewInBrowserLink . '">View in browser');
@@ -100,7 +100,7 @@ class SendPreviewControllerTest extends \MailPoetTest {
       'send' => function ($newsletter, $subscriber) {
         expect(is_array($newsletter))->true();
         expect($newsletter['body']['text'])->stringContainsString('Hello test');
-        expect($subscriber)->equals($subscriber);
+        verify($subscriber)->equals($subscriber);
         return [
           'response' => false,
           'error' => $this->make(MailerError::class, [

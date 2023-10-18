@@ -39,9 +39,9 @@ class NewslettersExporterTest extends \MailPoetTest {
     $result = $this->exporter->export('email.that@doesnt.exists');
     expect($result)->array();
     expect($result)->hasKey('data');
-    expect($result['data'])->equals([]);
+    verify($result['data'])->equals([]);
     expect($result)->hasKey('done');
-    expect($result['done'])->equals(true);
+    verify($result['done'])->equals(true);
   }
 
   public function testExportWorksForSubscriberWithNoNewsletters() {
@@ -49,9 +49,9 @@ class NewslettersExporterTest extends \MailPoetTest {
     $result = $this->exporter->export('email.that@has.no.newsletters');
     expect($result)->array();
     expect($result)->hasKey('data');
-    expect($result['data'])->equals([]);
+    verify($result['data'])->equals([]);
     expect($result)->hasKey('done');
-    expect($result['done'])->equals(true);
+    verify($result['done'])->equals(true);
   }
 
   public function testExportReturnsRenderedSubjects() {
@@ -86,7 +86,7 @@ class NewslettersExporterTest extends \MailPoetTest {
     $result = $this->exporter->export('user@with.newsletters');
     expect($result['data'])->array();
     expect($result['data'])->count(1);
-    expect($result['done'])->equals(true);
+    verify($result['done'])->equals(true);
     expect($result['data'][0])->hasKey('group_id');
     expect($result['data'][0])->hasKey('group_label');
     expect($result['data'][0])->hasKey('item_id');
@@ -124,7 +124,7 @@ class NewslettersExporterTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $result = $this->exporter->export('user1@with.newsletters');
-    expect($result['data'][0]['data'][3]['name'])->equals('Email preview');
+    verify($result['data'][0]['data'][3]['name'])->equals('Email preview');
     expect($result['data'][0]['data'][3]['value'])->stringContainsString('mailpoet_router&endpoint=view_in_browser&action=view&data=');
   }
 
@@ -202,7 +202,7 @@ class NewslettersExporterTest extends \MailPoetTest {
     (new StatisticsOpensFactory($newsletter1Entity, $subscriber2Entity))->create();
 
     $result = $this->exporter->export('user21@with.newsletters');
-    expect(count($result['data']))->equals(2);
+    verify(count($result['data']))->equals(2);
     expect($result['data'][0]['data'])->contains(['name' => 'Opened', 'value' => 'Yes']);
     expect($result['data'][0]['data'])->contains(['name' => 'Opened at', 'value' => '2017-01-02 12:23:45']);
     expect($result['data'][1]['data'])->contains(['name' => 'Opened', 'value' => 'No']);

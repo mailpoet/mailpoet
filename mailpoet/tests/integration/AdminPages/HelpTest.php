@@ -58,9 +58,9 @@ class HelpTest extends \MailPoetTest {
       ->create();
     $queue = $this->createNewSendingQueue($task, $newsletter);
     $data = $this->helpPage->buildTaskData($task);
-    expect($data['newsletter']['newsletter_id'])->equals($newsletter->getId());
-    expect($data['newsletter']['queue_id'])->equals($queue->getId());
-    expect($data['newsletter']['subject'])->equals('Rendered Subject');
+    verify($data['newsletter']['newsletter_id'])->equals($newsletter->getId());
+    verify($data['newsletter']['queue_id'])->equals($queue->getId());
+    verify($data['newsletter']['subject'])->equals('Rendered Subject');
     expect($data['newsletter']['preview_url'])->notEmpty();
   }
 
@@ -71,10 +71,10 @@ class HelpTest extends \MailPoetTest {
       Carbon::now()->addDay()
     );
     $data = $this->helpPage->buildTaskData($task);
-    expect($data['newsletter']['newsletter_id'])->equals(null);
-    expect($data['newsletter']['queue_id'])->equals(null);
-    expect($data['newsletter']['subject'])->equals(null);
-    expect($data['newsletter']['preview_url'])->equals(null);
+    verify($data['newsletter']['newsletter_id'])->equals(null);
+    verify($data['newsletter']['queue_id'])->equals(null);
+    verify($data['newsletter']['subject'])->equals(null);
+    verify($data['newsletter']['preview_url'])->equals(null);
   }
 
   private function createNewSendingQueue(?ScheduledTaskEntity $task, ?NewsletterEntity $newsletter, $renderedSubject = null): SendingQueueEntity {

@@ -30,7 +30,7 @@ class SendingQueueTest extends \MailPoetTest {
       'text' => 'text',
     ];
     $queue->newsletterRenderedBody = serialize($data);
-    expect($queue->getNewsletterRenderedBody())->equals($data);
+    verify($queue->getNewsletterRenderedBody())->equals($data);
   }
 
   public function testItReadsJsonEncodedRenderedNewsletterBody() {
@@ -40,7 +40,7 @@ class SendingQueueTest extends \MailPoetTest {
       'text' => 'text',
     ];
     $queue->newsletterRenderedBody = json_encode($data);
-    expect($queue->getNewsletterRenderedBody())->equals($data);
+    verify($queue->getNewsletterRenderedBody())->equals($data);
   }
 
   public function testItJsonEncodesRenderedNewsletterBodyWhenSaving() {
@@ -60,7 +60,7 @@ class SendingQueueTest extends \MailPoetTest {
     /** @var string queue_newsletter_rendered_body */
     $queueNewsletterRenderedBody = $queue->newsletterRenderedBody;
     expect(Helpers::isJson($queueNewsletterRenderedBody))->true();
-    expect(json_decode($queueNewsletterRenderedBody, true))->equals($data);
+    verify(json_decode($queueNewsletterRenderedBody, true))->equals($data);
   }
 
   public function testItJsonEncodesMetaWhenSaving() {
@@ -79,7 +79,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     expect(Helpers::isJson($queue->meta))->true();
     $this->assertIsString($queue->meta);
-    expect(json_decode((string)$queue->meta, true))->equals($meta);
+    verify(json_decode((string)$queue->meta, true))->equals($meta);
   }
 
   public function testItDoesNotJsonEncodesMetaEqualToNull() {
@@ -94,7 +94,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueue::class, $queue);
 
     expect(Helpers::isJson($queue->meta))->false();
-    expect($queue->meta)->equals($meta);
+    verify($queue->meta)->equals($meta);
   }
 
   public function testItReencodesSerializedObjectToJsonEncoded() {
@@ -111,12 +111,12 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sendingQueue = SendingQueue::findOne($queue->id);
     $this->assertInstanceOf(SendingQueue::class, $sendingQueue);
-    expect($sendingQueue->newsletterRenderedBody)->equals(serialize($newsletterRenderedBody));
+    verify($sendingQueue->newsletterRenderedBody)->equals(serialize($newsletterRenderedBody));
 
     // re-saving the queue will re-rencode the body using json_encode()
     $sendingQueue->save();
     $sendingQueue = SendingQueue::findOne($queue->id);
     $this->assertInstanceOf(SendingQueue::class, $sendingQueue);
-    expect($sendingQueue->newsletterRenderedBody)->equals(json_encode($newsletterRenderedBody));
+    verify($sendingQueue->newsletterRenderedBody)->equals(json_encode($newsletterRenderedBody));
   }
 }

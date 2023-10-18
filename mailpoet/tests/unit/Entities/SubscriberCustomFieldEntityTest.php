@@ -16,7 +16,7 @@ class SubscriberCustomFieldEntityTest extends \MailPoetUnitTest {
       'month' => 7,
       'day' => 10,
     ]);
-    expect($subscriberCustomField->getValue())->equals('2010-07-10 00:00:00');
+    verify($subscriberCustomField->getValue())->equals('2010-07-10 00:00:00');
   }
 
   public function testValueYearMonthIsFormatted(): void {
@@ -31,7 +31,7 @@ class SubscriberCustomFieldEntityTest extends \MailPoetUnitTest {
       'year' => 2010,
       'month' => 2,
     ]);
-    expect($subscriberCustomField->getValue())->equals('2010-02-01 00:00:00');
+    verify($subscriberCustomField->getValue())->equals('2010-02-01 00:00:00');
   }
 
   public function testValueYearIsFormatted(): void {
@@ -45,7 +45,7 @@ class SubscriberCustomFieldEntityTest extends \MailPoetUnitTest {
     $subscriberCustomField = new SubscriberCustomFieldEntity($subscriber, $customField, [
       'year' => 1994,
     ]);
-    expect($subscriberCustomField->getValue())->equals('1994-01-01 00:00:00');
+    verify($subscriberCustomField->getValue())->equals('1994-01-01 00:00:00');
   }
 
   public function testValueStringIsFormatted(): void {
@@ -53,6 +53,6 @@ class SubscriberCustomFieldEntityTest extends \MailPoetUnitTest {
     $customField = new CustomFieldEntity();
     $customField->setType(CustomFieldEntity::TYPE_TEXT);
     $subscriberCustomField = new SubscriberCustomFieldEntity($subscriber, $customField, 'some value');
-    expect($subscriberCustomField->getValue())->equals('some value');
+    verify($subscriberCustomField->getValue())->equals('some value');
   }
 }

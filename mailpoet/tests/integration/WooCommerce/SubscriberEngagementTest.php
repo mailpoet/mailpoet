@@ -47,7 +47,7 @@ class SubscriberEngagementTest extends \MailPoetTest {
       ->willReturn($order);
     $this->subscriberEngagement->updateSubscriberEngagement(1);
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getLastEngagementAt())->equals($now);
+    verify($subscriber->getLastEngagementAt())->equals($now);
   }
 
   public function testItDoesntUpdateAnythingForNonExistingOrder() {
@@ -72,7 +72,7 @@ class SubscriberEngagementTest extends \MailPoetTest {
     $purchaseTime = $subscriber->getLastPurchaseAt();
     $this->assertInstanceOf(DateTimeInterface::class, $engagementTime);
     $this->assertInstanceOf(DateTimeInterface::class, $purchaseTime);
-    expect($engagementTime)->equals($purchaseTime);
+    verify($engagementTime)->equals($purchaseTime);
     expect($engagementTime)->greaterThan(Carbon::now()->subMinute());
   }
 

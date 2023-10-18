@@ -158,12 +158,12 @@ class SchedulerTest extends \MailPoetTest {
     $this->assertInstanceOf(NewsletterEntity::class, $notificationHistory);
     // check the hash of the post notification history
     expect($notificationHistory->getHash())->notEquals($newsletter->getHash());
-    expect(strlen((string)$notificationHistory->getHash()))->equals(Security::HASH_LENGTH);
+    verify(strlen((string)$notificationHistory->getHash()))->equals(Security::HASH_LENGTH);
     // check the unsubscribe token of the post notification history
     expect($notificationHistory->getUnsubscribeToken())->notEquals($newsletter->getUnsubscribeToken());
-    expect(strlen((string)$notificationHistory->getUnsubscribeToken()))->equals(Security::UNSUBSCRIBE_TOKEN_LENGTH);
+    verify(strlen((string)$notificationHistory->getUnsubscribeToken()))->equals(Security::UNSUBSCRIBE_TOKEN_LENGTH);
 
-    expect($notificationHistory->getParent())->equals($newsletter);
+    verify($notificationHistory->getParent())->equals($newsletter);
     expect($notificationHistory->getNewsletterSegments())->count(count($segments));
   }
 
@@ -486,13 +486,13 @@ class SchedulerTest extends \MailPoetTest {
     $updatedSubscribersIds = array_map(function(SubscriberEntity $subscriber): int {
       return (int)$subscriber->getId();
     }, $updatedSubscribers);
-    expect($updatedSubscribersIds)->equals([$subscriber->getId()]);
+    verify($updatedSubscribersIds)->equals([$subscriber->getId()]);
     // set queue's status to null
     expect($scheduledTask->getStatus())->null();
     // set newsletter's status to sending
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
-    expect($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+    verify($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 
   public function testItFailsToProcessPostNotificationNewsletterWhenSegmentsDontExist() {
@@ -570,16 +570,16 @@ class SchedulerTest extends \MailPoetTest {
     $updatedSubscribersIds = array_map(function(SubscriberEntity $subscriber): int {
       return (int)$subscriber->getId();
     }, $updatedSubscribers);
-    expect($updatedSubscribersIds)->equals([$subscriber->getId()]);
+    verify($updatedSubscribersIds)->equals([$subscriber->getId()]);
     $scheduledNewsletter = $sendingQueue->getNewsletter();
     $this->assertInstanceOf(NewsletterEntity::class, $scheduledNewsletter);
-    expect($scheduledNewsletter->getId())->equals($notificationHistory->getId());
-    expect($sendingQueue->getCountProcessed())->equals(0);
-    expect($sendingQueue->getCountToProcess())->equals(1);
+    verify($scheduledNewsletter->getId())->equals($notificationHistory->getId());
+    verify($sendingQueue->getCountProcessed())->equals(0);
+    verify($sendingQueue->getCountToProcess())->equals(1);
     // set notification history's status to sending
     $updatedNotificationHistory = $this->newslettersRepository->findOneBy(['parent' => $newsletter->getId()]);
     $this->assertInstanceOf(NewsletterEntity::class, $updatedNotificationHistory);
-    expect($updatedNotificationHistory->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+    verify($updatedNotificationHistory->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 
   public function testItFailsToProcessWhenScheduledQueuesNotFound() {
@@ -777,9 +777,9 @@ class SchedulerTest extends \MailPoetTest {
 
     // scheduled task should exist
     $task = SendingTask::getByNewsletterId($newsletter->getId());
-    expect($task->status)->equals(SendingQueueEntity::STATUS_SCHEDULED);
-    expect($task->newsletterId)->equals($newsletter->getId());
-    expect($task->getSubscribers())->equals([$subscriber->getId()]);
+    verify($task->status)->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    verify($task->newsletterId)->equals($newsletter->getId());
+    verify($task->getSubscribers())->equals([$subscriber->getId()]);
 
     // task should have its status set to null (i.e., sending)
     $scheduler = $this->getScheduler();
@@ -802,9 +802,9 @@ class SchedulerTest extends \MailPoetTest {
 
     // scheduled task should exist
     $task = SendingTask::getByNewsletterId($newsletter->getId());
-    expect($task->status)->equals(SendingQueueEntity::STATUS_SCHEDULED);
-    expect($task->newsletterId)->equals($newsletter->getId());
-    expect($task->getSubscribers())->equals([$subscriber->getId()]);
+    verify($task->status)->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    verify($task->newsletterId)->equals($newsletter->getId());
+    verify($task->getSubscribers())->equals([$subscriber->getId()]);
 
     // task should be deleted
     $scheduler = $this->getScheduler();
@@ -837,8 +837,8 @@ class SchedulerTest extends \MailPoetTest {
 
     // scheduled task should exist
     $task = SendingTask::getByNewsletterId($newsletter->getId());
-    expect($task->status)->equals(SendingQueueEntity::STATUS_SCHEDULED);
-    expect($task->newsletterId)->equals($newsletter->getId());
+    verify($task->status)->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    verify($task->newsletterId)->equals($newsletter->getId());
 
     // task should have its status set to null (i.e., sending)
     $scheduler = $this->getScheduler($this->subscribersFinder);
@@ -848,7 +848,7 @@ class SchedulerTest extends \MailPoetTest {
     // task should have 1 subscriber added from segment
     $subscribers = $task->subscribers()->findMany();
     expect($subscribers)->count(1);
-    expect($subscribers[0]->id)->equals($subscriber->getId());
+    verify($subscribers[0]->id)->equals($subscriber->getId());
   }
 
   public function testItProcessesScheduledAutomationEmail() {
@@ -863,9 +863,9 @@ class SchedulerTest extends \MailPoetTest {
 
     // scheduled task should exist
     $task = SendingTask::getByNewsletterId($newsletter->getId());
-    expect($task->status)->equals(SendingQueueEntity::STATUS_SCHEDULED);
-    expect($task->newsletterId)->equals($newsletter->getId());
-    expect($task->getSubscribers())->equals([$subscriber->getId()]);
+    verify($task->status)->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    verify($task->newsletterId)->equals($newsletter->getId());
+    verify($task->getSubscribers())->equals([$subscriber->getId()]);
 
     // task should have its status set to null (i.e., sending)
     $scheduler = $this->getScheduler();
@@ -888,9 +888,9 @@ class SchedulerTest extends \MailPoetTest {
 
     // scheduled task should exist
     $task = SendingTask::getByNewsletterId($newsletter->getId());
-    expect($task->status)->equals(SendingQueueEntity::STATUS_SCHEDULED);
-    expect($task->newsletterId)->equals($newsletter->getId());
-    expect($task->getSubscribers())->equals([$subscriber->getId()]);
+    verify($task->status)->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    verify($task->newsletterId)->equals($newsletter->getId());
+    verify($task->getSubscribers())->equals([$subscriber->getId()]);
 
     // task should be deleted
     $scheduler = $this->getScheduler();

@@ -60,8 +60,8 @@ class SubmitTest extends \MailPoetUnitTest {
     $type = $this->htmlParser->getAttribute($input, 'type');
     $value = $this->htmlParser->getAttribute($input, 'value');
     $style = $this->htmlParser->getAttribute($input, 'style');
-    expect($type->value)->equals('submit');
-    expect($value->value)->equals('Submit label');
-    expect($style->value)->equals('border-radius: 10px;');
+    verify($type->value)->equals('submit');
+    verify($value->value)->equals('Submit label');
+    verify($style->value)->equals('border-radius: 10px;');
   }
 }

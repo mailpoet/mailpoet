@@ -67,7 +67,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber)->isInstanceOf(SubscriberEntity::class);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItCanSubscribeSubscriberWithConfirmation(): void {
@@ -85,7 +85,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber)->isInstanceOf(SubscriberEntity::class);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
   public function testItReturnsInfoAboutErrorWhenConfirmationEmailFails(): void {
@@ -107,7 +107,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($result)->hasKey('error');
-    expect($result['error'])->equals('Confirmation email error');
+    verify($result['error'])->equals('Confirmation email error');
   }
 
   public function testItCanSubscribeSubscriberWithCustomField(): void {
@@ -127,15 +127,15 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber)->isInstanceOf(SubscriberEntity::class);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriberCustomFields = $this->subscriberCustomFieldRepository->findBy(['subscriber' => $subscriber]);
     expect($subscriberCustomFields)->count(1);
     $subscriberCustomField = reset($subscriberCustomFields);
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
     expect($subscriberCustomField)->isInstanceOf(SubscriberCustomFieldEntity::class);
-    expect($subscriberCustomField->getSubscriber())->equals($subscriber);
-    expect($subscriberCustomField->getCustomField())->equals($customField);
-    expect($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);
+    verify($subscriberCustomField->getSubscriber())->equals($subscriber);
+    verify($subscriberCustomField->getCustomField())->equals($customField);
+    verify($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);
   }
 
   public function testItCanSubscribeSubscriberWithTags(): void {

@@ -28,7 +28,7 @@ class AutomationsCreateFromTemplateTest extends AutomationTest {
       ],
     ]);
     $countAfter = count($this->automationStorage->getAutomations());
-    expect($countAfter)->equals($countBefore + 1);
+    verify($countAfter)->equals($countBefore + 1);
   }
 
   public function testEditorIsAllowed(): void {

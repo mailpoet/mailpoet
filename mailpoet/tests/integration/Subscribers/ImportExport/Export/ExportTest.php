@@ -146,9 +146,9 @@ class ExportTest extends \MailPoetTest {
   }
 
   public function testItCanConstruct() {
-    expect($this->export->exportFormatOption)
+    verify($this->export->exportFormatOption)
       ->equals('csv');
-    expect($this->export->subscriberFields)
+    verify($this->export->subscriberFields)
       ->equals(
         [
           'email',
@@ -156,30 +156,30 @@ class ExportTest extends \MailPoetTest {
           $this->customField->getId(),
         ]
       );
-    expect($this->export->subscriberCustomFields)
+    verify($this->export->subscriberCustomFields)
       ->equals($this->export->getSubscriberCustomFields());
-    expect($this->export->formattedSubscriberFields)
+    verify($this->export->formattedSubscriberFields)
       ->equals(
         $this->export->formatSubscriberFields(
           $this->export->subscriberFields,
           $this->export->subscriberCustomFields
         )
       );
-    expect($this->export->formattedSubscriberFieldsWithList)
+    verify($this->export->formattedSubscriberFieldsWithList)
       ->equals(
         \array_merge(
           $this->export->formattedSubscriberFields,
           [__('List', 'mailpoet')]
         )
       );
-    expect(
+    verify(
       preg_match(
         '|' .
         preg_quote(Env::$tempPath, '|') . '/MailPoet_export_[a-z0-9]{15}.' .
         $this->export->exportFormatOption .
         '|', $this->export->exportFile)
     )->equals(1);
-    expect(
+    verify(
       preg_match(
         '|' .
         preg_quote(Env::$tempUrl, '|') . '/' .
@@ -192,7 +192,7 @@ class ExportTest extends \MailPoetTest {
     $source = $this->customFieldsRepository->findOneBy(['name' => 'Country']);
     $this->assertInstanceOf(CustomFieldEntity::class, $source);
     $target = $this->export->getSubscriberCustomFields();
-    expect($target)->equals([$source->getId() => $source->getName()]);
+    verify($target)->equals([$source->getId() => $source->getName()]);
   }
 
   public function testItCanFormatSubscriberFields() {
@@ -200,7 +200,7 @@ class ExportTest extends \MailPoetTest {
       array_keys($this->subscriberFields),
       $this->export->getSubscriberCustomFields()
     );
-    expect($formattedSubscriberFields)
+    verify($formattedSubscriberFields)
       ->equals(array_values($this->subscriberFields));
   }
 
@@ -208,7 +208,7 @@ class ExportTest extends \MailPoetTest {
     $subscribers = $this->export->getSubscribers() ?? [];
     foreach ($subscribers as $subscriber) {
       if ($subscriber['email'] === $this->subscribersData[1]) {
-        expect($subscriber['Country'])
+        verify($subscriber['Country'])
           ->equals($this->subscribersData[1][$this->customField->getId()]);
       }
     }
@@ -233,7 +233,7 @@ class ExportTest extends \MailPoetTest {
     $export = $this->createExport($jsonData);
     $subscribers = $export->getSubscribers() ?? [];
     expect($subscribers)->count(1);
-    expect($subscribers[0]['segment_name'])->equals('Not In Segment');
+    verify($subscribers[0]['segment_name'])->equals('Not In Segment');
   }
 
   public function testItRequiresWritableExportFile() {
@@ -242,7 +242,7 @@ class ExportTest extends \MailPoetTest {
       $this->export->process();
       $this->fail('Export did not throw an exception');
     } catch (\Exception $e) {
-      expect($e->getMessage())
+      verify($e->getMessage())
         ->equals("The export file could not be saved on the server.");
     }
   }
@@ -255,7 +255,7 @@ class ExportTest extends \MailPoetTest {
     } catch (\Exception $e) {
       $this->fail('Export to .csv process threw an exception');
     }
-    expect($result['totalExported'])->equals(4);
+    verify($result['totalExported'])->equals(4);
     expect($result['exportFileURL'])->notEmpty();
 
     try {
@@ -265,7 +265,7 @@ class ExportTest extends \MailPoetTest {
     } catch (\Exception $e) {
       $this->fail('Export to .xlsx process threw an exception');
     }
-    expect($result['totalExported'])->equals(4);
+    verify($result['totalExported'])->equals(4);
     expect($result['exportFileURL'])->notEmpty();
   }
 

@@ -59,21 +59,21 @@ class ScheduledTaskSubscribersListingRepositoryTest extends \MailPoetTest {
       'params' => [ 'task_ids' => [$this->scheduledTask->getId()]],
     ];
     [$all, $sent, $failed, $unprocessed] = $this->repository->getGroups($this->listingHandler->getListingDefinition($listingData));
-    expect($all['name'])->equals('all');
-    expect($all['label'])->equals('All');
-    expect($all['count'])->equals(3);
+    verify($all['name'])->equals('all');
+    verify($all['label'])->equals('All');
+    verify($all['count'])->equals(3);
 
-    expect($sent['name'])->equals('sent');
-    expect($sent['label'])->equals('Sent');
-    expect($sent['count'])->equals(1);
+    verify($sent['name'])->equals('sent');
+    verify($sent['label'])->equals('Sent');
+    verify($sent['count'])->equals(1);
 
-    expect($failed['name'])->equals('failed');
-    expect($failed['label'])->equals('Failed');
-    expect($failed['count'])->equals(1);
+    verify($failed['name'])->equals('failed');
+    verify($failed['label'])->equals('Failed');
+    verify($failed['count'])->equals(1);
 
-    expect($unprocessed['name'])->equals('unprocessed');
-    expect($unprocessed['label'])->equals('Unprocessed');
-    expect($unprocessed['count'])->equals(1);
+    verify($unprocessed['name'])->equals('unprocessed');
+    verify($unprocessed['label'])->equals('Unprocessed');
+    verify($unprocessed['count'])->equals(1);
   }
 
   public function testItReturnCorrectDataAndCountForGroupAll() {
@@ -84,19 +84,19 @@ class ScheduledTaskSubscribersListingRepositoryTest extends \MailPoetTest {
     $tasksSubscribers = $this->repository->getData($this->listingHandler->getListingDefinition($listingData));
     $count = $this->repository->getCount($this->listingHandler->getListingDefinition($listingData));
     expect($tasksSubscribers)->count(3);
-    expect($count)->equals(3);
+    verify($count)->equals(3);
 
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $tasksSubscribers[0]);
     $this->assertInstanceOf(SubscriberEntity::class, $tasksSubscribers[0]->getSubscriber());
-    expect($tasksSubscribers[0]->getSubscriber()->getEmail())->equals('subscriberUprocessed@email.com');
+    verify($tasksSubscribers[0]->getSubscriber()->getEmail())->equals('subscriberUprocessed@email.com');
 
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $tasksSubscribers[1]);
     $this->assertInstanceOf(SubscriberEntity::class, $tasksSubscribers[1]->getSubscriber());
-    expect($tasksSubscribers[1]->getSubscriber()->getEmail())->equals('subscriberProcessed@email.com');
+    verify($tasksSubscribers[1]->getSubscriber()->getEmail())->equals('subscriberProcessed@email.com');
 
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $tasksSubscribers[2]);
     $this->assertInstanceOf(SubscriberEntity::class, $tasksSubscribers[2]->getSubscriber());
-    expect($tasksSubscribers[2]->getSubscriber()->getEmail())->equals('subscriberFailed@email.com');
+    verify($tasksSubscribers[2]->getSubscriber()->getEmail())->equals('subscriberFailed@email.com');
   }
 
   public function testItCanFilterByGroup() {
@@ -107,11 +107,11 @@ class ScheduledTaskSubscribersListingRepositoryTest extends \MailPoetTest {
     $tasksSubscribers = $this->repository->getData($this->listingHandler->getListingDefinition($listingData));
     $count = $this->repository->getCount($this->listingHandler->getListingDefinition($listingData));
     expect($tasksSubscribers)->count(1);
-    expect($count)->equals(1);
+    verify($count)->equals(1);
 
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $tasksSubscribers[0]);
     $this->assertInstanceOf(SubscriberEntity::class, $tasksSubscribers[0]->getSubscriber());
-    expect($tasksSubscribers[0]->getSubscriber()->getEmail())->equals('subscriberFailed@email.com');
+    verify($tasksSubscribers[0]->getSubscriber()->getEmail())->equals('subscriberFailed@email.com');
   }
 
   public function testItCanSearchByEmail() {
@@ -123,10 +123,10 @@ class ScheduledTaskSubscribersListingRepositoryTest extends \MailPoetTest {
     $tasksSubscribers = $this->repository->getData($this->listingHandler->getListingDefinition($listingData));
     $count = $this->repository->getCount($this->listingHandler->getListingDefinition($listingData));
     expect($tasksSubscribers)->count(1);
-    expect($count)->equals(1);
+    verify($count)->equals(1);
 
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $tasksSubscribers[0]);
     $this->assertInstanceOf(SubscriberEntity::class, $tasksSubscribers[0]->getSubscriber());
-    expect($tasksSubscribers[0]->getSubscriber()->getEmail())->equals('subscriberProcessed@email.com');
+    verify($tasksSubscribers[0]->getSubscriber()->getEmail())->equals('subscriberProcessed@email.com');
   }
 }

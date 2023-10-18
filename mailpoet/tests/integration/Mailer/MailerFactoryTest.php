@@ -128,17 +128,17 @@ class MailerFactoryTest extends \MailPoetTest {
     $mailer = $this->factory->getDefaultMailer();
     $mailerMethod = $mailer->mailerMethod;
     $this->assertInstanceOf(PHPMail::class, $mailerMethod);
-    expect($mailerMethod->sender)->equals([
+    verify($mailerMethod->sender)->equals([
       'from_name' => 'Sender',
       'from_email' => 'sender@email.com',
       'from_name_email' => 'Sender <sender@email.com>',
     ]);
-    expect($mailerMethod->replyTo)->equals([
+    verify($mailerMethod->replyTo)->equals([
       'reply_to_name' => 'Reply To',
       'reply_to_email' => 'reply@email.com',
       'reply_to_name_email' => 'Reply To <reply@email.com>',
     ]);
-    expect($mailerMethod->returnPath)->equals($this->returnPath);
+    verify($mailerMethod->returnPath)->equals($this->returnPath);
   }
 
   public function testItUsesSenderAsReplyToWhenReplyToIsNotSet() {
@@ -146,7 +146,7 @@ class MailerFactoryTest extends \MailPoetTest {
     $mailer = $this->factory->getDefaultMailer();
     $mailerMethod = $mailer->mailerMethod;
     $this->assertInstanceOf(PHPMail::class, $mailerMethod);
-    expect($mailerMethod->replyTo)->equals([
+    verify($mailerMethod->replyTo)->equals([
       'reply_to_name' => 'Sender',
       'reply_to_email' => 'sender@email.com',
       'reply_to_name_email' => 'Sender <sender@email.com>',
@@ -158,7 +158,7 @@ class MailerFactoryTest extends \MailPoetTest {
     $mailer = $this->factory->getDefaultMailer();
     $mailerMethod = $mailer->mailerMethod;
     $this->assertInstanceOf(PHPMail::class, $mailerMethod);
-    expect($mailerMethod->returnPath)->equals('sender@email.com');
+    verify($mailerMethod->returnPath)->equals('sender@email.com');
   }
 
   public function testItUsesSenderAddressInReplyToInCaseReplyToHasOnlyName() {
@@ -166,7 +166,7 @@ class MailerFactoryTest extends \MailPoetTest {
     $mailer = $this->factory->getDefaultMailer();
     $mailerMethod = $mailer->mailerMethod;
     $this->assertInstanceOf(PHPMail::class, $mailerMethod);
-    expect($mailerMethod->replyTo)->equals([
+    verify($mailerMethod->replyTo)->equals([
       'reply_to_name' => 'Reply To',
       'reply_to_email' => 'sender@email.com',
       'reply_to_name_email' => 'Reply To <sender@email.com>',
@@ -186,8 +186,8 @@ class MailerFactoryTest extends \MailPoetTest {
     $mailer = $this->factory->getDefaultMailer();
     $mailerMethod = $mailer->mailerMethod;
     $this->assertInstanceOf(PHPMail::class, $mailerMethod);
-    expect($mailerMethod->sender['from_name'])->equals(sprintf('=?utf-8?B?%s?=', base64_encode('Sender Außergewöhnlichen тест системы')));
-    expect($mailerMethod->replyTo['reply_to_name'])->equals(sprintf('=?utf-8?B?%s?=', base64_encode('Reply-To Außergewöhnlichen тест системы')));
+    verify($mailerMethod->sender['from_name'])->equals(sprintf('=?utf-8?B?%s?=', base64_encode('Sender Außergewöhnlichen тест системы')));
+    verify($mailerMethod->replyTo['reply_to_name'])->equals(sprintf('=?utf-8?B?%s?=', base64_encode('Reply-To Außergewöhnlichen тест системы')));
   }
 
   public function testItCachesDefaultMailerInstance() {

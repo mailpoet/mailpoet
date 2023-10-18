@@ -178,7 +178,7 @@ class ServicesCheckerTest extends \MailPoetTest {
         'state' => Bridge::KEY_VALID,
       ]
     );
-    expect($this->servicesChecker->getValidAccountKey())->equals($mssKey);
+    verify($this->servicesChecker->getValidAccountKey())->equals($mssKey);
 
     // Only Premium is Valid
     $this->settings->set(
@@ -193,7 +193,7 @@ class ServicesCheckerTest extends \MailPoetTest {
         'state' => '',
       ]
     );
-    expect($this->servicesChecker->getValidAccountKey())->equals($premiumKey);
+    verify($this->servicesChecker->getValidAccountKey())->equals($premiumKey);
 
     // Both Valid (lets use MSS in that case)
     $this->settings->set(
@@ -202,7 +202,7 @@ class ServicesCheckerTest extends \MailPoetTest {
         'state' => Bridge::KEY_VALID,
       ]
     );
-    expect($this->servicesChecker->getValidAccountKey())->equals($mssKey);
+    verify($this->servicesChecker->getValidAccountKey())->equals($mssKey);
 
     // MSS is valid but underprivileged premium invalid
     $this->settings->set(
@@ -217,7 +217,7 @@ class ServicesCheckerTest extends \MailPoetTest {
         'state' => Bridge::KEY_INVALID,
       ]
     );
-    expect($this->servicesChecker->getValidAccountKey())->equals($mssKey);
+    verify($this->servicesChecker->getValidAccountKey())->equals($mssKey);
 
     // MSS is invalid, premium valid but underprivileged
     $this->settings->set(
@@ -232,7 +232,7 @@ class ServicesCheckerTest extends \MailPoetTest {
         'state' => Bridge::KEY_VALID_UNDERPRIVILEGED,
       ]
     );
-    expect($this->servicesChecker->getValidAccountKey())->equals($premiumKey);
+    verify($this->servicesChecker->getValidAccountKey())->equals($premiumKey);
 
     // None valid
     // Only MSS is Valid

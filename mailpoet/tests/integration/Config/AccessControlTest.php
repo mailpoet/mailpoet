@@ -67,7 +67,7 @@ class AccessControlTest extends \MailPoetTest {
       }
     );
 
-    expect($this->accessControl->getDefaultPermissions())->equals(
+    verify($this->accessControl->getDefaultPermissions())->equals(
       [
         AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN => [
           'custom_access_plugin_admin_role',
@@ -100,7 +100,7 @@ class AccessControlTest extends \MailPoetTest {
   public function testItGetsPermissionLabels() {
     $permissions = $this->accessControl->getDefaultPermissions();
     $labels = $this->accessControl->getPermissionLabels();
-    expect(count($permissions))->equals(count($labels));
+    verify(count($permissions))->equals(count($labels));
   }
 
   public function testItValidatesIfUserHasCapability() {

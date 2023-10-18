@@ -53,15 +53,15 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $count = $this->repository->getSubscribersCount((int)$segment->getId());
-    expect($count)->equals(3);
+    verify($count)->equals(3);
     $count = $this->repository->getSubscribersCount((int)$segment->getId(), SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($count)->equals(1);
+    verify($count)->equals(1);
     $ids = $this->repository->getSubscriberIdsInSegment((int)$segment->getId());
-    expect($ids)->equals([$subscriberInSegment->getId()]);
+    verify($ids)->equals([$subscriberInSegment->getId()]);
     $filteredIds = $this->repository->findSubscribersIdsInSegment((int)$segment->getId(), [$subscriberInSegment->getId(), 20, 30]);
-    expect($filteredIds)->equals([$subscriberInSegment->getId()]);
+    verify($filteredIds)->equals([$subscriberInSegment->getId()]);
     $filteredIds = $this->repository->findSubscribersIdsInSegment((int)$segment->getId(), [$globallyUnsubscribedSubscriberInSegment->getId()]);
-    expect($filteredIds)->equals([]);
+    verify($filteredIds)->equals([]);
   }
 
   public function testItReturnsSubscribersInDynamicSegments() {
@@ -80,17 +80,17 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $count = $this->repository->getSubscribersCount((int)$segment->getId());
-    expect($count)->equals(1);
+    verify($count)->equals(1);
     $count = $this->repository->getSubscribersCount((int)$segment->getId(), SubscriberEntity::STATUS_UNSUBSCRIBED);
-    expect($count)->equals(0);
+    verify($count)->equals(0);
     $count = $this->repository->getSubscribersCount((int)$segment->getId(), SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($count)->equals(1);
+    verify($count)->equals(1);
     $ids = $this->repository->getSubscriberIdsInSegment((int)$segment->getId());
-    expect($ids)->equals([$wpUserSubscriber->getId()]);
+    verify($ids)->equals([$wpUserSubscriber->getId()]);
     $filteredIds = $this->repository->findSubscribersIdsInSegment((int)$segment->getId(), [$wpUserSubscriber->getId(), 20, 30]);
-    expect($filteredIds)->equals([$wpUserSubscriber->getId()]);
+    verify($filteredIds)->equals([$wpUserSubscriber->getId()]);
     $filteredIds = $this->repository->findSubscribersIdsInSegment((int)$segment->getId(), [$subscriberNoList->getId()]);
-    expect($filteredIds)->equals([]);
+    verify($filteredIds)->equals([]);
 
     $this->tester->deleteWordPressUser($wpUserEmail);
   }
@@ -117,10 +117,10 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $subscribersCount = $this->repository->getSubscribersStatisticsCount($segment);
-    expect($subscribersCount[SubscriberEntity::STATUS_SUBSCRIBED])->equals(1);
-    expect($subscribersCount[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(1);
-    expect($subscribersCount[SubscriberEntity::STATUS_UNCONFIRMED])->equals(1);
-    expect($subscribersCount[SubscriberEntity::STATUS_BOUNCED])->equals(1);
+    verify($subscribersCount[SubscriberEntity::STATUS_SUBSCRIBED])->equals(1);
+    verify($subscribersCount[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(1);
+    verify($subscribersCount[SubscriberEntity::STATUS_UNCONFIRMED])->equals(1);
+    verify($subscribersCount[SubscriberEntity::STATUS_BOUNCED])->equals(1);
 
     // unsubscribed from this particular segment
     foreach ($subscriberSegments as $subscriberSegment) {
@@ -130,10 +130,10 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
 
     $this->clearSubscribersCountCache();
     $subscribersCount = $this->repository->getSubscribersStatisticsCount($segment);
-    expect($subscribersCount[SubscriberEntity::STATUS_SUBSCRIBED])->equals(0);
-    expect($subscribersCount[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(4);
-    expect($subscribersCount[SubscriberEntity::STATUS_UNCONFIRMED])->equals(0);
-    expect($subscribersCount[SubscriberEntity::STATUS_BOUNCED])->equals(0);
+    verify($subscribersCount[SubscriberEntity::STATUS_SUBSCRIBED])->equals(0);
+    verify($subscribersCount[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(4);
+    verify($subscribersCount[SubscriberEntity::STATUS_UNCONFIRMED])->equals(0);
+    verify($subscribersCount[SubscriberEntity::STATUS_BOUNCED])->equals(0);
 
     // trashed subscribers
     foreach ($subscriberSegments as $subscriberSegment) {
@@ -146,10 +146,10 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
 
     $this->clearSubscribersCountCache();
     $subscribersCount = $this->repository->getSubscribersStatisticsCount($segment);
-    expect($subscribersCount[SubscriberEntity::STATUS_SUBSCRIBED])->equals(0);
-    expect($subscribersCount[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(0);
-    expect($subscribersCount[SubscriberEntity::STATUS_UNCONFIRMED])->equals(0);
-    expect($subscribersCount[SubscriberEntity::STATUS_BOUNCED])->equals(0);
+    verify($subscribersCount[SubscriberEntity::STATUS_SUBSCRIBED])->equals(0);
+    verify($subscribersCount[SubscriberEntity::STATUS_UNSUBSCRIBED])->equals(0);
+    verify($subscribersCount[SubscriberEntity::STATUS_UNCONFIRMED])->equals(0);
+    verify($subscribersCount[SubscriberEntity::STATUS_BOUNCED])->equals(0);
   }
 
   public function testGetSubscribersCountBySegmentIds(): void {
@@ -167,7 +167,7 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
 
     // two static segments
     $count = $this->repository->getSubscribersCountBySegmentIds([$segmentOne->getId(), $segmentTwo->getId()]);
-    expect($count)->equals(3);
+    verify($count)->equals(3);
 
     $dynamicSegmentOne = $this->createDynamicSegmentEntity();
     $this->entityManager->flush();
@@ -186,7 +186,7 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
       $segmentTwo->getId(),
       $dynamicSegmentOne->getId(),
     ]);
-    expect($count)->equals(5);
+    verify($count)->equals(5);
 
     $dynamicSegmentTwo = $this->createDynamicSegmentEntity('author');
     $this->entityManager->flush();
@@ -200,7 +200,7 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
       $dynamicSegmentOne->getId(),
       $dynamicSegmentTwo->getId(),
     ]);
-    expect($count)->equals(3);
+    verify($count)->equals(3);
 
     // all four segments
     $count = $this->repository->getSubscribersCountBySegmentIds([
@@ -209,7 +209,7 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
       $dynamicSegmentOne->getId(),
       $dynamicSegmentTwo->getId(),
     ]);
-    expect($count)->equals(6);
+    verify($count)->equals(6);
   }
 
   public function testSubscriberCountCanBeFilteredByDynamicSegment(): void {
@@ -223,10 +223,10 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     $this->assertIsInt($segment->getId());
 
     $countWithoutFilter = $this->repository->getSubscribersCountBySegmentIds([$segment->getId()]);
-    expect($countWithoutFilter)->equals(3);
+    verify($countWithoutFilter)->equals(3);
 
     $countWithFilter = $this->repository->getSubscribersCountBySegmentIds([$segment->getId()], null, $filterSegment->getId());
-    expect($countWithFilter)->equals(2);
+    verify($countWithFilter)->equals(2);
   }
 
   public function _after() {

@@ -47,16 +47,16 @@ class FormsTest extends \MailPoetTest {
 
   public function testItCanGetAForm() {
     $response = $this->endpoint->get(/* missing id */);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->equals('This form does not exist.');
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['message'])->equals('This form does not exist.');
 
     $response = $this->endpoint->get(['id' => 'not_an_id']);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->equals('This form does not exist.');
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['message'])->equals('This form does not exist.');
 
     $response = $this->endpoint->get(['id' => $this->form1->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(
       $this->reloadForm((int)$this->form1->getId())->toArray()
     );
   }
@@ -64,38 +64,38 @@ class FormsTest extends \MailPoetTest {
   public function testItCanGetListingData() {
     $response = $this->endpoint->listing();
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     expect($response->meta)->hasKey('filters');
     expect($response->meta)->hasKey('groups');
-    expect($response->meta['count'])->equals(3);
+    verify($response->meta['count'])->equals(3);
 
     expect($response->data)->count(3);
-    expect($response->data[0]['name'])->equals('Form 1');
-    expect($response->data[1]['name'])->equals('Form 2');
-    expect($response->data[2]['name'])->equals('Form 3');
+    verify($response->data[0]['name'])->equals('Form 1');
+    verify($response->data[1]['name'])->equals('Form 2');
+    verify($response->data[2]['name'])->equals('Form 3');
   }
 
   public function testItCanCreateANewForm() {
     $response = $this->endpoint->saveEditor();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(
       $this->reloadForm((int)$response->data['id'])->toArray()
     );
-    expect($response->data['name'])->equals('New form');
+    verify($response->data['name'])->equals('New form');
   }
 
   public function testItCanStoreDataForPreview() {
     $response = $this->endpoint->saveEditor();
     $formId = $response->data['id'];
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(
       $this->reloadForm((int)$formId)->toArray()
     );
     $response->data['styles'] = '/* Custom Styles */';
 
     $response = $this->endpoint->previewEditor($response->data);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $storedData = $this->wp->getTransient(PreviewPage::PREVIEW_DATA_TRANSIENT_PREFIX . $formId);
     expect($storedData['body'])->notEmpty();
     expect($storedData['styles'])->notEmpty();
@@ -104,23 +104,23 @@ class FormsTest extends \MailPoetTest {
 
   public function testItCanSaveFormEditor() {
     $response = $this->endpoint->saveEditor();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     $form = $this->reloadForm((int)$response->data['id'])->toArray();
     $form['name'] = 'Updated form';
 
     $response = $this->endpoint->saveEditor($form);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->meta['is_widget'])->false();
-    expect($response->data['name'])->equals('Updated form');
-    expect($response->data['settings']['segments_selected_by'])->equals('admin');
+    verify($response->data['name'])->equals('Updated form');
+    verify($response->data['settings']['segments_selected_by'])->equals('admin');
   }
 
   public function testItOnlyAdminCanSaveCustomHtml() {
     // Administrator
     wp_set_current_user(1);
     $response = $this->endpoint->saveEditor();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     $form = $this->reloadForm((int)$response->data['id'])->toArray();
     $form['body'][] = [
@@ -130,17 +130,17 @@ class FormsTest extends \MailPoetTest {
       ],
     ] ;
     $response = $this->endpoint->saveEditor($form);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     // Non Admin
     wp_set_current_user(0);
     $response = $this->endpoint->saveEditor($form);
-    expect($response->status)->equals(APIResponse::STATUS_FORBIDDEN);
+    verify($response->status)->equals(APIResponse::STATUS_FORBIDDEN);
     expect($response->errors[0]['message'])->startsWith('Only administrator can');
   }
 
   public function testItCanExtractListsFromListSelectionBlock() {
     $response = $this->endpoint->saveEditor();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     $form = $this->reloadForm((int)$response->data['id'])->toArray();
     $form['body'][] = [
@@ -151,14 +151,14 @@ class FormsTest extends \MailPoetTest {
     ];
 
     $response = $this->endpoint->saveEditor($form);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['settings']['segments_selected_by'])->equals('user');
-    expect($response->data['settings']['segments'])->equals([1, 3]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['settings']['segments_selected_by'])->equals('user');
+    verify($response->data['settings']['segments'])->equals([1, 3]);
   }
 
   public function testItCanExtractListsFromNestedListSelectionBlock() {
     $response = $this->endpoint->saveEditor();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     $form = $this->reloadForm((int)$response->data['id'])->toArray();
     $form['body'][] = [
@@ -181,9 +181,9 @@ class FormsTest extends \MailPoetTest {
     ];
 
     $response = $this->endpoint->saveEditor($form);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['settings']['segments_selected_by'])->equals('user');
-    expect($response->data['settings']['segments'])->equals([2, 4]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['settings']['segments_selected_by'])->equals('user');
+    verify($response->data['settings']['segments'])->equals([2, 4]);
   }
 
   public function testItCreatesTagsDuringSavingFormEditor(): void {
@@ -199,7 +199,7 @@ class FormsTest extends \MailPoetTest {
         ],
       ],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     $tag1 = $this->tagRepository->findOneBy(['name' => $tag->getName()]);
     $this->assertEquals($tag1, $tag);
@@ -217,61 +217,61 @@ class FormsTest extends \MailPoetTest {
     expect($this->form1)->notNull();
 
     $response = $this->endpoint->restore(['id' => $this->form1->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(
       $this->form1->toArray()
     );
     expect($response->data['deleted_at'])->null();
-    expect($response->meta['count'])->equals(1);
+    verify($response->meta['count'])->equals(1);
   }
 
   public function testErrorWhenRestoringNonExistentForm() {
     $response = $this->endpoint->restore(['id' => 'Invalid ID']);
-    expect($response->errors[0]['error'])->equals('not_found');
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['error'])->equals('not_found');
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->meta)->isEmpty();
   }
 
   public function testItCanTrashAForm() {
     $response = $this->endpoint->trash(['id' => $this->form2->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(
       $this->form2->toArray()
     );
     expect($response->data['deleted_at'])->notNull();
-    expect($response->meta['count'])->equals(1);
+    verify($response->meta['count'])->equals(1);
   }
 
   public function testErrorWhenTrashingNonExistentForm() {
     $response = $this->endpoint->trash(['id' => 'Invalid ID']);
-    expect($response->errors[0]['error'])->equals('not_found');
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['error'])->equals('not_found');
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->meta)->isEmpty();
   }
 
   public function testItCanDeleteAForm() {
     $response = $this->endpoint->delete(['id' => $this->form3->getId()]);
     expect($response->data)->isEmpty();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(1);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(1);
   }
 
   public function testErrorWhenDeletingNonExistentForm() {
     $response = $this->endpoint->delete(['id' => 'Invalid ID']);
-    expect($response->errors[0]['error'])->equals('not_found');
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['error'])->equals('not_found');
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     expect($response->meta)->isEmpty();
   }
 
   public function testItCanDuplicateAForm() {
     $response = $this->endpoint->duplicate(['id' => $this->form1->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $form = $this->formsRepository->findOneBy(['name' => 'Copy of Form 1']);
     $this->assertInstanceOf(FormEntity::class, $form);
-    expect($response->data)->equals(
+    verify($response->data)->equals(
       $form->toArray()
     );
-    expect($response->meta['count'])->equals(1);
+    verify($response->meta['count'])->equals(1);
   }
 
   public function testItCanBulkDeleteForms() {
@@ -279,22 +279,22 @@ class FormsTest extends \MailPoetTest {
       'action' => 'trash',
       'listing' => ['group' => 'all'],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(3);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(3);
 
     $response = $this->endpoint->bulkAction([
       'action' => 'delete',
       'listing' => ['group' => 'trash'],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(3);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(3);
 
     $response = $this->endpoint->bulkAction([
       'action' => 'delete',
       'listing' => ['group' => 'trash'],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(0);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(0);
   }
 
   public function testItCanUpdateFormStatus() {
@@ -302,34 +302,34 @@ class FormsTest extends \MailPoetTest {
       'status' => FormEntity::STATUS_ENABLED,
       'id' => $this->form1->getId(),
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $form = $this->reloadForm((int)$this->form1->getId());
-    expect($form->getStatus())->equals(FormEntity::STATUS_ENABLED);
+    verify($form->getStatus())->equals(FormEntity::STATUS_ENABLED);
 
     $response = $this->endpoint->setStatus([
       'status' => FormEntity::STATUS_DISABLED,
       'id' => $this->form1->getId(),
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $form = $this->reloadForm((int)$this->form1->getId());
-    expect($form->getStatus())->equals(FormEntity::STATUS_DISABLED);
+    verify($form->getStatus())->equals(FormEntity::STATUS_DISABLED);
 
     $response = $this->endpoint->setStatus([
       'status' => FormEntity::STATUS_DISABLED,
       'id' => 'invalid id',
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
 
     $response = $this->endpoint->setStatus([
       'id' => $this->form1->getId(),
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
     $response = $this->endpoint->setStatus([
       'status' => 'invalid status',
       'id' => $this->form1->getId(),
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
   private function createForm(string $name): FormEntity {

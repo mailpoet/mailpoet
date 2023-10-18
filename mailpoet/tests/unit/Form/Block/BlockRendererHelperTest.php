@@ -48,16 +48,16 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
 
     $block['styles'] = ['bold' => '1'];
     $label = $this->rendererHelper->renderLabel($block, []);
-    expect($label)->equals('<label class="mailpoet_text_label" style="font-weight: bold;">Input label</label>');
+    verify($label)->equals('<label class="mailpoet_text_label" style="font-weight: bold;">Input label</label>');
 
     $block['params']['required'] = '1';
     $block['styles'] = [];
     $label = $this->rendererHelper->renderLabel($block, []);
-    expect($label)->equals('<label class="mailpoet_text_label" >Input label <span class="mailpoet_required">*</span></label>');
+    verify($label)->equals('<label class="mailpoet_text_label" >Input label <span class="mailpoet_required">*</span></label>');
 
     $block['params']['hide_label'] = '1';
     $label = $this->rendererHelper->renderLabel($block, []);
-    expect($label)->equals('');
+    verify($label)->equals('');
 
     $label = $this->rendererHelper->renderLabel($this->block, ['fontSize' => 10]);
     expect($label)->stringContainsString('style="font-size: 10px;');
@@ -73,92 +73,92 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
 
     $block['styles'] = ['bold' => '1'];
     $label = $this->rendererHelper->renderLegend($block, []);
-    expect($label)->equals('<legend class="mailpoet_text_label" style="font-weight: bold;">Input label</legend>');
+    verify($label)->equals('<legend class="mailpoet_text_label" style="font-weight: bold;">Input label</legend>');
 
     $block['params']['required'] = '1';
     $block['styles'] = [];
     $label = $this->rendererHelper->renderLegend($block, []);
-    expect($label)->equals('<legend class="mailpoet_text_label" >Input label <span class="mailpoet_required">*</span></legend>');
+    verify($label)->equals('<legend class="mailpoet_text_label" >Input label <span class="mailpoet_required">*</span></legend>');
 
     $block['params']['hide_label'] = '1';
     $label = $this->rendererHelper->renderLegend($block, []);
-    expect($label)->equals('');
+    verify($label)->equals('');
   }
 
   public function testItShouldRenderPlaceholder() {
     $block = $this->block;
     $placeholder = $this->rendererHelper->renderInputPlaceholder($block);
-    expect($placeholder)->equals('');
+    verify($placeholder)->equals('');
 
     $block['params']['label_within'] = '1';
     $placeholder = $this->rendererHelper->renderInputPlaceholder($block);
-    expect($placeholder)->equals(' placeholder="Input label" ');
+    verify($placeholder)->equals(' placeholder="Input label" ');
 
     $block['params']['required'] = '1';
     $placeholder = $this->rendererHelper->renderInputPlaceholder($block);
-    expect($placeholder)->equals(' placeholder="Input label *" ');
+    verify($placeholder)->equals(' placeholder="Input label *" ');
   }
 
   public function testItShouldRenderInputValidations() {
     $block = $this->block;
     $validation = $this->rendererHelper->getInputValidation($block);
-    expect($validation)->equals('');
+    verify($validation)->equals('');
 
     $block['params']['required'] = '1';
     $validation = $this->rendererHelper->getInputValidation($block, [], 2);
-    expect($validation)->equals('data-parsley-required="true" data-parsley-errors-container=".mailpoet_error_1_2" data-parsley-required-message="This field is required."');
+    verify($validation)->equals('data-parsley-required="true" data-parsley-errors-container=".mailpoet_error_1_2" data-parsley-required-message="This field is required."');
 
     $block['params']['required'] = '0';
     $block['id'] = 'email';
     $validation = $this->rendererHelper->getInputValidation($block);
-    expect($validation)->equals('data-parsley-required="true" data-parsley-minlength="6" data-parsley-maxlength="150" data-parsley-type-message="This value should be a valid email."');
+    verify($validation)->equals('data-parsley-required="true" data-parsley-minlength="6" data-parsley-maxlength="150" data-parsley-type-message="This value should be a valid email."');
 
     $block = $this->block;
     $block['params']['validate'] = 'phone';
     $validation = $this->rendererHelper->getInputValidation($block);
-    expect($validation)->equals('data-parsley-pattern="^[\d\+\-\.\(\)\/\s]*$" data-parsley-error-message="Please specify a valid phone number."');
+    verify($validation)->equals('data-parsley-pattern="^[\d\+\-\.\(\)\/\s]*$" data-parsley-error-message="Please specify a valid phone number."');
 
     $block = $this->block;
     $block['type'] = 'radio';
     $validation = $this->rendererHelper->getInputValidation($block);
-    expect($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1" data-parsley-required-message="Please select at least one option."');
+    verify($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1" data-parsley-required-message="Please select at least one option."');
 
     $block = $this->block;
     $block['type'] = 'date';
     $validation = $this->rendererHelper->getInputValidation($block);
-    expect($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1"');
+    verify($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1"');
 
     $block = $this->block;
     $validation = $this->rendererHelper->getInputValidation($block, ['custom']);
-    expect($validation)->equals('data-parsley-0="custom"');
+    verify($validation)->equals('data-parsley-0="custom"');
   }
 
   public function testItShouldRenderInputValidationsWithFormId(): void {
     $block = $this->block;
     $block['type'] = 'radio';
     $validation = $this->rendererHelper->getInputValidation($block, [], 1);
-    expect($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1_1" data-parsley-required-message="Please select at least one option."');
+    verify($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1_1" data-parsley-required-message="Please select at least one option."');
 
     $block = $this->block;
     $block['type'] = 'checkbox';
     $validation = $this->rendererHelper->getInputValidation($block, [], 2);
-    expect($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1_2" data-parsley-required-message="Please select at least one option."');
+    verify($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1_2" data-parsley-required-message="Please select at least one option."');
 
     $block = $this->block;
     $block['type'] = 'date';
     $validation = $this->rendererHelper->getInputValidation($block, [], 3);
-    expect($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1_3"');
+    verify($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1_3"');
 
     $block = $this->block;
     $block['id'] = 'segments';
     $validation = $this->rendererHelper->getInputValidation($block, [], 4);
-    expect($validation)->equals('data-parsley-required="true" data-parsley-group="segments" data-parsley-errors-container=".mailpoet_error_segments_4" data-parsley-required-message="Please select a list."');
+    verify($validation)->equals('data-parsley-required="true" data-parsley-group="segments" data-parsley-errors-container=".mailpoet_error_segments_4" data-parsley-required-message="Please select a list."');
   }
 
   public function testItShouldObfuscateFieldNameIfNeeded() {
     $block = $this->block;
     $fieldName = $this->rendererHelper->getFieldName($block);
-    expect($fieldName)->equals('cf_1');
+    verify($fieldName)->equals('cf_1');
 
     $obfuscatorMock = $this->createMock(FieldNameObfuscator::class);
     $obfuscatorMock->expects($this->once())->method('obfuscate')->willReturn('xyz');
@@ -166,6 +166,6 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
 
     $block['id'] = 'email';
     $fieldName = $renderer->getFieldName($block);
-    expect($fieldName)->equals('xyz');
+    verify($fieldName)->equals('xyz');
   }
 }

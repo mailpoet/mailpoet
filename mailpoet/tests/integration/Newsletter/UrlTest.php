@@ -21,6 +21,6 @@ class UrlTest extends \MailPoetTest {
     $emptySubscriber = new SubscriberEntity();
     $urlEmptySubscriber = $newsletterUrl->getViewInBrowserUrl($newsletter, $emptySubscriber);
 
-    expect($urlNullSubscriber)->equals($urlEmptySubscriber);
+    verify($urlNullSubscriber)->equals($urlEmptySubscriber);
   }
 }

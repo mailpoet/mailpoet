@@ -54,8 +54,8 @@ class FilterHandlerTest extends \MailPoetTest {
     $this->assertIsArray($result[1]);
     $subscriber2 = $this->entityManager->find(SubscriberEntity::class, $result[1]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber1->getEmail())->equals('user-role-test1@example.com');
-    expect($subscriber2->getEmail())->equals('user-role-test3@example.com');
+    verify($subscriber1->getEmail())->equals('user-role-test1@example.com');
+    verify($subscriber2->getEmail())->equals('user-role-test3@example.com');
   }
 
   private function getSegment(string $role): SegmentEntity {

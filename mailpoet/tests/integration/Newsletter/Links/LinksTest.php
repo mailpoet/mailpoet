@@ -37,7 +37,7 @@ class LinksTest extends \MailPoetTest {
     $template = '<a href="http://example.com">some site</a> http://link2.com <img src="http://link3.com">';
     $result = $this->links->extract($template);
 
-    expect($result[0])->equals(
+    verify($result[0])->equals(
       [
         'type' => Links::LINK_TYPE_URL,
         'link' => 'http://example.com',
@@ -48,7 +48,7 @@ class LinksTest extends \MailPoetTest {
   public function testItOnlyHashesAndReplacesLinksInAnchorTags() {
     $template = '<a href="http://example.com"><img src="http://example.com" /></a>';
     $result = $this->links->process($template, 0, 0);
-    expect($result[0])->equals(
+    verify($result[0])->equals(
       sprintf(
         '<a href="%s-%s"><img src="http://example.com" /></a>',
         Links::DATA_TAG_CLICK,
@@ -65,7 +65,7 @@ class LinksTest extends \MailPoetTest {
 
     $template = '<a href="http://example.com"><img src="http://example.com" /></a>';
     $result = $this->links->process($template, $link->getNewsletter()->getId(), $link->getQueue()->getId());
-    expect($result[0])->equals(
+    verify($result[0])->equals(
       sprintf(
         '<a href="%s-%s"><img src="http://example.com" /></a>',
         Links::DATA_TAG_CLICK,
@@ -78,7 +78,7 @@ class LinksTest extends \MailPoetTest {
     $template = '[notlink:shortcode] [link:some_link_shortcode]';
     $result = $this->links->extract($template);
 
-    expect($result[0])->equals(
+    verify($result[0])->equals(
       [
         'type' => Links::LINK_TYPE_SHORTCODE,
         'link' => '[link:some_link_shortcode]',
@@ -91,7 +91,7 @@ class LinksTest extends \MailPoetTest {
     list($updatedContent, $hashedLinks) = $this->links->process($template, 0, 0);
 
     // 2 links were hashed
-    expect(count($hashedLinks))->equals(2);
+    verify(count($hashedLinks))->equals(2);
     // links in returned content were replaced with hashes
     expect($updatedContent)
       ->stringContainsString(Links::DATA_TAG_CLICK . '-' . $hashedLinks[0]['hash']);
@@ -103,7 +103,7 @@ class LinksTest extends \MailPoetTest {
   public function testItHashesAndReplacesLinksWithSpecialCharacters() {
     $template = '<a href="http://сайт.cóm/彌撒時間">some site</a>';
     $result = $this->links->process($template, 0, 0);
-    expect($result[0])->equals(
+    verify($result[0])->equals(
       sprintf(
         '<a href="%s-%s">some site</a>',
         Links::DATA_TAG_CLICK,
@@ -151,10 +151,10 @@ class LinksTest extends \MailPoetTest {
       $data['preview']
     );
     // URL data object should be an indexed array
-    expect($urlDataObject)->equals(array_values($data));
+    verify($urlDataObject)->equals(array_values($data));
     // transformed URL object should be an associative array
     $transformedUrlDataObject = $this->links->transformUrlDataObject($urlDataObject);
-    expect($transformedUrlDataObject)->equals($data);
+    verify($transformedUrlDataObject)->equals($data);
   }
 
   public function testItReplacesHashedLinksWithSubscriberData() {
@@ -182,8 +182,8 @@ class LinksTest extends \MailPoetTest {
     foreach ($result['data'] as $data) {
       $data = Router::decodeRequestData($data);
       $data = $this->links->transformUrlDataObject($data);
-      expect($data['subscriber_id'])->equals($subscriber->getId());
-      expect($data['queue_id'])->equals($queue->getId());
+      verify($data['subscriber_id'])->equals($subscriber->getId());
+      verify($data['queue_id'])->equals($queue->getId());
       expect(isset($data['subscriber_token']))->true();
     }
   }
@@ -209,8 +209,8 @@ class LinksTest extends \MailPoetTest {
     // 1 database record was created
     $newsletterLink = $this->newsletterLinkRepository->findOneBy(['newsletter' => $newsletterId, 'queue' => $queueId]);
     $this->assertInstanceOf(NewsletterLinkEntity::class, $newsletterLink);
-    expect($newsletterLink->getHash())->equals('123');
-    expect($newsletterLink->getUrl())->equals('http://example.com');
+    verify($newsletterLink->getHash())->equals('123');
+    verify($newsletterLink->getUrl())->equals('http://example.com');
   }
 
   public function testItCanReuseAlreadySavedLinks() {
@@ -231,9 +231,9 @@ class LinksTest extends \MailPoetTest {
 
     list($content, $links) = $this->links->process('<a href="http://example.com">x</a>', $this->newsletter->getId(), 2);
     expect(is_array($links))->true();
-    expect(count($links))->equals(1);
-    expect($links[0]['hash'])->equals('123');
-    expect($links[0]['url'])->equals('http://example.com');
+    verify(count($links))->equals(1);
+    verify($links[0]['hash'])->equals('123');
+    verify($links[0]['url'])->equals('http://example.com');
   }
 
   public function testItMatchesHashedLinks() {
@@ -271,13 +271,13 @@ class LinksTest extends \MailPoetTest {
       ],
     ];
     $links = $this->links->ensureInstantUnsubscribeLink($links);
-    expect(count($links))->equals(2);
-    expect($links[1]['link'])->equals(NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE);
-    expect($links[1]['type'])->equals(Links::LINK_TYPE_SHORTCODE);
+    verify(count($links))->equals(2);
+    verify($links[1]['link'])->equals(NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE);
+    verify($links[1]['type'])->equals(Links::LINK_TYPE_SHORTCODE);
     expect($links[1])->hasKey('processed_link');
     expect($links[1])->hasKey('hash');
     $links = $this->links->ensureInstantUnsubscribeLink($links);
-    expect(count($links))->equals(2);
+    verify(count($links))->equals(2);
   }
 
   public function testItCanConvertAllHashedLinksToUrls() {

@@ -25,11 +25,11 @@ class TransactionalEmailsUnitTest extends \MailPoetUnitTest {
       },
       'homeUrl' => 'http://test.loc',
       'wpSpecialcharsDecode' => function($text) {
-        expect($text)->equals('Test');
+        verify($text)->equals('Test');
         return $text;
       },
       'wpParseUrl' => function($url) {
-        expect($url)->equals('http://test.loc');
+        verify($url)->equals('http://test.loc');
         return 'test.loc';
       },
     ]);
@@ -38,7 +38,7 @@ class TransactionalEmailsUnitTest extends \MailPoetUnitTest {
     $woocommerceHelper = Stub::make(WooCommerceHelper::class);
     $newslettersRepository = Stub::make(NewslettersRepository::class);
     $transactionalEmails = new TransactionalEmails($wp, $settings, $template, $woocommerceHelper, $newslettersRepository);
-    expect($transactionalEmails->getEmailHeadings())->equals([
+    verify($transactionalEmails->getEmailHeadings())->equals([
       'new_account' => 'Test: New Order: #0001',
       'processing_order' => 'Thank you for your order',
       'completed_order' => 'Thanks for shopping at test.loc',
