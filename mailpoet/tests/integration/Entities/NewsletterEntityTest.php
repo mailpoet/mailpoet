@@ -76,7 +76,7 @@ class NewsletterEntityTest extends \MailPoetTest {
 
     expect($newsletterOptionField)->notNull();
     verify($newsletterOption->getValue())->equals($optionValue);
-    expect($newsletter->getOption(NewsletterOptionFieldEntity::NAME_SEGMENT))->null();
+    verify($newsletter->getOption(NewsletterOptionFieldEntity::NAME_SEGMENT))->null();
   }
 
   public function testItPausesTaskWhenPausingNewsletter() {
@@ -184,7 +184,7 @@ class NewsletterEntityTest extends \MailPoetTest {
   public function testItCanRetrieveFilterSegmentIdOption(): void {
     $optionField = (new NewsletterOptionField())->findOrCreate(NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID);
     $newsletter = $this->createNewsletter();
-    expect($newsletter->getFilterSegmentId())->null();
+    verify($newsletter->getFilterSegmentId())->null();
 
     $newsletterOption = new NewsletterOptionEntity($newsletter, $optionField);
     $newsletterOption->setValue('2');
@@ -199,7 +199,7 @@ class NewsletterEntityTest extends \MailPoetTest {
   public function testItInheritsFilterSegmentIdFromParent(): void {
     $optionField = (new NewsletterOptionField())->findOrCreate(NewsletterOptionFieldEntity::NAME_FILTER_SEGMENT_ID, NewsletterEntity::TYPE_NOTIFICATION);
     $notificationNewsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION);
-    expect($notificationNewsletter->getFilterSegmentId())->null();
+    verify($notificationNewsletter->getFilterSegmentId())->null();
 
     $newsletterOption = new NewsletterOptionEntity($notificationNewsletter, $optionField);
     $newsletterOption->setValue('2');
@@ -211,7 +211,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     verify($notificationNewsletter->getFilterSegmentId())->equals(2);
 
     $notificationHistoryNewsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
-    expect($notificationHistoryNewsletter->getFilterSegmentId())->null();
+    verify($notificationHistoryNewsletter->getFilterSegmentId())->null();
 
     $notificationHistoryNewsletter->setParent($notificationNewsletter);
     $this->entityManager->persist($notificationHistoryNewsletter);

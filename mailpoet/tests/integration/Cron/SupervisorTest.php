@@ -36,7 +36,7 @@ class SupervisorTest extends \MailPoetTest {
 
   public function testItCreatesDaemonWhenOneDoesNotExist() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
-    expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
+    verify($this->settings->get(CronHelper::DAEMON_SETTING))->null();
     $this->supervisor->init();
     expect($this->supervisor->getDaemon())->notEmpty();
   }

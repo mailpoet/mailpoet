@@ -50,7 +50,7 @@ class ThumbnailSaverTest extends \MailPoetTest {
     $template = $this->thumbnailSaver->ensureTemplateThumbnailFile($template);
     $thumbnailUrl = $template->getThumbnail();
     // Base url was updated back to initial value
-    expect($thumbnailUrl)->null();
+    verify($thumbnailUrl)->null();
   }
 
   private function createTemplate(): NewsletterTemplateEntity {

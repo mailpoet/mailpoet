@@ -87,7 +87,7 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     $this->repository->resume($queue);
     $this->entityManager->refresh($task);
 
-    expect($task->getStatus())->null();
+    verify($task->getStatus())->null();
     verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 

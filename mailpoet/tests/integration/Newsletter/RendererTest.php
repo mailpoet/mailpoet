@@ -477,7 +477,7 @@ class RendererTest extends \MailPoetTest {
     $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][4];
     $DOM = $this->dOMParser->parseStr((new Spacer)->render($template));
-    expect($DOM('tr > td.mailpoet_spacer', 0)->attr('bgcolor'))->null();
+    verify($DOM('tr > td.mailpoet_spacer', 0)->attr('bgcolor'))->null();
     $template['styles']['block']['backgroundColor'] = '#ffff';
     $DOM = $this->dOMParser->parseStr((new Spacer)->render($template));
     verify($DOM('tr > td.mailpoet_spacer', 0)->attr('bgcolor'))

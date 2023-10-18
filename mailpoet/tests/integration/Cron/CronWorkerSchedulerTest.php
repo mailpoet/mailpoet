@@ -51,7 +51,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     verify($immediateTask->getId())->equals($task->getId());
     expect($tasks)->count(1);
     expect($tasks[0]->getType())->same('test');
-    expect($tasks[0]->getStatus())->null();
+    verify($tasks[0]->getStatus())->null();
     expect($tasks[0]->getScheduledAt())->same($nextRunDate);
   }
 

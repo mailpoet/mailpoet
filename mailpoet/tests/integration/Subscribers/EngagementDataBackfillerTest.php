@@ -81,8 +81,8 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $sub1->setLastPurchaseAt(null);
     $sub2->setLastPurchaseAt(null);
     $this->entityManager->flush();
-    expect($sub2->getLastPurchaseAt())->null();
-    expect($sub1->getLastPurchaseAt())->null();
+    verify($sub2->getLastPurchaseAt())->null();
+    verify($sub1->getLastPurchaseAt())->null();
 
     $this->backfiller->updateBatch([$sub1, $sub2]);
 
@@ -160,10 +160,10 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
 
     $this->entityManager->flush();
 
-    expect($sub1->getLastOpenAt())->null();
-    expect($sub2->getLastOpenAt())->null();
-    expect($sub3->getLastOpenAt())->null();
-    expect($sub4->getLastOpenAt())->null();
+    verify($sub1->getLastOpenAt())->null();
+    verify($sub2->getLastOpenAt())->null();
+    verify($sub3->getLastOpenAt())->null();
+    verify($sub4->getLastOpenAt())->null();
 
     $this->backfiller->updateBatch([$sub1, $sub2, $sub3, $sub4]);
 
@@ -179,7 +179,7 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     verify($sub1->getLastOpenAt()->getTimestamp())->equals($newer->getTimestamp());
     verify($sub2->getLastOpenAt()->getTimestamp())->equals($sub2date->getTimestamp());
     verify($sub3->getLastOpenAt()->getTimestamp())->equals($sub3date->getTimestamp());
-    expect($sub4->getLastOpenAt())->null();
+    verify($sub4->getLastOpenAt())->null();
   }
 
   public function testItRetrievesClicksData(): void {
@@ -249,10 +249,10 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
 
     $this->entityManager->flush();
 
-    expect($sub1->getLastClickAt())->null();
-    expect($sub2->getLastClickAt())->null();
-    expect($sub3->getLastClickAt())->null();
-    expect($sub4->getLastClickAt())->null();
+    verify($sub1->getLastClickAt())->null();
+    verify($sub2->getLastClickAt())->null();
+    verify($sub3->getLastClickAt())->null();
+    verify($sub4->getLastClickAt())->null();
 
     $this->backfiller->updateBatch([$sub1, $sub2, $sub3, $sub4]);
 
@@ -269,7 +269,7 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     verify($sub1->getLastClickAt()->getTimestamp())->equals($newer->getTimestamp());
     verify($sub2->getLastClickAt()->getTimestamp())->equals($sub2date->getTimestamp());
     verify($sub3->getLastClickAt()->getTimestamp())->equals($sub3date->getTimestamp());
-    expect($sub4->getLastOpenAt())->null();
+    verify($sub4->getLastOpenAt())->null();
   }
 
   public function testItRetrievesSendingData(): void {
@@ -339,10 +339,10 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
 
     $this->entityManager->flush();
 
-    expect($sub1->getLastSendingAt())->null();
-    expect($sub2->getLastSendingAt())->null();
-    expect($sub3->getLastSendingAt())->null();
-    expect($sub4->getLastSendingAt())->null();
+    verify($sub1->getLastSendingAt())->null();
+    verify($sub2->getLastSendingAt())->null();
+    verify($sub3->getLastSendingAt())->null();
+    verify($sub4->getLastSendingAt())->null();
 
     $this->backfiller->updateBatch([$sub1, $sub2, $sub3, $sub4]);
 
@@ -358,7 +358,7 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     verify($sub1->getLastSendingAt()->getTimestamp())->equals($newer->getTimestamp());
     verify($sub2->getLastSendingAt()->getTimestamp())->equals($sub2date->getTimestamp());
     verify($sub3->getLastSendingAt()->getTimestamp())->equals($sub3date->getTimestamp());
-    expect($sub4->getLastSendingAt())->null();
+    verify($sub4->getLastSendingAt())->null();
   }
 
   public function testItRetrievesSubscribersInBatches(): void {

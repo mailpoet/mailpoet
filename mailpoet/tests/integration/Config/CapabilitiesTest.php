@@ -79,7 +79,7 @@ class CapabilitiesTest extends \MailPoetTest {
     $this->caps->setupWPCapabilities();
 
     // role does not exist
-    expect(get_role('nonexistent_role'))->null();
+    verify(get_role('nonexistent_role'))->null();
 
     // other MailPoet capabilities were successfully configured
     $editorRole = get_role('editor');

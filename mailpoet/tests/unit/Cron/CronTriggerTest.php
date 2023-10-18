@@ -57,7 +57,7 @@ class CronTriggerTest extends \MailPoetUnitTest {
       },
     ]);
     $cronTrigger = $this->createCronTrigger($settingsMock, $wordPressTrigger);
-    expect($cronTrigger->init())->null();
+    verify($cronTrigger->init())->null();
   }
 
   private function createCronTrigger(

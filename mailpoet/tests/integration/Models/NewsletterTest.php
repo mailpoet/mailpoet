@@ -213,7 +213,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($this->newsletter->deletedAt)->notNull();
     $this->newsletter->restore();
     $this->newsletter = $this->reloadNewsletter($this->newsletter);
-    expect($this->newsletter->deletedAt)->null();
+    verify($this->newsletter->deletedAt)->null();
     verify($this->newsletter->status)->equals(Newsletter::STATUS_SENT);
   }
 

@@ -90,7 +90,7 @@ class CustomFieldsTest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_OK);
 
     $customField = $this->repository->findOneBy(['type' => 'date']);
-    expect($customField)->null();
+    verify($customField)->null();
 
     $response = $this->endpoint->delete(['id' => $customFieldId]);
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);

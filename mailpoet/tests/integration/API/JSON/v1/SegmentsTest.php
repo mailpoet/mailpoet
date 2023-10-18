@@ -130,7 +130,7 @@ class SegmentsTest extends \MailPoetTest {
     verify($response->data)->equals(
       $this->responseBuilder->build($segment)
     );
-    expect($response->data['deleted_at'])->null();
+    verify($response->data['deleted_at'])->null();
     verify($response->meta['count'])->equals(1);
   }
 

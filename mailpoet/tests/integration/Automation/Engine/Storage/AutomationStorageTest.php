@@ -153,7 +153,7 @@ class AutomationStorageTest extends \MailPoetTest {
     expect($this->testee->getAutomations())->count(2);
     $this->testee->deleteAutomation($automationToDelete);
     expect($this->testee->getAutomations())->count(1);
-    expect($this->testee->getAutomation($automationToDelete->getId()))->null();
+    verify($this->testee->getAutomation($automationToDelete->getId()))->null();
     $automationToKeepFromDatabase = $this->testee->getAutomation($automationToKeep->getId());
     $this->assertInstanceOf(Automation::class, $automationToKeepFromDatabase);
     expect($automationToKeepFromDatabase->getVersionId())->notNull();
@@ -188,13 +188,13 @@ class AutomationStorageTest extends \MailPoetTest {
     }
     $this->testee->deleteAutomation($automations['toDelete']);
     foreach ($runs['toDelete'] as $runId) {
-      expect($automationRunStorage->getAutomationRun($runId))->null();
+      verify($automationRunStorage->getAutomationRun($runId))->null();
     }
     foreach ($runs['toKeep'] as $runId) {
       expect($automationRunStorage->getAutomationRun($runId))->notNull();
     }
     foreach ($runLogs['toDelete'] as $runLogId) {
-      expect($automationRunLogStorage->getAutomationRunLog($runLogId))->null();
+      verify($automationRunLogStorage->getAutomationRunLog($runLogId))->null();
     }
     foreach ($runLogs['toKeep'] as $runLogId) {
       expect($automationRunLogStorage->getAutomationRunLog($runLogId))->notNull();

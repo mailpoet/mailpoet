@@ -58,7 +58,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($segment1);
     $this->entityManager->refresh($segment2);
     verify($result)->equals(1);
-    expect($segment1->getDeletedAt())->null();
+    verify($segment1->getDeletedAt())->null();
     expect($segment2->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
   }
 
@@ -72,7 +72,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($segment2);
     verify($result)->equals(1);
     expect($segment1->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
-    expect($segment2->getDeletedAt())->null();
+    verify($segment2->getDeletedAt())->null();
   }
 
   public function testItReturnsCountsOfSegmentsWithMultipleFilters(): void {

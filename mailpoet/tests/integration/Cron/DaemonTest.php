@@ -85,7 +85,7 @@ class DaemonTest extends \MailPoetTest {
     $daemon = new Daemon($this->cronHelper, $cronWorkerRunner, $factoryMock, $this->diContainer->get(LoggerFactory::class));
     $daemon->run($data);
     $log = $this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]);
-    expect($log)->null();
+    verify($log)->null();
     $this->wp->removeFilter('mailpoet_cron_get_execution_limit', $limitCallback);
   }
 

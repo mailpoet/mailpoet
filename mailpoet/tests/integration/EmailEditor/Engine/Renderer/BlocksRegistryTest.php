@@ -18,7 +18,7 @@ class BlocksRegistryTest extends \MailPoetTest {
 
   public function testItReturnsNullForUnknownRenderer() {
     $storedRenderer = $this->registry->getBlockRenderer('test');
-    expect($storedRenderer)->null();
+    verify($storedRenderer)->null();
   }
 
   public function testItStoresAddedRenderer() {

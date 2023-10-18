@@ -51,7 +51,7 @@ class AnalyticsTest extends \MailPoetTest {
     $this->settings->set('analytics', ['enabled' => '']);
     $analytics = new Analytics($reporter, SettingsController::getInstance());
 
-    expect($analytics->generateAnalytics())->null();
+    verify($analytics->generateAnalytics())->null();
   }
 
   public function testGetDataIfSentRecently() {
@@ -66,7 +66,7 @@ class AnalyticsTest extends \MailPoetTest {
     $this->settings->set('analytics_last_sent', Carbon::now()->subHours(1));
     $analytics = new Analytics($reporter, SettingsController::getInstance());
 
-    expect($analytics->generateAnalytics())->null();
+    verify($analytics->generateAnalytics())->null();
   }
 
   public function testGetDataIfEnabledButNeverSent() {
@@ -116,7 +116,7 @@ class AnalyticsTest extends \MailPoetTest {
 
     verify($this->settings->get('public_id'))->equals($fakePublicId);
     verify($this->settings->get('new_public_id'))->equals('true');
-    expect($this->settings->get(Analytics::SETTINGS_LAST_SENT_KEY, null))->null();
+    verify($this->settings->get(Analytics::SETTINGS_LAST_SENT_KEY, null))->null();
   }
 
   public function testIsPublicIdNew() {

@@ -38,7 +38,7 @@ class DynamicSegmentFilterRepositoryTest extends \MailPoetTest {
       DynamicSegmentFilterData::TYPE_USER_ROLE,
       UserRole::TYPE
     );
-    expect($dynamicFilter)->null();
+    verify($dynamicFilter)->null();
   }
 
   private function createSegment(string $name): SegmentEntity {

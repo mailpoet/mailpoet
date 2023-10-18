@@ -72,7 +72,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     $subscriber = $this->createSubscriber();
     $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getLastEngagementAt())->null();
+    verify($subscriber->getLastEngagementAt())->null();
   }
 
   public function testItReturnsTrueWhenCompleted() {

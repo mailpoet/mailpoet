@@ -308,7 +308,7 @@ class OpensTest extends \MailPoetTest {
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
     $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
-    expect($openEntity->getUserAgent())->null();
+    verify($openEntity->getUserAgent())->null();
     verify($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     // Track Machine User Agent
     $machineUserAgentName = UserAgentEntity::MACHINE_USER_AGENTS[0];
@@ -319,7 +319,7 @@ class OpensTest extends \MailPoetTest {
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
     $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
-    expect($openEntity->getUserAgent())->null();
+    verify($openEntity->getUserAgent())->null();
     verify($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
   }
 
@@ -339,7 +339,7 @@ class OpensTest extends \MailPoetTest {
     expect($openEntities)->count(1);
     $openEntity = reset($openEntities);
     $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
-    expect($openEntity->getUserAgent())->null();
+    verify($openEntity->getUserAgent())->null();
     verify($openEntity->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
     // Track Human User Agent
     $humanUserAgentName = 'User Agent';

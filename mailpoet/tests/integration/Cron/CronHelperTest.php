@@ -174,7 +174,7 @@ class CronHelperTest extends \MailPoetTest {
         CronHelper::DAEMON_SETTING,
         $daemon
       );
-      expect($this->cronHelper->isDaemonAccessible())->null();
+      verify($this->cronHelper->isDaemonAccessible())->null();
     }
   }
 
@@ -259,7 +259,7 @@ class CronHelperTest extends \MailPoetTest {
 
   public function testItEnforcesExecutionLimit() {
     $time = microtime(true);
-    expect($this->cronHelper->enforceExecutionLimit($time))->null();
+    verify($this->cronHelper->enforceExecutionLimit($time))->null();
     try {
       $this->cronHelper->enforceExecutionLimit($time - $this->cronHelper->getDaemonExecutionLimit());
       self::fail('Execution limit exception not thrown.');

@@ -331,7 +331,7 @@ class SubscribersTest extends \MailPoetTest {
     verify($response->data['id'])->equals($subscriber->getId());
     verify($response->data['email'])->equals($subscriber->getEmail());
     verify($response->data['status'])->equals($subscriber->getStatus());
-    expect($response->data['deleted_at'])->null();
+    verify($response->data['deleted_at'])->null();
     verify($response->meta['count'])->equals(1);
   }
 
@@ -904,7 +904,7 @@ class SubscribersTest extends \MailPoetTest {
     ]);
 
     $didSubscribe = $this->subscribersRepository->findOneBy(['email' => 'toto@mailpoet.com']);
-    expect($didSubscribe)->null();
+    verify($didSubscribe)->null();
     expect($response)->isInstanceOf(ErrorResponse::class);
     verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     verify($response->errors[0]['message'])->equals($expectedErrorMessage);
@@ -1083,8 +1083,8 @@ class SubscribersTest extends \MailPoetTest {
 
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->meta['count'])->equals(2);
-    expect($subscriberTag1)->null();
-    expect($subscriberTag2)->null();
+    verify($subscriberTag1)->null();
+    verify($subscriberTag2)->null();
 
     // Testing that removing the same tag again does not return an error
     $response = $this->endpoint->bulkAction($bulkActionData);

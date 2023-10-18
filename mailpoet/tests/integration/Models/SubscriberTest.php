@@ -133,7 +133,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber->save();
     $subscriberUpdated = Subscriber::where('email', $this->testData['email'])
       ->findOne();
-    expect($subscriberUpdated->lastSubscribedAt)->null();
+    verify($subscriberUpdated->lastSubscribedAt)->null();
 
     // Change to subscribed updates last_updated_at
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;

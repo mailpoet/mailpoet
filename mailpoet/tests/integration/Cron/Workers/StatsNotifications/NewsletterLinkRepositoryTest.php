@@ -61,6 +61,6 @@ class NewsletterLinkRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $nonExistingTopLink = $repository->findTopLinkForNewsletter((int)$newsletter2->getId());
-    expect($nonExistingTopLink)->null();
+    verify($nonExistingTopLink)->null();
   }
 }

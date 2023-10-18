@@ -117,7 +117,7 @@ class BridgeApiTest extends \MailPoetTest {
       ->method('wpRemoteRetrieveResponseCode')
       ->willReturn(400);
     $result = $this->api->getAuthorizedSenderDomains();
-    expect($result)->null();
+    verify($result)->null();
   }
 
   public function testGetDomainsLogsErrorWhenResponseHasUnexpectedFormat() {

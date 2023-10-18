@@ -72,8 +72,8 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $newsletter = $this->saveController->save($newsletterData);
     $updatedQueue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $updatedQueue); // PHPStan
-    expect($updatedQueue->getNewsletterRenderedSubject())->null();
-    expect($updatedQueue->getNewsletterRenderedBody())->null();
+    verify($updatedQueue->getNewsletterRenderedSubject())->null();
+    verify($updatedQueue->getNewsletterRenderedBody())->null();
   }
 
   public function testItCanRerenderQueueUponSave() {
@@ -174,7 +174,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption); // PHPStan
 
     verify($task1->getScheduledAt())->equals($this->scheduler->getNextRunDate($scheduleOption->getValue()));
-    expect($task2->getScheduledAt())->null();
+    verify($task2->getScheduledAt())->null();
   }
 
   public function testItCanModifySegmentsOfExistingNewsletter() {
@@ -244,8 +244,8 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
 
     $newsletter = $this->saveController->save($newsletterData);
     verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
-    expect($newsletter->getLatestQueue())->null();
-    expect($this->diContainer->get(SendingQueuesRepository::class)->findOneById($queueId))->null();
+    verify($newsletter->getLatestQueue())->null();
+    verify($this->diContainer->get(SendingQueuesRepository::class)->findOneById($queueId))->null();
   }
 
   public function testItSavesDefaultSenderIfNeeded() {
@@ -280,7 +280,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     ];
 
     $this->saveController->save($data);
-    expect($settings->get('sender'))->null();
+    verify($settings->get('sender'))->null();
   }
 
   public function testItDoesntOverrideDefaultSender() {

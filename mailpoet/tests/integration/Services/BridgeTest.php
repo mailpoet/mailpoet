@@ -468,7 +468,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->storeMSSKeyAndState('cba', $result);
     $state = $this->getMssKeyState() ?? [];
     verify($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
-    expect($state['data'])->null();
+    verify($state['data'])->null();
   }
 
   public function testItPreservesPremiumKeyStateDataIfSubsequentCheckFails() {
@@ -534,7 +534,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->storePremiumKeyAndState('cba', $result);
     $state = $this->getPremiumKeyState() ?? [];
     verify($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
-    expect($state['data'])->null();
+    verify($state['data'])->null();
   }
 
   public function testItSavesAccessRestrictionForUnderprivilegePremiumKeys() {
@@ -608,7 +608,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
     $result = $this->bridge->$method('abc');
     expect($result)->notEmpty();
-    expect($result['data'])->null();
+    verify($result['data'])->null();
     verify($result['access_restriction'])->equals($expectedAccessRestriction);
   }
 

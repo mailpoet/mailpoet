@@ -544,7 +544,7 @@ class WPTest extends \MailPoetTest {
     $wpSegment->synchronizeUser($id);
     $subscriber1 = Subscriber::where("wp_user_id", $id)->findOne();
     verify($subscriber1->status)->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($subscriber1->deletedAt)->null();
+    verify($subscriber1->deletedAt)->null();
   }
 
   public function testItDoesNotTrashNewUsersWhoIsWooCustomerToDisabledWPSegment(): void {
@@ -577,7 +577,7 @@ class WPTest extends \MailPoetTest {
     $wpSegment->synchronizeUser($id);
     $subscriber1 = Subscriber::where("wp_user_id", $id)->findOne();
     verify($subscriber1->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
-    expect($subscriber1->deletedAt)->null();
+    verify($subscriber1->deletedAt)->null();
     remove_role('customer');
   }
 

@@ -221,7 +221,7 @@ class FormsTest extends \MailPoetTest {
     verify($response->data)->equals(
       $this->form1->toArray()
     );
-    expect($response->data['deleted_at'])->null();
+    verify($response->data['deleted_at'])->null();
     verify($response->meta['count'])->equals(1);
   }
 
