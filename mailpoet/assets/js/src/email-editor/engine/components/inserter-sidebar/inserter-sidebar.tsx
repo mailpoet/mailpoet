@@ -1,18 +1,16 @@
-import { createSlotFill } from '@wordpress/components';
-
-const { Slot: InserterSlot, Fill: InserterFill } = createSlotFill(
-  'EmailEditorInserter',
-);
+import { __experimentalLibrary as Library } from '@wordpress/block-editor';
 
 export function InserterSidebar() {
   return (
     <div className="edit-post-editor__inserter-panel ">
-      <InserterSlot
-        bubblesVirtually
-        className="edit-post-editor__inserter-panel-content"
-      />
+      <div className="edit-post-editor__inserter-panel-content">
+        <Library
+          showMostUsedBlocks
+          showInserterHelpPanel={false}
+          rootClientId={undefined}
+          __experimentalInsertionIndex={undefined}
+        />
+      </div>
     </div>
   );
 }
-
-InserterSidebar.InserterFill = InserterFill;

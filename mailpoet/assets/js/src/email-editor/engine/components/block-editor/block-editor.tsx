@@ -1,26 +1,28 @@
 import {
   BlockEditorKeyboardShortcuts,
   BlockEditorProvider,
-  BlockInspector,
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore No types for this exist yet.
   BlockTools,
   BlockList,
   ObserveTyping,
   WritingFlow,
-  __experimentalListView as ListView,
-  __experimentalLibrary as Library,
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore No types for this exist yet.
   __experimentalUseResizeCanvas as useResizeCanvas,
 } from '@wordpress/block-editor';
 import classnames from 'classnames';
 import { useSelect } from '@wordpress/data';
+import {
+  ComplementaryArea,
+  FullscreenMode,
+  InterfaceSkeleton,
+} from '@wordpress/interface';
 import { useEntityBlockEditor } from '@wordpress/core-data';
 
 import { storeName } from '../../store';
 import { Sidebar } from '../sidebar/sidebar';
-
+import { Header } from '../header';
 import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 
@@ -33,6 +35,26 @@ export function BlockEditor() {
     }),
     [],
   );
+
+  const {
+    isFullscreenActive,
+    isSidebarOpened,
+    isInserterSidebarOpened,
+    isListviewSidebarOpened,
+  } = useSelect(
+    (select) => ({
+      isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
+      isSidebarOpened: select(storeName).isSidebarOpened(),
+      isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
+      isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
+      postId: select(storeName).getEmailPostId(),
+    }),
+    [],
+  );
+
+  const className = classnames('interface-interface-skeleton', {
+    'is-sidebar-opened': isSidebarOpened,
+  });
 
   const [blocks, onInput, onChange] = useEntityBlockEditor(
     'postType',
@@ -66,53 +88,53 @@ export function BlockEditor() {
   };
 
   return (
-    <div className="edit-post-visual-editor">
-      <div
-        className="edit-post-visual-editor__content-area"
-        style={contentAreaStyles}
-      >
-        <div
-          style={inlineStyles}
-          className={classnames({
-            'is-mobile-preview': previewDeviceType === 'Mobile',
-            'is-desktop-preview': previewDeviceType === 'Desktop',
-          })}
-        >
-          <BlockEditorProvider
-            value={blocks}
-            onInput={onInput}
-            onChange={onChange}
-            settings={initialSettings}
-          >
-            <Sidebar.InspectorFill>
-              <BlockInspector />
-            </Sidebar.InspectorFill>
-            <ListviewSidebar.ListviewFill>
-              <ListView />
-            </ListviewSidebar.ListviewFill>
-            <InserterSidebar.InserterFill>
-              <Library
-                showMostUsedBlocks
-                showInserterHelpPanel={false}
-                rootClientId={undefined}
-                __experimentalInsertionIndex={undefined}
-              />
-            </InserterSidebar.InserterFill>
-            <div className="editor-styles-wrapper">
-              {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-              {/* @ts-ignore BlockEditorKeyboardShortcuts.Register has no types */}
-              <BlockEditorKeyboardShortcuts.Register />
-              <BlockTools>
-                <WritingFlow>
-                  <ObserveTyping>
-                    <BlockList />
-                  </ObserveTyping>
-                </WritingFlow>
-              </BlockTools>
+    <BlockEditorProvider
+      value={blocks}
+      onInput={onInput}
+      onChange={onChange}
+      settings={initialSettings}
+      useSubRegistry={false}
+    >
+      <FullscreenMode isActive={isFullscreenActive} />
+      <Sidebar />
+      <InterfaceSkeleton
+        className={className}
+        header={<Header />}
+        content={
+          <div className="edit-post-visual-editor">
+            <div
+              className="edit-post-visual-editor__content-area"
+              style={contentAreaStyles}
+            >
+              <div
+                style={inlineStyles}
+                className={classnames({
+                  'is-mobile-preview': previewDeviceType === 'Mobile',
+                  'is-desktop-preview': previewDeviceType === 'Desktop',
+                })}
+              >
+                <div className="editor-styles-wrapper">
+                  {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                  {/* @ts-ignore BlockEditorKeyboardShortcuts.Register has no types */}
+                  <BlockEditorKeyboardShortcuts.Register />
+                  <BlockTools>
+                    <WritingFlow>
+                      <ObserveTyping>
+                        <BlockList />
+                      </ObserveTyping>
+                    </WritingFlow>
+                  </BlockTools>
+                </div>
+              </div>
             </div>
-          </BlockEditorProvider>
-        </div>
-      </div>
-    </div>
+          </div>
+        }
+        sidebar={<ComplementaryArea.Slot scope={storeName} />}
+        secondarySidebar={
+          (isInserterSidebarOpened && <InserterSidebar />) ||
+          (isListviewSidebarOpened && <ListviewSidebar />)
+        }
+      />
+    </BlockEditorProvider>
   );
 }
