@@ -170,7 +170,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       $optionField = $newsletterOption->getOptionField();
       return $optionField && $optionField->getName() === 'schedule';
     })->first();
-    expect($task1->getScheduledAt())->notEquals($currentTime);
+    verify($task1->getScheduledAt())->notEquals($currentTime);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption); // PHPStan
 
     verify($task1->getScheduledAt())->equals($this->scheduler->getNextRunDate($scheduleOption->getValue()));
@@ -310,7 +310,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($duplicate->getSubject())->equals('Copy of ' . $newsletter->getSubject());
     expect($duplicate->getHash())->string();
     expect($duplicate->getHash())->notEmpty();
-    expect($duplicate->getHash())->notEquals($newsletter->getHash());
+    verify($duplicate->getHash())->notEquals($newsletter->getHash());
     verify($duplicate->getBody())->equals($newsletter->getBody());
     verify($duplicate->getStatus())->equals(NewsletterEntity::STATUS_DRAFT);
   }
@@ -322,7 +322,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $newsletter->setWpPostId($postId);
     $this->entityManager->flush();
     $duplicate = $this->saveController->duplicate($newsletter);
-    expect($duplicate->getWpPostId())->notEquals($postId);
+    verify($duplicate->getWpPostId())->notEquals($postId);
     $post = $wp->getPost($duplicate->getWpPostId());
     verify($post->post_content)->equals('newsletter content'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }

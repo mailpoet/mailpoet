@@ -96,6 +96,6 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
     $this->eraser->erase('subscriber@for.anon.test');
     $subscriberAfter = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberAfter);
-    expect($subscriberAfter->getEmail())->notEquals('subscriber@for.anon.test');
+    verify($subscriberAfter->getEmail())->notEquals('subscriber@for.anon.test');
   }
 }

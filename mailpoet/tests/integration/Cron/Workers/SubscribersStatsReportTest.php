@@ -111,6 +111,6 @@ class SubscribersStatsReportTest extends \MailPoetTest {
     expect($result2)->isInstanceOf(Carbon::class);
     expect($result2->getTimestamp())->greaterThan($time);
     expect($result2->getTimestamp())->lessThan($time + $maxExpectedScheduleInterval);
-    expect($result2->getTimestamp())->notEquals($result->getTimestamp());
+    verify($result2->getTimestamp())->notEquals($result->getTimestamp());
   }
 }

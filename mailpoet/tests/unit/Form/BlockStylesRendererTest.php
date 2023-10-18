@@ -107,7 +107,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
   public function testItShouldRenderPlaceholderStyles() {
     verify($this->renderer->renderPlaceholderStyles([], 'input'))->equals('');
     verify($this->renderer->renderPlaceholderStyles(['params' => ['label_within' => '1']], 'input'))->equals('');
-    expect($this->renderer->renderPlaceholderStyles([
+    verify($this->renderer->renderPlaceholderStyles([
       'params' => ['label_within' => '1'],
       'styles' => ['font_color' => 'red'],
     ], 'input'))->notEquals('');

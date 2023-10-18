@@ -26,7 +26,7 @@ class SecurityTest extends \MailPoetUnitTest {
   public function testItGeneratesRandomHash() {
     $hash1 = Security::generateHash();
     $hash2 = Security::generateHash();
-    expect($hash1)->notEquals($hash2);
+    verify($hash1)->notEquals($hash2);
     verify(strlen($hash1))->equals(Security::HASH_LENGTH);
   }
 

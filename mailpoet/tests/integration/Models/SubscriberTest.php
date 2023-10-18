@@ -104,7 +104,7 @@ class SubscriberTest extends \MailPoetTest {
     $conflictSubscriber = Subscriber::create();
     $conflictSubscriber->hydrate($this->testData);
     $saved = $conflictSubscriber->save();
-    expect($saved)->notEquals(true);
+    verify($saved)->notEquals(true);
   }
 
   public function testItHasStatusDefaultStatusOfUnconfirmed() {
@@ -439,7 +439,7 @@ class SubscriberTest extends \MailPoetTest {
     verify($record->lastName)->equals($data['last_name']);
     $record->lastName = 'Mailer';
     $result = Subscriber::createOrUpdate($record->asArray());
-    expect($result)->notEquals(false);
+    verify($result)->notEquals(false);
     expect($result->getValidationErrors())->isEmpty();
     $record = Subscriber::where('email', $data['email'])
       ->findOne();
@@ -596,7 +596,7 @@ class SubscriberTest extends \MailPoetTest {
     verify($wpSubscriber->trash())->equals(false);
 
     $subscriber = Subscriber::findOne($wpSubscriber->id);
-    expect($subscriber)->notEquals(false);
+    verify($subscriber)->notEquals(false);
     verify($subscriber->deletedAt)->equals(null);
   }
 
@@ -610,7 +610,7 @@ class SubscriberTest extends \MailPoetTest {
     verify($wpSubscriber->delete())->equals(false);
 
     $subscriber = Subscriber::findOne($wpSubscriber->id);
-    expect($subscriber)->notEquals(false);
+    verify($subscriber)->notEquals(false);
   }
 
   public function testItCannotTrashWooCommerceCustomer() {
@@ -623,7 +623,7 @@ class SubscriberTest extends \MailPoetTest {
     verify($wpSubscriber->trash())->equals(false);
 
     $subscriber = Subscriber::findOne($wpSubscriber->id);
-    expect($subscriber)->notEquals(false);
+    verify($subscriber)->notEquals(false);
     verify($subscriber->deletedAt)->equals(null);
   }
 
@@ -637,7 +637,7 @@ class SubscriberTest extends \MailPoetTest {
     verify($wpSubscriber->delete())->equals(false);
 
     $subscriber = Subscriber::findOne($wpSubscriber->id);
-    expect($subscriber)->notEquals(false);
+    verify($subscriber)->notEquals(false);
   }
 
   public function testItCanDeleteCustomFieldRelations() {

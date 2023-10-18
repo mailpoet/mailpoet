@@ -50,8 +50,8 @@ class CaptchaRendererTest extends \MailPoetTest {
     $firstCaptcha = $this->session->getCaptchaHash();
     $secondImage = $this->testee->renderImage(null, null, $sessionId, true);
     $secondCaptcha = $this->session->getCaptchaHash();
-    expect($secondImage)->notEquals($firstImage);
-    expect($firstCaptcha['phrase'])->notEquals($secondCaptcha['phrase']);
+    verify($secondImage)->notEquals($firstImage);
+    verify($firstCaptcha['phrase'])->notEquals($secondCaptcha['phrase']);
   }
 
   /**
@@ -64,8 +64,8 @@ class CaptchaRendererTest extends \MailPoetTest {
     $firstCaptcha = $this->session->getCaptchaHash();
     $secondAudio = $this->testee->renderAudio($sessionId, true);
     $secondCaptcha = $this->session->getCaptchaHash();
-    expect($fistAudio)->notEquals($secondAudio);
-    expect($firstCaptcha['phrase'])->notEquals($secondCaptcha['phrase']);
+    verify($fistAudio)->notEquals($secondAudio);
+    verify($firstCaptcha['phrase'])->notEquals($secondCaptcha['phrase']);
   }
 
   /**

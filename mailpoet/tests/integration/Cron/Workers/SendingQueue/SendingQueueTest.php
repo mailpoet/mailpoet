@@ -345,7 +345,7 @@ class SendingQueueTest extends \MailPoetTest {
   public function testItDeletesQueueWhenNewsletterIsNotFound() {
     // queue exists
     $queue = SendingQueue::findOne($this->queue->id);
-    expect($queue)->notEquals(false);
+    verify($queue)->notEquals(false);
 
     // delete newsletter
     $this->newslettersRepository->bulkDelete([$this->newsletter->id]);
@@ -455,7 +455,7 @@ class SendingQueueTest extends \MailPoetTest {
       ->where('subscriber_id', $this->subscriber->getId())
       ->where('queue_id', $this->queue->id)
       ->findOne();
-    expect($statistics)->notEquals(false);
+    verify($statistics)->notEquals(false);
   }
 
   public function testItSendCorrectDataToSubscribersOneByOne() {
@@ -583,7 +583,7 @@ class SendingQueueTest extends \MailPoetTest {
       ->where('subscriber_id', $this->subscriber->getId())
       ->where('queue_id', $this->queue->id)
       ->findOne();
-    expect($statistics)->notEquals(false);
+    verify($statistics)->notEquals(false);
   }
 
   public function testItProcessesStandardNewsletters() {
@@ -632,7 +632,7 @@ class SendingQueueTest extends \MailPoetTest {
       ->where('subscriber_id', $this->subscriber->getId())
       ->where('queue_id', $this->queue->id)
       ->findOne();
-    expect($statistics)->notEquals(false);
+    verify($statistics)->notEquals(false);
   }
 
   public function testItHandlesSendingErrorCorrectly() {
@@ -737,7 +737,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     $newQueue = ScheduledTask::findOne($this->queue->task_id);
     $this->assertInstanceOf(ScheduledTask::class, $newQueue);
-    expect($newQueue->updatedAt)->notEquals($originalUpdated);
+    verify($newQueue->updatedAt)->notEquals($originalUpdated);
   }
 
   public function testItCanProcessWelcomeNewsletters() {
@@ -789,7 +789,7 @@ class SendingQueueTest extends \MailPoetTest {
       ->where('subscriber_id', $this->subscriber->getId())
       ->where('queue_id', $this->queue->id)
       ->findOne();
-    expect($statistics)->notEquals(false);
+    verify($statistics)->notEquals(false);
   }
 
   public function testItPreventsSendingWelcomeEmailWhenSubscriberIsUnsubscribed() {

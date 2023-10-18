@@ -142,7 +142,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     );
 
     verify($subscriber->getId() > 0)->equals(true);
-    expect($subscriber->getId())->notEquals(1337);
+    verify($subscriber->getId())->notEquals(1337);
     expect($subscriber->getSegments())->count(1);
     verify($subscriber->getEmail())->equals('donald@mailpoet.com');
     verify($subscriber->getFirstName())->equals('Donald');
@@ -153,8 +153,8 @@ class SubscriberActionsTest extends \MailPoetTest {
     verify($subscriber->getWpUserId())->null();
     verify($subscriber->getIsWoocommerceUser())->equals(0);
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
-    expect($createdAt->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:01');
-    expect($subscriber->getUpdatedAt()->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:02');
+    verify($createdAt->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:01');
+    verify($subscriber->getUpdatedAt()->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:02');
     verify($createdAt->getTimestamp())->equals($subscriber->getUpdatedAt()->getTimestamp(), 2);
     verify($subscriber->getDeletedAt())->null();
   }
