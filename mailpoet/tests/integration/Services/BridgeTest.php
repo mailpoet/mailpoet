@@ -270,7 +270,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedEmailAddresses();
-    expect($result)->same(['authorized@email.com']);
+    verify($result)->same(['authorized@email.com']);
   }
 
   public function testItReturnsAllUserEmails() {
@@ -283,7 +283,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedEmailAddresses('all');
-    expect($result)->same($array);
+    verify($result)->same($array);
   }
 
   public function testItReturnsAnEmptyArrayIfNoEmailForAllParam() {
@@ -291,7 +291,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedEmailAddresses('all');
-    expect($result)->same([]);
+    verify($result)->same([]);
   }
 
   public function testItReturnsAnEmptyArrayIfNoEmailForAuthorizedParam() {
@@ -299,7 +299,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedEmailAddresses();
-    expect($result)->same([]);
+    verify($result)->same([]);
   }
 
   public function testItReturnsAnEmptyArrayIfNoNullForAuthorizedParam() {
@@ -307,7 +307,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedEmailAddresses();
-    expect($result)->same([]);
+    verify($result)->same([]);
   }
 
   public function testItReturnsTheRightDataForSenderDomains() {
@@ -316,21 +316,21 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedSenderDomains();
-    expect($result)->same([]);
+    verify($result)->same([]);
 
     // when API returns an empty array []
     $api = Stub::make(new API(null), ['getAuthorizedSenderDomains' => []], $this);
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedSenderDomains();
-    expect($result)->same([]);
+    verify($result)->same([]);
 
     // when arg param is 'all'
     $api = Stub::make(new API(null), ['getAuthorizedSenderDomains' => []], $this);
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedSenderDomains('all');
-    expect($result)->same([]);
+    verify($result)->same([]);
   }
 
   public function testItReturnsSenderDomainsDnsRecords() {
@@ -343,14 +343,14 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedSenderDomains('example.com');
-    expect($result)->same($data[0]['dns']);
+    verify($result)->same($data[0]['dns']);
 
     // with a custom sender domain param that does not exist
     $api = Stub::make(new API(null), ['getAuthorizedSenderDomains' => $data], $this);
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedSenderDomains('mailpoet.com');
-    expect($result)->same([]);
+    verify($result)->same([]);
 
     // when param is all
     $returnDataForAllParam = [
@@ -361,7 +361,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedSenderDomains('all');
-    expect($result)->same($returnDataForAllParam);
+    verify($result)->same($returnDataForAllParam);
 
     // when param is not provided
     $returnDataForNoArgs = [
@@ -372,7 +372,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedSenderDomains();
-    expect($result)->same($returnDataForNoArgs);
+    verify($result)->same($returnDataForNoArgs);
   }
 
   public function testItCanCreateSenderDomain() {

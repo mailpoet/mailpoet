@@ -61,13 +61,13 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
   public function testItReturnsName() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text']);
     verify($result)->arrayHasKey('name');
-    expect($result['name'])->same('Name');
+    verify($result['name'])->same('Name');
   }
 
   public function testItReturnsType() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'Text']);
     verify($result)->arrayHasKey('type');
-    expect($result['type'])->same('text');
+    verify($result['type'])->same('text');
   }
 
   public function testItIgnoresUnknownProperties() {
@@ -82,9 +82,9 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
 
   public function testItReturnsCorrectRequiredForm() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['required' => true]]);
-    expect($result['params']['required'])->same('1');
+    verify($result['params']['required'])->same('1');
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['required' => false]]);
-    expect($result['params']['required'])->same('');
+    verify($result['params']['required'])->same('');
   }
 
   public function testItIgnoresUnknownParams() {
@@ -96,7 +96,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
   public function testItFillsLabel() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text']);
     verify($result['params'])->arrayHasKey('label');
-    expect($result['params']['label'])->same('Name');
+    verify($result['params']['label'])->same('Name');
   }
 
   public function testItThrowsForInvalidValidate() {
@@ -106,7 +106,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
 
   public function testItReturnsSanitizedValidate() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['validate' => 'alphanuM']]);
-    expect($result['params']['validate'])->same('alphanum');
+    verify($result['params']['validate'])->same('alphanum');
   }
 
   public function testItThrowsIfNoValuesInRadio() {
@@ -137,8 +137,8 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     $values = $result['params']['values'];
     expect($values)->array();
     expect($values)->count(2);
-    expect($values[0])->same(['value' => 'value 1', 'is_checked' => '']);
-    expect($values[1])->same(['value' => 'value 2', 'is_checked' => '1']);
+    verify($values[0])->same(['value' => 'value 1', 'is_checked' => '']);
+    verify($values[1])->same(['value' => 'value 2', 'is_checked' => '1']);
   }
 
   public function testItThrowsIfNoValuesInCheckbox() {
@@ -198,7 +198,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     $values = $result['params']['values'];
     expect($values)->array();
     expect($values)->count(1);
-    expect($values[0])->same(['value' => 'value 1', 'is_checked' => '1']);
+    verify($values[0])->same(['value' => 'value 1', 'is_checked' => '1']);
   }
 
   public function testDateThrowsIfNoDateFormat() {

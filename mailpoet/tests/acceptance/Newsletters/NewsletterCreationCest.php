@@ -125,7 +125,7 @@ class NewsletterCreationCest {
     $i->click('[data-automation-id="switch_send_to_email"]');
     $i->waitForText('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to your authorized emails.');
     $href = $i->grabAttributeFrom('//a[text()="your authorized emails"]', 'href');
-    expect($href)->same('https://account.mailpoet.com/authorization');
+    verify($href)->same('https://account.mailpoet.com/authorization');
     $i->click('#mailpoet_modal_close');
     $i->scrollToTop();
     $i->click('Next');
@@ -134,7 +134,7 @@ class NewsletterCreationCest {
     $i->waitForElement('[data-automation-id="newsletter_send_heading"]');
     $i->waitForText('You’ll soon be able to send once our team reviews your account. In the meantime, you can send previews to your authorized emails.');
     $href = $i->grabAttributeFrom('//a[text()="your authorized emails"]', 'href');
-    expect($href)->same('https://account.mailpoet.com/authorization');
+    verify($href)->same('https://account.mailpoet.com/authorization');
     $i->seeElement('[data-automation-id="email-submit"]:disabled');
   }
 }

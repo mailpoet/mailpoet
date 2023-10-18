@@ -57,8 +57,8 @@ class FormListingRepositoryTest extends \MailPoetTest {
       'sort_order' => 'asc',
     ]));
     expect($forms)->count(2);
-    expect($forms[0]->getName())->same('Form 1');
-    expect($forms[1]->getName())->same('Form 2');
+    verify($forms[0]->getName())->same('Form 1');
+    verify($forms[1]->getName())->same('Form 2');
 
     // DESC
     $forms = $this->formListingRepository->getData($this->listingHandler->getListingDefinition([
@@ -66,8 +66,8 @@ class FormListingRepositoryTest extends \MailPoetTest {
       'sort_order' => 'desc',
     ]));
     expect($forms)->count(2);
-    expect($forms[0]->getName())->same('Form 2');
-    expect($forms[1]->getName())->same('Form 1');
+    verify($forms[0]->getName())->same('Form 2');
+    verify($forms[1]->getName())->same('Form 1');
   }
 
   public function testItAppliesLimitAndOffset() {
@@ -77,7 +77,7 @@ class FormListingRepositoryTest extends \MailPoetTest {
       'offset' => 0,
     ]));
     expect($forms)->count(1);
-    expect($forms[0]->getName())->same('Form 1');
+    verify($forms[0]->getName())->same('Form 1');
 
     // second page
     $forms = $this->formListingRepository->getData($this->listingHandler->getListingDefinition([
@@ -85,7 +85,7 @@ class FormListingRepositoryTest extends \MailPoetTest {
       'offset' => 1,
     ]));
     expect($forms)->count(1);
-    expect($forms[0]->getName())->same('Form 2');
+    verify($forms[0]->getName())->same('Form 2');
 
     // third page
     $forms = $this->formListingRepository->getData($this->listingHandler->getListingDefinition([

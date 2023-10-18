@@ -47,7 +47,7 @@ class ValidationTest extends \MailPoetTest {
       $this->fail('Validation exception was not thrown.');
     } catch (ValidationException $e) {
       $entityClass = get_class($entity);
-      expect($e->getMessage())->same("Validation failed for '$entityClass'.\nDetails:\n  [name] This value should not be blank.");
+      verify($e->getMessage())->same("Validation failed for '$entityClass'.\nDetails:\n  [name] This value should not be blank.");
     }
   }
 
@@ -64,7 +64,7 @@ class ValidationTest extends \MailPoetTest {
       $this->fail('Validation exception was not thrown.');
     } catch (ValidationException $e) {
       $entityClass = get_class($entity);
-      expect($e->getMessage())->same("Validation failed for '$entityClass'.\nDetails:\n  [name] This value is too short. It should have 3 characters or more.");
+      verify($e->getMessage())->same("Validation failed for '$entityClass'.\nDetails:\n  [name] This value is too short. It should have 3 characters or more.");
     }
   }
 

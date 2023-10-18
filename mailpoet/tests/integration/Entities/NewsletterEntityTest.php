@@ -29,11 +29,11 @@ class NewsletterEntityTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->entityManager->refresh($newsletter);
-    expect($newsletter->getNewsletterSegments()->count())->same(1);
+    verify($newsletter->getNewsletterSegments()->count())->same(1);
 
     $newsletter->getNewsletterSegments()->removeElement($newsletterSegment);
     $this->entityManager->flush();
-    expect($newsletter->getNewsletterSegments()->count())->same(0);
+    verify($newsletter->getNewsletterSegments()->count())->same(0);
 
     $newsletterSegments = $this->diContainer->get(NewsletterSegmentRepository::class)->findBy(['newsletter' => $newsletter]);
     expect($newsletterSegments)->count(0);
@@ -47,11 +47,11 @@ class NewsletterEntityTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->entityManager->refresh($newsletter);
-    expect($newsletter->getOptions()->count())->same(1);
+    verify($newsletter->getOptions()->count())->same(1);
 
     $newsletter->getOptions()->removeElement($newsletterOption);
     $this->entityManager->flush();
-    expect($newsletter->getOptions()->count())->same(0);
+    verify($newsletter->getOptions()->count())->same(0);
 
     $newsletterSegments = $this->diContainer->get(NewsletterOptionsRepository::class)->findBy(['newsletter' => $newsletter]);
     expect($newsletterSegments)->count(0);

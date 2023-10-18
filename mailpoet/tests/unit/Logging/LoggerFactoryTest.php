@@ -33,7 +33,7 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
   public function testItReturnsInstance() {
     $logger1 = $this->loggerFactory->getLogger('logger-name');
     $logger2 = $this->loggerFactory->getLogger('logger-name');
-    expect($logger1)->same($logger2);
+    verify($logger1)->same($logger2);
   }
 
   public function testItAttachesProcessors() {

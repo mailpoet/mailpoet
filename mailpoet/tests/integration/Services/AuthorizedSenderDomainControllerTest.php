@@ -57,7 +57,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     $controller = $this->getController($bridgeMock);
     $allDomains = $controller->getAllSenderDomains();
-    expect($allDomains)->same($domains);
+    verify($allDomains)->same($domains);
   }
 
   public function testItReturnsVerifiedSenderDomains() {
@@ -73,7 +73,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     $controller = $this->getController($bridgeMock);
     $verifiedDomains = $controller->getVerifiedSenderDomains();
-    expect($verifiedDomains)->same(['mailpoet.com']); // only this is Verified for now
+    verify($verifiedDomains)->same(['mailpoet.com']); // only this is Verified for now
   }
 
   public function testItReturnsEmptyArrayWhenNoVerifiedSenderDomains() {
@@ -83,7 +83,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $controller = $this->getController($bridgeMock);
 
     $verifiedDomains = $controller->getVerifiedSenderDomains();
-    expect($verifiedDomains)->same([]);
+    verify($verifiedDomains)->same([]);
 
     $domains = ['testdomain.com' => []];
     $expectation = Expected::once($domains);
@@ -91,7 +91,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $bridgeMock = $this->make(Bridge::class, ['getAuthorizedSenderDomains' => $expectation]);
     $controller = $this->getController($bridgeMock);
     $verifiedDomains = $controller->getVerifiedSenderDomains();
-    expect($verifiedDomains)->same([]);
+    verify($verifiedDomains)->same([]);
   }
 
   public function testCreateAuthorizedSenderDomainThrowsForExistingDomains() {
@@ -170,19 +170,19 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
   public function testItReturnsTrueWhenDmarcIsEnabled() {
     $controller = $this->getController();
     $isRestricted = $controller->isDomainDmarcRestricted('mailpoet.com');
-    expect($isRestricted)->same(true);
+    verify($isRestricted)->same(true);
   }
 
   public function testItReturnsFalseWhenDmarcIsNotEnabled() {
     $controller = $this->getController();
     $isRestricted = $controller->isDomainDmarcRestricted('example.com');
-    expect($isRestricted)->same(false);
+    verify($isRestricted)->same(false);
   }
 
   public function testItReturnsDmarcStatus() {
     $controller = $this->getController();
     $isRestricted = $controller->getDmarcPolicyForDomain('example.com');
-    expect($isRestricted)->same('none');
+    verify($isRestricted)->same('none');
   }
 
   private function getController($bridgeMock = null): AuthorizedSenderDomainController {

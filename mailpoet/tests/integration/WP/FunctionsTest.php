@@ -54,8 +54,8 @@ class FunctionsTest extends \MailPoetTest {
 
     $callback = function ($value, $value2) use ($testValue, $testValue2, &$called) {
       $called = true;
-      expect($value)->same($testValue);
-      expect($value2)->same($testValue2);
+      verify($value)->same($testValue);
+      verify($value2)->same($testValue2);
     };
 
     $this->wp->addAction($this->action, $callback, 10, 2);
