@@ -33,8 +33,8 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($segment1);
     $this->entityManager->refresh($segment2);
     verify($result)->equals(2);
-    expect($segment1->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
-    expect($segment2->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
+    verify($segment1->getDeletedAt())->instanceOf(\DateTimeInterface::class);
+    verify($segment2->getDeletedAt())->instanceOf(\DateTimeInterface::class);
   }
 
   public function testItCanBulkTrashDynamicSegments(): void {
@@ -45,8 +45,8 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($segment1);
     $this->entityManager->refresh($segment2);
     verify($result)->equals(2);
-    expect($segment1->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
-    expect($segment2->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
+    verify($segment1->getDeletedAt())->instanceOf(\DateTimeInterface::class);
+    verify($segment2->getDeletedAt())->instanceOf(\DateTimeInterface::class);
   }
 
   public function testItSkipTrashingForActivelyUsedDefaultSegments(): void {
@@ -59,7 +59,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($segment2);
     verify($result)->equals(1);
     verify($segment1->getDeletedAt())->null();
-    expect($segment2->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
+    verify($segment2->getDeletedAt())->instanceOf(\DateTimeInterface::class);
   }
 
   public function testItSkipTrashingForActivelyUsedDynamicSegments(): void {
@@ -71,7 +71,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($segment1);
     $this->entityManager->refresh($segment2);
     verify($result)->equals(1);
-    expect($segment1->getDeletedAt())->isInstanceOf(\DateTimeInterface::class);
+    verify($segment1->getDeletedAt())->instanceOf(\DateTimeInterface::class);
     verify($segment2->getDeletedAt())->null();
   }
 

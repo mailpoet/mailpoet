@@ -27,7 +27,7 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
 
   public function testItCreatesLogger() {
     $logger = $this->loggerFactory->getLogger('logger-name');
-    expect($logger)->isInstanceOf(\MailPoetVendor\Monolog\Logger::class);
+    verify($logger)->instanceOf(\MailPoetVendor\Monolog\Logger::class);
   }
 
   public function testItReturnsInstance() {
@@ -52,7 +52,7 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
     $logger1 = $this->loggerFactory->getLogger('logger-with-handler');
     $handlers = $logger1->getHandlers();
     verify($handlers)->notEmpty();
-    expect($handlers[0])->isInstanceOf(LogHandler::class);
+    verify($handlers[0])->instanceOf(LogHandler::class);
   }
 
   public function testItSetsDefaultLoggingLevel() {

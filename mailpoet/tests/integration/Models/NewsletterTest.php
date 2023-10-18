@@ -140,7 +140,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->parentId = $parentNewsletter->id;
     $newsletter->save();
     $parent = $newsletter->parent()->findOne();
-    expect($parent)->isInstanceOf('MailPoet\Models\Newsletter');
+    verify($parent)->instanceOf('MailPoet\Models\Newsletter');
     verify($parent->id)->equals($parentNewsletter->id);
   }
 

@@ -28,14 +28,14 @@ class DynamicSegmentsTest extends \MailPoetTest {
   public function testGetReturnsResponse() {
     $segment = $this->createDynamicSegmentEntity('s1', '');
     $response = $this->endpoint->get(['id' => $segment->getId()]);
-    expect($response)->isInstanceOf('\MailPoet\API\JSON\SuccessResponse');
+    verify($response)->instanceOf('\MailPoet\API\JSON\SuccessResponse');
     verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
     verify($response->data['id'])->equals($segment->getId());
   }
 
   public function testGetReturnsError() {
     $response = $this->endpoint->get(['id' => 5]);
-    expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
+    verify($response)->instanceOf('\MailPoet\API\JSON\ErrorResponse');
     verify($response->status)->equals(self::SEGMENT_NOT_FOUND_RESPONSE_CODE);
   }
 
@@ -49,7 +49,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
         'action' => UserRole::TYPE,
       ]],
     ]);
-    expect($response)->isInstanceOf('\MailPoet\API\JSON\SuccessResponse');
+    verify($response)->instanceOf('\MailPoet\API\JSON\SuccessResponse');
     verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
     verify($response->data['name'])->equals('Test dynamic');
   }
@@ -58,7 +58,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $response = $this->endpoint->save([
       'name' => 'Test dynamic',
     ]);
-    expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
+    verify($response)->instanceOf('\MailPoet\API\JSON\ErrorResponse');
     verify($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
     verify($response->errors[0]['message'])->equals('Please add at least one condition for filtering.');
   }
@@ -74,7 +74,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     ];
     $this->endpoint->save($data);
     $response = $this->endpoint->save($data);
-    expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
+    verify($response)->instanceOf('\MailPoet\API\JSON\ErrorResponse');
     verify($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
     verify($response->errors[0]['message'])->equals('Another record already exists. Please specify a different "name".');
   }
@@ -89,7 +89,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     ];
     $this->endpoint->save($data);
     $response = $this->endpoint->save($data);
-    expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
+    verify($response)->instanceOf('\MailPoet\API\JSON\ErrorResponse');
     verify($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
     verify($response->errors[0]['message'])->equals('Please specify a name.');
   }

@@ -9,6 +9,6 @@ use MailPoetVendor\Doctrine\DBAL\Connection;
 class Migration_20221024_080348 extends DbMigration {
   public function run(): void {
     echo 'Migration run called!';
-    expect($this->connection)->isInstanceOf(Connection::class);
+    verify($this->connection)->instanceOf(Connection::class);
   }
 }

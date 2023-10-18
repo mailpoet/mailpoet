@@ -28,10 +28,10 @@ class ConnectionFactoryTest extends \MailPoetTest {
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
 
-    expect($connection)->isInstanceOf(SerializableConnection::class);
-    expect($connection->getWrappedConnection())->isInstanceOf(PDO::class);
-    expect($connection->getDriver())->isInstanceOf(PDOMySql\Driver::class);
-    expect($connection->getDatabasePlatform())->isInstanceOf(MySqlPlatform::class);
+    verify($connection)->instanceOf(SerializableConnection::class);
+    verify($connection->getWrappedConnection())->instanceOf(PDO::class);
+    verify($connection->getDriver())->instanceOf(PDOMySql\Driver::class);
+    verify($connection->getDatabasePlatform())->instanceOf(MySqlPlatform::class);
     $params = $connection->getParams();
     verify($params['host'])->equals(Env::$dbHost);
     expect($params)->notContains('unix_socket');
@@ -40,8 +40,8 @@ class ConnectionFactoryTest extends \MailPoetTest {
     verify($params['charset'])->equals(Env::$dbCharset);
     verify($connection->getDatabase())->equals(Env::$dbName);
 
-    expect(Type::getType(JsonType::NAME))->isInstanceOf(JsonType::class);
-    expect(Type::getType(JsonOrSerializedType::NAME))->isInstanceOf(JsonOrSerializedType::class);
+    verify(Type::getType(JsonType::NAME))->instanceOf(JsonType::class);
+    verify(Type::getType(JsonOrSerializedType::NAME))->instanceOf(JsonOrSerializedType::class);
   }
 
   public function testItSetsUpPort() {
@@ -92,7 +92,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     Env::$dbHost = '::ffff:' . gethostbyname($this->envBackup['db_host']);
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
-    expect($connection->getWrappedConnection())->isInstanceOf(PDO::class);
+    verify($connection->getWrappedConnection())->instanceOf(PDO::class);
     verify($connection->executeQuery('SELECT "abc"')->fetchOne())->same('abc');
   }
 

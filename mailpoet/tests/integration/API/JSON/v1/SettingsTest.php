@@ -301,16 +301,16 @@ class SettingsTest extends \MailPoetTest {
   public function testItCanDeleteSetting() {
     $this->settings->set('setting_to_be_deleted', true);
     $response = $this->endpoint->delete('setting_to_be_deleted');
-    expect($response)->isInstanceOf(SuccessResponse::class);
+    verify($response)->instanceOf(SuccessResponse::class);
     verify($this->settings->get('setting_to_be_deleted'))->null();
   }
 
   public function testDeleteReturnErrorForEmptySettingName() {
-    expect($this->endpoint->delete(''))->isInstanceOf(ErrorResponse::class);
+    verify($this->endpoint->delete(''))->instanceOf(ErrorResponse::class);
   }
 
   public function testDeleteReturnErrorIfSettingDoesntExist() {
-    expect($this->endpoint->delete('unexistent_setting'))->isInstanceOf(ErrorResponse::class);
+    verify($this->endpoint->delete('unexistent_setting'))->instanceOf(ErrorResponse::class);
   }
 
   public function testItSetsUpMSSWithProvidedKey() {
@@ -335,7 +335,7 @@ class SettingsTest extends \MailPoetTest {
       $this->diContainer->get(ConfirmationEmailCustomizer::class)
     );
 
-    expect($this->endpoint->setKeyAndSetupMss($newKey))->isInstanceOf(SuccessResponse::class);
+    verify($this->endpoint->setKeyAndSetupMss($newKey))->instanceOf(SuccessResponse::class);
     verify($this->settings->get('mta.mailpoet_api_key'))->equals($newKey);
     verify($this->settings->get('mta_group'))->equals('mailpoet');
     verify($this->settings->get('mta.method'))->equals('MailPoet');

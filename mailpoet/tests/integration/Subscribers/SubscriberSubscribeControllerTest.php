@@ -66,7 +66,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber)->isInstanceOf(SubscriberEntity::class);
+    verify($subscriber)->instanceOf(SubscriberEntity::class);
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
@@ -84,7 +84,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber)->isInstanceOf(SubscriberEntity::class);
+    verify($subscriber)->instanceOf(SubscriberEntity::class);
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
@@ -126,13 +126,13 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber)->isInstanceOf(SubscriberEntity::class);
+    verify($subscriber)->instanceOf(SubscriberEntity::class);
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriberCustomFields = $this->subscriberCustomFieldRepository->findBy(['subscriber' => $subscriber]);
     expect($subscriberCustomFields)->count(1);
     $subscriberCustomField = reset($subscriberCustomFields);
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
-    expect($subscriberCustomField)->isInstanceOf(SubscriberCustomFieldEntity::class);
+    verify($subscriberCustomField)->instanceOf(SubscriberCustomFieldEntity::class);
     verify($subscriberCustomField->getSubscriber())->equals($subscriber);
     verify($subscriberCustomField->getCustomField())->equals($customField);
     verify($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);

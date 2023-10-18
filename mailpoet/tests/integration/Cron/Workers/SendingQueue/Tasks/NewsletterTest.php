@@ -112,12 +112,12 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterEntity->setStatus(NewsletterEntity::STATUS_ACTIVE);
     $this->newslettersRepository->persist($newsletterEntity);
     $this->newslettersRepository->flush();
-    expect($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->isInstanceOf(NewsletterEntity::class);
+    verify($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->instanceOf(NewsletterEntity::class);
 
     $newsletterEntity->setStatus(NewsletterEntity::STATUS_SENDING);
     $this->newslettersRepository->persist($newsletterEntity);
     $this->newslettersRepository->flush();
-    expect($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->isInstanceOf(NewsletterEntity::class);
+    verify($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->instanceOf(NewsletterEntity::class);
   }
 
   public function testItDoesNotGetDeletedNewsletter() {
@@ -146,12 +146,12 @@ class NewsletterTest extends \MailPoetTest {
     $parentNewsletterEntity->setStatus(NewsletterEntity::STATUS_ACTIVE);
     $this->newslettersRepository->persist($parentNewsletterEntity);
     $this->newslettersRepository->flush();
-    expect($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->isInstanceOf(NewsletterEntity::class);
+    verify($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->instanceOf(NewsletterEntity::class);
 
     $parentNewsletterEntity->setStatus(NewsletterEntity::STATUS_SENDING);
     $this->newslettersRepository->persist($parentNewsletterEntity);
     $this->newslettersRepository->flush();
-    expect($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->isInstanceOf(NewsletterEntity::class);
+    verify($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->instanceOf(NewsletterEntity::class);
   }
 
   public function testItDoesNotGetDeletedNewsletterWhenParentNewsletterIsDeleted() {
@@ -248,7 +248,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterTask = new NewsletterTask(new WPFunctions, $postsTask);
     $result = $newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask);
     $newsletterPost = $newsletterPostRepository->findOneBy(['newsletter' => $this->newsletter->getId()]);
-    expect($newsletterPost)->isInstanceOf(NewsletterPostEntity::class);
+    verify($newsletterPost)->instanceOf(NewsletterPostEntity::class);
     verify($result)->notEquals(false);
     $this->assertInstanceOf(NewsletterPostEntity::class, $newsletterPost);
     verify($newsletterPost->getPostId())->equals('10');

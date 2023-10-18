@@ -38,7 +38,7 @@ class ErrorHandlerTest extends \MailPoetUnitTest {
       'key' => 'value',
     ]));
 
-    expect($response)->isInstanceOf(ErrorResponse::class);
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->status)->equals($expectedCode);
     verify($response->errors)->equals([['error' => 'key', 'message' => 'value']]);
   }

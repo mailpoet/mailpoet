@@ -17,17 +17,17 @@ class ConfigurationFactoryTest extends \MailPoetTest {
     $configurationFactory = new ConfigurationFactory(new AnnotationReaderProvider(), false);
     $configuration = $configurationFactory->createConfiguration();
 
-    expect($configuration)->isInstanceOf(Configuration::class);
-    expect($configuration->getNamingStrategy())->isInstanceOf(UnderscoreNamingStrategy::class);
+    verify($configuration)->instanceOf(Configuration::class);
+    verify($configuration->getNamingStrategy())->instanceOf(UnderscoreNamingStrategy::class);
 
     // metadata
     verify($configuration->getClassMetadataFactoryName())->equals(TablePrefixMetadataFactory::class);
-    expect($configuration->getMetadataCache())->isInstanceOf(PSRMetadataCache::class);
-    expect($configuration->getMetadataDriverImpl())->isInstanceOf(AnnotationDriver::class);
+    verify($configuration->getMetadataCache())->instanceOf(PSRMetadataCache::class);
+    verify($configuration->getMetadataDriverImpl())->instanceOf(AnnotationDriver::class);
 
     // cache
-    expect($configuration->getQueryCacheImpl())->isInstanceOf(ArrayCache::class);
-    expect($configuration->getResultCacheImpl())->isInstanceOf(ArrayCache::class);
+    verify($configuration->getQueryCacheImpl())->instanceOf(ArrayCache::class);
+    verify($configuration->getResultCacheImpl())->instanceOf(ArrayCache::class);
 
     // proxies
     verify(realpath($configuration->getProxyDir()))->equals(realpath(__DIR__ . '/../../../generated/doctrine-proxies'));

@@ -905,7 +905,7 @@ class SubscribersTest extends \MailPoetTest {
 
     $didSubscribe = $this->subscribersRepository->findOneBy(['email' => 'toto@mailpoet.com']);
     verify($didSubscribe)->null();
-    expect($response)->isInstanceOf(ErrorResponse::class);
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     verify($response->errors[0]['message'])->equals($expectedErrorMessage);
   }
@@ -1043,8 +1043,8 @@ class SubscribersTest extends \MailPoetTest {
 
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->meta['count'])->equals(2);
-    expect($subscriberTag1)->isInstanceOf(SubscriberTagEntity::class);
-    expect($subscriberTag2)->isInstanceOf(SubscriberTagEntity::class);
+    verify($subscriberTag1)->instanceOf(SubscriberTagEntity::class);
+    verify($subscriberTag2)->instanceOf(SubscriberTagEntity::class);
 
     // Testing that adding the same tag again does not return an error
     $response = $this->endpoint->bulkAction($bulkActionData);

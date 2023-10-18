@@ -253,8 +253,8 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $newsletter2->setWpPostId($post2Id);
     $newsletter3 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENDING);
 
-    expect($this->wp->getPost($post1Id))->isInstanceOf(\WP_Post::class);
-    expect($this->wp->getPost($post2Id))->isInstanceOf(\WP_Post::class);
+    verify($this->wp->getPost($post1Id))->instanceOf(\WP_Post::class);
+    verify($this->wp->getPost($post2Id))->instanceOf(\WP_Post::class);
 
     $this->entityManager->flush();
     $this->entityManager->clear();
