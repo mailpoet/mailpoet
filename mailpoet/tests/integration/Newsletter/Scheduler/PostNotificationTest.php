@@ -383,7 +383,7 @@ class PostNotificationTest extends \MailPoetTest {
     wp_insert_post($postData);
 
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
-    expect($queue)->notNull();
+    verify($queue)->notNull();
   }
 
   public function testSchedulerWontRunIfUnsentNotificationHistoryExists() {

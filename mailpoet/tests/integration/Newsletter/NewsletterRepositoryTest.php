@@ -53,30 +53,30 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($notification);
 
     // Should trash the newsletters
-    expect($standardNewsletter->getDeletedAt())->notNull();
-    expect($notification->getDeletedAt())->notNull();
+    verify($standardNewsletter->getDeletedAt())->notNull();
+    verify($notification->getDeletedAt())->notNull();
 
     // Should trash sending queue and task
     $standardQueue = $standardNewsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $standardQueue);
     $this->entityManager->refresh($standardQueue);
-    expect($standardQueue->getDeletedAt())->notNull();
+    verify($standardQueue->getDeletedAt())->notNull();
     $scheduledTask = $standardQueue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->entityManager->refresh($scheduledTask);
-    expect($scheduledTask->getDeletedAt())->notNull();
+    verify($scheduledTask->getDeletedAt())->notNull();
 
     // Should trash children + task + queue
     $this->entityManager->refresh($notificationHistory);
-    expect($notificationHistory->getDeletedAt())->notNull();
+    verify($notificationHistory->getDeletedAt())->notNull();
     $notificationHistory = $notificationHistory->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $notificationHistory);
     $this->entityManager->refresh($notificationHistory);
-    expect($notificationHistory->getDeletedAt())->notNull();
+    verify($notificationHistory->getDeletedAt())->notNull();
     $scheduledTask = $notificationHistory->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->entityManager->refresh($scheduledTask);
-    expect($scheduledTask->getDeletedAt())->notNull();
+    verify($scheduledTask->getDeletedAt())->notNull();
   }
 
   public function testItBulkRestoresNewslettersAndChildren() {

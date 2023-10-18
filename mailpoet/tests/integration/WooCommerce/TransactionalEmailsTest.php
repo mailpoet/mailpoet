@@ -64,7 +64,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
     $this->assertInstanceOf(NewsletterEntity::class, $email);
     $id = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID, null);
     verify($email)->notEmpty();
-    expect($id)->notNull();
+    verify($id)->notNull();
     verify($email->getId())->equals($id);
   }
 

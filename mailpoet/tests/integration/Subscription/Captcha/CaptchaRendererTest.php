@@ -23,7 +23,7 @@ class CaptchaRendererTest extends \MailPoetTest {
     $result = $this->testee->renderImage(null, null, null, true);
     verify(strpos($result, 'JPEG') !== false)->true();
     $sessionId = $this->session->getId();
-    expect($sessionId)->notNull();
+    verify($sessionId)->notNull();
   }
 
   public function testItRendersAudio() {

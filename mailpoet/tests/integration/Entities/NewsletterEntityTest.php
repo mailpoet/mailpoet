@@ -74,7 +74,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletterOptionField = $newsletter->getOption($optionField->getName());
     $this->assertInstanceOf(NewsletterOptionEntity::class, $newsletterOption);
 
-    expect($newsletterOptionField)->notNull();
+    verify($newsletterOptionField)->notNull();
     verify($newsletterOption->getValue())->equals($optionValue);
     verify($newsletter->getOption(NewsletterOptionFieldEntity::NAME_SEGMENT))->null();
   }

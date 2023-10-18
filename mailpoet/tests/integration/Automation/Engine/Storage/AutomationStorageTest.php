@@ -156,7 +156,7 @@ class AutomationStorageTest extends \MailPoetTest {
     verify($this->testee->getAutomation($automationToDelete->getId()))->null();
     $automationToKeepFromDatabase = $this->testee->getAutomation($automationToKeep->getId());
     $this->assertInstanceOf(Automation::class, $automationToKeepFromDatabase);
-    expect($automationToKeepFromDatabase->getVersionId())->notNull();
+    verify($automationToKeepFromDatabase->getVersionId())->notNull();
   }
 
   public function testItCanDeleteAutomationsRelatedData() {
@@ -191,13 +191,13 @@ class AutomationStorageTest extends \MailPoetTest {
       verify($automationRunStorage->getAutomationRun($runId))->null();
     }
     foreach ($runs['toKeep'] as $runId) {
-      expect($automationRunStorage->getAutomationRun($runId))->notNull();
+      verify($automationRunStorage->getAutomationRun($runId))->notNull();
     }
     foreach ($runLogs['toDelete'] as $runLogId) {
       verify($automationRunLogStorage->getAutomationRunLog($runLogId))->null();
     }
     foreach ($runLogs['toKeep'] as $runLogId) {
-      expect($automationRunLogStorage->getAutomationRunLog($runLogId))->notNull();
+      verify($automationRunLogStorage->getAutomationRunLog($runLogId))->notNull();
     }
   }
 

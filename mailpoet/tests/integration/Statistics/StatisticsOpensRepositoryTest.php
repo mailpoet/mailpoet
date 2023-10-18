@@ -44,11 +44,11 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     verify($newSubscriber->getEngagementScore())->null();
-    expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
+    verify($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
     $newSegment = $this->segmentsRepository->findOneById($segment->getId());
     $this->assertInstanceOf(SegmentEntity::class, $newSegment);
     verify($newSegment->getAverageEngagementScore())->null();
-    expect($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
+    verify($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
   }
 
   public function testItUpdatesScoreTimeWhenNotEnoughNewsletters() {
@@ -63,7 +63,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     verify($newSubscriber->getEngagementScore())->null();
-    expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
+    verify($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
     $updated = $newSubscriber->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
@@ -71,7 +71,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $newSegment = $this->segmentsRepository->findOneById($segment->getId());
     $this->assertInstanceOf(SegmentEntity::class, $newSegment);
     verify($newSegment->getAverageEngagementScore())->null();
-    expect($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
+    verify($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
     $updated = $newSegment->getAverageEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $averageScoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
@@ -113,7 +113,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     verify($newSubscriber->getEngagementScore())->equals(33, 1);
-    expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
+    verify($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
     $updated = $newSubscriber->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
@@ -122,7 +122,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $newSegment = $this->segmentsRepository->findOneById($segment->getId());
     $this->assertInstanceOf(SegmentEntity::class, $newSegment);
     verify($newSegment->getAverageEngagementScore())->equals(33, 1);
-    expect($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
+    verify($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
     $updated = $newSegment->getAverageEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
@@ -169,7 +169,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     verify($newSubscriber->getEngagementScore())->equals(0.0);
-    expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
+    verify($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
     $updated = $newSubscriber->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
@@ -178,7 +178,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $newSubscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber2);
     verify($newSubscriber2->getEngagementScore())->equals(33, 1);
-    expect($newSubscriber2->getEngagementScoreUpdatedAt())->notNull();
+    verify($newSubscriber2->getEngagementScoreUpdatedAt())->notNull();
     $updated = $newSubscriber2->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
@@ -187,7 +187,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $newSegment = $this->segmentsRepository->findOneById($segment->getId());
     $this->assertInstanceOf(SegmentEntity::class, $newSegment);
     verify($newSegment->getAverageEngagementScore())->equals(16.6, 0.1);
-    expect($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
+    verify($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
     $updated = $newSegment->getAverageEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
@@ -213,7 +213,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
     verify($newSubscriber->getEngagementScore())->equals(33, 1);
-    expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
+    verify($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
     $updated = $newSubscriber->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));

@@ -325,7 +325,7 @@ class NewslettersTest extends \MailPoetTest {
 
     $trashedNewsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $trashedNewsletter);
-    expect($trashedNewsletter->getDeletedAt())->notNull();
+    verify($trashedNewsletter->getDeletedAt())->notNull();
 
     $response = $this->endpoint->restore(['id' => $this->newsletter->getId()]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
@@ -342,7 +342,7 @@ class NewslettersTest extends \MailPoetTest {
     $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     verify($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
-    expect($response->data['deleted_at'])->notNull();
+    verify($response->data['deleted_at'])->notNull();
     verify($response->meta['count'])->equals(1);
   }
 

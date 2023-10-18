@@ -173,7 +173,7 @@ class WordPressTest extends \MailPoetTest {
     // check that cron daemon does not exist
     verify($this->settings->get(CronHelper::DAEMON_SETTING))->null();
     $this->wordpressTrigger->run();
-    expect($this->settings->get(CronHelper::DAEMON_SETTING))->notNull();
+    verify($this->settings->get(CronHelper::DAEMON_SETTING))->notNull();
   }
 
   public function testItDeactivatesCronDaemonWhenExecutionRequirementsAreNotMet() {
