@@ -19,7 +19,7 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     /** @var DynamicSegmentsResponseBuilder $responseBuilder */
     $responseBuilder = $this->diContainer->get(DynamicSegmentsResponseBuilder::class);
     $response = $responseBuilder->build($segment);
-    expect($response)->array();
+    verify($response)->isArray();
     verify($response['id'])->equals($segment->getId());
     verify($response['name'])->equals($name);
     verify($response['description'])->equals($description);
@@ -28,7 +28,7 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     verify($response)->arrayHasKey('updated_at');
     verify($response)->arrayHasKey('deleted_at');
     verify($response['filters_connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
-    expect($response['filters'])->array();
+    verify($response['filters'])->isArray();
     verify($response['filters'])->arrayCount(1);
     verify($response['filters'][0]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     verify($response['filters'][0]['wordpressRole'])->equals(['editor']);
@@ -46,7 +46,7 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     /** @var DynamicSegmentsResponseBuilder $responseBuilder */
     $responseBuilder = $this->diContainer->get(DynamicSegmentsResponseBuilder::class);
     $response = $responseBuilder->build($segment);
-    expect($response)->array();
+    verify($response)->isArray();
     verify($response['id'])->equals($segment->getId());
     verify($response['name'])->equals($name);
     verify($response['description'])->equals($description);
@@ -55,7 +55,7 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     verify($response)->arrayHasKey('updated_at');
     verify($response)->arrayHasKey('deleted_at');
     verify($response['filters_connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
-    expect($response['filters'])->array();
+    verify($response['filters'])->isArray();
     verify($response['filters'])->arrayCount(2);
     verify($response['filters'][0]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     verify($response['filters'][0]['wordpressRole'])->equals(['editor']);
@@ -86,7 +86,7 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     /** @var DynamicSegmentsResponseBuilder $responseBuilder */
     $responseBuilder = $this->diContainer->get(DynamicSegmentsResponseBuilder::class);
     $response = $responseBuilder->buildForListing([$segment]);
-    expect($response)->array();
+    verify($response)->isArray();
     verify($response[0]['name'])->equals($name);
     verify($response[0]['description'])->equals($description);
     verify($response[0]['type'])->equals(SegmentEntity::TYPE_DYNAMIC);

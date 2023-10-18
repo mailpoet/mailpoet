@@ -51,7 +51,7 @@ class SegmentsResponseBuilderTest extends \MailPoetTest {
 
     $responseBuilder = $di->get(SegmentsResponseBuilder::class);
     $response = $responseBuilder->buildForListing([$segment]);
-    expect($response)->array();
+    verify($response)->isArray();
     verify($response[0]['name'])->equals($name);
     verify($response[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
     expect($response[0]['subscribers_url'])->startsWith('http');

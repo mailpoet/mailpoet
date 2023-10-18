@@ -103,7 +103,7 @@ class JsonTypesTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $savedData = $this->connection->executeQuery("SELECT * FROM $this->tableName")->fetchAssociative() ?: [];
-    expect($savedData)->array();
+    verify($savedData)->isArray();
     verify($savedData['json_data'])->null();
     verify($savedData['json_or_serialized_data'])->null();
   }

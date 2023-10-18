@@ -55,7 +55,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
 
   public function testItReturnsArray() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text']);
-    expect($result)->array();
+    verify($result)->isArray();
   }
 
   public function testItReturnsName() {
@@ -135,7 +135,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
       ],
     ]);
     $values = $result['params']['values'];
-    expect($values)->array();
+    verify($values)->isArray();
     verify($values)->arrayCount(2);
     verify($values[0])->same(['value' => 'value 1', 'is_checked' => '']);
     verify($values[1])->same(['value' => 'value 2', 'is_checked' => '1']);
@@ -196,7 +196,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
       ],
     ]);
     $values = $result['params']['values'];
-    expect($values)->array();
+    verify($values)->isArray();
     verify($values)->arrayCount(1);
     verify($values[0])->same(['value' => 'value 1', 'is_checked' => '1']);
   }

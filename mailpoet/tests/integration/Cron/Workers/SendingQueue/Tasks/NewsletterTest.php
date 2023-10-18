@@ -190,7 +190,7 @@ class NewsletterTest extends \MailPoetTest {
 
     $hookName = 'mailpoet_sending_newsletter_render_after_pre_process';
     verify(WPHooksHelper::isFilterApplied($hookName))->true();
-    expect(WPHooksHelper::getFilterApplied($hookName)[0])->array();
+    verify(WPHooksHelper::getFilterApplied($hookName)[0])->isArray();
     verify(WPHooksHelper::getFilterApplied($hookName)[1] instanceof NewsletterEntity)->true();
   }
 
@@ -212,7 +212,7 @@ class NewsletterTest extends \MailPoetTest {
 
     $hookName = 'mailpoet_sending_newsletter_render_after_pre_process';
     verify(WPHooksHelper::isFilterApplied($hookName))->true();
-    expect(WPHooksHelper::getFilterApplied($hookName)[0])->array();
+    verify(WPHooksHelper::getFilterApplied($hookName)[0])->isArray();
     verify(WPHooksHelper::getFilterApplied($hookName)[1] instanceof NewsletterEntity)->true();
   }
 
@@ -610,7 +610,7 @@ class NewsletterTest extends \MailPoetTest {
     verify($newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask))->equals($this->newsletter);
     $this->entityManager->refresh($sendingQueue);
     $updatedMeta = $sendingQueue->getMeta();
-    expect($updatedMeta)->array();
+    verify($updatedMeta)->isArray();
     verify($updatedMeta)->arrayHasKey('filterSegment');
     $filterData = $updatedMeta['filterSegment']['filters'][0]['data'] ?? [];
     verify($filterData['value'])->equals(50);

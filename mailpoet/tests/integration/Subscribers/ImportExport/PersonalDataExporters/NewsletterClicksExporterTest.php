@@ -23,7 +23,7 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
 
   public function testExportWorksWhenSubscriberNotFound() {
     $result = $this->exporter->export('email.that@doesnt.exists');
-    expect($result)->array();
+    verify($result)->isArray();
     verify($result)->arrayHasKey('data');
     verify($result['data'])->equals([]);
     verify($result)->arrayHasKey('done');
@@ -37,7 +37,7 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $result = $this->exporter->export('email.that@has.no.newsletters');
-    expect($result)->array();
+    verify($result)->isArray();
     verify($result)->arrayHasKey('data');
     verify($result['data'])->equals([]);
     verify($result)->arrayHasKey('done');
@@ -50,7 +50,7 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
     $this->prepareDataToBeExported($userEmail, $userAgentName);
 
     $result = $this->exporter->export($userEmail);
-    expect($result['data'])->array();
+    verify($result['data'])->isArray();
     verify($result['data'])->arrayCount(1);
     verify($result['done'])->equals(true);
     verify($result['data'][0])->arrayHasKey('group_id');
