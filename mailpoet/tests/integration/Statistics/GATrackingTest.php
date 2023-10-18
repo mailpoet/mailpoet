@@ -45,7 +45,7 @@ class GATrackingTest extends \MailPoetTest {
 
     // Process (filled GA campaign)
     $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
-    expect($result)->notEquals($this->renderedNewsletter);
+    verify($result)->notEquals($this->renderedNewsletter);
   }
 
   public function testItGetsGACampaignFromParentNewsletterForPostNotifications() {
@@ -55,7 +55,7 @@ class GATrackingTest extends \MailPoetTest {
       ->create();
 
     $result = $this->tracking->applyGATracking($this->renderedNewsletter, $notificationHistory, $this->internalHost);
-    expect($result)->notEquals($this->renderedNewsletter);
+    verify($result)->notEquals($this->renderedNewsletter);
   }
 
   public function testItCanAddGAParamsToLinks() {

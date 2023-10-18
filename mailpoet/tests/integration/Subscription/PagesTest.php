@@ -236,7 +236,7 @@ class PagesTest extends \MailPoetTest {
 
     $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
-    expect($updatedSubscriber->getStatus())->notEquals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($updatedSubscriber->getStatus())->notEquals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function testItUnsubscribesAndTracksCorrectMethod() {

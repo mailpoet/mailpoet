@@ -28,7 +28,7 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
     verify($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->equals(false);
     $controller->init();
 
-    expect($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->notEquals(false);
+    verify($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->notEquals(false);
   }
 
   public function testItGenerateNewsletterIfNoneExist() {
@@ -39,7 +39,7 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
 
     expect($newsletter)->isInstanceOf(NewsletterEntity::class);
 
-    expect($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->notEquals(false);
+    verify($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->notEquals(false);
   }
 
   public function testItRegenerateNewsletterIfIdIsSetButNewsletterDoesNotExist() {
@@ -50,7 +50,7 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
 
     expect($newsletter)->isInstanceOf(NewsletterEntity::class);
 
-    expect($newsletter->getId())->notEquals(5);
+    verify($newsletter->getId())->notEquals(5);
 
     verify($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->equals($newsletter->getId());
   }

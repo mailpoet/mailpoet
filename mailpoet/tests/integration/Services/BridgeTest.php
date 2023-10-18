@@ -130,8 +130,8 @@ class BridgeTest extends \MailPoetTest {
     ];
     foreach ($states as $state) {
       $this->bridge->storeMSSKeyAndState($this->validKey, $state);
-      expect($this->getMSSKey())->notEquals($this->validKey);
-      expect($this->getMSSKeyState())->notEquals($state);
+      verify($this->getMSSKey())->notEquals($this->validKey);
+      verify($this->getMSSKeyState())->notEquals($state);
     }
   }
 
@@ -196,8 +196,8 @@ class BridgeTest extends \MailPoetTest {
     ];
     foreach ($states as $state) {
       $this->bridge->storePremiumKeyAndState($this->validKey, $state);
-      expect($this->getPremiumKey())->notEquals($this->validKey);
-      expect($this->getPremiumKeyState())->notEquals($state);
+      verify($this->getPremiumKey())->notEquals($this->validKey);
+      verify($this->getPremiumKeyState())->notEquals($state);
     }
   }
 
@@ -216,9 +216,9 @@ class BridgeTest extends \MailPoetTest {
   public function testItDoesNotStoreInvalidSubscriptionType() {
     $state = ['state' => Bridge::KEY_VALID, 'data' => ['subscription_type' => 'INVALID']];
     $this->bridge->storePremiumKeyAndState($this->validKey, $state);
-    expect($this->getSubscriptionType())->notEquals('INVALID');
+    verify($this->getSubscriptionType())->notEquals('INVALID');
     $this->bridge->storeMSSKeyAndState($this->validKey, $state);
-    expect($this->getSubscriptionType())->notEquals('INVALID');
+    verify($this->getSubscriptionType())->notEquals('INVALID');
   }
 
   public function testItInvalidatesMSSKey() {

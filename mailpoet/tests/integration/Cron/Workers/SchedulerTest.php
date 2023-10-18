@@ -157,10 +157,10 @@ class SchedulerTest extends \MailPoetTest {
     expect($notificationHistory)->notEmpty();
     $this->assertInstanceOf(NewsletterEntity::class, $notificationHistory);
     // check the hash of the post notification history
-    expect($notificationHistory->getHash())->notEquals($newsletter->getHash());
+    verify($notificationHistory->getHash())->notEquals($newsletter->getHash());
     verify(strlen((string)$notificationHistory->getHash()))->equals(Security::HASH_LENGTH);
     // check the unsubscribe token of the post notification history
-    expect($notificationHistory->getUnsubscribeToken())->notEquals($newsletter->getUnsubscribeToken());
+    verify($notificationHistory->getUnsubscribeToken())->notEquals($newsletter->getUnsubscribeToken());
     verify(strlen((string)$notificationHistory->getUnsubscribeToken()))->equals(Security::UNSUBSCRIBE_TOKEN_LENGTH);
 
     verify($notificationHistory->getParent())->equals($newsletter);
@@ -910,7 +910,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler->process();
     $newQueue = $this->scheduledTasksRepository->findOneById($queue->taskId);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $newQueue);
-    expect($newQueue->getUpdatedAt())->notEquals($originalUpdated);
+    verify($newQueue->getUpdatedAt())->notEquals($originalUpdated);
   }
 
   public function _createNewsletterSegment($newsletterId, $segmentId) {

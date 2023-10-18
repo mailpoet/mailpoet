@@ -249,7 +249,7 @@ class NewsletterTest extends \MailPoetTest {
     $result = $newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask);
     $newsletterPost = $newsletterPostRepository->findOneBy(['newsletter' => $this->newsletter->getId()]);
     expect($newsletterPost)->isInstanceOf(NewsletterPostEntity::class);
-    expect($result)->notEquals(false);
+    verify($result)->notEquals(false);
     $this->assertInstanceOf(NewsletterPostEntity::class, $newsletterPost);
     verify($newsletterPost->getPostId())->equals('10');
   }
@@ -294,7 +294,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletterTask->markNewsletterAsSent($newsletter, $this->sendingTask);
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
-    expect($updatedNewsletter->getStatus())->notEquals(NewsletterEntity::STATUS_SENT);
+    verify($updatedNewsletter->getStatus())->notEquals(NewsletterEntity::STATUS_SENT);
   }
 
   public function testItDoesNotRenderSubscriberShortcodeInSubjectWhenPreprocessingNewsletter() {
@@ -540,7 +540,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->setSubject('Subject 2');
     $this->entityManager->persist($newsletter);
     $this->entityManager->flush();
-    expect($originalCampaignId)->notEquals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters));
+    verify($originalCampaignId)->notEquals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters));
   }
 
   public function testCampaignIdRevertsIfContentReverts() {
@@ -555,7 +555,7 @@ class NewsletterTest extends \MailPoetTest {
     $updatedRenderedNewsletters = [
       'text' => 'text body updated',
     ];
-    expect($originalCampaignId)->notEquals($this->newsletterTask->calculateCampaignId($newsletter, $updatedRenderedNewsletters));
+    verify($originalCampaignId)->notEquals($this->newsletterTask->calculateCampaignId($newsletter, $updatedRenderedNewsletters));
     $newsletter->setSubject('Subject');
     $this->entityManager->persist($newsletter);
     $this->entityManager->flush();
@@ -568,7 +568,7 @@ class NewsletterTest extends \MailPoetTest {
     $renderedNewsletters = [
       'text' => 'text body',
     ];
-    expect($this->newsletterTask->calculateCampaignId($newsletter1, $renderedNewsletters))->notEquals($this->newsletterTask->calculateCampaignId($newsletter2, $renderedNewsletters));
+    verify($this->newsletterTask->calculateCampaignId($newsletter1, $renderedNewsletters))->notEquals($this->newsletterTask->calculateCampaignId($newsletter2, $renderedNewsletters));
   }
 
   public function testCampaignIdChangesIfImageChanges() {
@@ -582,7 +582,7 @@ class NewsletterTest extends \MailPoetTest {
       'text' => '[alt text] Text',
       'html' => '<img src="http://example.com/different-image-same-alt.jpg" alt="alt text"><p>Text</p>',
     ];
-    expect($originalCampaignId)->notEquals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewslettersDifferentImageSrc));
+    verify($originalCampaignId)->notEquals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewslettersDifferentImageSrc));
   }
 
   public function testPreProcessingSavesFilterSegmentData(): void {

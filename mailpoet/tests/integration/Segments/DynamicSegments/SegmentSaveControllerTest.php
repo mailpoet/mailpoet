@@ -118,7 +118,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $this->addDynamicFilter($segment, ['editor']);
 
     $duplicate = $this->saveController->duplicate($segment);
-    expect($duplicate->getId())->notEquals($segment->getId());
+    verify($duplicate->getId())->notEquals($segment->getId());
     $filters = $duplicate->getDynamicFilters();
     expect($filters)->count(2);
 
@@ -128,7 +128,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $originalFilter1);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $duplicateFilter1);
 
-    expect($originalFilter1->getId())->notEquals($duplicateFilter1->getId());
+    verify($originalFilter1->getId())->notEquals($duplicateFilter1->getId());
     verify($duplicateFilter1->getFilterData()->getAction())->equals(UserRole::TYPE);
     verify($duplicateFilter1->getFilterData()->getParam('wordpressRole'))->equals(['administrator']);
     verify($duplicateFilter1->getFilterData()->getParam('connect'))->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
@@ -139,7 +139,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $originalFilter2);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $duplicateFilter2);
 
-    expect($originalFilter2->getId())->notEquals($duplicateFilter2->getId());
+    verify($originalFilter2->getId())->notEquals($duplicateFilter2->getId());
     verify($duplicateFilter2->getFilterData()->getAction())->equals(UserRole::TYPE);
     verify($duplicateFilter2->getFilterData()->getParam('wordpressRole'))->equals(['editor']);
     verify($duplicateFilter2->getFilterData()->getParam('connect'))->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);

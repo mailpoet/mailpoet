@@ -60,7 +60,7 @@ class PQueryTest extends \MailPoetUnitTest {
     if ($equals) {
       verify($parsedHtml)->equals($html);
     } else {
-      expect($parsedHtml)->notEquals($html);
+      verify($parsedHtml)->notEquals($html);
     }
   }
 }
