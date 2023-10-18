@@ -72,7 +72,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
 
   public function testItIgnoresUnknownProperties() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'unknown' => 'Unknown property']);
-    expect($result)->hasNotKey('unknown');
+    verify($result)->arrayHasNotKey('unknown');
   }
 
   public function testItReturnsParamsIfPassed() {
@@ -90,7 +90,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
   public function testItIgnoresUnknownParams() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['unknown' => 'Unknown property']]);
     verify($result)->arrayHasKey('params');
-    expect($result['params'])->hasNotKey('unknown');
+    verify($result['params'])->arrayHasNotKey('unknown');
   }
 
   public function testItFillsLabel() {
