@@ -87,8 +87,8 @@ class ImageTest extends \MailPoetUnitTest {
     $imgAlt = $this->htmlParser->getAttribute($img, 'alt');
     verify($imgAlt->value)->equals('Alt text');
     $style = $this->htmlParser->getAttribute($img, 'style');
-    expect($style->value)->stringContainsString('width: 100px');
-    expect($style->value)->stringContainsString('height: 200px');
+    verify($style->value)->stringContainsString('width: 100px');
+    verify($style->value)->stringContainsString('height: 200px');
 
     $caption = $this->htmlParser->getChildElement($figure, 'figcaption');
     $captionContent = $this->htmlParser->getChildElement($caption, 'strong');

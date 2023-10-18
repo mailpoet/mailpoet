@@ -183,9 +183,9 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertInstanceOf(NewsletterLinkEntity::class, $link);
     $updatedQueue = SendingTask::getByNewsletterId($this->newsletter->getId());
     $renderedNewsletter = $updatedQueue->getNewsletterRenderedBody();
-    expect($renderedNewsletter['html'])
+    verify($renderedNewsletter['html'])
       ->stringContainsString('[mailpoet_click_data]-' . $link->getHash());
-    expect($renderedNewsletter['html'])
+    verify($renderedNewsletter['html'])
       ->stringContainsString('[mailpoet_open_data]');
 
     $hookName = 'mailpoet_sending_newsletter_render_after_pre_process';
@@ -304,7 +304,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask);
     $this->sendingTask = SendingTask::getByNewsletterId($this->newsletter->getId());
     $wp = new WPFunctions();
-    expect($this->sendingTask->newsletterRenderedSubject)
+    verify($this->sendingTask->newsletterRenderedSubject)
       ->stringContainsString(date_i18n('jS', $wp->currentTime('timestamp')));
   }
 
@@ -352,10 +352,10 @@ class NewsletterTest extends \MailPoetTest {
       $this->subscriber,
       $this->sendingTask
     );
-    expect($result['subject'])->stringContainsString($this->subscriber->getFirstName());
-    expect($result['body']['html'])
+    verify($result['subject'])->stringContainsString($this->subscriber->getFirstName());
+    verify($result['body']['html'])
       ->stringContainsString(Router::NAME . '&endpoint=track&action=click&data=');
-    expect($result['body']['text'])
+    verify($result['body']['text'])
       ->stringContainsString(Router::NAME . '&endpoint=track&action=click&data=');
   }
 
@@ -517,9 +517,9 @@ class NewsletterTest extends \MailPoetTest {
     $coupon = (string)$wooCommerceHelper->getLatestCoupon();
 
     expect($result['body']['html'])->stringNotContainsString(Coupon::CODE_PLACEHOLDER);
-    expect($result['body']['html'])->stringContainsString($coupon);
+    verify($result['body']['html'])->stringContainsString($coupon);
     expect($result['body']['text'])->stringNotContainsString(Coupon::CODE_PLACEHOLDER);
-    expect($result['body']['text'])->stringContainsString($coupon);
+    verify($result['body']['text'])->stringContainsString($coupon);
   }
 
   public function testCampaignIdDoesNotChangeIfContentStaysTheSame() {

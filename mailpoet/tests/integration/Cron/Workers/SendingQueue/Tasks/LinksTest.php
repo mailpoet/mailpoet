@@ -59,9 +59,9 @@ class LinksTest extends \MailPoetTest {
     $result = $this->links->hashAndReplaceLinks($renderedNewsletter, 0, 0);
     $processedRenderedNewsletterBody = $result[0];
     $processedAndHashedLinks = $result[1];
-    expect($processedRenderedNewsletterBody['html'])
+    verify($processedRenderedNewsletterBody['html'])
       ->stringContainsString($processedAndHashedLinks[0]['hash']);
-    expect($processedRenderedNewsletterBody['text'])
+    verify($processedRenderedNewsletterBody['text'])
       ->stringContainsString($processedAndHashedLinks[0]['hash']);
     verify($processedAndHashedLinks[0]['link'])->equals('http://example.com');
   }
@@ -76,7 +76,7 @@ class LinksTest extends \MailPoetTest {
 
     $newsletterLink = $this->newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter->getId()]);
     $this->assertInstanceOf(NewsletterLinkEntity::class, $newsletterLink);
-    expect($result['html'])->stringContainsString($newsletterLink->getHash());
+    verify($result['html'])->stringContainsString($newsletterLink->getHash());
   }
 
   public function testItCanEnsureThatInstantUnsubscribeLinkIsAlwaysPresent() {

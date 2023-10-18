@@ -82,7 +82,7 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
 
     expect($newsletter->getBody())->array();
     $stringBody = json_encode($newsletter->getBody());
-    expect($stringBody)->stringContainsString($this->partialTemplateContent);
+    verify($stringBody)->stringContainsString($this->partialTemplateContent);
   }
 
   public function testItRendersEmail() {
@@ -107,9 +107,9 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
 
     $renderedContent = (array)$controller->render($newsletter);
 
-    expect($renderedContent['html'])->stringContainsString($this->partialTemplateContent);
-    expect($renderedContent['text'])->stringContainsString($this->partialTemplateContent);
-    expect($renderedContent['subject'])->stringContainsString($subject);
+    verify($renderedContent['html'])->stringContainsString($this->partialTemplateContent);
+    verify($renderedContent['text'])->stringContainsString($this->partialTemplateContent);
+    verify($renderedContent['subject'])->stringContainsString($subject);
   }
 
   private function generateController(): ConfirmationEmailCustomizer {

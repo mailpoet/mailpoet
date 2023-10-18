@@ -57,9 +57,9 @@ class BridgeApiTest extends \MailPoetTest {
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
-    expect($errorLog->getMessage())->stringContainsString('www.home-example.com');
-    expect($errorLog->getMessage())->stringContainsString('key-validation.failed');
-    expect($errorLog->getMessage())->stringContainsString('"key_type":"premium"');
+    verify($errorLog->getMessage())->stringContainsString('www.home-example.com');
+    verify($errorLog->getMessage())->stringContainsString('key-validation.failed');
+    verify($errorLog->getMessage())->stringContainsString('"key_type":"premium"');
   }
 
   public function testItDoesntLogsWhenMssKeyCheckPass() {
@@ -91,9 +91,9 @@ class BridgeApiTest extends \MailPoetTest {
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
-    expect($errorLog->getMessage())->stringContainsString('www.home-example.com');
-    expect($errorLog->getMessage())->stringContainsString('key-validation.failed');
-    expect($errorLog->getMessage())->stringContainsString('"key_type":"mss"');
+    verify($errorLog->getMessage())->stringContainsString('www.home-example.com');
+    verify($errorLog->getMessage())->stringContainsString('key-validation.failed');
+    verify($errorLog->getMessage())->stringContainsString('"key_type":"mss"');
   }
 
   public function testItCanGetSenderDomains() {
@@ -135,8 +135,8 @@ class BridgeApiTest extends \MailPoetTest {
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
-    expect($errorLog->getMessage())->stringContainsString('getAuthorizedSenderDomains API response was not in expected format.');
-    expect($errorLog->getMessage())->stringContainsString('trololo');
+    verify($errorLog->getMessage())->stringContainsString('getAuthorizedSenderDomains API response was not in expected format.');
+    verify($errorLog->getMessage())->stringContainsString('trololo');
   }
 
   public function testItCanCreateSenderDomain() {
@@ -168,8 +168,8 @@ class BridgeApiTest extends \MailPoetTest {
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
-    expect($errorLog->getMessage())->stringContainsString('createAuthorizedSenderDomain API response was not in expected format.');
-    expect($errorLog->getMessage())->stringContainsString('trololo');
+    verify($errorLog->getMessage())->stringContainsString('createAuthorizedSenderDomain API response was not in expected format.');
+    verify($errorLog->getMessage())->stringContainsString('trololo');
   }
 
   public function testCantCreateSenderDomainWhichExists() {
@@ -202,7 +202,7 @@ class BridgeApiTest extends \MailPoetTest {
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
-    expect($errorLog->getMessage())->stringContainsString('verifyAuthorizedSenderDomain API response was not in expected format.');
-    expect($errorLog->getMessage())->stringContainsString('trololo');
+    verify($errorLog->getMessage())->stringContainsString('verifyAuthorizedSenderDomain API response was not in expected format.');
+    verify($errorLog->getMessage())->stringContainsString('trololo');
   }
 }

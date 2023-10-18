@@ -90,7 +90,7 @@ class DaemonRunTest extends \MailPoetTest {
     expect($actions)->count(0);
     $log = $this->diContainer->get(LogRepository::class)->findOneBy(['name' => 'cron', 'level' => 200]);
     $this->assertInstanceOf(LogEntity::class, $log);
-    expect($log->getMessage())->stringContainsString('Daemon run ended too early');
+    verify($log->getMessage())->stringContainsString('Daemon run ended too early');
     $this->diContainer->get(SettingsController::class)->set('logging', 'errors');
   }
 

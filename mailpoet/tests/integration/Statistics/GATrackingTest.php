@@ -60,13 +60,13 @@ class GATrackingTest extends \MailPoetTest {
 
   public function testItCanAddGAParamsToLinks() {
     $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
-    expect($result['text'])->stringContainsString('utm_campaign=' . urlencode($this->gaCampaign));
-    expect($result['html'])->stringContainsString('utm_campaign=' . urlencode($this->gaCampaign));
+    verify($result['text'])->stringContainsString('utm_campaign=' . urlencode($this->gaCampaign));
+    verify($result['html'])->stringContainsString('utm_campaign=' . urlencode($this->gaCampaign));
   }
 
   public function testItKeepsShorcodes() {
     $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
-    expect($result['text'])->stringContainsString('email=[subscriber:email]');
-    expect($result['html'])->stringContainsString('email=[subscriber:email]');
+    verify($result['text'])->stringContainsString('email=[subscriber:email]');
+    verify($result['html'])->stringContainsString('email=[subscriber:email]');
   }
 }

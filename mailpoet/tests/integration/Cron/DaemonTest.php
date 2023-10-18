@@ -61,7 +61,7 @@ class DaemonTest extends \MailPoetTest {
     $daemon->run($data);
     $log = $this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]);
     $this->assertInstanceOf(LogEntity::class, $log);
-    expect($log->getMessage())->stringContainsString('Worker error!');
+    verify($log->getMessage())->stringContainsString('Worker error!');
   }
 
   public function testItTerminatesWhenExecutionLimitIsReached() {

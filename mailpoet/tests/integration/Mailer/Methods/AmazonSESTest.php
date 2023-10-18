@@ -210,7 +210,7 @@ class AmazonSESTest extends \MailPoetTest {
   public function testItCanSignRequest() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     $signedRequest = $this->mailer->signRequest($body);
-    expect($signedRequest)
+    verify($signedRequest)
       ->stringContainsString(
         $this->mailer->awsSigningAlgorithm . ' Credential=' .
         $this->mailer->awsAccessKey . '/' .
@@ -236,7 +236,7 @@ class AmazonSESTest extends \MailPoetTest {
     $result = $this->mailer->send($this->newsletter, 'test@example.com');
     verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
-    expect($result['error']->getMessage())->stringContainsString("Missing final '@domain'");
+    verify($result['error']->getMessage())->stringContainsString("Missing final '@domain'");
   }
 
   public function testItChecksBlacklistBeforeSending() {
@@ -253,7 +253,7 @@ class AmazonSESTest extends \MailPoetTest {
     );
     verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
-    expect($result['error']->getMessage())->stringContainsString('AmazonSES has returned an unknown error.');
+    verify($result['error']->getMessage())->stringContainsString('AmazonSES has returned an unknown error.');
   }
 
   public function testItCanSend() {

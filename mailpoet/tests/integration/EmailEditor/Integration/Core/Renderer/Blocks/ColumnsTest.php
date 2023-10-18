@@ -51,7 +51,7 @@ class ColumnsTest extends \MailPoetTest {
   public function testItRendersInnerColumn() {
     $stylesController = $this->diContainer->get(StylesController::class);
     $rendered = $this->columnsRenderer->render($this->parsedColumns, $this->blocksRenderer, $stylesController);
-    expect($rendered)->stringContainsString('Column 1');
+    verify($rendered)->stringContainsString('Column 1');
   }
 
   public function testItRendersWidthForOneColumn() {
@@ -59,7 +59,7 @@ class ColumnsTest extends \MailPoetTest {
     $stylesController->method('getEmailLayoutStyles')
       ->willReturn(['width' => 800]);
     $rendered = $this->columnsRenderer->render($this->parsedColumns, $this->blocksRenderer, $stylesController);
-    expect($rendered)->stringContainsString('width:784px;');
+    verify($rendered)->stringContainsString('width:784px;');
   }
 
   public function testItRendersWidthForTwoColumns() {
@@ -69,6 +69,6 @@ class ColumnsTest extends \MailPoetTest {
     $parsedColumns = $this->parsedColumns;
     $parsedColumns['innerBlocks'][] = $parsedColumns['innerBlocks'][0]; // Insert another column
     $rendered = $this->columnsRenderer->render($parsedColumns, $this->blocksRenderer, $stylesController);
-    expect($rendered)->stringContainsString('width:392px;');
+    verify($rendered)->stringContainsString('width:392px;');
   }
 }

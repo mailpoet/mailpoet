@@ -103,9 +103,9 @@ class WooCommerceSettingsTabCest {
     $i->amOnPage("/wp-admin/admin.php?page=wc-settings&tab=email");
     $i->scrollTo(self::CUSTOMIZE_SELECTOR);
     $href = $i->grabAttributeFrom(self::CUSTOMIZE_SELECTOR, 'href');
-    expect($href)->stringContainsString('?page=mailpoet-newsletter-editor&id=');
+    verify($href)->stringContainsString('?page=mailpoet-newsletter-editor&id=');
     $href = $i->grabAttributeFrom(self::DISABLE_SELECTOR, 'href');
-    expect($href)->stringContainsString('?page=mailpoet-settings#woocommerce');
+    verify($href)->stringContainsString('?page=mailpoet-settings#woocommerce');
 
     $i->amOnPage("/wp-admin/admin.php?page=wc-settings&tab=email&section=wc_email_new_order");
     $i->dontSeeElementInDOM(self::CUSTOMIZE_SELECTOR);

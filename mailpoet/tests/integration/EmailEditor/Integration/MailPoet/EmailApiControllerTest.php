@@ -65,7 +65,7 @@ class EmailApiControllerTest extends \MailPoetTest {
       $this->fail('Incorrect state exception should have been thrown.');
     } catch (NotFoundException $exception) {
       verify($exception->getHttpStatusCode())->equals(APIResponse::STATUS_NOT_FOUND);
-      expect($exception->getMessage())->stringContainsString('Newsletter was not found');
+      verify($exception->getMessage())->stringContainsString('Newsletter was not found');
     }
   }
 
@@ -84,7 +84,7 @@ class EmailApiControllerTest extends \MailPoetTest {
       $this->fail('Incorrect state exception should have been thrown.');
     } catch (UnexpectedValueException $exception) {
       verify($exception->getHttpStatusCode())->equals(APIResponse::STATUS_BAD_REQUEST);
-      expect($exception->getMessage())->stringContainsString('Newsletter ID does not match the post ID');
+      verify($exception->getMessage())->stringContainsString('Newsletter ID does not match the post ID');
     }
   }
 

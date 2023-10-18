@@ -43,12 +43,12 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'fontSize' => 13,
     ];
     $result = $this->renderer->renderForTextInput($styles, $settings);
-    expect($result)->stringContainsString('border-radius:10px !important;');
-    expect($result)->stringContainsString('border-color:#fff;');
-    expect($result)->stringContainsString('border-width:10px;');
-    expect($result)->stringContainsString('background-color:#dddddd;');
-    expect($result)->stringContainsString('padding:40px;');
-    expect($result)->stringContainsString('font-size:13px;');
+    verify($result)->stringContainsString('border-radius:10px !important;');
+    verify($result)->stringContainsString('border-color:#fff;');
+    verify($result)->stringContainsString('border-width:10px;');
+    verify($result)->stringContainsString('background-color:#dddddd;');
+    verify($result)->stringContainsString('padding:40px;');
+    verify($result)->stringContainsString('font-size:13px;');
     expect($result)->stringNotContainsString('font-weight:bold;');
   }
 
@@ -76,14 +76,14 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'fontSize' => 13,
     ];
     $result = $this->renderer->renderForButton($styles, $settings);
-    expect($result)->stringContainsString('border-radius:10px !important;');
-    expect($result)->stringContainsString('border-color:#fff;');
-    expect($result)->stringContainsString('border-width:10px;');
-    expect($result)->stringContainsString('background-color:#dddddd;');
-    expect($result)->stringContainsString('color:#eeeeee;');
-    expect($result)->stringContainsString('font-size:8px;');
-    expect($result)->stringContainsString('font-weight:bold;');
-    expect($result)->stringContainsString('padding:40px;');
+    verify($result)->stringContainsString('border-radius:10px !important;');
+    verify($result)->stringContainsString('border-color:#fff;');
+    verify($result)->stringContainsString('border-width:10px;');
+    verify($result)->stringContainsString('background-color:#dddddd;');
+    verify($result)->stringContainsString('color:#eeeeee;');
+    verify($result)->stringContainsString('font-size:8px;');
+    verify($result)->stringContainsString('font-weight:bold;');
+    verify($result)->stringContainsString('padding:40px;');
   }
 
   public function testItShouldRenderButtonGradient() {
@@ -95,7 +95,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'fontSize' => 13,
     ];
     $result = $this->renderer->renderForButton($styles, $settings);
-    expect($result)->stringContainsString('background: linear-gradient(#eee, #ddd);');
+    verify($result)->stringContainsString('background: linear-gradient(#eee, #ddd);');
   }
 
   public function testItShouldRenderSegmentInputStyles() {
@@ -119,9 +119,9 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'font_family' => 'font1',
     ];
     $result = $this->renderer->renderForButton($styles, $settings);
-    expect($result)->stringContainsString("font-family:'font1'");
+    verify($result)->stringContainsString("font-family:'font1'");
     $result = $this->renderer->renderForButton(['font_family' => 'font2'], $settings);
-    expect($result)->stringContainsString("font-family:'font2'");
+    verify($result)->stringContainsString("font-family:'font2'");
   }
 
   public function testItShouldSupportFontSizesWithUnits() {
@@ -130,16 +130,16 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
       'fontSize' => '1.5rem',
     ];
     $result = $this->renderer->renderForButton([], $settings);
-    expect($result)->stringContainsString('font-size:1.5rem;');
+    verify($result)->stringContainsString('font-size:1.5rem;');
     $styles = [
       'font_size' => '2.4em',
     ];
     $result = $this->renderer->renderForButton($styles, $settings);
-    expect($result)->stringContainsString('font-size:2.4em;');
+    verify($result)->stringContainsString('font-size:2.4em;');
     $styles = [
       'font_size' => '23',
     ];
     $result = $this->renderer->renderForButton($styles, $settings);
-    expect($result)->stringContainsString('font-size:23px;');
+    verify($result)->stringContainsString('font-size:23px;');
   }
 }

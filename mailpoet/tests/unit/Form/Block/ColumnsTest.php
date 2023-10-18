@@ -39,7 +39,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
-    expect($class->textContent)->stringContainsString('mailpoet_vertically_align_top');
+    verify($class->textContent)->stringContainsString('mailpoet_vertically_align_top');
   }
 
   public function testItShouldRenderCustomClass() {
@@ -48,7 +48,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
-    expect($class->textContent)->stringContainsString('my-class');
+    verify($class->textContent)->stringContainsString('my-class');
   }
 
   public function testItShouldRenderStackOnMobileClassWhenFlagIsNotSet() {
@@ -56,7 +56,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
-    expect($class->textContent)->stringContainsString('mailpoet_stack_on_mobile');
+    verify($class->textContent)->stringContainsString('mailpoet_stack_on_mobile');
   }
 
   public function testItShouldRenderStackOnMobileClassWhenFlagIsTurnedOn() {
@@ -65,7 +65,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
-    expect($class->textContent)->stringContainsString('mailpoet_stack_on_mobile');
+    verify($class->textContent)->stringContainsString('mailpoet_stack_on_mobile');
   }
 
   public function testItShouldNotRenderStackOnMobileClassWhenFlagTurnedOff() {
@@ -83,9 +83,9 @@ class ColumnsTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
-    expect($style->textContent)->stringContainsString('background-color:#ffffff;');
+    verify($style->textContent)->stringContainsString('background-color:#ffffff;');
     $class = $this->htmlParser->getAttribute($columns, 'class');
-    expect($class->textContent)->stringContainsString('mailpoet_column_with_background');
+    verify($class->textContent)->stringContainsString('mailpoet_column_with_background');
   }
 
   public function testItShouldRenderCustomTextColor() {
@@ -94,7 +94,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
-    expect($style->textContent)->stringContainsString('color:#ffffee;');
+    verify($style->textContent)->stringContainsString('color:#ffffee;');
   }
 
   public function testItShouldGradientBackground() {
@@ -103,9 +103,9 @@ class ColumnsTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
-    expect($style->textContent)->stringContainsString('background:linear-gradient(red, yellow);');
+    verify($style->textContent)->stringContainsString('background:linear-gradient(red, yellow);');
     $class = $this->htmlParser->getAttribute($columns, 'class');
-    expect($class->textContent)->stringContainsString('mailpoet_column_with_background');
+    verify($class->textContent)->stringContainsString('mailpoet_column_with_background');
   }
 
   public function testItShouldRenderPadding() {
@@ -114,6 +114,6 @@ class ColumnsTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
-    expect($style->textContent)->stringContainsString('padding:1em 2em 3em 4em;');
+    verify($style->textContent)->stringContainsString('padding:1em 2em 3em 4em;');
   }
 }

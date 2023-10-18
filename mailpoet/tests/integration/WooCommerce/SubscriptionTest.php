@@ -99,7 +99,7 @@ class SubscriptionTest extends \MailPoetTest {
   public function testItDisplaysCheckboxOptinMessageFromSettings() {
     $newMessage = 'This is a test message.';
     $this->settings->set(Subscription::OPTIN_MESSAGE_SETTING_NAME, $newMessage);
-    expect($this->getRenderedOptinField())->stringContainsString($newMessage);
+    verify($this->getRenderedOptinField())->stringContainsString($newMessage);
   }
 
   public function testItsTemplateCanBeOverriddenByAHook() {
@@ -113,8 +113,8 @@ class SubscriptionTest extends \MailPoetTest {
       4
     );
     $result = $this->getRenderedOptinField();
-    expect($result)->stringContainsString($newTemplate);
-    expect($result)->stringContainsString(Subscription::CHECKOUT_OPTIN_INPUT_NAME);
+    verify($result)->stringContainsString($newTemplate);
+    verify($result)->stringContainsString(Subscription::CHECKOUT_OPTIN_INPUT_NAME);
   }
 
   public function testItDoesNotTryToSubscribeIfThereIsNoEmailInOrderData() {

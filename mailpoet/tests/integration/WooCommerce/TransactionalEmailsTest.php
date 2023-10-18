@@ -94,7 +94,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
     ]);
     $this->assertInstanceOf(NewsletterEntity::class, $email);
     expect($email)->notEmpty();
-    expect(json_encode($email->getBody()))->stringContainsString('my-awesome-image-url');
+    verify(json_encode($email->getBody()))->stringContainsString('my-awesome-image-url');
   }
 
   public function testInitStripsUnwantedTagsFromWCFooterText() {

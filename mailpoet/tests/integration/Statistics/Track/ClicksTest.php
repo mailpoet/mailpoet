@@ -439,7 +439,7 @@ class ClicksTest extends \MailPoetTest {
       $this->queue,
       $preview = false
     );
-    expect($link)->stringContainsString('&endpoint=view_in_browser');
+    verify($link)->stringContainsString('&endpoint=view_in_browser');
   }
 
   public function testItFailsToConvertsInvalidShortcodeToUrl() {

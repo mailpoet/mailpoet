@@ -57,7 +57,7 @@ class SendGridTest extends \MailPoetTest {
 
   public function testItCanGenerateBody() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $this->extraParams);
-    expect($body['to'])->stringContainsString($this->subscriber);
+    verify($body['to'])->stringContainsString($this->subscriber);
     verify($body['from'])->equals($this->sender['from_email']);
     verify($body['fromname'])->equals($this->sender['from_name']);
     verify($body['replyto'])->equals($this->replyTo['reply_to_email']);
@@ -110,7 +110,7 @@ class SendGridTest extends \MailPoetTest {
     );
     verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
-    expect($result['error']->getMessage())->stringContainsString('SendGrid has returned an unknown error.');
+    verify($result['error']->getMessage())->stringContainsString('SendGrid has returned an unknown error.');
   }
 
   public function testItCanSend() {

@@ -68,9 +68,9 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
     $disabledMailFunctionNotice = $this->generateNoticeWithMethodOverride(['isFunctionDisabled' => true]);
     $notice = $disabledMailFunctionNotice->init(true);
 
-    expect($notice)->stringContainsString('Get ready to send your first campaign');
-    expect($notice)->stringContainsString('Connect your website with MailPoet');
-    expect($notice)->stringContainsString('account.mailpoet.com/?s=50&amp;utm_source=mailpoet&amp;utm_medium=plugin&amp;utm_campaign=disabled_mail_function');
+    verify($notice)->stringContainsString('Get ready to send your first campaign');
+    verify($notice)->stringContainsString('Connect your website with MailPoet');
+    verify($notice)->stringContainsString('account.mailpoet.com/?s=50&amp;utm_source=mailpoet&amp;utm_medium=plugin&amp;utm_campaign=disabled_mail_function');
   }
 
   public function testItDoesNotDisplaysNoticeWhenMailFunctionIsEnabled() {
@@ -108,7 +108,7 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
     $disabledMailFunctionNotice = $this->generateNoticeWithMethodOverride(['sendTestMail' => false]);
     $notice = $disabledMailFunctionNotice->init(true);
 
-    expect($notice)->stringContainsString('Get ready to send your first campaign');
+    verify($notice)->stringContainsString('Get ready to send your first campaign');
 
     $status = $this->settings->get(DisabledMailFunctionNotice::DISABLED_MAIL_FUNCTION_CHECK, false);
     verify($status)->equals(true);
@@ -121,16 +121,16 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
     ]);
     $notice = $disabledMailFunctionNotice->init(true);
 
-    expect($notice)->stringContainsString('Get ready to send your first campaign');
+    verify($notice)->stringContainsString('Get ready to send your first campaign');
 
     $status = $this->settings->get(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
     verify($status)->equals(false);
 
     $secondNotice = $disabledMailFunctionNotice->init(true);
-    expect($secondNotice)->stringContainsString('Get ready to send your first campaign');
+    verify($secondNotice)->stringContainsString('Get ready to send your first campaign');
 
     $thirdNotice = $disabledMailFunctionNotice->init(true);
-    expect($thirdNotice)->stringContainsString('Get ready to send your first campaign');
+    verify($thirdNotice)->stringContainsString('Get ready to send your first campaign');
   }
 
   public function testItContinueDisplayingNoticeWhenMailFunctionIsMisConfigured() {
@@ -141,16 +141,16 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
 
     $notice = $disabledMailFunctionNotice->init(true);
 
-    expect($notice)->stringContainsString('Get ready to send your first campaign');
+    verify($notice)->stringContainsString('Get ready to send your first campaign');
 
     $status = $this->settings->get(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
     verify($status)->equals(false);
 
     $secondNotice = $disabledMailFunctionNotice->init(true);
-    expect($secondNotice)->stringContainsString('Get ready to send your first campaign');
+    verify($secondNotice)->stringContainsString('Get ready to send your first campaign');
 
     $thirdNotice = $disabledMailFunctionNotice->init(true);
-    expect($thirdNotice)->stringContainsString('Get ready to send your first campaign');
+    verify($thirdNotice)->stringContainsString('Get ready to send your first campaign');
   }
 
   public function testItClearsNoticeWhenSendingMethodIsChanged() {
@@ -160,16 +160,16 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
     ]);
     $notice = $disabledMailFunctionNotice->init(true);
 
-    expect($notice)->stringContainsString('Get ready to send your first campaign');
+    verify($notice)->stringContainsString('Get ready to send your first campaign');
 
     $status = $this->settings->get(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
     verify($status)->equals(false);
 
     $secondNotice = $disabledMailFunctionNotice->init(true);
-    expect($secondNotice)->stringContainsString('Get ready to send your first campaign');
+    verify($secondNotice)->stringContainsString('Get ready to send your first campaign');
 
     $thirdNotice = $disabledMailFunctionNotice->init(true);
-    expect($thirdNotice)->stringContainsString('Get ready to send your first campaign');
+    verify($thirdNotice)->stringContainsString('Get ready to send your first campaign');
 
     $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
 

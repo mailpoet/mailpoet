@@ -17,9 +17,9 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
     $this->createSubscribers(50);
 
     $result = $this->notice->init(true);
-    expect($result)->stringContainsString('Good news! MailPoet won’t send emails to your 50 inactive subscribers.');
-    expect($result)->stringContainsString('https://kb.mailpoet.com/article/264-inactive-subscribers');
-    expect($result)->stringContainsString('<a href="admin.php?page=mailpoet-settings#advanced" class="button button-primary">Go to the Advanced Settings</a>');
+    verify($result)->stringContainsString('Good news! MailPoet won’t send emails to your 50 inactive subscribers.');
+    verify($result)->stringContainsString('https://kb.mailpoet.com/article/264-inactive-subscribers');
+    verify($result)->stringContainsString('<a href="admin.php?page=mailpoet-settings#advanced" class="button button-primary">Go to the Advanced Settings</a>');
   }
 
   public function testItDoesntDisplayWhenDisabled() {
@@ -37,9 +37,9 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
     $settingsFactory->withDeactivateSubscriberAfter12Months();
 
     $result = $this->notice->init(true);
-    expect($result)->stringContainsString('Good news! MailPoet won’t send emails to your 50 inactive subscribers.');
-    expect($result)->stringContainsString('https://kb.mailpoet.com/article/264-inactive-subscribers');
-    expect($result)->stringContainsString('<a href="admin.php?page=mailpoet-settings#advanced" class="button button-primary">Go to the Advanced Settings</a>');
+    verify($result)->stringContainsString('Good news! MailPoet won’t send emails to your 50 inactive subscribers.');
+    verify($result)->stringContainsString('https://kb.mailpoet.com/article/264-inactive-subscribers');
+    verify($result)->stringContainsString('<a href="admin.php?page=mailpoet-settings#advanced" class="button button-primary">Go to the Advanced Settings</a>');
   }
 
   public function testItDoesntDisplayWhenInactiveTimeRangeChanged() {

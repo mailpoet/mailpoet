@@ -125,7 +125,7 @@ class NewslettersExporterTest extends \MailPoetTest {
 
     $result = $this->exporter->export('user1@with.newsletters');
     verify($result['data'][0]['data'][3]['name'])->equals('Email preview');
-    expect($result['data'][0]['data'][3]['value'])->stringContainsString('mailpoet_router&endpoint=view_in_browser&action=view&data=');
+    verify($result['data'][0]['data'][3]['value'])->stringContainsString('mailpoet_router&endpoint=view_in_browser&action=view&data=');
   }
 
   public function testExportOpens() {

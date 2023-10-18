@@ -40,8 +40,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error)->isInstanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_SEND);
     verify($error->getLevel())->equals(MailerError::LEVEL_SOFT);
-    expect($error->getMessage())->stringContainsString('unknown error');
-    expect($error->getMessage())->stringContainsString('MailPoet');
+    verify($error->getMessage())->stringContainsString('unknown error');
+    verify($error->getMessage())->stringContainsString('MailPoet');
   }
 
   public function testCreateConnectionError() {
@@ -78,7 +78,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error)->isInstanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_SEND);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->stringContainsString('MailPoet Sending Service has been temporarily suspended for your site due to');
+    verify($error->getMessage())->stringContainsString('MailPoet Sending Service has been temporarily suspended for your site due to');
   }
 
   public function testGetErrorInsufficientPrivileges(): void {
@@ -93,7 +93,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error)->isInstanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_INSUFFICIENT_PRIVILEGES);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->stringContainsString('You have reached the subscriber limit of your plan.');
+    verify($error->getMessage())->stringContainsString('You have reached the subscriber limit of your plan.');
   }
 
   public function testGetErrorSubscribersLimits(): void {
@@ -108,7 +108,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error)->isInstanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_SUBSCRIBER_LIMIT_REACHED);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->stringContainsString('You have reached the subscriber limit of your plan.');
+    verify($error->getMessage())->stringContainsString('You have reached the subscriber limit of your plan.');
   }
 
   public function testGetErrorUnauthorizedEmail() {
@@ -123,8 +123,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error)->isInstanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_AUTHORIZATION);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->stringContainsString('Sending all of your emails has been paused');
-    expect($error->getMessage())->stringContainsString('because your email address');
+    verify($error->getMessage())->stringContainsString('Sending all of your emails has been paused');
+    verify($error->getMessage())->stringContainsString('because your email address');
   }
 
   public function testGetErrorPayloadTooBig() {
@@ -195,8 +195,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error)->isInstanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_PENDING_APPROVAL);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->stringContainsString('pending approval');
-    expect($error->getMessage())->stringContainsString("You’ll soon be able to send once our team reviews your account.");
+    verify($error->getMessage())->stringContainsString('pending approval');
+    verify($error->getMessage())->stringContainsString("You’ll soon be able to send once our team reviews your account.");
   }
 
   public function testGetUnavailableServiceError() {
@@ -252,8 +252,8 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     expect($error)->isInstanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_EMAIL_LIMIT_REACHED);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    expect($error->getMessage())->stringContainsString('You have sent more emails this month than your MailPoet plan includes (1000),');
-    expect($error->getMessage())->stringContainsString('wait until sending is automatically resumed on 2023-01-31');
+    verify($error->getMessage())->stringContainsString('You have sent more emails this month than your MailPoet plan includes (1000),');
+    verify($error->getMessage())->stringContainsString('wait until sending is automatically resumed on 2023-01-31');
 
     // Check email volume error when the limit is unknown
     $this->mapper = new MailPoetMapper(
@@ -262,7 +262,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
       $wpFunctions
     );
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
-    expect($error->getMessage())->stringContainsString('You have sent more emails this month than your MailPoet plan includes,');
-    expect($error->getMessage())->stringContainsString('wait until sending is automatically resumed on 2023-01-31');
+    verify($error->getMessage())->stringContainsString('You have sent more emails this month than your MailPoet plan includes,');
+    verify($error->getMessage())->stringContainsString('wait until sending is automatically resumed on 2023-01-31');
   }
 }

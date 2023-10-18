@@ -253,7 +253,7 @@ class CronHelperTest extends \MailPoetTest {
 
   public function testItGetsSubsiteUrlOnMultisiteEnvironment() {
     if (is_multisite()) {
-      expect($this->cronHelper->getSiteUrl())->stringContainsString((string)getenv('WP_TEST_MULTISITE_SLUG'));
+      verify($this->cronHelper->getSiteUrl())->stringContainsString((string)getenv('WP_TEST_MULTISITE_SLUG'));
     }
   }
 
@@ -270,7 +270,7 @@ class CronHelperTest extends \MailPoetTest {
 
   public function testItAllowsSettingCustomCronUrl() {
     $filter = function($url) {
-      expect($url)->stringContainsString('&endpoint=cron');
+      verify($url)->stringContainsString('&endpoint=cron');
       return 'http://custom_cron_url';
     };
     add_filter('mailpoet_cron_request_url', $filter);

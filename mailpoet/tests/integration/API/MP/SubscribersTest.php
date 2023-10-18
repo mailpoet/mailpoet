@@ -505,9 +505,9 @@ class SubscribersTest extends \MailPoetTest {
       $this->getApi()->addSubscriber($subscriber);
       $this->fail('Failed to add subscriber exception should have been thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->stringContainsString('Failed to add subscriber:');
+      verify($e->getMessage())->stringContainsString('Failed to add subscriber:');
       // error message (converted to lowercase) returned by the model
-      expect($e->getMessage())->stringContainsString('value is not a valid email address.');
+      verify($e->getMessage())->stringContainsString('value is not a valid email address.');
     }
   }
 

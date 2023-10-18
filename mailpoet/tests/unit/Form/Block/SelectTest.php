@@ -77,21 +77,21 @@ class SelectTest extends \MailPoetUnitTest {
 
   public function testItRendersSelectBlock() {
     $rendered = $this->selectBlock->render($this->block, []);
-    expect($rendered)->stringContainsString(SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($rendered)->stringContainsString(SubscriberEntity::STATUS_UNSUBSCRIBED);
-    expect($rendered)->stringContainsString(SubscriberEntity::STATUS_BOUNCED);
+    verify($rendered)->stringContainsString(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($rendered)->stringContainsString(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($rendered)->stringContainsString(SubscriberEntity::STATUS_BOUNCED);
   }
 
   public function testItRendersSelectedOption() {
     $this->block['params']['values'][0]['is_checked'] = true;
     $rendered = $this->selectBlock->render($this->block, []);
-    expect($rendered)->stringContainsString('selected="selected"');
+    verify($rendered)->stringContainsString('selected="selected"');
   }
 
   public function testItRendersDisabledOptions() {
     $this->block['params']['values'][2]['is_disabled'] = true;
     $rendered = $this->selectBlock->render($this->block, []);
-    expect($rendered)->stringContainsString('disabled="disabled"');
+    verify($rendered)->stringContainsString('disabled="disabled"');
   }
 
   public function testItDoesNotRenderHiddenOptions() {

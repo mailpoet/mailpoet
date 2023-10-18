@@ -11,7 +11,7 @@ class RendererTest extends \MailPoetTest {
     $renderer = ContainerWrapper::getInstance()->get(Renderer::class);
     $this->assertInstanceOf(Renderer::class, $renderer);
     $formHtml = $renderer->renderBlocks($formBody);
-    expect($formHtml)->stringContainsString('<input type="email" name="data[email]"/>'); // honey pot
-    expect($formHtml)->stringContainsString('input type="submit" class="mailpoet_submit" value="Subscribe!"'); // Subscribe button
+    verify($formHtml)->stringContainsString('<input type="email" name="data[email]"/>'); // honey pot
+    verify($formHtml)->stringContainsString('input type="submit" class="mailpoet_submit" value="Subscribe!"'); // Subscribe button
   }
 }

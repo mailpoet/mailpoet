@@ -31,13 +31,13 @@ class RendererTest extends \MailPoetTest {
       'en',
       'noindex,nofollow'
     );
-    expect($rendered['html'])->stringContainsString('Subject');
-    expect($rendered['html'])->stringContainsString('Preheader content');
-    expect($rendered['html'])->stringContainsString('noindex,nofollow');
-    expect($rendered['html'])->stringContainsString('Hello!');
+    verify($rendered['html'])->stringContainsString('Subject');
+    verify($rendered['html'])->stringContainsString('Preheader content');
+    verify($rendered['html'])->stringContainsString('noindex,nofollow');
+    verify($rendered['html'])->stringContainsString('Hello!');
 
-    expect($rendered['text'])->stringContainsString('Preheader content');
-    expect($rendered['text'])->stringContainsString('Hello!');
+    verify($rendered['text'])->stringContainsString('Preheader content');
+    verify($rendered['text'])->stringContainsString('Hello!');
   }
 
   public function testItInlinesStyles() {
@@ -56,7 +56,7 @@ class RendererTest extends \MailPoetTest {
     }
     $this->assertInstanceOf(\DOMElement::class, $body);
     $style = $body->getAttribute('style');
-    expect($style)->stringContainsString('color:pink');
+    verify($style)->stringContainsString('color:pink');
     remove_filter('mailpoet_email_renderer_styles', $stylesCallback);
   }
 
@@ -72,7 +72,7 @@ class RendererTest extends \MailPoetTest {
     }
     $this->assertInstanceOf(\DOMElement::class, $body);
     $style = $body->getAttribute('style');
-    expect($style)->stringContainsString('font-family:Arial,\'Helvetica Neue\',Helvetica,sans-serif;');
+    verify($style)->stringContainsString('font-family:Arial,\'Helvetica Neue\',Helvetica,sans-serif;');
   }
 
   public function testItAppliesLayoutStyles() {
@@ -95,7 +95,7 @@ class RendererTest extends \MailPoetTest {
     }
     $this->assertInstanceOf(\DOMElement::class, $body);
     $style = $body->getAttribute('style');
-    expect($style)->stringContainsString('background:#123456');
+    verify($style)->stringContainsString('background:#123456');
 
     $xpath = new \DOMXPath($doc);
     $wrapper = null;
@@ -105,6 +105,6 @@ class RendererTest extends \MailPoetTest {
     }
     $this->assertInstanceOf(\DOMElement::class, $wrapper);
     $style = $wrapper->getAttribute('style');
-    expect($style)->stringContainsString('max-width: 123px');
+    verify($style)->stringContainsString('max-width: 123px');
   }
 }
