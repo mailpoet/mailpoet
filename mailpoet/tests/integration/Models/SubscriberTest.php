@@ -141,7 +141,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscriberUpdated = Subscriber::where('email', $this->testData['email'])
       ->findOne();
     $lastSubscribedAt = new Carbon($subscriberUpdated->lastUpdatedAt);
-    expect($lastSubscribedAt)->lessThan((new Carbon())->addSeconds(2));
+    verify($lastSubscribedAt)->lessThan((new Carbon())->addSeconds(2));
     verify($lastSubscribedAt)->greaterThan((new Carbon())->subSeconds(2));
 
     // Change to other status keeps last_updated_at

@@ -67,7 +67,7 @@ class DaemonRunTest extends \MailPoetTest {
 
     // Verify execution limit after run. floor(30 - some time taken by previous action) - 10s (safety execution timout margin)
     verify($this->daemonRun->getDaemonExecutionLimit())->greaterThan(0);
-    expect($this->daemonRun->getDaemonExecutionLimit())->lessThan(20);
+    verify($this->daemonRun->getDaemonExecutionLimit())->lessThan(20);
   }
 
   public function testItDoesNotContinueWhenThePreviousRunSuspiciouslyShort() {

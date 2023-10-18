@@ -105,9 +105,9 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['wpUserId' => $user->ID]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     verify($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
-    expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
+    verify($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
     verify($subscriber->getLastPageViewAt())->greaterThan(Carbon::now()->subMinute());
-    expect($subscriber->getLastPageViewAt())->lessThan(Carbon::now()->addMinute());
+    verify($subscriber->getLastPageViewAt())->lessThan(Carbon::now()->addMinute());
   }
 
   /**
@@ -146,7 +146,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     verify($result)->true();
     $this->entityManager->refresh($subscriber);
     verify($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
-    expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
+    verify($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
   }
 
   public function testItUpdatesSubscriberEngagementForWpUserEvenWithDisabledCookieTracking() {
@@ -165,7 +165,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     verify($result)->true();
     $this->entityManager->refresh($subscriber);
     verify($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
-    expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
+    verify($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
   }
 
   public function testItDoesntTrackWhenCookieTrackingIsDisabledAndThereInNoWPUser() {

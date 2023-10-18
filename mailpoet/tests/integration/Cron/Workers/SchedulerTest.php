@@ -714,7 +714,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler->processScheduledStandardNewsletter($newsletter, $queue);
     $refetchedTask = $this->scheduledTasksRepository->findOneById($task->getId());
     $this->assertInstanceOf(ScheduledTaskEntity::class, $refetchedTask);
-    expect($refetchedTask->getScheduledAt())->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(1));
+    verify($refetchedTask->getScheduledAt())->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(1));
   }
 
   /**
