@@ -10,13 +10,13 @@ use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TopLevelPreprocessor;
 class PreprocessManagerTest extends \MailPoetUnitTest {
   public function testItCallsPreprocessorsProperly(): void {
     $layoutStyles = [
-      'width' => 600,
+      'width' => '600px',
       'background' => '#ffffff',
       'padding' => [
-        'bottom' => 0,
-        'left' => 0,
-        'right' => 0,
-        'top' => 0,
+        'bottom' => '0px',
+        'left' => '0px',
+        'right' => '0px',
+        'top' => '0px',
       ],
     ];
     $topLevel = $this->createMock(TopLevelPreprocessor::class);

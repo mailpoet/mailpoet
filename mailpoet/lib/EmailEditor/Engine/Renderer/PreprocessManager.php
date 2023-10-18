@@ -23,7 +23,7 @@ class PreprocessManager {
 
   /**
    * @param array $parsedBlocks
-   * @param array{width: int, background: string, padding: array{bottom: int, left: int, right: int, top: int}} $layoutStyles
+   * @param array{width: string, background: string, padding: array{bottom: string, left: string, right: string, top: string}} $layoutStyles
    * @return array
    */
   public function preprocess(array $parsedBlocks, array $layoutStyles): array {
