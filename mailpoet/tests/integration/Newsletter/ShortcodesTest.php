@@ -103,7 +103,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcodesObject = $this->shortcodesObject;
     $shortcode = ['[some:shortcode arg1="val1" arg2="val2"]']; // WP style arguments
     $result = $shortcodesObject->process($shortcode);
-    expect($result[0])->false();
+    verify($result[0])->false();
     add_filter(
       'mailpoet_newsletter_shortcode',
       function($shortcode, $newsletter, $subscriber, $queue, $content, $arguments) {

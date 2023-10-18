@@ -353,7 +353,7 @@ class SendingQueueTest extends \MailPoetTest {
     // queue no longer exists
     $this->sendingQueueWorker->process();
     $queue = SendingQueue::findOne($this->queue->id);
-    expect($queue)->false();
+    verify($queue)->false();
   }
 
   public function testItPassesExtraParametersToMailerWhenTrackingIsDisabled() {

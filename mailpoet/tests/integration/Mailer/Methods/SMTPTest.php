@@ -136,7 +136,7 @@ class SMTPTest extends \MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    expect($result['response'])->false();
+    verify($result['response'])->false();
   }
 
   public function testItAppliesSMTPOptionsFilter() {
@@ -189,7 +189,7 @@ class SMTPTest extends \MailPoetTest {
       $this->newsletter,
       $blacklistedSubscriber
     );
-    expect($result['response'])->false();
+    verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
     expect($result['error']->getMessage())->stringContainsString('SMTP has returned an unknown error.');
   }

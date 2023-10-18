@@ -30,7 +30,7 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
     $subscriberCustomField->value = $this->data[0]['value'];
     $subscriberCustomField->save();
     expect($subscriberCustomField->id())->greaterOrEquals(1);
-    expect($subscriberCustomField->getErrors())->false();
+    verify($subscriberCustomField->getErrors())->false();
   }
 
   public function testItCanCreateMultipleRecords() {

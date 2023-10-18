@@ -34,16 +34,16 @@ class MailChimpTest extends \MailPoetTest {
   public function testItCanGetAPIKey(): void {
     $validApiKeyFormat = '12345678901234567890123456789012-ab1';
     // key must consist of two parts separated by hyphen
-    expect($this->mailchimp->getAPIKey('invalid_api_key_format'))->false();
+    verify($this->mailchimp->getAPIKey('invalid_api_key_format'))->false();
     // key must only contain numerals and letters
-    expect($this->mailchimp->getAPIKey('12345678901234567890123456789012-@?1'))->false();
+    verify($this->mailchimp->getAPIKey('12345678901234567890123456789012-@?1'))->false();
     // the first part of the key must contain 32 characters,
-    expect($this->mailchimp->getAPIKey('1234567890123456789012345678901-123'))
+    verify($this->mailchimp->getAPIKey('1234567890123456789012345678901-123'))
       ->false();
     // the second part must contain 2-4 characters
-    expect($this->mailchimp->getAPIKey('12345678901234567890123456789012-12345'))
+    verify($this->mailchimp->getAPIKey('12345678901234567890123456789012-12345'))
       ->false();
-    expect($this->mailchimp->getAPIKey('12345678901234567890123456789012-1'))
+    verify($this->mailchimp->getAPIKey('12345678901234567890123456789012-1'))
       ->false();
     verify($this->mailchimp->getAPIKey($validApiKeyFormat))
       ->equals($validApiKeyFormat);
@@ -139,7 +139,7 @@ class MailChimpTest extends \MailPoetTest {
         'avg_click_rate' => 0.05,
       ],
     ];
-    expect($this->mailchimp->isSubscriberAllowed($unsubscribed))->false();
+    verify($this->mailchimp->isSubscriberAllowed($unsubscribed))->false();
 
     $badRate = [
       'email_address' => 'test@user.com',
@@ -150,7 +150,7 @@ class MailChimpTest extends \MailPoetTest {
         'avg_click_rate' => 0.002,
       ],
     ];
-    expect($this->mailchimp->isSubscriberAllowed($badRate))->false();
+    verify($this->mailchimp->isSubscriberAllowed($badRate))->false();
 
     $badRating = [
       'email_address' => 'test@user.com',
@@ -161,7 +161,7 @@ class MailChimpTest extends \MailPoetTest {
         'avg_click_rate' => 0.1,
       ],
     ];
-    expect($this->mailchimp->isSubscriberAllowed($badRating))->false();
+    verify($this->mailchimp->isSubscriberAllowed($badRating))->false();
   }
 
   public function testItAllowsConvenientSubscribers(): void {

@@ -352,7 +352,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItDoesNotDisplayManageSubscriptionFormForLoggedOutUsers() {
     wp_set_current_user(0);
-    expect((new WPFunctions)->isUserLoggedIn())->false();
+    verify((new WPFunctions)->isUserLoggedIn())->false();
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
@@ -388,7 +388,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItDoesNotDisplayManageSubscriptionPageForLoggedOutUsers() {
     wp_set_current_user(0);
-    expect((new WPFunctions)->isUserLoggedIn())->false();
+    verify((new WPFunctions)->isUserLoggedIn())->false();
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();

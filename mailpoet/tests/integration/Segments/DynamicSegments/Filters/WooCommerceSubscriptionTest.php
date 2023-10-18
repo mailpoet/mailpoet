@@ -65,7 +65,7 @@ class WooCommerceSubscriptionTest extends \MailPoetTest {
     );
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->wooCommerceSubscriptionFilter);
     expect($emails)->count(3);
-    expect(in_array($notToBeFoundEmail, $emails))->false();
+    verify(in_array($notToBeFoundEmail, $emails))->false();
     $this->tester->deleteWordPressUser($notToBeFoundEmail);
   }
 

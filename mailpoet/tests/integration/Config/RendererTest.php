@@ -58,7 +58,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItReturnsFalseAssetManifestDoesNotExist() {
-    expect($this->renderer->getAssetManifest(Env::$tempPath . '/js.json'))->false();
+    verify($this->renderer->getAssetManifest(Env::$tempPath . '/js.json'))->false();
   }
 
   public function testItCanGetCssAsset() {

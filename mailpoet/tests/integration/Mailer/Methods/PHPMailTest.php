@@ -142,7 +142,7 @@ class PHPMailTest extends \MailPoetTest {
       $this->newsletter,
       $blacklistedSubscriber
     );
-    expect($result['response'])->false();
+    verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
     expect($result['error']->getMessage())->stringContainsString('PHPMail has returned an unknown error.');
   }
@@ -162,6 +162,6 @@ class PHPMailTest extends \MailPoetTest {
     // caused an override.
     $this->mailer->mailer::$validator = 'php';
     $result = $this->mailer->mailer::validateAddress('john.@doe.com');
-    expect($result)->false();
+    verify($result)->false();
   }
 }

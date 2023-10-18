@@ -70,8 +70,8 @@ class ConnectionFactoryTest extends \MailPoetTest {
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
     $params = $connection->getParams();
-    expect(isset($params['host']))->false();
-    expect(isset($params['port']))->false();
+    verify(isset($params['host']))->false();
+    verify(isset($params['port']))->false();
     verify($params['unix_socket'])->equals('socket');
   }
 

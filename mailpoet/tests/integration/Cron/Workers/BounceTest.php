@@ -92,7 +92,7 @@ class BounceTest extends \MailPoetTest {
   }
 
   public function testItRequiresMailPoetMethodToBeSetUp() {
-    expect($this->worker->checkProcessingRequirements())->false();
+    verify($this->worker->checkProcessingRequirements())->false();
     $this->setMailPoetSendingMethod();
     verify($this->worker->checkProcessingRequirements())->true();
   }

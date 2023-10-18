@@ -656,8 +656,8 @@ class NewslettersTest extends \MailPoetTest {
     parse_str((string)parse_url($previewLink, PHP_URL_QUERY), $previewLinkData);
     $previewLinkData = $this->newsletterUrl->transformUrlDataObject(Router::decodeRequestData($previewLinkData['data']));
     expect($previewLinkData['newsletter_hash'])->notEmpty();
-    expect($previewLinkData['subscriber_id'])->false();
-    expect($previewLinkData['subscriber_token'])->false();
+    verify($previewLinkData['subscriber_id'])->false();
+    verify($previewLinkData['subscriber_token'])->false();
     verify((boolean)$previewLinkData['preview'])->true();
   }
 

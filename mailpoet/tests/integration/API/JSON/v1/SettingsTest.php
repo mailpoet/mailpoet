@@ -161,7 +161,7 @@ class SettingsTest extends \MailPoetTest {
     $response = $this->endpoint->setAuthorizedFromAddress(['address' => 'authorized@email.com']);
     expect($response->status)->same(200);
     expect($this->settings->get('sender.address'))->same('authorized@email.com');
-    expect(MailerLog::isSendingPaused())->false();
+    verify(MailerLog::isSendingPaused())->false();
   }
 
   public function testItSaveUnauthorizedAddressAndReturnsMeta() {

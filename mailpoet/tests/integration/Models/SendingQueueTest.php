@@ -93,7 +93,7 @@ class SendingQueueTest extends \MailPoetTest {
     $queue = SendingQueue::findOne($queue->id);
     $this->assertInstanceOf(SendingQueue::class, $queue);
 
-    expect(Helpers::isJson($queue->meta))->false();
+    verify(Helpers::isJson($queue->meta))->false();
     verify($queue->meta)->equals($meta);
   }
 

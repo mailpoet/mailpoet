@@ -31,7 +31,7 @@ class SubscribersTest extends \MailPoetUnitTest {
       'premium_subscribers_limit' => 500,
       'mss_subscribers_limit' => 500,
     ]);
-    expect($subscribersFeature->check())->false();
+    verify($subscribersFeature->check())->false();
   }
 
   public function testCheckReturnsTrueIfNewUserReachedLimit() {
@@ -68,7 +68,7 @@ class SubscribersTest extends \MailPoetUnitTest {
       'premium_subscribers_limit' => 500,
       'mss_subscribers_limit' => 500,
     ]);
-    expect($subscribersFeature->check())->false();
+    verify($subscribersFeature->check())->false();
   }
 
   public function testCheckReturnsFalseIfMSSKeyExistsAndDidntReachLimit() {
@@ -80,7 +80,7 @@ class SubscribersTest extends \MailPoetUnitTest {
       'premium_subscribers_limit' => 500,
       'mss_subscribers_limit' => 3500,
     ]);
-    expect($subscribersFeature->check())->false();
+    verify($subscribersFeature->check())->false();
   }
 
   public function testCheckReturnsTrueIfMSSKeyExistsAndReachedLimit() {
@@ -116,7 +116,7 @@ class SubscribersTest extends \MailPoetUnitTest {
       'premium_subscribers_limit' => 500,
       'mss_subscribers_limit' => 500,
     ]);
-    expect($subscribersFeature->check())->false();
+    verify($subscribersFeature->check())->false();
   }
 
   public function testCheckReturnsFalseIfPremiumKeyExistsAndDidntReachLimit() {
@@ -128,7 +128,7 @@ class SubscribersTest extends \MailPoetUnitTest {
       'premium_subscribers_limit' => 3500,
       'mss_subscribers_limit' => 500,
     ]);
-    expect($subscribersFeature->check())->false();
+    verify($subscribersFeature->check())->false();
   }
 
   public function testCheckReturnsTrueIfPremiumKeyExistsAndReachedLimit() {
@@ -152,7 +152,7 @@ class SubscribersTest extends \MailPoetUnitTest {
       'premium_subscribers_limit' => false,
       'mss_subscribers_limit' => false,
     ]);
-    expect($subscribersFeature->check())->false();
+    verify($subscribersFeature->check())->false();
   }
 
   public function testCheckReturnsFalseIfMSSKeyExistsButLimitMissing() {
@@ -164,7 +164,7 @@ class SubscribersTest extends \MailPoetUnitTest {
       'premium_subscribers_limit' => false,
       'mss_subscribers_limit' => false,
     ]);
-    expect($subscribersFeature->check())->false();
+    verify($subscribersFeature->check())->false();
   }
 
   public function testCheckReturnsTrueIfPremiumSupportAndReachedLimit() {

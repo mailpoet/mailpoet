@@ -40,7 +40,7 @@ class SubscriberTest extends \MailPoetTest {
 
   public function testItCanBeCreated() {
     verify($this->saved->id() > 0)->true();
-    expect($this->saved->getErrors())->false();
+    verify($this->saved->getErrors())->false();
   }
 
   public function testItHasFirstName() {
@@ -120,7 +120,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber->save();
 
     verify($subscriber->id() > 0)->true();
-    expect($subscriber->getErrors())->false();
+    verify($subscriber->getErrors())->false();
     $subscriberUpdated = Subscriber::where('email', $this->testData['email'])
       ->findOne();
     verify($subscriberUpdated->status)->equals(Subscriber::STATUS_SUBSCRIBED);
@@ -285,7 +285,7 @@ class SubscriberTest extends \MailPoetTest {
     $segment = Segment::createOrUpdate([
       'name' => 'some name',
     ]);
-    expect($segment->getErrors())->false();
+    verify($segment->getErrors())->false();
 
     $association = SubscriberSegment::create();
     $association->subscriberId = $this->subscriber->id;
@@ -431,7 +431,7 @@ class SubscriberTest extends \MailPoetTest {
     ];
     $result = Subscriber::createOrUpdate($data);
     verify($result->id() > 0)->true();
-    expect($result->getErrors())->false();
+    verify($result->getErrors())->false();
 
     $record = Subscriber::where('email', $data['email'])
       ->findOne();
@@ -854,7 +854,7 @@ class SubscriberTest extends \MailPoetTest {
         'email' => 'new.subscriber@example.com',
       ]
     );
-    expect($result->getErrors())->false();
+    verify($result->getErrors())->false();
     expect($result->firstName)->isEmpty();
     expect($result->lastName)->isEmpty();
     verify($result->status)->equals(Subscriber::STATUS_UNCONFIRMED);
@@ -867,7 +867,7 @@ class SubscriberTest extends \MailPoetTest {
         'email' => $existingSubscriberData['email'],
       ]
     );
-    expect($result->getErrors())->false();
+    verify($result->getErrors())->false();
     verify($result->firstName)->equals($this->testData['first_name']);
     verify($result->lastName)->equals($this->testData['last_name']);
   }

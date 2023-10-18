@@ -46,7 +46,7 @@ class SchedulerTest extends \MailPoetTest {
     verify($this->testee->getNextRunDate('* * * * *'))
       ->equals($currentTime->addMinute()->format('Y-m-d H:i:00'));
     // when invalid CRON expression is used, false response is returned
-    expect($this->testee->getNextRunDate('invalid CRON expression'))->false();
+    verify($this->testee->getNextRunDate('invalid CRON expression'))->false();
   }
 
   public function testItCanGetPreviousRunDate() {
@@ -56,7 +56,7 @@ class SchedulerTest extends \MailPoetTest {
     verify($this->testee->getPreviousRunDate('* * * * *'))
       ->equals($currentTime->subMinute()->format('Y-m-d H:i:00'));
     // when invalid CRON expression is used, false response is returned
-    expect($this->testee->getPreviousRunDate('invalid CRON expression'))->false();
+    verify($this->testee->getPreviousRunDate('invalid CRON expression'))->false();
   }
 
   public function testItFormatsDatetimeString() {

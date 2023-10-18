@@ -53,11 +53,11 @@ class BridgeTest extends \MailPoetTest {
 
   public function testMPCheckReturnsFalseWhenMailerThrowsException() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, '');
-    expect(Bridge::isMPSendingServiceEnabled())->false();
+    verify(Bridge::isMPSendingServiceEnabled())->false();
   }
 
   public function testItChecksIfPremiumKeyIsSpecified() {
-    expect(Bridge::isPremiumKeySpecified())->false();
+    verify(Bridge::isPremiumKeySpecified())->false();
     $this->fillPremiumKey();
     verify(Bridge::isPremiumKeySpecified())->true();
   }
@@ -378,7 +378,7 @@ class BridgeTest extends \MailPoetTest {
   public function testItCanCreateSenderDomain() {
     $result = $this->bridge->createAuthorizedSenderDomain('mailpoet.com');
     expect($result)->notEmpty();
-    expect(isset($result['error']))->false();
+    verify(isset($result['error']))->false();
     verify($result[0]['host'])->equals('mailpoet1._domainkey.example.com');
   }
 

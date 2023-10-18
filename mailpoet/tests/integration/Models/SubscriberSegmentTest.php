@@ -247,7 +247,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
       'status' => Subscriber::STATUS_SUBSCRIBED,
     ]);
     verify($result->id > 0)->true();
-    expect($result->getErrors())->false();
+    verify($result->getErrors())->false();
 
     // check that we have the proper status
     $created = SubscriberSegment::findOne($result->id);
@@ -261,7 +261,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
       'status' => Subscriber::STATUS_UNSUBSCRIBED,
     ]);
     verify($result->id > 0)->true();
-    expect($result->getErrors())->false();
+    verify($result->getErrors())->false();
 
     // check updated status
     $updated = SubscriberSegment::findOne($created->id);

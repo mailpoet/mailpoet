@@ -123,7 +123,7 @@ class RouterTest extends \MailPoetTest {
       ]
     );
     $router->accessControl = $accessControl;
-    expect($router->validatePermissions(null, $permissions))->false();
+    verify($router->validatePermissions(null, $permissions))->false();
 
     $accessControl = Stub::make(
       new AccessControl(),
@@ -158,7 +158,7 @@ class RouterTest extends \MailPoetTest {
       ]
     );
     $router->accessControl = $accessControl;
-    expect($router->validatePermissions('test', $permissions))->false();
+    verify($router->validatePermissions('test', $permissions))->false();
 
     $accessControl = Stub::make(
       new AccessControl(),

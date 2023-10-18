@@ -193,7 +193,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    expect($result['response'])->false();
+    verify($result['response'])->false();
   }
 
   public function testItCannotSendWithoutProperApiKey() {
@@ -203,7 +203,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    expect($result['response'])->false();
+    verify($result['response'])->false();
   }
 
   public function testItCanSend() {
@@ -225,7 +225,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this
     );
     $result = $this->mailer->send($this->newsletter, $this->subscriber);
-    expect($result['response'])->false();
+    verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
     verify($result['error']->getOperation())->equals(MailerError::OPERATION_CONNECT);
   }
@@ -241,7 +241,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this
     );
     $result = $this->mailer->send($this->newsletter, $this->subscriber);
-    expect($result['response'])->false();
+    verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
     verify($result['error']->getOperation())->equals(MailerError::OPERATION_SEND);
   }
@@ -257,7 +257,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this
     );
     $result = $this->mailer->send($this->newsletter, $this->subscriber);
-    expect($result['response'])->false();
+    verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
   }
 
@@ -272,7 +272,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this
     );
     $result = $this->mailer->send([$this->newsletter, $this->newsletter], ['a@example.com', 'c d <b@example.com>']);
-    expect($result['response'])->false();
+    verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
     verify($result['error']->getOperation())->equals(MailerError::OPERATION_SEND);
   }
@@ -288,7 +288,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this
     );
     $result = $this->mailer->send([$this->newsletter, $this->newsletter], ['a@example.com', 'c d <b@example.com>']);
-    expect($result['response'])->false();
+    verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
     verify($result['error']->getOperation())->equals(MailerError::OPERATION_SEND);
   }
@@ -335,7 +335,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->newsletter,
       $blacklistedSubscriber
     );
-    expect($result['response'])->false();
+    verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
     expect($result['error']->getMessage())->stringContainsString('unknown error');
     expect($result['error']->getMessage())->stringContainsString('MailPoet has returned an unknown error.');
@@ -361,7 +361,7 @@ class MailPoetAPITest extends \MailPoetTest {
       $this->newsletter,
       ['good@example.com', $blacklistedSubscriber, 'good2@example.com']
     );
-    expect($result['response'])->false();
+    verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
     expect($result['error']->getMessage())->stringContainsString('unknown error');
     expect($result['error']->getMessage())->stringContainsString('MailPoet has returned an unknown error.');

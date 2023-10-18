@@ -32,13 +32,13 @@ class ServicesCheckerTest extends \MailPoetTest {
   public function testItForciblyChecksMSSKeyIfMPSendingServiceIsDisabled() {
     $this->disableMailPoetSendingMethod();
     $result = $this->servicesChecker->isMailPoetAPIKeyValid(false, true);
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItReturnsFalseIfMSSKeyIsNotSpecified() {
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, '');
     $result = $this->servicesChecker->isMailPoetAPIKeyValid();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItReturnsTrueIfMSSKeyIsValid() {
@@ -56,7 +56,7 @@ class ServicesCheckerTest extends \MailPoetTest {
       ['state' => Bridge::KEY_INVALID]
     );
     $result = $this->servicesChecker->isMailPoetAPIKeyValid();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItReturnsTrueIfMSSKeyIsExpiring() {
@@ -79,7 +79,7 @@ class ServicesCheckerTest extends \MailPoetTest {
       ]
     );
     $result = $this->servicesChecker->isMailPoetAPIKeyValid();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItReturnsFalseIfMSSKeyStateIsEmpty() {
@@ -90,13 +90,13 @@ class ServicesCheckerTest extends \MailPoetTest {
       ]
     );
     $result = $this->servicesChecker->isMailPoetAPIKeyValid();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItReturnsFalseIfPremiumKeyIsNotSpecified() {
     $this->clearPremiumKey();
     $result = $this->servicesChecker->isPremiumKeyValid();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItReturnsTrueIfPremiumKeyIsValid() {
@@ -114,7 +114,7 @@ class ServicesCheckerTest extends \MailPoetTest {
       ['state' => Bridge::KEY_INVALID]
     );
     $result = $this->servicesChecker->isPremiumKeyValid();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItReturnsFalseIfPremiumKeyIsAlreadyUsed() {
@@ -123,7 +123,7 @@ class ServicesCheckerTest extends \MailPoetTest {
       ['state' => Bridge::KEY_ALREADY_USED]
     );
     $result = $this->servicesChecker->isPremiumKeyValid();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItReturnsTrueIfPremiumKeyIsExpiring() {
@@ -146,7 +146,7 @@ class ServicesCheckerTest extends \MailPoetTest {
       ]
     );
     $result = $this->servicesChecker->isPremiumKeyValid();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItReturnsFalseIfPremiumKeyStateIsEmpty() {
@@ -157,7 +157,7 @@ class ServicesCheckerTest extends \MailPoetTest {
       ]
     );
     $result = $this->servicesChecker->isPremiumKeyValid();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItReturnsAnyValidKey() {
@@ -273,7 +273,7 @@ class ServicesCheckerTest extends \MailPoetTest {
       ]
     );
     $result = $this->servicesChecker->isUserActivelyPaying();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItReturnsFalseIfUserIsNotActivelyPayingButUsingMss() {
@@ -286,7 +286,7 @@ class ServicesCheckerTest extends \MailPoetTest {
     );
 
     $result = $this->servicesChecker->isUserActivelyPaying();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItReturnsTrueIfUserIsActivelyPayingAndUsingMss() {
@@ -314,7 +314,7 @@ class ServicesCheckerTest extends \MailPoetTest {
 
   public function testItReturnsFalseIfNoSubscriptionTypeOrNotBundled() {
     $result = $this->servicesChecker->isBundledSubscription();
-    expect($result)->false();
+    verify($result)->false();
 
     $this->settings->set(
       Bridge::SUBSCRIPTION_TYPE_SETTING_NAME,
@@ -322,7 +322,7 @@ class ServicesCheckerTest extends \MailPoetTest {
     );
 
     $result = $this->servicesChecker->isBundledSubscription();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   private function setMailPoetSendingMethod() {

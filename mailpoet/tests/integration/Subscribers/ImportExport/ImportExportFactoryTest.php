@@ -153,7 +153,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       verify(in_array($field, array_keys($formattedSubscriberFields[0])))
         ->true();
     }
-    expect($formattedSubscriberFields[0]['custom'])->false();
+    verify($formattedSubscriberFields[0]['custom'])->false();
   }
 
   public function testItCanGetSubscriberCustomFields() {

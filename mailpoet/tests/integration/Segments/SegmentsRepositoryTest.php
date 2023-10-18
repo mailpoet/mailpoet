@@ -116,7 +116,7 @@ class SegmentsRepositoryTest extends \MailPoetTest {
   public function testItCanCheckForUniqueNames(): void {
     $this->createDefaultSegment('Test');
     $this->segmentsRepository->flush();
-    expect($this->segmentsRepository->isNameUnique('Test', null))->false();
+    verify($this->segmentsRepository->isNameUnique('Test', null))->false();
     verify($this->segmentsRepository->isNameUnique('Unique Name', null))->true();
   }
 

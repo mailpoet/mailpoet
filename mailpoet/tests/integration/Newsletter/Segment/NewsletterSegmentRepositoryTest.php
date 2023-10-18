@@ -68,7 +68,7 @@ class NewsletterSegmentRepositoryTest extends \MailPoetTest {
       $segmentWithMultipleActiveEmails->getId(),
     ]);
 
-    expect(isset($usedSegments[$unusedSegment->getId()]))->false();
+    verify(isset($usedSegments[$unusedSegment->getId()]))->false();
     verify($usedSegments[$dynamicWithScheduledNewsletter->getId()])->equals(['Scheduled']);
     verify($usedSegments[$segmentWithSendingEmail->getId()])->equals(['Sending']);
     verify($usedSegments[$segmentWithAutomaticEmail->getId()])->equals(['Automatic']);

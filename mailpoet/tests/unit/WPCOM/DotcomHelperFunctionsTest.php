@@ -12,7 +12,7 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
   }
 
   public function testItReturnsFalseIfNotDotcom() {
-    expect($this->dotcomHelper->isDotcom())->false();
+    verify($this->dotcomHelper->isDotcom())->false();
   }
 
   public function testItReturnsTrueIfDotcom() {

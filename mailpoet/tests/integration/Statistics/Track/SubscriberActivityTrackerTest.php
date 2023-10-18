@@ -176,7 +176,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 180; // 3 minutes ago
     $this->setPageViewCookieTimestamp($oldPageViewTimestamp);
     $this->setSubscriberCookieSubscriber($subscriber);
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItDoesntTrackWhenCalledWithinAMinute() {
@@ -186,7 +186,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 50; // 50 seconds  ago
     $this->setPageViewCookieTimestamp($oldPageViewTimestamp);
     $this->setSubscriberCookieSubscriber($subscriber);
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItDoesntTrackWhenCantDetermineSubscriber() {
@@ -195,7 +195,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 180; // 3 minutes  ago
     $this->setPageViewCookieTimestamp($oldPageViewTimestamp);
     $this->setSubscriberCookieSubscriber(null);
-    expect($result)->false();
+    verify($result)->false();
   }
 
   private function createSubscriber(): SubscriberEntity {

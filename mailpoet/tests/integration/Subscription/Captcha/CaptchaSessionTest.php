@@ -32,8 +32,8 @@ class CaptchaSessionTest extends \MailPoetTest {
     $this->captchaSession->setFormData(['email' => 'email@example.com']);
     $this->captchaSession->setCaptchaHash('hash123');
     $this->captchaSession->reset();
-    expect($this->captchaSession->getFormData())->false();
-    expect($this->captchaSession->getCaptchaHash())->false();
+    verify($this->captchaSession->getFormData())->false();
+    verify($this->captchaSession->getCaptchaHash())->false();
   }
 
   public function testItAssociatesDataWithSession() {
@@ -41,7 +41,7 @@ class CaptchaSessionTest extends \MailPoetTest {
     $this->captchaSession->setCaptchaHash($hash);
     verify($this->captchaSession->getCaptchaHash())->equals($hash);
     $this->captchaSession->init();
-    expect($this->captchaSession->getCaptchaHash())->false();
+    verify($this->captchaSession->getCaptchaHash())->false();
     $this->captchaSession->init(self::SESSION_ID);
     verify($this->captchaSession->getCaptchaHash())->equals($hash);
   }

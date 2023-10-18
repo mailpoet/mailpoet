@@ -36,7 +36,7 @@ class CronTriggerTest extends \MailPoetUnitTest {
       'get' => CronTrigger::METHOD_WORDPRESS,
     ]);
     $cronTrigger = $this->createCronTrigger($settingsMock);
-    expect($cronTrigger->init('cli'))->false();
+    verify($cronTrigger->init('cli'))->false();
   }
 
   public function testItReturnsFalseWhenItCantInitializeCronTriggerMethod() {
@@ -44,7 +44,7 @@ class CronTriggerTest extends \MailPoetUnitTest {
       'get' => 'unknown-method',
     ]);
     $cronTrigger = $this->createCronTrigger($settingsMock);
-    expect($cronTrigger->init())->false();
+    verify($cronTrigger->init())->false();
   }
 
   public function testItIgnoresExceptionsThrownFromCronTriggerMethods() {

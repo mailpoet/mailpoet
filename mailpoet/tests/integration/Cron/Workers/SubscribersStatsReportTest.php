@@ -50,7 +50,7 @@ class SubscribersStatsReportTest extends \MailPoetTest {
     $this->servicesCheckerMock->expects($this->once())
       ->method('getValidAccountKey')
       ->willReturn(null);
-    expect($this->worker->checkProcessingRequirements())->false();
+    verify($this->worker->checkProcessingRequirements())->false();
   }
 
   public function testItSucceedsRequirementsCheckIfThereIsValidKey() {
@@ -80,7 +80,7 @@ class SubscribersStatsReportTest extends \MailPoetTest {
       ->willReturn(null);
     $this->countReporerMock->expects($this->never())
       ->method('report');
-    expect($this->worker->processTaskStrategy($task, $timer))->false();
+    verify($this->worker->processTaskStrategy($task, $timer))->false();
   }
 
   public function testItRescheduleTaskInCaseTheStatsReportFailed() {
@@ -94,7 +94,7 @@ class SubscribersStatsReportTest extends \MailPoetTest {
       ->willReturn(false);
     $this->schedulerMock->expects($this->once())
       ->method('rescheduleProgressively');
-    expect($this->worker->processTaskStrategy($task, $timer))->false();
+    verify($this->worker->processTaskStrategy($task, $timer))->false();
   }
 
   public function testItGeneratesRandomNextRunDate() {

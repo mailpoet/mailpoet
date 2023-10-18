@@ -207,7 +207,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
   public function testItLimitsNumberOfConfirmationEmailsForNotLoggedInUser() {
     wp_set_current_user(0);
-    expect((new WPFunctions)->isUserLoggedIn())->false();
+    verify((new WPFunctions)->isUserLoggedIn())->false();
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' => function() {

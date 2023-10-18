@@ -66,7 +66,7 @@ class FunctionsTest extends \MailPoetTest {
     $called = false;
     $this->wp->removeAction($this->action, $callback);
     $this->wp->doAction($this->action);
-    expect($called)->false();
+    verify($called)->false();
   }
 
   public function testItCanProcessFilters() {
@@ -88,7 +88,7 @@ class FunctionsTest extends \MailPoetTest {
     $called = false;
     $this->wp->removeFilter($this->filter, $callback);
     $this->wp->applyFilters($this->filter, $testValue);
-    expect($called)->false();
+    verify($called)->false();
   }
 
   public function testPluginisNotUninstallablePlugin() {

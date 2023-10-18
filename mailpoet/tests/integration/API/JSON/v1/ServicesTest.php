@@ -157,7 +157,7 @@ class ServicesTest extends \MailPoetTest {
 
   public function testItDoesNotPauseSendingWhenMSSKeyValidAndApproved() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
-    expect(MailerLog::isSendingPaused())->false();
+    verify(MailerLog::isSendingPaused())->false();
 
     $bridge = $this->make(
       Bridge::class,
@@ -173,12 +173,12 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect(MailerLog::isSendingPaused())->false();
+    verify(MailerLog::isSendingPaused())->false();
   }
 
   public function testItPausesSendingWhenMSSKeyValidButNotApproved() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
-    expect(MailerLog::isSendingPaused())->false();
+    verify(MailerLog::isSendingPaused())->false();
 
     $bridge = $this->make(
       Bridge::class,
@@ -221,7 +221,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect(MailerLog::isSendingPaused())->false();
+    verify(MailerLog::isSendingPaused())->false();
   }
 
   public function testItRespondsWithErrorIfNoPremiumKeyIsGiven() {

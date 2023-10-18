@@ -82,15 +82,15 @@ class TrackTest extends \MailPoetTest {
     // queue ID is required
     $data = $this->trackData;
     unset($data['queue_id']);
-    expect($this->track->_processTrackData($data))->false();
+    verify($this->track->_processTrackData($data))->false();
     // subscriber ID is required
     $data = $this->trackData;
     unset($data['subscriber_id']);
-    expect($this->track->_processTrackData($data))->false();
+    verify($this->track->_processTrackData($data))->false();
     // subscriber token is required
     $data = $this->trackData;
     unset($data['subscriber_token']);
-    expect($this->track->_processTrackData($data))->false();
+    verify($this->track->_processTrackData($data))->false();
   }
 
   public function testItFailsWhenSubscriberTokenDoesNotMatch() {
@@ -132,7 +132,7 @@ class TrackTest extends \MailPoetTest {
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
     $data->subscriber = $subscriber;
-    expect($this->track->_validateTrackData($data))->false();
+    verify($this->track->_validateTrackData($data))->false();
   }
 
   public function testItDoesNotRequireWpUsersToBeOnProcessedListWhenPreviewIsEnabled() {
@@ -155,7 +155,7 @@ class TrackTest extends \MailPoetTest {
     $data['newsletter_id'] = false;
     $data['queue_id'] = 99;
     $processedData = $this->track->_processTrackData($data);
-    expect($processedData)->false();
+    verify($processedData)->false();
   }
 
   public function testItGetsNewsletterFromQueue() {

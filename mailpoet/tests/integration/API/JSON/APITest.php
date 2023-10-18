@@ -272,7 +272,7 @@ class APITest extends \MailPoetTest {
     );
 
     $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, $this->loggerFactory, new WPFunctions);
-    expect($api->validatePermissions(null, $permissions))->false();
+    verify($api->validatePermissions(null, $permissions))->false();
 
     $accessControl = Stub::make(
       new AccessControl(),
@@ -306,7 +306,7 @@ class APITest extends \MailPoetTest {
     );
 
     $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, $this->loggerFactory, new WPFunctions);
-    expect($api->validatePermissions('test', $permissions))->false();
+    verify($api->validatePermissions('test', $permissions))->false();
 
     $accessControl = Stub::make(
       new AccessControl(),

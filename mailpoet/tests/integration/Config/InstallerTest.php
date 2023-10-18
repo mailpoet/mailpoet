@@ -100,6 +100,6 @@ class InstallerTest extends \MailPoetTest {
 
   public function testItChecksIfAPluginIsInstalled() {
     verify(Installer::isPluginInstalled(Env::$pluginName))->true();
-    expect(Installer::isPluginInstalled('some-non-existent-plugin-123'))->false();
+    verify(Installer::isPluginInstalled('some-non-existent-plugin-123'))->false();
   }
 }

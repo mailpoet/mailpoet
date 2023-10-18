@@ -32,7 +32,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
     $revisionPostType = get_post_type_object('revision');
     $this->assertInstanceOf(\WP_Post_Type::class, $revisionPostType);
     verify($revisionPostType->exclude_from_search)->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect(isset($response->data['revision']))->false();
+    verify(isset($response->data['revision']))->false();
   }
 
   public function testItGetTerms() {
