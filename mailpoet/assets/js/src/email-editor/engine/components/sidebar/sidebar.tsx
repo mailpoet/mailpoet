@@ -1,6 +1,7 @@
-import { createSlotFill, Panel } from '@wordpress/components';
+import { Panel } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
+import { BlockInspector } from '@wordpress/block-editor';
 import {
   ComplementaryArea,
   store as interfaceStore,
@@ -14,10 +15,6 @@ import {
 } from '../../store';
 import { Header } from './header';
 import { EmailSettings } from './email-settings';
-
-const { Slot: InspectorSlot, Fill: InspectorFill } = createSlotFill(
-  'EmailEditorBlockInspector',
-);
 
 type Props = ComponentProps<typeof ComplementaryArea>;
 
@@ -42,11 +39,9 @@ export function Sidebar(props: Props): JSX.Element {
       {sidebarKey === mainSidebarEmailKey && <EmailSettings />}
       {sidebarKey === mainSidebarBlockKey && (
         <Panel>
-          <InspectorSlot bubblesVirtually />
+          <BlockInspector />
         </Panel>
       )}
     </ComplementaryArea>
   );
 }
-
-Sidebar.InspectorFill = InspectorFill;
