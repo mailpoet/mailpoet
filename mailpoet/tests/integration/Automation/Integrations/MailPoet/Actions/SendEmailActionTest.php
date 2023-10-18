@@ -110,14 +110,14 @@ class SendEmailActionTest extends \MailPoetTest {
     $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-    expect($scheduled)->count(0);
+    verify($scheduled)->arrayCount(0);
 
     $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
     $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
     $this->action->run($args, $controller);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-    expect($scheduled)->count(1);
+    verify($scheduled)->arrayCount(1);
   }
 
   public function testNothingScheduledIfSegmentDeleted(): void {
@@ -134,7 +134,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-    expect($scheduled)->count(0);
+    verify($scheduled)->arrayCount(0);
 
     $this->segmentsRepository->bulkDelete([$segment->getId()]);
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
@@ -148,7 +148,7 @@ class SendEmailActionTest extends \MailPoetTest {
     }
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-    expect($scheduled)->count(0);
+    verify($scheduled)->arrayCount(0);
   }
 
   public function testNothingScheduledIfSubscriberDeleted(): void {
@@ -165,7 +165,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-    expect($scheduled)->count(0);
+    verify($scheduled)->arrayCount(0);
 
     $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
@@ -179,7 +179,7 @@ class SendEmailActionTest extends \MailPoetTest {
     }
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-    expect($scheduled)->count(0);
+    verify($scheduled)->arrayCount(0);
   }
 
   public function testNothingScheduledIfSubscriberIsNotGloballySubscribed(): void {
@@ -205,7 +205,7 @@ class SendEmailActionTest extends \MailPoetTest {
       $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
 
       $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-      expect($scheduled)->count(0);
+      verify($scheduled)->arrayCount(0);
 
       $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
       $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
@@ -219,7 +219,7 @@ class SendEmailActionTest extends \MailPoetTest {
       }
 
       $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-      expect($scheduled)->count(0);
+      verify($scheduled)->arrayCount(0);
     }
   }
 
@@ -236,7 +236,7 @@ class SendEmailActionTest extends \MailPoetTest {
     $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-    expect($scheduled)->count(0);
+    verify($scheduled)->arrayCount(0);
 
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
     $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
@@ -249,7 +249,7 @@ class SendEmailActionTest extends \MailPoetTest {
     }
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
-    expect($scheduled)->count(0);
+    verify($scheduled)->arrayCount(0);
   }
 
   /**

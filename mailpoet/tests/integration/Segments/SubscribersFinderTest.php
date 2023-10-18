@@ -64,7 +64,7 @@ class SubscribersFinderTest extends \MailPoetTest {
   public function testFindSubscribersInSegmentInSegmentDefaultSegment() {
     $deletedSegmentId = 1000; // non-existent segment
     $subscribers = $this->subscribersFinder->findSubscribersInSegments([$this->subscriber2->getId()], [$this->segment1->getId(), $deletedSegmentId]);
-    expect($subscribers)->count(1);
+    verify($subscribers)->arrayCount(1);
     verify($subscribers[$this->subscriber2->getId()])->equals($this->subscriber2->getId());
   }
 
@@ -78,7 +78,7 @@ class SubscribersFinderTest extends \MailPoetTest {
 
     $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->getId()], [$this->segment3->getId()]);
-    expect($subscribers)->count(1);
+    verify($subscribers)->arrayCount(1);
     expect($subscribers)->contains($this->subscriber3->getId());
   }
 
@@ -92,7 +92,7 @@ class SubscribersFinderTest extends \MailPoetTest {
 
     $finder = new SubscribersFinder($mock, $this->segmentsRepository, $this->entityManager);
     $subscribers = $finder->findSubscribersInSegments([$this->subscriber3->getId()], [$this->segment3->getId(), $this->segment3->getId()]);
-    expect($subscribers)->count(1);
+    verify($subscribers)->arrayCount(1);
   }
 
   public function testItAddsSubscribersToTaskFromStaticSegments() {

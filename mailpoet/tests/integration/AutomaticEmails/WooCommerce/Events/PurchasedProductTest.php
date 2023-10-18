@@ -113,7 +113,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $event2 = $this->createOrderEvent($subscriber, [1000, 12345]);
     $event2->scheduleEmailWhenProductIsPurchased(13);
     $queue2 = $this->sendingQueuesRepository->findBy(['newsletter' => $email]);
-    expect($queue2)->count(count($queue1));
+    verify($queue2)->arrayCount(count($queue1));
   }
 
   public function testItCreatesASecondSendingTaskAfterTriggerUpdated() {
@@ -123,14 +123,14 @@ class PurchasedProductTest extends \MailPoetTest {
     $event = $this->createOrderEvent($subscriber, [1000, 12345]);
     $this->triggerEmailForState('completed', $email, $event);
     $queues = $this->sendingQueuesRepository->findBy(['newsletter' => $email]);
-    expect($queues)->count(1);
+    verify($queues)->arrayCount(1);
 
     $this->updateEmailTriggerIds($email, [1000, 12345]);
 
     $event2 = $this->createOrderEvent($subscriber, [1000, 12345]);
     $this->triggerEmailForState('completed', $email, $event2);
     $queues = $this->sendingQueuesRepository->findBy(['newsletter' => $email]);
-    expect($queues)->count(2);
+    verify($queues)->arrayCount(2);
   }
 
   public function testItDoesNotScheduleEmailWhenPurchasedProductDoesNotMatchConfiguredProductIds() {

@@ -47,7 +47,7 @@ class FilterHandlerTest extends \MailPoetTest {
     $statement = $this->filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
     $this->assertInstanceOf(Statement::class, $statement);
     $result = $statement->fetchAll();
-    expect($result)->count(2);
+    verify($result)->arrayCount(2);
     $this->assertIsArray($result[0]);
     $subscriber1 = $this->entityManager->find(SubscriberEntity::class, $result[0]['id']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);

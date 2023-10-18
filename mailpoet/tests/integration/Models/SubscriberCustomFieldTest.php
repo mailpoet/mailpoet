@@ -73,6 +73,6 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
     $subscriber = (object)['id' => $this->data[0]['subscriber_id']];
     SubscriberCustomField::deleteSubscriberRelations($subscriber);
     $records = SubscriberCustomField::findArray();
-    expect($records)->count(1);
+    verify($records)->arrayCount(1);
   }
 }

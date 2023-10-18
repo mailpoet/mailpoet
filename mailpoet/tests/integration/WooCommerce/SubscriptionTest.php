@@ -141,7 +141,7 @@ class SubscriptionTest extends \MailPoetTest {
     $this->subscribeToSegment($this->subscriber, $this->wcSegment);
     $this->entityManager->refresh($this->subscriber);
     $subscribedSegments = $this->subscriber->getSegments();
-    expect($subscribedSegments)->count(1);
+    verify($subscribedSegments)->arrayCount(1);
 
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, false);
     $this->settings->set('signup_confirmation', ['enabled' => true]);
@@ -152,7 +152,7 @@ class SubscriptionTest extends \MailPoetTest {
 
     $this->entityManager->refresh($this->subscriber);
     $subscribedSegments = $this->subscriber->getSegments();
-    expect($subscribedSegments)->count(1);
+    verify($subscribedSegments)->arrayCount(1);
     verify($this->subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
@@ -162,7 +162,7 @@ class SubscriptionTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscribedSegments = $subscriber->getSegments();
-    expect($subscribedSegments)->count(1);
+    verify($subscribedSegments)->arrayCount(1);
 
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
     $_POST[Subscription::CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME] = 1;
@@ -171,7 +171,7 @@ class SubscriptionTest extends \MailPoetTest {
     verify($subscribed)->equals(false);
 
     $subscribedSegments = $this->subscriber->getSegments();
-    expect($subscribedSegments)->count(0);
+    verify($subscribedSegments)->arrayCount(0);
 
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
@@ -190,7 +190,7 @@ class SubscriptionTest extends \MailPoetTest {
     $this->subscribersRepository->flush();
 
     $subscribedSegments = $this->subscriber->getSegments();
-    expect($subscribedSegments)->count(0);
+    verify($subscribedSegments)->arrayCount(0);
 
     // extra segment to subscribe to
     $segment = $this->segmentsRepository->createOrUpdate('some name', 'some description');
@@ -211,7 +211,7 @@ class SubscriptionTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscribedSegments = $subscriber->getSegments()->toArray();
-    expect($subscribedSegments)->count(2);
+    verify($subscribedSegments)->arrayCount(2);
 
     $subscribedSegmentIds = array_map(function (SegmentEntity $segment): int {
       return (int)$segment->getId();
@@ -242,7 +242,7 @@ class SubscriptionTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscribedSegments = $subscriber->getSegments();
-    expect($subscribedSegments)->count(0);
+    verify($subscribedSegments)->arrayCount(0);
 
     $this->settings->set(Subscription::OPTIN_ENABLED_SETTING_NAME, true);
     $_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME] = 'on';
@@ -258,7 +258,7 @@ class SubscriptionTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $subscribedSegments = $subscriber->getSegments();
-    expect($subscribedSegments)->count(1);
+    verify($subscribedSegments)->arrayCount(1);
 
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);

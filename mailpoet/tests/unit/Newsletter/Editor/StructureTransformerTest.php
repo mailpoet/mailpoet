@@ -18,7 +18,7 @@ class StructureTransformerTest extends \MailPoetUnitTest {
 
     $blocks = $this->transformer->transform($html, false);
 
-    expect($blocks)->count(3);
+    verify($blocks)->arrayCount(3);
     verify($blocks[0]['type'])->equals('text');
     verify($blocks[0]['text'])->equals('<p><i>italic</i><em>previous text</em></p>');
 

@@ -39,7 +39,7 @@ class BridgeApiTest extends \MailPoetTest {
       ->willReturn('');
     $this->api->checkPremiumKey();
     $logs = $this->logRepository->findAll();
-    expect($logs)->count(0);
+    verify($logs)->arrayCount(0);
   }
 
   public function testItLogsWhenPremiumKeyCheckFails() {
@@ -53,7 +53,7 @@ class BridgeApiTest extends \MailPoetTest {
       ->willReturn('www.home-example.com');
     $this->api->checkPremiumKey();
     $logs = $this->logRepository->findAll();
-    expect($logs)->count(1);
+    verify($logs)->arrayCount(1);
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
@@ -73,7 +73,7 @@ class BridgeApiTest extends \MailPoetTest {
       ->willReturn('');
     $this->api->checkMSSKey();
     $logs = $this->logRepository->findAll();
-    expect($logs)->count(0);
+    verify($logs)->arrayCount(0);
   }
 
   public function testItLogsWhenMssKeyCheckFails() {
@@ -87,7 +87,7 @@ class BridgeApiTest extends \MailPoetTest {
       ->willReturn('www.home-example.com');
     $this->api->checkMSSKey();
     $logs = $this->logRepository->findAll();
-    expect($logs)->count(1);
+    verify($logs)->arrayCount(1);
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
@@ -131,7 +131,7 @@ class BridgeApiTest extends \MailPoetTest {
       ->willReturn('trololo');
     $this->api->getAuthorizedSenderDomains();
     $logs = $this->logRepository->findAll();
-    expect($logs)->count(1);
+    verify($logs)->arrayCount(1);
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
@@ -164,7 +164,7 @@ class BridgeApiTest extends \MailPoetTest {
     $result = $this->api->createAuthorizedSenderDomain('mailpoet.com');
     verify($result)->equals([]);
     $logs = $this->logRepository->findAll();
-    expect($logs)->count(1);
+    verify($logs)->arrayCount(1);
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);
@@ -198,7 +198,7 @@ class BridgeApiTest extends \MailPoetTest {
     $result = $this->api->verifyAuthorizedSenderDomain('mailpoet.com');
     verify($result)->equals([]);
     $logs = $this->logRepository->findAll();
-    expect($logs)->count(1);
+    verify($logs)->arrayCount(1);
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
     verify($errorLog->getLevel())->equals(Logger::ERROR);

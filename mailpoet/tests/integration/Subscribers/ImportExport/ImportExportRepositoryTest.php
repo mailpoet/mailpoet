@@ -61,7 +61,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
 
     verify($count)->equals(2);
     $subscribers = $this->subscribersRepository->findAll();
-    expect($subscribers)->count(2);
+    verify($subscribers)->arrayCount(2);
     $user1 = $subscribers[0];
     $this->assertInstanceOf(SubscriberEntity::class, $user1);
     verify($user1->getEmail())->equals('user1@export-test.com');
@@ -97,7 +97,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     verify($count)->equals(2);
     $this->entityManager->clear();
     $subscribers = $this->subscribersRepository->findAll();
-    expect($subscribers)->count(2);
+    verify($subscribers)->arrayCount(2);
     $user1 = $subscribers[0];
     $this->assertInstanceOf(SubscriberEntity::class, $user1);
     verify($user1->getEmail())->equals('user1@export-test.com');
@@ -133,7 +133,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
 
     verify($count)->equals(2);
     $customFields = $this->subscriberCustomFieldRepository->findAll();
-    expect($customFields)->count(2);
+    verify($customFields)->arrayCount(2);
     $subscriberCustomField1 = $customFields[0];
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField1);
     verify($subscriberCustomField1->getSubscriber())->equals($subscriber1);
@@ -209,7 +209,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     $this->createSubscriberSegment($user3, $segment2, SubscriberEntity::STATUS_SUBSCRIBED);
 
     $exported = $this->repository->getSubscribersBatchBySegment($segment1, 100);
-    expect($exported)->count(2);
+    verify($exported)->arrayCount(2);
     verify($exported[0]['first_name'])->equals('One');
     verify($exported[0]['last_name'])->equals('User');
     verify($exported[0]['email'])->equals('user1@export-test.com');
@@ -237,7 +237,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     $this->subscribersRepository->flush();
 
     $exported = $this->repository->getSubscribersBatchBySegment($segment1, 100);
-    expect($exported)->count(1);
+    verify($exported)->arrayCount(1);
     verify($exported[0]['first_name'])->equals('One');
     verify($exported[0]['last_name'])->equals('User');
     verify($exported[0]['email'])->equals('user1@export-test.com');
@@ -267,7 +267,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     // User5 is not subscribed to any segment, should be exported
 
     $exported = $this->repository->getSubscribersBatchBySegment(null, 100);
-    expect($exported)->count(3);
+    verify($exported)->arrayCount(3);
     verify($exported[0]['first_name'])->equals('Two');
     verify($exported[0]['last_name'])->equals('User');
     verify($exported[0]['email'])->equals('user2@export-test.com');
@@ -303,7 +303,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     $segment2 = $this->segmentsRepository->findOneById($segment2->getId());
     $this->assertInstanceOf(SegmentEntity::class, $segment2);
     $exported = $this->repository->getSubscribersBatchBySegment($segment2, 100);
-    expect($exported)->count(2);
+    verify($exported)->arrayCount(2);
     verify($exported[0]['email'])->equals('user2@export-test.com');
     verify($exported[0]['segment_name'])->equals('Dynamic Segment');
     verify($exported[1]['email'])->equals('user3@export-test.com');
@@ -352,7 +352,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
     for ($i = 3; $i <= 5; $i++) {
       $exported = $this->repository->getSubscribersBatchBySegment($segment2, 1, $offset);
       $offset += count($exported);
-      expect($exported)->count(1);
+      verify($exported)->arrayCount(1);
       verify($exported[0]['email'])->equals("user{$i}@export-test.com");
       verify($exported[0]['segment_name'])->equals('Two');
     }

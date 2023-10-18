@@ -50,9 +50,9 @@ class DaemonRunTest extends \MailPoetTest {
 
     $this->actionScheduler->scheduleImmediateSingleAction(DaemonRun::NAME);
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(1);
+    verify($actions)->arrayCount(1);
     $doneActions = $this->actionSchedulerHelper->getMailPoetCompleteActions();
-    expect($doneActions)->count(0);
+    verify($doneActions)->arrayCount(0);
 
     // We can't call $this->daemonRun->process directly because it ends up with wp_die();
     // We must also instantiate fresh runner, because the global instance may have exhausted execution time, because it is created
@@ -61,9 +61,9 @@ class DaemonRunTest extends \MailPoetTest {
     $runner->run();
 
     $doneActions = $this->actionSchedulerHelper->getMailPoetCompleteActions();
-    expect($doneActions)->count(1);
+    verify($doneActions)->arrayCount(1);
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(0);
+    verify($actions)->arrayCount(0);
 
     // Verify execution limit after run. floor(30 - some time taken by previous action) - 10s (safety execution timout margin)
     expect($this->daemonRun->getDaemonExecutionLimit())->greaterThan(0);
@@ -87,7 +87,7 @@ class DaemonRunTest extends \MailPoetTest {
     $runAction->process();
     $runAction->afterProcess();
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(0);
+    verify($actions)->arrayCount(0);
     $log = $this->diContainer->get(LogRepository::class)->findOneBy(['name' => 'cron', 'level' => 200]);
     $this->assertInstanceOf(LogEntity::class, $log);
     verify($log->getMessage())->stringContainsString('Daemon run ended too early');
@@ -113,11 +113,11 @@ class DaemonRunTest extends \MailPoetTest {
       $this->diContainer->get(LoggerFactory::class)
     );
     $actions = $this->actionSchedulerHelper->getMailPoetCronActions();
-    expect($actions)->count(0);
+    verify($actions)->arrayCount(0);
     $runAction->process();
     $runAction->afterProcess();
     $actions = $this->actionSchedulerHelper->getMailPoetCronActions();
-    expect($actions)->count(1);
+    verify($actions)->arrayCount(1);
   }
 
   private function cleanup(): void {

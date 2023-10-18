@@ -279,12 +279,12 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($newsletterSegment);
     $this->entityManager->flush();
 
-    expect($this->repository->findAll())->count(2);
+    verify($this->repository->findAll())->arrayCount(2);
 
     // return archives in a given segment
     $results = $this->repository->getArchives(['segmentIds' => [$segment->getId()]]);
 
-    expect($results)->count(1);
+    verify($results)->arrayCount(1);
     verify($results[0]->getId())->equals($newsletters[1]->getId());
     verify($results[0]->getType())->equals(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
   }
@@ -311,7 +311,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     end($newsletters)->setDeletedAt(new Carbon());
     $this->entityManager->flush();
 
-    expect($this->repository->findAll())->count(8);
+    verify($this->repository->findAll())->arrayCount(8);
 
     // archives return only:
     // 1. STANDARD and NOTIFICATION HISTORY newsletters
@@ -319,7 +319,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     // 3. with sending queue records that are COMPLETED
     $results = $this->repository->getArchives();
 
-    expect($results)->count(2);
+    verify($results)->arrayCount(2);
     verify($results[0]->getId())->equals($newsletters[1]->getId());
     verify($results[0]->getType())->equals(NewsletterEntity::TYPE_STANDARD);
     verify($results[1]->getId())->equals($newsletters[6]->getId());

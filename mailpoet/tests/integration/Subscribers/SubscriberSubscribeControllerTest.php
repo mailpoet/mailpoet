@@ -129,7 +129,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
     verify($subscriber)->instanceOf(SubscriberEntity::class);
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriberCustomFields = $this->subscriberCustomFieldRepository->findBy(['subscriber' => $subscriber]);
-    expect($subscriberCustomFields)->count(1);
+    verify($subscriberCustomFields)->arrayCount(1);
     $subscriberCustomField = reset($subscriberCustomFields);
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
     verify($subscriberCustomField)->instanceOf(SubscriberCustomFieldEntity::class);

@@ -117,7 +117,7 @@ class BounceTest extends \MailPoetTest {
       'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
     ]))->equals(0);
     $result = $this->worker->prepareTaskStrategy($task, microtime(true));
-    expect($this->emails)->count($this->scheduledTaskSubscribersRepository->countBy([]));
+    verify($this->emails)->arrayCount($this->scheduledTaskSubscribersRepository->countBy([]));
     verify($result)->true();
     verify($this->scheduledTaskSubscribersRepository->countBy([
       'task' => $task,
@@ -196,7 +196,7 @@ class BounceTest extends \MailPoetTest {
     // test it
     $statisticsRepository = $this->diContainer->get(StatisticsBouncesRepository::class);
     $statistics = $statisticsRepository->findAll();
-    expect($statistics)->count(1);
+    verify($statistics)->arrayCount(1);
   }
 
   private function setMailPoetSendingMethod() {

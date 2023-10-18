@@ -78,11 +78,11 @@ class SubscriberListingRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $filters = $this->repository->getFilters($this->getListingDefinition());
-    expect($filters['segment'])->count(3);
+    verify($filters['segment'])->arrayCount(3);
     verify($filters['segment'][0]['label'])->equals('All Lists');
     verify($filters['segment'][1]['label'])->equals('Subscribers without a list (3)');
     verify($filters['segment'][2]['label'])->equals('Segment 2 (2)');
-    expect($filters['tag'])->count(2);
+    verify($filters['tag'])->arrayCount(2);
     verify($filters['tag'][0]['label'])->equals('All Tags');
     verify($filters['tag'][1]['label'])->equals('My Tag (1)');
   }

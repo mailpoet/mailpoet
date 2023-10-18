@@ -29,7 +29,7 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     verify($response)->arrayHasKey('deleted_at');
     verify($response['filters_connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
     expect($response['filters'])->array();
-    expect($response['filters'])->count(1);
+    verify($response['filters'])->arrayCount(1);
     verify($response['filters'][0]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     verify($response['filters'][0]['wordpressRole'])->equals(['editor']);
     verify($response['filters'][0]['action'])->equals(UserRole::TYPE);
@@ -56,7 +56,7 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     verify($response)->arrayHasKey('deleted_at');
     verify($response['filters_connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
     expect($response['filters'])->array();
-    expect($response['filters'])->count(2);
+    verify($response['filters'])->arrayCount(2);
     verify($response['filters'][0]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
     verify($response['filters'][0]['wordpressRole'])->equals(['editor']);
     verify($response['filters'][0]['action'])->equals(UserRole::TYPE);

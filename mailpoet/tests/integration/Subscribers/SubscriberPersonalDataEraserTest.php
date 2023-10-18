@@ -61,7 +61,7 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
 
     $subscriberCustomFieldRepository = $this->diContainer->get(SubscriberCustomFieldRepository::class);
     $subscriberCustomFields = $subscriberCustomFieldRepository->findBy(['subscriber' => $subscriber]);
-    expect($subscriberCustomFields)->count(2);
+    verify($subscriberCustomFields)->arrayCount(2);
     verify($subscriberCustomFields[0]->getValue())->equals('');
     verify($subscriberCustomFields[1]->getValue())->equals('');
   }

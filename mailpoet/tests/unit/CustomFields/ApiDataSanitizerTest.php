@@ -136,7 +136,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     ]);
     $values = $result['params']['values'];
     expect($values)->array();
-    expect($values)->count(2);
+    verify($values)->arrayCount(2);
     verify($values[0])->same(['value' => 'value 1', 'is_checked' => '']);
     verify($values[1])->same(['value' => 'value 2', 'is_checked' => '1']);
   }
@@ -197,7 +197,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
     ]);
     $values = $result['params']['values'];
     expect($values)->array();
-    expect($values)->count(1);
+    verify($values)->arrayCount(1);
     verify($values[0])->same(['value' => 'value 1', 'is_checked' => '1']);
   }
 

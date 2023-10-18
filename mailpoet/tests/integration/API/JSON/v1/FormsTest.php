@@ -70,7 +70,7 @@ class FormsTest extends \MailPoetTest {
     verify($response->meta)->arrayHasKey('groups');
     verify($response->meta['count'])->equals(3);
 
-    expect($response->data)->count(3);
+    verify($response->data)->arrayCount(3);
     verify($response->data[0]['name'])->equals('Form 1');
     verify($response->data[1]['name'])->equals('Form 2');
     verify($response->data[2]['name'])->equals('Form 3');

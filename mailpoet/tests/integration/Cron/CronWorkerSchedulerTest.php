@@ -25,7 +25,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $nextRunDate = Carbon::now()->addWeek();
     $this->cronWorkerScheduler->schedule('test', $nextRunDate);
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
-    expect($tasks)->count(1);
+    verify($tasks)->arrayCount(1);
     verify($tasks[0]->getType())->same('test');
     verify($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
     verify($tasks[0]->getScheduledAt())->same($nextRunDate);
@@ -34,11 +34,11 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
   public function testItDoesNotScheduleTaskTwice() {
     $nextRunDate = Carbon::now()->addWeek();
     $task = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
-    expect($this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll())->count(1);
+    verify($this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll())->arrayCount(1);
 
     $result = $this->cronWorkerScheduler->schedule('test', $nextRunDate);
     verify($result->getId())->equals($task->getId());
-    expect($this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll())->count(1);
+    verify($this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll())->arrayCount(1);
   }
 
   public function testItDoesntScheduleRunningTaskImmediatelyIfRunning() {
@@ -49,7 +49,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $immediateTask = $this->cronWorkerScheduler->scheduleImmediatelyIfNotRunning('test');
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
     verify($immediateTask->getId())->equals($task->getId());
-    expect($tasks)->count(1);
+    verify($tasks)->arrayCount(1);
     verify($tasks[0]->getType())->same('test');
     verify($tasks[0]->getStatus())->null();
     verify($tasks[0]->getScheduledAt())->same($nextRunDate);
@@ -61,7 +61,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $immediateTask = $this->cronWorkerScheduler->scheduleImmediatelyIfNotRunning('test');
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
     verify($immediateTask->getId())->equals($task->getId());
-    expect($tasks)->count(1);
+    verify($tasks)->arrayCount(1);
     verify($tasks[0]->getType())->same('test');
     verify($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
     $this->tester->assertEqualDateTimes($tasks[0]->getScheduledAt(), Carbon::now(), 1);
@@ -70,7 +70,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
   public function testItScheduleTaskImmediatelyIfNotRunning() {
     $this->cronWorkerScheduler->scheduleImmediatelyIfNotRunning('test');
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
-    expect($tasks)->count(1);
+    verify($tasks)->arrayCount(1);
     verify($tasks[0]->getType())->equals('test');
     verify($tasks[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $this->tester->assertEqualDateTimes($tasks[0]->getScheduledAt(), Carbon::now(), 1);
@@ -82,7 +82,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $this->cronWorkerScheduler->reschedule($task, 10);
 
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
-    expect($tasks)->count(1);
+    verify($tasks)->arrayCount(1);
     verify($tasks[0]->getType())->same('test');
     verify($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($tasks[0]->getScheduledAt())->greaterThan($nextRunDate);

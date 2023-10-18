@@ -49,7 +49,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     verify($duplicate->getName())->equals('Copy of ' . $segment->getName());
     verify($duplicate->getDescription())->equals($segment->getDescription());
     verify($duplicate->getType())->equals($segment->getType());
-    expect($subscriberSegments)->count(2);
+    verify($subscriberSegments)->arrayCount(2);
     verify($subscriberDuplicate1->getStatus())->equals($subscriberSegment1->getStatus());
     verify($subscriberDuplicate2->getStatus())->equals($subscriberSegment2->getStatus());
   }

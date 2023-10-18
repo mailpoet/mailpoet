@@ -78,7 +78,7 @@ class SegmentsTest extends \MailPoetTest {
     verify($response->meta)->arrayHasKey('groups');
     verify($response->meta['count'])->equals(3);
 
-    expect($response->data)->count(3);
+    verify($response->data)->arrayCount(3);
     verify($response->data[0]['name'])->equals($this->segment1->getName());
     verify($response->data[1]['name'])->equals($this->segment2->getName());
     verify($response->data[2]['name'])->equals($this->segment3->getName());
@@ -247,7 +247,7 @@ class SegmentsTest extends \MailPoetTest {
     verify($response->meta['count'])->equals(0);
 
     $subsribers = $this->subscriberSegmentRepository->findBy(['segment' => $this->segment1]);
-    expect($subsribers)->count(0);
+    verify($subsribers)->arrayCount(0);
   }
 
   private function createForm(string $formName, array $settings) {

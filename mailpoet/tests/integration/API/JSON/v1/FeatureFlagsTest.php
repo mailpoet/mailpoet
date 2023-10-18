@@ -70,7 +70,7 @@ class FeatureFlagsTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $features = $this->repository->findBy(['name' => 'feature-a']);
-    expect($features)->count(1);
+    verify($features)->arrayCount(1);
     verify($features[0]->getName())->equals('feature-a');
     verify($features[0]->getValue())->equals(false);
   }

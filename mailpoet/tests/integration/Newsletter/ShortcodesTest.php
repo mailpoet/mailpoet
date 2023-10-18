@@ -107,7 +107,7 @@ class ShortcodesTest extends \MailPoetTest {
     add_filter(
       'mailpoet_newsletter_shortcode',
       function($shortcode, $newsletter, $subscriber, $queue, $content, $arguments) {
-        expect($arguments)->count(2);
+        verify($arguments)->arrayCount(2);
         verify($arguments['arg1'])->equals('val1');
         verify($arguments['arg2'])->equals('val2');
         if (strpos($shortcode, '[some:shortcode') === 0) return 'success';
@@ -394,7 +394,7 @@ class ShortcodesTest extends \MailPoetTest {
     verify($result[0])->null();
     remove_all_filters('mailpoet_newsletter_shortcode_link');
     add_filter('mailpoet_newsletter_shortcode_link', function($shortcode, $newsletter, $subscriber, $queue, $arguments) {
-      expect($arguments)->count(2);
+      verify($arguments)->arrayCount(2);
       verify($arguments['arg1'])->equals('val1');
       verify($arguments['arg2'])->equals('val2');
       if ($shortcode === '[link:shortcode]') return 'success';

@@ -55,7 +55,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);
     $response = $endpoint->getAll();
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->count(count($templates));
+    verify($response->data)->arrayCount(count($templates));
   }
 
   public function testItCanSaveANewTemplate() {

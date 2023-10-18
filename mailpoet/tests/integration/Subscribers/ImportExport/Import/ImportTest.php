@@ -197,7 +197,7 @@ class ImportTest extends \MailPoetTest {
     ];
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
-    expect($result['email'])->count(1);
+    verify($result['email'])->arrayCount(1);
     verify($result['email'][0])->equals('jane@doe.com');
 
     // valid email passes validation
@@ -222,7 +222,7 @@ class ImportTest extends \MailPoetTest {
     ];
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
-    expect($result['confirmed_at'])->count(1);
+    verify($result['confirmed_at'])->arrayCount(1);
     verify($result['confirmed_at'][0])->equals('2019-05-31 18:42:35');
 
     // normalize confirmed_at
@@ -251,7 +251,7 @@ class ImportTest extends \MailPoetTest {
     ];
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
-    expect($result['confirmed_ip'])->count(2);
+    verify($result['confirmed_ip'])->arrayCount(2);
     verify($result['confirmed_ip'][0])->empty();
     verify($result['confirmed_ip'][1])->equals('192.68.69.32');
 
@@ -262,7 +262,7 @@ class ImportTest extends \MailPoetTest {
     ];
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
-    expect($result['confirmed_ip'])->count(2);
+    verify($result['confirmed_ip'])->arrayCount(2);
     verify($result['confirmed_ip'][0])->empty();
     verify($result['confirmed_ip'][1])->equals('192.68.69.32');
 
@@ -273,7 +273,7 @@ class ImportTest extends \MailPoetTest {
     ];
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
-    expect($result['confirmed_ip'])->count(2);
+    verify($result['confirmed_ip'])->arrayCount(2);
     verify($result['confirmed_ip'][0])->empty();
     verify($result['confirmed_ip'][1])->equals('192.68.69.32');
 
@@ -668,7 +668,7 @@ class ImportTest extends \MailPoetTest {
       $data['subscribers'][0][2],
       $data['subscribers'][1][2],
     ]]);
-    expect($newSubscribers)->count(2);
+    verify($newSubscribers)->arrayCount(2);
     verify($newSubscribers[0]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     verify($newSubscribers[1]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     verify($newSubscribers[0]->getSource())->equals('imported');
@@ -801,7 +801,7 @@ class ImportTest extends \MailPoetTest {
       $data['subscribers'][0][2],
       $data['subscribers'][1][2],
     ]]);
-    expect($newSubscribers)->count(2);
+    verify($newSubscribers)->arrayCount(2);
   }
 
   public function testItOnlyAppliesCustomFormatToSitesWithCustomFormat(): void {
@@ -825,7 +825,7 @@ class ImportTest extends \MailPoetTest {
       $data['subscribers'][0][2],
       $data['subscribers'][1][2],
     ]]);
-    expect($newSubscribers)->count(1);
+    verify($newSubscribers)->arrayCount(1);
     verify($newSubscribers[0]->getEmail())->equals('correctdateformat2@yopmail.com');
   }
 

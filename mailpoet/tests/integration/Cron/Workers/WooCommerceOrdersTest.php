@@ -68,7 +68,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
 
     $this->cronWorkerRunner->run($this->worker);
     $tasks = $this->scheduledTaskRepository->findBy(['type' => WooCommercePastOrders::TASK_TYPE]);
-    expect($tasks)->count(1);
+    verify($tasks)->arrayCount(1);
   }
 
   public function testItRunsOnlyOnce() {
@@ -100,7 +100,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $tasks = $this->scheduledTaskRepository->findBy(['type' => WooCommercePastOrders::TASK_TYPE]);
-    expect($tasks)->count(1);
+    verify($tasks)->arrayCount(1);
   }
 
   public function testItTracksOrders() {
@@ -115,7 +115,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $tasks = $this->scheduledTaskRepository->findBy(['type' => WooCommercePastOrders::TASK_TYPE]);
-    expect($tasks)->count(1);
+    verify($tasks)->arrayCount(1);
     verify($tasks[0]->getStatus())->equals(null); // null means 'running'
   }
 
@@ -143,7 +143,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $tasks = $this->scheduledTaskRepository->findBy(['type' => WooCommercePastOrders::TASK_TYPE]);
-    expect($tasks)->count(1);
+    verify($tasks)->arrayCount(1);
     verify($tasks[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
   }
 

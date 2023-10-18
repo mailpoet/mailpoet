@@ -206,7 +206,7 @@ class TrackTest extends \MailPoetTest {
     // assert that 2 links with identical hash exist
     $newsletterLinkRepository = $this->diContainer->get(NewsletterLinkRepository::class);
     $newsletterLink = $newsletterLinkRepository->findBy(['hash' => $link->getHash()]);
-    expect($newsletterLink)->count(2);
+    verify($newsletterLink)->arrayCount(2);
 
     // assert that the fetched link ID belong to the newly created link
     $processedData = $this->track->_processTrackData($trackData);

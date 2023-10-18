@@ -194,11 +194,11 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
       $this->diContainer->get(TransactionalEmails::class)
     );
     $transactionalEmails->useTemplateForWoocommerceEmails();
-    expect($addedActions)->count(1);
+    verify($addedActions)->arrayCount(1);
     expect($addedActions['woocommerce_email'])->callable();
     $addedActions['woocommerce_email']($wcEmails);
-    expect($removedActions)->count(2);
-    expect($addedActions)->count(4);
+    verify($removedActions)->arrayCount(2);
+    verify($addedActions)->arrayCount(4);
     expect($addedActions['woocommerce_email_header'])->callable();
     ob_start();
     $addedActions['woocommerce_email_header']('heading text');

@@ -78,11 +78,11 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
           verify($subscriber)->equals('a@b.c');
           verify($newsletter)->arrayHasKey('subject');
           verify($newsletter)->arrayHasKey('body');
-          expect($newsletter)->count(2);
+          verify($newsletter)->arrayCount(2);
           verify($newsletter['subject'])->equals('New subscriber to List1, List2');
           verify($newsletter['body'])->arrayHasKey('html');
           verify($newsletter['body'])->arrayHasKey('text');
-          expect($newsletter['body'])->count(2);
+          verify($newsletter['body'])->arrayCount(2);
           verify($newsletter['body']['text'])->stringContainsString('subscriber@example.com');
           verify($newsletter['body']['html'])->stringContainsString('subscriber@example.com');
           verify($extraParams['meta'])->equals([
@@ -108,11 +108,11 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
           verify($subscriber)->equals('a@b.c');
           verify($newsletter)->arrayHasKey('subject');
           verify($newsletter)->arrayHasKey('body');
-          expect($newsletter)->count(2);
+          verify($newsletter)->arrayCount(2);
           expect($newsletter['subject'])->matchesFormat('New subscriber to List %s, List %s');
           verify($newsletter['body'])->arrayHasKey('html');
           verify($newsletter['body'])->arrayHasKey('text');
-          expect($newsletter['body'])->count(2);
+          verify($newsletter['body'])->arrayCount(2);
           verify($newsletter['body']['text'])->stringContainsString('subscriber@example.com');
           verify($newsletter['body']['html'])->stringContainsString('subscriber@example.com');
           verify($extraParams['meta'])->equals([

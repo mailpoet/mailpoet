@@ -81,7 +81,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   public function testItGetsSubscribersThatPurchasedAllProducts(): void {
     $segmentFilterData = $this->getSegmentFilterData($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ALL);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
-    expect($emails)->count(0);
+    verify($emails)->arrayCount(0);
     $expectedEmails = ['customer1@example.com'];
     $segmentFilterData = $this->getSegmentFilterData([$this->categoryIds[0]], DynamicSegmentFilterData::OPERATOR_ALL);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);

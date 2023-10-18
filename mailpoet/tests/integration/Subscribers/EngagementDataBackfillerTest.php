@@ -50,7 +50,7 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $subscriberIds = array_map(function($subscriber) {
       return $subscriber->getId();
     }, $batch);
-    expect($batch)->count(3);
+    verify($batch)->arrayCount(3);
     $data = $this->backfiller->getPurchaseDataForBatch($subscriberIds);
     $this->assertInstanceOf(SubscriberEntity::class, $sub1);
     $this->assertInstanceOf(SubscriberEntity::class, $sub2);
@@ -124,7 +124,7 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
 
     $this->entityManager->flush();
     $openData = $this->backfiller->getOpenDataForBatch([$sub1->getId(), $sub2->getId(), $sub3->getId(), $sub4->getId()]);
-    expect($openData)->count(3);
+    verify($openData)->arrayCount(3);
     verify($openData[$sub1->getId()]['last_open_at'])->equals((string)$newer);
     verify($openData[$sub2->getId()]['last_open_at'])->equals((string)$sub2date);
     verify($openData[$sub3->getId()]['last_open_at'])->equals((string)$sub3date);
@@ -212,7 +212,7 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
 
     $this->entityManager->flush();
     $clickData = $this->backfiller->getClickDataForBatch([$sub1->getId(), $sub2->getId(), $sub3->getId(), $sub4->getId()]);
-    expect($clickData)->count(3);
+    verify($clickData)->arrayCount(3);
     verify($clickData[$sub1->getId()]['last_click_at'])->equals((string)$newer);
     verify($clickData[$sub2->getId()]['last_click_at'])->equals((string)$sub2date);
     verify($clickData[$sub3->getId()]['last_click_at'])->equals((string)$sub3date);
@@ -302,7 +302,7 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
 
     $this->entityManager->flush();
     $clickData = $this->backfiller->getSendingDataForBatch([$sub1->getId(), $sub2->getId(), $sub3->getId(), $sub4->getId()]);
-    expect($clickData)->count(3);
+    verify($clickData)->arrayCount(3);
     verify($clickData[$sub1->getId()]['last_sending_at'])->equals((string)$newer);
     verify($clickData[$sub2->getId()]['last_sending_at'])->equals((string)$sub2date);
     verify($clickData[$sub3->getId()]['last_sending_at'])->equals((string)$sub3date);
@@ -366,13 +366,13 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
       (new Subscriber())->withEmail("$i@example.com")->create();
     }
     $batch = $this->backfiller->getBatch(0, 10);
-    expect($batch)->count(10);
+    verify($batch)->arrayCount(10);
     $last = end($batch);
     $this->assertInstanceOf(SubscriberEntity::class, $last);
     $this->assertIsInt($last->getId());
 
     $batch2 = $this->backfiller->getBatch($last->getId(), 5);
-    expect($batch2)->count(5);
+    verify($batch2)->arrayCount(5);
   }
 
   private function createOrder(int $customerId, string $email, Carbon $createdAt, $status = 'wc-completed'): int {

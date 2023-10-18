@@ -446,19 +446,19 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->meta)->arrayHasKey('groups');
     verify($response->meta['count'])->equals(2);
 
-    expect($response->data)->count(2);
+    verify($response->data)->arrayCount(2);
     verify($response->data[0]['subject'])->equals('My Standard Newsletter');
     verify($response->data[1]['subject'])->equals('My Post Notification');
 
     // 1st subscriber has 2 segments
-    expect($response->data[0]['segments'])->count(2);
+    verify($response->data[0]['segments'])->arrayCount(2);
     verify($response->data[0]['segments'][0]['id'])
       ->equals($segment1->getId());
     verify($response->data[0]['segments'][1]['id'])
       ->equals($segment2->getId());
 
     // 2nd subscriber has 1 segment
-    expect($response->data[1]['segments'])->count(1);
+    verify($response->data[1]['segments'])->arrayCount(1);
     verify($response->data[1]['segments'][0]['id'])
       ->equals($segment2->getId());
   }
@@ -518,7 +518,7 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_OK);
 
     verify($response->meta['count'])->equals(2);
-    expect($response->data)->count(1);
+    verify($response->data)->arrayCount(1);
     verify($response->data[0]['subject'])->equals(
       $this->postNotification->getSubject()
     );
@@ -534,7 +534,7 @@ class NewslettersTest extends \MailPoetTest {
     );
 
     verify($response->meta['count'])->equals(2);
-    expect($response->data)->count(1);
+    verify($response->data)->arrayCount(1);
     verify($response->data[0]['subject'])->equals(
       $this->newsletter->getSubject()
     );

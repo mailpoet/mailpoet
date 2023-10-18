@@ -35,10 +35,10 @@ class DaemonTriggerTest extends \MailPoetTest {
 
   public function testItSchedulesTriggerActionOnInit(): void {
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(0);
+    verify($actions)->arrayCount(0);
     $this->daemonTrigger->init();
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(1);
+    verify($actions)->arrayCount(1);
     $action = reset($actions);
     $this->assertInstanceOf(\ActionScheduler_Action::class, $action);
     verify($action->get_hook())->equals(DaemonTrigger::NAME);
@@ -46,27 +46,27 @@ class DaemonTriggerTest extends \MailPoetTest {
 
   public function testTriggerDoesNotTriggerAnythingIfThereAreNoJobs(): void {
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(0);
+    verify($actions)->arrayCount(0);
     $this->daemonTrigger->process();
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(0);
+    verify($actions)->arrayCount(0);
   }
 
   public function testTriggerUnschedulesRunJobIfThereIsNoMoreWork(): void {
     $actionScheduler = $this->diContainer->get(ActionScheduler::class);
     $actionScheduler->scheduleRecurringAction(time() + 60, 1, DaemonRun::NAME);
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(1);
+    verify($actions)->arrayCount(1);
     $this->daemonTrigger->process();
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(0);
+    verify($actions)->arrayCount(0);
   }
 
   public function testTriggerTriggerRunnerActionWhenThereIsJob(): void {
     $this->diContainer->get(SettingsController::class)->set('cron_trigger.method', CronTrigger::METHOD_ACTION_SCHEDULER);
     $this->createDueScheduledTask();
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(0);
+    verify($actions)->arrayCount(0);
     $remoteExecutorHandlerMock = $this->createMock(RemoteExecutorHandler::class);
     $remoteExecutorHandlerMock->expects($this->once())
       ->method('triggerExecutor');
@@ -75,7 +75,7 @@ class DaemonTriggerTest extends \MailPoetTest {
     ]);
     $daemonTrigger->process();
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(1);
+    verify($actions)->arrayCount(1);
     $action = reset($actions);
     $this->assertInstanceOf(\ActionScheduler_Action::class, $action);
     verify($action->get_hook())->equals(DaemonRun::NAME);

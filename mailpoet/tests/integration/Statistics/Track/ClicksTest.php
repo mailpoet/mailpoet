@@ -195,7 +195,7 @@ class ClicksTest extends \MailPoetTest {
     ], $this);
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
-    expect($trackedClicks)->count(1);
+    verify($trackedClicks)->arrayCount(1);
     $click = $trackedClicks[0];
     $userAgent = $click->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
@@ -221,7 +221,7 @@ class ClicksTest extends \MailPoetTest {
     ], $this);
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
-    expect($trackedClicks)->count(1);
+    verify($trackedClicks)->arrayCount(1);
     $click = $trackedClicks[0];
     $userAgent = $click->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
@@ -229,7 +229,7 @@ class ClicksTest extends \MailPoetTest {
     $data->userAgent = 'User Agent 2';
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
-    expect($trackedClicks)->count(1);
+    verify($trackedClicks)->arrayCount(1);
     $click = $trackedClicks[0];
     $userAgent = $click->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
@@ -257,7 +257,7 @@ class ClicksTest extends \MailPoetTest {
     $data->userAgent = $humanUserAgentName;
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
-    expect($trackedClicks)->count(1);
+    verify($trackedClicks)->arrayCount(1);
     $click = $trackedClicks[0];
     $userAgent = $click->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
@@ -269,7 +269,7 @@ class ClicksTest extends \MailPoetTest {
     $data->userAgent = $machineUserAgentName;
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
-    expect($trackedClicks)->count(1);
+    verify($trackedClicks)->arrayCount(1);
     $click = $trackedClicks[0];
     $userAgent = $click->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
@@ -299,7 +299,7 @@ class ClicksTest extends \MailPoetTest {
     $data->userAgent = $machineUserAgentName;
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
-    expect($trackedClicks)->count(1);
+    verify($trackedClicks)->arrayCount(1);
     $click = $trackedClicks[0];
     $userAgent = $click->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
@@ -311,7 +311,7 @@ class ClicksTest extends \MailPoetTest {
     $data->userAgent = $humanUserAgentName;
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
-    expect($trackedClicks)->count(1);
+    verify($trackedClicks)->arrayCount(1);
     $click = $trackedClicks[0];
     $userAgent = $click->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
@@ -340,7 +340,7 @@ class ClicksTest extends \MailPoetTest {
     $data->userAgent = null;
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
-    expect($trackedClicks)->count(1);
+    verify($trackedClicks)->arrayCount(1);
     $click = $trackedClicks[0];
     verify($click->getUserAgent())->null();
     verify($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
@@ -349,7 +349,7 @@ class ClicksTest extends \MailPoetTest {
     $data->userAgent = $machineUserAgentName;
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
-    expect($trackedClicks)->count(1);
+    verify($trackedClicks)->arrayCount(1);
     $click = $trackedClicks[0];
     verify($click->getUserAgent())->null();
     verify($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
@@ -375,7 +375,7 @@ class ClicksTest extends \MailPoetTest {
     $data->userAgent = null;
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
-    expect($trackedClicks)->count(1);
+    verify($trackedClicks)->arrayCount(1);
     $click = $trackedClicks[0];
     verify($click->getUserAgent())->null();
     verify($click->getUserAgentType())->equals(UserAgentEntity::USER_AGENT_TYPE_HUMAN);
@@ -384,7 +384,7 @@ class ClicksTest extends \MailPoetTest {
     $data->userAgent = $humanUserAgentName;
     $clicks->track($data);
     $trackedClicks = $clicksRepository->findAll();
-    expect($trackedClicks)->count(1);
+    verify($trackedClicks)->arrayCount(1);
     $click = $trackedClicks[0];
     $userAgent = $click->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);

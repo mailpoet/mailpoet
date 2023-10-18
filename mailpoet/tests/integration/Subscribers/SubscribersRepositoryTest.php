@@ -284,7 +284,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     // subscriber with removed segments
     expect($this->repository->findOneById($subscriberOneId))->notNull();
-    expect($this->subscriberSegmentRepository->findBy(['subscriber' => $subscriberOneId]))->count(0);
+    verify($this->subscriberSegmentRepository->findBy(['subscriber' => $subscriberOneId]))->arrayCount(0);
 
     // subscriber with segments
     expect($this->repository->findOneById($subscriberTwoId))->notNull();
@@ -320,7 +320,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     // subscriber without segment
     expect($this->repository->findOneById($subscriberTwoId))->notNull();
-    expect($this->subscriberSegmentRepository->findBy(['subscriber' => $subscriberTwoId]))->count(0);
+    verify($this->subscriberSegmentRepository->findBy(['subscriber' => $subscriberTwoId]))->arrayCount(0);
   }
 
   public function testItBulMoveSubscribersToSegment(): void {

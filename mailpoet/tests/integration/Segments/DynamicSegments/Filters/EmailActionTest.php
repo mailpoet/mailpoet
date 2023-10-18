@@ -203,7 +203,7 @@ class EmailActionTest extends \MailPoetTest {
       'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
     ]);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
-    expect($emails)->count(0);
+    verify($emails)->arrayCount(0);
   }
 
   public function testGetClickedWithNoneOfLinks(): void {

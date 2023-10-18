@@ -34,20 +34,20 @@ class FormListingRepositoryTest extends \MailPoetTest {
   public function testItAppliesGroup() {
     // all/trash groups
     $forms = $this->formListingRepository->getData($this->listingHandler->getListingDefinition(['group' => 'all']));
-    expect($forms)->count(2);
+    verify($forms)->arrayCount(2);
 
     $forms = $this->formListingRepository->getData($this->listingHandler->getListingDefinition(['group' => 'trash']));
-    expect($forms)->count(0);
+    verify($forms)->arrayCount(0);
 
     // delete one form
     $this->form1->setDeletedAt(new \DateTime());
     $this->entityManager->flush();
 
     $forms = $this->formListingRepository->getData($this->listingHandler->getListingDefinition(['group' => 'all']));
-    expect($forms)->count(1);
+    verify($forms)->arrayCount(1);
 
     $forms = $this->formListingRepository->getData($this->listingHandler->getListingDefinition(['group' => 'trash']));
-    expect($forms)->count(1);
+    verify($forms)->arrayCount(1);
   }
 
   public function testItAppliesSort() {
@@ -56,7 +56,7 @@ class FormListingRepositoryTest extends \MailPoetTest {
       'sort_by' => 'name',
       'sort_order' => 'asc',
     ]));
-    expect($forms)->count(2);
+    verify($forms)->arrayCount(2);
     verify($forms[0]->getName())->same('Form 1');
     verify($forms[1]->getName())->same('Form 2');
 
@@ -65,7 +65,7 @@ class FormListingRepositoryTest extends \MailPoetTest {
       'sort_by' => 'name',
       'sort_order' => 'desc',
     ]));
-    expect($forms)->count(2);
+    verify($forms)->arrayCount(2);
     verify($forms[0]->getName())->same('Form 2');
     verify($forms[1]->getName())->same('Form 1');
   }
@@ -76,7 +76,7 @@ class FormListingRepositoryTest extends \MailPoetTest {
       'limit' => 1,
       'offset' => 0,
     ]));
-    expect($forms)->count(1);
+    verify($forms)->arrayCount(1);
     verify($forms[0]->getName())->same('Form 1');
 
     // second page
@@ -84,7 +84,7 @@ class FormListingRepositoryTest extends \MailPoetTest {
       'limit' => 1,
       'offset' => 1,
     ]));
-    expect($forms)->count(1);
+    verify($forms)->arrayCount(1);
     verify($forms[0]->getName())->same('Form 2');
 
     // third page
@@ -92,6 +92,6 @@ class FormListingRepositoryTest extends \MailPoetTest {
       'limit' => 1,
       'offset' => 2,
     ]));
-    expect($forms)->count(0);
+    verify($forms)->arrayCount(0);
   }
 }

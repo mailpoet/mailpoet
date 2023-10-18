@@ -124,7 +124,7 @@ class NewsletterTest extends \MailPoetTest {
 
   public function testItCanHaveSegments() {
     $newsletterSegments = $this->newsletter->segments()->findArray();
-    expect($newsletterSegments)->count(2);
+    verify($newsletterSegments)->arrayCount(2);
     verify($newsletterSegments[0]['id'])->equals($this->segment1->id);
     verify($newsletterSegments[0]['name'])->equals('Segment 1');
     verify($newsletterSegments[1]['id'])->equals($this->segment2->id);
@@ -148,7 +148,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->segment2->delete();
     $this->newsletter->withSegments(true);
     $newsletterSegments = $this->newsletter->segments;
-    expect($newsletterSegments)->count(2);
+    verify($newsletterSegments)->arrayCount(2);
     verify($newsletterSegments[0]['id'])->equals($this->segment1->id);
     verify($newsletterSegments[0]['name'])->equals('Segment 1');
     verify($newsletterSegments[1]['id'])->equals($this->segment2->id);
@@ -254,9 +254,9 @@ class NewsletterTest extends \MailPoetTest {
     }
 
     // make sure relations exist
-    expect(SendingQueue::where('newsletter_id', $newsletter->id)->findArray())->count(6);
+    verify(SendingQueue::where('newsletter_id', $newsletter->id)->findArray())->arrayCount(6);
     $newsletterSegments = NewsletterSegment::where('newsletter_id', $newsletter->id)->findArray();
-    expect($newsletterSegments)->count(2);
+    verify($newsletterSegments)->arrayCount(2);
 
     // delete newsletter and check that relations no longer exist
     $newsletter->delete();
@@ -287,15 +287,15 @@ class NewsletterTest extends \MailPoetTest {
 
     // make sure relations exist
     // 1 parent newsletter/queues, 2 parent segments and 5 children queues/newsletters/segments
-    expect(Newsletter::findArray())->count(6);
-    expect(SendingQueue::findArray())->count(6);
-    expect(NewsletterSegment::findArray())->count(7);
+    verify(Newsletter::findArray())->arrayCount(6);
+    verify(SendingQueue::findArray())->arrayCount(6);
+    verify(NewsletterSegment::findArray())->arrayCount(7);
 
     // delete parent newsletter and check that relations no longer exist
     $parentNewsletter->delete();
-    expect(Newsletter::findArray())->count(0);
-    expect(SendingQueue::findArray())->count(0);
-    expect(NewsletterSegment::findArray())->count(0);
+    verify(Newsletter::findArray())->arrayCount(0);
+    verify(SendingQueue::findArray())->arrayCount(0);
+    verify(NewsletterSegment::findArray())->arrayCount(0);
   }
 
   public function testItTrashesQueueAssociationsWhenNewsletterIsTrashed() {
@@ -306,12 +306,12 @@ class NewsletterTest extends \MailPoetTest {
       $sendingQueue->newsletterId = $newsletter->id;
       $sendingQueue->save();
     }
-    expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
+    verify(SendingQueue::whereNull('deleted_at')->findArray())->arrayCount(6);
 
     // trash newsletter and check that relations are trashed
     $newsletter->trash();
     // 5 queues + 1 created in _before() method
-    expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
+    verify(SendingQueue::whereNotNull('deleted_at')->findArray())->arrayCount(6);
   }
 
   public function testItTrashesChildrenQueueAssociationsWhenParentNewsletterIsTrashed() {
@@ -330,14 +330,14 @@ class NewsletterTest extends \MailPoetTest {
       $sendingQueue->save();
     }
     // 1 parent and 5 children queues/newsletters
-    expect(Newsletter::whereNull('deleted_at')->findArray())->count(6);
-    expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
+    verify(Newsletter::whereNull('deleted_at')->findArray())->arrayCount(6);
+    verify(SendingQueue::whereNull('deleted_at')->findArray())->arrayCount(6);
 
     // trash parent newsletter and check that relations are trashed
     $parentNewsletter->trash();
     // 1 parent and 5 children queues/newsletters
-    expect(Newsletter::whereNotNull('deleted_at')->findArray())->count(6);
-    expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
+    verify(Newsletter::whereNotNull('deleted_at')->findArray())->arrayCount(6);
+    verify(SendingQueue::whereNotNull('deleted_at')->findArray())->arrayCount(6);
   }
 
   public function testItRestoresTrashedQueueAssociationsWhenNewsletterIsRestored() {
@@ -355,13 +355,13 @@ class NewsletterTest extends \MailPoetTest {
     $inProgressTask = $sendingTasks[1];
     $inProgressTask->status = null;
     $inProgressTask->save();
-    expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(5);
+    verify(SendingQueue::whereNotNull('deleted_at')->findArray())->arrayCount(5);
     // restore newsletter and check that relations are restored
     $newsletter->restore();
     // 5 queues + 1 created in _before() method
-    expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
+    verify(SendingQueue::whereNull('deleted_at')->findArray())->arrayCount(6);
     // In progress task was switched to paused state
-    expect(ScheduledTask::whereNull('deleted_at')->where('status', ScheduledTask::STATUS_PAUSED)->findArray())->count(1);
+    verify(ScheduledTask::whereNull('deleted_at')->where('status', ScheduledTask::STATUS_PAUSED)->findArray())->arrayCount(1);
   }
 
   public function testItRestoresTrashedChildrenQueueAssociationsWhenParentNewsletterIsRestored() {
@@ -389,14 +389,14 @@ class NewsletterTest extends \MailPoetTest {
       $sendingQueue->save();
     }
     // 1 parent and 5 children queues/newsletters
-    expect(Newsletter::whereNotNull('deleted_at')->findArray())->count(6);
-    expect(SendingQueue::whereNotNull('deleted_at')->findArray())->count(6);
+    verify(Newsletter::whereNotNull('deleted_at')->findArray())->arrayCount(6);
+    verify(SendingQueue::whereNotNull('deleted_at')->findArray())->arrayCount(6);
 
     // restore parent newsletter and check that relations are restored
     $parentNewsletter->restore();
     // 1 parent and 5 children queues/newsletters
-    expect(Newsletter::whereNull('deleted_at')->findArray())->count(6);
-    expect(SendingQueue::whereNull('deleted_at')->findArray())->count(6);
+    verify(Newsletter::whereNull('deleted_at')->findArray())->arrayCount(6);
+    verify(SendingQueue::whereNull('deleted_at')->findArray())->arrayCount(6);
   }
 
   public function testItGetsAndDecodesNewsletterOptionMetaField() {

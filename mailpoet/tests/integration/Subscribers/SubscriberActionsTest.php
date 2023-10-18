@@ -86,7 +86,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation.enabled', false);
     [$subscriber] = $this->subscriberActions->subscribe($this->testData, [$segment->getId()]);
     verify($subscriber->getId() > 0)->equals(true);
-    expect($subscriber->getSegments())->count(1);
+    verify($subscriber->getSegments())->arrayCount(1);
 
     $scheduledNotification = $this->sendingQueuesRepository->findOneByNewsletterAndTaskStatus(
       $newsletter,
@@ -113,7 +113,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation.enabled', true);
     [$subscriber] = $this->subscriberActions->subscribe($this->testData, [$segment->getId()]);
     verify($subscriber->getId() > 0)->equals(true);
-    expect($subscriber->getSegments())->count(1);
+    verify($subscriber->getSegments())->arrayCount(1);
     $scheduledNotification = $this->sendingQueuesRepository->findOneByNewsletterAndTaskStatus(
       $newsletter,
       ScheduledTaskEntity::STATUS_SCHEDULED
@@ -143,7 +143,7 @@ class SubscriberActionsTest extends \MailPoetTest {
 
     verify($subscriber->getId() > 0)->equals(true);
     verify($subscriber->getId())->notEquals(1337);
-    expect($subscriber->getSegments())->count(1);
+    verify($subscriber->getSegments())->arrayCount(1);
     verify($subscriber->getEmail())->equals('donald@mailpoet.com');
     verify($subscriber->getFirstName())->equals('Donald');
     verify($subscriber->getLastName())->equals('Trump');
@@ -178,7 +178,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     );
 
     verify($subscriber->getId() > 0)->equals(true);
-    expect($subscriber->getSegments())->count(1);
+    verify($subscriber->getSegments())->arrayCount(1);
     verify($subscriber->getEmail())->equals($data['email']);
     verify($subscriber->getFirstName())->equals($data['first_name']);
     verify($subscriber->getLastName())->equals($data['last_name']);
@@ -193,7 +193,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     );
 
     verify($subscriber->getId() > 0)->equals(true);
-    expect($subscriber->getSegments())->count(2);
+    verify($subscriber->getSegments())->arrayCount(2);
     verify($subscriber->getEmail())->equals($data2['email']);
     verify($subscriber->getFirstName())->equals($data2['first_name']);
     verify($subscriber->getLastName())->equals($data2['last_name']);
@@ -223,7 +223,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     );
 
     verify($subscriber->getId() > 0)->equals(true);
-    expect($subscriber->getSegments())->count(1);
+    verify($subscriber->getSegments())->arrayCount(1);
     verify($subscriber->getEmail())->equals($data['email']);
     verify($subscriber->getFirstName())->equals($data['first_name']);
     verify($subscriber->getLastName())->equals($data['last_name']);
@@ -245,7 +245,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     );
 
     verify($subscriber->getId() > 0)->equals(true);
-    expect($subscriber->getSegments())->count(2);
+    verify($subscriber->getSegments())->arrayCount(2);
     // fields should be left intact
     verify($subscriber->getEmail())->equals($data['email']);
     verify($subscriber->getFirstName())->equals($data['first_name']);

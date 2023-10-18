@@ -55,7 +55,7 @@ class UserRoleTest extends \MailPoetTest {
   public function testItDoesntGetSubString(): void {
     $segmentFilterData = $this->getSegmentFilterData('edit');
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->userRoleFilter);
-    expect($emails)->count(0);
+    verify($emails)->arrayCount(0);
   }
 
   public function testItRetrievesLookupData(): void {

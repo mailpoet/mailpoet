@@ -36,7 +36,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     verify($newsletter->getNewsletterSegments()->count())->same(0);
 
     $newsletterSegments = $this->diContainer->get(NewsletterSegmentRepository::class)->findBy(['newsletter' => $newsletter]);
-    expect($newsletterSegments)->count(0);
+    verify($newsletterSegments)->arrayCount(0);
   }
 
   public function testItRemovesOrphanedOptionRelations() {
@@ -54,7 +54,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     verify($newsletter->getOptions()->count())->same(0);
 
     $newsletterSegments = $this->diContainer->get(NewsletterOptionsRepository::class)->findBy(['newsletter' => $newsletter]);
-    expect($newsletterSegments)->count(0);
+    verify($newsletterSegments)->arrayCount(0);
   }
 
   public function testGetOptionReturnsCorrectData(): void {

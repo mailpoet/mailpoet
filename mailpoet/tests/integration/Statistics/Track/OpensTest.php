@@ -167,7 +167,7 @@ class OpensTest extends \MailPoetTest {
     ], $this);
     $opens->track($this->trackData);
     $opens = $this->statisticsOpensRepository->findAll();
-    expect($opens)->count(1);
+    verify($opens)->arrayCount(1);
     $open = $opens[0];
     $userAgent = $open->getUserAgent();
     expect($userAgent)->notNull();
@@ -186,13 +186,13 @@ class OpensTest extends \MailPoetTest {
     ], $this);
     $opens->track($this->trackData);
     $opens = $this->statisticsOpensRepository->findAll();
-    expect($opens)->count(1);
+    verify($opens)->arrayCount(1);
     $open = $opens[0];
     $userAgent = $open->getUserAgent();
     expect($userAgent)->notNull();
     $uaRepository = $this->diContainer->get(UserAgentsRepository::class);
     $userAgents = $uaRepository->findBy(['userAgent' => 'User agent1']);
-    expect($userAgents)->count(1);
+    verify($userAgents)->arrayCount(1);
   }
 
   public function testItOverridesOldUserAgent() {
@@ -209,7 +209,7 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
     verify(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $opens = $this->statisticsOpensRepository->findAll();
-    expect($opens)->count(1);
+    verify($opens)->arrayCount(1);
     $open = $opens[0];
     $userAgent = $open->getUserAgent();
     $this->assertInstanceOf(UserAgentEntity::class, $userAgent);
@@ -230,7 +230,7 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
     verify(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
-    expect($openEntities)->count(1);
+    verify($openEntities)->arrayCount(1);
     $openEntity = reset($openEntities);
     $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     $userAgent = $openEntity->getUserAgent();
@@ -244,7 +244,7 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
     verify(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
-    expect($openEntities)->count(1);
+    verify($openEntities)->arrayCount(1);
     $openEntity = reset($openEntities);
     $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     $userAgent = $openEntity->getUserAgent();
@@ -268,7 +268,7 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
     verify(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
-    expect($openEntities)->count(1);
+    verify($openEntities)->arrayCount(1);
     $openEntity = reset($openEntities);
     $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     $userAgent = $openEntity->getUserAgent();
@@ -282,7 +282,7 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
     verify(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
-    expect($openEntities)->count(1);
+    verify($openEntities)->arrayCount(1);
     $openEntity = reset($openEntities);
     $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     $userAgent = $openEntity->getUserAgent();
@@ -305,7 +305,7 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
     verify(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
-    expect($openEntities)->count(1);
+    verify($openEntities)->arrayCount(1);
     $openEntity = reset($openEntities);
     $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     verify($openEntity->getUserAgent())->null();
@@ -316,7 +316,7 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
     verify(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
-    expect($openEntities)->count(1);
+    verify($openEntities)->arrayCount(1);
     $openEntity = reset($openEntities);
     $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     verify($openEntity->getUserAgent())->null();
@@ -336,7 +336,7 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
     verify(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
-    expect($openEntities)->count(1);
+    verify($openEntities)->arrayCount(1);
     $openEntity = reset($openEntities);
     $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     verify($openEntity->getUserAgent())->null();
@@ -347,7 +347,7 @@ class OpensTest extends \MailPoetTest {
     $opens->track($this->trackData);
     verify(count($this->statisticsOpensRepository->findAll()))->equals(1);
     $openEntities = $this->statisticsOpensRepository->findAll();
-    expect($openEntities)->count(1);
+    verify($openEntities)->arrayCount(1);
     $openEntity = reset($openEntities);
     $this->assertInstanceOf(StatisticsOpenEntity::class, $openEntity);
     $userAgent = $openEntity->getUserAgent();

@@ -55,18 +55,18 @@ class FormEntityTest extends \MailPoetUnitTest {
     $formEntity = new FormEntity('Test' );
     $formEntity->setBody($this->body);
     $paragraphs = $formEntity->getBlocksByTypes([FormEntity::PARAGRAPH_BLOCK_TYPE]);
-    expect($paragraphs)->count(3);
+    verify($paragraphs)->arrayCount(3);
     verify($paragraphs[0]['params']['content'])->equals('Paragraph 1');
     verify($paragraphs[1]['params']['content'])->equals('Paragraph 2');
     verify($paragraphs[2]['params']['content'])->equals('Paragraph 3');
 
     $headings = $formEntity->getBlocksByTypes([FormEntity::HEADING_BLOCK_TYPE]);
-    expect($headings)->count(1);
+    verify($headings)->arrayCount(1);
     verify($headings[0]['params']['content'])->equals('Heading 1');
 
     $columns = $formEntity->getBlocksByTypes([FormEntity::COLUMNS_BLOCK_TYPE]);
-    expect($columns)->count(1);
-    expect($columns[0]['body'])->count(2);
+    verify($columns)->arrayCount(1);
+    verify($columns[0]['body'])->arrayCount(2);
   }
 
   public function testGetSegmentSelectionSegmentIds() {

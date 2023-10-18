@@ -65,7 +65,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $this->tester->assertEqualDateTimes($expectedTime, $task->getScheduledAt(), 1);
     // task should have 1 associated user
     $subscribers = $task->getSubscribers()->toArray();
-    expect($subscribers)->count(1);
+    verify($subscribers)->arrayCount(1);
     verify($subscribers[0]->getSubscriber())->equals($subscriber);
   }
 
@@ -97,7 +97,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $this->tester->assertEqualDateTimes($expectedTime, $task->getScheduledAt(), 1);
     // task should not have any subscribers
     $subscribers = $task->getSubscribers();
-    expect($subscribers)->count(0);
+    verify($subscribers)->arrayCount(0);
   }
 
   public function testItDoesNotScheduleAutomaticEmailWhenGroupDoesNotMatch() {
@@ -181,7 +181,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $automaticEmailScheduler->scheduleAutomaticEmail('some_group', 'some_event', $condition);
     $result = $this->sendingQueuesRepository->findAll();
     $sendingQueue = reset($result);
-    expect($result)->count(1);
+    verify($result)->arrayCount(1);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $newsletter = $sendingQueue->getNewsletter();
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);

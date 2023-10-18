@@ -364,7 +364,7 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     );
     $woocommercePurchases->trackPurchase($orderMock->get_id());
     $purchaseStats = $this->statisticsWooCommercePurchasesRepository->findBy([]);
-    expect($purchaseStats)->count(1);
+    verify($purchaseStats)->arrayCount(1);
     $click = $purchaseStats[0]->getClick();
     $this->assertInstanceOf(StatisticsClickEntity::class, $click);
     verify($click->getId())->equals($click->getId());

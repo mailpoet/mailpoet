@@ -64,9 +64,9 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     expect($subscriber->getLinkToken())->notNull();
     expect($subscriber->getId())->notNull();
     expect($subscriber->getLastSubscribedAt())->notNull();
-    expect($subscriber->getSegments())->count(2);
-    expect($subscriber->getSubscriberSegments())->count(2);
-    expect($subscriber->getSubscriberTags())->count(2);
+    verify($subscriber->getSegments())->arrayCount(2);
+    verify($subscriber->getSubscriberSegments())->arrayCount(2);
+    verify($subscriber->getSubscriberTags())->arrayCount(2);
   }
 
   public function testItCanUpdateASubscriber(): void {
@@ -92,9 +92,9 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     verify($subscriber->getFirstName())->equals($data['first_name']);
     verify($subscriber->getLastName())->equals($data['last_name']);
     expect($subscriber->getLastSubscribedAt())->notNull();
-    expect($subscriber->getSegments())->count(1);
-    expect($subscriber->getSubscriberSegments())->count(1);
-    expect($subscriber->getSubscriberTags())->count(1);
+    verify($subscriber->getSegments())->arrayCount(1);
+    verify($subscriber->getSubscriberSegments())->arrayCount(1);
+    verify($subscriber->getSubscriberTags())->arrayCount(1);
     // Check exact tag name
     $tagNames = array_values(array_map(function (SubscriberTagEntity $subscriberTag): string {
       return ($tag = $subscriberTag->getTag()) ? $tag->getName() : '';
@@ -107,7 +107,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
       'Third',
     ];
     $subscriber = $this->saveController->save($data);
-    expect($subscriber->getSubscriberTags())->count(2);
+    verify($subscriber->getSubscriberTags())->arrayCount(2);
     $tagNames = array_values(array_map(function (SubscriberTagEntity $subscriberTag): string {
       return ($tag = $subscriberTag->getTag()) ? $tag->getName() : '';
     }, $subscriber->getSubscriberTags()->toArray()));
@@ -141,7 +141,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     $this->entityManager->remove($orphanSegment);
     $this->entityManager->flush();
     $subscriberSegments = $this->subscriberSegmentRepository->findBy(['subscriber' => $subscriber]);
-    expect($subscriberSegments)->count(1);
+    verify($subscriberSegments)->arrayCount(1);
 
     // Update subscriber with new segments
     $data = [
@@ -159,7 +159,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     $subscriber = $this->saveController->save($data);
     // Check the $orphanSegment is gone
     $subscriberSegments = $this->subscriberSegmentRepository->findBy(['subscriber' => $subscriber]);
-    expect($subscriberSegments)->count(2);
+    verify($subscriberSegments)->arrayCount(2);
   }
 
   private function createSubscriber(string $email, string $status): SubscriberEntity {
