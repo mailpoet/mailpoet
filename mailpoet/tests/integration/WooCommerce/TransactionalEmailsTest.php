@@ -63,7 +63,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
     $email = $this->newslettersRepository->findOneBy(['type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL]);
     $this->assertInstanceOf(NewsletterEntity::class, $email);
     $id = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID, null);
-    expect($email)->notEmpty();
+    verify($email)->notEmpty();
     expect($id)->notNull();
     verify($email->getId())->equals($id);
   }
@@ -93,7 +93,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
       'type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL,
     ]);
     $this->assertInstanceOf(NewsletterEntity::class, $email);
-    expect($email)->notEmpty();
+    verify($email)->notEmpty();
     verify(json_encode($email->getBody()))->stringContainsString('my-awesome-image-url');
   }
 

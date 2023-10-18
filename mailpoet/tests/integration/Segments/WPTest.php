@@ -185,7 +185,7 @@ class WPTest extends \MailPoetTest {
     $id = $this->insertUser($randomNumber);
     $this->wpSegment->synchronizeUsers();
     $wpSubscriber = Segment::getWPSegment()->subscribers()->where('wp_user_id', $id)->findOne();
-    expect($wpSubscriber)->notEmpty();
+    verify($wpSubscriber)->notEmpty();
     verify($wpSubscriber->id)->equals($subscriber->id);
     verify($wpSubscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
@@ -364,7 +364,7 @@ class WPTest extends \MailPoetTest {
     $subscribersCount = $this->getSubscribersCount();
     verify($subscribersCount)->equals(3);
     $dbSubscriber = Subscriber::findOne($subscriber3->id);
-    expect($dbSubscriber)->notEmpty();
+    verify($dbSubscriber)->notEmpty();
     $subscriber3->delete();
   }
 
@@ -409,7 +409,7 @@ class WPTest extends \MailPoetTest {
     $association->segmentId = $wpSegment->id;
     $association->save();
     $dbSubscriber = Subscriber::findOne($subscriber->id);
-    expect($dbSubscriber)->notEmpty();
+    verify($dbSubscriber)->notEmpty();
     $this->wpSegment->synchronizeUsers();
     $dbSubscriber = Subscriber::findOne($subscriber->id);
     expect($dbSubscriber)->isEmpty();

@@ -61,7 +61,7 @@ class HelpTest extends \MailPoetTest {
     verify($data['newsletter']['newsletter_id'])->equals($newsletter->getId());
     verify($data['newsletter']['queue_id'])->equals($queue->getId());
     verify($data['newsletter']['subject'])->equals('Rendered Subject');
-    expect($data['newsletter']['preview_url'])->notEmpty();
+    verify($data['newsletter']['preview_url'])->notEmpty();
   }
 
   public function testItDoesNotFailForSendingTaskWithMissingNewsletterInconsistentData() {

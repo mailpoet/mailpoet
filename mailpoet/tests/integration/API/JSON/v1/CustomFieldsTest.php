@@ -75,9 +75,9 @@ class CustomFieldsTest extends \MailPoetTest {
     expect($response->data)->count(count($this->customFields));
 
     foreach ($response->data as $customField) {
-      expect($customField['name'])->notEmpty();
-      expect($customField['type'])->notEmpty();
-      expect($customField['params'])->notEmpty();
+      verify($customField['name'])->notEmpty();
+      verify($customField['type'])->notEmpty();
+      verify($customField['params'])->notEmpty();
     }
   }
 
@@ -148,7 +148,7 @@ class CustomFieldsTest extends \MailPoetTest {
 
     verify($response->data['name'])->equals('CF: text');
     verify($response->data['type'])->equals('text');
-    expect($response->data['params'])->notEmpty();
+    verify($response->data['params'])->notEmpty();
 
     $response = $this->endpoint->get(['id' => 'not_an_id']);
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);

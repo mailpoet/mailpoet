@@ -81,7 +81,7 @@ class CheckboxTest extends \MailPoetUnitTest {
     $html = $this->checkbox->render($this->block, [], 213);
 
     $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_1_213']");
-    expect($errorContainer)->notEmpty();
+    verify($errorContainer)->notEmpty();
     verify($errorContainer->nodeName)->equals('span');
   }
 }

@@ -100,7 +100,7 @@ class TranslationUpdaterTest extends \MailPoetTest {
     );
     $result = $updater->checkForTranslations($updateTransient);
 
-    expect($result->translations)->notEmpty();
+    verify($result->translations)->notEmpty();
     $freeTranslation = $result->translations[0];
     verify($freeTranslation['type'])->equals('plugin');
     verify($freeTranslation['slug'])->equals($this->freeSlug);
@@ -222,7 +222,7 @@ class TranslationUpdaterTest extends \MailPoetTest {
       ]
     );
     $result = $updater->checkForTranslations($updateTransient);
-    expect($result->translations)->notEmpty();
+    verify($result->translations)->notEmpty();
     $freeTranslation = $result->translations[0];
     verify($freeTranslation['type'])->equals('plugin');
     verify($freeTranslation['slug'])->equals($this->freeSlug);
@@ -405,7 +405,7 @@ class TranslationUpdaterTest extends \MailPoetTest {
     );
     $result = $updater->checkForTranslations($updateTransient);
 
-    expect($result->translations)->notEmpty();
+    verify($result->translations)->notEmpty();
     $freeTranslation = $result->translations[0];
     verify($freeTranslation['type'])->equals('plugin');
     verify($freeTranslation['slug'])->equals($this->freeSlug);

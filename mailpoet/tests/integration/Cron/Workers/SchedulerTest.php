@@ -131,7 +131,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue->status = SendingQueueEntity::STATUS_SCHEDULED;
     $queue->scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
     $queue->save();
-    expect($scheduler->getScheduledSendingTasks())->notEmpty();
+    verify($scheduler->getScheduledSendingTasks())->notEmpty();
   }
 
   public function testItCanCreateNotificationHistory() {
@@ -154,7 +154,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
     $scheduler->createPostNotificationHistory($newsletter);
     $notificationHistory = $this->newslettersRepository->findOneBy(['parent' => $newsletter, 'type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY]);
-    expect($notificationHistory)->notEmpty();
+    verify($notificationHistory)->notEmpty();
     $this->assertInstanceOf(NewsletterEntity::class, $notificationHistory);
     // check the hash of the post notification history
     verify($notificationHistory->getHash())->notEquals($newsletter->getHash());
@@ -179,7 +179,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
 
     // queue and associated newsletter should be deleted when interval type is set to "immediately"
-    expect($this->sendingQueuesRepository->findAll())->notEmpty();
+    verify($this->sendingQueuesRepository->findAll())->notEmpty();
     $scheduler->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
     expect($this->sendingQueuesRepository->findAll())->count(0);
   }
@@ -559,7 +559,7 @@ class SchedulerTest extends \MailPoetTest {
     // create notification history
     $notificationHistory = $this->newslettersRepository->findOneBy(['parent' => $newsletter->getId()]);
     $this->assertInstanceOf(NewsletterEntity::class, $notificationHistory);
-    expect($notificationHistory)->notEmpty();
+    verify($notificationHistory)->notEmpty();
     // update queue with a list of subscribers to process and change newsletter id
     // to that of the notification history
     $sendingQueue = $this->sendingQueuesRepository->findOneById($queue->id);

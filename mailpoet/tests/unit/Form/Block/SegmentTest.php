@@ -100,7 +100,7 @@ class SegmentTest extends \MailPoetUnitTest {
     $html = $this->segment->render($this->block, [], 1);
 
     $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_segment_1']");
-    expect($errorContainer)->notEmpty();
+    verify($errorContainer)->notEmpty();
     verify($errorContainer->nodeName)->equals('span');
   }
 

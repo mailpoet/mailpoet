@@ -256,7 +256,7 @@ class ExportTest extends \MailPoetTest {
       $this->fail('Export to .csv process threw an exception');
     }
     verify($result['totalExported'])->equals(4);
-    expect($result['exportFileURL'])->notEmpty();
+    verify($result['exportFileURL'])->notEmpty();
 
     try {
       $this->export->exportFile = $this->export->getExportFile('xlsx');
@@ -266,7 +266,7 @@ class ExportTest extends \MailPoetTest {
       $this->fail('Export to .xlsx process threw an exception');
     }
     verify($result['totalExported'])->equals(4);
-    expect($result['exportFileURL'])->notEmpty();
+    verify($result['exportFileURL'])->notEmpty();
   }
 
   private function createCustomField(string $name, string $type): CustomFieldEntity {

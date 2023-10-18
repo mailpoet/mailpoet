@@ -261,10 +261,10 @@ class RendererTest extends \MailPoetTest {
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][0];
     $DOM = $this->dOMParser->parseStr((new Header)->render($template));
     // element should be properly nested, and styles should be applied
-    expect($DOM('tr > td.mailpoet_header', 0)->html())->notEmpty();
-    expect($DOM('tr > td > a', 0)->html())->notEmpty();
-    expect($DOM('a', 0)->attr('style'))->notEmpty();
-    expect($DOM('td', 0)->attr('style'))->notEmpty();
+    verify($DOM('tr > td.mailpoet_header', 0)->html())->notEmpty();
+    verify($DOM('tr > td > a', 0)->html())->notEmpty();
+    verify($DOM('a', 0)->attr('style'))->notEmpty();
+    verify($DOM('td', 0)->attr('style'))->notEmpty();
   }
 
   public function testItRendersImage() {
@@ -418,10 +418,10 @@ class RendererTest extends \MailPoetTest {
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][2];
     $DOM = $this->dOMParser->parseStr((new Text)->render($template));
     // blockquotes and paragraphs should be converted to spans and placed inside a table
-    expect(
+    verify(
       $DOM('tr > td > table > tr > td.mailpoet_paragraph', 0)->html()
     )->notEmpty();
-    expect(
+    verify(
       $DOM('tr > td > table > tr > td.mailpoet_blockquote', 0)->html()
     )->notEmpty();
     // blockquote should contain heading elements but not paragraphs
@@ -432,10 +432,10 @@ class RendererTest extends \MailPoetTest {
       $DOM('tr > td > table > tr > td.mailpoet_blockquote', 0)->html()
     )->stringNotContainsString('<p');
     // ul/ol/li should have mailpoet_paragraph class added & styles applied
-    expect(
+    verify(
       $DOM('tr > td > ul.mailpoet_paragraph > li.mailpoet_paragraph', 0)->html()
     )->notEmpty();
-    expect(
+    verify(
       $DOM('tr > td > ol.mailpoet_paragraph > li.mailpoet_paragraph', 0)->html()
     )->notEmpty();
     verify($DOM('tr > td.mailpoet_text > ul.mailpoet_paragraph', 0)->attr('style'))
@@ -497,7 +497,7 @@ class RendererTest extends \MailPoetTest {
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $DOM = $this->dOMParser->parseStr((new Button)->render($template, self::COLUMN_BASE_WIDTH));
     // element should be properly nested with arcsize/styles/fillcolor set
-    expect(
+    verify(
       $DOM('tr > td > div > table > tr > td > a.mailpoet_button', 0)->html()
     )->notEmpty();
     verify(
@@ -545,7 +545,7 @@ class RendererTest extends \MailPoetTest {
     $DOM = $this->dOMParser->parseStr((new Social)->render($template));
     // element should be properly nested, contain social icons and
     // image source/link href/alt should be  properly set
-    expect($DOM('tr > td', 0)->html())->notEmpty();
+    verify($DOM('tr > td', 0)->html())->notEmpty();
     verify($DOM('a', 0)->attr('href'))->equals('http://example.com');
     verify($DOM('td > a:nth-of-type(10) > img')->attr('src'))->stringContainsString('custom.png');
     verify($DOM('td > a:nth-of-type(10) > img')->attr('alt'))->equals('custom');
@@ -572,10 +572,10 @@ class RendererTest extends \MailPoetTest {
     $template = $newsletter['content']['blocks'][3]['blocks'][0]['blocks'][0];
     $DOM = $this->dOMParser->parseStr((new Footer)->render($template));
     // element should be properly nested, and styles should be applied
-    expect($DOM('tr > td.mailpoet_footer', 0)->html())->notEmpty();
-    expect($DOM('tr > td > a', 0)->html())->notEmpty();
-    expect($DOM('a', 0)->attr('style'))->notEmpty();
-    expect($DOM('td', 0)->attr('style'))->notEmpty();
+    verify($DOM('tr > td.mailpoet_footer', 0)->html())->notEmpty();
+    verify($DOM('tr > td > a', 0)->html())->notEmpty();
+    verify($DOM('a', 0)->attr('style'))->notEmpty();
+    verify($DOM('td', 0)->attr('style'))->notEmpty();
   }
 
   public function testItSetsSubject() {

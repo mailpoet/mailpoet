@@ -68,7 +68,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->wooCommerceSegment->synchronizeRegisteredCustomer($user->ID, $hook);
     $subscriber = $this->findWCSubscriberByWpUserId($user->ID);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber)->notEmpty();
+    verify($subscriber)->notEmpty();
     verify($subscriber->getEmail())->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($subscriber->getFirstName())->equals($firstName);
     verify($subscriber->getLastName())->equals($lastName);
@@ -93,7 +93,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->wooCommerceSegment->synchronizeRegisteredCustomer($user->ID, $hook);
     $subscriber = $this->findWCSubscriberByWpUserId($user->ID);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber)->notEmpty();
+    verify($subscriber)->notEmpty();
     verify($subscriber->getEmail())->equals($user->user_email); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($subscriber->getFirstName())->equals($firstName);
     verify($subscriber->getLastName())->equals($lastName);
@@ -114,10 +114,10 @@ class WooCommerceTest extends \MailPoetTest {
       Source::WORDPRESS_USER
     );
     $association = $this->createSubscriberSegment($subscriber, $wooCommerceSegment);
-    expect($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
+    verify($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
     $hook = 'woocommerce_delete_customer';
     $this->wooCommerceSegment->synchronizeRegisteredCustomer($user->ID, $hook);
-    expect($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
+    verify($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
   }
 
   public function testItSynchronizesNewGuestCustomer(): void {
@@ -240,7 +240,7 @@ class WooCommerceTest extends \MailPoetTest {
       'isWoocommerceUser' => true,
     ]);
     $this->assertInstanceOf(SubscriberEntity::class, $wpSubscriber);
-    expect($wpSubscriber)->notEmpty();
+    verify($wpSubscriber)->notEmpty();
     verify($wpSubscriber->getId())->equals($subscriber->getId());
     verify($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
@@ -261,7 +261,7 @@ class WooCommerceTest extends \MailPoetTest {
       'isWoocommerceUser' => true,
     ]);
     $this->assertInstanceOf(SubscriberEntity::class, $wpSubscriber);
-    expect($wpSubscriber)->notEmpty();
+    verify($wpSubscriber)->notEmpty();
     verify($wpSubscriber->getEmail())->equals($subscriber->getEmail());
     verify($wpSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
@@ -425,7 +425,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->entityManager->clear();
     $dbSubscriber = $this->subscribersRepository->findOneById($subscriber3->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $dbSubscriber);
-    expect($dbSubscriber)->notEmpty();
+    verify($dbSubscriber)->notEmpty();
     $this->entityManager->remove($dbSubscriber);
     $this->entityManager->flush();
   }
@@ -439,7 +439,7 @@ class WooCommerceTest extends \MailPoetTest {
       SubscriberEntity::STATUS_SUBSCRIBED
     );
     $association = $this->createSubscriberSegment($subscriber, $wooCommerceSegment);
-    expect($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
+    verify($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
     $this->synchronizeAllCustomers();
     $this->entityManager->clear();
     expect($this->subscriberSegmentsRepository->findOneById($association->getId()))->isEmpty();
@@ -457,7 +457,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->subscribersRepository->flush();
     $this->clearEmail($subscriber);
     $association = $this->createSubscriberSegment($subscriber, $wooCommerceSegment);
-    expect($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
+    verify($this->subscriberSegmentsRepository->findOneById($association->getId()))->notEmpty();
     $this->entityManager->clear();
     $this->synchronizeAllCustomers();
     expect($this->subscriberSegmentsRepository->findOneById($association->getId()))->isEmpty();

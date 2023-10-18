@@ -471,7 +471,7 @@ class NewsletterTest extends \MailPoetTest {
     ]);
     $newsletter = $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
     verify($newsletter->status)->equals(Newsletter::STATUS_DRAFT);
-    expect($newsletter->getErrors())->notEmpty();
+    verify($newsletter->getErrors())->notEmpty();
   }
 
   private function reloadNewsletter(Newsletter $newsletter): Newsletter {

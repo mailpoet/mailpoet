@@ -20,6 +20,6 @@ class AfterMigrationNoticeTest extends \MailPoetTest {
     $notice = new AfterMigrationNotice();
     $notice->enable();
     $result = $notice->init(true);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
   }
 }

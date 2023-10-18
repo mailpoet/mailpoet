@@ -58,7 +58,7 @@ class SendingTest extends \MailPoetTest {
 
   public function testItCanCreateManyFromTasks() {
     $sendings = SendingTask::createManyFromTasks([$this->task]);
-    expect($sendings)->notEmpty();
+    verify($sendings)->notEmpty();
     $queue = $sendings[0]->queue();
     verify($queue->taskId)->equals($this->task->id);
   }
@@ -163,7 +163,7 @@ class SendingTest extends \MailPoetTest {
     $this->sending->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(1);
     $this->sending->save();
     $tasks = $this->scheduledTaskRepository->findScheduledSendingTasks();
-    expect($tasks)->notEmpty();
+    verify($tasks)->notEmpty();
     foreach ($tasks as $task) {
       expect($task)->isInstanceOf(ScheduledTaskEntity::class);
     }
@@ -192,7 +192,7 @@ class SendingTest extends \MailPoetTest {
     $this->sending->scheduled_at = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(1);
     $this->sending->save();
     $tasks = $this->scheduledTaskRepository->findRunningSendingTasks();
-    expect($tasks)->notEmpty();
+    verify($tasks)->notEmpty();
     foreach ($tasks as $task) {
       expect($task)->isInstanceOf(ScheduledTaskEntity::class);
     }

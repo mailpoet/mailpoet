@@ -185,7 +185,7 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
     $mockedWCCoupon->method('save')->willReturn($expectedCouponId);
 
     $mockedWCCoupon->method('set_code')->willReturnCallback(function ($code) {
-      expect($code)->notEmpty();
+      verify($code)->notEmpty();
     });
 
     $mockedWCCoupon->method('set_date_expires')->willReturnCallback(function ($date) use ($expiryDay) {

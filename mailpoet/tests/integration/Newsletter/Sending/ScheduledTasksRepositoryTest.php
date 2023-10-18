@@ -128,7 +128,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->assertContains(Bounce::TASK_TYPE, $types);
     verify(is_int($data[1]->getPriority()))->true();
     expect($data[1]->getUpdatedAt())->isInstanceOf(\DateTimeInterface::class);
-    expect($data[1]->getStatus())->notEmpty();
+    verify($data[1]->getStatus())->notEmpty();
     expect($data[0])->isInstanceOf(ScheduledTaskEntity::class);
     expect($data[1])->isInstanceOf(ScheduledTaskEntity::class);
   }

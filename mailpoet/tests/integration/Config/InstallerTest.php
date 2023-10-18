@@ -76,9 +76,9 @@ class InstallerTest extends \MailPoetTest {
     );
     $result = $installer->getPluginInformation(false, 'plugin_information', $args);
     verify($result->slug)->equals($this->slug);
-    expect($result->new_version)->notEmpty(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($result->download_link)->notEmpty(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($result->package)->notEmpty();
+    verify($result->new_version)->notEmpty(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($result->download_link)->notEmpty(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($result->package)->notEmpty();
   }
 
   public function testItIgnoresNonMatchingRequestsWhenGettingPluginInformation() {

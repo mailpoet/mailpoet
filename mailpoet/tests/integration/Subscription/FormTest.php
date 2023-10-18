@@ -82,7 +82,7 @@ class FormTest extends \MailPoetTest {
     ], $this);
     $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
     $result = $formController->onSubmit($this->requestData);
-    expect($this->subscribersRepository->findOneBy(['email' => $this->testEmail]))->notEmpty();
+    verify($this->subscribersRepository->findOneBy(['email' => $this->testEmail]))->notEmpty();
     verify($result['mailpoet_success'])->equals($this->form->getId());
     verify($result['mailpoet_error'])->null();
   }
@@ -105,7 +105,7 @@ class FormTest extends \MailPoetTest {
     ], $this);
     $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
     $result = $formController->onSubmit($this->requestData);
-    expect($this->subscribersRepository->findOneBy(['email' => $this->testEmail]))->notEmpty();
+    verify($this->subscribersRepository->findOneBy(['email' => $this->testEmail]))->notEmpty();
     expect($result)->regExp('/http.*?sample-post|http.*?\?p=\d+/i');
   }
 

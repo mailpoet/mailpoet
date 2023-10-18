@@ -43,7 +43,7 @@ class PurchasedProductTest extends \MailPoetTest {
   public function testItGetsEventDetails() {
     $event = new PurchasedProduct();
     $result = $event->getEventDetails();
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['slug'])->equals(PurchasedProduct::SLUG);
   }
 
@@ -148,7 +148,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $email = $this->createEmailTriggeredByProductIds([1000]);
     $event = $this->createOrderEvent($subscriber, [1000]);
     $sendingQueue = $this->triggerEmailForState('processing', $email, $event);
-    expect($sendingQueue)->notEmpty();
+    verify($sendingQueue)->notEmpty();
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     verify($sendingQueue->getMeta())->equals(['orderedProducts' => [1000]]);
   }
@@ -159,7 +159,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $email = $this->createEmailTriggeredByProductIds([1000]);
     $event = $this->createOrderEvent($subscriber, [1000]);
     $sendingQueue = $this->triggerEmailForState('completed', $email, $event);
-    expect($sendingQueue)->notEmpty();
+    verify($sendingQueue)->notEmpty();
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     verify($sendingQueue->getMeta())->equals(['orderedProducts' => [1000]]);
   }
@@ -170,7 +170,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $email = $this->createEmailTriggeredByProductIds([1000]);
     $event = $this->createOrderEvent($subscriber, [1000, 1002]);
     $sendingQueue = $this->triggerEmailForState('completed', $email, $event);
-    expect($sendingQueue)->notEmpty();
+    verify($sendingQueue)->notEmpty();
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     verify($sendingQueue->getMeta())->equals(['orderedProducts' => [1000]]);
   }
@@ -181,7 +181,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $email = $this->createEmailTriggeredByProductIds([1000, 2000]);
     $event = $this->createOrderEvent($subscriber, [1000]);
     $sendingQueue = $this->triggerEmailForState('completed', $email, $event);
-    expect($sendingQueue)->notEmpty();
+    verify($sendingQueue)->notEmpty();
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     verify($sendingQueue->getMeta())->equals(['orderedProducts' => [1000]]);
   }

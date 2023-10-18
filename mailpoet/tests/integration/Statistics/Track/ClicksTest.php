@@ -172,8 +172,8 @@ class ClicksTest extends \MailPoetTest {
     ], $this);
     $clicks->track($data);
 
-    expect($this->statisticsClicksRepository->findAll())->notEmpty();
-    expect($this->statisticsOpensRepository->findAll())->notEmpty();
+    verify($this->statisticsClicksRepository->findAll())->notEmpty();
+    verify($this->statisticsOpensRepository->findAll())->notEmpty();
   }
 
   public function testItTracksUserAgent() {

@@ -316,7 +316,7 @@ class NewslettersTest extends \MailPoetTest {
       ]
     );
     $tasks = $this->scheduledTasksRepository->findAll();
-    expect($tasks)->notEmpty();
+    verify($tasks)->notEmpty();
   }
 
   public function testItCanRestoreANewsletter() {
@@ -655,7 +655,7 @@ class NewslettersTest extends \MailPoetTest {
     $previewLink = $response->data[0]['preview_url'];
     parse_str((string)parse_url($previewLink, PHP_URL_QUERY), $previewLinkData);
     $previewLinkData = $this->newsletterUrl->transformUrlDataObject(Router::decodeRequestData($previewLinkData['data']));
-    expect($previewLinkData['newsletter_hash'])->notEmpty();
+    verify($previewLinkData['newsletter_hash'])->notEmpty();
     verify($previewLinkData['subscriber_id'])->false();
     verify($previewLinkData['subscriber_token'])->false();
     verify((boolean)$previewLinkData['preview'])->true();

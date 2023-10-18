@@ -25,17 +25,17 @@ class HomepageDataControllerTest extends \MailPoetTest {
 
   public function testItFetchesBasicData(): void {
     $data = $this->homepageDataController->getPageData();
-    expect($data)->notEmpty();
+    verify($data)->notEmpty();
     verify($data['taskListDismissed'])->false();
     verify($data['productDiscoveryDismissed'])->false();
     expect($data['taskListStatus'])->array();
-    expect($data['taskListStatus'])->notEmpty();
+    verify($data['taskListStatus'])->notEmpty();
     expect($data['productDiscoveryStatus'])->array();
-    expect($data['productDiscoveryStatus'])->notEmpty();
+    verify($data['productDiscoveryStatus'])->notEmpty();
     expect($data['wooCustomersCount'])->int();
     expect($data['subscribersCount'])->int();
     expect($data['subscribersStats'])->array();
-    expect($data['taskListStatus'])->notEmpty();
+    verify($data['taskListStatus'])->notEmpty();
   }
 
   public function testItFetchesSenderTaskListStatus(): void {

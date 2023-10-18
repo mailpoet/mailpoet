@@ -231,7 +231,7 @@ class SubscribersTest extends \MailPoetTest {
 
     $result = $this->getApi()->subscribeToList($subscriber->getEmail(), $segment->getId());
     verify($result['id'])->equals($subscriber->getId());
-    expect($result['subscriptions'])->notEmpty();
+    verify($result['subscriptions'])->notEmpty();
     verify($result['subscriptions'][0]['segment_id'])->equals($segment->getId());
   }
 

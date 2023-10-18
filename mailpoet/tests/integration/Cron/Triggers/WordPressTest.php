@@ -79,7 +79,7 @@ class WordPressTest extends \MailPoetTest {
     $timeInThePast = (time() - $runInterval) - 1;
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $timeInThePast);
     $this->addQueue(SendingQueueEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->run())->notEmpty();
+    verify($this->wordpressTrigger->run())->notEmpty();
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->greaterThan($timeInThePast);
     WPFunctions::get()->removeAllFilters('mailpoet_cron_trigger_wordpress_run_interval');
   }
@@ -90,7 +90,7 @@ class WordPressTest extends \MailPoetTest {
     $this->addQueue(SendingQueueEntity::STATUS_SCHEDULED);
     WordPress::resetRunInterval();
     expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->isEmpty();
-    expect($this->wordpressTrigger->run())->notEmpty();
+    verify($this->wordpressTrigger->run())->notEmpty();
   }
 
   public function testItRequiresScheduledQueuesToExecute() {
