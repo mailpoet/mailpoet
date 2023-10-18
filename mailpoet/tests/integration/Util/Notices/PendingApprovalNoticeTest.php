@@ -36,7 +36,7 @@ class PendingApprovalNoticeTest extends \MailPoetTest {
     $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
 
     $result = $this->notice->init(true);
-    expect($result)->null();
+    verify($result)->null();
   }
 
   public function testItDoesNotDisplayWhenDisabled(): void {
@@ -44,7 +44,7 @@ class PendingApprovalNoticeTest extends \MailPoetTest {
     $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
 
     $result = $this->notice->init(false);
-    expect($result)->null();
+    verify($result)->null();
   }
 
   public function testItDoesNotDisplayWhenNotUsingMailPoet(): void {
@@ -52,7 +52,7 @@ class PendingApprovalNoticeTest extends \MailPoetTest {
     $this->settings->set('mta.method', Mailer::METHOD_PHPMAIL);
 
     $result = $this->notice->init(true);
-    expect($result)->null();
+    verify($result)->null();
   }
 
   public function testItDoesNotDisplayWhenApproved(): void {
@@ -60,6 +60,6 @@ class PendingApprovalNoticeTest extends \MailPoetTest {
     $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
 
     $result = $this->notice->init(true);
-    expect($result)->null();
+    verify($result)->null();
   }
 }

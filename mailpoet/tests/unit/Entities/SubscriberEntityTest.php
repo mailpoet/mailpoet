@@ -11,6 +11,6 @@ class SubscriberEntityTest extends \MailPoetUnitTest {
 
   public function testMagicGetterReturnsNullForUnknown() {
     $subscriber = new SubscriberEntity();
-    expect($subscriber->non_existing_property)->null();// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($subscriber->non_existing_property)->null();// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 }

@@ -49,7 +49,7 @@ class ColumnTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[@class="mailpoet_form_column"]');
     $this->assertInstanceOf(\DOMNamedNodeMap::class, $column->attributes);
-    expect($column->attributes->getNamedItem('style'))->null();
+    verify($column->attributes->getNamedItem('style'))->null();
   }
 
   public function testItShouldRenderWidthBackwardCompatible() {

@@ -171,7 +171,7 @@ class WordPressTest extends \MailPoetTest {
     // status of 'null' indicates that queue is running
     $this->addQueue(null);
     // check that cron daemon does not exist
-    expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
+    verify($this->settings->get(CronHelper::DAEMON_SETTING))->null();
     $this->wordpressTrigger->run();
     expect($this->settings->get(CronHelper::DAEMON_SETTING))->notNull();
   }
@@ -186,7 +186,7 @@ class WordPressTest extends \MailPoetTest {
   public function testItDoesNotTriggerCronWhenFutureStatsReportIsScheduled() {
     $future = Carbon::now()->addHour();
     $statsJobType = SubscribersStatsReport::TASK_TYPE;
-    expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
+    verify($this->settings->get(CronHelper::DAEMON_SETTING))->null();
     $scheduledTaskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $this->entityManager->getConnection()->executeStatement("DELETE FROM $scheduledTaskTable WHERE type = '$statsJobType';");
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'asdfgh');
@@ -198,7 +198,7 @@ class WordPressTest extends \MailPoetTest {
 
   public function testItDoesNotTriggerCronForStatsReportIfThereIsNoValidKey() {
     $statsJobType = SubscribersStatsReport::TASK_TYPE;
-    expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
+    verify($this->settings->get(CronHelper::DAEMON_SETTING))->null();
     $scheduledTaskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $this->entityManager->getConnection()->executeStatement("DELETE FROM $scheduledTaskTable WHERE type = '$statsJobType';");
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'somekey');
@@ -209,7 +209,7 @@ class WordPressTest extends \MailPoetTest {
 
   public function testItTriggersCronIfThereIsValidKeyAndNoStatsReportJobScheduled() {
     $statsJobType = SubscribersStatsReport::TASK_TYPE;
-    expect($this->settings->get(CronHelper::DAEMON_SETTING))->null();
+    verify($this->settings->get(CronHelper::DAEMON_SETTING))->null();
     $scheduledTaskTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $this->entityManager->getConnection()->executeStatement("DELETE FROM $scheduledTaskTable WHERE type = '$statsJobType';");
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'somekey');

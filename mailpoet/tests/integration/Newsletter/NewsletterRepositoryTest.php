@@ -93,8 +93,8 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($notification);
 
     // Should trash the newsletters
-    expect($standardNewsletter->getDeletedAt())->null();
-    expect($notification->getDeletedAt())->null();
+    verify($standardNewsletter->getDeletedAt())->null();
+    verify($notification->getDeletedAt())->null();
     verify($standardNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
     verify($notification->getStatus())->equals(NewsletterEntity::STATUS_ACTIVE);
 
@@ -102,25 +102,25 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $standardQueue = $standardNewsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $standardQueue);
     $this->entityManager->refresh($standardQueue);
-    expect($standardQueue->getDeletedAt())->null();
+    verify($standardQueue->getDeletedAt())->null();
     $scheduledTask = $standardQueue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->entityManager->refresh($scheduledTask);
-    expect($scheduledTask->getDeletedAt())->null();
+    verify($scheduledTask->getDeletedAt())->null();
     // Pause sending tasks which were in progress
     verify($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
 
     // Should restore children + task + queue
     $this->entityManager->refresh($notificationHistory);
-    expect($notificationHistory->getDeletedAt())->null();
+    verify($notificationHistory->getDeletedAt())->null();
     $notificationHistoryQueue = $notificationHistory->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $notificationHistoryQueue);
     $this->entityManager->refresh($notificationHistoryQueue);
-    expect($notificationHistoryQueue->getDeletedAt())->null();
+    verify($notificationHistoryQueue->getDeletedAt())->null();
     $scheduledTask = $notificationHistoryQueue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->entityManager->refresh($scheduledTask);
-    expect($scheduledTask->getDeletedAt())->null();
+    verify($scheduledTask->getDeletedAt())->null();
     verify($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
   }
 
@@ -172,51 +172,51 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
     // Check they were all deleted
     // Newsletters
-    expect($this->repository->findOneById($standardNewsletter->getId()))->null();
-    expect($this->repository->findOneById($notification->getId()))->null();
-    expect($this->repository->findOneById($notificationHistory->getId()))->null();
+    verify($this->repository->findOneById($standardNewsletter->getId()))->null();
+    verify($this->repository->findOneById($notification->getId()))->null();
+    verify($this->repository->findOneById($notificationHistory->getId()))->null();
 
     // Sending queues
-    expect($this->entityManager->find(SendingQueueEntity::class, $standardQueue->getId()))->null();
-    expect($this->entityManager->find(SendingQueueEntity::class, $notificationHistoryQueue->getId()))->null();
+    verify($this->entityManager->find(SendingQueueEntity::class, $standardQueue->getId()))->null();
+    verify($this->entityManager->find(SendingQueueEntity::class, $notificationHistoryQueue->getId()))->null();
 
     // Scheduled tasks subscribers
-    expect($this->taskSubscribersRepository->findOneBy(['task' => $standardScheduledTaks]))->null();
-    expect($this->taskSubscribersRepository->findOneBy(['task' => $notificationHistoryScheduledTask]))->null();
+    verify($this->taskSubscribersRepository->findOneBy(['task' => $standardScheduledTaks]))->null();
+    verify($this->taskSubscribersRepository->findOneBy(['task' => $notificationHistoryScheduledTask]))->null();
 
     // Scheduled tasks
-    expect($this->entityManager->find(ScheduledTaskEntity::class, $standardScheduledTaks->getId()))->null();
-    expect($this->entityManager->find(ScheduledTaskEntity::class, $notificationHistoryScheduledTask->getId()))->null();
+    verify($this->entityManager->find(ScheduledTaskEntity::class, $standardScheduledTaks->getId()))->null();
+    verify($this->entityManager->find(ScheduledTaskEntity::class, $notificationHistoryScheduledTask->getId()))->null();
 
     // Newsletter segments
-    expect($this->entityManager->find(NewsletterSegmentEntity::class, $standardSegment->getId()))->null();
-    expect($this->entityManager->find(NewsletterSegmentEntity::class, $notificationHistorySegment->getId()))->null();
+    verify($this->entityManager->find(NewsletterSegmentEntity::class, $standardSegment->getId()))->null();
+    verify($this->entityManager->find(NewsletterSegmentEntity::class, $notificationHistorySegment->getId()))->null();
 
     // Newsletter stats notifications
-    expect($this->entityManager->find(StatsNotificationEntity::class, $standardStatsNotificationScheduledTask->getId()))->null();
-    expect($this->entityManager->find(StatsNotificationEntity::class, $notificationHistoryStatsNotification->getId()))->null();
+    verify($this->entityManager->find(StatsNotificationEntity::class, $standardStatsNotificationScheduledTask->getId()))->null();
+    verify($this->entityManager->find(StatsNotificationEntity::class, $notificationHistoryStatsNotification->getId()))->null();
 
     // Newsletter stats notifications scheduled tasks
-    expect($this->entityManager->find(ScheduledTaskEntity::class, $standardStatsNotificationScheduledTask->getId()))->null();
-    expect($this->entityManager->find(ScheduledTaskEntity::class, $notificationHistoryStatsNotificationScheduledTask->getId()))->null();
+    verify($this->entityManager->find(ScheduledTaskEntity::class, $standardStatsNotificationScheduledTask->getId()))->null();
+    verify($this->entityManager->find(ScheduledTaskEntity::class, $notificationHistoryStatsNotificationScheduledTask->getId()))->null();
 
     // Newsletter links
-    expect($this->entityManager->find(NewsletterLinkEntity::class, $standardLink->getId()))->null();
-    expect($this->entityManager->find(NewsletterLinkEntity::class, $notificationHistoryLink->getId()))->null();
+    verify($this->entityManager->find(NewsletterLinkEntity::class, $standardLink->getId()))->null();
+    verify($this->entityManager->find(NewsletterLinkEntity::class, $notificationHistoryLink->getId()))->null();
 
     // Option fields values
-    expect($this->entityManager->find(NewsletterOptionEntity::class, $optionValue->getId()))->null();
+    verify($this->entityManager->find(NewsletterOptionEntity::class, $optionValue->getId()))->null();
 
     // Newsletter post
-    expect($this->entityManager->find(NewsletterPostEntity::class, $newsletterPost->getId()))->null();
+    verify($this->entityManager->find(NewsletterPostEntity::class, $newsletterPost->getId()))->null();
 
     // Statistics data
-    expect($this->entityManager->find(StatisticsNewsletterEntity::class, $statisticsNewsletter->getId()))->null();
-    expect($this->entityManager->find(StatisticsOpenEntity::class, $statisticsOpen->getId()))->null();
-    expect($this->entityManager->find(StatisticsClickEntity::class, $statisticsClick->getId()))->null();
+    verify($this->entityManager->find(StatisticsNewsletterEntity::class, $statisticsNewsletter->getId()))->null();
+    verify($this->entityManager->find(StatisticsOpenEntity::class, $statisticsOpen->getId()))->null();
+    verify($this->entityManager->find(StatisticsClickEntity::class, $statisticsClick->getId()))->null();
     $statisticsPurchase = $this->entityManager->find(StatisticsWooCommercePurchaseEntity::class, $statisticsPurchase->getId());
     $this->assertNotNull($statisticsPurchase);
-    expect($statisticsPurchase->getNewsletter())->null();
+    verify($statisticsPurchase->getNewsletter())->null();
   }
 
   public function testItDeletesMultipleNewslettersWithPurchaseStatsAndKeepsStats() {
@@ -232,16 +232,16 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->clear();
 
     // Check Newsletters were deleted
-    expect($this->repository->findOneById($standardNewsletter1->getId()))->null();
-    expect($this->repository->findOneById($standardNewsletter2->getId()))->null();
+    verify($this->repository->findOneById($standardNewsletter1->getId()))->null();
+    verify($this->repository->findOneById($standardNewsletter2->getId()))->null();
 
     // Check purchase stats were not deleted
     $statisticsPurchase1 = $this->entityManager->find(StatisticsWooCommercePurchaseEntity::class, $statisticsPurchase1->getId());
     $statisticsPurchase2 = $this->entityManager->find(StatisticsWooCommercePurchaseEntity::class, $statisticsPurchase2->getId());
     $this->assertNotNull($statisticsPurchase1);
-    expect($statisticsPurchase1->getNewsletter())->null();
+    verify($statisticsPurchase1->getNewsletter())->null();
     $this->assertNotNull($statisticsPurchase2);
-    expect($statisticsPurchase2->getNewsletter())->null();
+    verify($statisticsPurchase2->getNewsletter())->null();
   }
 
   public function testItDeletesWpPostsBulkDelete() {
@@ -260,8 +260,8 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->clear();
 
     $this->repository->bulkDelete([$newsletter1->getId(), $newsletter2->getId(), $newsletter3->getId()]);
-    expect($this->wp->getPost($post1Id))->null();
-    expect($this->wp->getPost($post2Id))->null();
+    verify($this->wp->getPost($post1Id))->null();
+    verify($this->wp->getPost($post2Id))->null();
   }
 
   public function testItGetsArchiveNewslettersForSegments() {

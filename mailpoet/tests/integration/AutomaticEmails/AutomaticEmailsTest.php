@@ -47,7 +47,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
     expect($result)->hasKey('email1');
     $this->AM->unregisterAutomaticEmails();
     $result = $this->AM->getAutomaticEmails();
-    expect($result)->null();
+    verify($result)->null();
   }
 
   public function testItGetsAutomaticEmails() {
@@ -93,7 +93,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
   }
 
   public function testItReturnsNullWhenGettingEmailBySlugAndThereAreNoRegisteredEmails() {
-    expect($this->AM->getAutomaticEmailBySlug('some_slug'))->null();
+    verify($this->AM->getAutomaticEmailBySlug('some_slug'))->null();
 
   }
 
@@ -114,7 +114,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       ];
     });
 
-    expect($this->AM->getAutomaticEmailBySlug('some_slug'))->null();
+    verify($this->AM->getAutomaticEmailBySlug('some_slug'))->null();
 
     $this->wp->removeAllFilters('mailpoet_automatic_email_test');
   }
@@ -159,7 +159,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
   }
 
   public function testItReturnsNullWhenGettingEmailEventBySlugAndThereAreNoRegisteredEmails() {
-    expect($this->AM->getAutomaticEmailEventBySlug('some_email', 'some_slug'))->null();
+    verify($this->AM->getAutomaticEmailEventBySlug('some_email', 'some_slug'))->null();
   }
 
   public function testItReturnsNullWhenItCannotGetEmailEventBySlug() {
@@ -179,7 +179,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       ];
     });
 
-    expect($this->AM->getAutomaticEmailEventBySlug('emai', 'some_slug'))->null();
+    verify($this->AM->getAutomaticEmailEventBySlug('emai', 'some_slug'))->null();
 
     $this->wp->removeAllFilters('mailpoet_automatic_email_test');
   }

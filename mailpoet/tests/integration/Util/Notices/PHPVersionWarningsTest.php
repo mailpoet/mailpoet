@@ -58,13 +58,13 @@ class PHPVersionWarningsTest extends \MailPoetTest {
 
   public function testItPrintsNoWarningWhenDisabled() {
     $warning = $this->phpVersionWarning->init('5.5.3', false);
-    expect($warning)->null();
+    verify($warning)->null();
   }
 
   public function testItPrintsNoWarningWhenDismised() {
     $this->phpVersionWarning->init('5.5.3', true);
     $this->phpVersionWarning->disable();
     $warning = $this->phpVersionWarning->init('5.5.3', true);
-    expect($warning)->null();
+    verify($warning)->null();
   }
 }

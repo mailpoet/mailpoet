@@ -74,12 +74,12 @@ class ImportExportFactoryTest extends \MailPoetTest {
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => 'mike@mailpoet.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getDeletedAt())->null();
+    verify($subscriber->getDeletedAt())->null();
 
     $this->subscribersRepository->bulkTrash([$subscriber->getId()]);
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => 'mike@mailpoet.com', 'deletedAt' => null]);
-    expect($subscriber)->null();
+    verify($subscriber)->null();
 
     $this->clearSubscribersCountCache();
     $segments = $this->importFactory->getSegments();

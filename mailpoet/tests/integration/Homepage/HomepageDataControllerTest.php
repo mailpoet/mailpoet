@@ -61,7 +61,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $settings = $this->diContainer->get(SettingsController::class);
     $settings->set('homepage.task_list_dismissed', true);
     $data = $this->homepageDataController->getPageData();
-    expect($data['taskListStatus'])->null();
+    verify($data['taskListStatus'])->null();
   }
 
   public function testItFetchesSubscribersAddedTaskListStatus(): void {

@@ -135,7 +135,7 @@ class PostNotificationTest extends \MailPoetTest {
     // queue is not created when notification was already sent for the post
     $this->postNotificationScheduler->schedulePostNotification($postId);
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
-    expect($queue)->null();
+    verify($queue)->null();
   }
 
   public function testItSchedulesPostNotification() {
@@ -374,7 +374,7 @@ class PostNotificationTest extends \MailPoetTest {
     wp_insert_post($postData);
 
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
-    expect($queue)->null();
+    verify($queue)->null();
 
     $this->_removePostNotificationHooks();
     register_post_type('post', ['exclude_from_search' => false]);
@@ -420,7 +420,7 @@ class PostNotificationTest extends \MailPoetTest {
     wp_insert_post($postData);
 
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
-    expect($queue)->null();
+    verify($queue)->null();
   }
 
   public function _removePostNotificationHooks() {

@@ -91,7 +91,7 @@ class JsonTypesTest extends \MailPoetTest {
 
     $entity = $this->entityManager->find(JsonEntity::class, 1);
     $this->assertInstanceOf(JsonEntity::class, $entity); // PHPStan
-    expect($entity->getJsonData())->null();
+    verify($entity->getJsonData())->null();
     expect($entity->getJsonOrSerializedData())->same($this->testData);
   }
 
@@ -104,8 +104,8 @@ class JsonTypesTest extends \MailPoetTest {
 
     $savedData = $this->connection->executeQuery("SELECT * FROM $this->tableName")->fetchAssociative() ?: [];
     expect($savedData)->array();
-    expect($savedData['json_data'])->null();
-    expect($savedData['json_or_serialized_data'])->null();
+    verify($savedData['json_data'])->null();
+    verify($savedData['json_or_serialized_data'])->null();
   }
 
   public function testItLoadsNullData() {
@@ -120,8 +120,8 @@ class JsonTypesTest extends \MailPoetTest {
 
     $entity = $this->entityManager->find(JsonEntity::class, 1);
     $this->assertInstanceOf(JsonEntity::class, $entity); // PHPStan
-    expect($entity->getJsonData())->null();
-    expect($entity->getJsonOrSerializedData())->null();
+    verify($entity->getJsonData())->null();
+    verify($entity->getJsonOrSerializedData())->null();
   }
 
   public function testItLoadsEmptyStringAsNull() {
@@ -136,8 +136,8 @@ class JsonTypesTest extends \MailPoetTest {
 
     $entity = $this->entityManager->find(JsonEntity::class, 1);
     $this->assertInstanceOf(JsonEntity::class, $entity); // PHPStan
-    expect($entity->getJsonData())->null();
-    expect($entity->getJsonOrSerializedData())->null();
+    verify($entity->getJsonData())->null();
+    verify($entity->getJsonOrSerializedData())->null();
   }
 
   public function testItDoesNotSaveInvalidData() {

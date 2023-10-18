@@ -135,7 +135,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
     $this->entityManager->refresh($dynamicSegment);
     $this->assertInstanceOf(SegmentEntity::class, $dynamicSegment);
-    expect($dynamicSegment->getDeletedAt())->null();
+    verify($dynamicSegment->getDeletedAt())->null();
   }
 
   public function testItCanDeleteASegment() {
@@ -152,8 +152,8 @@ class DynamicSegmentsTest extends \MailPoetTest {
     // Clear entity manager to forget all entities
     $this->entityManager->clear();
 
-    expect($this->entityManager->find(SegmentEntity::class, $dynamicSegment->getId()))->null();
-    expect($this->entityManager->find(DynamicSegmentFilterEntity::class, $dynamicSegmentFilter->getId()))->null();
+    verify($this->entityManager->find(SegmentEntity::class, $dynamicSegment->getId()))->null();
+    verify($this->entityManager->find(DynamicSegmentFilterEntity::class, $dynamicSegmentFilter->getId()))->null();
   }
 
   public function testItCanBulkDeleteSegments() {
@@ -182,8 +182,8 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
     $this->entityManager->refresh($dynamicSegment1);
     $this->entityManager->refresh($dynamicSegment2);
-    expect($dynamicSegment1->getDeletedAt())->null();
-    expect($dynamicSegment2->getDeletedAt())->null();
+    verify($dynamicSegment1->getDeletedAt())->null();
+    verify($dynamicSegment2->getDeletedAt())->null();
 
     $this->endpoint->bulkAction([
       'action' => 'trash',
@@ -207,8 +207,8 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
     $this->entityManager->clear();
 
-    expect($this->entityManager->find(SegmentEntity::class, $dynamicSegment1->getId()))->null();
-    expect($this->entityManager->find(SegmentEntity::class, $dynamicSegment2->getId()))->null();
+    verify($this->entityManager->find(SegmentEntity::class, $dynamicSegment1->getId()))->null();
+    verify($this->entityManager->find(SegmentEntity::class, $dynamicSegment2->getId()))->null();
   }
 
   private function createDynamicSegmentEntity(string $name, string $description): SegmentEntity {

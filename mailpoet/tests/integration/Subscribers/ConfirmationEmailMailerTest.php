@@ -178,7 +178,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
       $exceptionMessage = $e->getMessage();
     }
     verify($exceptionMessage)->equals(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
-    expect(MailerLog::getError())->null();
+    verify(MailerLog::getError())->null();
   }
 
   public function testItDoesntSendWhenMSSIsActiveAndConfirmationEmailIsNotAuthorized() {

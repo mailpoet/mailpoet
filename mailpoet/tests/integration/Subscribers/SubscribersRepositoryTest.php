@@ -55,7 +55,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     // don't trashed subscriber
     $subscriberThree = $this->repository->findOneById($subscriberThreeId);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberThree);
-    expect($subscriberThree->getDeletedAt())->null();
+    verify($subscriberThree->getDeletedAt())->null();
   }
 
   public function testItBulkRestoreTrashedSubscribers(): void {
@@ -74,7 +74,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     // restored subscriber
     $subscriberOne = $this->repository->findOneById($subscriberOneId);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberOne);
-    expect($subscriberOne->getDeletedAt())->null();
+    verify($subscriberOne->getDeletedAt())->null();
     // don't restored subscriber
     $subscriberTwo = $this->repository->findOneById($subscriberTwoId);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberTwo);
@@ -86,9 +86,9 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $subscriberTwo = $this->createSubscriber('two@e.com');
     $subscriberThree = $this->createSubscriber('three@e.com');
 
-    expect($subscriberOne->getLastSendingAt())->null();
-    expect($subscriberTwo->getLastSendingAt())->null();
-    expect($subscriberThree->getLastSendingAt())->null();
+    verify($subscriberOne->getLastSendingAt())->null();
+    verify($subscriberTwo->getLastSendingAt())->null();
+    verify($subscriberThree->getLastSendingAt())->null();
     $idsToUpdate = [
       $subscriberOne->getId(),
       $subscriberThree->getId(),
@@ -100,7 +100,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $this->repository->refresh($subscriberThree);
     $this->assertInstanceOf(DateTimeInterface::class, $subscriberOne->getLastSendingAt());
     verify($subscriberOne->getLastSendingAt()->getTimestamp())->equals($now->getTimestamp());
-    expect($subscriberTwo->getLastSendingAt())->null();
+    verify($subscriberTwo->getLastSendingAt())->null();
     $this->assertInstanceOf(DateTimeInterface::class, $subscriberThree->getLastSendingAt());
     verify($subscriberThree->getLastSendingAt()->getTimestamp())->equals($now->getTimestamp());
   }
@@ -110,9 +110,9 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $subscriberTwo = $this->createSubscriber('two@e.com');
     $subscriberThree = $this->createSubscriber('three@e.com');
 
-    expect($subscriberOne->getEngagementScoreUpdatedAt())->null();
-    expect($subscriberTwo->getEngagementScoreUpdatedAt())->null();
-    expect($subscriberThree->getEngagementScoreUpdatedAt())->null();
+    verify($subscriberOne->getEngagementScoreUpdatedAt())->null();
+    verify($subscriberTwo->getEngagementScoreUpdatedAt())->null();
+    verify($subscriberThree->getEngagementScoreUpdatedAt())->null();
     $idsToUpdate = [
       $subscriberOne->getId(),
       $subscriberThree->getId(),
@@ -124,7 +124,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $this->repository->refresh($subscriberThree);
     $this->assertInstanceOf(DateTimeInterface::class, $subscriberOne->getEngagementScoreUpdatedAt());
     verify($subscriberOne->getEngagementScoreUpdatedAt()->getTimestamp())->equals($now->getTimestamp());
-    expect($subscriberTwo->getEngagementScoreUpdatedAt())->null();
+    verify($subscriberTwo->getEngagementScoreUpdatedAt())->null();
     $this->assertInstanceOf(DateTimeInterface::class, $subscriberThree->getEngagementScoreUpdatedAt());
     verify($subscriberThree->getEngagementScoreUpdatedAt()->getTimestamp())->equals($now->getTimestamp());
   }
@@ -160,9 +160,9 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $this->repository->refresh($subscriberTwo);
     $this->repository->refresh($subscriberThree);
 
-    expect($subscriberOne->getEngagementScoreUpdatedAt())->null();
+    verify($subscriberOne->getEngagementScoreUpdatedAt())->null();
     $this->assertInstanceOf(DateTimeInterface::class, $subscriberTwo->getEngagementScoreUpdatedAt());
-    expect($subscriberOne->getEngagementScoreUpdatedAt())->null();
+    verify($subscriberOne->getEngagementScoreUpdatedAt())->null();
   }
 
   public function testItBulkDeleteSubscribers(): void {
@@ -185,9 +185,9 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $this->entityManager->clear();
 
     // deleted subscriber
-    expect($this->repository->findOneById($subscriberOneId))->null();
-    expect($this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriberOneId]))->null();
-    expect($this->subscriberCustomFieldRepository->findOneBy(['subscriber' => $subscriberOneId]))->null();
+    verify($this->repository->findOneById($subscriberOneId))->null();
+    verify($this->subscriberSegmentRepository->findOneBy(['subscriber' => $subscriberOneId]))->null();
+    verify($this->subscriberCustomFieldRepository->findOneBy(['subscriber' => $subscriberOneId]))->null();
     // don't restored subscriber
     $subscriberTwo = $this->repository->findOneById($subscriberTwoId);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberTwo);
@@ -218,7 +218,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     // subscriber with removed segment one
     expect($this->repository->findOneById($subscriberOneId))->notNull();
-    expect($this->subscriberSegmentRepository->findOneBy([
+    verify($this->subscriberSegmentRepository->findOneBy([
       'subscriber' => $subscriberOneId,
       'segment' => $segmentOneId,
     ]))->null();
@@ -229,7 +229,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     // subscriber with removed segment two
     expect($this->repository->findOneById($subscriberTwoId))->notNull();
-    expect($this->subscriberSegmentRepository->findOneBy([
+    verify($this->subscriberSegmentRepository->findOneBy([
       'subscriber' => $subscriberTwoId,
       'segment' => $segmentTwoId,
     ]))->null();
@@ -342,7 +342,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     // subscriber moved to segment two
     expect($this->repository->findOneById($subscriberOneId))->notNull();
-    expect($this->subscriberSegmentRepository->findOneBy([
+    verify($this->subscriberSegmentRepository->findOneBy([
       'subscriber' => $subscriberOneId,
       'segment' => $segmentOneId,
     ]))->null();
@@ -353,7 +353,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     // subscriber which stay in segment two
     expect($this->repository->findOneById($subscriberTwoId))->notNull();
-    expect($this->subscriberSegmentRepository->findOneBy([
+    verify($this->subscriberSegmentRepository->findOneBy([
       'subscriber' => $subscriberTwoId,
       'segment' => $segmentOneId,
     ]))->null();

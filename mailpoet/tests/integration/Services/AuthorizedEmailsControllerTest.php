@@ -35,7 +35,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, 'Error');
     $controller = $this->getController($authorizedEmailsFromApi = null);
     $controller->checkAuthorizedEmailAddresses();
-    expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
+    verify($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
   }
 
   public function testItSetsProperErrorForOldUsers() {
@@ -62,7 +62,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->setMailPoetSendingMethod();
     $controller = $this->getController($authorizedEmailsFromApi = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
-    expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
+    verify($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
   }
 
   public function testItSetEmptyErrorWhenDomainIsVerifiedButSenderAddressIsNotAuthorized() {
@@ -86,7 +86,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
     $controller->checkAuthorizedEmailAddresses();
-    expect($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
+    verify($this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING))->null();
   }
 
   public function testItSetErrorForScheduledNewsletterWithUnauthorizedSender() {
@@ -120,7 +120,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $controller = $this->getController($authorizedEmailsFromApi = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
     $error = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
-    expect($error)->null();
+    verify($error)->null();
   }
 
   public function testItResetsUnauthorizedErrorInMailerLog() {
@@ -132,7 +132,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $controller = $this->getController($authorizedEmailsFromApi = ['auth@email.com']);
     $controller->checkAuthorizedEmailAddresses();
     $error = MailerLog::getError();
-    expect($error)->null();
+    verify($error)->null();
   }
 
   public function testItResetsUnauthorizedErrorInMailerLogWhenDomainIsVerified() {
@@ -161,7 +161,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $controller->checkAuthorizedEmailAddresses();
 
     $error = MailerLog::getError();
-    expect($error)->null();
+    verify($error)->null();
   }
 
   public function testItDoesNotResetOtherErrorInMailerLog() {

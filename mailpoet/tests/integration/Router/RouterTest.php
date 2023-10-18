@@ -56,7 +56,7 @@ class RouterTest extends \MailPoetTest {
       [$this->accessControl, $this->container, $routerData]
     );
     $result = $router->init();
-    expect($result)->null();
+    verify($result)->null();
   }
 
   public function testItTerminatesRequestWhenEndpointNotFound() {

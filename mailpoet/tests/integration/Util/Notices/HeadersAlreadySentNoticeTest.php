@@ -44,7 +44,7 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
       ['headersSent' => false]
     );
     $notice = $headersAlreadySentNotice->init(true);
-    expect($notice)->null();
+    verify($notice)->null();
   }
 
   public function testItPrintsWarningWhenWhitespaceIsInBuffer() {
@@ -67,7 +67,7 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
       ['headersSent' => true]
     );
     $warning = $headersAlreadySentNotice->init(false);
-    expect($warning)->null();
+    verify($warning)->null();
   }
 
   public function testItPrintsNoWarningWhenDismissed() {
@@ -78,7 +78,7 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
     );
     $headersAlreadySentNotice->disable();
     $warning = $headersAlreadySentNotice->init(true);
-    expect($warning)->null();
+    verify($warning)->null();
   }
 
   public function testItPrintsCaptchaAndTrackingMessagesIfEnabled() {
@@ -105,6 +105,6 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
   public function testItPrintsNoMessagesWhenCaptchaAndTrackingDisabled() {
     $headersAlreadySentNotice = Stub::make(HeadersAlreadySentNotice::class);
     $notice = $headersAlreadySentNotice->display(false, false);
-    expect($notice)->null();
+    verify($notice)->null();
   }
 }

@@ -58,13 +58,13 @@ class SubscriberEngagementTest extends \MailPoetTest {
       ->willReturn(false);
     $this->subscriberEngagement->updateSubscriberEngagement(1);
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getLastEngagementAt())->null();
+    verify($subscriber->getLastEngagementAt())->null();
   }
 
   public function testItUpdatesTimestampsWhenOrderChangesToPaidStatus(): void {
     $subscriber = $this->createSubscriber();
-    expect($subscriber->getLastEngagementAt())->null();
-    expect($subscriber->getLastPurchaseAt())->null();
+    verify($subscriber->getLastEngagementAt())->null();
+    verify($subscriber->getLastPurchaseAt())->null();
     $order = $this->tester->createWooCommerceOrder(['status' => 'pending', 'billing_email' => $subscriber->getEmail()]);
     $order->set_status('processing');
     $order->save();

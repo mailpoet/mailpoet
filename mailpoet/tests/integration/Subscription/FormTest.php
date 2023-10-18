@@ -84,7 +84,7 @@ class FormTest extends \MailPoetTest {
     $result = $formController->onSubmit($this->requestData);
     expect($this->subscribersRepository->findOneBy(['email' => $this->testEmail]))->notEmpty();
     verify($result['mailpoet_success'])->equals($this->form->getId());
-    expect($result['mailpoet_error'])->null();
+    verify($result['mailpoet_error'])->null();
   }
 
   public function testItSubscribesAndRedirectsToCustomUrlWithSuccessResponse() {
@@ -122,7 +122,7 @@ class FormTest extends \MailPoetTest {
     $result = $formController->onSubmit($requestData);
     expect($this->subscribersRepository->findAll())->isEmpty();
     verify($result['mailpoet_error'])->equals($this->form->getId());
-    expect($result['mailpoet_success'])->null();
+    verify($result['mailpoet_success'])->null();
   }
 
   public function testItDoesNotSubscribeAndRedirectsToRedirectUrlIfPresent() {

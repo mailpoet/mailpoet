@@ -30,7 +30,7 @@ class MailerTest extends \MailPoetTest {
     $response = $mailerEndpoint->resumeSending();
     verify($response->status)->equals(APIResponse::STATUS_OK);
     $mailerLog = MailerLog::getMailerLog();
-    expect($mailerLog['status'])->null();
+    verify($mailerLog['status'])->null();
   }
 
   public function testItRunsAuhtorizedEmailsCheckIfErrorIsPresent() {

@@ -203,7 +203,7 @@ class SchedulerTest extends \MailPoetTest {
 
     $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    expect($queue->scheduledAt)->null();
+    verify($queue->scheduledAt)->null();
 
     $this->newsletterOptionFactory->create($newsletter, NewsletterOptionFieldEntity::NAME_SCHEDULE, '0 5 * * *');
 
@@ -341,7 +341,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
-    expect($scheduledTask->getStatus())->null();
+    verify($scheduledTask->getStatus())->null();
   }
 
   public function testItProcessesWelcomeNewsletterWhenWPUserIsVerified() {
@@ -362,7 +362,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
-    expect($scheduledTask->getStatus())->null();
+    verify($scheduledTask->getStatus())->null();
   }
 
   public function testItFailsMailpoetSubscriberVerificationWhenSubscriberDoesNotExist() {
@@ -444,7 +444,7 @@ class SchedulerTest extends \MailPoetTest {
     $result = $scheduler->verifyMailpoetSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     verify($result)->false();
     // update the time queue is scheduled to run at
-    expect($this->sendingQueuesRepository->findOneById($queue->id))->null();
+    verify($this->sendingQueuesRepository->findOneById($queue->id))->null();
   }
 
   public function testItCanVerifyMailpoetSubscriber() {
@@ -488,7 +488,7 @@ class SchedulerTest extends \MailPoetTest {
     }, $updatedSubscribers);
     verify($updatedSubscribersIds)->equals([$subscriber->getId()]);
     // set queue's status to null
-    expect($scheduledTask->getStatus())->null();
+    verify($scheduledTask->getStatus())->null();
     // set newsletter's status to sending
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
@@ -785,7 +785,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
     $scheduler->process();
     $task = SendingTask::getByNewsletterId($newsletter->getId());
-    expect($task->status)->null();
+    verify($task->status)->null();
   }
 
   public function testItDeletesScheduledAutomaticEmailWhenUserDoesNotExist() {
@@ -844,7 +844,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler($this->subscribersFinder);
     $scheduler->process();
     $task = SendingTask::getByNewsletterId($newsletter->getId());
-    expect($task->status)->null();
+    verify($task->status)->null();
     // task should have 1 subscriber added from segment
     $subscribers = $task->subscribers()->findMany();
     expect($subscribers)->count(1);
@@ -871,7 +871,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
     $scheduler->process();
     $task = SendingTask::getByNewsletterId($newsletter->getId());
-    expect($task->status)->null();
+    verify($task->status)->null();
   }
 
   public function testItDeletesScheduledAutomationEmailWhenUserDoesNotExist() {

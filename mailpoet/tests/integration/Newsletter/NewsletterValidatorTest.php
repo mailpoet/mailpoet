@@ -20,7 +20,7 @@ class NewsletterValidatorTest extends \MailPoetTest {
   public function testUnsubscribeFooterIsNotRequiredIfNotUsingMSS() {
       $newsletter = (new Newsletter())->loadBodyFrom('newsletterWithTextNoFooter.json')->create();
       $validationError = $this->newsletterValidator->validate($newsletter);
-      expect($validationError)->null();
+      verify($validationError)->null();
   }
 
   public function testUnsubscribeFooterRequiredIfUsingMSS() {
@@ -51,7 +51,7 @@ class NewsletterValidatorTest extends \MailPoetTest {
       ],
     ]]])->create();
     $validationError = $this->newsletterValidator->validate($newsletter);
-    expect($validationError)->null();
+    verify($validationError)->null();
   }
 
   public function testItRequiresReengagementShortcodes() {
@@ -72,7 +72,7 @@ class NewsletterValidatorTest extends \MailPoetTest {
       ],
     ])->create();
     $validationError = $this->newsletterValidator->validate($newsletter);
-    expect($validationError)->null();
+    verify($validationError)->null();
   }
 
   public function testItRequiresTrackingForReengagementEmails() {
@@ -102,6 +102,6 @@ class NewsletterValidatorTest extends \MailPoetTest {
   public function testAlcEmailPassesWithAlcBlock() {
     $newsletter = (new Newsletter())->loadBodyFrom('newsletterWithALC.json')->withPostNotificationsType()->create();
     $validationError = $this->newsletterValidator->validate($newsletter);
-    expect($validationError)->null();
+    verify($validationError)->null();
   }
 }

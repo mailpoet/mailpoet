@@ -43,11 +43,11 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->repository->recalculateSegmentScore($segment);
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
-    expect($newSubscriber->getEngagementScore())->null();
+    verify($newSubscriber->getEngagementScore())->null();
     expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
     $newSegment = $this->segmentsRepository->findOneById($segment->getId());
     $this->assertInstanceOf(SegmentEntity::class, $newSegment);
-    expect($newSegment->getAverageEngagementScore())->null();
+    verify($newSegment->getAverageEngagementScore())->null();
     expect($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
   }
 
@@ -62,7 +62,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $this->repository->recalculateSegmentScore($segment);
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
-    expect($newSubscriber->getEngagementScore())->null();
+    verify($newSubscriber->getEngagementScore())->null();
     expect($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
     $updated = $newSubscriber->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
@@ -70,7 +70,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     verify($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
     $newSegment = $this->segmentsRepository->findOneById($segment->getId());
     $this->assertInstanceOf(SegmentEntity::class, $newSegment);
-    expect($newSegment->getAverageEngagementScore())->null();
+    verify($newSegment->getAverageEngagementScore())->null();
     expect($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
     $updated = $newSegment->getAverageEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
@@ -88,7 +88,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     verify($subscriber->getEngagementScore())->equals(5);
     $this->repository->recalculateSubscriberScore($subscriber);
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getEngagementScore())->null();
+    verify($subscriber->getEngagementScore())->null();
   }
 
   public function testItUpdatesScore() {

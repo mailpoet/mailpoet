@@ -342,7 +342,7 @@ class ShortcodesTest extends \MailPoetTest {
     $wpUser = wp_set_current_user(1);
     verify((new WPFunctions)->isUserLoggedIn())->true();
 
-    expect($this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]))->null(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]))->null(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();
@@ -378,7 +378,7 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItDoesNotDisplayLinkToManageSubscriptionPageForLoggedinNonexistentSubscribers() {
     $wpUser = wp_set_current_user(1);
     verify((new WPFunctions)->isUserLoggedIn())->true();
-    expect($this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]))->null(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]))->null(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     $shortcodes->init();

@@ -106,7 +106,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterEntity->setStatus(NewsletterEntity::STATUS_DRAFT);
     $this->newslettersRepository->persist($newsletterEntity);
     $this->newslettersRepository->flush();
-    expect($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->null();
+    verify($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->null();
 
     // active or sending statuses return newsletter
     $newsletterEntity->setStatus(NewsletterEntity::STATUS_ACTIVE);
@@ -124,7 +124,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletter->setDeletedAt(new Carbon());
     $this->newslettersRepository->persist($this->newsletter);
     $this->newslettersRepository->flush();
-    expect($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->null();
+    verify($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->null();
   }
 
   public function testItDoesNotGetNewsletterWhenParentNewsletterStatusIsNotActiveOrSending() {
@@ -140,7 +140,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterEntity->setParent($parentNewsletterEntity);
     $this->newslettersRepository->persist($newsletterEntity);
     $this->newslettersRepository->flush();
-    expect($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->null();
+    verify($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->null();
 
     // active or sending statuses return newsletter
     $parentNewsletterEntity->setStatus(NewsletterEntity::STATUS_ACTIVE);
@@ -163,7 +163,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->setParent($this->parentNewsletter);
     $this->newslettersRepository->persist($newsletter);
     $this->newslettersRepository->flush();
-    expect($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->null();
+    verify($this->newsletterTask->getNewsletterFromQueue($this->sendingTask))->null();
   }
 
   public function testItReturnsNewsletterObjectWhenRenderedNewsletterBodyExistsInTheQueue() {
@@ -202,7 +202,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterTask->trackingEnabled = false;
     $newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask);
     $link = $this->newsletterLinkRepository->findOneBy(['newsletter' => $this->newsletter->getId()]);
-    expect($link)->null();
+    verify($link)->null();
     $updatedQueue = SendingTask::getByNewsletterId($this->newsletter->getId());
     $renderedNewsletter = $updatedQueue->getNewsletterRenderedBody();
     expect($renderedNewsletter['html'])
@@ -231,7 +231,7 @@ class NewsletterTest extends \MailPoetTest {
     // newsletter is deleted.
     $this->entityManager->clear(); // needed while part of the code uses Paris models and part uses Doctrine
     $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
-    expect($newsletter)->null();
+    verify($newsletter)->null();
   }
 
   public function testItSavesNewsletterPosts() {
@@ -606,7 +606,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->sendingQueuesRepository->flush();
     $newsletterTask = new NewsletterTask();
     $sendingQueueMeta = $sendingQueue->getMeta();
-    expect($sendingQueueMeta)->null();
+    verify($sendingQueueMeta)->null();
     verify($newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask))->equals($this->newsletter);
     $this->entityManager->refresh($sendingQueue);
     $updatedMeta = $sendingQueue->getMeta();

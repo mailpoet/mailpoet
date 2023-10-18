@@ -26,7 +26,7 @@ class ServicesCheckerTest extends \MailPoetTest {
   public function testItDoesNotCheckMSSKeyIfMPSendingServiceIsDisabled() {
     $this->disableMailPoetSendingMethod();
     $result = $this->servicesChecker->isMailPoetAPIKeyValid();
-    expect($result)->null();
+    verify($result)->null();
   }
 
   public function testItForciblyChecksMSSKeyIfMPSendingServiceIsDisabled() {
@@ -248,7 +248,7 @@ class ServicesCheckerTest extends \MailPoetTest {
         'state' => '',
       ]
     );
-    expect($this->servicesChecker->getValidAccountKey())->null();
+    verify($this->servicesChecker->getValidAccountKey())->null();
   }
 
   public function testItReturnsTrueIfUserIsActivelyPaying() {

@@ -118,7 +118,7 @@ class SubscriberActionsTest extends \MailPoetTest {
       $newsletter,
       ScheduledTaskEntity::STATUS_SCHEDULED
     );
-    expect($scheduledNotification)->null();
+    verify($scheduledNotification)->null();
   }
 
   public function testItCannotSubscribeWithReservedColumns() {
@@ -150,13 +150,13 @@ class SubscriberActionsTest extends \MailPoetTest {
 
     $createdAt = $subscriber->getCreatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
-    expect($subscriber->getWpUserId())->null();
+    verify($subscriber->getWpUserId())->null();
     verify($subscriber->getIsWoocommerceUser())->equals(0);
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
     expect($createdAt->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:01');
     expect($subscriber->getUpdatedAt()->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:02');
     verify($createdAt->getTimestamp())->equals($subscriber->getUpdatedAt()->getTimestamp(), 2);
-    expect($subscriber->getDeletedAt())->null();
+    verify($subscriber->getDeletedAt())->null();
   }
 
   public function testItOverwritesSubscriberDataWhenConfirmationIsDisabled() {

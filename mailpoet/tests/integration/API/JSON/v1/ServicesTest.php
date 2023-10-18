@@ -403,8 +403,8 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
 
-    expect($this->settings->get('public_id', null))->null();
-    expect($this->settings->get('new_public_id', null))->null();
+    verify($this->settings->get('public_id', null))->null();
+    verify($this->settings->get('new_public_id', null))->null();
   }
 
   public function testItRespondsWithPublicIdForPremium() {
@@ -445,8 +445,8 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkPremiumKey($this->data);
 
-    expect($this->settings->get('public_id', null))->null();
-    expect($this->settings->get('new_public_id', null))->null();
+    verify($this->settings->get('public_id', null))->null();
+    verify($this->settings->get('new_public_id', null))->null();
   }
 
   public function testCongratulatoryEmailIsSent() {

@@ -82,7 +82,7 @@ class UserFlagsControllerTest extends \MailPoetTest {
       'userId' => $this->currentUserId,
       'name' => 'flag_1',
     ]);
-    expect($flag)->null();
+    verify($flag)->null();
   }
 
   private function createUserFlag($userId, $name, $value) {

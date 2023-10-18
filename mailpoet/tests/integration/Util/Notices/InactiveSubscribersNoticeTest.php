@@ -27,7 +27,7 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
 
     $this->notice->disable();
     $result = $this->notice->init(true);
-    expect($result)->null();
+    verify($result)->null();
   }
 
   public function testItDisplaysWhenInactiveTimeRangeIsTheDefaultValue() {
@@ -49,14 +49,14 @@ class InactiveSubscribersNoticeTest extends \MailPoetTest {
     $settingsFactory->withDeactivateSubscriberAfter3Months();
 
     $result = $this->notice->init(true);
-    expect($result)->null();
+    verify($result)->null();
   }
 
   public function testItDoesntDisplayWhenNotEnoughInactiveSubscribers() {
     $this->createSubscribers(49);
 
     $result = $this->notice->init(true);
-    expect($result)->null();
+    verify($result)->null();
   }
 
   public function _before() {

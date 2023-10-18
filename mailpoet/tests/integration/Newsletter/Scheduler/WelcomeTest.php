@@ -185,7 +185,7 @@ class WelcomeTest extends \MailPoetTest {
 
     // queue is not created
     $queue = $this->newsletter->getLatestQueue();
-    expect($queue)->null();
+    verify($queue)->null();
   }
 
   public function testItSchedulesSubscriberWelcomeNotification() {
@@ -300,7 +300,7 @@ class WelcomeTest extends \MailPoetTest {
 
     // queue is not created
     $queue = $newsletter->getLatestQueue();
-    expect($queue)->null();
+    verify($queue)->null();
   }
 
   public function testItDoesNotScheduleWPUserWelcomeNotificationWhenUserRoleDoesNotMatch() {
@@ -320,7 +320,7 @@ class WelcomeTest extends \MailPoetTest {
 
     // queue is not created
     $queue = $newsletter->getLatestQueue();
-    expect($queue)->null();
+    verify($queue)->null();
   }
 
   public function testItDoesNotSchedulesWPUserWelcomeNotificationWhenSubscriberIsInTrash() {
@@ -342,7 +342,7 @@ class WelcomeTest extends \MailPoetTest {
     );
     // queue is created and scheduled for delivery one day later
     $queue = $newsletter->getLatestQueue();
-    expect($queue)->null();
+    verify($queue)->null();
   }
 
   public function testItDoesNotSchedulesWPUserWelcomeNotificationWhenWpSegmentIsInTrash() {
@@ -363,7 +363,7 @@ class WelcomeTest extends \MailPoetTest {
     );
     // queue is created and scheduled for delivery one day later
     $queue = $newsletter->getLatestQueue();
-    expect($queue)->null();
+    verify($queue)->null();
   }
 
   public function testItSchedulesWPUserWelcomeNotificationWhenUserRolesMatches() {

@@ -420,12 +420,12 @@ class SendingQueueTest extends \MailPoetTest {
     $this->subscriber->setEngagementScoreUpdatedAt(Carbon::now()->subDays(5));
     $this->entityManager->flush();
     $this->entityManager->refresh($this->subscriber);
-    expect($this->subscriber->getLastSendingAt())->null();
+    verify($this->subscriber->getLastSendingAt())->null();
     expect($this->subscriber->getEngagementScoreUpdatedAt())->notNull();
     $sendingQueueWorker->process();
     $this->subscribersRepository->refresh($this->subscriber);
     expect($this->subscriber->getLastSendingAt())->notNull();
-    expect($this->subscriber->getEngagementScoreUpdatedAt())->null();
+    verify($this->subscriber->getEngagementScoreUpdatedAt())->null();
 
     // newsletter status is set to sent
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
@@ -550,7 +550,7 @@ class SendingQueueTest extends \MailPoetTest {
         ]
       )
     );
-    expect($this->subscriber->getLastSendingAt())->null();
+    verify($this->subscriber->getLastSendingAt())->null();
     $sendingQueueWorker->process();
     $this->subscribersRepository->refresh($this->subscriber);
     expect($this->subscriber->getLastSendingAt())->notNull();
@@ -1018,7 +1018,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountTotal())->equals($expectSending ? 1 : 0);
     // Transactional emails shouldn't update last sending at
     $this->subscribersRepository->refresh($subscriber);
-    expect($subscriber->getLastSendingAt())->null();
+    verify($subscriber->getLastSendingAt())->null();
   }
 
   public function dataForTestItSendsTransactionalEmails(): array {

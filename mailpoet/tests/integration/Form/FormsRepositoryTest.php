@@ -17,12 +17,12 @@ class FormsRepositoryTest extends \MailPoetTest {
     $form = $this->createForm('Form 1');
     expect($this->repository->findOneById($form->getId()))->isInstanceOf(FormEntity::class);
     $this->repository->delete($form);
-    expect($form->getId())->null();
+    verify($form->getId())->null();
   }
 
   public function testItCanTrashForm() {
     $form = $this->createForm('Form 1');
-    expect($form->getDeletedAt())->null();
+    verify($form->getDeletedAt())->null();
     $this->repository->trash($form);
     expect($form->getDeletedAt())->notNull();
   }
@@ -32,7 +32,7 @@ class FormsRepositoryTest extends \MailPoetTest {
     $this->repository->trash($form);
     expect($form->getDeletedAt())->notNull();
     $this->repository->restore($form);
-    expect($form->getDeletedAt())->null();
+    verify($form->getDeletedAt())->null();
   }
 
   private function createForm(string $name): FormEntity {

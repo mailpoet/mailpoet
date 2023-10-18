@@ -276,7 +276,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->wp->expects($this->never())->method('isSingle');
     $this->wp->expects($this->never())->method('isSingular');
     $this->repository->expects($this->never())->method('findAll');
-    expect($this->hook->contentDisplay(null))->null();
+    verify($this->hook->contentDisplay(null))->null();
     verify($this->hook->contentDisplay([1,2,3]))->equals([1,2,3]);
     verify($this->hook->contentDisplay(1))->equals(1);
     verify($this->hook->contentDisplay(1.1))->equals(1.1);

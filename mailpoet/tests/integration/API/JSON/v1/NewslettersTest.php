@@ -332,7 +332,7 @@ class NewslettersTest extends \MailPoetTest {
     $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     verify($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
-    expect($response->data['deleted_at'])->null();
+    verify($response->data['deleted_at'])->null();
     verify($response->meta['count'])->equals(1);
   }
 

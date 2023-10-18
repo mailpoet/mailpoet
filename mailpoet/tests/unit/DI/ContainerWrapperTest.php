@@ -24,7 +24,7 @@ class ContainerWrapperTest extends \MailPoetUnitTest {
 
   public function testItProvidesPremiumContainerIfAvailable() {
     $instance = new ContainerWrapper(new ContainerBuilder());
-    expect($instance->getPremiumContainer())->null();
+    verify($instance->getPremiumContainer())->null();
 
     $instance = new ContainerWrapper(new ContainerBuilder(), new ContainerBuilder());
     expect($instance->getPremiumContainer())->isInstanceOf(ContainerBuilder::class);

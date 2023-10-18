@@ -29,7 +29,7 @@ class EnvTest extends \MailPoetTest {
   public function testItProcessDBHost() {
     Env::init('file', '1.0.0', 'localhost', 'db_user', 'pass123', 'db_name');
     verify(Env::$dbHost)->equals('localhost');
-    expect(Env::$dbPort)->null();
+    verify(Env::$dbPort)->null();
 
     Env::init('file', '1.0.0', 'localhost:3307', 'db_user', 'pass123', 'db_name');
     verify(Env::$dbHost)->equals('localhost');

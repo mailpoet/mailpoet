@@ -41,7 +41,7 @@ class MailerLogTest extends \MailPoetTest {
     $mailerConfig = $settings->get(Mailer::MAILER_CONFIG_SETTING_NAME);
     $mailerConfig['method'] = Mailer::METHOD_MAILPOET;
     $settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, $mailerConfig);
-    expect(MailerLog::incrementSentCount())->null();
+    verify(MailerLog::incrementSentCount())->null();
     verify(MailerLog::sentSince())->equals($expectedCount);
   }
 
@@ -53,9 +53,9 @@ class MailerLogTest extends \MailPoetTest {
     $mailerLog = MailerLog::getMailerLog();
     $mailerLog['error'] = ['operation' => 'send', 'error_message' => ''];
     $this->settings->set(MailerLog::SETTING_NAME, $mailerLog);
-    expect(MailerLog::incrementSentCount())->null();
+    verify(MailerLog::incrementSentCount())->null();
     $mailerLog = MailerLog::getMailerLog();
-    expect($mailerLog['error'])->null();
+    verify($mailerLog['error'])->null();
   }
 
   public function testItCreatesMailer() {
@@ -191,7 +191,7 @@ class MailerLogTest extends \MailPoetTest {
     // status is reset when sending is resumed
     MailerLog::resumeSending();
     $mailerLog = MailerLog::getMailerLog();
-    expect($mailerLog['status'])->null();
+    verify($mailerLog['status'])->null();
   }
 
   public function testItPausesSending() {
@@ -204,16 +204,16 @@ class MailerLogTest extends \MailPoetTest {
     MailerLog::pauseSending($mailerLog);
     $mailerLog = MailerLog::getMailerLog();
     verify($mailerLog['status'])->equals(MailerLog::STATUS_PAUSED);
-    expect($mailerLog['retry_attempt'])->null();
-    expect($mailerLog['retry_at'])->null();
+    verify($mailerLog['retry_attempt'])->null();
+    verify($mailerLog['retry_at'])->null();
   }
 
   public function testItProcessesSendingError() {
     // retry-related mailer values should be null
     $mailerLog = MailerLog::getMailerLog();
-    expect($mailerLog['retry_attempt'])->null();
-    expect($mailerLog['retry_at'])->null();
-    expect($mailerLog['error'])->null();
+    verify($mailerLog['retry_attempt'])->null();
+    verify($mailerLog['retry_at'])->null();
+    verify($mailerLog['error'])->null();
     // retry attempt should be incremented, error logged, retry attempt scheduled
     $this->expectException('\Exception');
     MailerLog::processError($operation = 'send', $error = 'email rejected');
@@ -230,9 +230,9 @@ class MailerLogTest extends \MailPoetTest {
 
   public function testItProcessesNonBlockingSendingError() {
     $mailerLog = MailerLog::getMailerLog();
-    expect($mailerLog['retry_attempt'])->null();
-    expect($mailerLog['retry_at'])->null();
-    expect($mailerLog['error'])->null();
+    verify($mailerLog['retry_attempt'])->null();
+    verify($mailerLog['retry_at'])->null();
+    verify($mailerLog['error'])->null();
     $this->expectException('\Exception');
     MailerLog::processNonBlockingError($operation = 'send', $error = 'email rejected');
     $mailerLog = MailerLog::getMailerLog();
@@ -248,7 +248,7 @@ class MailerLogTest extends \MailPoetTest {
 
   public function testItPausesSendingAfterProcessingSendingError() {
     $mailerLog = MailerLog::getMailerLog();
-    expect($mailerLog['error'])->null();
+    verify($mailerLog['error'])->null();
     $error = null;
     try {
       MailerLog::processError($operation = 'send', $error = 'email rejected - sending paused', $errorCode = null, $pauseSending = true);
@@ -257,8 +257,8 @@ class MailerLogTest extends \MailPoetTest {
       verify($e->getMessage())->equals('Sending has been paused.');
     }
     $mailerLog = MailerLog::getMailerLog();
-    expect($mailerLog['retry_attempt'])->null();
-    expect($mailerLog['retry_at'])->null();
+    verify($mailerLog['retry_attempt'])->null();
+    verify($mailerLog['retry_at'])->null();
     verify($mailerLog['status'])->equals(MailerLog::STATUS_PAUSED);
     verify($mailerLog['error'])->equals(
       [
@@ -273,8 +273,8 @@ class MailerLogTest extends \MailPoetTest {
 
   public function testItProcessesTransactionalEmailSendingError() {
     $mailerLog = MailerLog::getMailerLog();
-    expect($mailerLog['transactional_email_last_error_at'])->null();
-    expect($mailerLog['transactional_email_error_count'])->null();
+    verify($mailerLog['transactional_email_last_error_at'])->null();
+    verify($mailerLog['transactional_email_error_count'])->null();
     MailerLog::processTransactionalEmailError(MailerError::OPERATION_SEND, 'email rejected');
     $mailerLog = MailerLog::getMailerLog();
     verify($mailerLog['transactional_email_last_error_at'])->equals(time(), 1);
@@ -319,8 +319,8 @@ class MailerLogTest extends \MailPoetTest {
     MailerLog::updateMailerLog($mailerLog);
     MailerLog::processTransactionalEmailError(MailerError::OPERATION_SEND, 'email rejected');
     $mailerLog = MailerLog::getMailerLog();
-    expect($mailerLog['transactional_email_last_error_at'])->null();
-    expect($mailerLog['transactional_email_error_count'])->null();
+    verify($mailerLog['transactional_email_last_error_at'])->null();
+    verify($mailerLog['transactional_email_error_count'])->null();
     verify(MailerLog::isSendingPaused())->true();
     $logs = $this->entityManager->getRepository(LogEntity::class)->findAll();
     $this->assertInstanceOf(LogEntity::class, $logs[0]);
@@ -408,7 +408,7 @@ class MailerLogTest extends \MailPoetTest {
     $mailerLog = MailerLog::createMailerLog();
     $mailerLog['retry_attempt'] = 2;
     // allow less than 3 attempts
-    expect(MailerLog::enforceExecutionRequirements($mailerLog))->null();
+    verify(MailerLog::enforceExecutionRequirements($mailerLog))->null();
     // pase sending and throw exception when more than 3 attempts
     $mailerLog['retry_attempt'] = MailerLog::RETRY_ATTEMPTS_LIMIT;
     try {
@@ -434,11 +434,11 @@ class MailerLogTest extends \MailPoetTest {
     ];
     $mailerLog['status'] = 'status';
     $mailerLog = MailerLog::clearSendingErrorLog($mailerLog);
-    expect($mailerLog['retry_attempt'])->null();
-    expect($mailerLog['retry_at'])->null();
-    expect($mailerLog['error'])->null();
-    expect($mailerLog['transactional_email_last_error_at'])->null();
-    expect($mailerLog['transactional_email_error_count'])->null();
+    verify($mailerLog['retry_attempt'])->null();
+    verify($mailerLog['retry_at'])->null();
+    verify($mailerLog['error'])->null();
+    verify($mailerLog['transactional_email_last_error_at'])->null();
+    verify($mailerLog['transactional_email_error_count'])->null();
     verify($mailerLog['status'])->equals('status');
   }
 

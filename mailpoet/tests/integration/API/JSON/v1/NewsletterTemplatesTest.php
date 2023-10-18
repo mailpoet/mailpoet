@@ -130,6 +130,6 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_OK);
 
     $deletedTemplate = $this->newsletterTemplatesRepository->findOneById($templateId);
-    expect($deletedTemplate)->null();
+    verify($deletedTemplate)->null();
   }
 }

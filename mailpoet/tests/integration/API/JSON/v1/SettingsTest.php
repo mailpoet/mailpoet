@@ -242,7 +242,7 @@ class SettingsTest extends \MailPoetTest {
         'status' => ScheduledTaskEntity::STATUS_SCHEDULED,
       ]
     );
-    expect($task)->null();
+    verify($task)->null();
 
     $settings = ['deactivate_subscriber_after_inactive_days' => 0];
     $this->endpoint->set($settings);
@@ -302,7 +302,7 @@ class SettingsTest extends \MailPoetTest {
     $this->settings->set('setting_to_be_deleted', true);
     $response = $this->endpoint->delete('setting_to_be_deleted');
     expect($response)->isInstanceOf(SuccessResponse::class);
-    expect($this->settings->get('setting_to_be_deleted'))->null();
+    verify($this->settings->get('setting_to_be_deleted'))->null();
   }
 
   public function testDeleteReturnErrorForEmptySettingName() {
