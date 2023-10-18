@@ -54,7 +54,7 @@ class SegmentsResponseBuilderTest extends \MailPoetTest {
     verify($response)->isArray();
     verify($response[0]['name'])->equals($name);
     verify($response[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
-    expect($response[0]['subscribers_url'])->startsWith('http');
+    verify($response[0]['subscribers_url'])->stringStartsWith('http');
     verify($response[0]['subscribers_count']['subscribed'])->equals('1');
   }
 }

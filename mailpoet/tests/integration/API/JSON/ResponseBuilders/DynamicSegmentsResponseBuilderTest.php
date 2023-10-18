@@ -90,7 +90,7 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     verify($response[0]['name'])->equals($name);
     verify($response[0]['description'])->equals($description);
     verify($response[0]['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
-    expect($response[0]['subscribers_url'])->startsWith('http');
+    verify($response[0]['subscribers_url'])->stringStartsWith('http');
     verify($response[0]['count_all'])->equals(1);
     verify($response[0]['count_subscribed'])->equals(1);
 

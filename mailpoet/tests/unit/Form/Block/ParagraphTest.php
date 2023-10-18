@@ -18,7 +18,7 @@ class ParagraphTest extends \MailPoetUnitTest {
 
   public function testItShouldRenderParagraph() {
     $html = $this->paragraph->render([]);
-    expect($html)->startsWith('<p');
+    verify($html)->stringStartsWith('<p');
   }
 
   public function testItShouldRenderContent() {
