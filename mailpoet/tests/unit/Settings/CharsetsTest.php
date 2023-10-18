@@ -7,7 +7,7 @@ use MailPoet\Settings\Charsets;
 class CharsetsTest extends \MailPoetUnitTest {
   public function testItReturnsAListOfCharsets() {
     $charsets = Charsets::getAll();
-    expect($charsets)->notEmpty();
+    verify($charsets)->notEmpty();
     verify($charsets[0])->equals('UTF-8');
   }
 }

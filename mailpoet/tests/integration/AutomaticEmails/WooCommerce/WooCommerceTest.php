@@ -36,7 +36,7 @@ class WooCommerceTest extends \MailPoetTest {
     // event is registered
     $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailEventBySlug(WooCommerce::SLUG, AbandonedCart::SLUG);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
   }
 
   public function testItRegistersFirstPuchaseEvent() {
@@ -46,7 +46,7 @@ class WooCommerceTest extends \MailPoetTest {
     // event is registered
     $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailEventBySlug(WooCommerce::SLUG, FirstPurchase::SLUG);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
 
     // event hooks are initialized
     verify(has_filter('mailpoet_newsletter_shortcode'))->true();
@@ -61,7 +61,7 @@ class WooCommerceTest extends \MailPoetTest {
     // event is registered
     $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailEventBySlug(WooCommerce::SLUG, PurchasedInCategory::SLUG);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
   }
 
   public function testItRegistersPurchasedProductEvent() {
@@ -71,7 +71,7 @@ class WooCommerceTest extends \MailPoetTest {
     // event is registered
     $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailEventBySlug(WooCommerce::SLUG, PurchasedProduct::SLUG);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
 
     // event hooks are initialized
     verify(has_filter('woocommerce_order_status_completed'))->true();

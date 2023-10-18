@@ -110,7 +110,7 @@ class LogHandlerTest extends \MailPoetTest {
     ]);
 
     $log = $this->repository->findBy(['name' => 'old name keep']);
-    expect($log)->notEmpty();
+    verify($log)->notEmpty();
   }
 
   public function testItResilientToSqlError(): void {

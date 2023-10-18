@@ -7,7 +7,7 @@ use MailPoet\Settings\Hosts;
 class HostsTest extends \MailPoetUnitTest {
   public function testItReturnsAListOfWebHosts() {
     $webHosts = Hosts::getWebHosts();
-    expect($webHosts)->notEmpty();
+    verify($webHosts)->notEmpty();
 
     foreach ($webHosts as $host) {
       expect($host['interval'])->greaterThan(0);
@@ -17,7 +17,7 @@ class HostsTest extends \MailPoetUnitTest {
 
   public function testItReturnsAListOfSMTPHosts() {
     $smtpHosts = Hosts::getSMTPHosts();
-    expect($smtpHosts)->notEmpty();
+    verify($smtpHosts)->notEmpty();
 
     foreach ($smtpHosts as $host) {
       expect($host['interval'])->greaterThan(0);

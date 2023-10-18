@@ -79,7 +79,7 @@ class SettingsTest extends \MailPoetTest {
     $response = $this->endpoint->get();
     verify($response->status)->equals(APIResponse::STATUS_OK);
 
-    expect($response->data)->notEmpty();
+    verify($response->data)->notEmpty();
     verify($response->data['some']['setting']['key'])->true();
 
     $this->diContainer->get(SettingsRepository::class)->truncate();

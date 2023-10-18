@@ -30,15 +30,15 @@ class SupervisorTest extends \MailPoetTest {
   public function testItCanBeInitialized() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     $this->supervisor->init();
-    expect($this->supervisor->token)->notEmpty();
-    expect($this->supervisor->daemon)->notEmpty();
+    verify($this->supervisor->token)->notEmpty();
+    verify($this->supervisor->daemon)->notEmpty();
   }
 
   public function testItCreatesDaemonWhenOneDoesNotExist() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
     verify($this->settings->get(CronHelper::DAEMON_SETTING))->null();
     $this->supervisor->init();
-    expect($this->supervisor->getDaemon())->notEmpty();
+    verify($this->supervisor->getDaemon())->notEmpty();
   }
 
   public function testItReturnsDaemonWhenOneExists() {

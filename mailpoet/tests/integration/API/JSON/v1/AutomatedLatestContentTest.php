@@ -17,11 +17,11 @@ class AutomatedLatestContentTest extends \MailPoetTest {
 
   public function testItGetsPostTypes() {
     $response = $this->endpoint->getPostTypes();
-    expect($response->data)->notEmpty();
+    verify($response->data)->notEmpty();
     foreach ($response->data as $postType) {
       expect($postType)->count(2);
-      expect($postType['name'])->notEmpty();
-      expect($postType['label'])->notEmpty();
+      verify($postType['name'])->notEmpty();
+      verify($postType['label'])->notEmpty();
     }
   }
 

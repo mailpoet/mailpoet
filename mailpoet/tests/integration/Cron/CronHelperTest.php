@@ -286,7 +286,7 @@ class CronHelperTest extends \MailPoetTest {
       'user-agent' => 'custom_user_agent',
     ];
     $filter = function($args) use ($requestArgs) {
-      expect($args)->notEmpty();
+      verify($args)->notEmpty();
       return $requestArgs;
     };
     $wpRemoteGetArgs = [];

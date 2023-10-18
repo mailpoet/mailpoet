@@ -75,7 +75,7 @@ class UpdaterTest extends \MailPoetTest {
       $result->response[$this->pluginName]->new_version,
       '<'
     ))->true();
-    expect($result->response[$this->pluginName]->package)->notEmpty();
+    verify($result->response[$this->pluginName]->package)->notEmpty();
   }
 
   public function testItSetsNoupdateKeyIfNoUpdateAvailable() {

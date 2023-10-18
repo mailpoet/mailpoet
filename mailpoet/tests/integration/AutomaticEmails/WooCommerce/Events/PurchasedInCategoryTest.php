@@ -45,7 +45,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
 
   public function testItGetsEventDetails() {
     $result = $this->event->getEventDetails();
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['slug'])->equals(PurchasedInCategory::SLUG);
   }
 
@@ -91,7 +91,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     // We only want to record the ID for the category that triggered the newsletter
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     verify($queue->getMeta())->equals(['orderedProductCategories' => ['15']]);
-    expect($queue->getTask())->notEmpty();
+    verify($queue->getTask())->notEmpty();
   }
 
   public function testItDoesNotRescheduleDueToFutureOrderWithAdditionalProduct() {
@@ -114,7 +114,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
     $this->event->scheduleEmail(3);
     $queue1 = $this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]);
-    expect($queue1)->notEmpty();
+    verify($queue1)->notEmpty();
 
     $order = $this->getOrderMock(['15', '17']);
     $this->woocommerceHelper = $this->createMock(WCHelper::class);
@@ -152,7 +152,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
     $this->event->scheduleEmail(3);
     $queue1 = $this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]);
-    expect($queue1)->notEmpty();
+    verify($queue1)->notEmpty();
 
     $order = $this->getOrderMock(['15']);
     $this->woocommerceHelper = $this->createMock(WCHelper::class);

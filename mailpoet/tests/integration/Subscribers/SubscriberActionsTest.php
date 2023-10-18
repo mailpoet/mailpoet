@@ -254,7 +254,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
     verify($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);
 
-    expect($subscriber->getUnconfirmedData())->notEmpty();
+    verify($subscriber->getUnconfirmedData())->notEmpty();
     verify($subscriber->getUnconfirmedData())->equals(json_encode($data2));
 
     // Unconfirmed data should be wiped after any direct update

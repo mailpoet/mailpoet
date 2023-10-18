@@ -138,7 +138,7 @@ class DateTest extends \MailPoetUnitTest {
     $html = $this->date->render($this->block, [], 44);
 
     $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_1_44']");
-    expect($errorContainer)->notEmpty();
+    verify($errorContainer)->notEmpty();
     verify($errorContainer->nodeName)->equals('span');
   }
 }

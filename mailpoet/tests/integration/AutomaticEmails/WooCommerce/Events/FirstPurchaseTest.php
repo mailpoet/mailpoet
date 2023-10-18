@@ -60,7 +60,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     $event = new FirstPurchase();
 
     $result = $event->getEventDetails();
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['slug'])->equals(FirstPurchase::SLUG);
   }
 

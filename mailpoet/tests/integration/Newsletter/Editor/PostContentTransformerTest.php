@@ -108,10 +108,10 @@ class PostContentTransformerTest extends \MailPoetTest {
     $result = $transformer->transform([]);
     verify($result[0]['type'])->equals('container');
     verify($result[0]['orientation'])->equals('horizontal');
-    expect($result[0]['styles'])->notEmpty();
+    verify($result[0]['styles'])->notEmpty();
     verify($result[0]['blocks'][0]['type'])->equals('container');
     verify($result[0]['blocks'][0]['orientation'])->equals('vertical');
-    expect($result[0]['blocks'][0]['styles'])->notEmpty();
+    verify($result[0]['blocks'][0]['styles'])->notEmpty();
     $resultBlocks = $result[0]['blocks'][0]['blocks'];
     verify(count($resultBlocks))->equals(3);
     verify($resultBlocks[0]['text'])->equals('Title');
@@ -146,10 +146,10 @@ class PostContentTransformerTest extends \MailPoetTest {
     $result = $transformer->transform([]);
     verify($result[0]['type'])->equals('container');
     verify($result[0]['orientation'])->equals('horizontal');
-    expect($result[0]['styles'])->notEmpty();
+    verify($result[0]['styles'])->notEmpty();
     verify($result[0]['blocks'][0]['type'])->equals('container');
     verify($result[0]['blocks'][0]['orientation'])->equals('vertical');
-    expect($result[0]['blocks'][0]['styles'])->notEmpty();
+    verify($result[0]['blocks'][0]['styles'])->notEmpty();
     verify(count($result[0]['blocks'][0]['blocks']))->equals(1);
     verify(count($result[1]['blocks']))->equals(2);
   }

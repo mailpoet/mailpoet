@@ -97,9 +97,9 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->previewEditor($response->data);
     verify($response->status)->equals(APIResponse::STATUS_OK);
     $storedData = $this->wp->getTransient(PreviewPage::PREVIEW_DATA_TRANSIENT_PREFIX . $formId);
-    expect($storedData['body'])->notEmpty();
-    expect($storedData['styles'])->notEmpty();
-    expect($storedData['settings'])->notEmpty();
+    verify($storedData['body'])->notEmpty();
+    verify($storedData['styles'])->notEmpty();
+    verify($storedData['settings'])->notEmpty();
   }
 
   public function testItCanSaveFormEditor() {

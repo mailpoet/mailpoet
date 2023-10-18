@@ -69,32 +69,32 @@ class BridgeTest extends \MailPoetTest {
 
   public function testItChecksValidMSSKey() {
     $result = $this->bridge->checkMSSKey($this->validKey);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['state'])->equals(Bridge::KEY_VALID);
   }
 
   public function testItChecksInvalidMSSKey() {
     $result = $this->bridge->checkMSSKey($this->invalidKey);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['state'])->equals(Bridge::KEY_INVALID);
   }
 
   public function testItChecksExpiringMSSKey() {
     $result = $this->bridge->checkMSSKey($this->expiringKey);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['state'])->equals(Bridge::KEY_EXPIRING);
-    expect($result['data']['expire_at'])->notEmpty();
+    verify($result['data']['expire_at'])->notEmpty();
   }
 
   public function testItChecksAlreadyUsed() {
     $result = $this->bridge->checkMSSKey($this->usedKey);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['state'])->equals(Bridge::KEY_ALREADY_USED);
   }
 
   public function testItChecksForbiddenEndpointMSSKey() {
     $result = $this->bridge->checkMSSKey($this->underPrivilegedKey);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
   }
 
@@ -102,7 +102,7 @@ class BridgeTest extends \MailPoetTest {
     $api = Stub::make(new API(null), ['checkMSSKey' => []], $this);
     $this->bridge->api = $api;
     $result = $this->bridge->checkMSSKey($this->validKey);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['state'])->equals(Bridge::KEY_CHECK_ERROR);
   }
 
@@ -137,40 +137,40 @@ class BridgeTest extends \MailPoetTest {
 
   public function testItChecksValidPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->validKey);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['state'])->equals(Bridge::KEY_VALID);
   }
 
   public function testItChecksInvalidPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->invalidKey);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['state'])->equals(Bridge::KEY_INVALID);
   }
 
   public function testItChecksAlreadyUsedPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->usedPremiumKey);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['state'])->equals(Bridge::KEY_ALREADY_USED);
   }
 
   public function testItChecksForbiddenEndpointPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->underPrivilegedKey);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
   }
 
   public function testItChecksExpiringPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->expiringPremiumKey);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['state'])->equals(Bridge::KEY_EXPIRING);
-    expect($result['data']['expire_at'])->notEmpty();
+    verify($result['data']['expire_at'])->notEmpty();
   }
 
   public function testItReturnsErrorStateOnEmptyAPIResponseCodeDuringPremiumCheck() {
     $api = Stub::make(new API(null), ['checkPremiumKey' => []], $this);
     $this->bridge->api = $api;
     $result = $this->bridge->checkPremiumKey($this->validKey);
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['state'])->equals(Bridge::KEY_CHECK_ERROR);
   }
 
@@ -377,21 +377,21 @@ class BridgeTest extends \MailPoetTest {
 
   public function testItCanCreateSenderDomain() {
     $result = $this->bridge->createAuthorizedSenderDomain('mailpoet.com');
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify(isset($result['error']))->false();
     verify($result[0]['host'])->equals('mailpoet1._domainkey.example.com');
   }
 
   public function testItDoesntCreateSenderDomainThatExists() {
     $result = $this->bridge->createAuthorizedSenderDomain('existing.com');
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['error'])->equals('This domain was already added to the list.');
     verify($result['status'])->equals(false);
   }
 
   public function testTheSenderDomainApiReturnsValidDataType() {
     $result = $this->bridge->getAuthorizedSenderDomains('mailpoet.com');
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result[0]['host'])->equals('mailpoet1._domainkey.example.com');
     verify($result[0]['value'])->equals('dkim1.sendingservice.net');
     verify($result[0]['type'])->equals('CNAME');
@@ -401,7 +401,7 @@ class BridgeTest extends \MailPoetTest {
 
   public function testItCanVerifySenderDomain() {
     $result = $this->bridge->verifyAuthorizedSenderDomain('mailpoet.com');
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['ok'])->equals(true); // verified
   }
 
@@ -607,7 +607,7 @@ class BridgeTest extends \MailPoetTest {
     ]);
     $this->bridge->api = $api;
     $result = $this->bridge->$method('abc');
-    expect($result)->notEmpty();
+    verify($result)->notEmpty();
     verify($result['data'])->null();
     verify($result['access_restriction'])->equals($expectedAccessRestriction);
   }

@@ -17,7 +17,7 @@ class ThumbnailSaverTest extends \MailPoetTest {
     $template = $this->createTemplate();
     $template = $this->thumbnailSaver->ensureTemplateThumbnailFile($template);
     $thumbnailUrl = $template->getThumbnail();
-    expect($thumbnailUrl)->notEmpty();
+    verify($thumbnailUrl)->notEmpty();
     expect($thumbnailUrl)->string();
     expect($thumbnailUrl)->startsWith(Env::$tempUrl);
     verify($thumbnailUrl)->stringContainsString(ThumbnailSaver::THUMBNAIL_DIRECTORY);

@@ -160,8 +160,8 @@ class ImportTest extends \MailPoetTest {
     verify(is_array($this->import->subscribersFields))->true();
     verify(is_array($this->import->subscribersCustomFields))->true();
     verify($this->import->subscribersCount)->equals(2);
-    expect($this->import->createdAt)->notEmpty();
-    expect($this->import->updatedAt)->notEmpty();
+    verify($this->import->createdAt)->notEmpty();
+    verify($this->import->updatedAt)->notEmpty();
   }
 
   public function testItChecksForRequiredDataFields(): void {

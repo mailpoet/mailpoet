@@ -224,8 +224,8 @@ class SubscriptionTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     verify($subscriber->getSource())->equals(Source::WOOCOMMERCE_CHECKOUT);
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($subscriber->getConfirmedIp())->notEmpty();
-    expect($subscriber->getConfirmedAt())->notEmpty();
+    verify($subscriber->getConfirmedIp())->notEmpty();
+    verify($subscriber->getConfirmedAt())->notEmpty();
   }
 
   public function testItSendsConfirmationEmail() {

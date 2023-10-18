@@ -128,7 +128,7 @@ class OpensTest extends \MailPoetTest {
       'returnResponse' => null,
     ], $this);
     $opens->track($this->trackData);
-    expect($this->statisticsOpensRepository->findAll())->notEmpty();
+    verify($this->statisticsOpensRepository->findAll())->notEmpty();
   }
 
   public function testItDoesNotTrackRepeatedOpenEvents() {

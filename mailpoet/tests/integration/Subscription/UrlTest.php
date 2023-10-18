@@ -160,7 +160,7 @@ class UrlTest extends \MailPoetTest {
   private function checkSubscriberData(string $url) {
     $data = $this->getUrlData($url);
     verify($data['email'])->stringContainsString('john@mailpoet.com');
-    expect($data['token'])->notEmpty();
+    verify($data['token'])->notEmpty();
     return $data;
   }
 

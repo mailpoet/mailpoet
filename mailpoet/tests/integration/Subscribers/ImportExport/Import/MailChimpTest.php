@@ -77,8 +77,8 @@ class MailChimpTest extends \MailPoetTest {
       $this->fail('MailChimp getLists() threw an exception');
     }
     expect($lists)->count(2);
-    expect($lists[0]['id'])->notEmpty();
-    expect($lists[0]['name'])->notEmpty();
+    verify($lists[0]['id'])->notEmpty();
+    verify($lists[0]['name'])->notEmpty();
   }
 
   public function testItFailsWithIncorrectLists(): void {
@@ -110,7 +110,7 @@ class MailChimpTest extends \MailPoetTest {
 
     verify($subscribers)->arrayHasKey('invalid');
     verify($subscribers)->arrayHasKey('duplicate');
-    expect($subscribers['header'])->notEmpty();
+    verify($subscribers['header'])->notEmpty();
     expect($subscribers['subscribers'])->count(1);
     verify($subscribers['subscribersCount'])->equals(1);
   }

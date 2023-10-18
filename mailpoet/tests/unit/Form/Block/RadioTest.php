@@ -89,7 +89,7 @@ class RadioTest extends \MailPoetUnitTest {
     $html = $this->radio->render($this->block, [], 31);
 
     $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_1_31']");
-    expect($errorContainer)->notEmpty();
+    verify($errorContainer)->notEmpty();
     verify($errorContainer->nodeName)->equals('span');
   }
 }

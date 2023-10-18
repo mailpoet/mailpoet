@@ -51,7 +51,7 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
   public function testItAttachesHandler() {
     $logger1 = $this->loggerFactory->getLogger('logger-with-handler');
     $handlers = $logger1->getHandlers();
-    expect($handlers)->notEmpty();
+    verify($handlers)->notEmpty();
     expect($handlers[0])->isInstanceOf(LogHandler::class);
   }
 
