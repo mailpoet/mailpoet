@@ -60,8 +60,8 @@ class JsonTypesTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $savedData = $this->connection->executeQuery("SELECT * FROM $this->tableName")->fetchAssociative() ?: [];
-    expect($savedData['json_data'])->same(json_encode($this->testData));
-    expect($savedData['json_or_serialized_data'])->same(json_encode($this->testData));
+    verify($savedData['json_data'])->same(json_encode($this->testData));
+    verify($savedData['json_or_serialized_data'])->same(json_encode($this->testData));
   }
 
   public function testItLoadsJsonData() {
@@ -76,8 +76,8 @@ class JsonTypesTest extends \MailPoetTest {
 
     $entity = $this->entityManager->find(JsonEntity::class, 1);
     $this->assertInstanceOf(JsonEntity::class, $entity); // PHPStan
-    expect($entity->getJsonData())->same($this->testData);
-    expect($entity->getJsonOrSerializedData())->same($this->testData);
+    verify($entity->getJsonData())->same($this->testData);
+    verify($entity->getJsonOrSerializedData())->same($this->testData);
   }
 
   public function testItLoadsSerializedData() {
@@ -92,7 +92,7 @@ class JsonTypesTest extends \MailPoetTest {
     $entity = $this->entityManager->find(JsonEntity::class, 1);
     $this->assertInstanceOf(JsonEntity::class, $entity); // PHPStan
     verify($entity->getJsonData())->null();
-    expect($entity->getJsonOrSerializedData())->same($this->testData);
+    verify($entity->getJsonOrSerializedData())->same($this->testData);
   }
 
   public function testItSavesNullData() {

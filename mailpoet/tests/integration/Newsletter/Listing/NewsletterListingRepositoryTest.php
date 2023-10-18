@@ -233,8 +233,8 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
       'sort_order' => 'asc',
     ]));
     expect($newsletters)->count(2);
-    expect($newsletters[0]->getSubject())->same('Newsletter A');
-    expect($newsletters[1]->getSubject())->same('Newsletter B');
+    verify($newsletters[0]->getSubject())->same('Newsletter A');
+    verify($newsletters[1]->getSubject())->same('Newsletter B');
 
     // DESC
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
@@ -242,8 +242,8 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
       'sort_order' => 'desc',
     ]));
     expect($newsletters)->count(2);
-    expect($newsletters[0]->getSubject())->same('Newsletter B');
-    expect($newsletters[1]->getSubject())->same('Newsletter A');
+    verify($newsletters[0]->getSubject())->same('Newsletter B');
+    verify($newsletters[1]->getSubject())->same('Newsletter A');
   }
 
   public function testItAppliesLimitAndOffset() {
@@ -268,7 +268,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
       'offset' => 0,
     ]));
     expect($newsletters)->count(1);
-    expect($newsletters[0]->getSubject())->same('Newsletter A');
+    verify($newsletters[0]->getSubject())->same('Newsletter A');
 
     // second page
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
@@ -276,7 +276,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
       'offset' => 1,
     ]));
     expect($newsletters)->count(1);
-    expect($newsletters[0]->getSubject())->same('Newsletter B');
+    verify($newsletters[0]->getSubject())->same('Newsletter B');
 
     // third page
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([

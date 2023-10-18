@@ -210,7 +210,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
       $viewInBrowserController->view($data);
       $this->fail("Expected 'InvalidArgumentException' with message '$message' was not thrown");
     } catch (\InvalidArgumentException $e) {
-      expect($e->getMessage())->same($message);
+      verify($e->getMessage())->same($message);
     }
   }
 

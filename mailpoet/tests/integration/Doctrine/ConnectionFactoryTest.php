@@ -93,7 +93,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
     expect($connection->getWrappedConnection())->isInstanceOf(PDO::class);
-    expect($connection->executeQuery('SELECT "abc"')->fetchOne())->same('abc');
+    verify($connection->executeQuery('SELECT "abc"')->fetchOne())->same('abc');
   }
 
   public function testItSetsDriverOptions() {

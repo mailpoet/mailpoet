@@ -45,8 +45,8 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
     $response = $endpoint->get(['id' => $template->getId()]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['name'])->same('Template #1');
-    expect($response->data['body'])->same(['key1' => 'value1']);
+    verify($response->data['name'])->same('Template #1');
+    verify($response->data['body'])->same(['key1' => 'value1']);
   }
 
   public function testItCanGetAllNewsletterTemplates() {
@@ -67,8 +67,8 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);
     $response = $endpoint->save($templateData);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['name'])->same('Template #3');
-    expect($response->data['body'])->same(['key3' => 'value3']);
+    verify($response->data['name'])->same('Template #3');
+    verify($response->data['body'])->same(['key3' => 'value3']);
   }
 
   public function testItCanSaveANewTemplateAssociatedWithANewsletter() {
@@ -87,9 +87,9 @@ class NewsletterTemplatesTest extends \MailPoetTest {
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);
     $response = $endpoint->save($templateData);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['name'])->same('Template #3');
-    expect($response->data['body'])->same(['key3' => 'value3']);
-    expect($response->data['newsletter_id'])->same($newsletter->getId());
+    verify($response->data['name'])->same('Template #3');
+    verify($response->data['body'])->same(['key3' => 'value3']);
+    verify($response->data['newsletter_id'])->same($newsletter->getId());
   }
 
   public function testItCanUpdateTemplateAssociatedWithANewsletter() {
@@ -111,9 +111,9 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
     $templateData['body'] = json_decode($templateData['body'], true);
 
-    expect($response->data['name'])->same('Template #2');
-    expect($response->data['body'])->same(['key3' => 'value3']);
-    expect($response->data['newsletter_id'])->same($newsletter->getId());
+    verify($response->data['name'])->same('Template #2');
+    verify($response->data['body'])->same(['key3' => 'value3']);
+    verify($response->data['newsletter_id'])->same($newsletter->getId());
   }
 
   public function testItCanDeleteANewsletterTemplate() {

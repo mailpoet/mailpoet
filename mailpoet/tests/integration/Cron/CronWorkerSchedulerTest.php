@@ -26,9 +26,9 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $this->cronWorkerScheduler->schedule('test', $nextRunDate);
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
     expect($tasks)->count(1);
-    expect($tasks[0]->getType())->same('test');
-    expect($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($tasks[0]->getScheduledAt())->same($nextRunDate);
+    verify($tasks[0]->getType())->same('test');
+    verify($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($tasks[0]->getScheduledAt())->same($nextRunDate);
   }
 
   public function testItDoesNotScheduleTaskTwice() {
@@ -50,9 +50,9 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
     verify($immediateTask->getId())->equals($task->getId());
     expect($tasks)->count(1);
-    expect($tasks[0]->getType())->same('test');
+    verify($tasks[0]->getType())->same('test');
     verify($tasks[0]->getStatus())->null();
-    expect($tasks[0]->getScheduledAt())->same($nextRunDate);
+    verify($tasks[0]->getScheduledAt())->same($nextRunDate);
   }
 
   public function testItRescheduleScheduledTaskImmediatelyIfNotRunning() {
@@ -62,8 +62,8 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
     verify($immediateTask->getId())->equals($task->getId());
     expect($tasks)->count(1);
-    expect($tasks[0]->getType())->same('test');
-    expect($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($tasks[0]->getType())->same('test');
+    verify($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
     $this->tester->assertEqualDateTimes($tasks[0]->getScheduledAt(), Carbon::now(), 1);
   }
 
@@ -83,8 +83,8 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
 
     $tasks = $this->entityManager->getRepository(ScheduledTaskEntity::class)->findAll();
     expect($tasks)->count(1);
-    expect($tasks[0]->getType())->same('test');
-    expect($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($tasks[0]->getType())->same('test');
+    verify($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
     expect($tasks[0]->getScheduledAt())->greaterThan($nextRunDate);
     expect($tasks[0]->getScheduledAt())->greaterThan(Carbon::now());
   }

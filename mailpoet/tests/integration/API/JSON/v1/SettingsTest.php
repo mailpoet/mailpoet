@@ -159,8 +159,8 @@ class SettingsTest extends \MailPoetTest {
     MailerLog::pauseSending(MailerLog::getMailerLog());
     $this->settings->set('sender.address', '');
     $response = $this->endpoint->setAuthorizedFromAddress(['address' => 'authorized@email.com']);
-    expect($response->status)->same(200);
-    expect($this->settings->get('sender.address'))->same('authorized@email.com');
+    verify($response->status)->same(200);
+    verify($this->settings->get('sender.address'))->same('authorized@email.com');
     verify(MailerLog::isSendingPaused())->false();
   }
 
@@ -191,8 +191,8 @@ class SettingsTest extends \MailPoetTest {
     $response = $this->endpoint->set([
       'sender' => ['address' => 'invalid@email.com'],
     ]);
-    expect($response->status)->same(200);
-    expect($this->settings->get('sender.address'))->same('invalid@email.com');
+    verify($response->status)->same(200);
+    verify($this->settings->get('sender.address'))->same('invalid@email.com');
     verify($response->meta)->equals([
       'invalid_sender_address' => 'invalid@email.com',
       'showNotice' => false,
@@ -224,12 +224,12 @@ class SettingsTest extends \MailPoetTest {
 
     $this->settings->set('sender.address', '');
     $response = $this->endpoint->setAuthorizedFromAddress(['address' => 'invalid@email.com']);
-    expect($response->status)->same(400);
-    expect($response->getData()['errors'][0])->same([
+    verify($response->status)->same(400);
+    verify($response->getData()['errors'][0])->same([
       'error' => 'unauthorized',
       'message' => 'Can’t use this email yet! Please authorize it first.',
     ]);
-    expect($this->settings->get('sender.address'))->same('');
+    verify($this->settings->get('sender.address'))->same('');
   }
 
   public function testItSchedulesInactiveSubscribersCheckIfIntervalSettingChanges() {

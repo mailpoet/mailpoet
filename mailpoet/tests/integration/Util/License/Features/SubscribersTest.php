@@ -28,7 +28,7 @@ class SubscribersTest extends \MailPoetTest {
   public function testItComputesSubscribersCount() {
     // no subscribers
     $count = $this->subscribers->getSubscribersCount();
-    expect($count)->same(0);
+    verify($count)->same(0);
 
     // create some subscribers (unconfirmed, subscribed, and inactive should be counted)
     $this->createSubscriber('unconfirmed@fake.loc', SubscriberEntity::STATUS_UNCONFIRMED);
@@ -37,7 +37,7 @@ class SubscribersTest extends \MailPoetTest {
 
     // check count
     $count = $this->subscribers->getSubscribersCount();
-    expect($count)->same(3);
+    verify($count)->same(3);
 
     // add more subscribers (bounced, unsubscribed, and trashed should not be counted)
     $this->createSubscriber('bounced@fake.loc', SubscriberEntity::STATUS_BOUNCED);
@@ -48,23 +48,23 @@ class SubscribersTest extends \MailPoetTest {
 
     // check count
     $count = $this->subscribers->getSubscribersCount();
-    expect($count)->same(3);
+    verify($count)->same(3);
   }
 
   public function testItDoesntCacheSubscribersCountForLowValues() {
     // no subscribers
     $count = $this->subscribers->getSubscribersCount();
-    expect($count)->same(0);
+    verify($count)->same(0);
 
     // add subscriber
     $this->createSubscriber('one@fake.loc', SubscriberEntity::STATUS_SUBSCRIBED);
     $count = $this->subscribers->getSubscribersCount();
-    expect($count)->same(1);
+    verify($count)->same(1);
 
     // add another subscriber (count updates without cache purging)
     $this->createSubscriber('two@fake.loc', SubscriberEntity::STATUS_SUBSCRIBED);
     $count = $this->subscribers->getSubscribersCount();
-    expect($count)->same(2);
+    verify($count)->same(2);
   }
 
   public function testItCachesSubscribersCountForHighValues() {
@@ -75,7 +75,7 @@ class SubscribersTest extends \MailPoetTest {
     ]);
 
     $count = $subscribers->getSubscribersCount();
-    expect($count)->same(123456);
+    verify($count)->same(123456);
 
     $subscribers = $this->getServiceWithOverrides(Subscribers::class, [
       'subscribersRepository' => Stub::make(SubscribersRepository::class, [
@@ -85,12 +85,12 @@ class SubscribersTest extends \MailPoetTest {
 
     // check count (cached value)
     $count = $subscribers->getSubscribersCount();
-    expect($count)->same(123456);
+    verify($count)->same(123456);
 
     // check count (uncached value)
     $this->wp->deleteTransient(Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY);
     $count = $subscribers->getSubscribersCount();
-    expect($count)->same(999999);
+    verify($count)->same(999999);
   }
 
   public function testItInvalidatesSubscribersCountCache() {
@@ -109,7 +109,7 @@ class SubscribersTest extends \MailPoetTest {
 
     // check count (cached value)
     $count = $subscribers->getSubscribersCount();
-    expect($count)->same(123456);
+    verify($count)->same(123456);
 
     // modify timestamp, check count (-> uncached value)
     $this->wp->updateOption(
@@ -117,7 +117,7 @@ class SubscribersTest extends \MailPoetTest {
       $this->wp->currentTime('timestamp') - 1
     );
     $count = $subscribers->getSubscribersCount();
-    expect($count)->same(999999);
+    verify($count)->same(999999);
   }
 
   private function createSubscriber(string $email, string $status): SubscriberEntity {

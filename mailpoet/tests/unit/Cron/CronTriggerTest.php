@@ -10,9 +10,9 @@ use MailPoet\Settings\SettingsController;
 
 class CronTriggerTest extends \MailPoetUnitTest {
   public function testItDefinesConstants() {
-    expect(CronTrigger::METHOD_LINUX_CRON)->same('Linux Cron');
-    expect(CronTrigger::METHOD_WORDPRESS)->same('WordPress');
-    expect(CronTrigger::METHOD_ACTION_SCHEDULER)->same('Action Scheduler');
+    verify(CronTrigger::METHOD_LINUX_CRON)->same('Linux Cron');
+    verify(CronTrigger::METHOD_WORDPRESS)->same('WordPress');
+    verify(CronTrigger::METHOD_ACTION_SCHEDULER)->same('Action Scheduler');
     verify(CronTrigger::METHODS)->equals([
       'wordpress' => 'WordPress',
       'linux_cron' => 'Linux Cron',

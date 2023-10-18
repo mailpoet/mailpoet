@@ -89,7 +89,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $this->saveController->save($newsletterData);
     $updatedQueue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $updatedQueue); // PHPStan
-    expect($updatedQueue->getNewsletterRenderedSubject())->same('My Updated Newsletter');
+    verify($updatedQueue->getNewsletterRenderedSubject())->same('My Updated Newsletter');
     verify($updatedQueue->getNewsletterRenderedBody())->arrayHasKey('html');
     verify($updatedQueue->getNewsletterRenderedBody())->arrayHasKey('text');
   }
@@ -262,8 +262,8 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     ];
 
     $this->saveController->save($data);
-    expect($settings->get('sender.name'))->same('Test sender');
-    expect($settings->get('sender.address'))->same('test@example.com');
+    verify($settings->get('sender.name'))->same('Test sender');
+    verify($settings->get('sender.address'))->same('test@example.com');
   }
 
   public function testItDoesntSaveDefaultSenderWhenEmptyValues() {
@@ -300,8 +300,8 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     ];
 
     $this->saveController->save($data);
-    expect($settings->get('sender.name'))->same('Test sender');
-    expect($settings->get('sender.address'))->same('test@example.com');
+    verify($settings->get('sender.name'))->same('Test sender');
+    verify($settings->get('sender.address'))->same('test@example.com');
   }
 
   public function testItDuplicatesNewsletter() {
@@ -356,10 +356,10 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
       'type' => NewsletterEntity::TYPE_STANDARD,
     ];
     $newsletter = $this->saveController->save($data);
-    expect($newsletter->getSenderName())->same('Sender');
-    expect($newsletter->getSenderAddress())->same('sender@test.com');
-    expect($newsletter->getReplyToName())->same('Reply');
-    expect($newsletter->getReplyToAddress())->same('reply@test.com');
+    verify($newsletter->getSenderName())->same('Sender');
+    verify($newsletter->getSenderAddress())->same('sender@test.com');
+    verify($newsletter->getReplyToName())->same('Reply');
+    verify($newsletter->getReplyToAddress())->same('reply@test.com');
   }
 
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {

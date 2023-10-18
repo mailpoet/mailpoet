@@ -211,7 +211,7 @@ class WordpressMailerTest extends \MailPoetTest {
     }
 
     // ensure error from primary mailer is thrown
-    expect($errorMessage)->same('Error from primary mailer');
+    verify($errorMessage)->same('Error from primary mailer');
   }
 
   public function testItThrowsOnUnknownContentType() {

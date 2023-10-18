@@ -218,7 +218,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->settings->set('sender.address', '');
     $controller = $this->getController(['authorized@email.com']);
     $controller->setFromEmailAddress('authorized@email.com');
-    expect($this->settings->get('sender.address'))->same('authorized@email.com');
+    verify($this->settings->get('sender.address'))->same('authorized@email.com');
   }
 
   public function testItSetsFromAddressInSettingsWhenDomainIsVerified() {
@@ -234,7 +234,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
     $controller->setFromEmailAddress('authorized@email.com');
-    expect($this->settings->get('sender.address'))->same('authorized@email.com');
+    verify($this->settings->get('sender.address'))->same('authorized@email.com');
   }
 
   public function testItSetsFromAddressInScheduledEmails() {
@@ -249,11 +249,11 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->settings->set('sender.address', '');
     $controller = $this->getController(['authorized@email.com']);
     $controller->setFromEmailAddress('authorized@email.com');
-    expect($newsletter->getSenderAddress())->same('authorized@email.com');
+    verify($newsletter->getSenderAddress())->same('authorized@email.com');
 
     // refresh from DB and check again
     $this->entityManager->refresh($newsletter);
-    expect($newsletter->getSenderAddress())->same('authorized@email.com');
+    verify($newsletter->getSenderAddress())->same('authorized@email.com');
   }
 
   public function testItSetsFromAddressInAutomaticEmails() {
@@ -268,11 +268,11 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->settings->set('sender.address', '');
     $controller = $this->getController(['authorized@email.com']);
     $controller->setFromEmailAddress('authorized@email.com');
-    expect($newsletter->getSenderAddress())->same('authorized@email.com');
+    verify($newsletter->getSenderAddress())->same('authorized@email.com');
 
     // refresh from DB and check again
     $this->entityManager->refresh($newsletter);
-    expect($newsletter->getSenderAddress())->same('authorized@email.com');
+    verify($newsletter->getSenderAddress())->same('authorized@email.com');
   }
 
   public function testItDoesntSetFromAddressForSentEmails() {
@@ -287,11 +287,11 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $this->settings->set('sender.address', '');
     $controller = $this->getController(['authorized@email.com']);
     $controller->setFromEmailAddress('authorized@email.com');
-    expect($newsletter->getSenderAddress())->same('invalid@email.com');
+    verify($newsletter->getSenderAddress())->same('invalid@email.com');
 
     // refresh from DB and check again
     $this->entityManager->refresh($newsletter);
-    expect($newsletter->getSenderAddress())->same('invalid@email.com');
+    verify($newsletter->getSenderAddress())->same('invalid@email.com');
   }
 
   public function testSetsFromAddressThrowsForUnauthorizedEmail() {
