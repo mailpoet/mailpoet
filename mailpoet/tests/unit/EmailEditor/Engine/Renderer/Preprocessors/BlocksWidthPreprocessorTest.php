@@ -42,13 +42,13 @@ class BlocksWidthPreprocessorTest extends \MailPoetUnitTest {
         ],
       ],
     ]];
-    $result = $this->preprocessor->preprocess($blocks, ['width' => 660, 'padding' => ['left' => 0, 'right' => 0]]);
+    $result = $this->preprocessor->preprocess($blocks, ['width' => '660px', 'padding' => ['left' => '0px', 'right' => '0px']]);
     $result = $result[0];
-    expect($result['email_attrs']['width'])->equals(660);
+    expect($result['email_attrs']['width'])->equals('660px');
     expect($result['innerBlocks'])->count(3);
-    expect($result['innerBlocks'][0]['email_attrs']['width'])->equals(330); // 660 * 0.5
-    expect($result['innerBlocks'][1]['email_attrs']['width'])->equals(165); // 660 * 0.25
-    expect($result['innerBlocks'][2]['email_attrs']['width'])->equals(100);
+    expect($result['innerBlocks'][0]['email_attrs']['width'])->equals('330px'); // 660 * 0.5
+    expect($result['innerBlocks'][1]['email_attrs']['width'])->equals('165px'); // 660 * 0.25
+    expect($result['innerBlocks'][2]['email_attrs']['width'])->equals('100px');
   }
 
   public function testItCalculatesWidthWithLayoutPadding(): void {
@@ -79,12 +79,12 @@ class BlocksWidthPreprocessorTest extends \MailPoetUnitTest {
         ],
       ],
     ]];
-    $result = $this->preprocessor->preprocess($blocks, ['width' => 600, 'padding' => ['left' => 20, 'right' => 20]]);
+    $result = $this->preprocessor->preprocess($blocks, ['width' => '600px', 'padding' => ['left' => '20px', 'right' => '20px']]);
     $result = $result[0];
     expect($result['innerBlocks'])->count(3);
-    expect($result['innerBlocks'][0]['email_attrs']['width'])->equals(185); // (600 - 20 - 20) * 0.33
-    expect($result['innerBlocks'][1]['email_attrs']['width'])->equals(100);
-    expect($result['innerBlocks'][2]['email_attrs']['width'])->equals(112); // (600 - 20 - 20) * 0.2
+    expect($result['innerBlocks'][0]['email_attrs']['width'])->equals('185px'); // (600 - 20 - 20) * 0.33
+    expect($result['innerBlocks'][1]['email_attrs']['width'])->equals('100px');
+    expect($result['innerBlocks'][2]['email_attrs']['width'])->equals('112px'); // (600 - 20 - 20) * 0.2
   }
 
   public function testItCalculatesWidthOfBlockInColumn(): void {
@@ -136,14 +136,14 @@ class BlocksWidthPreprocessorTest extends \MailPoetUnitTest {
         ],
       ],
     ]];
-    $result = $this->preprocessor->preprocess($blocks, ['width' => 660, 'padding' => ['left' => 15, 'right' => 15]]);
+    $result = $this->preprocessor->preprocess($blocks, ['width' => '660px', 'padding' => ['left' => '15px', 'right' => '15px']]);
     $innerBlocks = $result[0]['innerBlocks'];
 
     expect($innerBlocks)->count(2);
-    expect($innerBlocks[0]['email_attrs']['width'])->equals(252); // (660 - 15 - 15) * 0.4
-    expect($innerBlocks[0]['innerBlocks'][0]['email_attrs']['width'])->equals(232); // paragraph: 252 - 10 - 10
-    expect($innerBlocks[1]['email_attrs']['width'])->equals(378); // (660 - 15 - 15) * 0.6
-    expect($innerBlocks[1]['innerBlocks'][0]['email_attrs']['width'])->equals(338); // paragraph: 378 - 25 - 15
+    expect($innerBlocks[0]['email_attrs']['width'])->equals('252px'); // (660 - 15 - 15) * 0.4
+    expect($innerBlocks[0]['innerBlocks'][0])->hasNotKey('email_attrs'); // paragraph block should not have width
+    expect($innerBlocks[1]['email_attrs']['width'])->equals('378px'); // (660 - 15 - 15) * 0.6
+    expect($innerBlocks[1]['innerBlocks'][0])->hasNotKey('email_attrs'); // paragraph block should not have width
   }
 
   public function testItAddsMissingColumnWidth(): void {
@@ -186,15 +186,15 @@ class BlocksWidthPreprocessorTest extends \MailPoetUnitTest {
         ],
       ],
     ]];
-    $result = $this->preprocessor->preprocess($blocks, ['width' => 660, 'padding' => ['left' => 30, 'right' => 30]]);
+    $result = $this->preprocessor->preprocess($blocks, ['width' => '660px', 'padding' => ['left' => '30px', 'right' => '30px']]);
     $innerBlocks = $result[0]['innerBlocks'];
 
     expect($innerBlocks)->count(3);
-    expect($innerBlocks[0]['email_attrs']['width'])->equals(200); // (660 - 30 - 30) * 0.33
-    expect($innerBlocks[0]['innerBlocks'][0]['email_attrs']['width'])->equals(200); // paragraph: 200
-    expect($innerBlocks[1]['email_attrs']['width'])->equals(200); // (660 - 30 - 30) * 0.33
-    expect($innerBlocks[1]['innerBlocks'][0]['email_attrs']['width'])->equals(200); // paragraph: 200
-    expect($innerBlocks[2]['email_attrs']['width'])->equals(200); // (660 - 30 - 30) * 0.33
-    expect($innerBlocks[2]['innerBlocks'][0]['email_attrs']['width'])->equals(200); // paragraph: 200
+    expect($innerBlocks[0]['email_attrs']['width'])->equals('200px'); // (660 - 30 - 30) * 0.33
+    expect($innerBlocks[0]['innerBlocks'][0])->hasNotKey('email_attrs'); // paragraph block should not have width
+    expect($innerBlocks[1]['email_attrs']['width'])->equals('200px'); // (660 - 30 - 30) * 0.33
+    expect($innerBlocks[1]['innerBlocks'][0])->hasNotKey('email_attrs'); // paragraph block should not have width
+    expect($innerBlocks[2]['email_attrs']['width'])->equals('200px'); // (660 - 30 - 30) * 0.33
+    expect($innerBlocks[2]['innerBlocks'][0])->hasNotKey('email_attrs'); // paragraph block should not have width
   }
 }

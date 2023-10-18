@@ -7,11 +7,16 @@ namespace MailPoet\EmailEditor\Engine\Renderer\Preprocessors;
  * The final width in pixels is stored in the email_attrs array because we would like to avoid changing the original attributes.
  */
 class BlocksWidthPreprocessor implements Preprocessor {
+
+  const BLOCKS_WITHOUT_WIDTH = [
+    'core/paragraph',
+  ];
+
   public function preprocess(array $parsedBlocks, array $layoutStyles): array {
-    $layoutWidth = $layoutStyles['width'];
+    $layoutWidth = $this->parseNumberFromStringWithPixels($layoutStyles['width']);
     // Subtract padding from the width of the layout element
-    $layoutWidth -= $layoutStyles['padding']['left'] ?? 0;
-    $layoutWidth -= $layoutStyles['padding']['right'] ?? 0;
+    $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['left'] ?? '0px');
+    $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['right'] ?? '0px');
     foreach ($parsedBlocks as $key => $block) {
       $width = $this->convertWithToPixels($block['attrs']['width'] ?? '100%', $layoutWidth);
 
@@ -21,12 +26,14 @@ class BlocksWidthPreprocessor implements Preprocessor {
 
       // Copy layout styles and update width and padding
       $modifiedLayoutStyles = $layoutStyles;
-      $modifiedLayoutStyles['width'] = $width;
-      $modifiedLayoutStyles['padding']['left'] = $this->parseNumberFromStringWithPixels($block['attrs']['style']['spacing']['padding']['left'] ?? '0px');
-      $modifiedLayoutStyles['padding']['right'] = $this->parseNumberFromStringWithPixels($block['attrs']['style']['spacing']['padding']['right'] ?? '0px');
+      $modifiedLayoutStyles['width'] = "{$width}px";
+      $modifiedLayoutStyles['padding']['left'] = $block['attrs']['style']['spacing']['padding']['left'] ?? '0px';
+      $modifiedLayoutStyles['padding']['right'] = $block['attrs']['style']['spacing']['padding']['right'] ?? '0px';
 
-      // Set current block values and reassign it to $parsedBlocks
-      $block['email_attrs']['width'] = $width;
+      // Set current block values and reassign it to $parsedBlocks, but don't set width for blocks that are not supposed to have it
+      if (!in_array($block['blockName'], self::BLOCKS_WITHOUT_WIDTH, true)) {
+        $block['email_attrs']['width'] = "{$width}px";
+      }
       $block['innerBlocks'] = $this->preprocess($block['innerBlocks'], $modifiedLayoutStyles);
       $parsedBlocks[$key] = $block;
     }

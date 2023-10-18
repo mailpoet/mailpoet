@@ -5,9 +5,9 @@ namespace MailPoet\EmailEditor\Engine;
 class StylesController {
   /**
    * Width of the email in pixels.
-   * @var int
+   * @var string
    */
-  const EMAIL_WIDTH = 660;
+  const EMAIL_WIDTH = '660px';
 
   /**
    * Width of the email in pixels.
@@ -17,9 +17,9 @@ class StylesController {
 
   /**
    * Padding of the email in pixels.
-   * @var int
+   * @var string
    */
-  const EMAIL_PADDING = 10;
+  const EMAIL_PADDING = '10px';
 
   /**
    * Default styles applied to the email. These are going to be replaced by style settings.
@@ -43,7 +43,7 @@ class StylesController {
   }
 
   /**
-   * @return array{width: int, background: string, padding: array{bottom: int, left: int, right: int, top: int}}
+   * @return array{width: string, background: string, padding: array{bottom: string, left: string, right: string, top: string}}
    */
   public function getEmailLayoutStyles(): array {
     return [

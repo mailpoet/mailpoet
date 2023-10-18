@@ -33,8 +33,14 @@ class EmailApiController {
   public function getEmailDataSchema(): array {
     return Builder::object([
       'layout_styles' => Builder::object([
-        'width' => Builder::integer(),
+        'width' => Builder::string(),
         'background' => Builder::string(),
+        'padding' => Builder::object([
+          'bottom' => Builder::string(),
+          'left' => Builder::string(),
+          'right' => Builder::string(),
+          'top' => Builder::string(),
+        ]),
       ]),
     ])->toArray();
   }
