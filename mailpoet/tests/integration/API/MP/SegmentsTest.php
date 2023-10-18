@@ -74,7 +74,7 @@ class SegmentsTest extends \MailPoetTest {
       'description' => 'Description',
       'type' => 'ignore this field',
     ]);
-    expect($result['id'])->greaterThan(0);
+    verify($result['id'])->greaterThan(0);
     verify($result['name'])->equals('Test segment123');
     verify($result['description'])->equals('Description');
     verify($result['type'])->equals('default');
@@ -97,7 +97,7 @@ class SegmentsTest extends \MailPoetTest {
     ];
 
     $result = $this->getApi()->addList($segment);
-    expect($result['id'])->greaterThan(0);
+    verify($result['id'])->greaterThan(0);
     verify($result['name'])->equals($segment['name']);
   }
 

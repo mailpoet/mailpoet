@@ -38,7 +38,7 @@ class ThrottlingTest extends \MailPoetTest {
     verify($this->throttling->throttle())->equals(false);
     verify($this->throttling->throttle())->equals(false);
     $wp->removeFilter('mailpoet_subscription_limit_enabled', '__return_false');
-    expect($this->throttling->throttle())->greaterThan(0);
+    verify($this->throttling->throttle())->greaterThan(0);
   }
 
   public function testItDoesNotThrottleForExemptRoleUsers() {
@@ -48,7 +48,7 @@ class ThrottlingTest extends \MailPoetTest {
     verify($this->throttling->throttle())->equals(false);
     verify($this->throttling->throttle())->equals(false);
     wp_set_current_user(0);
-    expect($this->throttling->throttle())->greaterThan(0);
+    verify($this->throttling->throttle())->greaterThan(0);
   }
 
   public function testItThrottlesForNotExemptRoleUsers() {

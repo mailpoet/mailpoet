@@ -62,7 +62,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $result = $this->tracker->trackActivity();
     verify($result)->true();
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getLastEngagementAt())->greaterThan($oldEngagementTime);
+    verify($subscriber->getLastEngagementAt())->greaterThan($oldEngagementTime);
   }
 
   public function testItFiresActionWhenActivityIsTracked() {
@@ -104,9 +104,9 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     verify($result)->true();
     $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['wpUserId' => $user->ID]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
+    verify($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
     expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
-    expect($subscriber->getLastPageViewAt())->greaterThan(Carbon::now()->subMinute());
+    verify($subscriber->getLastPageViewAt())->greaterThan(Carbon::now()->subMinute());
     expect($subscriber->getLastPageViewAt())->lessThan(Carbon::now()->addMinute());
   }
 
@@ -145,7 +145,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $result = $tracker->trackActivity();
     verify($result)->true();
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
+    verify($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
     expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
   }
 
@@ -164,7 +164,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $result = $this->tracker->trackActivity();
     verify($result)->true();
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
+    verify($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
     expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
   }
 

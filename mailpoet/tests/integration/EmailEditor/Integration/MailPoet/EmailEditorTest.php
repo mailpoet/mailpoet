@@ -41,7 +41,7 @@ class EmailEditorTest extends \MailPoetTest {
     $postId = $wp->wpInsertPost(['post_type' => 'mailpoet_email']);
     $newsletters = $this->newslettersRepository->findAll();
     verify(count($newsletters))->equals(1);
-    expect($newsletters[0]->getWpPostId())->greaterThan(0);
+    verify($newsletters[0]->getWpPostId())->greaterThan(0);
     verify($newsletters[0]->getWpPostId())->equals($postId);
     // Add non-email standard post
     $wp->wpInsertPost(['post_type' => 'post']);

@@ -73,7 +73,7 @@ class SubscriberEngagementTest extends \MailPoetTest {
     $this->assertInstanceOf(DateTimeInterface::class, $engagementTime);
     $this->assertInstanceOf(DateTimeInterface::class, $purchaseTime);
     verify($engagementTime)->equals($purchaseTime);
-    expect($engagementTime)->greaterThan(Carbon::now()->subMinute());
+    verify($engagementTime)->greaterThan(Carbon::now()->subMinute());
   }
 
   public function testItDoesntThrowAnErrorForNonExistingSubscriber() {

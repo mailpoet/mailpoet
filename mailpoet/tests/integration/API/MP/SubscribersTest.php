@@ -525,7 +525,7 @@ class SubscribersTest extends \MailPoetTest {
     $expectedRemoteAddr = '127.0.0.1';
     $_SERVER['REMOTE_ADDR'] = $expectedRemoteAddr;
     $result = $this->getApi()->addSubscriber($subscriber);
-    expect($result['id'])->greaterThan(0);
+    verify($result['id'])->greaterThan(0);
     verify($result['email'])->equals($subscriber['email']);
     verify($result['cf_' . $customField->getId()])->equals('test');
     verify($result['source'])->equals('api');
@@ -566,7 +566,7 @@ class SubscribersTest extends \MailPoetTest {
     ];
 
     $result = $this->getApi()->addSubscriber($subscriber, [$segment->getId()]);
-    expect($result['id'])->greaterThan(0);
+    verify($result['id'])->greaterThan(0);
     verify($result['email'])->equals($subscriber['email']);
     verify($result['subscriptions'][0]['segment_id'])->equals($segment->getId());
   }

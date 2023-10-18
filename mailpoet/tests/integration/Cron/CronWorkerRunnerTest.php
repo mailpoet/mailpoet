@@ -141,7 +141,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
 
     $task = $this->scheduledTasksRepository->findOneById($task->getId());
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getScheduledAt())->greaterThan($scheduledAt);
+    verify($task->getScheduledAt())->greaterThan($scheduledAt);
     verify($task->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
     verify($task->getInProgress())->empty();
 
@@ -168,7 +168,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
       verify($e->getMessage())->equals('test error');
       $task = $this->scheduledTasksRepository->findOneById($task->getId());
       $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-      expect($task->getScheduledAt())->greaterThan($scheduledAt);
+      verify($task->getScheduledAt())->greaterThan($scheduledAt);
       verify($task->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
       verify($task->getRescheduleCount())->equals(1);
       verify($task->getInProgress())->empty();

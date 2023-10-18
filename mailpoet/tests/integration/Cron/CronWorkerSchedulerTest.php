@@ -85,8 +85,8 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
     verify($tasks)->arrayCount(1);
     verify($tasks[0]->getType())->same('test');
     verify($tasks[0]->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($tasks[0]->getScheduledAt())->greaterThan($nextRunDate);
-    expect($tasks[0]->getScheduledAt())->greaterThan(Carbon::now());
+    verify($tasks[0]->getScheduledAt())->greaterThan($nextRunDate);
+    verify($tasks[0]->getScheduledAt())->greaterThan(Carbon::now());
   }
 
   public function testItCanRescheduleTasksProgressively() {

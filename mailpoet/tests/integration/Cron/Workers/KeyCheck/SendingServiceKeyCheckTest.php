@@ -50,7 +50,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
     ]);
 
     $nextRunDate = $this->worker->getNextRunDate();
-    expect($nextRunDate)->greaterThan(Carbon::now()->addMinutes(55));
+    verify($nextRunDate)->greaterThan(Carbon::now()->addMinutes(55));
     expect($nextRunDate)->lessThan(Carbon::now()->addMinutes(65));
   }
 

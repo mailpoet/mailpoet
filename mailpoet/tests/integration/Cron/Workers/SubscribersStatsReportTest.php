@@ -105,11 +105,11 @@ class SubscribersStatsReportTest extends \MailPoetTest {
       ->willReturn($time);
     $result = $this->worker->getNextRunDate();
     verify($result)->instanceOf(Carbon::class);
-    expect($result->getTimestamp())->greaterThan($time);
+    verify($result->getTimestamp())->greaterThan($time);
     expect($result->getTimestamp())->lessThan($time + $maxExpectedScheduleInterval);
     $result2 = $this->worker->getNextRunDate();
     verify($result2)->instanceOf(Carbon::class);
-    expect($result2->getTimestamp())->greaterThan($time);
+    verify($result2->getTimestamp())->greaterThan($time);
     expect($result2->getTimestamp())->lessThan($time + $maxExpectedScheduleInterval);
     verify($result2->getTimestamp())->notEquals($result->getTimestamp());
   }
