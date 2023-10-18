@@ -90,7 +90,7 @@ class WelcomeTest extends \MailPoetTest {
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
-    expect($queue->getId())->greaterOrEquals(1);
+    verify($queue->getId())->greaterThanOrEqual(1);
     $task = $queue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
@@ -115,7 +115,7 @@ class WelcomeTest extends \MailPoetTest {
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
-    expect($queue->getId())->greaterOrEquals(1);
+    verify($queue->getId())->greaterThanOrEqual(1);
     $task = $queue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
@@ -140,7 +140,7 @@ class WelcomeTest extends \MailPoetTest {
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
-    expect($queue->getId())->greaterOrEquals(1);
+    verify($queue->getId())->greaterThanOrEqual(1);
     $task = $queue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
@@ -166,7 +166,7 @@ class WelcomeTest extends \MailPoetTest {
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
-    expect($queue->getId())->greaterOrEquals(1);
+    verify($queue->getId())->greaterThanOrEqual(1);
     $task = $queue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);

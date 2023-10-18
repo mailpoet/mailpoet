@@ -33,8 +33,8 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
       []
     );
     $daemon = $this->diContainer->get(DaemonHttpRunner::class);
-    expect(strlen((string)$daemon->timer))->greaterOrEquals(5);
-    expect(strlen($daemon->token))->greaterOrEquals(5);
+    verify(strlen((string)$daemon->timer))->greaterThanOrEqual(5);
+    verify(strlen($daemon->token))->greaterThanOrEqual(5);
   }
 
   public function testItDoesNotRunWithoutRequestData() {
@@ -241,9 +241,9 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemonHttpRunner->__construct($daemon, $this->cronHelper, SettingsController::getInstance(), $this->diContainer->get(WordPress::class));
     $daemonHttpRunner->run($data);
     $updatedDaemon = $this->settings->get(CronHelper::DAEMON_SETTING);
-    expect($updatedDaemon['run_started_at'])->greaterOrEquals($now);
+    verify($updatedDaemon['run_started_at'])->greaterThanOrEqual($now);
     expect($updatedDaemon['run_started_at'])->lessThan($now + 2);
-    expect($updatedDaemon['run_completed_at'])->greaterOrEquals($now + 2);
+    verify($updatedDaemon['run_completed_at'])->greaterThanOrEqual($now + 2);
     expect($updatedDaemon['run_completed_at'])->lessThan($now + 4);
   }
 

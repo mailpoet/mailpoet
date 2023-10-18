@@ -113,7 +113,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
 
     // check timezone, SQL mode, wait timeout
     verify($result['@@session.time_zone'])->equals(Env::$dbTimezoneOffset);
-    expect($result['@@session.wait_timeout'])->greaterOrEquals(60);
+    verify($result['@@session.wait_timeout'])->greaterThanOrEqual(60);
 
     // check "SET NAMES ... COLLATE ..."
     verify($result['@@session.character_set_client'])->equals(Env::$dbCharset);

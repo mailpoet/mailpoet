@@ -262,7 +262,7 @@ class SchedulerTest extends \MailPoetTest {
     // return true when user exists and WP role matches the one specified for the welcome email
     $result = $scheduler->verifyWPSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     verify($result)->true();
-    expect(count($this->sendingQueuesRepository->findAll()))->greaterOrEquals(1);
+    verify(count($this->sendingQueuesRepository->findAll()))->greaterThanOrEqual(1);
   }
 
   public function testItPassesWPSubscriberVerificationWhenSubscriberHasAnyRole() {
@@ -278,7 +278,7 @@ class SchedulerTest extends \MailPoetTest {
     // true when user exists and has any role
     $result = $scheduler->verifyWPSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     verify($result)->true();
-    expect(count($this->sendingQueuesRepository->findAll()))->greaterOrEquals(1);
+    verify(count($this->sendingQueuesRepository->findAll()))->greaterThanOrEqual(1);
   }
 
   public function testItDoesNotProcessWelcomeNewsletterWhenThereAreNoSubscribersToProcess() {

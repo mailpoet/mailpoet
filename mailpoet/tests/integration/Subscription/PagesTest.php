@@ -151,9 +151,9 @@ class PagesTest extends \MailPoetTest {
     $confirmedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
     verify($confirmedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($confirmedSubscriber->getConfirmedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
+    verify($confirmedSubscriber->getConfirmedAt())->greaterThanOrEqual(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
     verify($confirmedSubscriber->getConfirmedAt())->lessThanOrEqual(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
-    expect($confirmedSubscriber->getLastSubscribedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
+    verify($confirmedSubscriber->getLastSubscribedAt())->greaterThanOrEqual(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
     verify($confirmedSubscriber->getLastSubscribedAt())->lessThanOrEqual(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
     verify($confirmedSubscriber->getFirstName())->equals('First name');
   }
