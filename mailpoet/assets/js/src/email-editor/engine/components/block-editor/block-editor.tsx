@@ -33,10 +33,13 @@ export function BlockEditor() {
     }),
     [],
   );
+
   const [blocks, onInput, onChange] = useEntityBlockEditor(
     'postType',
     'mailpoet_email',
-    { id: postId.toString() },
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore We have to use integer as we do in other places. Using string causes that id is referenced to a different post.
+    { id: postId },
   );
 
   // These will be set by the user in the future in email or global styles.
