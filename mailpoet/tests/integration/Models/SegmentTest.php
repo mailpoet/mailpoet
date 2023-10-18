@@ -62,7 +62,7 @@ class SegmentTest extends \MailPoetTest {
 
   public function testItCanBeCreated() {
     verify($this->segment->id() > 0)->true();
-    expect($this->segment->getErrors())->false();
+    verify($this->segment->getErrors())->false();
   }
 
   public function testItCanHaveName() {
@@ -132,7 +132,7 @@ class SegmentTest extends \MailPoetTest {
       'name' => 'new list',
     ]);
     verify($isCreated->id() > 0)->true();
-    expect($isCreated->getErrors())->false();
+    verify($isCreated->getErrors())->false();
 
     $segment = Segment::where('name', 'new list')
       ->findOne();

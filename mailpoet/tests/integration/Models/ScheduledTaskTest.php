@@ -158,7 +158,7 @@ class ScheduledTaskTest extends \MailPoetTest {
     $task = ScheduledTask::findOne($task->id);
     $this->assertInstanceOf(ScheduledTask::class, $task);
 
-    expect(Helpers::isJson($task->meta))->false();
+    verify(Helpers::isJson($task->meta))->false();
     verify($task->meta)->equals($meta);
   }
 }

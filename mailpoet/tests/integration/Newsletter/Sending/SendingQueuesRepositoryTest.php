@@ -28,7 +28,7 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($queue);
 
     $result = $this->repository->isSubscriberProcessed($queue, $subscriber);
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testIsSubscriberProcessedUnprocessed() {
@@ -39,7 +39,7 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $result = $this->repository->isSubscriberProcessed($queue, $subscriber);
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testIsSubscriberProcessedProcessed() {

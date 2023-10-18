@@ -220,7 +220,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'description' => true,
       'events' => true,
     ];
-    expect($this->AM->validateAutomaticEmailDataFields($data))->false();
+    verify($this->AM->validateAutomaticEmailDataFields($data))->false();
 
     // title is missing
     $data = [
@@ -228,7 +228,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'description' => true,
       'events' => true,
     ];
-    expect($this->AM->validateAutomaticEmailDataFields($data))->false();
+    verify($this->AM->validateAutomaticEmailDataFields($data))->false();
 
     // description is missing
     $data = [
@@ -236,7 +236,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'title' => true,
       'events' => true,
     ];
-    expect($this->AM->validateAutomaticEmailDataFields($data))->false();
+    verify($this->AM->validateAutomaticEmailDataFields($data))->false();
 
     // events are missing
     $data = [
@@ -244,7 +244,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'title' => true,
       'description' => true,
     ];
-    expect($this->AM->validateAutomaticEmailDataFields($data))->false();
+    verify($this->AM->validateAutomaticEmailDataFields($data))->false();
 
     // valid object
     $data = [
@@ -265,7 +265,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
         'listingScheduleDisplayText' => true,
       ],
     ];
-    expect($this->AM->validateAutomaticEmailEventsDataFields($data))->false();
+    verify($this->AM->validateAutomaticEmailEventsDataFields($data))->false();
 
     // title is missing
     $data = [
@@ -275,7 +275,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
         'listingScheduleDisplayText' => true,
       ],
     ];
-    expect($this->AM->validateAutomaticEmailEventsDataFields($data))->false();
+    verify($this->AM->validateAutomaticEmailEventsDataFields($data))->false();
 
     // description is missing
     $data = [
@@ -285,7 +285,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
         'listingScheduleDisplayText' => true,
       ],
     ];
-    expect($this->AM->validateAutomaticEmailEventsDataFields($data))->false();
+    verify($this->AM->validateAutomaticEmailEventsDataFields($data))->false();
 
     // listingScheduleDisplayText is missing
     $data = [
@@ -295,7 +295,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
         'description' => true,
       ],
     ];
-    expect($this->AM->validateAutomaticEmailEventsDataFields($data))->false();
+    verify($this->AM->validateAutomaticEmailEventsDataFields($data))->false();
 
     // valid object
     $data = [

@@ -243,7 +243,7 @@ class WelcomeTest extends \MailPoetTest {
       $trashedSubscriber->getId(),
       $segments = [$this->segment->getId()]
     );
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItDoesNotScheduleWelcomeNotificationWhenSegmentIsInTrash() {
@@ -263,7 +263,7 @@ class WelcomeTest extends \MailPoetTest {
       $this->subscriber->getId(),
       $segments = [$this->segment->getId()]
     );
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function itDoesNotScheduleAnythingWhenNewsletterDoesNotExist() {
@@ -272,14 +272,14 @@ class WelcomeTest extends \MailPoetTest {
       $this->subscriber->getId(),
       $segments = []
     );
-    expect($result)->false();
+    verify($result)->false();
 
     // WP user welcome notification is not scheduled
     $result = $this->welcomeScheduler->scheduleWPUserWelcomeNotification(
       $this->subscriber->getId(),
       $wpUser = ['roles' => ['editor']]
     );
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItDoesNotScheduleWPUserWelcomeNotificationWhenRoleHasNotChanged() {

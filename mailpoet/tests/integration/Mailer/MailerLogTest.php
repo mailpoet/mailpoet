@@ -142,7 +142,7 @@ class MailerLogTest extends \MailPoetTest {
       'started' => $started,
     ];
     $this->settings->set(MailerLog::SETTING_NAME, $mailerLog);
-    expect(MailerLog::isSendingLimitReached())->false();
+    verify(MailerLog::isSendingLimitReached())->false();
 
     // limit is reached
     $started = time() - 10;
@@ -159,7 +159,7 @@ class MailerLogTest extends \MailPoetTest {
     $mailerLog['status'] = MailerLog::STATUS_PAUSED;
     verify(MailerLog::isSendingPaused($mailerLog))->true();
     $mailerLog['status'] = null;
-    expect(MailerLog::isSendingPaused($mailerLog))->false();
+    verify(MailerLog::isSendingPaused($mailerLog))->false();
   }
 
   public function testItLimitReachedCalculationDoesNotIncludeOutdatedData() {
@@ -178,7 +178,7 @@ class MailerLogTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, $mailerConfig);
 
     // limit is not reached
-    expect(MailerLog::isSendingLimitReached())->false();
+    verify(MailerLog::isSendingLimitReached())->false();
   }
 
   public function testItResumesSending() {

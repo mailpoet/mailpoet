@@ -38,7 +38,7 @@ class CustomFieldTest extends \MailPoetTest {
 
   public function testItCanBeCreated() {
     verify($this->customField->id() > 0)->true();
-    expect($this->customField->getErrors())->false();
+    verify($this->customField->getErrors())->false();
   }
 
   public function testItCanBeUpdated() {
@@ -49,7 +49,7 @@ class CustomFieldTest extends \MailPoetTest {
       'name' => 'Country',
     ]);
 
-    expect($updatedCustomField->getErrors())->false();
+    verify($updatedCustomField->getErrors())->false();
     verify($updatedCustomField->name)->equals('Country');
     verify($updatedCustomField->id)->equals($this->customField->id);
   }

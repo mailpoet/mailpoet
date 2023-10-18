@@ -227,7 +227,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newslettersRepository->flush();
     // returned result is false
     $result = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask);
-    expect($result)->false();
+    verify($result)->false();
     // newsletter is deleted.
     $this->entityManager->clear(); // needed while part of the code uses Paris models and part uses Doctrine
     $newsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());

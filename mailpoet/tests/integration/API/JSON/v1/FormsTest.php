@@ -111,7 +111,7 @@ class FormsTest extends \MailPoetTest {
 
     $response = $this->endpoint->saveEditor($form);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['is_widget'])->false();
+    verify($response->meta['is_widget'])->false();
     verify($response->data['name'])->equals('Updated form');
     verify($response->data['settings']['segments_selected_by'])->equals('admin');
   }

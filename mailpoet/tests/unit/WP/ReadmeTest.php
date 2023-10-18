@@ -27,8 +27,8 @@ class ReadmeTest extends \MailPoetUnitTest {
 
   public function testItReturnsFalseOnMalformedData() {
     $result = Readme::parseChangelog("");
-    expect($result)->false();
+    verify($result)->false();
     $result = Readme::parseChangelog("== Changelog ==\n\n\n=\n==");
-    expect($result)->false();
+    verify($result)->false();
   }
 }

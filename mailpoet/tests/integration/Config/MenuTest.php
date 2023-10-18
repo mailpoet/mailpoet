@@ -13,7 +13,7 @@ use MailPoet\WP\Functions as WPFunctions;
 class MenuTest extends \MailPoetTest {
   public function testItReturnsTrueIfCurrentPageBelongsToMailpoet() {
     $result = Menu::isOnMailPoetAdminPage(null, 'somepage');
-    expect($result)->false();
+    verify($result)->false();
     $result = Menu::isOnMailPoetAdminPage(null, 'mailpoet-newsletters');
     verify($result)->true();
   }
@@ -21,7 +21,7 @@ class MenuTest extends \MailPoetTest {
   public function testItRespectsExclusionsWhenCheckingMPPages() {
     $exclude = ['mailpoet-welcome'];
     $result = Menu::isOnMailPoetAdminPage($exclude, 'mailpoet-welcome');
-    expect($result)->false();
+    verify($result)->false();
     $result = Menu::isOnMailPoetAdminPage($exclude, 'mailpoet-newsletters');
     verify($result)->true();
   }
@@ -33,11 +33,11 @@ class MenuTest extends \MailPoetTest {
 
     $_REQUEST['page'] = 'blah';
     $result = Menu::isOnMailPoetAdminPage();
-    expect($result)->false();
+    verify($result)->false();
 
     unset($_REQUEST['page']);
     $result = Menu::isOnMailPoetAdminPage();
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItChecksPremiumKey() {
@@ -58,7 +58,7 @@ class MenuTest extends \MailPoetTest {
       $this
     );
     $menu->checkPremiumKey($checker);
-    expect($menu->premiumKeyValid)->false();
+    verify($menu->premiumKeyValid)->false();
   }
 
   public function testItHidesAutomationIfBundledSubscriptionAndAutomateWooActive() {

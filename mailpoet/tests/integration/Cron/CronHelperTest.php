@@ -134,7 +134,7 @@ class CronHelperTest extends \MailPoetTest {
         CronHelper::DAEMON_SETTING,
         $daemon
       );
-      expect($this->cronHelper->isDaemonAccessible())->false();
+      verify($this->cronHelper->isDaemonAccessible())->false();
     }
   }
 
@@ -331,7 +331,7 @@ class CronHelperTest extends \MailPoetTest {
 
   public function testItValidatesPingResponse() {
     verify($this->cronHelper->validatePingResponse('pong'))->true();
-    expect($this->cronHelper->validatePingResponse('something else'))->false();
+    verify($this->cronHelper->validatePingResponse('something else'))->false();
   }
 
   private function getDeamonTestData() {

@@ -136,31 +136,31 @@ class Migration_20221028_105818_App_Test extends \MailPoetTest {
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', null);
     $this->migration->run();
     verify($this->settings->get('tracking.level'))->equals(TrackingConfig::LEVEL_FULL);
-    expect($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
+    verify($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
     // WooCommerce disabled and Tracking disabled
     $this->settings->set('tracking', ['enabled' => false]);
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', null);
     $this->migration->run();
     verify($this->settings->get('tracking.level'))->equals(TrackingConfig::LEVEL_BASIC);
-    expect($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
+    verify($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
     // WooCommerce enabled with cookie enabled and Tracking enabled
     $this->settings->set('tracking', ['enabled' => true]);
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "1");
     $this->migration->run();
     verify($this->settings->get('tracking.level'))->equals(TrackingConfig::LEVEL_FULL);
-    expect($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
+    verify($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
     // WooCommerce enabled with cookie disabled and Tracking enabled
     $this->settings->set('tracking', ['enabled' => true]);
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "");
     $this->migration->run();
     verify($this->settings->get('tracking.level'))->equals(TrackingConfig::LEVEL_PARTIAL);
-    expect($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
+    verify($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
     // WooCommerce enabled with cookie disabled and Tracking disabled
     $this->settings->set('tracking', ['enabled' => false]);
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "");
     $this->migration->run();
     verify($this->settings->get('tracking.level'))->equals(TrackingConfig::LEVEL_BASIC);
-    expect($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
+    verify($wp->getTransient(ChangedTrackingNotice::OPTION_NAME))->false();
     // WooCommerce enabled with cookie enabled and Tracking disabled
     $this->settings->set('tracking', ['enabled' => false]);
     $this->settings->set('woocommerce.accept_cookie_revenue_tracking.enabled', "1");

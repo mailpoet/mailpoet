@@ -93,7 +93,7 @@ class SendGridTest extends \MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    expect($result['response'])->false();
+    verify($result['response'])->false();
   }
 
   public function testItChecksBlacklistBeforeSending() {
@@ -108,7 +108,7 @@ class SendGridTest extends \MailPoetTest {
       $this->newsletter,
       $blacklistedSubscriber
     );
-    expect($result['response'])->false();
+    verify($result['response'])->false();
     expect($result['error'])->isInstanceOf(MailerError::class);
     expect($result['error']->getMessage())->stringContainsString('SendGrid has returned an unknown error.');
   }

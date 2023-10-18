@@ -58,7 +58,7 @@ class NewsletterTest extends \MailPoetTest {
 
   public function testItCanBeCreated() {
     verify($this->newsletter->id() > 0)->true();
-    expect($this->newsletter->getErrors())->false();
+    verify($this->newsletter->getErrors())->false();
   }
 
   public function testItHasASubject() {
@@ -163,7 +163,7 @@ class NewsletterTest extends \MailPoetTest {
         'body' => 'body',
       ]);
     verify($isCreated->id() > 0)->true();
-    expect($isCreated->getErrors())->false();
+    verify($isCreated->getErrors())->false();
 
     $newsletter = Newsletter::where('subject', 'new newsletter')
       ->findOne();

@@ -32,12 +32,12 @@ class AnalyticsTest extends \MailPoetTest {
 
   public function testIsEnabledReturnsFalseIfEmptySettings() {
     $this->settings->set('analytics', []);
-    expect($this->analytics->isEnabled())->false();
+    verify($this->analytics->isEnabled())->false();
   }
 
   public function testIsEnabledReturnsFalseIfNotEnabled() {
     $this->settings->set('analytics', ['enabled' => '']);
-    expect($this->analytics->isEnabled())->false();
+    verify($this->analytics->isEnabled())->false();
   }
 
   public function testGetDataIfSettingsIsDisabled() {
@@ -134,7 +134,7 @@ class AnalyticsTest extends \MailPoetTest {
     $this->analytics->setPublicId($fakePublicId);
     // We tried to update public_id with the same value, so it's not marked as new
     verify($this->settings->get('new_public_id'))->equals('false');
-    expect($this->analytics->isPublicIdNew())->false();
+    verify($this->analytics->isPublicIdNew())->false();
     verify($this->settings->get('new_public_id'))->equals('false');
   }
 

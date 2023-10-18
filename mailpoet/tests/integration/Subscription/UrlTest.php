@@ -118,7 +118,7 @@ class UrlTest extends \MailPoetTest {
     expect($url)->stringContainsString('endpoint=subscription');
 
     $data = $this->getUrlData($url);
-    expect(isset($data['data']['queueId']))->false();
+    verify(isset($data['data']['queueId']))->false();
     verify($data['preview'])->equals(1);
   }
 
@@ -153,7 +153,7 @@ class UrlTest extends \MailPoetTest {
     expect($url)->stringContainsString('endpoint=subscription');
 
     $data = $this->getUrlData($url);
-    expect(isset($data['data']['queueId']))->false();
+    verify(isset($data['data']['queueId']))->false();
     verify($data['preview'])->equals(1);
   }
 

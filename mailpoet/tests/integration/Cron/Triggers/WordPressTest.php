@@ -94,22 +94,22 @@ class WordPressTest extends \MailPoetTest {
   }
 
   public function testItRequiresScheduledQueuesToExecute() {
-    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->false();
     $this->addQueue(SendingQueueEntity::STATUS_SCHEDULED);
     verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItRequiresRunningQueuesToExecute() {
-    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->false();
     // status of 'null' indicates that queue is running
     $this->addQueue(null);
     verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItFailsExecutionRequiremenetsCheckWhenQueueStatusIsCompleted() {
-    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->false();
     $this->addQueue(ScheduledTaskEntity::STATUS_COMPLETED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function testItRequiresSendingLimitNotToBeReachedToExecute() {
@@ -117,7 +117,7 @@ class WordPressTest extends \MailPoetTest {
     $this->addMTAConfigAndLog(null);
     verify($this->wordpressTrigger->checkExecutionRequirements())->true();
     $this->addMTAConfigAndLog(1);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function testItRequiresSendingNotToBePausedToExecute() {
@@ -125,7 +125,7 @@ class WordPressTest extends \MailPoetTest {
     $this->addMTAConfigAndLog(null);
     verify($this->wordpressTrigger->checkExecutionRequirements())->true();
     $this->addMTAConfigAndLog(0, MailerLog::STATUS_PAUSED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function testItDoesNotExecuteWhenWeAreWaitingForRetry() {
@@ -135,7 +135,7 @@ class WordPressTest extends \MailPoetTest {
     $this->addMTAConfigAndLog(null, null, time() - 1);
     verify($this->wordpressTrigger->checkExecutionRequirements())->true();
     $this->addMTAConfigAndLog(null, null, time() + 120);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function testItExecutesWhenAuthorizedEmailsCheckIsDue() {
@@ -193,7 +193,7 @@ class WordPressTest extends \MailPoetTest {
     $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => 'valid']);
     verify($this->wordpressTrigger->checkExecutionRequirements())->true();
     $this->addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function testItDoesNotTriggerCronForStatsReportIfThereIsNoValidKey() {
@@ -204,7 +204,7 @@ class WordPressTest extends \MailPoetTest {
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'somekey');
     $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => 'invalid']);
     $this->settings->set(Bridge::PREMIUM_KEY_SETTING_NAME, null);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function testItTriggersCronIfThereIsValidKeyAndNoStatsReportJobScheduled() {
@@ -292,7 +292,7 @@ class WordPressTest extends \MailPoetTest {
     $this->addScheduledTask(NewsletterTemplateThumbnails::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     $this->addScheduledTask(SubscribersLastEngagement::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     $this->addScheduledTask(SubscribersCountCacheRecalculation::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->false();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   private function addMTAConfigAndLog($sent, $status = null, int $retryAt = null) {

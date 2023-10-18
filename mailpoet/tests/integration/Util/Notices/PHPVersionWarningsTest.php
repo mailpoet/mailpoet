@@ -35,7 +35,7 @@ class PHPVersionWarningsTest extends \MailPoetTest {
   }
 
   public function testPHP74IsNotOutdated() {
-    expect($this->phpVersionWarning->isOutdatedPHPVersion('7.4'))->false();
+    verify($this->phpVersionWarning->isOutdatedPHPVersion('7.4'))->false();
   }
 
   public function testItPrintsWarningFor71() {

@@ -29,7 +29,7 @@ class WooCommerceSyncTest extends \MailPoetTest {
   public function testItWillNotRunIfWooCommerceIsDisabled() {
     $this->woocommerceHelper->method('isWooCommerceActive')
       ->willReturn(false);
-    expect($this->worker->checkProcessingRequirements())->false();
+    verify($this->worker->checkProcessingRequirements())->false();
   }
 
   public function testItWillRunIfWooCommerceIsEnabled() {

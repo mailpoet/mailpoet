@@ -60,7 +60,7 @@ class CapabilitiesTest extends \MailPoetTest {
         $checked = true;
         $role = get_role($role);
         $this->assertInstanceOf(WP_Role::class, $role);
-        expect($role->has_cap($name))->false();
+        verify($role->has_cap($name))->false();
       }
     }
     verify($checked)->true();
@@ -84,7 +84,7 @@ class CapabilitiesTest extends \MailPoetTest {
     // other MailPoet capabilities were successfully configured
     $editorRole = get_role('editor');
     $this->assertInstanceOf(WP_Role::class, $editorRole);
-    expect($editorRole->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->false();
+    verify($editorRole->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->false();
     verify($editorRole->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
 
     // Restore capabilities

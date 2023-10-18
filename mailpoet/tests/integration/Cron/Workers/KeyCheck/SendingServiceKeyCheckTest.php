@@ -28,7 +28,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
   }
 
   public function testItRequiresMailPoetMethodToBeSetUp() {
-    expect($this->worker->checkProcessingRequirements())->false();
+    verify($this->worker->checkProcessingRequirements())->false();
     $this->setMailPoetSendingMethod();
     verify($this->worker->checkProcessingRequirements())->true();
   }
@@ -76,7 +76,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
 
     $this->setMailPoetSendingMethod();
     $worker->checkKey();
-    expect(MailerLog::isSendingPaused())->false();
+    verify(MailerLog::isSendingPaused())->false();
   }
 
   public function testItChecksMSSKey() {

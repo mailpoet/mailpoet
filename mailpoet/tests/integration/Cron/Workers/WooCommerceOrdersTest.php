@@ -55,7 +55,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
 
   public function testItDoesNotRunIfWooCommerceIsDisabled() {
     $this->woocommerceHelper->method('isWooCommerceActive')->willReturn(false);
-    expect($this->worker->checkProcessingRequirements())->false();
+    verify($this->worker->checkProcessingRequirements())->false();
 
     $this->cronWorkerRunner->run($this->worker);
     $tasks = $this->scheduledTaskRepository->findBy(['type' => WooCommercePastOrders::TASK_TYPE]);
@@ -91,7 +91,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
 
     // 3. complete (do not schedule again)
-    expect($this->worker->checkProcessingRequirements())->false();
+    verify($this->worker->checkProcessingRequirements())->false();
     $this->cronWorkerRunner->run($this->worker);
     $this->entityManager->clear();
     $task = $this->scheduledTaskRepository->findOneBy(['type' => WooCommercePastOrders::TASK_TYPE]);

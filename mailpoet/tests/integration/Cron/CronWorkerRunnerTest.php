@@ -83,7 +83,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     ]);
 
     $result = $this->cronWorkerRunner->run($worker);
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItFailsToProcessWithoutProcessingRequirementsMet() {
@@ -97,7 +97,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $this->createRunningTask();
 
     $result = $this->cronWorkerRunner->run($worker);
-    expect($result)->false();
+    verify($result)->false();
   }
 
   public function testItCanScheduleTaskAutomatically() {
@@ -109,7 +109,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     ]);
 
     $result = $this->cronWorkerRunner->run($worker);
-    expect($result)->false();
+    verify($result)->false();
     $scheduledTask = $this->scheduledTasksRepository->findAll()[0];
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     expect($scheduledTask->getScheduledAt())->same($inOneWeek);
