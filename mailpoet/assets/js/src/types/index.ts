@@ -78,6 +78,16 @@ declare module '@wordpress/components' {
     }
   }
 
+  // Property "className" is missing in Slot props
+  // See https://github.com/WordPress/gutenberg/tree/c5c8c167e35980ea144975169543fb842c5297fa/packages/components/src/slot-fill
+  // "Slot with bubblesVirtually set to true also accept an optional className to add to the slot container."
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  export namespace Slot {
+    export interface Props {
+      className?: string;
+    }
+  }
+
   export const __experimentalText: any;
   export const __unstableComposite: typeof Composite;
   export const __unstableCompositeGroup: typeof CompositeGroup;
