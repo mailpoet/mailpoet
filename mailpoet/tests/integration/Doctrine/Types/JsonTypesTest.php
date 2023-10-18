@@ -151,7 +151,7 @@ class JsonTypesTest extends \MailPoetTest {
     } catch (Exception $e) {
       $exception = $e;
     }
-    expect($exception)->isInstanceOf(RuntimeException::class);
+    verify($exception)->instanceOf(RuntimeException::class);
   }
 
   public function testItDoesNotLoadInvalidData() {
@@ -169,7 +169,7 @@ class JsonTypesTest extends \MailPoetTest {
     } catch (Exception $e) {
       $exception = $e;
     }
-    expect($exception)->isInstanceOf(RuntimeException::class);
+    verify($exception)->instanceOf(RuntimeException::class);
   }
 
   public function _after() {

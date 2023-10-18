@@ -15,7 +15,7 @@ class FormsRepositoryTest extends \MailPoetTest {
 
   public function testItCanDeleteForm() {
     $form = $this->createForm('Form 1');
-    expect($this->repository->findOneById($form->getId()))->isInstanceOf(FormEntity::class);
+    verify($this->repository->findOneById($form->getId()))->instanceOf(FormEntity::class);
     $this->repository->delete($form);
     verify($form->getId())->null();
   }

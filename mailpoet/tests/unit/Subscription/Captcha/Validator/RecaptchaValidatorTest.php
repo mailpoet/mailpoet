@@ -142,7 +142,7 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest {
     } catch (ValidationError $error) {
       verify($error->getMessage())->equals('Error while validating the CAPTCHA.');
     }
-    expect($error)->isInstanceOf(ValidationError::class);
+    verify($error)->instanceOf(ValidationError::class);
   }
 
   public function testConnectionError() {
@@ -186,6 +186,6 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest {
     } catch (ValidationError $error) {
       verify($error->getMessage())->equals('Error while validating the CAPTCHA.');
     }
-    expect($error)->isInstanceOf(ValidationError::class);
+    verify($error)->instanceOf(ValidationError::class);
   }
 }

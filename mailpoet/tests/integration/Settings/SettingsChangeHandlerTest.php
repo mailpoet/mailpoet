@@ -47,7 +47,7 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
     verify($task)->null();
     $this->settingsChangeHandler->onSubscribeOldWoocommerceCustomersChange();
     $task = $this->getScheduledTaskByType(WooCommerceSync::TASK_TYPE);
-    expect($task)->isInstanceOf(ScheduledTaskEntity::class);
+    verify($task)->instanceOf(ScheduledTaskEntity::class);
   }
 
   public function testItReschedulesScheduledTaskForInactiveSubscribers(): void {
@@ -70,7 +70,7 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
     verify($task)->null();
     $this->settingsChangeHandler->onInactiveSubscribersIntervalChange();
     $task = $this->getScheduledTaskByType(InactiveSubscribers::TASK_TYPE);
-    expect($task)->isInstanceOf(ScheduledTaskEntity::class);
+    verify($task)->instanceOf(ScheduledTaskEntity::class);
   }
 
   private function createScheduledTask(string $type): ScheduledTaskEntity {

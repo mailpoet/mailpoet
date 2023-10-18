@@ -235,7 +235,7 @@ class AmazonSESTest extends \MailPoetTest {
     $this->mailer->sender['from_name_email'] = 'invalid';
     $result = $this->mailer->send($this->newsletter, 'test@example.com');
     verify($result['response'])->false();
-    expect($result['error'])->isInstanceOf(MailerError::class);
+    verify($result['error'])->instanceOf(MailerError::class);
     verify($result['error']->getMessage())->stringContainsString("Missing final '@domain'");
   }
 
@@ -252,7 +252,7 @@ class AmazonSESTest extends \MailPoetTest {
       $blacklistedSubscriber
     );
     verify($result['response'])->false();
-    expect($result['error'])->isInstanceOf(MailerError::class);
+    verify($result['error'])->instanceOf(MailerError::class);
     verify($result['error']->getMessage())->stringContainsString('AmazonSES has returned an unknown error.');
   }
 

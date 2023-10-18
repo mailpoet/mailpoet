@@ -239,7 +239,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       verify($error->getMessage())->equals('Please regenerate the CAPTCHA.');
       verify($error->getMeta()['redirect_url'])->equals($newUrl);
     }
-    expect($error)->isInstanceOf(ValidationError::class);
+    verify($error)->instanceOf(ValidationError::class);
   }
 
   public function testCaptchaMissmatch() {
@@ -276,7 +276,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       verify($error->getMessage())->equals('The characters entered do not match with the previous CAPTCHA.');
       verify($error->getMeta()['refresh_captcha'])->true();
     }
-    expect($error)->isInstanceOf(ValidationError::class);
+    verify($error)->instanceOf(ValidationError::class);
   }
 
   public function testNoCaptchaIsSend() {
@@ -319,6 +319,6 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       verify($error->getMessage())->equals('Please fill in the CAPTCHA.');
       verify($error->getMeta()['redirect_url'])->equals($newUrl);
     }
-    expect($error)->isInstanceOf(ValidationError::class);
+    verify($error)->instanceOf(ValidationError::class);
   }
 }

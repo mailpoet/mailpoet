@@ -14,12 +14,12 @@ require_once __DIR__ . '/TestService.php';
 class ContainerWrapperTest extends \MailPoetUnitTest {
   public function testItCanConstruct() {
     $instance = new ContainerWrapper(new ContainerBuilder());
-    expect($instance)->isInstanceOf(ContainerWrapper::class);
-    expect($instance)->isInstanceOf(ContainerInterface::class);
+    verify($instance)->instanceOf(ContainerWrapper::class);
+    verify($instance)->instanceOf(ContainerInterface::class);
 
     $instance = new ContainerWrapper(new ContainerBuilder(), new ContainerBuilder());
-    expect($instance)->isInstanceOf(ContainerWrapper::class);
-    expect($instance)->isInstanceOf(ContainerInterface::class);
+    verify($instance)->instanceOf(ContainerWrapper::class);
+    verify($instance)->instanceOf(ContainerInterface::class);
   }
 
   public function testItProvidesPremiumContainerIfAvailable() {
@@ -27,7 +27,7 @@ class ContainerWrapperTest extends \MailPoetUnitTest {
     verify($instance->getPremiumContainer())->null();
 
     $instance = new ContainerWrapper(new ContainerBuilder(), new ContainerBuilder());
-    expect($instance->getPremiumContainer())->isInstanceOf(ContainerBuilder::class);
+    verify($instance->getPremiumContainer())->instanceOf(ContainerBuilder::class);
   }
 
   public function testItProvidesFreePluginServices() {
@@ -55,7 +55,7 @@ class ContainerWrapperTest extends \MailPoetUnitTest {
     } catch (ServiceNotFoundException $e) {
       $exception = $e;
     }
-    expect($exception)->isInstanceOf(ServiceNotFoundException::class);
+    verify($exception)->instanceOf(ServiceNotFoundException::class);
   }
 
   public function testItReturnServiceFromPremium() {
@@ -91,6 +91,6 @@ class ContainerWrapperTest extends \MailPoetUnitTest {
     } catch (ServiceNotFoundException $e) {
       $exception = $e;
     }
-    expect($exception)->isInstanceOf(ServiceNotFoundException::class);
+    verify($exception)->instanceOf(ServiceNotFoundException::class);
   }
 }

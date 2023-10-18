@@ -92,7 +92,7 @@ class SubscriberActionsTest extends \MailPoetTest {
       $newsletter,
       ScheduledTaskEntity::STATUS_SCHEDULED
     );
-    expect($scheduledNotification)->isInstanceOf(SendingQueueEntity::class);
+    verify($scheduledNotification)->instanceOf(SendingQueueEntity::class);
   }
 
   public function testItDoesNotScheduleWelcomeNotificationUponSubscriptionWhenSubscriptionConfirmationIsEnabled() {

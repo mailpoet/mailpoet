@@ -109,7 +109,7 @@ class SendGridTest extends \MailPoetTest {
       $blacklistedSubscriber
     );
     verify($result['response'])->false();
-    expect($result['error'])->isInstanceOf(MailerError::class);
+    verify($result['error'])->instanceOf(MailerError::class);
     verify($result['error']->getMessage())->stringContainsString('SendGrid has returned an unknown error.');
   }
 

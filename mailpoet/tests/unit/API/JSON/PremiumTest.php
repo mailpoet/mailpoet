@@ -25,7 +25,7 @@ class PremiumTest extends \MailPoetUnitTest {
 
     $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions());
     $response = $premium->installPlugin();
-    expect($response)->isInstanceOf(SuccessResponse::class);
+    verify($response)->instanceOf(SuccessResponse::class);
   }
 
   public function testInstallationFailsWhenKeyInvalid() {
@@ -40,7 +40,7 @@ class PremiumTest extends \MailPoetUnitTest {
 
     $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions());
     $response = $premium->installPlugin();
-    expect($response)->isInstanceOf(ErrorResponse::class);
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->getData()['errors'][0])->same([
       'error' => 'bad_request',
       'message' => 'Premium key is not valid.',
@@ -59,7 +59,7 @@ class PremiumTest extends \MailPoetUnitTest {
 
     $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions());
     $response = $premium->installPlugin();
-    expect($response)->isInstanceOf(ErrorResponse::class);
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->getData()['errors'][0])->same([
       'error' => 'bad_request',
       'message' => 'Error when installing MailPoet Premium plugin.',
@@ -80,7 +80,7 @@ class PremiumTest extends \MailPoetUnitTest {
 
     $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions());
     $response = $premium->installPlugin();
-    expect($response)->isInstanceOf(ErrorResponse::class);
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->getData()['errors'][0])->same([
       'error' => 'bad_request',
       'message' => 'Error when installing MailPoet Premium plugin.',
@@ -98,7 +98,7 @@ class PremiumTest extends \MailPoetUnitTest {
 
     $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions());
     $response = $premium->activatePlugin();
-    expect($response)->isInstanceOf(SuccessResponse::class);
+    verify($response)->instanceOf(SuccessResponse::class);
   }
 
   public function testActivationFailsWhenKeyInvalid() {
@@ -108,7 +108,7 @@ class PremiumTest extends \MailPoetUnitTest {
 
     $premium = new Premium($servicesChecker, new WPFunctions(), new DotcomHelperFunctions());
     $response = $premium->activatePlugin();
-    expect($response)->isInstanceOf(ErrorResponse::class);
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->getData()['errors'][0])->same([
       'error' => 'bad_request',
       'message' => 'Premium key is not valid.',
@@ -126,7 +126,7 @@ class PremiumTest extends \MailPoetUnitTest {
 
     $premium = new Premium($servicesChecker, $wp, new DotcomHelperFunctions());
     $response = $premium->activatePlugin();
-    expect($response)->isInstanceOf(ErrorResponse::class);
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->getData()['errors'][0])->same([
       'error' => 'bad_request',
       'message' => 'Error when activating MailPoet Premium plugin.',

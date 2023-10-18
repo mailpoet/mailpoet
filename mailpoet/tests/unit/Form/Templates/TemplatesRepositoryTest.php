@@ -24,7 +24,7 @@ class TemplatesRepositoryTest extends \MailPoetUnitTest {
 
   public function testItCanBuildFormTemplate() {
     $formEntity = $this->repository->getFormTemplate(TemplateRepository::INITIAL_FORM_TEMPLATE);
-    expect($formEntity)->isInstanceOf(FormTemplate::class);
+    verify($formEntity)->instanceOf(FormTemplate::class);
     verify($formEntity->getStyles())->notEmpty();
     verify($formEntity->getBody())->notEmpty();
     verify($formEntity->getSettings())->notEmpty();

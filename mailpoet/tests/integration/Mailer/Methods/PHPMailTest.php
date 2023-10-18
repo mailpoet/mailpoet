@@ -53,7 +53,7 @@ class PHPMailTest extends \MailPoetTest {
 
   public function testItCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
-    expect($mailer)->isInstanceOf(PHPMailer::class);
+    verify($mailer)->instanceOf(PHPMailer::class);
 
     // uses PHP's mail() function
     verify($mailer->Mailer)->equals('mail'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -143,7 +143,7 @@ class PHPMailTest extends \MailPoetTest {
       $blacklistedSubscriber
     );
     verify($result['response'])->false();
-    expect($result['error'])->isInstanceOf(MailerError::class);
+    verify($result['error'])->instanceOf(MailerError::class);
     verify($result['error']->getMessage())->stringContainsString('PHPMail has returned an unknown error.');
   }
 

@@ -6,7 +6,7 @@ use MailPoet\API\API;
 
 class APITest extends \MailPoetTest {
   public function testItCallsMPAPI() {
-    expect(API::MP('v1'))->isInstanceOf('MailPoet\API\MP\v1\API');
+    verify(API::MP('v1'))->instanceOf('MailPoet\API\MP\v1\API');
   }
 
   public function testItThrowsErrorWhenWrongMPAPIVersionIsCalled() {

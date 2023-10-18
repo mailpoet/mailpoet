@@ -165,7 +165,7 @@ class SendingTest extends \MailPoetTest {
     $tasks = $this->scheduledTaskRepository->findScheduledSendingTasks();
     verify($tasks)->notEmpty();
     foreach ($tasks as $task) {
-      expect($task)->isInstanceOf(ScheduledTaskEntity::class);
+      verify($task)->instanceOf(ScheduledTaskEntity::class);
     }
 
     // if task exists but sending queue is missing, results should not contain empty (false) values
@@ -194,7 +194,7 @@ class SendingTest extends \MailPoetTest {
     $tasks = $this->scheduledTaskRepository->findRunningSendingTasks();
     verify($tasks)->notEmpty();
     foreach ($tasks as $task) {
-      expect($task)->isInstanceOf(ScheduledTaskEntity::class);
+      verify($task)->instanceOf(ScheduledTaskEntity::class);
     }
 
     // if task exists but sending queue is missing, results should not contain empty (false) values

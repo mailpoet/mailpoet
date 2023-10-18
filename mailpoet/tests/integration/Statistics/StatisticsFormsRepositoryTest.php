@@ -22,7 +22,7 @@ class StatisticsFormsRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(StatisticsFormEntity::class, $record);
     verify($record->getForm())->equals($form);
     verify($record->getSubscriber())->equals($subscriber);
-    expect($this->repository->findOneBy(['form' => $form, 'subscriber' => $subscriber]))->isInstanceOf(StatisticsFormEntity::class);
+    verify($this->repository->findOneBy(['form' => $form, 'subscriber' => $subscriber]))->instanceOf(StatisticsFormEntity::class);
   }
 
   public function testItDoesNotOverrideStats(): void {

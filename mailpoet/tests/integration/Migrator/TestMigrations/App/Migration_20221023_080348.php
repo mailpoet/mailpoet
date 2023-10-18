@@ -10,7 +10,7 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 class Migration_20221023_080348 extends AppMigration {
   public function run(): void {
     echo 'Migration run called!';
-    expect($this->entityManager)->isInstanceOf(EntityManager::class);
-    expect($this->container)->isInstanceOf(ContainerWrapper::class);
+    verify($this->entityManager)->instanceOf(EntityManager::class);
+    verify($this->container)->instanceOf(ContainerWrapper::class);
   }
 }

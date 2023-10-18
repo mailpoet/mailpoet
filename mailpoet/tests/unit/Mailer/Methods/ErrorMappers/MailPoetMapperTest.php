@@ -37,7 +37,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
 
   public function testCreateBlacklistError() {
     $error = $this->mapper->getBlacklistError($this->subscribers[1]);
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_SEND);
     verify($error->getLevel())->equals(MailerError::LEVEL_SOFT);
     verify($error->getMessage())->stringContainsString('unknown error');
@@ -46,7 +46,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
 
   public function testCreateConnectionError() {
     $error = $this->mapper->getConnectionError('connection error');
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_CONNECT);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
     verify($error->getMessage())->equals('connection error');
@@ -60,7 +60,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
 
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_SEND);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
     verify($error->getMessage())->equals('JSON input is not an array');
@@ -75,7 +75,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
 
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_SEND);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
     verify($error->getMessage())->stringContainsString('MailPoet Sending Service has been temporarily suspended for your site due to');
@@ -90,7 +90,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
 
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_INSUFFICIENT_PRIVILEGES);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
     verify($error->getMessage())->stringContainsString('You have reached the subscriber limit of your plan.');
@@ -105,7 +105,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
 
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_SUBSCRIBER_LIMIT_REACHED);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
     verify($error->getMessage())->stringContainsString('You have reached the subscriber limit of your plan.');
@@ -120,7 +120,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
 
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_AUTHORIZATION);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
     verify($error->getMessage())->stringContainsString('Sending all of your emails has been paused');
@@ -134,7 +134,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
       'message' => 'error too big',
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_SEND);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
     verify($error->getMessage())->equals('error too big');
@@ -147,7 +147,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
       'message' => 'Api Error',
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_SEND);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
     verify($error->getMessage())->equals('Error while sending. Api Error');
@@ -160,7 +160,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
       'message' => '[{"index":0,"errors":{"subject":"subject is missing"}},{"index":1,"errors":{"subject":"subject is missing"}}]',
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_SEND);
     verify($error->getLevel())->equals(MailerError::LEVEL_SOFT);
     $subscriberErrors = $error->getSubscriberErrors();
@@ -178,7 +178,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
       'message' => '[{"errors":{"subject":"subject is missing"}},{"errors":{"subject":"subject is missing"}}]',
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_SEND);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
     verify($error->getMessage())->equals('Error while sending. Invalid MSS response format.');
@@ -192,7 +192,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
       'error' => API::ERROR_MESSAGE_PENDING_APPROVAL,
     ];
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_PENDING_APPROVAL);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
     verify($error->getMessage())->stringContainsString('pending approval');
@@ -207,7 +207,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     ];
 
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getRetryInterval())->equals(MailPoetMapper::TEMPORARY_UNAVAILABLE_RETRY_INTERVAL);
     verify($error->getOperation())->equals(MailerError::OPERATION_SEND);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
@@ -249,7 +249,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
       $wpFunctions
     );
     $error = $this->mapper->getErrorForResult($apiResult, $this->subscribers);
-    expect($error)->isInstanceOf(MailerError::class);
+    verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_EMAIL_LIMIT_REACHED);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
     verify($error->getMessage())->stringContainsString('You have sent more emails this month than your MailPoet plan includes (1000),');

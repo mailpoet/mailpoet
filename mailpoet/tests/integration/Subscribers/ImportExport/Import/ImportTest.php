@@ -572,12 +572,12 @@ class ImportTest extends \MailPoetTest {
         'subscriber' => $dbSubscriber,
         'segment' => $this->segment1->getId(),
       ]);
-      expect($subscriberSegment1)->isInstanceOf(SubscriberSegmentEntity::class);
+      verify($subscriberSegment1)->instanceOf(SubscriberSegmentEntity::class);
       $subscriberSegment2 = $this->subscriberSegmentRepository->findOneBy([
         'subscriber' => $dbSubscriber,
         'segment' => $this->segment2->getId(),
       ]);
-      expect($subscriberSegment2)->isInstanceOf(SubscriberSegmentEntity::class);
+      verify($subscriberSegment2)->instanceOf(SubscriberSegmentEntity::class);
     }
   }
 
@@ -607,12 +607,12 @@ class ImportTest extends \MailPoetTest {
         'subscriber' => $dbSubscriber,
         'tag' => $this->tag1,
       ]);
-      expect($subscriberTag)->isInstanceOf(SubscriberTagEntity::class);
+      verify($subscriberTag)->instanceOf(SubscriberTagEntity::class);
       $subscriberTag = $this->subscribersTagRepository->findOneBy([
         'subscriber' => $dbSubscriber,
         'tag' => $tag2,
       ]);
-      expect($subscriberTag)->isInstanceOf(SubscriberTagEntity::class);
+      verify($subscriberTag)->instanceOf(SubscriberTagEntity::class);
     }
   }
 
@@ -776,7 +776,7 @@ class ImportTest extends \MailPoetTest {
         'subscriber' => $dbSubscriber,
         'segment' => $this->testData['segments'][0],
       ]);
-      expect($subscriberSegment)->isInstanceOf(SubscriberSegmentEntity::class);
+      verify($subscriberSegment)->instanceOf(SubscriberSegmentEntity::class);
     }
   }
 
