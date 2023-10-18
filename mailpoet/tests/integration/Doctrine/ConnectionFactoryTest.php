@@ -60,7 +60,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     Env::$dbCharset = '';
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
-    expect($connection->getParams())->hasNotKey('charset');
+    verify($connection->getParams())->arrayHasNotKey('charset');
   }
 
   public function testItSetsUpSocket() {

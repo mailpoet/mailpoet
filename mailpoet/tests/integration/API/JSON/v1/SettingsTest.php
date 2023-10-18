@@ -128,7 +128,7 @@ class SettingsTest extends \MailPoetTest {
 
     $response = $this->endpoint->get();
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['some']['setting'])->hasNotKey('key');
+    verify($response->data['some']['setting'])->arrayHasNotKey('key');
     verify($response->data['some']['setting']['new_key'])->true();
     verify($response->data['some']['new_setting'])->true();
   }

@@ -148,8 +148,8 @@ class TrackerTest extends \MailPoetTest {
     verify($mailPoetData['campaign_' . $notificationParent->getId() . '_type'])->equals($notificationParent->getType());
     verify($mailPoetData['campaign_' . $notificationParent->getId() . '_orders_count'])->equals(2);
 
-    expect($mailPoetData)->hasNotKey('campaign_' . $notificationHistory1->getId() . '_revenue');
-    expect($mailPoetData)->hasNotKey('campaign_' . $notificationHistory2->getId() . '_revenue');
+    verify($mailPoetData)->arrayHasNotKey('campaign_' . $notificationHistory1->getId() . '_revenue');
+    verify($mailPoetData)->arrayHasNotKey('campaign_' . $notificationHistory2->getId() . '_revenue');
   }
 
   public function testItTracksOnlyTheMainShopCurrency(): void {
@@ -189,7 +189,7 @@ class TrackerTest extends \MailPoetTest {
     verify($mailPoetData['campaign_' . $newsletter2->getId() . '_type'])->equals($newsletter2->getType());
     verify($mailPoetData['campaign_' . $newsletter2->getId() . '_orders_count'])->equals(1);
 
-    expect($mailPoetData)->hasNotKey('campaign_' . $newsletter3->getId() . '_revenue');
+    verify($mailPoetData)->arrayHasNotKey('campaign_' . $newsletter3->getId() . '_revenue');
   }
 
   public function testItTracksTheRevenueOfDeletedCampaigns(): void {
