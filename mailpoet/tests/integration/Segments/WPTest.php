@@ -285,7 +285,7 @@ class WPTest extends \MailPoetTest {
     $subscriber->save();
     $this->wpSegment->synchronizeUsers();
     $subscriber = Subscriber::where("wp_user_id", $id)->findOne();
-    expect($subscriber->deletedAt)->notNull();
+    verify($subscriber->deletedAt)->notNull();
   }
 
   public function testItSynchronizesDeletedWPUsersUsingHooks(): void {

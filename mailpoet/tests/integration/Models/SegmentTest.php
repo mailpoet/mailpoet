@@ -98,7 +98,7 @@ class SegmentTest extends \MailPoetTest {
   public function testItHasACreatedAtOnCreation() {
     $segment = Segment::findOne($this->segment->id);
     $this->assertInstanceOf(Segment::class, $segment);
-    expect($segment->createdAt)->notNull();
+    verify($segment->createdAt)->notNull();
   }
 
   public function testItHasAnUpdatedAtOnCreation() {

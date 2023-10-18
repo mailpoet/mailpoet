@@ -24,13 +24,13 @@ class FormsRepositoryTest extends \MailPoetTest {
     $form = $this->createForm('Form 1');
     verify($form->getDeletedAt())->null();
     $this->repository->trash($form);
-    expect($form->getDeletedAt())->notNull();
+    verify($form->getDeletedAt())->notNull();
   }
 
   public function testItCanRestoreForm() {
     $form = $this->createForm('Form 1');
     $this->repository->trash($form);
-    expect($form->getDeletedAt())->notNull();
+    verify($form->getDeletedAt())->notNull();
     $this->repository->restore($form);
     verify($form->getDeletedAt())->null();
   }

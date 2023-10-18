@@ -170,7 +170,7 @@ class OpensTest extends \MailPoetTest {
     verify($opens)->arrayCount(1);
     $open = $opens[0];
     $userAgent = $open->getUserAgent();
-    expect($userAgent)->notNull();
+    verify($userAgent)->notNull();
   }
 
   public function testItSavesOpenWithExistingUserAgent() {
@@ -189,7 +189,7 @@ class OpensTest extends \MailPoetTest {
     verify($opens)->arrayCount(1);
     $open = $opens[0];
     $userAgent = $open->getUserAgent();
-    expect($userAgent)->notNull();
+    verify($userAgent)->notNull();
     $uaRepository = $this->diContainer->get(UserAgentsRepository::class);
     $userAgents = $uaRepository->findBy(['userAgent' => 'User agent1']);
     verify($userAgents)->arrayCount(1);

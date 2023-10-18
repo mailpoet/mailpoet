@@ -214,7 +214,7 @@ class FormsTest extends \MailPoetTest {
     $this->entityManager->refresh($this->form1);
 
     $this->assertInstanceOf(FormEntity::class, $this->form1);
-    expect($this->form1)->notNull();
+    verify($this->form1)->notNull();
 
     $response = $this->endpoint->restore(['id' => $this->form1->getId()]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
@@ -238,7 +238,7 @@ class FormsTest extends \MailPoetTest {
     verify($response->data)->equals(
       $this->form2->toArray()
     );
-    expect($response->data['deleted_at'])->notNull();
+    verify($response->data['deleted_at'])->notNull();
     verify($response->meta['count'])->equals(1);
   }
 

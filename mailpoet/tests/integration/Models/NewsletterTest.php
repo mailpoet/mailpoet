@@ -88,7 +88,7 @@ class NewsletterTest extends \MailPoetTest {
   public function testItHasACreatedAtOnCreation() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     $this->assertInstanceOf(Newsletter::class, $newsletter);
-    expect($newsletter->createdAt)->notNull();
+    verify($newsletter->createdAt)->notNull();
   }
 
   public function testItHasAnUpdatedAtOnCreation() {
@@ -210,7 +210,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletter->status = Newsletter::STATUS_SENT;
     $this->newsletter->trash();
     $this->newsletter = $this->reloadNewsletter($this->newsletter);
-    expect($this->newsletter->deletedAt)->notNull();
+    verify($this->newsletter->deletedAt)->notNull();
     $this->newsletter->restore();
     $this->newsletter = $this->reloadNewsletter($this->newsletter);
     verify($this->newsletter->deletedAt)->null();

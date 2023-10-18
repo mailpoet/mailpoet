@@ -132,7 +132,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
       'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
         $this->assertNotNull($subscriber); // PHPStan
-        expect($subscriber)->notNull();
+        verify($subscriber)->notNull();
         verify($subscriber->getId())->equals(0);
       }),
     ]);
@@ -149,7 +149,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
       'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) use ($subscriberId) {
         $this->assertNotNull($subscriber); // PHPStan
-        expect($subscriber)->notNull();
+        verify($subscriber)->notNull();
         verify($subscriber->getId())->equals($subscriberId);
       }),
     ]);
@@ -170,7 +170,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
       'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
         $this->assertNotNull($queue); // PHPStan
-        expect($queue)->notNull();
+        verify($queue)->notNull();
         verify($queue->getId())->equals($this->sendingTask->id);
       }),
     ]);
@@ -186,7 +186,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $viewInBrowserRenderer = $this->make(ViewInBrowserRenderer::class, [
       'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
         $this->assertNotNull($queue); // PHPStan
-        expect($queue)->notNull();
+        verify($queue)->notNull();
         verify($queue->getId())->equals($this->sendingTask->queue()->id);
       }),
     ]);

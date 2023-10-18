@@ -120,7 +120,7 @@ class SegmentsTest extends \MailPoetTest {
 
     $trashedSegment = $this->segmentRepository->findOneById($this->segment1->getId());
     $this->assertInstanceOf(SegmentEntity::class, $trashedSegment);
-    expect($trashedSegment->getDeletedAt())->notNull();
+    verify($trashedSegment->getDeletedAt())->notNull();
     $this->entityManager->clear();
 
     $response = $this->endpoint->restore(['id' => $this->segment1->getId()]);
@@ -144,7 +144,7 @@ class SegmentsTest extends \MailPoetTest {
     verify($response->data)->equals(
       $this->responseBuilder->build($segment)
     );
-    expect($response->data['deleted_at'])->notNull();
+    verify($response->data['deleted_at'])->notNull();
     verify($response->meta['count'])->equals(1);
   }
 
@@ -197,7 +197,7 @@ class SegmentsTest extends \MailPoetTest {
     verify($response->data)->equals(
       $this->responseBuilder->build($segment)
     );
-    expect($response->data['deleted_at'])->notNull();
+    verify($response->data['deleted_at'])->notNull();
     verify($response->meta['count'])->equals(1);
   }
 

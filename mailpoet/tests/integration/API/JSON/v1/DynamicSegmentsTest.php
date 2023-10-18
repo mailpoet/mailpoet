@@ -105,7 +105,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
     $this->entityManager->refresh($dynamicSegment);
     $this->assertInstanceOf(SegmentEntity::class, $dynamicSegment);
-    expect($dynamicSegment->getDeletedAt())->notNull();
+    verify($dynamicSegment->getDeletedAt())->notNull();
   }
 
   public function testItReturnsErrorWhenTrashingSegmentWithActiveNewsletter() {
@@ -169,8 +169,8 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
     $this->entityManager->refresh($dynamicSegment1);
     $this->entityManager->refresh($dynamicSegment2);
-    expect($dynamicSegment1->getDeletedAt())->notNull();
-    expect($dynamicSegment2->getDeletedAt())->notNull();
+    verify($dynamicSegment1->getDeletedAt())->notNull();
+    verify($dynamicSegment2->getDeletedAt())->notNull();
 
     $response = $this->endpoint->bulkAction([
       'action' => 'restore',

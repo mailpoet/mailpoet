@@ -355,7 +355,7 @@ class WooCommerceTest extends \MailPoetTest {
       'isWoocommerceUser' => true,
     ]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getDeletedAt())->notNull();
+    verify($subscriber->getDeletedAt())->notNull();
   }
 
   public function testItDoesntRemoveGuestCustomersFromTrash(): void {
@@ -374,7 +374,7 @@ class WooCommerceTest extends \MailPoetTest {
       'isWoocommerceUser' => true,
     ]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getDeletedAt())->notNull();
+    verify($subscriber->getDeletedAt())->notNull();
   }
 
   public function testItRemovesOrphanedSubscribers(): void {

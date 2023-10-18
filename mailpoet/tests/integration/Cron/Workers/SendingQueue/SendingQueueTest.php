@@ -421,10 +421,10 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->flush();
     $this->entityManager->refresh($this->subscriber);
     verify($this->subscriber->getLastSendingAt())->null();
-    expect($this->subscriber->getEngagementScoreUpdatedAt())->notNull();
+    verify($this->subscriber->getEngagementScoreUpdatedAt())->notNull();
     $sendingQueueWorker->process();
     $this->subscribersRepository->refresh($this->subscriber);
-    expect($this->subscriber->getLastSendingAt())->notNull();
+    verify($this->subscriber->getLastSendingAt())->notNull();
     verify($this->subscriber->getEngagementScoreUpdatedAt())->null();
 
     // newsletter status is set to sent
@@ -553,7 +553,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->subscriber->getLastSendingAt())->null();
     $sendingQueueWorker->process();
     $this->subscribersRepository->refresh($this->subscriber);
-    expect($this->subscriber->getLastSendingAt())->notNull();
+    verify($this->subscriber->getLastSendingAt())->notNull();
 
     // newsletter status is set to sent
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);

@@ -213,7 +213,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $queueEntity);
     $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($queueEntity);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
-    expect($scheduledTask->getScheduledAt())->notNull();
+    verify($scheduledTask->getScheduledAt())->notNull();
   }
 
   public function testItFailsWPSubscriberVerificationWhenSubscriberIsNotAWPUser() {
@@ -335,7 +335,7 @@ class SchedulerTest extends \MailPoetTest {
       'verifyMailpoetSubscriber' => Expected::exactly(1, true),
       'scheduledTasksRepository' => $this->diContainer->get(ScheduledTasksRepository::class),
     ], $this);
-    expect($queue->status)->notNull();
+    verify($queue->status)->notNull();
     verify($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
     $sendingQueue = $this->sendingQueuesRepository->findOneById($queue->id);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
@@ -355,7 +355,7 @@ class SchedulerTest extends \MailPoetTest {
       'verifyWPSubscriber' => Expected::exactly(1, true),
       'scheduledTasksRepository' => $this->diContainer->get(ScheduledTasksRepository::class),
     ], $this);
-    expect($queue->status)->notNull();
+    verify($queue->status)->notNull();
     verify($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
     // update queue's status to null
     $sendingQueue = $this->sendingQueuesRepository->findOneById($queue->id);
@@ -997,7 +997,7 @@ class SchedulerTest extends \MailPoetTest {
         'role' => $role,
       ]
     );
-    expect($user->ID)->notNull();
+    verify($user->ID)->notNull();
     return $user;
   }
 

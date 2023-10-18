@@ -336,8 +336,8 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $newsletter = $this->saveController->save($data);
     verify($newsletter->getSubject())->equals($data['subject']);
     verify($newsletter->getType())->equals($data['type']);
-    expect($newsletter->getHash())->notNull();
-    expect($newsletter->getId())->notNull();
+    verify($newsletter->getHash())->notNull();
+    verify($newsletter->getId())->notNull();
   }
 
   public function testItCreatesNewsletterWithDefaultSender() {

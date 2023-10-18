@@ -344,7 +344,7 @@ class SubscribersTest extends \MailPoetTest {
     verify($response->data['id'])->equals($subscriber->getId());
     verify($response->data['email'])->equals($subscriber->getEmail());
     verify($response->data['status'])->equals($subscriber->getStatus());
-    expect($response->data['deleted_at'])->notNull();
+    verify($response->data['deleted_at'])->notNull();
     verify($response->meta['count'])->equals(1);
   }
 

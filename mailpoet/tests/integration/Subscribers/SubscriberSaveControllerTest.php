@@ -60,10 +60,10 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     verify($subscriber->getConfirmedIp())->equals($data['confirmed_ip']);
     verify($subscriber->getSubscribedIp())->equals($data['subscribed_ip']);
     verify($subscriber->getWpUserId())->equals($data['wp_user_id']);
-    expect($subscriber->getUnsubscribeToken())->notNull();
-    expect($subscriber->getLinkToken())->notNull();
-    expect($subscriber->getId())->notNull();
-    expect($subscriber->getLastSubscribedAt())->notNull();
+    verify($subscriber->getUnsubscribeToken())->notNull();
+    verify($subscriber->getLinkToken())->notNull();
+    verify($subscriber->getId())->notNull();
+    verify($subscriber->getLastSubscribedAt())->notNull();
     verify($subscriber->getSegments())->arrayCount(2);
     verify($subscriber->getSubscriberSegments())->arrayCount(2);
     verify($subscriber->getSubscriberTags())->arrayCount(2);
@@ -91,7 +91,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     verify($subscriber->getStatus())->equals($data['status']);
     verify($subscriber->getFirstName())->equals($data['first_name']);
     verify($subscriber->getLastName())->equals($data['last_name']);
-    expect($subscriber->getLastSubscribedAt())->notNull();
+    verify($subscriber->getLastSubscribedAt())->notNull();
     verify($subscriber->getSegments())->arrayCount(1);
     verify($subscriber->getSubscriberSegments())->arrayCount(1);
     verify($subscriber->getSubscriberTags())->arrayCount(1);

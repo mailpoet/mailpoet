@@ -31,26 +31,26 @@ class UrlTest extends \MailPoetTest {
     $this->settings->delete('subscription');
 
     $url = $this->url->getCaptchaUrl('abc');
-    expect($url)->notNull();
+    verify($url)->notNull();
     verify($url)->stringContainsString('action=captcha');
     verify($url)->stringContainsString('endpoint=subscription');
 
     $url = $this->url->getUnsubscribeUrl(null);
-    expect($url)->notNull();
+    verify($url)->notNull();
     verify($url)->stringContainsString('action=unsubscribe');
     verify($url)->stringContainsString('endpoint=subscription');
   }
 
   public function testItReturnsTheCaptchaUrl() {
     $url = $this->url->getCaptchaUrl('abc');
-    expect($url)->notNull();
+    verify($url)->notNull();
     verify($url)->stringContainsString('action=captcha');
     verify($url)->stringContainsString('endpoint=subscription');
   }
 
   public function testItReturnsTheCaptchaImageUrl() {
     $url = $this->url->getCaptchaImageUrl(250, 100, 'abc');
-    expect($url)->notNull();
+    verify($url)->notNull();
     verify($url)->stringContainsString('action=captchaImage');
     verify($url)->stringContainsString('endpoint=subscription');
   }
@@ -58,7 +58,7 @@ class UrlTest extends \MailPoetTest {
   public function testItReturnsTheConfirmationUrl() {
     // preview
     $url = $this->url->getConfirmationUrl(null);
-    expect($url)->notNull();
+    verify($url)->notNull();
     verify($url)->stringContainsString('action=confirm');
     verify($url)->stringContainsString('endpoint=subscription');
 
@@ -74,7 +74,7 @@ class UrlTest extends \MailPoetTest {
   public function testItReturnsTheManageSubscriptionUrl() {
     // preview
     $url = $this->url->getManageUrl(null);
-    expect($url)->notNull();
+    verify($url)->notNull();
     verify($url)->stringContainsString('action=manage');
     verify($url)->stringContainsString('endpoint=subscription');
 
@@ -90,7 +90,7 @@ class UrlTest extends \MailPoetTest {
   public function testItReturnsTheUnsubscribeUrl() {
     // preview
     $url = $this->url->getUnsubscribeUrl(null);
-    expect($url)->notNull();
+    verify($url)->notNull();
     verify($url)->stringContainsString('action=unsubscribe');
     verify($url)->stringContainsString('endpoint=subscription');
     $data = $this->getUrlData($url);
@@ -125,7 +125,7 @@ class UrlTest extends \MailPoetTest {
   public function testItReturnsConfirmUnsubscribeUrl() {
     // preview
     $url = $this->url->getConfirmUnsubscribeUrl(null);
-    expect($url)->notNull();
+    verify($url)->notNull();
     verify($url)->stringContainsString('action=confirm_unsubscribe');
     verify($url)->stringContainsString('endpoint=subscription');
     $data = $this->getUrlData($url);

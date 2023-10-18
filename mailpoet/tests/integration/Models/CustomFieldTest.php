@@ -86,7 +86,7 @@ class CustomFieldTest extends \MailPoetTest {
   public function testItHasACreatedAtOnCreation() {
     $customField = CustomField::findOne($this->customField->id);
     $this->assertInstanceOf(CustomField::class, $customField);
-    expect($customField->createdAt)->notNull();
+    verify($customField->createdAt)->notNull();
   }
 
   public function testItHasAnUpdatedAtOnCreation() {
