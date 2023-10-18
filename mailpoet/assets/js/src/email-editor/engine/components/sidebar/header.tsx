@@ -1,6 +1,8 @@
 import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
-import { useDispatch } from '@wordpress/data';
+import { useEffect } from '@wordpress/element';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { store as blockEditorStore } from '@wordpress/block-editor';
 import {
   mainSidebarEmailKey,
   mainSidebarBlockKey,
@@ -13,6 +15,17 @@ type Props = {
 
 export function Header({ sidebarKey }: Props) {
   const { openSidebar } = useDispatch(storeName);
+
+  const selectedBlockId = useSelect(
+    (select) => select(blockEditorStore).getSelectedBlockClientId(),
+    [],
+  );
+
+  // Switch tab based on selected block.
+  useEffect(() => {
+    openSidebar(selectedBlockId ? mainSidebarBlockKey : mainSidebarEmailKey);
+  }, [selectedBlockId, openSidebar]);
+
   return (
     <div className="components-panel__header interface-complementary-area-header edit-post-sidebar__panel-tabs">
       <ul>
