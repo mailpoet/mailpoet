@@ -13,16 +13,22 @@ class WordPressIntegration {
   /** @var CommentSubject */
   private $commentSubject;
 
+  /** @var ContextFactory */
+  private $contextFactory;
+
   public function __construct(
     UserSubject $userSubject,
-    CommentSubject $commentSubject
+    CommentSubject $commentSubject,
+    ContextFactory $contextFactory
   ) {
     $this->userSubject = $userSubject;
     $this->commentSubject = $commentSubject;
+    $this->contextFactory = $contextFactory;
   }
 
   public function register(Registry $registry): void {
     $registry->addSubject($this->userSubject);
     $registry->addSubject($this->commentSubject);
+    $registry->addContextFactory('wordpress', [$this->contextFactory, 'getContextData']);
   }
 }
