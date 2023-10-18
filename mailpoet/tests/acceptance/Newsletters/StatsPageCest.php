@@ -27,7 +27,7 @@ class StatsPageCest {
       $href = $i->grabAttributeFrom('//a[span[text()="Upgrade"]]', 'href');
       verify($href)->stringContainsString('https://account.mailpoet.com/?s=1&email=test%40test.com&g=starter&utm_source=plugin&utm_medium=stats&utm_campaign=signup');
       $href = $i->grabAttributeFrom('//a[text()="Learn more"]', 'href');
-      expect($href)->endsWith('page=mailpoet-upgrade');
+      verify($href)->stringEndsWith('page=mailpoet-upgrade');
     }
   }
 }

@@ -39,7 +39,7 @@ class ThumbnailSaverTest extends \MailPoetTest {
     verify($thumbnailUrl)->stringStartsWith(Env::$tempUrl);
     [,$fileName] = explode(ThumbnailSaver::THUMBNAIL_DIRECTORY, (string)$thumbnailUrl);
     // File is still the same
-    expect($thumbnailUrl)->endsWith($fileName);
+    verify($thumbnailUrl)->stringEndsWith($fileName);
     $file = Env::$tempPath . '/' . ThumbnailSaver::THUMBNAIL_DIRECTORY . $fileName;
     unlink($file); // remove the file after the test
   }
