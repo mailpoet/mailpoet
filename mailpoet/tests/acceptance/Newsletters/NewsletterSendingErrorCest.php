@@ -25,7 +25,7 @@ class NewsletterSendingErrorCest {
     $i->see('Resume sending', '.notice-error p');
 
     $href = $i->grabAttributeFrom('//a[text()="sending method settings"]', 'href');
-    expect($href)->endsWith('page=mailpoet-settings#mta');
+    verify($href)->stringEndsWith('page=mailpoet-settings#mta');
 
     $i->click('Resume sending');
     $i->waitForText('Sending has been resumed.');

@@ -91,7 +91,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($renderedForm);
+    verify($result)->stringEndsWith($renderedForm);
   }
 
   public function testItOnlyDisplaysOncePerRequest(): void {
@@ -110,7 +110,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->any())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($renderedForm);
+    verify($result)->stringEndsWith($renderedForm);
 
     $result2 = $this->hook->contentDisplay('content');
     verify($result2)->equals('content');
@@ -134,7 +134,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($renderedForm);
+    verify($result)->stringEndsWith($renderedForm);
   }
 
   public function testAppendsRenderedFormAfterOnASpecificCategory() {
@@ -161,7 +161,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($renderedForm);
+    verify($result)->stringEndsWith($renderedForm);
   }
 
   public function testAppendsRenderedFormAfterOnASpecificWoocommerceCategory() {
@@ -189,7 +189,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($renderedForm);
+    verify($result)->stringEndsWith($renderedForm);
   }
 
   public function testAppendsRenderedFormAfterOnASpecificTag() {
@@ -218,7 +218,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($renderedForm);
+    verify($result)->stringEndsWith($renderedForm);
   }
 
   public function testAppendsRenderedFormAfterOnASpecificWooCommerceTag() {
@@ -247,7 +247,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($renderedForm);
+    verify($result)->stringEndsWith($renderedForm);
   }
 
   public function testAppendsRenderedFormAfterOnASpecificPage() {
@@ -269,7 +269,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($renderedForm);
+    verify($result)->stringEndsWith($renderedForm);
   }
 
   public function testItPassThruNonStringPostContent() {
@@ -368,7 +368,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($renderedForm);
+    verify($result)->stringEndsWith($renderedForm);
   }
 
   public function testAppendsRenderedFormOnWoocommerceShopListingPageWhenAllPagesIsSelected() {
@@ -399,7 +399,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($renderedForm);
+    verify($result)->stringEndsWith($renderedForm);
   }
 
   public function testItDoesNotAppendsFormOnWoocommerceShopListingPageWhenPageIsNotSelected() {
@@ -490,7 +490,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($formHtml);
+    verify($result)->stringEndsWith($formHtml);
   }
 
   public function testSetsTransientToImprovePerformance() {
@@ -541,7 +541,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($formHtml);
+    verify($result)->stringEndsWith($formHtml);
   }
 
   public function testDisplayFormOnAllTagArchives(): void {
@@ -839,7 +839,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
 
     $result = $this->hook->contentDisplay('content');
-    expect($result)->endsWith($formHtml);
+    verify($result)->stringEndsWith($formHtml);
   }
 
   public function testAppendsRenderedFixedBarForm() {
@@ -865,7 +865,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($formHtml);
+    verify($result)->stringEndsWith($formHtml);
   }
 
   public function testOnlyOneFormInEachCategory() {
@@ -891,7 +891,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
 
     $result = $this->hook->contentDisplay('content');
     verify($result)->notEquals('content');
-    expect($result)->endsWith($formHtml);
+    verify($result)->stringEndsWith($formHtml);
   }
 
   public function _after() {
