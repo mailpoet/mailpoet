@@ -97,7 +97,7 @@ class OpensTest extends \MailPoetTest {
       'returnResponse' => Expected::exactly(1),
     ], $this);
     $opens->track(false);
-    expect($this->statisticsOpensRepository->findAll())->isEmpty();
+    verify($this->statisticsOpensRepository->findAll())->empty();
   }
 
   public function testItDoesNotTrackOpenEventFromWpUserWhenPreviewIsEnabled() {
@@ -112,11 +112,11 @@ class OpensTest extends \MailPoetTest {
       'returnResponse' => null,
     ], $this);
     $opens->track($data);
-    expect($this->statisticsOpensRepository->findAll())->isEmpty();
+    verify($this->statisticsOpensRepository->findAll())->empty();
   }
 
   public function testItReturnsNothingWhenImageDisplayIsDisabled() {
-    expect($this->opens->track($this->trackData, $displayImage = false))->isEmpty();
+    verify($this->opens->track($this->trackData, $displayImage = false))->empty();
   }
 
   public function testItTracksOpenEvent() {

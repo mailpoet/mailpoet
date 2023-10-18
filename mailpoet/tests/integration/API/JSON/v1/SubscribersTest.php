@@ -350,7 +350,7 @@ class SubscribersTest extends \MailPoetTest {
 
   public function testItCanDeleteASubscriber() {
     $response = $this->endpoint->delete(['id' => $this->subscriber1->getId()]);
-    expect($response->data)->isEmpty();
+    verify($response->data)->empty();
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->meta['count'])->equals(1);
   }
@@ -604,7 +604,7 @@ class SubscribersTest extends \MailPoetTest {
       'action' => 'delete',
     ]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->isEmpty();
+    verify($response->data)->empty();
     verify($response->meta['count'])->equals(count($selectionIds));
 
     $this->entityManager->clear();
@@ -938,7 +938,7 @@ class SubscribersTest extends \MailPoetTest {
 
     // welcome notification is created only for segment #1
     $this->endpoint->save($subscriberData);
-    expect($this->sendingQueuesRepository->findAll())->isEmpty();
+    verify($this->sendingQueuesRepository->findAll())->empty();
 
     $subscriberData['segments'] = [$this->segment1->getId()];
     $this->endpoint->save($subscriberData);

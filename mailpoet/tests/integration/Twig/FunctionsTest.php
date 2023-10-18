@@ -19,6 +19,6 @@ class FunctionsTest extends \MailPoetTest {
     $resultRtl = $twig->render('template');
     verify($resultRtl)->equals('rtl');
     $resultNoRtl = $twig->render('template');
-    expect($resultNoRtl)->isEmpty();
+    verify($resultNoRtl)->empty();
   }
 }

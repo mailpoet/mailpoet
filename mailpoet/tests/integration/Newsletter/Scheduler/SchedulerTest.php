@@ -26,7 +26,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletterFactory->withWelcomeTypeForSegment()->withActiveStatus()->create();
 
     // no newsletters with type "notification" should be found
-    expect($this->testee->getNewsletters(NewsletterEntity::TYPE_NOTIFICATION))->isEmpty();
+    verify($this->testee->getNewsletters(NewsletterEntity::TYPE_NOTIFICATION))->empty();
 
     // one newsletter with type "welcome" should be found
     expect($this->testee->getNewsletters(NewsletterEntity::TYPE_WELCOME))->count(1);
@@ -35,7 +35,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $newsletterFactory->withAutomaticType()->withActiveStatus()->create();
     $newsletterOptionFactory->create($newsletter, 'group', 'test');
 
-    expect($this->testee->getNewsletters(NewsletterEntity::TYPE_WELCOME, 'group_does_not_exist'))->isEmpty();
+    verify($this->testee->getNewsletters(NewsletterEntity::TYPE_WELCOME, 'group_does_not_exist'))->empty();
     expect($this->testee->getNewsletters(NewsletterEntity::TYPE_AUTOMATIC, 'test'))->count(1);
   }
 

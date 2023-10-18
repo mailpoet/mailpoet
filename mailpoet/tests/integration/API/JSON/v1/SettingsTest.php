@@ -269,7 +269,7 @@ class SettingsTest extends \MailPoetTest {
 
     $this->settings->resetCache();
     verify($this->settings->get('sender')['address'])->equals('johndoeexampletestnonexistinghopefullyfreemail@gmail.com');
-    expect($this->settings->get('reply_to'))->isEmpty();
+    verify($this->settings->get('reply_to'))->empty();
   }
 
   public function testItDeactivatesReEngagementEmailsIfTrackingDisabled(): void {

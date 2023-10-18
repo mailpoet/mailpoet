@@ -66,7 +66,7 @@ class SendingTest extends \MailPoetTest {
   public function testItDeletesInvalidTasksWhenCreatingManyFromTasks() {
     $this->queue->delete();
     $sendings = SendingTask::createManyFromTasks([$this->task]);
-    expect($sendings)->isEmpty();
+    verify($sendings)->empty();
     $task = ScheduledTask::findOne($this->task->id);
     $this->assertInstanceOf(ScheduledTask::class, $task);
     verify($task->status)->equals(ScheduledTask::STATUS_INVALID);
@@ -115,7 +115,7 @@ class SendingTest extends \MailPoetTest {
     $this->sending->delete();
     verify(ScheduledTask::findOne($this->task->id))->equals(false);
     verify(SendingQueue::findOne($this->queue->id))->equals(false);
-    expect(ScheduledTaskSubscriber::where('task_id', $this->task->id)->findMany())->isEmpty();
+    verify(ScheduledTaskSubscriber::where('task_id', $this->task->id)->findMany())->empty();
   }
 
   public function testItGetsSubscribers() {
@@ -171,7 +171,7 @@ class SendingTest extends \MailPoetTest {
     // if task exists but sending queue is missing, results should not contain empty (false) values
     $this->queue->delete();
     $tasks = $this->scheduledTaskRepository->findRunningSendingTasks();
-    expect($tasks)->isEmpty();
+    verify($tasks)->empty();
   }
 
   public function testItGetsBatchOfScheduledQueues() {
@@ -200,7 +200,7 @@ class SendingTest extends \MailPoetTest {
     // if task exists but sending queue is missing, results should not contain empty (false) values
     $this->queue->delete();
     $tasks = $this->scheduledTaskRepository->findRunningSendingTasks();
-    expect($tasks)->isEmpty();
+    verify($tasks)->empty();
   }
 
   public function testItGetsBatchOfRunningQueues() {

@@ -120,7 +120,7 @@ class FormTest extends \MailPoetTest {
     ], $this);
     $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
     $result = $formController->onSubmit($requestData);
-    expect($this->subscribersRepository->findAll())->isEmpty();
+    verify($this->subscribersRepository->findAll())->empty();
     verify($result['mailpoet_error'])->equals($this->form->getId());
     verify($result['mailpoet_success'])->null();
   }

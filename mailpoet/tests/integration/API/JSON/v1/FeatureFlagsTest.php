@@ -103,7 +103,7 @@ class FeatureFlagsTest extends \MailPoetTest {
     ]);
 
     $endpoint = $this->createEndpointWithFeatureDefaults([]);
-    expect($endpoint->getAll()->data)->isEmpty();
+    verify($endpoint->getAll()->data)->empty();
   }
 
   public function testItDoesNotSaveUnknownFlag() {

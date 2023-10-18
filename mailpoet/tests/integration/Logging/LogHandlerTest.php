@@ -75,7 +75,7 @@ class LogHandlerTest extends \MailPoetTest {
     ]);
 
     $log = $this->repository->findBy(['name' => 'old name']);
-    expect($log)->isEmpty();
+    verify($log)->empty();
   }
 
   public function testItNotPurgesOldLogs() {

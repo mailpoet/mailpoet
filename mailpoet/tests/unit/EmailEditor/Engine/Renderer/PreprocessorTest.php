@@ -53,7 +53,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
     verify($result[0]['innerBlocks'][0]['innerBlocks'][0]['blockName'])->equals('core/paragraph');
     // Second columns remains empty
     verify($result[1]['innerBlocks'][0]['blockName'])->equals('core/column');
-    expect($result[1]['innerBlocks'][0]['innerBlocks'])->isEmpty();
+    verify($result[1]['innerBlocks'][0]['innerBlocks'])->empty();
     // Third columns contain columns with two paragraph blocks
     verify($result[2]['innerBlocks'][0]['blockName'])->equals('core/column');
     expect($result[2]['innerBlocks'][0]['innerBlocks'])->count(2);

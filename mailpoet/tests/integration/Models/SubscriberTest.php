@@ -440,7 +440,7 @@ class SubscriberTest extends \MailPoetTest {
     $record->lastName = 'Mailer';
     $result = Subscriber::createOrUpdate($record->asArray());
     verify($result)->notEquals(false);
-    expect($result->getValidationErrors())->isEmpty();
+    verify($result->getValidationErrors())->empty();
     $record = Subscriber::where('email', $data['email'])
       ->findOne();
     verify($record->lastName)->equals('Mailer');
@@ -855,8 +855,8 @@ class SubscriberTest extends \MailPoetTest {
       ]
     );
     verify($result->getErrors())->false();
-    expect($result->firstName)->isEmpty();
-    expect($result->lastName)->isEmpty();
+    verify($result->firstName)->empty();
+    verify($result->lastName)->empty();
     verify($result->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
 

@@ -348,7 +348,7 @@ class NewslettersTest extends \MailPoetTest {
 
   public function testItCanDeleteANewsletter() {
     $response = $this->endpoint->delete(['id' => $this->newsletter->getId()]);
-    expect($response->data)->isEmpty();
+    verify($response->data)->empty();
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->meta['count'])->equals(1);
   }

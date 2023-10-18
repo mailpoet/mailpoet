@@ -42,7 +42,7 @@ class SimpleWorkerTest extends \MailPoetTest {
   }
 
   public function testItSchedulesTask() {
-    expect($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE]))->isEmpty();
+    verify($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE]))->empty();
     (new MockSimpleWorker())->schedule();
     verify($this->scheduledTasksRepository->findBy(['type' => MockSimpleWorker::TASK_TYPE]))->notEmpty();
   }

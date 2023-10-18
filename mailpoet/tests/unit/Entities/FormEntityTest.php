@@ -73,7 +73,7 @@ class FormEntityTest extends \MailPoetUnitTest {
     $formEntity = new FormEntity('Test' );
     $formEntity->setBody($this->body);
     $segmentIds = $formEntity->getSegmentBlocksSegmentIds();
-    expect($segmentIds)->isEmpty();
+    verify($segmentIds)->empty();
 
     // Add segment selection block to second columns
     $body = $this->body;

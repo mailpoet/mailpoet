@@ -151,8 +151,8 @@ class ClicksTest extends \MailPoetTest {
     ], $this);
     $clicks->track($data);
 
-    expect($this->statisticsClicksRepository->findAll())->isEmpty();
-    expect($this->statisticsOpensRepository->findAll())->isEmpty();
+    verify($this->statisticsClicksRepository->findAll())->empty();
+    verify($this->statisticsOpensRepository->findAll())->empty();
   }
 
   public function testItTracksClickAndOpenEvent() {

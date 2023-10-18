@@ -222,7 +222,7 @@ class WPTest extends \MailPoetTest {
     $this->updateWPUserEmail($id, '');
     $this->wpSegment->synchronizeUsers();
     $subscriber = Subscriber::where('wp_user_id', $id)->findOne();
-    expect($subscriber)->isEmpty();
+    verify($subscriber)->empty();
     $this->deleteWPUser($id);
   }
 
@@ -412,7 +412,7 @@ class WPTest extends \MailPoetTest {
     verify($dbSubscriber)->notEmpty();
     $this->wpSegment->synchronizeUsers();
     $dbSubscriber = Subscriber::findOne($subscriber->id);
-    expect($dbSubscriber)->isEmpty();
+    verify($dbSubscriber)->empty();
   }
 
   public function testItAddsNewUserToDisabledWpSegmentAsUnconfirmedAndTrashed(): void {

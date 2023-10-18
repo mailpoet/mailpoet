@@ -252,7 +252,7 @@ class ImportTest extends \MailPoetTest {
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
     expect($result['confirmed_ip'])->count(2);
-    expect($result['confirmed_ip'][0])->isEmpty();
+    verify($result['confirmed_ip'][0])->empty();
     verify($result['confirmed_ip'][1])->equals('192.68.69.32');
 
     // invalid IPv4 confirmed_ip is empty in the data object
@@ -263,7 +263,7 @@ class ImportTest extends \MailPoetTest {
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
     expect($result['confirmed_ip'])->count(2);
-    expect($result['confirmed_ip'][0])->isEmpty();
+    verify($result['confirmed_ip'][0])->empty();
     verify($result['confirmed_ip'][1])->equals('192.68.69.32');
 
     // Empty confirmed_ip is empty in the data object
@@ -274,7 +274,7 @@ class ImportTest extends \MailPoetTest {
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
     expect($result['confirmed_ip'])->count(2);
-    expect($result['confirmed_ip'][0])->isEmpty();
+    verify($result['confirmed_ip'][0])->empty();
     verify($result['confirmed_ip'][1])->equals('192.68.69.32');
 
     // normalize confirmed_at

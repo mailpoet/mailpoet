@@ -143,7 +143,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getScheduledAt())->greaterThan($scheduledAt);
     verify($task->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($task->getInProgress())->isEmpty();
+    verify($task->getInProgress())->empty();
 
     // reset the state of the updatedAt field. this is needed to reset the state of TimestampListener::now otherwise it will impact other tests.
     // this code can be removed once https://mailpoet.atlassian.net/browse/MAILPOET-3870 is fixed.
@@ -171,7 +171,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
       expect($task->getScheduledAt())->greaterThan($scheduledAt);
       verify($task->getStatus())->same(ScheduledTaskEntity::STATUS_SCHEDULED);
       verify($task->getRescheduleCount())->equals(1);
-      expect($task->getInProgress())->isEmpty();
+      verify($task->getInProgress())->empty();
     }
   }
 

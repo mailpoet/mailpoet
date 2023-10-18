@@ -64,7 +64,7 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
       ]
     );
     $records = SubscriberCustomField::findArray();
-    expect($records)->isEmpty();
+    verify($records)->empty();
   }
 
   public function testItCanDeleteSubscriberRelations() {

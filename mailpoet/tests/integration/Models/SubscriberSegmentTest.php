@@ -155,7 +155,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     verify($result)->true();
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
-    expect($subscribedSegments)->isEmpty();
+    verify($subscribedSegments)->empty();
 
     // the relations still exist but now have a status of "unsubscribed"
     $subscriptionsCount = SubscriberSegment::where(

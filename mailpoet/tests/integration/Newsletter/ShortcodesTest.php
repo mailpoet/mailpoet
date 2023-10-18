@@ -93,10 +93,10 @@ class ShortcodesTest extends \MailPoetTest {
     verify($details['argument_value'])->equals('default_value');
     $content = '[category:action|default]';
     $details = $shortcodesObject->match($content);
-    expect($details)->isEmpty();
+    verify($details)->empty();
     $content = '[category|default:default_value]';
     $details = $shortcodesObject->match($content);
-    expect($details)->isEmpty();
+    verify($details)->empty();
   }
 
   public function testItCanProcessCustomShortcodes() {

@@ -53,7 +53,7 @@ class PurchasedProductTest extends \MailPoetTest {
     ]);
     $event = new PurchasedProduct($helper);
     $result = $event->scheduleEmailWhenProductIsPurchased(12);
-    expect($result)->isEmpty();
+    verify($result)->empty();
   }
 
   public function testItDoesNotScheduleEmailWhenCustomerEmailIsEmpty() {
@@ -70,7 +70,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $event = new PurchasedProduct($helper);
 
     $result = $event->scheduleEmailWhenProductIsPurchased(12);
-    expect($result)->isEmpty();
+    verify($result)->empty();
   }
 
   public function testItDoesNotScheduleEmailWhenCustomerIsNotAWCSegmentSubscriber() {
@@ -97,7 +97,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $event = new PurchasedProduct($helper);
 
     $result = $event->scheduleEmailWhenProductIsPurchased(12);
-    expect($result)->isEmpty();
+    verify($result)->empty();
   }
 
   public function testItDoesNotScheduleEmailWhenAlreadySent() {
@@ -139,7 +139,7 @@ class PurchasedProductTest extends \MailPoetTest {
     $email = $this->createEmailTriggeredByProductIds([2000, 3000]);
     $event = $this->createOrderEvent($subscriber, [1000]);
     $scheduledTask = $this->triggerEmailForState('completed', $email, $event);
-    expect($scheduledTask)->isEmpty();
+    verify($scheduledTask)->empty();
   }
 
   public function testItSchedulesEmailForProcessingOrder() {
