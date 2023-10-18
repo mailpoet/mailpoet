@@ -18,7 +18,7 @@ class ContextFactory {
   /** @return mixed[] */
   public function getContextData(): array {
     return [
-      'comment_stati' => $this->getCommentStati(),
+      'comment_statuses' => $this->getCommentStatuses(),
       'post_types' => $this->getPostTypes(),
       'taxonomies' => $this->getTaxonomies(),
     ];
@@ -27,7 +27,7 @@ class ContextFactory {
   /**
    * @return string[][]
    */
-  private function getCommentStati(): array {
+  private function getCommentStatuses(): array {
     $statiMap = $this->wp->getCommentStatuses();
     $stati = [];
     foreach ($statiMap as $id => $name) {
