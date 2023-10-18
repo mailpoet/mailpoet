@@ -86,7 +86,7 @@ class MailerTest extends \MailPoetTest {
     $this->sender['address'] = 'staff@mailpoet.com';
     $mailer = $this->mailerFactory->buildMailer($this->mailer, $this->sender, $this->replyTo);
     $result = $mailer->send($this->newsletter, $this->subscriber);
-    expect($result['response'])->true();
+    verify($result['response'])->true();
   }
 
   public function testItCanSendWhenSubscriberEntityIsPassed() {
@@ -102,6 +102,6 @@ class MailerTest extends \MailPoetTest {
     $this->sender['address'] = 'staff@mailpoet.com';
     $mailer = $this->mailerFactory->buildMailer($this->mailer, $this->sender, $this->replyTo);
     $result = $mailer->send($this->newsletter, $subscriber);
-    expect($result['response'])->true();
+    verify($result['response'])->true();
   }
 }

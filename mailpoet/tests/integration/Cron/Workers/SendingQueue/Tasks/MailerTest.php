@@ -55,7 +55,7 @@ class MailerTest extends \MailPoetTest {
   public function testItGetsMailerLog() {
     $mailerTask = $this->diContainer->get(MailerTask::class);
     $mailerLog = $mailerTask->getMailerLog();
-    expect(is_array($mailerLog))->true();
+    verify(is_array($mailerLog))->true();
   }
 
   public function testItUpdatesMailerLogSentCount() {

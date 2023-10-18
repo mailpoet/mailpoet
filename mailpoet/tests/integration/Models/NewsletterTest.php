@@ -57,7 +57,7 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItCanBeCreated() {
-    expect($this->newsletter->id() > 0)->true();
+    verify($this->newsletter->id() > 0)->true();
     expect($this->newsletter->getErrors())->false();
   }
 
@@ -113,12 +113,12 @@ class NewsletterTest extends \MailPoetTest {
     $isTimeUpdated = (
       $updatedNewsletter->updatedAt > $updatedNewsletter->createdAt
     );
-    expect($isTimeUpdated)->true();
+    verify($isTimeUpdated)->true();
   }
 
   public function testItCanBeQueued() {
     $queue = $this->newsletter->getQueue();
-    expect($queue->id > 0)->true();
+    verify($queue->id > 0)->true();
     verify($queue->newsletterId)->equals($this->newsletter->id);
   }
 
@@ -162,7 +162,7 @@ class NewsletterTest extends \MailPoetTest {
         'type' => Newsletter::TYPE_STANDARD,
         'body' => 'body',
       ]);
-    expect($isCreated->id() > 0)->true();
+    verify($isCreated->id() > 0)->true();
     expect($isCreated->getErrors())->false();
 
     $newsletter = Newsletter::where('subject', 'new newsletter')

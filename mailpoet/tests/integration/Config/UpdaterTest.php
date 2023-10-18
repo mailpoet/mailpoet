@@ -70,7 +70,7 @@ class UpdaterTest extends \MailPoetTest {
     verify($result->checked[$this->pluginName])->equals($this->version);
     verify($result->response[$this->pluginName]->slug)->equals($this->slug);
     verify($result->response[$this->pluginName]->plugin)->equals($this->pluginName);
-    expect(version_compare(
+    verify(version_compare(
       $this->version,
       $result->response[$this->pluginName]->new_version,
       '<'
@@ -107,7 +107,7 @@ class UpdaterTest extends \MailPoetTest {
     verify($result->checked[$this->pluginName])->equals($this->version);
     verify($result->no_update[$this->pluginName]->slug)->equals($this->slug); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($result->no_update[$this->pluginName]->plugin)->equals($this->pluginName); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect(version_compare(
+    verify(version_compare(
       $this->version,
       $result->no_update[$this->pluginName]->new_version, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       '='
@@ -116,6 +116,6 @@ class UpdaterTest extends \MailPoetTest {
 
   public function testItReturnsObjectIfPassedNonObjectWhenCheckingForUpdates() {
     $result = $this->updater->checkForUpdate(null);
-    expect($result instanceof \stdClass)->true();
+    verify($result instanceof \stdClass)->true();
   }
 }

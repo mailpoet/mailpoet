@@ -147,7 +147,7 @@ class CronHelperTest extends \MailPoetTest {
       CronHelper::DAEMON_SETTING,
       $daemon
     );
-    expect($this->cronHelper->isDaemonAccessible())->true();
+    verify($this->cronHelper->isDaemonAccessible())->true();
   }
 
   public function testItDetectsUnknownStateOfTheDaemon() {
@@ -221,7 +221,7 @@ class CronHelperTest extends \MailPoetTest {
     $token1 = $this->cronHelper->createToken();
     $token2 = $this->cronHelper->createToken();
     expect($token1)->notEquals($token2);
-    expect(is_string($token1))->true();
+    verify(is_string($token1))->true();
     verify(strlen($token1))->equals(5);
   }
 
@@ -330,7 +330,7 @@ class CronHelperTest extends \MailPoetTest {
   }
 
   public function testItValidatesPingResponse() {
-    expect($this->cronHelper->validatePingResponse('pong'))->true();
+    verify($this->cronHelper->validatePingResponse('pong'))->true();
     expect($this->cronHelper->validatePingResponse('something else'))->false();
   }
 

@@ -64,7 +64,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
 
   public function testItRunsIfWooCommerceIsEnabled() {
     $this->woocommerceHelper->method('isWooCommerceActive')->willReturn(true);
-    expect($this->worker->checkProcessingRequirements())->true();
+    verify($this->worker->checkProcessingRequirements())->true();
 
     $this->cronWorkerRunner->run($this->worker);
     $tasks = $this->scheduledTaskRepository->findBy(['type' => WooCommercePastOrders::TASK_TYPE]);
@@ -76,14 +76,14 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->woocommerceHelper->method('wcGetOrders')->willReturn([]);
 
     // 1. schedule
-    expect($this->worker->checkProcessingRequirements())->true();
+    verify($this->worker->checkProcessingRequirements())->true();
     $this->cronWorkerRunner->run($this->worker);
     $task = $this->scheduledTaskRepository->findOneBy(['type' => WooCommercePastOrders::TASK_TYPE]);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
 
     // 2. prepare and run
-    expect($this->worker->checkProcessingRequirements())->true();
+    verify($this->worker->checkProcessingRequirements())->true();
     $this->cronWorkerRunner->run($this->worker);
     $this->entityManager->clear();
     $task = $this->scheduledTaskRepository->findOneBy(['type' => WooCommercePastOrders::TASK_TYPE]);

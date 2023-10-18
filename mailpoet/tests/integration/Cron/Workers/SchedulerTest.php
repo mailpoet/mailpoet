@@ -261,7 +261,7 @@ class SchedulerTest extends \MailPoetTest {
 
     // return true when user exists and WP role matches the one specified for the welcome email
     $result = $scheduler->verifyWPSubscriber((int)$subscriber->getId(), $newsletter, $queue);
-    expect($result)->true();
+    verify($result)->true();
     expect(count($this->sendingQueuesRepository->findAll()))->greaterOrEquals(1);
   }
 
@@ -277,7 +277,7 @@ class SchedulerTest extends \MailPoetTest {
 
     // true when user exists and has any role
     $result = $scheduler->verifyWPSubscriber((int)$subscriber->getId(), $newsletter, $queue);
-    expect($result)->true();
+    verify($result)->true();
     expect(count($this->sendingQueuesRepository->findAll()))->greaterOrEquals(1);
   }
 
@@ -336,7 +336,7 @@ class SchedulerTest extends \MailPoetTest {
       'scheduledTasksRepository' => $this->diContainer->get(ScheduledTasksRepository::class),
     ], $this);
     expect($queue->status)->notNull();
-    expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
+    verify($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
     $sendingQueue = $this->sendingQueuesRepository->findOneById($queue->id);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
@@ -356,7 +356,7 @@ class SchedulerTest extends \MailPoetTest {
       'scheduledTasksRepository' => $this->diContainer->get(ScheduledTasksRepository::class),
     ], $this);
     expect($queue->status)->notNull();
-    expect($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
+    verify($scheduler->processWelcomeNewsletter($newsletter, $queue))->true();
     // update queue's status to null
     $sendingQueue = $this->sendingQueuesRepository->findOneById($queue->id);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
@@ -461,7 +461,7 @@ class SchedulerTest extends \MailPoetTest {
 
     // return true after successful verification
     $result = $scheduler->verifyMailpoetSubscriber((int)$subscriber->getId(), $newsletter, $queue);
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItProcessesScheduledStandardNewsletter() {
@@ -476,7 +476,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->entityManager->refresh($newsletter);
 
     // return true
-    expect($scheduler->processScheduledStandardNewsletter($newsletter, $queue))->true();
+    verify($scheduler->processScheduledStandardNewsletter($newsletter, $queue))->true();
     // update queue's list of subscribers to process
     $sendingQueue = $this->sendingQueuesRepository->findOneById($queue->id);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
@@ -555,7 +555,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->entityManager->refresh($newsletter);
 
     // return true
-    expect($scheduler->processPostNotificationNewsletter($newsletter, $queue))->true();
+    verify($scheduler->processPostNotificationNewsletter($newsletter, $queue))->true();
     // create notification history
     $notificationHistory = $this->newslettersRepository->findOneBy(['parent' => $newsletter->getId()]);
     $this->assertInstanceOf(NewsletterEntity::class, $notificationHistory);

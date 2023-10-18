@@ -47,7 +47,7 @@ class ServicesCheckerTest extends \MailPoetTest {
       ['state' => Bridge::KEY_VALID]
     );
     $result = $this->servicesChecker->isMailPoetAPIKeyValid();
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItReturnsFalseIfMSSKeyIsInvalid() {
@@ -68,7 +68,7 @@ class ServicesCheckerTest extends \MailPoetTest {
       ]
     );
     $result = $this->servicesChecker->isMailPoetAPIKeyValid();
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItReturnsFalseIfMSSKeyStateIsUnexpected() {
@@ -105,7 +105,7 @@ class ServicesCheckerTest extends \MailPoetTest {
       ['state' => Bridge::KEY_VALID]
     );
     $result = $this->servicesChecker->isPremiumKeyValid();
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItReturnsFalseIfPremiumKeyIsInvalid() {
@@ -135,7 +135,7 @@ class ServicesCheckerTest extends \MailPoetTest {
       ]
     );
     $result = $this->servicesChecker->isPremiumKeyValid();
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItReturnsFalseIfPremiumKeyStateIsUnexpected() {
@@ -261,7 +261,7 @@ class ServicesCheckerTest extends \MailPoetTest {
     );
 
     $result = $this->servicesChecker->isUserActivelyPaying();
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItReturnsFalseIfUserIsNotActivelyPaying() {
@@ -299,7 +299,7 @@ class ServicesCheckerTest extends \MailPoetTest {
     );
 
     $result = $this->servicesChecker->isUserActivelyPaying();
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItReturnsTrueIfSubscriptionIsBundled() {
@@ -309,7 +309,7 @@ class ServicesCheckerTest extends \MailPoetTest {
     );
 
     $result = $this->servicesChecker->isBundledSubscription();
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItReturnsFalseIfNoSubscriptionTypeOrNotBundled() {

@@ -28,13 +28,13 @@ class KeyCheckWorkerTest extends \MailPoetTest {
 
   public function testItCanInitializeBridgeAPI() {
     $this->worker->init();
-    expect($this->worker->bridge instanceof Bridge)->true();
+    verify($this->worker->bridge instanceof Bridge)->true();
   }
 
   public function testItReturnsTrueOnSuccessfulKeyCheck() {
     $task = $this->createRunningTask();
     $result = $this->worker->processTaskStrategy($task, microtime(true));
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItReschedulesCheckOnException() {

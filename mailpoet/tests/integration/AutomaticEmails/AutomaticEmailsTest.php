@@ -253,7 +253,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'description' => true,
       'events' => true,
     ];
-    expect($this->AM->validateAutomaticEmailDataFields($data))->true();
+    verify($this->AM->validateAutomaticEmailDataFields($data))->true();
   }
 
   public function testItValidatesEmailEventsDataFields() {
@@ -307,6 +307,6 @@ class AutomaticEmailsTest extends \MailPoetTest {
       ],
     ];
 
-    expect($this->AM->validateAutomaticEmailEventsDataFields($data))->true();
+    verify($this->AM->validateAutomaticEmailEventsDataFields($data))->true();
   }
 }

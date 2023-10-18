@@ -45,10 +45,10 @@ class CapabilitiesTest extends \MailPoetTest {
         $checked = true;
         $role = get_role($role);
         $this->assertInstanceOf(WP_Role::class, $role);
-        expect($role->has_cap($name))->true();
+        verify($role->has_cap($name))->true();
       }
     }
-    expect($checked)->true();
+    verify($checked)->true();
   }
 
   public function testItRemovesWPCapabilities() {
@@ -63,7 +63,7 @@ class CapabilitiesTest extends \MailPoetTest {
         expect($role->has_cap($name))->false();
       }
     }
-    expect($checked)->true();
+    verify($checked)->true();
     // Restore capabilities
     $this->caps->setupWPCapabilities();
   }
@@ -85,7 +85,7 @@ class CapabilitiesTest extends \MailPoetTest {
     $editorRole = get_role('editor');
     $this->assertInstanceOf(WP_Role::class, $editorRole);
     expect($editorRole->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->false();
-    expect($editorRole->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
+    verify($editorRole->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
 
     // Restore capabilities
     $wp->removeFilter('mailpoet_permission_access_plugin_admin', $filter);
@@ -93,8 +93,8 @@ class CapabilitiesTest extends \MailPoetTest {
 
     $editorRole = get_role('editor');
     $this->assertInstanceOf(WP_Role::class, $editorRole);
-    expect($editorRole->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->true();
-    expect($editorRole->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
+    verify($editorRole->has_cap(AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN))->true();
+    verify($editorRole->has_cap(AccessControl::PERMISSION_MANAGE_EMAILS))->true();
   }
 
   public function testItSetsUpMembersCapabilities() {
@@ -106,12 +106,12 @@ class CapabilitiesTest extends \MailPoetTest {
     $this->caps->setupMembersCapabilities();
 
     $hookName = 'members_register_cap_groups';
-    expect(WPHooksHelper::isActionAdded($hookName))->true();
-    expect(is_callable(WPHooksHelper::getActionAdded($hookName)[0]))->true();
+    verify(WPHooksHelper::isActionAdded($hookName))->true();
+    verify(is_callable(WPHooksHelper::getActionAdded($hookName)[0]))->true();
 
     $hookName = 'members_register_caps';
-    expect(WPHooksHelper::isActionAdded($hookName))->true();
-    expect(is_callable(WPHooksHelper::getActionAdded($hookName)[0]))->true();
+    verify(WPHooksHelper::isActionAdded($hookName))->true();
+    verify(is_callable(WPHooksHelper::getActionAdded($hookName)[0]))->true();
   }
 
   public function testItRegistersMembersCapabilities() {

@@ -616,8 +616,8 @@ class SubscribersTest extends \MailPoetTest {
       $this->subscribersRepository->findOneById($deletableSubscriber->getId()) === null
     );
 
-    expect($isSubscriber1Deleted)->true();
-    expect($isDeletableSubscriberDeleted)->true();
+    verify($isSubscriber1Deleted)->true();
+    verify($isDeletableSubscriberDeleted)->true();
   }
 
   public function testItCanBulkDeleteSubscribers() {

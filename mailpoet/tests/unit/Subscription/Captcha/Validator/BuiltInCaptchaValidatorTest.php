@@ -59,7 +59,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
     $data = [
       'captcha' => $phrase,
     ];
-    expect($testee->validate($data))->true();
+    verify($testee->validate($data))->true();
 
   }
 
@@ -92,7 +92,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
     $data = [
       'captcha' => $phrase,
     ];
-    expect($testee->validate($data))->true();
+    verify($testee->validate($data))->true();
   }
 
   public function dataForTestSomeRolesCanBypassCaptcha() {
@@ -195,7 +195,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
     $data = [
     'captcha' => $phrase,
     ];
-    expect($testee->validate($data))->true();
+    verify($testee->validate($data))->true();
 
   }
 
@@ -274,7 +274,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       $testee->validate($data);
     } catch (ValidationError $error) {
       verify($error->getMessage())->equals('The characters entered do not match with the previous CAPTCHA.');
-      expect($error->getMeta()['refresh_captcha'])->true();
+      verify($error->getMeta()['refresh_captcha'])->true();
     }
     expect($error)->isInstanceOf(ValidationError::class);
   }

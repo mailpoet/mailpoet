@@ -88,13 +88,13 @@ class BounceTest extends \MailPoetTest {
       $this->diContainer->get(Bridge::class)
     );
     $worker->init();
-    expect($worker->api instanceof API)->true();
+    verify($worker->api instanceof API)->true();
   }
 
   public function testItRequiresMailPoetMethodToBeSetUp() {
     expect($this->worker->checkProcessingRequirements())->false();
     $this->setMailPoetSendingMethod();
-    expect($this->worker->checkProcessingRequirements())->true();
+    verify($this->worker->checkProcessingRequirements())->true();
   }
 
   public function testItDeletesAllSubscribersIfThereAreNoSubscribersToProcessWhenPreparingTask() {
@@ -118,7 +118,7 @@ class BounceTest extends \MailPoetTest {
     ]))->equals(0);
     $result = $this->worker->prepareTaskStrategy($task, microtime(true));
     expect($this->emails)->count($this->scheduledTaskSubscribersRepository->countBy([]));
-    expect($result)->true();
+    verify($result)->true();
     verify($this->scheduledTaskSubscribersRepository->countBy([
       'task' => $task,
       'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,

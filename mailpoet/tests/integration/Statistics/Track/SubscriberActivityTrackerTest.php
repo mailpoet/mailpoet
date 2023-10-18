@@ -60,7 +60,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('setPageViewTimestamp');
     $result = $this->tracker->trackActivity();
-    expect($result)->true();
+    verify($result)->true();
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->greaterThan($oldEngagementTime);
   }
@@ -84,7 +84,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('setPageViewTimestamp');
     $result = $this->tracker->trackActivity();
-    expect($result)->true();
+    verify($result)->true();
     $this->assertInstanceOf(SubscriberEntity::class, $callbackSubscriber);
   }
 
@@ -101,7 +101,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('setPageViewTimestamp');
     $result = $this->tracker->trackActivity();
-    expect($result)->true();
+    verify($result)->true();
     $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['wpUserId' => $user->ID]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     expect($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
@@ -143,7 +143,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
       ->expects($this->once())
       ->method('setPageViewTimestamp');
     $result = $tracker->trackActivity();
-    expect($result)->true();
+    verify($result)->true();
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
     expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());
@@ -162,7 +162,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $this->setPageViewCookieTimestamp(null);
     $this->setSubscriberCookieSubscriber(null);
     $result = $this->tracker->trackActivity();
-    expect($result)->true();
+    verify($result)->true();
     $this->entityManager->refresh($subscriber);
     expect($subscriber->getLastEngagementAt())->greaterThan(Carbon::now()->subMinute());
     expect($subscriber->getLastEngagementAt())->lessThan(Carbon::now()->addMinute());

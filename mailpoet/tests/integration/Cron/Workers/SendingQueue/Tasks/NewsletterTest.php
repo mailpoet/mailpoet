@@ -96,7 +96,7 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItConstructs() {
-    expect($this->newsletterTask->trackingEnabled)->true();
+    verify($this->newsletterTask->trackingEnabled)->true();
   }
 
   public function testItDoesNotGetNewsletterWhenStatusIsNotActiveOrSending() {
@@ -169,7 +169,7 @@ class NewsletterTest extends \MailPoetTest {
   public function testItReturnsNewsletterObjectWhenRenderedNewsletterBodyExistsInTheQueue() {
     $this->sendingTask->newsletterRenderedBody = ['html' => 'test', 'text' => 'test'];
     $result = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask);
-    expect($result instanceof NewsletterEntity)->true();
+    verify($result instanceof NewsletterEntity)->true();
   }
 
   public function testItHashesLinksAndInsertsTrackingImageWhenTrackingIsEnabled() {
@@ -189,9 +189,9 @@ class NewsletterTest extends \MailPoetTest {
       ->stringContainsString('[mailpoet_open_data]');
 
     $hookName = 'mailpoet_sending_newsletter_render_after_pre_process';
-    expect(WPHooksHelper::isFilterApplied($hookName))->true();
+    verify(WPHooksHelper::isFilterApplied($hookName))->true();
     expect(WPHooksHelper::getFilterApplied($hookName)[0])->array();
-    expect(WPHooksHelper::getFilterApplied($hookName)[1] instanceof NewsletterEntity)->true();
+    verify(WPHooksHelper::getFilterApplied($hookName)[1] instanceof NewsletterEntity)->true();
   }
 
   public function testItDoesNotHashLinksAndInsertTrackingCodeWhenTrackingIsDisabled() {
@@ -211,9 +211,9 @@ class NewsletterTest extends \MailPoetTest {
       ->stringNotContainsString('[mailpoet_open_data]');
 
     $hookName = 'mailpoet_sending_newsletter_render_after_pre_process';
-    expect(WPHooksHelper::isFilterApplied($hookName))->true();
+    verify(WPHooksHelper::isFilterApplied($hookName))->true();
     expect(WPHooksHelper::getFilterApplied($hookName)[0])->array();
-    expect(WPHooksHelper::getFilterApplied($hookName)[1] instanceof NewsletterEntity)->true();
+    verify(WPHooksHelper::getFilterApplied($hookName)[1] instanceof NewsletterEntity)->true();
   }
 
   public function testItReturnsFalseAndDeletesNewsletterWhenPostNotificationContainsNoPosts() {

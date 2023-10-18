@@ -38,7 +38,7 @@ class LinkTokensTest extends \MailPoetTest {
   public function testItVerifiesSubscriberToken() {
     $subscriber = $this->createSubscriber('demo@fake.loc');
     $token = $this->linkTokens->getToken($subscriber);
-    expect($this->linkTokens->verifyToken($subscriber, $token))->true();
+    verify($this->linkTokens->verifyToken($subscriber, $token))->true();
     expect($this->linkTokens->verifyToken($subscriber, 'faketoken'))->false();
   }
 

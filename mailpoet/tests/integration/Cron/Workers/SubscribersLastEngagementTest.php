@@ -79,7 +79,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     $this->createSubscriber();
     $task = new ScheduledTaskEntity();
     $result = $this->worker->processTaskStrategy($task, microtime(true));
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItInterruptsProcessIfExecutionLimitReachedIsReachedAndFinishesOnSecondRun() {
@@ -94,7 +94,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     $this->assertInstanceOf(\Exception::class, $exception);
     expect($exception->getMessage())->startsWith('The maximum execution time');
     $result = $this->worker->processTaskStrategy($task, microtime(true));
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItProcessMultipleBatches() {
@@ -112,7 +112,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
 
     $task = new ScheduledTaskEntity();
     $result = $this->worker->processTaskStrategy($task, microtime(true));
-    expect($result)->true();
+    verify($result)->true();
     $this->entityManager->refresh($subscriberInFirstBatch);
     $this->entityManager->refresh($subscriberInSecondBatch);
     verify($subscriberInFirstBatch->getLastEngagementAt())->equals($firstOpenTime);

@@ -59,7 +59,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     /** @var string queue_newsletter_rendered_body */
     $queueNewsletterRenderedBody = $queue->newsletterRenderedBody;
-    expect(Helpers::isJson($queueNewsletterRenderedBody))->true();
+    verify(Helpers::isJson($queueNewsletterRenderedBody))->true();
     verify(json_decode($queueNewsletterRenderedBody, true))->equals($data);
   }
 
@@ -77,7 +77,7 @@ class SendingQueueTest extends \MailPoetTest {
     $queue = SendingQueue::findOne($queue->id);
     $this->assertInstanceOf(SendingQueue::class, $queue);
 
-    expect(Helpers::isJson($queue->meta))->true();
+    verify(Helpers::isJson($queue->meta))->true();
     $this->assertIsString($queue->meta);
     verify(json_decode((string)$queue->meta, true))->equals($meta);
   }

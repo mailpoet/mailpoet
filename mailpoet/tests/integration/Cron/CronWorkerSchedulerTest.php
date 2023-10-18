@@ -95,7 +95,7 @@ class CronWorkerSchedulerTest extends \MailPoetTest {
 
     $timeout = $this->cronWorkerScheduler->rescheduleProgressively($task);
     verify($timeout)->equals(ScheduledTaskEntity::BASIC_RESCHEDULE_TIMEOUT);
-    expect($scheduledAt < $task->getScheduledAt())->true();
+    verify($scheduledAt < $task->getScheduledAt())->true();
     verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
 
     $timeout = $this->cronWorkerScheduler->rescheduleProgressively($task);

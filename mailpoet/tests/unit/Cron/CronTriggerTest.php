@@ -28,7 +28,7 @@ class CronTriggerTest extends \MailPoetUnitTest {
       'get' => CronTrigger::METHOD_WORDPRESS,
     ]);
     $cronTrigger = $this->createCronTrigger($settingsMock);
-    expect($cronTrigger->init())->true();
+    verify($cronTrigger->init())->true();
   }
 
   public function testItDoesntTriggerWordPressMethodInCliEnvironment() {

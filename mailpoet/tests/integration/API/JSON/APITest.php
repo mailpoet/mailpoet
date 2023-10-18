@@ -78,7 +78,7 @@ class APITest extends \MailPoetTest {
       'mailpoet_api_setup',
       function($api) use (&$called) {
         $called = true;
-        expect($api instanceof JSONAPI)->true();
+        verify($api instanceof JSONAPI)->true();
       }
     );
     $wpStub = Stub::make(new WPFunctions, [
@@ -95,7 +95,7 @@ class APITest extends \MailPoetTest {
       ]
     );
     $api->setupAjax();
-    expect($called)->true();
+    verify($called)->true();
   }
 
   public function testItCanAddEndpointNamespaces() {
@@ -284,7 +284,7 @@ class APITest extends \MailPoetTest {
       ]
     );
     $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, $this->loggerFactory, new WPFunctions);
-    expect($api->validatePermissions(null, $permissions))->true();
+    verify($api->validatePermissions(null, $permissions))->true();
   }
 
   public function testItValidatesEndpointMethodPermission() {
@@ -319,7 +319,7 @@ class APITest extends \MailPoetTest {
     );
 
     $api = new JSONAPI($this->container, $accessControl, $this->errorHandler, $this->settings, $this->loggerFactory, new WPFunctions);
-    expect($api->validatePermissions('test', $permissions))->true();
+    verify($api->validatePermissions('test', $permissions))->true();
   }
 
   public function testItThrowsExceptionWhenInvalidEndpointMethodIsCalled() {

@@ -135,7 +135,7 @@ class RouterTest extends \MailPoetTest {
       ]
     );
     $router->accessControl = $accessControl;
-    expect($router->validatePermissions(null, $permissions))->true();
+    verify($router->validatePermissions(null, $permissions))->true();
   }
 
   public function testItValidatesEndpointActionPermission() {
@@ -170,7 +170,7 @@ class RouterTest extends \MailPoetTest {
       ]
     );
     $router->accessControl = $accessControl;
-    expect($router->validatePermissions('test', $permissions))->true();
+    verify($router->validatePermissions('test', $permissions))->true();
   }
 
   public function testItValidatesPermissionBeforeProcessingEndpointAction() {
@@ -226,7 +226,7 @@ class RouterTest extends \MailPoetTest {
 
   public function testItExecutesUrlParameterConflictResolverAction() {
     $this->router->init();
-    expect((boolean)did_action('mailpoet_conflict_resolver_router_url_query_parameters'))->true();
+    verify((boolean)did_action('mailpoet_conflict_resolver_router_url_query_parameters'))->true();
   }
 
   public function testItCanEncodeRequestData() {

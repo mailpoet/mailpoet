@@ -48,7 +48,7 @@ class BridgeTest extends \MailPoetTest {
 
   public function testItChecksIfCurrentSendingMethodIsMailpoet() {
     $this->setMailPoetSendingMethod();
-    expect(Bridge::isMPSendingServiceEnabled())->true();
+    verify(Bridge::isMPSendingServiceEnabled())->true();
   }
 
   public function testMPCheckReturnsFalseWhenMailerThrowsException() {
@@ -59,12 +59,12 @@ class BridgeTest extends \MailPoetTest {
   public function testItChecksIfPremiumKeyIsSpecified() {
     expect(Bridge::isPremiumKeySpecified())->false();
     $this->fillPremiumKey();
-    expect(Bridge::isPremiumKeySpecified())->true();
+    verify(Bridge::isPremiumKeySpecified())->true();
   }
 
   public function testItInstantiatesDefaultAPI() {
     $this->bridge->api = null;
-    expect($this->bridge->getApi('key') instanceof API)->true();
+    verify($this->bridge->getApi('key') instanceof API)->true();
   }
 
   public function testItChecksValidMSSKey() {
@@ -232,7 +232,7 @@ class BridgeTest extends \MailPoetTest {
 
   public function testItPingsBridge() {
     if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
-    expect(Bridge::pingBridge())->true();
+    verify(Bridge::pingBridge())->true();
   }
 
   public function testItAllowsChangingRequestTimeout() {

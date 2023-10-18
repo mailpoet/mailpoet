@@ -21,7 +21,7 @@ class CaptchaRendererTest extends \MailPoetTest {
 
   public function testItRendersImage() {
     $result = $this->testee->renderImage(null, null, null, true);
-    expect(strpos($result, 'JPEG') !== false)->true();
+    verify(strpos($result, 'JPEG') !== false)->true();
     $sessionId = $this->session->getId();
     expect($sessionId)->notNull();
   }
@@ -37,7 +37,7 @@ class CaptchaRendererTest extends \MailPoetTest {
     $sessionId = $this->session->getId();
     $result = $this->testee->renderAudio($sessionId, true);
     $partOfAudio = '(-1166::BBKKQQVZZ^^bbggkkoosxx|';
-    expect(strpos($result, $partOfAudio) !== false)->true();
+    verify(strpos($result, $partOfAudio) !== false)->true();
   }
 
   /**

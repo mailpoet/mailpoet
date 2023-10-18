@@ -96,14 +96,14 @@ class WordPressTest extends \MailPoetTest {
   public function testItRequiresScheduledQueuesToExecute() {
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
     $this->addQueue(SendingQueueEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItRequiresRunningQueuesToExecute() {
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
     // status of 'null' indicates that queue is running
     $this->addQueue(null);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItFailsExecutionRequiremenetsCheckWhenQueueStatusIsCompleted() {
@@ -115,7 +115,7 @@ class WordPressTest extends \MailPoetTest {
   public function testItRequiresSendingLimitNotToBeReachedToExecute() {
     $this->addQueue(null);
     $this->addMTAConfigAndLog(null);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
     $this->addMTAConfigAndLog(1);
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
@@ -123,7 +123,7 @@ class WordPressTest extends \MailPoetTest {
   public function testItRequiresSendingNotToBePausedToExecute() {
     $this->addQueue(null);
     $this->addMTAConfigAndLog(null);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
     $this->addMTAConfigAndLog(0, MailerLog::STATUS_PAUSED);
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
@@ -131,21 +131,21 @@ class WordPressTest extends \MailPoetTest {
   public function testItDoesNotExecuteWhenWeAreWaitingForRetry() {
     $this->addQueue(null);
     $this->addMTAConfigAndLog(null);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
     $this->addMTAConfigAndLog(null, null, time() - 1);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
     $this->addMTAConfigAndLog(null, null, time() + 120);
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
 
   public function testItExecutesWhenAuthorizedEmailsCheckIsDue() {
     $this->addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenBeamerTaskIsDue() {
     $this->addScheduledTask(Beamer::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenBounceIsActive() {
@@ -157,7 +157,7 @@ class WordPressTest extends \MailPoetTest {
       ],
     ]);
     $this->addScheduledTask(BounceWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItCanDeactivateRunningDaemon() {
@@ -191,7 +191,7 @@ class WordPressTest extends \MailPoetTest {
     $this->entityManager->getConnection()->executeStatement("DELETE FROM $scheduledTaskTable WHERE type = '$statsJobType';");
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'asdfgh');
     $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => 'valid']);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
     $this->addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     expect($this->wordpressTrigger->checkExecutionRequirements())->false();
   }
@@ -214,77 +214,77 @@ class WordPressTest extends \MailPoetTest {
     $this->entityManager->getConnection()->executeStatement("DELETE FROM $scheduledTaskTable WHERE type = '$statsJobType';");
     $this->settings->set(Bridge::API_KEY_SETTING_NAME, 'somekey');
     $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME, ['state' => 'valid']);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenStatsNotificationsWorkerTaskIsDue() {
     $this->addScheduledTask(StatsNotificationsWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenAutomatedEmailsTaskIsDue() {
     $this->addScheduledTask(AutomatedEmails::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenSubscribersEmailCountTaskIsDue() {
     $this->addScheduledTask(SubscribersEmailCount::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenInactiveSubscribersTaskIsDue() {
     $this->addScheduledTask(InactiveSubscribers::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenUnsubscribeTokensTaskIsDue() {
     $this->addScheduledTask(UnsubscribeTokens::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenSubscriberLinkTokensTaskIsDue() {
     $this->addScheduledTask(SubscriberLinkTokens::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenWooCommerceSyncWorkerTaskIsDue() {
     $this->addScheduledTask(WooCommerceSyncWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenAuthorizedSendingEmailsCheckTaskIsDue() {
     $this->addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenWooCommercePastOrdersTaskIsDue() {
     $this->addScheduledTask(WooCommercePastOrders::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenSubscribersEngagementScoreTaskIsDue() {
     $this->addScheduledTask(SubscribersEngagementScore::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenSubscribersCountCacheRecalculationTaskIsDue() {
     $this->addScheduledTask(SubscribersCountCacheRecalculation::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenSubscribersLastEngagementTaskIsDue() {
     $this->addScheduledTask(SubscribersLastEngagement::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenReEngagementEmailsSchedulerTaskIsDue() {
     $this->addScheduledTask(ReEngagementEmailsScheduler::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItExecutesWhenNewsletterTemplateThumbnailsTaskIsDue() {
     $this->addScheduledTask(NewsletterTemplateThumbnails::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($this->wordpressTrigger->checkExecutionRequirements())->true();
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
   public function testItDoesNotExecuteWhenTasksAreScheduledInFuture() {

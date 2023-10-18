@@ -27,7 +27,7 @@ class PremiumKeyCheckTest extends \MailPoetTest {
   public function testItRequiresPremiumKeyToBeSpecified() {
     expect($this->worker->checkProcessingRequirements())->false();
     $this->fillPremiumKey();
-    expect($this->worker->checkProcessingRequirements())->true();
+    verify($this->worker->checkProcessingRequirements())->true();
   }
 
   public function testItChecksPremiumKey() {

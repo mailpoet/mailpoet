@@ -94,7 +94,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $this->subscriberSegmentRepository->subscribeToSegments($this->subscriber, [$segment]);
 
     $result = $sender->sendConfirmationEmail($this->subscriber);
-    expect($result)->true();
+    verify($result)->true();
     verify($this->subscriber->getConfirmationsCount())->equals(1);
 
     $sender->sendConfirmationEmailOnce($this->subscriber);
@@ -233,7 +233,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
   public function testItDoesNotLimitNumberOfConfirmationEmailsForLoggedInUser() {
     wp_set_current_user(1);
-    expect((new WPFunctions)->isUserLoggedIn())->true();
+    verify((new WPFunctions)->isUserLoggedIn())->true();
 
     $mailer = Stub::makeEmpty(Mailer::class, [
       'send' => function() {

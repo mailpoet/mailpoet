@@ -67,7 +67,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $updated = $newSubscriber->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
-    expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+    verify($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
     $newSegment = $this->segmentsRepository->findOneById($segment->getId());
     $this->assertInstanceOf(SegmentEntity::class, $newSegment);
     expect($newSegment->getAverageEngagementScore())->null();
@@ -75,7 +75,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $updated = $newSegment->getAverageEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $averageScoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
-    expect($averageScoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+    verify($averageScoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
   }
 
   public function testItResetsSubscriberScoreIfNotEnoughNewsletters() {
@@ -117,7 +117,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $updated = $newSubscriber->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
-    expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+    verify($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
 
     $newSegment = $this->segmentsRepository->findOneById($segment->getId());
     $this->assertInstanceOf(SegmentEntity::class, $newSegment);
@@ -126,7 +126,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $updated = $newSegment->getAverageEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
-    expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+    verify($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
   }
 
   public function testItUpdatesScoreOnlyForTwelveMonths(): void {
@@ -173,7 +173,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $updated = $newSubscriber->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
-    expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+    verify($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
 
     $newSubscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber2);
@@ -182,7 +182,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $updated = $newSubscriber2->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
-    expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+    verify($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
 
     $newSegment = $this->segmentsRepository->findOneById($segment->getId());
     $this->assertInstanceOf(SegmentEntity::class, $newSegment);
@@ -191,7 +191,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $updated = $newSegment->getAverageEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
-    expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+    verify($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
   }
 
   public function testForWooCommerce() {
@@ -217,7 +217,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
     $updated = $newSubscriber->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
     $scoreUpdatedAt = new CarbonImmutable($updated->format('Y-m-d H:i:s'));
-    expect($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
+    verify($scoreUpdatedAt->isAfter((new CarbonImmutable())->subMinutes(5)))->true();
   }
 
   private function createSubscriber(): SubscriberEntity {

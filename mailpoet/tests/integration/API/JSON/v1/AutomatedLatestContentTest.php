@@ -31,7 +31,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
     // https://codex.wordpress.org/Post_Types
     $revisionPostType = get_post_type_object('revision');
     $this->assertInstanceOf(\WP_Post_Type::class, $revisionPostType);
-    expect($revisionPostType->exclude_from_search)->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($revisionPostType->exclude_from_search)->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect(isset($response->data['revision']))->false();
   }
 

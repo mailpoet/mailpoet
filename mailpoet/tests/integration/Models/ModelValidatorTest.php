@@ -22,7 +22,7 @@ class ModelValidatorTest extends \MailPoetTest {
   public function testItValidatesEmail() {
     expect($this->validator->validateEmail('test'))->false();
     expect($this->validator->validateEmail('tést@éxample.com'))->false();
-    expect($this->validator->validateEmail('test@example.com'))->true();
+    verify($this->validator->validateEmail('test@example.com'))->true();
     expect($this->validator->validateEmail('loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong_email@example.com'))->false();
     expect($this->validator->validateEmail('a@b.c'))->false();
   }
@@ -33,11 +33,11 @@ class ModelValidatorTest extends \MailPoetTest {
     expect($this->validator->validateRenderedNewsletterBody(['html' => 'test', 'text' => null]))->false();
     expect($this->validator->validateRenderedNewsletterBody(['html' => null, 'text' => 'test']))->false();
 
-    expect($this->validator->validateRenderedNewsletterBody(null))->true();
-    expect($this->validator->validateRenderedNewsletterBody(serialize(null)))->true();
-    expect($this->validator->validateRenderedNewsletterBody(serialize(['html' => 'test', 'text' => 'test'])))->true();
-    expect($this->validator->validateRenderedNewsletterBody(['html' => 'test', 'text' => 'test']))->true();
-    expect($this->validator->validateRenderedNewsletterBody(json_encode(null)))->true();
-    expect($this->validator->validateRenderedNewsletterBody(json_encode(['html' => 'test', 'text' => 'test'])))->true();
+    verify($this->validator->validateRenderedNewsletterBody(null))->true();
+    verify($this->validator->validateRenderedNewsletterBody(serialize(null)))->true();
+    verify($this->validator->validateRenderedNewsletterBody(serialize(['html' => 'test', 'text' => 'test'])))->true();
+    verify($this->validator->validateRenderedNewsletterBody(['html' => 'test', 'text' => 'test']))->true();
+    verify($this->validator->validateRenderedNewsletterBody(json_encode(null)))->true();
+    verify($this->validator->validateRenderedNewsletterBody(json_encode(['html' => 'test', 'text' => 'test'])))->true();
   }
 }

@@ -61,7 +61,7 @@ class FunctionsTest extends \MailPoetTest {
     $this->wp->addAction($this->action, $callback, 10, 2);
     $this->wp->doAction($this->action, $testValue, $testValue2);
 
-    expect($called)->true();
+    verify($called)->true();
 
     $called = false;
     $this->wp->removeAction($this->action, $callback);
@@ -82,7 +82,7 @@ class FunctionsTest extends \MailPoetTest {
     $this->wp->addFilter($this->filter, $callback);
     $result = $this->wp->applyFilters($this->filter, $testValue);
 
-    expect($called)->true();
+    verify($called)->true();
     verify($result)->equals($testValue);
 
     $called = false;

@@ -18,9 +18,9 @@ class SecurityTest extends \MailPoetUnitTest {
     verify(strlen($longHash))->equals(64);
 
     // expect only alphanumerical characters
-    expect(ctype_alnum($hash))->true();
-    expect(ctype_alnum($shortHash))->true();
-    expect(ctype_alnum($longHash))->true();
+    verify(ctype_alnum($hash))->true();
+    verify(ctype_alnum($shortHash))->true();
+    verify(ctype_alnum($longHash))->true();
   }
 
   public function testItGeneratesRandomHash() {

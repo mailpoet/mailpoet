@@ -200,7 +200,7 @@ class SMTPTest extends \MailPoetTest {
       $this->newsletter,
       $this->subscriber
     );
-    expect($result['response'])->true();
+    verify($result['response'])->true();
   }
 
   public function testItAppliesSMTPFilters(): void {

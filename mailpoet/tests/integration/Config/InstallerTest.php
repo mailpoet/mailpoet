@@ -94,12 +94,12 @@ class InstallerTest extends \MailPoetTest {
 
   public function testItGetsPremiumStatus() {
     $status = Installer::getPremiumStatus();
-    expect(isset($status['premium_plugin_active']))->true();
-    expect(isset($status['premium_plugin_installed']))->true();
+    verify(isset($status['premium_plugin_active']))->true();
+    verify(isset($status['premium_plugin_installed']))->true();
   }
 
   public function testItChecksIfAPluginIsInstalled() {
-    expect(Installer::isPluginInstalled(Env::$pluginName))->true();
+    verify(Installer::isPluginInstalled(Env::$pluginName))->true();
     expect(Installer::isPluginInstalled('some-non-existent-plugin-123'))->false();
   }
 }
