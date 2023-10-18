@@ -19,7 +19,7 @@
     "codeception/module-cli": "^1.0",
     "codeception/module-db": "^1.1",
     "codeception/module-webdriver": "^1.4",
-    "codeception/verify": "1.5.0",
+    "codeception/verify": "^2.1",
     "composer/composer": "^2.2",
     "composer/xdebug-handler": "^3.0.3",
     "consolidation/robo": "^4.0",

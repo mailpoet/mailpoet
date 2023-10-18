@@ -7,7 +7,6 @@ parameters:
     - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
     - vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
     - ../../vendor/codeception/codeception/autoload.php
-    - ../../vendor/codeception/verify/src/Codeception/function.php
     - ../../vendor/codeception/verify/src/Codeception/Verify/Verify.php
     - ../../tests/_support/_generated/AcceptanceTesterActions.php
     - ../../tests/_support/_generated/IntegrationTesterActions.php
