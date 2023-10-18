@@ -110,6 +110,6 @@ class AccessControlTest extends \MailPoetTest {
       'currentUserCan' => true,
     ]));
 
-    expect($accessControl->validatePermission($capability))->true();
+    verify($accessControl->validatePermission($capability))->true();
   }
 }

@@ -18,7 +18,7 @@ class DotcomHelperFunctionsTest extends \MailPoetUnitTest {
   public function testItReturnsTrueIfDotcom() {
     define('IS_ATOMIC', true);
     define('ATOMIC_CLIENT_ID', '2');
-    expect($this->dotcomHelper->isDotcom())->true();
+    verify($this->dotcomHelper->isDotcom())->true();
   }
 
   public function testItReturnsEmptyStringIfNoPlan() {

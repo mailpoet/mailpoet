@@ -57,7 +57,7 @@ class SubscribersStatsReportTest extends \MailPoetTest {
     $this->servicesCheckerMock->expects($this->once())
       ->method('getValidAccountKey')
       ->willReturn('a_valid_key');
-    expect($this->worker->checkProcessingRequirements())->true();
+    verify($this->worker->checkProcessingRequirements())->true();
   }
 
   public function testItReportsCountToBridge() {
@@ -69,7 +69,7 @@ class SubscribersStatsReportTest extends \MailPoetTest {
     $this->countReporerMock->expects($this->once())
       ->method('report')
       ->willReturn(true);
-    expect($this->worker->processTaskStrategy($task, $timer))->true();
+    verify($this->worker->processTaskStrategy($task, $timer))->true();
   }
 
   public function testItDontReportCountToBridgeIfThereIsNoValidKey() {

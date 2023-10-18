@@ -216,8 +216,8 @@ class SubscriptionTest extends \MailPoetTest {
     $subscribedSegmentIds = array_map(function (SegmentEntity $segment): int {
       return (int)$segment->getId();
     }, $subscribedSegments);
-    expect(in_array($this->wcSegment->getId(), $subscribedSegmentIds))->true();
-    expect(in_array($segment->getId(), $subscribedSegmentIds))->true();
+    verify(in_array($this->wcSegment->getId(), $subscribedSegmentIds))->true();
+    verify(in_array($segment->getId(), $subscribedSegmentIds))->true();
 
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());

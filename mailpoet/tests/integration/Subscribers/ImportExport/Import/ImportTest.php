@@ -155,10 +155,10 @@ class ImportTest extends \MailPoetTest {
   }
 
   public function testItConstructs(): void {
-    expect(is_array($this->import->subscribersData))->true();
+    verify(is_array($this->import->subscribersData))->true();
     verify($this->import->segmentsIds)->equals($this->testData['segments']);
-    expect(is_array($this->import->subscribersFields))->true();
-    expect(is_array($this->import->subscribersCustomFields))->true();
+    verify(is_array($this->import->subscribersFields))->true();
+    verify(is_array($this->import->subscribersCustomFields))->true();
     verify($this->import->subscribersCount)->equals(2);
     expect($this->import->createdAt)->notEmpty();
     expect($this->import->updatedAt)->notEmpty();
@@ -415,16 +415,16 @@ class ImportTest extends \MailPoetTest {
       $subscribersData
     );
     // "created_at", "status", "first_name" and "last_name" fields are added and populated with default values
-    expect(in_array('status', $result['fields']))->true();
+    verify(in_array('status', $result['fields']))->true();
     verify(count($result['data']['status']))->equals($import->subscribersCount);
     verify($result['data']['status'][0])->equals($import->requiredSubscribersFields['status']);
-    expect(in_array('first_name', $result['fields']))->true();
+    verify(in_array('first_name', $result['fields']))->true();
     verify(count($result['data']['first_name']))->equals($import->subscribersCount);
     verify($result['data']['first_name'][0])->equals($import->requiredSubscribersFields['first_name']);
-    expect(in_array('last_name', $result['fields']))->true();
+    verify(in_array('last_name', $result['fields']))->true();
     verify(count($result['data']['last_name']))->equals($import->subscribersCount);
     verify($result['data']['last_name'][0])->equals($import->requiredSubscribersFields['last_name']);
-    expect(in_array('created_at', $result['fields']))->true();
+    verify(in_array('created_at', $result['fields']))->true();
     verify(count($result['data']['created_at']))->equals($import->subscribersCount);
     verify($result['data']['created_at'][0])->equals($import->createdAt);
   }

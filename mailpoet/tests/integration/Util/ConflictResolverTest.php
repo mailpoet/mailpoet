@@ -18,17 +18,17 @@ class ConflictResolverTest extends \MailPoetTest {
   }
 
   public function testItResolvesRouterUrlQueryParametersConflict() {
-    expect(!empty($this->wpFilter['mailpoet_conflict_resolver_router_url_query_parameters']))->true();
+    verify(!empty($this->wpFilter['mailpoet_conflict_resolver_router_url_query_parameters']))->true();
     // it should unset action & endpoint GET variables
     $_GET['endpoint'] = $_GET['action'] = $_GET['test'] = 'test';
     do_action('mailpoet_conflict_resolver_router_url_query_parameters');
-    expect(empty($_GET['endpoint']))->true();
-    expect(empty($_GET['action']))->true();
+    verify(empty($_GET['endpoint']))->true();
+    verify(empty($_GET['action']))->true();
     expect(empty($_GET['test']))->false();
   }
 
   public function testItUnloadsAllStylesFromLocationsNotOnPermittedList() {
-    expect(!empty($this->wpFilter['mailpoet_conflict_resolver_styles']))->true();
+    verify(!empty($this->wpFilter['mailpoet_conflict_resolver_styles']))->true();
     // grab a random permitted style location
     $permittedAssetLocation = $this->conflictResolver->permittedAssetsLocations['styles'][array_rand($this->conflictResolver->permittedAssetsLocations['styles'], 1)];
     // enqueue styles
@@ -42,7 +42,7 @@ class ConflictResolverTest extends \MailPoetTest {
     global $wp_styles; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     // it should dequeue all styles except those found on the list of permitted locations
     expect(in_array('select2', $wp_styles->queue))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect(in_array('permitted_style', $wp_styles->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify(in_array('permitted_style', $wp_styles->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function testItWhitelistsStyles() {
@@ -62,11 +62,11 @@ class ConflictResolverTest extends \MailPoetTest {
     do_action('admin_footer');
     global $wp_styles; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     // it should not dequeue select2 style
-    expect(in_array('select2', $wp_styles->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify(in_array('select2', $wp_styles->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function testItUnloadsAllScriptsFromLocationsNotOnPermittedList() {
-    expect(!empty($this->wpFilter['mailpoet_conflict_resolver_scripts']))->true();
+    verify(!empty($this->wpFilter['mailpoet_conflict_resolver_scripts']))->true();
     // grab a random permitted script location
     $permittedAssetLocation = $this->conflictResolver->permittedAssetsLocations['scripts'][array_rand($this->conflictResolver->permittedAssetsLocations['scripts'], 1)];
     // enqueue scripts
@@ -80,7 +80,7 @@ class ConflictResolverTest extends \MailPoetTest {
     // it should dequeue all scripts except those found on the list of permitted locations
     expect(in_array('select2', $wp_scripts->queue))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect(in_array('some_random_script', $wp_scripts->queue))->false(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect(in_array('permitted_script', $wp_scripts->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify(in_array('permitted_script', $wp_scripts->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function testItWhitelistsScripts() {
@@ -98,6 +98,6 @@ class ConflictResolverTest extends \MailPoetTest {
     do_action('admin_print_footer_scripts');
     global $wp_scripts; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     // it should not dequeue select2 script
-    expect(in_array('select2', $wp_scripts->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify(in_array('select2', $wp_scripts->queue))->true(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 }

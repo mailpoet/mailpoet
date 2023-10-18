@@ -35,7 +35,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
         $this->segment1->id,
         $this->segment2->id,
     ]);
-    expect($result)->true();
+    verify($result)->true();
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
     expect($subscribedSegments)->count(2);
@@ -46,7 +46,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     $result = SubscriberSegment::subscribeToSegments($this->subscriber, [
         $this->segment1->id,
     ]);
-    expect($result)->true();
+    verify($result)->true();
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
     expect($subscribedSegments)->count(1);
@@ -80,7 +80,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
         $this->segment1->id,
       ]
     );
-    expect($result)->true();
+    verify($result)->true();
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
     expect($subscribedSegments)->count(1);
@@ -152,7 +152,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
 
     // unsubscribe subscriber from all segments
     $result = SubscriberSegment::unsubscribeFromSegments($this->subscriber);
-    expect($result)->true();
+    verify($result)->true();
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
     expect($subscribedSegments)->isEmpty();
@@ -171,13 +171,13 @@ class SubscriberSegmentTest extends \MailPoetTest {
         $this->segment1->id,
         $this->segment2->id,
     ]);
-    expect($result)->true();
+    verify($result)->true();
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
     expect($subscribedSegments)->count(2);
 
     $result = SubscriberSegment::unsubscribeFromSegments($this->subscriber);
-    expect($result)->true();
+    verify($result)->true();
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
     expect($subscribedSegments)->count(0);
@@ -234,7 +234,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     $result = SubscriberSegment::deleteManySubscriptions([
       $this->subscriber->id, $subscriber2->id,
     ]);
-    expect($result)->true();
+    verify($result)->true();
 
     verify(SubscriberSegment::count())->equals(0);
   }
@@ -246,7 +246,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
       'segment_id' => $this->segment1->id,
       'status' => Subscriber::STATUS_SUBSCRIBED,
     ]);
-    expect($result->id > 0)->true();
+    verify($result->id > 0)->true();
     expect($result->getErrors())->false();
 
     // check that we have the proper status
@@ -260,7 +260,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
       'segment_id' => $this->segment1->id,
       'status' => Subscriber::STATUS_UNSUBSCRIBED,
     ]);
-    expect($result->id > 0)->true();
+    verify($result->id > 0)->true();
     expect($result->getErrors())->false();
 
     // check updated status
@@ -303,11 +303,11 @@ class SubscriberSegmentTest extends \MailPoetTest {
         $this->wpSegment->id,
         $this->wcSegment->id,
     ]);
-    expect($result)->true();
+    verify($result)->true();
 
     // unsubscribe from all segments
     $result = SubscriberSegment::unsubscribeFromSegments($this->subscriber);
-    expect($result)->true();
+    verify($result)->true();
 
     // the subscriber should still be subscribed to the WP segment
     $subscribedSegments = $this->subscriber->segments()->findArray();
@@ -322,11 +322,11 @@ class SubscriberSegmentTest extends \MailPoetTest {
         $this->wpSegment->id,
         $this->wcSegment->id,
     ]);
-    expect($result)->true();
+    verify($result)->true();
 
     // delete all subscriber's subscriptions
     $result = SubscriberSegment::deleteSubscriptions($this->subscriber);
-    expect($result)->true();
+    verify($result)->true();
 
     // the subscriber should still be subscribed to the WP segment
     $subscribedSegments = $this->subscriber->segments()->findArray();

@@ -145,7 +145,7 @@ class ScheduledTaskTest extends \MailPoetTest {
 
     /** @var string $taskMeta */
     $taskMeta = $task->meta;
-    expect(Helpers::isJson($taskMeta))->true();
+    verify(Helpers::isJson($taskMeta))->true();
     verify(json_decode($taskMeta, true))->equals($meta);
   }
 

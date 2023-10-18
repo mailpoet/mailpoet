@@ -33,7 +33,7 @@ class HelpersTest extends \MailPoetUnitTest {
   public function testItChecksForValidJsonString() {
     expect(Helpers::isJson(123))->false();
     $json = json_encode(['one' => 1, 'two' => 2]);
-    expect(Helpers::isJson($json))->true();
+    verify(Helpers::isJson($json))->true();
   }
 
   public function testItTrimStringsRecursively() {

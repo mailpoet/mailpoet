@@ -15,7 +15,7 @@ class MenuTest extends \MailPoetTest {
     $result = Menu::isOnMailPoetAdminPage(null, 'somepage');
     expect($result)->false();
     $result = Menu::isOnMailPoetAdminPage(null, 'mailpoet-newsletters');
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItRespectsExclusionsWhenCheckingMPPages() {
@@ -23,13 +23,13 @@ class MenuTest extends \MailPoetTest {
     $result = Menu::isOnMailPoetAdminPage($exclude, 'mailpoet-welcome');
     expect($result)->false();
     $result = Menu::isOnMailPoetAdminPage($exclude, 'mailpoet-newsletters');
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItWorksWithRequestDataWhenCheckingMPPages() {
     $_REQUEST['page'] = 'mailpoet-newsletters';
     $result = Menu::isOnMailPoetAdminPage();
-    expect($result)->true();
+    verify($result)->true();
 
     $_REQUEST['page'] = 'blah';
     $result = Menu::isOnMailPoetAdminPage();
@@ -50,7 +50,7 @@ class MenuTest extends \MailPoetTest {
       $this
     );
     $menu->checkPremiumKey($checker);
-    expect($menu->premiumKeyValid)->true();
+    verify($menu->premiumKeyValid)->true();
 
     $checker = Stub::make(
       new ServicesChecker(),

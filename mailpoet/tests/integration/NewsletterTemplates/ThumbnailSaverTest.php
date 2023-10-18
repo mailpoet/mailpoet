@@ -23,7 +23,7 @@ class ThumbnailSaverTest extends \MailPoetTest {
     expect($thumbnailUrl)->stringContainsString(ThumbnailSaver::THUMBNAIL_DIRECTORY);
     [,$fileName] = explode(ThumbnailSaver::THUMBNAIL_DIRECTORY, (string)$thumbnailUrl);
     $file = Env::$tempPath . '/' . ThumbnailSaver::THUMBNAIL_DIRECTORY . $fileName;
-    expect(file_exists($file))->true();
+    verify(file_exists($file))->true();
     unlink($file); // remove the file after the test
   }
 

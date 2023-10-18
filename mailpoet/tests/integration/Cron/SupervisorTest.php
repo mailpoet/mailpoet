@@ -59,7 +59,7 @@ class SupervisorTest extends \MailPoetTest {
     $this->supervisor->init();
     $this->supervisor->daemon['updated_at'] = time() - $this->cronHelper->getDaemonExecutionTimeout();
     $daemon = $this->supervisor->checkDaemon();
-    expect(is_int($daemon['updated_at']))->true();
+    verify(is_int($daemon['updated_at']))->true();
     expect($daemon['updated_at'])->notEquals($this->supervisor->daemon['updated_at']);
     verify($daemon['status'])->equals(CronHelper::DAEMON_STATUS_ACTIVE);
   }

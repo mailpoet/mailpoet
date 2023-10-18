@@ -75,8 +75,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber1->getStatus() === SubscriberEntity::STATUS_INACTIVE || $subscriber2->getStatus() === SubscriberEntity::STATUS_INACTIVE)->true();
-    expect($subscriber1->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED || $subscriber2->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)->true();
+    verify($subscriber1->getStatus() === SubscriberEntity::STATUS_INACTIVE || $subscriber2->getStatus() === SubscriberEntity::STATUS_INACTIVE)->true();
+    verify($subscriber1->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED || $subscriber2->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)->true();
 
     $result = $this->controller->markInactiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize, $subscriber2->getId(), self::UNOPENED_EMAILS_THRESHOLD);
     $this->entityManager->clear();
@@ -190,8 +190,8 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber1->getStatus() === SubscriberEntity::STATUS_INACTIVE || $subscriber2->getStatus() === SubscriberEntity::STATUS_INACTIVE)->true();
-    expect($subscriber1->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED || $subscriber2->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)->true();
+    verify($subscriber1->getStatus() === SubscriberEntity::STATUS_INACTIVE || $subscriber2->getStatus() === SubscriberEntity::STATUS_INACTIVE)->true();
+    verify($subscriber1->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED || $subscriber2->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED)->true();
 
     $result = $this->controller->markActiveSubscribers(self::INACTIVITY_DAYS_THRESHOLD, $batchSize);
     $this->entityManager->clear();

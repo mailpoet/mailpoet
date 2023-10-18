@@ -37,7 +37,7 @@ class CustomFieldTest extends \MailPoetTest {
   }
 
   public function testItCanBeCreated() {
-    expect($this->customField->id() > 0)->true();
+    verify($this->customField->id() > 0)->true();
     expect($this->customField->getErrors())->false();
   }
 
@@ -78,7 +78,7 @@ class CustomFieldTest extends \MailPoetTest {
     $result = $invalidCustomField->save();
     $errors = $result->getErrors();
 
-    expect(is_array($errors))->true();
+    verify(is_array($errors))->true();
     verify($errors[0])->equals('Please specify a name.');
     verify($errors[1])->equals('Please specify a type.');
   }
@@ -111,7 +111,7 @@ class CustomFieldTest extends \MailPoetTest {
     $isTimeUpdated = (
       $updatedCustomField->updatedAt > $updatedCustomField->createdAt
     );
-    expect($isTimeUpdated)->true();
+    verify($isTimeUpdated)->true();
   }
 
   public function testItCanHaveManySubscribers() {

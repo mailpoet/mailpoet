@@ -61,7 +61,7 @@ class SegmentTest extends \MailPoetTest {
   }
 
   public function testItCanBeCreated() {
-    expect($this->segment->id() > 0)->true();
+    verify($this->segment->id() > 0)->true();
     expect($this->segment->getErrors())->false();
   }
 
@@ -75,7 +75,7 @@ class SegmentTest extends \MailPoetTest {
     $result = $segment->save();
     $errors = $result->getErrors();
 
-    expect(is_array($errors))->true();
+    verify(is_array($errors))->true();
     verify($errors[0])->equals(
       'Another record already exists. Please specify a different "name".'
     );
@@ -91,7 +91,7 @@ class SegmentTest extends \MailPoetTest {
     $result = $invalidSegment->save();
     $errors = $result->getErrors();
 
-    expect(is_array($errors))->true();
+    verify(is_array($errors))->true();
     verify($errors[0])->equals('Please specify a name.');
   }
 
@@ -124,14 +124,14 @@ class SegmentTest extends \MailPoetTest {
     $isTimeUpdated = (
       $updatedSegment->updatedAt > $updatedSegment->createdAt
     );
-    expect($isTimeUpdated)->true();
+    verify($isTimeUpdated)->true();
   }
 
   public function testItCanCreateOrUpdate() {
     $isCreated = Segment::createOrUpdate([
       'name' => 'new list',
     ]);
-    expect($isCreated->id() > 0)->true();
+    verify($isCreated->id() > 0)->true();
     expect($isCreated->getErrors())->false();
 
     $segment = Segment::where('name', 'new list')

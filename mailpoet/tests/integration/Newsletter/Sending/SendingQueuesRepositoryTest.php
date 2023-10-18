@@ -50,7 +50,7 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $result = $this->repository->isSubscriberProcessed($queue, $subscriber);
-    expect($result)->true();
+    verify($result)->true();
   }
 
   public function testItFinishesSendingWhenResumingQueueWithEverythingSent() {

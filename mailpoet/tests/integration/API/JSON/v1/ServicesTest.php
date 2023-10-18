@@ -194,7 +194,7 @@ class ServicesTest extends \MailPoetTest {
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->checkMSSKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect(MailerLog::isSendingPaused())->true();
+    verify(MailerLog::isSendingPaused())->true();
   }
 
   public function testItResumesSendingWhenMSSKeyBecomesApproved() {
@@ -205,7 +205,7 @@ class ServicesTest extends \MailPoetTest {
       'data' => ['is_approved' => false],
     ]);
     MailerLog::pauseSending(MailerLog::getMailerLog());
-    expect(MailerLog::isSendingPaused())->true();
+    verify(MailerLog::isSendingPaused())->true();
 
     $bridge = $this->make(
       Bridge::class,
@@ -243,7 +243,7 @@ class ServicesTest extends \MailPoetTest {
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_OK);
     foreach (array_keys(Installer::getPremiumStatus()) as $key) {
-      expect(isset($response->meta[$key]))->true();
+      verify(isset($response->meta[$key]))->true();
     }
   }
 

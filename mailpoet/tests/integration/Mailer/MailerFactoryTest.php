@@ -191,6 +191,6 @@ class MailerFactoryTest extends \MailPoetTest {
   }
 
   public function testItCachesDefaultMailerInstance() {
-    expect($this->factory->getDefaultMailer() === $this->factory->getDefaultMailer())->true();
+    verify($this->factory->getDefaultMailer() === $this->factory->getDefaultMailer())->true();
   }
 }

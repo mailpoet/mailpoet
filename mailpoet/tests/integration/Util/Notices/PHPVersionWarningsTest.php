@@ -19,19 +19,19 @@ class PHPVersionWarningsTest extends \MailPoetTest {
   }
 
   public function testPHP70IsOutdated() {
-    expect($this->phpVersionWarning->isOutdatedPHPVersion('7.0.8'))->true();
+    verify($this->phpVersionWarning->isOutdatedPHPVersion('7.0.8'))->true();
   }
 
   public function testPHP71IsOutdated() {
-    expect($this->phpVersionWarning->isOutdatedPHPVersion('7.1.8'))->true();
+    verify($this->phpVersionWarning->isOutdatedPHPVersion('7.1.8'))->true();
   }
 
   public function testPHP72IsOutdated() {
-    expect($this->phpVersionWarning->isOutdatedPHPVersion('7.2'))->true();
+    verify($this->phpVersionWarning->isOutdatedPHPVersion('7.2'))->true();
   }
 
   public function testPHP73IsOutdated() {
-    expect($this->phpVersionWarning->isOutdatedPHPVersion('7.3'))->true();
+    verify($this->phpVersionWarning->isOutdatedPHPVersion('7.3'))->true();
   }
 
   public function testPHP74IsNotOutdated() {

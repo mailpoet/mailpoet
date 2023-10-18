@@ -49,9 +49,9 @@ class WooCommerceTest extends \MailPoetTest {
     expect($result)->notEmpty();
 
     // event hooks are initialized
-    expect(has_filter('mailpoet_newsletter_shortcode'))->true();
-    expect(has_filter('woocommerce_order_status_completed'))->true();
-    expect(has_filter('woocommerce_order_status_processing'))->true();
+    verify(has_filter('mailpoet_newsletter_shortcode'))->true();
+    verify(has_filter('woocommerce_order_status_completed'))->true();
+    verify(has_filter('woocommerce_order_status_processing'))->true();
   }
 
   public function testItRegistersPurchasedInCategoryEvent() {
@@ -74,9 +74,9 @@ class WooCommerceTest extends \MailPoetTest {
     expect($result)->notEmpty();
 
     // event hooks are initialized
-    expect(has_filter('woocommerce_order_status_completed'))->true();
-    expect(has_filter('woocommerce_order_status_processing'))->true();
-    expect(has_filter('woocommerce_product_purchased_get_products'))->true();
+    verify(has_filter('woocommerce_order_status_completed'))->true();
+    verify(has_filter('woocommerce_order_status_processing'))->true();
+    verify(has_filter('woocommerce_product_purchased_get_products'))->true();
   }
 
   public function testItReplacesEventActionButtonWithLinkToWCPluginRepoWhenWCIsDisabled() {

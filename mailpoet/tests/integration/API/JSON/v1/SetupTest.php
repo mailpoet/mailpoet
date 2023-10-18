@@ -40,7 +40,7 @@ class SetupTest extends \MailPoetTest {
 
     $settings = SettingsController::getInstance();
     $signupConfirmation = $settings->fetch('signup_confirmation.enabled');
-    expect($signupConfirmation)->true();
+    verify($signupConfirmation)->true();
 
     $captcha = $settings->fetch('captcha');
     $captchaType = $captchaRenderer->isSupported() ? CaptchaConstants::TYPE_BUILTIN : CaptchaConstants::TYPE_DISABLED;
@@ -49,9 +49,9 @@ class SetupTest extends \MailPoetTest {
     verify($captcha['recaptcha_secret_token'])->equals('');
 
     $woocommerceOptinOnCheckout = $settings->fetch('woocommerce.optin_on_checkout');
-    expect($woocommerceOptinOnCheckout['enabled'])->true();
+    verify($woocommerceOptinOnCheckout['enabled'])->true();
 
     $hookName = 'mailpoet_setup_reset';
-    expect(WPHooksHelper::isActionDone($hookName))->true();
+    verify(WPHooksHelper::isActionDone($hookName))->true();
   }
 }

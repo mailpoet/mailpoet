@@ -80,7 +80,7 @@ class SettingsTest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_OK);
 
     expect($response->data)->notEmpty();
-    expect($response->data['some']['setting']['key'])->true();
+    verify($response->data['some']['setting']['key'])->true();
 
     $this->diContainer->get(SettingsRepository::class)->truncate();
     $this->settings->resetCache();
@@ -129,8 +129,8 @@ class SettingsTest extends \MailPoetTest {
     $response = $this->endpoint->get();
     verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['some']['setting'])->hasNotKey('key');
-    expect($response->data['some']['setting']['new_key'])->true();
-    expect($response->data['some']['new_setting'])->true();
+    verify($response->data['some']['setting']['new_key'])->true();
+    verify($response->data['some']['new_setting'])->true();
   }
 
   public function testItSetsAuthorizedFromAddressAndResumesSending() {

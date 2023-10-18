@@ -174,6 +174,6 @@ class MailChimpTest extends \MailPoetTest {
         'avg_click_rate' => 0.1,
       ],
     ];
-    expect($this->mailchimp->isSubscriberAllowed($subscribed))->true();
+    verify($this->mailchimp->isSubscriberAllowed($subscribed))->true();
   }
 }

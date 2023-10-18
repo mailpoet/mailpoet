@@ -54,7 +54,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $settings->set('sender.name', 'John Doe');
     $data = $this->homepageDataController->getPageData();
     $taskListStatus = $data['taskListStatus'];
-    expect($taskListStatus['senderSet'])->true();
+    verify($taskListStatus['senderSet'])->true();
   }
 
   public function testItDoesntFetchTaskListStatusWhenTaskListDismissed(): void {
@@ -72,7 +72,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $form = (new Form())->create();
     $data = $this->homepageDataController->getPageData();
     $taskListStatus = $data['taskListStatus'];
-    expect($taskListStatus['subscribersAdded'])->true();
+    verify($taskListStatus['subscribersAdded'])->true();
     $this->entityManager->remove($form);
     $this->entityManager->flush($form);
 
@@ -85,7 +85,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     }
     $data = $this->homepageDataController->getPageData();
     $taskListStatus = $data['taskListStatus'];
-    expect($taskListStatus['subscribersAdded'])->true();
+    verify($taskListStatus['subscribersAdded'])->true();
   }
 
   public function testItFetchesProductDiscoveryStatusForWelcomeCampaign(): void {
@@ -104,7 +104,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
     $this->entityManager->flush();
     $productDiscoveryStatus = $this->homepageDataController->getPageData()['productDiscoveryStatus'];
-    expect($productDiscoveryStatus['setUpWelcomeCampaign'])->true();
+    verify($productDiscoveryStatus['setUpWelcomeCampaign'])->true();
   }
 
   public function testItFetchesProductDiscoveryStatusSentNewsletters(): void {
@@ -123,13 +123,13 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $newsletter->setStatus(NewsletterEntity::STATUS_SCHEDULED);
     $this->entityManager->flush();
     $productDiscoveryStatus = $this->homepageDataController->getPageData()['productDiscoveryStatus'];
-    expect($productDiscoveryStatus['sendFirstNewsletter'])->true();
+    verify($productDiscoveryStatus['sendFirstNewsletter'])->true();
 
     // Done when standard newsletter is sent
     $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
     $this->entityManager->flush();
     $productDiscoveryStatus = $this->homepageDataController->getPageData()['productDiscoveryStatus'];
-    expect($productDiscoveryStatus['sendFirstNewsletter'])->true();
+    verify($productDiscoveryStatus['sendFirstNewsletter'])->true();
 
     // Not done when post notification is draft
     $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
@@ -142,13 +142,13 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
     $this->entityManager->flush();
     $productDiscoveryStatus = $this->homepageDataController->getPageData()['productDiscoveryStatus'];
-    expect($productDiscoveryStatus['sendFirstNewsletter'])->true();
+    verify($productDiscoveryStatus['sendFirstNewsletter'])->true();
 
     // Done when automatic email active
     $newsletter->setType(NewsletterEntity::TYPE_AUTOMATIC);
     $this->entityManager->flush();
     $productDiscoveryStatus = $this->homepageDataController->getPageData()['productDiscoveryStatus'];
-    expect($productDiscoveryStatus['sendFirstNewsletter'])->true();
+    verify($productDiscoveryStatus['sendFirstNewsletter'])->true();
   }
 
   public function testItFetchesProductDiscoveryStatusSetUpAbandonedCartEmail(): void {
@@ -168,7 +168,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
     $this->entityManager->flush();
     $productDiscoveryStatus = $this->homepageDataController->getPageData()['productDiscoveryStatus'];
-    expect($productDiscoveryStatus['setUpAbandonedCartEmail'])->true();
+    verify($productDiscoveryStatus['setUpAbandonedCartEmail'])->true();
   }
 
   public function testItFetchesSubscriberStatsForZeroSubscribers(): void {

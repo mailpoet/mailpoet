@@ -178,7 +178,7 @@ class NewslettersTest extends \MailPoetTest {
       NewslettersResponseBuilder::RELATION_QUEUE,
     ]));
     $hookName = 'mailpoet_api_newsletters_get_after';
-    expect(WPHooksHelper::isFilterApplied($hookName))->true();
+    verify(WPHooksHelper::isFilterApplied($hookName))->true();
     expect(WPHooksHelper::getFilterApplied($hookName)[0])->array();
   }
 
@@ -370,8 +370,8 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->meta['count'])->equals(1);
 
     $hookName = 'mailpoet_api_newsletters_duplicate_after';
-    expect(WPHooksHelper::isActionDone($hookName))->true();
-    expect(WPHooksHelper::getActionDone($hookName)[0] instanceof NewsletterEntity)->true();
+    verify(WPHooksHelper::isActionDone($hookName))->true();
+    verify(WPHooksHelper::getActionDone($hookName)[0] instanceof NewsletterEntity)->true();
 
     $response = $this->endpoint->duplicate(['id' => $this->postNotification->getId()]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
@@ -658,7 +658,7 @@ class NewslettersTest extends \MailPoetTest {
     expect($previewLinkData['newsletter_hash'])->notEmpty();
     expect($previewLinkData['subscriber_id'])->false();
     expect($previewLinkData['subscriber_token'])->false();
-    expect((boolean)$previewLinkData['preview'])->true();
+    verify((boolean)$previewLinkData['preview'])->true();
   }
 
   private function createNewsletterSegment(

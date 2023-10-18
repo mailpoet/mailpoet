@@ -151,13 +151,13 @@ class MailerLogTest extends \MailPoetTest {
       'started' => $started,
     ];
     $this->settings->set(MailerLog::SETTING_NAME, $mailerLog);
-    expect(MailerLog::isSendingLimitReached())->true();
+    verify(MailerLog::isSendingLimitReached())->true();
   }
 
   public function testItChecksWhenSendingIsPaused() {
     $mailerLog = MailerLog::getMailerLog();
     $mailerLog['status'] = MailerLog::STATUS_PAUSED;
-    expect(MailerLog::isSendingPaused($mailerLog))->true();
+    verify(MailerLog::isSendingPaused($mailerLog))->true();
     $mailerLog['status'] = null;
     expect(MailerLog::isSendingPaused($mailerLog))->false();
   }
@@ -321,7 +321,7 @@ class MailerLogTest extends \MailPoetTest {
     $mailerLog = MailerLog::getMailerLog();
     expect($mailerLog['transactional_email_last_error_at'])->null();
     expect($mailerLog['transactional_email_error_count'])->null();
-    expect(MailerLog::isSendingPaused())->true();
+    verify(MailerLog::isSendingPaused())->true();
     $logs = $this->entityManager->getRepository(LogEntity::class)->findAll();
     $this->assertInstanceOf(LogEntity::class, $logs[0]);
     expect($logs[0]->getMessage())->stringContainsString('Email sending was paused due a transactional email error');

@@ -39,7 +39,7 @@ class SubscriberTest extends \MailPoetTest {
   }
 
   public function testItCanBeCreated() {
-    expect($this->saved->id() > 0)->true();
+    verify($this->saved->id() > 0)->true();
     expect($this->saved->getErrors())->false();
   }
 
@@ -119,7 +119,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber->status = Subscriber::STATUS_SUBSCRIBED;
     $subscriber->save();
 
-    expect($subscriber->id() > 0)->true();
+    verify($subscriber->id() > 0)->true();
     expect($subscriber->getErrors())->false();
     $subscriberUpdated = Subscriber::where('email', $this->testData['email'])
       ->findOne();
@@ -430,7 +430,7 @@ class SubscriberTest extends \MailPoetTest {
       'last_name' => 'Doe',
     ];
     $result = Subscriber::createOrUpdate($data);
-    expect($result->id() > 0)->true();
+    verify($result->id() > 0)->true();
     expect($result->getErrors())->false();
 
     $record = Subscriber::where('email', $data['email'])
@@ -502,7 +502,7 @@ class SubscriberTest extends \MailPoetTest {
       'type' => 'date',
     ]);
 
-    expect($customField->id() > 0)->true();
+    verify($customField->id() > 0)->true();
 
     $value = [
       'year' => 1984,
@@ -568,7 +568,7 @@ class SubscriberTest extends \MailPoetTest {
       [$subscriber1->id, $subscriber2->id, $subscriber3->id],
       [$segment->id]
     );
-    expect($result)->true();
+    verify($result)->true();
 
     $subscribedSubscribersInSegment = Subscriber::getSubscribedInSegments(
       [$segment->id]

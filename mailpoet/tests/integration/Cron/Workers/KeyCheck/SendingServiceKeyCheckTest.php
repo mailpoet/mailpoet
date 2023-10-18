@@ -30,7 +30,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
   public function testItRequiresMailPoetMethodToBeSetUp() {
     expect($this->worker->checkProcessingRequirements())->false();
     $this->setMailPoetSendingMethod();
-    expect($this->worker->checkProcessingRequirements())->true();
+    verify($this->worker->checkProcessingRequirements())->true();
   }
 
   public function testItRunsEveryHourWhenKeyPendingApproval() {
@@ -56,7 +56,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
 
   public function testItResumesSendingWhenKeyApproved() {
     MailerLog::pauseSending(MailerLog::getMailerLog());
-    expect(MailerLog::isSendingPaused())->true();
+    verify(MailerLog::isSendingPaused())->true();
 
     $servicesChecker = $this->make(ServicesChecker::class, [
       'isMailPoetAPIKeyPendingApproval' => Stub::consecutive(true, false),

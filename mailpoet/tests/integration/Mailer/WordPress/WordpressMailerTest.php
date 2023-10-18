@@ -148,7 +148,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->addAddress('email@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'body';
-    expect($wpMailer->send())->true();
+    verify($wpMailer->send())->true();
   }
 
   public function testItUsesBackupMailerWhenPrimaryFails() {
@@ -175,7 +175,7 @@ class WordpressMailerTest extends \MailPoetTest {
     $wpMailer->addAddress('email@example.com');
     $wpMailer->From = 'email-from@example.com';
     $wpMailer->Body = 'body';
-    expect($wpMailer->send())->true();
+    verify($wpMailer->send())->true();
   }
 
   public function testItThrowsPhpmailerExceptionOnError() {

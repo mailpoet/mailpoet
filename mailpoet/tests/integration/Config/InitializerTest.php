@@ -10,6 +10,6 @@ class InitializerTest extends \MailPoetTest {
     foreach ($wp_filter['wp_loaded'][10] as $name => $hook) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       if (preg_match('/postInitialize/', $name)) $isHooked = true;
     }
-    expect($isHooked)->true();
+    verify($isHooked)->true();
   }
 }

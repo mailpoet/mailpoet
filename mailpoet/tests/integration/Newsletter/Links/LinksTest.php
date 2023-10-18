@@ -184,7 +184,7 @@ class LinksTest extends \MailPoetTest {
       $data = $this->links->transformUrlDataObject($data);
       verify($data['subscriber_id'])->equals($subscriber->getId());
       verify($data['queue_id'])->equals($queue->getId());
-      expect(isset($data['subscriber_token']))->true();
+      verify(isset($data['subscriber_token']))->true();
     }
   }
 
@@ -230,7 +230,7 @@ class LinksTest extends \MailPoetTest {
       ->create();
 
     list($content, $links) = $this->links->process('<a href="http://example.com">x</a>', $this->newsletter->getId(), 2);
-    expect(is_array($links))->true();
+    verify(is_array($links))->true();
     verify(count($links))->equals(1);
     verify($links[0]['hash'])->equals('123');
     verify($links[0]['url'])->equals('http://example.com');
@@ -240,8 +240,8 @@ class LinksTest extends \MailPoetTest {
     $regex = $this->links->getLinkRegex();
     expect((boolean)preg_match($regex, '[some_tag]-123'))->false();
     expect((boolean)preg_match($regex, '[some_tag]'))->false();
-    expect((boolean)preg_match($regex, '[mailpoet_click_data]-123'))->true();
-    expect((boolean)preg_match($regex, '[mailpoet_open_data]'))->true();
+    verify((boolean)preg_match($regex, '[mailpoet_click_data]-123'))->true();
+    verify((boolean)preg_match($regex, '[mailpoet_open_data]'))->true();
   }
 
   public function testItCanConvertOnlyHashedLinkShortcodes() {

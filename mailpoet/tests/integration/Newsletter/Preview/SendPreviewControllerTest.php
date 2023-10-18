@@ -65,7 +65,7 @@ class SendPreviewControllerTest extends \MailPoetTest {
           $viewInBrowserLink = $this->newsletterUrl->getViewInBrowserUrl($this->newsletter);
           $mailerMetaInfo = new MetaInfo;
 
-          expect(is_array($newsletter))->true();
+          verify(is_array($newsletter))->true();
           expect($newsletter['body']['text'])->stringContainsString('Hello test');
           verify($subscriber)->equals($subscriber);
           verify($extraParams['unsubscribe_url'])->equals(home_url());
@@ -98,7 +98,7 @@ class SendPreviewControllerTest extends \MailPoetTest {
   public function testItThrowsWhenSendingFailed() {
     $mailer = $this->makeEmpty(Mailer::class, [
       'send' => function ($newsletter, $subscriber) {
-        expect(is_array($newsletter))->true();
+        verify(is_array($newsletter))->true();
         expect($newsletter['body']['text'])->stringContainsString('Hello test');
         verify($subscriber)->equals($subscriber);
         return [

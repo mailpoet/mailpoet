@@ -363,7 +363,7 @@ class TranslationUpdaterTest extends \MailPoetTest {
 
   public function testItReturnsObjectIfPassedNonObjectWhenCheckingForTranslations(): void {
     $result = $this->updater->checkForTranslations(null);
-    expect($result instanceof \stdClass)->true();
+    verify($result instanceof \stdClass)->true();
   }
 
   public function testItDoesNotThrowErrorIfWrongEncodingInLocales(): void {

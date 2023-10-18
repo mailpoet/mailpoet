@@ -21,7 +21,7 @@ class DatabaseTest extends \MailPoetTest {
   }
 
   public function testItDefinesTables() {
-    expect(defined('MP_SETTINGS_TABLE'))->true();
+    verify(defined('MP_SETTINGS_TABLE'))->true();
   }
 
   public function testItConfiguresLogging() {

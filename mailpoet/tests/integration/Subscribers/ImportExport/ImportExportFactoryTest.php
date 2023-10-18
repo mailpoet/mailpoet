@@ -120,7 +120,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'last_name',
     ];
     foreach ($fields as $field) {
-      expect(in_array($field, array_keys($subsriberFields)))->true();
+      verify(in_array($field, array_keys($subsriberFields)))->true();
     }
     // export fields contain extra data
     $this->importFactory->action = 'export';
@@ -134,7 +134,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'subscribed_ip',
     ];
     foreach ($exportFields as $field) {
-      expect(in_array($field, array_keys($subsriberFields)))->true();
+      verify(in_array($field, array_keys($subsriberFields)))->true();
     }
   }
 
@@ -150,7 +150,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'custom',
     ];
     foreach ($fields as $field) {
-      expect(in_array($field, array_keys($formattedSubscriberFields[0])))
+      verify(in_array($field, array_keys($formattedSubscriberFields[0])))
         ->true();
     }
     expect($formattedSubscriberFields[0]['custom'])->false();
@@ -176,10 +176,10 @@ class ImportExportFactoryTest extends \MailPoetTest {
       'custom',
     ];
     foreach ($fields as $field) {
-      expect(in_array($field, array_keys($formattedSubscriberCustomFields[0])))
+      verify(in_array($field, array_keys($formattedSubscriberCustomFields[0])))
         ->true();
     }
-    expect($formattedSubscriberCustomFields[0]['custom'])->true();
+    verify($formattedSubscriberCustomFields[0]['custom'])->true();
   }
 
   public function testItCanFormatFieldsForSelect2Import() {

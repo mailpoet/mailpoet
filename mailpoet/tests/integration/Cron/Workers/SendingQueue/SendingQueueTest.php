@@ -365,9 +365,9 @@ class SendingQueueTest extends \MailPoetTest {
         [$this->diContainer->get(MailerFactory::class)],
         [
           'send' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams) use ($directUnsubscribeURL) {
-            expect(isset($extraParams['unsubscribe_url']))->true();
+            verify(isset($extraParams['unsubscribe_url']))->true();
             verify($extraParams['unsubscribe_url'])->equals($directUnsubscribeURL);
-            expect(isset($extraParams['meta']))->true();
+            verify(isset($extraParams['meta']))->true();
             verify($extraParams['meta']['email_type'])->equals('newsletter');
             verify($extraParams['meta']['subscriber_status'])->equals('subscribed');
             verify($extraParams['meta']['subscriber_source'])->equals('administrator');
@@ -388,9 +388,9 @@ class SendingQueueTest extends \MailPoetTest {
         [$this->diContainer->get(MailerFactory::class)],
         [
           'send' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams) use ($trackedUnsubscribeURL) {
-            expect(isset($extraParams['unsubscribe_url']))->true();
+            verify(isset($extraParams['unsubscribe_url']))->true();
             verify($extraParams['unsubscribe_url'])->equals($trackedUnsubscribeURL);
-            expect(isset($extraParams['meta']))->true();
+            verify(isset($extraParams['meta']))->true();
             verify($extraParams['meta']['email_type'])->equals('newsletter');
             verify($extraParams['meta']['subscriber_status'])->equals('subscribed');
             verify($extraParams['meta']['subscriber_source'])->equals('administrator');
@@ -410,8 +410,8 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'send' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams) {
             // newsletter body should not be empty
-            expect(!empty($newsletter['body']['html']))->true();
-            expect(!empty($newsletter['body']['text']))->true();
+            verify(!empty($newsletter['body']['html']))->true();
+            verify(!empty($newsletter['body']['text']))->true();
             return $this->mailerTaskDummyResponse;
           }),
         ]
@@ -540,8 +540,8 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'sendBulk' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
-            expect(!empty($newsletter[0]['body']['html']))->true();
-            expect(!empty($newsletter[0]['body']['text']))->true();
+            verify(!empty($newsletter[0]['body']['html']))->true();
+            verify(!empty($newsletter[0]['body']['text']))->true();
             return $this->mailerTaskDummyResponse;
           }),
           'getProcessingMethod' => Expected::exactly(1, function() {
@@ -594,8 +594,8 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'send' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
-            expect(!empty($newsletter['body']['html']))->true();
-            expect(!empty($newsletter['body']['text']))->true();
+            verify(!empty($newsletter['body']['html']))->true();
+            verify(!empty($newsletter['body']['text']))->true();
             return $this->mailerTaskDummyResponse;
           }),
         ]
@@ -751,8 +751,8 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'send' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
-            expect(!empty($newsletter['body']['html']))->true();
-            expect(!empty($newsletter['body']['text']))->true();
+            verify(!empty($newsletter['body']['html']))->true();
+            verify(!empty($newsletter['body']['text']))->true();
             return $this->mailerTaskDummyResponse;
           }),
         ]
@@ -1269,8 +1269,8 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'send' => Expected::exactly(1, function($newsletter, $subscriber) {
             // newsletter body should not be empty
-            expect(!empty($newsletter['body']['html']))->true();
-            expect(!empty($newsletter['body']['text']))->true();
+            verify(!empty($newsletter['body']['html']))->true();
+            verify(!empty($newsletter['body']['text']))->true();
             return $this->mailerTaskDummyResponse;
           }),
         ]
@@ -1278,7 +1278,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sendingQueueWorker->process();
     $meta = $this->queue->getSendingQueueEntity()->getMeta();
-    expect(isset($meta['campaignId']))->true();
+    verify(isset($meta['campaignId']))->true();
     $campaignId = $meta['campaignId'];
     verify(strlen($campaignId))->equals(16);
   }
@@ -1292,8 +1292,8 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'send' => Expected::exactly(1, function($newsletter, $subscriber, $extraParams = []) use (&$mailerTaskExtraParams) {
             // newsletter body should not be empty
-            expect(!empty($newsletter['body']['html']))->true();
-            expect(!empty($newsletter['body']['text']))->true();
+            verify(!empty($newsletter['body']['html']))->true();
+            verify(!empty($newsletter['body']['text']))->true();
             $mailerTaskExtraParams = $extraParams;
             return $this->mailerTaskDummyResponse;
           }),
@@ -1302,7 +1302,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sendingQueueWorker->process();
     $meta = $this->queue->getSendingQueueEntity()->getMeta();
-    expect(isset($meta['campaignId']))->true();
+    verify(isset($meta['campaignId']))->true();
     $campaignId = $meta['campaignId'];
     verify($mailerTaskExtraParams['meta']['campaign_id'])->equals($campaignId);
   }
@@ -1324,8 +1324,8 @@ class SendingQueueTest extends \MailPoetTest {
         [
           'send' => Expected::exactly(2, function($newsletter, $subscriber, $extraParams = []) use (&$mailerTaskCampaignIds) {
             // newsletter body should not be empty
-            expect(!empty($newsletter['body']['html']))->true();
-            expect(!empty($newsletter['body']['text']))->true();
+            verify(!empty($newsletter['body']['html']))->true();
+            verify(!empty($newsletter['body']['text']))->true();
             $mailerTaskCampaignIds[$subscriber] = $extraParams['meta']['campaign_id'];
             return $this->mailerTaskDummyResponse;
           }),
@@ -1334,7 +1334,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sendingQueueWorker->process();
     $meta = $this->queue->getSendingQueueEntity()->getMeta();
-    expect(isset($meta['campaignId']))->true();
+    verify(isset($meta['campaignId']))->true();
     $campaignId = $meta['campaignId'];
     verify(count($mailerTaskCampaignIds))->equals(2);
     foreach (array_values($mailerTaskCampaignIds) as $mailerTaskCampaignId) {

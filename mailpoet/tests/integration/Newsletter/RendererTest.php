@@ -71,8 +71,8 @@ class RendererTest extends \MailPoetTest {
 
   public function testItRendersCompleteNewsletter() {
     $template = $this->renderer->renderAsPreview($this->newsletter);// do not render logo
-    expect(isset($template['html']))->true();
-    expect(isset($template['text']))->true();
+    verify(isset($template['html']))->true();
+    verify(isset($template['text']))->true();
     $DOM = $this->dOMParser->parseStr($template['html']);
     // we expect to have 7 columns:
     //  1x column including header

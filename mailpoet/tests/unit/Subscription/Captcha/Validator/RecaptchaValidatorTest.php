@@ -50,7 +50,7 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest {
     $data = [
       'recaptchaResponseToken' => $recaptchaResponseToken,
     ];
-    expect($testee->validate($data))->true();
+    verify($testee->validate($data))->true();
   }
 
   public function testSuccessfulValidation() {
@@ -95,7 +95,7 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest {
     $data = [
       'recaptchaResponseToken' => $recaptchaResponseToken,
     ];
-    expect($testee->validate($data))->true();
+    verify($testee->validate($data))->true();
   }
 
   public function testFailingValidation() {

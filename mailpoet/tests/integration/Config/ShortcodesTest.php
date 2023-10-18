@@ -271,7 +271,7 @@ class ShortcodesTest extends \MailPoetTest {
     $userData = ["ID" => 1, "first_name" => "Foo", "last_name" => "Bar"];
     $currentUser = new \WP_User((object)$userData, "FooBar");
     $wpUser = wp_set_current_user($currentUser->ID);
-    expect((new WPFunctions)->isUserLoggedIn())->true();
+    verify((new WPFunctions)->isUserLoggedIn())->true();
 
     $this->subscriberFactory
       ->withFirstName('Foo')
@@ -302,7 +302,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItDisplaysManageSubscriptionFormForLoggedinExistingUsers() {
     $wpUser = wp_set_current_user(1);
-    expect((new WPFunctions)->isUserLoggedIn())->true();
+    verify((new WPFunctions)->isUserLoggedIn())->true();
 
     $subscriber = $this->subscriberFactory
       ->withEmail($wpUser->user_email)
@@ -319,7 +319,7 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItAppliesFilterForManageSubscriptionForm() {
     $wpUser = wp_set_current_user(1);
     $wp = new WPFunctions;
-    expect($wp->isUserLoggedIn())->true();
+    verify($wp->isUserLoggedIn())->true();
 
     $this->subscriberFactory
       ->withEmail($wpUser->user_email)
@@ -340,7 +340,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItDoesNotDisplayManageSubscriptionFormForLoggedinNonexistentSubscribers() {
     $wpUser = wp_set_current_user(1);
-    expect((new WPFunctions)->isUserLoggedIn())->true();
+    verify((new WPFunctions)->isUserLoggedIn())->true();
 
     expect($this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]))->null(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
@@ -362,7 +362,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItDisplaysLinkToManageSubscriptionPageForLoggedinExistingUsers() {
     $wpUser = wp_set_current_user(1);
-    expect((new WPFunctions)->isUserLoggedIn())->true();
+    verify((new WPFunctions)->isUserLoggedIn())->true();
 
     $this->subscriberFactory
       ->withEmail($wpUser->user_email)
@@ -377,7 +377,7 @@ class ShortcodesTest extends \MailPoetTest {
 
   public function testItDoesNotDisplayLinkToManageSubscriptionPageForLoggedinNonexistentSubscribers() {
     $wpUser = wp_set_current_user(1);
-    expect((new WPFunctions)->isUserLoggedIn())->true();
+    verify((new WPFunctions)->isUserLoggedIn())->true();
     expect($this->subscribersRepository->findOneBy(['email' => $wpUser->user_email]))->null(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);

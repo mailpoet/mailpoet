@@ -56,7 +56,7 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $sub2);
     verify($data[$sub1->getId()]['last_purchase_at'])->equals( (string)$newer);
     verify($data[$sub2->getId()]['last_purchase_at'])->equals((string)$newer2);
-    expect(!isset($data[$customerId3]))->true();
+    verify(!isset($data[$customerId3]))->true();
   }
 
   public function testItUpdatesSubscribersPurchaseData(): void {
@@ -128,7 +128,7 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     verify($openData[$sub1->getId()]['last_open_at'])->equals((string)$newer);
     verify($openData[$sub2->getId()]['last_open_at'])->equals((string)$sub2date);
     verify($openData[$sub3->getId()]['last_open_at'])->equals((string)$sub3date);
-    expect(!isset($openData[$sub4->getId()]))->true();
+    verify(!isset($openData[$sub4->getId()]))->true();
   }
 
   public function testItUpdatesOpensData(): void {
@@ -216,7 +216,7 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     verify($clickData[$sub1->getId()]['last_click_at'])->equals((string)$newer);
     verify($clickData[$sub2->getId()]['last_click_at'])->equals((string)$sub2date);
     verify($clickData[$sub3->getId()]['last_click_at'])->equals((string)$sub3date);
-    expect(!isset($clickData[$sub4->getId()]))->true();
+    verify(!isset($clickData[$sub4->getId()]))->true();
   }
 
   public function testItUpdatesClicksData(): void {
@@ -306,7 +306,7 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     verify($clickData[$sub1->getId()]['last_sending_at'])->equals((string)$newer);
     verify($clickData[$sub2->getId()]['last_sending_at'])->equals((string)$sub2date);
     verify($clickData[$sub3->getId()]['last_sending_at'])->equals((string)$sub3date);
-    expect(!isset($clickData[$sub4->getId()]))->true();
+    verify(!isset($clickData[$sub4->getId()]))->true();
   }
 
   public function testItUpdatesSendingData(): void {
