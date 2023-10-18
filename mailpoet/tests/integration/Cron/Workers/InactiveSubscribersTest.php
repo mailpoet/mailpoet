@@ -49,7 +49,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
 
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task)->instanceOf(ScheduledTaskEntity::class);
-    expect($task->getScheduledAt())->greaterThan(new Carbon());
+    verify($task->getScheduledAt())->greaterThan(new Carbon());
   }
 
   public function testItDoesNotRunWhenTrackingIsDisabled() {
@@ -86,7 +86,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
 
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task)->instanceOf(ScheduledTaskEntity::class);
-    expect($task->getScheduledAt())->greaterThan(new Carbon());
+    verify($task->getScheduledAt())->greaterThan(new Carbon());
   }
 
   public function testRunBatchesUntilItIsFinished() {

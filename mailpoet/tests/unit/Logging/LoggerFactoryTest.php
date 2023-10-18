@@ -39,7 +39,7 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
   public function testItAttachesProcessors() {
     $logger1 = $this->loggerFactory->getLogger('logger-with-processors', true);
     $processors = $logger1->getProcessors();
-    expect(count($processors))->greaterThan(1);
+    verify(count($processors))->greaterThan(1);
   }
 
   public function testItSkipsOptionalProcessors() {

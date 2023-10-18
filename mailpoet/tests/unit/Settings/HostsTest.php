@@ -10,8 +10,8 @@ class HostsTest extends \MailPoetUnitTest {
     verify($webHosts)->notEmpty();
 
     foreach ($webHosts as $host) {
-      expect($host['interval'])->greaterThan(0);
-      expect($host['emails'])->greaterThan(0);
+      verify($host['interval'])->greaterThan(0);
+      verify($host['emails'])->greaterThan(0);
     }
   }
 
@@ -20,8 +20,8 @@ class HostsTest extends \MailPoetUnitTest {
     verify($smtpHosts)->notEmpty();
 
     foreach ($smtpHosts as $host) {
-      expect($host['interval'])->greaterThan(0);
-      expect($host['emails'])->greaterThan(0);
+      verify($host['interval'])->greaterThan(0);
+      verify($host['emails'])->greaterThan(0);
     }
   }
 }

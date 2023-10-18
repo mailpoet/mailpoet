@@ -142,7 +142,7 @@ class SubscriberTest extends \MailPoetTest {
       ->findOne();
     $lastSubscribedAt = new Carbon($subscriberUpdated->lastUpdatedAt);
     expect($lastSubscribedAt)->lessThan((new Carbon())->addSeconds(2));
-    expect($lastSubscribedAt)->greaterThan((new Carbon())->subSeconds(2));
+    verify($lastSubscribedAt)->greaterThan((new Carbon())->subSeconds(2));
 
     // Change to other status keeps last_updated_at
     $lastSubscribedAt = (new Carbon())->subHour();

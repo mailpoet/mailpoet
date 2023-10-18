@@ -129,7 +129,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     ]);
     $connection = $connectionFactory->createConnection();
     $current = $connection->executeQuery('SELECT @@session.wait_timeout')->fetchColumn();
-    expect($current)->greaterThan(1);
+    verify($current)->greaterThan(1);
 
     // timeout will be set to higher value
     $connectionFactory = $this->make(ConnectionFactory::class, [

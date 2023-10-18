@@ -31,7 +31,7 @@ class MailerLogTest extends \MailPoetTest {
     $resultExpectedGreaterThan = time() - 1;
     $mailerLog = MailerLog::getMailerLog();
     verify($mailerLog['sent'])->equals([]);
-    expect($mailerLog['started'])->greaterThan($resultExpectedGreaterThan);
+    verify($mailerLog['started'])->greaterThan($resultExpectedGreaterThan);
   }
 
   public function testItDoesNotIncrementWhenSendingMethodIsMailpoet() {
@@ -62,7 +62,7 @@ class MailerLogTest extends \MailPoetTest {
     $resultExpectedGreaterThan = time() - 1;
     $mailerLog = MailerLog::createMailerLog();
     verify($mailerLog['sent'])->equals([]);
-    expect($mailerLog['started'])->greaterThan($resultExpectedGreaterThan);
+    verify($mailerLog['started'])->greaterThan($resultExpectedGreaterThan);
   }
 
   public function testItResetsMailerLog() {
@@ -75,7 +75,7 @@ class MailerLogTest extends \MailPoetTest {
     MailerLog::resetMailerLog();
     $updatedMailerLog = $this->settings->get(MailerLog::SETTING_NAME);
     verify($updatedMailerLog['sent'])->equals([]);
-    expect($updatedMailerLog['started'])->greaterThan($mailerLog['started']);
+    verify($updatedMailerLog['started'])->greaterThan($mailerLog['started']);
   }
 
   public function testItUpdatesMailerLog() {
@@ -219,7 +219,7 @@ class MailerLogTest extends \MailPoetTest {
     MailerLog::processError($operation = 'send', $error = 'email rejected');
     $mailerLog = MailerLog::getMailerLog();
     verify($mailerLog['retry_attempt'])->equals(1);
-    expect($mailerLog['retry_at'])->greaterThan(time());
+    verify($mailerLog['retry_at'])->greaterThan(time());
     verify($mailerLog['error'])->equals(
       [
         'operation' => 'send',
@@ -237,7 +237,7 @@ class MailerLogTest extends \MailPoetTest {
     MailerLog::processNonBlockingError($operation = 'send', $error = 'email rejected');
     $mailerLog = MailerLog::getMailerLog();
     verify($mailerLog['retry_attempt'])->equals(1);
-    expect($mailerLog['retry_at'])->greaterThan(time());
+    verify($mailerLog['retry_at'])->greaterThan(time());
     verify($mailerLog['error'])->equals(
       [
         'operation' => 'send',
