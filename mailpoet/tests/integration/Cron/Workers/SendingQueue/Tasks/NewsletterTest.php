@@ -205,9 +205,9 @@ class NewsletterTest extends \MailPoetTest {
     verify($link)->null();
     $updatedQueue = SendingTask::getByNewsletterId($this->newsletter->getId());
     $renderedNewsletter = $updatedQueue->getNewsletterRenderedBody();
-    expect($renderedNewsletter['html'])
+    verify($renderedNewsletter['html'])
       ->stringNotContainsString('[mailpoet_click_data]');
-    expect($renderedNewsletter['html'])
+    verify($renderedNewsletter['html'])
       ->stringNotContainsString('[mailpoet_open_data]');
 
     $hookName = 'mailpoet_sending_newsletter_render_after_pre_process';
@@ -370,9 +370,9 @@ class NewsletterTest extends \MailPoetTest {
       $this->subscriber,
       $this->sendingTask
     );
-    expect($result['body']['html'])
+    verify($result['body']['html'])
       ->stringNotContainsString(Router::NAME . '&endpoint=track&action=click&data=');
-    expect($result['body']['text'])
+    verify($result['body']['text'])
       ->stringNotContainsString(Router::NAME . '&endpoint=track&action=click&data=');
   }
 
@@ -516,9 +516,9 @@ class NewsletterTest extends \MailPoetTest {
     $wooCommerceHelper = $this->diContainer->get(Helper::class);
     $coupon = (string)$wooCommerceHelper->getLatestCoupon();
 
-    expect($result['body']['html'])->stringNotContainsString(Coupon::CODE_PLACEHOLDER);
+    verify($result['body']['html'])->stringNotContainsString(Coupon::CODE_PLACEHOLDER);
     verify($result['body']['html'])->stringContainsString($coupon);
-    expect($result['body']['text'])->stringNotContainsString(Coupon::CODE_PLACEHOLDER);
+    verify($result['body']['text'])->stringNotContainsString(Coupon::CODE_PLACEHOLDER);
     verify($result['body']['text'])->stringContainsString($coupon);
   }
 

@@ -428,7 +428,7 @@ class RendererTest extends \MailPoetTest {
     verify(
       $DOM('tr > td > table > tr > td.mailpoet_blockquote', 0)->html()
     )->stringContainsString('<h2');
-    expect(
+    verify(
       $DOM('tr > td > table > tr > td.mailpoet_blockquote', 0)->html()
     )->stringNotContainsString('<p');
     // ul/ol/li should have mailpoet_paragraph class added & styles applied
@@ -605,7 +605,7 @@ class RendererTest extends \MailPoetTest {
     $this->assertIsArray($body);
     $this->newsletter->setBody($body);
     $template = $this->renderer->render($this->newsletter);
-    expect($template['html'])->stringNotContainsString('mailpoet_logo_newsletter.png');
+    verify($template['html'])->stringNotContainsString('mailpoet_logo_newsletter.png');
   }
 
   public function testItDoesNotAddMailpoetLogoWhenPreviewIsEnabled() {
@@ -615,7 +615,7 @@ class RendererTest extends \MailPoetTest {
     $this->assertIsArray($body);
     $this->newsletter->setBody($body);
     $template = $this->renderer->renderAsPreview($this->newsletter);
-    expect($template['html'])->stringNotContainsString('mailpoet_logo_newsletter.png');
+    verify($template['html'])->stringNotContainsString('mailpoet_logo_newsletter.png');
   }
 
   public function testItAddsMailpoetLogo() {

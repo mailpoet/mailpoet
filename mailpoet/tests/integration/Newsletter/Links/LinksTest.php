@@ -97,7 +97,7 @@ class LinksTest extends \MailPoetTest {
       ->stringContainsString(Links::DATA_TAG_CLICK . '-' . $hashedLinks[0]['hash']);
     verify($updatedContent)
       ->stringContainsString(Links::DATA_TAG_CLICK . '-' . $hashedLinks[1]['hash']);
-    expect($updatedContent)->stringNotContainsString('link');
+    verify($updatedContent)->stringNotContainsString('link');
   }
 
   public function testItHashesAndReplacesLinksWithSpecialCharacters() {
@@ -131,7 +131,7 @@ class LinksTest extends \MailPoetTest {
       ->stringContainsString('replace by this');
     verify($updatedContent)
       ->stringContainsString('[link:some_link_shortcode]');
-    expect($updatedContent)->stringNotContainsString('http://example.com');
+    verify($updatedContent)->stringNotContainsString('http://example.com');
   }
 
   public function testItCreatesAndTransformsUrlDataObject() {
@@ -168,8 +168,8 @@ class LinksTest extends \MailPoetTest {
     $result = $this->links->replaceSubscriberData($subscriber->getId(), $queue->getId(), $template);
 
     // there are no click/open data tags
-    expect($result)->stringNotContainsString(Links::DATA_TAG_CLICK);
-    expect($result)->stringNotContainsString(Links::DATA_TAG_OPEN);
+    verify($result)->stringNotContainsString(Links::DATA_TAG_CLICK);
+    verify($result)->stringNotContainsString(Links::DATA_TAG_OPEN);
 
     // data tags were converted to URLs
     expect($result)

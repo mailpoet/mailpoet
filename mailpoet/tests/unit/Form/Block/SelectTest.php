@@ -97,6 +97,6 @@ class SelectTest extends \MailPoetUnitTest {
   public function testItDoesNotRenderHiddenOptions() {
     $this->block['params']['values'][2]['is_hidden'] = true;
     $rendered = $this->selectBlock->render($this->block, []);
-    expect($rendered)->stringNotContainsString(SubscriberEntity::STATUS_BOUNCED);
+    verify($rendered)->stringNotContainsString(SubscriberEntity::STATUS_BOUNCED);
   }
 }

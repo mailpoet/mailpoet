@@ -74,7 +74,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $html = $this->columns->render($block, 'content');
     $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
-    expect($class->textContent)->stringNotContainsString('mailpoet_stack_on_mobile');
+    verify($class->textContent)->stringNotContainsString('mailpoet_stack_on_mobile');
   }
 
   public function testItShouldRenderCustomBackground() {

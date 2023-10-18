@@ -183,7 +183,7 @@ class TextTest extends \MailPoetUnitTest {
   public function testItRemovesLastLineBreak() {
     $this->block['text'] = 'hello<br />';
     $output = (new Text)->render($this->block);
-    expect($output)->stringNotContainsString('<br />');
+    verify($output)->stringNotContainsString('<br />');
   }
 
   public function htmlEntitiesStrings() {
@@ -200,7 +200,7 @@ class TextTest extends \MailPoetUnitTest {
   public function testItDoesNotDecodeHtmlEntities($htmlString) {
     $this->block['text'] = $htmlString;
     $output = (new Text())->render($this->block);
-    expect($output)->stringNotContainsString('<script>');
+    verify($output)->stringNotContainsString('<script>');
     verify($output)->stringContainsString("&lt;script&gt;alert('test');&lt;/script&gt;");
   }
 

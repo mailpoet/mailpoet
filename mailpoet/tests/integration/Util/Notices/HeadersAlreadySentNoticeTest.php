@@ -92,13 +92,13 @@ class HeadersAlreadySentNoticeTest extends \MailPoetTest {
     $headersAlreadySentNotice = Stub::make(HeadersAlreadySentNotice::class);
     $notice = $headersAlreadySentNotice->display(false, true);
     verify($notice->getMessage())->stringContainsString('Inaccurate tracking');
-    expect($notice->getMessage())->stringNotContainsString('CAPTCHA not rendering');
+    verify($notice->getMessage())->stringNotContainsString('CAPTCHA not rendering');
   }
 
   public function testItPrintsNoTrackingMessageIftrackingDisabled() {
     $headersAlreadySentNotice = Stub::make(HeadersAlreadySentNotice::class);
     $notice = $headersAlreadySentNotice->display(true, false);
-    expect($notice->getMessage())->stringNotContainsString('Inaccurate tracking');
+    verify($notice->getMessage())->stringNotContainsString('Inaccurate tracking');
     verify($notice->getMessage())->stringContainsString('CAPTCHA not rendering');
   }
 

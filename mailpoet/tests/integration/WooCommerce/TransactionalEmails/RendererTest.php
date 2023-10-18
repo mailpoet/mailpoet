@@ -51,16 +51,16 @@ class RendererTest extends \MailPoetTest {
     verify($html)->stringContainsString('Some text before heading');
     verify($html)->stringContainsString('Heading Text');
     verify($html)->stringContainsString('Some text between heading and content');
-    expect($html)->stringNotContainsString('Some text after content');
+    verify($html)->stringNotContainsString('Some text after content');
   }
 
   public function testGetHTMLAfterContent() {
     $renderer = $this->getRenderer();
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLAfterContent();
-    expect($html)->stringNotContainsString('Some text before heading');
-    expect($html)->stringNotContainsString('Heading Text');
-    expect($html)->stringNotContainsString('Some text between heading and content');
+    verify($html)->stringNotContainsString('Some text before heading');
+    verify($html)->stringNotContainsString('Heading Text');
+    verify($html)->stringNotContainsString('Some text between heading and content');
     verify($html)->stringContainsString('Some text after content');
   }
 

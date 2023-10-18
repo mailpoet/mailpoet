@@ -646,7 +646,7 @@ class NewslettersTest extends \MailPoetTest {
     ]);
 
     $response = $this->endpoint->showPreview($data);
-    expect($response->meta['preview_url'])->stringNotContainsString('http');
+    verify($response->meta['preview_url'])->stringNotContainsString('http');
     expect($response->meta['preview_url'])->regExp('!^\/\/!');
   }
 

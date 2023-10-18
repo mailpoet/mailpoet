@@ -113,8 +113,8 @@ class AutomatedLatestContentBlockTest extends \MailPoetTest {
     $encodedResult = json_encode($result);
     verify($encodedResult)->stringContainsString('POST 4');
     verify($encodedResult)->stringContainsString('POST 3');
-    expect($encodedResult)->stringNotContainsString('POST 2');
-    expect($encodedResult)->stringNotContainsString('POST 1');
+    verify($encodedResult)->stringNotContainsString('POST 2');
+    verify($encodedResult)->stringNotContainsString('POST 1');
   }
 
   public function testItRendersPostOnlyOncePerEmail() {
@@ -124,12 +124,12 @@ class AutomatedLatestContentBlockTest extends \MailPoetTest {
     $encodedResult = json_encode($result);
     verify($encodedResult)->stringContainsString('POST 4');
     verify($encodedResult)->stringContainsString('POST 3');
-    expect($encodedResult)->stringNotContainsString('POST 2');
-    expect($encodedResult)->stringNotContainsString('POST 1');
+    verify($encodedResult)->stringNotContainsString('POST 2');
+    verify($encodedResult)->stringNotContainsString('POST 1');
     $result = $this->block->render($notificationHistory, $this->alcBlock);
     $encodedResult = json_encode($result);
-    expect($encodedResult)->stringNotContainsString('POST 4');
-    expect($encodedResult)->stringNotContainsString('POST 3');
+    verify($encodedResult)->stringNotContainsString('POST 4');
+    verify($encodedResult)->stringNotContainsString('POST 3');
     verify($encodedResult)->stringContainsString('POST 2');
     verify($encodedResult)->stringContainsString('POST 1');
   }
@@ -141,16 +141,16 @@ class AutomatedLatestContentBlockTest extends \MailPoetTest {
     $encodedResult = json_encode($result);
     verify($encodedResult)->stringContainsString('POST 4');
     verify($encodedResult)->stringContainsString('POST 3');
-    expect($encodedResult)->stringNotContainsString('POST 2');
-    expect($encodedResult)->stringNotContainsString('POST 1');
+    verify($encodedResult)->stringNotContainsString('POST 2');
+    verify($encodedResult)->stringNotContainsString('POST 1');
     $notification2 = $this->createNewsletter('Newsletter2', NewsletterEntity::TYPE_NOTIFICATION);
     $notificationHistory2 = $this->createNewsletter('Newsletter2', NewsletterEntity::TYPE_NOTIFICATION_HISTORY, $notification2);
     $result = $this->block->render($notificationHistory2, $this->alcBlock);
     $encodedResult = json_encode($result);
     verify($encodedResult)->stringContainsString('POST 4');
     verify($encodedResult)->stringContainsString('POST 3');
-    expect($encodedResult)->stringNotContainsString('POST 2');
-    expect($encodedResult)->stringNotContainsString('POST 1');
+    verify($encodedResult)->stringNotContainsString('POST 2');
+    verify($encodedResult)->stringNotContainsString('POST 1');
   }
 
   public function testItRendersOnlyPostsNewerThanLastSent() {
@@ -164,9 +164,9 @@ class AutomatedLatestContentBlockTest extends \MailPoetTest {
     $result = $this->block->render($notificationHistory, $this->alcBlock);
     $encodedResult = json_encode($result);
     verify($encodedResult)->stringContainsString('POST 4');
-    expect($encodedResult)->stringNotContainsString('POST 3');
-    expect($encodedResult)->stringNotContainsString('POST 2');
-    expect($encodedResult)->stringNotContainsString('POST 1');
+    verify($encodedResult)->stringNotContainsString('POST 3');
+    verify($encodedResult)->stringNotContainsString('POST 2');
+    verify($encodedResult)->stringNotContainsString('POST 1');
   }
 
   private function createPost(string $title, string $publishDate, string $type = 'post') {

@@ -214,7 +214,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $queue
     );
     // hashed link should be replaced with a URL
-    expect($renderedBody)->stringNotContainsString('[mailpoet_click_data]');
+    verify($renderedBody)->stringNotContainsString('[mailpoet_click_data]');
     verify($renderedBody)->stringContainsString('<a href="http://google.com">');
   }
 
@@ -229,7 +229,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $queue
     );
     // open tracking data tag should be removed
-    expect($renderedBody)->stringNotContainsString('[mailpoet_open_data]');
+    verify($renderedBody)->stringNotContainsString('[mailpoet_open_data]');
     verify($renderedBody)->stringContainsString('<img alt="" class="" src="">');
   }
 }
