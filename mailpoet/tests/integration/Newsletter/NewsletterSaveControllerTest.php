@@ -90,8 +90,8 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $updatedQueue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $updatedQueue); // PHPStan
     expect($updatedQueue->getNewsletterRenderedSubject())->same('My Updated Newsletter');
-    expect($updatedQueue->getNewsletterRenderedBody())->hasKey('html');
-    expect($updatedQueue->getNewsletterRenderedBody())->hasKey('text');
+    verify($updatedQueue->getNewsletterRenderedBody())->arrayHasKey('html');
+    verify($updatedQueue->getNewsletterRenderedBody())->arrayHasKey('text');
   }
 
   public function testItCanUpdatePostNotificationScheduleUponSave() {

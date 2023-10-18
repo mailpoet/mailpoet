@@ -60,13 +60,13 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
 
   public function testItReturnsName() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text']);
-    expect($result)->hasKey('name');
+    verify($result)->arrayHasKey('name');
     expect($result['name'])->same('Name');
   }
 
   public function testItReturnsType() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'Text']);
-    expect($result)->hasKey('type');
+    verify($result)->arrayHasKey('type');
     expect($result['type'])->same('text');
   }
 
@@ -77,7 +77,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
 
   public function testItReturnsParamsIfPassed() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['required' => '1']]);
-    expect($result)->hasKey('params');
+    verify($result)->arrayHasKey('params');
   }
 
   public function testItReturnsCorrectRequiredForm() {
@@ -89,13 +89,13 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
 
   public function testItIgnoresUnknownParams() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text', 'params' => ['unknown' => 'Unknown property']]);
-    expect($result)->hasKey('params');
+    verify($result)->arrayHasKey('params');
     expect($result['params'])->hasNotKey('unknown');
   }
 
   public function testItFillsLabel() {
     $result = $this->sanitizer->sanitize(['name' => 'Name', 'type' => 'text']);
-    expect($result['params'])->hasKey('label');
+    verify($result['params'])->arrayHasKey('label');
     expect($result['params']['label'])->same('Name');
   }
 

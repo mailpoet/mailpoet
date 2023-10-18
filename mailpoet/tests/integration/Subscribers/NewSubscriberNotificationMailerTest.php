@@ -76,12 +76,12 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
       'send' =>
         Expected::once(function($newsletter, $subscriber, $extraParams) {
           verify($subscriber)->equals('a@b.c');
-          expect($newsletter)->hasKey('subject');
-          expect($newsletter)->hasKey('body');
+          verify($newsletter)->arrayHasKey('subject');
+          verify($newsletter)->arrayHasKey('body');
           expect($newsletter)->count(2);
           verify($newsletter['subject'])->equals('New subscriber to List1, List2');
-          expect($newsletter['body'])->hasKey('html');
-          expect($newsletter['body'])->hasKey('text');
+          verify($newsletter['body'])->arrayHasKey('html');
+          verify($newsletter['body'])->arrayHasKey('text');
           expect($newsletter['body'])->count(2);
           verify($newsletter['body']['text'])->stringContainsString('subscriber@example.com');
           verify($newsletter['body']['html'])->stringContainsString('subscriber@example.com');
@@ -106,12 +106,12 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
       'send' =>
         Expected::once(function($newsletter, $subscriber, $extraParams) {
           verify($subscriber)->equals('a@b.c');
-          expect($newsletter)->hasKey('subject');
-          expect($newsletter)->hasKey('body');
+          verify($newsletter)->arrayHasKey('subject');
+          verify($newsletter)->arrayHasKey('body');
           expect($newsletter)->count(2);
           expect($newsletter['subject'])->matchesFormat('New subscriber to List %s, List %s');
-          expect($newsletter['body'])->hasKey('html');
-          expect($newsletter['body'])->hasKey('text');
+          verify($newsletter['body'])->arrayHasKey('html');
+          verify($newsletter['body'])->arrayHasKey('text');
           expect($newsletter['body'])->count(2);
           verify($newsletter['body']['text'])->stringContainsString('subscriber@example.com');
           verify($newsletter['body']['html'])->stringContainsString('subscriber@example.com');

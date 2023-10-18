@@ -24,10 +24,10 @@ class SegmentsResponseBuilderTest extends \MailPoetTest {
     verify($response['name'])->equals($name);
     verify($response['type'])->equals(SegmentEntity::TYPE_DEFAULT);
     verify($response['description'])->equals($description);
-    expect($response)->hasKey('id');
-    expect($response)->hasKey('created_at');
-    expect($response)->hasKey('updated_at');
-    expect($response)->hasKey('deleted_at');
+    verify($response)->arrayHasKey('id');
+    verify($response)->arrayHasKey('created_at');
+    verify($response)->arrayHasKey('updated_at');
+    verify($response)->arrayHasKey('deleted_at');
     $em->remove($segment);
     $em->flush();
   }

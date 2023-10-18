@@ -80,7 +80,7 @@ class ModelTest extends \MailPoetTest {
     $model->set_orm($orm);
     $model->save();
     $errors = $model->getErrors();
-    expect($errors)->hasKey(MPModel::DUPLICATE_RECORD);
+    verify($errors)->arrayHasKey(MPModel::DUPLICATE_RECORD);
     verify($errors[MPModel::DUPLICATE_RECORD])->stringContainsString('Please specify a different "name".');
   }
 

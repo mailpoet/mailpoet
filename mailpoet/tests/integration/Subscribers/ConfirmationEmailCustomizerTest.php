@@ -93,9 +93,9 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
 
     expect($renderedContent)->array();
 
-    expect($renderedContent)->hasKey('html');
-    expect($renderedContent)->hasKey('text');
-    expect($renderedContent)->hasKey('subject');
+    verify($renderedContent)->arrayHasKey('html');
+    verify($renderedContent)->arrayHasKey('text');
+    verify($renderedContent)->arrayHasKey('subject');
   }
 
   public function testItRendersEmailWithDefaultTemplateContent() {

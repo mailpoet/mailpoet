@@ -24,9 +24,9 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     verify($response['name'])->equals($name);
     verify($response['description'])->equals($description);
     verify($response['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
-    expect($response)->hasKey('created_at');
-    expect($response)->hasKey('updated_at');
-    expect($response)->hasKey('deleted_at');
+    verify($response)->arrayHasKey('created_at');
+    verify($response)->arrayHasKey('updated_at');
+    verify($response)->arrayHasKey('deleted_at');
     verify($response['filters_connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
     expect($response['filters'])->array();
     expect($response['filters'])->count(1);
@@ -51,9 +51,9 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     verify($response['name'])->equals($name);
     verify($response['description'])->equals($description);
     verify($response['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
-    expect($response)->hasKey('created_at');
-    expect($response)->hasKey('updated_at');
-    expect($response)->hasKey('deleted_at');
+    verify($response)->arrayHasKey('created_at');
+    verify($response)->arrayHasKey('updated_at');
+    verify($response)->arrayHasKey('deleted_at');
     verify($response['filters_connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
     expect($response['filters'])->array();
     expect($response['filters'])->count(2);

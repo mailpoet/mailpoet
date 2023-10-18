@@ -38,9 +38,9 @@ class NewslettersExporterTest extends \MailPoetTest {
   public function testExportWorksWhenSubscriberNotFound() {
     $result = $this->exporter->export('email.that@doesnt.exists');
     expect($result)->array();
-    expect($result)->hasKey('data');
+    verify($result)->arrayHasKey('data');
     verify($result['data'])->equals([]);
-    expect($result)->hasKey('done');
+    verify($result)->arrayHasKey('done');
     verify($result['done'])->equals(true);
   }
 
@@ -48,9 +48,9 @@ class NewslettersExporterTest extends \MailPoetTest {
     (new SubscriberFactory())->withEmail('email.that@has.no.newsletters')->create();
     $result = $this->exporter->export('email.that@has.no.newsletters');
     expect($result)->array();
-    expect($result)->hasKey('data');
+    verify($result)->arrayHasKey('data');
     verify($result['data'])->equals([]);
-    expect($result)->hasKey('done');
+    verify($result)->arrayHasKey('done');
     verify($result['done'])->equals(true);
   }
 
@@ -87,10 +87,10 @@ class NewslettersExporterTest extends \MailPoetTest {
     expect($result['data'])->array();
     expect($result['data'])->count(1);
     verify($result['done'])->equals(true);
-    expect($result['data'][0])->hasKey('group_id');
-    expect($result['data'][0])->hasKey('group_label');
-    expect($result['data'][0])->hasKey('item_id');
-    expect($result['data'][0])->hasKey('data');
+    verify($result['data'][0])->arrayHasKey('group_id');
+    verify($result['data'][0])->arrayHasKey('group_label');
+    verify($result['data'][0])->arrayHasKey('item_id');
+    verify($result['data'][0])->arrayHasKey('data');
     expect($result['data'][0]['data'])->contains(['name' => 'Email subject', 'value' => 'Email Subject']);
   }
 

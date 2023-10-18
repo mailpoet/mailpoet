@@ -274,8 +274,8 @@ class LinksTest extends \MailPoetTest {
     verify(count($links))->equals(2);
     verify($links[1]['link'])->equals(NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE);
     verify($links[1]['type'])->equals(Links::LINK_TYPE_SHORTCODE);
-    expect($links[1])->hasKey('processed_link');
-    expect($links[1])->hasKey('hash');
+    verify($links[1])->arrayHasKey('processed_link');
+    verify($links[1])->arrayHasKey('hash');
     $links = $this->links->ensureInstantUnsubscribeLink($links);
     verify(count($links))->equals(2);
   }
