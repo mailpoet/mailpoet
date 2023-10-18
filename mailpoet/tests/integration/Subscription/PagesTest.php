@@ -98,7 +98,7 @@ class PagesTest extends \MailPoetTest {
 
     $confirmedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
-    expect($confirmedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($confirmedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     $this->assertTrue(Carbon::parse($confirmedSubscriber->getLastSubscribedAt())->isToday());
   }
 
@@ -150,12 +150,12 @@ class PagesTest extends \MailPoetTest {
     $this->entityManager->clear();
     $confirmedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
-    expect($confirmedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($confirmedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($confirmedSubscriber->getConfirmedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
     expect($confirmedSubscriber->getConfirmedAt())->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
     expect($confirmedSubscriber->getLastSubscribedAt())->greaterOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
     expect($confirmedSubscriber->getLastSubscribedAt())->lessOrEquals(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
-    expect($confirmedSubscriber->getFirstName())->equals('First name');
+    verify($confirmedSubscriber->getFirstName())->equals('First name');
   }
 
   public function testItSendsWelcomeNotificationUponConfirmingSubscription() {
@@ -188,12 +188,12 @@ class PagesTest extends \MailPoetTest {
     $newsletterEntity = $newslettersRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
     $scheduledNotifications = $scheduledTasksRepository->findByNewsletterAndStatus($newsletterEntity, SendingQueueEntity::STATUS_SCHEDULED);
-    expect(count($scheduledNotifications))->equals(1);
+    verify(count($scheduledNotifications))->equals(1);
 
     // Does not schedule another on repeated confirmation
     $subscription->confirm();
     $scheduledNotifications = $scheduledTasksRepository->findByNewsletterAndStatus($newsletterEntity, SendingQueueEntity::STATUS_SCHEDULED);
-    expect(count($scheduledNotifications))->equals(1);
+    verify(count($scheduledNotifications))->equals(1);
   }
 
   public function testItUnsubscribes() {
@@ -205,7 +205,7 @@ class PagesTest extends \MailPoetTest {
 
     $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
-    expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
 
     $subscriberSegments = $updatedSubscriber->getSubscriberSegments();
     foreach ($subscriberSegments as $subscriberSegment) {
@@ -254,10 +254,10 @@ class PagesTest extends \MailPoetTest {
     $updatedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
 
-    expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $unsubscriptionStat = $this->statisticsUnsubscribesRepository->findOneBy(['subscriber' => $updatedSubscriber->getId()]);
-    expect($unsubscriptionStat->getMethod())->equals( StatisticsUnsubscribeEntity::METHOD_LINK);
-    expect($unsubscriptionStat->getSource())->equals(StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
+    verify($unsubscriptionStat->getMethod())->equals( StatisticsUnsubscribeEntity::METHOD_LINK);
+    verify($unsubscriptionStat->getSource())->equals(StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
 
     $this->statisticsUnsubscribesRepository->remove($unsubscriptionStat);
     $this->statisticsUnsubscribesRepository->flush();
@@ -274,10 +274,10 @@ class PagesTest extends \MailPoetTest {
     $updatedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
 
-    expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $unsubscriptionStat = $this->statisticsUnsubscribesRepository->findOneBy(['subscriber' => $updatedSubscriber->getId()]);
-    expect($unsubscriptionStat->getMethod())->equals(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
-    expect($unsubscriptionStat->getSource())->equals(StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
+    verify($unsubscriptionStat->getMethod())->equals(StatisticsUnsubscribeEntity::METHOD_ONE_CLICK);
+    verify($unsubscriptionStat->getSource())->equals(StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
 
   }
 
@@ -295,7 +295,7 @@ class PagesTest extends \MailPoetTest {
     $updatedSubscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
     $clickStat = $this->statisticsClicksRepository->getAllForSubscriber($this->subscriber)->getQuery()->getResult();
-    expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     expect($clickStat)->count(1);
   }
 

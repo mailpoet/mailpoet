@@ -51,8 +51,8 @@ class TimestampListenerTest extends EventListenersBaseTest {
     $this->entityManager->persist($entity);
     $this->entityManager->flush();
 
-    expect($entity->getCreatedAt())->equals($this->now);
-    expect($entity->getUpdatedAt())->equals($this->now);
+    verify($entity->getCreatedAt())->equals($this->now);
+    verify($entity->getUpdatedAt())->equals($this->now);
   }
 
   public function testItSetsTimestampOnUpdate() {
@@ -72,8 +72,8 @@ class TimestampListenerTest extends EventListenersBaseTest {
 
     $createdAt = $entity->getCreatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
-    expect($createdAt->format('Y-m-d H:i:s'))->equals('2000-01-01 12:00:00');
-    expect($entity->getUpdatedAt())->equals($this->now);
+    verify($createdAt->format('Y-m-d H:i:s'))->equals('2000-01-01 12:00:00');
+    verify($entity->getUpdatedAt())->equals($this->now);
   }
 
   public function testItUsesDifferentTimesWhenCreatingDifferentEntities() {

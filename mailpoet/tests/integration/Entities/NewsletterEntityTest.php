@@ -75,7 +75,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $this->assertInstanceOf(NewsletterOptionEntity::class, $newsletterOption);
 
     expect($newsletterOptionField)->notNull();
-    expect($newsletterOption->getValue())->equals($optionValue);
+    verify($newsletterOption->getValue())->equals($optionValue);
     expect($newsletter->getOption(NewsletterOptionFieldEntity::NAME_SEGMENT))->null();
   }
 
@@ -102,7 +102,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
 
     // verify
-    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
   }
 
   public function testItActivatesTaskWhenActivatingNewsletter() {
@@ -128,7 +128,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
 
     // verify
-    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
   }
 
   public function testItDoesNotActivateTaskIfInTooMuchInPast() {
@@ -155,7 +155,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
 
     // verify
-    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
   }
 
   public function testItGetProcessedAtReturnsNullIfEmailHasNotBeingQueuedYet() {
@@ -193,7 +193,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->entityManager->refresh($newsletter);
-    expect($newsletter->getFilterSegmentId())->equals(2);
+    verify($newsletter->getFilterSegmentId())->equals(2);
   }
 
   public function testItInheritsFilterSegmentIdFromParent(): void {
@@ -208,7 +208,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $this->entityManager->refresh($notificationNewsletter);
-    expect($notificationNewsletter->getFilterSegmentId())->equals(2);
+    verify($notificationNewsletter->getFilterSegmentId())->equals(2);
 
     $notificationHistoryNewsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
     expect($notificationHistoryNewsletter->getFilterSegmentId())->null();
@@ -217,7 +217,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $this->entityManager->persist($notificationHistoryNewsletter);
     $this->entityManager->flush();
     $this->entityManager->refresh($notificationHistoryNewsletter);
-    expect($notificationHistoryNewsletter->getFilterSegmentId())->equals(2);
+    verify($notificationHistoryNewsletter->getFilterSegmentId())->equals(2);
   }
 
   private function createNewsletter(string $type = NewsletterEntity::TYPE_STANDARD): NewsletterEntity {

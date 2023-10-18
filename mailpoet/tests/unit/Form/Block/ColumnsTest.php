@@ -30,7 +30,7 @@ class ColumnsTest extends \MailPoetUnitTest {
 
   public function testItShouldRenderColumns() {
     $html = $this->columns->render($this->block, 'content');
-    expect($html)->equals('<div class="mailpoet_form_columns mailpoet_paragraph mailpoet_stack_on_mobile">content</div>');
+    verify($html)->equals('<div class="mailpoet_form_columns mailpoet_paragraph mailpoet_stack_on_mobile">content</div>');
   }
 
   public function testItShouldRenderVerticalAlignClass() {

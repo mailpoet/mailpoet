@@ -76,16 +76,16 @@ class SegmentTest extends \MailPoetUnitTest {
 
     $checkbox1 = $this->htmlParser->getElementByXpath($html, "//label[@class='mailpoet_checkbox_label']", 0);
     $checkbox2 = $this->htmlParser->getElementByXpath($html, "//label[@class='mailpoet_checkbox_label']", 1);
-    expect($checkbox1->textContent)->equals(' List 1');
-    expect($checkbox2->textContent)->equals(' List 2');
+    verify($checkbox1->textContent)->equals(' List 1');
+    verify($checkbox2->textContent)->equals(' List 2');
 
     $checkbox1Input = $this->htmlParser->getChildElement($checkbox1, 'input');
     $checkbox2Input = $this->htmlParser->getChildElement($checkbox2, 'input');
-    expect($this->htmlParser->getAttribute($checkbox1Input, 'value')->value)->equals(1);
-    expect($this->htmlParser->getAttribute($checkbox2Input, 'value')->value)->equals(2);
-    expect($this->htmlParser->getAttribute($checkbox1Input, 'name')->value)->equals('data[Segments][]');
-    expect($this->htmlParser->getAttribute($checkbox2Input, 'name')->value)->equals('data[Segments][]');
-    expect($this->htmlParser->getAttribute($checkbox1Input, 'checked')->value)->equals('checked');
+    verify($this->htmlParser->getAttribute($checkbox1Input, 'value')->value)->equals(1);
+    verify($this->htmlParser->getAttribute($checkbox2Input, 'value')->value)->equals(2);
+    verify($this->htmlParser->getAttribute($checkbox1Input, 'name')->value)->equals('data[Segments][]');
+    verify($this->htmlParser->getAttribute($checkbox2Input, 'name')->value)->equals('data[Segments][]');
+    verify($this->htmlParser->getAttribute($checkbox1Input, 'checked')->value)->equals('checked');
   }
 
   public function testItShouldRenderErrorContainerWithFormId(): void {
@@ -101,7 +101,7 @@ class SegmentTest extends \MailPoetUnitTest {
 
     $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_segment_1']");
     expect($errorContainer)->notEmpty();
-    expect($errorContainer->nodeName)->equals('span');
+    verify($errorContainer->nodeName)->equals('span');
   }
 
   /**

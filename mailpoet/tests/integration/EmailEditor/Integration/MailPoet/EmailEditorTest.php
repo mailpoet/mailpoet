@@ -35,19 +35,19 @@ class EmailEditorTest extends \MailPoetTest {
   public function testItCreatesAssociatedNewsletterEntity() {
     $this->emailEditor->initialize();
     $newsletters = $this->newslettersRepository->findAll();
-    expect(count($newsletters))->equals(0);
+    verify(count($newsletters))->equals(0);
     $wp = $this->diContainer->get(WPFunctions::class);
     // Add email post
     $postId = $wp->wpInsertPost(['post_type' => 'mailpoet_email']);
     $newsletters = $this->newslettersRepository->findAll();
-    expect(count($newsletters))->equals(1);
+    verify(count($newsletters))->equals(1);
     expect($newsletters[0]->getWpPostId())->greaterThan(0);
-    expect($newsletters[0]->getWpPostId())->equals($postId);
+    verify($newsletters[0]->getWpPostId())->equals($postId);
     // Add non-email standard post
     $wp->wpInsertPost(['post_type' => 'post']);
     $newsletters = $this->newslettersRepository->findAll();
     // Newsletters count should not change
-    expect(count($newsletters))->equals(1);
+    verify(count($newsletters))->equals(1);
   }
 
   public function _after() {

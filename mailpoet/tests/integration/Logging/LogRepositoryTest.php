@@ -29,6 +29,6 @@ class LogRepositoryTest extends \MailPoetTest {
       $logsInDB[] = $log->getId();
     }
     sort($logsInDB);
-    expect([$log2->getId(), $log3->getId(), $log4->getId()])->equals($logsInDB);
+    verify([$log2->getId(), $log3->getId(), $log4->getId()])->equals($logsInDB);
   }
 }

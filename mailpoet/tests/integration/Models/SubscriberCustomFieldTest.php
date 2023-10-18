@@ -37,9 +37,9 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
     $data = array_map('array_values', $this->data);
     SubscriberCustomField::createMultiple($data);
     $records = SubscriberCustomField::findArray();
-    expect(count($records))->equals(2);
-    expect($records[0]['value'])->equals('Test 1');
-    expect($records[1]['value'])->equals('Test 2');
+    verify(count($records))->equals(2);
+    verify($records[0]['value'])->equals('Test 1');
+    verify($records[1]['value'])->equals('Test 2');
   }
 
   public function testItCanUpdateMultipleRecords() {
@@ -50,8 +50,8 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
     $updatedData = array_map('array_values', $updatedData);
     SubscriberCustomField::updateMultiple($updatedData);
     $records = SubscriberCustomField::findArray();
-    expect($records[0]['value'])->equals('Updated');
-    expect($records[1]['value'])->equals('Test 2');
+    verify($records[0]['value'])->equals('Updated');
+    verify($records[1]['value'])->equals('Test 2');
   }
 
   public function testItCanDeleteManySubscriberRelations() {

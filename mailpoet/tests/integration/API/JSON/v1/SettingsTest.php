@@ -77,7 +77,7 @@ class SettingsTest extends \MailPoetTest {
 
   public function testItCanGetSettings() {
     $response = $this->endpoint->get();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     expect($response->data)->notEmpty();
     expect($response->data['some']['setting']['key'])->true();
@@ -85,8 +85,8 @@ class SettingsTest extends \MailPoetTest {
     $this->diContainer->get(SettingsRepository::class)->truncate();
     $this->settings->resetCache();
     $response = $this->endpoint->get();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals($this->settings->getAllDefaults());
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals($this->settings->getAllDefaults());
   }
 
   public function testItCanSetSettings() {
@@ -120,14 +120,14 @@ class SettingsTest extends \MailPoetTest {
     );
 
     $response = $this->endpoint->set(/* missing data */);
-    expect($response->errors[0]['error'])->equals(APIError::BAD_REQUEST);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['error'])->equals(APIError::BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
     $response = $this->endpoint->set($newSettings);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     $response = $this->endpoint->get();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['some']['setting'])->hasNotKey('key');
     expect($response->data['some']['setting']['new_key'])->true();
     expect($response->data['some']['new_setting'])->true();
@@ -193,7 +193,7 @@ class SettingsTest extends \MailPoetTest {
     ]);
     expect($response->status)->same(200);
     expect($this->settings->get('sender.address'))->same('invalid@email.com');
-    expect($response->meta)->equals([
+    verify($response->meta)->equals([
       'invalid_sender_address' => 'invalid@email.com',
       'showNotice' => false,
     ]);
@@ -268,7 +268,7 @@ class SettingsTest extends \MailPoetTest {
     $this->endpoint->set($newSettings);
 
     $this->settings->resetCache();
-    expect($this->settings->get('sender')['address'])->equals('johndoeexampletestnonexistinghopefullyfreemail@gmail.com');
+    verify($this->settings->get('sender')['address'])->equals('johndoeexampletestnonexistinghopefullyfreemail@gmail.com');
     expect($this->settings->get('reply_to'))->isEmpty();
   }
 
@@ -276,26 +276,26 @@ class SettingsTest extends \MailPoetTest {
     $this->createNewsletter(NewsletterEntity::TYPE_RE_ENGAGEMENT, NewsletterEntity::STATUS_ACTIVE);
     $this->settings->set('tracking', ['level' => TrackingConfig::LEVEL_PARTIAL]);
     $response = $this->endpoint->set(['tracking' => ['level' => TrackingConfig::LEVEL_BASIC]]);
-    expect($response->meta['showNotice'])->equals(true);
-    expect($response->meta['action'])->equals('deactivate');
-    expect($this->newsletterRepository->findActiveByTypes([NewsletterEntity::TYPE_RE_ENGAGEMENT]))->equals([]);
+    verify($response->meta['showNotice'])->equals(true);
+    verify($response->meta['action'])->equals('deactivate');
+    verify($this->newsletterRepository->findActiveByTypes([NewsletterEntity::TYPE_RE_ENGAGEMENT]))->equals([]);
   }
 
   public function testItFlagsNoticeToReactivateReEngagementEmailsIfTrackingEnabled(): void {
     $this->createNewsletter(NewsletterEntity::TYPE_RE_ENGAGEMENT);
     $this->settings->set('tracking', ['level' => TrackingConfig::LEVEL_BASIC]);
     $response = $this->endpoint->set(['tracking' => ['level' => TrackingConfig::LEVEL_PARTIAL]]);
-    expect($response->meta['showNotice'])->equals(true);
-    expect($response->meta['action'])->equals('reactivate');
+    verify($response->meta['showNotice'])->equals(true);
+    verify($response->meta['action'])->equals('reactivate');
   }
 
   public function testNoNoticeWhenTrackingChangesIfNoReEngagementEmails(): void {
     $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_ACTIVE);
     $this->settings->set('tracking', ['level' => TrackingConfig::LEVEL_BASIC]);
     $response = $this->endpoint->set(['tracking' => ['level' => TrackingConfig::LEVEL_PARTIAL]]);
-    expect($response->meta['showNotice'])->equals(false);
+    verify($response->meta['showNotice'])->equals(false);
     $response = $this->endpoint->set(['tracking' => ['level' => TrackingConfig::LEVEL_BASIC]]);
-    expect($response->meta['showNotice'])->equals(false);
+    verify($response->meta['showNotice'])->equals(false);
   }
 
   public function testItCanDeleteSetting() {
@@ -336,11 +336,11 @@ class SettingsTest extends \MailPoetTest {
     );
 
     expect($this->endpoint->setKeyAndSetupMss($newKey))->isInstanceOf(SuccessResponse::class);
-    expect($this->settings->get('mta.mailpoet_api_key'))->equals($newKey);
-    expect($this->settings->get('mta_group'))->equals('mailpoet');
-    expect($this->settings->get('mta.method'))->equals('MailPoet');
-    expect($this->settings->get('signup_confirmation.enabled'))->equals(1);
-    expect($this->settings->get('premium.premium_key'))->equals($newKey);
+    verify($this->settings->get('mta.mailpoet_api_key'))->equals($newKey);
+    verify($this->settings->get('mta_group'))->equals('mailpoet');
+    verify($this->settings->get('mta.method'))->equals('MailPoet');
+    verify($this->settings->get('signup_confirmation.enabled'))->equals(1);
+    verify($this->settings->get('premium.premium_key'))->equals($newKey);
   }
 
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT, $parent = null): NewsletterEntity {

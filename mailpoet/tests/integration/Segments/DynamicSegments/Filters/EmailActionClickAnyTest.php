@@ -70,7 +70,7 @@ class EmailActionClickAnyTest extends \MailPoetTest {
     $data = $this->getSegmentFilterData(EmailActionClickAny::TYPE);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($data, $this->emailAction);
     expect($emails)->count(1);
-    expect($emails[0])->equals('opened_clicked@example.com');
+    verify($emails[0])->equals('opened_clicked@example.com');
   }
 
   private function getSegmentFilterData(string $action, int $newsletterId = null, int $linkId = null): DynamicSegmentFilterData {

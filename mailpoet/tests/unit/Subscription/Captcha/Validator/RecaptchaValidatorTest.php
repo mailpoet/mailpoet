@@ -32,14 +32,14 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest {
       WPFunctions::class,
       [
         'wpRemotePost' => function($url, $args) use ($recaptchaResponseToken, $captchaSettings, $response) {
-          expect($url)->equals('https://www.google.com/recaptcha/api/siteverify');
-          expect($args['body']['secret'])->equals($captchaSettings['recaptcha_invisible_secret_token']);
-          expect($args['body']['response'])->equals($recaptchaResponseToken);
+          verify($url)->equals('https://www.google.com/recaptcha/api/siteverify');
+          verify($args['body']['secret'])->equals($captchaSettings['recaptcha_invisible_secret_token']);
+          verify($args['body']['response'])->equals($recaptchaResponseToken);
           return $response;
         },
         'isWpError' => false,
         'wpRemoteRetrieveBody' => function($data) use ($response) {
-          expect($data)->equals($response);
+          verify($data)->equals($response);
           return $response;
         },
       ],
@@ -77,14 +77,14 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest {
       WPFunctions::class,
       [
         'wpRemotePost' => function($url, $args) use ($recaptchaResponseToken, $captchaSettings, $response) {
-          expect($url)->equals('https://www.google.com/recaptcha/api/siteverify');
-          expect($args['body']['secret'])->equals($captchaSettings['recaptcha_secret_token']);
-          expect($args['body']['response'])->equals($recaptchaResponseToken);
+          verify($url)->equals('https://www.google.com/recaptcha/api/siteverify');
+          verify($args['body']['secret'])->equals($captchaSettings['recaptcha_secret_token']);
+          verify($args['body']['response'])->equals($recaptchaResponseToken);
           return $response;
         },
         'isWpError' => false,
         'wpRemoteRetrieveBody' => function($data) use ($response) {
-          expect($data)->equals($response);
+          verify($data)->equals($response);
           return $response;
         },
       ],
@@ -140,7 +140,7 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest {
     try {
       $testee->validate($data);
     } catch (ValidationError $error) {
-      expect($error->getMessage())->equals('Error while validating the CAPTCHA.');
+      verify($error->getMessage())->equals('Error while validating the CAPTCHA.');
     }
     expect($error)->isInstanceOf(ValidationError::class);
   }
@@ -184,7 +184,7 @@ class RecaptchaValidatorTest extends \MailPoetUnitTest {
     try {
       $testee->validate($data);
     } catch (ValidationError $error) {
-      expect($error->getMessage())->equals('Error while validating the CAPTCHA.');
+      verify($error->getMessage())->equals('Error while validating the CAPTCHA.');
     }
     expect($error)->isInstanceOf(ValidationError::class);
   }

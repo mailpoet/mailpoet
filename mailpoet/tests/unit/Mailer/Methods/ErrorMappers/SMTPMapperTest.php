@@ -29,7 +29,7 @@ class SMTPMapperTest extends \MailPoetUnitTest {
   public function testItCreatesSoftErrorForInvalidEmail() {
     $message = 'Invalid address (to): john@rambo.com';
     $error = $this->mapper->getErrorFromException(new Exception($message), 'john@rambo.com');
-    expect($error->getLevel())->equals(MailerError::LEVEL_SOFT);
+    verify($error->getLevel())->equals(MailerError::LEVEL_SOFT);
   }
 
   public function _after() {

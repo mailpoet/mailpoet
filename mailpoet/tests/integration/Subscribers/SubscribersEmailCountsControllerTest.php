@@ -50,7 +50,7 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 3);
 
     [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts(null, 3);
-    expect($count)->equals(3);
+    verify($count)->equals(3);
 
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
@@ -60,9 +60,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
 
-    expect($subscriber1->getEmailCount())->equals(80);
-    expect($subscriber2->getEmailCount())->equals(8);
-    expect($subscriber3->getEmailCount())->equals(0);
+    verify($subscriber1->getEmailCount())->equals(80);
+    verify($subscriber2->getEmailCount())->equals(8);
+    verify($subscriber3->getEmailCount())->equals(0);
   }
 
   public function testItIncrementsSubscribersEmailCountsWhenDateProvided(): void {
@@ -79,7 +79,7 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $dateFrom = $dateFromCarbon->subDays(7)->toDateTime();
 
     [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts($dateFrom, 3);
-    expect($count)->equals(3);
+    verify($count)->equals(3);
 
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
@@ -89,9 +89,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
 
-    expect($subscriber1->getEmailCount())->equals(81);
-    expect($subscriber2->getEmailCount())->equals(9);
-    expect($subscriber3->getEmailCount())->equals(1);
+    verify($subscriber1->getEmailCount())->equals(81);
+    verify($subscriber2->getEmailCount())->equals(9);
+    verify($subscriber3->getEmailCount())->equals(1);
 
   }
 
@@ -117,9 +117,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
 
-    expect($subscriber1->getEmailCount())->equals(80);
-    expect($subscriber2->getEmailCount())->equals(8);
-    expect($subscriber3->getEmailCount())->equals(1);
+    verify($subscriber1->getEmailCount())->equals(80);
+    verify($subscriber2->getEmailCount())->equals(8);
+    verify($subscriber3->getEmailCount())->equals(1);
   }
 
   public function testItUpdatesOnlySubscribersInBatch() {
@@ -133,7 +133,7 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
 
     // First batch of 1
     [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts(null, 1);
-    expect($count)->equals(1);
+    verify($count)->equals(1);
     // Second batch of 1
     $this->controller->updateSubscribersEmailCounts(null, 1, $maxSubscriberId + 1);
 
@@ -145,16 +145,16 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
 
-    expect($subscriber1->getEmailCount())->equals(80);
-    expect($subscriber2->getEmailCount())->equals(8);
+    verify($subscriber1->getEmailCount())->equals(80);
+    verify($subscriber2->getEmailCount())->equals(8);
     // Subscriber not in batch should not be updated
-    expect($subscriber3->getEmailCount())->equals(0);
+    verify($subscriber3->getEmailCount())->equals(0);
   }
 
   public function testItDoesNotCountIfThereAreNoSubscribersOrTasksToUpdate() {
     // Subscribers empty table
     [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts(null, 1);
-    expect($count)->equals(0);
+    verify($count)->equals(0);
 
     $subscriber1 = $this->createSubscriber('s1@email.com', 100);
     $subscriber2 = $this->createSubscriber('s2@email.com', 20);
@@ -164,7 +164,7 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $dateFromCarbon = new Carbon();
     $dateFrom = $dateFromCarbon->subDays(7)->toDateTime();
     [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts($dateFrom, 1);
-    expect($count)->equals(0);
+    verify($count)->equals(0);
 
     $this->createCompletedSendingTasksForSubscriber($subscriber1, 80, 90);
     $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 3);
@@ -172,7 +172,7 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
 
     // No subscribers to update from startId
     [$count, $maxSubscriberId] = $this->controller->updateSubscribersEmailCounts(null, 1, 4);
-    expect($count)->equals(0);
+    verify($count)->equals(0);
 
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
@@ -182,9 +182,9 @@ class SubscribersEmailCountsControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber3);
 
-    expect($subscriber1->getEmailCount())->equals(0);
-    expect($subscriber2->getEmailCount())->equals(0);
-    expect($subscriber3->getEmailCount())->equals(0);
+    verify($subscriber1->getEmailCount())->equals(0);
+    verify($subscriber2->getEmailCount())->equals(0);
+    verify($subscriber3->getEmailCount())->equals(0);
   }
 
   private function createCompletedSendingTasksForSubscriber(SubscriberEntity $subscriber, int $numTasks = 1, int $processedDaysAgo = 0): void {

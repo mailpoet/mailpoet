@@ -310,8 +310,8 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     ]));
 
     expect($filters['segment'])->count(2); // All list + 1 segments
-    expect($filters['segment'][0]['label'])->equals('All Lists');
-    expect($filters['segment'][1]['label'])->equals('Segment 1 (1)');
-    expect($filters['segment'][1]['value'])->equals($segment1->getId());
+    verify($filters['segment'][0]['label'])->equals('All Lists');
+    verify($filters['segment'][1]['label'])->equals('Segment 1 (1)');
+    verify($filters['segment'][1]['value'])->equals($segment1->getId());
   }
 }

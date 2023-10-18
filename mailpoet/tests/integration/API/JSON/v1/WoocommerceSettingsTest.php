@@ -24,15 +24,15 @@ class WoocommerceSettingsTest extends \MailPoetTest {
     $response = $this->endpoint->set([
       'woocommerce_email_base_color' => '#aaaaaa',
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($this->wp->getOption('woocommerce_email_base_color'))->equals('#aaaaaa');
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($this->wp->getOption('woocommerce_email_base_color'))->equals('#aaaaaa');
   }
 
   public function testItDoesNotSetUnallowedSettings() {
     $response = $this->endpoint->set([
       'mailpoet_some_none_exting_option' => 'some value',
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($this->wp->getOption('mailpoet_some_none_exting_option', null))->equals(null);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($this->wp->getOption('mailpoet_some_none_exting_option', null))->equals(null);
   }
 }

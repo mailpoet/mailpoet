@@ -45,14 +45,14 @@ class MailChimpTest extends \MailPoetTest {
       ->false();
     expect($this->mailchimp->getAPIKey('12345678901234567890123456789012-1'))
       ->false();
-    expect($this->mailchimp->getAPIKey($validApiKeyFormat))
+    verify($this->mailchimp->getAPIKey($validApiKeyFormat))
       ->equals($validApiKeyFormat);
   }
 
   public function testItCanGetDatacenter(): void {
     $validApiKeyFormat = '12345678901234567890123456789012-ab1';
     $dataCenter = 'ab1';
-    expect($this->mailchimp->getDataCenter($validApiKeyFormat))
+    verify($this->mailchimp->getDataCenter($validApiKeyFormat))
       ->equals($dataCenter);
   }
 
@@ -112,7 +112,7 @@ class MailChimpTest extends \MailPoetTest {
     expect($subscribers)->hasKey('duplicate');
     expect($subscribers['header'])->notEmpty();
     expect($subscribers['subscribers'])->count(1);
-    expect($subscribers['subscribersCount'])->equals(1);
+    verify($subscribers['subscribersCount'])->equals(1);
   }
 
   public function testItFailsWhenSubscribersDataTooLarge(): void {

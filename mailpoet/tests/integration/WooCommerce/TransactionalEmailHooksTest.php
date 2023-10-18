@@ -107,18 +107,18 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     $this->wp->updateOption('woocommerce_email_body_background_color', 'blue');
     $this->wp->updateOption('woocommerce_email_text_color', 'black');
 
-    expect($this->wp->getOption('woocommerce_email_background_color'))->equals('white');
-    expect($this->wp->getOption('woocommerce_email_base_color'))->equals('red');
-    expect($this->wp->getOption('woocommerce_email_body_background_color'))->equals('blue');
-    expect($this->wp->getOption('woocommerce_email_text_color'))->equals('black');
+    verify($this->wp->getOption('woocommerce_email_background_color'))->equals('white');
+    verify($this->wp->getOption('woocommerce_email_base_color'))->equals('red');
+    verify($this->wp->getOption('woocommerce_email_body_background_color'))->equals('blue');
+    verify($this->wp->getOption('woocommerce_email_text_color'))->equals('black');
 
     $transactionalEmails = $this->diContainer->get(TransactionalEmailHooks::class);
     $transactionalEmails->overrideStylesForWooEmails();
 
-    expect($this->wp->getOption('woocommerce_email_background_color'))->equals('#777777');
-    expect($this->wp->getOption('woocommerce_email_base_color'))->equals('#888888');
-    expect($this->wp->getOption('woocommerce_email_body_background_color'))->equals('#666666');
-    expect($this->wp->getOption('woocommerce_email_text_color'))->equals('#111111');
+    verify($this->wp->getOption('woocommerce_email_background_color'))->equals('#777777');
+    verify($this->wp->getOption('woocommerce_email_base_color'))->equals('#888888');
+    verify($this->wp->getOption('woocommerce_email_body_background_color'))->equals('#666666');
+    verify($this->wp->getOption('woocommerce_email_text_color'))->equals('#111111');
   }
 
   public function testItDoesntReplaceWoocommerceEmailStylesIfEmailIsNotSet() {
@@ -132,10 +132,10 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     $transactionalEmails = $this->diContainer->get(TransactionalEmailHooks::class);
     $transactionalEmails->overrideStylesForWooEmails();
 
-    expect($this->wp->getOption('woocommerce_email_background_color'))->equals('white');
-    expect($this->wp->getOption('woocommerce_email_base_color'))->equals('red');
-    expect($this->wp->getOption('woocommerce_email_body_background_color'))->equals('blue');
-    expect($this->wp->getOption('woocommerce_email_text_color'))->equals('black');
+    verify($this->wp->getOption('woocommerce_email_background_color'))->equals('white');
+    verify($this->wp->getOption('woocommerce_email_base_color'))->equals('red');
+    verify($this->wp->getOption('woocommerce_email_body_background_color'))->equals('blue');
+    verify($this->wp->getOption('woocommerce_email_text_color'))->equals('black');
   }
 
   public function testUseTemplateForWCEmails() {
@@ -171,8 +171,8 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     ]);
     $renderer = Stub::make(Renderer::class, [
       'render' => function(NewsletterEntity $entity, $subject) use(&$newsletter) {
-        expect($entity->getId())->equals($newsletter->getId());
-        expect($subject)->equals('heading text');
+        verify($entity->getId())->equals($newsletter->getId());
+        verify($subject)->equals('heading text');
       },
       'getHTMLBeforeContent' => function() {
         return 'HTML before content.';
@@ -202,13 +202,13 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     expect($addedActions['woocommerce_email_header'])->callable();
     ob_start();
     $addedActions['woocommerce_email_header']('heading text');
-    expect(ob_get_clean())->equals('HTML before content.');
+    verify(ob_get_clean())->equals('HTML before content.');
     expect($addedActions['woocommerce_email_footer'])->callable();
     ob_start();
     $addedActions['woocommerce_email_footer']();
-    expect(ob_get_clean())->equals('HTML after content');
+    verify(ob_get_clean())->equals('HTML after content');
     expect($addedActions['woocommerce_email_styles'])->callable();
-    expect($addedActions['woocommerce_email_styles']('some css'))->equals('prefixed some css');
+    verify($addedActions['woocommerce_email_styles']('some css'))->equals('prefixed some css');
   }
 
   public function testUseTemplateForWCEmailsWorksWithNoEmail() {

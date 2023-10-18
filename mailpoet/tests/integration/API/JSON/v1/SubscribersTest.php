@@ -161,24 +161,24 @@ class SubscribersTest extends \MailPoetTest {
 
   public function testItCanGetASubscriber() {
     $response = $this->endpoint->get(['id' => 'not_an_id']);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->equals(
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['message'])->equals(
       'This subscriber does not exist.'
     );
 
     $response = $this->endpoint->get(/* missing argument */);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->equals(
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['message'])->equals(
       'This subscriber does not exist.'
     );
 
     $response = $this->endpoint->get(['id' => $this->subscriber1->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data['id'])->equals($this->subscriber1->getId());
-    expect($response->data['first_name'])->equals($this->subscriber1->getFirstName());
-    expect($response->data['email'])->equals($this->subscriber1->getEmail());
-    expect($response->data['unsubscribes'])->equals([]);
-    expect($response->data['subscriptions'])->equals([]);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data['id'])->equals($this->subscriber1->getId());
+    verify($response->data['first_name'])->equals($this->subscriber1->getFirstName());
+    verify($response->data['email'])->equals($this->subscriber1->getEmail());
+    verify($response->data['unsubscribes'])->equals([]);
+    verify($response->data['subscriptions'])->equals([]);
   }
 
   public function testItCanSaveANewSubscriber() {
@@ -193,27 +193,27 @@ class SubscribersTest extends \MailPoetTest {
     ];
 
     $response = $this->endpoint->save($validData);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $this->assertInstanceOf(SuccessResponse::class, $response);
     $this->entityManager->clear();
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneBy(['email' => 'raul.doe@mailpoet.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($response->data['email'])->equals('raul.doe@mailpoet.com');
-    expect($response->data['id'])->equals($subscriber->getId());
-    expect($response->data['status'])->equals($subscriber->getStatus());
+    verify($response->data['email'])->equals('raul.doe@mailpoet.com');
+    verify($response->data['id'])->equals($subscriber->getId());
+    verify($response->data['status'])->equals($subscriber->getStatus());
 
     $subscriberSegments = $subscriber->getSegments();
-    expect($subscriberSegments->count())->equals(2);
-    expect($subscriberSegments->get(0)->getName())->equals($this->segment1->getName());
-    expect($subscriberSegments->get(1)->getName())->equals($this->segment2->getName());
+    verify($subscriberSegments->count())->equals(2);
+    verify($subscriberSegments->get(0)->getName())->equals($this->segment1->getName());
+    verify($subscriberSegments->get(1)->getName())->equals($this->segment2->getName());
 
     $this->entityManager->clear();
     $response = $this->endpoint->save(/* missing data */);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     $this->assertInstanceOf(ErrorResponse::class, $response);
 
-    expect($response->errors[0]['message'])
+    verify($response->errors[0]['message'])
       ->equals('Please enter your email address');
 
     $invalidData = [
@@ -222,11 +222,11 @@ class SubscribersTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $response = $this->endpoint->save($invalidData);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     $this->assertInstanceOf(ErrorResponse::class, $response);
-    expect($response->errors[0]['message'])
+    verify($response->errors[0]['message'])
       ->equals('Your email address is invalid!');
-    expect($subscriber->getSource())->equals('administrator');
+    verify($subscriber->getSource())->equals('administrator');
   }
 
   public function testItCanSaveANewSubscriberWithCustomField() {
@@ -245,15 +245,15 @@ class SubscribersTest extends \MailPoetTest {
 
     $response = $this->endpoint->save($validData);
     $this->assertInstanceOf(SuccessResponse::class, $response);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $this->entityManager->clear();
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneBy(['email' => 'raul.doe@mailpoet.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($response->data['email'])->equals('raul.doe@mailpoet.com');
-    expect($response->data['id'])->equals($subscriber->getId());
-    expect($response->data['status'])->equals($subscriber->getStatus());
-    expect($response->data["cf_{$customField->getId()}"])->equals('testing');
+    verify($response->data['email'])->equals('raul.doe@mailpoet.com');
+    verify($response->data['id'])->equals($subscriber->getId());
+    verify($response->data['status'])->equals($subscriber->getStatus());
+    verify($response->data["cf_{$customField->getId()}"])->equals('testing');
   }
 
   public function testItCanSaveAnExistingSubscriber() {
@@ -268,12 +268,12 @@ class SubscribersTest extends \MailPoetTest {
 
     $response = $this->endpoint->save($subscriberData);
     $this->assertInstanceOf(SuccessResponse::class, $response);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(
       $this->responseBuilder->build($this->subscriber2)
     );
-    expect($response->data['first_name'])->equals('Super Jane');
-    expect($response->data['source'])->equals('api');
+    verify($response->data['first_name'])->equals('Super Jane');
+    verify($response->data['source'])->equals('api');
   }
 
   public function testItCanUpdateEmailOfAnExistingSubscriber() {
@@ -281,12 +281,12 @@ class SubscribersTest extends \MailPoetTest {
     $subscriberData['email'] = 'newjane@mailpoet.com';
     $response = $this->endpoint->save($subscriberData);
     $this->assertInstanceOf(SuccessResponse::class, $response);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(
       $this->responseBuilder->build($this->subscriber2)
     );
-    expect($response->data['email'])->equals('newjane@mailpoet.com');
-    expect($response->data['first_name'])->equals($subscriberData['first_name']);
+    verify($response->data['email'])->equals('newjane@mailpoet.com');
+    verify($response->data['first_name'])->equals($subscriberData['first_name']);
   }
 
   public function testItCannotUpdateEmailOfAnExistingSubscriberIfEmailIsNotUnique() {
@@ -294,8 +294,8 @@ class SubscribersTest extends \MailPoetTest {
     $subscriberData['email'] = $this->subscriber1->getEmail();
     $response = $this->endpoint->save($subscriberData);
     $this->assertInstanceOf(ErrorResponse::class, $response);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('A subscriber with E-mail "' . $this->subscriber1->getEmail() . '" already exists.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('A subscriber with E-mail "' . $this->subscriber1->getEmail() . '" already exists.');
   }
 
   public function testItCanRemoveListsFromAnExistingSubscriber() {
@@ -309,11 +309,11 @@ class SubscribersTest extends \MailPoetTest {
 
     $response = $this->endpoint->save($subscriberData);
     $this->assertInstanceOf(SuccessResponse::class, $response);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(
       $this->responseBuilder->build($this->subscriber2)
     );
-    expect($this->subscriber2->getSubscriberSegments()->filter(function (SubscriberSegmentEntity $subscriberSegment) {
+    verify($this->subscriber2->getSubscriberSegments()->filter(function (SubscriberSegmentEntity $subscriberSegment) {
       return $subscriberSegment->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED;
     })->count())->equals(0);
   }
@@ -324,35 +324,35 @@ class SubscribersTest extends \MailPoetTest {
 
     $response = $this->endpoint->restore(['id' => $this->subscriber1->getId()]);
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneById($this->subscriber1->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($response->data['id'])->equals($subscriber->getId());
-    expect($response->data['email'])->equals($subscriber->getEmail());
-    expect($response->data['status'])->equals($subscriber->getStatus());
+    verify($response->data['id'])->equals($subscriber->getId());
+    verify($response->data['email'])->equals($subscriber->getEmail());
+    verify($response->data['status'])->equals($subscriber->getStatus());
     expect($response->data['deleted_at'])->null();
-    expect($response->meta['count'])->equals(1);
+    verify($response->meta['count'])->equals(1);
   }
 
   public function testItCanTrashASubscriber() {
     $response = $this->endpoint->trash(['id' => $this->subscriber2->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneById($this->subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($response->data['id'])->equals($subscriber->getId());
-    expect($response->data['email'])->equals($subscriber->getEmail());
-    expect($response->data['status'])->equals($subscriber->getStatus());
+    verify($response->data['id'])->equals($subscriber->getId());
+    verify($response->data['email'])->equals($subscriber->getEmail());
+    verify($response->data['status'])->equals($subscriber->getStatus());
     expect($response->data['deleted_at'])->notNull();
-    expect($response->meta['count'])->equals(1);
+    verify($response->meta['count'])->equals(1);
   }
 
   public function testItCanDeleteASubscriber() {
     $response = $this->endpoint->delete(['id' => $this->subscriber1->getId()]);
     expect($response->data)->isEmpty();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(1);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(1);
   }
 
   public function testItCanFilterListing() {
@@ -364,7 +364,7 @@ class SubscribersTest extends \MailPoetTest {
     ]);
 
     // it should return all subscribers
-    expect($response->meta['count'])->equals(2);
+    verify($response->meta['count'])->equals(2);
 
     // filter by 1st segment
     $response = $this->endpoint->listing([
@@ -373,8 +373,8 @@ class SubscribersTest extends \MailPoetTest {
       ],
     ]);
 
-    expect($response->meta['count'])->equals(1);
-    expect($response->data[0]['email'])->equals($this->subscriber2->getEmail());
+    verify($response->meta['count'])->equals(1);
+    verify($response->data[0]['email'])->equals($this->subscriber2->getEmail());
 
     // filter by 2nd segment
     $response = $this->endpoint->listing([
@@ -383,8 +383,8 @@ class SubscribersTest extends \MailPoetTest {
       ],
     ]);
 
-    expect($response->meta['count'])->equals(1);
-    expect($response->data[0]['email'])->equals($this->subscriber2->getEmail());
+    verify($response->meta['count'])->equals(1);
+    verify($response->data[0]['email'])->equals($this->subscriber2->getEmail());
   }
 
   public function testItCanLoadDynamicSegments() {
@@ -419,57 +419,57 @@ class SubscribersTest extends \MailPoetTest {
     $response = $this->endpoint->listing([
       'search' => '',
     ]);
-    expect($response->meta['count'])->equals(3);
+    verify($response->meta['count'])->equals(3);
 
     // search by email
     $response = $this->endpoint->listing([
       'search' => '.me',
     ]);
-    expect($response->meta['count'])->equals(1);
-    expect($response->data[0]['email'])->equals($newSubscriber->getEmail());
+    verify($response->meta['count'])->equals(1);
+    verify($response->data[0]['email'])->equals($newSubscriber->getEmail());
 
     // search by last name
     $response = $this->endpoint->listing([
       'search' => 'doe',
     ]);
-    expect($response->meta['count'])->equals(2);
-    expect($response->data[0]['email'])->equals($this->subscriber1->getEmail());
-    expect($response->data[1]['email'])->equals($this->subscriber2->getEmail());
+    verify($response->meta['count'])->equals(2);
+    verify($response->data[0]['email'])->equals($this->subscriber1->getEmail());
+    verify($response->data[1]['email'])->equals($this->subscriber2->getEmail());
 
     // search by first name
     $response = $this->endpoint->listing([
       'search' => 'billy',
     ]);
-    expect($response->meta['count'])->equals(1);
-    expect($response->data[0]['email'])->equals($newSubscriber->getEmail());
+    verify($response->meta['count'])->equals(1);
+    verify($response->data[0]['email'])->equals($newSubscriber->getEmail());
   }
 
   public function testItCanGroupListing() {
     $subscribedGroup = $this->endpoint->listing([
       'group' => SubscriberEntity::STATUS_SUBSCRIBED,
     ]);
-    expect($subscribedGroup->meta['count'])->equals(1);
-    expect($subscribedGroup->data[0]['email'])->equals(
+    verify($subscribedGroup->meta['count'])->equals(1);
+    verify($subscribedGroup->data[0]['email'])->equals(
       $this->subscriber2->getEmail()
     );
 
     $unsubscribedGroup = $this->endpoint->listing([
       'group' => SubscriberEntity::STATUS_UNSUBSCRIBED,
     ]);
-    expect($unsubscribedGroup->meta['count'])->equals(0);
+    verify($unsubscribedGroup->meta['count'])->equals(0);
 
     $unconfirmedGroup = $this->endpoint->listing([
       'group' => SubscriberEntity::STATUS_UNCONFIRMED,
     ]);
-    expect($unconfirmedGroup->meta['count'])->equals(1);
-    expect($unconfirmedGroup->data[0]['email'])->equals(
+    verify($unconfirmedGroup->meta['count'])->equals(1);
+    verify($unconfirmedGroup->data[0]['email'])->equals(
       $this->subscriber1->getEmail()
     );
 
     $trashedGroup = $this->endpoint->listing([
       'group' => 'trash',
     ]);
-    expect($trashedGroup->meta['count'])->equals(0);
+    verify($trashedGroup->meta['count'])->equals(0);
 
     // trash 1st subscriber
     $this->subscriber1->setDeletedAt(new \DateTime());
@@ -478,8 +478,8 @@ class SubscribersTest extends \MailPoetTest {
     $trashedGroup = $this->endpoint->listing([
       'group' => 'trash',
     ]);
-    expect($trashedGroup->meta['count'])->equals(1);
-    expect($trashedGroup->data[0]['email'])->equals(
+    verify($trashedGroup->meta['count'])->equals(1);
+    verify($trashedGroup->data[0]['email'])->equals(
       $this->subscriber1->getEmail()
     );
   }
@@ -504,7 +504,7 @@ class SubscribersTest extends \MailPoetTest {
       ],
     ]);
 
-    expect($response->data[0]['status'])->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($response->data[0]['status'])->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function testItCanSortAndLimitListing() {
@@ -515,9 +515,9 @@ class SubscribersTest extends \MailPoetTest {
       'sort_order' => 'asc',
     ]);
 
-    expect($response->meta['count'])->equals(2);
+    verify($response->meta['count'])->equals(2);
     expect($response->data)->count(1);
-    expect($response->data[0]['email'])->equals(
+    verify($response->data[0]['email'])->equals(
       $this->subscriber2->getEmail()
     );
 
@@ -529,9 +529,9 @@ class SubscribersTest extends \MailPoetTest {
       'sort_order' => 'asc',
     ]);
 
-    expect($response->meta['count'])->equals(2);
+    verify($response->meta['count'])->equals(2);
     expect($response->data)->count(1);
-    expect($response->data[0]['email'])->equals(
+    verify($response->data[0]['email'])->equals(
       $this->subscriber1->getEmail()
     );
   }
@@ -603,9 +603,9 @@ class SubscribersTest extends \MailPoetTest {
       ],
       'action' => 'delete',
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->isEmpty();
-    expect($response->meta['count'])->equals(count($selectionIds));
+    verify($response->meta['count'])->equals(count($selectionIds));
 
     $this->entityManager->clear();
 
@@ -625,22 +625,22 @@ class SubscribersTest extends \MailPoetTest {
       'action' => 'trash',
       'listing' => ['group' => 'all'],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(2);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(2);
 
     $response = $this->endpoint->bulkAction([
       'action' => 'delete',
       'listing' => ['group' => 'trash'],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(2);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(2);
 
     $response = $this->endpoint->bulkAction([
       'action' => 'delete',
       'listing' => ['group' => 'trash'],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(0);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(0);
   }
 
   public function testItCannotRunAnInvalidBulkAction() {
@@ -650,7 +650,7 @@ class SubscribersTest extends \MailPoetTest {
         'listing' => [],
       ]);
     } catch (UnexpectedValueException $exception) {
-      expect($exception->getHttpStatusCode())->equals(APIResponse::STATUS_BAD_REQUEST);
+      verify($exception->getHttpStatusCode())->equals(APIResponse::STATUS_BAD_REQUEST);
       expect($exception->getErrors()[Error::BAD_REQUEST])->stringContainsString('Invalid bulk action');
     }
   }
@@ -662,8 +662,8 @@ class SubscribersTest extends \MailPoetTest {
       // no form ID specified
     ]);
 
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please leave the first field empty.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Please leave the first field empty.');
   }
 
   public function testItCannotSubscribeWithoutFormID() {
@@ -672,8 +672,8 @@ class SubscribersTest extends \MailPoetTest {
       // no form ID specified
     ]);
 
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please specify a valid form ID.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Please specify a valid form ID.');
   }
 
   public function testItCannotSubscribeWithoutSegmentsIfTheyAreSelectedByUser() {
@@ -683,8 +683,8 @@ class SubscribersTest extends \MailPoetTest {
       // no segments specified
     ]);
 
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please select a list.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Please select a list.');
   }
 
   public function testItCanSubscribe() {
@@ -694,7 +694,7 @@ class SubscribersTest extends \MailPoetTest {
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
     ]);
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
   }
 
   public function testItCanSubscribeToSelectedSegment() {
@@ -704,13 +704,13 @@ class SubscribersTest extends \MailPoetTest {
       $this->obfuscatedSegments => [$this->segment2->getId()],
     ]);
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneBy(['email' => 'toto@mailpoet.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $segments = $subscriber->getSegments();
-    expect($segments->count())->equals(1);
-    expect($segments->get(0)->getId())->equals($this->segment2->getId());
+    verify($segments->count())->equals(1);
+    verify($segments->get(0)->getId())->equals($this->segment2->getId());
   }
 
   public function testItCannotSubscribeWithoutReCaptchaWhenEnabled() {
@@ -720,8 +720,8 @@ class SubscribersTest extends \MailPoetTest {
       'form_id' => $this->form->getId(),
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please check the CAPTCHA.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Please check the CAPTCHA.');
     $this->settings->set('captcha', []);
   }
 
@@ -732,8 +732,8 @@ class SubscribersTest extends \MailPoetTest {
       'form_id' => $this->form->getId(),
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please check the CAPTCHA.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Please check the CAPTCHA.');
     $this->settings->set('captcha', []);
   }
 
@@ -749,8 +749,8 @@ class SubscribersTest extends \MailPoetTest {
       'form_id' => $this->form->getId(),
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please fill in the CAPTCHA.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Please fill in the CAPTCHA.');
     $this->settings->set('captcha', []);
   }
 
@@ -772,7 +772,7 @@ class SubscribersTest extends \MailPoetTest {
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
       'captcha' => $captchaValue['phrase'],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $this->settings->set('captcha', []);
   }
 
@@ -796,7 +796,7 @@ class SubscribersTest extends \MailPoetTest {
       'form_id' => $form->getId(),
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
   public function testItCanSubscribeWithoutSegmentsIfTheyAreSelectedByAdmin() {
@@ -812,14 +812,14 @@ class SubscribersTest extends \MailPoetTest {
       // no segments specified
     ]);
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $subscriberRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriber = $subscriberRepository->findOneBy(['email' => 'toto@mailpoet.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $segments = $subscriber->getSegments();
-    expect($segments->count())->equals(2);
-    expect($segments->get(0)->getId())->equals($settings['segments'][0]);
-    expect($segments->get(1)->getId())->equals($settings['segments'][1]);
+    verify($segments->count())->equals(2);
+    verify($segments->get(0)->getId())->equals($settings['segments'][0]);
+    verify($segments->get(1)->getId())->equals($settings['segments'][1]);
   }
 
   public function testItCannotSubscribeIfFormHasNoSegmentsDefined() {
@@ -836,8 +836,8 @@ class SubscribersTest extends \MailPoetTest {
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
     ]);
 
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please select a list.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Please select a list.');
   }
 
   public function testItCannotMassSubscribe() {
@@ -855,8 +855,8 @@ class SubscribersTest extends \MailPoetTest {
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
     ]);
 
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('You need to wait 1 minutes before subscribing again.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('You need to wait 1 minutes before subscribing again.');
   }
 
   public function testItCannotMassResubscribe() {
@@ -882,8 +882,8 @@ class SubscribersTest extends \MailPoetTest {
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
     ]);
 
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('You need to wait 1 minutes before subscribing again.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('You need to wait 1 minutes before subscribing again.');
   }
 
   public function testThirdPartiesCanInterruptSubscriptionProcess() {
@@ -906,8 +906,8 @@ class SubscribersTest extends \MailPoetTest {
     $didSubscribe = $this->subscribersRepository->findOneBy(['email' => 'toto@mailpoet.com']);
     expect($didSubscribe)->null();
     expect($response)->isInstanceOf(ErrorResponse::class);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals($expectedErrorMessage);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals($expectedErrorMessage);
   }
 
   public function testItSchedulesWelcomeEmailNotificationWhenSubscriberIsAdded() {
@@ -972,23 +972,23 @@ class SubscribersTest extends \MailPoetTest {
 
   public function testItSendsConfirmationEmail() {
     $response = $this->endpoint->sendConfirmationEmail(['id' => 'non_existent']);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
 
     $response = $this->endpoint->sendConfirmationEmail(['id' => $this->subscriber1->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     wp_set_current_user(0);
     $this->subscriber1->setConfirmationsCount(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS);
     $this->entityManager->flush();
     $response = $this->endpoint->sendConfirmationEmail(['id' => $this->subscriber1->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
   }
 
   public function testItDisplaysProperErrorMessageWhenConfirmationEmailsAreDisabled() {
     $this->settings->set('signup_confirmation.enabled', false);
     $response = $this->endpoint->sendConfirmationEmail(['id' => $this->subscriber1->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Sign-up confirmation is disabled in your <a href="admin.php?page=mailpoet-settings#/signup">MailPoet settings</a>. Please enable it to resend confirmation emails or update your subscriber’s status manually.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Sign-up confirmation is disabled in your <a href="admin.php?page=mailpoet-settings#/signup">MailPoet settings</a>. Please enable it to resend confirmation emails or update your subscriber’s status manually.');
   }
 
   public function testItKeepsSpecialSegmentsUnchangedAfterSaving() {
@@ -1015,8 +1015,8 @@ class SubscribersTest extends \MailPoetTest {
     $this->endpoint->save($subscriberData);
 
     $segments = $subscriber->getSegments();
-    expect($segments->get(0)->getId())->equals($this->segment1->getId());
-    expect($segments->get(1)->getId())->equals($wcSegment->getId());
+    verify($segments->get(0)->getId())->equals($this->segment1->getId());
+    verify($segments->get(1)->getId())->equals($wcSegment->getId());
   }
 
   public function testItCanBulkAddTagToSubscribers(): void {
@@ -1041,15 +1041,15 @@ class SubscribersTest extends \MailPoetTest {
     $subscriberTag1 = $subscriberTagRepository->findOneBy(['subscriber' => $this->subscriber1, 'tag' => $tag]);
     $subscriberTag2 = $subscriberTagRepository->findOneBy(['subscriber' => $this->subscriber2, 'tag' => $tag]);
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(2);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(2);
     expect($subscriberTag1)->isInstanceOf(SubscriberTagEntity::class);
     expect($subscriberTag2)->isInstanceOf(SubscriberTagEntity::class);
 
     // Testing that adding the same tag again does not return an error
     $response = $this->endpoint->bulkAction($bulkActionData);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(0);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(0);
   }
 
   public function testItCanBulkRemoveTagFromSubscribers(): void {
@@ -1081,15 +1081,15 @@ class SubscribersTest extends \MailPoetTest {
     $subscriberTag1 = $subscriberTagRepository->findOneBy(['subscriber' => $subscriber1, 'tag' => $tag]);
     $subscriberTag2 = $subscriberTagRepository->findOneBy(['subscriber' => $subscriber2, 'tag' => $tag]);
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(2);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(2);
     expect($subscriberTag1)->null();
     expect($subscriberTag2)->null();
 
     // Testing that removing the same tag again does not return an error
     $response = $this->endpoint->bulkAction($bulkActionData);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(0);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(0);
   }
 
   private function _createWelcomeNewsletter(): void {

@@ -25,9 +25,9 @@ class FeaturesControllerTest extends \MailPoetUnitTest {
       ]
     );
 
-    expect($controller->isSupported('feature-a'))->equals(true);
-    expect($controller->isSupported('feature-b'))->equals(false);
-    expect($controller->getAllFlags())->equals([
+    verify($controller->isSupported('feature-a'))->equals(true);
+    verify($controller->isSupported('feature-b'))->equals(false);
+    verify($controller->getAllFlags())->equals([
       'feature-a' => true,
       'feature-b' => false,
     ]);
@@ -47,8 +47,8 @@ class FeaturesControllerTest extends \MailPoetUnitTest {
       ],
     ]);
 
-    expect($controller->isSupported('feature-a'))->equals(false);
-    expect($controller->getAllFlags())->equals([
+    verify($controller->isSupported('feature-a'))->equals(false);
+    verify($controller->getAllFlags())->equals([
       'feature-a' => false,
     ]);
   }
@@ -68,7 +68,7 @@ class FeaturesControllerTest extends \MailPoetUnitTest {
     try {
       $controller->isSupported('feature-unknown');
     } catch (\RuntimeException $e) {
-      expect($e->getMessage())->equals("Unknown feature 'feature-unknown'");
+      verify($e->getMessage())->equals("Unknown feature 'feature-unknown'");
     }
     expect($controller->getAllFlags())->isEmpty();
   }

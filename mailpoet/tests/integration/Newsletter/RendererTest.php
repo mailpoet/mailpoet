@@ -79,12 +79,12 @@ class RendererTest extends \MailPoetTest {
     //  2x column
     //  3x column
     //  1x footer
-    expect(count($DOM('.mailpoet_cols-one')))->equals(2);
-    expect(count($DOM('.mailpoet_cols-two')))->equals(2);
-    expect(count($DOM('.mailpoet_cols-three')))->equals(3);
+    verify(count($DOM('.mailpoet_cols-one')))->equals(2);
+    verify(count($DOM('.mailpoet_cols-two')))->equals(2);
+    verify(count($DOM('.mailpoet_cols-three')))->equals(3);
 
     // nested vertical container should be rendered
-    expect(count($DOM('.nested-vertical-container')))->equals(1);
+    verify(count($DOM('.nested-vertical-container')))->equals(1);
   }
 
   public function testItRendersOneColumn() {
@@ -109,7 +109,7 @@ class RendererTest extends \MailPoetTest {
     foreach ($DOM('table.mailpoet_cols-one > tbody') as $column) {
       $renderedColumnContent[] = trim($column->text());
     };
-    expect($renderedColumnContent)->equals($columnContent);
+    verify($renderedColumnContent)->equals($columnContent);
     expect((string)$DOM)->stringContainsString(' bgcolor="#999999"');
   }
 
@@ -136,7 +136,7 @@ class RendererTest extends \MailPoetTest {
     foreach ($DOM('table.mailpoet_cols-two > tbody') as $column) {
       $renderedColumnContent[] = trim($column->text());
     };
-    expect($renderedColumnContent)->equals($columnContent);
+    verify($renderedColumnContent)->equals($columnContent);
     expect((string)$DOM)->stringContainsString(' bgcolor="#999999"');
   }
 
@@ -164,7 +164,7 @@ class RendererTest extends \MailPoetTest {
     foreach ($DOM('table.mailpoet_cols-three > tbody') as $column) {
       $renderedColumnContent[] = trim($column->text());
     };
-    expect($renderedColumnContent)->equals($columnContent);
+    verify($renderedColumnContent)->equals($columnContent);
     expect((string)$DOM)->stringContainsString(' bgcolor="#999999"');
   }
 
@@ -272,7 +272,7 @@ class RendererTest extends \MailPoetTest {
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][1];
     $DOM = $this->dOMParser->parseStr((new Image)->render($template, self::COLUMN_BASE_WIDTH));
     // element should be properly nested, it's width set and style applied
-    expect($DOM('tr > td > img', 0)->attr('width'))->equals(620);
+    verify($DOM('tr > td > img', 0)->attr('width'))->equals(620);
   }
 
   public function testItRendersAlignedImage() {
@@ -281,21 +281,21 @@ class RendererTest extends \MailPoetTest {
     // default alignment (center)
     unset($template['styles']['block']['textAlign']);
     $DOM = $this->dOMParser->parseStr((new Image)->render($template, $columnCount = 1));
-    expect($DOM('tr > td', 0)->attr('align'))->equals('center');
+    verify($DOM('tr > td', 0)->attr('align'))->equals('center');
     $template['styles']['block']['textAlign'] = 'center';
     $DOM = $this->dOMParser->parseStr((new Image)->render($template, $columnCount = 1));
-    expect($DOM('tr > td', 0)->attr('align'))->equals('center');
+    verify($DOM('tr > td', 0)->attr('align'))->equals('center');
     $template['styles']['block']['textAlign'] = 'something odd';
     $DOM = $this->dOMParser->parseStr((new Image)->render($template, $columnCount = 1));
-    expect($DOM('tr > td', 0)->attr('align'))->equals('center');
+    verify($DOM('tr > td', 0)->attr('align'))->equals('center');
     // left alignment
     $template['styles']['block']['textAlign'] = 'left';
     $DOM = $this->dOMParser->parseStr((new Image)->render($template, $columnCount = 1));
-    expect($DOM('tr > td', 0)->attr('align'))->equals('left');
+    verify($DOM('tr > td', 0)->attr('align'))->equals('left');
     // right alignment
     $template['styles']['block']['textAlign'] = 'right';
     $DOM = $this->dOMParser->parseStr((new Image)->render($template, $columnCount = 1));
-    expect($DOM('tr > td', 0)->attr('align'))->equals('right');
+    verify($DOM('tr > td', 0)->attr('align'))->equals('right');
   }
 
   public function testItDoesNotRenderImageWithoutSrc() {
@@ -307,7 +307,7 @@ class RendererTest extends \MailPoetTest {
       'alt' => 'some test alt text',
     ];
     $renderedImage = (new Image)->render($image, self::COLUMN_BASE_WIDTH);
-    expect($renderedImage)->equals('');
+    verify($renderedImage)->equals('');
   }
 
   public function testItForcesAbsoluteSrcForImages() {
@@ -342,7 +342,7 @@ class RendererTest extends \MailPoetTest {
     $DOM = $this->dOMParser->parseStr((new Image)->render($template, self::COLUMN_BASE_WIDTH));
     // element should be wrapped in <a> tag
     expect($DOM('tr > td > a', 0)->html())->stringContainsString('<img');
-    expect($DOM('tr > td > a', 0)->attr('href'))->equals($template['link']);
+    verify($DOM('tr > td > a', 0)->attr('href'))->equals($template['link']);
   }
 
   public function testItAdjustsImageDimensions() {
@@ -353,25 +353,25 @@ class RendererTest extends \MailPoetTest {
       'fullWidth' => true,
     ];
     $newImageDimensions = (new Image)->adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
-    expect($newImageDimensions['width'])->equals(660);
-    expect($newImageDimensions['height'])->equals(495);
+    verify($newImageDimensions['width'])->equals(660);
+    verify($newImageDimensions['height'])->equals(495);
     // nothing happens when image width = column width
     $image['width'] = 661;
     $newImageDimensions = (new Image)->adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
-    expect($newImageDimensions['width'])->equals(660);
+    verify($newImageDimensions['width'])->equals(660);
     // nothing happens when image width < column width
     $image['width'] = 659;
     $newImageDimensions = (new Image)->adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
-    expect($newImageDimensions['width'])->equals(659);
+    verify($newImageDimensions['width'])->equals(659);
     // image is reduced by 40px when it's width > padded column width
     $image['width'] = 621;
     $image['fullWidth'] = false;
     $newImageDimensions = (new Image)->adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
-    expect($newImageDimensions['width'])->equals(620);
+    verify($newImageDimensions['width'])->equals(620);
     // nothing happens when image with < padded column width
     $image['width'] = 619;
     $newImageDimensions = (new Image)->adjustImageDimensions($image, self::COLUMN_BASE_WIDTH);
-    expect($newImageDimensions['width'])->equals(619);
+    verify($newImageDimensions['width'])->equals(619);
   }
 
   public function testItRendersImageWithAutoDimensions() {
@@ -447,7 +447,7 @@ class RendererTest extends \MailPoetTest {
     // trailing line breaks should be cut off, but not inside an element
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][8];
     $DOM = $this->dOMParser->parseStr((new Text)->render($template));
-    expect(count($DOM('tr > td > br', 0)))
+    verify(count($DOM('tr > td > br', 0)))
       ->equals(0);
     expect($DOM('tr > td > h3', 0)->html())
       ->stringContainsString('<a');
@@ -458,7 +458,7 @@ class RendererTest extends \MailPoetTest {
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][3];
     $DOM = $this->dOMParser->parseStr((new Divider)->render($template));
     // element should be properly nested and its border-top-width set
-    expect(
+    verify(
       preg_match(
         '/border-top-width: 3px/',
         $DOM('tr > td.mailpoet_divider > table > tr > td.mailpoet_divider-cell', 0)->attr('style')
@@ -470,7 +470,7 @@ class RendererTest extends \MailPoetTest {
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][4];
     $DOM = $this->dOMParser->parseStr((new Spacer)->render($template));
     // element should be properly nested and its height set
-    expect($DOM('tr > td.mailpoet_spacer', 0)->attr('height'))->equals(50);
+    verify($DOM('tr > td.mailpoet_spacer', 0)->attr('height'))->equals(50);
   }
 
   public function testItSetsSpacerBackground() {
@@ -480,7 +480,7 @@ class RendererTest extends \MailPoetTest {
     expect($DOM('tr > td.mailpoet_spacer', 0)->attr('bgcolor'))->null();
     $template['styles']['block']['backgroundColor'] = '#ffff';
     $DOM = $this->dOMParser->parseStr((new Spacer)->render($template));
-    expect($DOM('tr > td.mailpoet_spacer', 0)->attr('bgcolor'))
+    verify($DOM('tr > td.mailpoet_spacer', 0)->attr('bgcolor'))
       ->equals('#ffff');
   }
 
@@ -489,7 +489,7 @@ class RendererTest extends \MailPoetTest {
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $template['styles']['block']['width'] = '700px';
     $buttonWidth = (new Button)->calculateWidth($template, self::COLUMN_BASE_WIDTH);
-    expect($buttonWidth)->equals('618px'); //(width - (2 * border width)
+    verify($buttonWidth)->equals('618px'); //(width - (2 * border width)
   }
 
   public function testItRendersButton() {
@@ -500,27 +500,27 @@ class RendererTest extends \MailPoetTest {
     expect(
       $DOM('tr > td > div > table > tr > td > a.mailpoet_button', 0)->html()
     )->notEmpty();
-    expect(
+    verify(
       preg_match(
         '/line-height: 30px/',
         $DOM('a.mailpoet_button', 0)->attr('style'))
     )->equals(1);
-    expect(
+    verify(
       preg_match(
         '/arcsize="' . round(20 / 30 * 100) . '%"/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
     )->equals(1);
-    expect(
+    verify(
       preg_match(
         '/style="height:30px.*?width:98px/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
     )->equals(1);
-    expect(
+    verify(
       preg_match(
         '/style="color:#ffffff.*?font-family:Arial.*?font-size:14px/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
     )->equals(1);
-    expect(
+    verify(
       preg_match(
         '/fillcolor="#666666/',
         $DOM('tr > td > div > table > tr > td', 0)->text())
@@ -532,7 +532,7 @@ class RendererTest extends \MailPoetTest {
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $template['styles']['block']['fontFamily'] = 'Lucida';
     $DOM = $this->dOMParser->parseStr((new Button)->render($template, self::COLUMN_BASE_WIDTH));
-    expect(
+    verify(
       preg_match(
         '/font-family: \'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif/',
         $DOM('a.mailpoet_button', 0)->attr('style'))
@@ -546,11 +546,11 @@ class RendererTest extends \MailPoetTest {
     // element should be properly nested, contain social icons and
     // image source/link href/alt should be  properly set
     expect($DOM('tr > td', 0)->html())->notEmpty();
-    expect($DOM('a', 0)->attr('href'))->equals('http://example.com');
+    verify($DOM('a', 0)->attr('href'))->equals('http://example.com');
     expect($DOM('td > a:nth-of-type(10) > img')->attr('src'))->stringContainsString('custom.png');
-    expect($DOM('td > a:nth-of-type(10) > img')->attr('alt'))->equals('custom');
+    verify($DOM('td > a:nth-of-type(10) > img')->attr('alt'))->equals('custom');
     // there should be 10 icons
-    expect(count($DOM('a > img')))->equals(10);
+    verify(count($DOM('a > img')))->equals(10);
   }
 
   public function testItDoesNotRenderSocialIconsWithoutImageSrc() {
@@ -564,7 +564,7 @@ class RendererTest extends \MailPoetTest {
       ],
     ];
     $renderedBlock = (new Social)->render($block);
-    expect($renderedBlock)->equals('');
+    verify($renderedBlock)->equals('');
   }
 
   public function testItRendersFooter() {
@@ -585,7 +585,7 @@ class RendererTest extends \MailPoetTest {
     $template = $this->renderer->render($this->newsletter);
     $DOM = $this->dOMParser->parseStr($template['html']);
     $subject = trim($DOM('title')->text());
-    expect($subject)->equals($this->newsletter->getSubject());
+    verify($subject)->equals($this->newsletter->getSubject());
   }
 
   public function testItSetsPreheader() {
@@ -595,7 +595,7 @@ class RendererTest extends \MailPoetTest {
     $template = $this->renderer->render($this->newsletter);
     $DOM = $this->dOMParser->parseStr($template['html']);
     $preheader = trim($DOM('td.mailpoet_preheader')->text());
-    expect($preheader)->equals($this->newsletter->getPreheader());
+    verify($preheader)->equals($this->newsletter->getPreheader());
   }
 
   public function testItDoesNotAddMailpoetLogoWhenUserIsPaying() {
@@ -634,15 +634,15 @@ class RendererTest extends \MailPoetTest {
     $this->newsletter->setBody($body);
     $template = $this->renderer->render($this->newsletter);
     // !important should be stripped from everywhere except from with the <style> tag
-    expect(preg_match('/<style.*?important/s', $template['html']))->equals(1);
-    expect(preg_match('/mailpoet_template.*?important/s', $template['html']))->equals(0);
+    verify(preg_match('/<style.*?important/s', $template['html']))->equals(1);
+    verify(preg_match('/mailpoet_template.*?important/s', $template['html']))->equals(0);
 
     // spaces are only replaces in image tag URLs
-    expect(preg_match('/image%20with%20space.jpg/s', $template['html']))->equals(1);
-    expect(preg_match('/link%20with%20space.jpg/s', $template['html']))->equals(0);
+    verify(preg_match('/image%20with%20space.jpg/s', $template['html']))->equals(1);
+    verify(preg_match('/link%20with%20space.jpg/s', $template['html']))->equals(0);
 
     // non mso condition for button is rendered correctly
-    expect(preg_match('/<\!--\[if \!mso\]><\!-- -->\s+<a class=\"mailpoet\_button\".+<\/a>\s+<\!--<\!\[endif\]-->/s', $template['html']))->equals(1);
+    verify(preg_match('/<\!--\[if \!mso\]><\!-- -->\s+<a class=\"mailpoet\_button\".+<\/a>\s+<\!--<\!\[endif\]-->/s', $template['html']))->equals(1);
   }
 
   // Test case for MAILPOET-3660

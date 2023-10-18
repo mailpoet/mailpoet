@@ -21,7 +21,7 @@ class ConfigurationFactoryTest extends \MailPoetTest {
     expect($configuration->getNamingStrategy())->isInstanceOf(UnderscoreNamingStrategy::class);
 
     // metadata
-    expect($configuration->getClassMetadataFactoryName())->equals(TablePrefixMetadataFactory::class);
+    verify($configuration->getClassMetadataFactoryName())->equals(TablePrefixMetadataFactory::class);
     expect($configuration->getMetadataCache())->isInstanceOf(PSRMetadataCache::class);
     expect($configuration->getMetadataDriverImpl())->isInstanceOf(AnnotationDriver::class);
 
@@ -30,19 +30,19 @@ class ConfigurationFactoryTest extends \MailPoetTest {
     expect($configuration->getResultCacheImpl())->isInstanceOf(ArrayCache::class);
 
     // proxies
-    expect(realpath($configuration->getProxyDir()))->equals(realpath(__DIR__ . '/../../../generated/doctrine-proxies'));
-    expect($configuration->getProxyNamespace())->equals('MailPoetDoctrineProxies');
+    verify(realpath($configuration->getProxyDir()))->equals(realpath(__DIR__ . '/../../../generated/doctrine-proxies'));
+    verify($configuration->getProxyNamespace())->equals('MailPoetDoctrineProxies');
   }
 
   public function testItSetsUpEnvironmentSpecificOptions() {
     // dev mode
     $configurationFactory = new ConfigurationFactory(new AnnotationReaderProvider(), true);
     $configuration = $configurationFactory->createConfiguration();
-    expect($configuration->getAutoGenerateProxyClasses())->equals(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+    verify($configuration->getAutoGenerateProxyClasses())->equals(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
     // production mode
     $configurationFactory = new ConfigurationFactory(new AnnotationReaderProvider(), false);
     $configuration = $configurationFactory->createConfiguration();
-    expect($configuration->getAutoGenerateProxyClasses())->equals(AbstractProxyFactory::AUTOGENERATE_NEVER);
+    verify($configuration->getAutoGenerateProxyClasses())->equals(AbstractProxyFactory::AUTOGENERATE_NEVER);
   }
 }

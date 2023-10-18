@@ -60,7 +60,7 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
     $logger1 = $this->loggerFactory->getLogger('logger-with-handler');
     $handlers = $logger1->getHandlers();
     $this->assertInstanceOf(AbstractHandler::class, $handlers[0]);
-    expect($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::ERROR);
+    verify($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::ERROR);
   }
 
   public function testItSetsLoggingLevelForNothing() {
@@ -68,7 +68,7 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
     $logger1 = $this->loggerFactory->getLogger('logger-for-nothing');
     $handlers = $logger1->getHandlers();
     $this->assertInstanceOf(AbstractHandler::class, $handlers[0]);
-    expect($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::EMERGENCY);
+    verify($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::EMERGENCY);
   }
 
   public function testItSetsLoggingLevelForErrors() {
@@ -76,7 +76,7 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
     $logger1 = $this->loggerFactory->getLogger('logger-for-errors');
     $handlers = $logger1->getHandlers();
     $this->assertInstanceOf(AbstractHandler::class, $handlers[0]);
-    expect($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::ERROR);
+    verify($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::ERROR);
   }
 
   public function testItSetsLoggingLevelForEverything() {
@@ -84,6 +84,6 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
     $logger1 = $this->loggerFactory->getLogger('logger-for-everything');
     $handlers = $logger1->getHandlers();
     $this->assertInstanceOf(AbstractHandler::class, $handlers[0]);
-    expect($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::DEBUG);
+    verify($handlers[0]->getLevel())->equals(\MailPoetVendor\Monolog\Logger::DEBUG);
   }
 }

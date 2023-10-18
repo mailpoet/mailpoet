@@ -14,6 +14,6 @@ class UrlTest extends \MailPoetUnitTest {
       'addQueryArg' => '',
     ]));
     $currentUrl = $urlHelper->getCurrentUrl();
-    expect($currentUrl)->equals($homeUrl);
+    verify($currentUrl)->equals($homeUrl);
   }
 }

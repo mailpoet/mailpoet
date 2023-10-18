@@ -66,10 +66,10 @@ class CheckboxTest extends \MailPoetUnitTest {
     $this->wpMock->expects($this->once())->method('wpKses');
     $html = $this->checkbox->render($this->block, []);
     $checkboxLabel = $this->htmlParser->getElementByXpath($html, "//label[@class='mailpoet_checkbox_label']");
-    expect($checkboxLabel->nodeValue)->equals(' Checkbox label');
+    verify($checkboxLabel->nodeValue)->equals(' Checkbox label');
     $checkbox = $this->htmlParser->getChildElement($checkboxLabel, 'input');
     $checked = $this->htmlParser->getAttribute($checkbox, 'checked');
-    expect($checked->value)->equals('checked');
+    verify($checked->value)->equals('checked');
   }
 
   public function testItShouldRenderErrorContainerWithFormId() {
@@ -82,6 +82,6 @@ class CheckboxTest extends \MailPoetUnitTest {
 
     $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_1_213']");
     expect($errorContainer)->notEmpty();
-    expect($errorContainer->nodeName)->equals('span');
+    verify($errorContainer->nodeName)->equals('span');
   }
 }

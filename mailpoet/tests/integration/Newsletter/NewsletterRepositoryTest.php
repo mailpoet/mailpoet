@@ -95,8 +95,8 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     // Should trash the newsletters
     expect($standardNewsletter->getDeletedAt())->null();
     expect($notification->getDeletedAt())->null();
-    expect($standardNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
-    expect($notification->getStatus())->equals(NewsletterEntity::STATUS_ACTIVE);
+    verify($standardNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+    verify($notification->getStatus())->equals(NewsletterEntity::STATUS_ACTIVE);
 
     // Should restore sending queue and task
     $standardQueue = $standardNewsletter->getLatestQueue();
@@ -108,7 +108,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($scheduledTask);
     expect($scheduledTask->getDeletedAt())->null();
     // Pause sending tasks which were in progress
-    expect($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
 
     // Should restore children + task + queue
     $this->entityManager->refresh($notificationHistory);
@@ -121,7 +121,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->entityManager->refresh($scheduledTask);
     expect($scheduledTask->getDeletedAt())->null();
-    expect($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
   }
 
   public function testItBulkDeleteNewslettersAndChildren() {
@@ -285,8 +285,8 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $results = $this->repository->getArchives(['segmentIds' => [$segment->getId()]]);
 
     expect($results)->count(1);
-    expect($results[0]->getId())->equals($newsletters[1]->getId());
-    expect($results[0]->getType())->equals(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    verify($results[0]->getId())->equals($newsletters[1]->getId());
+    verify($results[0]->getType())->equals(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
   }
 
   public function testItGetsAllArchiveNewsletters() {
@@ -320,10 +320,10 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $results = $this->repository->getArchives();
 
     expect($results)->count(2);
-    expect($results[0]->getId())->equals($newsletters[1]->getId());
-    expect($results[0]->getType())->equals(NewsletterEntity::TYPE_STANDARD);
-    expect($results[1]->getId())->equals($newsletters[6]->getId());
-    expect($results[1]->getType())->equals(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
+    verify($results[0]->getId())->equals($newsletters[1]->getId());
+    verify($results[0]->getType())->equals(NewsletterEntity::TYPE_STANDARD);
+    verify($results[1]->getId())->equals($newsletters[6]->getId());
+    verify($results[1]->getType())->equals(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
   }
 
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT, $parent = null): NewsletterEntity {

@@ -108,7 +108,7 @@ class TrackTest extends \MailPoetTest {
       'sendingQueuesRepository' => $this->diContainer->get(SendingQueuesRepository::class),
       'linkTokens' => $this->linkTokens,
       'terminate' => function($code) {
-        expect($code)->equals(403);
+        verify($code)->equals(403);
       },
     ]);
     $track->_validateTrackData($data);
@@ -147,7 +147,7 @@ class TrackTest extends \MailPoetTest {
     $this->subscriber->setWpUserId(99);
     $this->entityManager->flush();
     $data->preview = true;
-    expect($this->track->_validateTrackData($data))->equals($data);
+    verify($this->track->_validateTrackData($data))->equals($data);
   }
 
   public function testItRequiresValidQueueToGetNewsletter() {
@@ -162,15 +162,15 @@ class TrackTest extends \MailPoetTest {
     $data = $this->trackData;
     $data['newsletter_id'] = false;
     $processedData = $this->track->_processTrackData($data);
-    expect($processedData->newsletter->getId())->equals($this->newsletter->getId());
+    verify($processedData->newsletter->getId())->equals($this->newsletter->getId());
   }
 
   public function testItProcessesTrackData() {
     $processedData = $this->track->_processTrackData($this->trackData);
-    expect($processedData->queue->getId())->equals($this->queue->getId());
-    expect($processedData->subscriber->getId())->equals($this->subscriber->getId());
-    expect($processedData->newsletter->getId())->equals($this->newsletter->getId());
-    expect($processedData->link->getId())->equals($this->link->getId());
+    verify($processedData->queue->getId())->equals($this->queue->getId());
+    verify($processedData->subscriber->getId())->equals($this->subscriber->getId());
+    verify($processedData->newsletter->getId())->equals($this->newsletter->getId());
+    verify($processedData->link->getId())->equals($this->link->getId());
   }
 
   public function testItGetsProperHashWhenDuplicateHashesExist() {
@@ -210,6 +210,6 @@ class TrackTest extends \MailPoetTest {
 
     // assert that the fetched link ID belong to the newly created link
     $processedData = $this->track->_processTrackData($trackData);
-    expect($processedData->link->getId())->equals($link->getId());
+    verify($processedData->link->getId())->equals($link->getId());
   }
 }

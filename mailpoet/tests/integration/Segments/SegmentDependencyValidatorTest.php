@@ -22,12 +22,12 @@ class SegmentDependencyValidatorTest extends \MailPoetTest {
     // Plugin is not active
     $validator = $this->createValidator(false);
     $missingPlugins = $validator->getMissingPluginsBySegment($dynamicSegment);
-    expect($missingPlugins)->equals(['WooCommerce']);
+    verify($missingPlugins)->equals(['WooCommerce']);
 
     // Plugin is active
     $validator = $this->createValidator(true);
     $missingPlugins = $validator->getMissingPluginsBySegment($dynamicSegment);
-    expect($missingPlugins)->equals([]);
+    verify($missingPlugins)->equals([]);
   }
 
   private function createSegment(string $filterType, string $action, array $filterData): SegmentEntity {

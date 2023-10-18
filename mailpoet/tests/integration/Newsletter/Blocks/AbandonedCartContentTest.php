@@ -91,7 +91,7 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $sendingTask = $this->createSendingTask($newsletter);
     $result = $this->block->render($newsletter, $this->accBlock, false, $sendingTask);
     $encodedResult = json_encode($result);
-    expect($encodedResult)->equals('[]');
+    verify($encodedResult)->equals('[]');
   }
 
   public function testItDoesNotRenderIfAutomaticNewsletterIsNotForAbandonedCart() {
@@ -100,7 +100,7 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $sendingTask = $this->createSendingTask($newsletter);
     $result = $this->block->render($newsletter, $this->accBlock, false, $sendingTask);
     $encodedResult = json_encode($result);
-    expect($encodedResult)->equals('[]');
+    verify($encodedResult)->equals('[]');
   }
 
   public function testItRendersLatestProductsInPreviewMode() {
@@ -123,7 +123,7 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $this->accBlock['pricePosition'] = 'hidden';
     $result = $this->block->render($newsletter, $this->accBlock, false);
     $encodedResult = json_encode($result);
-    expect($encodedResult)->equals('[]');
+    verify($encodedResult)->equals('[]');
   }
 
   public function testItDoesNotRenderIfCartIsEmpty() {
@@ -134,7 +134,7 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $sendingTask = $this->createSendingTask($newsletter, [AbandonedCart::TASK_META_NAME => []]);
     $result = $this->block->render($newsletter, $this->accBlock, false, $sendingTask);
     $encodedResult = json_encode($result);
-    expect($encodedResult)->equals('[]');
+    verify($encodedResult)->equals('[]');
   }
 
   public function testItRendersAbandonedCartContentBlock() {

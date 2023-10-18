@@ -34,7 +34,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
     ];
 
     $query = new BlockPostQuery(['args' => $args]);
-    expect($query->getQueryParams()['tax_query'])->equals([
+    verify($query->getQueryParams()['tax_query'])->equals([
       [
         [
           'taxonomy' => 'post_tag',
@@ -68,7 +68,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
 
     $query = (new BlockPostQuery(['args' => $args]))->getQueryParams()['tax_query'];
 
-    expect($query[0][0]['operator'])->equals('NOT IN');
-    expect($query[0]['relation'])->equals('AND');
+    verify($query[0][0]['operator'])->equals('NOT IN');
+    verify($query[0]['relation'])->equals('AND');
   }
 }

@@ -120,20 +120,20 @@ class SubscriptionTest extends \MailPoetTest {
   public function testItDoesNotTryToSubscribeIfThereIsNoEmailInOrderData() {
     $data = [];
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
-    expect($subscribed)->equals(null);
+    verify($subscribed)->equals(null);
   }
 
   public function testItDoesNotTryToSubscribeIfSubscriberWithTheEmailWasNotSynced() {
     // non-existent
     $data['billing_email'] = 'non-existent-subscriber@example.com';
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
-    expect($subscribed)->equals(null);
+    verify($subscribed)->equals(null);
     // not a WooCommerce user
     $this->subscriber->setIsWoocommerceUser(false);
     $this->subscribersRepository->flush();
     $data['billing_email'] = $this->subscriber->getEmail();
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
-    expect($subscribed)->equals(null);
+    verify($subscribed)->equals(null);
   }
 
   public function testItKeepsSubscribedStatusWhenOptinIsDisabledAndSignUpConfirmationIsEnabled() {
@@ -148,12 +148,12 @@ class SubscriptionTest extends \MailPoetTest {
     $data['billing_email'] = $this->subscriber->getEmail();
 
     $subscribedInWooSegment = $this->subscription->subscribeOnCheckout($this->orderId, $data);
-    expect($subscribedInWooSegment)->equals(false);
+    verify($subscribedInWooSegment)->equals(false);
 
     $this->entityManager->refresh($this->subscriber);
     $subscribedSegments = $this->subscriber->getSegments();
     expect($subscribedSegments)->count(1);
-    expect($this->subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($this->subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItDoesNotUnsubscribesIfCheckboxIsNotChecked() {
@@ -168,7 +168,7 @@ class SubscriptionTest extends \MailPoetTest {
     $_POST[Subscription::CHECKOUT_OPTIN_PRESENCE_CHECK_INPUT_NAME] = 1;
     $data['billing_email'] = $this->subscriber->getEmail();
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
-    expect($subscribed)->equals(false);
+    verify($subscribed)->equals(false);
 
     $subscribedSegments = $this->subscriber->getSegments();
     expect($subscribedSegments)->count(0);
@@ -176,7 +176,7 @@ class SubscriptionTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItSubscribesIfCheckboxIsChecked() {
@@ -204,7 +204,7 @@ class SubscriptionTest extends \MailPoetTest {
 
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
 
-    expect($subscribed)->equals(true);
+    verify($subscribed)->equals(true);
     unset($_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME]);
 
     $this->entityManager->clear();
@@ -222,8 +222,8 @@ class SubscriptionTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_CHECKOUT);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getSource())->equals(Source::WOOCOMMERCE_CHECKOUT);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
     expect($subscriber->getConfirmedIp())->notEmpty();
     expect($subscriber->getConfirmedAt())->notEmpty();
   }
@@ -251,7 +251,7 @@ class SubscriptionTest extends \MailPoetTest {
 
     $subscribed = $this->subscription->subscribeOnCheckout($this->orderId, $data);
 
-    expect($subscribed)->equals(true);
+    verify($subscribed)->equals(true);
     unset($_POST[Subscription::CHECKOUT_OPTIN_INPUT_NAME]);
 
     $this->entityManager->clear();
@@ -262,8 +262,8 @@ class SubscriptionTest extends \MailPoetTest {
 
     $subscriber = $this->subscribersRepository->findOneById($this->subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($subscriber->getSource())->equals(Source::WOOCOMMERCE_CHECKOUT);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    verify($subscriber->getSource())->equals(Source::WOOCOMMERCE_CHECKOUT);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
   private function subscribeToSegment(SubscriberEntity $subscriber, SegmentEntity $segment): void {

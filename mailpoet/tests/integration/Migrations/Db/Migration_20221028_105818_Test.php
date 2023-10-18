@@ -28,8 +28,8 @@ class Migration_20221028_105818_Test extends \MailPoetTest {
     $this->migration->run();
     $filter = $this->entityManager->find(DynamicSegmentFilterEntity::class, $id);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filter);
-    expect($filter->getFilterData()->getAction())->equals(EmailAction::ACTION_OPENED);
-    expect($filter->getFilterData()->getData())->equals(['newsletters' => [1], 'operator' => 'any']);
+    verify($filter->getFilterData()->getAction())->equals(EmailAction::ACTION_OPENED);
+    verify($filter->getFilterData()->getData())->equals(['newsletters' => [1], 'operator' => 'any']);
   }
 
   public function testItMigratesEmailOpensFiltersCorrectly() {
@@ -39,8 +39,8 @@ class Migration_20221028_105818_Test extends \MailPoetTest {
     $this->migration->run();
     $filter = $this->entityManager->find(DynamicSegmentFilterEntity::class, $id);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filter);
-    expect($filter->getFilterData()->getAction())->equals(EmailAction::ACTION_MACHINE_OPENED);
-    expect($filter->getFilterData()->getData())->equals(['newsletters' => [1], 'operator' => 'any']);
+    verify($filter->getFilterData()->getAction())->equals(EmailAction::ACTION_MACHINE_OPENED);
+    verify($filter->getFilterData()->getData())->equals(['newsletters' => [1], 'operator' => 'any']);
   }
 
   public function testItMigratesEmailNotOpenedFiltersCorrectly() {
@@ -50,8 +50,8 @@ class Migration_20221028_105818_Test extends \MailPoetTest {
     $this->migration->run();
     $filter = $this->entityManager->find(DynamicSegmentFilterEntity::class, $id);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filter);
-    expect($filter->getFilterData()->getAction())->equals(EmailAction::ACTION_OPENED);
-    expect($filter->getFilterData()->getData())->equals(['newsletters' => [1], 'operator' => 'none']);
+    verify($filter->getFilterData()->getAction())->equals(EmailAction::ACTION_OPENED);
+    verify($filter->getFilterData()->getData())->equals(['newsletters' => [1], 'operator' => 'none']);
   }
 
   public function testItMigratesEmailClicksFiltersCorrectly() {
@@ -65,10 +65,10 @@ class Migration_20221028_105818_Test extends \MailPoetTest {
     $filterLink = $this->entityManager->find(DynamicSegmentFilterEntity::class, $id2);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filterNoLink);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filterLink);
-    expect($filterNoLink->getFilterData()->getAction())->equals(EmailAction::ACTION_CLICKED);
-    expect($filterNoLink->getFilterData()->getData())->equals(['newsletter_id' => '1', 'operator' => 'any', 'link_ids' => []]);
-    expect($filterLink->getFilterData()->getAction())->equals(EmailAction::ACTION_CLICKED);
-    expect($filterLink->getFilterData()->getData())->equals(['newsletter_id' => '1', 'operator' => 'any', 'link_ids' => [2]]);
+    verify($filterNoLink->getFilterData()->getAction())->equals(EmailAction::ACTION_CLICKED);
+    verify($filterNoLink->getFilterData()->getData())->equals(['newsletter_id' => '1', 'operator' => 'any', 'link_ids' => []]);
+    verify($filterLink->getFilterData()->getAction())->equals(EmailAction::ACTION_CLICKED);
+    verify($filterLink->getFilterData()->getData())->equals(['newsletter_id' => '1', 'operator' => 'any', 'link_ids' => [2]]);
   }
 
   public function testItMigratesEmailNotClickedFiltersCorrectly() {
@@ -82,10 +82,10 @@ class Migration_20221028_105818_Test extends \MailPoetTest {
     $filterLink = $this->entityManager->find(DynamicSegmentFilterEntity::class, $id2);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filterNoLink);
     $this->assertInstanceOf(DynamicSegmentFilterEntity::class, $filterLink);
-    expect($filterNoLink->getFilterData()->getAction())->equals(EmailAction::ACTION_CLICKED);
-    expect($filterNoLink->getFilterData()->getData())->equals(['newsletter_id' => '1', 'operator' => 'none', 'link_ids' => []]);
-    expect($filterLink->getFilterData()->getAction())->equals(EmailAction::ACTION_CLICKED);
-    expect($filterLink->getFilterData()->getData())->equals(['newsletter_id' => '1', 'operator' => 'none', 'link_ids' => [2]]);
+    verify($filterNoLink->getFilterData()->getAction())->equals(EmailAction::ACTION_CLICKED);
+    verify($filterNoLink->getFilterData()->getData())->equals(['newsletter_id' => '1', 'operator' => 'none', 'link_ids' => []]);
+    verify($filterLink->getFilterData()->getAction())->equals(EmailAction::ACTION_CLICKED);
+    verify($filterLink->getFilterData()->getData())->equals(['newsletter_id' => '1', 'operator' => 'none', 'link_ids' => [2]]);
   }
 
   private function createSegmentFilter(string $action, array $data, string $type, $segmentId = 1): int {

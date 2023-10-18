@@ -47,7 +47,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('Send');
     $i->waitForElement('[name="subject"]');
     $subject = $i->grabValueFrom('[name="subject"]');
-    expect($subject)->equals('My New Subject');
+    verify($subject)->equals('My New Subject');
     $i->waitForText('My New Preview Text');
     $i->fillField('sender_name', 'John Doe');
     $i->fillField('sender_address', 'john.doe@example.com');

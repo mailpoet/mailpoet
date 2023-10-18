@@ -22,8 +22,8 @@ class BeamerTest extends \MailPoetTest {
     ]);
     $beamer = new Beamer($settings, $wp);
     $done = $beamer->setLastAnnouncementDate();
-    expect($done)->equals(true);
-    expect($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($newDate)->getTimestamp());
+    verify($done)->equals(true);
+    verify($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($newDate)->getTimestamp());
   }
 
   public function testItDoesNothingIfNoResponse() {
@@ -36,8 +36,8 @@ class BeamerTest extends \MailPoetTest {
     ]);
     $beamer = new Beamer($settings, $wp);
     $done = $beamer->setLastAnnouncementDate();
-    expect($done)->equals(false);
-    expect($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($oldDate)->getTimestamp());
+    verify($done)->equals(false);
+    verify($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($oldDate)->getTimestamp());
   }
 
   public function testItDoesNothingIfWrongResponse() {
@@ -50,8 +50,8 @@ class BeamerTest extends \MailPoetTest {
     ]);
     $beamer = new Beamer($settings, $wp);
     $done = $beamer->setLastAnnouncementDate();
-    expect($done)->equals(false);
-    expect($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($oldDate)->getTimestamp());
+    verify($done)->equals(false);
+    verify($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($oldDate)->getTimestamp());
   }
 
   public function testItDoesNothingIfEmptyList() {
@@ -64,7 +64,7 @@ class BeamerTest extends \MailPoetTest {
     ]);
     $beamer = new Beamer($settings, $wp);
     $done = $beamer->setLastAnnouncementDate();
-    expect($done)->equals(false);
-    expect($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($oldDate)->getTimestamp());
+    verify($done)->equals(false);
+    verify($settings->get('last_announcement_date'))->equals(Carbon::createFromTimeString($oldDate)->getTimestamp());
   }
 }

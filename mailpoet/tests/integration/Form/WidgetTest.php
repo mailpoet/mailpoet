@@ -33,7 +33,7 @@ class WidgetTest extends \MailPoetTest {
       ]
     );
     $DOM = pQuery::parseStr($renderedFormWidget);
-    expect($DOM->query('form')->attr('target'))->equals('_self');
+    verify($DOM->query('form')->attr('target'))->equals('_self');
 
     // form target is modified to _top via hook
     (new WPFunctions)->addFilter(
@@ -51,6 +51,6 @@ class WidgetTest extends \MailPoetTest {
       ]
     );
     $DOM = pQuery::parseStr($renderedFormWidget);
-    expect($DOM->query('form')->attr('target'))->equals('_top');
+    verify($DOM->query('form')->attr('target'))->equals('_top');
   }
 }

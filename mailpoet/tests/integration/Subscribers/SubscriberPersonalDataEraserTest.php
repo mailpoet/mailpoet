@@ -30,9 +30,9 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
     $result = $this->eraser->erase('email.that@doesnt.exists');
     expect($result)->array();
     expect($result)->hasKey('items_removed');
-    expect($result['items_removed'])->equals(0);
+    verify($result['items_removed'])->equals(0);
     expect($result)->hasKey('done');
-    expect($result['done'])->equals(true);
+    verify($result['done'])->equals(true);
   }
 
   public function testItDeletesCustomFields() {
@@ -62,8 +62,8 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
     $subscriberCustomFieldRepository = $this->diContainer->get(SubscriberCustomFieldRepository::class);
     $subscriberCustomFields = $subscriberCustomFieldRepository->findBy(['subscriber' => $subscriber]);
     expect($subscriberCustomFields)->count(2);
-    expect($subscriberCustomFields[0]->getValue())->equals('');
-    expect($subscriberCustomFields[1]->getValue())->equals('');
+    verify($subscriberCustomFields[0]->getValue())->equals('');
+    verify($subscriberCustomFields[1]->getValue())->equals('');
   }
 
   public function testItDeletesSubscriberData() {
@@ -80,12 +80,12 @@ class SubscriberPersonalDataEraserTest extends \MailPoetTest {
     $this->eraser->erase('subscriber@for.anon.test');
     $subscriberAfter = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberAfter);
-    expect($subscriberAfter->getFirstName())->equals('Anonymous');
-    expect($subscriberAfter->getLastName())->equals('Anonymous');
-    expect($subscriberAfter->getStatus())->equals('unsubscribed');
-    expect($subscriberAfter->getSubscribedIp())->equals('0.0.0.0');
-    expect($subscriberAfter->getConfirmedIp())->equals('0.0.0.0');
-    expect($subscriberAfter->getUnconfirmedData())->equals('');
+    verify($subscriberAfter->getFirstName())->equals('Anonymous');
+    verify($subscriberAfter->getLastName())->equals('Anonymous');
+    verify($subscriberAfter->getStatus())->equals('unsubscribed');
+    verify($subscriberAfter->getSubscribedIp())->equals('0.0.0.0');
+    verify($subscriberAfter->getConfirmedIp())->equals('0.0.0.0');
+    verify($subscriberAfter->getUnconfirmedData())->equals('');
   }
 
   public function testItDeletesSubscriberEmailAddress() {

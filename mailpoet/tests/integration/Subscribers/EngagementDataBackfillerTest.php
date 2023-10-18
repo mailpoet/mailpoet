@@ -54,8 +54,8 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $data = $this->backfiller->getPurchaseDataForBatch($subscriberIds);
     $this->assertInstanceOf(SubscriberEntity::class, $sub1);
     $this->assertInstanceOf(SubscriberEntity::class, $sub2);
-    expect($data[$sub1->getId()]['last_purchase_at'])->equals( (string)$newer);
-    expect($data[$sub2->getId()]['last_purchase_at'])->equals((string)$newer2);
+    verify($data[$sub1->getId()]['last_purchase_at'])->equals( (string)$newer);
+    verify($data[$sub2->getId()]['last_purchase_at'])->equals((string)$newer2);
     expect(!isset($data[$customerId3]))->true();
   }
 
@@ -91,8 +91,8 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
 
     $this->assertInstanceOf(DateTimeInterface::class, $sub1->getLastPurchaseAt());
     $this->assertInstanceOf(DateTimeInterface::class, $sub2->getLastPurchaseAt());
-    expect($sub1->getLastPurchaseAt()->getTimestamp())->equals($newer->getTimestamp());
-    expect($sub2->getLastPurchaseAt()->getTimestamp())->equals($newer2->getTimestamp());
+    verify($sub1->getLastPurchaseAt()->getTimestamp())->equals($newer->getTimestamp());
+    verify($sub2->getLastPurchaseAt()->getTimestamp())->equals($newer2->getTimestamp());
   }
 
   public function testItRetrievesOpensData(): void {
@@ -125,9 +125,9 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $this->entityManager->flush();
     $openData = $this->backfiller->getOpenDataForBatch([$sub1->getId(), $sub2->getId(), $sub3->getId(), $sub4->getId()]);
     expect($openData)->count(3);
-    expect($openData[$sub1->getId()]['last_open_at'])->equals((string)$newer);
-    expect($openData[$sub2->getId()]['last_open_at'])->equals((string)$sub2date);
-    expect($openData[$sub3->getId()]['last_open_at'])->equals((string)$sub3date);
+    verify($openData[$sub1->getId()]['last_open_at'])->equals((string)$newer);
+    verify($openData[$sub2->getId()]['last_open_at'])->equals((string)$sub2date);
+    verify($openData[$sub3->getId()]['last_open_at'])->equals((string)$sub3date);
     expect(!isset($openData[$sub4->getId()]))->true();
   }
 
@@ -176,9 +176,9 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $this->assertInstanceOf(DateTimeInterface::class, $sub2->getLastOpenAt());
     $this->assertInstanceOf(DateTimeInterface::class, $sub3->getLastOpenAt());
 
-    expect($sub1->getLastOpenAt()->getTimestamp())->equals($newer->getTimestamp());
-    expect($sub2->getLastOpenAt()->getTimestamp())->equals($sub2date->getTimestamp());
-    expect($sub3->getLastOpenAt()->getTimestamp())->equals($sub3date->getTimestamp());
+    verify($sub1->getLastOpenAt()->getTimestamp())->equals($newer->getTimestamp());
+    verify($sub2->getLastOpenAt()->getTimestamp())->equals($sub2date->getTimestamp());
+    verify($sub3->getLastOpenAt()->getTimestamp())->equals($sub3date->getTimestamp());
     expect($sub4->getLastOpenAt())->null();
   }
 
@@ -213,9 +213,9 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $this->entityManager->flush();
     $clickData = $this->backfiller->getClickDataForBatch([$sub1->getId(), $sub2->getId(), $sub3->getId(), $sub4->getId()]);
     expect($clickData)->count(3);
-    expect($clickData[$sub1->getId()]['last_click_at'])->equals((string)$newer);
-    expect($clickData[$sub2->getId()]['last_click_at'])->equals((string)$sub2date);
-    expect($clickData[$sub3->getId()]['last_click_at'])->equals((string)$sub3date);
+    verify($clickData[$sub1->getId()]['last_click_at'])->equals((string)$newer);
+    verify($clickData[$sub2->getId()]['last_click_at'])->equals((string)$sub2date);
+    verify($clickData[$sub3->getId()]['last_click_at'])->equals((string)$sub3date);
     expect(!isset($clickData[$sub4->getId()]))->true();
   }
 
@@ -266,9 +266,9 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $this->assertInstanceOf(DateTimeInterface::class, $sub3->getLastClickAt());
 
 
-    expect($sub1->getLastClickAt()->getTimestamp())->equals($newer->getTimestamp());
-    expect($sub2->getLastClickAt()->getTimestamp())->equals($sub2date->getTimestamp());
-    expect($sub3->getLastClickAt()->getTimestamp())->equals($sub3date->getTimestamp());
+    verify($sub1->getLastClickAt()->getTimestamp())->equals($newer->getTimestamp());
+    verify($sub2->getLastClickAt()->getTimestamp())->equals($sub2date->getTimestamp());
+    verify($sub3->getLastClickAt()->getTimestamp())->equals($sub3date->getTimestamp());
     expect($sub4->getLastOpenAt())->null();
   }
 
@@ -303,9 +303,9 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $this->entityManager->flush();
     $clickData = $this->backfiller->getSendingDataForBatch([$sub1->getId(), $sub2->getId(), $sub3->getId(), $sub4->getId()]);
     expect($clickData)->count(3);
-    expect($clickData[$sub1->getId()]['last_sending_at'])->equals((string)$newer);
-    expect($clickData[$sub2->getId()]['last_sending_at'])->equals((string)$sub2date);
-    expect($clickData[$sub3->getId()]['last_sending_at'])->equals((string)$sub3date);
+    verify($clickData[$sub1->getId()]['last_sending_at'])->equals((string)$newer);
+    verify($clickData[$sub2->getId()]['last_sending_at'])->equals((string)$sub2date);
+    verify($clickData[$sub3->getId()]['last_sending_at'])->equals((string)$sub3date);
     expect(!isset($clickData[$sub4->getId()]))->true();
   }
 
@@ -355,9 +355,9 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $this->assertInstanceOf(DateTimeInterface::class, $sub2->getLastSendingAt());
     $this->assertInstanceOf(DateTimeInterface::class, $sub3->getLastSendingAt());
 
-    expect($sub1->getLastSendingAt()->getTimestamp())->equals($newer->getTimestamp());
-    expect($sub2->getLastSendingAt()->getTimestamp())->equals($sub2date->getTimestamp());
-    expect($sub3->getLastSendingAt()->getTimestamp())->equals($sub3date->getTimestamp());
+    verify($sub1->getLastSendingAt()->getTimestamp())->equals($newer->getTimestamp());
+    verify($sub2->getLastSendingAt()->getTimestamp())->equals($sub2date->getTimestamp());
+    verify($sub3->getLastSendingAt()->getTimestamp())->equals($sub3date->getTimestamp());
     expect($sub4->getLastSendingAt())->null();
   }
 

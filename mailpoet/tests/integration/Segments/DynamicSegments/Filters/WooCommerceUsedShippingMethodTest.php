@@ -171,7 +171,7 @@ class WooCommerceUsedShippingMethodTest extends \MailPoetTest {
       'timeframe' => 'inTheLast',
     ]);
     $lookupData = $this->filter->getLookupData($filterData);
-    expect($lookupData)->equals(['shippingMethods' => []]);
+    verify($lookupData)->equals(['shippingMethods' => []]);
   }
 
   private function assertFilterReturnsEmails(string $operator, array $shippingMethodStrings, int $days, string $timeframe, array $expectedEmails): void {

@@ -119,18 +119,18 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $task = $this->scheduler->scheduleAll()[0];
     $this->entityManager->refresh($task);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
-    expect($task->getType())->equals(Sending::TASK_TYPE);
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($task->getType())->equals(Sending::TASK_TYPE);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
-    expect($scheduledAt->getTimestamp())->equals(Carbon::now()->getTimestamp(), 1);
-    expect($task->getSubscribers()->count())->equals(2);
+    verify($scheduledAt->getTimestamp())->equals(Carbon::now()->getTimestamp(), 1);
+    verify($task->getSubscribers()->count())->equals(2);
 
     $sendingQueue = $this->entityManager->getRepository(SendingQueueEntity::class)->findOneBy(['task' => $task]);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
-    expect($sendingQueue->getCountToProcess())->equals(2);
-    expect($sendingQueue->getCountTotal())->equals(2);
-    expect($sendingQueue->getCountProcessed())->equals(0);
+    verify($sendingQueue->getCountToProcess())->equals(2);
+    verify($sendingQueue->getCountTotal())->equals(2);
+    verify($sendingQueue->getCountProcessed())->equals(0);
   }
 
   public function testItSchedulesOneSubscriberInTwoSegmentsOnlyOnce() {
@@ -154,11 +154,11 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $task = $this->scheduler->scheduleAll()[0];
     $this->entityManager->refresh($task);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getSubscribers()->count())->equals(1);
+    verify($task->getSubscribers()->count())->equals(1);
 
     $sendingQueue = $this->entityManager->getRepository(SendingQueueEntity::class)->findOneBy(['task' => $task]);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
-    expect($sendingQueue->getCountToProcess())->equals(1);
+    verify($sendingQueue->getCountToProcess())->equals(1);
   }
 
   private function createReEngagementEmail(int $monthsAfter, string $status = NewsletterEntity::STATUS_ACTIVE) {

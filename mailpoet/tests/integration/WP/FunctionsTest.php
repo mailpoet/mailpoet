@@ -83,7 +83,7 @@ class FunctionsTest extends \MailPoetTest {
     $result = $this->wp->applyFilters($this->filter, $testValue);
 
     expect($called)->true();
-    expect($result)->equals($testValue);
+    verify($result)->equals($testValue);
 
     $called = false;
     $this->wp->removeFilter($this->filter, $callback);

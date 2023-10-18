@@ -26,7 +26,7 @@ class FeatureFlagsTest extends \MailPoetTest {
       'feature-b' => false,
     ]);
 
-    expect($endpoint->getAll()->data)->equals([
+    verify($endpoint->getAll()->data)->equals([
       [
         'name' => 'feature-a',
         'value' => true,
@@ -50,7 +50,7 @@ class FeatureFlagsTest extends \MailPoetTest {
       'feature-a' => true,
     ]);
 
-    expect($endpoint->getAll()->data)->equals([
+    verify($endpoint->getAll()->data)->equals([
       [
         'name' => 'feature-a',
         'value' => false,
@@ -71,8 +71,8 @@ class FeatureFlagsTest extends \MailPoetTest {
     $this->entityManager->clear();
     $features = $this->repository->findBy(['name' => 'feature-a']);
     expect($features)->count(1);
-    expect($features[0]->getName())->equals('feature-a');
-    expect($features[0]->getValue())->equals(false);
+    verify($features[0]->getName())->equals('feature-a');
+    verify($features[0]->getValue())->equals(false);
   }
 
   public function testItUpdatesDatabaseValue() {
@@ -91,9 +91,9 @@ class FeatureFlagsTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $features = $this->repository->findBy(['name' => 'feature-a']);
-    expect(count($features))->equals(1);
-    expect($features[0]->getName())->equals('feature-a');
-    expect($features[0]->getValue())->equals(true);
+    verify(count($features))->equals(1);
+    verify($features[0]->getName())->equals('feature-a');
+    verify($features[0]->getValue())->equals(true);
   }
 
   public function testItDoesNotReturnUnknownFlag() {
@@ -112,11 +112,11 @@ class FeatureFlagsTest extends \MailPoetTest {
       'feature-unknown' => false,
     ]);
 
-    expect($response->errors[0]['error'])->equals(APIError::BAD_REQUEST);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['error'])->equals(APIError::BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
     $features = $this->repository->findAll();
-    expect(count($features))->equals(0);
+    verify(count($features))->equals(0);
   }
 
   /** @return FeatureFlags */

@@ -77,51 +77,51 @@ class SMTPTest extends \MailPoetTest {
 
   public function testItCanBuildMailer() {
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->Host)
+    verify($mailer->Host)
       ->equals($this->settings['host']);
-    expect($mailer->Port)
+    verify($mailer->Port)
       ->equals($this->settings['port']);
-    expect($mailer->Username)
+    verify($mailer->Username)
       ->equals($this->settings['login']);
-    expect($mailer->Password)
+    verify($mailer->Password)
       ->equals($this->settings['password']);
-    expect($mailer->SMTPSecure)
+    verify($mailer->SMTPSecure)
       ->equals($this->settings['encryption']);
   }
 
   public function testItCanCreateMessage() {
     $mailer = $this->mailer
       ->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extraParams);
-    expect($mailer->CharSet)->equals('UTF-8'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->getToAddresses())->equals([
+    verify($mailer->CharSet)->equals('UTF-8'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->getToAddresses())->equals([
         ['blackhole@mailpoet.com', 'Recipient'],
     ]);
-    expect($mailer->getAllRecipientAddresses())->equals(['blackhole@mailpoet.com' => true]);
-    expect($mailer->From)->equals($this->sender['from_email']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->FromName)->equals($this->sender['from_name']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->getReplyToAddresses())->equals([
+    verify($mailer->getAllRecipientAddresses())->equals(['blackhole@mailpoet.com' => true]);
+    verify($mailer->From)->equals($this->sender['from_email']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->FromName)->equals($this->sender['from_name']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->getReplyToAddresses())->equals([
       'reply-to@mailpoet.com' => ['reply-to@mailpoet.com', 'Reply To'],
     ]);
-    expect($mailer->Sender)->equals($this->returnPath); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->ContentType)->equals('text/html'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->Subject)->equals($this->newsletter['subject']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->Body)->equals($this->newsletter['body']['html']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->AltBody)->equals($this->newsletter['body']['text']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->getCustomHeaders())->equals([['List-Unsubscribe', '<https://www.mailpoet.com>']]);
+    verify($mailer->Sender)->equals($this->returnPath); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->ContentType)->equals('text/html'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->Subject)->equals($this->newsletter['subject']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->Body)->equals($this->newsletter['body']['html']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->AltBody)->equals($this->newsletter['body']['text']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->getCustomHeaders())->equals([['List-Unsubscribe', '<https://www.mailpoet.com>']]);
   }
 
   public function testItCanProcessSubscriber() {
-    expect($this->mailer->processSubscriber('test@test.com'))
+    verify($this->mailer->processSubscriber('test@test.com'))
       ->equals([
         'email' => 'test@test.com',
         'name' => '',
       ]);
-    expect($this->mailer->processSubscriber('First <test@test.com>'))
+    verify($this->mailer->processSubscriber('First <test@test.com>'))
       ->equals([
         'email' => 'test@test.com',
         'name' => 'First',
       ]);
-    expect($this->mailer->processSubscriber('First Last <test@test.com>'))
+    verify($this->mailer->processSubscriber('First Last <test@test.com>'))
       ->equals([
         'email' => 'test@test.com',
         'name' => 'First Last',
@@ -154,7 +154,7 @@ class SMTPTest extends \MailPoetTest {
       }
     );
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->SMTPOptions)->equals(
+    verify($mailer->SMTPOptions)->equals(
       [
         'ssl' => [
           'verify_peer' => false,
@@ -166,7 +166,7 @@ class SMTPTest extends \MailPoetTest {
 
   public function testItAppliesTimeoutFilter() {
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->Timeout)->equals(\MailPoet\Mailer\Methods\SMTP::SMTP_CONNECTION_TIMEOUT);
+    verify($mailer->Timeout)->equals(\MailPoet\Mailer\Methods\SMTP::SMTP_CONNECTION_TIMEOUT);
     (new WPFunctions)->addFilter(
       'mailpoet_mailer_smtp_connection_timeout',
       function() {
@@ -174,7 +174,7 @@ class SMTPTest extends \MailPoetTest {
       }
     );
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->Timeout)->equals(20);
+    verify($mailer->Timeout)->equals(20);
   }
 
   public function testItChecksBlacklistBeforeSending() {
@@ -222,11 +222,11 @@ class SMTPTest extends \MailPoetTest {
     });
 
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->Host)->equals('filter_host');
-    expect($mailer->Port)->equals('filter_port');
-    expect($mailer->SMTPSecure)->equals('filter_encryption');
-    expect($mailer->SMTPAuth)->equals(true);
-    expect($mailer->Username)->equals('filter_username');
-    expect($mailer->Password)->equals('filter_password');
+    verify($mailer->Host)->equals('filter_host');
+    verify($mailer->Port)->equals('filter_port');
+    verify($mailer->SMTPSecure)->equals('filter_encryption');
+    verify($mailer->SMTPAuth)->equals(true);
+    verify($mailer->Username)->equals('filter_username');
+    verify($mailer->Password)->equals('filter_password');
   }
 }

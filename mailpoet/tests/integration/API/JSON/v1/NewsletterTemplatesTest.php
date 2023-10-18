@@ -34,17 +34,17 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);
     $response = $endpoint->get(/* missing id */);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['message'])
       ->equals('This template does not exist.');
 
     $response = $endpoint->get(['id' => 'not_an_id']);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['message'])
       ->equals('This template does not exist.');
 
     $response = $endpoint->get(['id' => $template->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['name'])->same('Template #1');
     expect($response->data['body'])->same(['key1' => 'value1']);
   }
@@ -54,7 +54,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);
     $response = $endpoint->getAll();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data)->count(count($templates));
   }
 
@@ -66,7 +66,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);
     $response = $endpoint->save($templateData);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['name'])->same('Template #3');
     expect($response->data['body'])->same(['key3' => 'value3']);
   }
@@ -86,7 +86,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);
     $response = $endpoint->save($templateData);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     expect($response->data['name'])->same('Template #3');
     expect($response->data['body'])->same(['key3' => 'value3']);
     expect($response->data['newsletter_id'])->same($newsletter->getId());
@@ -107,7 +107,7 @@ class NewsletterTemplatesTest extends \MailPoetTest {
 
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);
     $response = $endpoint->save($templateData);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     $templateData['body'] = json_decode($templateData['body'], true);
 
@@ -119,15 +119,15 @@ class NewsletterTemplatesTest extends \MailPoetTest {
   public function testItCanDeleteANewsletterTemplate() {
     $endpoint = $this->diContainer->get(NewsletterTemplates::class);
     $response = $endpoint->delete(/* missing id */);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['message'])
       ->equals('This template does not exist.');
 
     $template = $this->newsletterTemplatesRepository->findOneBy(['name' => 'Template #1']);
     $this->assertInstanceOf(NewsletterTemplateEntity::class, $template);
     $templateId = $template->getId();
     $response = $endpoint->delete(['id' => $template->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     $deletedTemplate = $this->newsletterTemplatesRepository->findOneById($templateId);
     expect($deletedTemplate)->null();

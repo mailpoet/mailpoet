@@ -58,14 +58,14 @@ class SubscriberActionsTest extends \MailPoetTest {
       [$segment->getId(), $segment2->getId()]
     );
 
-    expect($subscriber->getId() > 0)->equals(true);
-    expect($subscriber->getSegments()->count())->equals(2);
-    expect($subscriber->getEmail())->equals($this->testData['email']);
-    expect($subscriber->getFirstName())->equals($this->testData['first_name']);
-    expect($subscriber->getLastName())->equals($this->testData['last_name']);
+    verify($subscriber->getId() > 0)->equals(true);
+    verify($subscriber->getSegments()->count())->equals(2);
+    verify($subscriber->getEmail())->equals($this->testData['email']);
+    verify($subscriber->getFirstName())->equals($this->testData['first_name']);
+    verify($subscriber->getLastName())->equals($this->testData['last_name']);
     // signup confirmation is enabled by default
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
-    expect($subscriber->getDeletedAt())->equals(null);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    verify($subscriber->getDeletedAt())->equals(null);
   }
 
   public function testItSchedulesWelcomeNotificationUponSubscriptionWhenSubscriptionConfirmationIsDisabled() {
@@ -85,7 +85,7 @@ class SubscriberActionsTest extends \MailPoetTest {
 
     $this->settings->set('signup_confirmation.enabled', false);
     [$subscriber] = $this->subscriberActions->subscribe($this->testData, [$segment->getId()]);
-    expect($subscriber->getId() > 0)->equals(true);
+    verify($subscriber->getId() > 0)->equals(true);
     expect($subscriber->getSegments())->count(1);
 
     $scheduledNotification = $this->sendingQueuesRepository->findOneByNewsletterAndTaskStatus(
@@ -112,7 +112,7 @@ class SubscriberActionsTest extends \MailPoetTest {
 
     $this->settings->set('signup_confirmation.enabled', true);
     [$subscriber] = $this->subscriberActions->subscribe($this->testData, [$segment->getId()]);
-    expect($subscriber->getId() > 0)->equals(true);
+    verify($subscriber->getId() > 0)->equals(true);
     expect($subscriber->getSegments())->count(1);
     $scheduledNotification = $this->sendingQueuesRepository->findOneByNewsletterAndTaskStatus(
       $newsletter,
@@ -141,21 +141,21 @@ class SubscriberActionsTest extends \MailPoetTest {
       [$segment->getId()]
     );
 
-    expect($subscriber->getId() > 0)->equals(true);
+    verify($subscriber->getId() > 0)->equals(true);
     expect($subscriber->getId())->notEquals(1337);
     expect($subscriber->getSegments())->count(1);
-    expect($subscriber->getEmail())->equals('donald@mailpoet.com');
-    expect($subscriber->getFirstName())->equals('Donald');
-    expect($subscriber->getLastName())->equals('Trump');
+    verify($subscriber->getEmail())->equals('donald@mailpoet.com');
+    verify($subscriber->getFirstName())->equals('Donald');
+    verify($subscriber->getLastName())->equals('Trump');
 
     $createdAt = $subscriber->getCreatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
     expect($subscriber->getWpUserId())->null();
-    expect($subscriber->getIsWoocommerceUser())->equals(0);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    verify($subscriber->getIsWoocommerceUser())->equals(0);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
     expect($createdAt->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:01');
     expect($subscriber->getUpdatedAt()->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:02');
-    expect($createdAt->getTimestamp())->equals($subscriber->getUpdatedAt()->getTimestamp(), 2);
+    verify($createdAt->getTimestamp())->equals($subscriber->getUpdatedAt()->getTimestamp(), 2);
     expect($subscriber->getDeletedAt())->null();
   }
 
@@ -177,11 +177,11 @@ class SubscriberActionsTest extends \MailPoetTest {
       [$segment->getId()]
     );
 
-    expect($subscriber->getId() > 0)->equals(true);
+    verify($subscriber->getId() > 0)->equals(true);
     expect($subscriber->getSegments())->count(1);
-    expect($subscriber->getEmail())->equals($data['email']);
-    expect($subscriber->getFirstName())->equals($data['first_name']);
-    expect($subscriber->getLastName())->equals($data['last_name']);
+    verify($subscriber->getEmail())->equals($data['email']);
+    verify($subscriber->getFirstName())->equals($data['first_name']);
+    verify($subscriber->getLastName())->equals($data['last_name']);
 
     $data2 = $data;
     $data2['first_name'] = 'Aaa';
@@ -192,11 +192,11 @@ class SubscriberActionsTest extends \MailPoetTest {
       [$segment->getId(), $segment2->getId()]
     );
 
-    expect($subscriber->getId() > 0)->equals(true);
+    verify($subscriber->getId() > 0)->equals(true);
     expect($subscriber->getSegments())->count(2);
-    expect($subscriber->getEmail())->equals($data2['email']);
-    expect($subscriber->getFirstName())->equals($data2['first_name']);
-    expect($subscriber->getLastName())->equals($data2['last_name']);
+    verify($subscriber->getEmail())->equals($data2['email']);
+    verify($subscriber->getFirstName())->equals($data2['first_name']);
+    verify($subscriber->getLastName())->equals($data2['last_name']);
 
     $this->settings->set('signup_confirmation.enabled', $originalSettingValue);
   }
@@ -222,15 +222,15 @@ class SubscriberActionsTest extends \MailPoetTest {
       [$segment->getId()]
     );
 
-    expect($subscriber->getId() > 0)->equals(true);
+    verify($subscriber->getId() > 0)->equals(true);
     expect($subscriber->getSegments())->count(1);
-    expect($subscriber->getEmail())->equals($data['email']);
-    expect($subscriber->getFirstName())->equals($data['first_name']);
-    expect($subscriber->getLastName())->equals($data['last_name']);
+    verify($subscriber->getEmail())->equals($data['email']);
+    verify($subscriber->getFirstName())->equals($data['first_name']);
+    verify($subscriber->getLastName())->equals($data['last_name']);
     codecept_debug($subscriber->getSubscriberCustomFields()->count());
     $subscriberCustomField = $subscriber->getSubscriberCustomField($customField);
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
-    expect($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);
+    verify($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);
 
     expect($subscriber->getUnconfirmedData())->isEmpty();
 
@@ -244,18 +244,18 @@ class SubscriberActionsTest extends \MailPoetTest {
       [$segment->getId(), $segment2->getId()]
     );
 
-    expect($subscriber->getId() > 0)->equals(true);
+    verify($subscriber->getId() > 0)->equals(true);
     expect($subscriber->getSegments())->count(2);
     // fields should be left intact
-    expect($subscriber->getEmail())->equals($data['email']);
-    expect($subscriber->getFirstName())->equals($data['first_name']);
-    expect($subscriber->getLastName())->equals($data['last_name']);
+    verify($subscriber->getEmail())->equals($data['email']);
+    verify($subscriber->getFirstName())->equals($data['first_name']);
+    verify($subscriber->getLastName())->equals($data['last_name']);
     $subscriberCustomField = $subscriber->getSubscriberCustomField($customField);
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
-    expect($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);
+    verify($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);
 
     expect($subscriber->getUnconfirmedData())->notEmpty();
-    expect($subscriber->getUnconfirmedData())->equals(json_encode($data2));
+    verify($subscriber->getUnconfirmedData())->equals(json_encode($data2));
 
     // Unconfirmed data should be wiped after any direct update
     // during confirmation, manual admin editing

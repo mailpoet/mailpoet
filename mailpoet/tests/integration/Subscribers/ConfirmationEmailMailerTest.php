@@ -70,7 +70,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
         Stub\Expected::once(function($email, $subscriber, $extraParams) {
           expect($email['body']['html'])->stringContainsString('<strong>Test segment</strong>');
           expect($email['body']['html'])->stringContainsString('<a target="_blank" href="http://example.com">Click here to confirm your subscription.</a>');
-          expect($extraParams['meta'])->equals([
+          verify($extraParams['meta'])->equals([
             'email_type' => 'confirmation',
             'subscriber_status' => 'unconfirmed',
             'subscriber_source' => 'api',
@@ -95,11 +95,11 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
 
     $result = $sender->sendConfirmationEmail($this->subscriber);
     expect($result)->true();
-    expect($this->subscriber->getConfirmationsCount())->equals(1);
+    verify($this->subscriber->getConfirmationsCount())->equals(1);
 
     $sender->sendConfirmationEmailOnce($this->subscriber);
     $this->subscribersRepository->refresh($this->subscriber);
-    expect($this->subscriber->getConfirmationsCount())->equals(1);
+    verify($this->subscriber->getConfirmationsCount())->equals(1);
   }
 
   public function testItThrowsExceptionWhenConfirmationEmailCannotBeSent() {
@@ -148,11 +148,11 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     } catch (\Exception $e) {
       $exceptionMessage = $e->getMessage();
     }
-    expect($exceptionMessage)->equals(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
+    verify($exceptionMessage)->equals(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
     $mailerLogError = MailerLog::getError();
     $this->assertIsArray($mailerLogError);
-    expect($mailerLogError['operation'])->equals(MailerError::OPERATION_SEND);
-    expect($mailerLogError['error_message'])->equals('Error message');
+    verify($mailerLogError['operation'])->equals(MailerError::OPERATION_SEND);
+    verify($mailerLogError['error_message'])->equals('Error message');
   }
 
   public function testSendConfirmationEmailThrowsAndIgnoresSoftErrorWhenSendReturnsFalse() {
@@ -177,7 +177,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     } catch (\Exception $e) {
       $exceptionMessage = $e->getMessage();
     }
-    expect($exceptionMessage)->equals(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
+    verify($exceptionMessage)->equals(__('There was an error when sending a confirmation email for your subscription. Please contact the website owner.', 'mailpoet'));
     expect(MailerLog::getError())->null();
   }
 
@@ -201,7 +201,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     );
 
     $result = $sender->sendConfirmationEmail($this->subscriber);
-    expect($result)->equals(false);
+    verify($result)->equals(false);
     $settings->set(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
   }
 
@@ -226,9 +226,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     );
 
     for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
-      expect($sender->sendConfirmationEmail($this->subscriber))->equals(true);
+      verify($sender->sendConfirmationEmail($this->subscriber))->equals(true);
     }
-    expect($sender->sendConfirmationEmail($this->subscriber))->equals(false);
+    verify($sender->sendConfirmationEmail($this->subscriber))->equals(false);
   }
 
   public function testItDoesNotLimitNumberOfConfirmationEmailsForLoggedInUser() {
@@ -252,9 +252,9 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     );
 
     for ($i = 0; $i < $sender::MAX_CONFIRMATION_EMAILS; $i++) {
-      expect($sender->sendConfirmationEmail($this->subscriber))->equals(true);
+      verify($sender->sendConfirmationEmail($this->subscriber))->equals(true);
     }
-    expect($sender->sendConfirmationEmail($this->subscriber))->equals(true);
+    verify($sender->sendConfirmationEmail($this->subscriber))->equals(true);
   }
 
   public function testGetMailBodyWithCustomizerReplacesActivationShortcode() {
@@ -315,7 +315,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     );
 
     $confirmationNewsletter = $confirmationEmailCustomizer->getNewsletter();
-    expect($confirmationNewsletter->getId())->equals($newsletter->getId());
+    verify($confirmationNewsletter->getId())->equals($newsletter->getId());
     $confirmationMailBody = $sender->getMailBodyWithCustomizer($this->subscriber, ['test_segment']);
     expect($confirmationMailBody['body']['html'])->stringContainsString('<a class="mailpoet_button" href="https://example.com"');
 
@@ -351,7 +351,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $newsletterRepository->flush();
 
     $confirmationNewsletter = $confirmationEmailCustomizer->getNewsletter();
-    expect($confirmationNewsletter->getId())->equals($newsletter->getId());
+    verify($confirmationNewsletter->getId())->equals($newsletter->getId());
     $confirmationMailBody = $sender->getMailBodyWithCustomizer($this->subscriber, ['test_segment']);
     expect($confirmationMailBody['body']['html'])->stringContainsString('<a class="mailpoet_button" href="https://example.com"');
 

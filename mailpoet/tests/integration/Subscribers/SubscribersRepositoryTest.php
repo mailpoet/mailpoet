@@ -99,10 +99,10 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $this->repository->refresh($subscriberTwo);
     $this->repository->refresh($subscriberThree);
     $this->assertInstanceOf(DateTimeInterface::class, $subscriberOne->getLastSendingAt());
-    expect($subscriberOne->getLastSendingAt()->getTimestamp())->equals($now->getTimestamp());
+    verify($subscriberOne->getLastSendingAt()->getTimestamp())->equals($now->getTimestamp());
     expect($subscriberTwo->getLastSendingAt())->null();
     $this->assertInstanceOf(DateTimeInterface::class, $subscriberThree->getLastSendingAt());
-    expect($subscriberThree->getLastSendingAt()->getTimestamp())->equals($now->getTimestamp());
+    verify($subscriberThree->getLastSendingAt()->getTimestamp())->equals($now->getTimestamp());
   }
 
   public function testItBulkUpdatesEngagementScoreUpdatedAt(): void {
@@ -123,10 +123,10 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $this->repository->refresh($subscriberTwo);
     $this->repository->refresh($subscriberThree);
     $this->assertInstanceOf(DateTimeInterface::class, $subscriberOne->getEngagementScoreUpdatedAt());
-    expect($subscriberOne->getEngagementScoreUpdatedAt()->getTimestamp())->equals($now->getTimestamp());
+    verify($subscriberOne->getEngagementScoreUpdatedAt()->getTimestamp())->equals($now->getTimestamp());
     expect($subscriberTwo->getEngagementScoreUpdatedAt())->null();
     $this->assertInstanceOf(DateTimeInterface::class, $subscriberThree->getEngagementScoreUpdatedAt());
-    expect($subscriberThree->getEngagementScoreUpdatedAt()->getTimestamp())->equals($now->getTimestamp());
+    verify($subscriberThree->getEngagementScoreUpdatedAt()->getTimestamp())->equals($now->getTimestamp());
   }
 
   public function testBulkUpdatesOfEngagementScoreCanNullifyData(): void {
@@ -254,13 +254,13 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $unsubscribedSubscriber = $this->repository->findOneById($subscriberOneId);
     expect($unsubscribedSubscriber)->notNull();
     $this->assertInstanceOf(SubscriberEntity::class, $unsubscribedSubscriber);
-    expect($unsubscribedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($unsubscribedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
 
     // subscriber still subscribed
     $subscribedSubscriber = $this->repository->findOneById($subscriberTwoId);
     expect($subscribedSubscriber)->notNull();
     $this->assertInstanceOf(SubscriberEntity::class, $subscribedSubscriber);
-    expect($subscribedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscribedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItBulkRemoveSubscriberFromAllSegments(): void {
@@ -372,7 +372,7 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     $count = $this->repository->bulkDelete([$subscriber->getId()]);
 
-    expect($count)->equals(0);
+    verify($count)->equals(0);
     expect($this->repository->findOneById($subscriberId))->notNull();
   }
 
@@ -385,17 +385,17 @@ class SubscribersRepositoryTest extends \MailPoetTest {
 
     $count = $this->repository->bulkDelete([$subscriberId]);
 
-    expect($count)->equals(0);
+    verify($count)->equals(0);
     expect($this->repository->findOneById($subscriberId))->notNull();
   }
 
   public function testItGetsMaxSubscriberId(): void {
     // check if equals to zero when no subscribers
-    expect($this->repository->getMaxSubscriberId())->equals(0);
+    verify($this->repository->getMaxSubscriberId())->equals(0);
     // check if equals to max subscriber id
     $this->createSubscriber('sub1@test.com');
     $subscriberTwo = $this->createSubscriber('sub2@test.com');
-    expect($this->repository->getMaxSubscriberId())->equals($subscriberTwo->getId());
+    verify($this->repository->getMaxSubscriberId())->equals($subscriberTwo->getId());
   }
 
   private function createSubscriber(string $email, ?DateTimeImmutable $deletedAt = null): SubscriberEntity {

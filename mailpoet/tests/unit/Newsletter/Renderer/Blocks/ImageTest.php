@@ -27,7 +27,7 @@ class ImageTest extends \MailPoetUnitTest {
           <a href="http://example.com"><img src="http://mailpoet.localhost/image.jpg" width="160" alt="Alt text"/></a>
         </td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 
   public function testItRendersWithoutLink() {
@@ -39,6 +39,6 @@ class ImageTest extends \MailPoetUnitTest {
           <img src="http://mailpoet.localhost/image.jpg" width="160" alt="Alt text"/>
         </td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 }

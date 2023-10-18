@@ -60,13 +60,13 @@ class AutomaticEmailTest extends \MailPoetTest {
     $expectedTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(2);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getId())->greaterOrEquals(1);
-    expect($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
-    expect($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    verify($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
+    verify($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
     $this->tester->assertEqualDateTimes($expectedTime, $task->getScheduledAt(), 1);
     // task should have 1 associated user
     $subscribers = $task->getSubscribers()->toArray();
     expect($subscribers)->count(1);
-    expect($subscribers[0]->getSubscriber())->equals($subscriber);
+    verify($subscribers[0]->getSubscriber())->equals($subscriber);
   }
 
   public function testItAddsMetaToSendingQueueWhenCreatingAutomaticEmailSendingTask() {
@@ -92,8 +92,8 @@ class AutomaticEmailTest extends \MailPoetTest {
     $expectedTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(2);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getId())->greaterOrEquals(1);
-    expect($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
-    expect($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    verify($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
+    verify($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
     $this->tester->assertEqualDateTimes($expectedTime, $task->getScheduledAt(), 1);
     // task should not have any subscribers
     $subscribers = $task->getSubscribers();
@@ -185,13 +185,13 @@ class AutomaticEmailTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $newsletter = $sendingQueue->getNewsletter();
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    expect($newsletter->getId())->equals($newsletter2->getId());
+    verify($newsletter->getId())->equals($newsletter2->getId());
     // scheduled task should be created
     $task = $sendingQueue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     expect($task->getId())->greaterOrEquals(1);
-    expect($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
-    expect($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    verify($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
+    verify($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
     $this->tester->assertEqualDateTimes($expectedTime, $task->getScheduledAt(), 1);
   }
 

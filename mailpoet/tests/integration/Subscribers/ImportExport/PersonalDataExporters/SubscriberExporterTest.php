@@ -32,9 +32,9 @@ class SubscriberExporterTest extends \MailPoetTest {
     $result = $this->exporter->export('email.that@doesnt.exists');
     expect($result)->array();
     expect($result)->hasKey('data');
-    expect($result['data'])->equals([]);
+    verify($result['data'])->equals([]);
     expect($result)->hasKey('done');
-    expect($result['done'])->equals(true);
+    verify($result['done'])->equals(true);
   }
 
   public function testExportSubscriberWithoutCustomFields() {
@@ -53,7 +53,7 @@ class SubscriberExporterTest extends \MailPoetTest {
     expect($result)->hasKey('done');
     expect($result['data'])->array();
     expect($result['data'])->count(1);
-    expect($result['done'])->equals(true);
+    verify($result['done'])->equals(true);
     expect($result['data'][0])->hasKey('group_id');
     expect($result['data'][0])->hasKey('group_label');
     expect($result['data'][0])->hasKey('item_id');
@@ -66,7 +66,7 @@ class SubscriberExporterTest extends \MailPoetTest {
       ['name' => 'Created at', 'value' => '2018-05-03 10:30:08'],
       ['name' => "Subscriber's subscription source", 'value' => 'Unknown'],
     ];
-    expect($result['data'][0]['data'])->equals($expected);
+    verify($result['data'][0]['data'])->equals($expected);
   }
 
   public function testExportSubscriberWithSource() {

@@ -67,7 +67,7 @@ class EditorLineHeightCest {
         ->findElement(WebDriverBy::cssSelector('.mailpoet_newsletter_wrapper .mailpoet_text_block ' . $selector))
         ->getCSSValue('line-height');
     });
-    expect($elementLineHeight)->equals((int)$fontSize * (float)$lineHeight);
+    verify($elementLineHeight)->equals((int)$fontSize * (float)$lineHeight);
   }
 
   private function checkLineHeightInPreview(\AcceptanceTester $i, $fontSize, $lineHeight, $selector) {

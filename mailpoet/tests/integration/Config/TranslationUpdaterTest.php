@@ -102,19 +102,19 @@ class TranslationUpdaterTest extends \MailPoetTest {
 
     expect($result->translations)->notEmpty();
     $freeTranslation = $result->translations[0];
-    expect($freeTranslation['type'])->equals('plugin');
-    expect($freeTranslation['slug'])->equals($this->freeSlug);
-    expect($freeTranslation['language'])->equals('fr_FR');
-    expect($freeTranslation['version'])->equals($this->freeVersion);
-    expect($freeTranslation['updated'])->equals('2021-08-12 14:28:35');
-    expect($freeTranslation['package'])->equals('https:\/\/translate.files.wordpress.com\/2021\/08\/mailpoet-free-0_1-fr_fr.zip');
+    verify($freeTranslation['type'])->equals('plugin');
+    verify($freeTranslation['slug'])->equals($this->freeSlug);
+    verify($freeTranslation['language'])->equals('fr_FR');
+    verify($freeTranslation['version'])->equals($this->freeVersion);
+    verify($freeTranslation['updated'])->equals('2021-08-12 14:28:35');
+    verify($freeTranslation['package'])->equals('https:\/\/translate.files.wordpress.com\/2021\/08\/mailpoet-free-0_1-fr_fr.zip');
     $premiumTranslation = $result->translations[1];
-    expect($premiumTranslation['type'])->equals('plugin');
-    expect($premiumTranslation['slug'])->equals($this->premiumSlug);
-    expect($premiumTranslation['language'])->equals('fr_FR');
-    expect($premiumTranslation['version'])->equals($this->premiumVersion);
-    expect($premiumTranslation['updated'])->equals('2021-08-12 14:28:35');
-    expect($premiumTranslation['package'])->equals('https:\/\/translate.files.wordpress.com\/2021\/08\/mailpoet-premium-0_1-fr_fr.zip');
+    verify($premiumTranslation['type'])->equals('plugin');
+    verify($premiumTranslation['slug'])->equals($this->premiumSlug);
+    verify($premiumTranslation['language'])->equals('fr_FR');
+    verify($premiumTranslation['version'])->equals($this->premiumVersion);
+    verify($premiumTranslation['updated'])->equals('2021-08-12 14:28:35');
+    verify($premiumTranslation['package'])->equals('https:\/\/translate.files.wordpress.com\/2021\/08\/mailpoet-premium-0_1-fr_fr.zip');
   }
 
   public function testItDoesNotOverrideNewerVersion(): void {
@@ -224,13 +224,13 @@ class TranslationUpdaterTest extends \MailPoetTest {
     $result = $updater->checkForTranslations($updateTransient);
     expect($result->translations)->notEmpty();
     $freeTranslation = $result->translations[0];
-    expect($freeTranslation['type'])->equals('plugin');
-    expect($freeTranslation['slug'])->equals($this->freeSlug);
-    expect($freeTranslation['language'])->equals('fr_FR');
-    expect($freeTranslation['version'])->equals($this->freeVersion);
+    verify($freeTranslation['type'])->equals('plugin');
+    verify($freeTranslation['slug'])->equals($this->freeSlug);
+    verify($freeTranslation['language'])->equals('fr_FR');
+    verify($freeTranslation['version'])->equals($this->freeVersion);
     // We add 1 second to .org so that .com translation are saved as newer.
-    expect($freeTranslation['updated'])->equals('2021-10-15 05:18:36');
-    expect($freeTranslation['package'])->equals('https:\/\/translate.files.wordpress.com\/2021\/08\/mailpoet-free-0_1-fr_fr.zip');
+    verify($freeTranslation['updated'])->equals('2021-10-15 05:18:36');
+    verify($freeTranslation['package'])->equals('https:\/\/translate.files.wordpress.com\/2021\/08\/mailpoet-free-0_1-fr_fr.zip');
   }
 
   public function testItDoesNotInstallDotOrgTranslationsInCaseThereIsLanguagePackFromDotCom(): void {
@@ -294,21 +294,21 @@ class TranslationUpdaterTest extends \MailPoetTest {
     expect($result->translations)->count(4); // askimet + mailpoet cs_CZ and two packs from .com
 
     $mailPoetCs = $result->translations[0];
-    expect($mailPoetCs['slug'])->equals('mailpoet');
-    expect($mailPoetCs['language'])->equals('cs_CZ');
+    verify($mailPoetCs['slug'])->equals('mailpoet');
+    verify($mailPoetCs['language'])->equals('cs_CZ');
 
     $askimetFr = $result->translations[1];
-    expect($askimetFr['slug'])->equals('askimet');
-    expect($askimetFr['language'])->equals('fr_FR');
+    verify($askimetFr['slug'])->equals('askimet');
+    verify($askimetFr['language'])->equals('fr_FR');
 
     $mailpoetFr = $result->translations[2];
-    expect($mailpoetFr['slug'])->equals('mailpoet');
-    expect($mailpoetFr['language'])->equals('fr_FR');
+    verify($mailpoetFr['slug'])->equals('mailpoet');
+    verify($mailpoetFr['language'])->equals('fr_FR');
     expect($mailpoetFr['package'])->stringContainsString('translate.files.wordpress.com');
 
     $mailpoetPremiumFr = $result->translations[3];
-    expect($mailpoetPremiumFr['slug'])->equals('mailpoet-premium');
-    expect($mailpoetPremiumFr['language'])->equals('fr_FR');
+    verify($mailpoetPremiumFr['slug'])->equals('mailpoet-premium');
+    verify($mailpoetPremiumFr['language'])->equals('fr_FR');
     expect($mailpoetPremiumFr['package'])->stringContainsString('translate.files.wordpress.com');
   }
 
@@ -407,12 +407,12 @@ class TranslationUpdaterTest extends \MailPoetTest {
 
     expect($result->translations)->notEmpty();
     $freeTranslation = $result->translations[0];
-    expect($freeTranslation['type'])->equals('plugin');
-    expect($freeTranslation['slug'])->equals($this->freeSlug);
-    expect($freeTranslation['language'])->equals('fr_FR');
-    expect($freeTranslation['version'])->equals($this->freeVersion);
-    expect($freeTranslation['updated'])->equals('2021-08-12 14:28:35');
-    expect($freeTranslation['package'])->equals('https:\/\/translate.files.wordpress.com\/2021\/08\/mailpoet-free-0_1-fr_fr.zip');
+    verify($freeTranslation['type'])->equals('plugin');
+    verify($freeTranslation['slug'])->equals($this->freeSlug);
+    verify($freeTranslation['language'])->equals('fr_FR');
+    verify($freeTranslation['version'])->equals($this->freeVersion);
+    verify($freeTranslation['updated'])->equals('2021-08-12 14:28:35');
+    verify($freeTranslation['package'])->equals('https:\/\/translate.files.wordpress.com\/2021\/08\/mailpoet-free-0_1-fr_fr.zip');
   }
 
   private function getResponseData(): array {

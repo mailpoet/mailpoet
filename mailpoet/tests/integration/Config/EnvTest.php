@@ -17,75 +17,75 @@ class EnvTest extends \MailPoetTest {
   }
 
   public function testItCanReturnPluginPrefix() {
-    expect(Env::$pluginPrefix)->equals('mailpoet_');
+    verify(Env::$pluginPrefix)->equals('mailpoet_');
   }
 
   public function testItCanReturnDbPrefix() {
     global $wpdb;
     $dbPrefix = $wpdb->prefix . 'mailpoet_';
-    expect(Env::$dbPrefix)->equals($dbPrefix);
+    verify(Env::$dbPrefix)->equals($dbPrefix);
   }
 
   public function testItProcessDBHost() {
     Env::init('file', '1.0.0', 'localhost', 'db_user', 'pass123', 'db_name');
-    expect(Env::$dbHost)->equals('localhost');
+    verify(Env::$dbHost)->equals('localhost');
     expect(Env::$dbPort)->null();
 
     Env::init('file', '1.0.0', 'localhost:3307', 'db_user', 'pass123', 'db_name');
-    expect(Env::$dbHost)->equals('localhost');
-    expect(Env::$dbPort)->equals('3307');
+    verify(Env::$dbHost)->equals('localhost');
+    verify(Env::$dbPort)->equals('3307');
   }
 
   public function testItProcessDBHostWithSocket() {
     Env::init('file', '1.0.0', 'localhost:/var/lib/mysql/mysql55.sock', 'db_user', 'pass123', 'db_name');
-    expect(Env::$dbHost)->equals('localhost');
-    expect(Env::$dbSocket)->equals('/var/lib/mysql/mysql55.sock');
+    verify(Env::$dbHost)->equals('localhost');
+    verify(Env::$dbSocket)->equals('/var/lib/mysql/mysql55.sock');
   }
 
   public function testItProcessDBHostWithIpV6Address() {
     Env::init('file', '1.0.0', '::1', 'db_user', 'pass123', 'db_name');
-    expect(Env::$dbHost)->equals('::1');
-    expect(Env::$dbSocket)->equals(null);
+    verify(Env::$dbHost)->equals('::1');
+    verify(Env::$dbSocket)->equals(null);
 
     Env::init('file', '1.0.0', 'b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036', 'db_user', 'pass123', 'db_name');
-    expect(Env::$dbHost)->equals('b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036');
-    expect(Env::$dbSocket)->equals(null);
+    verify(Env::$dbHost)->equals('b57e:9b70:ab96:6a0b:5ba2:49e3:ebba:a036');
+    verify(Env::$dbSocket)->equals(null);
   }
 
   public function testItCanReturnDbName() {
-    expect(Env::$dbName)->equals(DB_NAME);
+    verify(Env::$dbName)->equals(DB_NAME);
   }
 
   public function testItCanReturnDbUser() {
-    expect(Env::$dbUsername)->equals(DB_USER);
+    verify(Env::$dbUsername)->equals(DB_USER);
   }
 
   public function testItCanReturnDbPassword() {
-    expect(Env::$dbPassword)->equals(DB_PASSWORD);
+    verify(Env::$dbPassword)->equals(DB_PASSWORD);
   }
 
   public function testItCanReturnDbCharset() {
     global $wpdb;
     $charset = $wpdb->charset;
-    expect(Env::$dbCharset)->equals($charset);
+    verify(Env::$dbCharset)->equals($charset);
   }
 
   public function testItCanReturnDbCollation() {
     global $wpdb;
     $collation = $wpdb->collate;
-    expect(Env::$dbCollation)->equals($collation);
+    verify(Env::$dbCollation)->equals($collation);
   }
 
   public function testItCanReturnDbCharsetCollate() {
     global $wpdb;
     $charsetCollate = $wpdb->get_charset_collate();
-    expect(Env::$dbCharsetCollate)->equals($charsetCollate);
+    verify(Env::$dbCharsetCollate)->equals($charsetCollate);
   }
 
   public function testItCanGetDbTimezoneOffset() {
-    expect(Env::getDbTimezoneOffset('+1.5'))->equals("+01:30");
-    expect(Env::getDbTimezoneOffset('+11'))->equals("+11:00");
-    expect(Env::getDbTimezoneOffset('-5.5'))->equals("-05:30");
+    verify(Env::getDbTimezoneOffset('+1.5'))->equals("+01:30");
+    verify(Env::getDbTimezoneOffset('+11'))->equals("+11:00");
+    verify(Env::getDbTimezoneOffset('-5.5'))->equals("-05:30");
   }
 
   public function _after() {

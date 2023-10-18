@@ -36,7 +36,7 @@ class AutomationRunLogTest extends \MailPoetTest {
     $log->setData('data', $data);
     $this->automationRunLogStorage->createAutomationRunLog($log);
     $retrieved = $this->automationRunLogStorage->getLogsForAutomationRun(1)[0];
-    expect($retrieved->getData()['data'])->equals($data);
+    verify($retrieved->getData()['data'])->equals($data);
   }
 
   public function testItAllowsSettingMultidimensionalArraysOfScalarValues(): void {
@@ -53,7 +53,7 @@ class AutomationRunLogTest extends \MailPoetTest {
     $log->setData('data', $data);
     $this->automationRunLogStorage->createAutomationRunLog($log);
     $retrieved = $this->automationRunLogStorage->getLogsForAutomationRun(1)[0];
-    expect($retrieved->getData()['data'])->equals($data);
+    verify($retrieved->getData()['data'])->equals($data);
   }
 
   public function testItDoesNotAllowSettingDataThatIncludesClosures(): void {

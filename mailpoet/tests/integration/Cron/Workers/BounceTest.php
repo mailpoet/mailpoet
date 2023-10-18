@@ -74,7 +74,7 @@ class BounceTest extends \MailPoetTest {
   }
 
   public function testItDefinesConstants() {
-    expect(Bounce::BATCH_SIZE)->equals(100);
+    verify(Bounce::BATCH_SIZE)->equals(100);
   }
 
   public function testItCanInitializeBridgeAPI() {
@@ -112,14 +112,14 @@ class BounceTest extends \MailPoetTest {
 
   public function testItPreparesTask() {
     $task = $this->createScheduledTask();
-    expect($this->scheduledTaskSubscribersRepository->countBy([
+    verify($this->scheduledTaskSubscribersRepository->countBy([
       'task' => $task,
       'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
     ]))->equals(0);
     $result = $this->worker->prepareTaskStrategy($task, microtime(true));
     expect($this->emails)->count($this->scheduledTaskSubscribersRepository->countBy([]));
     expect($result)->true();
-    expect($this->scheduledTaskSubscribersRepository->countBy([
+    verify($this->scheduledTaskSubscribersRepository->countBy([
       'task' => $task,
       'processed' => ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED,
     ]))->equals(count($this->emails));
@@ -158,10 +158,10 @@ class BounceTest extends \MailPoetTest {
 
     $subscribers = $this->subscribersRepository->findAll();
 
-    expect($subscribers[0]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($subscribers[1]->getStatus())->equals(SubscriberEntity::STATUS_BOUNCED);
-    expect($subscribers[2]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($subscribers[3]->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    verify($subscribers[0]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscribers[1]->getStatus())->equals(SubscriberEntity::STATUS_BOUNCED);
+    verify($subscribers[2]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscribers[3]->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
   public function testItCreatesStatistics() {

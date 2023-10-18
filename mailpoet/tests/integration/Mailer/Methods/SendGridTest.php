@@ -58,31 +58,31 @@ class SendGridTest extends \MailPoetTest {
   public function testItCanGenerateBody() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber, $this->extraParams);
     expect($body['to'])->stringContainsString($this->subscriber);
-    expect($body['from'])->equals($this->sender['from_email']);
-    expect($body['fromname'])->equals($this->sender['from_name']);
-    expect($body['replyto'])->equals($this->replyTo['reply_to_email']);
-    expect($body['subject'])->equals($this->newsletter['subject']);
+    verify($body['from'])->equals($this->sender['from_email']);
+    verify($body['fromname'])->equals($this->sender['from_name']);
+    verify($body['replyto'])->equals($this->replyTo['reply_to_email']);
+    verify($body['subject'])->equals($this->newsletter['subject']);
     $headers = json_decode($body['headers'], true);
     $this->assertIsArray($headers);
-    expect($headers['List-Unsubscribe'])
+    verify($headers['List-Unsubscribe'])
       ->equals('<' . $this->extraParams['unsubscribe_url'] . '>');
-    expect($body['html'])->equals($this->newsletter['body']['html']);
-    expect($body['text'])->equals($this->newsletter['body']['text']);
+    verify($body['html'])->equals($this->newsletter['body']['html']);
+    verify($body['text'])->equals($this->newsletter['body']['text']);
   }
 
   public function testItCanCreateRequest() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
     $request = $this->mailer->request($this->newsletter, $this->subscriber);
-    expect($request['timeout'])->equals(10);
-    expect($request['httpversion'])->equals('1.1');
-    expect($request['method'])->equals('POST');
-    expect($request['headers']['Authorization'])
+    verify($request['timeout'])->equals(10);
+    verify($request['httpversion'])->equals('1.1');
+    verify($request['method'])->equals('POST');
+    verify($request['headers']['Authorization'])
       ->equals('Bearer ' . $this->settings['api_key']);
-    expect($request['body'])->equals(http_build_query($body));
+    verify($request['body'])->equals(http_build_query($body));
   }
 
   public function testItCanDoBasicAuth() {
-    expect($this->mailer->auth())
+    verify($this->mailer->auth())
       ->equals('Bearer ' . $this->settings['api_key']);
   }
 

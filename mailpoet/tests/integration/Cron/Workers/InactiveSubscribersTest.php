@@ -106,8 +106,8 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $this->entityManager->flush();
     $worker->processTaskStrategy($task, microtime(true));
 
-    expect($controllerMock->markInactiveSubscribers(5, 1000))->equals(0);
-    expect($controllerMock->markActiveSubscribers(5, 1000))->equals(0);
+    verify($controllerMock->markInactiveSubscribers(5, 1000))->equals(0);
+    verify($controllerMock->markActiveSubscribers(5, 1000))->equals(0);
   }
 
   public function testItCanStopDeactivationIfMarkInactiveSubscribersReturnsFalse() {
@@ -126,7 +126,7 @@ class InactiveSubscribersTest extends \MailPoetTest {
     $worker->processTaskStrategy($task, microtime(true));
 
     $meta = $task->getMeta();
-    expect(isset($meta['last_subscriber_id']))->equals(false);
+    verify(isset($meta['last_subscriber_id']))->equals(false);
   }
 
   public function testThrowsAnExceptionWhenTimeIsOut() {

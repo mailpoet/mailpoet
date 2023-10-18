@@ -73,13 +73,13 @@ class PostNotificationTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingTask->getSendingQueue());
     expect($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->count(1);
     $this->assertInstanceOf(NewsletterEntity::class, $sendingTask->getSendingQueue()->getNewsletter());
-    expect($sendingTask->getSendingQueue()->getNewsletter()->getId())->equals($newsletter->getId());
+    verify($sendingTask->getSendingQueue()->getNewsletter()->getId())->equals($newsletter->getId());
 
-    expect($sendingTask->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    verify($sendingTask->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
 
 
-    expect($sendingTask->getScheduledAt())->equals($this->scheduler->getNextRunDate('* 5 * * *'));
-    expect($sendingTask->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
+    verify($sendingTask->getScheduledAt())->equals($this->scheduler->getNextRunDate('* 5 * * *'));
+    verify($sendingTask->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
 
     // duplicate queue record should not be created
     $newsletterId = $newsletter->getId();
@@ -112,11 +112,11 @@ class PostNotificationTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingTask->getSendingQueue());
     expect($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->count(2);
     $this->assertInstanceOf(NewsletterEntity::class, $sendingTask->getSendingQueue()->getNewsletter());
-    expect($sendingTask->getSendingQueue()->getNewsletter()->getId())->equals($newsletter->getId());
+    verify($sendingTask->getSendingQueue()->getNewsletter()->getId())->equals($newsletter->getId());
 
-    expect($sendingTask->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
-    expect($sendingTask->getScheduledAt())->equals($this->scheduler->getNextRunDate('* 10 * * *'));
-    expect($sendingTask->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
+    verify($sendingTask->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
+    verify($sendingTask->getScheduledAt())->equals($this->scheduler->getNextRunDate('* 10 * * *'));
+    verify($sendingTask->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
 
     // duplicate queue record should not be created
     $newsletterId = $newsletter->getId();
@@ -152,7 +152,7 @@ class PostNotificationTest extends \MailPoetTest {
       $currentTime :
       $currentTime->addDay();
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
-    expect($queue->getTask()->getScheduledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT))
+    verify($queue->getTask()->getScheduledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT))
       ->equals($nextRunDate->format('Y-m-d 05:00:00'));
 
     // testing scheduling by minutes
@@ -169,7 +169,7 @@ class PostNotificationTest extends \MailPoetTest {
       $currentTime :
       $currentTime->addDay();
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
-    expect($queue->getTask()->getScheduledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT))
+    verify($queue->getTask()->getScheduledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT))
       ->equals($nextRunDate->format('Y-m-d 05:45:00'));
   }
 
@@ -189,7 +189,7 @@ class PostNotificationTest extends \MailPoetTest {
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-01 14:00:00');
 
     // testing scheduling by minutes
@@ -208,7 +208,7 @@ class PostNotificationTest extends \MailPoetTest {
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-01 14:15:00');
   }
 
@@ -230,7 +230,7 @@ class PostNotificationTest extends \MailPoetTest {
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-03 14:00:00');
 
     // testing scheduling by minutes
@@ -250,7 +250,7 @@ class PostNotificationTest extends \MailPoetTest {
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-03 23:45:00');
   }
 
@@ -271,7 +271,7 @@ class PostNotificationTest extends \MailPoetTest {
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-19 14:00:00');
 
     // testing scheduling by minutes
@@ -290,7 +290,7 @@ class PostNotificationTest extends \MailPoetTest {
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-19 00:45:00');
   }
 
@@ -311,7 +311,7 @@ class PostNotificationTest extends \MailPoetTest {
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1485694800; // Sunday, 29 January 2017 @ 1:00pm (UTC)
-    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-02-25 14:00:00');
 
     // testing scheduling by minutes
@@ -330,7 +330,7 @@ class PostNotificationTest extends \MailPoetTest {
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1485694800; // Sunday, 29 January 2017 @ 1:00pm (UTC)
-    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-02-25 14:15:00');
   }
 
@@ -351,7 +351,7 @@ class PostNotificationTest extends \MailPoetTest {
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
     $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    expect($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
       ->equals('2017-01-01 13:01:00');
   }
 

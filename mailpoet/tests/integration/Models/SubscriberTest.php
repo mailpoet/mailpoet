@@ -47,7 +47,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber =
       Subscriber::where('email', $this->testData['email'])
         ->findOne();
-    expect($subscriber->firstName)
+    verify($subscriber->firstName)
       ->equals($this->testData['first_name']);
   }
 
@@ -55,7 +55,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber =
       Subscriber::where('email', $this->testData['email'])
         ->findOne();
-    expect($subscriber->lastName)
+    verify($subscriber->lastName)
       ->equals($this->testData['last_name']);
   }
 
@@ -63,7 +63,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber =
       Subscriber::where('email', $this->testData['email'])
         ->findOne();
-    expect($subscriber->email)
+    verify($subscriber->email)
       ->equals($this->testData['email']);
   }
 
@@ -111,7 +111,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber =
       Subscriber::where('email', $this->testData['email'])
         ->findOne();
-    expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+    verify($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
 
   public function testItCanChangeStatus() {
@@ -123,7 +123,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($subscriber->getErrors())->false();
     $subscriberUpdated = Subscriber::where('email', $this->testData['email'])
       ->findOne();
-    expect($subscriberUpdated->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+    verify($subscriberUpdated->status)->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
   public function testItUpdateLastSubscribedAtCorrectly() {
@@ -152,26 +152,26 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber->save();
     $subscriberUpdated = Subscriber::where('email', $this->testData['email'])
       ->findOne();
-    expect($subscriberUpdated->lastSubscribedAt)->equals($lastSubscribedAt->toDateTimeString());
+    verify($subscriberUpdated->lastSubscribedAt)->equals($lastSubscribedAt->toDateTimeString());
   }
 
   public function testItHasSearchFilter() {
     $subscriber = Subscriber::filter('search', 'john')
       ->findOne();
-    expect($subscriber->firstName)->equals($this->testData['first_name']);
+    verify($subscriber->firstName)->equals($this->testData['first_name']);
     $subscriber = Subscriber::filter('search', 'mailer')
       ->findOne();
-    expect($subscriber->lastName)->equals($this->testData['last_name']);
+    verify($subscriber->lastName)->equals($this->testData['last_name']);
     $subscriber = Subscriber::filter('search', 'mailpoet')
       ->findOne();
-    expect($subscriber->email)->equals($this->testData['email']);
+    verify($subscriber->email)->equals($this->testData['email']);
   }
 
   public function testItHasGroupFilter() {
     $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_UNCONFIRMED)
       ->findMany();
     foreach ($subscribers as $subscriber) {
-      expect($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+      verify($subscriber->status)->equals(Subscriber::STATUS_UNCONFIRMED);
     }
 
     $this->subscriber->status = Subscriber::STATUS_SUBSCRIBED;
@@ -179,7 +179,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_SUBSCRIBED)
       ->findMany();
     foreach ($subscribers as $subscriber) {
-      expect($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
+      verify($subscriber->status)->equals(Subscriber::STATUS_SUBSCRIBED);
     }
 
     $this->subscriber->status = Subscriber::STATUS_UNSUBSCRIBED;
@@ -187,7 +187,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_UNSUBSCRIBED)
       ->findMany();
     foreach ($subscribers as $subscriber) {
-      expect($subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
+      verify($subscriber->status)->equals(Subscriber::STATUS_UNSUBSCRIBED);
     }
 
     $this->subscriber->status = Subscriber::STATUS_BOUNCED;
@@ -195,7 +195,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscribers = Subscriber::filter('groupBy', Subscriber::STATUS_BOUNCED)
       ->findMany();
     foreach ($subscribers as $subscriber) {
-      expect($subscriber->status)->equals(Subscriber::STATUS_BOUNCED);
+      verify($subscriber->status)->equals(Subscriber::STATUS_BOUNCED);
     }
   }
 
@@ -295,7 +295,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber = Subscriber::findOne($this->subscriber->id);
 
     $subscriberSegment = $subscriber->segments()->findOne();
-    expect($subscriberSegment->id)->equals($segment->id);
+    verify($subscriberSegment->id)->equals($segment->id);
   }
 
   public function testItCanHaveCustomFields() {
@@ -312,7 +312,7 @@ class SubscriberTest extends \MailPoetTest {
 
     $subscriber = Subscriber::filter('filterWithCustomFields')
       ->findOne($this->subscriber->id);
-    expect($subscriber->DOB)->equals($association->value);
+    verify($subscriber->DOB)->equals($association->value);
   }
 
   public function testItCanCreateSubscriberWithCustomFields() {
@@ -380,17 +380,17 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber = Subscriber::findOne($subscriberWithCustomField->id)
       ->withCustomFields();
 
-    expect($subscriber->id)->equals($subscriberWithCustomField->id);
-    expect($subscriber->email)->equals('user.with.cf@mailpoet.com');
-    expect($subscriber->{'cf_' . $customField->id})->equals('Paris');
+    verify($subscriber->id)->equals($subscriberWithCustomField->id);
+    verify($subscriber->email)->equals('user.with.cf@mailpoet.com');
+    verify($subscriber->{'cf_' . $customField->id})->equals('Paris');
     // date specified as array gets converted to string
-    expect($subscriber->{'cf_' . $customField2->id})->equals('1984-03-09 00:00:00');
+    verify($subscriber->{'cf_' . $customField2->id})->equals('1984-03-09 00:00:00');
     // date in different format specified as array is stored correctly
-    expect($subscriber->{'cf_' . $customField4->id})->equals('2020-04-25 00:00:00');
+    verify($subscriber->{'cf_' . $customField4->id})->equals('2020-04-25 00:00:00');
     // date specified as string is stored as is
-    expect($subscriber->{'cf_' . $customField3->id})->equals('2013-07');
+    verify($subscriber->{'cf_' . $customField3->id})->equals('2013-07');
     // year-month date in different format specified as array is stored correctly
-    expect($subscriber->{'cf_' . $customField5->id})->equals('2020-05-01 00:00:00');
+    verify($subscriber->{'cf_' . $customField5->id})->equals('2020-05-01 00:00:00');
   }
 
   public function testItShouldUnsubscribeFromAllSegments() {
@@ -435,15 +435,15 @@ class SubscriberTest extends \MailPoetTest {
 
     $record = Subscriber::where('email', $data['email'])
       ->findOne();
-    expect($record->firstName)->equals($data['first_name']);
-    expect($record->lastName)->equals($data['last_name']);
+    verify($record->firstName)->equals($data['first_name']);
+    verify($record->lastName)->equals($data['last_name']);
     $record->lastName = 'Mailer';
     $result = Subscriber::createOrUpdate($record->asArray());
     expect($result)->notEquals(false);
     expect($result->getValidationErrors())->isEmpty();
     $record = Subscriber::where('email', $data['email'])
       ->findOne();
-    expect($record->lastName)->equals('Mailer');
+    verify($record->lastName)->equals('Mailer');
   }
 
   public function testItCanCreateOrUpdateMultipleRecords() {
@@ -470,15 +470,15 @@ class SubscriberTest extends \MailPoetTest {
     ];
     Subscriber::createMultiple($columns, $values);
     $subscribers = Subscriber::findArray();
-    expect(count($subscribers))->equals(2);
-    expect($subscribers[1]['email'])->equals($values[1]['email']);
-    expect($subscribers[1]['status'])->equals($values[1]['status']);
+    verify(count($subscribers))->equals(2);
+    verify($subscribers[1]['email'])->equals($values[1]['email']);
+    verify($subscribers[1]['status'])->equals($values[1]['status']);
 
     $values[0]['first_name'] = 'John';
     Subscriber::updateMultiple($columns, $values);
     $subscribers = Subscriber::findArray();
-    expect($subscribers[0]['first_name'])->equals($values[0]['first_name']);
-    expect($subscribers[0]['status'])->equals('unsubscribed');
+    verify($subscribers[0]['first_name'])->equals($values[0]['first_name']);
+    verify($subscribers[0]['status'])->equals('unsubscribed');
   }
 
   public function testItCanBeUpdatedByEmail() {
@@ -488,12 +488,12 @@ class SubscriberTest extends \MailPoetTest {
       'last_name' => 'DoDo',
     ]);
 
-    expect($this->subscriber->id())->equals($subscriberUpdated->id());
+    verify($this->subscriber->id())->equals($subscriberUpdated->id());
 
     $subscriber = Subscriber::findOne($this->subscriber->id());
-    expect($subscriber->email)->equals($this->testData['email']);
-    expect($subscriber->firstName)->equals('JoJo');
-    expect($subscriber->lastName)->equals('DoDo');
+    verify($subscriber->email)->equals($this->testData['email']);
+    verify($subscriber->firstName)->equals('JoJo');
+    verify($subscriber->lastName)->equals('DoDo');
   }
 
   public function testItCanSetCustomField() {
@@ -515,7 +515,7 @@ class SubscriberTest extends \MailPoetTest {
 
     $subscriber = $subscriber->withCustomFields()->asArray();
 
-    expect($subscriber['cf_' . $customField->id()])->equals(
+    verify($subscriber['cf_' . $customField->id()])->equals(
       mktime(0, 0, 0, $value['month'], $value['day'], $value['year'])
     );
   }
@@ -523,7 +523,7 @@ class SubscriberTest extends \MailPoetTest {
   public function testItCanGetCustomField() {
     $subscriber = Subscriber::findOne($this->subscriber->id());
 
-    expect($subscriber->getCustomField(9999, 'default_value'))
+    verify($subscriber->getCustomField(9999, 'default_value'))
       ->equals('default_value');
 
     $customField = CustomField::createOrUpdate([
@@ -533,7 +533,7 @@ class SubscriberTest extends \MailPoetTest {
 
     $subscriber->setCustomField($customField->id(), 'non_default_value');
 
-    expect($subscriber->getCustomField($customField->id(), 'default_value'))
+    verify($subscriber->getCustomField($customField->id(), 'default_value'))
       ->equals('non_default_value');
   }
 
@@ -593,11 +593,11 @@ class SubscriberTest extends \MailPoetTest {
       'last_name' => 'WP User',
       'wp_user_id' => 1,
     ]);
-    expect($wpSubscriber->trash())->equals(false);
+    verify($wpSubscriber->trash())->equals(false);
 
     $subscriber = Subscriber::findOne($wpSubscriber->id);
     expect($subscriber)->notEquals(false);
-    expect($subscriber->deletedAt)->equals(null);
+    verify($subscriber->deletedAt)->equals(null);
   }
 
   public function testItCannotDeleteWpUser() {
@@ -607,7 +607,7 @@ class SubscriberTest extends \MailPoetTest {
       'last_name' => 'WP User',
       'wp_user_id' => 1,
     ]);
-    expect($wpSubscriber->delete())->equals(false);
+    verify($wpSubscriber->delete())->equals(false);
 
     $subscriber = Subscriber::findOne($wpSubscriber->id);
     expect($subscriber)->notEquals(false);
@@ -620,11 +620,11 @@ class SubscriberTest extends \MailPoetTest {
       'last_name' => 'WooCommerce Customer',
       'is_woocommerce_user' => 1,
     ]);
-    expect($wpSubscriber->trash())->equals(false);
+    verify($wpSubscriber->trash())->equals(false);
 
     $subscriber = Subscriber::findOne($wpSubscriber->id);
     expect($subscriber)->notEquals(false);
-    expect($subscriber->deletedAt)->equals(null);
+    verify($subscriber->deletedAt)->equals(null);
   }
 
   public function testItCannotDeleteWooCommerceCustomer() {
@@ -634,7 +634,7 @@ class SubscriberTest extends \MailPoetTest {
       'last_name' => 'WooCommerce Customer',
       'is_woocommerce_user' => 1,
     ]);
-    expect($wpSubscriber->delete())->equals(false);
+    verify($wpSubscriber->delete())->equals(false);
 
     $subscriber = Subscriber::findOne($wpSubscriber->id);
     expect($subscriber)->notEquals(false);
@@ -690,13 +690,13 @@ class SubscriberTest extends \MailPoetTest {
 
     // counts only subscribed & unconfirmed users
     $total = Subscriber::getTotalSubscribers();
-    expect($total)->equals(2);
+    verify($total)->equals(2);
 
     $subscriber1->status = Subscriber::STATUS_UNSUBSCRIBED;
     $subscriber1->save();
 
     $total = Subscriber::getTotalSubscribers();
-    expect($total)->equals(1);
+    verify($total)->equals(1);
   }
 
   public function testItDoesNotFindDeletedOrNonexistentSubscribersInSegments() {
@@ -733,7 +733,7 @@ class SubscriberTest extends \MailPoetTest {
         $segment[3]->id,
       ]
     )->findMany();
-    expect(Subscriber::extractSubscribersIds($subscribers))->equals(
+    verify(Subscriber::extractSubscribersIds($subscribers))->equals(
       [$subscriber[3]->id]
     );
   }
@@ -771,7 +771,7 @@ class SubscriberTest extends \MailPoetTest {
         $segment[3]->id,
       ]
     )->findMany();
-    expect(Subscriber::extractSubscribersIds($subscribers))->equals(
+    verify(Subscriber::extractSubscribersIds($subscribers))->equals(
       [
         $subscriber[1]->id,
         $subscriber[3]->id,
@@ -813,7 +813,7 @@ class SubscriberTest extends \MailPoetTest {
         $segment[3]->id,
       ]
     )->findMany();
-    expect(Subscriber::extractSubscribersIds($subscribers))->equals(
+    verify(Subscriber::extractSubscribersIds($subscribers))->equals(
       [$subscriber[1]->id]
     );
   }
@@ -821,31 +821,31 @@ class SubscriberTest extends \MailPoetTest {
   public function testItSetsDefaultValuesForRequiredFields() {
     // MySQL running in strict mode requires a value to be set for certain fields
     $values = Subscriber::setRequiredFieldsDefaultValues([]);
-    expect($values['first_name'])->equals('');
-    expect($values['last_name'])->equals('');
-    expect($values['status'])->equals(Subscriber::STATUS_UNCONFIRMED);
-    expect(strlen($values['unsubscribe_token']))->equals(15);
-    expect(strlen($values['link_token']))->equals(32);
+    verify($values['first_name'])->equals('');
+    verify($values['last_name'])->equals('');
+    verify($values['status'])->equals(Subscriber::STATUS_UNCONFIRMED);
+    verify(strlen($values['unsubscribe_token']))->equals(15);
+    verify(strlen($values['link_token']))->equals(32);
   }
 
   public function testItSetsDefaultStatusDependingOnSingupConfirmationOption() {
     // when signup confirmation is disabled, status should be 'subscribed'
     $this->settings->set('signup_confirmation.enabled', false);
     $values = Subscriber::setRequiredFieldsDefaultValues([]);
-    expect($values['first_name'])->equals('');
-    expect($values['last_name'])->equals('');
-    expect($values['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
-    expect(strlen($values['unsubscribe_token']))->equals(15);
+    verify($values['first_name'])->equals('');
+    verify($values['last_name'])->equals('');
+    verify($values['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
+    verify(strlen($values['unsubscribe_token']))->equals(15);
 
     $this->settings->set('signup_confirmation.enabled', true);
     // when signup confirmation is enabled, status should be 'unconfirmed'
     $values = Subscriber::setRequiredFieldsDefaultValues([]);
-    expect($values['status'])->equals(Subscriber::STATUS_UNCONFIRMED);
+    verify($values['status'])->equals(Subscriber::STATUS_UNCONFIRMED);
 
     // when status is specified, it should not change regardless of signup confirmation option
     $this->settings->set('signup_confirmation.enabled', true);
     $values = Subscriber::setRequiredFieldsDefaultValues(['status' => Subscriber::STATUS_SUBSCRIBED]);
-    expect($values['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
+    verify($values['status'])->equals(Subscriber::STATUS_SUBSCRIBED);
   }
 
   public function testItSetsDefaultValuesForNewSubscribers() {
@@ -857,7 +857,7 @@ class SubscriberTest extends \MailPoetTest {
     expect($result->getErrors())->false();
     expect($result->firstName)->isEmpty();
     expect($result->lastName)->isEmpty();
-    expect($result->status)->equals(Subscriber::STATUS_UNCONFIRMED);
+    verify($result->status)->equals(Subscriber::STATUS_UNCONFIRMED);
   }
 
   public function testItDoesNotSetDefaultValuesForExistingSubscribers() {
@@ -868,8 +868,8 @@ class SubscriberTest extends \MailPoetTest {
       ]
     );
     expect($result->getErrors())->false();
-    expect($result->firstName)->equals($this->testData['first_name']);
-    expect($result->lastName)->equals($this->testData['last_name']);
+    verify($result->firstName)->equals($this->testData['first_name']);
+    verify($result->lastName)->equals($this->testData['last_name']);
   }
 
   public function testItExtractsCustomFieldsFromObject() {
@@ -881,14 +881,14 @@ class SubscriberTest extends \MailPoetTest {
       'last_name' => 'Doe',
     ];
     list($data, $customValues) = Subscriber::extractCustomFieldsFromFromObject($data);
-    expect($data)->equals(
+    verify($data)->equals(
       [
         'email' => 'test@example.com',
         'first_name' => 'John',
         'last_name' => 'Doe',
       ]
     );
-    expect($customValues)->equals(
+    verify($customValues)->equals(
       [
         '1' => 'Paris',
         '2' => 'France',

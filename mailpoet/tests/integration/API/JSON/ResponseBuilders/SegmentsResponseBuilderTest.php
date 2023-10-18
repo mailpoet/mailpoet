@@ -21,9 +21,9 @@ class SegmentsResponseBuilderTest extends \MailPoetTest {
     $responseBuilder = $di->get(SegmentsResponseBuilder::class);
     $response = $responseBuilder->build($segment);
 
-    expect($response['name'])->equals($name);
-    expect($response['type'])->equals(SegmentEntity::TYPE_DEFAULT);
-    expect($response['description'])->equals($description);
+    verify($response['name'])->equals($name);
+    verify($response['type'])->equals(SegmentEntity::TYPE_DEFAULT);
+    verify($response['description'])->equals($description);
     expect($response)->hasKey('id');
     expect($response)->hasKey('created_at');
     expect($response)->hasKey('updated_at');
@@ -52,9 +52,9 @@ class SegmentsResponseBuilderTest extends \MailPoetTest {
     $responseBuilder = $di->get(SegmentsResponseBuilder::class);
     $response = $responseBuilder->buildForListing([$segment]);
     expect($response)->array();
-    expect($response[0]['name'])->equals($name);
-    expect($response[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
+    verify($response[0]['name'])->equals($name);
+    verify($response[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
     expect($response[0]['subscribers_url'])->startsWith('http');
-    expect($response[0]['subscribers_count']['subscribed'])->equals('1');
+    verify($response[0]['subscribers_count']['subscribed'])->equals('1');
   }
 }

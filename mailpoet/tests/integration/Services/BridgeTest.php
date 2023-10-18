@@ -70,32 +70,32 @@ class BridgeTest extends \MailPoetTest {
   public function testItChecksValidMSSKey() {
     $result = $this->bridge->checkMSSKey($this->validKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_VALID);
+    verify($result['state'])->equals(Bridge::KEY_VALID);
   }
 
   public function testItChecksInvalidMSSKey() {
     $result = $this->bridge->checkMSSKey($this->invalidKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_INVALID);
+    verify($result['state'])->equals(Bridge::KEY_INVALID);
   }
 
   public function testItChecksExpiringMSSKey() {
     $result = $this->bridge->checkMSSKey($this->expiringKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_EXPIRING);
+    verify($result['state'])->equals(Bridge::KEY_EXPIRING);
     expect($result['data']['expire_at'])->notEmpty();
   }
 
   public function testItChecksAlreadyUsed() {
     $result = $this->bridge->checkMSSKey($this->usedKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_ALREADY_USED);
+    verify($result['state'])->equals(Bridge::KEY_ALREADY_USED);
   }
 
   public function testItChecksForbiddenEndpointMSSKey() {
     $result = $this->bridge->checkMSSKey($this->underPrivilegedKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
+    verify($result['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
   }
 
   public function testItReturnsErrorStateOnEmptyAPIResponseCodeDuringMSSCheck() {
@@ -103,7 +103,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
     $result = $this->bridge->checkMSSKey($this->validKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_CHECK_ERROR);
+    verify($result['state'])->equals(Bridge::KEY_CHECK_ERROR);
   }
 
   public function testItStoresExpectedMSSKeyStates() {
@@ -118,8 +118,8 @@ class BridgeTest extends \MailPoetTest {
     foreach ($states as $state => $key) {
       $state = ['state' => $state];
       $this->bridge->storeMSSKeyAndState($key, $state);
-      expect($this->getMSSKey())->equals($key);
-      expect($this->getMSSKeyState())->equals($state);
+      verify($this->getMSSKey())->equals($key);
+      verify($this->getMSSKeyState())->equals($state);
     }
   }
 
@@ -138,31 +138,31 @@ class BridgeTest extends \MailPoetTest {
   public function testItChecksValidPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->validKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_VALID);
+    verify($result['state'])->equals(Bridge::KEY_VALID);
   }
 
   public function testItChecksInvalidPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->invalidKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_INVALID);
+    verify($result['state'])->equals(Bridge::KEY_INVALID);
   }
 
   public function testItChecksAlreadyUsedPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->usedPremiumKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_ALREADY_USED);
+    verify($result['state'])->equals(Bridge::KEY_ALREADY_USED);
   }
 
   public function testItChecksForbiddenEndpointPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->underPrivilegedKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
+    verify($result['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
   }
 
   public function testItChecksExpiringPremiumKey() {
     $result = $this->bridge->checkPremiumKey($this->expiringPremiumKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_EXPIRING);
+    verify($result['state'])->equals(Bridge::KEY_EXPIRING);
     expect($result['data']['expire_at'])->notEmpty();
   }
 
@@ -171,7 +171,7 @@ class BridgeTest extends \MailPoetTest {
     $this->bridge->api = $api;
     $result = $this->bridge->checkPremiumKey($this->validKey);
     expect($result)->notEmpty();
-    expect($result['state'])->equals(Bridge::KEY_CHECK_ERROR);
+    verify($result['state'])->equals(Bridge::KEY_CHECK_ERROR);
   }
 
   public function testItStoresExpectedPremiumKeyStates() {
@@ -184,8 +184,8 @@ class BridgeTest extends \MailPoetTest {
     foreach ($states as $state => $key) {
       $state = ['state' => $state];
       $this->bridge->storePremiumKeyAndState($key, $state);
-      expect($this->getPremiumKey())->equals($key);
-      expect($this->getPremiumKeyState())->equals($state);
+      verify($this->getPremiumKey())->equals($key);
+      verify($this->getPremiumKeyState())->equals($state);
     }
   }
 
@@ -204,13 +204,13 @@ class BridgeTest extends \MailPoetTest {
   public function testItStoresSubscriptionTypeOnPremiumCheck() {
     $state = ['state' => Bridge::KEY_VALID, 'data' => ['subscription_type' => Bridge::WPCOM_SUBSCRIPTION_TYPE]];
     $this->bridge->storePremiumKeyAndState($this->validKey, $state);
-    expect($this->getSubscriptionType())->equals(Bridge::WPCOM_SUBSCRIPTION_TYPE);
+    verify($this->getSubscriptionType())->equals(Bridge::WPCOM_SUBSCRIPTION_TYPE);
   }
 
   public function testItStoresSubscriptionTypeOnMSSCheck() {
     $state = ['state' => Bridge::KEY_VALID, 'data' => ['subscription_type' => Bridge::WCCOM_SUBSCRIPTION_TYPE]];
     $this->bridge->storeMSSKeyAndState($this->validKey, $state);
-    expect($this->getSubscriptionType())->equals(Bridge::WCCOM_SUBSCRIPTION_TYPE);
+    verify($this->getSubscriptionType())->equals(Bridge::WCCOM_SUBSCRIPTION_TYPE);
   }
 
   public function testItDoesNotStoreInvalidSubscriptionType() {
@@ -224,10 +224,10 @@ class BridgeTest extends \MailPoetTest {
   public function testItInvalidatesMSSKey() {
     $this->bridge->storeMSSKeyAndState($this->validKey, ['state' => Bridge::KEY_VALID]);
     $storedState = $this->getMssKeyState() ?? [];
-    expect($storedState['state'])->equals(Bridge::KEY_VALID);
+    verify($storedState['state'])->equals(Bridge::KEY_VALID);
     $this->bridge->invalidateMssKey();
     $storedState = $this->getMssKeyState() ?? [];
-    expect($storedState['state'])->equals(Bridge::KEY_INVALID);
+    verify($storedState['state'])->equals(Bridge::KEY_INVALID);
   }
 
   public function testItPingsBridge() {
@@ -246,7 +246,7 @@ class BridgeTest extends \MailPoetTest {
 
     // test default request value
     $api->sendMessages('test');
-    expect($wpRemotePostArgs[1]['timeout'])->equals(API::REQUEST_TIMEOUT);
+    verify($wpRemotePostArgs[1]['timeout'])->equals(API::REQUEST_TIMEOUT);
 
     // test custom request value
     $customRequestValue = 20;
@@ -256,7 +256,7 @@ class BridgeTest extends \MailPoetTest {
     $wp = new WPFunctions;
     $wp->addFilter('mailpoet_bridge_api_request_timeout', $filter);
     $api->sendMessages('test');
-    expect($wpRemotePostArgs[1]['timeout'])->equals($customRequestValue);
+    verify($wpRemotePostArgs[1]['timeout'])->equals($customRequestValue);
     $wp->removeFilter('mailpoet_bridge_api_request_timeout', $filter);
   }
 
@@ -379,30 +379,30 @@ class BridgeTest extends \MailPoetTest {
     $result = $this->bridge->createAuthorizedSenderDomain('mailpoet.com');
     expect($result)->notEmpty();
     expect(isset($result['error']))->false();
-    expect($result[0]['host'])->equals('mailpoet1._domainkey.example.com');
+    verify($result[0]['host'])->equals('mailpoet1._domainkey.example.com');
   }
 
   public function testItDoesntCreateSenderDomainThatExists() {
     $result = $this->bridge->createAuthorizedSenderDomain('existing.com');
     expect($result)->notEmpty();
-    expect($result['error'])->equals('This domain was already added to the list.');
-    expect($result['status'])->equals(false);
+    verify($result['error'])->equals('This domain was already added to the list.');
+    verify($result['status'])->equals(false);
   }
 
   public function testTheSenderDomainApiReturnsValidDataType() {
     $result = $this->bridge->getAuthorizedSenderDomains('mailpoet.com');
     expect($result)->notEmpty();
-    expect($result[0]['host'])->equals('mailpoet1._domainkey.example.com');
-    expect($result[0]['value'])->equals('dkim1.sendingservice.net');
-    expect($result[0]['type'])->equals('CNAME');
-    expect($result[0]['status'])->equals('valid');
-    expect($result[0]['message'])->equals('');
+    verify($result[0]['host'])->equals('mailpoet1._domainkey.example.com');
+    verify($result[0]['value'])->equals('dkim1.sendingservice.net');
+    verify($result[0]['type'])->equals('CNAME');
+    verify($result[0]['status'])->equals('valid');
+    verify($result[0]['message'])->equals('');
   }
 
   public function testItCanVerifySenderDomain() {
     $result = $this->bridge->verifyAuthorizedSenderDomain('mailpoet.com');
     expect($result)->notEmpty();
-    expect($result['ok'])->equals(true); // verified
+    verify($result['ok'])->equals(true); // verified
   }
 
   public function testItPreservesMSSKeyStateDataIfSubsequentCheckFails() {
@@ -428,14 +428,14 @@ class BridgeTest extends \MailPoetTest {
     $result = $this->bridge->checkMSSKey('abc');
     $this->bridge->storeMSSKeyAndState('abc', $result);
     $state = $this->getMssKeyState() ?? [];
-    expect($state['state'])->equals(Bridge::KEY_VALID);
-    expect($state['data'])->equals($data);
+    verify($state['state'])->equals(Bridge::KEY_VALID);
+    verify($state['data'])->equals($data);
     // Second check fails with 403 insufficient privileges simulating that key lost access to MSS
     $result = $this->bridge->checkMSSKey('abc');
     $this->bridge->storeMSSKeyAndState('abc', $result);
     $state = $this->getMssKeyState() ?? [];
-    expect($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
-    expect($state['data'])->equals($data);
+    verify($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
+    verify($state['data'])->equals($data);
   }
 
   public function testItResetsMSSKeyStateDataIfSubsequentCheckFailForADiffrentKey() {
@@ -461,13 +461,13 @@ class BridgeTest extends \MailPoetTest {
     $result = $this->bridge->checkMSSKey('abc');
     $this->bridge->storeMSSKeyAndState('abc', $result);
     $state = $this->getMssKeyState() ?? [];
-    expect($state['state'])->equals(Bridge::KEY_VALID);
-    expect($state['data'])->equals($data);
+    verify($state['state'])->equals(Bridge::KEY_VALID);
+    verify($state['data'])->equals($data);
     // Second check fails with 403 insufficient privileges simulating that key lost access to MSS
     $result = $this->bridge->checkMSSKey('cba');
     $this->bridge->storeMSSKeyAndState('cba', $result);
     $state = $this->getMssKeyState() ?? [];
-    expect($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
+    verify($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
     expect($state['data'])->null();
   }
 
@@ -494,14 +494,14 @@ class BridgeTest extends \MailPoetTest {
     $result = $this->bridge->checkPremiumKey('abc');
     $this->bridge->storePremiumKeyAndState('abc', $result);
     $state = $this->getPremiumKeyState() ?? [];
-    expect($state['state'])->equals(Bridge::KEY_VALID);
-    expect($state['data'])->equals($data);
+    verify($state['state'])->equals(Bridge::KEY_VALID);
+    verify($state['data'])->equals($data);
     // Second check fails with 403 insufficient privileges simulating that key lost access to MSS
     $result = $this->bridge->checkPremiumKey('abc');
     $this->bridge->storePremiumKeyAndState('abc', $result);
     $state = $this->getPremiumKeyState() ?? [];
-    expect($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
-    expect($state['data'])->equals($data);
+    verify($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
+    verify($state['data'])->equals($data);
   }
 
   public function testItResetsPremiumKeyStateDataIfSubsequentCheckFailForADiffrentKey() {
@@ -527,13 +527,13 @@ class BridgeTest extends \MailPoetTest {
     $result = $this->bridge->checkPremiumKey('abc');
     $this->bridge->storePremiumKeyAndState('abc', $result);
     $state = $this->getPremiumKeyState() ?? [];
-    expect($state['state'])->equals(Bridge::KEY_VALID);
-    expect($state['data'])->equals($data);
+    verify($state['state'])->equals(Bridge::KEY_VALID);
+    verify($state['data'])->equals($data);
     // Second check fails with 403 insufficient privileges simulating that key lost access to MSS
     $result = $this->bridge->checkPremiumKey('cba');
     $this->bridge->storePremiumKeyAndState('cba', $result);
     $state = $this->getPremiumKeyState() ?? [];
-    expect($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
+    verify($state['state'])->equals(Bridge::KEY_VALID_UNDERPRIVILEGED);
     expect($state['data'])->null();
   }
 
@@ -609,7 +609,7 @@ class BridgeTest extends \MailPoetTest {
     $result = $this->bridge->$method('abc');
     expect($result)->notEmpty();
     expect($result['data'])->null();
-    expect($result['access_restriction'])->equals($expectedAccessRestriction);
+    verify($result['access_restriction'])->equals($expectedAccessRestriction);
   }
 
   private function setMailPoetSendingMethod() {

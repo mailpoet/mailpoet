@@ -43,9 +43,9 @@ class SendingErrorHandlerTest extends \MailPoetTest {
           2,
           function($id, $message) {
             if ($id === 2) {
-              expect($message)->equals('Error Message');
+              verify($message)->equals('Error Message');
             } else {
-              expect($message)->equals('Subscriber Message');
+              verify($message)->equals('Subscriber Message');
             }
           }
         ),

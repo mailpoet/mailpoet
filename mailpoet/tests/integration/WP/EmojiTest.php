@@ -49,7 +49,7 @@ class EmojiTest extends \MailPoetTest {
     $this->createTable($table, 'utf8');
 
     $result = $this->emoji->encodeForUTF8Column($table, $this->column, $this->dataDecoded);
-    expect($result)->equals($this->dataEncoded);
+    verify($result)->equals($this->dataEncoded);
 
     $this->dropTable($table);
   }
@@ -59,14 +59,14 @@ class EmojiTest extends \MailPoetTest {
     $this->createTable($table, 'utf8mb4');
 
     $result = $this->emoji->encodeForUTF8Column($table, $this->column, $this->dataDecoded);
-    expect($result)->equals($this->dataDecoded);
+    verify($result)->equals($this->dataDecoded);
 
     $this->dropTable($table);
   }
 
   public function testItCanDecodeEntities() {
     $result = $this->emoji->decodeEntities($this->dataEncoded);
-    expect($result)->equals($this->dataDecoded);
+    verify($result)->equals($this->dataDecoded);
   }
 
   private function createTable($table, $charset) {

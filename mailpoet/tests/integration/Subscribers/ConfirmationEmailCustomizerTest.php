@@ -25,7 +25,7 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
   public function testItGeneratesNewsletterOnInit() {
     $controller = $this->generateController();
 
-    expect($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->equals(false);
+    verify($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->equals(false);
     $controller->init();
 
     expect($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->notEquals(false);
@@ -34,7 +34,7 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
   public function testItGenerateNewsletterIfNoneExist() {
     $controller = $this->generateController();
 
-    expect($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->equals(false);
+    verify($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->equals(false);
     $newsletter = $controller->getNewsletter();
 
     expect($newsletter)->isInstanceOf(NewsletterEntity::class);
@@ -52,14 +52,14 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
 
     expect($newsletter->getId())->notEquals(5);
 
-    expect($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->equals($newsletter->getId());
+    verify($this->settings->get(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, false))->equals($newsletter->getId());
   }
 
   public function testItGenerateNewsletterOfTypeConfirmationEmail() {
     $controller = $this->generateController();
     $newsletter = $controller->getNewsletter();
 
-    expect($newsletter->getType())->equals(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER);
+    verify($newsletter->getType())->equals(NewsletterEntity::TYPE_CONFIRMATION_EMAIL_CUSTOMIZER);
   }
 
   public function testItFetchAlreadyCreatedNewsletter() {
@@ -73,7 +73,7 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
     $controller = $this->generateController();
     $newNewsletter = $controller->getNewsletter();
 
-    expect($newNewsletter->getId())->equals($newsletter->getId());
+    verify($newNewsletter->getId())->equals($newsletter->getId());
   }
 
   public function testItFetchesConfirmationEmailTemplate() {

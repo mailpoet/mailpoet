@@ -42,10 +42,10 @@ class RouterTest extends \MailPoetTest {
       . base64_encode((string)json_encode($data));
     parse_str((string)parse_url($url, PHP_URL_QUERY), $_GET);
     $router = new Router($this->accessControl, $this->container);
-    expect($router->apiRequest)->equals(true);
-    expect($router->endpoint)->equals('viewInBrowser');
-    expect($router->endpointAction)->equals('view');
-    expect($router->data)->equals($data);
+    verify($router->apiRequest)->equals(true);
+    verify($router->endpoint)->equals('viewInBrowser');
+    verify($router->endpointAction)->equals('view');
+    verify($router->data)->equals($data);
   }
 
   public function testItContinuesExecutionWhenAPIRequestNotDetected() {
@@ -75,7 +75,7 @@ class RouterTest extends \MailPoetTest {
       ]
     );
     $result = $router->init();
-    expect($result)->equals(
+    verify($result)->equals(
       [
         404,
         'Invalid router endpoint',
@@ -99,7 +99,7 @@ class RouterTest extends \MailPoetTest {
       ]
     );
     $result = $router->init();
-    expect($result)->equals(
+    verify($result)->equals(
       [
         404,
         'Invalid router endpoint action',
@@ -117,7 +117,7 @@ class RouterTest extends \MailPoetTest {
       new AccessControl(),
       [
         'validatePermission' => Expected::once(function($cap) {
-          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          verify($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return false;
         }),
       ]
@@ -129,7 +129,7 @@ class RouterTest extends \MailPoetTest {
       new AccessControl(),
       [
         'validatePermission' => Expected::once(function($cap) {
-          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          verify($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return true;
         }),
       ]
@@ -152,7 +152,7 @@ class RouterTest extends \MailPoetTest {
       new AccessControl(),
       [
         'validatePermission' => Expected::once(function($cap) {
-          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          verify($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return false;
         }),
       ]
@@ -164,7 +164,7 @@ class RouterTest extends \MailPoetTest {
       new AccessControl(),
       [
         'validatePermission' => Expected::once(function($cap) {
-          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          verify($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return true;
         }),
       ]
@@ -179,8 +179,8 @@ class RouterTest extends \MailPoetTest {
       [$this->accessControl, $this->container, $this->routerData],
       [
         'validatePermissions' => function($action, $permissions) {
-          expect($action)->equals($this->routerData['action']);
-          expect($permissions)->equals(
+          verify($action)->equals($this->routerData['action']);
+          verify($permissions)->equals(
             [
               'global' => AccessControl::NO_ACCESS_RESTRICTION,
             ]
@@ -190,7 +190,7 @@ class RouterTest extends \MailPoetTest {
       ]
     );
     $result = $router->init();
-    expect($result)->equals(
+    verify($result)->equals(
       ['data' => 'dummy data']
     );
   }
@@ -210,7 +210,7 @@ class RouterTest extends \MailPoetTest {
       ]
     );
     $result = $router->init();
-    expect($result)->equals(
+    verify($result)->equals(
       [
         403,
         'You do not have the required permissions.',
@@ -221,7 +221,7 @@ class RouterTest extends \MailPoetTest {
   public function testItCallsEndpointAction() {
     $data = ['data' => 'dummy data'];
     $result = $this->router->init();
-    expect($result)->equals($data);
+    verify($result)->equals($data);
   }
 
   public function testItExecutesUrlParameterConflictResolverAction() {
@@ -232,7 +232,7 @@ class RouterTest extends \MailPoetTest {
   public function testItCanEncodeRequestData() {
     $data = ['data' => 'dummy data'];
     $result = Router::encodeRequestData($data);
-    expect($result)->equals(
+    verify($result)->equals(
       rtrim(base64_encode((string)json_encode($data)), '=')
     );
   }
@@ -240,21 +240,21 @@ class RouterTest extends \MailPoetTest {
   public function testItReturnsEmptyArrayWhenRequestDataIsAString() {
     $encodedData = 'test';
     $result = Router::decodeRequestData($encodedData);
-    expect($result)->equals([]);
+    verify($result)->equals([]);
   }
 
   public function testItCanDecodeRequestData() {
     $data = ['data' => 'dummy data'];
     $encodedData = rtrim(base64_encode((string)json_encode($data)), '=');
     $result = Router::decodeRequestData($encodedData);
-    expect($result)->equals($data);
+    verify($result)->equals($data);
   }
 
   public function testItCanConvertInvalidRequestDataToArray() {
     $result = Router::decodeRequestData('some_invalid_data');
-    expect($result)->equals([]);
+    verify($result)->equals([]);
     $result = Router::decodeRequestData(['key' => 'some_invalid_data']);
-    expect($result)->equals([]);
+    verify($result)->equals([]);
   }
 
   public function testItCanBuildRequest() {

@@ -171,7 +171,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
-    expect($result)->equals([
+    verify($result)->equals([
       'refresh_captcha' => true,
       'error' => 'You need to wait 1 before subscribing again.',
     ]);
@@ -263,7 +263,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $captchaSession = Stub::makeEmpty(CaptchaSession::class,
       [
         'init' => function($receivedSessionId) use ($captchaSessionId) {
-          expect($receivedSessionId)->equals($captchaSessionId);
+          verify($receivedSessionId)->equals($captchaSessionId);
         },
       ]);
     $subscriberActions = Stub::makeEmpty(
@@ -370,7 +370,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
-    expect($result)->equals([
+    verify($result)->equals([
       'error' => 'Please fill in the CAPTCHA.',
       'redirect_url' => $expectedRedirectLink,
     ]);
@@ -384,7 +384,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       [
         'getCaptchaHash' => ['phrase' => 'a_string_that_does_not_match'],
         'init' => function($receivedSessionId) use ($captchaSessionId) {
-          expect($receivedSessionId)->equals($captchaSessionId);
+          verify($receivedSessionId)->equals($captchaSessionId);
         },
       ]);
     $subscriberActions = Stub::makeEmpty(
@@ -499,7 +499,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
-    expect($result)->equals([
+    verify($result)->equals([
       'refresh_captcha' => true,
       'error' => 'The characters entered do not match with the previous CAPTCHA.',
     ]);
@@ -555,7 +555,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
 
     $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
-    expect($result)->equals(true);
+    verify($result)->equals(true);
   }
 
   public function testItShouldReturnFalseIfNotSubscribedToAnySegmentsInForm() {
@@ -608,7 +608,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
 
     $result = $testee->isSubscribedToAnyFormSegments($form, $subscriber);
-    expect($result)->equals(false);
+    verify($result)->equals(false);
   }
 
   public function testSubscribeSuccess() {
@@ -620,7 +620,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       [
         'getCaptchaHash' => $captcha,
         'init' => function($receivedSessionId) use ($captchaSessionId) {
-          expect($receivedSessionId)->equals($captchaSessionId);
+          verify($receivedSessionId)->equals($captchaSessionId);
         },
       ]);
     $formFields = [
@@ -657,8 +657,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       [
         'subscribe' => function($receivedData, $receivedSegmentIds) use ($formFields, $segmentIds, $subscriber) {
 
-          expect($receivedData)->equals($formFields);
-          expect($receivedSegmentIds)->equals($segmentIds);
+          verify($receivedData)->equals($formFields);
+          verify($receivedSegmentIds)->equals($segmentIds);
           return [$subscriber, ['confirmationEmailResult' => true]];
         },
       ],
@@ -697,10 +697,10 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       WPFunctions::class,
     [
       'doAction' => function($receivedHook, $receivedData, $receivedSegmentIds, $receivedForm) use ($formFields, $segmentIds, $form) {
-        expect($receivedHook)->equals('mailpoet_subscription_before_subscribe');
-        expect($receivedData)->equals($formFields);
-        expect($receivedSegmentIds)->equals($segmentIds);
-        expect($receivedForm)->equals($form);
+        verify($receivedHook)->equals('mailpoet_subscription_before_subscribe');
+        verify($receivedData)->equals($formFields);
+        verify($receivedSegmentIds)->equals($segmentIds);
+        verify($receivedForm)->equals($form);
       },
       ]
     );
@@ -710,7 +710,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       BuiltInCaptchaValidator::class,
       [
         'validate' => function($data) use ($captcha) {
-          expect($data['captcha'])->equals($captcha);
+          verify($data['captcha'])->equals($captcha);
           return true;
         },
       ],
@@ -736,6 +736,6 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
 
     $result = $testee->subscribe(array_merge(['form_id' => 1], $submitData));
-    expect($result)->equals([]);
+    verify($result)->equals([]);
   }
 }

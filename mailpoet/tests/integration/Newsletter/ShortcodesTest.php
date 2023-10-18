@@ -68,29 +68,29 @@ class ShortcodesTest extends \MailPoetTest {
   public function testItCanExtractShortcodes() {
     $content = '[category:action] [notshortcode]';
     $shortcodes = $this->shortcodesObject->extract($content);
-    expect(count($shortcodes))->equals(1);
+    verify(count($shortcodes))->equals(1);
   }
 
   public function testItCanExtractOnlySelectShortcodes() {
     $content = '[link:action] [newsletter:action]';
     $limit = ['link'];
     $shortcodes = $this->shortcodesObject->extract($content, $limit);
-    expect(count($shortcodes))->equals(1);
-    expect(preg_match('/link/', $shortcodes[0]))->equals(1);
+    verify(count($shortcodes))->equals(1);
+    verify(preg_match('/link/', $shortcodes[0]))->equals(1);
   }
 
   public function testItCanMatchShortcodeDetails() {
     $shortcodesObject = $this->shortcodesObject;
     $content = '[category:action]';
     $details = $shortcodesObject->match($content);
-    expect($details['category'])->equals('category');
-    expect($details['action'])->equals('action');
+    verify($details['category'])->equals('category');
+    verify($details['action'])->equals('action');
     $content = '[category:action|default:default_value]';
     $details = $shortcodesObject->match($content);
-    expect($details['category'])->equals('category');
-    expect($details['action'])->equals('action');
-    expect($details['argument'])->equals('default');
-    expect($details['argument_value'])->equals('default_value');
+    verify($details['category'])->equals('category');
+    verify($details['action'])->equals('action');
+    verify($details['argument'])->equals('default');
+    verify($details['argument_value'])->equals('default_value');
     $content = '[category:action|default]';
     $details = $shortcodesObject->match($content);
     expect($details)->isEmpty();
@@ -108,32 +108,32 @@ class ShortcodesTest extends \MailPoetTest {
       'mailpoet_newsletter_shortcode',
       function($shortcode, $newsletter, $subscriber, $queue, $content, $arguments) {
         expect($arguments)->count(2);
-        expect($arguments['arg1'])->equals('val1');
-        expect($arguments['arg2'])->equals('val2');
+        verify($arguments['arg1'])->equals('val1');
+        verify($arguments['arg2'])->equals('val2');
         if (strpos($shortcode, '[some:shortcode') === 0) return 'success';
       }, 10, 6
     );
     $result = $shortcodesObject->process($shortcode);
-    expect($result[0])->equals('success');
+    verify($result[0])->equals('success');
   }
 
   public function testItCanProcessDateShortcodes() {
     $date = $this->diContainer->get(Date::class);
     $shortcodeDetails = ['action' => 'd'];
-    expect($date->process($shortcodeDetails))->equals(date_i18n('d', WPFunctions::get()->currentTime('timestamp')));
+    verify($date->process($shortcodeDetails))->equals(date_i18n('d', WPFunctions::get()->currentTime('timestamp')));
     $shortcodeDetails = ['action' => 'dordinal'];
-    expect($date->process($shortcodeDetails))->equals(date_i18n('jS', WPFunctions::get()->currentTime('timestamp')));
+    verify($date->process($shortcodeDetails))->equals(date_i18n('jS', WPFunctions::get()->currentTime('timestamp')));
     $shortcodeDetails = ['action' => 'dtext'];
-    expect($date->process($shortcodeDetails))->equals(date_i18n('l', WPFunctions::get()->currentTime('timestamp')));
+    verify($date->process($shortcodeDetails))->equals(date_i18n('l', WPFunctions::get()->currentTime('timestamp')));
     $shortcodeDetails = ['action' => 'm'];
-    expect($date->process($shortcodeDetails))->equals(date_i18n('m', WPFunctions::get()->currentTime('timestamp')));
+    verify($date->process($shortcodeDetails))->equals(date_i18n('m', WPFunctions::get()->currentTime('timestamp')));
     $shortcodeDetails = ['action' => 'mtext'];
-    expect($date->process($shortcodeDetails))->equals(date_i18n('F', WPFunctions::get()->currentTime('timestamp')));
+    verify($date->process($shortcodeDetails))->equals(date_i18n('F', WPFunctions::get()->currentTime('timestamp')));
     $shortcodeDetails = ['action' => 'y'];
-    expect($date->process($shortcodeDetails))->equals(date_i18n('Y', WPFunctions::get()->currentTime('timestamp')));
+    verify($date->process($shortcodeDetails))->equals(date_i18n('Y', WPFunctions::get()->currentTime('timestamp')));
     // allow custom date formats (http://php.net/manual/en/function.date.php)
     $shortcodeDetails = ['action' => 'custom', 'action_argument' => 'format', 'action_argument_value' => 'U F'];
-    expect($date->process($shortcodeDetails))->equals(date_i18n('U F', WPFunctions::get()->currentTime('timestamp')));
+    verify($date->process($shortcodeDetails))->equals(date_i18n('U F', WPFunctions::get()->currentTime('timestamp')));
   }
 
   public function testItCanProcessDateWhenNewsletterIsSent() {
@@ -141,7 +141,7 @@ class ShortcodesTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter();
     $newsletter->setSentAt(new \DateTimeImmutable('2017-12-31'));
     $shortcodeDetails = ['action' => 'd'];
-    expect($date->process($shortcodeDetails, $newsletter))->equals('31');
+    verify($date->process($shortcodeDetails, $newsletter))->equals('31');
   }
 
   public function testItCanProcessNewsletterShortcodes() {
@@ -152,15 +152,15 @@ class ShortcodesTest extends \MailPoetTest {
       '<a href="#">not post</a>';
     $result =
       $shortcodesObject->process(['[newsletter:subject]'], $content);
-    expect($result[0])->equals($this->newsletter->getSubject());
+    verify($result[0])->equals($this->newsletter->getSubject());
     $result =
       $shortcodesObject->process(['[newsletter:total]'], $content);
-    expect($result[0])->equals(2);
+    verify($result[0])->equals(2);
     $result =
       $shortcodesObject->process(['[newsletter:post_title]'], $content);
     $wpPost = get_post($this->wPPost);
     $this->assertInstanceOf(WP_Post::class, $wpPost);
-    expect($result['0'])->equals($wpPost->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($result['0'])->equals($wpPost->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function itCanProcessPostNotificationNewsletterNumberShortcode() {
@@ -171,7 +171,7 @@ class ShortcodesTest extends \MailPoetTest {
     );
     $this->shortcodesObject->setNewsletter($postNotificationHistory);
     $result = $this->shortcodesObject->process(['[newsletter:number]']);
-    expect($result['0'])->equals(1);
+    verify($result['0'])->equals(1);
 
     // create another post notification
     $postNotificationHistory = $this->_createNewsletter(
@@ -180,23 +180,23 @@ class ShortcodesTest extends \MailPoetTest {
     );
     $this->shortcodesObject->setNewsletter($postNotificationHistory);
     $result = $this->shortcodesObject->process(['[newsletter:number]']);
-    expect($result['0'])->equals(2);
+    verify($result['0'])->equals(2);
   }
 
   public function testSubscriberShortcodesRequireSubscriberObjectOrFalseValue() {
     // when subscriber is empty, original value is returned
     $this->shortcodesObject->setSubscriber(null);
     $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
-    expect($result[0])->equals('[subscriber:firstname | default:test]');
+    verify($result[0])->equals('[subscriber:firstname | default:test]');
     // when subscriber is an object, proper value is returned
     $this->shortcodesObject->setSubscriber($this->subscriber);
     $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
-    expect($result[0])->equals($this->subscriber->getFirstName());
+    verify($result[0])->equals($this->subscriber->getFirstName());
     // when subscriber hasn't name, the default value is returned
     $this->subscriber->setFirstName('');
     $this->shortcodesObject->setSubscriber($this->subscriber);
     $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
-    expect($result[0])->equals('test');
+    verify($result[0])->equals('test');
   }
 
   public function testSubscriberFirstAndLastNameShortcodesReturnDefaultValueWhenDataIsEmpty() {
@@ -205,9 +205,9 @@ class ShortcodesTest extends \MailPoetTest {
     $subscriber->setFirstName('');
     $subscriber->setLastName('');
     $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
-    expect($result[0])->equals('test');
+    verify($result[0])->equals('test');
     $result = $this->shortcodesObject->process(['[subscriber:lastname | default:test]']);
-    expect($result[0])->equals('test');
+    verify($result[0])->equals('test');
   }
 
   public function testSanitizeName() {
@@ -215,22 +215,22 @@ class ShortcodesTest extends \MailPoetTest {
     $subscriber->setFirstName(' "><img src=x onError=prompt(1)>');
     $subscriber->setLastName(' "><img src=x onError=prompt(2)>');
     $result = $this->shortcodesObject->process(['[subscriber:firstname | default:test]']);
-    expect($result[0])->equals(' &quot;&gt;&lt;img src=x onError=prompt(1)&gt;');
+    verify($result[0])->equals(' &quot;&gt;&lt;img src=x onError=prompt(1)&gt;');
     $result = $this->shortcodesObject->process(['[subscriber:lastname | default:test]']);
-    expect($result[0])->equals(' &quot;&gt;&lt;img src=x onError=prompt(2)&gt;');
+    verify($result[0])->equals(' &quot;&gt;&lt;img src=x onError=prompt(2)&gt;');
   }
 
   public function testItCanProcessSubscriberShortcodes() {
     $shortcodesObject = $this->shortcodesObject;
     $result =
       $shortcodesObject->process(['[subscriber:firstname]']);
-    expect($result[0])->equals($this->subscriber->getFirstName());
+    verify($result[0])->equals($this->subscriber->getFirstName());
     $result =
       $shortcodesObject->process(['[subscriber:lastname]']);
-    expect($result[0])->equals($this->subscriber->getLastName());
+    verify($result[0])->equals($this->subscriber->getLastName());
     $result =
       $shortcodesObject->process(['[subscriber:displayname]']);
-    expect($result[0])->equals($this->wPUser->user_login);
+    verify($result[0])->equals($this->wPUser->user_login);
 
     $subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $subscriberCount = $subscribersRepository->countBy(
@@ -243,7 +243,7 @@ class ShortcodesTest extends \MailPoetTest {
 
     $result =
       $shortcodesObject->process(['[subscriber:count]']);
-    expect($result[0])->equals($subscriberCount);
+    verify($result[0])->equals($subscriberCount);
     $this->subscriber->setStatus('unsubscribed');
   }
 
@@ -258,18 +258,18 @@ class ShortcodesTest extends \MailPoetTest {
     $result = $shortcodesObject->process(
       ['[subscriber:cf_' . $customField->getId() . ']']
     );
-    expect($result[0])->equals('');
+    verify($result[0])->equals('');
     $result = $shortcodesObject->process(
       ['[subscriber:cf_' . $customField->getId() . ' | default:custom field value]']
     );
-    expect($result[0])->equals('custom field value');
+    verify($result[0])->equals('custom field value');
     $subscriberCustomField = new SubscriberCustomFieldEntity($subscriber, $customField, 'custom_field_value');
     $this->entityManager->persist($subscriberCustomField);
     $this->entityManager->flush();
     $result = $shortcodesObject->process(
       ['[subscriber:cf_' . $customField->getId() . ']']
     );
-    expect($result[0])->equals($subscriberCustomField->getValue());
+    verify($result[0])->equals($subscriberCustomField->getValue());
   }
 
   public function testItCanProcessLinkShortcodes() {
@@ -278,37 +278,37 @@ class ShortcodesTest extends \MailPoetTest {
       $shortcodesObject->process(['[link:subscription_unsubscribe_url]']);
     expect($result['0'])->regExp('/^http.*?action=confirm_unsubscribe/');
     $linkData = $this->getLinkData($result['0']);
-    expect($linkData['email'])->equals($this->subscriber->getEmail());
-    expect($linkData['token'])->equals($this->subscriber->getLinkToken());
+    verify($linkData['email'])->equals($this->subscriber->getEmail());
+    verify($linkData['token'])->equals($this->subscriber->getLinkToken());
 
     $result =
       $shortcodesObject->process(['[link:subscription_instant_unsubscribe_url]']);
     expect($result['0'])->regExp('/^http.*?action=unsubscribe/');
     $linkData = $this->getLinkData($result['0']);
-    expect($linkData['email'])->equals($this->subscriber->getEmail());
-    expect($linkData['token'])->equals($this->subscriber->getLinkToken());
+    verify($linkData['email'])->equals($this->subscriber->getEmail());
+    verify($linkData['token'])->equals($this->subscriber->getLinkToken());
 
     $result =
       $shortcodesObject->process(['[link:subscription_manage_url]']);
     expect($result['0'])->regExp('/^http.*?action=manage/');
     $linkData = $this->getLinkData($result['0']);
-    expect($linkData['email'])->equals($this->subscriber->getEmail());
-    expect($linkData['token'])->equals($this->subscriber->getLinkToken());
+    verify($linkData['email'])->equals($this->subscriber->getEmail());
+    verify($linkData['token'])->equals($this->subscriber->getLinkToken());
 
     $result =
       $shortcodesObject->process(['[link:newsletter_view_in_browser_url]']);
     expect($result['0'])->regExp('/^http.*?endpoint=view_in_browser/');
     $linkData = $this->getLinkData($result['0']);
-    expect($linkData['newsletter_id'])->equals($this->newsletter->getId());
-    expect($linkData['newsletter_hash'])->equals($this->newsletter->getHash());
-    expect($linkData['subscriber_token'])->equals($this->subscriber->getLinkToken());
-    expect($linkData['subscriber_id'])->equals($this->subscriber->getId());
+    verify($linkData['newsletter_id'])->equals($this->newsletter->getId());
+    verify($linkData['newsletter_hash'])->equals($this->newsletter->getHash());
+    verify($linkData['subscriber_token'])->equals($this->subscriber->getLinkToken());
+    verify($linkData['subscriber_id'])->equals($this->subscriber->getId());
 
     $result = $shortcodesObject->process(['[link:subscription_re_engage_url]']);
     expect($result['0'])->regExp('/^http.*?endpoint=subscription&action=re_engagement/');
     $linkData = $this->getLinkData($result['0']);
-    expect($linkData['email'])->equals($this->subscriber->getEmail());
-    expect($linkData['token'])->equals($this->subscriber->getLinkToken());
+    verify($linkData['email'])->equals($this->subscriber->getEmail());
+    verify($linkData['token'])->equals($this->subscriber->getLinkToken());
   }
 
   private function getLinkData(string $link): array {
@@ -373,7 +373,7 @@ class ShortcodesTest extends \MailPoetTest {
     $result = $shortcodesObject->process($shortcodes);
     // hash is returned
     foreach ($result as $index => $transformedShortcode) {
-      expect($transformedShortcode)->equals($links[$index]);
+      verify($transformedShortcode)->equals($links[$index]);
     }
   }
 
@@ -383,7 +383,7 @@ class ShortcodesTest extends \MailPoetTest {
     $subscriberWithoutLastname = new SubscriberEntity();
     $shortcodesObject->setSubscriber($subscriberWithoutLastname);
     $result = $shortcodesObject->process([$shortcode]);
-    expect($result[0])->equals('');
+    verify($result[0])->equals('');
   }
 
   public function testItCanProcessCustomLinkShortcodes() {
@@ -395,19 +395,19 @@ class ShortcodesTest extends \MailPoetTest {
     remove_all_filters('mailpoet_newsletter_shortcode_link');
     add_filter('mailpoet_newsletter_shortcode_link', function($shortcode, $newsletter, $subscriber, $queue, $arguments) {
       expect($arguments)->count(2);
-      expect($arguments['arg1'])->equals('val1');
-      expect($arguments['arg2'])->equals('val2');
+      verify($arguments['arg1'])->equals('val1');
+      verify($arguments['arg2'])->equals('val2');
       if ($shortcode === '[link:shortcode]') return 'success';
     }, 10, 5);
 
     $result = $shortcodesObject->process([$shortcode]);
-    expect($result[0])->equals('success');
+    verify($result[0])->equals('success');
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     // tracking function only works during sending, so queue object must not be false
     $shortcodesObject->setQueue($this->_createQueue());
     $result = $shortcodesObject->process([$shortcode], 'x');
     // when tracking is enabled, the shortcode is returned without arguments
-    expect($result[0])->equals('[link:shortcode]');
+    verify($result[0])->equals('[link:shortcode]');
   }
 
   public function testItCanProcessSiteTitleShortcode() {
@@ -417,7 +417,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcode = '[site:title]';
     $shortcodesObject = $this->shortcodesObject;
     $result = $shortcodesObject->process([$shortcode]);
-    expect($result[0])->equals($siteName);
+    verify($result[0])->equals($siteName);
   }
 
   public function testItCanProcessSiteHomepageLinkShortcode() {
@@ -427,7 +427,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcode = '[site:homepage_link]';
     $shortcodesObject = $this->shortcodesObject;
     $result = $shortcodesObject->process([$shortcode]);
-    expect($result[0])->equals("<a target=\"_blank\" href=\"{$siteUrl}\">{$siteName}</a>");
+    verify($result[0])->equals("<a target=\"_blank\" href=\"{$siteUrl}\">{$siteName}</a>");
   }
 
   public function testItCanProcessSiteHomepageUrlShortcode() {
@@ -437,7 +437,7 @@ class ShortcodesTest extends \MailPoetTest {
     $shortcode = '[site:homepage_url]';
     $shortcodesObject = $this->shortcodesObject;
     $result = $shortcodesObject->process([$shortcode]);
-    expect($result[0])->equals($siteUrl);
+    verify($result[0])->equals($siteUrl);
   }
 
   public function _createWPPost() {

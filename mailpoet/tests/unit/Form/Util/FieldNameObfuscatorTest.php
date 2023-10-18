@@ -26,7 +26,7 @@ class FieldNameObfuscatorTest extends \MailPoetUnitTest {
 
   public function testObfuscateDeobfuscateWorks() {
     $obfuscated = $this->obfuscator->obfuscate('email');
-    expect($this->obfuscator->deobfuscate($obfuscated))->equals('email');
+    verify($this->obfuscator->deobfuscate($obfuscated))->equals('email');
   }
 
   public function testObfuscatePayloadWorks() {
@@ -36,7 +36,7 @@ class FieldNameObfuscatorTest extends \MailPoetUnitTest {
       $obfuscated => 'obfuscatedFieldValue',
     ];
     $deobfuscatedPayload = $this->obfuscator->deobfuscateFormPayload($data);
-    expect($deobfuscatedPayload)->equals([
+    verify($deobfuscatedPayload)->equals([
       'regularField' => 'regularValue',
       'email' => 'obfuscatedFieldValue',
     ]);

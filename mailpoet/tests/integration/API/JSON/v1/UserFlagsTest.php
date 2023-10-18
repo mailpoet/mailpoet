@@ -36,18 +36,18 @@ class UserFlagsTest extends \MailPoetTest {
     ];
 
     $response = $this->endpoint->set(/* missing data */);
-    expect($response->errors[0]['error'])->equals(APIError::BAD_REQUEST);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['error'])->equals(APIError::BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
 
-    expect($this->userFlags->getAll())->equals([
+    verify($this->userFlags->getAll())->equals([
       'flag_1' => 'value_1',
       'flag_2' => 'default_value_2',
     ]);
 
     $response = $this->endpoint->set($newFlags);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
-    expect($this->userFlags->getAll())->equals([
+    verify($this->userFlags->getAll())->equals([
       'flag_1' => 'new_value_1',
       'flag_2' => 'default_value_2',
       'flag_3' => 'new_value_3',

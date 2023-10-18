@@ -31,16 +31,16 @@ class PreprocessorTest extends \MailPoetUnitTest {
   public function testItWrapsSingleTopLevelBlockIntoColumns() {
     $parsedDocument = [$this->paragraphBlock];
     $result = $this->preprocessor->preprocess($parsedDocument);
-    expect($result[0]['blockName'])->equals('core/columns');
-    expect($result[0]['innerBlocks'][0]['blockName'])->equals('core/column');
-    expect($result[0]['innerBlocks'][0]['innerBlocks'][0]['blockName'])->equals('core/paragraph');
-    expect($result[0]['innerBlocks'][0]['innerBlocks'][0]['innerHTML'])->equals('Paragraph content');
+    verify($result[0]['blockName'])->equals('core/columns');
+    verify($result[0]['innerBlocks'][0]['blockName'])->equals('core/column');
+    verify($result[0]['innerBlocks'][0]['innerBlocks'][0]['blockName'])->equals('core/paragraph');
+    verify($result[0]['innerBlocks'][0]['innerBlocks'][0]['innerHTML'])->equals('Paragraph content');
   }
 
   public function testItDoesntWrapColumns() {
     $parsedDocumentWithMultipleColumns = [$this->columnsBlock, $this->columnsBlock];
     $result = $this->preprocessor->preprocess($parsedDocumentWithMultipleColumns);
-    expect($result)->equals($parsedDocumentWithMultipleColumns);
+    verify($result)->equals($parsedDocumentWithMultipleColumns);
   }
 
   public function testItWrapsTopLevelBlocksSpreadBetweenColumns() {
@@ -49,15 +49,15 @@ class PreprocessorTest extends \MailPoetUnitTest {
     $result = $this->preprocessor->preprocess($parsedDocument);
     expect($result)->count(3);
     // First columns contain columns with one paragraph block
-    expect($result[0]['innerBlocks'][0]['blockName'])->equals('core/column');
-    expect($result[0]['innerBlocks'][0]['innerBlocks'][0]['blockName'])->equals('core/paragraph');
+    verify($result[0]['innerBlocks'][0]['blockName'])->equals('core/column');
+    verify($result[0]['innerBlocks'][0]['innerBlocks'][0]['blockName'])->equals('core/paragraph');
     // Second columns remains empty
-    expect($result[1]['innerBlocks'][0]['blockName'])->equals('core/column');
+    verify($result[1]['innerBlocks'][0]['blockName'])->equals('core/column');
     expect($result[1]['innerBlocks'][0]['innerBlocks'])->isEmpty();
     // Third columns contain columns with two paragraph blocks
-    expect($result[2]['innerBlocks'][0]['blockName'])->equals('core/column');
+    verify($result[2]['innerBlocks'][0]['blockName'])->equals('core/column');
     expect($result[2]['innerBlocks'][0]['innerBlocks'])->count(2);
-    expect($result[2]['innerBlocks'][0]['innerBlocks'][0]['blockName'])->equals('core/paragraph');
-    expect($result[2]['innerBlocks'][0]['innerBlocks'][1]['blockName'])->equals('core/paragraph');
+    verify($result[2]['innerBlocks'][0]['innerBlocks'][0]['blockName'])->equals('core/paragraph');
+    verify($result[2]['innerBlocks'][0]['innerBlocks'][1]['blockName'])->equals('core/paragraph');
   }
 }

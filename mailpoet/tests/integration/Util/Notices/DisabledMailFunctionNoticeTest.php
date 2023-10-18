@@ -61,7 +61,7 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
     $disabledMailFunctionNotice = $this->generateNoticeWithMethodOverride(['isFunctionDisabled' => true]);
     $notice = $disabledMailFunctionNotice->init(true);
 
-    expect($notice)->equals(null);
+    verify($notice)->equals(null);
   }
 
   public function testItDisplaysNoticeForPhpMailSendingMethod() {
@@ -77,21 +77,21 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
     $disabledMailFunctionNotice = $this->generateNoticeWithMethodOverride(['sendTestMail' => true]);
     $notice = $disabledMailFunctionNotice->init(true);
 
-    expect($notice)->equals(null);
+    verify($notice)->equals(null);
   }
 
   public function testItReturnsTrueWhenFunctionDoesNotExist() {
     $disabledMailFunctionNotice = $this->generateRawNotice();
     $result = $disabledMailFunctionNotice->isFunctionDisabled('mp_undefined_function');
 
-    expect($result)->equals(true);
+    verify($result)->equals(true);
   }
 
   public function testItReturnsFalseWhenFunctionExist() {
     $disabledMailFunctionNotice = $this->generateRawNotice();
     $result = $disabledMailFunctionNotice->isFunctionDisabled('in_array');
 
-    expect($result)->equals(false);
+    verify($result)->equals(false);
   }
 
   public function testItResetQueueCheck() {
@@ -99,9 +99,9 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
     $disabledMailFunctionNotice = $this->generateNoticeWithMethodOverride();
     $notice = $disabledMailFunctionNotice->init(true);
 
-    expect($notice)->equals(null);
+    verify($notice)->equals(null);
     $status = $this->settings->get(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
-    expect($status)->equals(false);
+    verify($status)->equals(false);
   }
 
   public function testItDisplayNoticeWhenMailIsMisConfigured() {
@@ -111,7 +111,7 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
     expect($notice)->stringContainsString('Get ready to send your first campaign');
 
     $status = $this->settings->get(DisabledMailFunctionNotice::DISABLED_MAIL_FUNCTION_CHECK, false);
-    expect($status)->equals(true);
+    verify($status)->equals(true);
   }
 
   public function testItContinueDisplayingNoticeWhenMailFunctionIsDisabled() {
@@ -124,7 +124,7 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
     expect($notice)->stringContainsString('Get ready to send your first campaign');
 
     $status = $this->settings->get(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
-    expect($status)->equals(false);
+    verify($status)->equals(false);
 
     $secondNotice = $disabledMailFunctionNotice->init(true);
     expect($secondNotice)->stringContainsString('Get ready to send your first campaign');
@@ -144,7 +144,7 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
     expect($notice)->stringContainsString('Get ready to send your first campaign');
 
     $status = $this->settings->get(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
-    expect($status)->equals(false);
+    verify($status)->equals(false);
 
     $secondNotice = $disabledMailFunctionNotice->init(true);
     expect($secondNotice)->stringContainsString('Get ready to send your first campaign');
@@ -163,7 +163,7 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
     expect($notice)->stringContainsString('Get ready to send your first campaign');
 
     $status = $this->settings->get(DisabledMailFunctionNotice::QUEUE_DISABLED_MAIL_FUNCTION_CHECK, false);
-    expect($status)->equals(false);
+    verify($status)->equals(false);
 
     $secondNotice = $disabledMailFunctionNotice->init(true);
     expect($secondNotice)->stringContainsString('Get ready to send your first campaign');
@@ -175,6 +175,6 @@ class DisabledMailFunctionNoticeTest extends \MailPoetTest {
 
     $fourthNotice = $disabledMailFunctionNotice->init(true);
 
-    expect($fourthNotice)->equals(null);
+    verify($fourthNotice)->equals(null);
   }
 }

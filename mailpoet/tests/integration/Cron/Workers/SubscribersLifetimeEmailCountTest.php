@@ -52,7 +52,7 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $settings->set('deactivate_subscriber_after_inactive_days', 0);
 
-    expect($this->worker->checkProcessingRequirements())->equals(false);
+    verify($this->worker->checkProcessingRequirements())->equals(false);
   }
 
   public function testItCalculatesTotalSubscribersEmailCountsOnFirstRun() {
@@ -66,10 +66,10 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    expect($subscriber1->getEmailCount())->equals(80);
+    verify($subscriber1->getEmailCount())->equals(80);
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber2->getEmailCount())->equals(8);
+    verify($subscriber2->getEmailCount())->equals(8);
   }
 
   public function testItStartsFromLastIdInTaskMeta() {
@@ -86,10 +86,10 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    expect($subscriber1->getEmailCount())->equals(0);
+    verify($subscriber1->getEmailCount())->equals(0);
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber2->getEmailCount())->equals(8);
+    verify($subscriber2->getEmailCount())->equals(8);
   }
 
   public function testItWorksIfTaskMetaIsString() {
@@ -107,10 +107,10 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    expect($subscriber1->getEmailCount())->equals(0);
+    verify($subscriber1->getEmailCount())->equals(0);
     $subscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber2);
-    expect($subscriber2->getEmailCount())->equals(8);
+    verify($subscriber2->getEmailCount())->equals(8);
   }
 
   public function testItUpdatesSubscribersEmailCountsAfterFirstRun() {
@@ -133,7 +133,7 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber1);
-    expect($subscriber1->getEmailCount())->equals(81);
+    verify($subscriber1->getEmailCount())->equals(81);
 
   }
 

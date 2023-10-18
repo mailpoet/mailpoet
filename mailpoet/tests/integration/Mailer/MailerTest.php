@@ -47,33 +47,33 @@ class MailerTest extends \MailPoetTest {
 
   public function testItCanTransformSubscriber() {
     $mailer = $this->mailerFactory->buildMailer($this->mailer, $this->sender, $this->replyTo);
-    expect($mailer->formatSubscriberNameAndEmailAddress('test@email.com'))
+    verify($mailer->formatSubscriberNameAndEmailAddress('test@email.com'))
       ->equals('test@email.com');
-    expect($mailer->formatSubscriberNameAndEmailAddress(
+    verify($mailer->formatSubscriberNameAndEmailAddress(
       [
         'email' => 'test@email.com',
       ])
     )->equals('test@email.com');
-    expect($mailer->formatSubscriberNameAndEmailAddress(
+    verify($mailer->formatSubscriberNameAndEmailAddress(
       [
         'first_name' => 'First',
         'email' => 'test@email.com',
       ])
     )->equals('First <test@email.com>');
-    expect($mailer->formatSubscriberNameAndEmailAddress(
+    verify($mailer->formatSubscriberNameAndEmailAddress(
       [
         'last_name' => 'Last',
         'email' => 'test@email.com',
       ])
     )->equals('Last <test@email.com>');
-    expect($mailer->formatSubscriberNameAndEmailAddress(
+    verify($mailer->formatSubscriberNameAndEmailAddress(
       [
         'first_name' => 'First',
         'last_name' => 'Last',
         'email' => 'test@email.com',
       ])
     )->equals('First Last <test@email.com>');
-    expect($mailer->formatSubscriberNameAndEmailAddress(
+    verify($mailer->formatSubscriberNameAndEmailAddress(
       [
         'full_name' => 'First Last',
         'email' => 'test@email.com',

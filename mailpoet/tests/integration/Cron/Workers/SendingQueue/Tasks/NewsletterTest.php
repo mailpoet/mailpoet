@@ -251,7 +251,7 @@ class NewsletterTest extends \MailPoetTest {
     expect($newsletterPost)->isInstanceOf(NewsletterPostEntity::class);
     expect($result)->notEquals(false);
     $this->assertInstanceOf(NewsletterPostEntity::class, $newsletterPost);
-    expect($newsletterPost->getPostId())->equals('10');
+    verify($newsletterPost->getPostId())->equals('10');
   }
 
   public function testItUpdatesStatusAndSetsSentAtDateOnlyForStandardAndPostNotificationNewsletters() {
@@ -268,10 +268,10 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletterTask->markNewsletterAsSent($newsletter, $this->sendingTask);
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
-    expect($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+    verify($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
     $sentAt = $updatedNewsletter->getSentAt();
     $this->assertInstanceOf(\DateTime::class, $sentAt);
-    expect($sentAt->getTimestamp())->equals($sendingQueue->processedAt->getTimestamp(), 1);
+    verify($sentAt->getTimestamp())->equals($sendingQueue->processedAt->getTimestamp(), 1);
 
     // newsletter type is 'notification history'
     $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
@@ -281,10 +281,10 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletterTask->markNewsletterAsSent($newsletter, $this->sendingTask);
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
-    expect($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+    verify($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
     $sentAt = $updatedNewsletter->getSentAt();
     $this->assertInstanceOf(\DateTime::class, $sentAt);
-    expect($sentAt->getTimestamp())->equals($sendingQueue->processedAt->getTimestamp(), 1);
+    verify($sentAt->getTimestamp())->equals($sendingQueue->processedAt->getTimestamp(), 1);
 
     // all other newsletter types
     $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
@@ -314,7 +314,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newslettersRepository->flush();
     $this->newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask);
     $this->sendingTask = SendingTask::getByNewsletterId($this->newsletter->getId());
-    expect($this->sendingTask->newsletterRenderedSubject)
+    verify($this->sendingTask->newsletterRenderedSubject)
       ->equals('No subject');
   }
 
@@ -338,9 +338,9 @@ class NewsletterTest extends \MailPoetTest {
       $this->subscriber,
       $this->sendingTask
     );
-    expect($result['subject'])->equals('queue subject');
-    expect($result['body']['html'])->equals('queue HTML body');
-    expect($result['body']['text'])->equals('queue TEXT body');
+    verify($result['subject'])->equals('queue subject');
+    verify($result['body']['html'])->equals('queue HTML body');
+    verify($result['body']['text'])->equals('queue TEXT body');
   }
 
   public function testItRendersShortcodesAndReplacesSubscriberDataInLinks() {
@@ -386,8 +386,8 @@ class NewsletterTest extends \MailPoetTest {
 
       expect(is_array($mailerLog['error']));
       if (is_array($mailerLog['error'])) {
-        expect($mailerLog['error']['operation'])->equals('queue_save');
-        expect($mailerLog['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
+        verify($mailerLog['error']['operation'])->equals('queue_save');
+        verify($mailerLog['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
       }
     }
   }
@@ -410,8 +410,8 @@ class NewsletterTest extends \MailPoetTest {
       $mailerLog = MailerLog::getMailerLog();
       expect(is_array($mailerLog['error']));
       if (is_array($mailerLog['error'])) {
-        expect($mailerLog['error']['operation'])->equals('queue_save');
-        expect($mailerLog['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
+        verify($mailerLog['error']['operation'])->equals('queue_save');
+        verify($mailerLog['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
       }
     }
   }
@@ -449,8 +449,8 @@ class NewsletterTest extends \MailPoetTest {
       $mailerLog = MailerLog::getMailerLog();
       expect(is_array($mailerLog['error']));
       if (is_array($mailerLog['error'])) {
-        expect($mailerLog['error']['operation'])->equals('queue_save');
-        expect($mailerLog['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
+        verify($mailerLog['error']['operation'])->equals('queue_save');
+        verify($mailerLog['error']['error_message'])->equals('There was an error processing your newsletter during sending. If possible, please contact us and report this issue.');
       }
     }
   }
@@ -488,7 +488,7 @@ class NewsletterTest extends \MailPoetTest {
       })]
     );
     $newsletterTask = new NewsletterTask(null, null, null, $emoji);
-    expect($newsletterTask->preProcessNewsletter($this->newsletter, $sendingTaskMock))->equals($this->newsletter);
+    verify($newsletterTask->preProcessNewsletter($this->newsletter, $sendingTaskMock))->equals($this->newsletter);
   }
 
   /**
@@ -528,7 +528,7 @@ class NewsletterTest extends \MailPoetTest {
       'text' => 'text body',
     ];
     $campaignId = $this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters);
-    expect($campaignId)->equals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters));
+    verify($campaignId)->equals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters));
   }
 
   public function testCampaignIdChangesIfSubjectChanges() {
@@ -559,7 +559,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->setSubject('Subject');
     $this->entityManager->persist($newsletter);
     $this->entityManager->flush();
-    expect($originalCampaignId)->equals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters));
+    verify($originalCampaignId)->equals($this->newsletterTask->calculateCampaignId($newsletter, $renderedNewsletters));
   }
 
   public function testCampaignIdDependsOnNewsletterId() {
@@ -607,15 +607,15 @@ class NewsletterTest extends \MailPoetTest {
     $newsletterTask = new NewsletterTask();
     $sendingQueueMeta = $sendingQueue->getMeta();
     expect($sendingQueueMeta)->null();
-    expect($newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask))->equals($this->newsletter);
+    verify($newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask))->equals($this->newsletter);
     $this->entityManager->refresh($sendingQueue);
     $updatedMeta = $sendingQueue->getMeta();
     expect($updatedMeta)->array();
     expect($updatedMeta)->hasKey('filterSegment');
     $filterData = $updatedMeta['filterSegment']['filters'][0]['data'] ?? [];
-    expect($filterData['value'])->equals(50);
-    expect($filterData['operator'])->equals('higherThan');
-    expect($filterData['connect'])->equals('and');
+    verify($filterData['value'])->equals(50);
+    verify($filterData['operator'])->equals('higherThan');
+    verify($filterData['connect'])->equals('and');
   }
 
   public function testItRecoverNewsletterFromInvalidSendingState(): void {

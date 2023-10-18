@@ -27,7 +27,7 @@ class HeadingTest extends \MailPoetUnitTest {
         'content' => 'Header',
       ],
     ]);
-    expect($html)->equals('<h2 class="mailpoet-heading">Header</h2>');
+    verify($html)->equals('<h2 class="mailpoet-heading">Header</h2>');
   }
 
   public function testItShouldRenderLevel() {
@@ -37,7 +37,7 @@ class HeadingTest extends \MailPoetUnitTest {
         'level' => 1,
       ],
     ]);
-    expect($html)->equals('<h1 class="mailpoet-heading">Header</h1>');
+    verify($html)->equals('<h1 class="mailpoet-heading">Header</h1>');
   }
 
   public function testItShouldRenderClass() {
@@ -48,7 +48,7 @@ class HeadingTest extends \MailPoetUnitTest {
         'class_name' => 'class1 class2',
       ],
     ]);
-    expect($html)->equals('<h1 class="mailpoet-heading class1 class2">Header</h1>');
+    verify($html)->equals('<h1 class="mailpoet-heading class1 class2">Header</h1>');
   }
 
   public function testItShouldRenderAnchor() {
@@ -59,7 +59,7 @@ class HeadingTest extends \MailPoetUnitTest {
         'anchor' => 'anchor',
       ],
     ]);
-    expect($html)->equals('<h1 class="mailpoet-heading" id="anchor">Header</h1>');
+    verify($html)->equals('<h1 class="mailpoet-heading" id="anchor">Header</h1>');
   }
 
   public function testItShouldRenderAlign() {
@@ -70,7 +70,7 @@ class HeadingTest extends \MailPoetUnitTest {
         'align' => 'right',
       ],
     ]);
-    expect($html)->equals('<h1 class="mailpoet-heading" style="text-align: right">Header</h1>');
+    verify($html)->equals('<h1 class="mailpoet-heading" style="text-align: right">Header</h1>');
   }
 
   public function testItShouldRenderTextColour() {
@@ -81,7 +81,7 @@ class HeadingTest extends \MailPoetUnitTest {
         'text_color' => 'red',
       ],
     ]);
-    expect($html)->equals('<h1 class="mailpoet-heading" style="color: red">Header</h1>');
+    verify($html)->equals('<h1 class="mailpoet-heading" style="color: red">Header</h1>');
   }
 
   public function testItShouldRenderBackgroundColor() {
@@ -102,7 +102,7 @@ class HeadingTest extends \MailPoetUnitTest {
         'font_size' => '33',
       ],
     ]);
-    expect($html)->equals('<h2 class="mailpoet-heading mailpoet-has-font-size" style="font-size: 33px">Header</h2>');
+    verify($html)->equals('<h2 class="mailpoet-heading mailpoet-has-font-size" style="font-size: 33px">Header</h2>');
   }
 
   public function testItShouldRenderFontSizeWithUnit() {
@@ -112,7 +112,7 @@ class HeadingTest extends \MailPoetUnitTest {
         'font_size' => '2.2em',
       ],
     ]);
-    expect($html)->equals('<h2 class="mailpoet-heading mailpoet-has-font-size" style="font-size: 2.2em">Header</h2>');
+    verify($html)->equals('<h2 class="mailpoet-heading mailpoet-has-font-size" style="font-size: 2.2em">Header</h2>');
   }
 
   public function testItShouldRenderLineHeight() {
@@ -122,6 +122,6 @@ class HeadingTest extends \MailPoetUnitTest {
         'line_height' => '2.3',
       ],
     ]);
-    expect($html)->equals('<h2 class="mailpoet-heading" style="line-height: 2.3">Header</h2>');
+    verify($html)->equals('<h2 class="mailpoet-heading" style="line-height: 2.3">Header</h2>');
   }
 }

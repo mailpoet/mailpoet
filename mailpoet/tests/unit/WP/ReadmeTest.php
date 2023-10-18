@@ -15,14 +15,14 @@ class ReadmeTest extends \MailPoetUnitTest {
 
   public function testItParsesChangelog() {
     $result = Readme::parseChangelog($this->data);
-    expect(count($result))->equals(2);
-    expect(count($result[0]['changes']))->equals(2);
-    expect(count($result[1]['changes']))->equals(1);
+    verify(count($result))->equals(2);
+    verify(count($result[0]['changes']))->equals(2);
+    verify(count($result[1]['changes']))->equals(1);
   }
 
   public function testItRespectsLimitOfParsedItems() {
     $result = Readme::parseChangelog($this->data, 1);
-    expect(count($result))->equals(1);
+    verify(count($result))->equals(1);
   }
 
   public function testItReturnsFalseOnMalformedData() {

@@ -35,14 +35,14 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
         $this->make(Services::class),
         $this->make(DotcomHelperFunctions::class, ['isAtomicPlatform' => false]),
       ]);
-    expect($provisioner->provisionLicense($result, $payload, DotcomLicenseProvisioner::EVENT_TYPE_PROVISION_LICENSE))->equals($result);
+    verify($provisioner->provisionLicense($result, $payload, DotcomLicenseProvisioner::EVENT_TYPE_PROVISION_LICENSE))->equals($result);
   }
 
   public function testItReturnsResultIfWrongEvent() {
     $result = false;
     $payload = ['apiKey' => 'some-key'];
     $eventType = 'wrong-event';
-    expect($this->provisioner->provisionLicense($result, $payload, $eventType))->equals($result);
+    verify($this->provisioner->provisionLicense($result, $payload, $eventType))->equals($result);
   }
 
   public function testItReturnsWPErrorIfMissingKey() {
@@ -51,7 +51,7 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
     $eventType = DotcomLicenseProvisioner::EVENT_TYPE_PROVISION_LICENSE;
     $error = $this->provisioner->provisionLicense($result, $payload, $eventType);
     $this->assertInstanceOf(\WP_Error::class, $error);
-    expect($error->get_error_message())->equals('Invalid license payload: Missing API key.');
+    verify($error->get_error_message())->equals('Invalid license payload: Missing API key.');
   }
 
   public function testItReturnsWPErrorIfErrorOnSettingUpMSS() {
@@ -68,7 +68,7 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
       ]);
     $error = $provisioner->provisionLicense($result, $payload, $eventType);
     $this->assertInstanceOf(\WP_Error::class, $error);
-    expect($error->get_error_message())->equals('some-error ');
+    verify($error->get_error_message())->equals('some-error ');
   }
 
   public function testItReturnsErrorIfCouldNotRefreshKey() {
@@ -85,7 +85,7 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
       ]);
     $error = $provisioner->provisionLicense($result, $payload, $eventType);
     $this->assertInstanceOf(\WP_Error::class, $error);
-    expect($error->get_error_message())->equals('some-error ');
+    verify($error->get_error_message())->equals('some-error ');
   }
 
   public function testItReturnsErrorIfCouldNotVerifyPremiumKey() {
@@ -106,7 +106,7 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
       ]);
     $error = $provisioner->provisionLicense($result, $payload, $eventType);
     $this->assertInstanceOf(\WP_Error::class, $error);
-    expect($error->get_error_message())->equals('some-error ');
+    verify($error->get_error_message())->equals('some-error ');
   }
 
   public function testItReturnsTrueIfKeyProvidedMSSActivatedAndRefreshed() {
@@ -126,6 +126,6 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
         $this->make(DotcomHelperFunctions::class, ['isAtomicPlatform' => true]),
       ]);
     $result = $provisioner->provisionLicense($result, $payload, $eventType);
-    expect($result)->equals(true);
+    verify($result)->equals(true);
   }
 }

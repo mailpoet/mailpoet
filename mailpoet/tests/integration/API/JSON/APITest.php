@@ -109,7 +109,7 @@ class APITest extends \MailPoetTest {
     $namespaces = $this->api->getEndpointNamespaces();
 
     expect($namespaces)->count(2);
-    expect($namespaces[$namespace['version']][0])->equals($namespace['name']);
+    verify($namespaces[$namespace['version']][0])->equals($namespace['name']);
   }
 
   public function testItReturns400ErrorWhenAPIVersionIsNotSpecified() {
@@ -119,7 +119,7 @@ class APITest extends \MailPoetTest {
     ];
 
     $response = $this->api->setRequestData($data, Endpoint::TYPE_POST);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
   public function testItAcceptsAndProcessesAPIVersion() {
@@ -136,8 +136,8 @@ class APITest extends \MailPoetTest {
     ];
     $this->api->setRequestData($data, Endpoint::TYPE_POST);
 
-    expect($this->api->getRequestedAPIVersion())->equals('v2');
-    expect($this->api->getRequestedEndpointClass())->equals(
+    verify($this->api->getRequestedAPIVersion())->equals('v2');
+    verify($this->api->getRequestedEndpointClass())->equals(
       'MailPoet\API\JSON\v2\APITestNamespacedEndpointStubV2'
     );
   }
@@ -158,7 +158,7 @@ class APITest extends \MailPoetTest {
     $this->api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $this->api->processRoute();
 
-    expect($response->getData()['data'])->equals($data['data']);
+    verify($response->getData()['data'])->equals($data['data']);
   }
 
   public function testItConvertsExceptionToErrorResponse() {
@@ -177,7 +177,7 @@ class APITest extends \MailPoetTest {
     $this->api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $this->api->processRoute();
 
-    expect($response->errors)->equals([['error' => 'key', 'message' => 'value']]);
+    verify($response->errors)->equals([['error' => 'key', 'message' => 'value']]);
   }
 
   public function testItCallsAddedEndpointsForSpecificAPIVersion() {
@@ -194,7 +194,7 @@ class APITest extends \MailPoetTest {
     ];
     $this->api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $this->api->processRoute();
-    expect($response->getData()['data'])->equals($data['api_version']);
+    verify($response->getData()['data'])->equals($data['api_version']);
   }
 
   public function testItValidatesPermissionBeforeProcessingEndpointMethod() {
@@ -213,8 +213,8 @@ class APITest extends \MailPoetTest {
       [
         'container' => $this->container,
         'validatePermissions' => function($method, $permissions) use ($data) {
-          expect($method)->equals($data['method']);
-          expect($permissions)->equals(
+          verify($method)->equals($data['method']);
+          verify($permissions)->equals(
             [
               'global' => AccessControl::NO_ACCESS_RESTRICTION,
               'methods' => [
@@ -230,7 +230,7 @@ class APITest extends \MailPoetTest {
     $api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $api->processRoute();
-    expect($response->getData()['data'])->equals($data['data']);
+    verify($response->getData()['data'])->equals($data['data']);
   }
 
   public function testItReturnsForbiddenResponseWhenPermissionFailsValidation() {
@@ -253,7 +253,7 @@ class APITest extends \MailPoetTest {
     $api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $api->processRoute();
-    expect($response->status)->equals(Response::STATUS_FORBIDDEN);
+    verify($response->status)->equals(Response::STATUS_FORBIDDEN);
   }
 
   public function testItValidatesGlobalPermission() {
@@ -265,7 +265,7 @@ class APITest extends \MailPoetTest {
       new AccessControl(),
       [
         'validatePermission' => Expected::once(function($cap) {
-          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          verify($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return false;
         }),
       ]
@@ -278,7 +278,7 @@ class APITest extends \MailPoetTest {
       new AccessControl(),
       [
         'validatePermission' => Expected::once(function($cap) {
-          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          verify($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return true;
         }),
       ]
@@ -299,7 +299,7 @@ class APITest extends \MailPoetTest {
       new AccessControl(),
       [
         'validatePermission' => Expected::once(function($cap) {
-          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          verify($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return false;
         }),
       ]
@@ -312,7 +312,7 @@ class APITest extends \MailPoetTest {
       new AccessControl(),
       [
         'validatePermission' => Expected::once(function($cap) {
-          expect($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
+          verify($cap)->equals(AccessControl::PERMISSION_MANAGE_SETTINGS);
           return true;
         }),
       ]
@@ -337,8 +337,8 @@ class APITest extends \MailPoetTest {
     $this->api->setRequestData($data, Endpoint::TYPE_POST);
     $response = $this->api->processRoute();
 
-    expect($response->status)->equals(Response::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Invalid API endpoint method.');
+    verify($response->status)->equals(Response::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Invalid API endpoint method.');
   }
 
   public function testItLogsExceptionToLogTable() {
@@ -365,8 +365,8 @@ class APITest extends \MailPoetTest {
     $log = reset($logs);
     $this->assertInstanceOf(LogEntity::class, $log);
     expect($log->getMessage())->stringContainsString('Some Error');
-    expect($log->getName())->equals(LoggerFactory::TOPIC_API);
-    expect($response->errors)->equals([['error' => 'bad_request', 'message' => 'Some Error']]);
+    verify($log->getName())->equals(LoggerFactory::TOPIC_API);
+    verify($response->errors)->equals([['error' => 'bad_request', 'message' => 'Some Error']]);
     $this->diContainer->get(SettingsController::class)->set('logging', 'errors');
   }
 

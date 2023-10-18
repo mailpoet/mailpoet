@@ -28,7 +28,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
       $wooPreprocessor,
       $couponPreProcessor
     );
-    expect($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceHeading']))->equals([[
+    verify($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceHeading']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
       'styles' => [
@@ -61,7 +61,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
       $wooPreprocessor,
       $couponPreProcessor
     );
-    expect($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceContent']))->equals([[
+    verify($preprocessor->processBlock(new NewsletterEntity(), ['type' => 'woocommerceContent']))->equals([[
       'type' => 'container',
       'orientation' => 'horizontal',
       'styles' => [

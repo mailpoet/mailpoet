@@ -36,7 +36,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'event_slug' => 'event_slug',
     ];
     $result = $this->api->getEventOptions($data);
-    expect($result->errors[0]['message'])->equals($expectedErrorMessage);
+    verify($result->errors[0]['message'])->equals($expectedErrorMessage);
 
     // filter is invalid
     $data = [
@@ -46,7 +46,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'event_slug' => 'event_slug',
     ];
     $result = $this->api->getEventOptions($data);
-    expect($result->errors[0]['message'])->equals($expectedErrorMessage);
+    verify($result->errors[0]['message'])->equals($expectedErrorMessage);
 
     // email slug is invalid
     $data = [
@@ -56,7 +56,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'event_slug' => 'event_slug',
     ];
     $result = $this->api->getEventOptions($data);
-    expect($result->errors[0]['message'])->equals($expectedErrorMessage);
+    verify($result->errors[0]['message'])->equals($expectedErrorMessage);
 
     // event slug is invalid
     $data = [
@@ -66,7 +66,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'event_slug' => null,
     ];
     $result = $this->api->getEventOptions($data);
-    expect($result->errors[0]['message'])->equals($expectedErrorMessage);
+    verify($result->errors[0]['message'])->equals($expectedErrorMessage);
   }
 
   public function testItRequiresValidEventFilterWhenGettingEventOptions() {
@@ -91,7 +91,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       ];
     });
     $this->wp->addFilter('test_filter', function($query) {
-      expect($query)->equals('test');
+      verify($query)->equals('test');
       return 'pass';
     });
 
@@ -103,7 +103,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'event_slug' => 'event_slug',
     ];
     $result = $this->api->getEventOptions($data);
-    expect($result->errors[0]['message'])->equals($expectedErrorMessage);
+    verify($result->errors[0]['message'])->equals($expectedErrorMessage);
 
     $this->wp->removeAllFilters('mailpoet_automatic_email_test');
     $this->wp->removeAllFilters('test_filter');
@@ -129,7 +129,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       ];
     });
     $this->wp->addFilter('test_filter', function($query) {
-      expect($query)->equals('test');
+      verify($query)->equals('test');
       return 'pass';
     });
 
@@ -140,7 +140,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'event_slug' => 'event_slug',
     ];
     $result = $this->api->getEventOptions($data);
-    expect($result->data)->equals('pass');
+    verify($result->data)->equals('pass');
 
     $this->wp->removeAllFilters('mailpoet_automatic_email_test');
     $this->wp->removeAllFilters('test_filter');
@@ -155,7 +155,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'event_slug' => 'event_slug',
     ];
     $result = $this->api->getEventOptions($data);
-    expect($result->errors[0]['message'])->equals($expectedErrorMessage);
+    verify($result->errors[0]['message'])->equals($expectedErrorMessage);
 
     // event slug is invalid
     $data = [
@@ -163,7 +163,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'event_slug' => null,
     ];
     $result = $this->api->getEventOptions($data);
-    expect($result->errors[0]['message'])->equals($expectedErrorMessage);
+    verify($result->errors[0]['message'])->equals($expectedErrorMessage);
   }
 
   public function testItRequiresValidEventWhenGettingEventShortcodes() {
@@ -191,7 +191,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       // should be 'event_slug'
     ];
     $result = $this->api->getEventShortcodes($data);
-    expect($result->errors[0]['message'])->equals($expectedErrorMessage);
+    verify($result->errors[0]['message'])->equals($expectedErrorMessage);
 
     $this->wp->removeAllFilters('mailpoet_automatic_email_test');
   }
@@ -225,7 +225,7 @@ class AutomaticEmailsTest extends \MailPoetTest {
       'event_slug' => 'event_slug',
     ];
     $result = $this->api->getEventShortcodes($data);
-    expect($result->data['email_title'])->equals($shortcodes);
+    verify($result->data['email_title'])->equals($shortcodes);
 
     $this->wp->removeAllFilters('mailpoet_automatic_email_test');
   }

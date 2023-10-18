@@ -29,14 +29,14 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $segment = $this->createDynamicSegmentEntity('s1', '');
     $response = $this->endpoint->get(['id' => $segment->getId()]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\SuccessResponse');
-    expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->data['id'])->equals($segment->getId());
+    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
+    verify($response->data['id'])->equals($segment->getId());
   }
 
   public function testGetReturnsError() {
     $response = $this->endpoint->get(['id' => 5]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
-    expect($response->status)->equals(self::SEGMENT_NOT_FOUND_RESPONSE_CODE);
+    verify($response->status)->equals(self::SEGMENT_NOT_FOUND_RESPONSE_CODE);
   }
 
   public function testSaverSavesData() {
@@ -50,8 +50,8 @@ class DynamicSegmentsTest extends \MailPoetTest {
       ]],
     ]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\SuccessResponse');
-    expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->data['name'])->equals('Test dynamic');
+    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
+    verify($response->data['name'])->equals('Test dynamic');
   }
 
   public function testSaverReturnsErrorOnInvalidFilterData() {
@@ -59,8 +59,8 @@ class DynamicSegmentsTest extends \MailPoetTest {
       'name' => 'Test dynamic',
     ]);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
-    expect($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
-    expect($response->errors[0]['message'])->equals('Please add at least one condition for filtering.');
+    verify($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
+    verify($response->errors[0]['message'])->equals('Please add at least one condition for filtering.');
   }
 
   public function testSaverReturnsErrorOnDuplicateRecord() {
@@ -75,8 +75,8 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $this->endpoint->save($data);
     $response = $this->endpoint->save($data);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
-    expect($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
-    expect($response->errors[0]['message'])->equals('Another record already exists. Please specify a different "name".');
+    verify($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
+    verify($response->errors[0]['message'])->equals('Another record already exists. Please specify a different "name".');
   }
 
   public function testSaverReturnsErrorOnEmptyName() {
@@ -90,8 +90,8 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $this->endpoint->save($data);
     $response = $this->endpoint->save($data);
     expect($response)->isInstanceOf('\MailPoet\API\JSON\ErrorResponse');
-    expect($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
-    expect($response->errors[0]['message'])->equals('Please specify a name.');
+    verify($response->status)->equals(self::INVALID_DATA_RESPONSE_CODE);
+    verify($response->errors[0]['message'])->equals('Please specify a name.');
   }
 
   public function testItCanTrashASegment() {
@@ -99,9 +99,9 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
     $response = $this->endpoint->trash(['id' => $dynamicSegment->getId()]);
 
-    expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->data['name'])->equals($dynamicSegment->getName());
-    expect($response->meta['count'])->equals(1);
+    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
+    verify($response->data['name'])->equals($dynamicSegment->getName());
+    verify($response->meta['count'])->equals(1);
 
     $this->entityManager->refresh($dynamicSegment);
     $this->assertInstanceOf(SegmentEntity::class, $dynamicSegment);
@@ -120,8 +120,8 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
     $response = $this->endpoint->trash(['id' => $dynamicSegment->getId()]);
     $this->entityManager->refresh($dynamicSegment);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals("Segment cannot be deleted because it’s used for 'Subject' email");
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals("Segment cannot be deleted because it’s used for 'Subject' email");
   }
 
   public function testItCanRestoreASegment() {
@@ -129,9 +129,9 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
     $response = $this->endpoint->restore(['id' => $dynamicSegment->getId()]);
 
-    expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->data['name'])->equals($dynamicSegment->getName());
-    expect($response->meta['count'])->equals(1);
+    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
+    verify($response->data['name'])->equals($dynamicSegment->getName());
+    verify($response->meta['count'])->equals(1);
 
     $this->entityManager->refresh($dynamicSegment);
     $this->assertInstanceOf(SegmentEntity::class, $dynamicSegment);
@@ -145,9 +145,9 @@ class DynamicSegmentsTest extends \MailPoetTest {
 
     $response = $this->endpoint->delete(['id' => $dynamicSegment->getId()]);
 
-    expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->data)->equals(null);
-    expect($response->meta['count'])->equals(1);
+    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
+    verify($response->data)->equals(null);
+    verify($response->meta['count'])->equals(1);
 
     // Clear entity manager to forget all entities
     $this->entityManager->clear();
@@ -164,8 +164,8 @@ class DynamicSegmentsTest extends \MailPoetTest {
       'action' => 'trash',
       'listing' => ['group' => 'all'],
     ]);
-    expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->meta['count'])->equals(2);
+    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
+    verify($response->meta['count'])->equals(2);
 
     $this->entityManager->refresh($dynamicSegment1);
     $this->entityManager->refresh($dynamicSegment2);
@@ -177,8 +177,8 @@ class DynamicSegmentsTest extends \MailPoetTest {
       'listing' => ['group' => 'trash'],
     ]);
 
-    expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->meta['count'])->equals(2);
+    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
+    verify($response->meta['count'])->equals(2);
 
     $this->entityManager->refresh($dynamicSegment1);
     $this->entityManager->refresh($dynamicSegment2);
@@ -194,16 +194,16 @@ class DynamicSegmentsTest extends \MailPoetTest {
       'action' => 'delete',
       'listing' => ['group' => 'trash'],
     ]);
-    expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->meta['count'])->equals(2);
+    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
+    verify($response->meta['count'])->equals(2);
 
     // Second delete doesn't delete anything
     $response = $this->endpoint->bulkAction([
       'action' => 'delete',
       'listing' => ['group' => 'trash'],
     ]);
-    expect($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
-    expect($response->meta['count'])->equals(0);
+    verify($response->status)->equals(self::SUCCESS_RESPONSE_CODE);
+    verify($response->meta['count'])->equals(0);
 
     $this->entityManager->clear();
 

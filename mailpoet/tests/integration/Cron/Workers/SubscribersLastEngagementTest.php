@@ -28,7 +28,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
 
     $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getLastEngagementAt())->equals($openTime);
+    verify($subscriber->getLastEngagementAt())->equals($openTime);
   }
 
   public function testItCanSetLastEngagementFromClicks() {
@@ -39,7 +39,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
 
     $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getLastEngagementAt())->equals($clickTime);
+    verify($subscriber->getLastEngagementAt())->equals($clickTime);
   }
 
   public function testItPicksLatestTimeFromClick() {
@@ -52,7 +52,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
 
     $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getLastEngagementAt())->equals($clickTime);
+    verify($subscriber->getLastEngagementAt())->equals($clickTime);
   }
 
   public function testItPicksLatestTimeFromOpen() {
@@ -65,7 +65,7 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
 
     $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getLastEngagementAt())->equals($openTime);
+    verify($subscriber->getLastEngagementAt())->equals($openTime);
   }
 
   public function testItKeepsNullIfNoTimeFound() {
@@ -115,9 +115,9 @@ class SubscribersLastEngagementTest extends \MailPoetTest {
     expect($result)->true();
     $this->entityManager->refresh($subscriberInFirstBatch);
     $this->entityManager->refresh($subscriberInSecondBatch);
-    expect($subscriberInFirstBatch->getLastEngagementAt())->equals($firstOpenTime);
-    expect($subscriberInSecondBatch->getLastEngagementAt())->equals($secondOpenTime);
-    expect($task->getMeta())->equals(['nextId' => 2001]);
+    verify($subscriberInFirstBatch->getLastEngagementAt())->equals($firstOpenTime);
+    verify($subscriberInSecondBatch->getLastEngagementAt())->equals($secondOpenTime);
+    verify($task->getMeta())->equals(['nextId' => 2001]);
   }
 
   private function createSubscriber($email = null): SubscriberEntity {

@@ -25,9 +25,9 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
     $result = $this->exporter->export('email.that@doesnt.exists');
     expect($result)->array();
     expect($result)->hasKey('data');
-    expect($result['data'])->equals([]);
+    verify($result['data'])->equals([]);
     expect($result)->hasKey('done');
-    expect($result['done'])->equals(true);
+    verify($result['done'])->equals(true);
   }
 
   public function testExportWorksForSubscriberWithNoNewsletters() {
@@ -39,9 +39,9 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
     $result = $this->exporter->export('email.that@has.no.newsletters');
     expect($result)->array();
     expect($result)->hasKey('data');
-    expect($result['data'])->equals([]);
+    verify($result['data'])->equals([]);
     expect($result)->hasKey('done');
-    expect($result['done'])->equals(true);
+    verify($result['done'])->equals(true);
   }
 
   public function testExportReturnsData() {
@@ -52,7 +52,7 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
     $result = $this->exporter->export($userEmail);
     expect($result['data'])->array();
     expect($result['data'])->count(1);
-    expect($result['done'])->equals(true);
+    verify($result['done'])->equals(true);
     expect($result['data'][0])->hasKey('group_id');
     expect($result['data'][0])->hasKey('group_label');
     expect($result['data'][0])->hasKey('item_id');

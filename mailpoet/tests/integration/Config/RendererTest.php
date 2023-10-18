@@ -37,8 +37,8 @@ class RendererTest extends \MailPoetTest {
       Env::$cachePath,
       new TwigFileSystem(Env::$viewsPath)
     );
-    expect($renderer->assetsManifestJs)->equals(Env::$assetsPath . '/dist/js/manifest.json');
-    expect($renderer->assetsManifestCss)->equals(Env::$assetsPath . '/dist/css/manifest.json');
+    verify($renderer->assetsManifestJs)->equals(Env::$assetsPath . '/dist/js/manifest.json');
+    verify($renderer->assetsManifestCss)->equals(Env::$assetsPath . '/dist/css/manifest.json');
   }
 
   public function testItGetsAssetManifest() {
@@ -53,8 +53,8 @@ class RendererTest extends \MailPoetTest {
     file_put_contents(Env::$tempPath . '/js.json', json_encode($assetsManifestJs));
     file_put_contents(Env::$tempPath . '/css.json', json_encode($assetsManifestCss));
 
-    expect($this->renderer->getAssetManifest(Env::$tempPath . '/js.json'))->equals($assetsManifestJs);
-    expect($this->renderer->getAssetManifest(Env::$tempPath . '/css.json'))->equals($assetsManifestCss);
+    verify($this->renderer->getAssetManifest(Env::$tempPath . '/js.json'))->equals($assetsManifestJs);
+    verify($this->renderer->getAssetManifest(Env::$tempPath . '/css.json'))->equals($assetsManifestCss);
   }
 
   public function testItReturnsFalseAssetManifestDoesNotExist() {
@@ -68,8 +68,8 @@ class RendererTest extends \MailPoetTest {
     ];
     $renderer = $this->renderer;
     $renderer->assetsManifestCss = $assetsManifestCss;
-    expect($renderer->getCssAsset('style1.css'))->equals('style1.hash.css');
-    expect($renderer->getCssAsset('style2.css'))->equals('style2.hash.css');
+    verify($renderer->getCssAsset('style1.css'))->equals('style1.hash.css');
+    verify($renderer->getCssAsset('style2.css'))->equals('style2.hash.css');
   }
 
   public function testItCanGetJsAsset() {
@@ -79,8 +79,8 @@ class RendererTest extends \MailPoetTest {
     ];
     $renderer = $this->renderer;
     $renderer->assetsManifestJs = $assetsManifestJs;
-    expect($renderer->getJsAsset('script1.js'))->equals('script1.hash.js');
-    expect($renderer->getJsAsset('script2.js'))->equals('script2.hash.js');
+    verify($renderer->getJsAsset('script1.js'))->equals('script1.hash.js');
+    verify($renderer->getJsAsset('script2.js'))->equals('script2.hash.js');
   }
 
   public function testItDelegatesRenderingToTwig() {
@@ -128,7 +128,7 @@ class RendererTest extends \MailPoetTest {
       ]
     );
 
-    expect($renderer->render(['somekey' => 'someval']))->equals('test render');
+    verify($renderer->render(['somekey' => 'someval']))->equals('test render');
   }
 
   public function _after() {

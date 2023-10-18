@@ -61,7 +61,7 @@ class FirstPurchaseTest extends \MailPoetTest {
 
     $result = $event->getEventDetails();
     expect($result)->notEmpty();
-    expect($result['slug'])->equals(FirstPurchase::SLUG);
+    verify($result['slug'])->equals(FirstPurchase::SLUG);
   }
 
   public function testDateShortcodeHandlerReturnsShortcodeWhenItCannotDetectProperShortcode() {
@@ -69,7 +69,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     $shortcode = 'wrong shortcode';
 
     $result = $event->handleOrderDateShortcode($shortcode, true, true, true);
-    expect($result)->equals($shortcode);
+    verify($result)->equals($shortcode);
   }
 
   public function testDateShortcodeHandlerReturnsShortcodeWhenQueueIsMissing() {
@@ -79,7 +79,7 @@ class FirstPurchaseTest extends \MailPoetTest {
       'dateI18n' => 'success',
     ]));
     $result = $event->handleOrderDateShortcode($shortcode, true, true, false);
-    expect($result)->equals('success');
+    verify($result)->equals('success');
   }
 
   public function testDateShortcodeHandlerReturnsCurrentDateWhenDateIsMissingInQueueMeta() {
@@ -91,7 +91,7 @@ class FirstPurchaseTest extends \MailPoetTest {
       'dateI18n' => 'success',
     ]));
     $result = $event->handleOrderDateShortcode($shortcode, true, true, $queue);
-    expect($result)->equals('success');
+    verify($result)->equals('success');
   }
 
   public function testDateShortcodeHandlerReturnsSystemFormattedDate() {
@@ -102,7 +102,7 @@ class FirstPurchaseTest extends \MailPoetTest {
       'dateI18n' => 'success',
     ]));
     $result = $event->handleOrderDateShortcode($shortcode, true, true, $queue);
-    expect($result)->equals('success');
+    verify($result)->equals('success');
   }
 
   public function testOrderAmountShortcodeHandlerReturnsShortcodeWhenItCannotDetectProperShortcode() {
@@ -110,7 +110,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     $shortcode = 'wrong shortcode';
 
     $result = $event->handleOrderTotalShortcode($shortcode, true, true, true);
-    expect($result)->equals($shortcode);
+    verify($result)->equals($shortcode);
   }
 
   public function testOrderAmountShortcodeHandlerReturnsFormattedZeroValueWhenQueueIsMissing() {
@@ -122,7 +122,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     $event = new FirstPurchase($helper);
     $shortcode = FirstPurchase::ORDER_TOTAL_SHORTCODE;
     $result = $event->handleOrderTotalShortcode($shortcode, true, true, false);
-    expect($result)->equals(0);
+    verify($result)->equals(0);
   }
 
   public function testOrderAmountShortcodeHandlerReturnsFormattedZeroValueWhenOrderAmountIsMissingInQueueMeta() {
@@ -135,7 +135,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     $shortcode = FirstPurchase::ORDER_TOTAL_SHORTCODE;
     $queue = $this->createSendingQueue($this->newsletterFactory->create());
     $result = $event->handleOrderTotalShortcode($shortcode, true, true, $queue);
-    expect($result)->equals(0);
+    verify($result)->equals(0);
   }
 
   public function testOrderAmountShortcodeHandlerReturnsFormattedPrice() {
@@ -148,7 +148,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     $shortcode = FirstPurchase::ORDER_TOTAL_SHORTCODE;
     $queue = $this->createSendingQueue($this->newsletterFactory->create(), ['order_amount' => 15]);
     $result = $event->handleOrderTotalShortcode($shortcode, true, true, $queue);
-    expect($result)->equals(15);
+    verify($result)->equals(15);
   }
 
   public function testItDoesNotScheduleEmailWhenOrderDetailsAreNotAvailable() {
@@ -245,7 +245,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     $sendingQueue = $this->sendingQueueRepository->findOneBy(['newsletter' => $newsletter]);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $meta = $sendingQueue->getMeta();
-    expect($meta)->equals([
+    verify($meta)->equals([
       'order_amount' => $order->get_total(),
       'order_date' => $orderDate->getTimestamp(),
       'order_id' => $order->get_id(),
@@ -269,7 +269,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     $tasksCountBeforeStatusChange = count($this->scheduledTasksRepository->findBy(['type' => Sending::TASK_TYPE]));
     WPFunctions::get()->doAction('woocommerce_order_status_completed', $orderId);
     $tasksCountAfterStatusChange = count($this->scheduledTasksRepository->findBy(['type' => Sending::TASK_TYPE]));
-    expect($tasksCountAfterStatusChange)->equals($tasksCountBeforeStatusChange);
+    verify($tasksCountAfterStatusChange)->equals($tasksCountBeforeStatusChange);
   }
 
   public function _runTestItSchedulesEmailForState($orderState) {
@@ -321,7 +321,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     $sendingQueue = $this->sendingQueueRepository->findOneBy(['newsletter' => $newsletter]);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $meta = $sendingQueue->getMeta();
-    expect($meta)->equals([
+    verify($meta)->equals([
       'order_amount' => 'order_total',
       'order_date' => $dateCreated->getTimestamp(),
       'order_id' => $orderId,

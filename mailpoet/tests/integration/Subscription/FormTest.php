@@ -83,7 +83,7 @@ class FormTest extends \MailPoetTest {
     $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
     $result = $formController->onSubmit($this->requestData);
     expect($this->subscribersRepository->findOneBy(['email' => $this->testEmail]))->notEmpty();
-    expect($result['mailpoet_success'])->equals($this->form->getId());
+    verify($result['mailpoet_success'])->equals($this->form->getId());
     expect($result['mailpoet_error'])->null();
   }
 
@@ -121,7 +121,7 @@ class FormTest extends \MailPoetTest {
     $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
     $result = $formController->onSubmit($requestData);
     expect($this->subscribersRepository->findAll())->isEmpty();
-    expect($result['mailpoet_error'])->equals($this->form->getId());
+    verify($result['mailpoet_error'])->equals($this->form->getId());
     expect($result['mailpoet_success'])->null();
   }
 
@@ -139,7 +139,7 @@ class FormTest extends \MailPoetTest {
     ], $this);
     $formController = new Form($api, $urlHelper);
     $result = $formController->onSubmit($this->requestData);
-    expect($result)->equals($redirectUrl);
+    verify($result)->equals($redirectUrl);
   }
 
   public function _after() {

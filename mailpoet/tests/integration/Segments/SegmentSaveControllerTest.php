@@ -28,9 +28,9 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     ];
 
     $segment = $this->saveController->save($segmentData);
-    expect($segment->getName())->equals('Segment one');
-    expect($segment->getDescription())->equals('Description');
-    expect($segment->getType())->equals(SegmentEntity::TYPE_DEFAULT);
+    verify($segment->getName())->equals('Segment one');
+    verify($segment->getDescription())->equals('Description');
+    verify($segment->getType())->equals(SegmentEntity::TYPE_DEFAULT);
   }
 
   public function testItDuplicatesSegment(): void {
@@ -46,12 +46,12 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $subscriberDuplicate2 = $this->subscriberSegmentRepository->findOneBy(['segment' => $duplicate, 'subscriber' => $subscriber2]);
     $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberDuplicate1);
     $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberDuplicate2);
-    expect($duplicate->getName())->equals('Copy of ' . $segment->getName());
-    expect($duplicate->getDescription())->equals($segment->getDescription());
-    expect($duplicate->getType())->equals($segment->getType());
+    verify($duplicate->getName())->equals('Copy of ' . $segment->getName());
+    verify($duplicate->getDescription())->equals($segment->getDescription());
+    verify($duplicate->getType())->equals($segment->getType());
     expect($subscriberSegments)->count(2);
-    expect($subscriberDuplicate1->getStatus())->equals($subscriberSegment1->getStatus());
-    expect($subscriberDuplicate2->getStatus())->equals($subscriberSegment2->getStatus());
+    verify($subscriberDuplicate1->getStatus())->equals($subscriberSegment1->getStatus());
+    verify($subscriberDuplicate2->getStatus())->equals($subscriberSegment2->getStatus());
   }
 
   public function testItCheckDuplicateSegment(): void {

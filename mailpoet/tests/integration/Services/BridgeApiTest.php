@@ -56,7 +56,7 @@ class BridgeApiTest extends \MailPoetTest {
     expect($logs)->count(1);
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
-    expect($errorLog->getLevel())->equals(Logger::ERROR);
+    verify($errorLog->getLevel())->equals(Logger::ERROR);
     expect($errorLog->getMessage())->stringContainsString('www.home-example.com');
     expect($errorLog->getMessage())->stringContainsString('key-validation.failed');
     expect($errorLog->getMessage())->stringContainsString('"key_type":"premium"');
@@ -90,7 +90,7 @@ class BridgeApiTest extends \MailPoetTest {
     expect($logs)->count(1);
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
-    expect($errorLog->getLevel())->equals(Logger::ERROR);
+    verify($errorLog->getLevel())->equals(Logger::ERROR);
     expect($errorLog->getMessage())->stringContainsString('www.home-example.com');
     expect($errorLog->getMessage())->stringContainsString('key-validation.failed');
     expect($errorLog->getMessage())->stringContainsString('"key_type":"mss"');
@@ -108,7 +108,7 @@ class BridgeApiTest extends \MailPoetTest {
       ->method('wpRemoteRetrieveBody')
       ->willReturn(json_encode([$domainResult]));
     $result = $this->api->getAuthorizedSenderDomains();
-    expect($result)->equals([$domainResult]);
+    verify($result)->equals([$domainResult]);
   }
 
   public function testItReturnsNullIfCantGetSenderDomains() {
@@ -134,7 +134,7 @@ class BridgeApiTest extends \MailPoetTest {
     expect($logs)->count(1);
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
-    expect($errorLog->getLevel())->equals(Logger::ERROR);
+    verify($errorLog->getLevel())->equals(Logger::ERROR);
     expect($errorLog->getMessage())->stringContainsString('getAuthorizedSenderDomains API response was not in expected format.');
     expect($errorLog->getMessage())->stringContainsString('trololo');
   }
@@ -149,7 +149,7 @@ class BridgeApiTest extends \MailPoetTest {
       ->method('wpRemoteRetrieveBody')
       ->willReturn(json_encode(BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE));
     $result = $this->api->createAuthorizedSenderDomain('mailpoet.com');
-    expect($result)->equals(BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE);
+    verify($result)->equals(BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE);
   }
 
   public function testCreateDomainLogsErrorWhenResponseHasUnexpectedFormat() {
@@ -162,12 +162,12 @@ class BridgeApiTest extends \MailPoetTest {
       ->method('wpRemoteRetrieveBody')
       ->willReturn('trololo');
     $result = $this->api->createAuthorizedSenderDomain('mailpoet.com');
-    expect($result)->equals([]);
+    verify($result)->equals([]);
     $logs = $this->logRepository->findAll();
     expect($logs)->count(1);
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
-    expect($errorLog->getLevel())->equals(Logger::ERROR);
+    verify($errorLog->getLevel())->equals(Logger::ERROR);
     expect($errorLog->getMessage())->stringContainsString('createAuthorizedSenderDomain API response was not in expected format.');
     expect($errorLog->getMessage())->stringContainsString('trololo');
   }
@@ -182,8 +182,8 @@ class BridgeApiTest extends \MailPoetTest {
       ->method('wpRemoteRetrieveBody')
       ->willReturn(json_encode(['error' => 'This domain was already added to the list.']));
     $result = $this->api->createAuthorizedSenderDomain('existing.com');
-    expect($result['status'])->equals(API::RESPONSE_STATUS_ERROR);
-    expect($result['error'])->equals('This domain was already added to the list.');
+    verify($result['status'])->equals(API::RESPONSE_STATUS_ERROR);
+    verify($result['error'])->equals('This domain was already added to the list.');
   }
 
   public function testVerifyDomainLogsErrorWhenResponseHasUnexpectedFormat() {
@@ -196,12 +196,12 @@ class BridgeApiTest extends \MailPoetTest {
       ->method('wpRemoteRetrieveBody')
       ->willReturn('trololo');
     $result = $this->api->verifyAuthorizedSenderDomain('mailpoet.com');
-    expect($result)->equals([]);
+    verify($result)->equals([]);
     $logs = $this->logRepository->findAll();
     expect($logs)->count(1);
     $errorLog = $logs[0];
     $this->assertInstanceOf(LogEntity::class, $errorLog);
-    expect($errorLog->getLevel())->equals(Logger::ERROR);
+    verify($errorLog->getLevel())->equals(Logger::ERROR);
     expect($errorLog->getMessage())->stringContainsString('verifyAuthorizedSenderDomain API response was not in expected format.');
     expect($errorLog->getMessage())->stringContainsString('trololo');
   }

@@ -38,21 +38,21 @@ class SystemReportCollectorTest extends \MailPoetTest {
   }
 
   public function testItReturnsPhpVersion() {
-    expect($this->systemInfoData['PHP version'])->equals(PHP_VERSION);
+    verify($this->systemInfoData['PHP version'])->equals(PHP_VERSION);
   }
 
   public function testItReturnsMailpoetVersion() {
-    expect($this->systemInfoData['MailPoet Free version'])->equals(MAILPOET_VERSION);
+    verify($this->systemInfoData['MailPoet Free version'])->equals(MAILPOET_VERSION);
   }
 
   public function testItReturnsWordpressVersion() {
-    expect($this->systemInfoData['WordPress version'])->equals(get_bloginfo('version'));
+    verify($this->systemInfoData['WordPress version'])->equals(get_bloginfo('version'));
   }
 
   public function testItReturnsDatabaseVersion() {
     global $wpdb;
     $dbVersion = $wpdb->get_var('SELECT @@VERSION');
-    expect($this->systemInfoData['Database version'])->equals($dbVersion);
+    verify($this->systemInfoData['Database version'])->equals($dbVersion);
   }
 
   public function testItReturnsWpMemoryLimit() {
@@ -88,7 +88,7 @@ class SystemReportCollectorTest extends \MailPoetTest {
   }
 
   public function testItReturnsIfWpIsMultisite() {
-    expect($this->systemInfoData['Multisite environment?'])->equals(is_multisite() ? 'Yes' : 'No');
+    verify($this->systemInfoData['Multisite environment?'])->equals(is_multisite() ? 'Yes' : 'No');
   }
 
   public function testItReturnsCurrentThemeNameAndVersion() {
@@ -105,12 +105,12 @@ class SystemReportCollectorTest extends \MailPoetTest {
   public function testItReturnsActivePlugins() {
     $activePlugins = get_option('active_plugins');
     $this->assertIsArray($activePlugins);
-    expect($this->systemInfoData['Active Plugin names'])->equals(join(", ", $activePlugins));
+    verify($this->systemInfoData['Active Plugin names'])->equals(join(", ", $activePlugins));
   }
 
   public function testItReturnsSendingMethodDetails() {
     $mta = $this->settings->get('mta');
-    expect($this->systemInfoData['Sending Method'])->equals($mta['method']);
+    verify($this->systemInfoData['Sending Method'])->equals($mta['method']);
     expect($this->systemInfoData['Sending Frequency'])->stringContainsString($mta['frequency']['emails'] . ' emails');
     expect($this->systemInfoData['Sending Frequency'])->stringContainsString($mta['frequency']['interval'] . ' minutes');
   }
@@ -120,7 +120,7 @@ class SystemReportCollectorTest extends \MailPoetTest {
     expect($this->systemInfoData['MailPoet sending info'])->stringContainsString('Default FROM address: ' . $this->settings->get('sender.address'));
     expect($this->systemInfoData['MailPoet sending info'])->stringContainsString('Default Reply-To address: ' . $this->settings->get('reply_to.address'));
     expect($this->systemInfoData['MailPoet sending info'])->stringContainsString('Bounce Email Address: ' . $this->settings->get('bounce.address'));
-    expect($this->systemInfoData['Plugin installed at'])->equals($this->settings->get('installed_at'));
+    verify($this->systemInfoData['Plugin installed at'])->equals($this->settings->get('installed_at'));
   }
 
   public function testItReturnsTransactionalEmailSendingMethod() {
@@ -133,17 +133,17 @@ class SystemReportCollectorTest extends \MailPoetTest {
 
   public function testItReturnsTotalNumberOfSubscribers() {
     // unsubscribed users are not taken into account
-    expect($this->systemInfoData['Total number of subscribers'])->equals(2);
+    verify($this->systemInfoData['Total number of subscribers'])->equals(2);
   }
 
   public function testItReturnsWebserverInformation() {
-    expect($this->systemInfoData['Web server'])->equals(
+    verify($this->systemInfoData['Web server'])->equals(
       (!empty($_SERVER["SERVER_SOFTWARE"])) ? sanitize_text_field(wp_unslash($_SERVER["SERVER_SOFTWARE"])) : 'N/A'
     );
   }
 
   public function testItReturnsServerOSInformation() {
-    expect($this->systemInfoData['Server OS'])->equals(php_uname());
+    verify($this->systemInfoData['Server OS'])->equals(php_uname());
   }
 
   public function testItReturnsCronPingUrl() {
@@ -160,13 +160,13 @@ class SystemReportCollectorTest extends \MailPoetTest {
   }
 
   public function testItReturnsPremiumVersion() {
-    expect($this->systemInfoData['MailPoet Premium version'])->equals(
+    verify($this->systemInfoData['MailPoet Premium version'])->equals(
       (defined('MAILPOET_PREMIUM_VERSION')) ? MAILPOET_PREMIUM_VERSION : 'N/A'
     );
   }
 
   public function testItReturnsPremiumKey() {
-    expect($this->systemInfoData['MailPoet Premium/MSS key'])->equals(
+    verify($this->systemInfoData['MailPoet Premium/MSS key'])->equals(
       $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME) ?: $this->settings->get(Bridge::API_KEY_SETTING_NAME)
     );
   }

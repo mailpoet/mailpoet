@@ -18,7 +18,7 @@ class MailerErrorTest extends \MailPoetUnitTest {
 
   public function testItCanComposeErrorMessageWithoutSubscribers() {
     $error = new MailerError(MailerError::OPERATION_SEND, MailerError::LEVEL_HARD, 'Some Message');
-    expect($error->getMessageWithFailedSubscribers())->equals('Some Message');
+    verify($error->getMessageWithFailedSubscribers())->equals('Some Message');
   }
 
   public function testItCanComposeErrorMessageWithOneSubscriber() {
@@ -30,7 +30,7 @@ class MailerErrorTest extends \MailPoetUnitTest {
       null,
       [$subscriberError]
     );
-    expect($error->getMessageWithFailedSubscribers())->equals('Some Message Unprocessed subscriber: (email@example.com: Subscriber message)');
+    verify($error->getMessageWithFailedSubscribers())->equals('Some Message Unprocessed subscriber: (email@example.com: Subscriber message)');
   }
 
   public function testItCanComposeErrorMessageWithMultipleSubscriberErrors() {
@@ -43,7 +43,7 @@ class MailerErrorTest extends \MailPoetUnitTest {
       null,
       [$subscriberError1, $subscriberError2]
     );
-    expect($error->getMessageWithFailedSubscribers())->equals(
+    verify($error->getMessageWithFailedSubscribers())->equals(
       'Some Message Unprocessed subscribers: (email1@example.com: Subscriber 1 message), (email2@example.com)'
     );
   }

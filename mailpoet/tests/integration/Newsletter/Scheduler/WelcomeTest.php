@@ -93,10 +93,10 @@ class WelcomeTest extends \MailPoetTest {
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
+    verify($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
-    expect($scheduledAt->format('Y-m-d H:i'))
+    verify($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addHours(2)->format('Y-m-d H:i'));
   }
 
@@ -118,10 +118,10 @@ class WelcomeTest extends \MailPoetTest {
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
+    verify($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
-    expect($scheduledAt->format('Y-m-d H:i'))
+    verify($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addDays(2)->format('Y-m-d H:i'));
   }
 
@@ -143,10 +143,10 @@ class WelcomeTest extends \MailPoetTest {
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
+    verify($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
-    expect($scheduledAt->format('Y-m-d H:i'))
+    verify($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addWeeks(2)->format('Y-m-d H:i'));
   }
 
@@ -169,10 +169,10 @@ class WelcomeTest extends \MailPoetTest {
     expect($queue->getId())->greaterOrEquals(1);
     $task = $queue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
+    verify($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
-    expect($scheduledAt->format('Y-m-d H:i'))
+    verify($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->format('Y-m-d H:i'));
   }
 
@@ -220,9 +220,9 @@ class WelcomeTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
-    expect($scheduledAt->format('Y-m-d H:i'))
+    verify($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addDay()->format('Y-m-d H:i'));
-    expect($result[0]->id())->equals($queue->getId());
+    verify($result[0]->id())->equals($queue->getId());
   }
 
   public function testItDoesNotScheduleWelcomeNotificationWhenSubscriberIsInTrash() {
@@ -390,7 +390,7 @@ class WelcomeTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
-    expect($scheduledAt->format('Y-m-d H:i'))
+    verify($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addDay()->format('Y-m-d H:i'));
   }
 
@@ -418,7 +418,7 @@ class WelcomeTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
-    expect($scheduledAt->format('Y-m-d H:i'))
+    verify($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addDay()->format('Y-m-d H:i'));
   }
 

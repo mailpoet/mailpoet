@@ -20,19 +20,19 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     $responseBuilder = $this->diContainer->get(DynamicSegmentsResponseBuilder::class);
     $response = $responseBuilder->build($segment);
     expect($response)->array();
-    expect($response['id'])->equals($segment->getId());
-    expect($response['name'])->equals($name);
-    expect($response['description'])->equals($description);
-    expect($response['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
+    verify($response['id'])->equals($segment->getId());
+    verify($response['name'])->equals($name);
+    verify($response['description'])->equals($description);
+    verify($response['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
     expect($response)->hasKey('created_at');
     expect($response)->hasKey('updated_at');
     expect($response)->hasKey('deleted_at');
-    expect($response['filters_connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+    verify($response['filters_connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
     expect($response['filters'])->array();
     expect($response['filters'])->count(1);
-    expect($response['filters'][0]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
-    expect($response['filters'][0]['wordpressRole'])->equals(['editor']);
-    expect($response['filters'][0]['action'])->equals(UserRole::TYPE);
+    verify($response['filters'][0]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    verify($response['filters'][0]['wordpressRole'])->equals(['editor']);
+    verify($response['filters'][0]['action'])->equals(UserRole::TYPE);
   }
 
   public function testItBuildsGetResponseWithTwoFilters() {
@@ -47,24 +47,24 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     $responseBuilder = $this->diContainer->get(DynamicSegmentsResponseBuilder::class);
     $response = $responseBuilder->build($segment);
     expect($response)->array();
-    expect($response['id'])->equals($segment->getId());
-    expect($response['name'])->equals($name);
-    expect($response['description'])->equals($description);
-    expect($response['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
+    verify($response['id'])->equals($segment->getId());
+    verify($response['name'])->equals($name);
+    verify($response['description'])->equals($description);
+    verify($response['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
     expect($response)->hasKey('created_at');
     expect($response)->hasKey('updated_at');
     expect($response)->hasKey('deleted_at');
-    expect($response['filters_connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+    verify($response['filters_connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
     expect($response['filters'])->array();
     expect($response['filters'])->count(2);
-    expect($response['filters'][0]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
-    expect($response['filters'][0]['wordpressRole'])->equals(['editor']);
-    expect($response['filters'][0]['action'])->equals(UserRole::TYPE);
-    expect($response['filters'][0]['connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
-    expect($response['filters'][1]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
-    expect($response['filters'][1]['wordpressRole'])->equals(['administrator']);
-    expect($response['filters'][1]['action'])->equals(UserRole::TYPE);
-    expect($response['filters'][1]['connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+    verify($response['filters'][0]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    verify($response['filters'][0]['wordpressRole'])->equals(['editor']);
+    verify($response['filters'][0]['action'])->equals(UserRole::TYPE);
+    verify($response['filters'][0]['connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
+    verify($response['filters'][1]['segmentType'])->equals(DynamicSegmentFilterData::TYPE_USER_ROLE);
+    verify($response['filters'][1]['wordpressRole'])->equals(['administrator']);
+    verify($response['filters'][1]['action'])->equals(UserRole::TYPE);
+    verify($response['filters'][1]['connect'])->equals(DynamicSegmentFilterData::CONNECT_TYPE_AND);
   }
 
   public function testItBuildsListingsResponse() {
@@ -87,12 +87,12 @@ class DynamicSegmentsResponseBuilderTest extends \MailPoetTest {
     $responseBuilder = $this->diContainer->get(DynamicSegmentsResponseBuilder::class);
     $response = $responseBuilder->buildForListing([$segment]);
     expect($response)->array();
-    expect($response[0]['name'])->equals($name);
-    expect($response[0]['description'])->equals($description);
-    expect($response[0]['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
+    verify($response[0]['name'])->equals($name);
+    verify($response[0]['description'])->equals($description);
+    verify($response[0]['type'])->equals(SegmentEntity::TYPE_DYNAMIC);
     expect($response[0]['subscribers_url'])->startsWith('http');
-    expect($response[0]['count_all'])->equals(1);
-    expect($response[0]['count_subscribed'])->equals(1);
+    verify($response[0]['count_all'])->equals(1);
+    verify($response[0]['count_subscribed'])->equals(1);
 
     $this->tester->deleteWordPressUser($wpUserEmail);
   }

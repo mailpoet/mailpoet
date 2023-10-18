@@ -67,32 +67,32 @@ class ImageTest extends \MailPoetUnitTest {
     $html = $this->image->render($this->block);
     $block = $this->htmlParser->getElementByXpath($html, '//div');
     $blockClass = $this->htmlParser->getAttribute($block, 'class');
-    expect($blockClass->value)->equals('mailpoet_form_image my-class');
+    verify($blockClass->value)->equals('mailpoet_form_image my-class');
 
     $figure = $this->htmlParser->getChildElement($block, 'figure');
     $figureClass = $this->htmlParser->getAttribute($figure, 'class');
-    expect($figureClass->value)->equals('size-medium alignleft');
+    verify($figureClass->value)->equals('size-medium alignleft');
 
     $img = $this->htmlParser->getChildElement($figure, 'img');
     $imgSrc = $this->htmlParser->getAttribute($img, 'src');
-    expect($imgSrc->value)->equals('http://example.com/image.jpg');
+    verify($imgSrc->value)->equals('http://example.com/image.jpg');
     $imgSrcset = $this->htmlParser->getAttribute($img, 'srcset');
-    expect($imgSrcset->value)->equals('srcsetvalue');
+    verify($imgSrcset->value)->equals('srcsetvalue');
     $imgWidth = $this->htmlParser->getAttribute($img, 'width');
-    expect($imgWidth->value)->equals(100);
+    verify($imgWidth->value)->equals(100);
     $imgHeight = $this->htmlParser->getAttribute($img, 'height');
-    expect($imgHeight->value)->equals(200);
+    verify($imgHeight->value)->equals(200);
     $imgTitle = $this->htmlParser->getAttribute($img, 'title');
-    expect($imgTitle->value)->equals('Title');
+    verify($imgTitle->value)->equals('Title');
     $imgAlt = $this->htmlParser->getAttribute($img, 'alt');
-    expect($imgAlt->value)->equals('Alt text');
+    verify($imgAlt->value)->equals('Alt text');
     $style = $this->htmlParser->getAttribute($img, 'style');
     expect($style->value)->stringContainsString('width: 100px');
     expect($style->value)->stringContainsString('height: 200px');
 
     $caption = $this->htmlParser->getChildElement($figure, 'figcaption');
     $captionContent = $this->htmlParser->getChildElement($caption, 'strong');
-    expect($captionContent->textContent)->equals('Caption');
+    verify($captionContent->textContent)->equals('Caption');
   }
 
   public function testItShouldRenderImageBlockWithLink() {
@@ -107,22 +107,22 @@ class ImageTest extends \MailPoetUnitTest {
     $figure = $this->htmlParser->getElementByXpath($html, '//figure');
     $link = $this->htmlParser->getChildElement($figure, 'a');
     $linkHref = $this->htmlParser->getAttribute($link, 'href');
-    expect($linkHref->value)->equals('http://example.com/');
+    verify($linkHref->value)->equals('http://example.com/');
     $linkTarget = $this->htmlParser->getAttribute($link, 'target');
-    expect($linkTarget->value)->equals('_blank');
+    verify($linkTarget->value)->equals('_blank');
     $linkRel = $this->htmlParser->getAttribute($link, 'rel');
-    expect($linkRel->value)->equals('relrel');
+    verify($linkRel->value)->equals('relrel');
     $linkClass = $this->htmlParser->getAttribute($link, 'class');
-    expect($linkClass->value)->equals('link-class');
+    verify($linkClass->value)->equals('link-class');
   }
 
   public function testItRendersNothingWhenUrlIsEmpty() {
     $block = $this->block;
     $block['params']['url'] = null;
     $html = $this->image->render($block);
-    expect($html)->equals('');
+    verify($html)->equals('');
     $block['params']['url'] = '';
     $html = $this->image->render($block);
-    expect($html)->equals('');
+    verify($html)->equals('');
   }
 }

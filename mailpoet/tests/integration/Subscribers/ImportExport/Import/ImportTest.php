@@ -156,10 +156,10 @@ class ImportTest extends \MailPoetTest {
 
   public function testItConstructs(): void {
     expect(is_array($this->import->subscribersData))->true();
-    expect($this->import->segmentsIds)->equals($this->testData['segments']);
+    verify($this->import->segmentsIds)->equals($this->testData['segments']);
     expect(is_array($this->import->subscribersFields))->true();
     expect(is_array($this->import->subscribersCustomFields))->true();
-    expect($this->import->subscribersCount)->equals(2);
+    verify($this->import->subscribersCount)->equals(2);
     expect($this->import->createdAt)->notEmpty();
     expect($this->import->updatedAt)->notEmpty();
   }
@@ -172,7 +172,7 @@ class ImportTest extends \MailPoetTest {
       $this->import->validateImportData($data);
       self::fail('Missing or invalid data exception not thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('Missing or invalid import data.');
+      verify($e->getMessage())->equals('Missing or invalid import data.');
     }
     // exception should not be thrown when all fields exist
     $this->import->validateImportData($this->testData);
@@ -185,7 +185,7 @@ class ImportTest extends \MailPoetTest {
       $this->import->validateImportData($data);
       self::fail('Missing or invalid data exception not thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('Missing or invalid import data.');
+      verify($e->getMessage())->equals('Missing or invalid import data.');
     }
   }
 
@@ -198,7 +198,7 @@ class ImportTest extends \MailPoetTest {
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
     expect($result['email'])->count(1);
-    expect($result['email'][0])->equals('jane@doe.com');
+    verify($result['email'][0])->equals('jane@doe.com');
 
     // valid email passes validation
     $data['email'] = [
@@ -206,7 +206,7 @@ class ImportTest extends \MailPoetTest {
       'jane@doe.com',
     ];
     $result = $this->import->validateSubscribersData($data);
-    expect($result)->equals($data);
+    verify($result)->equals($data);
   }
 
   public function testItValidatesSubscribersConfirmedAt(): void {
@@ -223,7 +223,7 @@ class ImportTest extends \MailPoetTest {
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
     expect($result['confirmed_at'])->count(1);
-    expect($result['confirmed_at'][0])->equals('2019-05-31 18:42:35');
+    verify($result['confirmed_at'][0])->equals('2019-05-31 18:42:35');
 
     // normalize confirmed_at
     $data['confirmed_at'] = [
@@ -232,7 +232,7 @@ class ImportTest extends \MailPoetTest {
     ];
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
-    expect($result['confirmed_at'])->equals([
+    verify($result['confirmed_at'])->equals([
       '2020-09-17 11:11:11',
       '2015-10-13 16:19:20',
     ]);
@@ -253,7 +253,7 @@ class ImportTest extends \MailPoetTest {
     $this->assertIsArray($result);
     expect($result['confirmed_ip'])->count(2);
     expect($result['confirmed_ip'][0])->isEmpty();
-    expect($result['confirmed_ip'][1])->equals('192.68.69.32');
+    verify($result['confirmed_ip'][1])->equals('192.68.69.32');
 
     // invalid IPv4 confirmed_ip is empty in the data object
     $data['confirmed_ip'] = [
@@ -264,7 +264,7 @@ class ImportTest extends \MailPoetTest {
     $this->assertIsArray($result);
     expect($result['confirmed_ip'])->count(2);
     expect($result['confirmed_ip'][0])->isEmpty();
-    expect($result['confirmed_ip'][1])->equals('192.68.69.32');
+    verify($result['confirmed_ip'][1])->equals('192.68.69.32');
 
     // Empty confirmed_ip is empty in the data object
     $data['confirmed_ip'] = [
@@ -275,7 +275,7 @@ class ImportTest extends \MailPoetTest {
     $this->assertIsArray($result);
     expect($result['confirmed_ip'])->count(2);
     expect($result['confirmed_ip'][0])->isEmpty();
-    expect($result['confirmed_ip'][1])->equals('192.68.69.32');
+    verify($result['confirmed_ip'][1])->equals('192.68.69.32');
 
     // normalize confirmed_at
     $data['confirmed_ip'] = [
@@ -284,7 +284,7 @@ class ImportTest extends \MailPoetTest {
     ];
     $result = $this->import->validateSubscribersData($data);
     $this->assertIsArray($result);
-    expect($result['confirmed_ip'])->equals($data['confirmed_ip']);
+    verify($result['confirmed_ip'])->equals($data['confirmed_ip']);
   }
 
   public function testItThrowsErrorWhenNoValidSubscribersAreFoundDuringImport(): void {
@@ -314,19 +314,19 @@ class ImportTest extends \MailPoetTest {
       $import->process();
       self::fail('No valid subscribers found exception not thrown.');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('No valid subscribers were found.');
+      verify($e->getMessage())->equals('No valid subscribers were found.');
     }
   }
 
   public function testItTransformsSubscribers(): void {
     $customField = $this->subscribersCustomFields[0];
-    expect($this->import->subscribersData['first_name'][0])
+    verify($this->import->subscribersData['first_name'][0])
       ->equals($this->testData['subscribers'][0][0]);
-    expect($this->import->subscribersData['last_name'][0])
+    verify($this->import->subscribersData['last_name'][0])
       ->equals($this->testData['subscribers'][0][1]);
-    expect($this->import->subscribersData['email'][0])
+    verify($this->import->subscribersData['email'][0])
       ->equals($this->testData['subscribers'][0][2]);
-    expect($this->import->subscribersData[$customField][0])
+    verify($this->import->subscribersData[$customField][0])
       ->equals($this->testData['subscribers'][0][3]);
   }
 
@@ -378,12 +378,12 @@ class ImportTest extends \MailPoetTest {
       $subscribersData
     );
     $this->assertIsArray($existingSubscribers);
-    expect($existingSubscribers['email'][0])->equals($subscribersData['email'][2]);
-    expect($existingSubscribers['email'][1])->equals($subscribersData['email'][3]);
+    verify($existingSubscribers['email'][0])->equals($subscribersData['email'][2]);
+    verify($existingSubscribers['email'][1])->equals($subscribersData['email'][3]);
     foreach ($newSubscribers as $field => $value) {
-      expect($value[0])->equals($subscribersData[$field][0]);
+      verify($value[0])->equals($subscribersData[$field][0]);
     }
-    expect($wpUsers)->equals([$subscribersDataExisting[0]['wp_user_id']]);
+    verify($wpUsers)->equals([$subscribersDataExisting[0]['wp_user_id']]);
   }
 
   public function testItAddsMissingRequiredFieldsToSubscribersObject(): void {
@@ -416,17 +416,17 @@ class ImportTest extends \MailPoetTest {
     );
     // "created_at", "status", "first_name" and "last_name" fields are added and populated with default values
     expect(in_array('status', $result['fields']))->true();
-    expect(count($result['data']['status']))->equals($import->subscribersCount);
-    expect($result['data']['status'][0])->equals($import->requiredSubscribersFields['status']);
+    verify(count($result['data']['status']))->equals($import->subscribersCount);
+    verify($result['data']['status'][0])->equals($import->requiredSubscribersFields['status']);
     expect(in_array('first_name', $result['fields']))->true();
-    expect(count($result['data']['first_name']))->equals($import->subscribersCount);
-    expect($result['data']['first_name'][0])->equals($import->requiredSubscribersFields['first_name']);
+    verify(count($result['data']['first_name']))->equals($import->subscribersCount);
+    verify($result['data']['first_name'][0])->equals($import->requiredSubscribersFields['first_name']);
     expect(in_array('last_name', $result['fields']))->true();
-    expect(count($result['data']['last_name']))->equals($import->subscribersCount);
-    expect($result['data']['last_name'][0])->equals($import->requiredSubscribersFields['last_name']);
+    verify(count($result['data']['last_name']))->equals($import->subscribersCount);
+    verify($result['data']['last_name'][0])->equals($import->requiredSubscribersFields['last_name']);
     expect(in_array('created_at', $result['fields']))->true();
-    expect(count($result['data']['created_at']))->equals($import->subscribersCount);
-    expect($result['data']['created_at'][0])->equals($import->createdAt);
+    verify(count($result['data']['created_at']))->equals($import->subscribersCount);
+    verify($result['data']['created_at'][0])->equals($import->createdAt);
   }
 
   public function testItGetsSubscriberFields(): void {
@@ -436,7 +436,7 @@ class ImportTest extends \MailPoetTest {
       39,
     ];
     $fields = $this->import->getSubscribersFields($data);
-    expect($fields)->equals(
+    verify($fields)->equals(
       [
         'one',
         'two',
@@ -450,7 +450,7 @@ class ImportTest extends \MailPoetTest {
       39,
     ];
     $fields = $this->import->getCustomSubscribersFields($data);
-    expect($fields)->equals([39]);
+    verify($fields)->equals([39]);
   }
 
   public function testItAddsOrUpdatesSubscribers(): void {
@@ -463,8 +463,8 @@ class ImportTest extends \MailPoetTest {
       $subscribersData
     );
     $subscribers = $this->subscriberRepository->findAll();
-    expect(count($subscribers))->equals(2);
-    expect($subscribers[0]->getEmail())
+    verify(count($subscribers))->equals(2);
+    verify($subscribers[0]->getEmail())
       ->equals($subscribersData['data']['email'][0]);
     $subscribersData['data']['first_name'][1] = 'MaryJane';
     $this->import->createOrUpdateSubscribers(
@@ -473,7 +473,7 @@ class ImportTest extends \MailPoetTest {
     );
     $this->entityManager->clear();
     $subscribers = $this->subscriberRepository->findAll();
-    expect($subscribers[1]->getFirstName())
+    verify($subscribers[1]->getFirstName())
       ->equals($subscribersData['data']['first_name'][1]);
   }
 
@@ -494,20 +494,20 @@ class ImportTest extends \MailPoetTest {
     $dbSubscribers = array_map(function (SubscriberEntity $subscriber): int {
       return (int)$subscriber->getId();
     }, $this->subscriberRepository->findAll());
-    expect(count($dbSubscribers))->equals(2);
+    verify(count($dbSubscribers))->equals(2);
     $this->import->addSubscribersToSegments(
       $dbSubscribers,
       [$this->segment1->getId(), $this->segment2->getId()]
     );
     $subscribersSegments = $this->subscriberSegmentRepository->findAll();
-    expect(count($subscribersSegments))->equals(4);
+    verify(count($subscribersSegments))->equals(4);
     $this->import->deleteExistingTrashedSubscribers(
       $subscribersData['data']
     );
     $subscribersSegments = $this->subscriberSegmentRepository->findAll();
     $dbSubscribers = $this->subscriberRepository->findAll();
-    expect(count($subscribersSegments))->equals(2);
-    expect(count($dbSubscribers))->equals(1);
+    verify(count($subscribersSegments))->equals(2);
+    verify(count($dbSubscribers))->equals(1);
   }
 
   public function testItCreatesOrUpdatesCustomFields(): void {
@@ -534,8 +534,8 @@ class ImportTest extends \MailPoetTest {
       $this->subscribersCustomFields
     );
     $subscribersCustomFields = $this->subscriberCustomFieldRepository->findAll();
-    expect(count($subscribersCustomFields))->equals(2);
-    expect($subscribersCustomFields[0]->getValue())
+    verify(count($subscribersCustomFields))->equals(2);
+    verify($subscribersCustomFields[0]->getValue())
       ->equals($subscribersData['data'][$customField][0]);
     $subscribersData[$customField][1] = 'Rio';
     $this->import->createOrUpdateCustomFields(
@@ -545,7 +545,7 @@ class ImportTest extends \MailPoetTest {
       $this->subscribersCustomFields
     );
     $subscribersCustomFields = $this->subscriberCustomFieldRepository->findAll();
-    expect($subscribersCustomFields[1]->getValue())
+    verify($subscribersCustomFields[1]->getValue())
       ->equals($subscribersData['data'][$customField][1]);
   }
 
@@ -634,12 +634,12 @@ class ImportTest extends \MailPoetTest {
 
   public function testItUpdatesSubscribers(): void {
     $result = $this->import->process();
-    expect($result['updated'])->equals(0);
+    verify($result['updated'])->equals(0);
     $result = $this->import->process();
-    expect($result['updated'])->equals(2);
+    verify($result['updated'])->equals(2);
     $this->import->updateSubscribers = false;
     $result = $this->import->process();
-    expect($result['updated'])->equals(0);
+    verify($result['updated'])->equals(0);
   }
 
   public function testItDoesNotUpdateExistingSubscribersStatusWhenStatusColumnIsNotPresent(): void {
@@ -653,7 +653,7 @@ class ImportTest extends \MailPoetTest {
 
     $updatedSubscriber = $this->subscriberRepository->findOneBy(['email' => $subscriber->getEmail()]);
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
-    expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function testItImportsNewsSubscribersWithAllAdditionalParameters(): void {
@@ -669,18 +669,18 @@ class ImportTest extends \MailPoetTest {
       $data['subscribers'][1][2],
     ]]);
     expect($newSubscribers)->count(2);
-    expect($newSubscribers[0]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($newSubscribers[1]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    expect($newSubscribers[0]->getSource())->equals('imported');
-    expect($newSubscribers[1]->getSource())->equals('imported');
-    expect(strlen((string)$newSubscribers[0]->getLinkToken()))->equals(SubscriberEntity::LINK_TOKEN_LENGTH);
-    expect(strlen((string)$newSubscribers[1]->getLinkToken()))->equals(SubscriberEntity::LINK_TOKEN_LENGTH);
+    verify($newSubscribers[0]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($newSubscribers[1]->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($newSubscribers[0]->getSource())->equals('imported');
+    verify($newSubscribers[1]->getSource())->equals('imported');
+    verify(strlen((string)$newSubscribers[0]->getLinkToken()))->equals(SubscriberEntity::LINK_TOKEN_LENGTH);
+    verify(strlen((string)$newSubscribers[1]->getLinkToken()))->equals(SubscriberEntity::LINK_TOKEN_LENGTH);
     $lastSubscribed1 = $newSubscribers[0]->getLastSubscribedAt();
     $lastSubscribed2 = $newSubscribers[1]->getLastSubscribedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $lastSubscribed1);
     $this->assertInstanceOf(\DateTimeInterface::class, $lastSubscribed2);
-    expect($lastSubscribed1->getTimestamp())->equals($this->testData['timestamp'], 1);
-    expect($lastSubscribed2->getTimestamp())->equals($this->testData['timestamp'], 1);
+    verify($lastSubscribed1->getTimestamp())->equals($this->testData['timestamp'], 1);
+    verify($lastSubscribed2->getTimestamp())->equals($this->testData['timestamp'], 1);
   }
 
   public function testItDoesNotUpdateExistingSubscribersLastSubscribedAtWhenItIsPresent(): void {
@@ -702,7 +702,7 @@ class ImportTest extends \MailPoetTest {
 
     $updatedSubscriber = $this->subscriberRepository->findOneBy(['email' => $existingSubscriber->getEmail()]);
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
-    expect($updatedSubscriber->getLastSubscribedAt())->equals(Carbon::createFromFormat('Y-m-d H:i:s', '2017-12-12 12:12:00'));
+    verify($updatedSubscriber->getLastSubscribedAt())->equals(Carbon::createFromFormat('Y-m-d H:i:s', '2017-12-12 12:12:00'));
   }
 
   public function testItSynchronizesWpUsers(): void {
@@ -716,7 +716,7 @@ class ImportTest extends \MailPoetTest {
     $this->entityManager->clear();
     $imported = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $imported);
-    expect($imported->getFirstName())->equals($beforeImport->getFirstName()); // Subscriber name was synchronized from WP
+    verify($imported->getFirstName())->equals($beforeImport->getFirstName()); // Subscriber name was synchronized from WP
     expect($imported->getFirstName())->notEquals('Mary');
     $this->tester->deleteWordPressUser('mary@jane.com');
   }
@@ -739,7 +739,7 @@ class ImportTest extends \MailPoetTest {
     $this->entityManager->clear();
     $updatedSubscriber = $this->subscriberRepository->findOneBy(['email' => $existingSubscriber->getEmail()]);
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
-    expect($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItDoesStatusNewSubscriberWhenNewSubscribersStatusIsSet(): void {
@@ -749,15 +749,15 @@ class ImportTest extends \MailPoetTest {
     $import->process();
     $newSubscriber = $this->subscriberRepository->findOneBy(['email' => 'Adam@Smith.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
-    expect($newSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($newSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $newSubscriber = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
-    expect($newSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    verify($newSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
   }
 
   public function testItRunsImport(): void {
     $result = $this->import->process();
-    expect($result['created'])->equals(2);
+    verify($result['created'])->equals(2);
     $subscriber = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->subscriberRepository->remove($subscriber);
@@ -766,7 +766,7 @@ class ImportTest extends \MailPoetTest {
     $this->import->updatedAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 1);
     $this->import->requiredSubscribersFields['created_at'] = $this->import->createdAt;
     $result = $this->import->process();
-    expect($result['created'])->equals(1);
+    verify($result['created'])->equals(1);
     $dbSubscribers = array_map(function (SubscriberEntity $subscriber): int {
       return (int)$subscriber->getId();
     }, $this->subscriberRepository->findAll());
@@ -826,7 +826,7 @@ class ImportTest extends \MailPoetTest {
       $data['subscribers'][1][2],
     ]]);
     expect($newSubscribers)->count(1);
-    expect($newSubscribers[0]->getEmail())->equals('correctdateformat2@yopmail.com');
+    verify($newSubscribers[0]->getEmail())->equals('correctdateformat2@yopmail.com');
   }
 
   private function createImportInstance(array $data): Import {

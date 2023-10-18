@@ -69,13 +69,13 @@ class NewsletterSegmentRepositoryTest extends \MailPoetTest {
     ]);
 
     expect(isset($usedSegments[$unusedSegment->getId()]))->false();
-    expect($usedSegments[$dynamicWithScheduledNewsletter->getId()])->equals(['Scheduled']);
-    expect($usedSegments[$segmentWithSendingEmail->getId()])->equals(['Sending']);
-    expect($usedSegments[$segmentWithAutomaticEmail->getId()])->equals(['Automatic']);
-    expect($usedSegments[$segmentWithWelcomeEmail->getId()])->equals(['Welcome']);
-    expect($usedSegments[$segmentWithPostNotification->getId()])->equals(['Notification']);
+    verify($usedSegments[$dynamicWithScheduledNewsletter->getId()])->equals(['Scheduled']);
+    verify($usedSegments[$segmentWithSendingEmail->getId()])->equals(['Sending']);
+    verify($usedSegments[$segmentWithAutomaticEmail->getId()])->equals(['Automatic']);
+    verify($usedSegments[$segmentWithWelcomeEmail->getId()])->equals(['Welcome']);
+    verify($usedSegments[$segmentWithPostNotification->getId()])->equals(['Notification']);
     sort($usedSegments[$segmentWithMultipleActiveEmails->getId()]);
-    expect($usedSegments[$segmentWithMultipleActiveEmails->getId()])->equals(['Notification', 'Sending', 'Welcome2']);
+    verify($usedSegments[$segmentWithMultipleActiveEmails->getId()])->equals(['Notification', 'Sending', 'Welcome2']);
   }
 
   private function createNewsletter(string $type, $subject, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {

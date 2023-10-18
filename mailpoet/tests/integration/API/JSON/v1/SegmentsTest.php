@@ -55,16 +55,16 @@ class SegmentsTest extends \MailPoetTest {
 
   public function testItCanGetASegment(): void {
     $response = $this->endpoint->get(/* missing id */);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->equals('This list does not exist.');
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['message'])->equals('This list does not exist.');
 
     $response = $this->endpoint->get(['id' => 'not_an_id']);
-    expect($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->errors[0]['message'])->equals('This list does not exist.');
+    verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
+    verify($response->errors[0]['message'])->equals('This list does not exist.');
 
     $response = $this->endpoint->get(['id' => $this->segment1->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(
       $this->responseBuilder->build($this->segment1)
     );
   }
@@ -72,16 +72,16 @@ class SegmentsTest extends \MailPoetTest {
   public function testItCanGetListingData(): void {
     $response = $this->endpoint->listing();
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
 
     expect($response->meta)->hasKey('filters');
     expect($response->meta)->hasKey('groups');
-    expect($response->meta['count'])->equals(3);
+    verify($response->meta['count'])->equals(3);
 
     expect($response->data)->count(3);
-    expect($response->data[0]['name'])->equals($this->segment1->getName());
-    expect($response->data[1]['name'])->equals($this->segment2->getName());
-    expect($response->data[2]['name'])->equals($this->segment3->getName());
+    verify($response->data[0]['name'])->equals($this->segment1->getName());
+    verify($response->data[1]['name'])->equals($this->segment2->getName());
+    verify($response->data[2]['name'])->equals($this->segment3->getName());
   }
 
   public function testItCanSaveASegment(): void {
@@ -91,15 +91,15 @@ class SegmentsTest extends \MailPoetTest {
     ];
 
     $response = $this->endpoint->save(/* missing data */);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Please specify a name.');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Please specify a name.');
     $this->entityManager->clear();
 
     $response = $this->endpoint->save($segmentData);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $segment = $this->segmentRepository->findOneBy(['name' => $name]);
     $this->assertInstanceOf(SegmentEntity::class, $segment);
-    expect($response->data)->equals(
+    verify($response->data)->equals(
       $this->responseBuilder->build($segment)
     );
   }
@@ -110,8 +110,8 @@ class SegmentsTest extends \MailPoetTest {
     ];
 
     $response = $this->endpoint->save($duplicateEntry);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals('Another record already exists. Please specify a different "name".');
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals('Another record already exists. Please specify a different "name".');
   }
 
   public function testItCanRestoreASegment(): void {
@@ -124,14 +124,14 @@ class SegmentsTest extends \MailPoetTest {
     $this->entityManager->clear();
 
     $response = $this->endpoint->restore(['id' => $this->segment1->getId()]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
     $segment = $this->segmentRepository->findOneById($trashedSegment->getId());
     $this->assertInstanceOf(SegmentEntity::class, $segment);
-    expect($response->data)->equals(
+    verify($response->data)->equals(
       $this->responseBuilder->build($segment)
     );
     expect($response->data['deleted_at'])->null();
-    expect($response->meta['count'])->equals(1);
+    verify($response->meta['count'])->equals(1);
   }
 
   public function testItCanTrashASegment() {
@@ -140,12 +140,12 @@ class SegmentsTest extends \MailPoetTest {
     $segment = $this->segmentRepository->findOneById($this->segment2->getId());
     $this->assertInstanceOf(SegmentEntity::class, $segment);
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(
       $this->responseBuilder->build($segment)
     );
     expect($response->data['deleted_at'])->notNull();
-    expect($response->meta['count'])->equals(1);
+    verify($response->meta['count'])->equals(1);
   }
 
   public function testItReturnsErrorWhenTrashingSegmentWithActiveNewsletter() {
@@ -159,8 +159,8 @@ class SegmentsTest extends \MailPoetTest {
 
     $response = $this->endpoint->trash(['id' => $this->segment2->getId()]);
     $this->entityManager->refresh($this->segment2);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals("List cannot be deleted because it’s used for 'Subject' email");
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals("List cannot be deleted because it’s used for 'Subject' email");
   }
 
   public function testItReturnsErrorWhenTrashingSegmentWithActiveForm() {
@@ -169,8 +169,8 @@ class SegmentsTest extends \MailPoetTest {
 
     $response = $this->endpoint->trash(['id' => $this->segment3->getId()]);
     $this->entityManager->refresh($this->segment3);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals("List cannot be deleted because it’s used for 'My Form' form");
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals("List cannot be deleted because it’s used for 'My Form' form");
   }
 
   public function testItReturnsPluralErrorWhenTrashingSegmentWithActiveForms() {
@@ -180,8 +180,8 @@ class SegmentsTest extends \MailPoetTest {
 
     $response = $this->endpoint->trash(['id' => $this->segment3->getId()]);
     $this->entityManager->refresh($this->segment3);
-    expect($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    expect($response->errors[0]['message'])->equals("List cannot be deleted because it’s used for 'My Form', 'My other Form' forms");
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($response->errors[0]['message'])->equals("List cannot be deleted because it’s used for 'My Form', 'My other Form' forms");
   }
 
   public function testItCanTrashSegmentWithoutActiveForm() {
@@ -193,19 +193,19 @@ class SegmentsTest extends \MailPoetTest {
     $segment = $this->segmentRepository->findOneById($this->segment2->getId());
     $this->assertInstanceOf(SegmentEntity::class, $segment);
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(
       $this->responseBuilder->build($segment)
     );
     expect($response->data['deleted_at'])->notNull();
-    expect($response->meta['count'])->equals(1);
+    verify($response->meta['count'])->equals(1);
   }
 
   public function testItCanDeleteASegment() {
     $response = $this->endpoint->delete(['id' => $this->segment3->getId()]);
     expect($response->data)->isEmpty();
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(1);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(1);
   }
 
   public function testItCanDuplicateASegment() {
@@ -213,11 +213,11 @@ class SegmentsTest extends \MailPoetTest {
     $segment = $this->segmentRepository->findOneBy(['name' => 'Copy of Segment 1']);
     $this->assertInstanceOf(SegmentEntity::class, $segment);
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->equals(
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->data)->equals(
       $this->responseBuilder->build($segment)
     );
-    expect($response->meta['count'])->equals(1);
+    verify($response->meta['count'])->equals(1);
   }
 
   public function testItCanBulkDeleteSegments() {
@@ -228,23 +228,23 @@ class SegmentsTest extends \MailPoetTest {
       'action' => 'trash',
       'listing' => ['group' => 'all'],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(3);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(3);
 
     $response = $this->endpoint->bulkAction([
       'action' => 'delete',
       'listing' => ['group' => 'trash'],
     ]);
 
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(3);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(3);
 
     $response = $this->endpoint->bulkAction([
       'action' => 'delete',
       'listing' => ['group' => 'trash'],
     ]);
-    expect($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->meta['count'])->equals(0);
+    verify($response->status)->equals(APIResponse::STATUS_OK);
+    verify($response->meta['count'])->equals(0);
 
     $subsribers = $this->subscriberSegmentRepository->findBy(['segment' => $this->segment1]);
     expect($subsribers)->count(0);

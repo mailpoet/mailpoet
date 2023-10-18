@@ -8,6 +8,6 @@ class CharsetsTest extends \MailPoetUnitTest {
   public function testItReturnsAListOfCharsets() {
     $charsets = Charsets::getAll();
     expect($charsets)->notEmpty();
-    expect($charsets[0])->equals('UTF-8');
+    verify($charsets[0])->equals('UTF-8');
   }
 }

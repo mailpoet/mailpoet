@@ -52,7 +52,7 @@ class PremiumKeyCheckTest extends \MailPoetTest {
         $this->equalTo($response)
       );
     $this->fillPremiumKey();
-    expect($this->worker->checkKey())->equals($response);
+    verify($this->worker->checkKey())->equals($response);
   }
 
   private function fillPremiumKey() {

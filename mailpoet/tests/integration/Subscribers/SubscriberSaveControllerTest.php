@@ -51,15 +51,15 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     ];
 
     $subscriber = $this->saveController->save($data);
-    expect($subscriber->getEmail())->equals($data['email']);
-    expect($subscriber->getStatus())->equals($data['status']);
-    expect($subscriber->getFirstName())->equals($data['first_name']);
-    expect($subscriber->getLastName())->equals($data['last_name']);
-    expect($subscriber->getCreatedAt())->equals(Carbon::createFromFormat('Y-m-d H:i:s', $data['created_at']));
-    expect($subscriber->getConfirmedAt())->equals(Carbon::createFromFormat('Y-m-d H:i:s', $data['confirmed_at']));
-    expect($subscriber->getConfirmedIp())->equals($data['confirmed_ip']);
-    expect($subscriber->getSubscribedIp())->equals($data['subscribed_ip']);
-    expect($subscriber->getWpUserId())->equals($data['wp_user_id']);
+    verify($subscriber->getEmail())->equals($data['email']);
+    verify($subscriber->getStatus())->equals($data['status']);
+    verify($subscriber->getFirstName())->equals($data['first_name']);
+    verify($subscriber->getLastName())->equals($data['last_name']);
+    verify($subscriber->getCreatedAt())->equals(Carbon::createFromFormat('Y-m-d H:i:s', $data['created_at']));
+    verify($subscriber->getConfirmedAt())->equals(Carbon::createFromFormat('Y-m-d H:i:s', $data['confirmed_at']));
+    verify($subscriber->getConfirmedIp())->equals($data['confirmed_ip']);
+    verify($subscriber->getSubscribedIp())->equals($data['subscribed_ip']);
+    verify($subscriber->getWpUserId())->equals($data['wp_user_id']);
     expect($subscriber->getUnsubscribeToken())->notNull();
     expect($subscriber->getLinkToken())->notNull();
     expect($subscriber->getId())->notNull();
@@ -87,10 +87,10 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
 
     $this->entityManager->clear();
     $subscriber = $this->saveController->save($data);
-    expect($subscriber->getEmail())->equals('second@test.com');
-    expect($subscriber->getStatus())->equals($data['status']);
-    expect($subscriber->getFirstName())->equals($data['first_name']);
-    expect($subscriber->getLastName())->equals($data['last_name']);
+    verify($subscriber->getEmail())->equals('second@test.com');
+    verify($subscriber->getStatus())->equals($data['status']);
+    verify($subscriber->getFirstName())->equals($data['first_name']);
+    verify($subscriber->getLastName())->equals($data['last_name']);
     expect($subscriber->getLastSubscribedAt())->notNull();
     expect($subscriber->getSegments())->count(1);
     expect($subscriber->getSubscriberSegments())->count(1);
@@ -99,7 +99,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     $tagNames = array_values(array_map(function (SubscriberTagEntity $subscriberTag): string {
       return ($tag = $subscriberTag->getTag()) ? $tag->getName() : '';
     }, $subscriber->getSubscriberTags()->toArray()));
-    expect($data['tags'])->equals($tagNames);
+    verify($data['tags'])->equals($tagNames);
 
     // Test updating tags
     $data['tags'] = [
@@ -111,7 +111,7 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     $tagNames = array_values(array_map(function (SubscriberTagEntity $subscriberTag): string {
       return ($tag = $subscriberTag->getTag()) ? $tag->getName() : '';
     }, $subscriber->getSubscriberTags()->toArray()));
-    expect($data['tags'])->equals($tagNames);
+    verify($data['tags'])->equals($tagNames);
   }
 
   public function testItThrowsExceptionWhenUpdatingSubscriberEmailIfNotUnique(): void {

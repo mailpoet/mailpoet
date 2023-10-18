@@ -51,9 +51,9 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
       NewslettersResponseBuilder::RELATION_TOTAL_SENT,
       NewslettersResponseBuilder::RELATION_STATISTICS,
     ]);
-    expect($response['total_sent'])->equals($stats['total_sent']);
-    expect($response['children_count'])->equals($stats['children_count']);
-    expect($response['statistics'])->equals($stats['statistics']);
+    verify($response['total_sent'])->equals($stats['total_sent']);
+    verify($response['children_count'])->equals($stats['children_count']);
+    verify($response['statistics'])->equals($stats['statistics']);
     $em->remove($newsletter);
     $em->flush();
   }

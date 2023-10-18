@@ -20,7 +20,7 @@ class SpacerTest extends \MailPoetUnitTest {
       <tr>
         <td class="mailpoet_spacer" height="13" valign="top"></td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 
   public function testsItRendersWithBackground() {
@@ -30,6 +30,6 @@ class SpacerTest extends \MailPoetUnitTest {
       <tr>
         <td class="mailpoet_spacer" bgcolor="#ffffff" height="13" valign="top"></td>
       </tr>';
-    expect($output)->equals($expectedResult);
+    verify($output)->equals($expectedResult);
   }
 }

@@ -23,16 +23,16 @@ class LinkTokensTest extends \MailPoetTest {
     $subscriber2 = $this->createSubscriber('demo2@fake.loc');
     $token1 = $this->linkTokens->getToken($subscriber1);
     $token2 = $this->linkTokens->getToken($subscriber2);
-    expect(strlen($token1))->equals(6);
-    expect(strlen($token2))->equals(6);
-    expect($token1 != $token2)->equals(true);
+    verify(strlen($token1))->equals(6);
+    verify(strlen($token2))->equals(6);
+    verify($token1 != $token2)->equals(true);
   }
 
   public function testItGetsSubscriberToken() {
     $subscriber1 = $this->createSubscriber('demo1@fake.loc', 'already-existing-token');
     $subscriber2 = $this->createSubscriber('demo2@fake.loc');
-    expect($this->linkTokens->getToken($subscriber1))->equals('already-existing-token');
-    expect(strlen($this->linkTokens->getToken($subscriber2)))->equals(6);
+    verify($this->linkTokens->getToken($subscriber1))->equals('already-existing-token');
+    verify(strlen($this->linkTokens->getToken($subscriber2)))->equals(6);
   }
 
   public function testItVerifiesSubscriberToken() {

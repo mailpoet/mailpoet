@@ -46,7 +46,7 @@ class DaemonRunTest extends \MailPoetTest {
       'address' => 'john@example.com',
     ]);
     $this->daemonRun->init();
-    expect($this->daemonRun->getDaemonExecutionLimit())->equals(20); // Verify initial execution limit
+    verify($this->daemonRun->getDaemonExecutionLimit())->equals(20); // Verify initial execution limit
 
     $this->actionScheduler->scheduleImmediateSingleAction(DaemonRun::NAME);
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();

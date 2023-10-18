@@ -234,7 +234,7 @@ class ApiDataSanitizerTest extends \MailPoetUnitTest {
       'type' => 'date',
       'params' => ['date_format' => 'MM/DD/YYYY', 'date_type' => 'year_month_day'],
     ]);
-    expect($result['params'])->equals([
+    verify($result['params'])->equals([
       'date_format' => 'MM/DD/YYYY',
       'date_type' => 'year_month_day',
       'label' => 'Name',

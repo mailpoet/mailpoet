@@ -64,25 +64,25 @@ class NewsletterTest extends \MailPoetTest {
   public function testItHasASubject() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     $this->assertInstanceOf(Newsletter::class, $newsletter);
-    expect($newsletter->subject)->equals($this->newsletter->subject);
+    verify($newsletter->subject)->equals($this->newsletter->subject);
   }
 
   public function testItHasAType() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     $this->assertInstanceOf(Newsletter::class, $newsletter);
-    expect($newsletter->type)->equals($this->newsletter->type);
+    verify($newsletter->type)->equals($this->newsletter->type);
   }
 
   public function testItHasABody() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     $this->assertInstanceOf(Newsletter::class, $newsletter);
-    expect($newsletter->body)->equals($this->newsletter->body);
+    verify($newsletter->body)->equals($this->newsletter->body);
   }
 
   public function testItHasPreheader() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     $this->assertInstanceOf(Newsletter::class, $newsletter);
-    expect($newsletter->preheader)->equals($this->newsletter->preheader);
+    verify($newsletter->preheader)->equals($this->newsletter->preheader);
   }
 
   public function testItHasACreatedAtOnCreation() {
@@ -94,7 +94,7 @@ class NewsletterTest extends \MailPoetTest {
   public function testItHasAnUpdatedAtOnCreation() {
     $newsletter = Newsletter::findOne($this->newsletter->id);
     $this->assertInstanceOf(Newsletter::class, $newsletter);
-    expect($newsletter->updatedAt)->equals($newsletter->createdAt);
+    verify($newsletter->updatedAt)->equals($newsletter->createdAt);
   }
 
   public function testItUpdatesTheUpdatedAtOnUpdate() {
@@ -109,7 +109,7 @@ class NewsletterTest extends \MailPoetTest {
 
     $updatedNewsletter = Newsletter::findOne($newsletter->id);
     $this->assertInstanceOf(Newsletter::class, $updatedNewsletter);
-    expect($updatedNewsletter->createdAt)->equals($createdAt);
+    verify($updatedNewsletter->createdAt)->equals($createdAt);
     $isTimeUpdated = (
       $updatedNewsletter->updatedAt > $updatedNewsletter->createdAt
     );
@@ -119,16 +119,16 @@ class NewsletterTest extends \MailPoetTest {
   public function testItCanBeQueued() {
     $queue = $this->newsletter->getQueue();
     expect($queue->id > 0)->true();
-    expect($queue->newsletterId)->equals($this->newsletter->id);
+    verify($queue->newsletterId)->equals($this->newsletter->id);
   }
 
   public function testItCanHaveSegments() {
     $newsletterSegments = $this->newsletter->segments()->findArray();
     expect($newsletterSegments)->count(2);
-    expect($newsletterSegments[0]['id'])->equals($this->segment1->id);
-    expect($newsletterSegments[0]['name'])->equals('Segment 1');
-    expect($newsletterSegments[1]['id'])->equals($this->segment2->id);
-    expect($newsletterSegments[1]['name'])->equals('Segment 2');
+    verify($newsletterSegments[0]['id'])->equals($this->segment1->id);
+    verify($newsletterSegments[0]['name'])->equals('Segment 1');
+    verify($newsletterSegments[1]['id'])->equals($this->segment2->id);
+    verify($newsletterSegments[1]['name'])->equals('Segment 2');
   }
 
   public function testItCanHaveParentNewsletter() {
@@ -141,7 +141,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->save();
     $parent = $newsletter->parent()->findOne();
     expect($parent)->isInstanceOf('MailPoet\Models\Newsletter');
-    expect($parent->id)->equals($parentNewsletter->id);
+    verify($parent->id)->equals($parentNewsletter->id);
   }
 
   public function testItCanHaveDeletedSegments() {
@@ -149,9 +149,9 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletter->withSegments(true);
     $newsletterSegments = $this->newsletter->segments;
     expect($newsletterSegments)->count(2);
-    expect($newsletterSegments[0]['id'])->equals($this->segment1->id);
-    expect($newsletterSegments[0]['name'])->equals('Segment 1');
-    expect($newsletterSegments[1]['id'])->equals($this->segment2->id);
+    verify($newsletterSegments[0]['id'])->equals($this->segment1->id);
+    verify($newsletterSegments[0]['name'])->equals('Segment 1');
+    verify($newsletterSegments[1]['id'])->equals($this->segment2->id);
     expect($newsletterSegments[1]['name'])->stringContainsString('Deleted');
   }
 
@@ -168,7 +168,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter = Newsletter::where('subject', 'new newsletter')
       ->findOne();
     $this->assertInstanceOf(Newsletter::class, $newsletter);
-    expect($newsletter->subject)->equals('new newsletter');
+    verify($newsletter->subject)->equals('new newsletter');
 
     $isUpdated = Newsletter::createOrUpdate(
       [
@@ -177,13 +177,13 @@ class NewsletterTest extends \MailPoetTest {
       ]);
     $newsletter = Newsletter::findOne($newsletter->id);
     $this->assertInstanceOf(Newsletter::class, $newsletter);
-    expect($newsletter->subject)->equals('updated newsletter');
+    verify($newsletter->subject)->equals('updated newsletter');
   }
 
   public function testItCannotSetAnEmptyDeletedAt() {
     $this->newsletter->deletedAt = '';
     $newsletter = $this->newsletter->save();
-    expect($newsletter->deletedAt)->equals('NULL');
+    verify($newsletter->deletedAt)->equals('NULL');
   }
 
   public function testItCanHaveOptions() {
@@ -194,16 +194,16 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_STANDARD)
       ->findOne($this->newsletter->id);
     $this->assertInstanceOf(Newsletter::class, $newsletter);
-    expect($newsletter->event)->equals($newsletterOption->getValue());
+    verify($newsletter->event)->equals($newsletterOption->getValue());
   }
 
   public function testItGeneratesHashOnNewsletterSave() {
-    expect(strlen($this->newsletter->hash))
+    verify(strlen($this->newsletter->hash))
       ->equals(Security::HASH_LENGTH);
   }
 
   public function testItGetsQueueFromNewsletter() {
-    expect($this->newsletter->queue()->findOne()->id)->equals($this->sendingQueue->id);
+    verify($this->newsletter->queue()->findOne()->id)->equals($this->sendingQueue->id);
   }
 
   public function testItCanBeRestored() {
@@ -214,7 +214,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletter->restore();
     $this->newsletter = $this->reloadNewsletter($this->newsletter);
     expect($this->newsletter->deletedAt)->null();
-    expect($this->newsletter->status)->equals(Newsletter::STATUS_SENT);
+    verify($this->newsletter->status)->equals(Newsletter::STATUS_SENT);
   }
 
   public function testItCanBulkRestoreNewsletters() {
@@ -420,7 +420,7 @@ class NewsletterTest extends \MailPoetTest {
     // if meta option exists, it should be returned as an array
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);
     $this->assertInstanceOf(Newsletter::class, $newsletter);
-    expect($newsletter->getMeta())->equals($meta);
+    verify($newsletter->getMeta())->equals($meta);
   }
 
   public function testPausesTaskWhenNewsletterWithActivationIsDisabled() {
@@ -437,7 +437,7 @@ class NewsletterTest extends \MailPoetTest {
       $newsletter->setStatus(Newsletter::STATUS_DRAFT);
       $taskFound = ScheduledTask::findOne($task->id());
       $this->assertInstanceOf(ScheduledTask::class, $taskFound);
-      expect($taskFound->status)->equals(ScheduledTask::STATUS_PAUSED);
+      verify($taskFound->status)->equals(ScheduledTask::STATUS_PAUSED);
     }
   }
 
@@ -459,7 +459,7 @@ class NewsletterTest extends \MailPoetTest {
       $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
       $taskFound = ScheduledTask::findOne($task->id());
       $this->assertInstanceOf(ScheduledTask::class, $taskFound);
-      expect($taskFound->status)->equals(ScheduledTask::STATUS_SCHEDULED);
+      verify($taskFound->status)->equals(ScheduledTask::STATUS_SCHEDULED);
     }
   }
 
@@ -470,7 +470,7 @@ class NewsletterTest extends \MailPoetTest {
       'status' => Newsletter::STATUS_DRAFT,
     ]);
     $newsletter = $newsletter->setStatus(Newsletter::STATUS_ACTIVE);
-    expect($newsletter->status)->equals(Newsletter::STATUS_DRAFT);
+    verify($newsletter->status)->equals(Newsletter::STATUS_DRAFT);
     expect($newsletter->getErrors())->notEmpty();
   }
 

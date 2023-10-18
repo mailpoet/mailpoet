@@ -173,8 +173,8 @@ class HomepageDataControllerTest extends \MailPoetTest {
 
   public function testItFetchesSubscriberStatsForZeroSubscribers(): void {
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['subscribed'])->equals(0);
-    expect($subscribersStats['global']['unsubscribed'])->equals(0);
+    verify($subscribersStats['global']['subscribed'])->equals(0);
+    verify($subscribersStats['global']['unsubscribed'])->equals(0);
   }
 
   public function testItFetchesCorrectGlobalSubscriberStats(): void {
@@ -206,8 +206,8 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['subscribed'])->equals(2);
-    expect($subscribersStats['global']['unsubscribed'])->equals(2);
+    verify($subscribersStats['global']['subscribed'])->equals(2);
+    verify($subscribersStats['global']['unsubscribed'])->equals(2);
   }
 
   public function testCountMultipleGlobalUnsubscribesOfTheSameSubscriberOnlyOnce(): void {
@@ -224,7 +224,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['unsubscribed'])->equals(1);
+    verify($subscribersStats['global']['unsubscribed'])->equals(1);
   }
 
   public function testItFetchesCorrectGlobalSubscriberChange(): void {
@@ -235,7 +235,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
       (new Subscriber())->create();
     }
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['changePercent'])->equals(1000);
+    verify($subscribersStats['global']['changePercent'])->equals(1000);
 
     // 10 New Subscribers + 6 Old Subscribers
     for ($i = 0; $i < 6; $i++) {
@@ -243,7 +243,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     }
     $this->clearSubscribersCountCache();
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['changePercent'])->equals(166.7);
+    verify($subscribersStats['global']['changePercent'])->equals(166.7);
 
     // 10 New Subscribers + 6 Old Subscribers + 10 New Unsubscribed
     for ($i = 0; $i < 10; $i++) {
@@ -253,7 +253,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     }
     $this->clearSubscribersCountCache();
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['changePercent'])->equals(0);
+    verify($subscribersStats['global']['changePercent'])->equals(0);
 
     // 10 New Subscribers + 6 Old Subscribers + 11 New Unsubscribed
     $unsubscribed = (new Subscriber())->withLastSubscribedAt($thirtyOneDaysAgo)->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)->create();
@@ -261,7 +261,7 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $this->entityManager->flush();
     $this->clearSubscribersCountCache();
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['global']['changePercent'])->equals(-5.9);
+    verify($subscribersStats['global']['changePercent'])->equals(-5.9);
   }
 
   public function testItFetchesCorrectListLevelSubscribedStats(): void {
@@ -286,11 +286,11 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
     $this->setUpdatedAtForEntity($subscriberSegment, $thirtyOneDaysAgo);
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['lists'][0]['id'])->equals($segment->getId());
-    expect($subscribersStats['lists'][0]['name'])->equals($segment->getName());
-    expect($subscribersStats['lists'][0]['subscribed'])->equals(1);
-    expect($subscribersStats['lists'][0]['unsubscribed'])->equals(0);
-    expect($subscribersStats['lists'][0]['averageEngagementScore'])->equals(0.5);
+    verify($subscribersStats['lists'][0]['id'])->equals($segment->getId());
+    verify($subscribersStats['lists'][0]['name'])->equals($segment->getName());
+    verify($subscribersStats['lists'][0]['subscribed'])->equals(1);
+    verify($subscribersStats['lists'][0]['unsubscribed'])->equals(0);
+    verify($subscribersStats['lists'][0]['averageEngagementScore'])->equals(0.5);
   }
 
   public function testItFetchesCorrectListLevelUnsubscribedStats(): void {
@@ -323,10 +323,10 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $this->setUpdatedAtForEntity($subscriberSegment, $thirtyOneDaysAgo);
 
     $subscribersStats = $this->homepageDataController->getPageData()['subscribersStats'];
-    expect($subscribersStats['lists'][0]['id'])->equals($segment->getId());
-    expect($subscribersStats['lists'][0]['name'])->equals($segment->getName());
-    expect($subscribersStats['lists'][0]['unsubscribed'])->equals(1);
-    expect($subscribersStats['lists'][0]['subscribed'])->equals(0);
+    verify($subscribersStats['lists'][0]['id'])->equals($segment->getId());
+    verify($subscribersStats['lists'][0]['name'])->equals($segment->getName());
+    verify($subscribersStats['lists'][0]['unsubscribed'])->equals(1);
+    verify($subscribersStats['lists'][0]['subscribed'])->equals(0);
   }
 
   private function cleanup() {

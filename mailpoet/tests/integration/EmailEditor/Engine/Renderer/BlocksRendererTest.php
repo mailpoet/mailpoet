@@ -24,7 +24,7 @@ class BlocksRendererTest extends \MailPoetTest {
         'innerHTML' => 'Buddy!',
       ],
     ]);
-    expect($content)->equals('HelloBuddy!');
+    verify($content)->equals('HelloBuddy!');
   }
 
   public function testItSkipsUnknownBlocks() {
@@ -39,7 +39,7 @@ class BlocksRendererTest extends \MailPoetTest {
         'innerHTML' => 'Buddy!',
       ],
     ]);
-    expect($content)->equals('Hello');
+    verify($content)->equals('Hello');
   }
 
   public function testItCanProcessNestedBlocks() {
@@ -58,7 +58,7 @@ class BlocksRendererTest extends \MailPoetTest {
         ],
       ],
     ]);
-    expect($content)->equals('[HelloBuddy!]');
+    verify($content)->equals('[HelloBuddy!]');
   }
 
   public function _after() {

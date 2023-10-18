@@ -35,11 +35,11 @@ class FormsResponseBuilderTest extends \MailPoetTest {
 
     $response = $this->responseBuilder->build($form);
 
-    expect($response['name'])->equals($this->formName);
-    expect($response['status'])->equals(FormEntity::STATUS_ENABLED);
-    expect($response['body']['name'])->equals($this->formBody['name']);
-    expect($response['body']['params']['label'])->equals($this->formBody['params']['label']);
-    expect($response['settings']['success_message'])->equals($this->formSettings['success_message']);
+    verify($response['name'])->equals($this->formName);
+    verify($response['status'])->equals(FormEntity::STATUS_ENABLED);
+    verify($response['body']['name'])->equals($this->formBody['name']);
+    verify($response['body']['params']['label'])->equals($this->formBody['params']['label']);
+    verify($response['settings']['success_message'])->equals($this->formSettings['success_message']);
   }
 
   public function testItBuildsFormsForListing() {
@@ -49,8 +49,8 @@ class FormsResponseBuilderTest extends \MailPoetTest {
     $response = $this->responseBuilder->buildForListing([$form1, $form2]);
 
     expect($response)->count(2);
-    expect($response[0]['signups'])->equals(0);
-    expect($response[0]['segments'])->equals($this->formSettings['segments']);
+    verify($response[0]['signups'])->equals(0);
+    verify($response[0]['segments'])->equals($this->formSettings['segments']);
   }
 
   private function createForm($name) {

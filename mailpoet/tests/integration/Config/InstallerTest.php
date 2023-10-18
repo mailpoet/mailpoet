@@ -75,7 +75,7 @@ class InstallerTest extends \MailPoetTest {
       $this
     );
     $result = $installer->getPluginInformation(false, 'plugin_information', $args);
-    expect($result->slug)->equals($this->slug);
+    verify($result->slug)->equals($this->slug);
     expect($result->new_version)->notEmpty(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($result->download_link)->notEmpty(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     expect($result->package)->notEmpty();
@@ -85,11 +85,11 @@ class InstallerTest extends \MailPoetTest {
     $data = new \stdClass;
     $data->someProperty = '123';
     $result = $this->installer->getPluginInformation($data, 'some_action', null);
-    expect($result)->equals($data);
+    verify($result)->equals($data);
     $args = new \stdClass;
     $args->slug = 'different-slug';
     $result = $this->installer->getPluginInformation($data, 'plugin_information', $args);
-    expect($result)->equals($data);
+    verify($result)->equals($data);
   }
 
   public function testItGetsPremiumStatus() {

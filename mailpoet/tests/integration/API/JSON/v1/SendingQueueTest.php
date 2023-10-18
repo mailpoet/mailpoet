@@ -53,11 +53,11 @@ class SendingQueueTest extends \MailPoetTest {
     $repo = $this->diContainer->get(ScheduledTasksRepository::class);
     $scheduledTask = $repo->findOneById($result->data['task_id']);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
-    expect($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $scheduled = $scheduledTask->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduled);
-    expect($scheduled->format('Y-m-d H:i:s'))->equals($newsletterOptions['scheduledAt']);
-    expect($scheduledTask->getType())->equals(Sending::TASK_TYPE);
+    verify($scheduled->format('Y-m-d H:i:s'))->equals($newsletterOptions['scheduledAt']);
+    verify($scheduledTask->getType())->equals(Sending::TASK_TYPE);
   }
 
   public function testItReturnsErrorIfSubscribersLimitReached() {
@@ -67,9 +67,9 @@ class SendingQueueTest extends \MailPoetTest {
       ]),
     ]);
     $res = $sendingQueue->add(['newsletter_id' => $this->newsletter->getId()]);
-    expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
+    verify($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
     $res = $sendingQueue->resume(['newsletter_id' => $this->newsletter->getId()]);
-    expect($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
+    verify($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
   }
 
   public function testItReschedulesScheduledSendingQueueTask() {
@@ -90,7 +90,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $scheduled = $scheduledTask->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduled);
-    expect($scheduled->format('Y-m-d H:i:s'))->equals('2018-10-10 10:00:00');
+    verify($scheduled->format('Y-m-d H:i:s'))->equals('2018-10-10 10:00:00');
 
     // update scheduled time
     $newsletterOptions = [
@@ -103,11 +103,11 @@ class SendingQueueTest extends \MailPoetTest {
     $rescheduledTask = $repo->findOneById($result->data['task_id']);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $rescheduledTask);
     // new task was not created
-    expect($rescheduledTask->getId())->equals($scheduledTask->getId());
+    verify($rescheduledTask->getId())->equals($scheduledTask->getId());
     // scheduled time was updated
     $scheduled = $rescheduledTask->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduled);
-    expect($scheduled->format('Y-m-d H:i:s'))->equals('2018-11-11 11:00:00');
+    verify($scheduled->format('Y-m-d H:i:s'))->equals('2018-11-11 11:00:00');
   }
 
   public function testItRejectsInvalidNewsletters() {

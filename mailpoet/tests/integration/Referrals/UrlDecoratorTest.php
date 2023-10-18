@@ -23,16 +23,16 @@ class UrlDecoratorTest extends \MailPoetTest {
   public function testItDoesntDoAnythingWhenNoReferralId() {
     $this->settings->set(ReferralDetector::REFERRAL_SETTING_NAME, null);
     $url = 'http://example.com';
-    expect($this->urlDecorator->decorate($url))->equals($url);
+    verify($this->urlDecorator->decorate($url))->equals($url);
   }
 
   public function testItCorrectlyAddsReferralId() {
     $this->settings->set(ReferralDetector::REFERRAL_SETTING_NAME, 'abcdefgh');
-    expect($this->urlDecorator->decorate('http://example.com/'))
+    verify($this->urlDecorator->decorate('http://example.com/'))
       ->equals('http://example.com/?ref=abcdefgh');
-    expect($this->urlDecorator->decorate('http://example.com/?param=value'))
+    verify($this->urlDecorator->decorate('http://example.com/?param=value'))
       ->equals('http://example.com/?param=value&ref=abcdefgh');
-    expect($this->urlDecorator->decorate('http://example.com/?param=value#hash/?param=val'))
+    verify($this->urlDecorator->decorate('http://example.com/?param=value#hash/?param=val'))
       ->equals('http://example.com/?param=value&ref=abcdefgh#hash/?param=val');
   }
 }

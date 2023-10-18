@@ -69,16 +69,16 @@ class AmazonSESTest extends \MailPoetTest {
   }
 
   public function testItsConstructorWorks() {
-    expect($this->mailer->awsEndpoint)
+    verify($this->mailer->awsEndpoint)
       ->equals(
         sprintf('email.%s.amazonaws.com', $this->settings['region'])
       );
-    expect($this->mailer->url)
+    verify($this->mailer->url)
       ->equals(
         sprintf('https://email.%s.amazonaws.com', $this->settings['region'])
       );
-    expect(preg_match('!^\d{8}T\d{6}Z$!', $this->mailer->date))->equals(1);
-    expect(preg_match('!^\d{8}$!', $this->mailer->dateWithoutTime))->equals(1);
+    verify(preg_match('!^\d{8}T\d{6}Z$!', $this->mailer->date))->equals(1);
+    verify(preg_match('!^\d{8}$!', $this->mailer->dateWithoutTime))->equals(1);
   }
 
   public function testItChecksForValidRegion() {
@@ -95,41 +95,41 @@ class AmazonSESTest extends \MailPoetTest {
       );
       $this->fail('Unsupported region exception was not thrown');
     } catch (\Exception $e) {
-      expect($e->getMessage())->equals('Unsupported Amazon SES region');
+      verify($e->getMessage())->equals('Unsupported Amazon SES region');
     }
   }
 
   public function testItCanGenerateBody() {
     $body = $this->mailer->getBody($this->newsletter, $this->subscriber);
-    expect($body['Action'])->equals('SendRawEmail');
-    expect($body['Version'])->equals('2010-12-01');
-    expect($body['Source'])->equals($this->sender['from_name_email']);
-    expect($body['RawMessage.Data'])
+    verify($body['Action'])->equals('SendRawEmail');
+    verify($body['Version'])->equals('2010-12-01');
+    verify($body['Source'])->equals($this->sender['from_name_email']);
+    verify($body['RawMessage.Data'])
       ->equals($this->mailer->encodeMessage($this->mailer->rawMessage));
   }
 
   public function testItCanCreateMessage() {
     $mailer = $this->mailer->configureMailerWithMessage($this->newsletter, $this->subscriber, $this->extraParams);
-    expect($mailer->CharSet)->equals('UTF-8'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->getToAddresses())->equals([[
+    verify($mailer->CharSet)->equals('UTF-8'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->getToAddresses())->equals([[
       'blackhole@mailpoet.com',
       'Recipient',
     ]]);
-    expect($mailer->getAllRecipientAddresses())->equals(['blackhole@mailpoet.com' => true]);
-    expect($mailer->From)->equals($this->sender['from_email']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->FromName)->equals($this->sender['from_name']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->getReplyToAddresses())->equals([
+    verify($mailer->getAllRecipientAddresses())->equals(['blackhole@mailpoet.com' => true]);
+    verify($mailer->From)->equals($this->sender['from_email']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->FromName)->equals($this->sender['from_name']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->getReplyToAddresses())->equals([
       $this->replyTo['reply_to_email'] => [
         $this->replyTo['reply_to_email'],
         $this->replyTo['reply_to_name'],
       ],
     ]);
-    expect($mailer->Sender)->equals($this->returnPath); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->ContentType)->equals('text/html'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->Subject)->equals($this->newsletter['subject']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->Body)->equals($this->newsletter['body']['html']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->AltBody)->equals($this->newsletter['body']['text']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    expect($mailer->getCustomHeaders())->equals([[
+    verify($mailer->Sender)->equals($this->returnPath); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->ContentType)->equals('text/html'); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->Subject)->equals($this->newsletter['subject']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->Body)->equals($this->newsletter['body']['html']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->AltBody)->equals($this->newsletter['body']['text']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($mailer->getCustomHeaders())->equals([[
       'List-Unsubscribe',
       '<https://www.mailpoet.com>',
     ]]);
@@ -143,14 +143,14 @@ class AmazonSESTest extends \MailPoetTest {
     // substitute the message to synchronize hashes
     $body['RawMessage.Data'] = $rawMessage;
     $body = array_map('urlencode', $body);
-    expect($request['timeout'])->equals(10);
-    expect($request['httpversion'])->equals('1.1');
-    expect($request['method'])->equals('POST');
-    expect($request['headers']['Host'])->equals($this->mailer->awsEndpoint);
-    expect($request['headers']['Authorization'])
+    verify($request['timeout'])->equals(10);
+    verify($request['httpversion'])->equals('1.1');
+    verify($request['method'])->equals('POST');
+    verify($request['headers']['Host'])->equals($this->mailer->awsEndpoint);
+    verify($request['headers']['Authorization'])
       ->equals($this->mailer->signRequest($body));
-    expect($request['headers']['X-Amz-Date'])->equals($this->mailer->date);
-    expect($request['body'])->equals(urldecode(http_build_query($body)));
+    verify($request['headers']['X-Amz-Date'])->equals($this->mailer->date);
+    verify($request['body'])->equals(urldecode(http_build_query($body)));
   }
 
   public function testItCanCreateCanonicalRequest() {
@@ -159,7 +159,7 @@ class AmazonSESTest extends \MailPoetTest {
       "\n",
       $this->mailer->getCanonicalRequest($body)
     );
-    expect($canonicalRequest)
+    verify($canonicalRequest)
       ->equals(
         [
           'POST',
@@ -178,7 +178,7 @@ class AmazonSESTest extends \MailPoetTest {
 
   public function testItCanCreateCredentialScope() {
     $credentialScope = $this->mailer->getCredentialScope();
-    expect($credentialScope)
+    verify($credentialScope)
       ->equals(
         $this->mailer->dateWithoutTime . '/' .
         $this->mailer->awsRegion . '/' .
@@ -196,7 +196,7 @@ class AmazonSESTest extends \MailPoetTest {
       $canonicalRequest
     );
     $stringToSing = explode("\n", $stringToSing);
-    expect($stringToSing)
+    verify($stringToSing)
       ->equals(
         [
           $this->mailer->awsSigningAlgorithm,
@@ -217,7 +217,7 @@ class AmazonSESTest extends \MailPoetTest {
         $this->mailer->getCredentialScope() . ', ' .
         'SignedHeaders=host;x-amz-date, Signature='
       );
-    expect(preg_match('!Signature=[A-Fa-f0-9]{64}$!', $signedRequest))
+    verify(preg_match('!Signature=[A-Fa-f0-9]{64}$!', $signedRequest))
       ->equals(1);
   }
 

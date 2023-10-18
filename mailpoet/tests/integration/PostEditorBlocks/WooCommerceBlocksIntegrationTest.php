@@ -57,7 +57,7 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['email' => $email]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
   public function testItDoesNotChangeStatusForGuestCustomer() {
@@ -72,7 +72,7 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['email' => $email]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
   public function testItHandlesOptinForExistingUnsubscribedCustomer() {
@@ -87,7 +87,7 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['email' => $email]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
   }
 
   public function testItHandlesOptinForExistingSubscribedCustomer() {
@@ -102,7 +102,7 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['email' => $email]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   public function testItDoesNotChangeStatusForExistingSubscribedCustomer() {
@@ -117,7 +117,7 @@ class WooCommerceBlocksIntegrationTest extends \MailPoetTest {
     $subscriber = $this->entityManager->getRepository(SubscriberEntity::class)->findOneBy(['email' => $email]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->entityManager->refresh($subscriber);
-    expect($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   private function setupSyncGuestUserMock(string $email) {

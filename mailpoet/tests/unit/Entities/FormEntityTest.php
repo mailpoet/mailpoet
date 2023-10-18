@@ -56,13 +56,13 @@ class FormEntityTest extends \MailPoetUnitTest {
     $formEntity->setBody($this->body);
     $paragraphs = $formEntity->getBlocksByTypes([FormEntity::PARAGRAPH_BLOCK_TYPE]);
     expect($paragraphs)->count(3);
-    expect($paragraphs[0]['params']['content'])->equals('Paragraph 1');
-    expect($paragraphs[1]['params']['content'])->equals('Paragraph 2');
-    expect($paragraphs[2]['params']['content'])->equals('Paragraph 3');
+    verify($paragraphs[0]['params']['content'])->equals('Paragraph 1');
+    verify($paragraphs[1]['params']['content'])->equals('Paragraph 2');
+    verify($paragraphs[2]['params']['content'])->equals('Paragraph 3');
 
     $headings = $formEntity->getBlocksByTypes([FormEntity::HEADING_BLOCK_TYPE]);
     expect($headings)->count(1);
-    expect($headings[0]['params']['content'])->equals('Heading 1');
+    verify($headings[0]['params']['content'])->equals('Heading 1');
 
     $columns = $formEntity->getBlocksByTypes([FormEntity::COLUMNS_BLOCK_TYPE]);
     expect($columns)->count(1);
@@ -85,6 +85,6 @@ class FormEntityTest extends \MailPoetUnitTest {
     ];
     $formEntity->setBody($body);
     $segmentIds = $formEntity->getSegmentBlocksSegmentIds();
-    expect($segmentIds)->equals([1, 3]);
+    verify($segmentIds)->equals([1, 3]);
   }
 }

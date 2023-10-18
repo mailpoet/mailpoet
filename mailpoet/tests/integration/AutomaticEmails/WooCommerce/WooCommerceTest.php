@@ -86,8 +86,8 @@ class WooCommerceTest extends \MailPoetTest {
     $AM = new AutomaticEmails(new WPFunctions(), $this->automaticEmailFactory);
     $result = $AM->getAutomaticEmailBySlug('woocommerce');
     foreach ($result['events'] as $event) {
-      expect($event['actionButtonTitle'])->equals('WooCommerce is required');
-      expect($event['actionButtonLink'])->equals('https://wordpress.org/plugins/woocommerce/');
+      verify($event['actionButtonTitle'])->equals('WooCommerce is required');
+      verify($event['actionButtonLink'])->equals('https://wordpress.org/plugins/woocommerce/');
     }
 
     $WC = $this->createWooCommerceEmailMock();

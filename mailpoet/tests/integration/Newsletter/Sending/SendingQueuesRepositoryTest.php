@@ -68,8 +68,8 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     $this->repository->resume($queue);
     $this->entityManager->refresh($task);
 
-    expect($task->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
-    expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+    verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
   }
 
   public function testItResumesSending() {
@@ -88,7 +88,7 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     $this->entityManager->refresh($task);
 
     expect($task->getStatus())->null();
-    expect($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 
   public function testItReturnsCountOfQueuesByNewsletterAndTaskStatus() {

@@ -53,7 +53,7 @@ class RendererTest extends \MailPoetUnitTest {
       ->willReturn(CaptchaConstants::TYPE_DISABLED);
     $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'));
     $blocks = $this->htmlParser->findByXpath($html, "//div[@class='block']");
-    expect($blocks->length)->equals(2);
+    verify($blocks->length)->equals(2);
   }
 
   public function testItShouldRenderHoneypot() {
@@ -64,9 +64,9 @@ class RendererTest extends \MailPoetUnitTest {
       ->willReturn(CaptchaConstants::TYPE_DISABLED);
     $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'));
     $hpLabel = $this->htmlParser->findByXpath($html, "//label[@class='mailpoet_hp_email_label']");
-    expect($hpLabel->length)->equals(1);
+    verify($hpLabel->length)->equals(1);
     $hpInput = $this->htmlParser->findByXpath($html, "//input[@type='email']");
-    expect($hpInput->length)->equals(1);
+    verify($hpInput->length)->equals(1);
   }
 
   public function testItShouldRenderReCaptcha() {
@@ -80,15 +80,15 @@ class RendererTest extends \MailPoetUnitTest {
       ]));
     $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'));
     $recaptcha = $this->htmlParser->findByXpath($html, "//div[@class='mailpoet_recaptcha']");
-    expect($recaptcha->length)->equals(1);
+    verify($recaptcha->length)->equals(1);
     $recaptchaIframes = $this->htmlParser->findByXpath($html, "//iframe");
-    expect($recaptchaIframes->length)->equals(1);
+    verify($recaptchaIframes->length)->equals(1);
     $iframe = $recaptchaIframes->item(0);
     $this->assertInstanceOf(\DOMNode::class, $iframe);
     $this->assertInstanceOf(\DOMNamedNodeMap::class, $iframe->attributes);
     $source = $iframe->attributes->getNamedItem('src');
     $this->assertInstanceOf(\DOMAttr::class, $source);
-    expect($source->value)->equals("https://www.google.com/recaptcha/api/fallback?k=$token");
+    verify($source->value)->equals("https://www.google.com/recaptcha/api/fallback?k=$token");
   }
 
   public function testItShouldNotRenderHoneypotAndRecaptcha() {
@@ -99,8 +99,8 @@ class RendererTest extends \MailPoetUnitTest {
       ->willReturn(CaptchaConstants::TYPE_DISABLED);
     $html = $this->renderer->renderBlocks(Fixtures::get('simple_form_body'), [], null, false);
     $hpLabel = $this->htmlParser->findByXpath($html, "//label[@class='mailpoet_hp_email_label']");
-    expect($hpLabel->length)->equals(0);
+    verify($hpLabel->length)->equals(0);
     $recaptcha = $this->htmlParser->findByXpath($html, "//div[@class='mailpoet_recaptcha']");
-    expect($recaptcha->length)->equals(0);
+    verify($recaptcha->length)->equals(0);
   }
 }

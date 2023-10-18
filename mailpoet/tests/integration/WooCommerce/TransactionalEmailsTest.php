@@ -65,14 +65,14 @@ class TransactionalEmailsTest extends \MailPoetTest {
     $id = $this->settings->get(TransactionalEmails::SETTING_EMAIL_ID, null);
     expect($email)->notEmpty();
     expect($id)->notNull();
-    expect($email->getId())->equals($id);
+    verify($email->getId())->equals($id);
   }
 
   public function testInitDoesntCreateTransactionalEmailIfSettingAlreadySet() {
     $this->settings->set(TransactionalEmails::SETTING_EMAIL_ID, 1);
     $this->transactionalEmails->init();
     $email = $this->newslettersRepository->findOneBy(['type' => NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL]);
-    expect($email)->equals(null);
+    verify($email)->equals(null);
   }
 
   public function testInitUsesImageFromWCSettings() {
@@ -106,7 +106,7 @@ class TransactionalEmailsTest extends \MailPoetTest {
     $body = $email->getBody();
     $this->assertIsArray($body);
     $footerTextBlock = $body['content']['blocks'][5]['blocks'][0]['blocks'][1];
-    expect($footerTextBlock['text'])->equals('<p style="text-align: center;">Text <a href="http://example.com">Link</a></p>');
+    verify($footerTextBlock['text'])->equals('<p style="text-align: center;">Text <a href="http://example.com">Link</a></p>');
     $this->wp->updateOption('woocommerce_email_footer_text', $optionOriginalValue);
   }
 }

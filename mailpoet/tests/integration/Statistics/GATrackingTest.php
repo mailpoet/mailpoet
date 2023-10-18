@@ -41,7 +41,7 @@ class GATrackingTest extends \MailPoetTest {
     // No process (empty GA campaign)
     $newsletter = (new NewsletterFactory())->create();
     $result = $this->tracking->applyGATracking($this->renderedNewsletter, $newsletter, $this->internalHost);
-    expect($result)->equals($this->renderedNewsletter);
+    verify($result)->equals($this->renderedNewsletter);
 
     // Process (filled GA campaign)
     $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);

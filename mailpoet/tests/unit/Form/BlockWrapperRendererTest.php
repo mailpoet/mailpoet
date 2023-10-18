@@ -13,7 +13,7 @@ class BlockWrapperRendererTest extends \MailPoetUnitTest {
     $renderer = new BlockWrapperRenderer($wpMock);
     $block = Fixtures::get('simple_form_body')[0];
     $result = $renderer->render($block, 'content');
-    expect($result)->equals('<div class="mailpoet_paragraph">content</div>');
+    verify($result)->equals('<div class="mailpoet_paragraph">content</div>');
   }
 
   public function testItShouldWrapRenderCustomClasses() {
@@ -23,6 +23,6 @@ class BlockWrapperRendererTest extends \MailPoetUnitTest {
     $block = Fixtures::get('simple_form_body')[0];
     $block['params']['class_name'] = 'class1 class2';
     $result = $renderer->render($block, 'content');
-    expect($result)->equals('<div class="mailpoet_paragraph class1 class2">content</div>');
+    verify($result)->equals('<div class="mailpoet_paragraph class1 class2">content</div>');
   }
 }

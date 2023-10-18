@@ -49,7 +49,7 @@ class DividerTest extends \MailPoetUnitTest {
     $block['params']['type'] = 'spacer';
     $block['params']['height'] = '10';
     $result = $this->divider->render($block);
-    expect($result)->equals("<div class='mailpoet_spacer' style='height: 10px;'></div>");
+    verify($result)->equals("<div class='mailpoet_spacer' style='height: 10px;'></div>");
   }
 
   public function testItRendersDivider() {

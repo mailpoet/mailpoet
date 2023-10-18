@@ -13,22 +13,22 @@ class SecondLevelDomainNamesTest extends \MailPoetUnitTest {
   }
 
   public function testItGetsSecondLevelDomainName() {
-    expect($this->extractor->get('mailpoet.com'))->equals('mailpoet.com');
+    verify($this->extractor->get('mailpoet.com'))->equals('mailpoet.com');
   }
 
   public function testItGetsSecondLevelDomainNameFromThirdLevel() {
-    expect($this->extractor->get('newsletters.mailpoet.com'))->equals('mailpoet.com');
+    verify($this->extractor->get('newsletters.mailpoet.com'))->equals('mailpoet.com');
   }
 
   public function testItGetsSecondLevelDomainNameWithCoUk() {
-    expect($this->extractor->get('example.co.uk'))->equals('example.co.uk');
+    verify($this->extractor->get('example.co.uk'))->equals('example.co.uk');
   }
 
   public function testItGetsSecondLevelDomainNameFromThirdLevelWithCoUk() {
-    expect($this->extractor->get('test.example.co.uk'))->equals('example.co.uk');
+    verify($this->extractor->get('test.example.co.uk'))->equals('example.co.uk');
   }
 
   public function testItGetsSecondLevelDomainNameForLocalhost() {
-    expect($this->extractor->get('localhost'))->equals('localhost');
+    verify($this->extractor->get('localhost'))->equals('localhost');
   }
 }
