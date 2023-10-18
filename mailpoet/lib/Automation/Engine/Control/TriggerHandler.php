@@ -82,7 +82,13 @@ class TriggerHandler {
       $automationRun = new AutomationRun($automation->getId(), $automation->getVersionId(), $trigger->getKey(), $subjects);
       $stepRunArgs = new StepRunArgs($automation, $automationRun, $step, $subjectEntries, 1);
 
-      if (!$this->filterHandler->matchesFilters($stepRunArgs)) {
+      $match = false;
+      try {
+        $match = $this->filterHandler->matchesFilters($stepRunArgs);
+      } catch (Exceptions\Exception $e) {
+        ;
+      }
+      if (!$match) {
         continue;
       }
 
