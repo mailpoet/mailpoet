@@ -92,12 +92,12 @@ class CustomFieldsTest extends \MailPoetTest {
         'date_type' => 'year_month_day',
       ],
     ]);
-    expect($response)->array();
+    verify($response)->isArray();
     verify($response)->arrayHasKey('id');
     verify($response)->arrayHasKey('name');
     verify($response)->arrayHasKey('type');
     verify($response)->arrayHasKey('params');
-    expect($response['params'])->array();
+    verify($response['params'])->isArray();
   }
 
   public function testItFailsToCreateNewCustomField() {

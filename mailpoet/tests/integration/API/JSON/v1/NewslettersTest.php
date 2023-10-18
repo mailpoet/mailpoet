@@ -179,7 +179,7 @@ class NewslettersTest extends \MailPoetTest {
     ]));
     $hookName = 'mailpoet_api_newsletters_get_after';
     verify(WPHooksHelper::isFilterApplied($hookName))->true();
-    expect(WPHooksHelper::getFilterApplied($hookName)[0])->array();
+    verify(WPHooksHelper::getFilterApplied($hookName)[0])->isArray();
   }
 
   public function testItCanSaveANewsletter() {

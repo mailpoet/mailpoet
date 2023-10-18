@@ -80,7 +80,7 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
     $controller = $this->generateController();
     $newsletter = $controller->getNewsletter();
 
-    expect($newsletter->getBody())->array();
+    verify($newsletter->getBody())->isArray();
     $stringBody = json_encode($newsletter->getBody());
     verify($stringBody)->stringContainsString($this->partialTemplateContent);
   }
@@ -91,7 +91,7 @@ class ConfirmationEmailCustomizerTest extends \MailPoetTest {
 
     $renderedContent = $controller->render($newsletter);
 
-    expect($renderedContent)->array();
+    verify($renderedContent)->isArray();
 
     verify($renderedContent)->arrayHasKey('html');
     verify($renderedContent)->arrayHasKey('text');

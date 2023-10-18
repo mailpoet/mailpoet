@@ -28,13 +28,13 @@ class HomepageDataControllerTest extends \MailPoetTest {
     verify($data)->notEmpty();
     verify($data['taskListDismissed'])->false();
     verify($data['productDiscoveryDismissed'])->false();
-    expect($data['taskListStatus'])->array();
+    verify($data['taskListStatus'])->isArray();
     verify($data['taskListStatus'])->notEmpty();
-    expect($data['productDiscoveryStatus'])->array();
+    verify($data['productDiscoveryStatus'])->isArray();
     verify($data['productDiscoveryStatus'])->notEmpty();
     expect($data['wooCustomersCount'])->int();
     expect($data['subscribersCount'])->int();
-    expect($data['subscribersStats'])->array();
+    verify($data['subscribersStats'])->isArray();
     verify($data['taskListStatus'])->notEmpty();
   }
 

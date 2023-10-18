@@ -44,7 +44,7 @@ class AutomationRunLogStorageTest extends \MailPoetTest {
       'code',
       'trace',
     ]);
-    expect($errors['trace'])->array();
+    verify($errors['trace'])->isArray();
     expect(count($errors['trace']))->greaterThan(0);
   }
 

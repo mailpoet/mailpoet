@@ -62,7 +62,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'some_mess' => 'mess',
     ];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -84,7 +84,7 @@ class FilterDataMapperTest extends \MailPoetTest {
     ]],
     ];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -108,7 +108,7 @@ class FilterDataMapperTest extends \MailPoetTest {
     ]],
     ];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -175,7 +175,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'some_mess' => 'mess',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -207,7 +207,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'some_mess' => 'mess',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -263,7 +263,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'some_mess' => 'mess',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -295,7 +295,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'days' => 3,
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -318,7 +318,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'uselessParam' => 1,
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -339,7 +339,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'operator' => 'less',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -388,7 +388,7 @@ class FilterDataMapperTest extends \MailPoetTest {
     ]]];
 
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -428,7 +428,7 @@ class FilterDataMapperTest extends \MailPoetTest {
     ]]];
 
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -465,7 +465,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'some_mess' => 'mess',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -522,7 +522,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'nonsense' => 1,
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -564,7 +564,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'operator' => SubscriberScore::HIGHER_THAN,
       'some' => 'mess',
     ]]]);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -596,7 +596,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'operator' => DynamicSegmentFilterData::OPERATOR_NONE,
       'some' => 'mess',
     ]]]);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -653,7 +653,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'operator' => 'equals',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -690,7 +690,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'some_mess' => 'mess',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -713,7 +713,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'value' => 'some value',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -747,7 +747,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'form_ids' => ['1', '2'],
       'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
     ]]]);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -793,7 +793,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'automation_ids' => ['1', '2'],
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -816,7 +816,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'automation_ids' => ['1', '2'],
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -888,7 +888,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'timeframe' => 'inTheLast',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -915,7 +915,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'coupon_code_ids' => ['1', '5'],
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
@@ -942,7 +942,7 @@ class FilterDataMapperTest extends \MailPoetTest {
       'value' => '2023-07-01',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
+    verify($filters)->isArray();
     verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
