@@ -1196,7 +1196,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     $refetchedTask = ScheduledTask::where('id', $task->id)->findOne();
     $this->assertInstanceOf(ScheduledTask::class, $refetchedTask); // PHPStan
-    expect($refetchedTask->scheduledAt)->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(42));
+    verify($refetchedTask->scheduledAt)->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(42));
   }
 
   public function testDoesNoRescheduleBounceTaskWhenPlannedInNearFuture() {

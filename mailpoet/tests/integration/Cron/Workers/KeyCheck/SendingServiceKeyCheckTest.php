@@ -38,7 +38,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
     $nextRun = $this->worker->getNextRunDate();
     $nextDay = Carbon::now()->startOfDay()->addDay()->addHours(6);
     verify($nextRun->format('Y-m-d'))->equals($nextDay->format('Y-m-d'));
-    expect($nextRun)->lessThan($nextDay);
+    verify($nextRun)->lessThan($nextDay);
 
     // when pending key approval, next run is scheduled in an hour
     $settings = $this->diContainer->get(SettingsController::class);
@@ -51,7 +51,7 @@ class SendingServiceKeyCheckTest extends \MailPoetTest {
 
     $nextRunDate = $this->worker->getNextRunDate();
     verify($nextRunDate)->greaterThan(Carbon::now()->addMinutes(55));
-    expect($nextRunDate)->lessThan(Carbon::now()->addMinutes(65));
+    verify($nextRunDate)->lessThan(Carbon::now()->addMinutes(65));
   }
 
   public function testItResumesSendingWhenKeyApproved() {

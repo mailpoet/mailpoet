@@ -99,7 +99,7 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemon = $this->makeEmpty(Daemon::class);
     $daemonHttpRunner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => Expected::exactly(1, function($pauseDelay) {
-        expect($pauseDelay)->lessThan($this->cronHelper->getDaemonExecutionLimit());
+        verify($pauseDelay)->lessThan($this->cronHelper->getDaemonExecutionLimit());
         verify($pauseDelay)->greaterThan($this->cronHelper->getDaemonExecutionLimit() - 1);
       }),
       'callSelf' => null,
@@ -242,9 +242,9 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $daemonHttpRunner->run($data);
     $updatedDaemon = $this->settings->get(CronHelper::DAEMON_SETTING);
     verify($updatedDaemon['run_started_at'])->greaterThanOrEqual($now);
-    expect($updatedDaemon['run_started_at'])->lessThan($now + 2);
+    verify($updatedDaemon['run_started_at'])->lessThan($now + 2);
     verify($updatedDaemon['run_completed_at'])->greaterThanOrEqual($now + 2);
-    expect($updatedDaemon['run_completed_at'])->lessThan($now + 4);
+    verify($updatedDaemon['run_completed_at'])->lessThan($now + 4);
   }
 
   public function testItCanRun() {

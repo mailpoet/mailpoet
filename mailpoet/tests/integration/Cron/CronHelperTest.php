@@ -111,7 +111,7 @@ class CronHelperTest extends \MailPoetTest {
     $cronHelper->accessDaemon('some_token');
     $updatedDaemon = $cronHelper->getDaemon();
     verify($updatedDaemon['run_accessed_at'])->greaterThanOrEqual($time);
-    expect($updatedDaemon['run_accessed_at'])->lessThan($time + 2);
+    verify($updatedDaemon['run_accessed_at'])->lessThan($time + 2);
   }
 
   public function testItThrowsAnExceptionIfAccessingNonExistingDaemon() {

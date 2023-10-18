@@ -253,7 +253,7 @@ class SettingsTest extends \MailPoetTest {
       ]
     );
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getScheduledAt())->lessThan(Carbon::now());
+    verify($task->getScheduledAt())->lessThan(Carbon::now());
   }
 
   public function testItRemovesFreeAddressOverrideOnMSSActivation() {
