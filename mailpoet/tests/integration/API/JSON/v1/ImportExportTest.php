@@ -39,7 +39,7 @@ class ImportExportTest extends \MailPoetTest {
     $now = time();
     $scheduledAt = new Carbon($task->getScheduledAt());
     expect($scheduledAt->timestamp)->greaterOrEquals($now - 1);
-    expect($scheduledAt->timestamp)->lessOrEquals($now + 1);
+    verify($scheduledAt->timestamp)->lessThanOrEqual($now + 1);
   }
 
   public function testItReschedulesScheduledTaskToNow() {
@@ -53,7 +53,7 @@ class ImportExportTest extends \MailPoetTest {
     $now = time();
     $scheduledAt = new Carbon($task->getScheduledAt());
     expect($scheduledAt->timestamp)->greaterOrEquals($now - 1);
-    expect($scheduledAt->timestamp)->lessOrEquals($now + 1);
+    verify($scheduledAt->timestamp)->lessThanOrEqual($now + 1);
     $taskCount = $this->scheduledTasksRepository->countBy(['type' => WooCommerceSync::TASK_TYPE]);
     verify($taskCount)->equals(1);
   }

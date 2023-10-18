@@ -63,7 +63,7 @@ class SimpleWorkerTest extends \MailPoetTest {
     $difference = $nextRunDate->diffInDays($currentDate);
     // Subtract days left in the current week
     $difference -= (Carbon::DAYS_PER_WEEK - (int)$currentDate->format('N'));
-    expect($difference)->lessOrEquals(7);
+    verify($difference)->lessThanOrEqual(7);
     expect($difference)->greaterOrEquals(0);
   }
 }

@@ -103,7 +103,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
     $secondsToMidnight = $dateTime->diffInSeconds($dateTime->copy()->startOfDay()->addDay());
 
     // next run should be planned in 6 hours after midnight
-    expect($nextRunDate->diffInSeconds($dateTime))->lessOrEquals(21600 + $secondsToMidnight);
+    verify($nextRunDate->diffInSeconds($dateTime))->lessThanOrEqual(21600 + $secondsToMidnight);
   }
 
   private function createRunningTask(Carbon $scheduledAt = null) {
