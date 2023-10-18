@@ -165,7 +165,7 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
     $result = $this->alcAPI->getBulkTransformedPosts([
       "blocks" => [$singleBlockQuery],
     ]);
-    expect($result->data)->count(1);
+    verify($result->data)->arrayCount(1);
 
     verify($result->data[0][0]->post_title)->equals($publishedPostTitle);
 
@@ -173,14 +173,14 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
     $result = $this->alcAPI->getBulkTransformedPosts([
       "blocks" => [$singleBlockQuery],
     ]);
-    expect($result->data)->count(1);
+    verify($result->data)->arrayCount(1);
     verify($result->data[0][0]->post_title)->equals($publishedPostTitle);
 
     $this->loginWithRole("administrator");
     $result = $this->alcAPI->getBulkTransformedPosts([
       "blocks" => [$singleBlockQuery],
     ]);
-    expect($result->data)->count(1);
+    verify($result->data)->arrayCount(1);
     verify($result->data[0][0]->post_title)->equals($publishedPostTitle);
   }
 
@@ -218,13 +218,13 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
     $result = $this->alcAPI->getPosts(['postStatus' => "any", "contentType" => "post"]);
 
     $this->loginWithRole("reader");
-    expect($result->data)->count(1);
+    verify($result->data)->arrayCount(1);
     expect($this->getPostTitles($result->data))->contains($publicPost['post_title']);
 
 
     $this->loginWithRole("editor");
     $result = $this->alcAPI->getPosts(['postStatus' => "any", "contentType" => "post"]);
-    expect($result->data)->count(2);
+    verify($result->data)->arrayCount(2);
     expect($this->getPostTitles($result->data))->contains($publicPost["post_title"]);
     expect($this->getPostTitles($result->data))->contains($privatePost["post_title"]);
 
@@ -234,7 +234,7 @@ class AutomatedLatestContentAPITest extends \MailPoetTest {
     }
 
     $result = $this->alcAPI->getPosts(['postStatus' => "any", "contentType" => "post"]);
-    expect($result->data)->count(3);
+    verify($result->data)->arrayCount(3);
     expect($this->getPostTitles($result->data))->contains($publicPost["post_title"]);
     expect($this->getPostTitles($result->data))->contains($draftPost["post_title"]);
     expect($this->getPostTitles($result->data))->contains($privatePost["post_title"]);

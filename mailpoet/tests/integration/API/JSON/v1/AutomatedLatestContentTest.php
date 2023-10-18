@@ -19,7 +19,7 @@ class AutomatedLatestContentTest extends \MailPoetTest {
     $response = $this->endpoint->getPostTypes();
     verify($response->data)->notEmpty();
     foreach ($response->data as $postType) {
-      expect($postType)->count(2);
+      verify($postType)->arrayCount(2);
       verify($postType['name'])->notEmpty();
       verify($postType['label'])->notEmpty();
     }

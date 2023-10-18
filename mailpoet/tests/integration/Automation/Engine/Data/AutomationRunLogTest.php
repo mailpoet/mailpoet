@@ -65,7 +65,7 @@ class AutomationRunLogTest extends \MailPoetTest {
     ];
     $this->expectException(\InvalidArgumentException::class);
     $log->setData('badData', $badData);
-    expect($log->getData())->count(0);
+    verify($log->getData())->arrayCount(0);
   }
 
   public function testItDoesNotAllowSettingObjectsForData(): void {
@@ -74,7 +74,7 @@ class AutomationRunLogTest extends \MailPoetTest {
     $object->key = 'value';
     $this->expectException(\InvalidArgumentException::class);
     $log->setData('object', $object);
-    expect($log->getData())->count(0);
+    verify($log->getData())->arrayCount(0);
   }
 
   public function testItDoesNotAllowSettingMultidimensionalArrayThatContainsNonScalarValue(): void {
@@ -92,6 +92,6 @@ class AutomationRunLogTest extends \MailPoetTest {
     ];
     $this->expectException(\InvalidArgumentException::class);
     $log->setData('data', $data);
-    expect($log->getData())->count(0);
+    verify($log->getData())->arrayCount(0);
   }
 }

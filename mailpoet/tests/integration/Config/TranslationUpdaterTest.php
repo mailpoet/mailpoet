@@ -291,7 +291,7 @@ class TranslationUpdaterTest extends \MailPoetTest {
       ]
     );
     $result = $updater->checkForTranslations($updateTransient);
-    expect($result->translations)->count(4); // askimet + mailpoet cs_CZ and two packs from .com
+    verify($result->translations)->arrayCount(4); // askimet + mailpoet cs_CZ and two packs from .com
 
     $mailPoetCs = $result->translations[0];
     verify($mailPoetCs['slug'])->equals('mailpoet');
@@ -358,7 +358,7 @@ class TranslationUpdaterTest extends \MailPoetTest {
       ]
     );
     $result = $updater->checkForTranslations($updateTransient);
-    expect($result->translations)->count(3);
+    verify($result->translations)->arrayCount(3);
   }
 
   public function testItReturnsObjectIfPassedNonObjectWhenCheckingForTranslations(): void {

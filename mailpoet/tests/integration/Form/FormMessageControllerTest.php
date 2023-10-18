@@ -39,7 +39,7 @@ class FormMessageControllerTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation.enabled', 0);
     $this->controller->updateSuccessMessages();
     $forms = $this->formsRepository->findAll();
-    expect($forms)->count(1);
+    verify($forms)->arrayCount(1);
     foreach ($forms as $form) {
       verify($form->getSettings()['success_message'] ?? null)->equals(__('You’ve been successfully subscribed to our newsletter!', 'mailpoet'));
     }
@@ -47,7 +47,7 @@ class FormMessageControllerTest extends \MailPoetTest {
     $this->settings->set('signup_confirmation.enabled', 1);
     $this->controller->updateSuccessMessages();
     $forms = $this->formsRepository->findAll();
-    expect($forms)->count(1);
+    verify($forms)->arrayCount(1);
     foreach ($forms as $form) {
       verify($form->getSettings()['success_message'] ?? null)->equals(__('Check your inbox or spam folder to confirm your subscription.', 'mailpoet'));
     }

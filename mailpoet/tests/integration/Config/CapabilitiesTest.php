@@ -119,8 +119,8 @@ class CapabilitiesTest extends \MailPoetTest {
     $permissionCount = count($permissions);
     if (function_exists('members_register_cap')) { // Members plugin active
       $this->caps->registerMembersCapabilities();
-      expect(members_get_cap_group(Capabilities::MEMBERS_CAP_GROUP_NAME)->caps)
-        ->count($permissionCount);
+      verify(members_get_cap_group(Capabilities::MEMBERS_CAP_GROUP_NAME)->caps)
+        ->arrayCount($permissionCount);
     } else {
       $caps = Stub::makeEmptyExcept(
         $this->caps,

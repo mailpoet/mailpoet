@@ -51,7 +51,7 @@ class NewsletterClicksExporterTest extends \MailPoetTest {
 
     $result = $this->exporter->export($userEmail);
     expect($result['data'])->array();
-    expect($result['data'])->count(1);
+    verify($result['data'])->arrayCount(1);
     verify($result['done'])->equals(true);
     verify($result['data'][0])->arrayHasKey('group_id');
     verify($result['data'][0])->arrayHasKey('group_label');

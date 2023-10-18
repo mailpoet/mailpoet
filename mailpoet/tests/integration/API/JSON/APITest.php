@@ -99,7 +99,7 @@ class APITest extends \MailPoetTest {
   }
 
   public function testItCanAddEndpointNamespaces() {
-    expect($this->api->getEndpointNamespaces())->count(1);
+    verify($this->api->getEndpointNamespaces())->arrayCount(1);
 
     $namespace = [
       'name' => 'MailPoet\\Dummy\\Name\\Space',
@@ -108,7 +108,7 @@ class APITest extends \MailPoetTest {
     $this->api->addEndpointNamespace($namespace['name'], $namespace['version']);
     $namespaces = $this->api->getEndpointNamespaces();
 
-    expect($namespaces)->count(2);
+    verify($namespaces)->arrayCount(2);
     verify($namespaces[$namespace['version']][0])->equals($namespace['name']);
   }
 
@@ -361,7 +361,7 @@ class APITest extends \MailPoetTest {
     /** @var LogRepository $logRepository */
     $logRepository = $this->container->get(LogRepository::class);
     $logs = $logRepository->findAll();
-    expect($logs)->count(1);
+    verify($logs)->arrayCount(1);
     $log = reset($logs);
     $this->assertInstanceOf(LogEntity::class, $log);
     verify($log->getMessage())->stringContainsString('Some Error');

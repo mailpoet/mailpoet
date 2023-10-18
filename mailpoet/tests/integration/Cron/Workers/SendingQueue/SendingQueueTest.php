@@ -442,8 +442,8 @@ class SendingQueueTest extends \MailPoetTest {
     verify($scheduledTask->getStatus())->equals(SendingQueue::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
-    expect($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
-      ->count(0);
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+      ->arrayCount(0);
     $processedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED);
     verify($processedSubscribers)->equals([$this->subscriber]);
     verify($sendingQueue->getCountTotal())->equals(1);
@@ -570,8 +570,8 @@ class SendingQueueTest extends \MailPoetTest {
     verify($scheduledTask->getStatus())->equals(SendingQueue::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
-    expect($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
-      ->count(0);
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+      ->arrayCount(0);
     $processedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED);
     verify($processedSubscribers)->equals([$this->subscriber]);
     verify($sendingQueue->getCountTotal())->equals(1);
@@ -619,8 +619,8 @@ class SendingQueueTest extends \MailPoetTest {
     verify($updatedNewsletter->getSentAt())->equals($scheduledTask->getProcessedAt());
 
     // queue subscriber processed/to process count is updated
-    expect($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
-      ->count(0);
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+      ->arrayCount(0);
     $processedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED);
     verify($processedSubscribers)->equals([$this->subscriber]);
     verify($sendingQueue->getCountTotal())->equals(1);

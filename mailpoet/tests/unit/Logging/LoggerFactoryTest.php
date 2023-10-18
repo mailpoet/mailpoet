@@ -45,7 +45,7 @@ class LoggerFactoryTest extends \MailPoetUnitTest {
   public function testItSkipsOptionalProcessors() {
     $logger1 = $this->loggerFactory->getLogger('logger-without-processors', false);
     $processors = $logger1->getProcessors();
-    expect($processors)->count(1);
+    verify($processors)->arrayCount(1);
   }
 
   public function testItAttachesHandler() {

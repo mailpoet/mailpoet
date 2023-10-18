@@ -248,7 +248,7 @@ class SegmentsTest extends \MailPoetTest {
     verify($result)->equals(true);
     $this->entityManager->clear();
     verify($this->segmentsRepository->findOneById($segmentId))->null();
-    expect($this->subscriberSegmentsRepository->findBy(['segment' => $segmentId]))->count(0);
+    verify($this->subscriberSegmentsRepository->findBy(['segment' => $segmentId]))->arrayCount(0);
   }
 
   private function getApi(): API {

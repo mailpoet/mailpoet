@@ -296,7 +296,7 @@ class PagesTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
     $clickStat = $this->statisticsClicksRepository->getAllForSubscriber($this->subscriber)->getQuery()->getResult();
     verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
-    expect($clickStat)->count(1);
+    verify($clickStat)->arrayCount(1);
   }
 
   private function getPages(

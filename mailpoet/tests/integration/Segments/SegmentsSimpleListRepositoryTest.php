@@ -60,7 +60,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
 
   public function testItReturnsSegmentsWithSubscribedSubscribersCount(): void {
     $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts();
-    expect($segments)->count(5);
+    verify($segments)->arrayCount(5);
     // Default 1
     verify($segments[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
     verify($segments[0]['subscribers'])->equals(1);
@@ -80,7 +80,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
 
   public function testItReturnsSegmentsWithSubscribedSubscribersCountFilteredBySegmentType(): void {
     $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts([SegmentEntity::TYPE_DEFAULT, SegmentEntity::TYPE_WP_USERS]);
-    expect($segments)->count(3);
+    verify($segments)->arrayCount(3);
     // Default 1
     verify($segments[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
     verify($segments[0]['subscribers'])->equals(1);
@@ -94,7 +94,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
 
   public function testItReturnsSegmentsWithAssociatedSubscribersCount(): void {
     $segments = $this->segmentsListRepository->getListWithAssociatedSubscribersCounts();
-    expect($segments)->count(5);
+    verify($segments)->arrayCount(5);
     // Default 1
     verify($segments[0]['type'])->equals(SegmentEntity::TYPE_DEFAULT);
     verify($segments[0]['subscribers'])->equals(2);
@@ -115,7 +115,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
   public function testItCanAddSegmentForSubscribersWithoutList(): void {
     $segments = $this->segmentsListRepository->getListWithAssociatedSubscribersCounts();
     $segments = $this->segmentsListRepository->addVirtualSubscribersWithoutListSegment($segments);
-    expect($segments)->count(6);
+    verify($segments)->arrayCount(6);
     verify($segments[5]['type'])->equals(SegmentEntity::TYPE_WITHOUT_LIST);
     verify($segments[5]['id'])->equals('0');
     verify($segments[5]['subscribers'])->equals(1);

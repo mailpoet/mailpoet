@@ -120,7 +120,7 @@ class SegmentSaveControllerTest extends \MailPoetTest {
     $duplicate = $this->saveController->duplicate($segment);
     verify($duplicate->getId())->notEquals($segment->getId());
     $filters = $duplicate->getDynamicFilters();
-    expect($filters)->count(2);
+    verify($filters)->arrayCount(2);
 
     $originalFilter1 = $segment->getDynamicFilters()->get(0);
     $duplicateFilter1 = $duplicate->getDynamicFilters()->get(0);

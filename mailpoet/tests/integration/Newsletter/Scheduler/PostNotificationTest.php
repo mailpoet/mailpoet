@@ -71,7 +71,7 @@ class PostNotificationTest extends \MailPoetTest {
     $sendingTask = $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $sendingTask);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingTask->getSendingQueue());
-    expect($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->count(1);
+    verify($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->arrayCount(1);
     $this->assertInstanceOf(NewsletterEntity::class, $sendingTask->getSendingQueue()->getNewsletter());
     verify($sendingTask->getSendingQueue()->getNewsletter()->getId())->equals($newsletter->getId());
 
@@ -87,7 +87,7 @@ class PostNotificationTest extends \MailPoetTest {
     $newsletter = $this->newslettersRepository->findOneById($newsletterId);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
-    expect($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->count(1);
+    verify($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->arrayCount(1);
   }
 
   public function testItCreatesPostNotificationSendingTaskIfAPausedNotificationExists() {
@@ -110,7 +110,7 @@ class PostNotificationTest extends \MailPoetTest {
     $sendingTask = $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $sendingTask);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingTask->getSendingQueue());
-    expect($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->count(2);
+    verify($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->arrayCount(2);
     $this->assertInstanceOf(NewsletterEntity::class, $sendingTask->getSendingQueue()->getNewsletter());
     verify($sendingTask->getSendingQueue()->getNewsletter()->getId())->equals($newsletter->getId());
 
@@ -124,7 +124,7 @@ class PostNotificationTest extends \MailPoetTest {
     $newsletter = $this->newslettersRepository->findOneById($newsletterId);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $this->postNotificationScheduler->createPostNotificationSendingTask($newsletter);
-    expect($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->count(2);
+    verify($this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]))->arrayCount(2);
   }
 
   public function testItDoesNotSchedulePostNotificationWhenNotificationWasAlreadySentForPost() {

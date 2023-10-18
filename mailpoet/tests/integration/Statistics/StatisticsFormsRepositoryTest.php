@@ -34,7 +34,7 @@ class StatisticsFormsRepositoryTest extends \MailPoetTest {
     verify($record->getSubscriber())->equals($subscriber);
 
     $this->repository->record($form, $subscriber);
-    expect($this->repository->findAll())->count(1);
+    verify($this->repository->findAll())->arrayCount(1);
   }
 
   public function testItCanRecordMultipleStats(): void {
@@ -46,7 +46,7 @@ class StatisticsFormsRepositoryTest extends \MailPoetTest {
     $this->repository->record($form2, $subscriber2);
     $this->repository->record($form1, $subscriber1);
 
-    expect($this->repository->findAll())->count(3);
+    verify($this->repository->findAll())->arrayCount(3);
   }
 
   public function testItCanReturnTheTotalSignupsOfAForm(): void {
@@ -62,7 +62,7 @@ class StatisticsFormsRepositoryTest extends \MailPoetTest {
 
     verify($this->repository->getTotalSignups((int)$form1->getId()))->equals(2);
     verify($this->repository->getTotalSignups((int)$form2->getId()))->equals(1);
-    expect($this->repository->findAll())->count(3);
+    verify($this->repository->findAll())->arrayCount(3);
   }
 
   private function createSubscriber(): SubscriberEntity {

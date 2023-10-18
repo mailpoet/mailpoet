@@ -22,27 +22,27 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
 
     // all/trash groups
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition(['group' => 'all']));
-    expect($newsletters)->count(1);
+    verify($newsletters)->arrayCount(1);
 
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition(['group' => 'trash']));
-    expect($newsletters)->count(0);
+    verify($newsletters)->arrayCount(0);
 
     // mark the newsletter sent
     $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
     $this->entityManager->flush();
 
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition(['group' => 'sent']));
-    expect($newsletters)->count(1);
+    verify($newsletters)->arrayCount(1);
 
     // delete the newsletter
     $newsletter->setDeletedAt(new \DateTime());
     $this->entityManager->flush();
 
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition(['group' => 'all']));
-    expect($newsletters)->count(0);
+    verify($newsletters)->arrayCount(0);
 
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition(['group' => 'trash']));
-    expect($newsletters)->count(1);
+    verify($newsletters)->arrayCount(1);
   }
 
   public function testItAppliesSearch() {
@@ -56,10 +56,10 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
     $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
 
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition(['search' => 'pineapple']));
-    expect($newsletters)->count(1);
+    verify($newsletters)->arrayCount(1);
 
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition(['search' => 'tomato']));
-    expect($newsletters)->count(0);
+    verify($newsletters)->arrayCount(0);
   }
 
   public function testItAppliesSegmentFilter() {
@@ -86,7 +86,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
 
     // without filter
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([]));
-    expect($newsletters)->count(2);
+    verify($newsletters)->arrayCount(2);
 
     // with filter
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
@@ -94,7 +94,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
         'segment' => $segment->getId(),
       ],
     ]));
-    expect($newsletters)->count(1);
+    verify($newsletters)->arrayCount(1);
   }
 
   public function testItAppliesTypeParameter() {
@@ -109,7 +109,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
 
     // without type
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([]));
-    expect($newsletters)->count(1);
+    verify($newsletters)->arrayCount(1);
 
     // with 'standard' type
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
@@ -117,7 +117,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
         'type' => 'standard',
       ],
     ]));
-    expect($newsletters)->count(1);
+    verify($newsletters)->arrayCount(1);
 
     // with 'welcome' type
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
@@ -125,7 +125,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
         'type' => 'welcome',
       ],
     ]));
-    expect($newsletters)->count(0);
+    verify($newsletters)->arrayCount(0);
   }
 
   public function testItAppliesAutomaticEmailsGroupParameter() {
@@ -161,7 +161,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
         'group' => 'woocommerce',
       ],
     ]));
-    expect($newsletters)->count(1);
+    verify($newsletters)->arrayCount(1);
 
     // get 'unicorns' group
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
@@ -170,11 +170,11 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
         'group' => 'unicorns',
       ],
     ]));
-    expect($newsletters)->count(1);
+    verify($newsletters)->arrayCount(1);
 
     // get all emails group
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition(['type' => NewsletterEntity::TYPE_AUTOMATIC]));
-    expect($newsletters)->count(2);
+    verify($newsletters)->arrayCount(2);
   }
 
   public function testItAppliesParentIdParameter() {
@@ -200,7 +200,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
         'parentId' => (string)$parent->getId(),
       ],
     ]));
-    expect($newsletters)->count(1);
+    verify($newsletters)->arrayCount(1);
 
     // non-existent parent ID
     $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
@@ -208,7 +208,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
         'parentId' => (string)$newsletter->getId(),
       ],
     ]));
-    expect($newsletters)->count(0);
+    verify($newsletters)->arrayCount(0);
   }
 
   public function testItAppliesSort() {
@@ -232,7 +232,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
       'sort_by' => 'subject',
       'sort_order' => 'asc',
     ]));
-    expect($newsletters)->count(2);
+    verify($newsletters)->arrayCount(2);
     verify($newsletters[0]->getSubject())->same('Newsletter A');
     verify($newsletters[1]->getSubject())->same('Newsletter B');
 
@@ -241,7 +241,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
       'sort_by' => 'subject',
       'sort_order' => 'desc',
     ]));
-    expect($newsletters)->count(2);
+    verify($newsletters)->arrayCount(2);
     verify($newsletters[0]->getSubject())->same('Newsletter B');
     verify($newsletters[1]->getSubject())->same('Newsletter A');
   }
@@ -267,7 +267,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
       'limit' => 1,
       'offset' => 0,
     ]));
-    expect($newsletters)->count(1);
+    verify($newsletters)->arrayCount(1);
     verify($newsletters[0]->getSubject())->same('Newsletter A');
 
     // second page
@@ -275,7 +275,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
       'limit' => 1,
       'offset' => 1,
     ]));
-    expect($newsletters)->count(1);
+    verify($newsletters)->arrayCount(1);
     verify($newsletters[0]->getSubject())->same('Newsletter B');
 
     // third page
@@ -283,7 +283,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
       'limit' => 1,
       'offset' => 2,
     ]));
-    expect($newsletters)->count(0);
+    verify($newsletters)->arrayCount(0);
   }
 
   public function testItReturnsCorrectSegmentFilterData() {
@@ -309,7 +309,7 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
       'offset' => 0,
     ]));
 
-    expect($filters['segment'])->count(2); // All list + 1 segments
+    verify($filters['segment'])->arrayCount(2); // All list + 1 segments
     verify($filters['segment'][0]['label'])->equals('All Lists');
     verify($filters['segment'][1]['label'])->equals('Segment 1 (1)');
     verify($filters['segment'][1]['value'])->equals($segment1->getId());

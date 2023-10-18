@@ -219,12 +219,12 @@ class ExportTest extends \MailPoetTest {
     $jsonData['segments'] = [$this->segment1->getId()];
     $export = $this->createExport($jsonData);
     $subscribers = $export->getSubscribers();
-    expect($subscribers)->count(2);
+    verify($subscribers)->arrayCount(2);
 
     $jsonData['segments'] = [$this->segment2->getId()];
     $export = $this->createExport($jsonData);
     $subscribers = $export->getSubscribers();
-    expect($subscribers)->count(2);
+    verify($subscribers)->arrayCount(2);
   }
 
   public function testItCanGetSubscribersOnlyWithoutSegments() {
@@ -232,7 +232,7 @@ class ExportTest extends \MailPoetTest {
     $jsonData['segments'] = [0];
     $export = $this->createExport($jsonData);
     $subscribers = $export->getSubscribers() ?? [];
-    expect($subscribers)->count(1);
+    verify($subscribers)->arrayCount(1);
     verify($subscribers[0]['segment_name'])->equals('Not In Segment');
   }
 

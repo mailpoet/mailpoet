@@ -147,7 +147,7 @@ class CouponsTest extends \MailPoetTest {
   private function validateResponse($response, $expectedCoupons): void {
     $returnedCoupons = $response->data;
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect($returnedCoupons)->count(count($expectedCoupons));
+    verify($returnedCoupons)->arrayCount(count($expectedCoupons));
 
     foreach ($expectedCoupons as $key => $coupon) {
       verify($coupon->get_id())->equals($returnedCoupons[$key]['id']);

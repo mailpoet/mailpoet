@@ -50,13 +50,13 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
   public function testItDoesntScheduleAnythingIfThereAreNoActiveReEngagementEmails() {
     $this->createReEngagementEmail(5, NewsletterEntity::STATUS_DRAFT); // Inactive re-engagement email
     $scheduled = $this->scheduler->scheduleAll();
-    expect($scheduled)->count(0);
+    verify($scheduled)->arrayCount(0);
   }
 
   public function testItDoesntScheduleAnythingIfThereAreNoSubscribersToSendTo() {
     $this->createReEngagementEmail(5);
     $scheduled = $this->scheduler->scheduleAll();
-    expect($scheduled)->count(0);
+    verify($scheduled)->arrayCount(0);
   }
 
   public function testItScheduleEmailWithCorrectSubscribers() {

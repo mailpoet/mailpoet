@@ -29,14 +29,14 @@ class SchedulerTest extends \MailPoetTest {
     verify($this->testee->getNewsletters(NewsletterEntity::TYPE_NOTIFICATION))->empty();
 
     // one newsletter with type "welcome" should be found
-    expect($this->testee->getNewsletters(NewsletterEntity::TYPE_WELCOME))->count(1);
+    verify($this->testee->getNewsletters(NewsletterEntity::TYPE_WELCOME))->arrayCount(1);
 
     // one automatic email belonging to "test" group should be found
     $newsletter = $newsletterFactory->withAutomaticType()->withActiveStatus()->create();
     $newsletterOptionFactory->create($newsletter, 'group', 'test');
 
     verify($this->testee->getNewsletters(NewsletterEntity::TYPE_WELCOME, 'group_does_not_exist'))->empty();
-    expect($this->testee->getNewsletters(NewsletterEntity::TYPE_AUTOMATIC, 'test'))->count(1);
+    verify($this->testee->getNewsletters(NewsletterEntity::TYPE_AUTOMATIC, 'test'))->arrayCount(1);
   }
 
   public function testItCanGetNextRunDate() {

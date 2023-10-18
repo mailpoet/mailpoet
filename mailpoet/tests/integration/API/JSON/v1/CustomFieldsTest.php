@@ -72,7 +72,7 @@ class CustomFieldsTest extends \MailPoetTest {
   public function testItCanGetAllCustomFields() {
     $response = $this->endpoint->getAll();
     verify($response->status)->equals(APIResponse::STATUS_OK);
-    expect($response->data)->count(count($this->customFields));
+    verify($response->data)->arrayCount(count($this->customFields));
 
     foreach ($response->data as $customField) {
       verify($customField['name'])->notEmpty();

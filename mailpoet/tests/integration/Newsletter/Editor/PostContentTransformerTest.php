@@ -245,7 +245,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     verify($result[0]['blocks'][0]['blocks'][0])->equals($this->titleMock);
     verify($result[0]['blocks'][0]['blocks'][1])->equals($this->imageMock);
     verify($result[0]['blocks'][0]['blocks'][2])->equals($this->contentMock[0]);
-    expect($result[0]['blocks'][0]['blocks'])->count(3);
+    verify($result[0]['blocks'][0]['blocks'])->arrayCount(3);
   }
 
   public function testShouldNotAddImageForExistingFullPost() {
@@ -259,7 +259,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     $result = $transformer->transform([]);
     verify($result[0]['blocks'][0]['blocks'][0])->equals($this->titleMock);
     verify($result[0]['blocks'][0]['blocks'][1])->equals($this->contentMock[0]);
-    expect($result[0]['blocks'][0]['blocks'])->count(2);
+    verify($result[0]['blocks'][0]['blocks'])->arrayCount(2);
   }
 
   public function testShouldAddImageForExistingFullPostProduct() {
@@ -274,7 +274,7 @@ class PostContentTransformerTest extends \MailPoetTest {
     verify($result[0]['blocks'][0]['blocks'][0])->equals($this->titleMock);
     verify($result[0]['blocks'][0]['blocks'][1])->equals($this->imageMock);
     verify($result[0]['blocks'][0]['blocks'][2])->equals($this->contentMock[0]);
-    expect($result[0]['blocks'][0]['blocks'])->count(3);
+    verify($result[0]['blocks'][0]['blocks'])->arrayCount(3);
   }
 
   public function testShouldAddClassToParagraphsInFullPostsWithLayout() {

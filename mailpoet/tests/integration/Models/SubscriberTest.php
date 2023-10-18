@@ -214,12 +214,12 @@ class SubscriberTest extends \MailPoetTest {
 
     // all, none + segments
     $filters = Subscriber::filters();
-    expect($filters['segment'])->count(4);
+    verify($filters['segment'])->arrayCount(4);
 
     // does not include trashed segments
     $segment->trash();
     $filters = Subscriber::filters();
-    expect($filters['segment'])->count(3);
+    verify($filters['segment'])->arrayCount(3);
   }
 
   public function testItAppliesSegmentFilter() {
@@ -240,10 +240,10 @@ class SubscriberTest extends \MailPoetTest {
     // not yet subscribed
     $subscribers = Subscriber::filter('filterBy', ['segment' => 'none'])
       ->findMany();
-    expect($subscribers)->count(1);
+    verify($subscribers)->arrayCount(1);
     $subscribers = Subscriber::filter('filterBy', ['segment' => $segment->id])
       ->findMany();
-    expect($subscribers)->count(0);
+    verify($subscribers)->arrayCount(0);
 
     // subscribed to a segment
     SubscriberSegment::subscribeToSegments(
@@ -253,10 +253,10 @@ class SubscriberTest extends \MailPoetTest {
 
     $subscribers = Subscriber::filter('filterBy', ['segment' => 'none'])
       ->findMany();
-    expect($subscribers)->count(0);
+    verify($subscribers)->arrayCount(0);
     $subscribers = Subscriber::filter('filterBy', ['segment' => $segment->id])
       ->findMany();
-    expect($subscribers)->count(1);
+    verify($subscribers)->arrayCount(1);
 
     // unsubscribed
     SubscriberSegment::unsubscribeFromSegments(
@@ -266,7 +266,7 @@ class SubscriberTest extends \MailPoetTest {
 
     $subscribers = Subscriber::filter('filterBy', ['segment' => 'none'])
       ->findMany();
-    expect($subscribers)->count(1);
+    verify($subscribers)->arrayCount(1);
 
     // subscribed to trashed segments
     SubscriberSegment::subscribeToSegments(
@@ -278,7 +278,7 @@ class SubscriberTest extends \MailPoetTest {
 
     $subscribers = Subscriber::filter('filterBy', ['segment' => 'none'])
       ->findMany();
-    expect($subscribers)->count(1);
+    verify($subscribers)->arrayCount(1);
   }
 
   public function testItCanHaveSegment() {
@@ -409,7 +409,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscriber = Subscriber::findOne($subscriber->id);
 
     $subscribedSegments = $subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(2);
+    verify($subscribedSegments)->arrayCount(2);
     expect($subscribedSegments[0]['name'] = 'Segment 1');
     expect($subscribedSegments[1]['name'] = 'Segment 2');
 
@@ -420,7 +420,7 @@ class SubscriberTest extends \MailPoetTest {
     ]);
 
     $subscribedSegments = $subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(0);
+    verify($subscribedSegments)->arrayCount(0);
   }
 
   public function testItCanCreateOrUpdate() {
@@ -573,7 +573,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscribedSubscribersInSegment = Subscriber::getSubscribedInSegments(
       [$segment->id]
     )->findArray();
-    expect($subscribedSubscribersInSegment)->count(1);
+    verify($subscribedSubscribersInSegment)->arrayCount(1);
 
     // update 1st subscriber's state to subscribed
     $subscriber = Subscriber::findOne($subscriber1->id);
@@ -583,7 +583,7 @@ class SubscriberTest extends \MailPoetTest {
     $subscribedSubscribersInSegment = Subscriber::getSubscribedInSegments(
       [$segment->id]
     )->findArray();
-    expect($subscribedSubscribersInSegment)->count(2);
+    verify($subscribedSubscribersInSegment)->arrayCount(2);
   }
 
   public function testItCannotTrashWpUser() {
@@ -653,9 +653,9 @@ class SubscriberTest extends \MailPoetTest {
       $subscriberCustomField->value = 'somevalue';
       $subscriberCustomField->save();
     }
-    expect(SubscriberCustomField::findMany())->count(5);
+    verify(SubscriberCustomField::findMany())->arrayCount(5);
     $subscriber->delete();
-    expect(SubscriberCustomField::findMany())->count(1);
+    verify(SubscriberCustomField::findMany())->arrayCount(1);
   }
 
   public function testItCanGetTheTotalNumberOfSubscribers() {

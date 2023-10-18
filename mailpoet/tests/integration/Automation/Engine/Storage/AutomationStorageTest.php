@@ -150,9 +150,9 @@ class AutomationStorageTest extends \MailPoetTest {
   public function testItCanDeleteAnAutomation() {
     $automationToDelete = $this->createEmptyAutomation();
     $automationToKeep = $this->createEmptyAutomation();
-    expect($this->testee->getAutomations())->count(2);
+    verify($this->testee->getAutomations())->arrayCount(2);
     $this->testee->deleteAutomation($automationToDelete);
-    expect($this->testee->getAutomations())->count(1);
+    verify($this->testee->getAutomations())->arrayCount(1);
     verify($this->testee->getAutomation($automationToDelete->getId()))->null();
     $automationToKeepFromDatabase = $this->testee->getAutomation($automationToKeep->getId());
     $this->assertInstanceOf(Automation::class, $automationToKeepFromDatabase);

@@ -38,7 +38,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     verify($result)->true();
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(2);
+    verify($subscribedSegments)->arrayCount(2);
   }
 
   public function testItCanResetSubscriptions() {
@@ -49,7 +49,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     verify($result)->true();
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(1);
+    verify($subscribedSegments)->arrayCount(1);
     verify($subscribedSegments[0]['name'])->equals($this->segment1->name);
 
     // reset subscriptions to second segment
@@ -58,7 +58,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     ]);
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(1);
+    verify($subscribedSegments)->arrayCount(1);
     verify($subscribedSegments[0]['name'])->equals($this->segment2->name);
   }
 
@@ -83,7 +83,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     verify($result)->true();
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(1);
+    verify($subscribedSegments)->arrayCount(1);
     verify($subscribedSegments[0]['name'])->equals($this->segment2->name);
   }
 
@@ -174,18 +174,18 @@ class SubscriberSegmentTest extends \MailPoetTest {
     verify($result)->true();
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(2);
+    verify($subscribedSegments)->arrayCount(2);
 
     $result = SubscriberSegment::unsubscribeFromSegments($this->subscriber);
     verify($result)->true();
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(0);
+    verify($subscribedSegments)->arrayCount(0);
 
     SubscriberSegment::resubscribeToAllSegments($this->subscriber);
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(2);
+    verify($subscribedSegments)->arrayCount(2);
   }
 
   public function testItCanDeleteSubscriptions() {
@@ -201,7 +201,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
     ]);
 
     $subscribedSegments = $this->subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(2);
+    verify($subscribedSegments)->arrayCount(2);
 
     // completely remove all subscriptions
     SubscriberSegment::deleteSubscriptions($this->subscriber);
@@ -311,7 +311,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
 
     // the subscriber should still be subscribed to the WP segment
     $subscribedSegments = $this->subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(1);
+    verify($subscribedSegments)->arrayCount(1);
     verify($subscribedSegments[0]['name'])->equals($this->wpSegment->name);
   }
 
@@ -330,7 +330,7 @@ class SubscriberSegmentTest extends \MailPoetTest {
 
     // the subscriber should still be subscribed to the WP segment
     $subscribedSegments = $this->subscriber->segments()->findArray();
-    expect($subscribedSegments)->count(2);
+    verify($subscribedSegments)->arrayCount(2);
     verify($subscribedSegments[0]['name'])->equals($this->wpSegment->name);
     verify($subscribedSegments[1]['name'])->equals($this->wcSegment->name);
   }

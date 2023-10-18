@@ -65,13 +65,13 @@ class WelcomeTest extends \MailPoetTest {
     // queue is not scheduled
     $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $existingSubscriber);
     $queues = $this->entityManager->getRepository(SendingQueueEntity::class)->findAll();
-    expect($queues)->count(1);
+    verify($queues)->arrayCount(1);
 
     // queue is scheduled
     $unscheduledSubscriber = $this->createSubscriber('welcome_test_2@example.com');
     $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $unscheduledSubscriber->getId());
     $queues = $this->entityManager->getRepository(SendingQueueEntity::class)->findAll();
-    expect($queues)->count(2);
+    verify($queues)->arrayCount(2);
   }
 
   public function testItCreatesWelcomeNotificationSendingTaskScheduledToSendInHours() {

@@ -164,7 +164,7 @@ class SchedulerTest extends \MailPoetTest {
     verify(strlen((string)$notificationHistory->getUnsubscribeToken()))->equals(Security::UNSUBSCRIBE_TOKEN_LENGTH);
 
     verify($notificationHistory->getParent())->equals($newsletter);
-    expect($notificationHistory->getNewsletterSegments())->count(count($segments));
+    verify($notificationHistory->getNewsletterSegments())->arrayCount(count($segments));
   }
 
   public function testItCanDeleteQueueWhenDeliveryIsSetToImmediately() {
@@ -181,7 +181,7 @@ class SchedulerTest extends \MailPoetTest {
     // queue and associated newsletter should be deleted when interval type is set to "immediately"
     verify($this->sendingQueuesRepository->findAll())->notEmpty();
     $scheduler->deleteQueueOrUpdateNextRunDate($queue, $newsletter);
-    expect($this->sendingQueuesRepository->findAll())->count(0);
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
   }
 
   public function testItCanRescheduleQueueDeliveryTime() {
@@ -229,7 +229,7 @@ class SchedulerTest extends \MailPoetTest {
     // return false and delete queue when subscriber is not a WP user
     $result = $scheduler->verifyWPSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     verify($result)->false();
-    expect($this->sendingQueuesRepository->findAll())->count(0);
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
   }
 
   public function testItFailsWPSubscriberVerificationWhenSubscriberRoleDoesNotMatch() {
@@ -246,7 +246,7 @@ class SchedulerTest extends \MailPoetTest {
     // specified for the welcome email
     $result = $scheduler->verifyWPSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     verify($result)->false();
-    expect($this->sendingQueuesRepository->findAll())->count(0);
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
   }
 
   public function testItPassesWPSubscriberVerificationWhenSubscriberExistsAndRoleMatches() {
@@ -290,7 +290,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
     $result = $scheduler->processWelcomeNewsletter($newsletter, $queue);
     verify($result)->false();
-    expect($this->sendingQueuesRepository->findAll())->count(0);
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
   }
 
   public function testItDoesNotProcessWelcomeNewsletterWhenWPUserCannotBeVerified() {
@@ -374,7 +374,7 @@ class SchedulerTest extends \MailPoetTest {
     $result = $scheduler->verifyMailpoetSubscriber(PHP_INT_MAX, $newsletter, $queue);
     verify($result)->false();
     // delete queue when subscriber can't be found
-    expect($this->sendingQueuesRepository->findAll())->count(0);
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
   }
 
   public function testItFailsMailpoetSubscriberVerificationWhenSubscriberIsNotInSegment() {
@@ -392,7 +392,7 @@ class SchedulerTest extends \MailPoetTest {
     $result = $scheduler->verifyMailpoetSubscriber((int)$subscriber->getId(), $newsletter, $queue);
     verify($result)->false();
     // delete queue when subscriber is not in segment specified for the newsletter
-    expect($this->sendingQueuesRepository->findAll())->count(0);
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
   }
 
   public function testItReschedulesQueueDeliveryWhenMailpoetSubscriberHasNotConfirmedSubscription() {
@@ -593,7 +593,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue->save();
     $scheduler = $this->getScheduler();
     $scheduler->process();
-    expect($this->sendingQueuesRepository->findAll())->count(0);
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
   }
 
   public function testItDeletesQueueDuringProcessingWhenNewsletterIsSoftDeleted() {
@@ -607,7 +607,7 @@ class SchedulerTest extends \MailPoetTest {
     $queue->save();
     $scheduler = $this->getScheduler();
     $scheduler->process();
-    expect($this->sendingQueuesRepository->findAll())->count(0);
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
   }
 
   public function testItProcessesWelcomeNewsletters() {
@@ -847,7 +847,7 @@ class SchedulerTest extends \MailPoetTest {
     verify($task->status)->null();
     // task should have 1 subscriber added from segment
     $subscribers = $task->subscribers()->findMany();
-    expect($subscribers)->count(1);
+    verify($subscribers)->arrayCount(1);
     verify($subscribers[0]->id)->equals($subscriber->getId());
   }
 

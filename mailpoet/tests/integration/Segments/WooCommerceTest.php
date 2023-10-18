@@ -336,7 +336,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->insertGuestCustomer();
     $this->synchronizeAllCustomers();
     $subscribers = $this->getWCSubscribersByEmails($this->userEmails);
-    expect($subscribers)->count(4);
+    verify($subscribers)->arrayCount(4);
   }
 
   public function testItDoesntRemoveRegisteredCustomersFromTrash(): void {
@@ -388,7 +388,7 @@ class WooCommerceTest extends \MailPoetTest {
     $this->tester->deleteTestWooOrder((int)$guest['order_id']);
     $this->synchronizeAllCustomers();
     $subscribers = $this->getWCSubscribersByEmails($this->userEmails);
-    expect($subscribers)->count(2);
+    verify($subscribers)->arrayCount(2);
   }
 
   public function testItDoesntDeleteNonWCData(): void {

@@ -179,12 +179,12 @@ class SendingTest extends \MailPoetTest {
     for ($i = 0; $i < $amount + 3; $i += 1) {
       $this->createNewSendingTask(['status' => ScheduledTask::STATUS_SCHEDULED]);
     }
-    expect($this->scheduledTaskRepository->findScheduledSendingTasks($amount))->count($amount);
+    verify($this->scheduledTaskRepository->findScheduledSendingTasks($amount))->arrayCount($amount);
   }
 
   public function testItDoesNotGetPaused() {
     $this->createNewSendingTask(['status' => ScheduledTask::STATUS_PAUSED]);
-    expect($this->scheduledTaskRepository->findScheduledSendingTasks())->count(0);
+    verify($this->scheduledTaskRepository->findScheduledSendingTasks())->arrayCount(0);
   }
 
   public function testItGetsRunningQueues() {
@@ -208,7 +208,7 @@ class SendingTest extends \MailPoetTest {
     for ($i = 0; $i < $amount + 3; $i += 1) {
       $this->createNewSendingTask(['status' => null]);
     }
-    expect($this->scheduledTaskRepository->findRunningSendingTasks($amount))->count($amount);
+    verify($this->scheduledTaskRepository->findRunningSendingTasks($amount))->arrayCount($amount);
   }
 
   public function testItGetsBatchOfRunningQueuesSortedByUpdatedTime() {

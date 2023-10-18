@@ -125,7 +125,7 @@ class LinksTest extends \MailPoetTest {
 
     [$updatedContent, $replacedLinks] = $this->links->replace($template, $processedLinks);
 
-    expect($replacedLinks)->count(1);
+    verify($replacedLinks)->arrayCount(1);
     // links in returned content were replaced with hashes
     verify($updatedContent)
       ->stringContainsString('replace by this');

@@ -47,7 +47,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
     $parsedDocument = [$this->paragraphBlock, $this->columnsBlock, $this->paragraphBlock, $this->paragraphBlock];
     // We expect to wrap top level paragraph blocks into columns so the result should three columns blocks
     $result = $this->preprocessor->preprocess($parsedDocument);
-    expect($result)->count(3);
+    verify($result)->arrayCount(3);
     // First columns contain columns with one paragraph block
     verify($result[0]['innerBlocks'][0]['blockName'])->equals('core/column');
     verify($result[0]['innerBlocks'][0]['innerBlocks'][0]['blockName'])->equals('core/paragraph');
@@ -56,7 +56,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
     verify($result[1]['innerBlocks'][0]['innerBlocks'])->empty();
     // Third columns contain columns with two paragraph blocks
     verify($result[2]['innerBlocks'][0]['blockName'])->equals('core/column');
-    expect($result[2]['innerBlocks'][0]['innerBlocks'])->count(2);
+    verify($result[2]['innerBlocks'][0]['innerBlocks'])->arrayCount(2);
     verify($result[2]['innerBlocks'][0]['innerBlocks'][0]['blockName'])->equals('core/paragraph');
     verify($result[2]['innerBlocks'][0]['innerBlocks'][1]['blockName'])->equals('core/paragraph');
   }

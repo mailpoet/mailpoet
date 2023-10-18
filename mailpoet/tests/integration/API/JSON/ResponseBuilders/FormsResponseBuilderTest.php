@@ -48,7 +48,7 @@ class FormsResponseBuilderTest extends \MailPoetTest {
 
     $response = $this->responseBuilder->buildForListing([$form1, $form2]);
 
-    expect($response)->count(2);
+    verify($response)->arrayCount(2);
     verify($response[0]['signups'])->equals(0);
     verify($response[0]['segments'])->equals($this->formSettings['segments']);
   }

@@ -190,7 +190,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
     $this->event->scheduleEmail(3);
     $queue1 = $this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]);
-    expect($queue1)->count(1);
+    verify($queue1)->arrayCount(1);
 
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     $this->updateEmailTriggerIds($newsletter, ['16']);
@@ -207,7 +207,7 @@ class PurchasedInCategoryTest extends \MailPoetTest {
     $this->event = new PurchasedInCategory($this->woocommerceHelper);
     $this->event->scheduleEmail(4);
     $queue2 = $this->sendingQueuesRepository->findBy(['newsletter' => $newsletter]);
-    expect($queue2)->count(2);
+    verify($queue2)->arrayCount(2);
   }
 
   private function getOrderMock($categories = ['123']) {

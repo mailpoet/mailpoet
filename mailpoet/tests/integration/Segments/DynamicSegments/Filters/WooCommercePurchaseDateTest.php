@@ -37,7 +37,7 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
     $this->createOrder($customerId2, new Carbon('2023-02-01'));
     $this->createOrder($customerId3, new Carbon('1993-01-01'));
     $emails = $this->getSubscriberEmailsMatchingFilter('after', '2023-02-01');
-    expect($emails)->count(1);
+    verify($emails)->arrayCount(1);
     verify($emails)->equals(['c1@example.com']);
   }
 
@@ -144,7 +144,7 @@ class WooCommercePurchaseDateTest extends \MailPoetTest {
       $this->createOrder($customerId, new Carbon($date), $invalidStatus);
     }
     $emails = $this->getSubscriberEmailsMatchingFilter('on', $date);
-    expect($emails)->count(2);
+    verify($emails)->arrayCount(2);
     $this->assertEqualsCanonicalizing(['wc-processing@example.com', 'wc-completed@example.com'], $emails);
   }
 

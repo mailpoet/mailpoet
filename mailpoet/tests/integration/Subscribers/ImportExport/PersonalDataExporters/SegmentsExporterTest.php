@@ -92,7 +92,7 @@ class SegmentsExporterTest extends \MailPoetTest {
        ],
     ];
     expect($result['data'])->array();
-    expect($result['data'])->count(2);
+    verify($result['data'])->arrayCount(2);
     verify($result['done'])->equals(true);
     verify($result['data'][0])->arrayHasKey('group_id');
     verify($result['data'][0])->arrayHasKey('group_label');

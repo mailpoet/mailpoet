@@ -83,7 +83,7 @@ class ScheduledTaskSubscribersListingRepositoryTest extends \MailPoetTest {
     ];
     $tasksSubscribers = $this->repository->getData($this->listingHandler->getListingDefinition($listingData));
     $count = $this->repository->getCount($this->listingHandler->getListingDefinition($listingData));
-    expect($tasksSubscribers)->count(3);
+    verify($tasksSubscribers)->arrayCount(3);
     verify($count)->equals(3);
 
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $tasksSubscribers[0]);
@@ -106,7 +106,7 @@ class ScheduledTaskSubscribersListingRepositoryTest extends \MailPoetTest {
     ];
     $tasksSubscribers = $this->repository->getData($this->listingHandler->getListingDefinition($listingData));
     $count = $this->repository->getCount($this->listingHandler->getListingDefinition($listingData));
-    expect($tasksSubscribers)->count(1);
+    verify($tasksSubscribers)->arrayCount(1);
     verify($count)->equals(1);
 
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $tasksSubscribers[0]);
@@ -122,7 +122,7 @@ class ScheduledTaskSubscribersListingRepositoryTest extends \MailPoetTest {
     ];
     $tasksSubscribers = $this->repository->getData($this->listingHandler->getListingDefinition($listingData));
     $count = $this->repository->getCount($this->listingHandler->getListingDefinition($listingData));
-    expect($tasksSubscribers)->count(1);
+    verify($tasksSubscribers)->arrayCount(1);
     verify($count)->equals(1);
 
     $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $tasksSubscribers[0]);

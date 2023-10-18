@@ -29,10 +29,10 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
 
   public function testItSchedulesTriggerActionOnInit(): void {
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(0);
+    verify($actions)->arrayCount(0);
     $this->actionSchedulerRunner->init();
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(1);
+    verify($actions)->arrayCount(1);
     $action = reset($actions);
     $this->assertInstanceOf(\ActionScheduler_Action::class, $action);
     verify($action->get_hook())->equals(DaemonTrigger::NAME);
@@ -41,24 +41,24 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
   public function testItDeactivateAllTasks(): void {
     $this->actionSchedulerRunner->init();
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(1);
+    verify($actions)->arrayCount(1);
     $this->actionSchedulerRunner->deactivate();
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(0);
+    verify($actions)->arrayCount(0);
   }
 
   public function testItDeactivatesAllTasksOnTrigger(): void {
     $this->actionScheduler->scheduleRecurringAction(time() - 1, 100, DaemonTrigger::NAME);
     $this->actionScheduler->scheduleImmediateSingleAction(DaemonRun::NAME);
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(2);
+    verify($actions)->arrayCount(2);
     $this->actionSchedulerRunner->init(false);
 
     $runner = new \ActionScheduler_QueueRunner();
     $runner->run();
 
     $actions = $this->actionSchedulerHelper->getMailPoetScheduledActions();
-    expect($actions)->count(0);
+    verify($actions)->arrayCount(0);
   }
 
   private function cleanup(): void {

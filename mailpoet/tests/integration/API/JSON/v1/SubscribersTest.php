@@ -516,7 +516,7 @@ class SubscribersTest extends \MailPoetTest {
     ]);
 
     verify($response->meta['count'])->equals(2);
-    expect($response->data)->count(1);
+    verify($response->data)->arrayCount(1);
     verify($response->data[0]['email'])->equals(
       $this->subscriber2->getEmail()
     );
@@ -530,7 +530,7 @@ class SubscribersTest extends \MailPoetTest {
     ]);
 
     verify($response->meta['count'])->equals(2);
-    expect($response->data)->count(1);
+    verify($response->data)->arrayCount(1);
     verify($response->data[0]['email'])->equals(
       $this->subscriber1->getEmail()
     );
@@ -922,7 +922,7 @@ class SubscribersTest extends \MailPoetTest {
     ];
 
     $this->endpoint->save($subscriberData);
-    expect($this->sendingQueuesRepository->findAll())->count(1);
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(1);
   }
 
   public function testItSchedulesWelcomeEmailNotificationWhenExistedSubscriberIsUpdated() {
@@ -942,7 +942,7 @@ class SubscribersTest extends \MailPoetTest {
 
     $subscriberData['segments'] = [$this->segment1->getId()];
     $this->endpoint->save($subscriberData);
-    expect($this->sendingQueuesRepository->findAll())->count(1);
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(1);
   }
 
   public function testItDoesNotSchedulesWelcomeEmailNotificationWhenNoNewSegmentIsAdded() {
@@ -967,7 +967,7 @@ class SubscribersTest extends \MailPoetTest {
     ];
 
     $this->endpoint->save($subscriberData);
-    expect($this->sendingQueuesRepository->findAll())->count(0);
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
   }
 
   public function testItSendsConfirmationEmail() {
