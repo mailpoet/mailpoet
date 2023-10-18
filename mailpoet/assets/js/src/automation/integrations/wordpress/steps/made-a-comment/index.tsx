@@ -4,7 +4,7 @@ import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';
 import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 import { Icon } from './icon';
 
-const keywords = ['comment'];
+const keywords = [__('comment', 'mailpoet')];
 export const step: StepType = {
   key: 'wordpress:made-a-comment',
   group: 'triggers',
