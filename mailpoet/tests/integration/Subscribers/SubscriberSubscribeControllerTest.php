@@ -106,7 +106,7 @@ class SubscriberSubscribeControllerTest extends \MailPoetTest {
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => $data[$this->obfuscatedEmail]]);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
-    expect($result)->hasKey('error');
+    verify($result)->arrayHasKey('error');
     verify($result['error'])->equals('Confirmation email error');
   }
 

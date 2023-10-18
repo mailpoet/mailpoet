@@ -108,8 +108,8 @@ class MailChimpTest extends \MailPoetTest {
       $this->fail('MailChimp getSubscribers() threw an exception');
     }
 
-    expect($subscribers)->hasKey('invalid');
-    expect($subscribers)->hasKey('duplicate');
+    verify($subscribers)->arrayHasKey('invalid');
+    verify($subscribers)->arrayHasKey('duplicate');
     expect($subscribers['header'])->notEmpty();
     expect($subscribers['subscribers'])->count(1);
     verify($subscribers['subscribersCount'])->equals(1);

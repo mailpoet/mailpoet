@@ -442,8 +442,8 @@ class NewslettersTest extends \MailPoetTest {
 
     verify($response->status)->equals(APIResponse::STATUS_OK);
 
-    expect($response->meta)->hasKey('filters');
-    expect($response->meta)->hasKey('groups');
+    verify($response->meta)->arrayHasKey('filters');
+    verify($response->meta)->arrayHasKey('groups');
     verify($response->meta['count'])->equals(2);
 
     expect($response->data)->count(2);

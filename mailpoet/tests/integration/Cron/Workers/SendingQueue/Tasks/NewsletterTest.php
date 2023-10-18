@@ -611,7 +611,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->entityManager->refresh($sendingQueue);
     $updatedMeta = $sendingQueue->getMeta();
     expect($updatedMeta)->array();
-    expect($updatedMeta)->hasKey('filterSegment');
+    verify($updatedMeta)->arrayHasKey('filterSegment');
     $filterData = $updatedMeta['filterSegment']['filters'][0]['data'] ?? [];
     verify($filterData['value'])->equals(50);
     verify($filterData['operator'])->equals('higherThan');
