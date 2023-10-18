@@ -112,8 +112,8 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $encodedResult = json_encode($result);
     verify($encodedResult)->stringContainsString('Product 4');
     verify($encodedResult)->stringContainsString('Product 3');
-    expect($encodedResult)->stringNotContainsString('Product 2');
-    expect($encodedResult)->stringNotContainsString('Product 1');
+    verify($encodedResult)->stringNotContainsString('Product 2');
+    verify($encodedResult)->stringNotContainsString('Product 1');
   }
 
   public function testItDoesNotRenderIfNoSendingTaskIsSupplied() {
@@ -145,7 +145,7 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $sendingTask = $this->createSendingTask($newsletter);
     $result = $this->block->render($newsletter, $this->accBlock, false, $sendingTask);
     $encodedResult = json_encode($result);
-    expect($encodedResult)->stringNotContainsString('Product 4');
+    verify($encodedResult)->stringNotContainsString('Product 4');
     verify($encodedResult)->stringContainsString('Product 3');
     verify($encodedResult)->stringContainsString('Product 2');
     verify($encodedResult)->stringContainsString('Product 1');

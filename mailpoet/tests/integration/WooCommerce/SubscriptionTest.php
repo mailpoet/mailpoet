@@ -78,7 +78,7 @@ class SubscriptionTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->getCurrentWPUser();
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->subscribeToSegment($subscriber, $this->wcSegment);
-    expect($this->getRenderedOptinField())->stringNotContainsString('checked');
+    verify($this->getRenderedOptinField())->stringNotContainsString('checked');
   }
 
   public function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsNotSubscribed() {
@@ -88,12 +88,12 @@ class SubscriptionTest extends \MailPoetTest {
     $subscriber = $this->subscribersRepository->getCurrentWPUser();
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->unsubscribeToSegment($subscriber, $this->wcSegment);
-    expect($this->getRenderedOptinField())->stringNotContainsString('checked');
+    verify($this->getRenderedOptinField())->stringNotContainsString('checked');
   }
 
   public function testItDisplaysAnUncheckedCheckboxIfCurrentUserIsNotLoggedIn() {
     wp_set_current_user(0);
-    expect($this->getRenderedOptinField())->stringNotContainsString('checked');
+    verify($this->getRenderedOptinField())->stringNotContainsString('checked');
   }
 
   public function testItDisplaysCheckboxOptinMessageFromSettings() {

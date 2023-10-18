@@ -49,7 +49,7 @@ class BlockStylesRendererTest extends \MailPoetUnitTest {
     verify($result)->stringContainsString('background-color:#dddddd;');
     verify($result)->stringContainsString('padding:40px;');
     verify($result)->stringContainsString('font-size:13px;');
-    expect($result)->stringNotContainsString('font-weight:bold;');
+    verify($result)->stringNotContainsString('font-weight:bold;');
   }
 
   public function testItShouldRenderSingleButtonStyles() {

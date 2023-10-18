@@ -91,7 +91,7 @@ class ShortcodesTest extends \MailPoetTest {
       ->create();
 
     $result = do_shortcode('[mailpoet_archive start_date="2023-09-04"]');
-    expect($result)->stringNotContainsString('Newsletter 1');
+    verify($result)->stringNotContainsString('Newsletter 1');
     verify($result)->stringContainsString('Newsletter 2');
   }
 
@@ -109,7 +109,7 @@ class ShortcodesTest extends \MailPoetTest {
 
     $result = do_shortcode('[mailpoet_archive end_date="2023-09-04"]');
     verify($result)->stringContainsString('Newsletter 1');
-    expect($result)->stringNotContainsString('Newsletter 2');
+    verify($result)->stringNotContainsString('Newsletter 2');
   }
 
   public function testArchiveAcceptsStartAndEndDate(): void {
@@ -130,9 +130,9 @@ class ShortcodesTest extends \MailPoetTest {
       ->create();
 
     $result = do_shortcode('[mailpoet_archive start_date="2023-08-02" end_date="2023-08-14"]');
-    expect($result)->stringNotContainsString('Newsletter 1');
+    verify($result)->stringNotContainsString('Newsletter 1');
     verify($result)->stringContainsString('Newsletter 2');
-    expect($result)->stringNotContainsString('Newsletter 3');
+    verify($result)->stringNotContainsString('Newsletter 3');
   }
 
   public function testArchiveAcceptsSubjectSearch(): void {
@@ -155,7 +155,7 @@ class ShortcodesTest extends \MailPoetTest {
     $result = do_shortcode('[mailpoet_archive subject_contains="great"]');
     verify($result)->stringContainsString('Great subject');
     verify($result)->stringContainsString('Subject that is great');
-    expect($result)->stringNotContainsString('Good subject');
+    verify($result)->stringNotContainsString('Good subject');
   }
 
   public function testArchiveAcceptsLastNDays(): void {
@@ -171,7 +171,7 @@ class ShortcodesTest extends \MailPoetTest {
       ->create();
     $result = do_shortcode('[mailpoet_archive in_the_last_days="4"]');
     verify($result)->stringContainsString('Newsletter 1');
-    expect($result)->stringNotContainsString('Newsletter 2');
+    verify($result)->stringNotContainsString('Newsletter 2');
   }
 
   public function testArchiveAcceptsSegments(): void {
@@ -191,7 +191,7 @@ class ShortcodesTest extends \MailPoetTest {
       ->create();
 
     $result = do_shortcode(sprintf("[mailpoet_archive segments=\"%s\"]", $segment2->getId()));
-    expect($result)->stringNotContainsString('Newsletter 1');
+    verify($result)->stringNotContainsString('Newsletter 1');
     verify($result)->stringContainsString('Newsletter 2');
   }
 
@@ -220,12 +220,12 @@ class ShortcodesTest extends \MailPoetTest {
     $result = do_shortcode('[mailpoet_archive limit="2"]');
     verify($result)->stringContainsString('Newsletter 1');
     verify($result)->stringContainsString('Newsletter 2');
-    expect($result)->stringNotContainsString('Newsletter 3');
+    verify($result)->stringNotContainsString('Newsletter 3');
 
     $result = do_shortcode('[mailpoet_archive limit="1"]');
     verify($result)->stringContainsString('Newsletter 1');
-    expect($result)->stringNotContainsString('Newsletter 2');
-    expect($result)->stringNotContainsString('Newsletter 3');
+    verify($result)->stringNotContainsString('Newsletter 2');
+    verify($result)->stringNotContainsString('Newsletter 3');
   }
 
   public function testItRendersShortcodeDefaultsInSubject() {

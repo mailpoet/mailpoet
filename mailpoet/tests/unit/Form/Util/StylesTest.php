@@ -165,8 +165,8 @@ class StylesTest extends \MailPoetUnitTest {
     // BC Style
     $styles = $this->styles->renderFormSettingsStyles($this->createForm($form), '#prefix', FormEntity::DISPLAY_TYPE_BELOW_POST);
     list($styleWithoutMedia) = explode('@media ', $styles);
-    expect($styleWithoutMedia)->stringNotContainsString('width:');
-    expect($styleWithoutMedia)->stringNotContainsString('max-width:');
+    verify($styleWithoutMedia)->stringNotContainsString('width:');
+    verify($styleWithoutMedia)->stringNotContainsString('max-width:');
     // Pixel
     $width = [
       'unit' => 'pixel',
@@ -180,7 +180,7 @@ class StylesTest extends \MailPoetUnitTest {
     $styles = $this->styles->renderFormSettingsStyles($this->createForm($form), '#prefix', FormEntity::DISPLAY_TYPE_BELOW_POST);
     list($styleWithoutMedia) = explode('@media ', $styles);
     verify($styleWithoutMedia)->stringContainsString('width: 900px;');
-    expect($styleWithoutMedia)->stringNotContainsString('max-width:');
+    verify($styleWithoutMedia)->stringNotContainsString('max-width:');
   }
 
   public function testItRendersWidthCssForFixedBar() {
@@ -255,8 +255,8 @@ class StylesTest extends \MailPoetUnitTest {
     // BC Style
     $styles = $this->styles->renderFormSettingsStyles($this->createForm($form), '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     list($styleWithoutMedia) = explode('@media ', $styles);
-    expect($styleWithoutMedia)->stringNotContainsString('width:');
-    expect($styleWithoutMedia)->stringNotContainsString('max-width:');
+    verify($styleWithoutMedia)->stringNotContainsString('width:');
+    verify($styleWithoutMedia)->stringNotContainsString('max-width:');
     // Percent
     $width = [
       'unit' => 'percent',
@@ -270,7 +270,7 @@ class StylesTest extends \MailPoetUnitTest {
     $styles = $this->styles->renderFormSettingsStyles($this->createForm($form), '#prefix', FormEntity::DISPLAY_TYPE_OTHERS);
     list($styleWithoutMedia) = explode('@media ', $styles);
     verify($styleWithoutMedia)->stringContainsString('width: 90%;');
-    expect($styleWithoutMedia)->stringNotContainsString('max-width:');
+    verify($styleWithoutMedia)->stringNotContainsString('max-width:');
   }
 
   public function testItRendersSlideInSpecificStyles() {
