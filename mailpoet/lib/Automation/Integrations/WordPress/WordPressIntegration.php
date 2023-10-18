@@ -2,11 +2,12 @@
 
 namespace MailPoet\Automation\Integrations\WordPress;
 
+use MailPoet\Automation\Engine\Integration;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Integrations\WordPress\Subjects\CommentSubject;
 use MailPoet\Automation\Integrations\WordPress\Subjects\UserSubject;
 
-class WordPressIntegration {
+class WordPressIntegration implements Integration {
   /** @var UserSubject */
   private $userSubject;
 
