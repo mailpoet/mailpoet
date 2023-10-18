@@ -2,7 +2,7 @@
   "require": {
     "php": ">=7.3",
     "mtdowling/cron-expression": "^1.1",
-    "woocommerce/action-scheduler": "^3.5"
+    "woocommerce/action-scheduler": "^3.6"
   },
   "require-dev": {
     "ext-gd": "*",
