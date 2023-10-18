@@ -141,7 +141,7 @@ class SMTPTest extends \MailPoetTest {
 
   public function testItAppliesSMTPOptionsFilter() {
     $mailer = $this->mailer->buildMailer();
-    expect($mailer->SMTPOptions)->isEmpty();
+    verify($mailer->SMTPOptions)->empty();
     (new WPFunctions)->addFilter(
       'mailpoet_mailer_smtp_options',
       function() {

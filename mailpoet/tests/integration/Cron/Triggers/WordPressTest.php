@@ -89,7 +89,7 @@ class WordPressTest extends \MailPoetTest {
     $this->settings->set(WordPress::LAST_RUN_AT_SETTING, $currentTime);
     $this->addQueue(SendingQueueEntity::STATUS_SCHEDULED);
     WordPress::resetRunInterval();
-    expect($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->isEmpty();
+    verify($this->settings->get(WordPress::LAST_RUN_AT_SETTING))->empty();
     verify($this->wordpressTrigger->run())->notEmpty();
   }
 

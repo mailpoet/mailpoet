@@ -232,7 +232,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
     verify($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);
 
-    expect($subscriber->getUnconfirmedData())->isEmpty();
+    verify($subscriber->getUnconfirmedData())->empty();
 
     $data2 = $data;
     $data2['first_name'] = 'Aaa';
@@ -261,7 +261,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     // during confirmation, manual admin editing
     $saveController = ContainerWrapper::getInstance()->get(SubscriberSaveController::class);
     $subscriber = $saveController->createOrUpdate($data2, $subscriber);
-    expect($subscriber->getUnconfirmedData())->isEmpty();
+    verify($subscriber->getUnconfirmedData())->empty();
 
     $this->settings->set('signup_confirmation.enabled', $originalSettingValue);
   }

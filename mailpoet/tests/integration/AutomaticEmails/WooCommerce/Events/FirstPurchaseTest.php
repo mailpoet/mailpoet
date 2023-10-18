@@ -157,7 +157,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     ]);
     $event = new FirstPurchase($helper);
     $result = $event->scheduleEmailWhenOrderIsPlaced(12);
-    expect($result)->isEmpty();
+    verify($result)->empty();
   }
 
   public function testItDoesNotScheduleEmailWhenCustomerEmailIsEmpty() {
@@ -173,7 +173,7 @@ class FirstPurchaseTest extends \MailPoetTest {
     ]);
     $event = new FirstPurchase($helper);
     $result = $event->scheduleEmailWhenOrderIsPlaced(12);
-    expect($result)->isEmpty();
+    verify($result)->empty();
   }
 
   public function testItDoesNotScheduleEmailWhenItIsNotCustomersFirstPurchase() {
@@ -185,7 +185,7 @@ class FirstPurchaseTest extends \MailPoetTest {
       'getCustomerOrderCount' => 2,
     ]);
     $result = $event->scheduleEmailWhenOrderIsPlaced(12);
-    expect($result)->isEmpty();
+    verify($result)->empty();
   }
 
   public function testItDoesNotScheduleEmailWhenCustomerIsNotAWCSegmentSubscriber() {
@@ -216,7 +216,7 @@ class FirstPurchaseTest extends \MailPoetTest {
 
     $event = new FirstPurchase($helper);
     $result = $event->scheduleEmailWhenOrderIsPlaced(12);
-    expect($result)->isEmpty();
+    verify($result)->empty();
   }
 
   public function testItScheduleEmailForGuestCustomer() {
@@ -240,7 +240,7 @@ class FirstPurchaseTest extends \MailPoetTest {
 
     $event = new FirstPurchase($this->wooCommerceHelper);
     $result = $event->scheduleEmailWhenOrderIsPlaced($order->get_id());
-    expect($result)->isEmpty();
+    verify($result)->empty();
 
     $sendingQueue = $this->sendingQueueRepository->findOneBy(['newsletter' => $newsletter]);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);

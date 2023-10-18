@@ -59,7 +59,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
 
     $this->cronWorkerRunner->run($this->worker);
     $tasks = $this->scheduledTaskRepository->findBy(['type' => WooCommercePastOrders::TASK_TYPE]);
-    expect($tasks)->isEmpty();
+    verify($tasks)->empty();
   }
 
   public function testItRunsIfWooCommerceIsEnabled() {

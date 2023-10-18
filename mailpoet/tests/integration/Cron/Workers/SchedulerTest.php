@@ -125,7 +125,7 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItCanGetScheduledQueues() {
     $scheduler = $this->diContainer->get(Scheduler::class);
-    expect($scheduler->getScheduledSendingTasks())->isEmpty();
+    verify($scheduler->getScheduledSendingTasks())->empty();
     $queue = SendingTask::create();
     $queue->newsletterId = 1;
     $queue->status = SendingQueueEntity::STATUS_SCHEDULED;
@@ -148,7 +148,7 @@ class SchedulerTest extends \MailPoetTest {
 
     // ensure that notification history does not exist
     $notificationHistory = $this->newslettersRepository->findOneBy(['parent' => $newsletter, 'type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY]);
-    expect($notificationHistory)->isEmpty();
+    verify($notificationHistory)->empty();
 
     // create notification history and ensure that it exists
     $scheduler = $this->getScheduler();

@@ -70,6 +70,6 @@ class FeaturesControllerTest extends \MailPoetUnitTest {
     } catch (\RuntimeException $e) {
       verify($e->getMessage())->equals("Unknown feature 'feature-unknown'");
     }
-    expect($controller->getAllFlags())->isEmpty();
+    verify($controller->getAllFlags())->empty();
   }
 }

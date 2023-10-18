@@ -35,7 +35,7 @@ class SubscriberSubscribedViaFormTest extends \MailPoetTest {
     $subscriber = (new Subscriber())->withEmail('subscriber1@example.com')->create();
     (new StatisticsForms($form, $subscriber))->create();
     $matching = $this->getMatchingEmails('any', [$form->getId() + 1]);
-    expect($matching)->isEmpty();
+    verify($matching)->empty();
   }
 
   public function testItWorksWithMultipleForms(): void {

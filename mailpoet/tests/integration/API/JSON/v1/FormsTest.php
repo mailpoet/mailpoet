@@ -229,7 +229,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->restore(['id' => 'Invalid ID']);
     verify($response->errors[0]['error'])->equals('not_found');
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->meta)->isEmpty();
+    verify($response->meta)->empty();
   }
 
   public function testItCanTrashAForm() {
@@ -246,12 +246,12 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->trash(['id' => 'Invalid ID']);
     verify($response->errors[0]['error'])->equals('not_found');
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->meta)->isEmpty();
+    verify($response->meta)->empty();
   }
 
   public function testItCanDeleteAForm() {
     $response = $this->endpoint->delete(['id' => $this->form3->getId()]);
-    expect($response->data)->isEmpty();
+    verify($response->data)->empty();
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->meta['count'])->equals(1);
   }
@@ -260,7 +260,7 @@ class FormsTest extends \MailPoetTest {
     $response = $this->endpoint->delete(['id' => 'Invalid ID']);
     verify($response->errors[0]['error'])->equals('not_found');
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
-    expect($response->meta)->isEmpty();
+    verify($response->meta)->empty();
   }
 
   public function testItCanDuplicateAForm() {

@@ -237,10 +237,10 @@ class NewsletterTest extends \MailPoetTest {
     }
 
     Newsletter::filter('bulkTrash');
-    expect(Newsletter::whereNull('deleted_at')->findArray())->isEmpty();
+    verify(Newsletter::whereNull('deleted_at')->findArray())->empty();
 
     Newsletter::filter('bulkRestore');
-    expect(Newsletter::whereNotNull('deleted_at')->findArray())->isEmpty();
+    verify(Newsletter::whereNotNull('deleted_at')->findArray())->empty();
   }
 
   public function testItDeletesSegmentAndQueueAssociationsWhenNewsletterIsDeleted() {
@@ -260,9 +260,9 @@ class NewsletterTest extends \MailPoetTest {
 
     // delete newsletter and check that relations no longer exist
     $newsletter->delete();
-    expect(SendingQueue::where('newsletter_id', $newsletter->id)->findArray())->isEmpty();
+    verify(SendingQueue::where('newsletter_id', $newsletter->id)->findArray())->empty();
     $newsletterSegments = NewsletterSegment::where('newsletter_id', $newsletter->id)->findArray();
-    expect($newsletterSegments)->isEmpty();
+    verify($newsletterSegments)->empty();
   }
 
   public function testItDeletesChildrenSegmentAndQueueAssociationsWhenParentNewsletterIsDeleted() {
@@ -415,7 +415,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->newsletterOptionFactory->create($newsletterEntity, 'meta', json_encode($meta));
 
     // by default meta option does not exist on newsletter object
-    expect($newsletter->getMeta())->isEmpty();
+    verify($newsletter->getMeta())->empty();
 
     // if meta option exists, it should be returned as an array
     $newsletter = Newsletter::filter('filterWithOptions', Newsletter::TYPE_AUTOMATIC)->findOne($newsletter->id);

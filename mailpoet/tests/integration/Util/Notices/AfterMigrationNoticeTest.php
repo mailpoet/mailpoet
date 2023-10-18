@@ -6,14 +6,14 @@ class AfterMigrationNoticeTest extends \MailPoetTest {
   public function testItDoesntDisplayIfShouldntDisplay() {
     $notice = new AfterMigrationNotice();
     $result = $notice->init(false);
-    expect($result)->isEmpty();
+    verify($result)->empty();
   }
 
   public function testItDoesntDisplayIfDisabled() {
     $notice = new AfterMigrationNotice();
     $notice->disable();
     $result = $notice->init(true);
-    expect($result)->isEmpty();
+    verify($result)->empty();
   }
 
   public function testItDisplayIfEnabled() {

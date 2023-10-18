@@ -203,7 +203,7 @@ class SegmentsTest extends \MailPoetTest {
 
   public function testItCanDeleteASegment() {
     $response = $this->endpoint->delete(['id' => $this->segment3->getId()]);
-    expect($response->data)->isEmpty();
+    verify($response->data)->empty();
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->meta['count'])->equals(1);
   }

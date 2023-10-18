@@ -169,7 +169,7 @@ class TranslationUpdaterTest extends \MailPoetTest {
       ]
     );
     $result = $updater->checkForTranslations($updateTransient);
-    expect($result->translations)->isEmpty();
+    verify($result->translations)->empty();
   }
 
   public function testItDoesNotOverrideNewerVersionInCaseItWasInstalledFromDotOrg(): void {
