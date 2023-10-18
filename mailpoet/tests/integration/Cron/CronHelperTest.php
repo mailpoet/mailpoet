@@ -110,7 +110,7 @@ class CronHelperTest extends \MailPoetTest {
     $cronHelper = new CronHelper($this->settings, $wp);
     $cronHelper->accessDaemon('some_token');
     $updatedDaemon = $cronHelper->getDaemon();
-    expect($updatedDaemon['run_accessed_at'])->greaterOrEquals($time);
+    verify($updatedDaemon['run_accessed_at'])->greaterThanOrEqual($time);
     expect($updatedDaemon['run_accessed_at'])->lessThan($time + 2);
   }
 
@@ -201,7 +201,7 @@ class CronHelperTest extends \MailPoetTest {
     $this->cronHelper->saveDaemonLastError('error');
     $daemon = $this->cronHelper->getDaemon();
     verify($daemon['last_error'])->equals('error');
-    expect($daemon['last_error_date'])->greaterOrEquals($time);
+    verify($daemon['last_error_date'])->greaterThanOrEqual($time);
   }
 
   public function testItSavesRunCompletedAt() {

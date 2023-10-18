@@ -66,7 +66,7 @@ class UpdaterTest extends \MailPoetTest {
       $this
     );
     $result = $updater->checkForUpdate($updateTransient);
-    expect($result->last_checked)->greaterOrEquals($updateTransient->last_checked); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($result->last_checked)->greaterThanOrEqual($updateTransient->last_checked); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($result->checked[$this->pluginName])->equals($this->version);
     verify($result->response[$this->pluginName]->slug)->equals($this->slug);
     verify($result->response[$this->pluginName]->plugin)->equals($this->pluginName);
@@ -103,7 +103,7 @@ class UpdaterTest extends \MailPoetTest {
       $this
     );
     $result = $updater->checkForUpdate($updateTransient);
-    expect($result->last_checked)->greaterOrEquals($updateTransient->last_checked); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($result->last_checked)->greaterThanOrEqual($updateTransient->last_checked); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($result->checked[$this->pluginName])->equals($this->version);
     verify($result->no_update[$this->pluginName]->slug)->equals($this->slug); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($result->no_update[$this->pluginName]->plugin)->equals($this->pluginName); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps

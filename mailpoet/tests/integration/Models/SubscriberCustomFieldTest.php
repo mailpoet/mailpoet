@@ -29,7 +29,7 @@ class SubscriberCustomFieldTest extends \MailPoetTest {
     $subscriberCustomField->subscriberId = $this->data[0]['subscriber_id'];
     $subscriberCustomField->value = $this->data[0]['value'];
     $subscriberCustomField->save();
-    expect($subscriberCustomField->id())->greaterOrEquals(1);
+    verify($subscriberCustomField->id())->greaterThanOrEqual(1);
     verify($subscriberCustomField->getErrors())->false();
   }
 

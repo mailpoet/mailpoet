@@ -38,7 +38,7 @@ class ImportExportTest extends \MailPoetTest {
     verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $now = time();
     $scheduledAt = new Carbon($task->getScheduledAt());
-    expect($scheduledAt->timestamp)->greaterOrEquals($now - 1);
+    verify($scheduledAt->timestamp)->greaterThanOrEqual($now - 1);
     verify($scheduledAt->timestamp)->lessThanOrEqual($now + 1);
   }
 
@@ -52,7 +52,7 @@ class ImportExportTest extends \MailPoetTest {
     verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
     $now = time();
     $scheduledAt = new Carbon($task->getScheduledAt());
-    expect($scheduledAt->timestamp)->greaterOrEquals($now - 1);
+    verify($scheduledAt->timestamp)->greaterThanOrEqual($now - 1);
     verify($scheduledAt->timestamp)->lessThanOrEqual($now + 1);
     $taskCount = $this->scheduledTasksRepository->countBy(['type' => WooCommerceSync::TASK_TYPE]);
     verify($taskCount)->equals(1);

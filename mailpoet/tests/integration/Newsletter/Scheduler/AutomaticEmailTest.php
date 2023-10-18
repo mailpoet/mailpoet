@@ -59,7 +59,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $task = $this->scheduledTasksRepository->findOneByNewsletter($newsletter);
     $expectedTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(2);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getId())->greaterOrEquals(1);
+    verify($task->getId())->greaterThanOrEqual(1);
     verify($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
     verify($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
     $this->tester->assertEqualDateTimes($expectedTime, $task->getScheduledAt(), 1);
@@ -91,7 +91,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $task = $this->scheduledTasksRepository->findOneByNewsletter($newsletter);
     $expectedTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(2);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getId())->greaterOrEquals(1);
+    verify($task->getId())->greaterThanOrEqual(1);
     verify($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
     verify($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
     $this->tester->assertEqualDateTimes($expectedTime, $task->getScheduledAt(), 1);
@@ -189,7 +189,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     // scheduled task should be created
     $task = $sendingQueue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
-    expect($task->getId())->greaterOrEquals(1);
+    verify($task->getId())->greaterThanOrEqual(1);
     verify($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
     verify($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
     $this->tester->assertEqualDateTimes($expectedTime, $task->getScheduledAt(), 1);
