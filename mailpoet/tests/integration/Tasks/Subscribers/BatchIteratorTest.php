@@ -57,7 +57,7 @@ class BatchIteratorTest extends \MailPoetTest {
       if ($i < $iterations) {
         verify(count($batch))->equals($this->batchSize);
       } else {
-        expect(count($batch))->lessOrEquals($this->batchSize);
+        verify(count($batch))->lessThanOrEqual($this->batchSize);
       }
     }
     verify($i)->equals($iterations);
