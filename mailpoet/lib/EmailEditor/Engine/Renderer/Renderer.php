@@ -42,17 +42,16 @@ class Renderer {
     $parser = new \WP_Block_Parser();
     $parsedBlocks = $parser->parse($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-    $parsedBlocks = $this->preprocessManager->preprocess($parsedBlocks, $this->stylesController->getEmailLayoutStyles());
+    $layoutStyles = $this->stylesController->getEmailLayoutStyles();
+    $parsedBlocks = $this->preprocessManager->preprocess($parsedBlocks, $layoutStyles);
     $renderedBody = $this->blocksRenderer->render($parsedBlocks);
 
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
-    $styles .= $this->stylesController->getEmailContentStyles();
     $styles = apply_filters('mailpoet_email_renderer_styles', $styles, $post);
 
     $template = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_FILE);
 
     // Apply layout styles
-    $layoutStyles = $this->stylesController->getEmailLayoutStyles();
     $template = str_replace(
       ['{{width}}', '{{background}}', '{{padding_top}}', '{{padding_right}}', '{{padding_bottom}}', '{{padding_left}}'],
       [$layoutStyles['width'], $layoutStyles['background'], $layoutStyles['padding']['top'], $layoutStyles['padding']['right'], $layoutStyles['padding']['bottom'], $layoutStyles['padding']['left']],
