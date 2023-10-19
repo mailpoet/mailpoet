@@ -20,22 +20,16 @@ export function Header() {
   const { toggleInserterSidebar, toggleListviewSidebar } =
     useDispatch(storeName);
   const { undo: undoAction, redo: redoAction } = useDispatch(coreDataStore);
-  const {
-    postId,
-    isInserterSidebarOpened,
-    isListviewSidebarOpened,
-    hasUndo,
-    hasRedo,
-  } = useSelect(
-    (select) => ({
-      postId: select(storeName).getEmailPostId(),
-      isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
-      isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
-      hasUndo: select(coreDataStore).hasUndo(),
-      hasRedo: select(coreDataStore).hasRedo(),
-    }),
-    [],
-  );
+  const { isInserterSidebarOpened, isListviewSidebarOpened, hasUndo, hasRedo } =
+    useSelect(
+      (select) => ({
+        isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
+        isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
+        hasUndo: select(coreDataStore).hasUndo(),
+        hasRedo: select(coreDataStore).hasRedo(),
+      }),
+      [],
+    );
   const [mailpoetEmailDa] = useEntityProp(
     'postType',
     'mailpoet_email',
@@ -113,7 +107,7 @@ export function Header() {
         <div className="edit-post-header__center">Todo Email Name</div>
       </div>
       <div className="edit-post-header__settings">
-        <SaveButton postId={postId} />
+        <SaveButton />
         <PreviewDropdown />
         <Button
           variant="primary"
