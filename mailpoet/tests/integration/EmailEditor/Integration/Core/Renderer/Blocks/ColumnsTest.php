@@ -4,7 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Engine\Renderer\BlocksRenderer;
-use MailPoet\EmailEditor\Engine\StylesController;
+use MailPoet\EmailEditor\Engine\SettingsController;
 
 class ColumnsTest extends \MailPoetTest {
   /** @var BlocksRenderer */
@@ -49,26 +49,26 @@ class ColumnsTest extends \MailPoetTest {
   }
 
   public function testItRendersInnerColumn() {
-    $stylesController = $this->diContainer->get(StylesController::class);
-    $rendered = $this->columnsRenderer->render($this->parsedColumns, $this->blocksRenderer, $stylesController);
+    $settingsController = $this->diContainer->get(SettingsController::class);
+    $rendered = $this->columnsRenderer->render($this->parsedColumns, $this->blocksRenderer, $settingsController);
     verify($rendered)->stringContainsString('Column 1');
   }
 
   public function testItRendersWidthForOneColumn() {
-    $stylesController = $this->createMock(StylesController::class);
-    $stylesController->method('getEmailLayoutStyles')
+    $settingsController = $this->createMock(SettingsController::class);
+    $settingsController->method('getEmailLayoutStyles')
       ->willReturn(['width' => 800]);
-    $rendered = $this->columnsRenderer->render($this->parsedColumns, $this->blocksRenderer, $stylesController);
+    $rendered = $this->columnsRenderer->render($this->parsedColumns, $this->blocksRenderer, $settingsController);
     verify($rendered)->stringContainsString('width:784px;');
   }
 
   public function testItRendersWidthForTwoColumns() {
-    $stylesController = $this->createMock(StylesController::class);
-    $stylesController->method('getEmailLayoutStyles')
+    $settingsController = $this->createMock(SettingsController::class);
+    $settingsController->method('getEmailLayoutStyles')
       ->willReturn(['width' => 800]);
     $parsedColumns = $this->parsedColumns;
     $parsedColumns['innerBlocks'][] = $parsedColumns['innerBlocks'][0]; // Insert another column
-    $rendered = $this->columnsRenderer->render($parsedColumns, $this->blocksRenderer, $stylesController);
+    $rendered = $this->columnsRenderer->render($parsedColumns, $this->blocksRenderer, $settingsController);
     verify($rendered)->stringContainsString('width:392px;');
   }
 }

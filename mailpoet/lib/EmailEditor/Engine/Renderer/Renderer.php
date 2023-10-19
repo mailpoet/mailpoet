@@ -2,7 +2,7 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
-use MailPoet\EmailEditor\Engine\StylesController;
+use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoetVendor\Html2Text\Html2Text;
 
@@ -17,8 +17,8 @@ class Renderer {
   /** @var PreprocessManager */
   private $preprocessManager;
 
-  /** @var StylesController */
-  private $stylesController;
+  /** @var SettingsController */
+  private $settingsController;
 
   const TEMPLATE_FILE = 'template.html';
   const TEMPLATE_STYLES_FILE = 'styles.css';
@@ -30,19 +30,19 @@ class Renderer {
     \MailPoetVendor\CSS $cssInliner,
     PreprocessManager $preprocessManager,
     BlocksRenderer $blocksRenderer,
-    StylesController $stylesController
+    SettingsController $settingsController
   ) {
     $this->cssInliner = $cssInliner;
     $this->preprocessManager = $preprocessManager;
     $this->blocksRenderer = $blocksRenderer;
-    $this->stylesController = $stylesController;
+    $this->settingsController = $settingsController;
   }
 
   public function render(\WP_Post $post, string $subject, string $preHeader, string $language, $metaRobots = ''): array {
     $parser = new \WP_Block_Parser();
     $parsedBlocks = $parser->parse($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-    $layoutStyles = $this->stylesController->getEmailLayoutStyles();
+    $layoutStyles = $this->settingsController->getEmailLayoutStyles();
     $parsedBlocks = $this->preprocessManager->preprocess($parsedBlocks, $layoutStyles);
     $renderedBody = $this->blocksRenderer->render($parsedBlocks);
 

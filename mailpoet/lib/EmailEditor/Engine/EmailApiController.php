@@ -5,13 +5,13 @@ namespace MailPoet\EmailEditor\Engine;
 use MailPoet\Validator\Builder;
 
 class EmailApiController {
-  /** @var StylesController */
-  private $stylesController;
+  /** @var SettingsController */
+  private $settingsController;
 
   public function __construct(
-    StylesController $stylesController
+    SettingsController $settingsController
   ) {
-    $this->stylesController = $stylesController;
+    $this->settingsController = $settingsController;
   }
 
   /**
@@ -19,7 +19,7 @@ class EmailApiController {
    */
   public function getEmailData(): array {
     return [
-      'layout_styles' => $this->stylesController->getEmailLayoutStyles(),
+      'layout_styles' => $this->settingsController->getEmailLayoutStyles(),
     ];
   }
 

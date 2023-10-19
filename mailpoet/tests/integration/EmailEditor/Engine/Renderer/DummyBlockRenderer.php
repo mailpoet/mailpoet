@@ -2,10 +2,10 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
-use MailPoet\EmailEditor\Engine\StylesController;
+use MailPoet\EmailEditor\Engine\SettingsController;
 
 class DummyBlockRenderer implements BlockRenderer {
-  public function render($parsedBlock, BlocksRenderer $blocksRenderer, StylesController $stylesController): string {
+  public function render($parsedBlock, BlocksRenderer $blocksRenderer, SettingsController $settingsController): string {
     if (!isset($parsedBlock['innerBlocks']) || empty($parsedBlock['innerBlocks'])) {
       return $parsedBlock['innerHTML'];
     }
