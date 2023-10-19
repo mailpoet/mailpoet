@@ -17,6 +17,17 @@ export function mapFilterType(filter) {
   const action = filter.action;
   const filterType = filter.type;
 
+  if (filterType === 'automations') {
+    switch (action) {
+      case 'enteredAutomation':
+        return 'entered automation';
+      case 'exitedAutomation':
+        return 'exited automation';
+      default:
+        return '';
+    }
+  }
+
   // Email
   if (filterType === 'email') {
     switch (action) {
@@ -34,6 +45,8 @@ export function mapFilterType(filter) {
         return 'opened';
       case 'machineOpened':
         return 'machine-opened';
+      case 'wasSent':
+        return 'was sent';
       default:
         return '';
     }
@@ -49,17 +62,39 @@ export function mapFilterType(filter) {
         return 'score';
       case 'wordpressRole':
         return 'WordPress user role';
-      case 'mailpoetCustomField':
-        return 'MailPoet custom field';
+      case 'lastEngagementDate':
+        return 'last engagement date';
+      case 'lastClickDate':
+        return 'last click date';
+      case 'lastPurchaseDate':
+        return 'last purchase date';
+      case 'lastOpenDate':
+        return 'last open date';
+      case 'lastPageViewDate':
+        return 'last page view date';
+      case 'lastSendingDate':
+        return 'last sending date';
+      case 'subscriberFirstName':
+        return 'first name';
+      case 'subscriberLastName':
+        return 'last name';
+      case 'subscriberEmail':
+        return 'email';
+      case 'subscribedViaForm':
+        return 'subscribed via form';
       default:
         return '';
     }
   }
   // WooCommerce
-  if (filterType === 'woocommerce')
+  if (filterType === 'woocommerce') {
     switch (action) {
       case 'customerInCountry':
         return 'is in country';
+      case 'customerInPostalCode':
+        return 'postal code';
+      case 'customerInCity':
+        return 'city';
       case 'purchasedCategory':
         return 'purchased in category';
       case 'purchasedProduct':
@@ -68,9 +103,24 @@ export function mapFilterType(filter) {
         return 'subscribed date';
       case 'totalSpent':
         return 'total spent';
+      case 'purchaseDate':
+        return 'purchase date';
+      case 'averageSpent':
+        return 'average order value';
+      case 'singleOrderValue':
+        return 'single order value';
+      case 'usedPaymentMethod':
+        return 'used payment method';
+      case 'usedShippingMethod':
+        return 'used shipping method';
+      case 'numberOfReviews':
+        return 'number of reviews';
+      case 'usedCouponCode':
+        return 'used coupon code';
       default:
         return '';
     }
+  }
   // WooCommerce Subscription
   if (
     filterType === 'woocommerceSubscription' &&
