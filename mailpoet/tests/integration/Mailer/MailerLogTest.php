@@ -277,7 +277,7 @@ class MailerLogTest extends \MailPoetTest {
     verify($mailerLog['transactional_email_error_count'])->null();
     MailerLog::processTransactionalEmailError(MailerError::OPERATION_SEND, 'email rejected');
     $mailerLog = MailerLog::getMailerLog();
-    verify($mailerLog['transactional_email_last_error_at'])->equals(time(), 1);
+    verify($mailerLog['transactional_email_last_error_at'])->equalsWithDelta(time(), 1);
     verify($mailerLog['transactional_email_error_count'])->equals(1);
     verify($mailerLog['error'])->equals(
       [
@@ -307,7 +307,7 @@ class MailerLogTest extends \MailPoetTest {
     MailerLog::updateMailerLog($mailerLog);
     MailerLog::processTransactionalEmailError(MailerError::OPERATION_SEND, 'email rejected');
     $mailerLog = MailerLog::getMailerLog();
-    verify($mailerLog['transactional_email_last_error_at'])->equals(time(), 1);
+    verify($mailerLog['transactional_email_last_error_at'])->equalsWithDelta(time(), 1);
     verify($mailerLog['transactional_email_error_count'])->equals(2);
   }
 
