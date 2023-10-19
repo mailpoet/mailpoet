@@ -55,7 +55,7 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
     expect($list['id'])->string();
     expect($list['name'])->string();
     expect($list['type'])->string();
-    expect($list['subscribers'])->int();
+    verify($list['subscribers'])->isInt();
   }
 
   public function testItReturnsSegmentsWithSubscribedSubscribersCount(): void {
