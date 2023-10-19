@@ -232,7 +232,7 @@ class MailPoetMapper {
   private function getCanNotSendError(array $result, $sender): array {
     if ($result['error'] === API::ERROR_MESSAGE_PENDING_APPROVAL) {
       $operation = MailerError::OPERATION_PENDING_APPROVAL;
-      $message = $this->pendingApprovalNotice->getPendingApprovalMessage();
+      $message = $this->pendingApprovalNotice->getPendingApprovalMessage() . '<br/>';
       return [$operation, $message];
     }
 
