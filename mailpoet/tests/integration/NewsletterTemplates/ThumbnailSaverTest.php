@@ -18,7 +18,7 @@ class ThumbnailSaverTest extends \MailPoetTest {
     $template = $this->thumbnailSaver->ensureTemplateThumbnailFile($template);
     $thumbnailUrl = $template->getThumbnail();
     verify($thumbnailUrl)->notEmpty();
-    expect($thumbnailUrl)->string();
+    verify($thumbnailUrl)->isString();
     verify($thumbnailUrl)->stringStartsWith(Env::$tempUrl);
     verify($thumbnailUrl)->stringContainsString(ThumbnailSaver::THUMBNAIL_DIRECTORY);
     [,$fileName] = explode(ThumbnailSaver::THUMBNAIL_DIRECTORY, (string)$thumbnailUrl);
@@ -35,7 +35,7 @@ class ThumbnailSaverTest extends \MailPoetTest {
     $template = $this->thumbnailSaver->ensureTemplateThumbnailFile($template);
     // Base url was updated back to initial value
     $thumbnailUrl = $template->getThumbnail();
-    expect($thumbnailUrl)->string();
+    verify($thumbnailUrl)->isString();
     verify($thumbnailUrl)->stringStartsWith(Env::$tempUrl);
     [,$fileName] = explode(ThumbnailSaver::THUMBNAIL_DIRECTORY, (string)$thumbnailUrl);
     // File is still the same

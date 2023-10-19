@@ -308,7 +308,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
     $duplicate = $this->saveController->duplicate($newsletter);
     verify($duplicate->getSubject())->equals('Copy of ' . $newsletter->getSubject());
-    expect($duplicate->getHash())->string();
+    verify($duplicate->getHash())->isString();
     verify($duplicate->getHash())->notEmpty();
     verify($duplicate->getHash())->notEquals($newsletter->getHash());
     verify($duplicate->getBody())->equals($newsletter->getBody());

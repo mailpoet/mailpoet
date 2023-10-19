@@ -52,9 +52,9 @@ class SegmentsSimpleListRepositoryTest extends \MailPoetTest {
 
   public function testItReturnsCorrectlyFormattedOutput(): void {
     [$list] = $this->segmentsListRepository->getListWithAssociatedSubscribersCounts();
-    expect($list['id'])->string();
-    expect($list['name'])->string();
-    expect($list['type'])->string();
+    verify($list['id'])->isString();
+    verify($list['name'])->isString();
+    verify($list['type'])->isString();
     verify($list['subscribers'])->isInt();
   }
 
