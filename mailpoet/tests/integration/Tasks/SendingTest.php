@@ -40,10 +40,10 @@ class SendingTest extends \MailPoetTest {
 
   public function testItCanBeConstructed() {
     $sending = SendingTask::create();
-    expect_that($sending instanceof SendingTask);
-    expect_that($sending->queue() instanceof SendingQueue);
-    expect_that($sending->task() instanceof ScheduledTask);
-    expect_that($sending->taskSubscribers() instanceof Subscribers);
+    verify($sending)->instanceOf(SendingTask::class);
+    verify($sending->queue())->instanceOf(SendingQueue::class);
+    verify($sending->task())->instanceOf(ScheduledTask::class);
+    verify($sending->taskSubscribers())->instanceOf(Subscribers::class);
   }
 
   public function testItCanBeConstructedOnlyWithAProperTaskType() {
