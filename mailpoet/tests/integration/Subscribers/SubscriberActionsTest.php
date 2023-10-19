@@ -155,7 +155,7 @@ class SubscriberActionsTest extends \MailPoetTest {
     verify($subscriber->getStatus())->equals(SubscriberEntity::STATUS_UNCONFIRMED);
     verify($createdAt->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:01');
     verify($subscriber->getUpdatedAt()->format('Y-m-d H:i:s'))->notEquals('1984-03-09 00:00:02');
-    verify($createdAt->getTimestamp())->equals($subscriber->getUpdatedAt()->getTimestamp(), 2);
+    verify($createdAt->getTimestamp())->equalsWithDelta($subscriber->getUpdatedAt()->getTimestamp(), 2);
     verify($subscriber->getDeletedAt())->null();
   }
 

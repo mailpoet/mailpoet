@@ -123,7 +123,7 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     verify($task->getType())->equals(Sending::TASK_TYPE);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
-    verify($scheduledAt->getTimestamp())->equals(Carbon::now()->getTimestamp(), 1);
+    verify($scheduledAt->getTimestamp())->equalsWithDelta(Carbon::now()->getTimestamp(), 1);
     verify($task->getSubscribers()->count())->equals(2);
 
     $sendingQueue = $this->entityManager->getRepository(SendingQueueEntity::class)->findOneBy(['task' => $task]);

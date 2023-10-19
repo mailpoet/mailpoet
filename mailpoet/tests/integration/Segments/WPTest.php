@@ -311,12 +311,12 @@ class WPTest extends \MailPoetTest {
     $deletedAt1 = Carbon::createFromFormat('Y-m-d H:i:s', $subscriber1->deletedAt);
     $this->assertInstanceOf(Carbon::class, $deletedAt1);
     verify($subscriber1->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
-    verify($deletedAt1->timestamp)->equals(Carbon::now()->timestamp, 1);
+    verify($deletedAt1->timestamp)->equalsWithDelta(Carbon::now()->timestamp, 1);
     $subscriber2 = Subscriber::where("wp_user_id", $id2)->findOne();
     $deletedAt2 = Carbon::createFromFormat('Y-m-d H:i:s', $subscriber2->deletedAt);
     $this->assertInstanceOf(Carbon::class, $deletedAt2);
     verify($subscriber2->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
-    verify($deletedAt2->timestamp)->equals(Carbon::now()->timestamp, 1);
+    verify($deletedAt2->timestamp)->equalsWithDelta(Carbon::now()->timestamp, 1);
   }
 
   public function testItRemovesOrphanedSubscribers(): void {
@@ -431,7 +431,7 @@ class WPTest extends \MailPoetTest {
     $deletedAt = Carbon::createFromFormat('Y-m-d H:i:s', $subscriber->deletedAt);
     $this->assertInstanceOf(Carbon::class, $deletedAt);
     verify($subscriber->status)->equals(SubscriberEntity::STATUS_UNCONFIRMED);
-    verify($deletedAt->timestamp)->equals(Carbon::now()->timestamp, 1);
+    verify($deletedAt->timestamp)->equalsWithDelta(Carbon::now()->timestamp, 1);
   }
 
   public function testItAddsNewUserWhoUncheckedOptInOnCheckoutPageAsUnconfirmed(): void {

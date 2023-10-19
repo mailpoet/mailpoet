@@ -295,7 +295,7 @@ class IntegrationTester extends \Codeception\Actor {
     if (!$date2 instanceof DateTimeInterface) {
       throw new \Exception('$date2 is not DateTimeInterface');
     }
-    verify($date1->getTimestamp())->equals($date2->getTimestamp(), $delta);
+    verify($date1->getTimestamp())->equalsWithDelta($date2->getTimestamp(), $delta);
   }
 
   public function createAutomation(string $name, Step ...$steps): ?Automation {

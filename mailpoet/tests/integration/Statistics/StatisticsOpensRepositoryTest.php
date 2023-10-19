@@ -112,7 +112,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
 
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
-    verify($newSubscriber->getEngagementScore())->equals(33, 1);
+    verify($newSubscriber->getEngagementScore())->equalsWithDelta(33, 1);
     verify($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
     $updated = $newSubscriber->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
@@ -121,7 +121,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
 
     $newSegment = $this->segmentsRepository->findOneById($segment->getId());
     $this->assertInstanceOf(SegmentEntity::class, $newSegment);
-    verify($newSegment->getAverageEngagementScore())->equals(33, 1);
+    verify($newSegment->getAverageEngagementScore())->equalsWithDelta(33, 1);
     verify($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
     $updated = $newSegment->getAverageEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
@@ -177,7 +177,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
 
     $newSubscriber2 = $this->subscribersRepository->findOneById($subscriber2->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber2);
-    verify($newSubscriber2->getEngagementScore())->equals(33, 1);
+    verify($newSubscriber2->getEngagementScore())->equalsWithDelta(33, 1);
     verify($newSubscriber2->getEngagementScoreUpdatedAt())->notNull();
     $updated = $newSubscriber2->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
@@ -186,7 +186,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
 
     $newSegment = $this->segmentsRepository->findOneById($segment->getId());
     $this->assertInstanceOf(SegmentEntity::class, $newSegment);
-    verify($newSegment->getAverageEngagementScore())->equals(16.6, 0.1);
+    verify($newSegment->getAverageEngagementScore())->equalsWithDelta(16.6, 0.1);
     verify($newSegment->getAverageEngagementScoreUpdatedAt())->notNull();
     $updated = $newSegment->getAverageEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);
@@ -212,7 +212,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
 
     $newSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $newSubscriber);
-    verify($newSubscriber->getEngagementScore())->equals(33, 1);
+    verify($newSubscriber->getEngagementScore())->equalsWithDelta(33, 1);
     verify($newSubscriber->getEngagementScoreUpdatedAt())->notNull();
     $updated = $newSubscriber->getEngagementScoreUpdatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $updated);

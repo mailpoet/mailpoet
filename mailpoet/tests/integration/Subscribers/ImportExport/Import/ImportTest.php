@@ -679,8 +679,8 @@ class ImportTest extends \MailPoetTest {
     $lastSubscribed2 = $newSubscribers[1]->getLastSubscribedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $lastSubscribed1);
     $this->assertInstanceOf(\DateTimeInterface::class, $lastSubscribed2);
-    verify($lastSubscribed1->getTimestamp())->equals($this->testData['timestamp'], 1);
-    verify($lastSubscribed2->getTimestamp())->equals($this->testData['timestamp'], 1);
+    verify($lastSubscribed1->getTimestamp())->equalsWithDelta($this->testData['timestamp'], 1);
+    verify($lastSubscribed2->getTimestamp())->equalsWithDelta($this->testData['timestamp'], 1);
   }
 
   public function testItDoesNotUpdateExistingSubscribersLastSubscribedAtWhenItIsPresent(): void {

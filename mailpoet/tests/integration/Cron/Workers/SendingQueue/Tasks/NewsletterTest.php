@@ -271,7 +271,7 @@ class NewsletterTest extends \MailPoetTest {
     verify($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
     $sentAt = $updatedNewsletter->getSentAt();
     $this->assertInstanceOf(\DateTime::class, $sentAt);
-    verify($sentAt->getTimestamp())->equals($sendingQueue->processedAt->getTimestamp(), 1);
+    verify($sentAt->getTimestamp())->equalsWithDelta($sendingQueue->processedAt->getTimestamp(), 1);
 
     // newsletter type is 'notification history'
     $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY);
@@ -284,7 +284,7 @@ class NewsletterTest extends \MailPoetTest {
     verify($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
     $sentAt = $updatedNewsletter->getSentAt();
     $this->assertInstanceOf(\DateTime::class, $sentAt);
-    verify($sentAt->getTimestamp())->equals($sendingQueue->processedAt->getTimestamp(), 1);
+    verify($sentAt->getTimestamp())->equalsWithDelta($sendingQueue->processedAt->getTimestamp(), 1);
 
     // all other newsletter types
     $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
