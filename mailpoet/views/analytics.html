@@ -5,12 +5,7 @@
 
 window.mixpanelTrackingId = "8cce373b255e5a76fb22d57b85db0c92";
 
-mixpanel.init(window.mixpanelTrackingId, {
-  loaded: function(mixpanel) {
-    // used in lib/Analytics/Analytics.php
-    document.cookie = "mixpanel_distinct_id=" + mixpanel.get_distinct_id();
-  }
-});
+mixpanel.init(window.mixpanelTrackingId);
 
 mixpanel.register({'Platform': 'Plugin'});
 
