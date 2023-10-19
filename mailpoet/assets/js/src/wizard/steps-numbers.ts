@@ -1,13 +1,21 @@
-export const getStepsCount = (): number => {
-  let stepsCount = 3;
+const getSteps = (): string[] => {
+  const steps = ['WelcomeWizardSenderStep'];
+  if (!window.mailpoet_is_dotcom) {
+    steps.push('WelcomeWizardUsageTrackingStep');
+  }
   if (window.mailpoet_woocommerce_active) {
-    stepsCount += 1;
+    steps.push('WizardWooCommerceStep');
   }
-  if (window.mailpoet_has_valid_api_key) {
-    stepsCount -= 1; // skip the MSS step if user already set API key
+  if (!window.mailpoet_has_valid_api_key) {
+    steps.push('WelcomeWizardPitchMSSStep');
   }
-  return stepsCount;
+  return steps;
 };
+
+export const getStepsCount = (): number => getSteps().length;
+
+export const mapStepNumberToStepName = (stepNumber: number): string | null =>
+  getSteps()[stepNumber - 1] || null;
 
 export const redirectToNextStep = (
   history: { push: (string) => void },
@@ -20,20 +28,4 @@ export const redirectToNextStep = (
   } else {
     finishWizard();
   }
-};
-
-export const mapStepNumberToStepName = (stepNumber: number): string | null => {
-  if (stepNumber === 1) {
-    return 'WelcomeWizardSenderStep';
-  }
-  if (stepNumber === 2) {
-    return 'WelcomeWizardUsageTrackingStep';
-  }
-  if (window.mailpoet_woocommerce_active && stepNumber === 3) {
-    return 'WizardWooCommerceStep';
-  }
-  if (!window.mailpoet_has_valid_api_key) {
-    return 'WelcomeWizardPitchMSSStep';
-  }
-  return null;
 };
