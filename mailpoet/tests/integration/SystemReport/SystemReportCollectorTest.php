@@ -155,7 +155,7 @@ class SystemReportCollectorTest extends \MailPoetTest {
     $wp = new WPFunctions;
     $wp->addFilter('mailpoet_cron_request_url', $filter);
     $systemInfoData = $this->systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
-    expect($systemInfoData['MailPoet sending info'])->regExp('!http:\/\/custom_url\/!');
+    verify($systemInfoData['MailPoet sending info'])->stringMatchesRegExp('!http:\/\/custom_url\/!');
     $wp->removeFilter('mailpoet_cron_request_url', $filter);
   }
 

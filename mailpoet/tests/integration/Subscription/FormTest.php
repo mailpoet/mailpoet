@@ -106,7 +106,7 @@ class FormTest extends \MailPoetTest {
     $formController = new Form(ContainerWrapper::getInstance()->get(API::class), $urlHelper);
     $result = $formController->onSubmit($this->requestData);
     verify($this->subscribersRepository->findOneBy(['email' => $this->testEmail]))->notEmpty();
-    expect($result)->regExp('/http.*?sample-post|http.*?\?p=\d+/i');
+    verify($result)->stringMatchesRegExp('/http.*?sample-post|http.*?\?p=\d+/i');
   }
 
   public function testItDoesNotSubscribeAndRedirectsBackWithErrorResponse() {

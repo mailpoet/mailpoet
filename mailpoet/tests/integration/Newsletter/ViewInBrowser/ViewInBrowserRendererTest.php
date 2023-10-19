@@ -151,7 +151,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $this->subscriber,
       $queue = null
     );
-    expect($renderedBody)->regExp('/Rendered newsletter/');
+    verify($renderedBody)->stringMatchesRegExp('/Rendered newsletter/');
   }
 
   public function testItReusesRenderedNewsletterBodyWhenQueueExists() {
@@ -174,7 +174,7 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $this->subscriber,
       $this->sendingQueueRepository->findOneById($this->sendingTask->queue()->id)
     );
-    expect($renderedBody)->regExp('/Newsletter from queue/');
+    verify($renderedBody)->stringMatchesRegExp('/Newsletter from queue/');
   }
 
   public function testItConvertsShortcodes() {
