@@ -44,7 +44,7 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
   public function testItShouldRenderLabel() {
     $block = $this->block;
     $label = $this->rendererHelper->renderLabel($block, []);
-    expect($label)->regExp('#<label.*class="mailpoet_text_label".*>Input label</label>#m');
+    verify($label)->stringMatchesRegExp('#<label.*class="mailpoet_text_label".*>Input label</label>#m');
 
     $block['styles'] = ['bold' => '1'];
     $label = $this->rendererHelper->renderLabel($block, []);
@@ -69,7 +69,7 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
   public function testItShouldRenderLegend() {
     $block = $this->block;
     $label = $this->rendererHelper->renderLegend($block, []);
-    expect($label)->regExp('#<legend.*class="mailpoet_text_label".*>Input label</legend>#m');
+    verify($label)->stringMatchesRegExp('#<legend.*class="mailpoet_text_label".*>Input label</legend>#m');
 
     $block['styles'] = ['bold' => '1'];
     $label = $this->rendererHelper->renderLegend($block, []);

@@ -54,7 +54,7 @@ class DateTimeTest extends \MailPoetUnitTest {
         return date($format);
       },
     ]));
-    expect($dateTime->getCurrentTime("i:s"))->regExp('/\d\d:\d\d/');
+    verify($dateTime->getCurrentTime("i:s"))->stringMatchesRegExp('/\d\d:\d\d/');
   }
 
   public function testFormatTime() {

@@ -172,10 +172,10 @@ class LinksTest extends \MailPoetTest {
     verify($result)->stringNotContainsString(Links::DATA_TAG_OPEN);
 
     // data tags were converted to URLs
-    expect($result)
-      ->regExp('/<a href="http.*?' . Router::NAME . '&endpoint=track&action=click&data=.*?>/');
-    expect($result)
-      ->regExp('/<img src="http.*?' . Router::NAME . '&endpoint=track&action=open&data=.*?>/');
+    verify($result)
+      ->stringMatchesRegExp('/<a href="http.*?' . Router::NAME . '&endpoint=track&action=click&data=.*?>/');
+    verify($result)
+      ->stringMatchesRegExp('/<img src="http.*?' . Router::NAME . '&endpoint=track&action=open&data=.*?>/');
 
     // data was properly encoded
     preg_match_all('/data=(?P<data>.*?)"/', $result, $result);
