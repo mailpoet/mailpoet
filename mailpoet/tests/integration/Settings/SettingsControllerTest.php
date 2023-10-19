@@ -120,6 +120,13 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->assertEquals(true, true);
   }
 
+  public function testItCanCheckIfSavedValueExists(): void {
+    $this->assertFalse($this->controller->hasSavedValue('test_key'));
+    $this->createOrUpdateSetting('test_key', 'some value');
+    $this->controller->resetCache(); // force reload from database
+    $this->assertTrue($this->controller->hasSavedValue('test_key'));
+  }
+
   private function createOrUpdateSetting($name, $value) {
     $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
     $this->connection->executeStatement("

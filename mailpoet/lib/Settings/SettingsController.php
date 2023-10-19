@@ -124,6 +124,17 @@ class SettingsController {
     unset($this->settings[$key]);
   }
 
+  /**
+   * Returns true if a value is stored in the database for the given key
+   *
+   * @param string $key
+   *
+   * @return bool
+   */
+  public function hasSavedValue(string $key): bool {
+    return $this->get($key, 'unset') !== 'unset';
+  }
+
   private function ensureLoaded() {
     if ($this->loaded) {
       return;
