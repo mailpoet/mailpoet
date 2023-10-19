@@ -11,6 +11,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentFilterRepository;
+use MailPoet\Segments\DynamicSegments\Filters\AutomationsEvents;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
@@ -18,14 +19,24 @@ use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberSubscribedViaForm;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberTag;
+use MailPoet\Segments\DynamicSegments\Filters\SubscriberTextField;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceAverageSpent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCustomerTextField;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfReviews;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchaseDate;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedCouponCode;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedPaymentMethod;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceUsedShippingMethod;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\Pages;
@@ -207,6 +218,28 @@ class Reporter {
       'Segment > total spent' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceTotalSpent::ACTION_TOTAL_SPENT),
       'Segment > WordPress user role' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, UserRole::TYPE),
       'Segment > subscriber tags' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTag::TYPE),
+      'Segment > purchase date' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommercePurchaseDate::ACTION),
+      'Segment > average order value' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceAverageSpent::ACTION),
+      'Segment > single order value' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceSingleOrderValue::ACTION_SINGLE_ORDER_VALUE),
+      'Segment > last engagement date' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberDateField::LAST_ENGAGEMENT_DATE),
+      'Segment > last click date' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberDateField::LAST_CLICK_DATE),
+      'Segment > last purchase date' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberDateField::LAST_PURCHASE_DATE),
+      'Segment > last open date' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberDateField::LAST_OPEN_DATE),
+      'Segment > last page view date' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberDateField::LAST_PAGE_VIEW_DATE),
+      'Segment > last sending date' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberDateField::LAST_SENDING_DATE),
+      'Segment > first name' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::FIRST_NAME),
+      'Segment > last name' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::LAST_NAME),
+      'Segment > email' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberTextField::EMAIL),
+      'Segment > city' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceCustomerTextField::CITY),
+      'Segment > postal code' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceCustomerTextField::POSTAL_CODE),
+      'Segment > used payment method' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceUsedPaymentMethod::ACTION),
+      'Segment > used shipping method' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceUsedShippingMethod::ACTION),
+      'Segment > number of reviews' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceNumberOfReviews::ACTION),
+      'Segment > used coupon code' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommerceUsedCouponCode::ACTION),
+      'Segment > entered automation' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_AUTOMATIONS, AutomationsEvents::ENTERED_ACTION),
+      'Segment > exited automation' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_AUTOMATIONS, AutomationsEvents::EXITED_ACTION),
+      'Segment > was sent' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_WAS_SENT),
+      'Segment > subscribed via form' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberSubscribedViaForm::TYPE),
       // Dynamic segment filters tracking -- end. If you extend segments tracking, please extend mapping in analytics.js
       'Number of segments with multiple conditions' => $this->segmentsRepository->getSegmentCountWithMultipleFilters(),
       'Support tier' => $this->subscribersFeature->hasPremiumSupport() ? 'premium' : 'free',
