@@ -13,9 +13,6 @@ class SettingsController {
   ];
 
   const DEFAULT_SETTINGS = [
-    'enableCustomSpacing' => true,
-    'enableCustomLineHeight' => true,
-    'disableCustomFontSizes' => false,
     'enableCustomUnits' => ['px', '%'],
     '__experimentalFeatures' => [
       'color' => [
@@ -41,9 +38,19 @@ class SettingsController {
   }
 
   public function getSettings(): array {
-    $settings = self::DEFAULT_SETTINGS;
+    $coreDefaultSettings = get_default_block_editor_settings();
+    $coreThemeData = \WP_Theme_JSON_Resolver::get_core_data();
+    $coreSettings = $coreThemeData->get_settings();
+
+    // Enable custom spacing
+    $coreSettings['spacing']['units'] = ['px'];
+    $coreSettings['spacing']['padding'] = true;
+
+    $settings = array_merge($coreDefaultSettings, self::DEFAULT_SETTINGS);
     $settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
     $settings['defaultEditorStyles'] = [[ 'css' => $this->stylesController->getEmailContentStyles() ]];
+    $settings['__experimentalFeatures'] = $coreSettings;
+
     return $settings;
   }
 }
