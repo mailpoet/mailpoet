@@ -195,19 +195,19 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
     );
     $transactionalEmails->useTemplateForWoocommerceEmails();
     verify($addedActions)->arrayCount(1);
-    expect($addedActions['woocommerce_email'])->callable();
+    verify($addedActions['woocommerce_email'])->isCallable();
     $addedActions['woocommerce_email']($wcEmails);
     verify($removedActions)->arrayCount(2);
     verify($addedActions)->arrayCount(4);
-    expect($addedActions['woocommerce_email_header'])->callable();
+    verify($addedActions['woocommerce_email_header'])->isCallable();
     ob_start();
     $addedActions['woocommerce_email_header']('heading text');
     verify(ob_get_clean())->equals('HTML before content.');
-    expect($addedActions['woocommerce_email_footer'])->callable();
+    verify($addedActions['woocommerce_email_footer'])->isCallable();
     ob_start();
     $addedActions['woocommerce_email_footer']();
     verify(ob_get_clean())->equals('HTML after content');
-    expect($addedActions['woocommerce_email_styles'])->callable();
+    verify($addedActions['woocommerce_email_styles'])->isCallable();
     verify($addedActions['woocommerce_email_styles']('some css'))->equals('prefixed some css');
   }
 
