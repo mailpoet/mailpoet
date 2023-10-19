@@ -34,7 +34,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     verify($connection->getDatabasePlatform())->instanceOf(MySqlPlatform::class);
     $params = $connection->getParams();
     verify($params['host'])->equals(Env::$dbHost);
-    expect($params)->notContains('unix_socket');
+    verify($params)->arrayNotContains('unix_socket');
     verify($params['user'])->equals(Env::$dbUsername);
     verify($params['password'])->equals(Env::$dbPassword);
     verify($params['charset'])->equals(Env::$dbCharset);
