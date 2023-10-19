@@ -1,5 +1,5 @@
 import { MailPoet } from 'mailpoet';
-import { sortFilters } from 'segments/dynamic/dynamic-segments-filters/sort-filters';
+import { sortFilters } from './sort-filters';
 import { EmailActionTypes, SegmentTypes } from '../types';
 
 export const EmailSegmentOptions = [
