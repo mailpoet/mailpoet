@@ -38,7 +38,7 @@ class WooFilterHelperTest extends \MailPoetTest {
     $queryBuilder = $this->tester->getSubscribersQueryBuilder();
     $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
     $emails = $this->tester->getSubscriberEmailsFromQueryBuilder($queryBuilder);
-    expect($emails)->notContains('customer@example.com');
+    verify($emails)->arrayNotContains('customer@example.com');
   }
 
   public function testOrderStatusesCanBeOverridden() {
@@ -50,7 +50,7 @@ class WooFilterHelperTest extends \MailPoetTest {
     $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder, ['wc-refunded']);
     $emails = $this->tester->getSubscriberEmailsFromQueryBuilder($queryBuilder);
     verify($emails)->arrayContains('refunded@example.com');
-    expect($emails)->notContains('completed@example.com');
+    verify($emails)->arrayNotContains('completed@example.com');
   }
 
   public function allowedStatuses() {

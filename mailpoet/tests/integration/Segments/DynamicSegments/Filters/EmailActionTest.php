@@ -310,7 +310,7 @@ class EmailActionTest extends \MailPoetTest {
 
     verify($emails)->arrayContains('1@example.com');
     verify($emails)->arrayContains('2@example.com');
-    expect($emails)->notContains('3@example.com');
+    verify($emails)->arrayNotContains('3@example.com');
   }
 
   public function testSentEmailAll(): void {
@@ -331,8 +331,8 @@ class EmailActionTest extends \MailPoetTest {
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
 
     verify($emails)->arrayContains('1@example.com');
-    expect($emails)->notContains('2@example.com');
-    expect($emails)->notContains('3@example.com');
+    verify($emails)->arrayNotContains('2@example.com');
+    verify($emails)->arrayNotContains('3@example.com');
   }
 
   public function testSentEmailNone(): void {
@@ -352,8 +352,8 @@ class EmailActionTest extends \MailPoetTest {
 
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->emailAction);
 
-    expect($emails)->notContains('1@example.com');
-    expect($emails)->notContains('2@example.com');
+    verify($emails)->arrayNotContains('1@example.com');
+    verify($emails)->arrayNotContains('2@example.com');
     verify($emails)->arrayContains('3@example.com');
   }
 
