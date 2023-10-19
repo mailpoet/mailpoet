@@ -47,6 +47,7 @@ else
   wp site create --slug=$WP_TEST_MULTISITE_SLUG
 fi
 
+wp core update --version=6.4-RC1
 echo "WORDPRESS VERSION:"
 wp core version
 
