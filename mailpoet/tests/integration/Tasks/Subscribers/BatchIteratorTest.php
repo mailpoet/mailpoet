@@ -45,7 +45,7 @@ class BatchIteratorTest extends \MailPoetTest {
 
   public function testItConstructs() {
     $iterator = new BatchIterator(123, 456); // random IDs
-    expect_that($iterator instanceof BatchIterator);
+    verify($iterator)->instanceOf(BatchIterator::class);
   }
 
   public function testItIterates() {

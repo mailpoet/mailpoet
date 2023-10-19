@@ -15,7 +15,7 @@ class CSSTest extends \MailPoetUnitTest {
 
   // tests
   public function testItCanBeInstantiated() {
-    expect_that($this->css instanceof \MailPoetVendor\CSS);
+    verify($this->css)->instanceOf('\MailPoetVendor\CSS');
   }
 
   /**
