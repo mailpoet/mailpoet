@@ -3,10 +3,11 @@
   display: grid;
   flex-grow: 1;
   grid-template-rows: auto 1fr;
+  overflow: scroll;
+  width: 100%;
 }
 
 .mailpoet-automation-editor-automation-wrapper {
-  overflow: scroll;
   padding: 0 20px 50px;
 }
 

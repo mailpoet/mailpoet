@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   __unstableComposite as Composite,
   __unstableUseCompositeState as useCompositeState,
@@ -11,6 +11,7 @@ import { InserterPopover } from '../inserter-popover';
 import { storeName } from '../../store';
 import { Statistics } from './statistics';
 import { Flow } from './flow';
+import { useAutomationScroll } from './use-automation-scroll';
 
 type AutomationProps = {
   context: 'edit' | 'view';
@@ -48,6 +49,10 @@ export function Automation({ context }: AutomationProps): JSX.Element {
     }
   }, [rendered]);
 
+  // handle automation scrolling
+  const automationRef = useRef<HTMLDivElement>();
+  useAutomationScroll(automationRef);
+
   if (!automationData) {
     return <EmptyAutomation />;
   }
@@ -56,6 +61,7 @@ export function Automation({ context }: AutomationProps): JSX.Element {
     <AutomationContext.Provider value={automationContext}>
       <AutomationCompositeContext.Provider value={compositeState}>
         <Composite
+          ref={automationRef}
           state={compositeState}
           role="tree"
           aria-label={__('Automation', 'mailpoet')}
