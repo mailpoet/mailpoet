@@ -97,7 +97,7 @@ class SystemReportCollectorTest extends \MailPoetTest {
     $version = $currentTheme->get('Version');
     $this->assertIsString($name);
     $this->assertIsString($version);
-    expect($version)->string();
+    verify($version)->isString();
     verify($this->systemInfoData['Current Theme'])->stringContainsString($name);
     verify($this->systemInfoData['Current Theme'])->stringContainsString($version);
   }
