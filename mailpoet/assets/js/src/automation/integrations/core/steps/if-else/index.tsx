@@ -7,10 +7,9 @@ import { BranchBadge } from './branch-badge';
 import { Footer } from './footer';
 
 const keywords = [
-  __('wait', 'mailpoet'),
-  __('pause', 'mailpoet'),
-  __('delay', 'mailpoet'),
-  __('time', 'mailpoet'),
+  __('condition', 'mailpoet'),
+  __('conditional', 'mailpoet'),
+  __('if/else', 'mailpoet'),
 ];
 
 export const step: StepType = {
