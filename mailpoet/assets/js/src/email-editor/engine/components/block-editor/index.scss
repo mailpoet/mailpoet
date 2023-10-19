@@ -60,3 +60,18 @@
 .wp-block {
   margin: 0;
 }
+
+.edit-post-visual-editor__content-area .wp-block-columns {
+  margin-bottom: 0;
+}
+
+.edit-post-visual-editor__content-area .is-mobile-preview {
+  .wp-block-columns {
+    display: flex;
+    flex-direction: column;
+
+    .wp-block-column {
+      box-sizing: border-box;
+    }
+  }
+}
