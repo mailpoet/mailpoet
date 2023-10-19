@@ -35,8 +35,6 @@ export function mapFilterType(filter) {
         return 'number of machine-opens';
       case 'opensAbsoluteCount':
         return 'number of opens';
-      case 'numberOfOrders':
-        return 'number of orders';
       case 'clicked':
         return 'clicked';
       case 'clickedAny':
@@ -117,6 +115,8 @@ export function mapFilterType(filter) {
         return 'number of reviews';
       case 'usedCouponCode':
         return 'used coupon code';
+      case 'numberOfOrders':
+        return 'number of orders';
       default:
         return '';
     }
