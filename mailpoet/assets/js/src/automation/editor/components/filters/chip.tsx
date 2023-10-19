@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { Dropdown } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { __ } from '@wordpress/i18n';
 import { FiltersList } from './list';
 import { FilterStrings } from './strings';
 import { Step } from '../automation/types';
@@ -42,7 +41,7 @@ export function FiltersChip({ step, strings }: Props): JSX.Element | null {
           onClick={onToggle}
           ariaExpanded={isOpen}
         >
-          {__(`${strings.label}: ${filterCount}`, 'mailpoet')}
+          {strings.label}: {filterCount}
         </Chip>
       )}
       renderContent={() => (
