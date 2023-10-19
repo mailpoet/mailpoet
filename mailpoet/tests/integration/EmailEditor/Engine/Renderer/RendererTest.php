@@ -3,7 +3,7 @@
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
 use MailPoet\EmailEditor\Engine\EmailEditor;
-use MailPoet\EmailEditor\Engine\StylesController;
+use MailPoet\EmailEditor\Engine\SettingsController;
 
 require_once __DIR__ . '/DummyBlockRenderer.php';
 
@@ -76,8 +76,8 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItAppliesLayoutStyles() {
-    $stylesControllerMock = $this->createMock(StylesController::class);
-    $stylesControllerMock->method('getEmailLayoutStyles')->willReturn([
+    $settingsControllerMock = $this->createMock(SettingsController::class);
+    $settingsControllerMock->method('getEmailLayoutStyles')->willReturn([
       'width' => 123,
       'background' => '#123456',
       'padding' => [
@@ -88,7 +88,7 @@ class RendererTest extends \MailPoetTest {
       ],
     ]);
     $renderer = $this->getServiceWithOverrides(Renderer::class, [
-      'stylesController' => $stylesControllerMock,
+      'stylesController' => $settingsControllerMock,
     ]);
     $rendered = $renderer->render($this->emailPost, 'Subject', '', 'en');
     $doc = new \DOMDocument();

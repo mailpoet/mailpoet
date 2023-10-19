@@ -4,7 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\Renderer\BlocksRenderer;
-use MailPoet\EmailEditor\Engine\StylesController;
+use MailPoet\EmailEditor\Engine\SettingsController;
 
 class Paragraph implements BlockRenderer {
   public function render($parsedBlock, BlocksRenderer $blocksRenderer, StylesController $stylesController): string {

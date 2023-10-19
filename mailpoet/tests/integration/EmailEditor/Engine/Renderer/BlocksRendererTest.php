@@ -2,7 +2,7 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
-use MailPoet\EmailEditor\Engine\StylesController;
+use MailPoet\EmailEditor\Engine\SettingsController;
 
 require_once __DIR__ . '/DummyBlockRenderer.php';
 
@@ -73,7 +73,7 @@ class BlocksRendererTest extends \MailPoetTest {
   private function getBlocksRenderer() {
     return new BlocksRenderer(
       new BlocksRegistry(),
-      new StylesController()
+      new SettingsController()
     );
   }
 }
