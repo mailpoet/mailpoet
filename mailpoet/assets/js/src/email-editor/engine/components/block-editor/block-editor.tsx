@@ -42,6 +42,7 @@ export function BlockEditor() {
     canUserEditMedia,
     hasFixedToolbar,
     focusMode,
+    layoutStyles,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
@@ -55,6 +56,7 @@ export function BlockEditor() {
       canUserEditMedia: select(coreStore).canUser('create', 'media'),
       hasFixedToolbar: select(storeName).isFeatureActive('fixedToolbar'),
       focusMode: select(storeName).isFeatureActive('focusMode'),
+      layoutStyles: select(storeName).getLayoutStyles(),
     }),
     [],
   );
@@ -76,7 +78,7 @@ export function BlockEditor() {
   );
 
   // These will be set by the user in the future in email or global styles.
-  const layoutBackground = '#cccccc';
+  const layoutBackground = layoutStyles.background;
   const documentBackground = '#ffffff';
 
   let inlineStyles = useResizeCanvas(previewDeviceType);
@@ -84,8 +86,8 @@ export function BlockEditor() {
   if (!inlineStyles) {
     inlineStyles = {
       height: 'auto',
-      width: '660px',
       margin: '4rem auto', // 4em top/bottom to place the email document nicely vertically in canvas. Same value is used for title in WP Post editor.
+      width: layoutStyles.width,
       display: 'flex',
       flexFlow: 'column',
       padding: '10px', // Hardcoded value of layout padding. This will be editable in email layout styles in the future.
@@ -93,6 +95,10 @@ export function BlockEditor() {
   }
   inlineStyles.background = documentBackground;
   inlineStyles.transition = 'all 0.3s ease 0s';
+  inlineStyles['padding-bottom'] = layoutStyles.padding.bottom;
+  inlineStyles['padding-left'] = layoutStyles.padding.left;
+  inlineStyles['padding-right'] = layoutStyles.padding.right;
+  inlineStyles['padding-top'] = layoutStyles.padding.top;
 
   const contentAreaStyles = {
     background:
