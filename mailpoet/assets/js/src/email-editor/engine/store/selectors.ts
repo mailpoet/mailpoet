@@ -80,3 +80,7 @@ export function getInitialEditorSettings(
 export function getPreviewState(state: State): State['preview'] {
   return state.preview;
 }
+
+export function getLayoutStyles(state: State): State['layoutStyles'] {
+  return state.layoutStyles;
+}

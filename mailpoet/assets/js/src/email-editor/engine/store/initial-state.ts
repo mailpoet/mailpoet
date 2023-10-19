@@ -1,5 +1,5 @@
 import { State } from './types';
-import { getEditorSettings } from './settings';
+import { getEditorSettings, getEmailLayoutStyles } from './settings';
 
 export function getInitialState(): State {
   const searchParams = new URLSearchParams(window.location.search);
@@ -13,6 +13,7 @@ export function getInitialState(): State {
     },
     postId,
     editorSettings: getEditorSettings(),
+    layoutStyles: getEmailLayoutStyles(),
     preview: {
       deviceType: 'Desktop',
       toEmail: window.MailPoetEmailEditor.current_wp_user_email,
