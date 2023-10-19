@@ -1,3 +1,4 @@
+import '@wordpress/format-library'; // Enables text formatting capabilities
 import { useSelect } from '@wordpress/data';
 import { StrictMode, createRoot } from '@wordpress/element';
 import { registerCoreBlocks } from '@wordpress/block-library';
