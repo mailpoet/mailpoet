@@ -11,6 +11,7 @@ import { InserterPopover } from '../inserter-popover';
 import { storeName } from '../../store';
 import { Statistics } from './statistics';
 import { Flow } from './flow';
+import { useAutomationDragToScroll } from './use-automation-drag-to-scroll';
 import { useAutomationScroll } from './use-automation-scroll';
 import { useAutomationScrollCenter } from './use-automation-scroll-center';
 
@@ -32,10 +33,11 @@ export function Automation({ context }: AutomationProps): JSX.Element {
     shift: true,
   });
 
-  // handle automation scrolling and horizontal scroll centering
+  // handle automation scrolling, dragging, and horizontal scroll centering
   const automationRef = useRef<HTMLDivElement>();
   useAutomationScroll(automationRef);
   useAutomationScrollCenter(automationRef);
+  useAutomationDragToScroll(automationRef);
 
   if (!automationData) {
     return <EmptyAutomation />;
