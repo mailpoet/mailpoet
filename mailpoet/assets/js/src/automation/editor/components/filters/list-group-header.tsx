@@ -55,7 +55,9 @@ export function ListGroupHeader({
 
   // read-only
   const description = createInterpolateElement(
-    group.operator === 'and' ? strings.andDescription : strings.orDescription,
+    group.operator === 'and'
+      ? strings.andGroupDescription
+      : strings.orGroupDescription,
     {
       operator: (
         <span className="mailpoet-automation-filters-list-group-description-operator" />

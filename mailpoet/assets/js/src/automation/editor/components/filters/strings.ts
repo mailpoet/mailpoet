@@ -1,9 +1,9 @@
 export type FilterStrings = {
   title: string;
-  label: string;
+  countLabel: string;
   addFilter: string;
   groupDescription: string;
-  andDescription: string;
-  orDescription: string;
+  andGroupDescription: string;
+  orGroupDescription: string;
   premiumMessage: string;
 };

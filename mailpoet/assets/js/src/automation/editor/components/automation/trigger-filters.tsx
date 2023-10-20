@@ -4,17 +4,17 @@ import { FilterStrings } from '../filters';
 export const triggerFilterStrings: FilterStrings = {
   title: __('Trigger filters', 'mailpoet'),
   // translators: %d is the number of filters that are set up
-  label: __('Filters: %d', 'mailpoet'),
+  countLabel: __('Filters: %d', 'mailpoet'),
   addFilter: __('Add trigger filter', 'mailpoet'),
   groupDescription: __(
     'The automation would only be started if the following trigger conditions are met:',
     'mailpoet',
   ),
-  andDescription: __(
+  andGroupDescription: __(
     'The automation would only be started if <operator>all of</operator> the following trigger conditions are met:',
     'mailpoet',
   ),
-  orDescription: __(
+  orGroupDescription: __(
     'The automation would only be started if <operator>any of</operator> the following trigger conditions are met:',
     'mailpoet',
   ),
