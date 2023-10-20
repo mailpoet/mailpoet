@@ -3,7 +3,8 @@ import { FilterStrings } from '../filters';
 
 export const triggerFilterStrings: FilterStrings = {
   title: __('Trigger filters', 'mailpoet'),
-  label: __('Filters', 'mailpoet'),
+  // translators: %d is the number of filters that are set up
+  label: __('Filters: %d', 'mailpoet'),
   addFilter: __('Add trigger filter', 'mailpoet'),
   groupDescription: __(
     'The automation would only be started if the following trigger conditions are met:',
