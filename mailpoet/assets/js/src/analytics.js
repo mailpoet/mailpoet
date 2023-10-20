@@ -45,6 +45,8 @@ export function mapFilterType(filter) {
         return 'machine-opened';
       case 'wasSent':
         return 'was sent';
+      case 'numberReceived':
+        return 'number of emails received';
       default:
         return '';
     }

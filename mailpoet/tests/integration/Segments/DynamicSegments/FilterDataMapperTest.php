@@ -1011,4 +1011,41 @@ class FilterDataMapperTest extends \MailPoetTest {
       'operator' => 'on',
     ]]]);
   }
+
+  public function testItMapsEmailsReceived(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => 'numberReceived',
+      'operator' => 'equals',
+      'emails' => '1',
+      'timeframe' => 'inTheLast',
+      'days' => '2',
+    ]]];
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
+    expect($filter->getAction())->equals('numberReceived');
+    expect($filter->getData())->equals([
+      'connect' => 'and',
+      'operator' => 'equals',
+      'emails' => '1',
+      'timeframe' => 'inTheLast',
+      'days' => '2',
+    ]);
+  }
+
+  public function testItValidatesEmailsReceivedEmailCount(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->mapper->map(['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_EMAIL,
+      'action' => 'numberReceived',
+      'operator' => 'equals',
+      'timeframe' => 'allTime',
+    ]]]);
+  }
 }
