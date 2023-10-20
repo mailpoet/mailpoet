@@ -64,6 +64,8 @@ class EmailEditor {
     // Load CSS from Post Editor
     $this->wp->wpEnqueueStyle('wp-edit-post');
 
+    // Enqueue media library scripts
+    $this->wp->wpEnqueueMedia();
 
     echo '<div id="mailpoet-email-editor"></div>';
   }

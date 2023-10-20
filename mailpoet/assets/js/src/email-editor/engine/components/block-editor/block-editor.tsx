@@ -12,6 +12,7 @@ import {
   __experimentalUseResizeCanvas as useResizeCanvas,
   BlockSelectionClearer,
 } from '@wordpress/block-editor';
+import { uploadMedia } from '@wordpress/media-utils';
 import classnames from 'classnames';
 import { useSelect } from '@wordpress/data';
 import {
@@ -19,8 +20,8 @@ import {
   FullscreenMode,
   InterfaceSkeleton,
 } from '@wordpress/interface';
-import { useEntityBlockEditor } from '@wordpress/core-data';
 
+import { useEntityBlockEditor, store as coreStore } from '@wordpress/core-data';
 import { storeName } from '../../store';
 import { Sidebar } from '../sidebar/sidebar';
 import { Header } from '../header';
@@ -37,6 +38,7 @@ export function BlockEditor() {
     isListviewSidebarOpened,
     isEmailLoaded,
     postId,
+    canUserEditMedia,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
@@ -47,6 +49,7 @@ export function BlockEditor() {
       initialSettings: select(storeName).getInitialEditorSettings(),
       previewDeviceType: select(storeName).getPreviewState().deviceType,
       isEmailLoaded: select(storeName).isEmailLoaded(),
+      canUserEditMedia: select(coreStore).canUser('create', 'media'),
     }),
     [],
   );
@@ -86,6 +89,11 @@ export function BlockEditor() {
       previewDeviceType === 'Desktop' ? layoutBackground : 'transparent',
   };
 
+  const settings = {
+    ...initialSettings,
+    mediaUpload: canUserEditMedia ? uploadMedia : null,
+  };
+
   // Do not render editor if email is not loaded yet.
   if (!isEmailLoaded) {
     return null;
@@ -96,7 +104,7 @@ export function BlockEditor() {
       value={blocks}
       onInput={onInput}
       onChange={onChange}
-      settings={initialSettings}
+      settings={settings}
       useSubRegistry={false}
     >
       <FullscreenMode isActive={isFullscreenActive} />

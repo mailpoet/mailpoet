@@ -33,11 +33,11 @@ function Editor() {
 }
 
 export function initialize(elementId: string) {
-  createStore();
   const container = document.getElementById(elementId);
   if (!container) {
     return;
   }
+  createStore();
   registerCoreBlocks();
   const root = createRoot(container);
   root.render(<Editor />);
