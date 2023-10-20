@@ -21,6 +21,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceAverageSpent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCustomerTextField;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceFirstOrder;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfReviews;
@@ -422,7 +423,7 @@ class FilterDataMapper {
       $filterData['single_order_value_amount'] = $data['single_order_value_amount'];
       $filterData['days'] = $data['days'] ?? 0;
       $filterData['timeframe'] = $data['timeframe'];
-    } elseif ($data['action'] === WooCommercePurchaseDate::ACTION) {
+    } elseif (in_array($data['action'], [WooCommercePurchaseDate::ACTION, WooCommerceFirstOrder::ACTION])) {
       $filterData['operator'] = $data['operator'];
       $filterData['value'] = $data['value'];
     } elseif ($data['action'] === WooCommerceAverageSpent::ACTION) {

@@ -22,6 +22,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceAverageSpent;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCountry;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCustomerTextField;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceFirstOrder;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceMembership;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfReviews;
@@ -116,6 +117,9 @@ class FilterFactory {
   /** @var WooCommerceUsedCouponCode  */
   private $wooCommerceUsedCouponCode;
 
+  /** @var WooCommerceFirstOrder */
+  private $wooCommerceFirstOrder;
+
   public function __construct(
     EmailAction $emailAction,
     EmailActionClickAny $emailActionClickAny,
@@ -130,6 +134,7 @@ class FilterFactory {
     WooCommerceNumberOfReviews $wooCommerceNumberOfReviews,
     WooCommerceTotalSpent $wooCommerceTotalSpent,
     WooCommerceMembership $wooCommerceMembership,
+    WooCommerceFirstOrder $wooCommerceFirstOrder,
     WooCommercePurchaseDate $wooCommercePurchaseDate,
     WooCommerceSubscription $wooCommerceSubscription,
     SubscriberScore $subscriberScore,
@@ -172,6 +177,7 @@ class FilterFactory {
     $this->automationsEvents = $automationsEvents;
     $this->subscriberDateField = $subscriberDateField;
     $this->wooCommerceUsedCouponCode = $wooCommerceUsedCouponCode;
+    $this->wooCommerceFirstOrder = $wooCommerceFirstOrder;
   }
 
   public function getFilterForFilterEntity(DynamicSegmentFilterEntity $filter): Filter {
@@ -271,6 +277,8 @@ class FilterFactory {
       return $this->wooCommerceCustomerTextField;
     } elseif ($action === WooCommerceUsedCouponCode::ACTION) {
       return $this->wooCommerceUsedCouponCode;
+    } elseif ($action === WooCommerceFirstOrder::ACTION) {
+      return $this->wooCommerceFirstOrder;
     }
     return $this->wooCommerceCategory;
   }
