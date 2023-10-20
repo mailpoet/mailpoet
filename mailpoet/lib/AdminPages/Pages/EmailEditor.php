@@ -61,14 +61,9 @@ class EmailEditor {
       ]
     );
 
-    $this->wp->wpEnqueueStyle('wp-components');
-    $this->wp->wpEnqueueStyle('wp-block-editor');
-    $this->wp->wpEnqueueStyle('wp-block-editor-content');
+    // Load CSS from Post Editor
     $this->wp->wpEnqueueStyle('wp-edit-post');
-    $this->wp->wpEnqueueStyle('wp-editor');
-    $this->wp->wpEnqueueStyle('wp-block-library');
-    $this->wp->wpEnqueueStyle('wp-format-library');
-    $this->wp->wpEnqueueStyle('wp-interface');
+
 
     echo '<div id="mailpoet-email-editor"></div>';
   }
