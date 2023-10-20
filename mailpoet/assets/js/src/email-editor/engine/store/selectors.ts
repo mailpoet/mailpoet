@@ -25,6 +25,15 @@ export const hasEdits = createRegistrySelector((select) => (): boolean => {
   );
 });
 
+export const isEmailLoaded = createRegistrySelector((select) => (): boolean => {
+  const postId = select(storeName).getEmailPostId();
+  return !!select(coreDataStore).getEntityRecord(
+    'postType',
+    'mailpoet_email',
+    postId,
+  );
+});
+
 export const isSaving = createRegistrySelector((select) => (): boolean => {
   const postId = select(storeName).getEmailPostId();
   return !!select(coreDataStore).isSavingEntityRecord(
