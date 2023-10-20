@@ -16,6 +16,7 @@ export enum EmailActionTypes {
   WAS_SENT = 'wasSent',
   CLICKED = 'clicked',
   CLICKED_ANY = 'clickedAny',
+  NUMBER_RECEIVED = 'numberReceived',
 }
 
 export enum SubscriberActionTypes {
@@ -173,6 +174,7 @@ export interface EmailFormItem extends FormItem {
   link_ids?: string[];
   operator?: string;
   opens?: string;
+  emails?: string;
 }
 
 export type Segment = {

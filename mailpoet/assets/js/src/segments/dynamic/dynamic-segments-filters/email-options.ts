@@ -19,6 +19,11 @@ export const EmailSegmentOptions = [
     group: SegmentTypes.Email,
   },
   {
+    value: EmailActionTypes.NUMBER_RECEIVED,
+    label: __('number of emails received', 'mailpoet'),
+    group: SegmentTypes.Email,
+  },
+  {
     value: EmailActionTypes.MACHINE_OPENS_ABSOLUTE_COUNT,
     label: __('number of machine-opens', 'mailpoet'),
     group: SegmentTypes.Email,
