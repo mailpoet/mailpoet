@@ -35,6 +35,7 @@ export function BlockEditor() {
     previewDeviceType,
     isInserterSidebarOpened,
     isListviewSidebarOpened,
+    isEmailLoaded,
     postId,
   } = useSelect(
     (select) => ({
@@ -45,6 +46,7 @@ export function BlockEditor() {
       postId: select(storeName).getEmailPostId(),
       initialSettings: select(storeName).getInitialEditorSettings(),
       previewDeviceType: select(storeName).getPreviewState().deviceType,
+      isEmailLoaded: select(storeName).isEmailLoaded(),
     }),
     [],
   );
@@ -83,6 +85,11 @@ export function BlockEditor() {
     background:
       previewDeviceType === 'Desktop' ? layoutBackground : 'transparent',
   };
+
+  // Do not render editor if email is not loaded yet.
+  if (!isEmailLoaded) {
+    return null;
+  }
 
   return (
     <BlockEditorProvider
