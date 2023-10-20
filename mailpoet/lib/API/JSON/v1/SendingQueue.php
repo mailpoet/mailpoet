@@ -13,7 +13,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Mailer\MailerFactory;
-use MailPoet\Models\Newsletter;
 use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\NewsletterValidator;
@@ -96,21 +95,16 @@ class SendingQueue extends APIEndpoint {
     );
 
     // check that the newsletter exists
-    $newsletter = Newsletter::findOneWithOptions($newsletterId);
+    $newsletter = $this->newsletterRepository->findOneById($newsletterId);
+    $this->newsletterRepository->prefetchOptions([$newsletter]);
 
-    if (!$newsletter instanceof Newsletter) {
-      return $this->errorResponse([
-        APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet'),
-      ]);
-    }
-    $newsletterEntity = $this->newsletterRepository->findOneById($newsletterId);
-    if (!$newsletterEntity instanceof NewsletterEntity) {
+    if (!$newsletter instanceof NewsletterEntity) {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet'),
       ]);
     }
 
-    $validationError = $this->newsletterValidator->validate($newsletterEntity);
+    $validationError = $this->newsletterValidator->validate($newsletter);
     if ($validationError) {
       return $this->errorResponse([
         APIError::BAD_REQUEST => $validationError,
@@ -128,7 +122,7 @@ class SendingQueue extends APIEndpoint {
 
     // add newsletter to the sending queue
     $queue = SendingQueueModel::joinWithTasks()
-      ->where('queues.newsletter_id', $newsletterEntity->getId())
+      ->where('queues.newsletter_id', $newsletter->getId())
       ->whereNull('tasks.status')
       ->findOne();
 
@@ -139,31 +133,31 @@ class SendingQueue extends APIEndpoint {
     }
 
     $scheduledQueue = SendingQueueModel::joinWithTasks()
-      ->where('queues.newsletter_id', $newsletterEntity->getId())
+      ->where('queues.newsletter_id', $newsletter->getId())
       ->where('tasks.status', SendingQueueModel::STATUS_SCHEDULED)
       ->findOne();
     if ($scheduledQueue instanceof SendingQueueModel) {
       $queue = SendingTask::createFromQueue($scheduledQueue);
     } else {
       $queue = SendingTask::create();
-      $queue->newsletterId = $newsletterEntity->getId();
+      $queue->newsletterId = $newsletter->getId();
     }
 
     WordPress::resetRunInterval();
-    if ((bool)$newsletterEntity->getOptionValue('isScheduled')) {
+    if ((bool)$newsletter->getOptionValue('isScheduled')) {
       // set newsletter status
-      $newsletterEntity->setStatus(NewsletterEntity::STATUS_SCHEDULED);
+      $newsletter->setStatus(NewsletterEntity::STATUS_SCHEDULED);
 
       // set queue status
       $queue->status = SendingQueueModel::STATUS_SCHEDULED;
-      $queue->scheduledAt = $this->scheduler->formatDatetimeString($newsletterEntity->getOptionValue('scheduledAt'));
+      $queue->scheduledAt = $this->scheduler->formatDatetimeString($newsletter->getOptionValue('scheduledAt'));
     } else {
-      $segments = $newsletterEntity->getSegmentIds();
+      $segments = $newsletter->getSegmentIds();
       $taskModel = $queue->task();
       $taskEntity = $this->scheduledTasksRepository->findOneById($taskModel->id);
 
       if ($taskEntity instanceof ScheduledTaskEntity) {
-        $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($taskEntity, $segments, $newsletterEntity->getFilterSegmentId());
+        $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($taskEntity, $segments, $newsletter->getFilterSegmentId());
       }
 
       if (!isset($subscribersCount) || !$subscribersCount) {
@@ -176,7 +170,7 @@ class SendingQueue extends APIEndpoint {
       $queue->scheduledAt = null;
 
       // set newsletter status
-      $newsletterEntity->setStatus(Newsletter::STATUS_SENDING);
+      $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
     }
     $queue->save();
     $this->newsletterRepository->flush();
@@ -185,9 +179,9 @@ class SendingQueue extends APIEndpoint {
     if (!empty($errors)) {
       return $this->errorResponse($errors);
     } else {
-      $this->triggerSending($newsletterEntity);
+      $this->triggerSending($newsletter);
       return $this->successResponse(
-        $newsletter->getQueue()->asArray()
+        ($newsletter->getLatestQueue() instanceof SendingQueueEntity) ? $newsletter->getLatestQueue()->toArray() : null
       );
     }
   }
