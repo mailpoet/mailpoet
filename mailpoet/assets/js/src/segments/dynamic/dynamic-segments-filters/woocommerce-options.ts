@@ -1,5 +1,5 @@
-import { sortFilters } from './sort-filters';
 import { __ } from '@wordpress/i18n';
+import { sortFilters } from './sort-filters';
 import { SegmentTypes } from '../types';
 
 // WooCommerce
