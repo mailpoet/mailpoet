@@ -3,7 +3,8 @@ import { FilterStrings } from '../../../../editor/components/filters';
 
 export const strings: FilterStrings = {
   title: __('Conditions', 'mailpoet'),
-  label: __('Conditions', 'mailpoet'),
+  // translators: %d is the number of conditions that are set up
+  label: __('Conditions: %d', 'mailpoet'),
   addFilter: __('Add condition', 'mailpoet'),
   groupDescription: __(
     'The automation would go through the yes flow if the following conditions are met:',
