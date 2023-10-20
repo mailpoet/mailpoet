@@ -101,6 +101,8 @@ export function mapFilterType(filter) {
         return 'subscribed date';
       case 'totalSpent':
         return 'total spent';
+      case 'firstOrder':
+        return 'first order';
       case 'purchaseDate':
         return 'purchase date';
       case 'averageSpent':
@@ -121,6 +123,7 @@ export function mapFilterType(filter) {
         return '';
     }
   }
+
   // WooCommerce Subscription
   if (
     filterType === 'woocommerceSubscription' &&
