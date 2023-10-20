@@ -931,6 +931,28 @@ class FilterDataMapperTest extends \MailPoetTest {
     ]);
   }
 
+  public function testItMapsFirstOrder(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => 'firstOrder',
+      'operator' => 'before',
+      'value' => '2023-10-18',
+    ]]];
+    $filters = $this->mapper->map($data);
+    expect($filters)->array();
+    expect($filters)->count(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
+    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    expect($filter->getAction())->equals('firstOrder');
+    expect($filter->getData())->equals([
+      'connect' => 'and',
+      'operator' => 'before',
+      'value' => '2023-10-18',
+    ]);
+  }
+
   /**
    * @dataProvider dateFieldActions
    */
