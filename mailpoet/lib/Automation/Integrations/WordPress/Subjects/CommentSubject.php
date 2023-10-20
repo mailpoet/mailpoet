@@ -6,6 +6,7 @@ use MailPoet\Automation\Engine\Data\Subject as SubjectData;
 use MailPoet\Automation\Engine\Integration\Payload;
 use MailPoet\Automation\Engine\Integration\Subject;
 use MailPoet\Automation\Engine\WordPress;
+use MailPoet\Automation\Integrations\WordPress\Fields\CommentFieldsFactory;
 use MailPoet\Automation\Integrations\WordPress\Payloads\CommentPayload;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
@@ -19,10 +20,15 @@ class CommentSubject implements Subject {
   /** @var WordPress */
   private $wp;
 
+  /** @var CommentFieldsFactory */
+  private $commentFieldsFactory;
+
   public function __construct(
-    WordPress $wp
+    WordPress $wp,
+    CommentFieldsFactory $commentFieldsFactory
   ) {
     $this->wp = $wp;
+    $this->commentFieldsFactory = $commentFieldsFactory;
   }
 
   public function getKey(): string {
@@ -40,7 +46,7 @@ class CommentSubject implements Subject {
   }
 
   public function getFields(): array {
-    return [];
+    return $this->commentFieldsFactory->getFields();
   }
 
   public function getPayload(SubjectData $subjectData): Payload {
