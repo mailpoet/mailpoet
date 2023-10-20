@@ -1,9 +1,15 @@
 import { dispatch, select } from '@wordpress/data';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as coreDataStore } from '@wordpress/core-data';
+import { store as preferencesStore } from '@wordpress/preferences';
 import { apiFetch } from '@wordpress/data-controls';
 import { storeName, mainSidebarEmailKey } from './constants';
-import { SendingPreviewStatus, State } from './types';
+import { SendingPreviewStatus, State, Feature } from './types';
+
+export const toggleFeature =
+  (feature: Feature) =>
+  ({ registry }): unknown =>
+    registry.dispatch(preferencesStore).toggle(storeName, feature);
 
 export function toggleInserterSidebar() {
   return {
@@ -38,13 +44,15 @@ export function updateSendPreviewEmail(toEmail: string) {
   } as const;
 }
 
-export function* openSidebar(key = mainSidebarEmailKey) {
-  yield dispatch(interfaceStore).enableComplementaryArea(storeName, key);
-}
+export const openSidebar =
+  (key = mainSidebarEmailKey) =>
+  ({ registry }): unknown =>
+    registry.dispatch(interfaceStore).enableComplementaryArea(storeName, key);
 
-export const closeSidebar = () => {
-  dispatch(interfaceStore).disableComplementaryArea(storeName);
-};
+export const closeSidebar =
+  () =>
+  ({ registry }): unknown =>
+    registry.dispatch(interfaceStore).disableComplementaryArea(storeName);
 
 export function* saveEditedEmail() {
   const postId = select(storeName).getEmailPostId();
