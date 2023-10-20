@@ -39,7 +39,6 @@ parameters:
       path: ../../lib/Entities/ScheduledTaskSubscriberEntity.php
       count: 2
     - '/Parameter #1 \$cssOrXPath of method AcceptanceTester::moveMouseOver\(\) expects string\|null, array<string, string> given./'
-    - '/Function expect invoked with 1 parameter, 0 required\./'
     - '/Call to method getName\(\) on an unknown class _generated\\([a-zA-Z])*Cookie/' # codeception generate incorrect return type in ../../tests/_support/_generated
     -
       message: "#^Cannot cast string|void to string\\.$#"
