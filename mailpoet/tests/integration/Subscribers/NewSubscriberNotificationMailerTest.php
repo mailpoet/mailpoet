@@ -109,7 +109,7 @@ class NewSubscriberNotificationMailerTest extends \MailPoetTest {
           verify($newsletter)->arrayHasKey('subject');
           verify($newsletter)->arrayHasKey('body');
           verify($newsletter)->arrayCount(2);
-          expect($newsletter['subject'])->matchesFormat('New subscriber to List %s, List %s');
+          verify($newsletter['subject'])->stringMatchesFormat('New subscriber to List %s, List %s');
           verify($newsletter['body'])->arrayHasKey('html');
           verify($newsletter['body'])->arrayHasKey('text');
           verify($newsletter['body'])->arrayCount(2);
