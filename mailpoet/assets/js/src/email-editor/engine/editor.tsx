@@ -7,6 +7,7 @@ import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import { EntityProvider } from '@wordpress/core-data';
 import { BlockEditor } from './components/block-editor';
 import { createStore, storeName } from './store';
+import { KeyboardShortcuts } from './components/keybord-shortcuts';
 
 function Editor() {
   const { postId } = useSelect(
@@ -20,6 +21,7 @@ function Editor() {
     <StrictMode>
       <ShortcutProvider>
         <SlotFillProvider>
+          <KeyboardShortcuts />
           <EntityProvider kind="postType" type="mailpoet_email" id={postId}>
             <BlockEditor />
             <Popover.Slot />
