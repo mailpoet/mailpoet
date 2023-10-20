@@ -30,7 +30,7 @@ export function NumberOfEmailsReceivedFields({
   const { updateSegmentFilter, updateSegmentFilterFromEvent } =
     useDispatch(storeName);
   useEffect(() => {
-    if (segment.operator === undefined) {
+    if (!['more', 'less', 'equals', 'not_equals'].includes(segment.operator)) {
       void updateSegmentFilter({ operator: 'more' }, filterIndex);
     }
   }, [updateSegmentFilter, segment, filterIndex]);
