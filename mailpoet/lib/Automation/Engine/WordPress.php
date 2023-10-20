@@ -126,6 +126,10 @@ class WordPress {
     return get_comment_statuses();
   }
 
+  public function getPostStatuses(): array {
+    return get_post_statuses();
+  }
+
   /**
    * @return array<int,int|string|WP_Term>|string|WP_Error
    */
