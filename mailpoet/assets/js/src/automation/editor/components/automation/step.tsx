@@ -62,7 +62,7 @@ export function Step({ step, isSelected }: Props): JSX.Element {
   const compositeItemId = `step-${step.id}`;
   const stepTypeData = stepType ?? getUnknownStepType(step);
 
-  const Footer = stepType.footer;
+  const Footer = stepType?.footer;
   const footer: RenderStepFooterType = Hooks.applyFilters(
     'mailpoet.automation.step.footer',
     <div className="mailpoet-automation-editor-step-footer">
