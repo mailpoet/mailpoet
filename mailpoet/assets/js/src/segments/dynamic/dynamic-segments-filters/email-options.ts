@@ -1,41 +1,41 @@
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 import { sortFilters } from './sort-filters';
 import { EmailActionTypes, SegmentTypes } from '../types';
 
 export const EmailSegmentOptions = [
   {
     value: EmailActionTypes.CLICKED,
-    label: MailPoet.I18n.t('emailActionClicked'),
+    label: __('clicked', 'mailpoet'),
     group: SegmentTypes.Email,
   },
   {
     value: EmailActionTypes.CLICKED_ANY,
-    label: MailPoet.I18n.t('emailActionClickedAnyEmail'),
+    label: __('clicked any email', 'mailpoet'),
     group: SegmentTypes.Email,
   },
   {
     value: EmailActionTypes.MACHINE_OPENED,
-    label: MailPoet.I18n.t('emailActionMachineOpened'),
+    label: __('machine-opened', 'mailpoet'),
     group: SegmentTypes.Email,
   },
   {
     value: EmailActionTypes.MACHINE_OPENS_ABSOLUTE_COUNT,
-    label: MailPoet.I18n.t('emailActionMachineOpensAbsoluteCount'),
+    label: __('number of machine-opens', 'mailpoet'),
     group: SegmentTypes.Email,
   },
   {
     value: EmailActionTypes.OPENS_ABSOLUTE_COUNT,
-    label: MailPoet.I18n.t('emailActionOpensAbsoluteCount'),
+    label: __('number of opens', 'mailpoet'),
     group: SegmentTypes.Email,
   },
   {
     value: EmailActionTypes.OPENED,
-    label: MailPoet.I18n.t('emailActionOpened'),
+    label: __('opened', 'mailpoet'),
     group: SegmentTypes.Email,
   },
   {
     value: EmailActionTypes.WAS_SENT,
-    label: MailPoet.I18n.t('emailActionWasSent'),
+    label: __('was sent', 'mailpoet'),
     group: SegmentTypes.Email,
   },
 ].sort(sortFilters);
