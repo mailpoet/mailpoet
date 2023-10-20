@@ -7,6 +7,7 @@ import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import { EntityProvider } from '@wordpress/core-data';
 import { BlockEditor } from './components/block-editor';
 import { createStore, storeName } from './store';
+import { initHooks } from './hooks';
 import { KeyboardShortcuts } from './components/keybord-shortcuts';
 
 function Editor() {
@@ -39,6 +40,7 @@ export function initialize(elementId: string) {
   }
   createStore();
   registerCoreBlocks();
+  initHooks();
   const root = createRoot(container);
   root.render(<Editor />);
 }
