@@ -19,6 +19,11 @@ export const EmailSegmentOptions = [
     group: SegmentTypes.Email,
   },
   {
+    value: EmailActionTypes.NUMBER_OF_CLICKS,
+    label: __('number of clicks', 'mailpoet'),
+    group: SegmentTypes.Email,
+  },
+  {
     value: EmailActionTypes.NUMBER_RECEIVED,
     label: __('number of emails received', 'mailpoet'),
     group: SegmentTypes.Email,

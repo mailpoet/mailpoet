@@ -13,6 +13,7 @@ import { EmailClickStatisticsFields } from './fields/email/email-statistics-clic
 import { EmailOpensAbsoluteCountFields } from './fields/email/email-opens-absolute-count';
 import { validateDaysPeriod } from './fields/days-period-field';
 import { NumberOfEmailsReceivedFields } from './fields/email/number-of-emails-received';
+import { NumberOfClicksFields } from './fields/email/number-of-clicks';
 
 export function validateEmail(formItems: EmailFormItem): boolean {
   // check if the action has the right type
@@ -56,6 +57,14 @@ export function validateEmail(formItems: EmailFormItem): boolean {
     );
   }
 
+  if (formItems.action === EmailActionTypes.NUMBER_OF_CLICKS) {
+    return (
+      validateDaysPeriod(formItems) &&
+      !!formItems.clicks &&
+      !!formItems.operator
+    );
+  }
+
   return false;
 }
 
@@ -69,6 +78,7 @@ const componentsMap = {
   [EmailActionTypes.MACHINE_OPENED]: EmailOpenStatisticsFields,
   [EmailActionTypes.CLICKED_ANY]: null,
   [EmailActionTypes.NUMBER_RECEIVED]: NumberOfEmailsReceivedFields,
+  [EmailActionTypes.NUMBER_OF_CLICKS]: NumberOfClicksFields,
 };
 
 export function EmailFields({ filterIndex }: FilterProps): JSX.Element {
