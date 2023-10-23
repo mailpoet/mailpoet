@@ -3,23 +3,24 @@ import { useSelect } from '@wordpress/data';
 import { AutomationFlowSection, storeName } from '../../../store';
 import { storeName as editorStoreName } from '../../../../../../editor/store';
 import { locale } from '../../../config';
-import { Automation } from '../../../../../../editor/components/automation/types';
+import { Step } from '../../../../../../editor/components/automation/types';
 
 type Props = {
-  previousStepId: string;
+  previousStep: Step;
+  index: number;
 };
+
 export function StatisticSeparator({
-  previousStepId,
+  previousStep,
+  index,
 }: Props): JSX.Element | null {
-  const { section, automation } = useSelect(
-    (s) =>
-      ({
-        section: s(storeName).getSection('automation_flow'),
-        automation: s(editorStoreName).getAutomationData(),
-      } as {
-        section: AutomationFlowSection;
-        automation: Automation;
-      }),
+  const { section, stepType } = useSelect(
+    (s) => ({
+      section: s(storeName).getSection(
+        'automation_flow',
+      ) as AutomationFlowSection,
+      stepType: s(editorStoreName).getStepType(previousStep.key),
+    }),
     [],
   );
 
@@ -28,14 +29,13 @@ export function StatisticSeparator({
     return null;
   }
 
-  const step = automation.steps[previousStepId];
-  if (step?.type === 'trigger') {
+  if (previousStep.type === 'trigger') {
     const formattedValue = Intl.NumberFormat(locale.toString(), {
       notation: 'compact',
     }).format(data.step_data.total);
     return (
       <div
-        className={`mailpoet-automation-editor-separator mailpoet-automation-analytics-separator mailpoet-automation-analytics-separator-${previousStepId}`}
+        className={`mailpoet-automation-editor-separator mailpoet-automation-analytics-separator mailpoet-automation-analytics-separator-${previousStep.id}`}
       >
         <p>
           <span className="mailpoet-automation-analytics-separator-values">
@@ -53,7 +53,7 @@ export function StatisticSeparator({
   }
 
   const flow = data.step_data?.flow;
-  const value = flow !== undefined ? flow[previousStepId] ?? 0 : 0;
+  const value = flow !== undefined ? flow[previousStep.id] ?? 0 : 0;
   const percent =
     data.step_data.total > 0
       ? Math.round((value / data.step_data.total) * 100)
@@ -65,21 +65,31 @@ export function StatisticSeparator({
     style: 'percent',
   }).format(percent / 100);
 
+  const BranchBadge =
+    previousStep.next_steps.length > 1 && stepType?.branchBadge;
+
   return (
-    <div
-      className={`mailpoet-automation-editor-separator mailpoet-automation-analytics-separator  mailpoet-automation-analytics-separator-${previousStepId}`}
-    >
-      <p>
-        <span className="mailpoet-automation-analytics-separator-values">
-          {formattedPercent} ({formattedValue})
-        </span>
-        <span className="mailpoet-automation-analytics-separator-text">
-          {
-            // translators: "completed" as in "100 people have completed this step".
-            __('completed', 'mailpoet')
-          }
-        </span>
-      </p>
-    </div>
+    <>
+      {BranchBadge && (
+        <div className="mailpoet-automation-editor-branch-badge">
+          <BranchBadge step={previousStep} index={index} />
+        </div>
+      )}
+      <div
+        className={`mailpoet-automation-editor-separator mailpoet-automation-analytics-separator  mailpoet-automation-analytics-separator-${previousStep.id}`}
+      >
+        <p>
+          <span className="mailpoet-automation-analytics-separator-values">
+            {formattedPercent} ({formattedValue})
+          </span>
+          <span className="mailpoet-automation-analytics-separator-text">
+            {
+              // translators: "completed" as in "100 people have completed this step".
+              __('completed', 'mailpoet')
+            }
+          </span>
+        </p>
+      </div>
+    </>
   );
 }

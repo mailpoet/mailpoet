@@ -14,6 +14,12 @@
 @import './components-automation/statistics';
 @import './components-automation-editor/editor';
 
+// automation integration styles
+
+@import './components-automation-integrations/core';
+@import './components-automation-integrations/mailpoet';
+@import './components-automation-integrations/woocommerce';
+
 // styles
 
 @import './components-automation-analytics/header';
