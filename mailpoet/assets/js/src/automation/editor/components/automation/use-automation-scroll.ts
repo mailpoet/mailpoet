@@ -3,10 +3,10 @@ import { MutableRefObject, useEffect } from 'react';
 // Handle automation scrolling, including both X and Y axes simultaneously.
 // Use animation frames to sync with browser repaints for smooth scrolling.
 export const useAutomationScroll = (
-  automationRef: MutableRefObject<HTMLDivElement>,
+  automationRef?: MutableRefObject<HTMLDivElement>,
 ): void =>
   useEffect(() => {
-    const automation = automationRef.current;
+    const automation = automationRef?.current;
     if (!automation) {
       return undefined;
     }
