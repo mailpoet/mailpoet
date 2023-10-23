@@ -62,7 +62,7 @@ export function initHooks() {
                 }
               />
             )}
-            <StatisticSeparator previousStepId={previousStepData.id} />
+            <StatisticSeparator previousStep={previousStepData} index={index} />
           </>
         );
       };
