@@ -8,6 +8,7 @@ import { FiltersPanelContentType } from '../../../types/filters';
 import { PremiumModal } from '../../../../common/premium-modal';
 import { FiltersList } from './list';
 import { FilterStrings } from './strings';
+import { Filter } from '../automation/types';
 
 type ContentProps = {
   strings: FilterStrings;
@@ -44,9 +45,10 @@ function FiltersPanelContent({ strings }: ContentProps): JSX.Element {
 
 type Props = {
   strings: FilterStrings;
+  onChange?: (data: Filter) => void;
 };
 
-export function FiltersPanel({ strings }: Props): JSX.Element {
+export function FiltersPanel({ strings, onChange }: Props): JSX.Element {
   const selectedStep = useSelect(
     (select) => select(storeName).getSelectedStep(),
     [],
@@ -58,8 +60,9 @@ export function FiltersPanel({ strings }: Props): JSX.Element {
         'mailpoet.automation.filters.panel.content',
         () => <FiltersPanelContent strings={strings} />,
         strings,
+        onChange,
       ) as FiltersPanelContentType,
-    [strings],
+    [strings, onChange],
   );
 
   return (
