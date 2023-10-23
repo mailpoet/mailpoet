@@ -6,6 +6,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Cron\ActionScheduler\Actions\DaemonRun;
 use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -14,7 +15,6 @@ use MailPoet\Newsletter\Url as NewsletterURL;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
 use MailPoet\SystemReport\SystemReportCollector;
-use MailPoet\Tasks\Sending;
 use MailPoet\WP\DateTime;
 
 class Help {
@@ -86,7 +86,7 @@ class Help {
     $systemStatusData['queueStatus']['tasksStatusCounts'] = $this->scheduledTasksRepository->getCountsPerStatus();
     $systemStatusData['queueStatus']['latestTasks'] = array_map(function ($task) {
       return $this->buildTaskData($task);
-    }, $this->scheduledTasksRepository->getLatestTasks(Sending::TASK_TYPE));
+    }, $this->scheduledTasksRepository->getLatestTasks(SendingQueue::TASK_TYPE));
     $this->pageRenderer->displayPage(
       'help.html',
       [
@@ -130,7 +130,7 @@ class Help {
 
   public function buildTaskData(ScheduledTaskEntity $task): array {
     $queue = $newsletter = null;
-    if ($task->getType() === Sending::TASK_TYPE) {
+    if ($task->getType() === SendingQueue::TASK_TYPE) {
       $queue = $this->sendingQueuesRepository->findOneBy(['task' => $task]);
       $newsletter = $queue ? $queue->getNewsletter() : null;
     }
