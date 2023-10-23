@@ -86,8 +86,21 @@ class AutomationAnalytics {
       ];
     }
 
+    $subjects = [];
+    foreach ($this->registry->getSubjects() as $key => $subject) {
+      $subjects[$key] = [
+        'key' => $subject->getKey(),
+        'name' => $subject->getName(),
+        'args_schema' => $subject->getArgsSchema()->toArray(),
+        'field_keys' => array_map(function ($field) {
+          return $field->getKey();
+        }, $subject->getFields()),
+      ];
+    }
+
     return [
       'steps' => $steps,
+      'subjects' => $subjects,
     ];
   }
 
