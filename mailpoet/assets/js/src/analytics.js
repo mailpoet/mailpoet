@@ -47,6 +47,8 @@ export function mapFilterType(filter) {
         return 'was sent';
       case 'numberReceived':
         return 'number of emails received';
+      case 'numberOfClicks':
+        return 'number of clicks';
       default:
         return '';
     }

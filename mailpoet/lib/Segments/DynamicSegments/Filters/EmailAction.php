@@ -37,6 +37,7 @@ class EmailAction implements Filter {
     EmailOpensAbsoluteCountAction::TYPE,
     EmailOpensAbsoluteCountAction::MACHINE_TYPE,
     EmailsReceived::ACTION,
+    NumberOfClicks::ACTION,
   ];
 
   /** @var EntityManager */

@@ -17,6 +17,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailActionClickAny;
 use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailsReceived;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
+use MailPoet\Segments\DynamicSegments\Filters\NumberOfClicks;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
@@ -244,6 +245,7 @@ class Reporter {
       'Segment > exited automation' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_AUTOMATIONS, AutomationsEvents::EXITED_ACTION),
       'Segment > was sent' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, EmailAction::ACTION_WAS_SENT),
       'Segment > subscribed via form' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_USER_ROLE, SubscriberSubscribedViaForm::TYPE),
+      'Segment > number of clicks' => $this->isFilterTypeActive(DynamicSegmentFilterData::TYPE_EMAIL, NumberOfClicks::ACTION),
       // Dynamic segment filters tracking -- end. If you extend segments tracking, please extend mapping in analytics.js
       'Number of segments with multiple conditions' => $this->segmentsRepository->getSegmentCountWithMultipleFilters(),
       'Support tier' => $this->subscribersFeature->hasPremiumSupport() ? 'premium' : 'free',
