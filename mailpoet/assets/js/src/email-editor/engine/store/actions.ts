@@ -59,17 +59,30 @@ export const closeSidebar =
 export function* saveEditedEmail() {
   const postId = select(storeName).getEmailPostId();
   // This returns a promise
-  yield dispatch(coreDataStore).saveEditedEntityRecord(
+
+  const result = yield dispatch(coreDataStore).saveEditedEntityRecord(
     'postType',
     'mailpoet_email',
     postId,
-    {},
+    { throwOnError: true },
   );
 
-  return dispatch(noticesStore).createSuccessNotice(
-    __('Email saved!', 'mailpoet'),
-    { type: 'snackbar', isDismissible: true },
-  );
+  result.then(() => {
+    dispatch(noticesStore).createErrorNotice(__('Email saved!', 'mailpoet'), {
+      type: 'snackbar',
+      isDismissible: true,
+    });
+  });
+
+  result.catch(() => {
+    dispatch(noticesStore).createErrorNotice(
+      __('There was an error saving email!', 'mailpoet'),
+      {
+        type: 'default',
+        isDismissible: true,
+      },
+    );
+  });
 }
 
 export function* updateEmailProperty(name: string, subject: string) {
