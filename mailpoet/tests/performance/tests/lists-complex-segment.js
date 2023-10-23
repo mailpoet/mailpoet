@@ -73,7 +73,7 @@ export async function listsComplexSegment() {
 
     // Click to add a new segment action
     await page
-      .locator('div.mailpoet-segments-segments-section > button')
+      .locator('div.mailpoet-segments-conditions-bottom > button')
       .click();
 
     // Select "Subscribed date" action
@@ -94,7 +94,7 @@ export async function listsComplexSegment() {
 
     // Click to add a new segment action
     await page
-      .locator('div.mailpoet-segments-segments-section > button')
+      .locator('div.mailpoet-segments-conditions-bottom > button')
       .click();
 
     // WordPress user role action has been automatically added
@@ -121,7 +121,7 @@ export async function listsComplexSegment() {
     });
 
     // Save the segment
-    await page.locator('div.mailpoet-form-actions > button > span').click();
+    await page.locator('div.mailpoet-form-actions > button').click();
     await page.waitForSelector('[data-automation-id="filters_all"]', {
       state: 'visible',
     });
