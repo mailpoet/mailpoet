@@ -2,13 +2,13 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
-use MailPoet\Tasks\Sending;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -37,7 +37,7 @@ class AutomationEmailScheduler {
     }
 
     $task = new ScheduledTaskEntity();
-    $task->setType(Sending::TASK_TYPE);
+    $task->setType(SendingQueue::TASK_TYPE);
     $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
     $task->setScheduledAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
     $task->setPriority(ScheduledTaskEntity::PRIORITY_MEDIUM);
