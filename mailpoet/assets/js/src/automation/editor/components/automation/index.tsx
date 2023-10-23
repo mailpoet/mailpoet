@@ -17,9 +17,15 @@ import { useAutomationScrollCenter } from './use-automation-scroll-center';
 
 type AutomationProps = {
   context: 'edit' | 'view';
+  scroll?: boolean;
+  drag?: boolean;
 };
 
-export function Automation({ context }: AutomationProps): JSX.Element {
+export function Automation({
+  context,
+  scroll = true,
+  drag = true,
+}: AutomationProps): JSX.Element {
   const automationData = useSelect(
     (select) => select(storeName).getAutomationData(),
     [],
@@ -35,9 +41,9 @@ export function Automation({ context }: AutomationProps): JSX.Element {
 
   // handle automation scrolling, dragging, and horizontal scroll centering
   const automationRef = useRef<HTMLDivElement>();
-  useAutomationScroll(automationRef);
+  useAutomationScroll(scroll ? automationRef : undefined);
   useAutomationScrollCenter(automationRef);
-  useAutomationDragToScroll(automationRef);
+  useAutomationDragToScroll(drag ? automationRef : undefined);
 
   if (!automationData) {
     return <EmptyAutomation />;

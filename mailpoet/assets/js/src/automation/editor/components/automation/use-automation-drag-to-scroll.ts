@@ -4,14 +4,14 @@ import { MutableRefObject, useEffect, useRef } from 'react';
 // Use animation frames to sync with browser repaints for smooth scrolling.
 // This handles mouse & trackpad. On touch devices, the drag runs natively.
 export const useAutomationDragToScroll = (
-  automationRef: MutableRefObject<HTMLDivElement>,
+  automationRef?: MutableRefObject<HTMLDivElement>,
 ): void => {
   // Using a ref here is crucial to avoid re-rendering the component tree
   // on every mouse move event. The event handlers must not modify state.
   const dragInfo = useRef({ isDragging: false, lastX: 0, lastY: 0 });
 
   useEffect(() => {
-    const automation = automationRef.current;
+    const automation = automationRef?.current;
     if (!automation) {
       return undefined;
     }

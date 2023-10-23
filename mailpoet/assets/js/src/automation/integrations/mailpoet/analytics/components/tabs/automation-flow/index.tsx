@@ -39,7 +39,7 @@ export function AutomationFlow(): JSX.Element {
           </Notice>
         </div>
       )}
-      <Automation context="view" />
+      <Automation context="view" scroll={false} drag={false} />
     </>
   );
 }
