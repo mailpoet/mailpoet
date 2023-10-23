@@ -7,51 +7,45 @@ use MailPoet\EmailEditor\Engine\Renderer\BlocksRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 class Columns implements BlockRenderer {
-  public function render($parsedBlock, BlocksRenderer $blocksRenderer, StylesController $stylesController): string {
-    if (!isset($parsedBlock['innerBlocks']) || empty($parsedBlock['innerBlocks'])) {
-      return '';
+  public function render($parsedBlock, BlocksRenderer $blocksRenderer, SettingsController $settingsController): string {
+    $content = '';
+    if (isset($parsedBlock['innerBlocks']) && !empty($parsedBlock['innerBlocks'])) {
+      $content = $blocksRenderer->render($parsedBlock['innerBlocks']);
     }
-    return str_replace('{columns_content}', $this->renderInnerColumns($parsedBlock['innerBlocks'], $blocksRenderer, $stylesController), $this->getColumnsContainerTemplate());
-  }
-
-  private function renderInnerColumns($columnBlocks, BlocksRenderer $blocksRenderer, StylesController $stylesController): string {
-    $layoutStyles = $stylesController->getEmailLayoutStyles();
-    // Dummy width calculation, we need to subtract 16px for padding
-    // We will add more sophisticated width calculation later when we add support for column widths and padding settings
-    $width = floor(($layoutStyles['width'] - 16) / count($columnBlocks));
-    $result = '';
-    foreach ($columnBlocks as $columnBlock) {
-      $result .= str_replace('{column_content}', $blocksRenderer->render([$columnBlock]), $this->getColumnTemplate($width, 'left'));
-    }
-    return $result;
+    return str_replace(
+      '{columns_content}',
+      $content,
+      $this->prepareColumnsTemplate($parsedBlock)
+    );
   }
 
   /**
    * Based on MJML <mj-section>
    */
-  private function getColumnsContainerTemplate(): string {
-    return '<tr>
-            <td style="direction:ltr;font-size:0px;padding:0px 0;text-align:center;">
-            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><![endif]-->
-              {columns_content}
-            <!--[if mso | IE]></tr></table><![endif]-->
-            </td>
-          </tr>';
-  }
+  private function prepareColumnsTemplate(array $parsedBlock): string {
+    $width = $parsedBlock['email_attrs']['width'] ?? '640px';
+    $backgroundColor = $parsedBlock['attrs']['style']['color']['background'] ?? 'none';
+    $paddingBottom = $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px';
+    $paddingLeft = $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px';
+    $paddingRight = $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px';
+    $paddingTop = $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px';
 
-  /**
-   * Based on MJML <mj-column>
-   */
-  private function getColumnTemplate($width, $alignment): string {
     return '
-     <!--[if mso | IE]><td class="" style="vertical-align:top;width:' . $width . 'px;" ><![endif]-->
-      <div class="email_column" style="font-size:0px;text-align:' . $alignment . ';direction:ltr;display:inline-block;vertical-align:top;width:' . $width . 'px;max-width:' . $width . 'px">
-        <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="' . $width . '">
+      <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="width:' . $width . ';" width="' . $width . '" bgcolor="' . $backgroundColor . '" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
+      <div style="background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';margin:0px auto;max-width:' . $width . ';width:100%;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';max-width:' . $width . ';width:100%;">
           <tbody>
-            {column_content}
+            <tr>
+              <td style="font-size:0px;padding-left:' . $paddingLeft . ';padding-right:' . $paddingRight . ';padding-bottom:' . $paddingBottom . ';padding-top:' . $paddingTop . ';text-align:left;">
+                <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><![endif]-->
+                {columns_content}
+                <!--[if mso | IE]></tr></table><![endif]-->
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
-       <!--[if mso | IE]></td><![endif]-->';
+      <!--[if mso | IE]></td></tr></table><![endif]-->
+    ';
   }
 }

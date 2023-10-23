@@ -58,7 +58,6 @@ p {
 @media screen and (max-width: 599px) {
   .email_column {
     max-width: 100% !important;
-    width: 100% !important;
   }
 }
 /* stylelint-enable property-no-unknown */
