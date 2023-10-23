@@ -2,6 +2,8 @@ import { dispatch, select } from '@wordpress/data';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { store as preferencesStore } from '@wordpress/preferences';
+import { store as noticesStore } from '@wordpress/notices';
+import { __ } from '@wordpress/i18n';
 import { apiFetch } from '@wordpress/data-controls';
 import { storeName, mainSidebarEmailKey } from './constants';
 import { SendingPreviewStatus, State, Feature } from './types';
@@ -63,7 +65,11 @@ export function* saveEditedEmail() {
     postId,
     {},
   );
-  // Todo Notice when promise is resolved
+
+  return dispatch(noticesStore).createSuccessNotice(
+    __('Email saved!', 'mailpoet'),
+    { type: 'snackbar', isDismissible: true },
+  );
 }
 
 export function* updateEmailProperty(name: string, subject: string) {

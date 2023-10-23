@@ -27,6 +27,7 @@ import { Sidebar } from '../sidebar/sidebar';
 import { Header } from '../header';
 import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
+import { EditorNotices, EditorSnackbars } from '../notices';
 
 export function BlockEditor() {
   const {
@@ -54,9 +55,13 @@ export function BlockEditor() {
     [],
   );
 
-  const className = classnames('interface-interface-skeleton', {
-    'is-sidebar-opened': isSidebarOpened,
-  });
+  const className = classnames(
+    'interface-interface-skeleton',
+    'edit-post-layout',
+    {
+      'is-sidebar-opened': isSidebarOpened,
+    },
+  );
 
   const [blocks, onInput, onChange] = useEntityBlockEditor(
     'postType',
@@ -112,37 +117,42 @@ export function BlockEditor() {
       <InterfaceSkeleton
         className={className}
         header={<Header />}
+        editorNotices={<EditorNotices />}
+        notices={<EditorSnackbars />}
         content={
-          <div className="edit-post-visual-editor">
-            <BlockSelectionClearer
-              className="edit-post-visual-editor__content-area"
-              style={contentAreaStyles}
-            >
-              <div
-                style={inlineStyles}
-                className={classnames({
-                  'is-mobile-preview': previewDeviceType === 'Mobile',
-                  'is-desktop-preview': previewDeviceType === 'Desktop',
-                })}
+          <>
+            <EditorNotices />
+            <div className="edit-post-visual-editor">
+              <BlockSelectionClearer
+                className="edit-post-visual-editor__content-area"
+                style={contentAreaStyles}
               >
-                <BlockSelectionClearer
-                  className="editor-styles-wrapper block-editor-writing-flow"
-                  style={{ width: '100%' }}
+                <div
+                  style={inlineStyles}
+                  className={classnames({
+                    'is-mobile-preview': previewDeviceType === 'Mobile',
+                    'is-desktop-preview': previewDeviceType === 'Desktop',
+                  })}
                 >
-                  {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                  {/* @ts-ignore BlockEditorKeyboardShortcuts.Register has no types */}
-                  <BlockEditorKeyboardShortcuts.Register />
-                  <BlockTools>
-                    <WritingFlow>
-                      <ObserveTyping>
-                        <BlockList />
-                      </ObserveTyping>
-                    </WritingFlow>
-                  </BlockTools>
-                </BlockSelectionClearer>
-              </div>
-            </BlockSelectionClearer>
-          </div>
+                  <BlockSelectionClearer
+                    className="editor-styles-wrapper block-editor-writing-flow"
+                    style={{ width: '100%' }}
+                  >
+                    {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                    {/* @ts-ignore BlockEditorKeyboardShortcuts.Register has no types */}
+                    <BlockEditorKeyboardShortcuts.Register />
+                    <BlockTools>
+                      <WritingFlow>
+                        <ObserveTyping>
+                          <BlockList />
+                        </ObserveTyping>
+                      </WritingFlow>
+                    </BlockTools>
+                  </BlockSelectionClearer>
+                </div>
+              </BlockSelectionClearer>
+            </div>
+          </>
         }
         sidebar={<ComplementaryArea.Slot scope={storeName} />}
         secondarySidebar={
