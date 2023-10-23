@@ -47,8 +47,24 @@ export function initHooks() {
       if (context !== 'view') {
         return filterValue;
       }
-      return function statisticSeperatorWrapper(previousStepData: StepData) {
-        return <StatisticSeparator previousStepId={previousStepData.id} />;
+      return function statisticSeperatorWrapper(
+        previousStepData: StepData,
+        index: number,
+      ) {
+        return (
+          <>
+            {previousStepData.next_steps.length > 1 && (
+              <div
+                className={
+                  index < previousStepData.next_steps.length / 2
+                    ? 'mailpoet-automation-editor-separator-curve-leaf-left'
+                    : 'mailpoet-automation-editor-separator-curve-leaf-right'
+                }
+              />
+            )}
+            <StatisticSeparator previousStepId={previousStepData.id} />
+          </>
+        );
       };
     },
     20,
