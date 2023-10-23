@@ -12,6 +12,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailsReceived;
 use MailPoet\Segments\DynamicSegments\Filters\Filter;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
+use MailPoet\Segments\DynamicSegments\Filters\NumberOfClicks;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
@@ -124,6 +125,9 @@ class FilterFactory {
   /** @var EmailsReceived */
   private $emailsReceived;
 
+  /** @var NumberOfClicks */
+  private $numberOfClicks;
+
   public function __construct(
     EmailAction $emailAction,
     EmailActionClickAny $emailActionClickAny,
@@ -153,7 +157,8 @@ class FilterFactory {
     SubscriberTextField $subscriberTextField,
     SubscriberDateField $subscriberDateField,
     AutomationsEvents $automationsEvents,
-    EmailsReceived $emailsReceived
+    EmailsReceived $emailsReceived,
+    NumberOfClicks $numberOfClicks
   ) {
     $this->emailAction = $emailAction;
     $this->userRole = $userRole;
@@ -184,6 +189,7 @@ class FilterFactory {
     $this->wooCommerceUsedCouponCode = $wooCommerceUsedCouponCode;
     $this->wooCommerceFirstOrder = $wooCommerceFirstOrder;
     $this->emailsReceived = $emailsReceived;
+    $this->numberOfClicks = $numberOfClicks;
   }
 
   public function getFilterForFilterEntity(DynamicSegmentFilterEntity $filter): Filter {
@@ -234,7 +240,7 @@ class FilterFactory {
 
   /**
    * @param ?string $action
-   * @return EmailAction|EmailActionClickAny|EmailOpensAbsoluteCountAction|EmailsReceived
+   * @return EmailAction|EmailActionClickAny|EmailOpensAbsoluteCountAction|EmailsReceived|NumberOfClicks
    */
   private function email(?string $action) {
     $countActions = [EmailOpensAbsoluteCountAction::TYPE, EmailOpensAbsoluteCountAction::MACHINE_TYPE];
@@ -244,6 +250,8 @@ class FilterFactory {
       return $this->emailActionClickAny;
     } elseif ($action === EmailsReceived::ACTION) {
       return $this->emailsReceived;
+    } elseif ($action === NumberOfClicks::ACTION) {
+      return $this->numberOfClicks;
     }
     return $this->emailAction;
   }

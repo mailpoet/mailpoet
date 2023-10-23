@@ -12,6 +12,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailOpensAbsoluteCountAction;
 use MailPoet\Segments\DynamicSegments\Filters\EmailsReceived;
 use MailPoet\Segments\DynamicSegments\Filters\FilterHelper;
 use MailPoet\Segments\DynamicSegments\Filters\MailPoetCustomFields;
+use MailPoet\Segments\DynamicSegments\Filters\NumberOfClicks;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberDateField;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberScore;
 use MailPoet\Segments\DynamicSegments\Filters\SubscriberSegment;
@@ -299,12 +300,25 @@ class FilterDataMapper {
       'operator' => $data['operator'] ?? DynamicSegmentFilterData::OPERATOR_ANY,
     ];
 
-    if (($data['action'] === EmailsReceived::ACTION)) {
+    if ($data['action'] === EmailsReceived::ACTION) {
       $this->filterHelper->validateDaysPeriodData($data);
       if (!isset($data['emails'])) {
         throw new InvalidFilterException('Missing email count value', InvalidFilterException::MISSING_VALUE);
       }
       $filterData['emails'] = $data['emails'];
+      $filterData['operator'] = $data['operator'];
+      $filterData['timeframe'] = $data['timeframe'];
+      $filterData['connect'] = $data['connect'];
+      $filterData['days'] = $data['days'] ?? 0;
+      return new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_EMAIL, $data['action'], $filterData);
+    }
+
+    if ($data['action'] === NumberOfClicks::ACTION) {
+      $this->filterHelper->validateDaysPeriodData($data);
+      if (!isset($data['clicks'])) {
+        throw new InvalidFilterException('Missing click count value', InvalidFilterException::MISSING_VALUE);
+      }
+      $filterData['clicks'] = $data['clicks'];
       $filterData['operator'] = $data['operator'];
       $filterData['timeframe'] = $data['timeframe'];
       $filterData['connect'] = $data['connect'];
