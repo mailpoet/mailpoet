@@ -264,3 +264,10 @@ export function setErrors(errors) {
     errors,
   };
 }
+
+export function removeStepErrors(stepId) {
+  return {
+    type: 'REMOVE_STEP_ERRORS',
+    stepId,
+  };
+}

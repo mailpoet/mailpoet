@@ -131,6 +131,18 @@ export function reducer(state: State, action): State {
         ...state,
         errors: action.errors,
       };
+    case 'REMOVE_STEP_ERRORS': {
+      const stepErrors = Object.entries(state.errors?.steps ?? {}).filter(
+        ([id]) => id !== action.stepId,
+      );
+      return {
+        ...state,
+        errors:
+          stepErrors.length > 0
+            ? { steps: Object.fromEntries(stepErrors) }
+            : undefined,
+      };
+    }
     default:
       return state;
   }
