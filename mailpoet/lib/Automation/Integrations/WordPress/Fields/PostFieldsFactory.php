@@ -37,7 +37,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->post_type : '';
+          return $post ? $post->post_type : null;
         },
         [
           'options' => $this->getPostTypes(),
@@ -50,7 +50,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->post_status : '';
+          return $post ? $post->post_status : null;
         },
         [
           'options' => $this->getPostStatuses(),
@@ -63,7 +63,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->post_content : '';
+          return $post ? $post->post_content : null;
         }
       ),
       new Field(
@@ -73,7 +73,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->post_title : '';
+          return $post ? $post->post_title : null;
         }
       ),
       new Field(
@@ -83,7 +83,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->post_date_gmt : '';
+          return $post ? $post->post_date_gmt : null;
         }
       ),
       new Field(
@@ -93,7 +93,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->post_modified_gmt : '';
+          return $post ? $post->post_modified_gmt : null;
         }
       ),
       new Field(
@@ -103,7 +103,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->post_author : 0;
+          return $post ? $post->post_author : null;
         }
       ),
       new Field(
@@ -113,7 +113,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->post_excerpt : '';
+          return $post ? $post->post_excerpt : null;
         }
       ),
       new Field(
@@ -143,7 +143,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->post_password : '';
+          return $post ? $post->post_password : null;
         }
       ),
       new Field(
@@ -153,7 +153,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->post_name : '';
+          return $post ? $post->post_name : null;
         }
       ),
       new Field(
@@ -163,7 +163,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->post_parent : 0;
+          return $post ? $post->post_parent : null;
         }
       ),
       new Field(
@@ -182,7 +182,7 @@ class PostFieldsFactory {
         __('Post guid', 'mailpoet'),
         function (PostPayload $payload) {
           $post = $payload->getPost();
-          return $post ? $post->guid : '';
+          return $post ? $post->guid : null;
         }
       ),
       new Field(
@@ -192,7 +192,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->menu_order : 0;
+          return $post ? $post->menu_order : null;
         }
       ),
       new Field(
