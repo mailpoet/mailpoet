@@ -52,11 +52,11 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     ];
     $result = $this->preprocessor->preprocess($blocks, []);
     $result = $result[0];
-    expect($result['innerBlocks'])->count(2);
-    expect($result['email_attrs'])->equals($expectedEmailAttrs);
-    expect($result['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs);
-    expect($result['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs);
-    expect($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs);
+    verify($result['innerBlocks'])->arrayCount(2);
+    verify($result['email_attrs'])->equals($expectedEmailAttrs);
+    verify($result['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs);
+    verify($result['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs);
+    verify($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs);
   }
 
   public function testItDoesNotCopyColumnsWidth(): void {
@@ -85,11 +85,11 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     ]];
     $result = $this->preprocessor->preprocess($blocks, []);
     $result = $result[0];
-    expect($result['innerBlocks'])->count(2);
-    expect($result['email_attrs'])->equals(['width' => '640px']);
-    expect($result['innerBlocks'][0]['email_attrs'])->equals([]);
-    expect($result['innerBlocks'][1]['email_attrs'])->equals([]);
-    expect($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals([]);
+    verify($result['innerBlocks'])->arrayCount(2);
+    verify($result['email_attrs'])->equals(['width' => '640px']);
+    verify($result['innerBlocks'][0]['email_attrs'])->equals([]);
+    verify($result['innerBlocks'][1]['email_attrs'])->equals([]);
+    verify($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals([]);
   }
 
   public function testItOverridesColumnsTypography(): void {
@@ -182,15 +182,15 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     $result = $this->preprocessor->preprocess($blocks, []);
     $child1 = $result[0];
     $child2 = $result[1];
-    expect($child1['innerBlocks'])->count(2);
-    expect($child1['email_attrs'])->equals($expectedEmailAttrs1);
-    expect($child1['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
-    expect($child1['innerBlocks'][0]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
-    expect($child1['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs1);
-    expect($child1['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs1);
-    expect($child2['innerBlocks'])->count(1);
-    expect($child2['email_attrs'])->equals([]);
-    expect($child2['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
-    expect($child2['innerBlocks'][0]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
+    verify($child1['innerBlocks'])->arrayCount(2);
+    verify($child1['email_attrs'])->equals($expectedEmailAttrs1);
+    verify($child1['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
+    verify($child1['innerBlocks'][0]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
+    verify($child1['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs1);
+    verify($child1['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs1);
+    verify($child2['innerBlocks'])->arrayCount(1);
+    verify($child2['email_attrs'])->equals([]);
+    verify($child2['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
+    verify($child2['innerBlocks'][0]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
   }
 }
