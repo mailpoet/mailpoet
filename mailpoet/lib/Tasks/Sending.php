@@ -221,8 +221,10 @@ class Sending {
   public function delete() {
     $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($this->scheduledTaskEntity);
     $this->scheduledTasksRepository->remove($this->scheduledTaskEntity);
+
+    $this->sendingQueuesRepository->remove($this->sendingQueueEntity);
+
     $this->scheduledTasksRepository->flush();
-    $this->queue->delete();
   }
 
   public function queue() {
