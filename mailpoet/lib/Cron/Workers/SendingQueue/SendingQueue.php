@@ -176,7 +176,7 @@ class SendingQueue {
 
     $this->deleteTaskIfNewsletterDoesNotExist($task);
 
-    $newsletterEntity = $this->newsletterTask->getNewsletterFromQueue($legacyQueue);
+    $newsletterEntity = $this->newsletterTask->getNewsletterFromQueue($task);
     if (!$newsletterEntity) {
       return;
     }

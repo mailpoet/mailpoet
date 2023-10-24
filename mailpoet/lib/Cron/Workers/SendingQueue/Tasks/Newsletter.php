@@ -9,7 +9,6 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
@@ -104,10 +103,10 @@ class Newsletter {
     $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
   }
 
-  public function getNewsletterFromQueue(Sending $sendingTask): ?NewsletterEntity {
+  public function getNewsletterFromQueue(ScheduledTaskEntity $task): ?NewsletterEntity {
     // get existing active or sending newsletter
-    $sendingQueue = $sendingTask->getSendingQueueEntity();
-    $newsletter = $sendingQueue->getNewsletter();
+    $queue = $task->getSendingQueue();
+    $newsletter = $queue ? $queue->getNewsletter() : null;
 
     if (
       is_null($newsletter)
@@ -115,7 +114,7 @@ class Newsletter {
       || !in_array($newsletter->getStatus(), [NewsletterEntity::STATUS_ACTIVE, NewsletterEntity::STATUS_SENDING])
       || $newsletter->getStatus() === NewsletterEntity::STATUS_CORRUPT
     ) {
-      $this->recoverFromInvalidState($newsletter, $sendingQueue);
+      $this->recoverFromInvalidState($task);
       return null;
     }
 
@@ -336,28 +335,23 @@ class Newsletter {
 
   /**
    * This method recovers the scheduled task and newsletter from a state when sending cannot proceed.
-   * @param NewsletterEntity|null $newsletter
-   * @param SendingQueueEntity $sendingQueue
-   * @return void
    */
-  private function recoverFromInvalidState(?NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue): void {
+  private function recoverFromInvalidState(ScheduledTaskEntity $task): void {
     // When newsletter does not exist, we need to remove the scheduled task and sending queue.
-    $scheduledTask = $sendingQueue->getTask();
+    $queue = $task->getSendingQueue();
+    $newsletter = $queue ? $queue->getNewsletter() : null;
     if (!$newsletter) {
-      if ($scheduledTask) {
-        $this->scheduledTasksRepository->remove($scheduledTask);
+      $this->scheduledTasksRepository->remove($task);
+      if ($queue) {
+        $this->sendingQueuesRepository->remove($queue);
       }
-      $this->sendingQueuesRepository->remove($sendingQueue);
       $this->sendingQueuesRepository->flush();
-
       return;
     }
 
     // Only deleted newsletter or newsletter with unexpected state should pass here.
     // Because this state cannot proceed with sending, we need to pause the scheduled task.
-    if ($scheduledTask) {
-      $scheduledTask->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
-      $this->scheduledTasksRepository->flush();
-    }
+    $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $this->scheduledTasksRepository->flush();
   }
 }
