@@ -65,6 +65,12 @@ class Sending {
   /** @var ScheduledTaskEntity */
   private $scheduledTaskEntity;
 
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
+  /** @var SendingQueueEntity */
+  private $sendingQueueEntity;
+
   private function __construct(
     ScheduledTask $task = null,
     SendingQueue $queue = null
@@ -89,6 +95,7 @@ class Sending {
     $this->queue = $queue;
     $this->scheduledTaskSubscribersRepository = ContainerWrapper::getInstance()->get(ScheduledTaskSubscribersRepository::class);
     $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
+    $this->sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
 
     // needed to make sure that the task has an ID so taht we can retrieve the ScheduledTaskEntity while this class stil uses Paris
     $this->save();
@@ -100,6 +107,14 @@ class Sending {
     }
 
     $this->scheduledTaskEntity = $scheduledTaskEntity;
+
+    $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($this->queue->id);
+
+    if (!$sendingQueueEntity instanceof SendingQueueEntity) {
+      throw new InvalidStateException('Sending queue entity not found');
+    }
+
+    $this->sendingQueueEntity = $sendingQueueEntity;
   }
 
   public static function create(ScheduledTask $task = null, SendingQueue $queue = null) {
@@ -215,14 +230,9 @@ class Sending {
   }
 
   public function getSendingQueueEntity(): SendingQueueEntity {
-    $sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
-    $sendingQueueEntity = $sendingQueuesRepository->findOneById($this->queue->id);
-    if (!$sendingQueueEntity) {
-      throw new InvalidStateException();
-    }
-    $sendingQueuesRepository->refresh($sendingQueueEntity);
+    $this->sendingQueuesRepository->refresh($this->sendingQueueEntity);
 
-    return $sendingQueueEntity;
+    return $this->sendingQueueEntity;
   }
 
   public function task() {
