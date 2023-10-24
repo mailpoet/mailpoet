@@ -2,14 +2,21 @@
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
-use MailPoet\EmailEditor\Engine\Renderer\BlocksRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 class Paragraph implements BlockRenderer {
-  public function render($parsedBlock, BlocksRenderer $blocksRenderer, SettingsController $settingsController): string {
-    $contentStyles = $settingsController->getEmailContentStyles();
-    return str_replace('{paragraph_content}', $parsedBlock['innerHTML'] ?? '', $this->prepareColumnTemplate($parsedBlock, $contentStyles));
+
+  private $settingsController;
+
+  public function __construct() {
+    $this->settingsController = ContainerWrapper::getInstance()->get(SettingsController::class);
+  }
+
+  public function render($blockContent, array $parsedBlock): string {
+    $contentStyles = $this->settingsController->getEmailContentStyles();
+    return str_replace('{paragraph_content}', $blockContent, $this->prepareColumnTemplate($parsedBlock, $contentStyles));
   }
 
   /**

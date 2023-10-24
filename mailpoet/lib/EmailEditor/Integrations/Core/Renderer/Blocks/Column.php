@@ -3,14 +3,12 @@
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
-use MailPoet\EmailEditor\Engine\Renderer\BlocksRenderer;
-use MailPoet\EmailEditor\Engine\SettingsController;
 
 class Column implements BlockRenderer {
-  public function render($parsedBlock, BlocksRenderer $blocksRenderer, SettingsController $settingsController): string {
+  public function render($blockContent, array $parsedBlock): string {
     $content = '';
-    if (isset($parsedBlock['innerBlocks']) && !empty($parsedBlock['innerBlocks'])) {
-      $content = $blocksRenderer->render($parsedBlock['innerBlocks']);
+    foreach ($parsedBlock['innerBlocks'] ?? [] as $block) {
+      $content .= render_block($block);
     }
 
     return str_replace(
