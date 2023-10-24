@@ -21,6 +21,17 @@ export function MoreMenu(): JSX.Element {
         <MenuGroup label={_x('View', 'noun', 'mailpoet')}>
           <PreferenceToggleMenuItem
             scope={storeName}
+            name="fixedToolbar"
+            label={__('Top toolbar', 'mailpoet')}
+            info={__(
+              'Access all block and document tools in a single place',
+              'mailpoet',
+            )}
+            messageActivated={__('Top toolbar activated', 'mailpoet')}
+            messageDeactivated={__('Top toolbar deactivated', 'mailpoet')}
+          />
+          <PreferenceToggleMenuItem
+            scope={storeName}
             name="fullscreenMode"
             label={__('Fullscreen mode', 'mailpoet')}
             info={__('Work without distraction', 'mailpoet')}

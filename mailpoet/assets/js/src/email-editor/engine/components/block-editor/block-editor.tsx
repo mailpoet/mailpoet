@@ -40,6 +40,7 @@ export function BlockEditor() {
     isEmailLoaded,
     postId,
     canUserEditMedia,
+    hasFixedToolbar,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
@@ -51,6 +52,7 @@ export function BlockEditor() {
       previewDeviceType: select(storeName).getPreviewState().deviceType,
       isEmailLoaded: select(storeName).isEmailLoaded(),
       canUserEditMedia: select(coreStore).canUser('create', 'media'),
+      hasFixedToolbar: select(storeName).isFeatureActive('fixedToolbar'),
     }),
     [],
   );
@@ -97,6 +99,7 @@ export function BlockEditor() {
   const settings = {
     ...initialSettings,
     mediaUpload: canUserEditMedia ? uploadMedia : null,
+    hasFixedToolbar,
   };
 
   // Do not render editor if email is not loaded yet.
