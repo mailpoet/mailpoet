@@ -154,7 +154,7 @@ class Scheduler {
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION) {
           $this->processPostNotificationNewsletter($newsletter, $task);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
-          $this->processScheduledStandardNewsletter($newsletter, $legacyQueue);
+          $this->processScheduledStandardNewsletter($newsletter, $task);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATIC) {
           $this->processScheduledAutomaticEmail($newsletter, $legacyQueue);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT) {
@@ -333,24 +333,17 @@ class Scheduler {
     return true;
   }
 
-  public function processScheduledStandardNewsletter(NewsletterEntity $newsletter, SendingTask $task) {
+  public function processScheduledStandardNewsletter(NewsletterEntity $newsletter, ScheduledTaskEntity $task) {
     $segments = $newsletter->getSegmentIds();
-    $taskModel = $task->task();
-    $taskEntity = $this->scheduledTasksRepository->findOneById($taskModel->id);
+    $this->subscribersFinder->addSubscribersToTaskFromSegments($task, $segments, $newsletter->getFilterSegmentId());
 
-    if ($taskEntity instanceof ScheduledTaskEntity) {
-      $this->subscribersFinder->addSubscribersToTaskFromSegments($taskEntity, $segments, $newsletter->getFilterSegmentId());
+    $task->setStatus(null);
+    $queue = $task->getSendingQueue();
+    if ($queue) {
+      $this->sendingQueuesRepository->updateCounts($queue);
     }
-
-    // update current queue
-    $task->updateCount();
-    $task->status = null;
-    $task->save();
-    // update newsletter status
     $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
-    $this->newslettersRepository->persist($newsletter);
-    $this->newslettersRepository->flush();
-    $this->updateScheduledTaskEntity($task);
+    $this->scheduledTasksRepository->flush();
     return true;
   }
 
