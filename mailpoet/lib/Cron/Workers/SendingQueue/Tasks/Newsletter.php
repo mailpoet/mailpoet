@@ -27,7 +27,6 @@ use MailPoet\Util\pQuery\DomNode;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
 
 class Newsletter {
   public $trackingEnabled;
@@ -279,15 +278,14 @@ class Newsletter {
     ];
   }
 
-  public function markNewsletterAsSent(NewsletterEntity $newsletter, Sending $sendingTask) {
+  public function markNewsletterAsSent(NewsletterEntity $newsletter, ScheduledTaskEntity $task) {
     // if it's a standard or notification history newsletter, update its status
     if (
       $newsletter->getType() === NewsletterEntity::TYPE_STANDARD ||
        $newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY
     ) {
-      $scheduledTask = $sendingTask->task();
       $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
-      $newsletter->setSentAt(new Carbon($scheduledTask->processedAt));
+      $newsletter->setSentAt($task->getProcessedAt());
       $this->newslettersRepository->persist($newsletter);
       $this->newslettersRepository->flush();
     }

@@ -277,7 +277,7 @@ class SendingQueue {
         );
         $legacyQueue->removeSubscribers($subscribersToRemove);
         if (!$legacyQueue->countToProcess) {
-          $this->newsletterTask->markNewsletterAsSent($newsletterEntity, $legacyQueue);
+          $this->newsletterTask->markNewsletterAsSent($newsletterEntity, $task);
           continue;
         }
         // if there aren't any subscribers to process in batch (e.g. all unsubscribed or were deleted) continue with next batch
@@ -317,7 +317,7 @@ class SendingQueue {
             'completed newsletter sending',
             ['newsletter_id' => $newsletter->id, 'task_id' => $task->getId()]
           );
-          $this->newsletterTask->markNewsletterAsSent($newsletterEntity, $legacyQueue);
+          $this->newsletterTask->markNewsletterAsSent($newsletterEntity, $task);
           $this->statsNotificationsScheduler->schedule($newsletterEntity);
         }
         $this->enforceSendingAndExecutionLimits($timer);
