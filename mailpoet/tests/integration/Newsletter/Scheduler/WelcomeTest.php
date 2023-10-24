@@ -9,17 +9,22 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class WelcomeTest extends \MailPoetTest {
 
   /** @var SegmentsRepository */
   private $segmentRepository;
+
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
 
   /** @var WelcomeScheduler */
   private $welcomeScheduler;
@@ -39,6 +44,7 @@ class WelcomeTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
+    $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->welcomeScheduler = $this->diContainer->get(WelcomeScheduler::class);
     $this->subscriber = $this->createSubscriber('welcome_test_1@example.com');
     $this->segment = $this->segmentRepository->createOrUpdate('welcome_segment');
@@ -203,7 +209,7 @@ class WelcomeTest extends \MailPoetTest {
     $segment3 = $this->segmentRepository->createOrUpdate('Segment 3');
 
     // queue is created and scheduled for delivery one day later
-    $result = $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
+    $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
       $this->subscriber->getId(),
       $segments = [
         $this->segment->getId(),
@@ -222,7 +228,10 @@ class WelcomeTest extends \MailPoetTest {
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
     verify($scheduledAt->format('Y-m-d H:i'))
       ->equals($currentTime->addDay()->format('Y-m-d H:i'));
-    verify($result[0]->id())->equals($queue->getId());
+
+    $queues = $this->sendingQueuesRepository->findAll();
+    $this->assertCount(1, $queues);
+    $this->assertSame($queue, $queues[0]);
   }
 
   public function testItDoesNotScheduleWelcomeNotificationWhenSubscriberIsInTrash() {
@@ -239,11 +248,13 @@ class WelcomeTest extends \MailPoetTest {
     $trashedSubscriber->setDeletedAt(Carbon::now());
     $this->entityManager->flush();
     // subscriber welcome notification is not scheduled
-    $result = $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
+    $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
       $trashedSubscriber->getId(),
       $segments = [$this->segment->getId()]
     );
-    verify($result)->false();
+
+    $queues = $this->sendingQueuesRepository->findAll();
+    $this->assertEmpty($queues);
   }
 
   public function testItDoesNotScheduleWelcomeNotificationWhenSegmentIsInTrash() {
@@ -259,27 +270,31 @@ class WelcomeTest extends \MailPoetTest {
     $this->segment->setDeletedAt(Carbon::now());
     $this->entityManager->flush();
     // subscriber welcome notification is not scheduled
-    $result = $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
+    $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
       $this->subscriber->getId(),
       $segments = [$this->segment->getId()]
     );
-    verify($result)->false();
+
+    $queues = $this->sendingQueuesRepository->findAll();
+    $this->assertEmpty($queues);
   }
 
   public function itDoesNotScheduleAnythingWhenNewsletterDoesNotExist() {
     // subscriber welcome notification is not scheduled
-    $result = $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
+    $this->welcomeScheduler->scheduleSubscriberWelcomeNotification(
       $this->subscriber->getId(),
       $segments = []
     );
-    verify($result)->false();
+    $queues = $this->sendingQueuesRepository->findAll();
+    $this->assertEmpty($queues);
 
     // WP user welcome notification is not scheduled
-    $result = $this->welcomeScheduler->scheduleWPUserWelcomeNotification(
+    $this->welcomeScheduler->scheduleWPUserWelcomeNotification(
       $this->subscriber->getId(),
       $wpUser = ['roles' => ['editor']]
     );
-    verify($result)->false();
+    $queues = $this->sendingQueuesRepository->findAll();
+    $this->assertEmpty($queues);
   }
 
   public function testItDoesNotScheduleWPUserWelcomeNotificationWhenRoleHasNotChanged() {
@@ -453,6 +468,7 @@ class WelcomeTest extends \MailPoetTest {
       ->method('currentTime')
       ->willReturn($currentTime->getTimestamp());
     return new WelcomeScheduler(
+      $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(SubscribersRepository::class),
       $this->segmentRepository,
       $this->diContainer->get(NewslettersRepository::class),
