@@ -158,7 +158,7 @@ class Scheduler {
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATIC) {
           $this->processScheduledAutomaticEmail($newsletter, $task);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT) {
-          $this->processReEngagementEmail($legacyQueue);
+          $this->processReEngagementEmail($task);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION) {
           $this->processScheduledAutomationEmail($legacyQueue);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL) {
@@ -338,10 +338,9 @@ class Scheduler {
     return true;
   }
 
-  private function processReEngagementEmail($queue) {
-    $queue->status = null;
-    $queue->save();
-    $this->updateScheduledTaskEntity($queue);
+  private function processReEngagementEmail(ScheduledTaskEntity $task) {
+    $task->setStatus(null);
+    $this->scheduledTasksRepository->flush();
     return true;
   }
 
