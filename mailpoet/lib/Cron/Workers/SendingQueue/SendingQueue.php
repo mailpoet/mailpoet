@@ -182,7 +182,7 @@ class SendingQueue {
     }
 
     // pre-process newsletter (render, replace shortcodes/links, etc.)
-    $newsletterEntity = $this->newsletterTask->preProcessNewsletter($newsletterEntity, $legacyQueue);
+    $newsletterEntity = $this->newsletterTask->preProcessNewsletter($newsletterEntity, $task);
 
     if (!$newsletterEntity) {
       $this->deleteTask($task);
