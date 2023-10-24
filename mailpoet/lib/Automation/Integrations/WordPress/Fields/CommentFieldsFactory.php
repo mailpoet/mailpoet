@@ -106,7 +106,21 @@ class CommentFieldsFactory {
         __('Comment status', 'mailpoet'),
         function (CommentPayload $payload) {
           $status = $this->wp->wpGetCommentStatus($payload->getCommentId());
-          return is_string($status) ? $status : null;
+          if (!is_string($status)) {
+            return null;
+          }
+
+          /**
+           * wp_get_comment_status returns 'unapproved' and 'approved' where get_comment_statuses returns 'hold' and 'approve'
+           * We need to normalize the status for matches.
+           */
+          if ($status === 'approved') {
+            $status = 'approve';
+          }
+          if ($status === 'unapproved') {
+            $status = 'hold';
+          }
+          return $status;
         },
         [
           'options' => $this->getCommentStatuses(),
