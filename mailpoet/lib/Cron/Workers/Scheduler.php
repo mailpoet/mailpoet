@@ -156,7 +156,7 @@ class Scheduler {
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
           $this->processScheduledStandardNewsletter($newsletter, $task);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATIC) {
-          $this->processScheduledAutomaticEmail($newsletter, $legacyQueue);
+          $this->processScheduledAutomaticEmail($newsletter, $task);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT) {
           $this->processReEngagementEmail($legacyQueue);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION) {
@@ -258,40 +258,31 @@ class Scheduler {
     return true;
   }
 
-  public function processScheduledAutomaticEmail(NewsletterEntity $newsletter, $queue) {
+  public function processScheduledAutomaticEmail(NewsletterEntity $newsletter, ScheduledTaskEntity $task) {
     if ($newsletter->getOptionValue('sendTo') === 'segment') {
       $segment = $this->segmentsRepository->findOneById($newsletter->getOptionValue('segment'));
       if ($segment instanceof SegmentEntity) {
-        $taskModel = $queue->task();
-        $taskEntity = $this->scheduledTasksRepository->findOneById($taskModel->id);
-        if ($taskEntity instanceof ScheduledTaskEntity) {
-          $result = $this->subscribersFinder->addSubscribersToTaskFromSegments($taskEntity, [(int)$segment->getId()]);
-        }
+        $result = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [(int)$segment->getId()]);
 
         if (empty($result)) {
-          $queue->delete();
-          $this->updateScheduledTaskEntity($queue, true);
+          $this->deleteByTask($task);
           return false;
         }
       }
     } else {
-      $subscribers = $queue->getSubscribers();
-      $subscriber = (!empty($subscribers) && is_array($subscribers)) ?
-        $this->subscribersRepository->findOneById($subscribers[0]) :
-        false;
+      $subscribers = $task->getSubscribers();
+      $subscriber = isset($subscribers[0]) ? $subscribers[0]->getSubscriber() : null;
       if (!$subscriber) {
-        $queue->delete();
-        $this->updateScheduledTaskEntity($queue, true);
+        $this->deleteByTask($task);
         return false;
       }
-      if ($this->verifySubscriber($subscriber, $queue) === false) {
+      if ($this->verifySubscriber($subscriber, $task) === false) {
         return false;
       }
     }
 
-    $queue->status = null;
-    $queue->save();
-    $this->updateScheduledTaskEntity($queue);
+    $task->setStatus(null);
+    $this->scheduledTasksRepository->flush();
     return true;
   }
 
