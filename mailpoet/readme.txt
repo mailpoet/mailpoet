@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.2
 Tested up to: 6.3
-Stable tag: 4.32.0
+Stable tag: 4.33.0
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,15 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.33.0 - 2023-10-24 =
+* Updated: composer dependencies;
+* Improved: declared compatibility with Checkout Blocks;
+* Improved: removed "MailPoet account connected" from onboarding step if MailPoet is set up in the background;
+* Improved: segment options are sorted alphabetically in all languages;
+* Changed: replace pQuery's "html" with "toString" method when encoding email content. This can affect how tags and tag-like entries are interpreted;
+* Fixed: missing spacing in Email editor block settings;
+* Fixed: due to some library conflicts, option to insert an image from Media Library is missing in Form editor.
 
 = 4.32.0 - 2023-10-16 =
 * Added: option to create new segment from the send page;
