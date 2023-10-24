@@ -17,6 +17,8 @@ use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
@@ -44,6 +46,12 @@ class Scheduler {
 
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
+
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
+
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
 
   /** @var NewslettersRepository */
   private $newslettersRepository;
@@ -75,6 +83,8 @@ class Scheduler {
     CronHelper $cronHelper,
     CronWorkerScheduler $cronWorkerScheduler,
     ScheduledTasksRepository $scheduledTasksRepository,
+    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
+    SendingQueuesRepository $sendingQueuesRepository,
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
     NewsletterSegmentRepository $newsletterSegmentRepository,
@@ -89,6 +99,8 @@ class Scheduler {
     $this->loggerFactory = $loggerFactory;
     $this->cronWorkerScheduler = $cronWorkerScheduler;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
@@ -134,7 +146,7 @@ class Scheduler {
       $newsletter = $queue->getNewsletter();
       try {
         if (!$newsletter instanceof NewsletterEntity || $newsletter->getDeletedAt() !== null) {
-          $legacyQueue->delete();
+          $this->deleteByTask($task);
         } elseif ($newsletter->getStatus() !== NewsletterEntity::STATUS_ACTIVE && $newsletter->getStatus() !== NewsletterEntity::STATUS_SCHEDULED) {
           continue;
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_WELCOME) {
@@ -157,7 +169,7 @@ class Scheduler {
         // This was added while refactoring this method to use Doctrine instead of Paris. We have to handle this case
         // for the SchedulerTest::testItDeletesQueueDuringProcessingWhenNewsletterNotFound() test. I'm not sure
         // if this problem could happen in production or not.
-        $legacyQueue->delete();
+        $this->deleteByTask($task);
       }
       $this->cronHelper->enforceExecutionLimit($timer);
     }
@@ -493,5 +505,15 @@ class Scheduler {
    */
   public function getScheduledSendingTasks(): array {
     return $this->scheduledTasksRepository->findScheduledSendingTasks(self::TASK_BATCH_SIZE);
+  }
+
+  private function deleteByTask(ScheduledTaskEntity $task): void {
+    $queue = $task->getSendingQueue();
+    if ($queue) {
+      $this->sendingQueuesRepository->remove($queue);
+    }
+    $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
+    $this->scheduledTasksRepository->remove($task);
+    $this->scheduledTasksRepository->flush();
   }
 }
