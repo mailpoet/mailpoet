@@ -86,6 +86,7 @@ class TriggerHandler {
       try {
         $match = $this->filterHandler->matchesFilters($stepRunArgs);
       } catch (Exceptions\Exception $e) {
+        // failed filter evaluation won't match
         ;
       }
       if (!$match) {
