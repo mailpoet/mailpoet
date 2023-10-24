@@ -37,7 +37,7 @@ class CommentFieldsFactory {
         function (CommentPayload $payload) {
           $comment = $payload->getComment();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $comment ? $comment->comment_author : '';
+          return $comment ? $comment->comment_author : null;
         }
       ),
       new Field(
@@ -47,7 +47,7 @@ class CommentFieldsFactory {
         function (CommentPayload $payload) {
           $comment = $payload->getComment();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $comment ? $comment->comment_author_email : '';
+          return $comment ? $comment->comment_author_email : null;
         }
       ),
       new Field(
@@ -57,7 +57,7 @@ class CommentFieldsFactory {
         function (CommentPayload $payload) {
           $comment = $payload->getComment();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $comment ? $comment->comment_author_url : '';
+          return $comment ? $comment->comment_author_url : null;
         }
       ),
       new Field(
@@ -67,7 +67,7 @@ class CommentFieldsFactory {
         function (CommentPayload $payload) {
           $comment = $payload->getComment();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $comment ? $comment->comment_author_IP : '';
+          return $comment ? $comment->comment_author_IP : null;
         }
       ),
       new Field(
@@ -77,7 +77,7 @@ class CommentFieldsFactory {
         function (CommentPayload $payload) {
           $comment = $payload->getComment();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $comment ? $comment->comment_date_gmt : '';
+          return $comment ? $comment->comment_date_gmt : null;
         }
       ),
       new Field(
@@ -87,7 +87,7 @@ class CommentFieldsFactory {
         function (CommentPayload $payload) {
           $comment = $payload->getComment();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $comment ? $comment->comment_content : '';
+          return $comment ? $comment->comment_content : null;
         }
       ),
       new Field(
@@ -97,7 +97,7 @@ class CommentFieldsFactory {
         function (CommentPayload $payload) {
           $comment = $payload->getComment();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $comment ? (int)$comment->comment_karma : 0;
+          return $comment ? (int)$comment->comment_karma : null;
         }
       ),
       new Field(
@@ -106,7 +106,7 @@ class CommentFieldsFactory {
         __('Comment status', 'mailpoet'),
         function (CommentPayload $payload) {
           $status = $this->wp->wpGetCommentStatus($payload->getCommentId());
-          return is_string($status) ? $status : '';
+          return is_string($status) ? $status : null;
         },
         [
           'options' => $this->getCommentStatuses(),
@@ -119,7 +119,7 @@ class CommentFieldsFactory {
         function (CommentPayload $payload) {
           $comment = $payload->getComment();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $comment ? $comment->comment_agent : '';
+          return $comment ? $comment->comment_agent : null;
         }
       ),
       new Field(
@@ -129,7 +129,7 @@ class CommentFieldsFactory {
         function (CommentPayload $payload) {
           $comment = $payload->getComment();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $comment ? $comment->comment_type : '';
+          return $comment ? $comment->comment_type : null;
         }
       ),
       new Field(
@@ -139,7 +139,7 @@ class CommentFieldsFactory {
         function (CommentPayload $payload) {
           $comment = $payload->getComment();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $comment ? $comment->comment_parent : 0;
+          return $comment ? $comment->comment_parent : null;
         }
       ),
       new Field(
