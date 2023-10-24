@@ -115,38 +115,49 @@ class Scheduler {
       if (!$task) continue;
       $scheduledQueue = SendingTask::createFromScheduledTask($task);
       if (!$scheduledQueue) continue;
-      $scheduledQueues[] = $scheduledQueue;
+      $scheduledQueues[$task->id] = $scheduledQueue;
     }
 
     $this->updateTasks($scheduledTasks);
-    foreach ($scheduledQueues as $i => $queue) {
-      $newsletter = $this->newslettersRepository->findOneById($queue->newsletterId);
+    foreach ($scheduledTasks as $task) {
+      $queue = $task->getSendingQueue();
+      if (!$queue) {
+        $this->deleteByTask($task);
+        continue;
+      }
+
+      $legacyQueue = $scheduledQueues[$task->getId()] ?? null;
+      if (!$legacyQueue) {
+        continue;
+      }
+
+      $newsletter = $queue->getNewsletter();
       try {
         if (!$newsletter instanceof NewsletterEntity || $newsletter->getDeletedAt() !== null) {
-          $queue->delete();
+          $legacyQueue->delete();
         } elseif ($newsletter->getStatus() !== NewsletterEntity::STATUS_ACTIVE && $newsletter->getStatus() !== NewsletterEntity::STATUS_SCHEDULED) {
           continue;
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_WELCOME) {
-          $this->processWelcomeNewsletter($newsletter, $queue);
+          $this->processWelcomeNewsletter($newsletter, $legacyQueue);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION) {
-          $this->processPostNotificationNewsletter($newsletter, $queue);
+          $this->processPostNotificationNewsletter($newsletter, $legacyQueue);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
-          $this->processScheduledStandardNewsletter($newsletter, $queue);
+          $this->processScheduledStandardNewsletter($newsletter, $legacyQueue);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATIC) {
-          $this->processScheduledAutomaticEmail($newsletter, $queue);
+          $this->processScheduledAutomaticEmail($newsletter, $legacyQueue);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_RE_ENGAGEMENT) {
-          $this->processReEngagementEmail($queue);
+          $this->processReEngagementEmail($legacyQueue);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION) {
-          $this->processScheduledAutomationEmail($queue);
+          $this->processScheduledAutomationEmail($legacyQueue);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL) {
-          $this->processScheduledTransactionalEmail($queue);
+          $this->processScheduledTransactionalEmail($legacyQueue);
         }
       } catch (EntityNotFoundException $e) {
         // Doctrine throws this exception when newsletter doesn't exist but is referenced in a scheduled task.
         // This was added while refactoring this method to use Doctrine instead of Paris. We have to handle this case
         // for the SchedulerTest::testItDeletesQueueDuringProcessingWhenNewsletterNotFound() test. I'm not sure
         // if this problem could happen in production or not.
-        $queue->delete();
+        $legacyQueue->delete();
       }
       $this->cronHelper->enforceExecutionLimit($timer);
     }
