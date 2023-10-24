@@ -74,7 +74,7 @@ class Env {
     if ($parsedHost === false) {
       throw new \InvalidArgumentException('Invalid db host configuration.');
     }
-    list($host, $port, $socket, $isIpv6) = $parsedHost;
+    [$host, $port, $socket, $isIpv6] = $parsedHost;
 
     global $wpdb;
     self::$dbPrefix = $wpdb->prefix . self::$pluginPrefix;
@@ -93,6 +93,7 @@ class Env {
 
   public static function getDbTimezoneOffset($offset = false) {
     $offset = ($offset) ? $offset : WPFunctions::get()->getOption('gmt_offset');
+    $offset = (float)($offset);
     $mins = $offset * 60;
     $sgn = ($mins < 0 ? -1 : 1);
     $mins = abs($mins);
