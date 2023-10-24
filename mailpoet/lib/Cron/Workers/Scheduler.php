@@ -10,7 +10,6 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
@@ -23,7 +22,6 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -118,28 +116,11 @@ class Scheduler {
     $this->cronHelper->enforceExecutionLimit($timer);
 
     $scheduledTasks = $this->getScheduledSendingTasks();
-    if (!count($scheduledTasks)) return false;
-
-    // To prevent big changes we convert ScheduledTaskEntity to old model
-    $scheduledQueues = [];
-    foreach ($scheduledTasks as $scheduledTask) {
-      $task = ScheduledTask::findOne($scheduledTask->getId());
-      if (!$task) continue;
-      $scheduledQueue = SendingTask::createFromScheduledTask($task);
-      if (!$scheduledQueue) continue;
-      $scheduledQueues[$task->id] = $scheduledQueue;
-    }
-
     $this->updateTasks($scheduledTasks);
     foreach ($scheduledTasks as $task) {
       $queue = $task->getSendingQueue();
       if (!$queue) {
         $this->deleteByTask($task);
-        continue;
-      }
-
-      $legacyQueue = $scheduledQueues[$task->getId()] ?? null;
-      if (!$legacyQueue) {
         continue;
       }
 
@@ -408,18 +389,6 @@ class Scheduler {
       $task->setScheduledAt($nextRunDate);
       $this->scheduledTasksRepository->flush();
     }
-  }
-
-  private function updateScheduledTaskEntity(SendingTask $queue, bool $hasBeenDeleted = false) {
-    $taskModel = $queue->task();
-    if (!$taskModel instanceof ScheduledTask) {
-      return;
-    }
-    $taskEntity = $this->scheduledTasksRepository->findOneById($taskModel->id);
-    if (!$taskEntity instanceof ScheduledTaskEntity) {
-      return;
-    }
-    $hasBeenDeleted ? $this->scheduledTasksRepository->detach($taskEntity) : $this->scheduledTasksRepository->refresh($taskEntity);
   }
 
   public function createPostNotificationHistory(NewsletterEntity $newsletter): NewsletterEntity {
