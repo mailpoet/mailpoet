@@ -3,9 +3,9 @@
 namespace MailPoet\Newsletter\Renderer;
 
 use MailPoet\Entities\NewsletterEntity;
-  use MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent;
+use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Newsletter\Renderer\Blocks\AbandonedCartContent;
 use MailPoet\Newsletter\Renderer\Blocks\AutomatedLatestContentBlock;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WooCommerce\CouponPreProcessor;
 use MailPoet\WooCommerce\TransactionalEmails\ContentPreprocessor;
 
@@ -48,7 +48,7 @@ class Preprocessor {
    * @param NewsletterEntity $newsletter
    * @return array
    */
-  public function process(NewsletterEntity $newsletter, $content, bool $preview = false, SendingTask $sendingTask = null) {
+  public function process(NewsletterEntity $newsletter, $content, bool $preview = false, SendingQueueEntity $sendingQueue = null) {
     if (!array_key_exists('blocks', $content)) {
       return $content;
     }
@@ -56,7 +56,7 @@ class Preprocessor {
     $contentBlocks = $content['blocks'];
     $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview);
     foreach ($contentBlocks as $block) {
-      $processedBlock = $this->processBlock($newsletter, $block, $preview, $sendingTask);
+      $processedBlock = $this->processBlock($newsletter, $block, $preview, $sendingQueue);
       if (!empty($processedBlock)) {
         $blocks = array_merge($blocks, $processedBlock);
       }
@@ -65,10 +65,10 @@ class Preprocessor {
     return $content;
   }
 
-  public function processBlock(NewsletterEntity $newsletter, array $block, bool $preview = false, SendingTask $sendingTask = null): array {
+  public function processBlock(NewsletterEntity $newsletter, array $block, bool $preview = false, SendingQueueEntity $sendingQueue = null): array {
     switch ($block['type']) {
       case 'abandonedCartContent':
-        return $this->abandonedCartContent->render($newsletter, $block, $preview, $sendingTask);
+        return $this->abandonedCartContent->render($newsletter, $block, $preview, $sendingQueue);
       case 'automatedLatestContentLayout':
         return $this->automatedLatestContent->render($newsletter, $block);
       case 'woocommerceHeading':

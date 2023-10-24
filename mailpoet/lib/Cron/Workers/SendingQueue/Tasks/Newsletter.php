@@ -156,7 +156,7 @@ class Newsletter {
       // hook to the newsletter post-processing filter and add tracking image
       $this->trackingImageInserted = OpenTracking::addTrackingImage();
       // render newsletter
-      $renderedNewsletter = $this->renderer->render($newsletter, $sendingTask);
+      $renderedNewsletter = $this->renderer->render($newsletter, $sendingTask->getSendingQueueEntity());
       $renderedNewsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after_pre_process',
         $renderedNewsletter,
@@ -170,7 +170,7 @@ class Newsletter {
       $renderedNewsletter = $this->linksTask->process($renderedNewsletter, $newsletter, $sendingTask);
     } else {
       // render newsletter
-      $renderedNewsletter = $this->renderer->render($newsletter, $sendingTask);
+      $renderedNewsletter = $this->renderer->render($newsletter, $sendingTask->getSendingQueueEntity());
       $renderedNewsletter = $this->wp->applyFilters(
         'mailpoet_sending_newsletter_render_after_pre_process',
         $renderedNewsletter,
