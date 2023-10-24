@@ -26,8 +26,8 @@ class WooCommerceFirstOrderTest extends \MailPoetTest {
     $this->createOrder($customerId1, new Carbon('2023-02-20'));
     $this->createOrder($customerId2, new Carbon('2023-02-22'));
     $emails = $this->getSubscriberEmailsMatchingFilter('before', '2023-02-21');
-    expect(count($emails))->equals(1);
-    expect($emails)->equals(['c1@example.com']);
+    verify(count($emails))->equals(1);
+    verify($emails)->equals(['c1@example.com']);
   }
 
   public function testGetSubscribersWithFirstOrderAfterDate(): void {
@@ -40,20 +40,20 @@ class WooCommerceFirstOrderTest extends \MailPoetTest {
     $this->createOrder($customerId3, new Carbon('1993-01-01'));
     $this->createOrder($customerId3, new Carbon('2024-01-01'));
     $emails = $this->getSubscriberEmailsMatchingFilter('after', '2023-02-01');
-    expect($emails)->count(1);
-    expect($emails)->equals(['c1@example.com']);
+    verify($emails)->arrayCount(1);
+    verify($emails)->equals(['c1@example.com']);
   }
 
   public function testInTheLast(): void {
     $customerId1 = $this->tester->createCustomer('c1@example.com');
     $this->createOrder($customerId1, Carbon::now()->subDays(3));
     $emails = $this->getSubscriberEmailsMatchingFilter('inTheLast', '5');
-    expect(count($emails))->equals(1);
+    verify(count($emails))->equals(1);
     $this->assertEqualsCanonicalizing(['c1@example.com'], $emails);
 
     $this->createOrder($customerId1, Carbon::now()->subDays(6));
     $emails = $this->getSubscriberEmailsMatchingFilter('inTheLast', '5');
-    expect(count($emails))->equals(0);
+    verify(count($emails))->equals(0);
   }
 
   public function testNotInTheLast(): void {
@@ -65,8 +65,8 @@ class WooCommerceFirstOrderTest extends \MailPoetTest {
     $this->createOrder($customerId3, Carbon::now()->subDays(5));
     $this->createOrder($customerId3, Carbon::now()->subDays(2));
     $emails = $this->getSubscriberEmailsMatchingFilter('notInTheLast', '5');
-    expect(count($emails))->equals(1);
-    expect($emails)->equals(['c3@example.com']);
+    verify(count($emails))->equals(1);
+    verify($emails)->equals(['c3@example.com']);
   }
 
   public function testNotInTheLastIncludesNonCustomers(): void {
@@ -87,8 +87,8 @@ class WooCommerceFirstOrderTest extends \MailPoetTest {
     $this->createOrder($customerId2, new Carbon('2023-01-02'));
     $this->createOrder($customerId3, new Carbon('2023-01-03'));
     $emails = $this->getSubscriberEmailsMatchingFilter('on', '2023-01-02');
-    expect(count($emails))->equals(1);
-    expect($emails)->equals(['c2@example.com']);
+    verify(count($emails))->equals(1);
+    verify($emails)->equals(['c2@example.com']);
   }
 
   public function testOnOrAfterDate(): void {
@@ -100,8 +100,8 @@ class WooCommerceFirstOrderTest extends \MailPoetTest {
     $this->createOrder($customerId2, new Carbon('2023-01-02'));
     $this->createOrder($customerId3, new Carbon('2023-01-03'));
     $emails = $this->getSubscriberEmailsMatchingFilter('onOrAfter', '2023-01-02');
-    expect(count($emails))->equals(2);
-    expect($emails)->equals(['c2@example.com', 'c3@example.com']);
+    verify(count($emails))->equals(2);
+    verify($emails)->equals(['c2@example.com', 'c3@example.com']);
   }
 
   public function testOnOrBeforeDate(): void {
@@ -112,8 +112,8 @@ class WooCommerceFirstOrderTest extends \MailPoetTest {
     $this->createOrder($customerId2, new Carbon('2023-01-02'));
     $this->createOrder($customerId3, new Carbon('2023-01-03'));
     $emails = $this->getSubscriberEmailsMatchingFilter('onOrBefore', '2023-01-02');
-    expect(count($emails))->equals(2);
-    expect($emails)->equals(['c1@example.com', 'c2@example.com']);
+    verify(count($emails))->equals(2);
+    verify($emails)->equals(['c1@example.com', 'c2@example.com']);
   }
 
   public function testNotOn(): void {
@@ -124,12 +124,12 @@ class WooCommerceFirstOrderTest extends \MailPoetTest {
     $this->createOrder($customerId2, new Carbon('2023-01-02'));
     $this->createOrder($customerId3, new Carbon('2023-01-03'));
     $emails = $this->getSubscriberEmailsMatchingFilter('notOn', '2023-01-02');
-    expect(count($emails))->equals(2);
+    verify(count($emails))->equals(2);
     $this->assertEqualsCanonicalizing(['c1@example.com', 'c3@example.com'], $emails);
 
     $this->createOrder($customerId3, new Carbon('2023-01-02'));
     $emails = $this->getSubscriberEmailsMatchingFilter('notOn', '2023-01-02');
-    expect(count($emails))->equals(1);
+    verify(count($emails))->equals(1);
     $this->assertEqualsCanonicalizing(['c1@example.com'], $emails);
   }
 
@@ -155,7 +155,7 @@ class WooCommerceFirstOrderTest extends \MailPoetTest {
       $this->createOrder($customerId, new Carbon($date), $invalidStatus);
     }
     $emails = $this->getSubscriberEmailsMatchingFilter('on', $date);
-    expect($emails)->count(2);
+    verify($emails)->arrayCount(2);
     $this->assertEqualsCanonicalizing(['wc-processing@example.com', 'wc-completed@example.com'], $emails);
   }
 

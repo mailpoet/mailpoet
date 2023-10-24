@@ -939,14 +939,14 @@ class FilterDataMapperTest extends \MailPoetTest {
       'value' => '2023-10-18',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
-    expect($filters)->count(1);
+    verify($filters)->isArray();
+    verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
-    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
-    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
-    expect($filter->getAction())->equals('firstOrder');
-    expect($filter->getData())->equals([
+    verify($filter)->instanceOf(DynamicSegmentFilterData::class);
+    verify($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    verify($filter->getAction())->equals('firstOrder');
+    verify($filter->getData())->equals([
       'connect' => 'and',
       'operator' => 'before',
       'value' => '2023-10-18',
@@ -963,14 +963,14 @@ class FilterDataMapperTest extends \MailPoetTest {
       'days' => '2',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
-    expect($filters)->count(1);
+    verify($filters)->isArray();
+    verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
-    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
-    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
-    expect($filter->getAction())->equals('numberOfClicks');
-    expect($filter->getData())->equals([
+    verify($filter)->instanceOf(DynamicSegmentFilterData::class);
+    verify($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
+    verify($filter->getAction())->equals('numberOfClicks');
+    verify($filter->getData())->equals([
       'connect' => 'and',
       'operator' => 'equals',
       'clicks' => '1',
@@ -1059,14 +1059,14 @@ class FilterDataMapperTest extends \MailPoetTest {
       'days' => '2',
     ]]];
     $filters = $this->mapper->map($data);
-    expect($filters)->array();
-    expect($filters)->count(1);
+    verify($filters)->isArray();
+    verify($filters)->arrayCount(1);
     $filter = reset($filters);
     $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
-    expect($filter)->isInstanceOf(DynamicSegmentFilterData::class);
-    expect($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
-    expect($filter->getAction())->equals('numberReceived');
-    expect($filter->getData())->equals([
+    verify($filter)->instanceOf(DynamicSegmentFilterData::class);
+    verify($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_EMAIL);
+    verify($filter->getAction())->equals('numberReceived');
+    verify($filter->getData())->equals([
       'connect' => 'and',
       'operator' => 'equals',
       'emails' => '1',
