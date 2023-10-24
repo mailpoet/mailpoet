@@ -50,4 +50,8 @@ export type MailPoetEmailData = {
   preview_url: string;
 };
 
-export type Feature = 'fullscreenMode' | 'showIconLabels' | 'fixedToolbar';
+export type Feature =
+  | 'fullscreenMode'
+  | 'showIconLabels'
+  | 'fixedToolbar'
+  | 'focusMode';

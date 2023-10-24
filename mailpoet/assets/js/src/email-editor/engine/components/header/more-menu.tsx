@@ -32,6 +32,14 @@ export function MoreMenu(): JSX.Element {
           />
           <PreferenceToggleMenuItem
             scope={storeName}
+            name="focusMode"
+            label={__('Spotlight mode', 'mailpoet')}
+            info={__('Focus at one block at a time', 'mailpoet')}
+            messageActivated={__('Spotlight mode activated', 'mailpoet')}
+            messageDeactivated={__('Spotlight mode deactivated', 'mailpoet')}
+          />
+          <PreferenceToggleMenuItem
+            scope={storeName}
             name="fullscreenMode"
             label={__('Fullscreen mode', 'mailpoet')}
             info={__('Work without distraction', 'mailpoet')}
