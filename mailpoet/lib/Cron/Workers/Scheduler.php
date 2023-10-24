@@ -150,7 +150,7 @@ class Scheduler {
         } elseif ($newsletter->getStatus() !== NewsletterEntity::STATUS_ACTIVE && $newsletter->getStatus() !== NewsletterEntity::STATUS_SCHEDULED) {
           continue;
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_WELCOME) {
-          $this->processWelcomeNewsletter($newsletter, $legacyQueue);
+          $this->processWelcomeNewsletter($newsletter, $task);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION) {
           $this->processPostNotificationNewsletter($newsletter, $legacyQueue);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {
@@ -175,28 +175,26 @@ class Scheduler {
     }
   }
 
-  public function processWelcomeNewsletter(NewsletterEntity $newsletter, $queue) {
-    $subscribers = $queue->getSubscribers();
+  public function processWelcomeNewsletter(NewsletterEntity $newsletter, ScheduledTaskEntity $task) {
+    $subscribers = $task->getSubscribers();
     if (empty($subscribers[0])) {
-      $queue->delete();
-      $this->updateScheduledTaskEntity($queue, true);
+      $this->deleteByTask($task);
       return false;
     }
-    $subscriberId = (int)$subscribers[0];
+    $subscriberId = (int)$subscribers[0]->getSubscriberId();
     if ($newsletter->getOptionValue('event') === 'segment') {
-      if ($this->verifyMailpoetSubscriber($subscriberId, $newsletter, $queue) === false) {
+      if ($this->verifyMailpoetSubscriber($subscriberId, $newsletter, $task) === false) {
         return false;
       }
     } else {
       if ($newsletter->getOptionValue('event') === 'user') {
-        if ($this->verifyWPSubscriber($subscriberId, $newsletter, $queue) === false) {
+        if ($this->verifyWPSubscriber($subscriberId, $newsletter, $task) === false) {
           return false;
         }
       }
     }
-    $queue->status = null;
-    $queue->save();
-    $this->updateScheduledTaskEntity($queue);
+    $task->setStatus(null);
+    $this->scheduledTasksRepository->flush();
     return true;
   }
 
@@ -363,7 +361,7 @@ class Scheduler {
     return true;
   }
 
-  public function verifyMailpoetSubscriber(int $subscriberId, NewsletterEntity $newsletter, $queue): bool {
+  public function verifyMailpoetSubscriber(int $subscriberId, NewsletterEntity $newsletter, ScheduledTaskEntity $task): bool {
     $subscriber = $this->subscribersRepository->findOneById($subscriberId);
 
     // check if subscriber is in proper segment
@@ -375,50 +373,46 @@ class Scheduler {
       ]
     );
     if (!$subscriber || !$subscriberInSegment) {
-      $queue->delete();
+      $this->deleteByTask($task);
       return false;
     }
-    return $this->verifySubscriber($subscriber, $queue);
+    return $this->verifySubscriber($subscriber, $task);
   }
 
-  public function verifyWPSubscriber(int $subscriberId, NewsletterEntity $newsletter, $queue): bool {
+  public function verifyWPSubscriber(int $subscriberId, NewsletterEntity $newsletter, ScheduledTaskEntity $task): bool {
     // check if user has the proper role
     $subscriber = $this->subscribersRepository->findOneById($subscriberId);
     if (!$subscriber || $subscriber->isWPUser() === false || is_null($subscriber->getWpUserId())) {
-      $queue->delete();
+      $this->deleteByTask($task);
       return false;
     }
     $wpUser = get_userdata($subscriber->getWpUserId());
     if ($wpUser === false) {
-      $queue->delete();
+      $this->deleteByTask($task);
       return false;
     }
     if (
       $newsletter->getOptionValue('role') !== WelcomeScheduler::WORDPRESS_ALL_ROLES
       && !in_array($newsletter->getOptionValue('role'), ((array)$wpUser)['roles'])
     ) {
-      $queue->delete();
+      $this->deleteByTask($task);
       return false;
     }
-    return $this->verifySubscriber($subscriber, $queue);
+    return $this->verifySubscriber($subscriber, $task);
   }
 
-  public function verifySubscriber(SubscriberEntity $subscriber, $queue): bool {
-    $newsletter = $queue->newsletterId ? $this->newslettersRepository->findOneById($queue->newsletterId) : null;
+  public function verifySubscriber(SubscriberEntity $subscriber, ScheduledTaskEntity $task): bool {
+    $queue = $task->getSendingQueue();
+    $newsletter = $queue ? $queue->getNewsletter() : null;
     if ($newsletter && $newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL) {
       return $subscriber->getStatus() !== SubscriberEntity::STATUS_BOUNCED;
     }
     if ($subscriber->getStatus() === SubscriberEntity::STATUS_UNCONFIRMED) {
       // reschedule delivery
-      $task = $this->scheduledTasksRepository->findOneById($queue->task()->id);
-
-      if ($task instanceof ScheduledTaskEntity) {
-        $this->cronWorkerScheduler->rescheduleProgressively($task);
-      }
-
+      $this->cronWorkerScheduler->rescheduleProgressively($task);
       return false;
     } else if ($subscriber->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED) {
-      $queue->delete();
+      $this->deleteByTask($task);
       return false;
     }
     return true;
