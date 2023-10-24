@@ -21,6 +21,7 @@ use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
@@ -78,6 +79,9 @@ class SendingQueue {
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
+
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
@@ -99,6 +103,7 @@ class SendingQueue {
     WPFunctions $wp,
     Links $links,
     ScheduledTasksRepository $scheduledTasksRepository,
+    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
     MailerTask $mailerTask,
     SubscribersRepository $subscribersRepository,
     SendingQueuesRepository $sendingQueuesRepository,
@@ -119,6 +124,7 @@ class SendingQueue {
     $this->cronHelper = $cronHelper;
     $this->links = $links;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
     $this->subscribersRepository = $subscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->entityManager = $entityManager;
@@ -168,7 +174,7 @@ class SendingQueue {
       ['task_id' => $task->getId()]
     );
 
-    $this->deleteTaskIfNewsletterDoesNotExist($legacyQueue);
+    $this->deleteTaskIfNewsletterDoesNotExist($task);
 
     $newsletterEntity = $this->newsletterTask->getNewsletterFromQueue($legacyQueue);
     if (!$newsletterEntity) {
@@ -179,7 +185,7 @@ class SendingQueue {
     $newsletterEntity = $this->newsletterTask->preProcessNewsletter($newsletterEntity, $legacyQueue);
 
     if (!$newsletterEntity) {
-      $this->deleteTask($legacyQueue);
+      $this->deleteTask($task);
       return;
     }
 
@@ -563,20 +569,27 @@ class SendingQueue {
     return $this->cronHelper->getDaemonExecutionLimit() * 3;
   }
 
-  private function deleteTaskIfNewsletterDoesNotExist(SendingTask $sendingTask) {
-    $sendingQueue = $sendingTask->getSendingQueueEntity();
-    $newsletter = $sendingQueue->getNewsletter();
+  private function deleteTaskIfNewsletterDoesNotExist(ScheduledTaskEntity $task) {
+    $queue = $task->getSendingQueue();
+    $newsletter = $queue ? $queue->getNewsletter() : null;
     if ($newsletter !== null) {
       return;
     }
-    $this->deleteTask($sendingTask);
+    $this->deleteTask($task);
   }
 
-  private function deleteTask(SendingTask $queue) {
+  private function deleteTask(ScheduledTaskEntity $task) {
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
       'delete task in sending queue',
-      ['task_id' => $queue->taskId]
+      ['task_id' => $task->getId()]
     );
-    $queue->delete();
+
+    $queue = $task->getSendingQueue();
+    if ($queue) {
+      $this->sendingQueuesRepository->remove($queue);
+    }
+    $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
+    $this->scheduledTasksRepository->remove($task);
+    $this->scheduledTasksRepository->flush();
   }
 }
