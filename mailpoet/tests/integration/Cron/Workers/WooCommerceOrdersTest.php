@@ -5,6 +5,7 @@ namespace MailPoet\Test\Cron\Workers;
 use Codeception\Util\Stub;
 use DateTime;
 use MailPoet\Cron\CronWorkerRunner;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
@@ -15,7 +16,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\Track\WooCommercePurchases;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -155,7 +155,7 @@ class WooCommerceOrdersTest extends \MailPoetTest {
     $this->entityManager->persist($newsletter);
 
     $task = new ScheduledTaskEntity();
-    $task->setType(SendingTask::TASK_TYPE);
+    $task->setType(SendingQueue::TASK_TYPE);
     $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
     $this->entityManager->persist($task);
 

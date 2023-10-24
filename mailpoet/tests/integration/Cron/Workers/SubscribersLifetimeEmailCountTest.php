@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\Workers;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -11,7 +12,6 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -186,7 +186,7 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
   private function createCompletedSendingTask(int $processedDaysAgo = 0): array {
     $processedAt = (new Carbon())->subDays($processedDaysAgo)->addHours(2);
     $task = new ScheduledTaskEntity();
-    $task->setType(Sending::TASK_TYPE);
+    $task->setType(SendingQueue::TASK_TYPE);
     $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
     $task->setCreatedAt($processedAt);
     $task->setProcessedAt($processedAt);

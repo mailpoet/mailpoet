@@ -9,6 +9,7 @@ use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
 use MailPoet\Cron\Workers\ReEngagementEmailsScheduler;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Cron\Workers\StatsNotifications\AutomatedEmails;
 use MailPoet\Cron\Workers\StatsNotifications\Worker as StatsNotificationsWorker;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
@@ -26,7 +27,6 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
@@ -325,7 +325,7 @@ class WordPressTest extends \MailPoetTest {
       Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')) :
       null;
     $newsletter = (new NewsletterFactory())->create();
-    $scheduledTask = (new ScheduledTaskFactory())->create(Sending::TASK_TYPE, $status, $scheduledAt);
+    $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, $status, $scheduledAt);
     $sendingQueue = (new SendingQueueFactory())->create($scheduledTask, $newsletter);
     return $sendingQueue;
   }

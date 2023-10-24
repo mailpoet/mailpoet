@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Tasks;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -316,7 +317,7 @@ class SendingTest extends \MailPoetTest {
 
   public function createNewScheduledTask() {
     $task = ScheduledTask::create();
-    $task->type = SendingTask::TASK_TYPE;
+    $task->type = SendingQueueWorker::TASK_TYPE;
     return $task->save();
   }
 

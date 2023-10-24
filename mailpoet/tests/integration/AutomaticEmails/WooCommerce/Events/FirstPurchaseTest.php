@@ -6,6 +6,7 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerceStubs\OrderDetails;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -14,7 +15,6 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -266,9 +266,9 @@ class FirstPurchaseTest extends \MailPoetTest {
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_processing');
     WPFunctions::get()->removeAllFilters('woocommerce_order_status_completed');
     $orderId = $this->_runTestItSchedulesEmailForState('processing');
-    $tasksCountBeforeStatusChange = count($this->scheduledTasksRepository->findBy(['type' => Sending::TASK_TYPE]));
+    $tasksCountBeforeStatusChange = count($this->scheduledTasksRepository->findBy(['type' => SendingQueue::TASK_TYPE]));
     WPFunctions::get()->doAction('woocommerce_order_status_completed', $orderId);
-    $tasksCountAfterStatusChange = count($this->scheduledTasksRepository->findBy(['type' => Sending::TASK_TYPE]));
+    $tasksCountAfterStatusChange = count($this->scheduledTasksRepository->findBy(['type' => SendingQueue::TASK_TYPE]));
     verify($tasksCountAfterStatusChange)->equals($tasksCountBeforeStatusChange);
   }
 

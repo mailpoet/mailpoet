@@ -5,6 +5,7 @@ namespace MailPoet\Test\Statistics\Track;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Config\SubscriberChangesNotifier;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -16,7 +17,6 @@ use MailPoet\Statistics\Track\Opens;
 use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -57,7 +57,7 @@ class OpensTest extends \MailPoetTest {
     $this->entityManager->persist($subscriber);
     // create queue
     $task = new ScheduledTaskEntity();
-    $task->setType(SendingTask::TASK_TYPE);
+    $task->setType(SendingQueue::TASK_TYPE);
     $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
     $this->entityManager->persist($task);
 

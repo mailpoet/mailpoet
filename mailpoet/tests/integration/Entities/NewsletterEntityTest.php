@@ -2,11 +2,11 @@
 
 namespace MailPoet\Entities;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Segments\SegmentsRepository;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
 
 class NewsletterEntityTest extends \MailPoetTest {
@@ -85,7 +85,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
     $newsletter->setStatus(NewsletterEntity::STATUS_SCHEDULED);
     $task = new ScheduledTaskEntity();
-    $task->setType(SendingTask::TASK_TYPE);
+    $task->setType(SendingQueue::TASK_TYPE);
     $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
     $this->entityManager->persist($task);
 
@@ -111,7 +111,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
     $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
     $task = new ScheduledTaskEntity();
-    $task->setType(SendingTask::TASK_TYPE);
+    $task->setType(SendingQueue::TASK_TYPE);
     $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
     $this->entityManager->persist($task);
 
@@ -137,7 +137,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletter->setType(NewsletterEntity::TYPE_WELCOME);
     $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
     $task = new ScheduledTaskEntity();
-    $task->setType(SendingTask::TASK_TYPE);
+    $task->setType(SendingQueue::TASK_TYPE);
     $task->setScheduledAt(new \DateTimeImmutable('2012-01-02 12:23:34'));
     $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
     $this->entityManager->persist($task);

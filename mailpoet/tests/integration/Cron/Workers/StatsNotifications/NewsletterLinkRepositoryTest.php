@@ -2,13 +2,13 @@
 
 namespace MailPoet\Cron\Workers\StatsNotifications;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Tasks\Sending as SendingTask;
 
 class NewsletterLinkRepositoryTest extends \MailPoetTest {
   public function testItFetchesTopLink() {
@@ -19,7 +19,7 @@ class NewsletterLinkRepositoryTest extends \MailPoetTest {
     $this->entityManager->persist($newsletter);
 
     $task = new ScheduledTaskEntity();
-    $task->setType(SendingTask::TASK_TYPE);
+    $task->setType(SendingQueue::TASK_TYPE);
     $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
     $this->entityManager->persist($task);
 

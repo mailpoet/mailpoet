@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
@@ -12,7 +13,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
 use MailPoet\Test\DataFactories\Segment;
@@ -120,7 +120,7 @@ class ReEngagementSchedulerTest extends \MailPoetTest {
     $this->entityManager->refresh($task);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
-    verify($task->getType())->equals(Sending::TASK_TYPE);
+    verify($task->getType())->equals(SendingQueue::TASK_TYPE);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduledAt);
     verify($scheduledAt->getTimestamp())->equalsWithDelta(Carbon::now()->getTimestamp(), 1);

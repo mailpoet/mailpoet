@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter;
 
 use Codeception\Util\Fixtures;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
@@ -355,7 +356,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
   private function createQueueWithTaskAndSegmentAndSubscribers(NewsletterEntity $newsletter, $status = ScheduledTaskEntity::STATUS_SCHEDULED): SendingQueueEntity {
     $task = new ScheduledTaskEntity();
-    $task->setType(SendingTask::TASK_TYPE);
+    $task->setType(SendingQueue::TASK_TYPE);
     $task->setStatus($status);
     $this->entityManager->persist($task);
 

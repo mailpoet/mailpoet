@@ -3,10 +3,10 @@
 namespace integration\API\JSON\ResponseBuilders;
 
 use MailPoet\API\JSON\ResponseBuilders\SendingQueuesResponseBuilder;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
@@ -33,7 +33,7 @@ class SendingQueuesResponseBuilderTest extends \MailPoetTest {
     $this->sendingQueuesResponseBuilder = $this->diContainer->get(SendingQueuesResponseBuilder::class);
     $scheduledAt = new Carbon('2018-10-10 10:00:00');
     $this->newsletter = $newsletterFactory->create();
-    $this->scheduledTask = $scheduledTaskFactory->create(Sending::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $scheduledAt);
+    $this->scheduledTask = $scheduledTaskFactory->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $scheduledAt);
     $this->sendingQueue = $sendingQueueFactory->create($this->scheduledTask, $this->newsletter);
     $this->assertInstanceOf(SendingQueueEntity::class, $this->sendingQueue);
   }
