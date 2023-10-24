@@ -6,13 +6,13 @@ use MailPoet\Config\Env;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\Renderer\Renderer as GuntenbergRenderer;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\NewsletterProcessingException;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Html2Text\Html2Text;
@@ -75,15 +75,15 @@ class Renderer {
     $this->featuresController = $featuresController;
   }
 
-  public function render(NewsletterEntity $newsletter, SendingTask $sendingTask = null, $type = false) {
-    return $this->_render($newsletter, $sendingTask, $type);
+  public function render(NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue = null, $type = false) {
+    return $this->_render($newsletter, $sendingQueue, $type);
   }
 
   public function renderAsPreview(NewsletterEntity $newsletter, $type = false, ?string $subject = null) {
     return $this->_render($newsletter, null, $type, true, $subject);
   }
 
-  private function _render(NewsletterEntity $newsletter, SendingTask $sendingTask = null, $type = false, $preview = false, $subject = null) {
+  private function _render(NewsletterEntity $newsletter, SendingQueueEntity $sendingQueue = null, $type = false, $preview = false, $subject = null) {
     $language = $this->wp->getBloginfo('language');
     $metaRobots = $preview ? '<meta name="robots" content="noindex, nofollow" />' : '';
     $subject = $subject ?: $newsletter->getSubject();
@@ -109,7 +109,7 @@ class Renderer {
 
       $renderedBody = "";
       try {
-        $content = $this->preprocessor->process($newsletter, $content, $preview, $sendingTask);
+        $content = $this->preprocessor->process($newsletter, $content, $preview, $sendingQueue);
         $renderedBody = $this->bodyRenderer->renderBody($newsletter, $content);
       } catch (NewsletterProcessingException $e) {
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
@@ -117,8 +117,8 @@ class Renderer {
           ['newsletter_id' => $newsletter->getId()]
         );
         $this->newslettersRepository->setAsCorrupt($newsletter);
-        if ($newsletter->getLatestQueue()) {
-          $this->sendingQueuesRepository->pause($newsletter->getLatestQueue());
+        if ($sendingQueue) {
+          $this->sendingQueuesRepository->pause($sendingQueue);
         }
       }
       $renderedStyles = $this->renderStyles($styles);

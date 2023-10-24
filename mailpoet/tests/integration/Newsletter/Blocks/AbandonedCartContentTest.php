@@ -6,10 +6,9 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce as WooCommerceEmail;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
-use MailPoet\Models\ScheduledTask;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Scheduler\AutomaticEmailScheduler;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\WP\Functions as WPFunctions;
@@ -89,7 +88,8 @@ class AbandonedCartContentTest extends \MailPoetTest {
   public function testItDoesNotRenderIfNewsletterTypeIsNotAutomatic() {
     $newsletter = $this->createNewsletter('Newsletter', NewsletterEntity::TYPE_STANDARD);
     $sendingTask = $this->createSendingTask($newsletter);
-    $result = $this->block->render($newsletter, $this->accBlock, false, $sendingTask);
+    $queue = $sendingTask->getSendingQueue();
+    $result = $this->block->render($newsletter, $this->accBlock, false, $queue);
     $encodedResult = json_encode($result);
     verify($encodedResult)->equals('[]');
   }
@@ -98,7 +98,8 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $newsletter = $this->createNewsletter('Newsletter', NewsletterEntity::TYPE_AUTOMATIC);
     $this->setGroupAndEventOptions($newsletter, WooCommerceEmail::SLUG, 'some_event');
     $sendingTask = $this->createSendingTask($newsletter);
-    $result = $this->block->render($newsletter, $this->accBlock, false, $sendingTask);
+    $queue = $sendingTask->getSendingQueue();
+    $result = $this->block->render($newsletter, $this->accBlock, false, $queue);
     $encodedResult = json_encode($result);
     verify($encodedResult)->equals('[]');
   }
@@ -132,7 +133,8 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $this->accBlock['displayType'] = 'titleOnly';
     $this->accBlock['pricePosition'] = 'hidden';
     $sendingTask = $this->createSendingTask($newsletter, [AbandonedCart::TASK_META_NAME => []]);
-    $result = $this->block->render($newsletter, $this->accBlock, false, $sendingTask);
+    $queue = $sendingTask->getSendingQueue();
+    $result = $this->block->render($newsletter, $this->accBlock, false, $queue);
     $encodedResult = json_encode($result);
     verify($encodedResult)->equals('[]');
   }
@@ -143,7 +145,8 @@ class AbandonedCartContentTest extends \MailPoetTest {
     $this->accBlock['displayType'] = 'titleOnly';
     $this->accBlock['pricePosition'] = 'hidden';
     $sendingTask = $this->createSendingTask($newsletter);
-    $result = $this->block->render($newsletter, $this->accBlock, false, $sendingTask);
+    $queue = $sendingTask->getSendingQueue();
+    $result = $this->block->render($newsletter, $this->accBlock, false, $queue);
     $encodedResult = json_encode($result);
     verify($encodedResult)->stringNotContainsString('Product 4');
     verify($encodedResult)->stringContainsString('Product 3');
@@ -178,13 +181,9 @@ class AbandonedCartContentTest extends \MailPoetTest {
     ]);
   }
 
-  private function createSendingTask(NewsletterEntity $newsletter, ?array $meta = null) {
+  private function createSendingTask(NewsletterEntity $newsletter, ?array $meta = null): ScheduledTaskEntity {
     $subscriber = (new Subscriber())->create(); // dummy default value
     $meta = $meta ?: [AbandonedCart::TASK_META_NAME => array_slice($this->productIds, 0, 3)];
-    $scheduledTask = $this->automaticEmailScheduler->createAutomaticEmailScheduledTask($newsletter, $subscriber, $meta);
-    // this can be removed when SendingTask usage is removed from AbandonedCartContent
-    $parisTask = ScheduledTask::findOne($scheduledTask->getId());
-    $this->assertInstanceOf(ScheduledTask::class, $parisTask);
-    return Sending::createFromScheduledTask($parisTask);
+    return $this->automaticEmailScheduler->createAutomaticEmailScheduledTask($newsletter, $subscriber, $meta);
   }
 }
