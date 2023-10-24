@@ -37,9 +37,9 @@ class CleanupPreprocessorTest extends \MailPoetUnitTest {
       self::PARAGRAPH_BLOCK,
     ];
     $result = $this->preprocessor->preprocess($blocks, []);
-    expect($result)->count(2);
-    expect($result[0])->equals(self::COLUMNS_BLOCK);
-    expect($result[1])->equals(self::PARAGRAPH_BLOCK);
+    verify($result)->arrayCount(2);
+    verify($result[0])->equals(self::COLUMNS_BLOCK);
+    verify($result[1])->equals(self::PARAGRAPH_BLOCK);
   }
 
   public function testItPreservesAllRelevantBlocks(): void {
@@ -49,9 +49,9 @@ class CleanupPreprocessorTest extends \MailPoetUnitTest {
       self::COLUMNS_BLOCK,
     ];
     $result = $this->preprocessor->preprocess($blocks, []);
-    expect($result)->count(3);
-    expect($result[0])->equals(self::COLUMNS_BLOCK);
-    expect($result[1])->equals(self::PARAGRAPH_BLOCK);
-    expect($result[2])->equals(self::COLUMNS_BLOCK);
+    verify($result)->arrayCount(3);
+    verify($result[0])->equals(self::COLUMNS_BLOCK);
+    verify($result[1])->equals(self::PARAGRAPH_BLOCK);
+    verify($result[2])->equals(self::COLUMNS_BLOCK);
   }
 }

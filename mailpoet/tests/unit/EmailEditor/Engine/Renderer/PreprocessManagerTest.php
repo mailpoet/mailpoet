@@ -37,6 +37,6 @@ class PreprocessManagerTest extends \MailPoetUnitTest {
 
     $preprocessManager = new PreprocessManager($cleanup, $topLevel, $blocksWidth, $typography);
     $preprocessManager->registerPreprocessor($secondPreprocessor);
-    expect($preprocessManager->preprocess([], $layoutStyles))->equals([]);
+    verify($preprocessManager->preprocess([], $layoutStyles))->equals([]);
   }
 }
