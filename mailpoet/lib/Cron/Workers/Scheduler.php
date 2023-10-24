@@ -162,7 +162,7 @@ class Scheduler {
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION) {
           $this->processScheduledAutomationEmail($task);
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL) {
-          $this->processScheduledTransactionalEmail($legacyQueue);
+          $this->processScheduledTransactionalEmail($task);
         }
       } catch (EntityNotFoundException $e) {
         // Doctrine throws this exception when newsletter doesn't exist but is referenced in a scheduled task.
@@ -302,23 +302,20 @@ class Scheduler {
     return true;
   }
 
-  public function processScheduledTransactionalEmail($queue): bool {
-    $subscribers = $queue->getSubscribers();
-    $subscriber = (!empty($subscribers) && is_array($subscribers)) ? $this->subscribersRepository->findOneById($subscribers[0]) : null;
+  public function processScheduledTransactionalEmail(ScheduledTaskEntity $task): bool {
+    $subscribers = $task->getSubscribers();
+    $subscriber = isset($subscribers[0]) ? $subscribers[0]->getSubscriber() : null;
     if (!$subscriber) {
-      $queue->delete();
-      $this->updateScheduledTaskEntity($queue, true);
+      $this->deleteByTask($task);
       return false;
     }
-    if (!$this->verifySubscriber($subscriber, $queue)) {
-      $queue->delete();
-      $this->updateScheduledTaskEntity($queue, true);
+    if (!$this->verifySubscriber($subscriber, $task)) {
+      $this->deleteByTask($task);
       return false;
     }
 
-    $queue->status = null;
-    $queue->save();
-    $this->updateScheduledTaskEntity($queue);
+    $task->setStatus(null);
+    $this->scheduledTasksRepository->flush();
     return true;
   }
 
