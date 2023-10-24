@@ -19,7 +19,6 @@ use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -314,17 +313,14 @@ class Subscribers {
    * @throws APIException
    */
   protected function _scheduleWelcomeNotification(SubscriberEntity $subscriber, array $segments) {
-    $result = $this->welcomeScheduler->scheduleSubscriberWelcomeNotification($subscriber->getId(), $segments);
-    if (is_array($result)) {
-      foreach ($result as $queue) {
-        if ($queue instanceof Sending && $queue->getErrors()) {
-          throw new APIException(
-            // translators: %s is a comma-separated list of errors
-            sprintf(__('Subscriber added, but welcome email failed to send: %s', 'mailpoet'), strtolower(implode(', ', $queue->getErrors()))),
-            APIException::WELCOME_FAILED_TO_SEND
-          );
-        }
-      }
+    try {
+      $this->welcomeScheduler->scheduleSubscriberWelcomeNotification($subscriber->getId(), $segments);
+    } catch (\Throwable $e) {
+      throw new APIException(
+        // translators: %s is an error message
+        sprintf(__('Subscriber added, but welcome email failed to send: %s', 'mailpoet'), $e->getMessage()),
+        APIException::WELCOME_FAILED_TO_SEND
+      );
     }
   }
 

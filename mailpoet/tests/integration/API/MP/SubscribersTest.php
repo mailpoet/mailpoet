@@ -15,8 +15,6 @@ use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
@@ -26,7 +24,6 @@ use MailPoet\Subscribers\RequiredCustomFieldValidator;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoetVendor\Carbon\Carbon;
@@ -610,15 +607,13 @@ class SubscribersTest extends \MailPoetTest {
   public function testItThrowsIfWelcomeEmailFails() {
     $settings = SettingsController::getInstance();
     $settings->set('signup_confirmation.enabled', false);
-    $task = ScheduledTask::create();
-    $task->type = 'sending';
-    $task->setError("Big Error");
-    $sendingStub = Sending::create($task, SendingQueue::create());
     $segment = $this->getSegment();
 
     $subscribers = Stub::copy($this->getSubscribers(), [
       'welcomeScheduler' => $this->make('MailPoet\Newsletter\Scheduler\WelcomeScheduler', [
-        'scheduleSubscriberWelcomeNotification' => [$sendingStub],
+        'scheduleSubscriberWelcomeNotification' => function () {
+          throw new \Exception();
+        },
       ]),
     ]);
     $API = $this->getApi($subscribers);
