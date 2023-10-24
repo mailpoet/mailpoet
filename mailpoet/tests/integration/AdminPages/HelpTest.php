@@ -5,6 +5,7 @@ namespace integration\AdminPages;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\AdminPages\Pages\Help;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -13,7 +14,6 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Services\Bridge;
 use MailPoet\SystemReport\SystemReportCollector;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoetVendor\Carbon\Carbon;
@@ -49,7 +49,7 @@ class HelpTest extends \MailPoetTest {
 
   public function testItFetchesNewsletterDataForSendingTasks() {
     $task = $this->scheduledTaskFactory->create(
-      Sending::TASK_TYPE,
+      SendingQueue::TASK_TYPE,
       ScheduledTaskEntity::STATUS_SCHEDULED,
       Carbon::now()->addDay()
     );
@@ -66,7 +66,7 @@ class HelpTest extends \MailPoetTest {
 
   public function testItDoesNotFailForSendingTaskWithMissingNewsletterInconsistentData() {
     $task = $this->scheduledTaskFactory->create(
-      Sending::TASK_TYPE,
+      SendingQueue::TASK_TYPE,
       ScheduledTaskEntity::STATUS_SCHEDULED,
       Carbon::now()->addDay()
     );

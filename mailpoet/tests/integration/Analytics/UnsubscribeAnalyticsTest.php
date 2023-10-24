@@ -3,8 +3,8 @@
 namespace integration\Analytics;
 
 use MailPoet\Analytics\UnsubscribeReporter;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\SendingQueue;
@@ -47,7 +47,7 @@ class UnsubscribeAnalyticsTest extends \MailPoetTest {
   private function createStatisticsUnsubscribe(\DateTimeInterface $createdAt, $method): StatisticsUnsubscribeEntity {
     $subscriber = (new Subscriber())->create();
     $newsletter = (new Newsletter())->create();
-    $task = (new ScheduledTask())->create(Sending::TASK_TYPE, null, (new Carbon())->subMonths(random_int(0, 12)));
+    $task = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, null, (new Carbon())->subMonths(random_int(0, 12)));
     $queue = (new SendingQueue())->create($task);
 
     $entity = new StatisticsUnsubscribeEntity($newsletter, $queue, $subscriber);

@@ -3,12 +3,12 @@
 namespace MailPoet\Segments;
 
 use Codeception\Util\Stub;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
@@ -55,7 +55,7 @@ class SubscribersFinderTest extends \MailPoetTest {
       ->create();
 
     $scheduledTaskFactory = new ScheduledTaskFactory();
-    $this->scheduledTask = $scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
+    $this->scheduledTask = $scheduledTaskFactory->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->subscribersFinder = $this->diContainer->get(SubscribersFinder::class);
     $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
@@ -178,20 +178,20 @@ class SubscribersFinderTest extends \MailPoetTest {
     $this->assertIsInt($dynamicSegment->getId());
 
     // Without filtering
-    $task = (new ScheduledTaskFactory())->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
     $staticCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [$staticSegment->getId()]);
     verify($staticCount)->equals(2);
 
-    $task = (new ScheduledTaskFactory())->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
     $dynamicCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [$dynamicSegment->getId()]);
     verify($dynamicCount)->equals(4);
 
     // With filtering
-    $task = (new ScheduledTaskFactory())->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
     $staticCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [$staticSegment->getId()], $filterSegment->getId());
     verify($staticCount)->equals(1);
 
-    $task = (new ScheduledTaskFactory())->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
+    $task = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, new Carbon());
     $dynamicCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [$dynamicSegment->getId()], $filterSegment->getId());
     verify($dynamicCount)->equals(2);
   }

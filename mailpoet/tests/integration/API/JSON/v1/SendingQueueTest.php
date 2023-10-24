@@ -5,12 +5,12 @@ namespace MailPoet\Test\API\JSON\v1;
 use Codeception\Util\Stub;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SendingQueue as SendingQueueAPI;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\NewsletterValidator;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOption;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -57,7 +57,7 @@ class SendingQueueTest extends \MailPoetTest {
     $scheduled = $scheduledTask->getScheduledAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $scheduled);
     verify($scheduled->format('Y-m-d H:i:s'))->equals($newsletterOptions['scheduledAt']);
-    verify($scheduledTask->getType())->equals(Sending::TASK_TYPE);
+    verify($scheduledTask->getType())->equals(SendingQueue::TASK_TYPE);
   }
 
   public function testItReturnsErrorIfSubscribersLimitReached() {

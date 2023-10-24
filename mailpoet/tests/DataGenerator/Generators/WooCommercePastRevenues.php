@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\DataGenerator\Generators;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
@@ -20,7 +21,6 @@ use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -387,7 +387,7 @@ class WooCommercePastRevenues implements Generator {
 
     // Sending task
     $task = new ScheduledTaskEntity();
-    $task->setType(Sending::TASK_TYPE);
+    $task->setType(SendingQueue::TASK_TYPE);
     $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
     $task->setCreatedAt(new Carbon($sentAt));
     $task->setProcessedAt(new Carbon($sentAt));

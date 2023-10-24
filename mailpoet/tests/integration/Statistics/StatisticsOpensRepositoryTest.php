@@ -2,6 +2,7 @@
 
 namespace MailPoet\Statistics;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -13,7 +14,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Carbon\CarbonImmutable;
 
@@ -282,7 +282,7 @@ class StatisticsOpensRepositoryTest extends \MailPoetTest {
 
   private function createSendingTask(SubscriberEntity $subscriber): ScheduledTaskEntity {
     $task = new ScheduledTaskEntity();
-    $task->setType(Sending::TASK_TYPE);
+    $task->setType(SendingQueue::TASK_TYPE);
     $this->entityManager->persist($task);
     $sub = new ScheduledTaskSubscriberEntity($task, $subscriber);
     $this->entityManager->persist($sub);

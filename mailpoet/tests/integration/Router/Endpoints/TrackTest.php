@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Router\Endpoints;
 
 use Codeception\Stub;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
@@ -14,7 +15,6 @@ use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Subscribers\LinkTokens;
-use MailPoet\Tasks\Sending;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterLink as NewsletterLinkFactory;
 
@@ -180,7 +180,7 @@ class TrackTest extends \MailPoetTest {
       ->withSendingQueue()
       ->create();
     $scheduledTaskEntity = $newsletter->getLatestQueue()->getTask();
-    $scheduledTaskEntity->setType(Sending::TASK_TYPE);
+    $scheduledTaskEntity->setType(SendingQueue::TASK_TYPE);
     $this->entityManager->persist($scheduledTaskEntity);
 
     $scheduledTaskSubscriber = new ScheduledTaskSubscriberEntity($scheduledTaskEntity, $this->subscriber, 1);

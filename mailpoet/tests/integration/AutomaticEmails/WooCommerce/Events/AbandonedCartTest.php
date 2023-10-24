@@ -3,6 +3,7 @@
 namespace MailPoet\AutomaticEmails\WooCommerce\Events;
 
 use MailPoet\AutomaticEmails\WooCommerce\WooCommerce as WooCommerceEmail;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
@@ -17,7 +18,6 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\Track\SubscriberActivityTracker;
 use MailPoet\Statistics\Track\SubscriberCookie;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -326,7 +326,7 @@ class AbandonedCartTest extends \MailPoetTest {
 
   private function createSendingTask(NewsletterEntity $newsletter, SubscriberEntity $subscriber, Carbon $scheduleAt): ScheduledTaskEntity {
     $scheduledTask = new ScheduledTaskEntity();
-    $scheduledTask->setType(SendingTask::TASK_TYPE);
+    $scheduledTask->setType(SendingQueue::TASK_TYPE);
     $this->entityManager->persist($scheduledTask);
     $this->entityManager->flush();
 

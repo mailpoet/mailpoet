@@ -1401,7 +1401,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   private function createQueueWithTaskAndSegment(NewsletterEntity $newsletter, $status = null, $body = null): SendingQueueEntity {
     $task = new ScheduledTaskEntity();
-    $task->setType(SendingTask::TASK_TYPE);
+    $task->setType(SendingQueueWorker::TASK_TYPE);
     $task->setStatus($status);
     $this->entityManager->persist($task);
 

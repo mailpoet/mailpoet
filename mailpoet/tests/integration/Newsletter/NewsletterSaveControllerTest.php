@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter;
 
 use Codeception\Util\Fixtures;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
@@ -13,7 +14,6 @@ use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -376,7 +376,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
 
   private function createQueueWithTask(NewsletterEntity $newsletter): SendingQueueEntity {
     $task = new ScheduledTaskEntity();
-    $task->setType(SendingTask::TASK_TYPE);
+    $task->setType(SendingQueue::TASK_TYPE);
     $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
     $this->entityManager->persist($task);
 

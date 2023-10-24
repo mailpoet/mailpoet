@@ -5,7 +5,6 @@ namespace MailPoet\Newsletter\Sending;
 use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue;
 use MailPoetVendor\Carbon\Carbon;
@@ -112,7 +111,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
   }
 
   public function testItCanFetchBasicTasksData() {
-    $task1 = $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
+    $task1 = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
     $task2 = $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, Carbon::now()->addDay());
     $data = $this->repository->getLatestTasks();
     verify(count($data))->equals(2);
@@ -124,7 +123,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     }, $data);
     $this->assertContains($task1->getId(), $ids);
     $this->assertContains($task2->getId(), $ids);
-    $this->assertContains(SendingTask::TASK_TYPE, $types);
+    $this->assertContains(SendingQueueWorker::TASK_TYPE, $types);
     $this->assertContains(Bounce::TASK_TYPE, $types);
     verify(is_int($data[1]->getPriority()))->true();
     verify($data[1]->getUpdatedAt())->instanceOf(\DateTimeInterface::class);
@@ -134,7 +133,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
   }
 
   public function testItCanFilterTasksByType() {
-    $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
     $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
     $data = $this->repository->getLatestTasks(Bounce::TASK_TYPE);
     verify(count($data))->equals(1);
@@ -142,8 +141,8 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
   }
 
   public function testItCanFilterTasksByStatus() {
-    $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
-    $this->scheduledTaskFactory->create(SendingTask::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDay());
     $data = $this->repository->getLatestTasks(null, [ScheduledTaskEntity::STATUS_COMPLETED]);
     verify(count($data))->equals(1);
     verify($data[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
@@ -151,7 +150,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
 
   public function testItDoesNotFailForSendingTaskWithoutQueue() {
     $this->scheduledTaskFactory->create(
-      SendingTask::TASK_TYPE,
+      SendingQueueWorker::TASK_TYPE,
       ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING,
       Carbon::now()->addDay()
     );
