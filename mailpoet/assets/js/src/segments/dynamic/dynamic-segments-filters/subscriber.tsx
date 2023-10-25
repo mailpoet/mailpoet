@@ -130,7 +130,9 @@ export function SubscriberFields({ filterIndex }: FilterProps): JSX.Element {
     Component = componentsMap[segment.action];
   }
 
-  if (!Component) return null;
+  if (!Component) {
+    return null;
+  }
 
   return <Component filterIndex={filterIndex} />;
 }

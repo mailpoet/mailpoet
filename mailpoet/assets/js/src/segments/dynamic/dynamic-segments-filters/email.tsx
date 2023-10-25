@@ -89,7 +89,9 @@ export function EmailFields({ filterIndex }: FilterProps): JSX.Element {
 
   const Component = componentsMap[segment.action];
 
-  if (!Component) return null;
+  if (!Component) {
+    return null;
+  }
 
   return <Component filterIndex={filterIndex} />;
 }
