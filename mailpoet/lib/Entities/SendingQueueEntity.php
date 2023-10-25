@@ -223,36 +223,4 @@ class SendingQueueEntity {
   public function setNewsletter(NewsletterEntity $newsletter) {
     $this->newsletter = $newsletter;
   }
-
-  public function toArray(): array {
-    if (!$this->getTask() instanceof ScheduledTaskEntity) {
-      throw new \RuntimeException('Invalid state. SendingQueue has no ScheduledTask associated.');
-    }
-
-    return [
-      'id' => $this->getId(),
-      'type' => $this->getTask()->getType(),
-      'status' => $this->getTask()->getStatus(),
-      'priority' => $this->getTask()->getPriority(),
-      'scheduled_at' => $this->getFormattedDateOrNull($this->getTask()->getScheduledAt()),
-      'processed_at' => $this->getFormattedDateOrNull($this->getTask()->getProcessedAt()),
-      'created_at' => $this->getFormattedDateOrNull($this->getTask()->getCreatedAt()),
-      'updated_at' => $this->getFormattedDateOrNull($this->getTask()->getUpdatedAt()),
-      'deleted_at' => $this->getFormattedDateOrNull($this->getTask()->getDeletedAt()),
-      'in_progress' => $this->getTask()->getInProgress(),
-      'reschedule_count' => $this->getTask()->getRescheduleCount(),
-      'meta' => $this->getMeta(),
-      'task_id' => $this->getTask()->getId(),
-      'newsletter_id' => ($this->getNewsletter() instanceof NewsletterEntity) ? $this->getNewsletter()->getId() : null,
-      'newsletter_rendered_body' => $this->getNewsletterRenderedBody(),
-      'newsletter_rendered_subject' => $this->getNewsletterRenderedSubject(),
-      'count_total' => $this->getCountTotal(),
-      'count_processed' => $this->getCountProcessed(),
-      'count_to_process' => $this->getCountToProcess(),
-    ];
-  }
-
-  private function getFormattedDateOrNull(?\DateTimeInterface $date): ?string {
-    return $date ? $date->format('Y-m-d H:i:s') : null;
-  }
 }

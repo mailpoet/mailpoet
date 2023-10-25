@@ -5,6 +5,7 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
 use MailPoet\API\JSON\Response;
+use MailPoet\API\JSON\ResponseBuilders\SendingQueuesResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
 use MailPoet\Cron\CronTrigger;
@@ -60,6 +61,9 @@ class SendingQueue extends APIEndpoint {
   /** @var DaemonTrigger */
   private $actionSchedulerDaemonTriggerAction;
 
+  /** @var SendingQueuesResponseBuilder */
+  private $sendingQueuesResponseBuilder;
+
   public function __construct(
     SubscribersFeature $subscribersFeature,
     NewslettersRepository $newsletterRepository,
@@ -70,7 +74,8 @@ class SendingQueue extends APIEndpoint {
     Scheduler $scheduler,
     SettingsController $settings,
     DaemonTrigger $actionSchedulerDaemonTriggerAction,
-    NewsletterValidator $newsletterValidator
+    NewsletterValidator $newsletterValidator,
+    SendingQueuesResponseBuilder $sendingQueuesResponseBuilder
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
@@ -82,6 +87,7 @@ class SendingQueue extends APIEndpoint {
     $this->settings = $settings;
     $this->actionSchedulerDaemonTriggerAction = $actionSchedulerDaemonTriggerAction;
     $this->newsletterValidator = $newsletterValidator;
+    $this->sendingQueuesResponseBuilder = $sendingQueuesResponseBuilder;
   }
 
   public function add($data = []) {
@@ -202,7 +208,7 @@ class SendingQueue extends APIEndpoint {
     } else {
       $this->triggerSending($newsletter);
       return $this->successResponse(
-        ($newsletter->getLatestQueue() instanceof SendingQueueEntity) ? $newsletter->getLatestQueue()->toArray() : null
+        ($newsletter->getLatestQueue() instanceof SendingQueueEntity) ? $this->sendingQueuesResponseBuilder->build($newsletter->getLatestQueue()) : null
       );
     }
   }

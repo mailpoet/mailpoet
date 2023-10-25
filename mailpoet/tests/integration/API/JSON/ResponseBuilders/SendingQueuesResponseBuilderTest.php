@@ -1,7 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace integration\Entities;
+namespace integration\API\JSON\ResponseBuilders;
 
+use MailPoet\API\JSON\ResponseBuilders\SendingQueuesResponseBuilder;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -11,7 +12,7 @@ use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoetVendor\Carbon\Carbon;
 
-class SendingQueueEntityTest extends \MailPoetTest {
+class SendingQueuesResponseBuilderTest extends \MailPoetTest {
   /** @var NewsletterEntity */
   private $newsletter;
 
@@ -21,11 +22,15 @@ class SendingQueueEntityTest extends \MailPoetTest {
   /** @var SendingQueueEntity */
   private $sendingQueue;
 
+  /** @var SendingQueuesResponseBuilder */
+  private $sendingQueuesResponseBuilder;
+
   public function _before() {
     $newsletterFactory = new NewsletterFactory();
     $sendingQueueFactory = new SendingQueueFactory();
     $scheduledTaskFactory = new ScheduledTaskFactory();
 
+    $this->sendingQueuesResponseBuilder = $this->diContainer->get(SendingQueuesResponseBuilder::class);
     $scheduledAt = new Carbon('2018-10-10 10:00:00');
     $this->newsletter = $newsletterFactory->create();
     $this->scheduledTask = $scheduledTaskFactory->create(Sending::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $scheduledAt);
@@ -33,7 +38,7 @@ class SendingQueueEntityTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $this->sendingQueue);
   }
 
-  public function testToArrayReturnsExpectedResult() {
+  public function testBuildReturnsExpectedResult() {
     $expectedResult = [
       'id' => $this->sendingQueue->getId(),
       'type' => 'sending',
@@ -56,6 +61,6 @@ class SendingQueueEntityTest extends \MailPoetTest {
       'count_to_process' => 0,
     ];
 
-    $this->assertSame($expectedResult, $this->sendingQueue->toArray());
+    $this->assertSame($expectedResult, $this->sendingQueuesResponseBuilder->build($this->sendingQueue));
   }
 }
