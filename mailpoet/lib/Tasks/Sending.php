@@ -211,7 +211,7 @@ class Sending {
     $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($this->scheduledTaskEntity);
     $this->scheduledTasksRepository->remove($this->scheduledTaskEntity);
 
-    $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($this->queue->id);
+    $sendingQueueEntity = $this->scheduledTaskEntity->getSendingQueue();
 
     if (!$sendingQueueEntity) {
       throw new InvalidStateException();
