@@ -4,28 +4,38 @@ namespace MailPoet\Test\Cron\Workers;
 
 use Codeception\Util\Fixtures;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Newsletter;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Subscribers\SubscribersRepository;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class UnsubscribeTokensTest extends \MailPoetTest {
 
   /** @var SubscriberEntity */
   private $subscriberWithToken;
+
+  /** @var NewsletterEntity */
   private $newsletterWithToken;
 
   /** @var SubscriberEntity */
   private $subscriberWithoutToken;
+
+  /** @var NewsletterEntity */
   private $newsletterWithoutToken;
 
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
   public function _before() {
     parent::_before();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
+    $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
 
     $this->subscriberWithToken = (new SubscriberFactory())
       ->withEmail('subscriber1@test.com')
@@ -36,21 +46,18 @@ class UnsubscribeTokensTest extends \MailPoetTest {
       ->withEmail('subscriber2@test.com')
       ->create();
 
-    $this->newsletterWithToken = Newsletter::createOrUpdate([
-      'subject' => 'My Newsletter',
-      'body' => Fixtures::get('newsletter_body_template'),
-      'type' => Newsletter::TYPE_STANDARD,
-    ]);
-    $this->newsletterWithToken->set('unsubscribe_token', 'aaabbbcccdddeee');
-    $this->newsletterWithToken->save();
+    $this->newsletterWithToken = (new NewsletterFactory())
+      ->withSubject('My Newsletter')
+      ->withBody(Fixtures::get('newsletter_body_template'))
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withUnsubscribeToken('aaabbbcccdddeee')
+      ->create();
 
-    $this->newsletterWithoutToken = Newsletter::createOrUpdate([
-      'subject' => 'My Newsletter',
-      'body' => Fixtures::get('newsletter_body_template'),
-      'type' => Newsletter::TYPE_STANDARD,
-    ]);
-    $this->newsletterWithoutToken->set('unsubscribe_token', null);
-    $this->newsletterWithoutToken->save();
+    $this->newsletterWithoutToken = (new NewsletterFactory())
+      ->withSubject('My Newsletter')
+      ->withBody(Fixtures::get('newsletter_body_template'))
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->create();
   }
 
   public function testItAddsTokensToSubscribers() {
@@ -66,13 +73,14 @@ class UnsubscribeTokensTest extends \MailPoetTest {
   }
 
   public function testItAddsTokensToNewsletters() {
+    verify($this->newsletterWithoutToken->getUnsubscribeToken())->null();
     $worker = new UnsubscribeTokens();
     $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
-    $this->newsletterWithToken = Newsletter::findOne($this->newsletterWithToken->id);
-    $this->newsletterWithoutToken = Newsletter::findOne($this->newsletterWithoutToken->id);
-    $this->assertInstanceOf(Newsletter::class, $this->newsletterWithToken);
-    $this->assertInstanceOf(Newsletter::class, $this->newsletterWithoutToken);
-    verify($this->newsletterWithToken->unsubscribeToken)->equals('aaabbbcccdddeee');
-    verify(strlen($this->newsletterWithoutToken->unsubscribeToken))->equals(15);
+    $newsletterWithToken = $this->newslettersRepository->findOneById($this->newsletterWithToken->getId());
+    $newsletterWithoutToken = $this->newslettersRepository->findOneById($this->newsletterWithoutToken->getId());
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterWithToken);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterWithoutToken);
+    verify($newsletterWithToken->getUnsubscribeToken())->equals('aaabbbcccdddeee');
+    verify(strlen($newsletterWithoutToken->getUnsubscribeToken() ?? ''))->equals(15);
   }
 }
