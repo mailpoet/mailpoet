@@ -55,3 +55,8 @@
 .edit-post-visual-editor__content-area {
   display: block; // Override flex to achieve height follow the length of the document
 }
+
+// For the WYSIWYG experience we don't want to display any margins between blocks in the editor
+.wp-block {
+  margin: 0;
+}
