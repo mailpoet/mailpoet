@@ -153,7 +153,7 @@ class CommentFieldsFactory {
         function (CommentPayload $payload) {
           $comment = $payload->getComment();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $comment ? $comment->comment_parent : null;
+          return $comment ? (int)$comment->comment_parent : null;
         }
       ),
       new Field(

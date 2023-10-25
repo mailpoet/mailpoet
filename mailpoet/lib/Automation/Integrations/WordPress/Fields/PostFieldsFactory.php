@@ -103,7 +103,7 @@ class PostFieldsFactory {
         function (PostPayload $payload) {
           $post = $payload->getPost();
           //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          return $post ? $post->post_author : null;
+          return $post ? (int)$post->post_author : null;
         }
       ),
       new Field(
