@@ -30,5 +30,10 @@ export function AutomationsFields({ filterIndex }: FilterProps): JSX.Element {
     [filterIndex],
   );
   const Component = componentsMap[segment.action];
+
+  if (!Component) {
+    return null;
+  }
+
   return <Component filterIndex={filterIndex} />;
 }
