@@ -491,6 +491,26 @@ class NewsletterTest extends \MailPoetTest {
     verify($newsletterTask->preProcessNewsletter($this->newsletter, $sendingTaskMock))->equals($this->newsletter);
   }
 
+  public function testItThrowsExceptionWhenNewsletterRenderedBodyIsInvalid() {
+    // properly serialized object
+    $sendingQueue = $this->sendingQueuesRepository->findOneById($this->sendingTask->id);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $sendingQueue->setNewsletterRenderedBody(['html' => 'test', 'text' => 'test']);
+    $this->sendingQueuesRepository->persist($sendingQueue);
+    $this->sendingQueuesRepository->flush();
+
+    $emoji = $this->make(
+      Emoji::class,
+      ['encodeEmojisInBody' => Expected::once(function ($params) {
+        return 'Invalid rendered body';
+      })]
+    );
+    $newsletterTask = new NewsletterTask(null, null, null, $emoji);
+    $this->expectException(\Exception::class);
+    $this->expectExceptionMessage('Sending is waiting to be retried.');
+    $newsletterTask->preProcessNewsletter($this->newsletter, $this->sendingTask);
+  }
+
   /**
    * @group woo
    */
