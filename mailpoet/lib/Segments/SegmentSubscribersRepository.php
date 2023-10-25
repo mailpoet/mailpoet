@@ -9,6 +9,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\NotFoundException;
+use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
@@ -420,7 +421,13 @@ class SegmentSubscribersRepository {
     if (count($filters) === 0) {
       return $queryBuilder->andWhere('0 = 1');
     } elseif ($segment instanceof SegmentEntity) {
-      $queryBuilder = $this->filterHandler->apply($queryBuilder, $segment);
+      try {
+        $queryBuilder = $this->filterHandler->apply($queryBuilder, $segment);
+      } catch (InvalidFilterException $e) {
+        // If a segment has an invalid filter, we should simply consider it empty instead of throwing
+        // an unhandled error. Unhandled errors here can break many admin pages.
+        $queryBuilder->andWhere('0 = 1');
+      }
     }
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $queryBuilder = $queryBuilder->andWhere("$subscribersTable.deleted_at IS NULL");
