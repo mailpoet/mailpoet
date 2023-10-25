@@ -229,6 +229,22 @@ class SegmentSubscribersRepositoryTest extends \MailPoetTest {
     verify($countWithFilter)->equals(2);
   }
 
+  public function testSubscriberCountIsZeroIfItHasAnInvalidFilter(): void {
+    $segment = new SegmentEntity('Segment' . rand(0, 10000), SegmentEntity::TYPE_DYNAMIC, 'Segment description');
+    $filterData = new DynamicSegmentFilterData(
+      'typeThatDefinitelyDoesNotExist',
+      'theActionDoesNotExistEither'
+    );
+    $dynamicFilter = new DynamicSegmentFilterEntity($segment, $filterData);
+    $segment->getDynamicFilters()->add($dynamicFilter);
+    $this->entityManager->persist($segment);
+    $this->entityManager->persist($dynamicFilter);
+    $this->entityManager->flush();
+
+    $count = $this->repository->getSubscribersCountBySegmentIds([$segment->getId()]);
+    $this->assertEquals(0, $count);
+  }
+
   public function _after() {
     parent::_after();
     $this->cleanup();
