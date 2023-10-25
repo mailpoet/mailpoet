@@ -13,7 +13,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
-use MailPoet\Models\SendingQueue as SendingQueueModel;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
@@ -229,15 +228,10 @@ class Newsletter {
     $renderedNewsletter = $this->emoji->encodeEmojisInBody($renderedNewsletter);
     $sendingTask->newsletterRenderedBody = $renderedNewsletter;
     $sendingTask->save();
+
     // catch DB errors
     $queueErrors = $sendingTask->getErrors();
-    if (!$queueErrors) {
-      // verify that the rendered body was successfully saved
-      $sendingQueue = SendingQueueModel::findOne($sendingTask->id);
-      if ($sendingQueue instanceof SendingQueueModel) {
-        $queueErrors = ($sendingQueue->validate() !== true);
-      }
-    }
+
     if ($queueErrors) {
       $this->stopNewsletterPreProcessing(sprintf('QUEUE-%d-SAVE', $sendingTask->id));
     }
