@@ -28,6 +28,14 @@ class RoboFile extends \Robo\Tasks {
       ->run();
   }
 
+  public function installPhp() {
+    return $this->taskExecStack()
+      ->stopOnFail()
+      ->exec('./tools/vendor/composer.phar install')
+      ->addCode([$this, 'cleanupCachedFiles'])
+      ->run();
+  }
+
   public function installJs() {
     return $this->taskExecStack()
       ->stopOnFail()
