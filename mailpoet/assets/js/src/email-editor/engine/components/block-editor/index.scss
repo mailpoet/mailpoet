@@ -51,3 +51,7 @@
     top: 6px;
   }
 }
+
+.edit-post-visual-editor__content-area {
+  display: block; // Override flex to achieve height follow the length of the document
+}

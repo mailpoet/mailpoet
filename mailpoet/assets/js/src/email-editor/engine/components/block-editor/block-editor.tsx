@@ -83,11 +83,12 @@ export function BlockEditor() {
   // UseResizeCanvas returns null if the previewDeviceType is Desktop.
   if (!inlineStyles) {
     inlineStyles = {
-      height: '100%',
+      height: 'auto',
       width: '660px',
-      margin: '0 auto',
+      margin: '4rem auto', // 4em top/bottom to place the email document nicely vertically in canvas. Same value is used for title in WP Post editor.
       display: 'flex',
       flexFlow: 'column',
+      padding: '10px', // Hardcoded value of layout padding. This will be editable in email layout styles in the future.
     };
   }
   inlineStyles.background = documentBackground;
