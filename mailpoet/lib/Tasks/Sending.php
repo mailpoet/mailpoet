@@ -213,11 +213,9 @@ class Sending {
 
     $sendingQueueEntity = $this->scheduledTaskEntity->getSendingQueue();
 
-    if (!$sendingQueueEntity) {
-      throw new InvalidStateException();
+    if ($sendingQueueEntity) {
+      $this->sendingQueuesRepository->remove($sendingQueueEntity);
     }
-
-    $this->sendingQueuesRepository->remove($sendingQueueEntity);
 
     $this->scheduledTasksRepository->flush();
   }
