@@ -226,7 +226,7 @@ class SendingQueueEntity {
 
   public function toArray(): array {
     if (!$this->getTask() instanceof ScheduledTaskEntity) {
-      throw new \RuntimeException('Invalid state. SendingQueue has ScheduledTask associated.');
+      throw new \RuntimeException('Invalid state. SendingQueue has no ScheduledTask associated.');
     }
 
     return [
