@@ -241,6 +241,16 @@ class Subscriber {
   }
 
   /**
+   * @param string $unsubscribeToken
+   *
+   * @return $this
+   */
+  public function withUnsubscribeToken(string $unsubscribeToken) {
+    $this->data['unsubscribeToken'] = $unsubscribeToken;
+    return $this;
+  }
+
+  /**
    * @return $this
    */
   public function withUpdatedAt(DateTimeInterface $updatedAt) {
@@ -271,6 +281,10 @@ class Subscriber {
     }
     if (isset($this->data['linkToken'])) {
       $subscriber->setLinkToken($this->data['linkToken']);
+    }
+
+    if (isset($this->data['unsubscribeToken'])) {
+      $subscriber->setUnsubscribeToken($this->data['unsubscribeToken']);
     }
 
     if (isset($this->data['deletedAt'])) {
