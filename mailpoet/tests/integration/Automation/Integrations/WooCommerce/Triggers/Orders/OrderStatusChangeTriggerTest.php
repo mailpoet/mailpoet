@@ -6,6 +6,9 @@ use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderStatusChangePayload;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderStatusChangedTrigger;
 
+/**
+ * @group woo
+ */
 class OrderStatusChangeTriggerTest extends \MailPoetTest {
   /**
    * @dataProvider dataTestIsTriggeredBy
