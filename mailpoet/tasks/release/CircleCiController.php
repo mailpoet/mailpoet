@@ -57,7 +57,7 @@ class CircleCiController {
     $releaseZipUrl = $this->getReleaseZipUrl($job['job_number']);
 
     $this->httpClient->get($releaseZipUrl, [
-      'save_to' => $targetPath,
+      'sink' => $targetPath,
       'query' => [
         'circle-token' => $this->token, // artifact download requires token as query param
       ],
