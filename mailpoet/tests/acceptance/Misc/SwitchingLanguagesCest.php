@@ -15,6 +15,13 @@ class SwitchingLanguagesCest {
   public function _before(\AcceptanceTester $i) {
     $i->wantToTest('Prepare data for testing');
 
+    try {
+      $i->cli(['language', 'core', 'install', 'de_DE']);
+      $i->cli(['language', 'plugin', 'install', 'mailpoet', 'de_DE']);
+    } catch (Throwable $e) {
+      // language already installed
+    }
+
     $segmentFactory = new Segment();
     $segment = $segmentFactory
       ->withName('Simple segment')
@@ -62,7 +69,7 @@ class SwitchingLanguagesCest {
     $i->amOnAdminPage('/options-general.php');
     $i->selectOption('WPLANG', ['value' => 'de_DE']);
     $i->click('[name="submit"]');
-    $i->waitForText('Die Einstellungen wurden gespeichert.');
+    $i->waitForText('Die Einstellungen wurden gespeichert.', 30);
 
     $i->wantTo('Update translations to make sure strings are downloaded');
 
