@@ -45,13 +45,13 @@ class ScheduledTaskSubscriberEntity {
   private $error;
 
   /**
-   * @ORM\Id @ORM\ManyToOne(targetEntity="MailPoet\Entities\ScheduledTaskEntity")
+   * @ORM\Id @ORM\ManyToOne(targetEntity="MailPoet\Entities\ScheduledTaskEntity", inversedBy="scheduledTaskSubscribers")
    * @var ScheduledTaskEntity|null
    */
   private $task;
 
   /**
-   * @ORM\Id @ORM\ManyToOne(targetEntity="MailPoet\Entities\SubscriberEntity")
+   * @ORM\Id @ORM\ManyToOne(targetEntity="MailPoet\Entities\SubscriberEntity", inversedBy="scheduledTaskSubscribers")
    * @var SubscriberEntity|null
    */
   private $subscriber;
