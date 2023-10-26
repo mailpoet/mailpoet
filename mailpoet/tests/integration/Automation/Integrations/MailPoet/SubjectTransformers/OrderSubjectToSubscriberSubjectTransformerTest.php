@@ -14,7 +14,7 @@ use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
-use MailPoet\Automation\Integrations\WooCommerce\Triggers\OrderStatusChangedTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderStatusChangedTrigger;
 use MailPoet\Test\Automation\Stubs\TestAction;
 
 require_once __DIR__ . '/../../../Stubs/TestAction.php';

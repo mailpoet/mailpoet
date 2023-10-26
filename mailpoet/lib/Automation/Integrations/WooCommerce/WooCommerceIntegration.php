@@ -11,7 +11,7 @@ use MailPoet\Automation\Integrations\WooCommerce\SubjectTransformers\WordPressUs
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\AbandonedCart\AbandonedCartTrigger;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysAProductTrigger;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysFromACategoryTrigger;
-use MailPoet\Automation\Integrations\WooCommerce\Triggers\OrderStatusChangedTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderStatusChangedTrigger;
 
 class WooCommerceIntegration {
 

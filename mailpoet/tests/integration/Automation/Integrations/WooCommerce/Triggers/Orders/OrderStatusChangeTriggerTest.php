@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Test\Automation\Integrations\MailPoet\Triggers;
+namespace MailPoet\Test\Automation\Integrations\MailPoet\Triggers\Orders;
 
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\OrderStatusChangePayload;
-use MailPoet\Automation\Integrations\WooCommerce\Triggers\OrderStatusChangedTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderStatusChangedTrigger;
 
 class OrderStatusChangeTriggerTest extends \MailPoetTest {
   /**
