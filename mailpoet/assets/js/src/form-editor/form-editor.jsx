@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import apiFetch from '@wordpress/api-fetch';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
@@ -26,6 +26,7 @@ function App() {
 window.addEventListener('DOMContentLoaded', () => {
   const appElement = document.querySelector('#mailpoet_form_edit');
   if (appElement) {
+    const root = createRoot(appElement);
     // Initialize WP API
     apiFetch.use(apiFetch.createRootURLMiddleware(window.wpApiSettings.root));
     apiFetch.use(apiFetch.createNonceMiddleware(window.wpApiSettings.nonce));
@@ -35,11 +36,10 @@ window.addEventListener('DOMContentLoaded', () => {
     initRichText();
     initTranslations(window.mailpoet_translations);
     registerTranslations();
-    ReactDOM.render(
+    root.render(
       <StrictMode>
         <App />
       </StrictMode>,
-      appElement,
     );
   }
 });
