@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { MailPoet } from 'mailpoet';
 import { KnowledgeBase } from 'help/knowledge-base.tsx';
 import { SystemInfo } from 'help/system-info.tsx';
@@ -40,5 +40,6 @@ const container = document.getElementById('help_container');
 
 if (container) {
   registerTranslations();
-  ReactDOM.render(<App />, container);
+  const root = createRoot(container);
+  root.render(<App />);
 }
