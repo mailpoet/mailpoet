@@ -54,7 +54,7 @@ class UnsubscribeTokens extends SimpleWorker {
     $queryBuilder = $entityManager->createQueryBuilder();
 
     $entities = $queryBuilder
-      ->select('e')
+      ->select('PARTIAL e.{id}')
       ->from($entityClass, 'e')
       ->where('e.unsubscribeToken IS NULL')
       ->andWhere('e.id > :lastProcessedId')
