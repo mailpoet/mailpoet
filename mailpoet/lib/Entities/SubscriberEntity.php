@@ -215,10 +215,17 @@ class SubscriberEntity {
    */
   private $subscriberTags;
 
+  /**
+   * @ORM\OneToMany(targetEntity="MailPoet\Entities\ScheduledTaskSubscriberEntity", mappedBy="subscriber", orphanRemoval=true)
+   * @var Collection<int, ScheduledTaskSubscriberEntity>
+   */
+  private $scheduledTaskSubscribers;
+
   public function __construct() {
     $this->subscriberSegments = new ArrayCollection();
     $this->subscriberCustomFields = new ArrayCollection();
     $this->subscriberTags = new ArrayCollection();
+    $this->scheduledTaskSubscribers = new ArrayCollection();
   }
 
   /**
