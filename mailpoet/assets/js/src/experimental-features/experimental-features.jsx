@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { MailPoet } from 'mailpoet';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
@@ -112,10 +112,10 @@ ExperimentalFeatures.displayName = 'ExperimentalFeatures';
 
 if (experimentalFeaturesContainer) {
   registerTranslations();
-  ReactDOM.render(
+  const root = createRoot(experimentalFeaturesContainer);
+  root.render(
     <ErrorBoundary>
       <ExperimentalFeatures />
     </ErrorBoundary>,
-    experimentalFeaturesContainer,
   );
 }
