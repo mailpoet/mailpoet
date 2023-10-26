@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Automation\Integrations\WooCommerce\Triggers;
+namespace MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders;
 
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
