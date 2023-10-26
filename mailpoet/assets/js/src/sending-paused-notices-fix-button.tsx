@@ -1,10 +1,10 @@
 import jQuery from 'jquery';
 import { useState } from 'react';
-import ReactDOM from 'react-dom';
 import { SetFromAddressModal } from 'common/set-from-address-modal';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { noop } from 'lodash';
+import { createRoot } from 'react-dom/client';
 
 type Props = {
   onRequestClose?: () => void;
@@ -44,7 +44,8 @@ App.defaultProps = {
 // ReactDOM.createPortal() but we need an element as a React root on all pages
 const container = document.getElementById('mailpoet_set_from_address_modal');
 if (container) {
-  ReactDOM.render(
+  const root = createRoot(container);
+  root.render(
     <App
       onRequestClose={() => {
         // if in Settings, reload page, so the new saved FROM address is loaded
@@ -56,6 +57,5 @@ if (container) {
         }
       }}
     />,
-    container,
   );
 }

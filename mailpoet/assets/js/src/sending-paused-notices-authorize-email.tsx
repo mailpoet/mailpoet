@@ -1,6 +1,6 @@
 import jQuery from 'jquery';
 import { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { MailPoet } from 'mailpoet';
 import { extractPageNameFromUrl } from 'common/functions';
 import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize-sender-email-and-domain-modal';
@@ -96,5 +96,6 @@ const container = document.getElementById(
   'mailpoet_authorize_sender_email_modal',
 );
 if (container) {
-  ReactDOM.render(<AuthorizeSenderEmailApp />, container);
+  const root = createRoot(container);
+  root.render(<AuthorizeSenderEmailApp />);
 }
