@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary, registerTranslations } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context';
@@ -25,10 +25,10 @@ function App(): JSX.Element {
 const container = document.getElementById('mailpoet_homepage_container');
 if (container) {
   registerTranslations();
-  ReactDOM.render(
+  const root = createRoot(container);
+  root.render(
     <ErrorBoundary>
       <App />
     </ErrorBoundary>,
-    container,
   );
 }
