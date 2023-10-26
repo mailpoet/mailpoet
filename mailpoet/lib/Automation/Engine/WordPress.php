@@ -21,6 +21,10 @@ class WordPress {
     return add_action($hookName, $callback, $priority, $acceptedArgs);
   }
 
+  public function removeAction(string $hookName, callable $callback, int $priority = 10): bool {
+    return remove_action($hookName, $callback, $priority);
+  }
+
   /** @param mixed ...$arg */
   public function doAction(string $hookName, ...$arg): void {
     do_action($hookName, ...$arg);

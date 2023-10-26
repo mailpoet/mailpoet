@@ -19,10 +19,10 @@ use MailPoet\WP\Functions;
 class OrderStatusChangedTrigger implements Trigger {
 
   /** @var Functions */
-  private $wp;
+  protected $wp;
 
   /** @var WooCommerce */
-  private $woocommerce;
+  protected $woocommerce;
 
   public function __construct(
     Functions $wp,

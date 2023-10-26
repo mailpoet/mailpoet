@@ -11,12 +11,23 @@ use MailPoet\Automation\Integrations\WooCommerce\SubjectTransformers\WordPressUs
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\AbandonedCart\AbandonedCartTrigger;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysAProductTrigger;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\BuysFromACategoryTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderCancelledTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderCompletedTrigger;
+use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderCreatedTrigger;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\Orders\OrderStatusChangedTrigger;
 
 class WooCommerceIntegration {
 
   /** @var OrderStatusChangedTrigger */
   private $orderStatusChangedTrigger;
+
+  /** @var OrderCreatedTrigger */
+  private $orderCreatedTrigger;
+
+  /** @var OrderCompletedTrigger */
+  private $orderCompletedTrigger;
+
+  private $orderCancelledTrigger;
 
   /** @var AbandonedCartTrigger  */
   private $abandonedCartTrigger;
@@ -50,6 +61,9 @@ class WooCommerceIntegration {
 
   public function __construct(
     OrderStatusChangedTrigger $orderStatusChangedTrigger,
+    OrderCreatedTrigger $orderCreatedTrigger,
+    OrderCompletedTrigger $orderCompletedTrigger,
+    OrderCancelledTrigger $orderCancelledTrigger,
     AbandonedCartTrigger $abandonedCartTrigger,
     BuysAProductTrigger $buysAProductTrigger,
     BuysFromACategoryTrigger $buysFromACategoryTrigger,
@@ -62,6 +76,9 @@ class WooCommerceIntegration {
     WooCommerce $wooCommerce
   ) {
     $this->orderStatusChangedTrigger = $orderStatusChangedTrigger;
+    $this->orderCreatedTrigger = $orderCreatedTrigger;
+    $this->orderCompletedTrigger = $orderCompletedTrigger;
+    $this->orderCancelledTrigger = $orderCancelledTrigger;
     $this->abandonedCartTrigger = $abandonedCartTrigger;
     $this->buysAProductTrigger = $buysAProductTrigger;
     $this->buysFromACategoryTrigger = $buysFromACategoryTrigger;
@@ -88,6 +105,9 @@ class WooCommerceIntegration {
     $registry->addSubject($this->orderStatusChangeSubject);
     $registry->addSubject($this->customerSubject);
     $registry->addTrigger($this->orderStatusChangedTrigger);
+    $registry->addTrigger($this->orderCreatedTrigger);
+    $registry->addTrigger($this->orderCompletedTrigger);
+    $registry->addTrigger($this->orderCancelledTrigger);
     $registry->addTrigger($this->abandonedCartTrigger);
     $registry->addTrigger($this->buysAProductTrigger);
     $registry->addTrigger($this->buysFromACategoryTrigger);
