@@ -98,6 +98,9 @@ class SubscribersFinder {
     if (!empty($dynamicSegmentIds)) {
       $count += $this->addSubscribersToTaskFromDynamicSegments($task, $dynamicSegmentIds, $filterSegmentId);
     }
+    if ($count > 0) {
+      $this->entityManager->refresh($task);
+    }
     return $count;
   }
 
