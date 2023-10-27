@@ -585,10 +585,13 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItDeletesQueueDuringProcessingWhenNewsletterNotFound() {
-    $newsletter = $this->_createNewsletter();
+    $subscriber = $this->_createSubscriber();
+    $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $task = $this->createTaskWithQueue($newsletter);
-    $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
-    $this->entityManager->flush();
+    $this->createTaskSubscriber($task, $subscriber);
+
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(1);
+    verify($this->scheduledTasksRepository->findOneByNewsletter($newsletter))->notNull();
 
     // remove newsletter, but not any related data
     $this->entityManager->getConnection()->delete(
@@ -600,6 +603,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getScheduler();
     $scheduler->process();
     verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
+    verify($this->scheduledTasksRepository->findOneByNewsletter($newsletter))->null();
   }
 
   public function testItDeletesQueueDuringProcessingWhenNewsletterIsSoftDeleted() {
