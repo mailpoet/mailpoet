@@ -463,7 +463,7 @@ class SchedulerTest extends \MailPoetTest {
     $subscriber = $this->_createSubscriber();
     $segment = $this->_createSegment();
     $this->_createSubscriberSegment($subscriber->getId(), $segment->getId());
-    $newsletter = $this->_createNewsletter();
+    $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_STANDARD);
     $this->_createNewsletterSegment($newsletter->getId(), $segment->getId());
     $this->assertIsInt($segment->getId());
     $task = $this->createTaskWithQueue($newsletter);
