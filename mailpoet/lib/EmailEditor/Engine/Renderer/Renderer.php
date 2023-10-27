@@ -11,8 +11,8 @@ class Renderer {
   /** @var \MailPoetVendor\CSS */
   private $cssInliner;
 
-  /** @var BlocksRenderer */
-  private $blocksRenderer;
+  /** @var BlocksRegistry */
+  private $blocksRegistry;
 
   /** @var PreprocessManager */
   private $preprocessManager;
@@ -29,12 +29,12 @@ class Renderer {
   public function __construct(
     \MailPoetVendor\CSS $cssInliner,
     PreprocessManager $preprocessManager,
-    BlocksRenderer $blocksRenderer,
+    BlocksRegistry $blocksRegistry,
     SettingsController $settingsController
   ) {
     $this->cssInliner = $cssInliner;
     $this->preprocessManager = $preprocessManager;
-    $this->blocksRenderer = $blocksRenderer;
+    $this->blocksRegistry = $blocksRegistry;
     $this->settingsController = $settingsController;
   }
 
@@ -44,7 +44,7 @@ class Renderer {
 
     $layoutStyles = $this->settingsController->getEmailLayoutStyles();
     $parsedBlocks = $this->preprocessManager->preprocess($parsedBlocks, $layoutStyles);
-    $renderedBody = $this->blocksRenderer->render($parsedBlocks);
+    $renderedBody = $this->renderBlocks($parsedBlocks);
 
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
     $styles = apply_filters('mailpoet_email_renderer_styles', $styles, $post);
@@ -85,6 +85,19 @@ class Renderer {
       'html' => $templateWithContents,
       'text' => $this->renderTextVersion($templateWithContents),
     ];
+  }
+
+  public function renderBlocks(array $parsedBlocks): string {
+    do_action('mailpoet_blocks_renderer_initialized', $this->blocksRegistry);
+
+    $content = '';
+    foreach ($parsedBlocks as $parsedBlock) {
+      $content .= render_block($parsedBlock);
+    }
+
+    do_action('mailpoet_blocks_renderer_uninitialized', $this->blocksRegistry);
+
+    return $content;
   }
 
   private function injectContentIntoTemplate($template, array $content) {
