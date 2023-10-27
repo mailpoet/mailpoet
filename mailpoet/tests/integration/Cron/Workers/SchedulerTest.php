@@ -269,10 +269,11 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter();
     $task = $this->createTaskWithQueue($newsletter);
 
-    // delete queue when the list of subscribers to process is blank
+    // delete task and queue when the list of subscribers to process is blank
     $scheduler = $this->getScheduler();
     $result = $scheduler->processWelcomeNewsletter($newsletter, $task);
     verify($result)->false();
+    verify($this->scheduledTasksRepository->findAll())->arrayCount(0);
     verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
   }
 
