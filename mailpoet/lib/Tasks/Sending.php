@@ -279,23 +279,6 @@ class Sending {
     return $this->updateCount(count($processedSubscribers))->getErrors() === false;
   }
 
-  public function saveSubscriberError($subcriberId, $errorMessage) {
-    $this->scheduledTaskSubscribersRepository->saveError($this->scheduledTaskEntity, $subcriberId, $errorMessage);
-
-    $this->updateTaskStatus();
-
-    return $this->updateCount()->getErrors() === false;
-  }
-
-  private function updateTaskStatus() {
-    // we need to update those fields here as the Sending class is in a mixed state using Paris and Doctrine at the same time
-    // this probably won't be necessary anymore once https://mailpoet.atlassian.net/browse/MAILPOET-4375 is finished
-    $this->task->status = $this->scheduledTaskEntity->getStatus();
-    if (!is_null($this->scheduledTaskEntity->getProcessedAt())) {
-      $this->task->processedAt = $this->scheduledTaskEntity->getProcessedAt()->format('Y-m-d H:i:s');
-    }
-  }
-
   public function updateCount(?int $count = null) {
     if ($count) {
       // increment/decrement counts based on known subscriber count, don't exceed the bounds
