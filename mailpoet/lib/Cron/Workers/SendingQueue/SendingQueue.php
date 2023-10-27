@@ -508,11 +508,7 @@ class SendingQueue {
     // log error message and schedule retry/pause sending
     if ($sendResult['response'] === false) {
       $error = $sendResult['error'];
-      $legacyTask = ScheduledTask::findOne($task->getId());
-      $legacyQueue = $legacyTask ? SendingTask::createFromScheduledTask($legacyTask) : null;
-      if ($legacyQueue) {
-        $this->errorHandler->processError($error, $legacyQueue, $preparedSubscribersIds, $preparedSubscribers);
-      }
+      $this->errorHandler->processError($error, $task, $preparedSubscribersIds, $preparedSubscribers);
     } else {
       $queue = $task->getSendingQueue();
       if (!$queue) {
