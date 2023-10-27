@@ -5,7 +5,6 @@ namespace MailPoet\Test\Cron\Workers;
 use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Cron\CronHelper;
-use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Cron\Workers\Scheduler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
@@ -19,16 +18,12 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Newsletter\Scheduler\Scheduler as NewsletterScheduler;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
-use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
-use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -47,29 +42,17 @@ class SchedulerTest extends \MailPoetTest {
   /** @var SubscribersFinder */
   private $subscribersFinder;
 
-  /** @var CronWorkerScheduler */
-  private $cronWorkerScheduler;
-
   /** @var ScheduledTasksRepository */
   private $scheduledTasksRepository;
 
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
-  /** @var SegmentsRepository */
-  private $segmentsRepository;
-
-  /** @var NewsletterScheduler */
-  private $newsletterScheduler;
-
   /** @var NewsletterOptionFactory */
   private $newsletterOptionFactory;
 
   /** @var NewsletterSegmentRepository */
   private $newsletterSegmentRepository;
-
-  /** @var Security */
-  private $security;
 
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
@@ -79,9 +62,6 @@ class SchedulerTest extends \MailPoetTest {
 
   /** @var SubscriberFactory */
   private $subscriberFactory;
-
-  /** @var SubscribersRepository */
-  private $subscribersRepository;
 
   /** @var SegmentFactory */
   private $segmentFactory;
@@ -97,18 +77,13 @@ class SchedulerTest extends \MailPoetTest {
     $this->loggerFactory = LoggerFactory::getInstance();
     $this->cronHelper = $this->diContainer->get(CronHelper::class);
     $this->subscribersFinder = $this->diContainer->get(SubscribersFinder::class);
-    $this->cronWorkerScheduler = $this->diContainer->get(CronWorkerScheduler::class);
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
-    $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
-    $this->newsletterScheduler = $this->diContainer->get(NewsletterScheduler::class);
     $this->newsletterOptionFactory = new NewsletterOptionFactory();
     $this->newsletterSegmentRepository = $this->diContainer->get(NewsletterSegmentRepository::class);
-    $this->security = $this->diContainer->get(Security::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->subscriberSegmentRepository = $this->diContainer->get(SubscriberSegmentRepository::class);
     $this->subscriberFactory = new SubscriberFactory();
-    $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->segmentFactory = new SegmentFactory();
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->newsletterFactory = new NewsletterFactory();
@@ -507,31 +482,9 @@ class SchedulerTest extends \MailPoetTest {
     $task = $this->createTaskWithQueue($newsletter);
     $segment = $this->_createSegment();
     $this->_createNewsletterSegment($newsletter->getId(), $segment->getId());
+    $this->entityManager->refresh($newsletter);
 
-    // delete or reschedule queue when there are no subscribers in segments
-    $scheduler = $this->construct(
-      Scheduler::class,
-      [
-        $this->subscribersFinder,
-        $this->loggerFactory,
-        $this->cronHelper,
-        $this->cronWorkerScheduler,
-        $this->scheduledTasksRepository,
-        $this->diContainer->get(ScheduledTaskSubscribersRepository::class),
-        $this->sendingQueuesRepository,
-        $this->newslettersRepository,
-        $this->segmentsRepository,
-        $this->newsletterSegmentRepository,
-        WPFunctions::get(),
-        $this->security,
-        $this->newsletterScheduler,
-        $this->subscriberSegmentRepository,
-        $this->subscribersRepository,
-      ], [
-      'deleteQueueOrUpdateNextRunDate' => Expected::exactly(1, function() {
-        return false;
-      }),
-      ]);
+    $scheduler = $this->getScheduler();
     verify($scheduler->processPostNotificationNewsletter($newsletter, $task))->false();
   }
 
