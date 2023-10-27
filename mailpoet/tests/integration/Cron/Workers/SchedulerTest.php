@@ -551,14 +551,12 @@ class SchedulerTest extends \MailPoetTest {
   public function testItDeletesQueueDuringProcessingWhenNewsletterIsSoftDeleted() {
     $newsletter = $this->_createNewsletter();
     $newsletter->setDeletedAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
-    $this->newslettersRepository->persist($newsletter);
+    $this->createTaskWithQueue($newsletter);
     $this->newslettersRepository->flush();
 
-    $task = $this->createTaskWithQueue($newsletter);
-    $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
-    $this->entityManager->flush();
     $scheduler = $this->getScheduler();
     $scheduler->process();
+    verify($this->scheduledTasksRepository->findAll())->arrayCount(0);
     verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
   }
 
