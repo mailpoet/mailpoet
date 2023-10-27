@@ -377,7 +377,7 @@ class SendingQueue {
         $this->newsletterTask->prepareNewsletterForSending(
           $newsletterEntity,
           $subscriberEntity,
-          $legacyQueue
+          $sendingQueueEntity
         );
       // format subscriber name/address according to mailer settings
       $preparedSubscribers[] = $this->mailerTask->prepareSubscriberForSending(
