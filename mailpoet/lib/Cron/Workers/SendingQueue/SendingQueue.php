@@ -295,8 +295,8 @@ class SendingQueue {
       $this->reScheduleBounceTask();
 
       if ($newsletterEntity->getStatus() !== NewsletterEntity::STATUS_CORRUPT) {
-        $legacyQueue = $this->processQueue(
-          $legacyQueue,
+        $this->processQueue(
+          $task,
           $_newsletter,
           $foundSubscribers,
           $timer
@@ -336,7 +336,7 @@ class SendingQueue {
     return $this->throttlingHandler->getBatchSize();
   }
 
-  public function processQueue($queue, $newsletter, $subscribers, $timer) {
+  public function processQueue(ScheduledTaskEntity $task, $newsletter, $subscribers, $timer) {
     // determine if processing is done in bulk or individually
     $processingMethod = $this->mailerTask->getProcessingMethod();
     $preparedNewsletters = [];
@@ -346,11 +346,24 @@ class SendingQueue {
     $statistics = [];
     $metas = [];
     $oneClickUnsubscribeUrls = [];
-    $sendingQueueEntity = $queue->getSendingQueueEntity();
+    $sendingQueueEntity = $task->getSendingQueue();
+    if (!$sendingQueueEntity) {
+      return;
+    }
+
+    $legacyTask = ScheduledTask::findOne($task->getId());
+    $legacyQueue = $legacyTask ? SendingTask::createFromScheduledTask($legacyTask) : null;
+    if (!$legacyQueue) {
+      return;
+    }
+
     $sendingQueueMeta = $sendingQueueEntity->getMeta() ?? [];
     $campaignId = $sendingQueueMeta['campaignId'] ?? null;
 
     $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+    if (!$newsletterEntity) {
+      return;
+    }
 
     foreach ($subscribers as $subscriber) {
       $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
@@ -359,16 +372,12 @@ class SendingQueue {
         continue;
       }
 
-      if (!$newsletterEntity instanceof NewsletterEntity) {
-        continue;
-      }
-
       // render shortcodes and replace subscriber data in tracked links
       $preparedNewsletters[] =
         $this->newsletterTask->prepareNewsletterForSending(
           $newsletterEntity,
           $subscriberEntity,
-          $queue
+          $legacyQueue
         );
       // format subscriber name/address according to mailer settings
       $preparedSubscribers[] = $this->mailerTask->prepareSubscriberForSending(
@@ -376,8 +385,8 @@ class SendingQueue {
       );
       $preparedSubscribersIds[] = $subscriber->id;
       // create personalized instant unsubsribe link
-      $unsubscribeUrls[] = $this->links->getUnsubscribeUrl($queue->id, $subscriberEntity);
-      $oneClickUnsubscribeUrls[] = $this->links->getOneClickUnsubscribeUrl($queue->id, $subscriberEntity);
+      $unsubscribeUrls[] = $this->links->getUnsubscribeUrl($sendingQueueEntity->getId(), $subscriberEntity);
+      $oneClickUnsubscribeUrls[] = $this->links->getOneClickUnsubscribeUrl($sendingQueueEntity->getId(), $subscriberEntity);
 
       $metasForSubscriber = $this->mailerMetaInfo->getNewsletterMetaInfo($newsletterEntity, $subscriberEntity);
       if ($campaignId) {
@@ -389,11 +398,11 @@ class SendingQueue {
       $statistics[] = [
         'newsletter_id' => $newsletter->id,
         'subscriber_id' => $subscriber->id,
-        'queue_id' => $queue->id,
+        'queue_id' => $sendingQueueEntity->getId(),
       ];
       if ($processingMethod === 'individual') {
-        $queue = $this->sendNewsletter(
-          $queue,
+        $this->sendNewsletter(
+          $legacyQueue,
           $preparedSubscribersIds[0],
           $preparedNewsletters[0],
           $preparedSubscribers[0],
@@ -415,8 +424,8 @@ class SendingQueue {
       }
     }
     if ($processingMethod === 'bulk') {
-      $queue = $this->sendNewsletters(
-        $queue,
+      $this->sendNewsletters(
+        $legacyQueue,
         $preparedSubscribersIds,
         $preparedNewsletters,
         $preparedSubscribers,
@@ -429,7 +438,6 @@ class SendingQueue {
         ]
       );
     }
-    return $queue;
   }
 
   public function sendNewsletter(
