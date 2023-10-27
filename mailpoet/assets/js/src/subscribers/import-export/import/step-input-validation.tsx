@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import { ComponentType, useCallback, useEffect, useState } from 'react';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import { CleanList } from 'subscribers/import-export/import/clean-list';
 import { ErrorBoundary } from 'common';
@@ -8,7 +7,24 @@ import { InitialQuestion } from './step-input-validation/initial-question.jsx';
 import { WrongSourceBlock } from './step-input-validation/wrong-source-block.jsx';
 import { LastSentQuestion } from './step-input-validation/last-sent-question.jsx';
 
-function StepInputValidationComponent({ stepMethodSelectionData, history }) {
+type StepMethodSelectionData = {
+  duplicate: string[];
+  header: string[];
+  invalid: string[];
+  role: string[];
+  subscribersCount: number;
+  subscribers: Array<string[]>;
+};
+
+type Props = {
+  history: RouteComponentProps['history'];
+  stepMethodSelectionData?: StepMethodSelectionData;
+};
+
+function StepInputValidationComponent({
+  stepMethodSelectionData,
+  history,
+}: Props): JSX.Element {
   const [importSource, setImportSource] = useState(undefined);
   const [lastSent, setLastSent] = useState(undefined);
 
@@ -53,23 +69,12 @@ function StepInputValidationComponent({ stepMethodSelectionData, history }) {
   );
 }
 
-StepInputValidationComponent.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-    replace: PropTypes.func.isRequired,
-  }).isRequired,
-  stepMethodSelectionData: PropTypes.shape({
-    duplicate: PropTypes.arrayOf(PropTypes.string),
-    header: PropTypes.arrayOf(PropTypes.string),
-    invalid: PropTypes.arrayOf(PropTypes.string),
-    role: PropTypes.arrayOf(PropTypes.string),
-    subscribersCount: PropTypes.number,
-    subscribers: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
-  }),
-};
-
 StepInputValidationComponent.defaultProps = {
   stepMethodSelectionData: undefined,
 };
 
-export const StepInputValidation = withRouter(StepInputValidationComponent);
+StepInputValidationComponent.displayName = 'StepInputValidationComponent';
+
+export const StepInputValidation = withRouter(
+  StepInputValidationComponent as ComponentType<RouteComponentProps>,
+);
