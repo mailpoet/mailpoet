@@ -49,7 +49,7 @@ export function ManageSubscription() {
               <a
                 className="mailpoet-link"
                 key={text}
-                href="/wp-admin/admin.php?page=mailpoet-segments#/lists"
+                href="/wp-admin/admin.php?page=mailpoet-lists#/"
                 rel="noopener noreferrer"
                 target="_blank"
               >
