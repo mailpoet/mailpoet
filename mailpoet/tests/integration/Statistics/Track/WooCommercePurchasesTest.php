@@ -494,7 +494,6 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $queue = new SendingQueueEntity();
     $this->entityManager->persist($queue);
     $queue->setNewsletter($newsletter);
-    $queue->setSubscribers((string)$subscriber->getId());
     $queue->setTask($task);
     $sendingTaskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber, 1);
     $this->entityManager->persist($sendingTaskSubscriber);

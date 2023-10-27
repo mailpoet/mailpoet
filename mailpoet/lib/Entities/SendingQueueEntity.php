@@ -49,12 +49,6 @@ class SendingQueueEntity {
   private $newsletterRenderedSubject;
 
   /**
-   * @ORM\Column(type="text", nullable=true)
-   * @var string|null
-   */
-  private $subscribers;
-
-  /**
    * @ORM\Column(type="integer")
    * @var int
    */
@@ -128,20 +122,6 @@ class SendingQueueEntity {
    */
   public function setNewsletterRenderedSubject($newsletterRenderedSubject) {
     $this->newsletterRenderedSubject = $newsletterRenderedSubject;
-  }
-
-  /**
-   * @return string|null
-   */
-  public function getSubscribers() {
-    return $this->subscribers;
-  }
-
-  /**
-   * @param string|null $subscribers
-   */
-  public function setSubscribers($subscribers) {
-    $this->subscribers = $subscribers;
   }
 
   /**
