@@ -331,7 +331,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItProcessesWelcomeNewsletterWhenWPUserIsVerified() {
-    $newsletter = $this->_createNewsletter();
+    $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_WELCOME);
     $subscriber = $this->_createSubscriber();
     $this->newsletterOptionFactory->create($newsletter, 'event', 'user');
 
@@ -344,7 +344,7 @@ class SchedulerTest extends \MailPoetTest {
     ], $this);
     verify($task->getStatus())->notNull();
     verify($scheduler->processWelcomeNewsletter($newsletter, $task))->true();
-    // update queue's status to null
+    // update task status to null
     $sendingQueue = $task->getSendingQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
