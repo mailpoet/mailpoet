@@ -1,7 +1,9 @@
 import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
+import ReactStringReplace from 'react-string-replace';
 import { useSelector } from 'settings/store/hooks';
 import { MssStatus } from 'settings/store/types';
+import { getLinkRegex } from '../../utils';
 
 type MssActiveMessageProps = { canUseSuccessClass: boolean };
 
@@ -22,11 +24,22 @@ type NotValidMessageProps = { message?: string };
 function NotValidMessage({ message }: NotValidMessageProps) {
   return (
     <div className="mailpoet_error">
-      {message ||
-        __(
-          'Your key is not valid for the MailPoet Sending Service',
-          'mailpoet',
-        )}
+      {message
+        ? ReactStringReplace(message, getLinkRegex(), (text) => (
+            <a
+              className="mailpoet-link"
+              key={text}
+              href="https://kb.mailpoet.com/article/249-how-to-change-the-domain-associated-with-a-key"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {text}
+            </a>
+          ))
+        : __(
+            'Your key is not valid for the MailPoet Sending Service',
+            'mailpoet',
+          )}
     </div>
   );
 }
