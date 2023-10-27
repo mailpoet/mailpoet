@@ -310,11 +310,11 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItProcessesWelcomeNewsletterWhenSubscriberIsVerified() {
-    $newsletter = $this->_createNewsletter();
+    $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_WELCOME);
     $subscriber = $this->_createSubscriber();
     $this->newsletterOptionFactory->create($newsletter, 'event', 'segment');
 
-    // return true when subsriber is verified and update the queue's status to null
+    // return true when subscriber is verified and update the task status to null
     $task = $this->createTaskWithQueue($newsletter);
     $this->createTaskSubscriber($task, $subscriber);
     $scheduler = Stub::make(Scheduler::class, [
