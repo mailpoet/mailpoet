@@ -30,7 +30,6 @@ use MailPoet\Util\Helpers;
  */
 class Sending {
   const TASK_TYPE = SendingQueueAlias::TASK_TYPE;
-  const RESULT_BATCH_SIZE = 5;
 
   /** @var ScheduledTask */
   private $task;
