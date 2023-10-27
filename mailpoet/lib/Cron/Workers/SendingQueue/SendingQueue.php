@@ -31,6 +31,7 @@ use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use Throwable;
 
 class SendingQueue {
   /** @var MailerTask */
@@ -350,12 +351,6 @@ class SendingQueue {
       return;
     }
 
-    $legacyTask = ScheduledTask::findOne($task->getId());
-    $legacyQueue = $legacyTask ? SendingTask::createFromScheduledTask($legacyTask) : null;
-    if (!$legacyQueue) {
-      return;
-    }
-
     $sendingQueueMeta = $sendingQueueEntity->getMeta() ?? [];
     $campaignId = $sendingQueueMeta['campaignId'] ?? null;
 
@@ -401,7 +396,7 @@ class SendingQueue {
       ];
       if ($processingMethod === 'individual') {
         $this->sendNewsletter(
-          $legacyQueue,
+          $task,
           $preparedSubscribersIds[0],
           $preparedNewsletters[0],
           $preparedSubscribers[0],
@@ -424,7 +419,7 @@ class SendingQueue {
     }
     if ($processingMethod === 'bulk') {
       $this->sendNewsletters(
-        $legacyQueue,
+        $task,
         $preparedSubscribersIds,
         $preparedNewsletters,
         $preparedSubscribers,
@@ -440,7 +435,7 @@ class SendingQueue {
   }
 
   public function sendNewsletter(
-    SendingTask $sendingTask, $preparedSubscriberId, $preparedNewsletter,
+    ScheduledTaskEntity $task, $preparedSubscriberId, $preparedNewsletter,
     $preparedSubscriber, $statistics, $timer, $extraParams = []
   ) {
     // send newsletter
@@ -449,8 +444,8 @@ class SendingQueue {
       $preparedSubscriber,
       $extraParams
     );
-    return $this->processSendResult(
-      $sendingTask,
+    $this->processSendResult(
+      $task,
       $sendResult,
       [$preparedSubscriber],
       [$preparedSubscriberId],
@@ -460,7 +455,7 @@ class SendingQueue {
   }
 
   public function sendNewsletters(
-    SendingTask $sendingTask, $preparedSubscribersIds, $preparedNewsletters,
+    ScheduledTaskEntity $task, $preparedSubscribersIds, $preparedNewsletters,
     $preparedSubscribers, $statistics, $timer, $extraParams = []
   ) {
     // send newsletters
@@ -469,8 +464,8 @@ class SendingQueue {
       $preparedSubscribers,
       $extraParams
     );
-    return $this->processSendResult(
-      $sendingTask,
+    $this->processSendResult(
+      $task,
       $sendResult,
       $preparedSubscribers,
       $preparedSubscribersIds,
@@ -502,7 +497,7 @@ class SendingQueue {
   }
 
   private function processSendResult(
-    SendingTask $sendingTask,
+    ScheduledTaskEntity $task,
     $sendResult,
     array $preparedSubscribers,
     array $preparedSubscribersIds,
@@ -512,25 +507,38 @@ class SendingQueue {
     // log error message and schedule retry/pause sending
     if ($sendResult['response'] === false) {
       $error = $sendResult['error'];
-      $this->errorHandler->processError($error, $sendingTask, $preparedSubscribersIds, $preparedSubscribers);
-    } elseif (!$sendingTask->updateProcessedSubscribers($preparedSubscribersIds)) { // update processed/to process list
-      MailerLog::processError(
-        'processed_list_update',
-        sprintf('QUEUE-%d-PROCESSED-LIST-UPDATE', $sendingTask->id),
-        null,
-        true
-      );
+      $legacyTask = ScheduledTask::findOne($task->getId());
+      $legacyQueue = $legacyTask ? SendingTask::createFromScheduledTask($legacyTask) : null;
+      if ($legacyQueue) {
+        $this->errorHandler->processError($error, $legacyQueue, $preparedSubscribersIds, $preparedSubscribers);
+      }
+    } else {
+      $queue = $task->getSendingQueue();
+      if (!$queue) {
+        return;
+      }
+      try {
+        $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($task, $preparedSubscribersIds);
+        $this->sendingQueuesRepository->updateCounts($queue);
+      } catch (Throwable $e) {
+        MailerLog::processError(
+          'processed_list_update',
+          sprintf('QUEUE-%d-PROCESSED-LIST-UPDATE', $queue->getId()),
+          null,
+          true
+        );
+      }
     }
+
     // log statistics
     StatisticsNewslettersModel::createMultiple($statistics);
     // update the sent count
     $this->mailerTask->updateSentCount();
     // enforce execution limits if queue is still being processed
-    if ($sendingTask->status !== ScheduledTaskEntity::STATUS_COMPLETED) {
+    if ($task->getStatus() !== ScheduledTaskEntity::STATUS_COMPLETED) {
       $this->enforceSendingAndExecutionLimits($timer);
     }
     $this->throttlingHandler->processSuccess();
-    return $sendingTask;
   }
 
   public function enforceSendingAndExecutionLimits($timer) {
