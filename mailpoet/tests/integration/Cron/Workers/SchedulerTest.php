@@ -167,19 +167,16 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItCanDeleteQueueWhenDeliveryIsSetToImmediately() {
     $newsletter = $this->_createNewsletter();
-    $newsletterEntity = $this->entityManager->getReference(NewsletterEntity::class, $newsletter->getId());
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
-    $this->newsletterOptionFactory->create($newsletterEntity, 'intervalType', 'immediately');
-
-    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->newsletterOptionFactory->create($newsletter, 'intervalType', 'immediately');
     $task = $this->createTaskWithQueue($newsletter);
-    $scheduler = $this->getScheduler();
 
-    // queue and associated newsletter should be deleted when interval type is set to "immediately"
-    verify($this->sendingQueuesRepository->findAll())->notEmpty();
+    // task and queue should be deleted when interval type is set to "immediately"
+    $scheduler = $this->getScheduler();
+    verify($this->sendingQueuesRepository->findAll())->arrayCount(1);
+    verify($this->scheduledTasksRepository->findAll())->arrayCount(1);
     $scheduler->deleteQueueOrUpdateNextRunDate($task, $newsletter);
     verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
+    verify($this->scheduledTasksRepository->findAll())->arrayCount(0);
   }
 
   public function testItCanRescheduleQueueDeliveryTime() {
