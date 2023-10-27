@@ -72,23 +72,23 @@ class RendererTest extends \MailPoetTest {
     }
     $this->assertInstanceOf(\DOMElement::class, $body);
     $style = $body->getAttribute('style');
-    verify($style)->stringContainsString('font-family:Arial,\'Helvetica Neue\',Helvetica,sans-serif;');
+    verify($style)->stringContainsString('margin:0;padding:0;');
   }
 
   public function testItAppliesLayoutStyles() {
     $settingsControllerMock = $this->createMock(SettingsController::class);
     $settingsControllerMock->method('getEmailLayoutStyles')->willReturn([
-      'width' => 123,
+      'width' => '123px',
       'background' => '#123456',
       'padding' => [
-        'left' => 1,
-        'right' => 2,
-        'top' => 3,
-        'bottom' => 4,
+        'left' => '1px',
+        'right' => '2px',
+        'top' => '3px',
+        'bottom' => '4px',
       ],
     ]);
     $renderer = $this->getServiceWithOverrides(Renderer::class, [
-      'stylesController' => $settingsControllerMock,
+      'settingsController' => $settingsControllerMock,
     ]);
     $rendered = $renderer->render($this->emailPost, 'Subject', '', 'en');
     $doc = new \DOMDocument();
