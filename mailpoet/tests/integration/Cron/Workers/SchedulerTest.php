@@ -201,8 +201,8 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItFailsWPSubscriberVerificationWhenSubscriberIsNotAWPUser() {
-    $wPUser = $this->_createOrUpdateWPUser('editor');
-    $subscriber = $this->_createSubscriber();
+    $this->_createOrUpdateWPUser('author');
+    $subscriber = $this->_createSubscriber(); // do not pass WP user ID
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_WELCOME);
 
     $this->newsletterOptionFactory->create($newsletter, 'role', 'author');
