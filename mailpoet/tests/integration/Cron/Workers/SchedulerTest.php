@@ -181,34 +181,23 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItCanRescheduleQueueDeliveryTime() {
     $newsletter = $this->_createNewsletter();
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    $newsletterOption = $this->newsletterOptionFactory->create($newsletter, 'intervalType', 'daily');
-
-    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    $scheduler = $this->getScheduler();
-
-    // queue's next run date should change when interval type is set to anything
-    // other than "immediately"
     $task = $this->createTaskWithQueue($newsletter);
     $task->setScheduledAt(null);
-    $newsletterOption->setValue('daily');
-    $this->entityManager->persist($newsletterOption);
+    $this->newsletterOptionFactory->create($newsletter, 'intervalType', 'daily');
+    $this->newsletterOptionFactory->create($newsletter, NewsletterOptionFieldEntity::NAME_SCHEDULE, '0 5 * * *');
     $this->entityManager->flush();
 
-    $newsletter = $this->newslettersRepository->findOneById($newsletter->getId());
-    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
     verify($task->getScheduledAt())->null();
 
-    $this->newsletterOptionFactory->create($newsletter, NewsletterOptionFieldEntity::NAME_SCHEDULE, '0 5 * * *');
-
+    // queue's next run date should change when interval type is set to anything other than "immediately"
+    $scheduler = $this->getScheduler();
     $scheduler->deleteQueueOrUpdateNextRunDate($task, $newsletter);
 
-    $queueEntity = $task->getSendingQueue();
-    $this->assertInstanceOf(SendingQueueEntity::class, $queueEntity);
-    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($queueEntity);
-    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
-    verify($scheduledTask->getScheduledAt())->notNull();
+    $queue = $task->getSendingQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    $task = $this->scheduledTasksRepository->findOneBySendingQueue($queue);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    verify($task->getScheduledAt())->notNull();
   }
 
   public function testItFailsWPSubscriberVerificationWhenSubscriberIsNotAWPUser() {
