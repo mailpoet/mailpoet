@@ -379,7 +379,8 @@ class SchedulerTest extends \MailPoetTest {
     // return false
     $result = $scheduler->verifyMailpoetSubscriber((int)$subscriber->getId(), $newsletter, $task);
     verify($result)->false();
-    // delete queue when subscriber is not in segment specified for the newsletter
+    // delete task and queue when subscriber is not in segment specified for the newsletter
+    verify($this->scheduledTasksRepository->findAll())->arrayCount(0);
     verify($this->sendingQueuesRepository->findAll())->arrayCount(0);
   }
 
