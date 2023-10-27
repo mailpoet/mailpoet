@@ -800,7 +800,10 @@ class SchedulerTest extends \MailPoetTest {
   public function testItDeletesScheduledAutomaticEmailWhenUserDoesNotExist() {
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_AUTOMATIC, NewsletterEntity::STATUS_SCHEDULED);
     $subscriber = $this->_createSubscriber();
-    $this->createTaskWithQueue($newsletter);
+    $task = $this->createTaskWithQueue($newsletter);
+    $this->createTaskSubscriber($task, $subscriber);
+
+    verify($this->scheduledTasksRepository->findOneByNewsletter($newsletter))->notNull();
 
     // remove subscriber, but not scheduled task subscriber
     $this->entityManager->getConnection()->delete(
@@ -812,8 +815,7 @@ class SchedulerTest extends \MailPoetTest {
     // task should be deleted
     $scheduler = $this->getScheduler();
     $scheduler->process();
-    $task = $this->scheduledTasksRepository->findOneByNewsletter($newsletter);
-    verify($task)->null();
+    verify($this->scheduledTasksRepository->findOneByNewsletter($newsletter))->null();
   }
 
   public function testItProcessesScheduledAutomaticEmailWhenSendingToSegment() {
