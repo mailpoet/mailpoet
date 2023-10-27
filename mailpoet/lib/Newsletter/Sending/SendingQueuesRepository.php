@@ -220,5 +220,6 @@ class SendingQueuesRepository extends Repository {
       $queue->setCountToProcess($unprocessed);
       $queue->setCountTotal($processed + $unprocessed);
     }
+    $this->entityManager->flush();
   }
 }
