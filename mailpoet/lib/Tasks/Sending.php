@@ -265,13 +265,6 @@ class Sending {
     $this->updateCount();
   }
 
-  public function removeSubscribers(array $subscriberIds) {
-    $this->scheduledTaskSubscribersRepository->deleteByScheduledTaskAndSubscriberIds($this->scheduledTaskEntity, $subscriberIds);
-
-    $this->updateTaskStatus();
-    $this->updateCount();
-  }
-
   public function updateProcessedSubscribers(array $processedSubscribers): bool {
     $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($this->scheduledTaskEntity, $processedSubscribers);
     $this->scheduledTasksRepository->refresh($this->scheduledTaskEntity); // needed while Sending still uses Paris
