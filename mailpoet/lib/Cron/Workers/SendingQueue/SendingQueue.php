@@ -16,7 +16,6 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -26,7 +25,6 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -164,12 +162,6 @@ class SendingQueue {
   }
 
   private function processSending(ScheduledTaskEntity $task, int $timer): void {
-    $legacyTask = ScheduledTask::findOne($task->getId());
-    $legacyQueue = $legacyTask ? SendingTask::createFromScheduledTask($legacyTask) : null;
-    if (!$legacyQueue) {
-      return;
-    }
-
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
       'sending queue processing',
       ['task_id' => $task->getId()]
@@ -177,8 +169,9 @@ class SendingQueue {
 
     $this->deleteTaskIfNewsletterDoesNotExist($task);
 
+    $queue = $task->getSendingQueue();
     $newsletterEntity = $this->newsletterTask->getNewsletterFromQueue($task);
-    if (!$newsletterEntity) {
+    if (!$queue || !$newsletterEntity) {
       return;
     }
 
@@ -220,8 +213,8 @@ class SendingQueue {
         'pause task in sending queue due deleted or trashed segment',
         ['task_id' => $task->getId()]
       );
-      $legacyQueue->status = ScheduledTaskEntity::STATUS_PAUSED;
-      $legacyQueue->save();
+      $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      $this->scheduledTasksRepository->flush();
       $this->wp->setTransient(self::EMAIL_WITH_INVALID_SEGMENT_OPTION, $newsletter->subject);
       return;
     }
@@ -251,8 +244,8 @@ class SendingQueue {
             'paused task in sending queue due to problem finding subscribers: ' . $exception->getMessage(),
             ['task_id' => $task->getId()]
           );
-          $legacyQueue->status = ScheduledTaskEntity::STATUS_PAUSED;
-          $legacyQueue->save();
+          $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+          $this->scheduledTasksRepository->flush();
           return;
         }
         $foundSubscribers = empty($foundSubscribersIds) ? [] : SubscriberModel::whereIn('id', $foundSubscribersIds)
@@ -276,8 +269,11 @@ class SendingQueue {
           $subscribersToProcessIds,
           $foundSubscribersIds
         );
-        $legacyQueue->removeSubscribers($subscribersToRemove);
-        if (!$legacyQueue->countToProcess) {
+
+        $this->scheduledTaskSubscribersRepository->deleteByScheduledTaskAndSubscriberIds($task, $subscribersToRemove);
+        $this->sendingQueuesRepository->updateCounts($queue);
+
+        if (!$queue->getCountToProcess()) {
           $this->newsletterTask->markNewsletterAsSent($newsletterEntity, $task);
           continue;
         }
@@ -313,7 +309,7 @@ class SendingQueue {
           'after queue chunk processing',
           ['newsletter_id' => $newsletter->id, 'task_id' => $task->getId()]
         );
-        if ($legacyQueue->status === ScheduledTaskEntity::STATUS_COMPLETED) {
+        if ($task->getStatus() === ScheduledTaskEntity::STATUS_COMPLETED) {
           $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
             'completed newsletter sending',
             ['newsletter_id' => $newsletter->id, 'task_id' => $task->getId()]
@@ -323,7 +319,7 @@ class SendingQueue {
         }
         $this->enforceSendingAndExecutionLimits($timer);
       } else {
-        $this->sendingQueuesRepository->pause($legacyQueue->getSendingQueueEntity());
+        $this->sendingQueuesRepository->pause($queue);
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
           'Can\'t send corrupt newsletter',
           ['newsletter_id' => $newsletter->id, 'task_id' => $task->getId()]
