@@ -81,6 +81,10 @@ class OrderCreatedTrigger implements Trigger {
   }
 
   public function isTriggeredBy(StepRunArgs $args): bool {
+    /**
+     * If we come to this point we always want to trigger the automation.
+     * The evaluation whether this is a "new" order is done in the handleCreate() method.
+     */
     return true;
   }
 
