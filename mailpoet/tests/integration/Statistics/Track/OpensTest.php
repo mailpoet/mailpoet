@@ -64,7 +64,6 @@ class OpensTest extends \MailPoetTest {
     $queue = new SendingQueueEntity();
     $queue->setNewsletter($newsletter);
     $queue->setTask($task);
-    $queue->setSubscribers((string)$subscriber->getId());
     $newsletter->getQueues()->add($queue);
     $this->entityManager->persist($queue);
     $this->entityManager->flush();

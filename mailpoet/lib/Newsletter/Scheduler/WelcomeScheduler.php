@@ -135,7 +135,6 @@ class WelcomeScheduler {
     $queue = new SendingQueueEntity();
     $queue->setTask($task);
     $queue->setNewsletter($newsletter);
-    $queue->setSubscribers((string)$subscriberId);
     $task->setSendingQueue($queue);
     $this->entityManager->persist($queue);
 

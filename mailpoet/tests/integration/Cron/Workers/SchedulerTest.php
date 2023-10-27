@@ -892,9 +892,6 @@ class SchedulerTest extends \MailPoetTest {
     $scheduledTaskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
     $this->entityManager->persist($scheduledTaskSubscriber);
     $task->getSubscribers()->add($scheduledTaskSubscriber);
-    if ($task->getSendingQueue()) {
-      $task->getSendingQueue()->setSubscribers((string)$subscriber->getId());
-    }
     $this->entityManager->flush();
     return $scheduledTaskSubscriber;
   }

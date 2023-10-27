@@ -52,7 +52,6 @@ class TrackTest extends \MailPoetTest {
     $queue = new SendingQueueEntity();
     $queue->setTask($task);
     $queue->setNewsletter($newsletter);
-    $queue->setSubscribers((string)$subscriber->getId());
     $this->queue = $queue;
     $this->entityManager->persist($queue);
     // create link
