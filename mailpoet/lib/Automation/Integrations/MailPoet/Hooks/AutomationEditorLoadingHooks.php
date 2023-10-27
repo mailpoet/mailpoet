@@ -6,12 +6,12 @@ use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\WP\Functions as WP;
 
 class AutomationEditorLoadingHooks {
 
-  /** @var WP */
+  /** @var WordPress */
   private $wp;
 
   /** @var AutomationStorage  */
@@ -21,7 +21,7 @@ class AutomationEditorLoadingHooks {
   private $newslettersRepository;
 
   public function __construct(
-    WP $wp,
+    WordPress $wp,
     AutomationStorage $automationStorage,
     NewslettersRepository $newslettersRepository
   ) {

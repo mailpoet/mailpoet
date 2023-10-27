@@ -5,19 +5,19 @@ namespace MailPoet\Automation\Integrations\MailPoet\Hooks;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
+use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
-use MailPoet\WP\Functions;
 
 class CreateAutomationRunHook {
 
 
-  /** @var Functions */
+  /** @var WordPress */
   private $wp;
 
   private $automationRunStorage;
 
   public function __construct(
-    Functions $wp,
+    WordPress $wp,
     AutomationRunStorage $automationRunStorage
   ) {
     $this->wp = $wp;

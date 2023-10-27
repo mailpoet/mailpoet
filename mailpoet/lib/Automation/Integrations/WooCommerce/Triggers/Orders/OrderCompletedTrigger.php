@@ -17,7 +17,6 @@ class OrderCompletedTrigger extends OrderStatusChangedTrigger {
   }
 
   public function isTriggeredBy(StepRunArgs $args): bool {
-    /** @var OrderStatusChangePayload $orderPayload */
     $orderPayload = $args->getSinglePayloadByClass(OrderStatusChangePayload::class);
     return $orderPayload->getTo() === 'completed';
   }

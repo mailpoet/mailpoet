@@ -6,21 +6,20 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Exceptions\InvalidStateException;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Cron\Workers\Automations\AbandonedCartWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
-use MailPoet\WP\Functions;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class AbandonedCartHandler {
 
   const TASK_ABANDONED_CART = 'automation_abandoned_cart';
 
-  /** @var Functions */
+  /** @var WordPress */
   private $wp;
 
   /** @var ScheduledTasksRepository  */
@@ -33,7 +32,7 @@ class AbandonedCartHandler {
   private $automationStorage;
 
   public function __construct(
-    Functions $wp,
+    WordPress $wp,
     ScheduledTasksRepository $tasksRepository,
     ScheduledTaskSubscribersRepository $taskSubscribersRepository,
     AutomationStorage $automationStorage
@@ -101,7 +100,7 @@ class AbandonedCartHandler {
     }
 
     $wait = $trigger->getArgs()['wait'] * 60;
-    $scheduledAt = Carbon::createFromTimestamp((int)WPFunctions::get()->currentTime('timestamp') + $wait);
+    $scheduledAt = Carbon::createFromTimestamp((int)$this->wp->currentTime('timestamp') + $wait);
     $task = new ScheduledTaskEntity();
     $task->setType(AbandonedCartWorker::TASK_TYPE);
 

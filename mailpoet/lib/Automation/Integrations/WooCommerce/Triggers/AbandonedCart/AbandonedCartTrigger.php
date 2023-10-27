@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Trigger;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
+use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\AbandonedCartPayload;
@@ -17,7 +18,6 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
-use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
 
 class AbandonedCartTrigger implements Trigger {
@@ -27,7 +27,7 @@ class AbandonedCartTrigger implements Trigger {
   /** @var AbandonedCartHandler */
   private $abandonedCartHandler;
 
-  /** @var Functions */
+  /** @var WordPress */
   private $wp;
 
   /** @var SegmentsRepository */
@@ -40,7 +40,7 @@ class AbandonedCartTrigger implements Trigger {
     AbandonedCartHandler $abandonedCartHandler,
     AutomationRunStorage $automationRunStorage,
     SegmentsRepository $segmentsRepository,
-    Functions $wp
+    WordPress $wp
   ) {
     $this->abandonedCartHandler = $abandonedCartHandler;
     $this->automationRunStorage = $automationRunStorage;

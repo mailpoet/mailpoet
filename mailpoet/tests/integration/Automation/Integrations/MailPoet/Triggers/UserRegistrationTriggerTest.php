@@ -9,6 +9,7 @@ use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Data\SubjectEntry;
 use MailPoet\Automation\Engine\Hooks;
+use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\MailPoet\Triggers\UserRegistrationTrigger;
@@ -19,7 +20,6 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\WP;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\WP\Functions;
 
 class UserRegistrationTriggerTest extends \MailPoetTest {
   const USER_NAME = 'user-name--x';
@@ -60,7 +60,7 @@ class UserRegistrationTriggerTest extends \MailPoetTest {
   }
 
   public function testCanHandleRegistration() {
-    $wpMock = $this->createMock(Functions::class);
+    $wpMock = $this->createMock(WordPress::class);
     $testee = new UserRegistrationTrigger(
       $wpMock,
       $this->diContainer->get(SubscribersRepository::class)
