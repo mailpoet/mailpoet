@@ -565,13 +565,9 @@ class SchedulerTest extends \MailPoetTest {
     $task = $this->createTaskWithQueue($newsletter);
     $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
     $this->entityManager->flush();
-    $scheduler = Stub::make(Scheduler::class, [
+    $scheduler = $this->getSchedulerMock([
       'processWelcomeNewsletter' => Expected::exactly(1),
-      'cronHelper' => $this->cronHelper,
-      'scheduledTasksRepository' => $this->scheduledTasksRepository,
-      'sendingQueuesRepository' => $this->sendingQueuesRepository,
-      'newslettersRepository' => $this->newslettersRepository,
-    ], $this);
+    ]);
     $scheduler->process();
   }
 
@@ -580,13 +576,9 @@ class SchedulerTest extends \MailPoetTest {
     $task = $this->createTaskWithQueue($newsletter);
     $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
     $this->entityManager->flush();
-    $scheduler = Stub::make(Scheduler::class, [
+    $scheduler = $this->getSchedulerMock([
       'processPostNotificationNewsletter' => Expected::exactly(1),
-      'cronHelper' => $this->cronHelper,
-      'scheduledTasksRepository' => $this->scheduledTasksRepository,
-      'sendingQueuesRepository' => $this->sendingQueuesRepository,
-      'newslettersRepository' => $this->newslettersRepository,
-    ], $this);
+    ]);
     $scheduler->process();
   }
 
@@ -595,13 +587,9 @@ class SchedulerTest extends \MailPoetTest {
     $task = $this->createTaskWithQueue($newsletter);
     $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
     $this->entityManager->flush();
-    $scheduler = Stub::make(Scheduler::class, [
+    $scheduler = $this->getSchedulerMock([
       'processScheduledStandardNewsletter' => Expected::exactly(1),
-      'cronHelper' => $this->cronHelper,
-      'scheduledTasksRepository' => $this->scheduledTasksRepository,
-      'sendingQueuesRepository' => $this->sendingQueuesRepository,
-      'newslettersRepository' => $this->newslettersRepository,
-    ], $this);
+    ]);
     $scheduler->process();
   }
 
@@ -610,15 +598,12 @@ class SchedulerTest extends \MailPoetTest {
     $task = $this->createTaskWithQueue($newsletter);
     $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
     $this->entityManager->flush();
-    $scheduler = Stub::make(Scheduler::class, [
+    $scheduler = $this->getSchedulerMock([
       'processPostNotificationNewsletter' => Expected::exactly(1),
       'cronHelper' => $this->make(CronHelper::class, [
         'enforceExecutionLimit' => Expected::exactly(2), // call at start + during processing
       ]),
-      'scheduledTasksRepository' => $this->scheduledTasksRepository,
-      'sendingQueuesRepository' => $this->sendingQueuesRepository,
-      'newslettersRepository' => $this->newslettersRepository,
-    ], $this);
+    ]);
     $scheduler->process();
   }
 
@@ -627,14 +612,9 @@ class SchedulerTest extends \MailPoetTest {
     $task = $this->createTaskWithQueue($newsletter);
     $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
     $this->entityManager->flush();
-
-    $scheduler = Stub::make(Scheduler::class, [
+    $scheduler = $this->getSchedulerMock([
       'processScheduledStandardNewsletter' => Expected::never(),
-      'cronHelper' => $this->cronHelper,
-      'scheduledTasksRepository' => $this->scheduledTasksRepository,
-      'sendingQueuesRepository' => $this->sendingQueuesRepository,
-      'newslettersRepository' => $this->newslettersRepository,
-    ], $this);
+    ]);
     // scheduled job is not processed
     $scheduler->process();
   }
@@ -644,14 +624,9 @@ class SchedulerTest extends \MailPoetTest {
     $task = $this->createTaskWithQueue($newsletter);
     $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
     $this->entityManager->flush();
-
-    $scheduler = Stub::make(Scheduler::class, [
+    $scheduler = $this->getSchedulerMock([
       'processScheduledStandardNewsletter' => Expected::once(),
-      'cronHelper' => $this->cronHelper,
-      'scheduledTasksRepository' => $this->scheduledTasksRepository,
-      'sendingQueuesRepository' => $this->sendingQueuesRepository,
-      'newslettersRepository' => $this->newslettersRepository,
-    ], $this);
+    ]);
     // scheduled job is processed
     $scheduler->process();
   }
@@ -712,13 +687,9 @@ class SchedulerTest extends \MailPoetTest {
     $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
     $this->entityManager->flush();
 
-    $scheduler = Stub::make(Scheduler::class, [
+    $scheduler = $this->getSchedulerMock([
       'processScheduledStandardNewsletter' => Expected::once(),
-      'cronHelper' => $this->cronHelper,
-      'scheduledTasksRepository' => $this->scheduledTasksRepository,
-      'sendingQueuesRepository' => $this->sendingQueuesRepository,
-      'newslettersRepository' => $this->newslettersRepository,
-    ], $this);
+    ]);
     // scheduled job is processed
     $scheduler->process();
   }
@@ -945,6 +916,15 @@ class SchedulerTest extends \MailPoetTest {
     }
     $this->entityManager->flush();
     return $scheduledTaskSubscriber;
+  }
+
+  private function getSchedulerMock(array $mocks): Scheduler {
+    return $this->make(Scheduler::class, $mocks + [
+      'cronHelper' => $this->cronHelper,
+      'scheduledTasksRepository' => $this->scheduledTasksRepository,
+      'sendingQueuesRepository' => $this->sendingQueuesRepository,
+      'newslettersRepository' => $this->newslettersRepository,
+    ]);
   }
 
   private function getScheduler(?SubscribersFinder $subscribersFinder = null): Scheduler {
