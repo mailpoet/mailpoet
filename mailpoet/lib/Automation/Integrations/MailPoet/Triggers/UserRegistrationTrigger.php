@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Hooks;
 use MailPoet\Automation\Engine\Integration\Trigger;
+use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
@@ -17,18 +18,17 @@ use MailPoet\InvalidStateException;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
-use MailPoet\WP\Functions as WPFunctions;
 
 class UserRegistrationTrigger implements Trigger {
   const KEY = 'mailpoet:wp-user-registered';
 
-  /** @var WPFunctions */
+  /** @var WordPress */
   private $wp;
 
   private $subscribersRepository;
 
   public function __construct(
-    WPFunctions $wp,
+    WordPress $wp,
     SubscribersRepository $subscribersRepository
   ) {
     $this->wp = $wp;
@@ -89,7 +89,7 @@ class UserRegistrationTrigger implements Trigger {
       return false;
     }
 
-    $user = $this->wp->getUserBy('id', $subscriberPayload->getWpUserId());
+    $user = $this->wp->getUserBy('id', (int)$subscriberPayload->getWpUserId());
     if (!$user) {
       return false;
     }
