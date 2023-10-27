@@ -7,7 +7,7 @@ import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { registerTranslations, withBoundary } from 'common';
 import { StepMethodSelection } from './import/step-method-selection.jsx';
-import { StepInputValidation } from './import/step-input-validation.jsx';
+import { StepInputValidation } from './import/step-input-validation';
 import { StepDataManipulation } from './import/step-data-manipulation.jsx';
 import { StepResults } from './import/step-results.jsx';
 import { StepCleanList } from './import/step-clean-list';
