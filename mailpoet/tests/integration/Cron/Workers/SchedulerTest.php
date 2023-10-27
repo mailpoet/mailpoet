@@ -550,7 +550,6 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItDeletesQueueDuringProcessingWhenNewsletterIsSoftDeleted() {
     $newsletter = $this->_createNewsletter();
-    $newsletter->setDeletedAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
     $this->createTaskWithQueue($newsletter);
     $this->newslettersRepository->flush();
 
@@ -562,9 +561,7 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItProcessesWelcomeNewsletters() {
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_WELCOME);
-    $task = $this->createTaskWithQueue($newsletter);
-    $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
-    $this->entityManager->flush();
+    $this->createTaskWithQueue($newsletter);
     $scheduler = $this->getSchedulerMock([
       'processWelcomeNewsletter' => Expected::exactly(1),
     ]);
@@ -573,9 +570,7 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItProcessesNotificationNewsletters() {
     $newsletter = $this->_createNewsletter();
-    $task = $this->createTaskWithQueue($newsletter);
-    $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
-    $this->entityManager->flush();
+    $this->createTaskWithQueue($newsletter);
     $scheduler = $this->getSchedulerMock([
       'processPostNotificationNewsletter' => Expected::exactly(1),
     ]);
@@ -584,9 +579,7 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItProcessesStandardScheduledNewsletters() {
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_STANDARD);
-    $task = $this->createTaskWithQueue($newsletter);
-    $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
-    $this->entityManager->flush();
+    $this->createTaskWithQueue($newsletter);
     $scheduler = $this->getSchedulerMock([
       'processScheduledStandardNewsletter' => Expected::exactly(1),
     ]);
@@ -595,9 +588,7 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItEnforcesExecutionLimitDuringProcessing() {
     $newsletter = $this->_createNewsletter();
-    $task = $this->createTaskWithQueue($newsletter);
-    $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
-    $this->entityManager->flush();
+    $this->createTaskWithQueue($newsletter);
     $scheduler = $this->getSchedulerMock([
       'processPostNotificationNewsletter' => Expected::exactly(1),
       'cronHelper' => $this->make(CronHelper::class, [
@@ -609,9 +600,7 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItDoesNotProcessScheduledJobsWhenNewsletterIsNotActive() {
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_DRAFT);
-    $task = $this->createTaskWithQueue($newsletter);
-    $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
-    $this->entityManager->flush();
+    $this->createTaskWithQueue($newsletter);
     $scheduler = $this->getSchedulerMock([
       'processScheduledStandardNewsletter' => Expected::never(),
     ]);
@@ -621,9 +610,7 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItProcessesScheduledJobsWhenNewsletterIsActive() {
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_ACTIVE);
-    $task = $this->createTaskWithQueue($newsletter);
-    $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
-    $this->entityManager->flush();
+    $this->createTaskWithQueue($newsletter);
     $scheduler = $this->getSchedulerMock([
       'processScheduledStandardNewsletter' => Expected::once(),
     ]);
@@ -632,7 +619,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItDoesNotReSchedulesBounceTaskWhenSoon() {
-    $task = $this->scheduledTaskFactory->create(
+    $this->scheduledTaskFactory->create(
       'bounce',
       ScheduledTaskEntity::STATUS_SCHEDULED,
       Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMinutes(5)
@@ -655,9 +642,7 @@ class SchedulerTest extends \MailPoetTest {
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL, NewsletterEntity::STATUS_SCHEDULED);
     $subscriber = $this->_createSubscriber(0, $subscriberStatus);
     $task = $this->createTaskWithQueue($newsletter);
-    $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
     $this->createTaskSubscriber($task, $subscriber);
-    $this->entityManager->flush();
 
     $scheduler = $this->diContainer->get(Scheduler::class);
     $scheduler->process();
@@ -683,9 +668,7 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItProcessesScheduledJobsWhenNewsletterIsScheduled() {
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SCHEDULED);
-    $task = $this->createTaskWithQueue($newsletter);
-    $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
-    $this->entityManager->flush();
+    $this->createTaskWithQueue($newsletter);
 
     $scheduler = $this->getSchedulerMock([
       'processScheduledStandardNewsletter' => Expected::once(),
@@ -742,9 +725,7 @@ class SchedulerTest extends \MailPoetTest {
       ]
     );
 
-    $task = $this->createTaskWithQueue($newsletter);
-    $task->setScheduledAt(Carbon::now()->subDay());
-    $this->entityManager->flush();
+    $this->createTaskWithQueue($newsletter);
 
     // task should have its status set to null (i.e., sending)
     $scheduler = $this->getScheduler($this->subscribersFinder);
