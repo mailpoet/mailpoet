@@ -9,6 +9,7 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
@@ -21,7 +22,6 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
-use MailPoet\Tasks\Sending;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\Util\pQuery\pQuery;
@@ -240,31 +240,28 @@ class Newsletter {
    * Shortcodes and links will be replaced in the subject, html and text body
    * to speed the processing, join content into a continuous string.
    */
-  public function prepareNewsletterForSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, Sending $sendingTask): array {
-    $sendingQueue = $sendingTask->queue();
-    $renderedNewsletter = $sendingQueue->getNewsletterRenderedBody();
+  public function prepareNewsletterForSending(NewsletterEntity $newsletter, SubscriberEntity $subscriber, SendingQueueEntity $queue): array {
+    $renderedNewsletter = $queue->getNewsletterRenderedBody();
     $renderedNewsletter = $this->emoji->decodeEmojisInBody($renderedNewsletter);
     $preparedNewsletter = Helpers::joinObject(
       [
-        $sendingTask->newsletterRenderedSubject,
+        $queue->getNewsletterRenderedSubject(),
         $renderedNewsletter['html'],
         $renderedNewsletter['text'],
       ]
     );
-
-    $sendingQueueEntity = $sendingTask->getSendingQueueEntity();
 
     $preparedNewsletter = ShortcodesTask::process(
       $preparedNewsletter,
       null,
       $newsletter,
       $subscriber,
-      $sendingQueueEntity
+      $queue
     );
     if ($this->trackingEnabled) {
       $preparedNewsletter = $this->newsletterLinks->replaceSubscriberData(
         $subscriber->getId(),
-        $sendingTask->id,
+        $queue->getId(),
         $preparedNewsletter
       );
     }
