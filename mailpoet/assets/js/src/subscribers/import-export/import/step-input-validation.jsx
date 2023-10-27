@@ -46,7 +46,7 @@ function StepInputValidationComponent({ stepMethodSelectionData, history }) {
 
       {importSource === 'existing-list' && lastSent === 'notRecently' && (
         <ErrorBoundary>
-          <CleanList />
+          <CleanList iHaveCleanedList={() => lastSentSubmit('recently')} />
         </ErrorBoundary>
       )}
     </>

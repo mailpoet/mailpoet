@@ -3,9 +3,10 @@ import { MailPoet } from 'mailpoet';
 
 type Props = {
   onProceed?: () => void;
+  iHaveCleanedList?: () => void;
 };
 
-function CleanList({ onProceed }: Props): JSX.Element {
+function CleanList({ onProceed, iHaveCleanedList }: Props): JSX.Element {
   return (
     <div className="mailpoet-clean-list-step-container">
       <p>{MailPoet.I18n.t('cleanListText1')}</p>
@@ -22,6 +23,11 @@ function CleanList({ onProceed }: Props): JSX.Element {
         >
           {MailPoet.I18n.t('tryListCleaning')}
         </Button>
+        {iHaveCleanedList && (
+          <Button onClick={iHaveCleanedList} variant="secondary">
+            {MailPoet.I18n.t('cleanedList')}
+          </Button>
+        )}
       </p>
     </div>
   );
