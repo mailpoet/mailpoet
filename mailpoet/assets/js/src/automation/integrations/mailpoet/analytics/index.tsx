@@ -18,6 +18,7 @@ import { initializeApi } from './api';
 import { initialize as initializeCoreIntegration } from '../../core';
 import { initialize as initializeMailPoetIntegration } from '../index';
 import { initialize as initializeWooCommerceIntegration } from '../../woocommerce';
+import { initialize as initializeWordPressIntegration } from '../../wordpress';
 import { PremiumModal } from '../../../../common/premium-modal';
 import { AutomationStatus } from '../../../listing/automation';
 import { MailPoet } from '../../../../mailpoet';
@@ -105,6 +106,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initializeCoreIntegration();
   initializeMailPoetIntegration();
   initializeWooCommerceIntegration();
+  initializeWordPressIntegration();
   registerApiErrorHandler();
   boot();
   ReactDOM.render(<App />, root);
