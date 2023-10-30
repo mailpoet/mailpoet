@@ -120,6 +120,7 @@ class Clicks {
       $this->subscribersRepository->maybeUpdateLastClickAt($subscriber);
     }
     $url = $this->processUrl($link->getUrl(), $newsletter, $subscriber, $queue, $wpUserPreview);
+    do_action('mailpoet_link_clicked', $link, $subscriber, $wpUserPreview);
     $this->redirectToUrl($url);
   }
 
