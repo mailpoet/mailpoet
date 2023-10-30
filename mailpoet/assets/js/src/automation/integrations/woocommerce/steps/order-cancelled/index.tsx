@@ -2,7 +2,11 @@ import { __, _x } from '@wordpress/i18n';
 import { StepType } from '../../../../editor/store';
 import { Icon } from './icon';
 
-const keywords = [__('woocommerce', 'mailpoet'), __('order', 'mailpoet')];
+const keywords = [
+  __('woocommerce', 'mailpoet'),
+  __('order', 'mailpoet'),
+  __('cancelled', 'mailpoet'),
+];
 export const step: StepType = {
   key: 'woocommerce:order-cancelled',
   group: 'triggers',
