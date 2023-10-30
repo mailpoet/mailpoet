@@ -6,6 +6,7 @@ const keywords = [
   __('woocommerce', 'mailpoet'),
   __('order', 'mailpoet'),
   __('new', 'mailpoet'),
+  __('created', 'mailpoet'),
 ];
 export const step: StepType = {
   key: 'woocommerce:order-created',
