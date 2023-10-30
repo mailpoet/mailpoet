@@ -8,6 +8,7 @@ use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Analytics;
 use MailPoet\Automation\Integrations\MailPoet\Hooks\AutomationEditorLoadingHooks;
 use MailPoet\Automation\Integrations\MailPoet\Hooks\CreateAutomationRunHook;
+use MailPoet\Automation\Integrations\MailPoet\Subjects\NewsletterLinkSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\Automation\Integrations\MailPoet\SubjectTransformers\OrderSubjectToSegmentSubjectTransformer;
@@ -26,6 +27,9 @@ class MailPoetIntegration implements Integration {
 
   /** @var SubscriberSubject */
   private $subscriberSubject;
+
+  /** @var NewsletterLinkSubject */
+  private $emailLinkSubject;
 
   /** @var SomeoneSubscribesTrigger */
   private $someoneSubscribesTrigger;
@@ -61,6 +65,7 @@ class MailPoetIntegration implements Integration {
     ContextFactory $contextFactory,
     SegmentSubject $segmentSubject,
     SubscriberSubject $subscriberSubject,
+    NewsletterLinkSubject $emailLinkSubject,
     OrderSubjectToSubscriberSubjectTransformer $orderToSubscriberTransformer,
     OrderSubjectToSegmentSubjectTransformer $orderToSegmentTransformer,
     SubscriberSubjectToWordPressUserSubjectTransformer $subscriberToWordPressUserTransformer,
@@ -75,6 +80,7 @@ class MailPoetIntegration implements Integration {
     $this->contextFactory = $contextFactory;
     $this->segmentSubject = $segmentSubject;
     $this->subscriberSubject = $subscriberSubject;
+    $this->emailLinkSubject = $emailLinkSubject;
     $this->orderToSubscriberTransformer = $orderToSubscriberTransformer;
     $this->orderToSegmentTransformer = $orderToSegmentTransformer;
     $this->subscriberToWordPressUserTransformer = $subscriberToWordPressUserTransformer;
@@ -94,6 +100,7 @@ class MailPoetIntegration implements Integration {
 
     $registry->addSubject($this->segmentSubject);
     $registry->addSubject($this->subscriberSubject);
+    $registry->addSubject($this->emailLinkSubject);
     $registry->addTrigger($this->someoneSubscribesTrigger);
     $registry->addTrigger($this->userRegistrationTrigger);
     $registry->addAction($this->sendEmailAction);
