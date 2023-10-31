@@ -36,9 +36,11 @@ class Columns implements BlockRenderer {
           <tbody>
             <tr>
               <td style="font-size:0px;padding-left:' . $paddingLeft . ';padding-right:' . $paddingRight . ';padding-bottom:' . $paddingBottom . ';padding-top:' . $paddingTop . ';text-align:left;">
-                <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><![endif]-->
-                {columns_content}
-                <!--[if mso | IE]></tr></table><![endif]-->
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                  <tr>
+                    {columns_content}
+                  </tr>
+                </table>
               </td>
             </tr>
           </tbody>
