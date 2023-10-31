@@ -195,7 +195,9 @@ class CommentFieldsTest extends \MailPoetTest {
     $this->assertSame([], $field->getArgs());
 
     $this->assertFalse($field->getValue(new CommentPayload(0, $this->wp)));
-    $commentId = wp_insert_comment([]);
+    $commentId = wp_insert_comment([
+      'comment_post_ID' => 1,
+    ]);
     $this->assertNotFalse($commentId);
     $comment = get_comment($commentId);
     $this->assertInstanceOf(\WP_Comment::class, $comment);
@@ -203,6 +205,7 @@ class CommentFieldsTest extends \MailPoetTest {
 
     $childId = wp_insert_comment([
       'comment_parent' => $commentId,
+      'comment_post_ID' => 1,
     ]);
     $this->assertNotFalse($childId);
     $this->assertTrue($field->getValue(new CommentPayload($commentId, $this->wp)));
