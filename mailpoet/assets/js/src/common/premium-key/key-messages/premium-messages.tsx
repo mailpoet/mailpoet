@@ -1,13 +1,12 @@
 import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
-import ReactStringReplace from 'react-string-replace';
+import { createInterpolateElement } from '@wordpress/element';
 import { useSelector } from 'settings/store/hooks';
 import { PremiumStatus } from 'settings/store/types';
 import { Button } from 'common/button/button';
 import { PremiumModal } from 'common/premium-modal';
 import { useState } from 'react';
 import { Data } from '../../premium-modal/upgrade-info';
-import { getLinkRegex } from '../../utils';
 
 type ActiveMessageProps = { canUseSuccessClass: boolean };
 
@@ -70,17 +69,19 @@ function NotValidMessage({ message }: NotValidMessageProps) {
   return (
     <div className="mailpoet_error">
       {message
-        ? ReactStringReplace(message, getLinkRegex(), (text) => (
-            <a
-              className="mailpoet-link"
-              key={text}
-              href="https://kb.mailpoet.com/article/249-how-to-change-the-domain-associated-with-a-key"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              {text}
-            </a>
-          ))
+        ? createInterpolateElement(message, {
+            a: (
+              <a
+                aria-label={message}
+                className="mailpoet-link"
+                href="https://kb.mailpoet.com/article/249-how-to-change-the-domain-associated-with-a-key"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                &nbsp;
+              </a>
+            ),
+          })
         : __('Your key is not valid for MailPoet Premium', 'mailpoet')}
     </div>
   );
