@@ -13,9 +13,9 @@ class NewsletterLinkFieldsTest extends \MailPoetTest {
   public function testUrlField(): void {
 
     $fields = $this->getFieldsMap();
-    $field = $fields['mailpoet:email_link:url'];
+    $field = $fields['mailpoet:email-link:url'];
     $this->assertInstanceOf(Field::class, $field);
-    $this->assertEquals('mailpoet:email_link:url', $field->getKey());
+    $this->assertEquals('mailpoet:email-link:url', $field->getKey());
     $this->assertEquals('Link URL', $field->getName());
     $this->assertEquals('string', $field->getType());
 
@@ -26,9 +26,9 @@ class NewsletterLinkFieldsTest extends \MailPoetTest {
 
   public function testCreatedField(): void {
     $fields = $this->getFieldsMap();
-    $field = $fields['mailpoet:email_link:created'];
+    $field = $fields['mailpoet:email-link:created'];
     $this->assertInstanceOf(Field::class, $field);
-    $this->assertEquals('mailpoet:email_link:created', $field->getKey());
+    $this->assertEquals('mailpoet:email-link:created', $field->getKey());
     $this->assertEquals('Created', $field->getName());
     $this->assertEquals('datetime', $field->getType());
 
@@ -39,9 +39,9 @@ class NewsletterLinkFieldsTest extends \MailPoetTest {
 
   public function testIdField(): void {
     $fields = $this->getFieldsMap();
-    $field = $fields['mailpoet:email_link:id'];
+    $field = $fields['mailpoet:email-link:id'];
     $this->assertInstanceOf(Field::class, $field);
-    $this->assertEquals('mailpoet:email_link:id', $field->getKey());
+    $this->assertEquals('mailpoet:email-link:id', $field->getKey());
     $this->assertEquals('Link ID', $field->getName());
     $this->assertEquals('integer', $field->getType());
 
