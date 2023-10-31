@@ -7,7 +7,7 @@ import { Icon } from './icon';
 const keywords = [
   __('email', 'mailpoet'),
   __('link', 'mailpoet'),
-  __('click', 'mailpoet'),
+  __('clicks', 'mailpoet'),
 ];
 
 export const step: StepType = {
