@@ -59,5 +59,9 @@ p {
   .email_column {
     max-width: 100% !important;
   }
+  .block {
+    display: block;
+    width: 100% !important;
+  }
 }
 /* stylelint-enable property-no-unknown */
