@@ -90,7 +90,6 @@ export function BlockEditor() {
       width: layoutStyles.width,
       display: 'flex',
       flexFlow: 'column',
-      padding: '10px', // Hardcoded value of layout padding. This will be editable in email layout styles in the future.
     };
   }
   inlineStyles.background = documentBackground;

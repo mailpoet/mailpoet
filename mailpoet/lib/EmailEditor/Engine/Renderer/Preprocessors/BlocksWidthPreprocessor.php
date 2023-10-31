@@ -21,7 +21,11 @@ class BlocksWidthPreprocessor implements Preprocessor {
       $width = $this->convertWithToPixels($block['attrs']['width'] ?? '100%', $layoutWidth);
 
       if ($block['blockName'] === 'core/columns') {
-        $block['innerBlocks'] = $this->addMissingColumnWidths($block['innerBlocks']);
+        // Calculate width of the columns based on the layout width and padding
+        $columnsWidth = $layoutWidth;
+        $columnsWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['spacing']['padding']['left'] ?? '0px');
+        $columnsWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['spacing']['padding']['right'] ?? '0px');
+        $block['innerBlocks'] = $this->addMissingColumnWidths($block['innerBlocks'], $columnsWidth);
       }
 
       // Copy layout styles and update width and padding
@@ -57,13 +61,23 @@ class BlocksWidthPreprocessor implements Preprocessor {
     return (float)str_replace('px', '', $string);
   }
 
-  private function addMissingColumnWidths(array $columns): array {
+  private function addMissingColumnWidths(array $columns, float $columnsWidth): array {
+    $columnsCountWithDefinedWidth = 0;
+    $definedColumnWidth = 0;
     $columnsCount = count($columns);
-    $defaultColumnsWidth = round(100 / $columnsCount, 2);
+    foreach ($columns as $column) {
+      if (isset($column['attrs']['width']) && !empty($column['attrs']['width'])) {
+        $columnsCountWithDefinedWidth++;
+        $definedColumnWidth += $this->convertWithToPixels($column['attrs']['width'], $columnsWidth);
+      }
+    }
 
-    foreach ($columns as $key => $column) {
-      if (!isset($column['attrs']['width'])) {
-        $columns[$key]['attrs']['width'] = "{$defaultColumnsWidth}%";
+    if ($columnsCount - $columnsCountWithDefinedWidth > 0) {
+      $defaultColumnsWidth = round(($columnsWidth - $definedColumnWidth) / ($columnsCount - $columnsCountWithDefinedWidth), 2);
+      foreach ($columns as $key => $column) {
+        if (!isset($column['attrs']['width']) || empty($column['attrs']['width'])) {
+          $columns[$key]['attrs']['width'] = "{$defaultColumnsWidth}px";
+        }
       }
     }
     return $columns;
