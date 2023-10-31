@@ -117,25 +117,33 @@ class PostFieldsTest extends \MailPoetTest {
     $field = $fields['wordpress:post:type'];
     $this->assertSame('Post type', $field->getName());
     $this->assertSame('enum', $field->getType());
-    $this->assertSame([
-      'options' => [
-        [
-          'id' => 'post',
-          'name' => 'Posts',
-        ],
-        [
-          'id' => 'page',
-          'name' => 'Pages',
-        ],
-        [
-          'id' => 'attachment',
-          'name' => 'Media',
-        ],
-        [
-          'id' => 'mailpoet_page',
-          'name' => 'MailPoet Page',
-        ],
+
+    $options = [
+      [
+        'id' => 'post',
+        'name' => 'Posts',
       ],
+      [
+        'id' => 'page',
+        'name' => 'Pages',
+      ],
+      [
+        'id' => 'attachment',
+        'name' => 'Media',
+      ],
+    ];
+    if (is_plugin_active('woocommerce/woocommerce.php')) {
+      $options[] = [
+        'id' => 'product',
+        'name' => 'Products',
+      ];
+    }
+    $options[] = [
+      'id' => 'mailpoet_page',
+      'name' => 'MailPoet Page',
+    ];
+    $this->assertSame([
+      'options' => $options,
     ], $field->getArgs());
 
     $expectation = 'page';
