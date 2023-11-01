@@ -21,6 +21,7 @@ import { useSelect } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
 import { MailPoet } from 'mailpoet';
+import { Footer } from '../../../common/templates';
 
 const tabs = [
   {
@@ -118,18 +119,16 @@ export function SegmentTemplates(): JSX.Element {
         )}
       </TabPanel>
 
-      <div className="mailpoet-templates-footer">
+      <Footer>
         <p>{__('Want to set your own conditions?', 'mailpoet')}</p>
         <Button
           variant="link"
           href={`#${ROUTES.NEW_DYNAMIC_SEGMENT}`}
-          onClick={(): void => {
-            trackNewCustomSegment();
-          }}
+          onClick={() => void trackNewCustomSegment()}
         >
           {__('Create custom segment', 'mailpoet')}
         </Button>
-      </div>
+      </Footer>
     </div>
   );
 }
