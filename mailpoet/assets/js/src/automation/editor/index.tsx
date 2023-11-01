@@ -25,15 +25,12 @@ import { Sidebar } from './components/sidebar';
 import { Automation } from './components/automation';
 import { automationSidebarKey, createStore, storeName } from './store';
 import { initializeApi } from '../api';
-import { initialize as initializeCoreIntegration } from '../integrations/core';
-import { initialize as initializeMailPoetIntegration } from '../integrations/mailpoet';
-import { initialize as initializeWordPressIntegration } from '../integrations/wordpress';
-import { initialize as initializeWooCommerceIntegration } from '../integrations/woocommerce';
 import { MailPoet } from '../../mailpoet';
 import { LISTING_NOTICE_PARAMETERS } from '../listing/automation-listing-notices';
 import { registerApiErrorHandler } from './api-error-handler';
 import { ActivatePanel } from './components/panel/activate-panel';
 import { AutomationStatus } from '../listing/automation';
+import { initializeIntegrations } from './integrations';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/layout/index.js
@@ -206,10 +203,7 @@ window.addEventListener('DOMContentLoaded', () => {
     registerTranslations();
     registerApiErrorHandler();
     initializeApi();
-    initializeCoreIntegration();
-    initializeMailPoetIntegration();
-    initializeWordPressIntegration();
-    initializeWooCommerceIntegration();
+    initializeIntegrations();
     const root = createRoot(container);
     root.render(<Editor />);
   }
