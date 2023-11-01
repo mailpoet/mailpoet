@@ -8,7 +8,50 @@ namespace {
   }
 
   if (!class_exists(\WC_Subscription::class)) {
-    class WC_Subscription extends WC_Product {
+    class WC_Subscription extends WC_Order {
+      public function get_id() {
+        return 0;
+      }
+
+      public function get_last_order() {
+        return 1;
+      }
+
+      public function get_customer_id() {
+        return 1;
+      }
+
+      public function get_cancelled_email_sent() {
+        return false;
+      }
+
+      public function get_failed_payment_count() {
+        return 1;
+      }
+
+      public function get_payment_count() {
+        return 1;
+      }
+
+      public function get_payment_interval() {
+        return 1;
+      }
+
+      public function get_total_initial_payment() {
+        return 1.00;
+      }
+
+      public function is_manual() {
+        return false;
+      }
+
+      public function get_billing_period() {
+        return 'day';
+      }
+
+      public function get_billing_interval() {
+        return 1;
+      }
     }
   }
 
