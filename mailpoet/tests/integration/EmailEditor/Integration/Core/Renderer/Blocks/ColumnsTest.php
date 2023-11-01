@@ -49,5 +49,32 @@ class ColumnsTest extends \MailPoetTest {
     $rendered = $this->columnsRenderer->render('', $this->parsedColumns);
     verify($rendered)->stringContainsString('Column 1');
     verify($rendered)->stringContainsString('width:784px;');
+    verify($rendered)->stringContainsString('max-width:784px;');
+  }
+
+  public function testItContainsColumnsStyles(): void {
+    $parsedColumns = $this->parsedColumns;
+    $parsedColumns['attrs'] = [
+      'style' => [
+        'color' => [
+          'background' => '#abcdef',
+        ],
+        'spacing' => [
+          'padding' => [
+            'bottom' => '5px',
+            'left' => '15px',
+            'right' => '20px',
+            'top' => '10px',
+          ],
+        ],
+      ],
+    ];
+    $rendered = $this->columnsRenderer->render('', $parsedColumns);
+    verify($rendered)->stringContainsString('background:#abcdef;');
+    verify($rendered)->stringContainsString('background-color:#abcdef;');
+    verify($rendered)->stringContainsString('padding-bottom:5px;');
+    verify($rendered)->stringContainsString('padding-left:15px;');
+    verify($rendered)->stringContainsString('padding-right:20px;');
+    verify($rendered)->stringContainsString('padding-top:10px;');
   }
 }
