@@ -104,6 +104,7 @@ interface Window {
   mailpoet_premium_version: string;
   mailpoet_premium_link: string;
   mailpoet_woocommerce_active: boolean;
+  mailpoet_woocommerce_subscriptions_active: boolean;
   mailpoet_woocommerce_store_config: WooCommerceStoreConfig;
   mailpoet_woocommerce_version: string;
   mailpoet_track_wizard_loaded_via_woocommerce: boolean;
