@@ -77,6 +77,9 @@ class PageRenderer {
   /** @var WooCommerce\Helper */
   private $wooCommerceHelper;
 
+  /** @var WooCommerce\WooCommerceSubscriptions\Helper */
+  private $wooCommerceSubscriptionsHelper;
+
   public function __construct(
     Bridge $bridge,
     Renderer $renderer,
@@ -93,7 +96,8 @@ class PageRenderer {
     TransientCache $transientCache,
     WPFunctions $wp,
     AssetsController $assetsController,
-    WooCommerce\Helper $wooCommerceHelper
+    WooCommerce\Helper $wooCommerceHelper,
+    WooCommerce\WooCommerceSubscriptions\Helper $wooCommerceSubscriptionsHelper
   ) {
     $this->bridge = $bridge;
     $this->renderer = $renderer;
@@ -111,6 +115,7 @@ class PageRenderer {
     $this->wp = $wp;
     $this->assetsController = $assetsController;
     $this->wooCommerceHelper = $wooCommerceHelper;
+    $this->wooCommerceSubscriptionsHelper = $wooCommerceSubscriptionsHelper;
   }
 
   /**
@@ -200,6 +205,7 @@ class PageRenderer {
         ];
       }, $this->tagRepository->findAll()),
       'display_docsbot_widget' => $this->displayDocsBotWidget(),
+      'is_woocommerce_subscriptions_active' => $this->wooCommerceSubscriptionsHelper->isWooCommerceSubscriptionsActive(),
     ];
 
     if (!$defaults['premium_plugin_active']) {
