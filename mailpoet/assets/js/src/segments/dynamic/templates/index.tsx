@@ -21,7 +21,7 @@ import { useSelect } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
 import { MailPoet } from 'mailpoet';
-import { Footer } from '../../../common/templates';
+import { Footer, Grid } from '../../../common/templates';
 
 const tabs = [
   {
@@ -106,7 +106,7 @@ export function SegmentTemplates(): JSX.Element {
 
       <TabPanel tabs={tabs}>
         {(tab) => (
-          <div className="mailpoet-templates-card-grid">
+          <Grid>
             {templates
               .filter(
                 (template) =>
@@ -115,7 +115,7 @@ export function SegmentTemplates(): JSX.Element {
               .map((template) => (
                 <TemplateListItem key={template.name} template={template} />
               ))}
-          </div>
+          </Grid>
         )}
       </TabPanel>
 
