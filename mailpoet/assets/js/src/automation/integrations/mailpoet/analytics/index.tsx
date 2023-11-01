@@ -15,13 +15,10 @@ import {
 } from '../../../editor/store';
 import { registerApiErrorHandler } from '../../../listing/api-error-handler';
 import { initializeApi } from './api';
-import { initialize as initializeCoreIntegration } from '../../core';
-import { initialize as initializeMailPoetIntegration } from '../index';
-import { initialize as initializeWooCommerceIntegration } from '../../woocommerce';
-import { initialize as initializeWordPressIntegration } from '../../wordpress';
 import { PremiumModal } from '../../../../common/premium-modal';
 import { AutomationStatus } from '../../../listing/automation';
 import { MailPoet } from '../../../../mailpoet';
+import { initializeIntegrations } from '../../../editor/integrations';
 
 function Analytics(): JSX.Element {
   const premiumModal = useSelect((s) => s(storeName).getPremiumModal());
@@ -103,10 +100,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   createStore();
   editorStoreCreate();
-  initializeCoreIntegration();
-  initializeMailPoetIntegration();
-  initializeWooCommerceIntegration();
-  initializeWordPressIntegration();
+  initializeIntegrations();
   registerApiErrorHandler();
   boot();
   ReactDOM.render(<App />, root);
