@@ -1,5 +1,5 @@
 import { TableCard } from '@woocommerce/components';
-import { Button, Flex, TabPanel } from '@wordpress/components';
+import { Button, TabPanel } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
 import {
@@ -15,6 +15,7 @@ import { getRow } from './get-row';
 import { storeName } from './store';
 import { Automation, AutomationStatus } from './automation';
 import { MailPoet } from '../../mailpoet';
+import { PageHeader } from '../../common/page-header';
 
 const tabConfig = [
   {
@@ -52,8 +53,7 @@ const tableHeaders = [
 
 export function AutomationListingHeader(): JSX.Element {
   return (
-    <Flex className="mailpoet-automation-listing-heading">
-      <h1 className="wp-heading-inline">{__('Automations', 'mailpoet')}</h1>
+    <PageHeader heading={__('Automations', 'mailpoet')}>
       <Button
         href={MailPoet.urls.automationTemplates}
         icon={plusIcon}
@@ -62,7 +62,7 @@ export function AutomationListingHeader(): JSX.Element {
       >
         {__('New automation', 'mailpoet')}
       </Button>
-    </Flex>
+    </PageHeader>
   );
 }
 
