@@ -71,10 +71,9 @@ progress::-moz-progress-bar {
   align-items: flex-start;
   display: grid;
   grid-gap: $grid-gap;
-  grid-template-columns: $grid-column $grid-column;
+  grid-template-columns: 1fr 1fr;
   justify-content: space-between;
   margin: $grid-gap auto;
-  max-width: 976px;
 
   @include respond-to(small-screen) {
     grid-template-columns: 1fr;
