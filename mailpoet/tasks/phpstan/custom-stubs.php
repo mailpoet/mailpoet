@@ -52,6 +52,10 @@ namespace {
       public function get_billing_interval() {
         return 1;
       }
+
+      public function get_date(string $dateType, string $timeZone = 'gmt') {
+        return 0;
+      }
     }
   }
 
