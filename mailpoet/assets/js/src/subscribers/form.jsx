@@ -9,6 +9,7 @@ import { Heading } from 'common/typography/heading/heading';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { MailPoet } from 'mailpoet';
 import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
+import { TopBarWithBeamer } from '../common/top-bar/top-bar';
 
 const fields = [
   {
@@ -240,7 +241,8 @@ function SubscriberForm({ match }) {
   const history = useHistory();
   const backUrl = location.state?.backUrl || '/';
   return (
-    <div>
+    <div className="mailpoet-main-container">
+      <TopBarWithBeamer />
       <Background color="#fff" />
       <HideScreenOptions />
 
