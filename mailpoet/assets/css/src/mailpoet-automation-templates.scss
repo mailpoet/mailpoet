@@ -1,18 +1,13 @@
-.mailpoet-automation-templates-heading {
-  margin: auto;
-  max-width: 982px;
-}
-
 ul.mailpoet-automation-templates {
   clear: both;
   cursor: pointer;
   display: grid;
   grid-gap: 32px;
-  grid-template-columns: repeat(auto-fill, 306px);
+  grid-template-columns: repeat(auto-fill, 336px);
   justify-content: center;
   margin: auto;
-  max-width: 982px;
   padding: 48px 0;
+  width: 100%;
 }
 
 .mailpoet-automation-template-list-item {

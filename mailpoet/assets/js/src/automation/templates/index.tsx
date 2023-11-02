@@ -1,6 +1,5 @@
 import { createRoot } from 'react-dom/client';
 import { __ } from '@wordpress/i18n';
-import { Flex } from '@wordpress/components';
 import { registerTranslations } from 'common';
 import { automationTemplates } from './config';
 import { TemplateListItem } from './components/template-list-item';
@@ -10,17 +9,15 @@ import {
   FromScratchButton,
   FromScratchListItem,
 } from './components/from-scratch';
+import { PageHeader } from '../../common/page-header';
 
 function Templates(): JSX.Element {
   return (
-    <>
+    <div className="mailpoet-main-container">
       <TopBarWithBeamer />
-      <Flex className="mailpoet-automation-templates-heading">
-        <h1 className="wp-heading-inline">
-          {__('Choose your automation template', 'mailpoet')}
-        </h1>
+      <PageHeader heading={__('Start with a template', 'mailpoet')}>
         <FromScratchButton />
-      </Flex>
+      </PageHeader>
 
       <ul className="mailpoet-automation-templates">
         {automationTemplates.map((template) => (
@@ -28,7 +25,7 @@ function Templates(): JSX.Element {
         ))}
         <FromScratchListItem />
       </ul>
-    </>
+    </div>
   );
 }
 

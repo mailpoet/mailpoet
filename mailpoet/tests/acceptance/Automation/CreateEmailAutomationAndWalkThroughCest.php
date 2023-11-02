@@ -21,7 +21,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->dontSee('Entered');
 
     $i->click('Start with a template');
-    $i->see('Choose your automation template');
+    $i->see('Start with a template', 'h1');
     $i->click('Welcome new subscribers');
 
     $i->waitForText('Draft');
