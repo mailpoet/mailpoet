@@ -31,7 +31,7 @@ class ManageListsCest {
     $i->login();
     $i->amOnMailpoetPage('Lists');
     $i->click('New List');
-    $i->click('Back');
+    $i->click('[aria-label="Navigate to the lists page"]');
     $i->click('New List');
     $i->fillField('Name', $newListTitle);
     $i->fillField('Description', $newListDesc);

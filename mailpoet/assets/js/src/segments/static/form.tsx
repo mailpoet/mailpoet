@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom';
+import { __ } from '@wordpress/i18n';
 import { Background } from 'common/background/background';
 import { Form } from 'form/form.jsx';
-import { Heading } from 'common/typography/heading/heading';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
 import { MailPoet } from 'mailpoet';
+import { BackButton, PageHeader } from '../../common/page-header';
 import { TopBarWithBeamer } from '../../common/top-bar/top-bar';
 
 const fields = [
@@ -57,16 +57,16 @@ function SegmentForm({ match }: SegmentFormPropType) {
       <Background color="#fff" />
       <HideScreenOptions />
 
-      <Heading level={1} className="mailpoet-title">
-        <span>{MailPoet.I18n.t('segment')}</span>
-        <Link
-          className="mailpoet-button button button-secondary button-small"
-          to="/"
-        >
-          {MailPoet.I18n.t('backToList')}
-        </Link>
-      </Heading>
-
+      <PageHeader
+        heading={MailPoet.I18n.t('segment')}
+        headingPrefix={
+          <BackButton
+            href="#/"
+            label={__('Lists', 'mailpoet')}
+            aria-label={__('Navigate to the lists page', 'mailpoet')}
+          />
+        }
+      />
       <SubscribersLimitNotice />
 
       <Form
