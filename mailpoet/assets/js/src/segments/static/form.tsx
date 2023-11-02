@@ -5,6 +5,7 @@ import { Heading } from 'common/typography/heading/heading';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
 import { MailPoet } from 'mailpoet';
+import { TopBarWithBeamer } from '../../common/top-bar/top-bar';
 
 const fields = [
   {
@@ -51,7 +52,8 @@ type SegmentFormPropType = {
 
 function SegmentForm({ match }: SegmentFormPropType) {
   return (
-    <div>
+    <div className="mailpoet-main-container">
+      <TopBarWithBeamer />
       <Background color="#fff" />
       <HideScreenOptions />
 
