@@ -1,15 +1,15 @@
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
 
 import { Background } from 'common/background/background';
 import { Form } from 'form/form.jsx';
-import { Heading } from 'common/typography/heading/heading';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { MailPoet } from 'mailpoet';
 import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
 import { TopBarWithBeamer } from '../common/top-bar/top-bar';
+import { BackButton, PageHeader } from '../common/page-header';
 
 const fields = [
   {
@@ -246,15 +246,15 @@ function SubscriberForm({ match }) {
       <Background color="#fff" />
       <HideScreenOptions />
 
-      <Heading level={1} className="mailpoet-title">
-        <span>{MailPoet.I18n.t('subscriber')}</span>
-        <Link
-          className="mailpoet-button button button-secondary button-small"
-          to={backUrl}
-        >
-          {MailPoet.I18n.t('backToList')}
-        </Link>
-      </Heading>
+      <PageHeader
+        heading={MailPoet.I18n.t('subscriber')}
+        headingPrefix={
+          <BackButton
+            onClick={() => history.push(backUrl)}
+            label={MailPoet.I18n.t('backToList')}
+          />
+        }
+      />
 
       <SubscribersLimitNotice />
 
