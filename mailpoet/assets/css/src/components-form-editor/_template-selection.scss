@@ -17,6 +17,10 @@ $mailpoet-form-template-thumbnail-height: 316px;
   @include formTemplatesGrid;
   padding-bottom: math.div($mailpoet-form-template-thumbnail-height, 3);
 
+  .mailpoet-page-header {
+    grid-column: 1 / -1;
+  }
+
   .mailpoet-categories {
     grid-column: 1 / -1;
     justify-content: center;

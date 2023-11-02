@@ -1,5 +1,5 @@
 import { __, _x } from '@wordpress/i18n';
-import { Button, Flex } from '@wordpress/components';
+import { Button } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { Categories } from 'common/categories/categories';
 import { Background } from 'common/background/background';
@@ -9,6 +9,7 @@ import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { Notice } from 'notices/notice';
 import { TemplateData } from './store/types';
 import { storeName } from './store/constants';
+import { PageHeader } from '../../common/page-header';
 
 export function Selection(): JSX.Element {
   const categories = [
@@ -104,10 +105,7 @@ export function Selection(): JSX.Element {
       <div data-automation-id="template_selection_list">
         <Background color="#fff" />
         <div className="mailpoet-form-templates">
-          <Flex className="mailpoet-form-template-selection-header">
-            <h1 className="wp-heading-inline">
-              {__('Start with a template', 'mailpoet')}
-            </h1>
+          <PageHeader heading={__('Start with a template', 'mailpoet')}>
             <Button
               data-automation-id="create_blank_form"
               variant="secondary"
@@ -117,7 +115,7 @@ export function Selection(): JSX.Element {
             >
               {__('Or, start with a blank form', 'mailpoet')}
             </Button>
-          </Flex>
+          </PageHeader>
           <Categories
             categories={categories}
             active={selectedCategory}
