@@ -97,9 +97,9 @@ export function SendPreviewEmail() {
       <p>
         {createInterpolateElement(
           __(
-            'Send yourself a test email to test how your email would look like in different email apps. You could also enter your <link1>Mail Tester</link1> email below to test your spam score. <link2>Learn more</link2>.',
+            'Send yourself a test email to test how your email would look like in different email apps. You can also test your spam score by sending a test email to <link1>{$serviceName}</link1>. <link2>Learn more</link2>.',
             'mailpoet',
-          ),
+          ).replace('{$serviceName}', 'Mail Tester'),
           {
             link1: (
               // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
