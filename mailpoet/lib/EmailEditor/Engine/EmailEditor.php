@@ -50,7 +50,7 @@ class EmailEditor {
       'show_ui' => true,
       'show_in_menu' => false,
       'show_in_nav_menus' => false,
-      'supports' => ['editor'],
+      'supports' => ['editor', 'title'],
       'has_archive' => true,
       'show_in_rest' => true, // Important to enable Gutenberg editor
     ];
