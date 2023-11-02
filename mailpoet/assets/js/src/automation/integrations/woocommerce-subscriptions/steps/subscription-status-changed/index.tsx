@@ -13,7 +13,7 @@ const keywords = [
 export const step: StepType = {
   key: 'woocommerce-subscriptions:subscription-status-changed',
   group: 'triggers',
-  title: () => __('Woo subscription status changed', 'mailpoet'),
+  title: () => __('Woo Subscription status changed', 'mailpoet'),
   description: () =>
     __(
       'Start the automation when subscription changed to a specific status.',
