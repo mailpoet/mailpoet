@@ -9,13 +9,22 @@ import {
   FromScratchButton,
   FromScratchListItem,
 } from './components/from-scratch';
-import { PageHeader } from '../../common/page-header';
+import { BackButton, PageHeader } from '../../common/page-header';
+import { MailPoet } from '../../mailpoet';
 
 function Templates(): JSX.Element {
   return (
     <div className="mailpoet-main-container">
       <TopBarWithBeamer />
-      <PageHeader heading={__('Start with a template', 'mailpoet')}>
+      <PageHeader
+        heading={__('Start with a template', 'mailpoet')}
+        headingPrefix={
+          <BackButton
+            href={MailPoet.urls.automationListing}
+            label={__('Back to automation list', 'mailpoet')}
+          />
+        }
+      >
         <FromScratchButton />
       </PageHeader>
 
