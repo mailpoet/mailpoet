@@ -85,7 +85,7 @@ export function* saveEditedEmail() {
   });
 }
 
-export function* updateEmailProperty(name: string, subject: string) {
+export function* updateEmailMailPoetProperty(name: string, value: string) {
   const postId = select(storeName).getEmailPostId();
   // There can be a better way how to get the edited post data
   const editedPost = select(coreDataStore).getEditedEntityRecord(
@@ -103,7 +103,7 @@ export function* updateEmailProperty(name: string, subject: string) {
     {
       mailpoet_data: {
         ...mailpoetData,
-        [name]: subject,
+        [name]: value,
       },
     },
   );
