@@ -5,12 +5,10 @@ import { automationTemplates } from './config';
 import { TemplateListItem } from './components/template-list-item';
 import { initializeApi } from '../api';
 import { TopBarWithBeamer } from '../../common/top-bar/top-bar';
-import {
-  FromScratchButton,
-  FromScratchListItem,
-} from './components/from-scratch';
+import { FromScratchButton } from './components/from-scratch';
 import { BackButton, PageHeader } from '../../common/page-header';
 import { MailPoet } from '../../mailpoet';
+import { Footer } from '../../common/templates';
 
 function Templates(): JSX.Element {
   return (
@@ -32,8 +30,14 @@ function Templates(): JSX.Element {
         {automationTemplates.map((template) => (
           <TemplateListItem key={template.slug} template={template} />
         ))}
-        <FromScratchListItem />
       </ul>
+
+      <Footer>
+        <p>{__('Can’t find what you’re looking for?', 'mailpoet')}</p>
+        <FromScratchButton variant="link">
+          {__('Start from scratch', 'mailpoet')}
+        </FromScratchButton>
+      </Footer>
     </div>
   );
 }
