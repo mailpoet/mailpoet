@@ -22,7 +22,7 @@ export function DetailsPanel() {
     'mailpoet_data',
   );
 
-  const { updateEmailProperty } = useDispatch(storeName);
+  const { updateEmailMailPoetProperty } = useDispatch(storeName);
 
   let subjectHelp = ReactStringReplace(
     __(
@@ -93,7 +93,7 @@ export function DetailsPanel() {
         label={subjectLabel}
         placeholder={__('Eg. The summer sale is here!', 'mailpoet')}
         value={mailpoetEmailData?.subject ?? ''}
-        onChange={(value) => updateEmailProperty('subject', value)}
+        onChange={(value) => updateEmailMailPoetProperty('subject', value)}
         data-automation-id="email_subject"
       />
       <div className="mailpoet-settings-panel__help">
@@ -108,7 +108,7 @@ export function DetailsPanel() {
           'mailpoet',
         )}
         value={mailpoetEmailData?.preheader ?? ''}
-        onChange={(value) => updateEmailProperty('preheader', value)}
+        onChange={(value) => updateEmailMailPoetProperty('preheader', value)}
         data-automation-id="email_preview_text"
       />
       <div className="mailpoet-settings-panel__help">
