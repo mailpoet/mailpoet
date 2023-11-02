@@ -9,7 +9,7 @@ import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { Notice } from 'notices/notice';
 import { TemplateData } from './store/types';
 import { storeName } from './store/constants';
-import { PageHeader } from '../../common/page-header';
+import { BackButton, PageHeader } from '../../common/page-header';
 
 export function Selection(): JSX.Element {
   const categories = [
@@ -105,7 +105,15 @@ export function Selection(): JSX.Element {
       <div data-automation-id="template_selection_list">
         <Background color="#fff" />
         <div className="mailpoet-form-templates">
-          <PageHeader heading={__('Start with a template', 'mailpoet')}>
+          <PageHeader
+            heading={__('Start with a template', 'mailpoet')}
+            headingPrefix={
+              <BackButton
+                href="?page=mailpoet-forms"
+                label={__('Back to forms list', 'mailpoet')}
+              />
+            }
+          >
             <Button
               data-automation-id="create_blank_form"
               variant="secondary"
