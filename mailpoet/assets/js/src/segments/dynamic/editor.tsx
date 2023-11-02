@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
-import { Button, Flex, FlexBlock } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { chevronLeft } from '@wordpress/icons';
 
 import { useRouteMatch, useLocation } from 'react-router-dom';
 
@@ -10,6 +8,7 @@ import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-option
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { Form } from './form';
 import { storeName } from './store';
+import { BackButton, PageHeader } from '../../common/page-header';
 
 export function Editor(): JSX.Element {
   const match = useRouteMatch<{ id: string }>();
@@ -40,31 +39,26 @@ export function Editor(): JSX.Element {
       <TopBarWithBeamer />
       <HideScreenOptions />
 
-      <Flex
-        className="mailpoet-heading"
-        direction={['column', 'row'] as any} // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports string[] and this is needed to make the component responsive
-        gap="16px"
-      >
-        <FlexBlock>
-          <h1 className="wp-heading-inline">
-            <Button
-              id="mailpoet-segments-back-button"
-              icon={chevronLeft}
-              href={`#${returnPage}`}
-              label={__('Return to previous page', 'mailpoet')}
-              onClick={(event) => {
-                if (newsletterId) {
-                  event.preventDefault();
-                  window.location.href = `admin.php?page=mailpoet-newsletters#/send/${newsletterId}`;
-                }
-              }}
-            />
-            {match.params.id
-              ? __('Edit segment', 'mailpoet')
-              : __('New segment', 'mailpoet')}
-          </h1>
-        </FlexBlock>
-      </Flex>
+      <PageHeader
+        heading={
+          match.params.id
+            ? __('Edit segment', 'mailpoet')
+            : __('New segment', 'mailpoet')
+        }
+        headingPrefix={
+          <BackButton
+            id="mailpoet-segments-back-button"
+            href={`#${returnPage}`}
+            label={__('Return to previous page', 'mailpoet')}
+            onClick={(event) => {
+              if (newsletterId) {
+                event.preventDefault();
+                window.location.href = `admin.php?page=mailpoet-newsletters#/send/${newsletterId}`;
+              }
+            }}
+          />
+        }
+      />
 
       <Form isNewSegment={isNewSegment} newsletterId={newsletterId} />
     </div>
