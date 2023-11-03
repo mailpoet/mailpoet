@@ -178,23 +178,40 @@ class Import {
           );
       }
 
-      if ($existingSubscribers['data'] && $this->updateSubscribers) {
+      $updateExistingSubscribersStatus = false;
+
+      if ($existingSubscribers['data']) {
         $allowedStatuses = [
           SubscriberEntity::STATUS_SUBSCRIBED,
           SubscriberEntity::STATUS_UNSUBSCRIBED,
           SubscriberEntity::STATUS_INACTIVE,
         ];
         if (in_array($this->existingSubscribersStatus, $allowedStatuses, true)) {
+          $updateExistingSubscribersStatus = true;
           $existingSubscribers = $this->addField($existingSubscribers, 'status', $this->existingSubscribersStatus);
         }
-        $updatedSubscribers =
-          $this->createOrUpdateSubscribers(
-            self::ACTION_UPDATE,
-            $existingSubscribers,
-            $this->subscribersCustomFields
-          );
-        if ($wpUsers) {
-          $this->synchronizeWPUsers($wpUsers);
+        if ($this->updateSubscribers) {
+          // Update existing subscribers' info (first_name, last_name etc.)
+          // as well as status (optionally) if the status column was added above
+          $updatedSubscribers =
+            $this->createOrUpdateSubscribers(
+              self::ACTION_UPDATE,
+              $existingSubscribers,
+              $this->subscribersCustomFields
+            );
+          if ($wpUsers) {
+            $this->synchronizeWPUsers($wpUsers);
+          }
+        } elseif ($updateExistingSubscribersStatus) {
+          // Only update existing subscribers' status
+          // For this we need to remove all other fields except email and status
+          $existingSubscribers['fields'] = array_intersect($existingSubscribers['fields'], ['email', 'status']);
+          $existingSubscribers['data'] = array_intersect_key($existingSubscribers['data'], array_flip(['email', 'status']));
+          $updatedSubscribers =
+            $this->createOrUpdateSubscribers(
+              self::ACTION_UPDATE,
+              $existingSubscribers
+            );
         }
       }
     } catch (\Exception $e) {

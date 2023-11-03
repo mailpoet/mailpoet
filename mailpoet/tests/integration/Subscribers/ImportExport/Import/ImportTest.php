@@ -727,8 +727,8 @@ class ImportTest extends \MailPoetTest {
     $lastSubscribedAt = Carbon::createFromFormat('Y-m-d H:i:s', '2020-08-08 08:08:00');
     $this->assertInstanceOf(Carbon::class, $lastSubscribedAt);
     $existingSubscriber = $this->createSubscriber(
-      'Adam',
-      'Smith',
+      'Adam0', // test first_name updating
+      'Smith0', // test last_name updating
       'Adam@Smith.com',
       SubscriberEntity::STATUS_UNSUBSCRIBED,
       $lastSubscribedAt
@@ -740,6 +740,32 @@ class ImportTest extends \MailPoetTest {
     $updatedSubscriber = $this->subscriberRepository->findOneBy(['email' => $existingSubscriber->getEmail()]);
     $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
     verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($updatedSubscriber->getFirstName())->equals('Adam');
+    verify($updatedSubscriber->getLastName())->equals('Smith');
+  }
+
+  public function testItDoesUpdateStatusExistingSubscriberWhenExistingSubscribersStatusIsSetAndUpdateSubscribersIsDisabled(): void {
+    $data = $this->testData;
+    $data['updateSubscribers'] = false;
+    $data['existingSubscribersStatus'] = SubscriberEntity::STATUS_SUBSCRIBED;
+    $lastSubscribedAt = Carbon::createFromFormat('Y-m-d H:i:s', '2020-08-08 08:08:00');
+    $this->assertInstanceOf(Carbon::class, $lastSubscribedAt);
+    $existingSubscriber = $this->createSubscriber(
+      'Adam0', // test first_name updating is disabled
+      'Smith0', // test last_name updating is disabled
+      'Adam@Smith.com',
+      SubscriberEntity::STATUS_UNSUBSCRIBED,
+      $lastSubscribedAt
+    );
+    $import = $this->createImportInstance($data);
+    $import->process();
+
+    $this->entityManager->clear();
+    $updatedSubscriber = $this->subscriberRepository->findOneBy(['email' => $existingSubscriber->getEmail()]);
+    $this->assertInstanceOf(SubscriberEntity::class, $updatedSubscriber);
+    verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
+    verify($updatedSubscriber->getFirstName())->equals('Adam0');
+    verify($updatedSubscriber->getLastName())->equals('Smith0');
   }
 
   public function testItDoesStatusNewSubscriberWhenNewSubscribersStatusIsSet(): void {
