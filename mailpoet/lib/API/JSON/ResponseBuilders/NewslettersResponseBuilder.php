@@ -81,6 +81,7 @@ class NewslettersResponseBuilder {
       'unsubscribe_token' => $newsletter->getUnsubscribeToken(),
       'ga_campaign' => $newsletter->getGaCampaign(),
       'wp_post_id' => $newsletter->getWpPostId(),
+      'campaign_name' => $newsletter->getCampaignName(),
     ];
 
     foreach ($relations as $relation) {
@@ -135,7 +136,6 @@ class NewslettersResponseBuilder {
     $couponBlockLogs = array_map(function ($item) {
       return "Coupon block: $item";
     }, $this->logRepository->getRawMessagesForNewsletter($newsletter, LoggerFactory::TOPIC_COUPONS));
-
     $data = [
       'id' => (string)$newsletter->getId(), // (string) for BC
       'hash' => $newsletter->getHash(),
@@ -159,6 +159,7 @@ class NewslettersResponseBuilder {
           : null
       ),
       'logs' => $couponBlockLogs,
+      'campaign_name' => $newsletter->getCampaignName(),
     ];
 
     if ($newsletter->getType() === NewsletterEntity::TYPE_STANDARD) {

@@ -76,7 +76,9 @@ const messages = {
 const columns = [
   {
     name: 'subject',
-    label: __('Subject', 'mailpoet'),
+    label: MailPoet.FeaturesController.isSupported('gutenberg_email_editor')
+      ? __('Name', 'mailpoet')
+      : __('Subject', 'mailpoet'),
     sortable: true,
   },
   {
@@ -210,6 +212,9 @@ class NewsletterListStandardComponent extends Component {
       'has-row-actions',
     );
 
+    const subject =
+      newsletter.queue.newsletter_rendered_subject || newsletter.subject;
+
     return (
       <div>
         <td className={rowClasses}>
@@ -221,7 +226,14 @@ class NewsletterListStandardComponent extends Component {
               confirmEdit(newsletter);
             }}
           >
-            {newsletter.queue.newsletter_rendered_subject || newsletter.subject}
+            {newsletter.campaign_name ? (
+              <>
+                {newsletter.campaign_name} <br />
+                <span className="mailpoet-listing-subtitle">{subject}</span>
+              </>
+            ) : (
+              subject
+            )}
           </a>
           {actions}
         </td>
