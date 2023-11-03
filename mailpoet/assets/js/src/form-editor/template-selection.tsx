@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { Selection } from './templates/selection';
@@ -17,14 +17,14 @@ function App() {
   );
 }
 
-const appElement = document.querySelector('#mailpoet_form_edit_templates');
-if (appElement) {
+const container = document.querySelector('#mailpoet_form_edit_templates');
+if (container) {
   registerTranslations();
   createStore();
-  ReactDOM.render(
+  const root = createRoot(container);
+  root.render(
     <StrictMode>
       <App />
     </StrictMode>,
-    appElement,
   );
 }
