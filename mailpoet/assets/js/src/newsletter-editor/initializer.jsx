@@ -1,7 +1,7 @@
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { ListingHeadingSteps } from 'newsletters/listings/heading-steps';
 import { newsletterTypesWithActivation } from 'newsletters/listings/utils';
 import { fetchAutomaticEmailShortcodes } from 'newsletters/automatic-emails/fetch-editor-shortcodes.jsx';
@@ -64,7 +64,8 @@ const renderHeading = (newsletterType, newsletterOptions) => {
       </ErrorBoundary>
     );
 
-    ReactDOM.render(stepsHeading, stepsHeadingContainer);
+    const root = createRoot(stepsHeadingContainer);
+    root.render(stepsHeading);
   }
 };
 
