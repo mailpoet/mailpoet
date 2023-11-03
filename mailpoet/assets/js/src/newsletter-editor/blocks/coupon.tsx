@@ -4,7 +4,7 @@
  */
 import { App } from 'newsletter-editor/app';
 import { BaseBlock } from 'newsletter-editor/blocks/base';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import _ from 'underscore';
 import jQuery from 'jquery';
 import 'backbone.marionette';
@@ -253,7 +253,9 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
     );
   },
   onRender() {
-    ReactDOM.render(
+    const container = document.getElementById('mailpoet_coupon_block_settings');
+    const root = createRoot(container);
+    root.render(
       <Settings
         availableDiscountTypes={App.getConfig()
           .get('coupon.discount_types')
@@ -265,7 +267,6 @@ Module.CouponBlockSettingsView = base.BlockSettingsView.extend({
         setValueCallback={(name, value) => this.model.set(name, value)}
         getValueCallback={(name) => this.model.get(name)}
       />,
-      document.getElementById('mailpoet_coupon_block_settings'),
     );
   },
 });
