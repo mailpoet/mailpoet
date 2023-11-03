@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { Popover, SlotFillProvider } from '@wordpress/components';
@@ -82,11 +82,12 @@ function App(): JSX.Element {
 window.addEventListener('DOMContentLoaded', () => {
   createStore();
 
-  const root = document.getElementById('mailpoet_automation');
-  if (root) {
+  const container = document.getElementById('mailpoet_automation');
+  if (container) {
     registerTranslations();
     registerApiErrorHandler();
     initializeApi();
-    ReactDOM.render(<App />, root);
+    const root = createRoot(container);
+    root.render(<App />);
   }
 });
