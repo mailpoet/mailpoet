@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { ErrorBoundary, registerTranslations } from 'common';
 import { Background } from 'common/background/background';
@@ -36,16 +36,14 @@ function Landingpage() {
 
 Landingpage.displayName = 'Landingpage';
 
-const landingpageContainer = document.getElementById(
-  'mailpoet_landingpage_container',
-);
+const container = document.getElementById('mailpoet_landingpage_container');
 
-if (landingpageContainer) {
+if (container) {
   registerTranslations();
-  ReactDOM.render(
+  const root = createRoot(container);
+  root.render(
     <ErrorBoundary>
       <Landingpage />
     </ErrorBoundary>,
-    landingpageContainer,
   );
 }
