@@ -2,6 +2,8 @@
 
 namespace MailPoet\WP;
 
+use MailPoet\WooCommerce\Helper;
+
 /**
  * Class AutocompletePostListLoader is used to load data for the frontend autocomplete
  */
@@ -9,13 +11,31 @@ class AutocompletePostListLoader {
   /** @var Functions */
   private $wp;
 
+  private $wc;
+
   public function __construct(
-    Functions $wp
+    Functions $wp,
+    Helper $wc
   ) {
     $this->wp = $wp;
+    $this->wc = $wc;
   }
 
-  public function getProducts() {
+  public function getProductsExcludingTypes(array $types): array {
+    if (!$this->wc->isWooCommerceActive()) {
+      return [];
+    }
+    /** @var \WC_Product_Data_Store_Interface $dataStore */
+    $dataStore = (new \WC_Product())->get_data_store();
+    return array_values(array_filter(
+      $this->getProducts(),
+      function($product) use ($types, $dataStore) {
+        return !in_array($dataStore->get_product_type($product['id']), $types);
+      }
+    ));
+  }
+
+  public function getProducts(): array {
     global $wpdb;
 
     $products = $wpdb->get_results($wpdb->prepare(
