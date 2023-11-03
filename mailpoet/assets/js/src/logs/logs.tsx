@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import { ErrorBoundary } from 'common';
 import { FilterType, List, Logs } from './list';
@@ -9,12 +9,13 @@ interface LogsWindow extends Window {
 
 declare let window: LogsWindow;
 
-const logsContainer = document.getElementById('mailpoet_logs_container');
+const container = document.getElementById('mailpoet_logs_container');
 
-if (logsContainer) {
+if (container) {
   const url = new URL(window.location.href);
 
-  ReactDOM.render(
+  const root = createRoot(container);
+  root.render(
     <ErrorBoundary>
       <List
         logs={window.mailpoet_logs}
@@ -36,6 +37,5 @@ if (logsContainer) {
         }}
       />
     </ErrorBoundary>,
-    logsContainer,
   );
 }
