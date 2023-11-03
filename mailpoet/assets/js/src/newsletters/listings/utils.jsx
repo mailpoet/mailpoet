@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { __ } from '@wordpress/i18n';
 import { Link } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
@@ -82,12 +82,13 @@ export const checkCronStatus = (state) => {
   );
 
   MailPoet.Notice.error('', { static: true, id: 'mailpoet_cron_error' });
+  const container = jQuery('[data-id="mailpoet_cron_error"]')[0];
+  const root = createRoot(container);
 
-  ReactDOM.render(
+  root.render(
     <div>
       <p>{cronPingCheckNotice}</p>
     </div>,
-    jQuery('[data-id="mailpoet_cron_error"]')[0],
   );
 };
 
