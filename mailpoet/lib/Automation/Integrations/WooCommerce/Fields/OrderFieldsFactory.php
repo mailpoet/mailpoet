@@ -386,10 +386,20 @@ class OrderFieldsFactory {
       ARRAY_A
     );
 
-    return array_map(function ($product) {
+    /** @var \WC_Product_Data_Store_Interface $dataStore */
+    $dataStore = (new \WC_Product())->get_data_store();
+    $products = array_values(array_filter(
+      (array)$products,
+      function ($product) use ($dataStore) {
+        $productType = $dataStore->get_product_type($product['ID']);
+        return $productType !== 'external';
+      }
+    ));
+    $options = array_map(function ($product) {
       $id = $product['ID'];
       $title = $product['post_title'];
       return ['id' => (int)$id, 'name' => "$title (#$id)"];
-    }, (array)$products);
+    }, $products);
+    return $options;
   }
 }
