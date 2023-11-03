@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { __ } from '@wordpress/i18n';
 import { Flex } from '@wordpress/components';
 import { registerTranslations } from 'common';
@@ -33,12 +33,13 @@ function Templates(): JSX.Element {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const root = document.getElementById('mailpoet_automation_templates');
-  if (!root) {
+  const container = document.getElementById('mailpoet_automation_templates');
+  if (!container) {
     return;
   }
 
   registerTranslations();
   initializeApi();
-  ReactDOM.render(<Templates />, root);
+  const root = createRoot(container);
+  root.render(<Templates />);
 });
