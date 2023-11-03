@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { ScrollToTop } from 'common/scroll-to-top.jsx';
 
@@ -86,5 +86,6 @@ function ImportSubscribers() {
 
 if (container) {
   registerTranslations();
-  ReactDOM.render(<ImportSubscribers />, container);
+  const root = createRoot(container);
+  root.render(<ImportSubscribers />);
 }
