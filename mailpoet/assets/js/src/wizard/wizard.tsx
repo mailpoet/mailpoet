@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
@@ -38,5 +38,6 @@ const container = document.getElementById('mailpoet-wizard-container');
 if (container) {
   registerTranslations();
   initSettingsStore();
-  ReactDOM.render(<App />, container);
+  const root = createRoot(container);
+  root.render(<App />);
 }
