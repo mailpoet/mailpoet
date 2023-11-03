@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 
 import { SegmentList } from 'segments/static/list';
@@ -26,5 +26,6 @@ function App(): JSX.Element {
 
 if (container) {
   registerTranslations();
-  ReactDOM.render(<App />, container);
+  const root = createRoot(container);
+  root.render(<App />);
 }
