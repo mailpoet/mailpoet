@@ -584,4 +584,12 @@ class NewsletterEntity {
     $post = \WP_Post::get_instance($this->wpPostId);
     return $post ?: null;
   }
+
+  public function getCampaignName(): ?string {
+    $post = $this->getWpPost();
+    if (!$post) {
+      return null;
+    }
+    return $post->post_title; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
 }
