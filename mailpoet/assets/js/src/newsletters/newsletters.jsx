@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import {
   HashRouter,
   Redirect,
@@ -289,6 +289,6 @@ function App() {
 const container = document.getElementById('newsletters_container');
 if (container) {
   registerTranslations();
-  // eslint-disable-next-line react/no-render-return-value
-  window.mailpoet_listing = ReactDOM.render(<App />, container);
+  const root = createRoot(container);
+  root.render(<App />);
 }
