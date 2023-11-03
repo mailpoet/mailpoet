@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { useEffect, useState } from 'react';
 import { Button, Icon, Popover, SlotFillProvider } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
@@ -201,8 +201,8 @@ window.addEventListener('DOMContentLoaded', () => {
     sidebarActiveByDefault ? automationSidebarKey : undefined,
   );
 
-  const root = document.getElementById('mailpoet_automation_editor');
-  if (root) {
+  const container = document.getElementById('mailpoet_automation_editor');
+  if (container) {
     registerTranslations();
     registerApiErrorHandler();
     initializeApi();
@@ -210,6 +210,7 @@ window.addEventListener('DOMContentLoaded', () => {
     initializeMailPoetIntegration();
     initializeWordPressIntegration();
     initializeWooCommerceIntegration();
-    ReactDOM.render(<Editor />, root);
+    const root = createRoot(container);
+    root.render(<Editor />);
   }
 });
