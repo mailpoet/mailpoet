@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { dispatch, select, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
@@ -97,8 +97,8 @@ function boot() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const root = document.getElementById('mailpoet_automation_analytics');
-  if (!root) {
+  const container = document.getElementById('mailpoet_automation_analytics');
+  if (!container) {
     return;
   }
   createStore();
@@ -109,5 +109,6 @@ window.addEventListener('DOMContentLoaded', () => {
   initializeWordPressIntegration();
   registerApiErrorHandler();
   boot();
-  ReactDOM.render(<App />, root);
+  const root = createRoot(container);
+  root.render(<App />);
 });
