@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { HashRouter, Route, Switch } from 'react-router-dom';
 
 import { SubscriberList } from 'subscribers/list.tsx';
@@ -31,5 +31,6 @@ const container = document.getElementById('subscribers_container');
 
 if (container) {
   registerTranslations();
-  ReactDOM.render(<App />, container);
+  const root = createRoot(container);
+  root.render(<App />);
 }
