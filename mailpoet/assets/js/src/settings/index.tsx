@@ -1,5 +1,5 @@
 import 'parsleyjs';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { initStore } from './store';
 import { Settings } from './settings';
@@ -17,5 +17,6 @@ const container = document.getElementById('settings_container');
 if (container) {
   registerTranslations();
   initStore();
-  ReactDOM.render(<Entry />, container);
+  const root = createRoot(container);
+  root.render(<Entry />);
 }
