@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { HashRouter, Route, Switch, useHistory } from 'react-router-dom';
 
 import { GlobalContext, useGlobalContextValue } from 'context';
@@ -62,5 +62,6 @@ function App(): JSX.Element {
 if (container) {
   registerTranslations();
   createStore();
-  ReactDOM.render(<App />, container);
+  const root = createRoot(container);
+  root.render(<App />);
 }
