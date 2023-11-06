@@ -87,7 +87,8 @@ class Renderer {
     $language = $this->wp->getBloginfo('language');
     $metaRobots = $preview ? '<meta name="robots" content="noindex, nofollow" />' : '';
     $subject = $subject ?: $newsletter->getSubject();
-    $wpPost = $newsletter->getWpPost();
+    $wpPostEntity = $newsletter->getWpPost();
+    $wpPost = $wpPostEntity ? $wpPostEntity->getWpPostInstance() : null;
     if ($this->featuresController->isSupported(FeaturesController::GUTENBERG_EMAIL_EDITOR) && $wpPost instanceof \WP_Post) {
       $renderedNewsletter = $this->guntenbergRenderer->render($wpPost, $subject, $newsletter->getPreheader(), $language, $metaRobots);
     } else {
