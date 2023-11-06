@@ -21,9 +21,9 @@ class Initializer {
   }
 
   public function unregisterCoreBlocksRenderers(BlocksRegistry $blocksRegistry): void {
-    $blocksRegistry->removeBlockRenderer('core/paragraph', new Renderer\Blocks\Paragraph());
-    $blocksRegistry->removeBlockRenderer('core/heading', new Renderer\Blocks\Heading());
-    $blocksRegistry->removeBlockRenderer('core/column', new Renderer\Blocks\Column());
-    $blocksRegistry->removeBlockRenderer('core/columns', new Renderer\Blocks\Columns());
+    $blocksRegistry->removeBlockRenderer('core/paragraph');
+    $blocksRegistry->removeBlockRenderer('core/heading');
+    $blocksRegistry->removeBlockRenderer('core/column');
+    $blocksRegistry->removeBlockRenderer('core/columns');
   }
 }
