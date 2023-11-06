@@ -20,6 +20,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\WpPostEntity;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
@@ -248,11 +249,13 @@ class NewsletterRepositoryTest extends \MailPoetTest {
   public function testItDeletesWpPostsBulkDelete() {
     $newsletter1 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENDING);
     $post1Id = $this->wp->wpInsertPost(['post_title' => 'Post 1']);
-    $newsletter1->setWpPostId($post1Id);
+    $newsletter1->setWpPost($this->entityManager->getReference(WpPostEntity::class, $post1Id));
     $newsletter2 = $this->createNewsletter(NewsletterEntity::TYPE_WELCOME, NewsletterEntity::STATUS_SENDING);
     $post2Id = $this->wp->wpInsertPost(['post_title' => 'Post 2']);
-    $newsletter2->setWpPostId($post2Id);
+    $newsletter2->setWpPost($this->entityManager->getReference(WpPostEntity::class, $post2Id));
     $newsletter3 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENDING);
+
+    $blogPost = $this->wp->wpInsertPost(['post_title' => 'Regular blog post']);
 
     verify($this->wp->getPost($post1Id))->instanceOf(\WP_Post::class);
     verify($this->wp->getPost($post2Id))->instanceOf(\WP_Post::class);
@@ -263,6 +266,7 @@ class NewsletterRepositoryTest extends \MailPoetTest {
     $this->repository->bulkDelete([$newsletter1->getId(), $newsletter2->getId(), $newsletter3->getId()]);
     verify($this->wp->getPost($post1Id))->null();
     verify($this->wp->getPost($post2Id))->null();
+    verify($this->wp->getPost($blogPost))->instanceOf(\WP_Post::class);
   }
 
   public function testItGetsArchiveNewslettersForSegments() {

@@ -12,6 +12,7 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\WpPostEntity;
 use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -420,7 +421,10 @@ class Newsletter {
     if (isset($this->data['parent'])) $newsletter->setParent($this->data['parent']);
     if (isset($this->data['deleted_at'])) $newsletter->setDeletedAt($this->data['deleted_at']);
     if (isset($this->data['ga_campaign'])) $newsletter->setGaCampaign($this->data['ga_campaign']);
-    if (isset($this->data['wp_post_id'])) $newsletter->setWpPostId($this->data['wp_post_id']);
+    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
+    if (isset($this->data['wp_post_id'])) {
+      $newsletter->setWpPost($entityManager->getReference(WpPostEntity::class, intval($this->data['wp_post_id'])));
+    }
 
     if (isset($this->data['unsubscribeToken'])) {
       $newsletter->setUnsubscribeToken($this->data['unsubscribeToken']);

@@ -468,10 +468,10 @@ class NewslettersRepository extends Repository {
 
       // Fetch WP Posts IDs and delete them
       /** @var int[] $wpPostsIds */
-      $wpPostsIds = $entityManager->createQueryBuilder()->select('n.wpPostId')
+      $wpPostsIds = $entityManager->createQueryBuilder()->select('wpp.id')
         ->from(NewsletterEntity::class, 'n')
+        ->join('n.wpPost', 'wpp')
         ->where('n.id IN (:ids)')
-        ->andWhere('n.wpPostId IS NOT NULL')
         ->setParameter('ids', $ids)
         ->getQuery()->getSingleColumnResult();
       foreach ($wpPostsIds as $wpPostId) {

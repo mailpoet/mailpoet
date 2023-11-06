@@ -28,7 +28,7 @@ class EmailApiController {
    * @return array - MailPoet specific email data that will be attached to the post API response
    */
   public function getEmailData($postEmailData): array {
-    $newsletter = $this->newsletterRepository->findOneBy(['wpPostId' => $postEmailData['id']]);
+    $newsletter = $this->newsletterRepository->findOneBy(['wpPost' => $postEmailData['id']]);
     return [
       'id' => $newsletter ? $newsletter->getId() : null,
       'subject' => $newsletter ? $newsletter->getSubject() : '',

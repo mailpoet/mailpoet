@@ -9,6 +9,7 @@ use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\WpPostEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
@@ -201,8 +202,10 @@ class NewsletterSaveController {
       $newPostId = $this->wp->wpInsertPost([
         'post_content' => $post->post_content, // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         'post_type' => $post->post_type, // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        // translators: %s is the campaign name of the mail which has been copied.
+        'post_title' => sprintf(__('Copy of %s', 'mailpoet'), $post->post_title), // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       ]);
-      $duplicate->setWpPostId($newPostId);
+      $duplicate->setWpPost($this->entityManager->getReference(WpPostEntity::class, $newPostId));
     }
 
     // create relationships between duplicate and segments

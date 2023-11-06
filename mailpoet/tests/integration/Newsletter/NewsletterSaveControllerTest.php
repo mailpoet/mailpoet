@@ -10,6 +10,7 @@ use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\WpPostEntity;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -336,12 +337,13 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
   public function testItDuplicatesNewsletterWithAssociatedPost() {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
     $wp = $this->diContainer->get(WPFunctions::class);
-    $postId = $wp->wpInsertPost(['post_content' => 'newsletter content']);
-    $newsletter->setWpPostId($postId);
+    $postId = $wp->wpInsertPost(['post_content' => 'newsletter content', 'post_title' => 'Newsletter Title']);
+    $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $postId));
     $this->entityManager->flush();
     $duplicate = $this->saveController->duplicate($newsletter);
     verify($duplicate->getWpPostId())->notEquals($postId);
     $post = $wp->getPost($duplicate->getWpPostId());
+    verify($duplicate->getCampaignName())->equals('Copy of Newsletter Title');
     verify($post->post_content)->equals('newsletter content'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
