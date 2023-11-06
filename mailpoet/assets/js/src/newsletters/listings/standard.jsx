@@ -75,7 +75,9 @@ const messages = {
 
 const columns = [
   {
-    name: 'subject',
+    name: MailPoet.FeaturesController.isSupported('gutenberg_email_editor')
+      ? 'name'
+      : 'subject',
     label: MailPoet.FeaturesController.isSupported('gutenberg_email_editor')
       ? __('Name', 'mailpoet')
       : __('Subject', 'mailpoet'),

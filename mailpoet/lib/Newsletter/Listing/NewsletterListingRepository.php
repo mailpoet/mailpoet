@@ -238,6 +238,11 @@ class NewsletterListingRepository extends ListingRepository {
   }
 
   protected function applySorting(QueryBuilder $queryBuilder, string $sortBy, string $sortOrder) {
+    if ($sortBy === 'name') {
+      $queryBuilder->addSelect('CONCAT(COALESCE(wpPost.postTitle, \'\'), n.subject) AS HIDDEN sortingName');
+      $queryBuilder->addOrderBy("sortingName", $sortOrder);
+      return;
+    }
     if ($sortBy === 'sentAt') {
       $queryBuilder->addSelect('CASE WHEN n.sentAt IS NULL THEN 1 ELSE 0 END AS HIDDEN sentAtIsNull');
       $queryBuilder->addOrderBy('sentAtIsNull', 'DESC');
