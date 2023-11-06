@@ -3,9 +3,10 @@
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
+use MailPoet\EmailEditor\Engine\SettingsController;
 
 class Columns implements BlockRenderer {
-  public function render($blockContent, array $parsedBlock): string {
+  public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $content = '';
     foreach ($parsedBlock['innerBlocks'] ?? [] as $block) {
       $content .= render_block($block);
@@ -14,15 +15,15 @@ class Columns implements BlockRenderer {
     return str_replace(
       '{columns_content}',
       $content,
-      $this->prepareColumnsTemplate($parsedBlock)
+      $this->prepareColumnsTemplate($parsedBlock, $settingsController)
     );
   }
 
   /**
    * Based on MJML <mj-section>
    */
-  private function prepareColumnsTemplate(array $parsedBlock): string {
-    $width = $parsedBlock['email_attrs']['width'] ?? '640px';
+  private function prepareColumnsTemplate(array $parsedBlock, SettingsController $settingsController): string {
+    $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
     $backgroundColor = $parsedBlock['attrs']['style']['color']['background'] ?? 'none';
     $paddingBottom = $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px';
     $paddingLeft = $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px';

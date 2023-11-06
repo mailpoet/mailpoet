@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\EmailEditor;
+use MailPoet\EmailEditor\Engine\SettingsController;
 
 class ColumnsTest extends \MailPoetTest {
   /** @var Columns */
@@ -40,13 +41,17 @@ class ColumnsTest extends \MailPoetTest {
     ],
   ];
 
+  /** @var SettingsController */
+  private $settingsController;
+
   public function _before() {
     $this->diContainer->get(EmailEditor::class)->initialize();
     $this->columnsRenderer = new Columns();
+    $this->settingsController = $this->diContainer->get(SettingsController::class);
   }
 
   public function testItRendersInnerColumn() {
-    $rendered = $this->columnsRenderer->render('', $this->parsedColumns);
+    $rendered = $this->columnsRenderer->render('', $this->parsedColumns, $this->settingsController);
     verify($rendered)->stringContainsString('Column 1');
     verify($rendered)->stringContainsString('width:784px;');
     verify($rendered)->stringContainsString('max-width:784px;');
@@ -69,7 +74,7 @@ class ColumnsTest extends \MailPoetTest {
         ],
       ],
     ];
-    $rendered = $this->columnsRenderer->render('', $parsedColumns);
+    $rendered = $this->columnsRenderer->render('', $parsedColumns, $this->settingsController);
     verify($rendered)->stringContainsString('background:#abcdef;');
     verify($rendered)->stringContainsString('background-color:#abcdef;');
     verify($rendered)->stringContainsString('padding-bottom:5px;');

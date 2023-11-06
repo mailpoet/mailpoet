@@ -125,4 +125,16 @@ class SettingsController {
       ],
     ];
   }
+
+  public function getLayoutWidthWithoutPadding(): string {
+    $layoutStyles = $this->getEmailLayoutStyles();
+    $width = $this->parseNumberFromStringWithPixels($layoutStyles['width']);
+    $width -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['left']);
+    $width -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['right']);
+    return "{$width}px";
+  }
+
+  private function parseNumberFromStringWithPixels(string $string): float {
+    return (float)str_replace('px', '', $string);
+  }
 }

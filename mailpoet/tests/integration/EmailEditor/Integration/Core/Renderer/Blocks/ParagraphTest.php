@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\EmailEditor;
+use MailPoet\EmailEditor\Engine\SettingsController;
 
 class ParagraphTest extends \MailPoetTest {
   /** @var Paragraph */
@@ -22,13 +23,17 @@ class ParagraphTest extends \MailPoetTest {
      ],
   ];
 
+  /** @var SettingsController */
+  private $settingsController;
+
   public function _before() {
     $this->diContainer->get(EmailEditor::class)->initialize();
     $this->paragraphRenderer = new Paragraph();
+    $this->settingsController = $this->diContainer->get(SettingsController::class);
   }
 
   public function testItRendersContent(): void {
-    $rendered = $this->paragraphRenderer->render('<p>Lorem Ipsum</p>', $this->parsedParagraph);
+    $rendered = $this->paragraphRenderer->render('<p>Lorem Ipsum</p>', $this->parsedParagraph, $this->settingsController);
     verify($rendered)->stringNotContainsString('width:'); // Paragraph should not contain width
     verify($rendered)->stringContainsString('Lorem Ipsum');
     verify($rendered)->stringContainsString('font-size:16px;');
