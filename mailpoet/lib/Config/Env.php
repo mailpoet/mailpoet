@@ -23,7 +23,10 @@ class Env {
   public static $languagesPath;
   public static $libPath;
   public static $pluginPrefix;
+  /** @var string WP DB prefix + plugin prefix */
   public static $dbPrefix;
+  /** @var string WP DB prefix only */
+  public static $wpDbPrefix;
   public static $dbHost;
   public static $dbIsIpv6;
   public static $dbSocket;
@@ -78,6 +81,7 @@ class Env {
 
     global $wpdb;
     self::$dbPrefix = $wpdb->prefix . self::$pluginPrefix;
+    self::$wpDbPrefix = $wpdb->prefix;
     self::$dbHost = $host;
     self::$dbIsIpv6 = $isIpv6;
     self::$dbPort = $port;
