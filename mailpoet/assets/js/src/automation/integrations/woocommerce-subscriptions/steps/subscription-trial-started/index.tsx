@@ -29,7 +29,7 @@ export const step: StepType = {
       }}
     >
       {__(
-        'Starting an automation when a subscription trial started is a premium feature.',
+        'Starting an automation when a subscription trial starts is a premium feature.',
         'mailpoet',
       )}
     </PremiumModalForStepEdit>
