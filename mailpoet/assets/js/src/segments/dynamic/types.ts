@@ -234,6 +234,7 @@ export type WindowProductCategories = {
 export type WindowNewslettersList = {
   sent_at: string;
   subject: string;
+  name: string;
   id: string;
 }[];
 

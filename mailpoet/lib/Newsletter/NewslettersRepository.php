@@ -515,9 +515,10 @@ class NewslettersRepository extends Repository {
    */
   public function getStandardNewsletterList(): array {
     return $this->entityManager->createQueryBuilder()
-      ->select('PARTIAL n.{id,subject,sentAt}')
+      ->select('PARTIAL n.{id,subject,sentAt}, PARTIAL wpPost.{id, postTitle}')
       ->addSelect('CASE WHEN n.sentAt IS NULL THEN 1 ELSE 0 END as HIDDEN sent_at_is_null')
       ->from(NewsletterEntity::class, 'n')
+      ->leftJoin('n.wpPost', 'wpPost')
       ->where('n.type = :typeStandard')
       ->andWhere('n.deletedAt IS NULL')
       ->orderBy('sent_at_is_null', 'DESC')

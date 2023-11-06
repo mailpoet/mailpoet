@@ -587,4 +587,13 @@ class NewsletterEntity {
     }
     return $wpPost->getPostTitle();
   }
+
+  /**
+   * Used for cases when we present newsletter by name.
+   * Newsletters created via legacy editor have only subjects.
+   */
+  public function getPresentableName(): string {
+    $campaignName = $this->getCampaignName();
+    return $campaignName ?: $this->getSubject();
+  }
 }
