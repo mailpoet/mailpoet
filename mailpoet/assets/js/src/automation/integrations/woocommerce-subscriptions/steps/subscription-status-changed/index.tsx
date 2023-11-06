@@ -7,7 +7,7 @@ const keywords = [
   __('woocommerce', 'mailpoet'),
   __('subscriptions', 'mailpoet'),
   __('status', 'mailpoet'),
-  __('change', 'mailpoet'),
+  __('changed', 'mailpoet'),
 ];
 
 export const step: StepType = {
@@ -32,7 +32,7 @@ export const step: StepType = {
       }}
     >
       {__(
-        'Starting an automation by changing the status of an subscription is a premium feature.',
+        'Starting an automation by changing the status of a subscription is a premium feature.',
         'mailpoet',
       )}
     </PremiumModalForStepEdit>
