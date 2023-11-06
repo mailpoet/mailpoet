@@ -179,11 +179,12 @@ class NewsletterListingRepository extends ListingRepository {
   }
 
   protected function applySelectClause(QueryBuilder $queryBuilder) {
-    $queryBuilder->select("PARTIAL n.{id,subject,hash,type,status,sentAt,updatedAt,deletedAt,wpPostId}");
+    $queryBuilder->select("PARTIAL n.{id,subject,hash,type,status,sentAt,updatedAt,deletedAt}, PARTIAL wpPost.{id,postTitle}");
   }
 
   protected function applyFromClause(QueryBuilder $queryBuilder) {
-    $queryBuilder->from(NewsletterEntity::class, 'n');
+    $queryBuilder->from(NewsletterEntity::class, 'n')
+      ->leftJoin('n.wpPost', 'wpPost');
   }
 
   protected function applyGroup(QueryBuilder $queryBuilder, string $group) {
