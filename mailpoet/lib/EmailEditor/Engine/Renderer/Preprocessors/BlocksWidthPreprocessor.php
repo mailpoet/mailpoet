@@ -18,7 +18,7 @@ class BlocksWidthPreprocessor implements Preprocessor {
     $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['left'] ?? '0px');
     $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['right'] ?? '0px');
     foreach ($parsedBlocks as $key => $block) {
-      $width = $this->convertWithToPixels($block['attrs']['width'] ?? '100%', $layoutWidth);
+      $width = $this->convertWidthToPixels($block['attrs']['width'] ?? '100%', $layoutWidth);
 
       if ($block['blockName'] === 'core/columns') {
         // Calculate width of the columns based on the layout width and padding
@@ -45,7 +45,7 @@ class BlocksWidthPreprocessor implements Preprocessor {
   }
 
   // TODO: We could add support for other units like em, rem, etc.
-  private function convertWithToPixels(string $currentWidth, float $layoutWidth): float {
+  private function convertWidthToPixels(string $currentWidth, float $layoutWidth): float {
     $width = $layoutWidth;
     if (strpos($currentWidth, '%') !== false) {
       $width = (float)str_replace('%', '', $currentWidth);
@@ -68,7 +68,7 @@ class BlocksWidthPreprocessor implements Preprocessor {
     foreach ($columns as $column) {
       if (isset($column['attrs']['width']) && !empty($column['attrs']['width'])) {
         $columnsCountWithDefinedWidth++;
-        $definedColumnWidth += $this->convertWithToPixels($column['attrs']['width'], $columnsWidth);
+        $definedColumnWidth += $this->convertWidthToPixels($column['attrs']['width'], $columnsWidth);
       }
     }
 
