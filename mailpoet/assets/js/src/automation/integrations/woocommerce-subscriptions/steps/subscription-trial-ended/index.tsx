@@ -14,7 +14,7 @@ export const step: StepType = {
   group: 'triggers',
   title: () => __('Woo Subscription trial ended', 'mailpoet'),
   description: () =>
-    __('Start the automation when a subscription trial ended.', 'mailpoet'),
+    __('Start the automation when a subscription trial ends.', 'mailpoet'),
 
   subtitle: () => __('Trigger', 'mailpoet'),
   keywords,
