@@ -36,7 +36,7 @@ export function EmailOpenStatisticsFields({
       ? MailPoet.Date.format(newsletter.sent_at)
       : MailPoet.I18n.t('notSentYet');
     return {
-      label: newsletter.subject,
+      label: newsletter.name,
       tag: sentAt,
       value: Number(newsletter.id),
     };

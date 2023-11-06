@@ -44,7 +44,7 @@ export function EmailClickStatisticsFields({
       ? MailPoet.Date.format(newsletter.sent_at)
       : __('Not sent yet', 'mailpoet');
     return {
-      label: newsletter.subject,
+      label: newsletter.name,
       tag: sentAt,
       value: Number(newsletter.id),
     };
