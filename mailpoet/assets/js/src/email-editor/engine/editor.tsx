@@ -5,7 +5,7 @@ import { registerCoreBlocks } from '@wordpress/block-library';
 import { Popover, SlotFillProvider } from '@wordpress/components';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import { EntityProvider } from '@wordpress/core-data';
-import { Hooks } from '../../hooks';
+import { addFilter } from '@wordpress/hooks';
 import { BlockEditor } from './components/block-editor';
 import { createStore, storeName } from './store';
 import { initHooks } from './hooks';
@@ -38,7 +38,7 @@ function Editor() {
  * Disable nesting columns inside columns by using WP hooks
  */
 function disableNestedColumns() {
-  Hooks.addFilter(
+  addFilter(
     'blocks.registerBlockType',
     'mailpoet-email-editor/change-columns-allowed-nesting',
     (settings, name) => {
