@@ -11,8 +11,16 @@ use MailPoetVendor\Doctrine\ORM\Mapping\ClassMetadataInfo;
 // because we need to add prefix at runtime, not at metadata dump (which is included in builds).
 // @see https://www.doctrine-project.org/projects/doctrine-orm/en/2.5/cookbook/sql-table-prefixes.html
 class TablePrefixMetadataFactory extends ClassMetadataFactory {
+  // WordPress tables that are used by MailPoet via Doctrine
+  const WP_TABLES = [
+    'posts',
+  ];
+
   /** @var string */
   private $prefix;
+
+  /** @var string */
+  private $wpDbPrefix;
 
   /** @var array */
   private $prefixedMap = [];
@@ -22,6 +30,7 @@ class TablePrefixMetadataFactory extends ClassMetadataFactory {
       throw new \RuntimeException('DB table prefix not initialized');
     }
     $this->prefix = Env::$dbPrefix;
+    $this->wpDbPrefix = Env::$wpDbPrefix;
     $this->setProxyClassNameResolver(new ProxyClassNameResolver());
   }
 
@@ -51,15 +60,29 @@ class TablePrefixMetadataFactory extends ClassMetadataFactory {
   public function addPrefix(ClassMetadata $classMetadata) {
     if (!$classMetadata->isInheritanceTypeSingleTable() || $classMetadata->getName() === $classMetadata->rootEntityName) {
       $classMetadata->setPrimaryTable([
-        'name' => $this->prefix . $classMetadata->getTableName(),
+        'name' => $this->createPrefixedName($classMetadata->getTableName()),
       ]);
     }
 
     foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping) {
       if ($mapping['type'] === ClassMetadataInfo::MANY_TO_MANY && $mapping['isOwningSide']) {
+        /** @var string $mappedTableName */
         $mappedTableName = $mapping['joinTable']['name'];
-        $classMetadata->associationMappings[$fieldName]['joinTable']['name'] = $this->prefix . $mappedTableName;
+        $classMetadata->associationMappings[$fieldName]['joinTable']['name'] = $this->createPrefixedName($mappedTableName);
       }
     }
+  }
+
+  /**
+   * MailPoet tables are prefixed by WP prefix + plugin prefix.
+   * For entities for WP tables we use WP prefix only.
+   */
+  private function createPrefixedName(string $tableName): string {
+    // Use WP prefix for WP tables
+    if (in_array($tableName, self::WP_TABLES, true)) {
+      return $this->wpDbPrefix . $tableName;
+    }
+    // Use WP + plugin prefix for MailPoet tables
+    return $this->prefix . $tableName;
   }
 }
