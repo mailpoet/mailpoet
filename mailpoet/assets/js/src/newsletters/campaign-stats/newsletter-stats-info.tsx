@@ -146,7 +146,14 @@ function NewsletterStatsInfo({ newsletter }: Props) {
   return (
     <Grid.ThreeColumns className="mailpoet-stats-info">
       <div>
-        <Heading level={1}>{newsletter.subject}</Heading>
+        <Heading level={1}>
+          {newsletter.campaign_name
+            ? newsletter.campaign_name
+            : newsletter.subject}
+          {newsletter.campaign_name && (
+            <span>{` (${newsletter.subject})`}</span>
+          )}
+        </Heading>
         <div>
           <Tag isInverted={false}>
             {getNewsletterStatusString(newsletter.status)}
