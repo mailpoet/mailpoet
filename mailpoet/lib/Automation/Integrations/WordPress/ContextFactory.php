@@ -74,7 +74,12 @@ class ContextFactory {
    */
   private function getTaxonomies(): array {
     /** @var \WP_Taxonomy[] $taxonomies */
-    $taxonomies = $this->wp->getTaxonomies([], 'object');
+    $taxonomies = array_filter(
+      $this->wp->getTaxonomies([], 'object'),
+      function($object): bool {
+        return $object instanceof \WP_Taxonomy;
+      }
+    );
     return array_values(array_map(
       function(\WP_Taxonomy $taxonomy): array {
         return [
