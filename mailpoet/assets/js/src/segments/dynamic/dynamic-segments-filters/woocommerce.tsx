@@ -67,7 +67,12 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (formItems.action === WooCommerceActionTypes.CUSTOMER_IN_COUNTRY) {
     return validateCustomerInCountry(formItems);
   }
-  if (formItems.action === WooCommerceActionTypes.NUMBER_OF_ORDERS) {
+  if (
+    [
+      WooCommerceActionTypes.NUMBER_OF_ORDERS,
+      WooCommerceActionTypes.NUMBER_OF_ORDERS_WITH_COUPON,
+    ].includes(formItems.action as WooCommerceActionTypes)
+  ) {
     return validateNumberOfOrders(formItems);
   }
   if (formItems.action === WooCommerceActionTypes.TOTAL_SPENT) {
@@ -113,6 +118,7 @@ const componentsMap = {
   [WooCommerceActionTypes.CUSTOMER_IN_CITY]: TextField,
   [WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE]: TextField,
   [WooCommerceActionTypes.NUMBER_OF_ORDERS]: NumberOfOrdersFields,
+  [WooCommerceActionTypes.NUMBER_OF_ORDERS_WITH_COUPON]: NumberOfOrdersFields,
   [WooCommerceActionTypes.NUMBER_OF_REVIEWS]: NumberOfReviewsFields,
   [WooCommerceActionTypes.PURCHASE_DATE]: DateFieldsDefaultBefore,
   [WooCommerceActionTypes.PURCHASED_PRODUCT]: PurchasedProductFields,

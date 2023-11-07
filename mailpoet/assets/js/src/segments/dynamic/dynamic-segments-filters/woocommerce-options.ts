@@ -5,6 +5,7 @@ import { SegmentTypes } from '../types';
 // WooCommerce
 export enum WooCommerceActionTypes {
   NUMBER_OF_ORDERS = 'numberOfOrders',
+  NUMBER_OF_ORDERS_WITH_COUPON = 'numberOfOrdersWithCoupon',
   NUMBER_OF_REVIEWS = 'numberOfReviews',
   PURCHASED_CATEGORY = 'purchasedCategory',
   PURCHASE_DATE = 'purchaseDate',
@@ -45,6 +46,11 @@ export const WooCommerceOptions = [
   {
     value: WooCommerceActionTypes.NUMBER_OF_ORDERS,
     label: __('number of orders', 'mailpoet'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.NUMBER_OF_ORDERS_WITH_COUPON,
+    label: __('number of orders with coupon code', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
