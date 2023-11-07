@@ -99,7 +99,7 @@ export function SegmentTemplates(): JSX.Element {
                   name={template.name}
                   description={template.description}
                   category={getCategoryNameBySlug(template.category)}
-                  isEssential={template.isEssential}
+                  badge={template.isEssential ? 'essential' : undefined}
                   onClick={() => void createFromTemplate(template)}
                 />
               ))}

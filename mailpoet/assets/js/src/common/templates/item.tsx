@@ -1,21 +1,13 @@
 import { EventHandler, MouseEvent } from 'react';
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Icon,
-  Tooltip,
-} from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
-import { starFilled } from '@wordpress/icons';
+import { Button, Card, CardBody, CardHeader } from '@wordpress/components';
 import { Tag } from '@woocommerce/components';
+import { ItemBadge } from './item-badge';
 
 type Props = {
   name: string;
   description: string;
   category: string;
-  isEssential?: boolean;
+  badge?: 'essential' | 'coming-soon' | 'premium';
   onClick?: EventHandler<MouseEvent<HTMLDivElement>>;
 };
 
@@ -23,19 +15,13 @@ export function Item({
   name,
   description,
   category,
-  isEssential = false,
+  badge,
   onClick,
 }: Props): JSX.Element {
   return (
     <Card className="mailpoet-templates-card" onClick={onClick}>
       <CardHeader className="mailpoet-templates-card-header">
-        {isEssential && (
-          <Tooltip text={__('Essential', 'mailpoet')}>
-            <div className="mailpoet-templates-badge-essential">
-              <Icon icon={starFilled} size={18} />
-            </div>
-          </Tooltip>
-        )}
+        {badge && <ItemBadge type={badge} />}
         <Button variant="link">{name}</Button>
       </CardHeader>
       <CardBody className="mailpoet-templates-card-body">
