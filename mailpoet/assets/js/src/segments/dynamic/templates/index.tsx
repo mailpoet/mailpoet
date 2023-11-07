@@ -3,18 +3,18 @@ import { Button, SearchControl, TabPanel } from '@wordpress/components';
 import { Badge } from '@woocommerce/components';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
-import { TemplateListItem } from 'segments/dynamic/templates/components/template-list-item';
 import {
   templates,
   templateCategories,
+  getCategoryNameBySlug,
 } from 'segments/dynamic/templates/templates';
 import * as ROUTES from 'segments/routes';
-import { useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
 import { MailPoet } from 'mailpoet';
 import { BackButton, PageHeader } from '../../../common/page-header';
-import { Footer, Grid } from '../../../common/templates';
+import { Footer, Grid, Item } from '../../../common/templates';
 
 const tabs = [
   {
@@ -49,6 +49,8 @@ export function SegmentTemplates(): JSX.Element {
     (select) => select(storeName).getErrors(),
     [],
   );
+
+  const { createFromTemplate } = useDispatch(storeName);
 
   const trackNewCustomSegment = (): void => {
     MailPoet.trackEvent('Segments > New empty segment');
@@ -93,7 +95,13 @@ export function SegmentTemplates(): JSX.Element {
                   tab.name === 'all' || template.category === tab.name,
               )
               .map((template) => (
-                <TemplateListItem key={template.name} template={template} />
+                <Item
+                  name={template.name}
+                  description={template.description}
+                  category={getCategoryNameBySlug(template.category)}
+                  isEssential={template.isEssential}
+                  onClick={() => void createFromTemplate(template)}
+                />
               ))}
           </Grid>
         )}
