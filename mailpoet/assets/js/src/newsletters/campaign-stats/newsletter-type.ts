@@ -2,6 +2,7 @@ export type NewsletterType = {
   id: string;
   total_sent: number;
   subject: string;
+  campaign_name: string;
   segments: { name: string; id?: string }[];
   queue: {
     scheduled_at: string;
