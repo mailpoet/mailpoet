@@ -32,10 +32,14 @@ class UnsubscribeTokensTest extends \MailPoetTest {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  /** @var UnsubscribeTokens */
+  private $worker;
+
   public function _before() {
     parent::_before();
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->worker = $this->diContainer->get(UnsubscribeTokens::class);
 
     $this->subscriberWithToken = (new SubscriberFactory())
       ->withEmail('subscriber1@test.com')
@@ -62,8 +66,7 @@ class UnsubscribeTokensTest extends \MailPoetTest {
 
   public function testItAddsTokensToSubscribers() {
     verify($this->subscriberWithoutToken->getUnsubscribeToken())->null();
-    $worker = new UnsubscribeTokens();
-    $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
+    $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $subscriberWithToken = $this->subscribersRepository->findOneById($this->subscriberWithToken->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $subscriberWithToken);
     $subscriberWithoutToken = $this->subscribersRepository->findOneById($this->subscriberWithoutToken->getId());
@@ -74,8 +77,7 @@ class UnsubscribeTokensTest extends \MailPoetTest {
 
   public function testItAddsTokensToNewsletters() {
     verify($this->newsletterWithoutToken->getUnsubscribeToken())->null();
-    $worker = new UnsubscribeTokens();
-    $worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
+    $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
     $newsletterWithToken = $this->newslettersRepository->findOneById($this->newsletterWithToken->getId());
     $newsletterWithoutToken = $this->newslettersRepository->findOneById($this->newsletterWithoutToken->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterWithToken);

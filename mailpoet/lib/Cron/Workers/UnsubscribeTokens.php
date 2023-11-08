@@ -1,13 +1,13 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Cron\Workers;
 
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Util\Security;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -15,6 +15,22 @@ class UnsubscribeTokens extends SimpleWorker {
   const TASK_TYPE = 'unsubscribe_tokens';
   const BATCH_SIZE = 1000;
   const AUTOMATIC_SCHEDULING = false;
+
+  /** @var Security */
+  private $security;
+
+  /** @var EntityManager */
+  private $entityManager;
+
+  public function __construct(
+    WPFunctions $wp,
+    Security $security,
+    EntityManager $entityManager
+  ) {
+    parent::__construct($wp);
+    $this->security = $security;
+    $this->entityManager = $entityManager;
+  }
 
   public function processTaskStrategy(ScheduledTaskEntity $task, $timer) {
     $meta = $task->getMeta();
@@ -48,10 +64,7 @@ class UnsubscribeTokens extends SimpleWorker {
   }
 
   private function addTokens($entityClass, &$lastProcessedId = 0) {
-    $security = ContainerWrapper::getInstance()->get(Security::class);
-    $entityManager = ContainerWrapper::getInstance()->get(EntityManager::class);
-
-    $queryBuilder = $entityManager->createQueryBuilder();
+    $queryBuilder = $this->entityManager->createQueryBuilder();
 
     $entities = $queryBuilder
       ->select('PARTIAL e.{id}')
@@ -70,11 +83,11 @@ class UnsubscribeTokens extends SimpleWorker {
 
     foreach ($entities as $entity) {
       $lastProcessedId = $entity->getId();
-      $entity->setUnsubscribeToken($security->generateUnsubscribeTokenByEntity($entity));
-      $entityManager->persist($entity);
+      $entity->setUnsubscribeToken($this->security->generateUnsubscribeTokenByEntity($entity));
+      $this->entityManager->persist($entity);
     }
 
-    $entityManager->flush();
+    $this->entityManager->flush();
 
     return count($entities);
   }
