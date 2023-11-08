@@ -408,7 +408,7 @@ class FilterDataMapper {
       }
       $filterData['country_code'] = $data['country_code'];
       $filterData['operator'] = $data['operator'] ?? DynamicSegmentFilterData::OPERATOR_ANY;
-    } elseif ($data['action'] === WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS) {
+    } elseif (in_array($data['action'], WooCommerceNumberOfOrders::ACTIONS)) {
       $this->filterHelper->validateDaysPeriodData($data);
       if (
         !isset($data['number_of_orders_type'])
