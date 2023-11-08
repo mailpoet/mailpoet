@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { EventHandler, MouseEvent } from 'react';
 import { Card, CardBody, CardHeader } from '@wordpress/components';
 import { Tag } from '@woocommerce/components';
@@ -10,6 +11,7 @@ type Props = {
   badge?: 'essential' | 'coming-soon' | 'premium';
   onClick?: EventHandler<MouseEvent<HTMLButtonElement>>;
   disabled?: boolean;
+  isBusy?: boolean;
 };
 
 export function Item({
@@ -19,14 +21,17 @@ export function Item({
   badge,
   onClick,
   disabled = false,
+  isBusy = false,
 }: Props): JSX.Element {
   return (
     <Card
       as="button"
-      className="mailpoet-templates-card"
+      className={classNames('mailpoet-templates-card', {
+        'mailpoet-templates-card-is-busy': isBusy,
+      })}
       onClick={onClick}
-      disabled={disabled}
-      aria-disabled={disabled}
+      disabled={disabled || isBusy}
+      aria-disabled={disabled || isBusy}
     >
       <CardHeader className="mailpoet-templates-card-header">
         {badge && <ItemBadge type={badge} />}
