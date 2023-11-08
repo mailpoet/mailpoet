@@ -38,7 +38,7 @@ export function Item({
         <div className="mailpoet-templates-card-header-title">{name}</div>
       </CardHeader>
       <CardBody className="mailpoet-templates-card-body">
-        <p>{description}</p>
+        <div className="mailpoet-templates-card-description">{description}</div>
         <Tag label={category} />
       </CardBody>
     </Card>
