@@ -1,6 +1,5 @@
-import { useCallback, useState } from 'react';
+import { ComponentProps, useCallback, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
-import { Button } from '@wordpress/components';
 import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
 import { AutomationTemplate } from '../config';
@@ -10,10 +9,18 @@ import {
   PremiumModal,
   premiumValidAndActive,
 } from '../../../common/premium-modal';
+import { Item } from '../../../common/templates';
 
-type TemplateListItemProps = {
-  template: AutomationTemplate;
-  heading?: 'h2' | 'h3';
+type Badge = ComponentProps<typeof Item>['badge'];
+
+const getBadge = (template: AutomationTemplate): Badge => {
+  if (template.type === 'coming-soon') {
+    return 'coming-soon';
+  }
+  if (template.type === 'premium') {
+    return 'premium';
+  }
+  return undefined;
 };
 
 const useCreateFromTemplate = () => {
@@ -42,10 +49,11 @@ const useCreateFromTemplate = () => {
   return [create, state] as const;
 };
 
-export function TemplateListItem({
-  template,
-  heading,
-}: TemplateListItemProps): JSX.Element {
+type Props = {
+  template: AutomationTemplate;
+};
+
+export function TemplateListItem({ template }: Props): JSX.Element {
   const [showPremium, setShowPremium] = useState(false);
   const [createAutomationFromTemplate, { loading, error, data }] =
     useCreateFromTemplate();
@@ -72,15 +80,16 @@ export function TemplateListItem({
     );
   }
 
-  const headingTag = heading ?? 'h2';
   return (
-    <li
-      className={`mailpoet-automation-template-list-item mailpoet-automation-template-list-item-${template.type}`}
-    >
+    <>
       {notice}
-      <Button
-        isBusy={loading}
+      <Item
+        name={template.name}
+        description={template.description}
+        category={template.category}
+        badge={getBadge(template)}
         disabled={template.type === 'coming-soon'}
+        isBusy={loading}
         onClick={() => {
           if (template.type === 'premium' && !premiumValidAndActive) {
             setShowPremium(true);
@@ -88,20 +97,7 @@ export function TemplateListItem({
           }
           void createAutomationFromTemplate(template.slug);
         }}
-      >
-        <div className="badge">
-          {template.type === 'coming-soon' && (
-            <span>{__('Coming soon', 'mailpoet')}</span>
-          )}
-          {template.type === 'premium' && (
-            <span>{__('Premium', 'mailpoet')}</span>
-          )}
-        </div>
-        {headingTag === 'h3' && <h3>{template.name}&nbsp;→</h3>}
-        {headingTag === 'h2' && <h2>{template.name}&nbsp;→</h2>}
-
-        <p>{template.description}</p>
-      </Button>
+      />
       {showPremium && (
         <PremiumModal
           onRequestClose={() => {
@@ -118,6 +114,6 @@ export function TemplateListItem({
           )}
         </PremiumModal>
       )}
-    </li>
+    </>
   );
 }

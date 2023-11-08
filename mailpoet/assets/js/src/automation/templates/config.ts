@@ -2,6 +2,7 @@ export type AutomationTemplate = {
   slug: string;
   name: string;
   description: string;
+  category: string;
   type: 'default' | 'free-only' | 'premium' | 'coming-soon';
 };
 
