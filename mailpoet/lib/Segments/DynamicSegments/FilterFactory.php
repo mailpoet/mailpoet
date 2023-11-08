@@ -271,7 +271,7 @@ class FilterFactory {
   private function wooCommerce(?string $action) {
     if ($action === WooCommerceProduct::ACTION_PRODUCT) {
       return $this->wooCommerceProduct;
-    } elseif ($action === WooCommerceNumberOfOrders::ACTION_NUMBER_OF_ORDERS) {
+    } elseif (in_array($action, WooCommerceNumberOfOrders::ACTIONS)) {
       return $this->wooCommerceNumberOfOrders;
     } elseif ($action === WooCommerceTotalSpent::ACTION_TOTAL_SPENT) {
       return $this->wooCommerceTotalSpent;

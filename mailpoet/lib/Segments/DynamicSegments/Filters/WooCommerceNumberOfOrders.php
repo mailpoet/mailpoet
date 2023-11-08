@@ -14,6 +14,12 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class WooCommerceNumberOfOrders implements Filter {
   const ACTION_NUMBER_OF_ORDERS = 'numberOfOrders';
+  const ACTION_NUMBER_OF_ORDERS_WITH_COUPON = 'numberOfOrdersWithCoupon';
+
+  const ACTIONS = [
+    self::ACTION_NUMBER_OF_ORDERS,
+    self::ACTION_NUMBER_OF_ORDERS_WITH_COUPON,
+  ];
 
   /** @var EntityManager */
   private $entityManager;
