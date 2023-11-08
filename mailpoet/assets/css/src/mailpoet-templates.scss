@@ -37,16 +37,21 @@
     grid-template-rows: auto 1fr;
   }
 
-  &:hover {
-    background: #fff;
+  &:hover,
+  &:focus {
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.15);
     color: inherit;
   }
 
-  &:focus {
-    border-color: #2271b1;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-    color: inherit;
+  // add focus ring in :after pseudo-element to cover badge edge
+  &:focus:after {
+    border-radius: inherit;
+    content: '';
+    inset: 0;
+    outline: var(--wp-admin-border-width-focus) solid
+      var(--wp-admin-theme-color);
+    pointer-events: none;
+    position: absolute;
   }
 }
 
