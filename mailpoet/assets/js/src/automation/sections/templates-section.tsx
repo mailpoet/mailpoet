@@ -19,11 +19,7 @@ export function TemplatesSection(): JSX.Element {
         </p>
         <ul className="mailpoet-section-template-list">
           {templates.map((template) => (
-            <TemplateListItem
-              key={template.slug}
-              template={template}
-              heading="h3"
-            />
+            <TemplateListItem key={template.slug} template={template} />
           ))}
         </ul>
         <Button variant="link" href={MailPoet.urls.automationTemplates}>
