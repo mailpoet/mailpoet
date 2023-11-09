@@ -2,7 +2,6 @@
 
 namespace MailPoet\REST\Automation\Automations;
 
-use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\REST\Automation\AutomationTest;
 
 require_once __DIR__ . '/../AutomationTest.php';
@@ -42,20 +41,20 @@ class AutomationTemplatesGetEndpointTest extends AutomationTest {
     //@ToDo: Once we have templates in other categories, we should make this test more specific.
     $result = $this->get(self::ENDPOINT_PATH, [
       'json' => [
-        'category' => AutomationTemplate::CATEGORY_WELCOME,
+        'category' => 'welcome',
       ],
     ]);
 
     $this->assertCount(4, $result['data']);
     $result = $this->get(self::ENDPOINT_PATH, [
       'json' => [
-        'category' => AutomationTemplate::CATEGORY_ABANDONED_CART,
+        'category' => 'abandoned-cart',
       ],
     ]);
     $this->assertCount(2, $result['data']);
     $result = $this->get(self::ENDPOINT_PATH, [
       'json' => [
-        'category' => AutomationTemplate::CATEGORY_WOOCOMMERCE,
+        'category' => 'woocommerce',
       ],
     ]);
     $this->assertCount(2, $result['data']);

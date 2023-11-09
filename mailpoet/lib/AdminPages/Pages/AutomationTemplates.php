@@ -5,6 +5,7 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Automation\Engine\Data\AutomationTemplate;
+use MailPoet\Automation\Engine\Data\AutomationTemplateCategory;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -49,6 +50,15 @@ class AutomationTemplates {
             return $template->toArray();
           },
           array_values($this->registry->getTemplates())
+        ),
+        'template_categories' => array_map(
+          function (AutomationTemplateCategory $category): array {
+            return [
+              'slug' => $category->getSlug(),
+              'name' => $category->getName(),
+            ];
+          },
+          array_values($this->registry->getTemplateCategories())
         ),
       ]
     );
