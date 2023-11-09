@@ -36,6 +36,17 @@ p {
   margin: 13px 0;
 }
 
+ul,
+ol,
+li {
+  margin: 0;
+}
+/* Wa want ensure the same design for all email clients */
+ul,
+ol {
+  padding-left: 40px;
+}
+
 /* https://www.emailonacid.com/blog/article/email-development/tips-for-coding-email-preheaders */
 .email_preheader,
 .email_preheader * {
