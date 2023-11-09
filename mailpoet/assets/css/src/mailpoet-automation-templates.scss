@@ -1,13 +1,1 @@
 @import './mailpoet-templates';
-
-ul.mailpoet-automation-templates {
-  clear: both;
-  cursor: pointer;
-  display: grid;
-  grid-gap: 32px;
-  grid-template-columns: repeat(auto-fill, 336px);
-  justify-content: center;
-  margin: auto;
-  padding: 48px 0;
-  width: 100%;
-}
