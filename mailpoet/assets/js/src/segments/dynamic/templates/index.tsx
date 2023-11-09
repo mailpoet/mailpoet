@@ -1,6 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { Button, SearchControl, TabPanel } from '@wordpress/components';
-import { Badge } from '@woocommerce/components';
+import { Button, SearchControl } from '@wordpress/components';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import {
@@ -14,17 +13,18 @@ import { storeName } from 'segments/dynamic/store';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
 import { MailPoet } from 'mailpoet';
 import { BackButton, PageHeader } from '../../../common/page-header';
-import { Footer, Grid, Item } from '../../../common/templates';
+import {
+  Footer,
+  Grid,
+  Item,
+  TabPanel,
+  TabTitle,
+} from '../../../common/templates';
 
 const tabs = [
   {
     name: 'all',
-    title: (
-      <>
-        <span>{__('All', 'mailpoet')}</span>
-        <Badge count={templates.length} />
-      </>
-    ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports JSX
+    title: <TabTitle title={__('All', 'mailpoet')} count={templates.length} />,
   },
 ];
 
@@ -35,12 +35,7 @@ templateCategories.forEach((category) => {
 
   tabs.push({
     name: category.slug,
-    title: (
-      <>
-        <span>{category.name}</span>
-        <Badge count={count} />
-      </>
-    ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports JSX
+    title: <TabTitle title={category.name} count={count} />,
   });
 });
 
