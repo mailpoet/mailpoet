@@ -43,28 +43,13 @@
 
 .mailpoet-segments-segments-section .mailpoet-form-segment-delete {
   align-items: center;
-  border: 1px solid $color-input-error;
-  border-radius: 12px;
-  color: $color-input-error;
   cursor: pointer;
   display: flex;
-  height: 20px;
+  height: 24px;
   justify-content: center;
   position: absolute;
   right: 40px;
-  width: 20px;
-}
-
-.mailpoet-segments-segments-section .mailpoet-form-segment-delete svg {
-  fill: currentColor;
-  height: 12px;
-  width: 12px;
-}
-
-.mailpoet-segments-segments-section .mailpoet-form-segment-delete:hover,
-.mailpoet-segments-segments-section .mailpoet-form-segment-delete:focus {
-  background: $color-input-error;
-  color: $color-white;
+  width: 24px;
 }
 
 .mailpoet-segments-conditions-bottom {
@@ -75,9 +60,21 @@
 }
 
 .mailpoet-segments-segments-section p {
-  padding: 11px 0;
+  padding: 24px 0;
 }
 
 .mailpoet-segments-filter-selector {
   width: 210px;
+}
+
+.mailpoet-segments-segments-section .mailpoet-form-radio-control:before {
+  background: $color-primary;
+}
+
+.mailpoet-segments-condition-type-selector {
+  padding-bottom: 40px;
+}
+
+.mailpoet-segments-condition-type {
+  color: $color-text-light;
 }
