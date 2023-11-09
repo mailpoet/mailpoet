@@ -66,18 +66,15 @@
 
   .mailpoet-templates-badge {
     align-items: center;
+    border: 1px solid transparent;
     border-radius: 0 0 2px 2px;
     display: flex;
-    height: 24px;
+    height: 22px;
     justify-content: center;
     position: absolute;
     right: 24px;
     top: -1px;
-    width: 24px;
-
-    svg {
-      fill: $color-white;
-    }
+    width: 22px;
   }
 
   button.is-link {
