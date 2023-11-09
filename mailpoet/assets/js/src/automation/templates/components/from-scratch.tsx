@@ -53,6 +53,7 @@ export function FromScratchButton({
   const [isBusy, setIsBusy] = useState(false);
   const onClickScratchButton = useCallback(() => {
     fromScratchHook(() => {
+      setIsBusy(false);
       setShowModal(true);
     }, errorHandler);
   }, []);
@@ -70,7 +71,7 @@ export function FromScratchButton({
       )}
       <Button
         variant={variant}
-        isBusy={isBusy}
+        isBusy={isBusy && variant !== 'link'}
         disabled={isBusy}
         onClick={() => {
           setIsBusy(true);
