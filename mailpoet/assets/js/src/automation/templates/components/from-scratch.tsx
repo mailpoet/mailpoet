@@ -1,4 +1,4 @@
-import { Dispatch, ReactNode, useCallback, useState } from 'react';
+import { Dispatch, useCallback, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { Hooks } from 'wp-js-hooks';
@@ -26,7 +26,7 @@ function FromScratchPremiumModal({
         utm_campaign: 'create_automation_from_scratch',
       }}
     >
-      {__('You cannot create automation from scratch.', 'mailpoet')}
+      {__('Creating custom automations is a premium feature.', 'mailpoet')}
     </PremiumModal>
   );
 }
@@ -43,12 +43,10 @@ function fromScratchHook(callback: () => void, errorHandler: Dispatch<string>) {
 
 type FromScratchButtonProps = {
   variant?: Button.Props['variant'];
-  children?: ReactNode;
 };
 
 export function FromScratchButton({
   variant = 'secondary',
-  children = __('From scratch', 'mailpoet'),
 }: FromScratchButtonProps): JSX.Element {
   const [showModal, setShowModal] = useState(false);
   const [error, errorHandler] = useState(null);
@@ -79,7 +77,7 @@ export function FromScratchButton({
           onClickScratchButton();
         }}
       >
-        {children}
+        {__('Create custom automation', 'mailpoet')}
       </Button>
       <FromScratchPremiumModal showModal={showModal} onClose={premiumClose} />
     </>
