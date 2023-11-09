@@ -10,6 +10,8 @@ class SettingsController {
     'core/column',
     'core/columns',
     'core/image',
+    'core/list',
+    'core/list-item',
   ];
 
   const DEFAULT_SETTINGS = [
