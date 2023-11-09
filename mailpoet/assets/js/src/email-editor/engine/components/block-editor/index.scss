@@ -54,6 +54,22 @@
 
 .edit-post-visual-editor__content-area {
   display: block; // Override flex to achieve height follow the length of the document
+
+  // Because block editor uses .has-background class after setting a background color
+  // we want to reset margin and padding for this class to avoid unexpected spacing
+  .has-background {
+    margin: 0;
+    padding: 0;
+  }
+
+  // Set default padding-left to have consistent default look in editor and in email
+  // This also overrides the default values in browsers for padding-inline-start
+  ul,
+  ol,
+  ul.has-background,
+  ol.has-background {
+    padding-left: 40px;
+  }
 }
 
 // For the WYSIWYG experience we don't want to display any margins between blocks in the editor
