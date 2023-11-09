@@ -1,7 +1,7 @@
 @import '../../../node_modules/@woocommerce/components/build-style/style';
 @import 'settings/colors';
 
-.components-tab-panel__tabs {
+.mailpoet-templates-tab-panel .components-tab-panel__tabs {
   border-bottom: 1px solid $color-poet-gray-dividers;
 
   .woocommerce-badge {
