@@ -67,9 +67,7 @@ function Templates(): JSX.Element {
 
       <Footer>
         <p>{__('Can’t find what you’re looking for?', 'mailpoet')}</p>
-        <FromScratchButton variant="link">
-          {__('Start from scratch', 'mailpoet')}
-        </FromScratchButton>
+        <FromScratchButton variant="link" />
       </Footer>
     </div>
   );
