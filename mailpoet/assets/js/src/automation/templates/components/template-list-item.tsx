@@ -2,7 +2,7 @@ import { ComponentProps, useCallback, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
-import { AutomationTemplate } from '../config';
+import { AutomationTemplate, automationTemplateCategories } from '../config';
 import { MailPoet } from '../../../mailpoet';
 import { Notice } from '../../../notices/notice';
 import {
@@ -12,6 +12,10 @@ import {
 import { Item } from '../../../common/templates';
 
 type Badge = ComponentProps<typeof Item>['badge'];
+
+const getCategory = (template: AutomationTemplate): string =>
+  automationTemplateCategories.find(({ slug }) => slug === template.category)
+    ?.name ?? __('Uncategorized', 'mailpoet');
 
 const getBadge = (template: AutomationTemplate): Badge => {
   if (template.type === 'coming-soon') {
@@ -86,7 +90,7 @@ export function TemplateListItem({ template }: Props): JSX.Element {
       <Item
         name={template.name}
         description={template.description}
-        category={template.category}
+        category={getCategory(template)}
         badge={getBadge(template)}
         disabled={template.type === 'coming-soon'}
         isBusy={loading}
