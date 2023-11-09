@@ -60,7 +60,7 @@ class MailpoetMenuCest {
     $i->wantTo('Check if the menu is still selected if I go to the templates');
     $i->waitForElementClickable(Locator::contains('button', 'Start with a template'));
     $i->click(Locator::contains('button', 'Start with a template'));
-    $i->waitForElement('.mailpoet-automation-templates');
+    $i->waitForElement('#mailpoet_automation_templates');
     $i->seeInCurrentUrl('?page=mailpoet-automation-templates');
     $this->assertSelectedMenuItem($i, 'Automations');
 
