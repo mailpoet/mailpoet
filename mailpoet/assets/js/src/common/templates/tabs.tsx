@@ -1,15 +1,21 @@
-import { ComponentType, ReactNode } from 'react';
+import { ComponentProps, ComponentType, ReactNode } from 'react';
 import { TabPanel as WpTabPanel } from '@wordpress/components';
 import { Badge } from '@woocommerce/components';
 
 // Tab['title'] is typed as string but supports React Nodes
-export const TabPanel = WpTabPanel as ComponentType<
+const FixedTabPanel = WpTabPanel as ComponentType<
   Omit<WpTabPanel.Props, 'tabs'> & {
     tabs: readonly (Omit<WpTabPanel.Props['tabs'][number], 'title'> & {
       title: ReactNode;
     })[];
   }
 >;
+
+export function TabPanel(
+  props: ComponentProps<typeof FixedTabPanel>,
+): JSX.Element {
+  return <FixedTabPanel className="mailpoet-templates-tab-panel" {...props} />;
+}
 
 type Props = {
   title: string;
