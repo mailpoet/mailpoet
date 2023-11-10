@@ -51,6 +51,10 @@ import {
   UsedCouponCodeFields,
   validateUsedCouponCode,
 } from './fields/woocommerce/used-coupon-code';
+import {
+  PurchasedWithAttributeFields,
+  validatePurchasedWithAttribute,
+} from './fields/woocommerce/purchased-with-attribute';
 
 export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (
@@ -102,6 +106,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   if (formItems.action === WooCommerceActionTypes.FIRST_ORDER) {
     return validateDateField(formItems);
   }
+  if (formItems.action === WooCommerceActionTypes.PURCHASED_WITH_ATTRIBUTE) {
+    return validatePurchasedWithAttribute(formItems);
+  }
   if (
     [
       WooCommerceActionTypes.CUSTOMER_IN_POSTAL_CODE,
@@ -123,6 +130,8 @@ const componentsMap = {
   [WooCommerceActionTypes.PURCHASE_DATE]: DateFieldsDefaultBefore,
   [WooCommerceActionTypes.PURCHASED_PRODUCT]: PurchasedProductFields,
   [WooCommerceActionTypes.PURCHASED_CATEGORY]: PurchasedCategoryFields,
+  [WooCommerceActionTypes.PURCHASED_WITH_ATTRIBUTE]:
+    PurchasedWithAttributeFields,
   [WooCommerceActionTypes.SINGLE_ORDER_VALUE]: SingleOrderValueFields,
   [WooCommerceActionTypes.TOTAL_SPENT]: TotalSpentFields,
   [WooCommerceActionTypes.AVERAGE_SPENT]: AverageSpentFields,

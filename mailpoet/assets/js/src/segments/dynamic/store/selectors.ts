@@ -14,6 +14,7 @@ import {
   WindowEditableRoles,
   WindowMembershipPlans,
   WindowNewslettersList,
+  WindowProductAttributes,
   WindowProductCategories,
   WindowProducts,
   WindowSubscriptionProducts,
@@ -30,6 +31,9 @@ export const getSubscriptionProducts = (
 ): WindowSubscriptionProducts => state.subscriptionProducts;
 export const getWordpressRoles = (state: StateType): WindowEditableRoles =>
   state.wordpressRoles;
+export const getProductAttributes = (
+  state: StateType,
+): WindowProductAttributes => state.productAttributes;
 export const getProductCategories = (
   state: StateType,
 ): WindowProductCategories => state.productCategories;

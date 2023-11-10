@@ -126,6 +126,26 @@ class DynamicSegments {
       ];
     }
 
+    $data['product_attributes'] = [];
+    $productAttributes = $this->woocommerceHelper->wcGetAttributeTaxonomies();
+
+    foreach ($productAttributes as $attribute) {
+      $attributeTerms = $this->wp->getTerms(
+        [
+          'taxonomy' => 'pa_' . $attribute->attribute_name, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          'hide_empty' => false,
+        ]
+      );
+
+      if (!isset($attributeTerms['errors'])) {
+        $data['product_attributes'][$attribute->attribute_id] = [ // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          'id' => $attribute->attribute_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          'label' => $attribute->attribute_label, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          'terms' => $attributeTerms,
+        ];
+      }
+    }
+
     $data['product_categories'] = $this->wpPostListLoader->getWooCommerceCategories();
 
     $data['products'] = $this->wpPostListLoader->getProducts();
