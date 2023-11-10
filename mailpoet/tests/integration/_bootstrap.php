@@ -219,6 +219,18 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     }
   }
 
+  protected function checkValidHTML(string $html): void {
+    $dom = new \DOMDocument();
+    libxml_use_internal_errors(true);
+    $dom->loadHTML($html);
+
+    // Check for errors during parsing
+    $errors = libxml_get_errors();
+    libxml_clear_errors();
+
+    $this->assertEmpty($errors, 'HTML is not valid: ' . $html);
+  }
+
   public function _after() {
     parent::_after();
     $this->tester->cleanup();
