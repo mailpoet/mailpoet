@@ -21,7 +21,8 @@ function disableNestedColumns() {
         blockTypes.forEach((allowedBlockType) => {
           if (
             allowedBlockType !== 'core/column' &&
-            allowedBlockType !== 'core/columns'
+            allowedBlockType !== 'core/columns' &&
+            allowedBlockType !== 'core/list-item'
           ) {
             allowedBlockTypes.push(allowedBlockType);
           }
