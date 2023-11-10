@@ -9,10 +9,10 @@ use MailPoet\EmailEditor\Engine\SettingsController;
 class ListBlock implements BlockRenderer {
   public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $contentStyles = $settingsController->getEmailContentStyles();
-    return str_replace('{list_content}', $blockContent, $this->prepareColumnTemplate($parsedBlock, $contentStyles));
+    return str_replace('{list_content}', $blockContent, $this->getBlockWrapper($parsedBlock, $contentStyles));
   }
 
-  private function prepareColumnTemplate(array $parsedBlock, array $contentStyles): string {
+  private function getBlockWrapper(array $parsedBlock, array $contentStyles): string {
     $styles = [];
     foreach ($parsedBlock['email_attrs'] ?? [] as $property => $value) {
       $styles[$property] = $value;
