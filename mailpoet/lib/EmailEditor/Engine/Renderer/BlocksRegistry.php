@@ -23,13 +23,14 @@ class BlocksRegistry {
     add_filter('render_block_' . $blockName, [$this, 'renderBlock'], 10, 2);
   }
 
-  public function removeBlockRenderer(string $blockName): void {
-    unset($this->blockRenderersMap[$blockName]);
-    remove_filter('render_block_' . $blockName, [$this, 'renderBlock']);
-  }
-
   public function getBlockRenderer(string $blockName): ?BlockRenderer {
     return apply_filters('mailpoet_block_renderer_' . $blockName, $this->blockRenderersMap[$blockName] ?? null);
+  }
+
+  public function removeAllBlockRendererFilters(): void {
+    foreach (array_keys($this->blockRenderersMap) as $blockName) {
+      $this->removeBlockRenderer($blockName);
+    }
   }
 
   public function renderBlock($blockContent, $parsedBlock): string {
@@ -38,5 +39,10 @@ class BlocksRegistry {
       throw new \InvalidArgumentException('Block renderer not found for block ' . $parsedBlock['name']);
     }
     return $this->blockRenderersMap[$parsedBlock['blockName']]->render($blockContent, $parsedBlock, $this->settingsController);
+  }
+
+  private function removeBlockRenderer(string $blockName): void {
+    unset($this->blockRenderersMap[$blockName]);
+    remove_filter('render_block_' . $blockName, [$this, 'renderBlock']);
   }
 }

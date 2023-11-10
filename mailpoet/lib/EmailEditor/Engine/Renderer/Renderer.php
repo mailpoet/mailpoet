@@ -94,8 +94,12 @@ class Renderer {
     foreach ($parsedBlocks as $parsedBlock) {
       $content .= render_block($parsedBlock);
     }
-    // @TODO We can call $this->blocksRegistry->unregisterAll() here. The registry knows all blocks and callbacks
-    do_action('mailpoet_blocks_renderer_uninitialized', $this->blocksRegistry);
+
+    /**
+     *  As we use default WordPress filters, we need to remove them after email rendering
+     *  so that we don't interfere with possible post rendering that might happen later.
+     */
+    $this->blocksRegistry->removeAllBlockRendererFilters();
 
     return $content;
   }
