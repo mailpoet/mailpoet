@@ -305,6 +305,10 @@ class Helper {
     return $keyedZones;
   }
 
+  public function wcGetAttributeTaxonomies(): array {
+    return wc_get_attribute_taxonomies();
+  }
+
   protected function formatShippingMethods(array $shippingMethods, string $shippingZoneName): array {
     $formattedShippingMethods = [];
 

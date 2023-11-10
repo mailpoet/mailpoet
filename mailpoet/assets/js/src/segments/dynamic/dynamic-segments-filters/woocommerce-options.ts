@@ -10,6 +10,7 @@ export enum WooCommerceActionTypes {
   PURCHASED_CATEGORY = 'purchasedCategory',
   PURCHASE_DATE = 'purchaseDate',
   PURCHASED_PRODUCT = 'purchasedProduct',
+  PURCHASED_WITH_ATTRIBUTE = 'purchasedWithAttribute',
   TOTAL_SPENT = 'totalSpent',
   AVERAGE_SPENT = 'averageSpent',
   CUSTOMER_IN_COUNTRY = 'customerInCountry',
@@ -76,6 +77,11 @@ export const WooCommerceOptions = [
   {
     value: WooCommerceActionTypes.PURCHASED_PRODUCT,
     label: __('purchased product', 'mailpoet'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.PURCHASED_WITH_ATTRIBUTE,
+    label: __('purchased with attribute', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
