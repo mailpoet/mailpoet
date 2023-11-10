@@ -18,8 +18,7 @@ use MailPoet\EmailEditor\Engine\SettingsController;
 
 class Heading implements BlockRenderer {
   public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    // here comes your rendering logic;
-    return 'HEADING_BLOCK';
+    return 'HEADING_BLOCK'; // here comes your rendering logic;
   }
 }
 ```
@@ -27,30 +26,18 @@ class Heading implements BlockRenderer {
 4. Register the renderer
 
 ```php
-<?php declare(strict_types = 1);
-
-namespace MailPoet\EmailEditor\Integrations\Core;
+<?php
 
 use MailPoet\EmailEditor\Engine\Renderer\BlocksRegistry;
 
-class Initializer {
-  public function initialize(): void {
-    add_action('mailpoet_blocks_renderer_initialized', [$this, 'registerCoreBlocksRenderers'], 10, 1);
-    add_action('mailpoet_blocks_renderer_uninitialized', [$this, 'unregisterCoreBlocksRenderers'], 10, 1);
-  }
+add_action('mailpoet_blocks_renderer_initialized', 'register_my_block_email_renderer');
 
-  /**
-   * Register core blocks email renderers when the blocks renderer is initialized.
-   */
-  public function registerCoreBlocksRenderers(BlocksRegistry $blocksRegistry): void {
-    $blocksRegistry->addBlockRenderer('core/heading', new Renderer\Blocks\Heading());
-  }
-
-  public function unregisterCoreBlocksRenderers(BlocksRegistry $blocksRegistry): void {
-    $blocksRegistry->removeBlockRenderer('core/heading');
-  }
+function register_my_block_email_renderer(BlocksRegistry $blocksRegistry): void {
+  $blocksRegistry->addBlockRenderer('core/heading', new Renderer\Blocks\Heading());
 }
 ```
+
+Note: For core blocks this is currently done in `MailPoet\EmailEditor\Integrations\Core\Initializer`.
 
 5. Implement the rendering logic in the renderer class.
 
