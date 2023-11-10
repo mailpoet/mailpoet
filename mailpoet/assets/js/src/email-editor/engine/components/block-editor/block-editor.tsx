@@ -90,6 +90,7 @@ export function BlockEditor() {
       width: layoutStyles.width,
       display: 'flex',
       flexFlow: 'column',
+      'box-sizing': 'border-box', // Because we want to exact email width, the padding must be included in the width.
     };
   }
   inlineStyles.background = documentBackground;
