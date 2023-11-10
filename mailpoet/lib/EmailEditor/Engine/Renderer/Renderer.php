@@ -94,7 +94,7 @@ class Renderer {
     foreach ($parsedBlocks as $parsedBlock) {
       $content .= render_block($parsedBlock);
     }
-
+    // @TODO We can call $this->blocksRegistry->unregisterAll() here. The registry knows all blocks and callbacks
     do_action('mailpoet_blocks_renderer_uninitialized', $this->blocksRegistry);
 
     return $content;
