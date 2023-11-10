@@ -15,14 +15,14 @@ class Column implements BlockRenderer {
     return str_replace(
       '{column_content}',
       $content,
-      $this->prepareColumnTemplate($parsedBlock, $settingsController)
+      $this->getBlockWrapper($parsedBlock, $settingsController)
     );
   }
 
   /**
    * Based on MJML <mj-column>
    */
-  private function prepareColumnTemplate(array $parsedBlock, SettingsController $settingsController): string {
+  private function getBlockWrapper(array $parsedBlock, SettingsController $settingsController): string {
     $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
     $backgroundColor = $parsedBlock['attrs']['style']['color']['background'] ?? 'none';
     $paddingBottom = $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px';
