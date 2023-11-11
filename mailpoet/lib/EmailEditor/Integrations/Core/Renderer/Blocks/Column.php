@@ -30,9 +30,25 @@ class Column implements BlockRenderer {
     $paddingRight = $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px';
     $paddingTop = $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px';
 
+    $verticalAlign = 'top';
+    // Because `stretch` is not a valid value for the `vertical-align` property, we don't override the default value
+    if (isset($parsedBlock['attrs']['verticalAlignment']) && $parsedBlock['attrs']['verticalAlignment'] !== 'stretch') {
+      $verticalAlign = $parsedBlock['attrs']['verticalAlignment'];
+    }
+
+    $mainCellStyles = [
+      'width' => $width,
+      'vertical-align' => $verticalAlign,
+    ];
+    // The default column alignment is `stretch to fill` which means that we need to set the background color to the main cell
+    // to create a feeling of a stretched column
+    if (!isset($parsedBlock['attrs']['verticalAlignment'])) {
+      $mainCellStyles['background-color'] = $backgroundColor;
+    }
+
     return '
-      <td class="block" style="vertical-align:top;width:' . $width . ';background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';">
-        <div class="email_column" style="background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';width:100%;max-width:' . $width . ';font-size:0px;text-align:left;display:inline-block;vertical-align:top;">
+      <td class="block" style="' . $this->convertStylesToString($mainCellStyles) . '">
+        <div class="email_column" style="background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';width:100%;max-width:' . $width . ';font-size:0px;text-align:left;display:inline-block;">
           <table class="email_column" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';width:100%;max-width:' . $width . ';vertical-align:top;" width="' . $width . '">
             <tbody>
               <tr>
@@ -45,5 +61,13 @@ class Column implements BlockRenderer {
         </div>
       </td>
     ';
+  }
+
+  private function convertStylesToString(array $styles): string {
+    $cssString = '';
+    foreach ($styles as $property => $value) {
+      $cssString .= $property . ':' . $value . '; ';
+    }
+    return trim($cssString); // Remove trailing space and return the formatted string
   }
 }
