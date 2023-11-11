@@ -111,6 +111,6 @@ class RendererTest extends \MailPoetTest {
     }
     $this->assertInstanceOf(\DOMElement::class, $wrapper);
     $style = $wrapper->getAttribute('style');
-    verify($style)->stringContainsString('max-width: 123px');
+    verify($style)->stringContainsString('max-width:123px');
   }
 }
