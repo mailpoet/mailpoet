@@ -124,21 +124,6 @@ p {
   margin: 0;
 }
 
-/* Resetting default browser margins to ensuring the same look in browser, email client and email editor */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
-}
-
-ul,
-ol,
-li {
-  margin: 0;
-}
 /* Wa want ensure the same design for all email clients */
 ul,
 ol {
