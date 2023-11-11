@@ -46,9 +46,10 @@ class ColumnTest extends \MailPoetTest {
 
   public function testItRendersColumnContent() {
     $rendered = $this->columnRenderer->render('', $this->parsedColumn, $this->settingsController);
-    verify($rendered)->stringContainsString('Column content');
-    verify($rendered)->stringContainsString('width:300px;');
-    verify($rendered)->stringContainsString('max-width:300px;');
+    $this->checkValidHTML($rendered);
+    $this->assertStringContainsString('Column content', $rendered);
+    $this->assertStringContainsString('width:300px;', $rendered);
+    $this->assertStringContainsString('max-width:300px;', $rendered);
   }
 
   public function testItContainsColumnsStyles(): void {
@@ -69,13 +70,14 @@ class ColumnTest extends \MailPoetTest {
       ],
     ];
     $rendered = $this->columnRenderer->render('', $parsedColumn, $this->settingsController);
-    verify($rendered)->stringContainsString('background:#abcdef;');
-    verify($rendered)->stringContainsString('background-color:#abcdef;');
-    verify($rendered)->stringContainsString('padding-bottom:5px;');
-    verify($rendered)->stringContainsString('padding-left:15px;');
-    verify($rendered)->stringContainsString('padding-right:20px;');
-    verify($rendered)->stringContainsString('padding-top:10px;');
-    verify($rendered)->stringContainsString('vertical-align:top;'); // Check for the default value of vertical alignment
+    $this->checkValidHTML($rendered);
+    $this->assertStringContainsString('background:#abcdef;', $rendered);
+    $this->assertStringContainsString('background-color:#abcdef;', $rendered);
+    $this->assertStringContainsString('padding-bottom:5px;', $rendered);
+    $this->assertStringContainsString('padding-left:15px;', $rendered);
+    $this->assertStringContainsString('padding-right:20px;', $rendered);
+    $this->assertStringContainsString('padding-top:10px;', $rendered);
+    $this->assertStringContainsString('vertical-align:top;', $rendered); // Check for the default value of vertical alignment
   }
 
   public function testItContainsExpectedVerticalAlignment(): void {
