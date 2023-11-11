@@ -3,7 +3,7 @@
 /* StyleLint is disabled because some rules contain properties that linter marks as unknown, but they are valid for email rendering */
 /* stylelint-disable property-no-unknown */
 
-/* Base CSS resets */
+/* Base CSS resets to fix Browser quirks and ensure consistent display between email editor and email preview */
 html,
 body,
 div,
