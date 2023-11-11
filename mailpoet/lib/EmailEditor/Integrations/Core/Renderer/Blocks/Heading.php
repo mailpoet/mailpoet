@@ -8,13 +8,13 @@ use MailPoet\EmailEditor\Engine\SettingsController;
 class Heading implements BlockRenderer {
   public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $contentStyles = $settingsController->getEmailContentStyles();
-    return str_replace('{heading_content}', $blockContent, $this->prepareColumnTemplate($parsedBlock, $contentStyles));
+    return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($parsedBlock, $contentStyles));
   }
 
   /**
    * Based on MJML <mj-text>
    */
-  private function prepareColumnTemplate(array $parsedBlock, array $contentStyles): string {
+  private function getBlockWrapper(array $parsedBlock, array $contentStyles): string {
     $styles = [];
     foreach ($parsedBlock['email_attrs'] ?? [] as $property => $value) {
       $styles[$property] = $value;
@@ -28,9 +28,19 @@ class Heading implements BlockRenderer {
     }
 
     return '
-      <div style="' . $this->convertStylesToString($styles) . '">
-        {heading_content}
-      </div>
+      <table
+        role="presentation"
+        border="0"
+        cellpadding="0"
+        cellspacing="0"
+        style="' . $this->convertStylesToString($styles) . '"
+      >
+        <tr>
+          <td>
+            {heading_content}
+          </td>
+        </tr>
+      </table>
     ';
   }
 
