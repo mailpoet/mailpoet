@@ -75,5 +75,14 @@ class ColumnTest extends \MailPoetTest {
     verify($rendered)->stringContainsString('padding-left:15px;');
     verify($rendered)->stringContainsString('padding-right:20px;');
     verify($rendered)->stringContainsString('padding-top:10px;');
+    verify($rendered)->stringContainsString('vertical-align:top;'); // Check for the default value of vertical alignment
+  }
+
+  public function testItContainsExpectedVerticalAlignment(): void {
+    $parsedColumn = $this->parsedColumn;
+    $parsedColumn['attrs']['verticalAlignment'] = 'bottom';
+    $rendered = $this->columnRenderer->render('', $parsedColumn, $this->settingsController);
+    $this->checkValidHTML($rendered);
+    $this->assertStringContainsString('vertical-align:bottom;', $rendered);
   }
 }
