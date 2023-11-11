@@ -32,6 +32,12 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->wantTo('Verify correct WP menu item is highlighted');
     $i->waitForText('Emails', 10, '#toplevel_page_mailpoet-homepage .current');
 
+    $i->wantTo('Change Campaign name');
+    $i->click('New Email');
+    $i->waitForElement('[name="campaign_name"]');
+    $i->clearFormField('[name="campaign_name"]');
+    $i->type('My Campaign Name');
+
     $i->wantTo('Change subject and preheader');
     $i->click('[data-automation-id="email_settings_tab"]');
     $i->fillField('[data-automation-id="email_subject"]', 'My New Subject');
@@ -53,6 +59,10 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->waitForEmailSendingOrSent();
 
     $i->triggerMailPoetActionScheduler();
+
+    $i->wantTo('Confirm the newsletter campaign name was saved');
+    $i->amOnMailpoetPage('Emails');
+    $i->waitForText('My Campaign Name', 10, '[data-automation-id="newsletters_listing_tabs"]');
 
     $i->wantTo('Confirm the newsletter was received');
     $i->checkEmailWasReceived('My New Subject');

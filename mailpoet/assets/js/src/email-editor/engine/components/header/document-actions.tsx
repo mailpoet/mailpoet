@@ -73,6 +73,7 @@ export function DocumentActions() {
               onChange={(newTitle) => {
                 setTitle(newTitle);
               }}
+              name="campaign_name"
               help={__(
                 `Name your email campaign to indicate its purpose. This would only be visible to you and not shown to your subscribers.`,
                 'mailpoet',
