@@ -47,7 +47,7 @@ class Column implements BlockRenderer {
     }
 
     return '
-      <td class="block" style="' . $this->convertStylesToString($mainCellStyles) . '">
+      <td class="block" style="' . $settingsController->convertStylesToString($mainCellStyles) . '">
         <div class="email_column" style="background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';width:100%;max-width:' . $width . ';font-size:0px;text-align:left;display:inline-block;">
           <table class="email_column" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';width:100%;max-width:' . $width . ';vertical-align:top;" width="' . $width . '">
             <tbody>
@@ -61,13 +61,5 @@ class Column implements BlockRenderer {
         </div>
       </td>
     ';
-  }
-
-  private function convertStylesToString(array $styles): string {
-    $cssString = '';
-    foreach ($styles as $property => $value) {
-      $cssString .= $property . ':' . $value . '; ';
-    }
-    return trim($cssString); // Remove trailing space and return the formatted string
   }
 }
