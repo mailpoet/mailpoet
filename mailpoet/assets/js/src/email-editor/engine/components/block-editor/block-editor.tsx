@@ -11,6 +11,9 @@ import {
   // @ts-ignore No types for this exist yet.
   __experimentalUseResizeCanvas as useResizeCanvas,
   BlockSelectionClearer,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore No types for this exist yet.
+  __unstableEditorStyles as EditorStyles,
 } from '@wordpress/block-editor';
 import { uploadMedia } from '@wordpress/media-utils';
 import classnames from 'classnames';
@@ -147,6 +150,10 @@ export function BlockEditor() {
                     'is-desktop-preview': previewDeviceType === 'Desktop',
                   })}
                 >
+                  <EditorStyles
+                    styles={settings.styles}
+                    scope=".editor-styles-wrapper"
+                  />
                   <BlockSelectionClearer
                     className="editor-styles-wrapper block-editor-writing-flow"
                     style={{ width: '100%' }}
@@ -157,7 +164,7 @@ export function BlockEditor() {
                     <BlockTools>
                       <WritingFlow>
                         <ObserveTyping>
-                          <BlockList />
+                          <BlockList className="is-layout-constrained" />
                         </ObserveTyping>
                       </WritingFlow>
                     </BlockTools>

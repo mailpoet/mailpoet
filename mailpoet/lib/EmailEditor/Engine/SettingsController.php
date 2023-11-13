@@ -102,7 +102,8 @@ class SettingsController {
 
     $settings = array_merge($coreDefaultSettings, self::DEFAULT_SETTINGS);
     $settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
-    $settings['defaultEditorStyles'] = [[ 'css' => $this->getEmailContentStyles() ]];
+    $settings['styles'] = [['css' => wp_get_global_stylesheet(['base-layout-styles'])]];
+
     $settings['__experimentalFeatures'] = $coreSettings;
 
     return $settings;
