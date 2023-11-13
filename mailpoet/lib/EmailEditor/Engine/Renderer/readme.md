@@ -4,7 +4,7 @@ The renderer is WIP and so is the API for adding support email rendering for new
 
 ## Adding support for a core block
 
-1. Add block into `ALLOWED_BLOCK_TYPES` in `mailpoet/lib/EmailEditor/Engine/Renderer/AllowedBlocks.php`.
+1. Add block into `ALLOWED_BLOCK_TYPES` in `mailpoet/lib/EmailEditor/Engine/Renderer/SettingsController.php`.
 2. Make sure the block is registered in the editor. Currently all core blocks are registered in the editor.
 3. Add BlockRender class (e.g. Heading) into `mailpoet/lib/EmailEditor/Integration/Core/Renderer/Blocks` folder. <br />
 
@@ -45,6 +45,7 @@ Note: For core blocks this is currently done in `MailPoet\EmailEditor\Integratio
 
 - You can take inspiration on block rendering from MJML in the https://mjml.io/try-it-live
 - Test the block in different clients [Litmus](https://litmus.com/)
+- You can take some inspirations from the HTML renderer by the old email editor
 
 ## TODO
 
