@@ -91,6 +91,8 @@ class SettingsController {
     ],
   ];
 
+  private $availableStylesheets = '';
+
   public function getSettings(): array {
     $coreDefaultSettings = get_default_block_editor_settings();
     $coreThemeData = \WP_Theme_JSON_Resolver::get_core_data();
@@ -110,6 +112,13 @@ class SettingsController {
 
   public function getEmailContentStyles(): array {
     return self::DEFAULT_EMAIL_CONTENT_STYLES;
+  }
+
+  public function getAvailableStylesheets(): string {
+    if ($this->availableStylesheets) return $this->availableStylesheets;
+    $coreThemeData = \WP_Theme_JSON_Resolver::get_core_data();
+    $this->availableStylesheets = $coreThemeData->get_stylesheet();
+    return $this->availableStylesheets;
   }
 
   /**
