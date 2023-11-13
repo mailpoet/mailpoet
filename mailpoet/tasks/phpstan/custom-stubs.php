@@ -82,6 +82,12 @@ namespace {
       }
     }
   }
+
+  // The function is currently not included in wordpress-stubs (https://github.com/php-stubs/wordpress-stubs)
+  if (!function_exists('wp_style_engine_get_styles')) {
+    function wp_style_engine_get_styles($block_styles, $options = []) {
+    }
+  }
 }
 
 // Temporary stubs for Woo Custom Tables.
