@@ -128,6 +128,13 @@ class SettingsController {
     ];
 
     $settings['__experimentalFeatures'] = $coreSettings;
+    // Enable border radius, color, style and width where possible
+    $settings['__experimentalFeatures']['border'] = [
+      "radius" => true,
+      "color" => true,
+      "style" => true,
+      "width" => true,
+    ];
 
     // Enabling alignWide allows full width for specific blocks such as columns, heading, image, etc.
     $settings['alignWide'] = true;
