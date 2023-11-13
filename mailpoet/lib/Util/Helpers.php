@@ -82,6 +82,13 @@ class Helpers {
     }, $str);
   }
 
+  public static function camelCaseToKebabCase($str) {
+    $str[0] = strtolower($str[0]);
+    return preg_replace_callback('/([A-Z])/', function ($c) {
+      return "-" . strtolower($c[1]);
+    }, $str);
+  }
+
   public static function joinObject($object = []) {
     return implode(self::DIVIDER, $object);
   }
