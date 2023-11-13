@@ -18,7 +18,9 @@ class BlocksWidthPreprocessor implements Preprocessor {
         $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['right'] ?? '0px');
       }
 
-      $width = $this->convertWidthToPixels($block['attrs']['width'] ?? '100%', $layoutWidth);
+      $widthInput = $block['attrs']['width'] ?? '100%';
+      $widthInput = is_numeric($widthInput) ? "$widthInput%" : $widthInput;
+      $width = $this->convertWidthToPixels($widthInput, $layoutWidth);
 
       if ($block['blockName'] === 'core/columns') {
         // Calculate width of the columns based on the layout width and padding
