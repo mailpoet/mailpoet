@@ -32,7 +32,6 @@ function deactivateStackOnMobile() {
   addFilter(
     'editor.BlockEdit',
     'mailpoet-email-editor/deactivate-stack-on-mobile',
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     columnsEditCallback,
   );
 }
