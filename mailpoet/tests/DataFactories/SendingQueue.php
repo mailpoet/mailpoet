@@ -34,6 +34,7 @@ class SendingQueue {
 
     $this->entityManager->persist($queue);
     $this->entityManager->flush();
+    $this->entityManager->refresh($task);
 
     return $queue;
   }
