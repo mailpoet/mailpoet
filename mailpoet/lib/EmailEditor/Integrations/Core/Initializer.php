@@ -19,5 +19,7 @@ class Initializer {
     $blocksRegistry->addBlockRenderer('core/columns', new Renderer\Blocks\Columns());
     $blocksRegistry->addBlockRenderer('core/list', new Renderer\Blocks\ListBlock());
     $blocksRegistry->addBlockRenderer('core/image', new Renderer\Blocks\Image());
+    $blocksRegistry->addBlockRenderer('core/buttons', new Renderer\Blocks\Buttons());
+    $blocksRegistry->addBlockRenderer('core/button', new Renderer\Blocks\Button());
   }
 }

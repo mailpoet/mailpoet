@@ -5,6 +5,8 @@ namespace MailPoet\EmailEditor\Engine;
 class SettingsController {
 
   const ALLOWED_BLOCK_TYPES = [
+    'core/button',
+    'core/buttons',
     'core/paragraph',
     'core/heading',
     'core/column',
