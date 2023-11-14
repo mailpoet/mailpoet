@@ -39,6 +39,7 @@ use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
@@ -97,6 +98,9 @@ class SendingQueueTest extends \MailPoetTest {
 
   /** @var SendingQueuesRepository */
   private $sendingQueuesRepository;
+
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
 
   public function _before() {
     parent::_before();
@@ -162,6 +166,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->tasksLinks = $this->diContainer->get(TasksLinks::class);
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
+    $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker();
@@ -218,6 +223,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->wp,
       $this->tasksLinks,
       $this->scheduledTasksRepository,
+      $this->scheduledTaskSubscribersRepository,
       $this->diContainer->get(MailerTask::class),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
@@ -249,6 +255,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->wp,
       $this->tasksLinks,
       $this->scheduledTasksRepository,
+      $this->scheduledTaskSubscribersRepository,
       $this->make(
         new MailerTask($this->diContainer->get(MailerFactory::class)),
         [
@@ -297,6 +304,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->wp,
       $this->tasksLinks,
       $this->scheduledTasksRepository,
+      $this->scheduledTaskSubscribersRepository,
       $this->make(
         new MailerTask($this->diContainer->get(MailerFactory::class)),
         [
@@ -343,6 +351,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->wp,
       $this->tasksLinks,
       $this->scheduledTasksRepository,
+      $this->scheduledTaskSubscribersRepository,
       $this->diContainer->get(MailerTask::class),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
@@ -677,6 +686,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->wp,
       $this->tasksLinks,
       $this->scheduledTasksRepository,
+      $this->scheduledTaskSubscribersRepository,
       $this->make(
         new MailerTask($this->diContainer->get(MailerFactory::class)),
         [
@@ -1124,6 +1134,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->wp,
       $this->tasksLinks,
       $this->scheduledTasksRepository,
+      $this->scheduledTaskSubscribersRepository,
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
@@ -1440,6 +1451,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->wp,
       $this->tasksLinks,
       $this->scheduledTasksRepository,
+      $this->scheduledTaskSubscribersRepository,
       $mailerMock ?? $this->diContainer->get(MailerTask::class),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
