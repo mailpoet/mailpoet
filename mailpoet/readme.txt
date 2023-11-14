@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.2
 Tested up to: 6.3
-Stable tag: 4.35.1
+Stable tag: 4.36.0
 Requires PHP: 7.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.36.0 - 2023-11-14 =
+* Updated: design of the section that shows multiple conditions when creating or editing segments;
+* Fixed: unsubscriber token issue introduced in the last release;
+* Fixed: automation editing UI issues;
+* Fixed: issue with the formatting of the paragraph block in the form editor.
 
 = 4.35.1 - 2023-11-07 =
 * Added: "order created", "order cancelled", and "order completed" automation triggers;
