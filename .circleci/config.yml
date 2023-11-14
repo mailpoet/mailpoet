@@ -985,7 +985,7 @@ workflows:
           mysql_command: --max_allowed_packet=100M --default-storage-engine=MYISAM
           mysql_image: mysql:5.5
           codeception_image_version: 7.4-cli_20220605.0
-          wordpress_image_version: wp-6.2_php8.0_20230425.1
+          wordpress_image_version: wp-6.3_php8.0_20230811.1
           requires:
             - build
       - performance_tests:
