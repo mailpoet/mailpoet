@@ -1,5 +1,6 @@
 import { addFilter } from '@wordpress/hooks';
 import { select } from '@wordpress/data';
+import { Block } from '@wordpress/blocks';
 import { storeName } from '../../store';
 
 /**
@@ -9,7 +10,7 @@ function disableNestedColumns() {
   addFilter(
     'blocks.registerBlockType',
     'mailpoet-email-editor/change-columns-allowed-nesting',
-    (settings, name) => {
+    (settings: Block, name) => {
       if (name === 'core/column') {
         // Filter out core/column and core/columns from supported blocks configured in the editor settings
         const editorSettings = select(storeName).getInitialEditorSettings();
@@ -28,7 +29,6 @@ function disableNestedColumns() {
           }
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return {
           ...settings,
           attributes: {
@@ -41,7 +41,6 @@ function disableNestedColumns() {
         };
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return settings;
     },
   );

@@ -1,6 +1,7 @@
 import { InspectorControls } from '@wordpress/block-editor';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';
+import { Block } from '@wordpress/blocks';
 
 const imageEditCallback = createHigherOrderComponent(
   (BlockEdit) =>
@@ -32,9 +33,8 @@ function disableImageFilter() {
   addFilter(
     'blocks.registerBlockType',
     'mailpoet-email-editor/deactivate-image-filter',
-    (settings, name) => {
+    (settings: Block, name) => {
       if (name === 'core/image') {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return {
           ...settings,
           supports: {
@@ -45,8 +45,6 @@ function disableImageFilter() {
           },
         };
       }
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return settings;
     },
   );
