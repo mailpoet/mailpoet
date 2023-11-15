@@ -3,6 +3,7 @@ import { disableNestedColumns } from './core/column';
 import { disableColumnsLayout, deactivateStackOnMobile } from './core/columns';
 import { disableImageFilter, hideExpandOnClick } from './core/image';
 import { disableCertainRichTextFormats } from './core/rich-text';
+import { enhanceButtonBlock } from './core/button';
 
 export function initBlocks() {
   disableNestedColumns();
@@ -11,5 +12,6 @@ export function initBlocks() {
   disableImageFilter();
   disableCertainRichTextFormats();
   disableColumnsLayout();
+  enhanceButtonBlock();
   registerCoreBlocks();
 }
