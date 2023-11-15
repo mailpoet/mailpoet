@@ -107,7 +107,7 @@
     "setimmediate": "^1.0.5",
     "slugify": "^1.6.6",
     "spectrum-colorpicker": "^1.8.1",
-    "tinymce": "^6.7.1",
+    "tinymce": "^6.7.3",
     "underscore": "^1.13.6",
     "velocity-animate": "^1.5.2"
   },
