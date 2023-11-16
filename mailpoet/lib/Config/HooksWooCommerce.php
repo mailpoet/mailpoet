@@ -8,6 +8,7 @@ use MailPoet\Logging\LoggerFactory;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Registration;
+use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WooCommerce\MailPoetTask;
 use MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannel;
 use MailPoet\WooCommerce\Settings as WooCommerceSettings;
@@ -40,6 +41,9 @@ class HooksWooCommerce {
   /** @var Tracker */
   private $tracker;
 
+  /** @var CdnAssetUrl */
+  private $cdnAssetUrl;
+
   public function __construct(
     WooCommerceSubscription $woocommerceSubscription,
     WooCommerceSegment $woocommerceSegment,
@@ -48,7 +52,8 @@ class HooksWooCommerce {
     Registration $subscriberRegistration,
     LoggerFactory $loggerFactory,
     Tracker $tracker,
-    SubscriberEngagement $subscriberEngagement
+    SubscriberEngagement $subscriberEngagement,
+    CdnAssetUrl $cdnAssetUrl
   ) {
     $this->woocommerceSubscription = $woocommerceSubscription;
     $this->woocommerceSegment = $woocommerceSegment;
@@ -58,6 +63,7 @@ class HooksWooCommerce {
     $this->subscriberRegistration = $subscriberRegistration;
     $this->tracker = $tracker;
     $this->subscriberEngagement = $subscriberEngagement;
+    $this->cdnAssetUrl = $cdnAssetUrl;
   }
 
   public function extendWooCommerceCheckoutForm() {
@@ -195,7 +201,7 @@ class HooksWooCommerce {
     }
 
     return array_merge($registeredMarketingChannels, [
-      new MPMarketingChannel(),
+      new MPMarketingChannel($this->cdnAssetUrl),
     ]);
   }
 
