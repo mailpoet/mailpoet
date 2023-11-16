@@ -9,6 +9,7 @@ use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Registration;
 use MailPoet\WooCommerce\MailPoetTask;
+use MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannel;
 use MailPoet\WooCommerce\Settings as WooCommerceSettings;
 use MailPoet\WooCommerce\SubscriberEngagement;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
@@ -186,6 +187,16 @@ class HooksWooCommerce {
     } catch (\Throwable $e) {
       $this->logError($e, 'Unable to add MailPoet task to WooCommerce homepage');
     }
+  }
+
+  public function addMailPoetMarketingMultiChannel($registeredMarketingChannels) {
+    if (!is_array($registeredMarketingChannels)) {
+      return $registeredMarketingChannels;
+    }
+
+    return array_merge($registeredMarketingChannels, [
+      new MPMarketingChannel(),
+    ]);
   }
 
   private function logError(\Throwable $e, $name) {
