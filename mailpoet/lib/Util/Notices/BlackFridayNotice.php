@@ -32,6 +32,7 @@ class BlackFridayNotice {
 
   public function init($shouldDisplay) {
     $shouldDisplay = $shouldDisplay
+      && !$this->servicesChecker->isBundledSubscription()
       && (time() >= strtotime(self::DATE_FROM))
       && (time() <= strtotime(self::DATE_TO))
       && !get_transient(self::OPTION_NAME);
