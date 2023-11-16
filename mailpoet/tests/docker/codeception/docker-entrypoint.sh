@@ -184,7 +184,7 @@ wp config set COOKIE_DOMAIN \$_SERVER[\'HTTP_HOST\'] --raw
 wp config set DISABLE_WP_CRON true --raw
 
 # activate theme
-wp theme activate twentytwentyone
+wp theme install twentytwentyone --activate
 
 if [[ $CIRCLE_JOB == *"_oldest"* ]]; then
   wp theme activate twentynineteen
