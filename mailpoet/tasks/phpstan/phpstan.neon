@@ -60,14 +60,6 @@ parameters:
       message: '/^Call to function method_exists\(\) with/'
       count: 2
       path: ../../lib/WooCommerce/Helper.php
-    - # WooCommerce stubs contains stubs for older ActionScheduler version
-      message: '/^Function as_schedule_recurring_action invoked with 6 parameters, 3-5 required.$/'
-      count: 1
-      path: ../../lib/Cron/ActionScheduler/ActionScheduler.php
-    - # WooCommerce stubs contains stubs for older ActionScheduler version
-      message: '/^Function as_schedule_single_action invoked with 5 parameters, 2-4 required.$/'
-      count: 1
-      path: ../../lib/Cron/ActionScheduler/ActionScheduler.php
     -
       message: '/^Cannot call method get\(\) on mixed.$/'
       count: 1
@@ -82,10 +74,6 @@ parameters:
     - message: '/Return type \(array\) of method MailPoet\\Logging\\PluginVersionProcessor::__invoke\(\) should be compatible with return type \(MailPoetVendor\\Monolog\\Processor\\Record\) of method MailPoetVendor\\Monolog\\Processor\\ProcessorInterface::__invoke\(\)/'
       count: 1
       path: ../../lib/Logging/PluginVersionProcessor.php
-    - # Can be removed once https://github.com/woocommerce/woocommerce/pull/36104 is merged. WooCommerce docblock for this method is outdated.
-      message: '/^Parameter #2 \$args of static method Automattic\\WooCommerce\\Admin\\Features\\OnboardingTasks\\TaskLists::add_task\(\) expects array, MailPoet\\WooCommerce\\MailPoetTask given.$/'
-      count: 1
-      path: ../../lib/Config/HooksWooCommerce.php
     -
       message: "#^Cannot cast string|void to string\\.$#"
       count: 3

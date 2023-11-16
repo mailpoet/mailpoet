@@ -84,6 +84,64 @@ namespace Automattic\WooCommerce\Internal\Features {
   }
 }
 
+// Temporary stubs for marketing channels
+// I have no idea why PhpStorm is complaining, but the woocommerce-stubs library has the latest updates
+namespace Automattic\WooCommerce\Admin\Marketing {
+  interface MarketingChannelInterface {
+    public const PRODUCT_LISTINGS_NOT_APPLICABLE   = 'not-applicable';
+    public const PRODUCT_LISTINGS_SYNC_IN_PROGRESS = 'sync-in-progress';
+    public const PRODUCT_LISTINGS_SYNC_FAILED      = 'sync-failed';
+    public const PRODUCT_LISTINGS_SYNCED           = 'synced';
+    public function get_slug(): string;
+    public function get_name(): string;
+    public function get_description(): string;
+    public function get_icon_url(): string;
+    public function is_setup_completed(): bool;
+    public function get_setup_url(): string;
+    public function get_product_listings_status(): string;
+    public function get_errors_count(): int;
+    public function get_supported_campaign_types(): array;
+    public function get_campaigns(): array;
+  }
+
+  class MarketingCampaign {
+    /**
+     * MarketingCampaign constructor.
+     *
+     * @param string                $id         The marketing campaign's unique identifier.
+     * @param MarketingCampaignType $type       The marketing campaign type.
+     * @param string                $title      The title of the marketing campaign.
+     * @param string                $manage_url The URL to the channel's campaign management page.
+     * @param Price|null            $cost       The cost of the marketing campaign with the currency.
+     */
+    public function __construct( string $id, MarketingCampaignType $type, string $title, string $manage_url, Price $cost = null ) {}
+  }
+
+  class MarketingCampaignType {
+    /**
+     * MarketingCampaignType constructor.
+     *
+     * @param string                    $id          A unique identifier for the campaign type.
+     * @param MarketingChannelInterface $channel     The marketing channel that this campaign type belongs to.
+     * @param string                    $name        Name of the marketing campaign type.
+     * @param string                    $description Description of the marketing campaign type.
+     * @param string                    $create_url  The URL to the create campaign page.
+     * @param string                    $icon_url    The URL to an image/icon for the campaign type.
+     */
+    public function __construct( string $id, MarketingChannelInterface $channel, string $name, string $description, string $create_url, string $icon_url ) {}
+  }
+
+  class Price {
+    /**
+     * Price constructor.
+     *
+     * @param string $value    The value of the price.
+     * @param string $currency The currency of the price.
+     */
+    public function __construct( string $value, string $currency ) {}
+  }
+}
+
 namespace WP_CLI\Utils {
   if (!function_exists('format_items')) {
     /** @param array|string $fields */
