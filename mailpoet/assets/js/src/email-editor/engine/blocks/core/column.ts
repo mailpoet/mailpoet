@@ -23,7 +23,8 @@ function disableNestedColumns() {
           if (
             allowedBlockType !== 'core/column' &&
             allowedBlockType !== 'core/columns' &&
-            allowedBlockType !== 'core/list-item'
+            allowedBlockType !== 'core/list-item' &&
+            allowedBlockType !== 'core/button'
           ) {
             allowedBlockTypes.push(allowedBlockType);
           }
