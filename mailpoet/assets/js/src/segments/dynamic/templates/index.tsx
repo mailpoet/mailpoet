@@ -91,6 +91,7 @@ export function SegmentTemplates(): JSX.Element {
               )
               .map((template) => (
                 <Item
+                  key={template.slug}
                   name={template.name}
                   description={template.description}
                   category={getCategoryNameBySlug(template.category)}
