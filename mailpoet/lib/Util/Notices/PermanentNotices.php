@@ -73,7 +73,7 @@ class PermanentNotices {
     $this->unauthorizedEmailsNotice = new UnauthorizedEmailNotice($wp, $settings);
     $this->unauthorizedEmailsInNewslettersNotice = new UnauthorizedEmailInNewslettersNotice($settings, $wp);
     $this->inactiveSubscribersNotice = new InactiveSubscribersNotice($settings, $subscribersRepository, $wp);
-    $this->blackFridayNotice = new BlackFridayNotice($subscribersRepository);
+    $this->blackFridayNotice = new BlackFridayNotice($serviceChecker, $subscribersFeature);
     $this->headersAlreadySentNotice = new HeadersAlreadySentNotice($settings, $trackingConfig, $wp);
     $this->emailWithInvalidListNotice = new EmailWithInvalidSegmentNotice($wp);
     $this->changedTrackingNotice = new ChangedTrackingNotice($wp);
