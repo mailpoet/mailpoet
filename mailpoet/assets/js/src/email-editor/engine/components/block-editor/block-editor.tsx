@@ -162,7 +162,13 @@ export function BlockEditor() {
                       <WritingFlow>
                         <ObserveTyping>
                           <BlockList
-                            className="is-layout-constrained has-global-padding"
+                            className={classnames(
+                              {
+                                'is-mobile-preview':
+                                  previewDeviceType === 'Mobile',
+                              },
+                              'is-layout-constrained has-global-padding',
+                            )}
                             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                             // @ts-ignore We have an older package of @wordpress/block-editor that doesn't contain the correct type
                             layout={layout}

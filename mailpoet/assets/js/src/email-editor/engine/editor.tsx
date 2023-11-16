@@ -5,6 +5,7 @@ import { Popover, SlotFillProvider } from '@wordpress/components';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import { EntityProvider } from '@wordpress/core-data';
 import { initBlocks } from './blocks';
+import { initializeLayout } from './layouts/flex-email';
 import { BlockEditor } from './components/block-editor';
 import { createStore, storeName } from './store';
 import { initHooks } from './hooks';
@@ -39,6 +40,7 @@ export function initialize(elementId: string) {
     return;
   }
   createStore();
+  initializeLayout();
   initBlocks();
   initHooks();
   const root = createRoot(container);
