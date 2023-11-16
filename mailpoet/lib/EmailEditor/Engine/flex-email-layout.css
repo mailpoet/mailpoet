@@ -1,0 +1,20 @@
+.is-layout-email-flex {
+  flex-wrap: nowrap;
+}
+
+:where(body .is-layout-flex) {
+  gap: var(--mp-flex-layout-gap, 16px);
+}
+
+.is-mobile-preview .is-layout-email-flex {
+  display: block;
+}
+
+.is-mobile-preview .is-layout-email-flex .block-editor-block-list__block {
+  padding: 5px 0;
+  width: 100%;
+}
+
+.is-mobile-preview .is-layout-email-flex .wp-block-button__link {
+  width: 100%;
+}
