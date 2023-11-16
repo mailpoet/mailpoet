@@ -6,8 +6,19 @@ use Automattic\WooCommerce\Admin\Marketing\MarketingCampaign;
 use Automattic\WooCommerce\Admin\Marketing\MarketingCampaignType;
 use Automattic\WooCommerce\Admin\Marketing\MarketingChannelInterface;
 use MailPoet\Config\Menu;
+use MailPoet\Util\CdnAssetUrl;
 
 class MPMarketingChannel implements MarketingChannelInterface {
+
+  /** @var CdnAssetUrl */
+  private $cdnAssetUrl;
+
+  public function __construct(
+    CdnAssetUrl $cdnAssetUrl
+  ) {
+    $this->cdnAssetUrl = $cdnAssetUrl;
+  }
+
   /**
    * Returns the unique identifier string for the marketing channel extension, also known as the plugin slug.
    *
@@ -41,8 +52,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return string
    */
   public function get_icon_url(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    // TODO: use the correct image
-    return 'https://ps.w.org/mailpoet/assets/icon-256x256.png';
+    return $this->cdnAssetUrl->generateCdnUrl('icon-white-123x128.png');
   }
 
   /**
