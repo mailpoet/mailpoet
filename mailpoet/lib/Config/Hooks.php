@@ -352,6 +352,12 @@ class Hooks {
       $this->hooksWooCommerce,
       'addMailPoetTaskToWooHomePage',
     ]);
+
+    $this->wp->addFilter(
+      'woocommerce_marketing_channels',
+      [$this->hooksWooCommerce, 'addMailPoetMarketingMultiChannel'],
+      10, 1
+    );
   }
 
   public function setupWoocommerceSystemInfo() {
