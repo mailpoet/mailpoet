@@ -1,6 +1,5 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
-use Codeception\Util\Locator;
 use Facebook\WebDriver\Exception\UnrecognizedExceptionException;
 use Facebook\WebDriver\Exception\WebDriverException;
 use Facebook\WebDriver\WebDriverKeys;
@@ -8,7 +7,6 @@ use MailPoet\Cache\TransientCache;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormMessageController;
-use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
@@ -475,14 +473,15 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->addProductToCart($product);
     $i->goToCheckout();
     $i->fillCustomerInfo($userEmail);
-    if ($doSubscribe) {
-      $settings = (ContainerWrapper::getInstance())->get(SettingsController::class);
-      $i->click(Locator::contains('label', $settings->get('woocommerce.optin_on_checkout.message')));
-    }
     if ($doRegister) {
       $i->optInForRegistration();
     }
     $i->selectPaymentMethod();
+    if ($doSubscribe) {
+      $i->optInForSubscription();
+    } else {
+      $i->optOutOfSubscription();
+    }
     $i->placeOrder();
     if ($doRegister) {
       $i->logOut();
@@ -518,13 +517,13 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function fillCustomerInfo($userEmail) {
     $i = $this;
-    $i->fillField('#billing-first_name', 'John');
-    $i->fillField('#billing-last_name', 'Doe');
-    $i->fillField('#billing-address_1', 'Address 1');
-    $i->fillField('#billing-city', 'Paris');
-    $i->fillField('#email', $userEmail);
-    $i->fillField('#billing-postcode', '75000');
-    $i->fillField('#billing-phone', '0555666777');
+    $i->fillField('billing_first_name', 'John');
+    $i->fillField('billing_last_name', 'Doe');
+    $i->fillField('billing_address_1', 'Address 1');
+    $i->fillField('billing_city', 'Paris');
+    $i->fillField('billing_email', $userEmail);
+    $i->fillField('billing_postcode', '75000');
+    $i->fillField('billing_phone', '123456');
   }
 
   /**
@@ -532,9 +531,9 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function optInForRegistration() {
     $i = $this;
-    $isCheckboxVisible = $i->executeJS('return document.getElementsByClassName("wc-block-checkout__create-account")');
+    $isCheckboxVisible = $i->executeJS('return document.getElementById("createaccount")');
     if ($isCheckboxVisible) {
-      $i->click(Locator::contains('label', 'Create an account?'));
+      $i->checkOption('#createaccount');
     }
   }
 
@@ -542,11 +541,10 @@ class AcceptanceTester extends \Codeception\Actor {
    * Check the option for subscribing to the WC list
    */
   public function optInForSubscription() {
-    $settings = (ContainerWrapper::getInstance())->get(SettingsController::class);
     $i = $this;
-    $isCheckboxVisible = $i->executeJS('return document.getElementById("checkbox-control-0")');
+    $isCheckboxVisible = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin")');
     if ($isCheckboxVisible) {
-      $i->click(Locator::contains('label', $settings->get('woocommerce.optin_on_checkout.message')));
+      $i->checkOption('#mailpoet_woocommerce_checkout_optin');
     }
   }
 
@@ -554,24 +552,23 @@ class AcceptanceTester extends \Codeception\Actor {
    * Uncheck the option for subscribing to the WC list
    */
   public function optOutOfSubscription() {
-    $settings = (ContainerWrapper::getInstance())->get(SettingsController::class);
     $i = $this;
-    $isCheckboxVisible = $i->executeJS('return document.getElementById("checkbox-control-0")');
+    $isCheckboxVisible = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin")');
     if ($isCheckboxVisible) {
-      $i->click(Locator::contains('label', $settings->get('woocommerce.optin_on_checkout.message')));
+      $i->uncheckOption('#mailpoet_woocommerce_checkout_optin');
     }
   }
 
   /**
    * Select a payment method (cheque, cod, ppec_paypal)
    */
-  public function selectPaymentMethod($method = 'bacs') {
+  public function selectPaymentMethod($method = 'cod') {
     $i = $this;
     // We need to scroll with some negative offset so that the input is not hidden above the top page fold
     $approximatePaymentMethodInputHeight = 40;
     $i->waitForElementNotVisible('.blockOverlay', 30); // wait for payment method loading overlay to disappear
-    $i->scrollTo('#radio-control-wc-payment-method-options-' . $method, 0, -$approximatePaymentMethodInputHeight);
-    $i->click('label[for="radio-control-wc-payment-method-options-' . $method . '"]');
+    $i->scrollTo('#payment_method_' . $method, 0, -$approximatePaymentMethodInputHeight);
+    $i->click('label[for="payment_method_' . $method . '"]');
     $i->wait(0.5); // Wait for animation after selecting the method.
   }
 
@@ -580,13 +577,8 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function placeOrder() {
     $i = $this;
-    // Add a note to order just to avoid flakiness due to race conditions
-    $i->click(Locator::contains('label', 'Add a note to your order'));
-    $i->fillField('.wc-block-components-textarea', 'This is a note');
-    $i->waitForElementClickable(Locator::contains('button', 'Place Order'));
-    $i->waitForText('Place Order');
-    $i->waitForElementClickable(Locator::contains('button', 'Place Order'));
-    $i->click(Locator::contains('button', 'Place Order'));
+    $i->waitForText('Place order');
+    $i->click('Place order');
     $i->waitForText('Order received');
   }
 
