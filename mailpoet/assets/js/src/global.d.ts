@@ -108,6 +108,7 @@ interface Window {
   mailpoet_woocommerce_store_config: WooCommerceStoreConfig;
   mailpoet_woocommerce_version: string;
   mailpoet_track_wizard_loaded_via_woocommerce: boolean;
+  mailpoet_track_wizard_loaded_via_woocommerce_marketing_dashboard: boolean;
   mailpoet_premium_active: boolean;
   mailpoet_subscribers_limit: number;
   mailpoet_subscribers_limit_reached: boolean;

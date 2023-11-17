@@ -15,6 +15,21 @@ function trackWizardLoadedViaWooCommerce() {
       data: 'send_event_that_wizard_was_loaded_via_woocommerce',
     });
   }
+
+  if (window.mailpoet_track_wizard_loaded_via_woocommerce_marketing_dashboard) {
+    window.MailPoet.trackEvent(
+      'User clicked on complete MailPoet setup in WooCommerce > Multichannel Marketing dashboard',
+      {
+        'WooCommerce version': window.mailpoet_woocommerce_version,
+      },
+    );
+    void window.MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'settings',
+      action: 'delete',
+      data: 'wizard_loaded_via_woocommerce_marketing_dashboard',
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', trackWizardLoadedViaWooCommerce);
