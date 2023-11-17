@@ -36,4 +36,30 @@ function deactivateStackOnMobile() {
   );
 }
 
-export { deactivateStackOnMobile };
+/**
+ * Disables layout support for columns and column blocks because
+ * the default layout `flex` add gaps between columns that it is not possible to support in emails.
+ */
+function disableColumnsLayout() {
+  addFilter(
+    'blocks.registerBlockType',
+    'mailpoet-email-editor/disable-columns-layout',
+    (settings, name) => {
+      if (name === 'core/columns' || name === 'core/column') {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return {
+          ...settings,
+          supports: {
+            ...settings.supports,
+            layout: false,
+          },
+        };
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return settings;
+    },
+  );
+}
+
+export { deactivateStackOnMobile, disableColumnsLayout };
