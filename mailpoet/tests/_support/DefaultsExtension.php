@@ -83,7 +83,7 @@ class DefaultsExtension extends Extension {
 
     // other
     update_option('woocommerce_bacs_settings', ['enabled' => 'yes'], 'yes');
-    update_option('woocommerce_cod_settings', ['enabled' => 'yes'], 'yes');
+    update_option('woocommerce_cod_settings', ['enabled' => 'yes', 'enable_for_virtual' => 'yes'], 'yes');
     update_option('woocommerce_enable_signup_and_login_from_checkout', 'yes', 'no');
     update_option('woocommerce_enable_myaccount_registration', 'yes', 'no');
 
