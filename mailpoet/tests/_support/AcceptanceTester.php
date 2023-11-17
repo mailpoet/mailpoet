@@ -532,7 +532,7 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function optInForRegistration() {
     $i = $this;
-    $isCheckboxVisible = $i->waitForText((Locator::contains('label', 'Create an account?')));
+    $isCheckboxVisible = $i->executeJS('return document.getElementsByClassName("wc-block-checkout__create-account")');
     if ($isCheckboxVisible) {
       $i->click(Locator::contains('label', 'Create an account?'));
     }
@@ -544,7 +544,7 @@ class AcceptanceTester extends \Codeception\Actor {
   public function optInForSubscription() {
     $settings = (ContainerWrapper::getInstance())->get(SettingsController::class);
     $i = $this;
-    $isCheckboxVisible = $i->waitForText($settings->get('woocommerce.optin_on_checkout.message'));
+    $isCheckboxVisible = $i->executeJS('return document.getElementById("checkbox-control-0")');
     if ($isCheckboxVisible) {
       $i->click(Locator::contains('label', $settings->get('woocommerce.optin_on_checkout.message')));
     }
@@ -556,7 +556,7 @@ class AcceptanceTester extends \Codeception\Actor {
   public function optOutOfSubscription() {
     $settings = (ContainerWrapper::getInstance())->get(SettingsController::class);
     $i = $this;
-    $isCheckboxVisible = $i->waitForText($settings->get('woocommerce.optin_on_checkout.message'));
+    $isCheckboxVisible = $i->executeJS('return document.getElementById("checkbox-control-0")');
     if ($isCheckboxVisible) {
       $i->click(Locator::contains('label', $settings->get('woocommerce.optin_on_checkout.message')));
     }
