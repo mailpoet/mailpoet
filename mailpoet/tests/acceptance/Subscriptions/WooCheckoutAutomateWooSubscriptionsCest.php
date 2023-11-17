@@ -15,7 +15,7 @@ use MailPoet\Test\DataFactories\WooCommerceProduct;
  */
 class WooCheckoutAutomateWooSubscriptionsCest {
 
-  const MAILPOET_OPTIN_ELEMENT = '#mailpoet_woocommerce_checkout_optin';
+  const MAILPOET_OPTIN_TEXT = 'Yes, I would like to be added to your mailing list';
   const AUTOMATE_WOO_OPTIN_TEXT = 'I want to receive updates about products and promotions';
 
   /** @var Settings */
@@ -44,14 +44,14 @@ class WooCheckoutAutomateWooSubscriptionsCest {
     $i->addProductToCart($this->product);
     $i->goToCheckout();
     $i->waitForText(self::AUTOMATE_WOO_OPTIN_TEXT, 10);
-    $i->dontSeeElement(self::MAILPOET_OPTIN_ELEMENT);
+    $i->dontSee(self::MAILPOET_OPTIN_TEXT);
   }
 
   public function checkoutOptInEnabled(\AcceptanceTester $i) {
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $i->addProductToCart($this->product);
     $i->goToCheckout();
-    $i->waitForElement(self::MAILPOET_OPTIN_ELEMENT, 10);
+    $i->waitForText(self::MAILPOET_OPTIN_TEXT, 10);
     $i->dontSee(self::AUTOMATE_WOO_OPTIN_TEXT);
   }
 
