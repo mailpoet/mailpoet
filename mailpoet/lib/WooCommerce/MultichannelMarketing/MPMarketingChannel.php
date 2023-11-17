@@ -6,6 +6,7 @@ use Automattic\WooCommerce\Admin\Marketing\MarketingCampaign;
 use Automattic\WooCommerce\Admin\Marketing\MarketingCampaignType;
 use Automattic\WooCommerce\Admin\Marketing\MarketingChannelInterface;
 use MailPoet\Config\Menu;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\CdnAssetUrl;
 
 class MPMarketingChannel implements MarketingChannelInterface {
@@ -13,10 +14,17 @@ class MPMarketingChannel implements MarketingChannelInterface {
   /** @var CdnAssetUrl */
   private $cdnAssetUrl;
 
+  /**
+   * @var SettingsController
+   */
+  private $settings;
+
   public function __construct(
-    CdnAssetUrl $cdnAssetUrl
+    CdnAssetUrl $cdnAssetUrl,
+    SettingsController $settings
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
+    $this->settings = $settings;
   }
 
   /**
@@ -61,7 +69,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return bool
    */
   public function is_setup_completed(): bool { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return true; // will be updated in MAILPOET-5695
+    return $this->isMPSetupComplete();
   }
 
   /**
@@ -70,7 +78,11 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return string
    */
   public function get_setup_url(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return admin_url('admin.php?page=' . Menu::MAIN_PAGE_SLUG); // will be updated in MAILPOET-5695
+    if ($this->isMPSetupComplete()) {
+      return admin_url('admin.php?page=' . Menu::MAIN_PAGE_SLUG);
+    }
+
+    return admin_url('admin.php?page=' . Menu::WELCOME_WIZARD_PAGE_SLUG . '&mailpoet_wizard_loaded_via_woocommerce_marketing_dashboard');
   }
 
   /**
@@ -107,5 +119,16 @@ class MPMarketingChannel implements MarketingChannelInterface {
    */
   public function get_campaigns(): array { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     return []; // will be updated in MAILPOET-5698
+  }
+
+  /**
+   * Whether the task is completed.
+   * If the setting 'version' is not null it means the welcome wizard
+   * was already completed so we mark this task as completed as well.
+   */
+  protected function isMPSetupComplete(): bool {
+    $version = $this->settings->get('version');
+
+    return $version !== null;
   }
 }
