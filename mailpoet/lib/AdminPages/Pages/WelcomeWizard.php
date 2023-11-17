@@ -11,6 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class WelcomeWizard {
   const TRACK_LOADDED_VIA_WOOCOMMERCE_SETTING_NAME = 'send_event_that_wizard_was_loaded_via_woocommerce';
+  const TRACK_LOADDED_VIA_WOOCOMMERCE_MARKETING_DASHBOARD_SETTING_NAME = 'wizard_loaded_via_woocommerce_marketing_dashboard';
 
   /** @var PageRenderer */
   private $pageRenderer;
@@ -49,6 +50,13 @@ class WelcomeWizard {
     if (!$loadedViaWooCommerce && isset($_GET['mailpoet_wizard_loaded_via_woocommerce'])) {
       // This setting is used to send an event to Mixpanel in another request as, before completing the wizard, Mixpanel is not enabled.
       $this->settings->set(WelcomeWizard::TRACK_LOADDED_VIA_WOOCOMMERCE_SETTING_NAME, 1);
+    }
+
+    $loadedViaWooCommerceMarketingDashboard = $this->settings->get(WelcomeWizard::TRACK_LOADDED_VIA_WOOCOMMERCE_MARKETING_DASHBOARD_SETTING_NAME, false);
+
+    if (!$loadedViaWooCommerceMarketingDashboard && isset($_GET['mailpoet_wizard_loaded_via_woocommerce_marketing_dashboard'])) {
+      // This setting is used to send an event to Mixpanel in another request as, before completing the wizard, Mixpanel is not enabled.
+      $this->settings->set(WelcomeWizard::TRACK_LOADDED_VIA_WOOCOMMERCE_MARKETING_DASHBOARD_SETTING_NAME, 1);
     }
 
 
