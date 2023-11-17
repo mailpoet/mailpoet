@@ -4,14 +4,12 @@ namespace MailPoet\Config;
 
 use Automattic\WooCommerce\Admin\Features\OnboardingTasks\Task;
 use Automattic\WooCommerce\Admin\Features\OnboardingTasks\TaskLists;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Segments\WooCommerce as WooCommerceSegment;
 use MailPoet\Statistics\Track\WooCommercePurchases;
 use MailPoet\Subscription\Registration;
-use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WooCommerce\MailPoetTask;
-use MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannel;
+use MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannelController;
 use MailPoet\WooCommerce\Settings as WooCommerceSettings;
 use MailPoet\WooCommerce\SubscriberEngagement;
 use MailPoet\WooCommerce\Subscription as WooCommerceSubscription;
@@ -42,11 +40,8 @@ class HooksWooCommerce {
   /** @var Tracker */
   private $tracker;
 
-  /** @var CdnAssetUrl */
-  private $cdnAssetUrl;
-
-  /** @var FeaturesController */
-  private $featuresController;
+  /** @var MPMarketingChannelController */
+  private $marketingChannelController;
 
   public function __construct(
     WooCommerceSubscription $woocommerceSubscription,
@@ -57,8 +52,7 @@ class HooksWooCommerce {
     LoggerFactory $loggerFactory,
     Tracker $tracker,
     SubscriberEngagement $subscriberEngagement,
-    CdnAssetUrl $cdnAssetUrl,
-    FeaturesController $featuresController
+    MPMarketingChannelController $marketingChannelController
   ) {
     $this->woocommerceSubscription = $woocommerceSubscription;
     $this->woocommerceSegment = $woocommerceSegment;
@@ -68,8 +62,7 @@ class HooksWooCommerce {
     $this->subscriberRegistration = $subscriberRegistration;
     $this->tracker = $tracker;
     $this->subscriberEngagement = $subscriberEngagement;
-    $this->cdnAssetUrl = $cdnAssetUrl;
-    $this->featuresController = $featuresController;
+    $this->marketingChannelController = $marketingChannelController;
   }
 
   public function extendWooCommerceCheckoutForm() {
@@ -202,17 +195,11 @@ class HooksWooCommerce {
   }
 
   public function addMailPoetMarketingMultiChannel($registeredMarketingChannels) {
-    if (!$this->featuresController->isSupported(FeaturesController::MAILPOET_WOOCOMMERCE_MULTICHANNEL_INTEGRATION)) {
-      return $registeredMarketingChannels; // Do not register the marketing channel if the feature flag is not enabled
-    }
-
     if (!is_array($registeredMarketingChannels)) {
       return $registeredMarketingChannels;
     }
 
-    return array_merge($registeredMarketingChannels, [
-      new MPMarketingChannel($this->cdnAssetUrl),
-    ]);
+    return $this->marketingChannelController->registerMarketingChannel($registeredMarketingChannels);
   }
 
   private function logError(\Throwable $e, $name) {
