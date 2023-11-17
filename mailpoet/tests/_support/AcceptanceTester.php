@@ -583,6 +583,7 @@ class AcceptanceTester extends \Codeception\Actor {
     // Add a note to order just to avoid flakiness due to race conditions
     $i->click(Locator::contains('label', 'Add a note to your order'));
     $i->fillField('.wc-block-components-textarea', 'This is a note');
+    $i->waitForElementClickable(Locator::contains('button', 'Place Order'));
     $i->waitForText('Place Order');
     $i->waitForElementClickable(Locator::contains('button', 'Place Order'));
     $i->click(Locator::contains('button', 'Place Order'));
