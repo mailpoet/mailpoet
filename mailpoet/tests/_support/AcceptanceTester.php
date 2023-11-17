@@ -532,7 +532,7 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function optInForRegistration() {
     $i = $this;
-    $isCheckboxVisible = $i->executeJS('return document.getElementsByClassName("wc-block-checkout__create-account")');
+    $isCheckboxVisible = $i->waitForText((Locator::contains('label', 'Create an account?')));
     if ($isCheckboxVisible) {
       $i->click(Locator::contains('label', 'Create an account?'));
     }
@@ -544,7 +544,7 @@ class AcceptanceTester extends \Codeception\Actor {
   public function optInForSubscription() {
     $settings = (ContainerWrapper::getInstance())->get(SettingsController::class);
     $i = $this;
-    $isCheckboxVisible = $i->executeJS('return document.getElementById("checkbox-control-0")');
+    $isCheckboxVisible = $i->waitForText($settings->get('woocommerce.optin_on_checkout.message'));
     if ($isCheckboxVisible) {
       $i->click(Locator::contains('label', $settings->get('woocommerce.optin_on_checkout.message')));
     }
@@ -556,7 +556,7 @@ class AcceptanceTester extends \Codeception\Actor {
   public function optOutOfSubscription() {
     $settings = (ContainerWrapper::getInstance())->get(SettingsController::class);
     $i = $this;
-    $isCheckboxVisible = $i->executeJS('return document.getElementById("checkbox-control-0")');
+    $isCheckboxVisible = $i->waitForText($settings->get('woocommerce.optin_on_checkout.message'));
     if ($isCheckboxVisible) {
       $i->click(Locator::contains('label', $settings->get('woocommerce.optin_on_checkout.message')));
     }
@@ -565,7 +565,7 @@ class AcceptanceTester extends \Codeception\Actor {
   /**
    * Select a payment method (cheque, cod, ppec_paypal)
    */
-  public function selectPaymentMethod($method = 'bacs') {
+  public function selectPaymentMethod($method = 'cod') {
     $i = $this;
     // We need to scroll with some negative offset so that the input is not hidden above the top page fold
     $approximatePaymentMethodInputHeight = 40;
