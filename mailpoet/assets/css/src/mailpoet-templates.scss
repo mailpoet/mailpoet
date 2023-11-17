@@ -24,13 +24,16 @@
 .mailpoet-templates-card {
   align-items: flex-end;
   border: none;
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   padding: 0;
   text-align: left;
   width: 336px;
+
+  &:not(:disabled) {
+    cursor: pointer;
+  }
 
   > div {
     display: grid;
