@@ -281,6 +281,8 @@ class Pages {
     global $post;
 
     if (
+      (!isset($post))
+      ||
       ($post->post_title !== __('MailPoet Page', 'mailpoet')) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       ||
       ($pageTitle !== $this->wp->singlePostTitle('', false))
