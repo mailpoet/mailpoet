@@ -12,6 +12,14 @@ Send beautiful newsletters from WordPress. Collect subscribers with signup forms
 
 == Description ==
 
+= Get up to 40% off all MailPoet annual plans and upgrades =
+
+Our Black Friday sale is live. Save up to 40% when you switch to or upgrade an annual plan — no coupon needed. Offer ends at 2 PM UTC, 28 November.
+
+[Shop annual plans](https://account.mailpoet.com/?billing=yearly&ref=sale-bfcm-2023-wporg&utm_source=wordpress.org&utm_medium=description&utm_campaign=sale_bfcm_2023)
+
+= What is MailPoet? =
+
 Use MailPoet to create, send, manage, and grow your email marketing campaigns – all without leaving your WordPress dashboard.
 
 Our newsletter builder integrates perfectly with WordPress so any website owner can create beautiful emails from scratch, or by using our responsive templates that display flawlessly across all devices.
