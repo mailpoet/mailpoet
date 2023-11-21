@@ -84,7 +84,7 @@ class MenuTest extends \MailPoetTest {
       [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
       [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
       [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [null, $this->anything(), $this->anything(), $this->anything(), Menu::AUTOMATIONS_PAGE_SLUG, $this->anything()]
+      [Menu::NO_PARENT_PAGE_SLUG, $this->anything(), $this->anything(), $this->anything(), Menu::AUTOMATIONS_PAGE_SLUG, $this->anything()]
     )->willReturn(true);
 
     $menu = new Menu(
