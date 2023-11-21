@@ -102,6 +102,12 @@ class SendingQueueTest extends \MailPoetTest {
   /** @var ScheduledTaskSubscribersRepository */
   private $scheduledTaskSubscribersRepository;
 
+  /** @var ScheduledTaskEntity */
+  private $scheduledTaskEntity;
+
+  /** @var SendingQueueEntity */
+  private $sendingQueueEntity;
+
   public function _before() {
     parent::_before();
     $wpUsers = get_users();
@@ -162,6 +168,15 @@ class SendingQueueTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker();
+
+    $scheduledTaskEntity = $this->scheduledTasksRepository->findOneById($this->queue->taskId);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTaskEntity);
+    $this->scheduledTaskEntity = $scheduledTaskEntity;
+
+    $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($this->queue->id);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueueEntity);
+    $this->sendingQueueEntity = $sendingQueueEntity;
+    $this->entityManager->refresh($this->sendingQueueEntity);
   }
 
   private function getDirectUnsubscribeURL() {
@@ -259,7 +274,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager
     );
     $sendingQueueWorker->sendNewsletters(
-      $this->queue,
+      $this->scheduledTaskEntity,
       $preparedSubscribers = [],
       $preparedNewsletters = [],
       $preparedSubscribers = [],
@@ -279,6 +294,7 @@ class SendingQueueTest extends \MailPoetTest {
     $queue = $this->queue;
     $queue->status = SendingQueue::STATUS_COMPLETED;
     $queue->save();
+    $this->entityManager->refresh($this->scheduledTaskEntity);
     $sendingQueueWorker = $this->make(
       $this->getSendingQueueWorker(),
       [
@@ -308,7 +324,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager
     );
     $sendingQueueWorker->sendNewsletters(
-      $queue,
+      $this->scheduledTaskEntity,
       $preparedSubscribers = [],
       $preparedNewsletters = [],
       $preparedSubscribers = [],
@@ -502,6 +518,12 @@ class SendingQueueTest extends \MailPoetTest {
     $queue->newsletterRenderedBody = ['html' => '<p>Hello [subscriber:email]</p>', 'text' => 'Hello [subscriber:email]'];
     $queue->newsletterRenderedSubject = 'News for [subscriber:email]';
     $queue->setSubscribers($subscriberIds);
+    $queue->save();
+    $scheduledTaskEntity = $this->scheduledTasksRepository->findOneById($queue->taskId);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTaskEntity);
+    $queueEntity = $scheduledTaskEntity->getSendingQueue();
+    $this->assertInstanceOf(SendingQueueEntity::class, $queueEntity);
+    $this->entityManager->refresh($queueEntity);
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
 
     $newsletter = $this->newsletter;
@@ -539,7 +561,7 @@ class SendingQueueTest extends \MailPoetTest {
       Subscriber::findOne($subscriber2->getId()),
     ];
 
-    $sendingQueueWorker->processQueue($queue, $newsletter, $subscribersModels, $timer);
+    $sendingQueueWorker->processQueue($scheduledTaskEntity, $newsletter, $subscribersModels, $timer);
   }
 
   public function testItCanProcessSubscribersInBulk() {
@@ -690,8 +712,13 @@ class SendingQueueTest extends \MailPoetTest {
       $this->entityManager
     );
 
+    $sendingQueue = $this->sendingQueuesRepository->findOneById($queue->id);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+
     $sendingQueueWorker->sendNewsletters(
-      $queue,
+      $scheduledTask,
       [$this->subscriber->getId(), $wrongSubscriber->getId()],
       [],
       [$this->subscriber->getEmail(), $wrongSubscriber->getEmail()],
@@ -699,11 +726,7 @@ class SendingQueueTest extends \MailPoetTest {
       microtime(true)
     );
 
-    // load queue and compare data after first sending
-    $sendingQueue = $this->sendingQueuesRepository->findOneById($queue->id);
-    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
-    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
-    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    // compare data after first sending
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
     verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))->equals([$this->subscriber]);
@@ -713,7 +736,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountToProcess())->equals(1);
 
     $sendingQueueWorker->sendNewsletters(
-      $queue,
+      $scheduledTask,
       [$this->subscriber->getId()],
       [],
       [$this->subscriber->getEmail()],
@@ -808,6 +831,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->subscriber->setStatus(Subscriber::STATUS_UNSUBSCRIBED);
     $this->entityManager->flush();
     $this->newsletterSegment->delete();
+    $this->entityManager->refresh($this->sendingQueueEntity);
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
       $this->construct(
@@ -844,6 +868,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscriber->getId(), // subscriber that should be processed
       $unsubscribedSubscriber->getId(), // subscriber that should be skipped
     ]);
+    $this->entityManager->refresh($this->sendingQueueEntity);
     $sendingQueueWorker = $this->getSendingQueueWorker(
       $this->construct(
         MailerTask::class,
@@ -881,6 +906,7 @@ class SendingQueueTest extends \MailPoetTest {
     ]);
     $queue->countTotal = 2;
     $queue->save();
+    $this->entityManager->refresh($this->sendingQueueEntity);
     $sendingQueueWorker = $this->sendingQueueWorker;
     $sendingQueueWorker->mailerTask = $this->construct(
       MailerTask::class,
@@ -923,6 +949,7 @@ class SendingQueueTest extends \MailPoetTest {
     $queue->setSubscribers($subscribers);
     $queue->countTotal = count($subscribers);
     $queue->save();
+    $this->entityManager->refresh($this->sendingQueueEntity);
     $sendingQueueWorker = $this->sendingQueueWorker;
     $sendingQueueWorker->mailerTask = $this->construct(
       MailerTask::class,
@@ -959,6 +986,7 @@ class SendingQueueTest extends \MailPoetTest {
     ]);
     $queue->countTotal = 2;
     $queue->save();
+    $this->entityManager->refresh($this->sendingQueueEntity);
     $sendingQueueWorker = $this->sendingQueueWorker;
     $sendingQueueWorker->mailerTask = $this->construct(
       MailerTask::class,
@@ -995,6 +1023,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriber = $this->subscriber;
     $subscriber->setDeletedAt(Carbon::now());
     $this->entityManager->flush();
+    $this->entityManager->refresh($this->sendingQueueEntity);
     $sendingQueueWorker->process();
 
     $sendingQueue = $this->sendingQueuesRepository->findOneById($this->queue->id);
@@ -1021,6 +1050,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriber = $this->subscriber;
     $subscriber->setStatus($subscriberStatus);
     $this->entityManager->flush();
+    $this->entityManager->refresh($this->sendingQueueEntity);
     $sendingQueueWorker->process();
 
     $sendingQueue = $this->sendingQueuesRepository->findOneById($this->queue->id);
@@ -1054,6 +1084,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriber = $this->subscriber;
     $subscriber->setStatus(Subscriber::STATUS_UNSUBSCRIBED);
     $this->entityManager->flush();
+    $this->entityManager->refresh($this->sendingQueueEntity);
     $sendingQueueWorker->process();
 
     $sendingQueue = $this->sendingQueuesRepository->findOneById($this->queue->id);
@@ -1074,6 +1105,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriberSegment = $this->subscriberSegment;
     $subscriberSegment->status = Subscriber::STATUS_UNSUBSCRIBED;
     $subscriberSegment->save();
+    $this->entityManager->refresh($this->sendingQueueEntity);
     $sendingQueueWorker->process();
 
     $sendingQueue = $this->sendingQueuesRepository->findOneById($this->queue->id);
@@ -1094,6 +1126,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriber = $this->subscriber;
     $subscriber->setStatus(Subscriber::STATUS_INACTIVE);
     $this->entityManager->flush();
+    $this->entityManager->refresh($this->sendingQueueEntity);
     $sendingQueueWorker->process();
 
     $sendingQueue = $this->sendingQueuesRepository->findOneById($this->queue->id);
@@ -1103,14 +1136,10 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItPausesSendingWhenProcessedSubscriberListCannotBeUpdated() {
-    $sendingTask = $this->createMock(SendingTask::class);
-    $sendingTask
+    $scheduledTaskSubscribersRepository = $this->createMock(ScheduledTaskSubscribersRepository::class);
+    $scheduledTaskSubscribersRepository
       ->method('updateProcessedSubscribers')
-      ->will($this->returnValue(false));
-    $sendingTask
-      ->method('__get')
-      ->with('id')
-      ->will($this->returnValue(100));
+      ->willThrowException(new \Exception());
     $sendingQueueWorker = $this->make(
       $this->getSendingQueueWorker()
     );
@@ -1126,7 +1155,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->wp,
       $this->tasksLinks,
       $this->scheduledTasksRepository,
-      $this->scheduledTaskSubscribersRepository,
+      $scheduledTaskSubscribersRepository,
       $this->construct(
         MailerTask::class,
         [$this->diContainer->get(MailerFactory::class)],
@@ -1140,7 +1169,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
     try {
       $sendingQueueWorker->sendNewsletters(
-        $sendingTask,
+        $this->scheduledTaskEntity,
         $preparedSubscribers = [],
         $preparedNewsletters = [],
         $preparedSubscribers = [],
@@ -1156,7 +1185,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($mailerLog['error'])->equals(
       [
         'operation' => 'processed_list_update',
-        'error_message' => 'QUEUE-100-PROCESSED-LIST-UPDATE',
+        'error_message' => "QUEUE-{$this->sendingQueueEntity->getId()}-PROCESSED-LIST-UPDATE",
       ]
     );
   }
@@ -1426,6 +1455,7 @@ class SendingQueueTest extends \MailPoetTest {
     $newsletter->getQueues()->add($queue);
 
     $this->entityManager->flush();
+    $this->entityManager->refresh($queue); // I'm not sure why calling refresh() here is needed and why the tests fail without it (calling $task->getSendingQueue() returns null)
     return $queue;
   }
 
