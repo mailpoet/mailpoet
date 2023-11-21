@@ -63,6 +63,25 @@ namespace {
     function wcs_create_subscription($args) {
     }
   }
+
+  if (!class_exists(\WP_HTML_Tag_Processor::class)) {
+    class WP_HTML_Tag_Processor {
+      public function __construct($content) {
+      }
+
+      public function next_tag($tag) {
+      }
+
+      public function get_attribute($attribute) {
+      }
+
+      public function get_updated_html() {
+      }
+
+      public function set_attribute($attribute, $value) {
+      }
+    }
+  }
 }
 
 // Temporary stubs for Woo Custom Tables.
