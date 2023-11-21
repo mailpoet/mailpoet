@@ -469,6 +469,7 @@ class AcceptanceTester extends \Codeception\Actor {
 
   /**
    * Order a product and create an account within the order process
+   * We are also checking the WooCommerce version and if it has new or old checkout experience
    */
   public function orderProduct(array $product, $userEmail, $doRegister = true, $doSubscribe = true) {
     $i = $this;
@@ -476,8 +477,22 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->goToCheckout();
     $i->fillCustomerInfo($userEmail);
     if ($doSubscribe) {
-      $settings = (ContainerWrapper::getInstance())->get(SettingsController::class);
-      $i->click(Locator::contains('label', $settings->get('woocommerce.optin_on_checkout.message')));
+      $wooCommerceVersion = $i->getWooCommerceVersion();
+      if (version_compare($wooCommerceVersion, '8.3.0', '>=')) {
+        $settings = (ContainerWrapper::getInstance())->get(SettingsController::class);
+        $i->click(Locator::contains('label', $settings->get('woocommerce.optin_on_checkout.message')));
+      } else {
+        $isCheckboxVisible = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin")');
+        if ($isCheckboxVisible) {
+          $i->checkOption('#mailpoet_woocommerce_checkout_optin');
+        }
+      }
+    } else {
+      $wooCommerceVersion = $i->getWooCommerceVersion();
+      if (version_compare($wooCommerceVersion, '8.3.0', '<')) {
+        $isCheckboxVisible = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin")');
+        $i->uncheckOption('#mailpoet_woocommerce_checkout_optin');
+      }
     }
     if ($doRegister) {
       $i->optInForRegistration();
@@ -515,26 +530,47 @@ class AcceptanceTester extends \Codeception\Actor {
 
   /**
    * Fill the customer info
+   * We are also checking the WooCommerce version and if it has new or old checkout experience
    */
   public function fillCustomerInfo($userEmail) {
     $i = $this;
-    $i->fillField('#billing-first_name', 'John');
-    $i->fillField('#billing-last_name', 'Doe');
-    $i->fillField('#billing-address_1', 'Address 1');
-    $i->fillField('#billing-city', 'Paris');
-    $i->fillField('#email', $userEmail);
-    $i->fillField('#billing-postcode', '75000');
-    $i->fillField('#billing-phone', '0555666777');
+    $wooCommerceVersion = $i->getWooCommerceVersion();
+    if (version_compare($wooCommerceVersion, '8.3.0', '>=')) {
+      $i->fillField('#billing-first_name', 'John');
+      $i->fillField('#billing-last_name', 'Doe');
+      $i->fillField('#billing-address_1', 'Address 1');
+      $i->fillField('#billing-city', 'Paris');
+      $i->fillField('#email', $userEmail);
+      $i->fillField('#billing-postcode', '75000');
+      $i->fillField('#billing-phone', '0555666777');
+    } else {
+      $i->fillField('billing_first_name', 'John');
+      $i->fillField('billing_last_name', 'Doe');
+      $i->fillField('billing_address_1', 'Address 1');
+      $i->fillField('billing_city', 'Paris');
+      $i->fillField('billing_email', $userEmail);
+      $i->fillField('billing_postcode', '75000');
+      $i->fillField('billing_phone', '123456');
+    }
   }
 
   /**
    * Check the option for creating an account
+   * We are also checking the WooCommerce version and if it has new or old checkout experience
    */
   public function optInForRegistration() {
     $i = $this;
-    $isCheckboxVisible = $i->executeJS('return document.getElementsByClassName("wc-block-checkout__create-account")');
-    if ($isCheckboxVisible) {
-      $i->click(Locator::contains('label', 'Create an account?'));
+    $wooCommerceVersion = $i->getWooCommerceVersion();
+    if (version_compare($wooCommerceVersion, '8.3.0', '>=')) {
+      $isCheckboxVisible = $i->executeJS('return document.getElementsByClassName("wc-block-checkout__create-account")');
+      if ($isCheckboxVisible) {
+        $i->click(Locator::contains('label', 'Create an account?'));
+      }
+    } else {
+      $isCheckboxVisible = $i->executeJS('return document.getElementById("createaccount")');
+      if ($isCheckboxVisible) {
+        $i->checkOption('#createaccount');
+      }
     }
   }
 
@@ -564,29 +600,47 @@ class AcceptanceTester extends \Codeception\Actor {
 
   /**
    * Select a payment method (cheque, cod, ppec_paypal)
+   * We are also checking the WooCommerce version and if it has new or old checkout experience
    */
   public function selectPaymentMethod($method = 'cod') {
     $i = $this;
-    // We need to scroll with some negative offset so that the input is not hidden above the top page fold
-    $approximatePaymentMethodInputHeight = 40;
-    $i->waitForElementNotVisible('.blockOverlay', 30); // wait for payment method loading overlay to disappear
-    $i->scrollTo('#radio-control-wc-payment-method-options-' . $method, 0, -$approximatePaymentMethodInputHeight);
-    $i->click('label[for="radio-control-wc-payment-method-options-' . $method . '"]');
-    $i->wait(0.5); // Wait for animation after selecting the method.
+    $wooCommerceVersion = $i->getWooCommerceVersion();
+    if (version_compare($wooCommerceVersion, '8.3.0', '>=')) {
+      // We need to scroll with some negative offset so that the input is not hidden above the top page fold
+      $approximatePaymentMethodInputHeight = 40;
+      $i->waitForElementNotVisible('.blockOverlay', 30); // wait for payment method loading overlay to disappear
+      $i->scrollTo('#radio-control-wc-payment-method-options-' . $method, 0, -$approximatePaymentMethodInputHeight);
+      $i->click('label[for="radio-control-wc-payment-method-options-' . $method . '"]');
+      $i->wait(0.5); // Wait for animation after selecting the method.
+    } else {
+      $approximatePaymentMethodInputHeight = 40;
+      $i->waitForElementNotVisible('.blockOverlay', 30); // wait for payment method loading overlay to disappear
+      $i->scrollTo('#payment_method_' . $method, 0, -$approximatePaymentMethodInputHeight);
+      $i->click('label[for="payment_method_' . $method . '"]');
+      $i->wait(0.5); // Wait for animation after selecting the method.
+    }
   }
 
   /**
    * Place the order
+   * We are also checking the WooCommerce version and if it has new or old checkout experience
    */
   public function placeOrder() {
     $i = $this;
-    // Add a note to order just to avoid flakiness due to race conditions
-    $i->click(Locator::contains('label', 'Add a note to your order'));
-    $i->fillField('.wc-block-components-textarea', 'This is a note');
-    $i->waitForText('Place Order');
-    $i->waitForElementClickable(Locator::contains('button', 'Place Order'));
-    $i->click(Locator::contains('button', 'Place Order'));
-    $i->waitForText('Order received');
+    $wooCommerceVersion = $i->getWooCommerceVersion();
+    if (version_compare($wooCommerceVersion, '8.3.0', '>=')) {
+      // Add a note to order just to avoid flakiness due to race conditions
+      $i->click(Locator::contains('label', 'Add a note to your order'));
+      $i->fillField('.wc-block-components-textarea', 'This is a note');
+      $i->waitForText('Place Order');
+      $i->waitForElementClickable(Locator::contains('button', 'Place Order'));
+      $i->click(Locator::contains('button', 'Place Order'));
+      $i->waitForText('Order received');
+    } else {
+      $i->waitForText('Place order');
+      $i->click('Place order');
+      $i->waitForText('Order received');
+    }
   }
 
   /**
