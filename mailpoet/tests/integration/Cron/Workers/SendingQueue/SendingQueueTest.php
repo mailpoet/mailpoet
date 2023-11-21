@@ -1259,7 +1259,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItPauseSendingTaskThatHasTrashedSegment() {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, 'Subject With Trashed', NewsletterEntity::STATUS_SENDING);
-    $queue = $this->createQueueWithTaskAndSegment($newsletter, null, ['html' => 'Hello', 'text' => 'Hello']);
+    $queue = $this->createQueueWithTask($newsletter, null, ['html' => 'Hello', 'text' => 'Hello']);
     $segment = $this->createSegment('Segment test', SegmentEntity::TYPE_DEFAULT);
     $segment->setDeletedAt(new \DateTime());
     $this->entityManager->flush();
@@ -1279,7 +1279,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItPauseSendingTaskThatHasDeletedSegment() {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, 'Subject With Deleted', NewsletterEntity::STATUS_SENDING);
-    $queue = $this->createQueueWithTaskAndSegment($newsletter, null, ['html' => 'Hello', 'text' => 'Hello']);
+    $queue = $this->createQueueWithTask($newsletter, null, ['html' => 'Hello', 'text' => 'Hello']);
     $segment = $this->createSegment('Segment test', SegmentEntity::TYPE_DEFAULT);
     $this->addSegmentToNewsletter($newsletter, $segment);
     $this->entityManager->createQueryBuilder()->delete(SegmentEntity::class, 's')
@@ -1384,7 +1384,7 @@ class SendingQueueTest extends \MailPoetTest {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, 'Subject With Deleted', NewsletterEntity::STATUS_SENDING);
     [$segment, $subscriber] = $this->createListWithSubscriber();
     $this->addSegmentToNewsletter($newsletter, $segment);
-    $queue = $this->createQueueWithTaskAndSegment($newsletter, null, ['html' => 'Hello', 'text' => 'Hello']);
+    $queue = $this->createQueueWithTask($newsletter, null, ['html' => 'Hello', 'text' => 'Hello']);
     $subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $this->entityManager->persist($subscriber);
     $this->entityManager->flush();
@@ -1436,7 +1436,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->flush();
   }
 
-  private function createQueueWithTaskAndSegment(NewsletterEntity $newsletter, $status = null, $body = null): SendingQueueEntity {
+  private function createQueueWithTask(NewsletterEntity $newsletter, $status = null, $body = null): SendingQueueEntity {
     $task = new ScheduledTaskEntity();
     $task->setType(SendingQueueWorker::TASK_TYPE);
     $task->setStatus($status);
