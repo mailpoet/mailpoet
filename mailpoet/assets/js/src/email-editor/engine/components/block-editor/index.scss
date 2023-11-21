@@ -74,6 +74,7 @@
 
 // For the WYSIWYG experience we don't want to display any margins between blocks in the editor
 .wp-block {
+  clear: both; // for ensuring that floated elements (images) are cleared
   margin: 0;
 }
 
@@ -87,18 +88,16 @@
     }
   }
 }
-// Because by default alignleft and alignright classes are floated we need to override this behavior to have a consistent look in editor and in email
-// We decided to present the image block as a block with 100% width
-.editor-styles-wrapper .is-layout-constrained .wp-block-image.alignleft,
-.editor-styles-wrapper .is-layout-constrained .wp-block-image.alignright {
-  float: none !important;
-  margin-inline-start: 0;
-  width: 100%;
-}
-// Align left does not need any additional styles, but for aligment right we use flex to prevent for broken look by floating images
+// Resetting the margin for images in the editor to avoid unexpected spacing
 .editor-styles-wrapper .is-layout-constrained .wp-block-image {
+  figcaption {
+    margin: 0;
+  }
+
+  &.alignleft,
   &.alignright {
-    display: flex;
-    justify-content: flex-end;
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    text-align: center;
   }
 }
