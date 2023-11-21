@@ -7,6 +7,7 @@ use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\SendingQueue\SendingErrorHandler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Cron\Workers\SendingQueue\SendingThrottlingHandler;
@@ -30,7 +31,6 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterSegment;
-use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
@@ -51,6 +51,7 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\Security;
@@ -779,9 +780,9 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sendingQueueWorker->process();
 
-    $newQueue = ScheduledTask::findOne($this->queue->task_id);
-    $this->assertInstanceOf(ScheduledTask::class, $newQueue);
-    verify($newQueue->updatedAt)->notEquals($originalUpdated);
+    $newScheduledTask = $this->scheduledTasksRepository->findOneById($this->queue->task_id);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $newScheduledTask);
+    verify($newScheduledTask->getUpdatedAt())->notEquals($originalUpdated);
   }
 
   public function testItCanProcessWelcomeNewsletters() {
@@ -1232,11 +1233,11 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItReschedulesBounceTaskWhenPlannedInFarFuture() {
-    $task = ScheduledTask::createOrUpdate([
-      'type' => 'bounce',
-      'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMonths(1),
-    ]);
+    $task = (new ScheduledTaskFactory())->create(
+      Bounce::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMonths(1)
+    );
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
       $this->construct(MailerTask::class, [$this->diContainer->get(MailerFactory::class)], [
@@ -1245,18 +1246,16 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sendingQueueWorker->process();
 
-    $refetchedTask = ScheduledTask::where('id', $task->id)->findOne();
-    $this->assertInstanceOf(ScheduledTask::class, $refetchedTask); // PHPStan
-    verify($refetchedTask->scheduledAt)->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(42));
+    verify($task->getScheduledAt())->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(42));
   }
 
-  public function testDoesNoRescheduleBounceTaskWhenPlannedInNearFuture() {
+  public function testDoesNotRescheduleBounceTaskWhenPlannedInNearFuture() {
     $inOneHour = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(1);
-    $task = ScheduledTask::createOrUpdate([
-      'type' => 'bounce',
-      'status' => ScheduledTask::STATUS_SCHEDULED,
-      'scheduled_at' => $inOneHour,
-    ]);
+    $task = (new ScheduledTaskFactory())->create(
+      Bounce::TASK_TYPE,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+      $inOneHour
+    );
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
       $this->construct(MailerTask::class, [$this->diContainer->get(MailerFactory::class)], [
@@ -1265,9 +1264,7 @@ class SendingQueueTest extends \MailPoetTest {
     );
     $sendingQueueWorker->process();
 
-    $refetchedTask = ScheduledTask::where('id', $task->id)->findOne();
-    $this->assertInstanceOf(ScheduledTask::class, $refetchedTask); // PHPStan
-    verify($refetchedTask->scheduledAt)->equals($inOneHour);
+    verify($task->getScheduledAt())->equals($inOneHour);
   }
 
   public function testItPauseSendingTaskThatHasTrashedSegment() {
