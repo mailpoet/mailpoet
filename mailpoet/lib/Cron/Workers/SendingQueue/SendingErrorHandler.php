@@ -3,9 +3,11 @@
 namespace MailPoet\Cron\Workers\SendingQueue;
 
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 
 class SendingErrorHandler {
   /** @var ScheduledTaskSubscribersRepository */
@@ -14,12 +16,17 @@ class SendingErrorHandler {
   /** @var SendingThrottlingHandler */
   private $throttlingHandler;
 
+  /** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   public function __construct(
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
-    SendingThrottlingHandler $throttlingHandler
+    SendingThrottlingHandler $throttlingHandler,
+    SendingQueuesRepository $sendingQueuesRepository
   ) {
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
     $this->throttlingHandler = $throttlingHandler;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
   }
 
   public function processError(
@@ -51,6 +58,12 @@ class SendingErrorHandler {
       $subscriberIdIndex = array_search($subscriberError->getEmail(), $preparedSubscribers);
       $message = $subscriberError->getMessage() ?: $error->getMessage();
       $this->scheduledTaskSubscribersRepository->saveError($task, $preparedSubscribersIds[$subscriberIdIndex], $message ?? '');
+    }
+
+    $queue = $task->getSendingQueue();
+
+    if ($queue instanceof SendingQueueEntity) {
+      $this->sendingQueuesRepository->updateCounts($queue);
     }
   }
 }
