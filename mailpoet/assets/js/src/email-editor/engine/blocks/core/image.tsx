@@ -25,6 +25,33 @@ const imageEditCallback = createHigherOrderComponent(
   'imageEditCallback',
 );
 
+/**
+ * Because CSS property filter is not supported in almost 50% of email clients we have to disable it
+ */
+function disableImageFilter() {
+  addFilter(
+    'blocks.registerBlockType',
+    'mailpoet-email-editor/deactivate-image-filter',
+    (settings, name) => {
+      if (name === 'core/image') {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return {
+          ...settings,
+          supports: {
+            ...settings.supports,
+            filter: {
+              duetone: false,
+            },
+          },
+        };
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return settings;
+    },
+  );
+}
+
 function hideExpandOnClick() {
   addFilter(
     'editor.BlockEdit',
@@ -33,4 +60,4 @@ function hideExpandOnClick() {
   );
 }
 
-export { hideExpandOnClick };
+export { hideExpandOnClick, disableImageFilter };
