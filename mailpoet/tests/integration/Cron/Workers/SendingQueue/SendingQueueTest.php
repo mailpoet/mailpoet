@@ -19,6 +19,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -30,7 +31,6 @@ use MailPoet\Mailer\SubscriberError;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
-use MailPoet\Models\ScheduledTaskSubscriber;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
@@ -468,9 +468,9 @@ class SendingQueueTest extends \MailPoetTest {
     verify($scheduledTask->getStatus())->equals(SendingQueue::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
       ->arrayCount(0);
-    $processedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED);
+    $processedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
     verify($processedSubscribers)->equals([$this->subscriber]);
     verify($sendingQueue->getCountTotal())->equals(1);
     verify($sendingQueue->getCountProcessed())->equals(1);
@@ -602,9 +602,9 @@ class SendingQueueTest extends \MailPoetTest {
     verify($scheduledTask->getStatus())->equals(SendingQueue::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
       ->arrayCount(0);
-    $processedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED);
+    $processedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
     verify($processedSubscribers)->equals([$this->subscriber]);
     verify($sendingQueue->getCountTotal())->equals(1);
     verify($sendingQueue->getCountProcessed())->equals(1);
@@ -651,9 +651,9 @@ class SendingQueueTest extends \MailPoetTest {
     verify($updatedNewsletter->getSentAt())->equalsWithDelta($scheduledTask->getProcessedAt(), 1);
 
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
       ->arrayCount(0);
-    $processedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED);
+    $processedSubscribers = $scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
     verify($processedSubscribers)->equals([$this->subscriber]);
     verify($sendingQueue->getCountTotal())->equals(1);
     verify($sendingQueue->getCountProcessed())->equals(1);
@@ -729,8 +729,8 @@ class SendingQueueTest extends \MailPoetTest {
     // compare data after first sending
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))->equals([$this->subscriber]);
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED))->equals([$wrongSubscriber]);
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))->equals([$this->subscriber]);
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))->equals([$wrongSubscriber]);
     verify($sendingQueue->getCountTotal())->equals(2);
     verify($sendingQueue->getCountProcessed())->equals(1);
     verify($sendingQueue->getCountToProcess())->equals(1);
@@ -747,8 +747,8 @@ class SendingQueueTest extends \MailPoetTest {
     // load queue and compare data after second sending
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))->equals([]);
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED))->equals([$this->subscriber, $wrongSubscriber]);
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))->equals([]);
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))->equals([$this->subscriber, $wrongSubscriber]);
     verify($sendingQueue->getCountTotal())->equals(2);
     verify($sendingQueue->getCountProcessed())->equals(2);
     verify($sendingQueue->getCountToProcess())->equals(0);
@@ -810,9 +810,9 @@ class SendingQueueTest extends \MailPoetTest {
     verify($scheduledTask->getStatus())->equals(SendingQueue::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
       ->equals([]);
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
       ->equals([$this->subscriber]);
     verify($sendingQueue->getCountTotal())->equals(1);
     verify($sendingQueue->getCountProcessed())->equals(1);
@@ -852,7 +852,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
 
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
       ->equals([]);
     verify($sendingQueue->getCountTotal())->equals(0);
     verify($sendingQueue->getCountProcessed())->equals(0);
@@ -891,7 +891,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->scheduledTasksRepository->refresh($scheduledTask);
 
     // Unprocessable subscribers were removed
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
       ->equals([$this->subscriber]); // subscriber that should be processed
     verify($sendingQueue->getCountTotal())->equals(1);
     verify($sendingQueue->getCountProcessed())->equals(1);
@@ -926,9 +926,9 @@ class SendingQueueTest extends \MailPoetTest {
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
       ->equals([]);
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
       ->equals([$this->subscriber]);
     verify($sendingQueue->getCountTotal())->equals(1);
     verify($sendingQueue->getCountProcessed())->equals(1);
@@ -969,9 +969,9 @@ class SendingQueueTest extends \MailPoetTest {
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
       ->equals([]);
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
       ->equals([$this->subscriber]);
     verify($sendingQueue->getCountTotal())->equals(1);
     verify($sendingQueue->getCountProcessed())->equals(1);
@@ -1002,9 +1002,9 @@ class SendingQueueTest extends \MailPoetTest {
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_UNPROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
       ->equals([]);
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriber::STATUS_PROCESSED))
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
       ->equals([]);
     verify($sendingQueue->getCountTotal())->equals(0);
     verify($sendingQueue->getCountProcessed())->equals(0);
