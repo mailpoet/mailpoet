@@ -87,3 +87,18 @@
     }
   }
 }
+// Because by default alignleft and alignright classes are floated we need to override this behavior to have a consistent look in editor and in email
+// We decided to present the image block as a block with 100% width
+.editor-styles-wrapper .is-layout-constrained .wp-block-image.alignleft,
+.editor-styles-wrapper .is-layout-constrained .wp-block-image.alignright {
+  float: none !important;
+  margin-inline-start: 0;
+  width: 100%;
+}
+// Align left does not need any additional styles, but for aligment right we use flex to prevent for broken look by floating images
+.editor-styles-wrapper .is-layout-constrained .wp-block-image {
+  &.alignright {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
