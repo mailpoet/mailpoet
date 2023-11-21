@@ -6,7 +6,6 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueAlias;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
-use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Models\ScheduledTask;
@@ -223,16 +222,6 @@ class Sending {
 
   public function queue() {
     return $this->queue;
-  }
-
-  public function getSendingQueueEntity(): SendingQueueEntity {
-    $sendingQueueEntity = $this->sendingQueuesRepository->findOneById($this->queue->id);
-    if (!$sendingQueueEntity) {
-      throw new InvalidStateException();
-    }
-    $this->sendingQueuesRepository->refresh($sendingQueueEntity);
-
-    return $sendingQueueEntity;
   }
 
   public function task() {
