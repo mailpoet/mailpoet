@@ -6,7 +6,6 @@ import {
   premiumValidAndActive,
 } from '../../../common/premium-modal';
 import { Item } from '../../../common/templates';
-import { TemplateDetail } from './template-detail';
 
 type Badge = ComponentProps<typeof Item>['badge'];
 
@@ -26,11 +25,11 @@ const getBadge = (template: AutomationTemplate): Badge => {
 
 type Props = {
   template: AutomationTemplate;
+  onSelect: () => void;
 };
 
-export function TemplateListItem({ template }: Props): JSX.Element {
+export function TemplateListItem({ template, onSelect }: Props): JSX.Element {
   const [showPremium, setShowPremium] = useState(false);
-  const [showDetail, setShowDetail] = useState(false);
 
   return (
     <>
@@ -44,16 +43,10 @@ export function TemplateListItem({ template }: Props): JSX.Element {
           if (template.type === 'premium' && !premiumValidAndActive) {
             setShowPremium(true);
           } else {
-            setShowDetail(true);
+            onSelect();
           }
         }}
       />
-      {showDetail && (
-        <TemplateDetail
-          template={template}
-          onRequestClose={() => setShowDetail(false)}
-        />
-      )}
       {showPremium && (
         <PremiumModal
           onRequestClose={() => {
