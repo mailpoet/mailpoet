@@ -1,15 +1,12 @@
-import { ComponentProps, useCallback, useState } from 'react';
-import apiFetch from '@wordpress/api-fetch';
-import { addQueryArgs } from '@wordpress/url';
+import { ComponentProps, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { AutomationTemplate, automationTemplateCategories } from '../config';
-import { MailPoet } from '../../../mailpoet';
-import { Notice } from '../../../notices/notice';
 import {
   PremiumModal,
   premiumValidAndActive,
 } from '../../../common/premium-modal';
 import { Item } from '../../../common/templates';
+import { TemplateDetail } from './template-detail';
 
 type Badge = ComponentProps<typeof Item>['badge'];
 
@@ -27,81 +24,36 @@ const getBadge = (template: AutomationTemplate): Badge => {
   return undefined;
 };
 
-const useCreateFromTemplate = () => {
-  const [state, setState] = useState({
-    data: undefined,
-    loading: false,
-    error: undefined,
-  });
-
-  const create = useCallback(async (slug: string) => {
-    setState((prevState) => ({ ...prevState, loading: true }));
-    try {
-      const data = await apiFetch({
-        path: `/automations/create-from-template`,
-        method: 'POST',
-        data: { slug },
-      });
-      setState((prevState) => ({ ...prevState, data }));
-    } catch (error) {
-      setState((prevState) => ({ ...prevState, error }));
-    } finally {
-      setState((prevState) => ({ ...prevState, loading: false }));
-    }
-  }, []);
-
-  return [create, state] as const;
-};
-
 type Props = {
   template: AutomationTemplate;
 };
 
 export function TemplateListItem({ template }: Props): JSX.Element {
   const [showPremium, setShowPremium] = useState(false);
-  const [createAutomationFromTemplate, { loading, error, data }] =
-    useCreateFromTemplate();
-
-  if (!error && data) {
-    MailPoet.trackEvent('Automations > Template selected', {
-      'Automation slug': template.slug,
-    });
-    window.location.href = addQueryArgs(MailPoet.urls.automationEditor, {
-      id: data.data.id,
-    });
-  }
-
-  let notice = null;
-  if (error) {
-    notice = (
-      <Notice type="error" closable timeout={false}>
-        <p>
-          {error.data
-            ? error.data.message
-            : __('Could not create automation.', 'mailpoet')}
-        </p>
-      </Notice>
-    );
-  }
+  const [showDetail, setShowDetail] = useState(false);
 
   return (
     <>
-      {notice}
       <Item
         name={template.name}
         description={template.description}
         category={getCategory(template)}
         badge={getBadge(template)}
         disabled={template.type === 'coming-soon'}
-        isBusy={loading}
         onClick={() => {
           if (template.type === 'premium' && !premiumValidAndActive) {
             setShowPremium(true);
-            return;
+          } else {
+            setShowDetail(true);
           }
-          void createAutomationFromTemplate(template.slug);
         }}
       />
+      {showDetail && (
+        <TemplateDetail
+          template={template}
+          onRequestClose={() => setShowDetail(false)}
+        />
+      )}
       {showPremium && (
         <PremiumModal
           onRequestClose={() => {
