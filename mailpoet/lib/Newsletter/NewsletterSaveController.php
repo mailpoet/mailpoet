@@ -156,7 +156,7 @@ class NewsletterSaveController {
     }
 
     $this->rescheduleIfNeeded($newsletter, $newsletterModel);
-    $this->updateQueue($newsletter, $newsletterModel, $data['options'] ?? []);
+    $this->updateQueue($newsletter, $data['options'] ?? []);
     $this->authorizedEmailsController->onNewsletterSenderAddressUpdate($newsletter, $oldSenderAddress);
     return $newsletter;
   }
@@ -410,7 +410,7 @@ class NewsletterSaveController {
     }
   }
 
-  private function updateQueue(NewsletterEntity $newsletter, Newsletter $newsletterModel, array $options) {
+  private function updateQueue(NewsletterEntity $newsletter, array $options) {
     if ($newsletter->getType() !== NewsletterEntity::TYPE_STANDARD) {
       return;
     }
@@ -425,15 +425,18 @@ class NewsletterSaveController {
       $this->entityManager->remove($queue);
       $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
     } else {
-      $queueModel = $newsletterModel->getQueue();
-      $queueModel->newsletterRenderedSubject = null;
-      $queueModel->newsletterRenderedBody = null;
+      $queue->setNewsletterRenderedSubject(null);
+      $queue->setNewsletterRenderedBody(null);
+      $this->entityManager->persist($queue);
 
       $newsletterQueueTask = new NewsletterQueueTask();
-      $newsletterQueueTask->preProcessNewsletter($newsletter, $queueModel);
+      $task = $queue->getTask();
 
-      // 'preProcessNewsletter' modifies queue by old model - let's reload it
-      $this->entityManager->refresh($queue);
+      if (!$task instanceof ScheduledTaskEntity) {
+        throw new InvalidStateException();
+      }
+
+      $newsletterQueueTask->preProcessNewsletter($newsletter, $task);
     }
     $this->entityManager->flush();
   }
