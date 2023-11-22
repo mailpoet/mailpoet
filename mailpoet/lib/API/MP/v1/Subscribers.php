@@ -395,30 +395,30 @@ class Subscribers {
       if ($foundSegment->getType() === SegmentEntity::TYPE_WP_USERS) {
         if ($context === self::CONTEXT_SUBSCRIBE) {
           // translators: %d is the ID of the segment
-          $message = __("Can't subscribe to a WordPress Users list with ID %d.", 'mailpoet');
+          $message = __("Can't subscribe to a WordPress Users list with ID '%d'.", 'mailpoet');
         } else {
           // translators: %d is the ID of the segment
-          $message = __("Can't unsubscribe from a WordPress Users list with ID %d.", 'mailpoet');
+          $message = __("Can't unsubscribe from a WordPress Users list with ID '%d'.", 'mailpoet');
         }
         throw new APIException(sprintf($message, $foundSegment->getId()), APIException::SUBSCRIBING_TO_WP_LIST_NOT_ALLOWED);
       }
       if ($foundSegment->getType() === SegmentEntity::TYPE_WC_USERS) {
         if ($context === self::CONTEXT_SUBSCRIBE) {
           // translators: %d is the ID of the segment
-          $message = __("Can't subscribe to a WooCommerce Customers list with ID %d.", 'mailpoet');
+          $message = __("Can't subscribe to a WooCommerce Customers list with ID '%d'.", 'mailpoet');
         } else {
           // translators: %d is the ID of the segment
-          $message = __("Can't unsubscribe from a WooCommerce Customers list with ID %d.", 'mailpoet');
+          $message = __("Can't unsubscribe from a WooCommerce Customers list with ID '%d'.", 'mailpoet');
         }
         throw new APIException(sprintf($message, $foundSegment->getId()), APIException::SUBSCRIBING_TO_WC_LIST_NOT_ALLOWED);
       }
       if ($foundSegment->getType() !== SegmentEntity::TYPE_DEFAULT) {
         if ($context === self::CONTEXT_SUBSCRIBE) {
           // translators: %d is the ID of the segment
-          $message = __("Can't subscribe to a list with ID %d.", 'mailpoet');
+          $message = __("Can't subscribe to a list with ID '%d'.", 'mailpoet');
         } else {
           // translators: %d is the ID of the segment
-          $message = __("Can't unsubscribe from a list with ID %d.", 'mailpoet');
+          $message = __("Can't unsubscribe from a list with ID '%d'.", 'mailpoet');
         }
         throw new APIException(sprintf($message, $foundSegment->getId()), APIException::SUBSCRIBING_TO_LIST_NOT_ALLOWED);
       }
@@ -430,7 +430,7 @@ class Subscribers {
       $missingIds = array_values(array_diff($listIds, $foundSegmentsIds));
       $exception = sprintf(
         // translators: %s is the count of lists
-        _n('List with ID %s does not exist.', 'Lists with IDs %s do not exist.', count($missingIds), 'mailpoet'),
+        _n("List with ID '%s' does not exist.", "Lists with IDs '%s' do not exist.", count($missingIds), 'mailpoet'),
         implode(', ', $missingIds)
       );
       throw new APIException(sprintf($exception, implode(', ', $missingIds)), APIException::LIST_NOT_EXISTS);
