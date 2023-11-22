@@ -1,1 +1,67 @@
 @import './mailpoet-templates';
+
+.mailpoet-automation-template-detail {
+  height: 100%;
+  max-height: min(70%, 700px);
+  width: 800px;
+
+  .components-modal__content {
+    display: grid;
+    margin: 0;
+    padding: 0;
+  }
+
+  .components-modal__header {
+    visibility: hidden;
+
+    button {
+      margin-right: -6px;
+      visibility: visible;
+    }
+  }
+}
+
+.mailpoet-automation-template-detail-content {
+  display: grid;
+  grid-template-areas:
+    'info preview'
+    'footer footer';
+  grid-template-columns: 360px auto;
+  grid-template-rows: 1fr auto;
+  height: 100%;
+  width: 100%;
+}
+
+.mailpoet-automation-template-detail-info {
+  padding: 32px;
+
+  h1 {
+    font-size: 16px;
+    line-height: 26px;
+    margin-top: 32px;
+  }
+}
+
+.mailpoet-automation-template-detail-preview {
+  background: #f6f7f7;
+}
+
+.mailpoet-automation-template-detail-footer {
+  align-items: center;
+  border-top: 1px solid #dcdcde;
+  display: flex;
+  grid-area: footer;
+  justify-content: space-between;
+  padding: 16px 24px;
+}
+
+.mailpoet-automation-template-detail-footer-navigation {
+  display: flex;
+  gap: 12px;
+  margin-left: -6px;
+}
+
+.mailpoet-automation-template-detail-footer-actions {
+  display: flex;
+  gap: 12px;
+}
