@@ -476,8 +476,10 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->addProductToCart($product);
     $i->goToCheckout();
     $i->fillCustomerInfo($userEmail);
+
+    $wooCommerceVersion = $i->getWooCommerceVersion();
+
     if ($doSubscribe) {
-      $wooCommerceVersion = $i->getWooCommerceVersion();
       if (version_compare($wooCommerceVersion, '8.3.0', '>=')) {
         $settings = (ContainerWrapper::getInstance())->get(SettingsController::class);
         $i->click(Locator::contains('label', $settings->get('woocommerce.optin_on_checkout.message')));
@@ -488,10 +490,11 @@ class AcceptanceTester extends \Codeception\Actor {
         }
       }
     } else {
-      $wooCommerceVersion = $i->getWooCommerceVersion();
       if (version_compare($wooCommerceVersion, '8.3.0', '<')) {
         $isCheckboxVisible = $i->executeJS('return document.getElementById("mailpoet_woocommerce_checkout_optin")');
-        $i->uncheckOption('#mailpoet_woocommerce_checkout_optin');
+        if ($isCheckboxVisible) {
+          $i->uncheckOption('#mailpoet_woocommerce_checkout_optin');
+        }
       }
     }
     if ($doRegister) {
