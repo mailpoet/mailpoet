@@ -11,7 +11,6 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\WpPostEntity;
 use MailPoet\InvalidStateException;
-use MailPoet\Models\Newsletter;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
@@ -141,12 +140,6 @@ class NewsletterSaveController {
       $this->updateOptions($newsletter, $data['options']);
     }
 
-    // fetch model with updated options (for back compatibility)
-    $newsletterModel = Newsletter::filter('filterWithOptions', $newsletter->getType())->findOne($newsletter->getId());
-    if (!$newsletterModel) {
-      throw new InvalidStateException();
-    }
-
     // save default sender if needed
     if (!$this->settings->get('sender') && !empty($data['sender_address']) && !empty($data['sender_name'])) {
       $this->settings->set('sender', [
@@ -155,7 +148,7 @@ class NewsletterSaveController {
       ]);
     }
 
-    $this->rescheduleIfNeeded($newsletter, $newsletterModel);
+    $this->rescheduleIfNeeded($newsletter);
     $this->updateQueue($newsletter, $data['options'] ?? []);
     $this->authorizedEmailsController->onNewsletterSenderAddressUpdate($newsletter, $oldSenderAddress);
     return $newsletter;
@@ -384,7 +377,7 @@ class NewsletterSaveController {
     $this->entityManager->flush();
   }
 
-  private function rescheduleIfNeeded(NewsletterEntity $newsletter, Newsletter $newsletterModel) {
+  private function rescheduleIfNeeded(NewsletterEntity $newsletter) {
     if ($newsletter->getType() !== NewsletterEntity::TYPE_NOTIFICATION) {
       return;
     }
