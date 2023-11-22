@@ -170,26 +170,6 @@ class SendingTest extends \MailPoetTest {
     verify($this->sending->count_to_process)->equals(3);
   }
 
-  public function testItRemovesSubscribers() {
-    $subscriberIds = [$this->subscriber2->getId()];
-    $this->sending->removeSubscribers($subscriberIds);
-    verify($this->sending->getSubscribers())->equals([$this->subscriber1->getId()]);
-    verify($this->sending->count_total)->equals(1);
-    verify($this->sending->status)->null();
-  }
-
-  public function testItRemovesSubscribersShouldMarkTaskAsComplete() {
-    $subscriberIds = [$this->subscriber1->getId(), $this->subscriber2->getId()];
-    $originalProcessedAt = $this->sending->processed_at;
-
-    $this->sending->removeSubscribers($subscriberIds);
-
-    verify($this->sending->getSubscribers())->empty();
-    verify($this->sending->count_total)->equals(0);
-    verify($this->sending->status)->same(ScheduledTaskEntity::STATUS_COMPLETED);
-    verify($this->sending->processed_at)->notSame($originalProcessedAt);
-  }
-
   public function testItUpdatesProcessedSubscribers() {
     $taskSubscriber1 = $this->getTaskSubscriber($this->task->id, $this->subscriber1->getId());
     $subscriberId2 = $this->subscriber2->getId();
@@ -297,22 +277,6 @@ class SendingTest extends \MailPoetTest {
     verify($tasks[0]->getId())->equals($sending1->taskId);
     verify($tasks[1]->getId())->equals($sending3->taskId);
     verify($tasks[2]->getId())->equals($sending2->taskId);
-  }
-
-  public function testItSavesSubscriberError() {
-    $error = 'Error message';
-    $this->sending->saveSubscriberError($this->subscriber1->getId(), $error);
-    $taskSubscriber = $this->getTaskSubscriber($this->task->id, $this->subscriber1->getId());
-
-    verify($taskSubscriber->getError())->equals($error);
-    verify($taskSubscriber->getFailed())->equals(ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED);
-    verify($taskSubscriber->getProcessed())->equals(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
-    verify($this->sending->count_total)->equals(2);
-    verify($this->sending->count_processed)->equals(1);
-    verify($this->sending->count_to_process)->equals(1);
-
-    $this->sending->saveSubscriberError($this->subscriber2->getId(), $error);
-    verify($this->sending->status)->same(ScheduledTaskEntity::STATUS_COMPLETED);
   }
 
   public function createNewScheduledTask() {
