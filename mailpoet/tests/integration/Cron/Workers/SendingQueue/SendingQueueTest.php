@@ -24,6 +24,7 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
@@ -35,7 +36,6 @@ use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
-use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -48,6 +48,7 @@ use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\LinkTokens;
+use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -108,6 +109,9 @@ class SendingQueueTest extends \MailPoetTest {
   /** NewsletterEntity */
   private $newsletterEntity;
 
+  /** @var SegmentEntity */
+  private $segmentEntity;
+
   public function _before() {
     parent::_before();
     $wpUsers = get_users();
@@ -118,18 +122,16 @@ class SendingQueueTest extends \MailPoetTest {
     $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
-    $this->subscriber = $this->createSubscriber('john@doe.com', 'John', 'Doe');
+    $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
+
     /** @var Segment $segment */
-    $segment = Segment::create();
-    $this->segment = $segment;
+    $this->segment = Segment::create();
     $this->segment->name = 'segment';
     $this->segment->save();
-    /** @var SubscriberSegment $subscriberSegment */
-    $subscriberSegment = SubscriberSegment::create();
-    $this->subscriberSegment = $subscriberSegment;
-    $this->subscriberSegment->subscriberId = (int)$this->subscriber->getId();
-    $this->subscriberSegment->segmentId = (int)$this->segment->id;
-    $this->subscriberSegment->save();
+    $segmentEntity = $this->segmentsRepository->findOneById($this->segment->id);
+    $this->assertInstanceOf(SegmentEntity::class, $segmentEntity);
+    $this->segmentEntity = $segmentEntity;
+    $this->subscriber = $this->createSubscriber('john@doe.com', 'John', 'Doe', [$this->segmentEntity]);
 
     /** @var Newsletter $newsletter */
     $newsletter = Newsletter::create();
@@ -174,7 +176,6 @@ class SendingQueueTest extends \MailPoetTest {
     $this->statsNotificationsWorker = $this->makeEmpty(StatsNotificationsScheduler::class);
     $this->loggerFactory = LoggerFactory::getInstance();
     $this->cronHelper = $this->diContainer->get(CronHelper::class);
-    $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
     $this->tasksLinks = $this->diContainer->get(TasksLinks::class);
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
@@ -1097,9 +1098,11 @@ class SendingQueueTest extends \MailPoetTest {
     );
 
     // newsletter is not sent to subscriber unsubscribed from segment
-    $subscriberSegment = $this->subscriberSegment;
-    $subscriberSegment->status = SubscriberEntity::STATUS_UNSUBSCRIBED;
-    $subscriberSegment->save();
+    $subscriberSegment = $this->subscriber->getSubscriberSegments()->first();
+    $this->assertInstanceOf(SubscriberSegmentEntity::class, $subscriberSegment);
+    $subscriberSegment->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->entityManager->persist($subscriberSegment);
+
     $sendingQueueWorker->process();
 
     $sendingQueue = $this->sendingQueuesRepository->findOneById($this->sendingQueue->getId());
@@ -1339,12 +1342,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testCampaignIdsAreTheSameForDifferentSubscribers() {
     $mailerTaskCampaignIds = [];
-    $secondSubscriber = $this->createSubscriber('sub2@example.com', 'Subscriber', 'Two');
-    /** @var SubscriberSegment $segment2 */
-    $segment2 = SubscriberSegment::create();
-    $segment2->subscriberId = (int)$secondSubscriber->getId();
-    $segment2->segmentId = (int)$this->segment->id;
-    $segment2->save();
+    $secondSubscriber = $this->createSubscriber('sub2@example.com', 'Subscriber', 'Two', [$this->segmentEntity]);
     $this->scheduledTaskSubscribersRepository->setSubscribers(
       $this->scheduledTask,
       [$this->subscriber->getId(), $secondSubscriber->getId()]
@@ -1429,15 +1427,16 @@ class SendingQueueTest extends \MailPoetTest {
     return $newsletter;
   }
 
-  private function createSubscriber(string $email, string $firstName, string $lastName): SubscriberEntity {
-    $subscriber = new SubscriberEntity();
-    $subscriber->setEmail($email);
-    $subscriber->setFirstName($firstName);
-    $subscriber->setLastName($lastName);
-    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
-    $subscriber->setSource('administrator');
-    $this->entityManager->persist($subscriber);
-    $this->entityManager->flush();
+  private function createSubscriber(string $email, string $firstName, string $lastName, $segments = []): SubscriberEntity {
+    $subscriber = (new SubscriberFactory())
+      ->withEmail($email)
+      ->withFirstName($firstName)
+      ->withLastName($lastName)
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSource(Source::ADMINISTRATOR)
+      ->withSegments($segments)
+      ->create();
+
     return $subscriber;
   }
 
