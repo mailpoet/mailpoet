@@ -15,6 +15,7 @@ class Image implements BlockRenderer {
     );
 
     $blockContent = $this->applyRoundedStyle($blockContent, $parsedBlock);
+    $blockContent = $this->addImageDimensions($blockContent, $parsedBlock, $settingsController);
     $blockContent = $this->addWidthToWrapper($blockContent, $parsedBlock, $settingsController);
     $blockContent = $this->addCaptionFontSize($blockContent, $settingsController);
     bdump($parsedBlock);
@@ -28,6 +29,27 @@ class Image implements BlockRenderer {
       // If the image should be in a circle, we need to set the border-radius to 100%
       // This style cannot be applied on the wrapper, and we need to set it directly on the image
       $blockContent = $this->addStyleToElement($blockContent, ['tag_name' => 'img'], 'border-radius: 100%;');
+    }
+
+    return $blockContent;
+  }
+
+  /**
+   * Settings width and height attributes for images is important for MS Outlook.
+   */
+  private function addImageDimensions($blockContent, array $parsedBlock, SettingsController $settingsController) {
+    $html = new \WP_HTML_Tag_Processor($blockContent);
+    if ($html->next_tag(['tag_name' => 'img'])) {
+      // Getting height from styles and if it's set, we set the height attribute
+      $styles = $html->get_attribute('style');
+      $styles = $settingsController->parseStylesToArray($styles);
+      $height = $styles['height'] ?? null;
+      if ($height && is_numeric($settingsController->parseNumberFromStringWithPixels($height))) {
+        $html->set_attribute('height', $settingsController->parseNumberFromStringWithPixels($height));
+      }
+
+      $html->set_attribute('width', $settingsController->parseNumberFromStringWithPixels($parsedBlock['email_attrs']['width']));
+      $blockContent = $html->get_updated_html();
     }
 
     return $blockContent;
@@ -81,7 +103,7 @@ class Image implements BlockRenderer {
       $styles['font-family'] = $contentStyles['typography']['fontFamily'];
     }
 
-    $styles['width'] = '100%';
+    $styles['width'] = '100% !important'; // Using important is necessary for Gmail app on mobile devices
     $align = $parsedBlock['attrs']['align'] ?? 'left';
 
     return '

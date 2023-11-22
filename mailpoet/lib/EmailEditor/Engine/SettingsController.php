@@ -157,7 +157,19 @@ class SettingsController {
     return trim($cssString); // Remove trailing space and return the formatted string
   }
 
-  private function parseNumberFromStringWithPixels(string $string): float {
+  public function parseStylesToArray(string $styles): array {
+    $styles = explode(';', $styles);
+    $parsedStyles = [];
+    foreach ($styles as $style) {
+      $style = explode(':', $style);
+      if (count($style) === 2) {
+        $parsedStyles[trim($style[0])] = trim($style[1]);
+      }
+    }
+    return $parsedStyles;
+  }
+
+  public function parseNumberFromStringWithPixels(string $string): float {
     return (float)str_replace('px', '', $string);
   }
 }
