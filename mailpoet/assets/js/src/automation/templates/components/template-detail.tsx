@@ -1,6 +1,6 @@
 import { MouseEventHandler, useCallback, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
-import { Button, Modal } from '@wordpress/components';
+import { Button, Modal, Snackbar } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { chevronLeft, chevronRight } from '@wordpress/icons';
 import { Tag } from '@woocommerce/components';
@@ -74,6 +74,14 @@ export function TemplateDetail({
             <Button icon={chevronRight} />
           </div>
           <div className="mailpoet-automation-template-detail-footer-actions">
+            {error && (
+              <Snackbar className="mailpoet-automation-template-detail-error">
+                {__(
+                  'An error occurred while creating the automation. Please, try again.',
+                  'mailpoet',
+                )}
+              </Snackbar>
+            )}
             <Button
               variant="tertiary"
               onClick={onRequestClose as MouseEventHandler}
