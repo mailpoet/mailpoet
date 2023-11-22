@@ -23,6 +23,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
@@ -33,7 +34,6 @@ use MailPoet\Mailer\SubscriberError;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -109,6 +109,9 @@ class SendingQueueTest extends \MailPoetTest {
   /** NewsletterEntity */
   private $newsletterEntity;
 
+  /** @var \MailPoetVendor\Doctrine\ORM\EntityRepository<\MailPoet\Entities\StatisticsNewsletterEntity> */
+  private $statisticsNewsletterRepository;
+
   public function _before() {
     parent::_before();
     $wpUsers = get_users();
@@ -170,6 +173,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
+    $this->statisticsNewsletterRepository = $this->entityManager->getRepository(StatisticsNewsletterEntity::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker();
   }
 
@@ -470,10 +474,11 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created
-    $statistics = StatisticsNewsletters::where('newsletter_id', $this->newsletter->id)
-      ->where('subscriber_id', $this->subscriber->getId())
-      ->where('queue_id', $this->sendingQueue->getId())
-      ->findOne();
+    $statistics = $this->statisticsNewsletterRepository->findOneBy([
+      'newsletter' => $this->newsletterEntity,
+      'subscriber' => $this->subscriber,
+      'queue' => $this->sendingQueue,
+    ]);
     verify($statistics)->notEquals(false);
   }
 
@@ -587,10 +592,11 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created
-    $statistics = StatisticsNewsletters::where('newsletter_id', $this->newsletter->id)
-      ->where('subscriber_id', $this->subscriber->getId())
-      ->where('queue_id', $this->sendingQueue->getId())
-      ->findOne();
+    $statistics = $this->statisticsNewsletterRepository->findOneBy([
+      'newsletter' => $this->newsletterEntity,
+      'subscriber' => $this->subscriber,
+      'queue' => $this->sendingQueue,
+    ]);
     verify($statistics)->notEquals(false);
   }
 
@@ -636,10 +642,11 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created
-    $statistics = StatisticsNewsletters::where('newsletter_id', $this->newsletter->id)
-      ->where('subscriber_id', $this->subscriber->getId())
-      ->where('queue_id', $this->sendingQueue->getId())
-      ->findOne();
+    $statistics = $this->statisticsNewsletterRepository->findOneBy([
+      'newsletter' => $this->newsletterEntity,
+      'subscriber' => $this->subscriber,
+      'queue' => $this->sendingQueue,
+    ]);
     verify($statistics)->notEquals(false);
   }
 
@@ -784,10 +791,11 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created
-    $statistics = StatisticsNewsletters::where('newsletter_id', $this->newsletter->id)
-      ->where('subscriber_id', $this->subscriber->getId())
-      ->where('queue_id', $this->sendingQueue->getId())
-      ->findOne();
+    $statistics = $this->statisticsNewsletterRepository->findOneBy([
+      'newsletter' => $this->newsletterEntity,
+      'subscriber' => $this->subscriber,
+      'queue' => $this->sendingQueue,
+    ]);
     verify($statistics)->notEquals(false);
   }
 
@@ -893,7 +901,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created only for 1 subscriber
-    $statistics = StatisticsNewsletters::findMany();
+    $statistics = $this->statisticsNewsletterRepository->findAll();
     verify(count($statistics))->equals(1);
   }
 
@@ -932,7 +940,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created only for 1 subscriber
-    $statistics = StatisticsNewsletters::findMany();
+    $statistics = $this->statisticsNewsletterRepository->findAll();
     verify(count($statistics))->equals(1);
   }
 
