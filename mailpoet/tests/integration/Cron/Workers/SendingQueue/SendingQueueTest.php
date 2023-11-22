@@ -906,6 +906,45 @@ class SendingQueueTest extends \MailPoetTest {
     verify(count($statistics))->equals(1);
   }
 
+  public function testItRemovesSubscribersFromProcessingListWhenNewsletterHasNoSegment() {
+    $this->newsletterEntity->getNewsletterSegments()->clear();
+    $invalidSubscriberId = 99999;
+
+    $this->scheduledTaskSubscribersRepository->setSubscribers(
+      $this->scheduledTask,
+      [$this->subscriber->getId(), $invalidSubscriberId]
+    );
+
+    $sendingQueueWorker = $this->sendingQueueWorker;
+    $sendingQueueWorker->mailerTask = $this->construct(
+      MailerTask::class,
+      [$this->diContainer->get(MailerFactory::class)],
+      [
+        'send' => Expected::exactly(1, function() {
+          return $this->mailerTaskDummyResponse;
+        }),
+      ]
+    );
+    $sendingQueueWorker->process();
+
+    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($this->sendingQueue);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->sendingQueuesRepository->refresh($this->sendingQueue);
+    $this->scheduledTasksRepository->refresh($scheduledTask);
+    // queue subscriber processed/to process count is updated
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
+      ->equals([]);
+    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
+      ->equals([$this->subscriber]);
+    verify($this->sendingQueue->getCountTotal())->equals(1);
+    verify($this->sendingQueue->getCountProcessed())->equals(1);
+    verify($this->sendingQueue->getCountToProcess())->equals(0);
+
+    // statistics entry should be created only for 1 subscriber
+    $statistics = StatisticsNewsletters::findMany();
+    verify(count($statistics))->equals(1);
+  }
+
   public function testItDoesNotCallMailerWithEmptyBatch() {
     $subscribers = [];
     while (count($subscribers) < 2 * SendingThrottlingHandler::BATCH_SIZE) {
