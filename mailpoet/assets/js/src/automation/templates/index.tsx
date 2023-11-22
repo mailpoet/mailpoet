@@ -2,13 +2,13 @@ import { createRoot } from 'react-dom/client';
 import { __ } from '@wordpress/i18n';
 import { registerTranslations } from 'common';
 import { automationTemplateCategories, automationTemplates } from './config';
-import { TemplateListItem } from './components/template-list-item';
 import { initializeApi } from '../api';
 import { TopBarWithBeamer } from '../../common/top-bar/top-bar';
 import { FromScratchButton } from './components/from-scratch';
 import { BackButton, PageHeader } from '../../common/page-header';
 import { MailPoet } from '../../mailpoet';
-import { Footer, Grid, TabPanel, TabTitle } from '../../common/templates';
+import { Footer, TabPanel, TabTitle } from '../../common/templates';
+import { TemplatesGrid } from './components/templates-grid';
 
 const tabs = [
   {
@@ -61,16 +61,12 @@ function Templates(): JSX.Element {
 
       <TabPanel tabs={tabs}>
         {(tab) => (
-          <Grid>
-            {automationTemplates
-              .filter(
-                (template) =>
-                  tab.name === 'all' || template.category === tab.name,
-              )
-              .map((template) => (
-                <TemplateListItem key={template.slug} template={template} />
-              ))}
-          </Grid>
+          <TemplatesGrid
+            templates={automationTemplates.filter(
+              (template) =>
+                tab.name === 'all' || template.category === tab.name,
+            )}
+          />
         )}
       </TabPanel>
 

@@ -2,7 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { MailPoet } from '../../mailpoet';
 import { automationTemplates } from '../templates/config';
-import { TemplateListItem } from '../templates/components/template-list-item';
+import { TemplatesGrid } from '../templates/components/templates-grid';
 
 export function TemplatesSection(): JSX.Element {
   const templates = automationTemplates.slice(0, 3);
@@ -18,9 +18,7 @@ export function TemplatesSection(): JSX.Element {
           )}
         </p>
         <ul className="mailpoet-section-template-list">
-          {templates.map((template) => (
-            <TemplateListItem key={template.slug} template={template} />
-          ))}
+          <TemplatesGrid templates={templates} />
         </ul>
         <Button variant="link" href={MailPoet.urls.automationTemplates}>
           {__('Browse all templates →', 'mailpoet')}
