@@ -32,7 +32,6 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterSegment;
-use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\StatisticsNewsletters;
 use MailPoet\Models\Subscriber;
@@ -68,6 +67,7 @@ class SendingQueueTest extends \MailPoetTest {
   public $newsletterSegment;
   public $newsletter;
   public $subscriberSegment;
+  /** @var SegmentEntity */
   public $segment;
   /** @var SubscriberEntity */
   public $subscriber;
@@ -109,9 +109,6 @@ class SendingQueueTest extends \MailPoetTest {
   /** NewsletterEntity */
   private $newsletterEntity;
 
-  /** @var SegmentEntity */
-  private $segmentEntity;
-
   public function _before() {
     parent::_before();
     $wpUsers = get_users();
@@ -123,15 +120,8 @@ class SendingQueueTest extends \MailPoetTest {
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
-
-    /** @var Segment $segment */
-    $this->segment = Segment::create();
-    $this->segment->name = 'segment';
-    $this->segment->save();
-    $segmentEntity = $this->segmentsRepository->findOneById($this->segment->id);
-    $this->assertInstanceOf(SegmentEntity::class, $segmentEntity);
-    $this->segmentEntity = $segmentEntity;
-    $this->subscriber = $this->createSubscriber('john@doe.com', 'John', 'Doe', [$this->segmentEntity]);
+    $this->segment = (new SegmentFactory())->withName('segment')->create();
+    $this->subscriber = $this->createSubscriber('john@doe.com', 'John', 'Doe', [$this->segment]);
 
     /** @var Newsletter $newsletter */
     $newsletter = Newsletter::create();
@@ -150,7 +140,7 @@ class SendingQueueTest extends \MailPoetTest {
     $newsletterSegment = NewsletterSegment::create();
     $this->newsletterSegment = $newsletterSegment;
     $this->newsletterSegment->newsletterId = $this->newsletter->id;
-    $this->newsletterSegment->segmentId = (int)$this->segment->id;
+    $this->newsletterSegment->segmentId = (int)$this->segment->getId();
     $this->newsletterSegment->save();
 
     $this->sendingQueue = $this->createQueueWithTask($this->newsletterEntity);
@@ -1342,7 +1332,7 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testCampaignIdsAreTheSameForDifferentSubscribers() {
     $mailerTaskCampaignIds = [];
-    $secondSubscriber = $this->createSubscriber('sub2@example.com', 'Subscriber', 'Two', [$this->segmentEntity]);
+    $secondSubscriber = $this->createSubscriber('sub2@example.com', 'Subscriber', 'Two', [$this->segment]);
     $this->scheduledTaskSubscribersRepository->setSubscribers(
       $this->scheduledTask,
       [$this->subscriber->getId(), $secondSubscriber->getId()]
