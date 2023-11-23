@@ -17,7 +17,7 @@ function Faq() {
         'mailpoet',
       ),
       text: __(
-        'MailPoet allows you to create five different types of emails: Newsletter, Welcome Email, Latest Post Notifications, Re-engagement Emails and WooCommerce.',
+        'MailPoet allows you to create five different types of campaigns: Newsletter, Welcome Email, Latest Post Notifications, Re-engagement Emails and WooCommerce.',
         'mailpoet',
       ),
       readMoreText: __('Read More', 'mailpoet'),
@@ -39,7 +39,7 @@ function Faq() {
       slug: 'item-3',
       title: __('Do I need a paid plan?', 'mailpoet'),
       text: __(
-        "When you install the MailPoet plugin, you can use it for free up to 1,000 subscribers. If you have more than 1,000 subscribers, you'll need one of our paid plans: Creator, Business, or Agency. The best choice of plan type will depend on whether you want to send with our MailPoet Sending Service or your own sending method, as well as the number of sites you will be using MailPoet on.",
+        "When you install the MailPoet plugin, you can use it for free up to 1,000 subscribers. If you have more than 1,000 subscribers, or want access to MailPoet’s advanced features, you'll need one of our paid plans: Creator, Business, or Agency. The best choice of plan type will depend on whether you want to send with our MailPoet Sending Service or your own sending method, as well as the number of sites you will be using MailPoet on.",
         'mailpoet',
       ),
       readMoreText: __('Read More', 'mailpoet'),
