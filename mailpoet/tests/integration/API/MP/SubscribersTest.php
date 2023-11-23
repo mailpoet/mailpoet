@@ -114,7 +114,7 @@ class SubscribersTest extends \MailPoetTest {
       $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId()]);
       $this->fail('WP Users segment exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals("Can't subscribe to a WordPress Users list with ID {$segment->getId()}.");
+      verify($e->getMessage())->equals("Can't subscribe to a WordPress Users list with ID '{$segment->getId()}'.");
     }
   }
 
@@ -126,7 +126,7 @@ class SubscribersTest extends \MailPoetTest {
       $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId()]);
       $this->fail('WooCommerce Customers segment exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals("Can't subscribe to a WooCommerce Customers list with ID {$segment->getId()}.");
+      verify($e->getMessage())->equals("Can't subscribe to a WooCommerce Customers list with ID '{$segment->getId()}'.");
     }
   }
 
@@ -139,14 +139,14 @@ class SubscribersTest extends \MailPoetTest {
       $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId(), 90, 100]);
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals('Lists with IDs 90, 100 do not exist.');
+      verify($e->getMessage())->equals("Lists with IDs '90, 100' do not exist.");
     }
     // single list error message
     try {
       $this->getApi()->subscribeToLists($subscriber->getId(), [$segment->getId(), 90]);
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals('List with ID 90 does not exist.');
+      verify($e->getMessage())->equals("List with ID '90' does not exist.");
     }
   }
 
@@ -393,14 +393,14 @@ class SubscribersTest extends \MailPoetTest {
       $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId(), 90, 100]);
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals('Lists with IDs 90, 100 do not exist.');
+      verify($e->getMessage())->equals("Lists with IDs '90, 100' do not exist.");
     }
     // single list error message
     try {
       $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId(), 90]);
       $this->fail('Missing segments with IDs exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals('List with ID 90 does not exist.');
+      verify($e->getMessage())->equals("List with ID '90' does not exist.");
     }
   }
 
@@ -411,7 +411,7 @@ class SubscribersTest extends \MailPoetTest {
       $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId()]);
       $this->fail('WP Users segment exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals("Can't unsubscribe from a WordPress Users list with ID {$segment->getId()}.");
+      verify($e->getMessage())->equals("Can't unsubscribe from a WordPress Users list with ID '{$segment->getId()}'.");
     }
   }
 
@@ -423,7 +423,7 @@ class SubscribersTest extends \MailPoetTest {
       $this->getApi()->unsubscribeFromLists($subscriber->getId(), [$segment->getId()]);
       $this->fail('WooCommerce Customers segment exception should have been thrown.');
     } catch (\Exception $e) {
-      verify($e->getMessage())->equals("Can't unsubscribe from a WooCommerce Customers list with ID {$segment->getId()}.");
+      verify($e->getMessage())->equals("Can't unsubscribe from a WooCommerce Customers list with ID '{$segment->getId()}'.");
     }
   }
 
