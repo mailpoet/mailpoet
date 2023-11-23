@@ -1,7 +1,7 @@
 #mailpoet_landingpage_container {
   $content-padding: 32px 65px;
   $mobile-content-padding: 25px;
-  $landingpage-max-width: 1460px;
+  $landingpage-max-width: 1200px;
 
   .mailpoet-content-center {
     text-align: center;
@@ -25,6 +25,8 @@
 
   .landing-footer {
     @include full-width-background($color-grey-0);
+    margin: 0 auto;
+    max-width: 900px;
     padding: $content-padding;
 
     .landing-footer-content {
@@ -35,6 +37,8 @@
 
   .landing-faq {
     @include full-width-background($color-grey-0);
+    margin: 0 auto;
+    max-width: 800px;
     padding: $content-padding;
 
     .mailpoet-faq-accordion {
@@ -67,16 +71,12 @@
 
       .hero-image {
         margin-top: -($hero-image-offset + 2rem);
+        max-width: 717px;
+        width: 100%;
       }
 
       @include respond-to(small-screen) {
         padding: $mobile-content-padding;
-      }
-    }
-
-    .landingpage-images {
-      @include respond-to(medium-screen) {
-        width: 100%;
       }
     }
 
@@ -101,34 +101,22 @@
     }
 
     .landingpage-wooCommerce-features {
-      margin-top: 30px;
-      padding: 2rem 10rem;
-
-      .landingpage-wooCommerce-feature-item {
-        padding: 30px;
-
-        @media screen and (min-width: 960px) and (max-width: 1460px) {
-          .landingpage-images {
-            width: 100%;
-          }
-        }
-
-        div:last-child {
-          margin: auto;
-        }
-      }
+      margin: 60px auto 30px;
+      max-width: 800px;
 
       @include respond-to(small-screen) {
-        padding: $mobile-content-padding;
-
-        .landingpage-wooCommerce-feature-item {
-          padding: 25px 0;
-
-          div:last-child {
-            text-align: center;
-          }
-        }
+        text-align: center;
       }
+    }
+
+    .landingpage-wooCommerce-feature-item {
+      align-items: center;
+      grid-gap: 30px;
+      padding: 10px 0 20px;
+    }
+
+    .landingpage-images {
+      width: 100%;
     }
   }
 
