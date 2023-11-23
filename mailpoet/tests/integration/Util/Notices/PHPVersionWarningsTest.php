@@ -34,8 +34,12 @@ class PHPVersionWarningsTest extends \MailPoetTest {
     verify($this->phpVersionWarning->isOutdatedPHPVersion('7.3'))->true();
   }
 
-  public function testPHP74IsNotOutdated() {
-    verify($this->phpVersionWarning->isOutdatedPHPVersion('7.4'))->false();
+  public function testPHP74IsOutdated() {
+    verify($this->phpVersionWarning->isOutdatedPHPVersion('7.4'))->true();
+  }
+
+  public function testPHP80IsNotOutdated() {
+    verify($this->phpVersionWarning->isOutdatedPHPVersion('8.0'))->false();
   }
 
   public function testItPrintsWarningFor71() {
@@ -53,6 +57,12 @@ class PHPVersionWarningsTest extends \MailPoetTest {
   public function testItPrintsWarningFor73() {
     $warning = $this->phpVersionWarning->init('7.3.0', true);
     verify($warning->getMessage())->stringContainsString('Your website is running an outdated version of PHP (7.3.0)');
+    verify($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
+  }
+
+  public function testItPrintsWarningFor74() {
+    $warning = $this->phpVersionWarning->init('7.4.0', true);
+    verify($warning->getMessage())->stringContainsString('Your website is running an outdated version of PHP (7.4.0)');
     verify($warning->getMessage())->stringContainsString('https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version');
   }
 
