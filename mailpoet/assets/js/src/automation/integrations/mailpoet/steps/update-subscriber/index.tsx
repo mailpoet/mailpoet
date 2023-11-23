@@ -5,8 +5,11 @@ import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';
 
 const keywords = [
+  // translators: verb, used as a search keyword for "Update subscriber" automation action
   __('update', 'mailpoet'),
+  // translators: used as a search keyword for "Update subscriber" automation action
   __('update subscriber', 'mailpoet'),
+  // translators: used as a search keyword for "Update subscriber" automation action
   __('update custom field', 'mailpoet'),
 ];
 export const step: StepType = {

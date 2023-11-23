@@ -4,12 +4,19 @@ import { Icon } from './icon';
 import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "Customer makes a review" trigger
   __('review', 'mailpoet'),
+  // translators: verb, used as a search keyword for "Customer makes a review" trigger
   __('buy', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Customer makes a review" trigger
   __('comment', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Customer makes a review" trigger
   __('ecommerce', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Customer makes a review" trigger
   __('woocommerce', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Customer makes a review" trigger
   __('product', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Customer makes a review" trigger
   __('order', 'mailpoet'),
 ];
 export const step: StepType = {

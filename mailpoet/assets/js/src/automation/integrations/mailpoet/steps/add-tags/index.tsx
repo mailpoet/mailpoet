@@ -5,11 +5,17 @@ import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';
 import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "Add tag" automation action
   __('tag', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Add tag" automation action
   __('tags', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Add tag" automation action
   __('label', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Add tag" automation action
   __('labels', 'mailpoet'),
+  // translators: used as a search keyword for "Add tag" automation action
   __('add tag', 'mailpoet'),
+  // translators: used as a search keyword for "Add tag" automation action
   __('add tags', 'mailpoet'),
 ];
 export const step: StepType = {

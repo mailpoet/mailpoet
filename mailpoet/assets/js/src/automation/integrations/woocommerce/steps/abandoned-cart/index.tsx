@@ -4,11 +4,17 @@ import { Icon } from './icon';
 import { StepType } from '../../../../editor/store';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "Subscriber abandons cart" trigger
   'cart',
+  // translators: adjective, used as a search keyword for "Subscriber abandons cart" trigger
   'abandoned',
+  // translators: verb, used as a search keyword for "Subscriber abandons cart" trigger
   'abandon',
+  // translators: noun, used as a search keyword for "Subscriber abandons cart" trigger
   'abandonment',
+  // translators: used as a search keyword for "Subscriber abandons cart" trigger
   'abandoned cart',
+  // translators: used as a search keyword for "Subscriber abandons cart" trigger
   'abandon cart',
 ];
 export const step: StepType = {

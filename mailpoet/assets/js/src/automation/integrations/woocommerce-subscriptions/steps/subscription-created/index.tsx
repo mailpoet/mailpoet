@@ -4,10 +4,15 @@ import { Icon } from './icon';
 import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "Woo Subscription started" trigger
   __('woocommerce', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Woo Subscription started" trigger
   __('subscriptions', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Woo Subscription started" trigger
   __('new', 'mailpoet'),
+  // translators: adjective, used as a search keyword for "Woo Subscription started" trigger
   __('created', 'mailpoet'),
+  // translators: adjective, used as a search keyword for "Woo Subscription started" trigger
   __('started', 'mailpoet'),
 ];
 

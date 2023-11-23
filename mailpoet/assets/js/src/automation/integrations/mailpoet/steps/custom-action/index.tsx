@@ -5,8 +5,11 @@ import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "Custom action" automation action
   __('custom', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Custom action" automation action
   __('hook', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Custom action" automation action
   __('code', 'mailpoet'),
 ];
 

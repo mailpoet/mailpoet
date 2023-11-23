@@ -10,8 +10,11 @@ import { TransactionalIcon } from './icons/transactional';
 import { MarketingIcon } from './icons/marketing';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "Send email" automation action
   __('email', 'mailpoet'),
+  // translators: used as a search keyword for "Send email" automation action
   __('send email', 'mailpoet'),
+  // translators: verb, used as a search keyword for "Send email" automation action
   __('send', 'mailpoet'),
 ];
 export const step: StepType = {

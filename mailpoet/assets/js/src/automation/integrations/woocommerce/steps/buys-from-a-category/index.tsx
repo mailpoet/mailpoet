@@ -4,12 +4,19 @@ import { Edit } from './edit';
 import { Icon } from './icon';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "Customer buys from a category" trigger
   __('category', 'mailpoet'),
+  // translators: verb, used as a search keyword for "Customer buys from a category" trigger
   __('buy', 'mailpoet'),
+  // translators: verb, used as a search keyword for "Customer buys from a category" trigger
   __('purchase', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Customer buys from a category" trigger
   __('ecommerce', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Customer buys from a category" trigger
   __('woocommerce', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Customer buys from a category" trigger
   __('product', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Customer buys from a category" trigger
   __('order', 'mailpoet'),
 ];
 export const step: StepType = {

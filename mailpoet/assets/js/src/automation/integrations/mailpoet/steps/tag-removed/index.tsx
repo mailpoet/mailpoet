@@ -5,11 +5,17 @@ import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 import { Icon } from './icon';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "Tag removed from subscriber" automation action
   __('tag', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Tag removed from subscriber" automation action
   __('tags', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Tag removed from subscriber" automation action
   __('label', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Tag removed from subscriber" automation action
   __('labels', 'mailpoet'),
+  // translators: used as a search keyword for "Tag removed from subscriber" automation action
   __('remove tag', 'mailpoet'),
+  // translators: used as a search keyword for "Tag removed from subscriber" automation action
   __('remove tags', 'mailpoet'),
 ];
 export const step: StepType = {

@@ -4,9 +4,13 @@ import { Edit } from './edit';
 import { Icon } from './icon';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "Order status changed" trigger
   __('woocommerce', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Order status changed" trigger
   __('order', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Order status changed" trigger
   __('status', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Order status changed" trigger
   __('change', 'mailpoet'),
 ];
 export const step: StepType = {
