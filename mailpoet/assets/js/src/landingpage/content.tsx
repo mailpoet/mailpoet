@@ -9,11 +9,13 @@ const Images = {
     icon_1: `${MailPoet.cdnUrl}landingpage/feature_icon_1.png`,
     icon_2: `${MailPoet.cdnUrl}landingpage/feature_icon_2.png`,
     icon_3: `${MailPoet.cdnUrl}landingpage/feature_icon_3.png`,
+    icon_4: `${MailPoet.cdnUrl}landingpage/feature_icon_4.png`,
   },
   wooCommerceFeatureImages: {
     feature_1: `${MailPoet.cdnUrl}landingpage/woo_feature_automate_your_marketing.png`,
     feature_2: `${MailPoet.cdnUrl}landingpage/woo_feature_measure_revenue_per_email.png`,
     feature_3: `${MailPoet.cdnUrl}landingpage/woo_feature_let_your_brand_shine.png`,
+    feature_4: `${MailPoet.cdnUrl}landingpage/woo_feature_rescue_abandoned_carts.png`,
   },
 };
 
@@ -42,7 +44,7 @@ function Content() {
         </Heading>
         <br />
 
-        <Grid.ThreeColumns className="landingpage-general-features">
+        <Grid.FourColumns className="landingpage-general-features">
           <div>
             <img
               src={Images.featureImages.icon_1}
@@ -87,7 +89,22 @@ function Content() {
               )}
             </p>
           </div>
-        </Grid.ThreeColumns>
+
+          <div>
+            <img
+              src={Images.featureImages.icon_4}
+              alt=""
+              className="landingpage-feature-icon"
+            />
+            <strong>{__('Save time with automations', 'mailpoet')}</strong>
+            <p>
+              {__(
+                'Set up smart triggers based on user behavior to automate list management, email sending, and more.',
+                'mailpoet',
+              )}
+            </p>
+          </div>
+        </Grid.FourColumns>
       </div>
 
       <div className="mailpoet-gap" />
@@ -159,6 +176,24 @@ function Content() {
             <p>
               {__(
                 "Use our inbuilt WooCommerce email customizer to design your store's transactional emails and build customer confidence.",
+                'mailpoet',
+              )}
+            </p>
+          </div>
+        </Grid.TwoColumns>
+        <Grid.TwoColumns className="landingpage-wooCommerce-feature-item">
+          <div>
+            <img
+              src={Images.wooCommerceFeatureImages.feature_4}
+              alt={__('Rescue abandoned carts feature Image', 'mailpoet')}
+              className="landingpage-images"
+            />
+          </div>
+          <div>
+            <strong>{__('Rescue abandoned carts', 'mailpoet')}</strong>
+            <p>
+              {__(
+                'Set up automated abandoned cart emails to win customers back and recover lost revenue.',
                 'mailpoet',
               )}
             </p>
