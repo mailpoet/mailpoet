@@ -9,6 +9,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class MailerTest extends \MailPoetTest {
@@ -33,11 +34,12 @@ class MailerTest extends \MailPoetTest {
   }
 
   public function testItCanConfigureMailerWithSenderAndReplyToAddressesFromEmail() {
-    $newsletter = new \stdClass();
-    $newsletter->senderName = 'Sender';
-    $newsletter->senderAddress = 'from@example.com';
-    $newsletter->replyToName = 'Reply-to';
-    $newsletter->replyToAddress = 'reply-to@example.com';
+    $newsletter = (new NewsletterFactory())
+      ->withSenderName('Sender')
+      ->withSenderAddress('from@example.com')
+      ->withReplyToName('Reply-to')
+      ->withReplyToAddress('reply-to@example.com')
+      ->create();
 
     $mailerFactoryMock = $this->createMock(MailerFactory::class);
     // First call in constructor

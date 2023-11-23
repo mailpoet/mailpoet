@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer as MailerInstance;
 use MailPoet\Mailer\MailerFactory;
@@ -23,18 +24,18 @@ class Mailer {
     $this->mailer = $this->configureMailer();
   }
 
-  public function configureMailer($newsletter = null) {
-    $sender['address'] = (!empty($newsletter->senderAddress)) ?
-      $newsletter->senderAddress :
+  public function configureMailer(NewsletterEntity $newsletter = null) {
+    $sender['address'] = ($newsletter && !empty($newsletter->getSenderAddress())) ?
+      $newsletter->getSenderAddress() :
       null;
-    $sender['name'] = (!empty($newsletter->senderName)) ?
-      $newsletter->senderName :
+    $sender['name'] = ($newsletter && !empty($newsletter->getSenderName())) ?
+      $newsletter->getSenderName() :
       null;
-    $replyTo['address'] = (!empty($newsletter->replyToAddress)) ?
-      $newsletter->replyToAddress :
+    $replyTo['address'] = ($newsletter && !empty($newsletter->getReplyToAddress())) ?
+      $newsletter->getReplyToAddress() :
       null;
-    $replyTo['name'] = (!empty($newsletter->replyToName)) ?
-      $newsletter->replyToName :
+    $replyTo['name'] = ($newsletter && !empty($newsletter->getReplyToName())) ?
+      $newsletter->getReplyToName() :
       null;
     if (!$sender['address']) {
       $sender = null;
