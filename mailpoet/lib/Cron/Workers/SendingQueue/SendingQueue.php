@@ -559,7 +559,7 @@ class SendingQueue {
   }
 
   private function stopProgress(ScheduledTaskEntity $task): void {
-    $task->setInProgress(true);
+    $task->setInProgress(false);
     $this->scheduledTasksRepository->flush();
   }
 

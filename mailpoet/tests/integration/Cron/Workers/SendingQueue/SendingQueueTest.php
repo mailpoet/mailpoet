@@ -1393,6 +1393,31 @@ class SendingQueueTest extends \MailPoetTest {
     verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 
+  public function testProcessMarksScheduledTaskInProgressAsFalseWhenProperlyProcessingTask() {
+    $sendingQueueWorker = $this->getSendingQueueWorker();
+    $sendingQueueWorker->process();
+    $this->assertSame(false, $this->scheduledTask->getInProgress());
+  }
+
+  public function testProcessMarksScheduledTaskProgressAsFinishedWhenThereIsAnErrorProcessingTask() {
+    $mailerTask = $this->createMock(MailerTask::class);
+    $mailerTask
+      ->method('send')
+      ->willThrowException(new \Exception());
+    $mailerTask
+      ->method('getProcessingMethod')
+      ->willReturn('individual');
+    $sendingQueueWorker = $this->getSendingQueueWorker($mailerTask);
+
+    try {
+      $sendingQueueWorker->process();
+    } catch (\Exception $e) {
+      // do nothing
+    }
+
+    $this->assertSame(false, $this->scheduledTask->getInProgress());
+  }
+
   private function createNewsletter(string $type, $subject, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType($type);
