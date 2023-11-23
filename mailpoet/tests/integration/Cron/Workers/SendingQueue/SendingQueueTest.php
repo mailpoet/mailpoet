@@ -32,7 +32,6 @@ use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SubscriberError;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -499,7 +498,7 @@ class SendingQueueTest extends \MailPoetTest {
         MailerTask::class,
         [
           'prepareSubscriberForSending' => function($subscriber) {
-            return $subscriber->get('email');
+            return $subscriber->getEmail();
           },
           'getProcessingMethod' => 'individual',
           'send' => Expected::exactly(2, function($newsletter, $subscriberEmail, $extraParams) use ($subscribersRepository, $sendingQueue) {
@@ -521,12 +520,7 @@ class SendingQueueTest extends \MailPoetTest {
       )
     );
 
-    $subscribersModels = [
-      Subscriber::findOne($subscriber1->getId()),
-      Subscriber::findOne($subscriber2->getId()),
-    ];
-
-    $sendingQueueWorker->processQueue($scheduledTask, $newsletter, $subscribersModels, $timer);
+    $sendingQueueWorker->processQueue($scheduledTask, $newsletter, [$subscriber1, $subscriber2], $timer);
   }
 
   public function testItCanProcessSubscribersInBulk() {

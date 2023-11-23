@@ -2,10 +2,12 @@
 
 namespace MailPoet\Cron\Workers\SendingQueue\Tasks;
 
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer as MailerInstance;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\Methods\MailPoet;
+use MailPoet\Models\Subscriber;
 
 class Mailer {
   /** @var MailerFactory */
@@ -58,8 +60,10 @@ class Mailer {
       'individual';
   }
 
-  public function prepareSubscriberForSending($subscriber) {
-    return $this->mailer->formatSubscriberNameAndEmailAddress($subscriber);
+  public function prepareSubscriberForSending(SubscriberEntity $subscriber) {
+    $subscriberModel = Subscriber::findOne($subscriber->getId());
+
+    return $this->mailer->formatSubscriberNameAndEmailAddress($subscriberModel);
   }
 
   public function sendBulk($preparedNewsletters, $preparedSubscribers, $extraParams = []) {
