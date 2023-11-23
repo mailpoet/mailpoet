@@ -21,6 +21,12 @@
   }
 }
 
+.admin_page_mailpoet-landingpage {
+  #wpfooter {
+    background: $color-grey-0;
+  }
+}
+
 .mailpoet-premium-page {
   color: $color-tertiary;
   margin: $grid-gap-large auto 0;
