@@ -15,7 +15,10 @@ export function updateDynamicQuery(values: Partial<DynamicSegmentQuery>): void {
   const currentQuery = select(storeName).getDynamicSegmentsQuery();
   const query = currentQuery ?? defaultQuery;
   const newQuery = { ...query, ...values };
-  if (JSON.stringify(query) === JSON.stringify(newQuery)) {
+  if (
+    currentQuery !== null &&
+    JSON.stringify(query) === JSON.stringify(newQuery)
+  ) {
     return;
   }
   dispatch(storeName).updateDynamicSegmentsQuery(newQuery);
