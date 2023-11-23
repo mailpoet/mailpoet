@@ -43,6 +43,20 @@ export function TemplatesGrid({ templates }: Props): JSX.Element {
     ref.current?.querySelector<HTMLDivElement>('[role=dialog]')?.focus();
   }, [selectedTemplate]);
 
+  useEffect(() => {
+    // handle previous/next via keyboard keys
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        getClickHandler('previous')?.();
+      }
+      if (event.key === 'ArrowRight') {
+        getClickHandler('next')?.();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [getClickHandler]);
+
   return (
     <>
       {selectedTemplate && (
