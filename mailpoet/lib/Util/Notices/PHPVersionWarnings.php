@@ -18,13 +18,13 @@ class PHPVersionWarnings {
   }
 
   public function isOutdatedPHPVersion($phpVersion) {
-    return version_compare($phpVersion, '7.4', '<') && !get_transient(self::OPTION_NAME);
+    return version_compare($phpVersion, '8.0', '<') && !get_transient(self::OPTION_NAME);
   }
 
   public function display($phpVersion) {
     // translators: %s is the PHP version
-    $errorString = __('Your website is running an outdated version of PHP (%s), on which MailPoet might stop working in the future. We recommend upgrading to 7.4 or greater. Read our [link]simple PHP upgrade guide.[/link]', 'mailpoet');
-    $errorString = sprintf($errorString, $phpVersion);
+    $errorString = __('Your website is running an outdated version of PHP (%1$s), on which MailPoet might stop working in the future. We recommend upgrading to %2$s or greater. Read our [link]simple PHP upgrade guide.[/link]', 'mailpoet');
+    $errorString = sprintf($errorString, $phpVersion, '8.1');
     $error = Helpers::replaceLinkTags($errorString, 'https://kb.mailpoet.com/article/251-upgrading-the-websites-php-version', [
       'target' => '_blank',
     ]);
