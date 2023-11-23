@@ -329,6 +329,22 @@ export interface SegmentFormDataWindow extends Window {
   mailpoet_automations: Automation[];
 }
 
+export type DynamicSegmentQuery = {
+  offset: number;
+  limit: number;
+  filter: Record<string, string>;
+  search: string;
+  sort_by: string;
+  sort_order: string;
+  group: string;
+};
+
+export type DynamicSegmentGroup = {
+  name: string;
+  label: string;
+  count: number;
+};
+
 export interface StateType {
   products: WindowProducts;
   membershipPlans: WindowMembershipPlans;
@@ -355,12 +371,22 @@ export interface StateType {
   signupForms: SignupForm[];
   automations: Automation[];
   previousPage: string;
-  dynamicSegments: DynamicSegment[];
+  dynamicSegmentsQuery: DynamicSegmentQuery | null;
+  dynamicSegments: DynamicSegmentsList;
 }
+
+export type DynamicSegmentsList = {
+  data: DynamicSegment[] | null;
+  meta: {
+    all: number;
+    groups: DynamicSegmentGroup[];
+  };
+};
 
 export enum Actions {
   SET_DYNAMIC_SEGMENTS = 'SET_DYNAMIC_SEGMENTS',
   SET_SEGMENT = 'SET_SEGMENT',
+  UPDATE_DYNAMIC_SEGMENTS_QUERY = 'UPDATE_DYNAMIC_SEGMENTS_QUERY',
   SET_ERRORS = 'SET_ERRORS',
   SET_PREVIOUS_PAGE = 'SET_PREVIOUS_PAGE',
   RESET_SEGMENT_AND_ERRORS = 'RESET_SEGMENT_AND_ERRORS',
@@ -381,7 +407,11 @@ export type UpdateSegmentActionData =
   | { filters_connect: SegmentConnectTypes };
 
 export interface SetDynamicSegmentsActionType extends ActionType {
-  dynamicSegments: DynamicSegment[];
+  dynamicSegments: DynamicSegmentsList;
+}
+
+export interface UpdateDynamicSegmentsQueryActionType extends ActionType {
+  query: DynamicSegmentQuery;
 }
 
 export interface SetSegmentActionType extends ActionType {
