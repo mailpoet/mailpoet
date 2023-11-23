@@ -11,7 +11,7 @@ function Header() {
         </Heading>
         <p>
           {__(
-            'Whether you’re just starting out or have already established your business, we’ve got what you need to reach customers where they are.',
+            'Whether you’re just starting out or have already established your business, we’ve got the tools you need to reach customers where they are.',
             'mailpoet',
           )}
         </p>

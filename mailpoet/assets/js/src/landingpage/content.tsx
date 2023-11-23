@@ -32,7 +32,10 @@ function Content() {
           {
             // translators: %s is number of websites using MailPoet, e.g., "700,000+"
             sprintf(
-              __('Powering email marketing for %s websites', 'mailpoet'),
+              __(
+                'Powerful email marketing, trusted by %s websites',
+                'mailpoet',
+              ),
               '700,000+',
             )
           }
@@ -96,7 +99,7 @@ function Content() {
           </Heading>
           <p>
             {__(
-              'Hyper-relevant content for every stage of the customer’s journey',
+              'Deliver hyper-relevant content at every stage of your customer’s journey',
               'mailpoet',
             )}
           </p>
@@ -108,12 +111,15 @@ function Content() {
           <div>
             <img
               src={Images.wooCommerceFeatureImages.feature_1}
-              alt={__('Automate your marketing feature Image', 'mailpoet')}
+              alt={__(
+                'Automate customer communication feature Image',
+                'mailpoet',
+              )}
               className="landingpage-images"
             />
           </div>
           <div>
-            <strong>{__('Automate your marketing', 'mailpoet')}</strong>
+            <strong>{__('Automate customer communication', 'mailpoet')}</strong>
             <p>
               {__(
                 'Drive sales and build loyalty through automated marketing messages that respond to your customer’s purchase data.',
