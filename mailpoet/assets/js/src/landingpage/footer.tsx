@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
+import { Button } from 'common';
 import { Heading } from 'common/typography/heading/heading';
-import { AbTestButton } from './ab-test-button';
+import { redirectToWelcomeWizard } from './util';
 
 function Footer() {
   return (
@@ -10,7 +11,9 @@ function Footer() {
           {' '}
           {__('Ready to start using MailPoet?', 'mailpoet')}{' '}
         </Heading>
-        <AbTestButton />
+        <Button onClick={redirectToWelcomeWizard}>
+          {__('Begin setup', 'mailpoet')}
+        </Button>
       </div>
     </section>
   );
