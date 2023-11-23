@@ -8,8 +8,8 @@ use MailPoet\Config\Populator;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerFactory;
-use MailPoet\Models\Subscriber;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class MailerTest extends \MailPoetTest {
   /** @var SettingsController */
@@ -90,12 +90,12 @@ class MailerTest extends \MailPoetTest {
   }
 
   public function testItCanPrepareSubscriberForSending() {
-    /** @var Subscriber $subscriber */
-    $subscriber = Subscriber::create();
-    $subscriber->email = 'test@example.com';
-    $subscriber->firstName = 'John';
-    $subscriber->lastName = 'Doe';
-    $subscriber->save();
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('test@example.com')
+      ->withFirstName('John')
+      ->withLastName('Doe')
+      ->create();
+
     $mailerTask = $this->diContainer->get(MailerTask::class);
     $preparedSubscriber = $mailerTask->prepareSubscriberForSending($subscriber);
     verify($preparedSubscriber)->equals('John Doe <test@example.com>');

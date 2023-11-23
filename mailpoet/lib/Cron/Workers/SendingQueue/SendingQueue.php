@@ -17,7 +17,6 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
-use MailPoet\Models\Subscriber as SubscriberModel;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
@@ -248,20 +247,32 @@ class SendingQueue {
           $this->scheduledTasksRepository->flush();
           return;
         }
-        $foundSubscribers = empty($foundSubscribersIds) ? [] : SubscriberModel::whereIn('id', $foundSubscribersIds)
-          ->whereNull('deleted_at')
-          ->findMany();
+        $foundSubscribers = empty($foundSubscribersIds) ? [] : $this->subscribersRepository->findBy(['id' => $foundSubscribersIds, 'deletedAt' => null]);
       } else {
         // No segments = Welcome emails or some Automatic emails.
         // Welcome emails or some Automatic emails use segments only for scheduling and store them as a newsletter option
-        $foundSubscribers = SubscriberModel::whereIn('id', $subscribersToProcessIds);
-        $foundSubscribers = $newsletter->type === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL ?
-          $foundSubscribers->whereNotEqual('status', SubscriberModel::STATUS_BOUNCED) :
-          $foundSubscribers->where('status', SubscriberModel::STATUS_SUBSCRIBED);
-        $foundSubscribers = $foundSubscribers
-          ->whereNull('deleted_at')
-          ->findMany();
-        $foundSubscribersIds = SubscriberModel::extractSubscribersIds($foundSubscribers);
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+
+        $queryBuilder->select('s')
+          ->from(SubscriberEntity::class, 's')
+          ->where('s.id IN (:subscriberIds)')
+          ->setParameter('subscriberIds', $subscribersToProcessIds)
+          ->andWhere('s.deletedAt IS NULL');
+
+        if ($newsletterEntity->getType() === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL) {
+          $queryBuilder->andWhere('s.status != :bouncedStatus')
+            ->setParameter('bouncedStatus', SubscriberEntity::STATUS_BOUNCED);
+        } else {
+          $queryBuilder->andWhere('s.status = :subscribedStatus')
+            ->setParameter('subscribedStatus', SubscriberEntity::STATUS_SUBSCRIBED);
+        }
+
+        $foundSubscribers = $queryBuilder->getQuery()->getResult();
+        $foundSubscribersIds = array_filter(
+          array_map(function(SubscriberEntity $subscriber) {
+            return (!empty($subscriber->getId())) ? $subscriber->getId() : false;
+          }, $foundSubscribers)
+        );
       }
       // if some subscribers weren't found, remove them from the processing list
       if (count($foundSubscribersIds) !== count($subscribersToProcessIds)) {
@@ -332,7 +343,10 @@ class SendingQueue {
     return $this->throttlingHandler->getBatchSize();
   }
 
-  public function processQueue(ScheduledTaskEntity $task, $newsletter, $subscribers, $timer) {
+  /**
+   * @param SubscriberEntity[] $subscribers
+   */
+  public function processQueue(ScheduledTaskEntity $task, $newsletter, array $subscribers, $timer) {
     // determine if processing is done in bulk or individually
     $processingMethod = $this->mailerTask->getProcessingMethod();
     $preparedNewsletters = [];
@@ -356,29 +370,23 @@ class SendingQueue {
     }
 
     foreach ($subscribers as $subscriber) {
-      $subscriberEntity = $this->subscribersRepository->findOneById($subscriber->id);
-
-      if (!$subscriberEntity instanceof SubscriberEntity) {
-        continue;
-      }
-
       // render shortcodes and replace subscriber data in tracked links
       $preparedNewsletters[] =
         $this->newsletterTask->prepareNewsletterForSending(
           $newsletterEntity,
-          $subscriberEntity,
+          $subscriber,
           $sendingQueueEntity
         );
       // format subscriber name/address according to mailer settings
       $preparedSubscribers[] = $this->mailerTask->prepareSubscriberForSending(
         $subscriber
       );
-      $preparedSubscribersIds[] = $subscriber->id;
+      $preparedSubscribersIds[] = $subscriber->getId();
       // create personalized instant unsubsribe link
-      $unsubscribeUrls[] = $this->links->getUnsubscribeUrl($sendingQueueEntity->getId(), $subscriberEntity);
-      $oneClickUnsubscribeUrls[] = $this->links->getOneClickUnsubscribeUrl($sendingQueueEntity->getId(), $subscriberEntity);
+      $unsubscribeUrls[] = $this->links->getUnsubscribeUrl($sendingQueueEntity->getId(), $subscriber);
+      $oneClickUnsubscribeUrls[] = $this->links->getOneClickUnsubscribeUrl($sendingQueueEntity->getId(), $subscriber);
 
-      $metasForSubscriber = $this->mailerMetaInfo->getNewsletterMetaInfo($newsletterEntity, $subscriberEntity);
+      $metasForSubscriber = $this->mailerMetaInfo->getNewsletterMetaInfo($newsletterEntity, $subscriber);
       if ($campaignId) {
         $metasForSubscriber['campaign_id'] = $campaignId;
       }
@@ -387,7 +395,7 @@ class SendingQueue {
       // keep track of values for statistics purposes
       $statistics[] = [
         'newsletter_id' => $newsletter->id,
-        'subscriber_id' => $subscriber->id,
+        'subscriber_id' => $subscriber->getId(),
         'queue_id' => $sendingQueueEntity->getId(),
       ];
       if ($processingMethod === 'individual') {
