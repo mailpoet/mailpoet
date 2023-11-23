@@ -31,5 +31,9 @@
     @media screen and (min-width: $mailpoet-breakpoint-small + 1) {
       @content;
     }
+  } @else if $media == large-screen {
+    @media screen and (max-width: $mailpoet-breakpoint-large) {
+      @content;
+    }
   }
 }
