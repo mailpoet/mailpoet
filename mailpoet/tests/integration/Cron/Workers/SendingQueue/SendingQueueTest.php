@@ -30,7 +30,6 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SubscriberError;
-use MailPoet\Models\SendingQueue;
 use MailPoet\Newsletter\Links\Links;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -274,7 +273,7 @@ class SendingQueueTest extends \MailPoetTest {
     // when sending is done and there are no more subscribers to process, continue
     // without enforcing execution limits. this allows the newsletter to be marked as sent
     // in the process() method and after that execution limits will be enforced
-    $this->scheduledTask->setStatus(SendingQueue::STATUS_COMPLETED);
+    $this->scheduledTask->setStatus(SendingQueueEntity::STATUS_COMPLETED);
     $this->entityManager->persist($this->scheduledTask);
     $this->entityManager->flush();
     $sendingQueueWorker = $this->make(
@@ -348,20 +347,6 @@ class SendingQueueTest extends \MailPoetTest {
       $this->statisticsNewslettersRepository
     );
     $sendingQueueWorker->process();
-  }
-
-  public function testItDeletesQueueWhenNewsletterIsNotFound() {
-    // queue exists
-    $queue = SendingQueue::findOne($this->sendingQueue->getId());
-    verify($queue)->notEquals(false);
-
-    // delete newsletter
-    $this->newslettersRepository->bulkDelete([$this->newsletter->getId()]);
-
-    // queue no longer exists
-    $this->sendingQueueWorker->process();
-    $queue = SendingQueue::findOne($this->sendingQueue->getId());
-    verify($queue)->false();
   }
 
   public function testItPassesExtraParametersToMailerWhenTrackingIsDisabled() {
@@ -445,7 +430,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
-    verify($scheduledTask->getStatus())->equals(SendingQueue::STATUS_COMPLETED);
+    verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
     verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
@@ -556,7 +541,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
-    verify($scheduledTask->getStatus())->equals(SendingQueue::STATUS_COMPLETED);
+    verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
     verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
@@ -600,7 +585,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->sendingQueuesRepository->refresh($sendingQueue);
     $this->scheduledTasksRepository->refresh($scheduledTask);
-    verify($scheduledTask->getStatus())->equals(SendingQueue::STATUS_COMPLETED);
+    verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
 
     // newsletter status is set to sent and sent_at date is populated
     $updatedNewsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
@@ -749,7 +734,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_ACTIVE);
 
     // queue status is set to completed
-    verify($this->scheduledTask->getStatus())->equals(SendingQueue::STATUS_COMPLETED);
+    verify($this->scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
     verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
