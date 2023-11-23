@@ -5,8 +5,11 @@ import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 import { Icon } from './icon';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "Subscriber clicks a link in email" trigger
   __('email', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Subscriber clicks a link in email" trigger
   __('link', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Subscriber clicks a link in email" trigger
   __('clicks', 'mailpoet'),
 ];
 

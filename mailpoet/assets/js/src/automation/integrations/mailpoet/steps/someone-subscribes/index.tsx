@@ -4,8 +4,11 @@ import { StepType } from '../../../../editor/store';
 import { Edit } from './edit';
 
 const keywords = [
+  // translators: verb, used as a search keyword for "Someone subscribes" trigger
   __('subscribe', 'mailpoet'),
+  // translators: used as a search keyword for "Someone subscribes" trigger
   __('new subscriber', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Someone subscribes" trigger
   __('subscription', 'mailpoet'),
 ];
 export const step: StepType = {

@@ -13,9 +13,13 @@ const getDelayInformation = (delayTypeValue: string, value: number): string =>
   }, '');
 
 const keywords = [
+  // translators: verb, used as a search keyword for "Delay" automation action
   __('wait', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Delay" automation action
   __('pause', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Delay" automation action
   __('delay', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Delay" automation action
   __('time', 'mailpoet'),
 ];
 export const step: StepType = {

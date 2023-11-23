@@ -7,8 +7,11 @@ import { BranchBadge } from './branch-badge';
 import { Footer } from './footer';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "If/Else" automation action
   __('condition', 'mailpoet'),
+  // translators: adjective, used as a search keyword for "If/Else" automation action
   __('conditional', 'mailpoet'),
+  // translators: noun, used as a search keyword for "If/Else" automation action
   __('if/else', 'mailpoet'),
 ];
 

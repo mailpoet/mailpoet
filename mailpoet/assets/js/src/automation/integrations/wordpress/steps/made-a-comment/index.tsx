@@ -4,7 +4,10 @@ import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';
 import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 import { Icon } from './icon';
 
-const keywords = [__('comment', 'mailpoet')];
+const keywords = [
+  // translators: noun, used as a search keyword for "User makes a comment" trigger
+  __('comment', 'mailpoet'),
+];
 export const step: StepType = {
   key: 'wordpress:made-a-comment',
   group: 'triggers',

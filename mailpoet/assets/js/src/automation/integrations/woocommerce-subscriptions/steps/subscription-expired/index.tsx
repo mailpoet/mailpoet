@@ -4,8 +4,11 @@ import { Icon } from './icon';
 import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "Woo Subscription expired" trigger
   __('woocommerce', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Woo Subscription expired" trigger
   __('subscription', 'mailpoet'),
+  // translators: adjective, used as a search keyword for "Woo Subscription expired" trigger
   __('expired', 'mailpoet'),
 ];
 

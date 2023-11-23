@@ -4,9 +4,13 @@ import { Icon } from './icon';
 import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
 
 const keywords = [
+  // translators: noun, used as a search keyword for "Woo Subscription payment failed" trigger
   __('woocommerce', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Woo Subscription payment failed" trigger
   __('subscription', 'mailpoet'),
+  // translators: noun, used as a search keyword for "Woo Subscription payment failed" trigger
   __('payment', 'mailpoet'),
+  // translators: adjective, used as a search keyword for "Woo Subscription payment failed" trigger
   __('failed', 'mailpoet'),
 ];
 export const step: StepType = {
