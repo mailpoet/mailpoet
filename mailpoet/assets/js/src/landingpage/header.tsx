@@ -16,7 +16,7 @@ function Header() {
             'mailpoet',
           )}
         </p>
-        <Button onClick={redirectToWelcomeWizard}>
+        <Button onClick={redirectToWelcomeWizard} dimension="hero">
           {__('Begin setup', 'mailpoet')}
         </Button>
       </div>
