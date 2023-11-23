@@ -748,6 +748,8 @@ class SendingQueueTest extends \MailPoetTest {
 
   public function testItCanProcessWelcomeNewsletters() {
     $this->newsletter->type = NewsletterEntity::TYPE_WELCOME;
+    $this->newsletter->save();
+    $this->entityManager->refresh($this->newsletterEntity);
     $this->newsletterSegment->delete();
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
@@ -770,7 +772,7 @@ class SendingQueueTest extends \MailPoetTest {
     // newsletter status is set to sent
     $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
     $this->assertInstanceOf(Newsletter::class, $updatedNewsletter);
-    verify($updatedNewsletter->status)->equals(NewsletterEntity::STATUS_SENT);
+    verify($updatedNewsletter->status)->equals(NewsletterEntity::STATUS_ACTIVE);
 
     // queue status is set to completed
     $sendingQueue = $this->sendingQueuesRepository->findOneById($this->sendingQueue->getId());
