@@ -40,6 +40,7 @@ class SomeoneSubscribesTrigger implements Trigger {
   }
 
   public function getName(): string {
+    // translators: automation trigger title
     return __('Someone subscribes', 'mailpoet');
   }
 

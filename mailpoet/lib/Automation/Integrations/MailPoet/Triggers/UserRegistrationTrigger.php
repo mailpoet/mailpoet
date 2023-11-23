@@ -40,6 +40,7 @@ class UserRegistrationTrigger implements Trigger {
   }
 
   public function getName(): string {
+    // translators: automation trigger title
     return __('WordPress user registers', 'mailpoet');
   }
 

@@ -27,6 +27,7 @@ class IfElseAction implements Action {
   }
 
   public function getName(): string {
+    // translators: automation action title
     return __('If/Else', 'mailpoet');
   }
 

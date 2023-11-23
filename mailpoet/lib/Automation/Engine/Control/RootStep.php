@@ -12,6 +12,7 @@ class RootStep implements Step {
   }
 
   public function getName(): string {
+    // translators: not shown to user, no need to translate
     return __('Root step', 'mailpoet');
   }
 
