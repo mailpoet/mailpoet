@@ -117,8 +117,23 @@ class Newsletter {
     return $this;
   }
 
+  public function withSenderName($name) {
+    $this->data['sender_name'] = $name;
+    return $this;
+  }
+
   public function withSenderAddress($address) {
     $this->data['sender_address'] = $address;
+    return $this;
+  }
+
+  public function withReplyToName($name) {
+    $this->data['reply_to_name'] = $name;
+    return $this;
+  }
+
+  public function withReplyToAddress($address) {
+    $this->data['reply_to_address'] = $address;
     return $this;
   }
 
@@ -411,12 +426,27 @@ class Newsletter {
     $newsletter->setType($this->data['type']);
     $newsletter->setStatus($this->data['status']);
     $newsletter->setBody($this->data['body']);
+
+    if (isset($this->data['sender_name'])) {
+      $newsletter->setSenderName($this->data['sender_name']);
+    } else {
+      $newsletter->setSenderName('John Doe');
+    }
+
     if (isset($this->data['sender_address'])) {
       $newsletter->setSenderAddress($this->data['sender_address']);
     } else {
       $newsletter->setSenderAddress('john.doe@example.com');
-      $newsletter->setSenderName('John Doe');
     }
+
+    if (isset($this->data['reply_to_name'])) {
+      $newsletter->setReplyToName($this->data['reply_to_name']);
+    }
+
+    if (isset($this->data['reply_to_address'])) {
+      $newsletter->setReplyToAddress($this->data['reply_to_address']);
+    }
+
     $newsletter->setHash(Security::generateHash());
     if (isset($this->data['parent'])) $newsletter->setParent($this->data['parent']);
     if (isset($this->data['deleted_at'])) $newsletter->setDeletedAt($this->data['deleted_at']);
