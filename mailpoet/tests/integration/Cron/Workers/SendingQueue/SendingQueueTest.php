@@ -31,8 +31,6 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\SubscriberError;
-use MailPoet\Models\Newsletter;
-use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\SendingQueue;
 use MailPoet\Models\Subscriber;
 use MailPoet\Newsletter\Links\Links;
@@ -50,6 +48,7 @@ use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\SubscriptionUrlFactory;
+use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -65,6 +64,8 @@ class SendingQueueTest extends \MailPoetTest {
   /* @var SendingQueueEntity */
   public $sendingQueue;
   public $newsletterSegment;
+
+  /** @var NewsletterEntity */
   public $newsletter;
   public $subscriberSegment;
   /** @var SegmentEntity */
@@ -106,9 +107,6 @@ class SendingQueueTest extends \MailPoetTest {
   /** @var ScheduledTaskEntity */
   private $scheduledTask;
 
-  /** NewsletterEntity */
-  private $newsletterEntity;
-
   /** @var \MailPoetVendor\Doctrine\ORM\EntityRepository<\MailPoet\Entities\StatisticsNewsletterEntity> */
   private $statisticsNewsletterRepository;
 
@@ -126,36 +124,24 @@ class SendingQueueTest extends \MailPoetTest {
     $this->segment = (new SegmentFactory())->withName('segment')->create();
     $this->subscriber = $this->createSubscriber('john@doe.com', 'John', 'Doe', [$this->segment]);
 
-    /** @var Newsletter $newsletter */
-    $newsletter = Newsletter::create();
-    $this->newsletter = $newsletter;
-    $this->newsletter->type = NewsletterEntity::TYPE_STANDARD;
-    $this->newsletter->status = NewsletterEntity::STATUS_ACTIVE;
+    $this->newsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withSubject(Fixtures::get('newsletter_subject_template'))
+      ->withBody(Fixtures::get('newsletter_body_template'))
+      ->withSegments([$this->segment])
+      ->create();
 
-    $this->newsletter->subject = Fixtures::get('newsletter_subject_template');
-    $this->newsletter->body = Fixtures::get('newsletter_body_template');
-    $this->newsletter->save();
-
-    $this->newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->id);
-    $this->assertInstanceOf(NewsletterEntity::class, $this->newsletterEntity);
-
-    /** @var NewsletterSegment $newsletterSegment */
-    $newsletterSegment = NewsletterSegment::create();
-    $this->newsletterSegment = $newsletterSegment;
-    $this->newsletterSegment->newsletterId = $this->newsletter->id;
-    $this->newsletterSegment->segmentId = (int)$this->segment->getId();
-    $this->newsletterSegment->save();
-
-    $this->sendingQueue = $this->createQueueWithTask($this->newsletterEntity);
+    $this->sendingQueue = $this->createQueueWithTask($this->newsletter);
     $scheduledTask = $this->sendingQueue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
     $this->scheduledTask = $scheduledTask;
     $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [$this->subscriber->getId()]);
 
-    $queue = $this->newsletterEntity->getLatestQueue();
+    $queue = $this->newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     $this->newsletterLink = new NewsletterLinkEntity(
-      $this->newsletterEntity,
+      $this->newsletter,
       $queue,
       '[link:subscription_instant_unsubscribe_url]',
       'abcde'
@@ -371,7 +357,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($queue)->notEquals(false);
 
     // delete newsletter
-    $this->newslettersRepository->bulkDelete([$this->newsletter->id]);
+    $this->newslettersRepository->bulkDelete([$this->newsletter->getId()]);
 
     // queue no longer exists
     $this->sendingQueueWorker->process();
@@ -451,9 +437,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->subscriber->getEngagementScoreUpdatedAt())->null();
 
     // newsletter status is set to sent
-    $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
-    $this->assertInstanceOf(Newsletter::class, $updatedNewsletter);
-    verify($updatedNewsletter->status)->equals(NewsletterEntity::STATUS_SENT);
+    verify($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
 
     // queue status is set to completed
     $sendingQueue = $this->sendingQueuesRepository->findOneById($this->sendingQueue->getId());
@@ -475,7 +459,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // statistics entry should be created
     $statistics = $this->statisticsNewsletterRepository->findOneBy([
-      'newsletter' => $this->newsletterEntity,
+      'newsletter' => $this->newsletter,
       'subscriber' => $this->subscriber,
       'queue' => $this->sendingQueue,
     ]);
@@ -497,7 +481,7 @@ class SendingQueueTest extends \MailPoetTest {
     $subscriber2->setEmail('2@localhost.com');
     $subscribersRepository->persist($subscriber2);
 
-    $sendingQueue = $this->createQueueWithTask($this->newsletterEntity);
+    $sendingQueue = $this->createQueueWithTask($this->newsletter);
 
     $sendingQueue->setNewsletterRenderedBody(['html' => '<p>Hello [subscriber:email]</p>', 'text' => 'Hello [subscriber:email]']);
     $sendingQueue->setNewsletterRenderedSubject('News for [subscriber:email]');
@@ -569,9 +553,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->subscriber->getLastSendingAt())->notNull();
 
     // newsletter status is set to sent
-    $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
-    $this->assertInstanceOf(Newsletter::class, $updatedNewsletter);
-    verify($updatedNewsletter->status)->equals(NewsletterEntity::STATUS_SENT);
+    verify($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
 
     // queue status is set to completed
     $sendingQueue = $this->sendingQueuesRepository->findOneById($this->sendingQueue->getId());
@@ -593,7 +575,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // statistics entry should be created
     $statistics = $this->statisticsNewsletterRepository->findOneBy([
-      'newsletter' => $this->newsletterEntity,
+      'newsletter' => $this->newsletter,
       'subscriber' => $this->subscriber,
       'queue' => $this->sendingQueue,
     ]);
@@ -627,7 +609,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($scheduledTask->getStatus())->equals(SendingQueue::STATUS_COMPLETED);
 
     // newsletter status is set to sent and sent_at date is populated
-    $updatedNewsletter = $this->newslettersRepository->findOneById($this->newsletter->id);
+    $updatedNewsletter = $this->newslettersRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
     verify($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
     verify($updatedNewsletter->getSentAt())->equalsWithDelta($scheduledTask->getProcessedAt(), 1);
@@ -643,7 +625,7 @@ class SendingQueueTest extends \MailPoetTest {
 
     // statistics entry should be created
     $statistics = $this->statisticsNewsletterRepository->findOneBy([
-      'newsletter' => $this->newsletterEntity,
+      'newsletter' => $this->newsletter,
       'subscriber' => $this->subscriber,
       'queue' => $this->sendingQueue,
     ]);
@@ -653,7 +635,7 @@ class SendingQueueTest extends \MailPoetTest {
   public function testItHandlesSendingErrorCorrectly() {
     $wrongSubscriber = $this->createSubscriber('doe@john.com>', 'Doe', 'John');
 
-    $sendingQueue = $this->createQueueWithTask($this->newsletterEntity);
+    $sendingQueue = $this->createQueueWithTask($this->newsletter);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $scheduledTask = $sendingQueue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
@@ -735,8 +717,9 @@ class SendingQueueTest extends \MailPoetTest {
     $originalUpdated = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(5);
     $this->setUpdatedAtForEntity($this->scheduledTask, $originalUpdated);
 
-    $this->newsletter->type = NewsletterEntity::TYPE_WELCOME;
-    $this->newsletterSegment->delete();
+    $this->newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $this->newsletter->getNewsletterSegments()->clear();
+    $this->entityManager->flush();
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
       $this->makeEmpty(MailerTask::class, [])
@@ -747,10 +730,9 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItCanProcessWelcomeNewsletters() {
-    $this->newsletter->type = NewsletterEntity::TYPE_WELCOME;
-    $this->newsletter->save();
-    $this->entityManager->refresh($this->newsletterEntity);
-    $this->newsletterSegment->delete();
+    $this->newsletter->setType(NewsletterEntity::TYPE_WELCOME);
+    $this->newsletter->getNewsletterSegments()->clear();
+    $this->entityManager->flush();
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
       $this->construct(
@@ -770,31 +752,23 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     // newsletter status is set to sent
-    $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
-    $this->assertInstanceOf(Newsletter::class, $updatedNewsletter);
-    verify($updatedNewsletter->status)->equals(NewsletterEntity::STATUS_ACTIVE);
+    verify($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_ACTIVE);
 
     // queue status is set to completed
-    $sendingQueue = $this->sendingQueuesRepository->findOneById($this->sendingQueue->getId());
-    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
-    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
-    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
-    $this->sendingQueuesRepository->refresh($sendingQueue);
-    $this->scheduledTasksRepository->refresh($scheduledTask);
-    verify($scheduledTask->getStatus())->equals(SendingQueue::STATUS_COMPLETED);
+    verify($this->scheduledTask->getStatus())->equals(SendingQueue::STATUS_COMPLETED);
 
     // queue subscriber processed/to process count is updated
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
+    verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED))
       ->equals([]);
-    verify($scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
+    verify($this->scheduledTask->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED))
       ->equals([$this->subscriber]);
-    verify($sendingQueue->getCountTotal())->equals(1);
-    verify($sendingQueue->getCountProcessed())->equals(1);
-    verify($sendingQueue->getCountToProcess())->equals(0);
+    verify($this->sendingQueue->getCountTotal())->equals(1);
+    verify($this->sendingQueue->getCountProcessed())->equals(1);
+    verify($this->sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created
     $statistics = $this->statisticsNewsletterRepository->findOneBy([
-      'newsletter' => $this->newsletterEntity,
+      'newsletter' => $this->newsletter,
       'subscriber' => $this->subscriber,
       'queue' => $this->sendingQueue,
     ]);
@@ -802,10 +776,10 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItPreventsSendingWelcomeEmailWhenSubscriberIsUnsubscribed() {
-    $this->newsletter->type = NewsletterEntity::TYPE_WELCOME;
+    $this->newsletter->setType(NewsletterEntity::TYPE_WELCOME);
     $this->subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->newsletter->getNewsletterSegments()->clear();
     $this->entityManager->flush();
-    $this->newsletterSegment->delete();
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
       $this->construct(
@@ -908,7 +882,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItRemovesSubscribersFromProcessingListWhenNewsletterHasNoSegment() {
-    $this->newsletterEntity->getNewsletterSegments()->clear();
+    $this->newsletter->getNewsletterSegments()->clear();
     $invalidSubscriberId = 99999;
 
     $this->scheduledTaskSubscribersRepository->setSubscribers(
@@ -1034,10 +1008,10 @@ class SendingQueueTest extends \MailPoetTest {
    * @dataProvider dataForTestItSendsTransactionalEmails
    */
   public function testItSendsTransactionalEmails(string $subscriberStatus, bool $expectSending) {
+    $this->newsletter->setType(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL);
+    $this->newsletter->getNewsletterSegments()->clear();
+    $this->entityManager->flush();
 
-    $this->newsletter->type = NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL;
-    $this->newsletter->save();
-    $this->newsletterSegment->delete();
     $sendingQueueWorker = $this->sendingQueueWorker;
     $sendingQueueWorker->mailerTask = $this->construct(
       MailerTask::class,
@@ -1187,6 +1161,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItDoesNotUpdateNewsletterHashDuringSending() {
+    $originalHash = $this->newsletter->getHash();
     $sendingQueueWorker = $this->getSendingQueueWorker(
       $this->construct(
         MailerTask::class,
@@ -1199,10 +1174,8 @@ class SendingQueueTest extends \MailPoetTest {
     $sendingQueueWorker->process();
 
     // newsletter is sent and hash remains intact
-    $updatedNewsletter = Newsletter::findOne($this->newsletter->id);
-    $this->assertInstanceOf(Newsletter::class, $updatedNewsletter);
-    verify($updatedNewsletter->status)->equals(NewsletterEntity::STATUS_SENT);
-    verify($updatedNewsletter->hash)->equals($this->newsletter->hash);
+    verify($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+    verify($this->newsletter->getHash())->equals($originalHash);
   }
 
   public function testItAllowsSettingCustomBatchSize() {
