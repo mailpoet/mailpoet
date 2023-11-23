@@ -17,6 +17,7 @@ class OrderStatusChangeSubject implements Subject {
   const KEY = 'woocommerce:order-status-changed';
 
   public function getName(): string {
+    // translators: automation subject (entity entering automation) title
     return __('WooCommerce order status change', 'mailpoet');
   }
 

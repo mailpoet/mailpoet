@@ -39,6 +39,7 @@ class NewsletterLinkSubject implements Subject {
   }
 
   public function getName(): string {
+    // translators: automation subject (entity entering automation) title
     return __('Email link', 'mailpoet');
   }
 

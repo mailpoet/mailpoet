@@ -32,6 +32,7 @@ class SegmentSubject implements Subject {
   }
 
   public function getName(): string {
+    // translators: automation subject (entity entering automation) title
     return __('MailPoet segment', 'mailpoet');
   }
 

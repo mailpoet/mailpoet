@@ -13,6 +13,7 @@ class OrderCancelledTrigger extends OrderStatusChangedTrigger {
   }
 
   public function getName(): string {
+    // translators: automation trigger title
     return __('Order cancelled', 'mailpoet');
   }
 

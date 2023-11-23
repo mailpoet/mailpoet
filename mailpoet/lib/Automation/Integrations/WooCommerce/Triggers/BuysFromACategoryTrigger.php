@@ -27,6 +27,7 @@ class BuysFromACategoryTrigger extends BuysAProductTrigger {
   }
 
   public function getName(): string {
+    // translators: automation trigger title
     return __('Customer buys from a category', 'mailpoet');
   }
 
