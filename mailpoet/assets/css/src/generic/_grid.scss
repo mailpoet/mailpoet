@@ -47,6 +47,24 @@
   }
 }
 
+.mailpoet-grid-four-columns {
+  display: grid;
+  grid-gap: $grid-gap;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+
+  > * {
+    min-width: 0;
+  }
+
+  @include respond-to(large-screen) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @include respond-to(small-screen) {
+    grid-template-columns: 1fr;
+  }
+}
+
 .mailpoet-grid-space-between {
   align-items: flex-start;
   display: flex;
