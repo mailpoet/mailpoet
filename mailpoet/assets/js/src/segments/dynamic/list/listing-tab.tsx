@@ -55,7 +55,7 @@ export function ListingTab(): JSX.Element {
       tabs={tabs}
       initialTabName="all"
       onSelect={(tab) => {
-        updateDynamicQuery({ group: tab });
+        updateDynamicQuery({ group: tab, offset: 0 });
       }}
     >
       {renderTabs}
