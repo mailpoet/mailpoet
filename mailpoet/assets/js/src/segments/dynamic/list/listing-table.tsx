@@ -1,12 +1,73 @@
 import { ComponentProps, useCallback, useEffect, useMemo } from 'react';
 import { TableCard } from '@woocommerce/components';
-import { useDispatch, useSelect } from '@wordpress/data';
+import { select, dispatch, useSelect } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
 import { __, _x } from '@wordpress/i18n';
 import { useLocation } from 'react-router-dom';
-import { DynamicSegment } from 'segments/types';
+import { DynamicSegment, DynamicSegmentQuery } from 'segments/types';
 import { TabPanel } from '@wordpress/components';
 import { getRow } from 'segments/dynamic/list/get-row';
+
+function updateDynamicQuery(values: Partial<DynamicSegmentQuery>): void {
+  const defaultQuery = {
+    offset: 0,
+    limit: 2,
+    filter: {},
+    search: '',
+    sort_by: 'updated_at',
+    sort_order: 'desc',
+    group: 'all',
+  };
+  const currentQuery = select(storeName).getDynamicSegmentsQuery();
+  const query = currentQuery ?? defaultQuery;
+  const newQuery = { ...query, ...values };
+  if (JSON.stringify(query) === JSON.stringify(newQuery)) {
+    return;
+  }
+  dispatch(storeName).updateDynamicSegmentsQuery(newQuery);
+}
+
+function updateDynamicQueryFromLocation(pathname: string): void {
+  const pathElements = pathname.split('/');
+  if (pathElements[1] !== 'segments') {
+    return;
+  }
+  const defaultQuery = {
+    offset: 0,
+    limit: 2,
+    filter: {},
+    search: '',
+    sort_by: 'updated_at',
+    sort_order: 'desc',
+    group: 'all',
+  };
+  const currentQuery = select(storeName).getDynamicSegmentsQuery();
+  const query = currentQuery !== null ? currentQuery : defaultQuery;
+  const queryKeys = Object.keys(query);
+
+  for (
+    let pathElementsIndex = 0;
+    pathElementsIndex < pathElements.length;
+    pathElementsIndex += 1
+  ) {
+    for (
+      let queryKeysIndex = 0;
+      queryKeysIndex < queryKeys.length;
+      queryKeysIndex += 1
+    ) {
+      if (
+        pathElements[pathElementsIndex].startsWith(
+          `${queryKeys[queryKeysIndex]}[`,
+        )
+      ) {
+        query[queryKeys[queryKeysIndex]] = pathElements[pathElementsIndex]
+          .replace(`${queryKeys[queryKeysIndex]}[`, '')
+          .replace(']', '');
+      }
+    }
+  }
+  updateDynamicQuery(query);
+}
 
 const tabConfig = [
   {
@@ -28,7 +89,7 @@ const tableHeaders = [
     cellClassName: 'mailpoet-listing-checkbox',
   },
   {
-    key: 'segment',
+    key: 'name',
     label: __('Segment', 'mailpoet'),
     cellClassName: 'mailpoet-listing-name',
     isSortable: true,
@@ -38,17 +99,17 @@ const tableHeaders = [
     label: __('Number of subscribers', 'mailpoet'),
     isLeftAligned: false,
     isNumeric: true,
-    isSortable: true,
+    isSortable: false,
   },
   {
     key: 'subscribed',
     label: __('Subscribed', 'mailpoet'),
     isLeftAligned: false,
     isNumeric: true,
-    isSortable: true,
+    isSortable: false,
   },
   {
-    key: 'modified_date',
+    key: 'updated_at',
     label: __('Modified', 'mailpoet'),
     cellClassName: 'mailpoet-listing-modified-date',
     isLeftAligned: false,
@@ -62,21 +123,18 @@ const tableHeaders = [
 
 export function ListingTable(): JSX.Element {
   const location = useLocation();
-  const pageSearch = useMemo(
-    () => new URLSearchParams(location.search),
-    [location],
-  );
-
-  const dynamicSegments = useSelect((select) =>
-    select(storeName).getDynamicSegments(),
-  );
-  const { loadDynamicSegments } = useDispatch(storeName);
+  const { dynamicSegments, dynamicSegmentQuery, dynamicSegmentsGroups } =
+    useSelect((s) => ({
+      dynamicSegments: s(storeName).getDynamicSegments(),
+      dynamicSegmentQuery: s(storeName).getDynamicSegmentsQuery(),
+      dynamicSegmentsGroups: s(storeName).getDynamicSegmentsGroups(),
+    }));
 
   useEffect(() => {
-    loadDynamicSegments().catch(() => {
-      // TODO: check if this is the right away to use loadDynamicSegments and handle errors if it is
-    });
-  }, [loadDynamicSegments]);
+    if (dynamicSegmentQuery === null) {
+      updateDynamicQueryFromLocation(location.pathname);
+    }
+  }, [dynamicSegmentQuery, location]);
 
   const groupedDynamicSegments = useMemo<
     Record<string, DynamicSegment[]>
@@ -95,8 +153,10 @@ export function ListingTable(): JSX.Element {
   const tabs = useMemo(
     () =>
       tabConfig.map((tab) => {
-        const count = (groupedDynamicSegments[tab.name] ?? []).length;
-
+        const currentGroup = dynamicSegmentsGroups?.find(
+          (group) => tab.name === group.name,
+        );
+        const count = currentGroup?.count ?? 0;
         return {
           name: tab.name,
           title: (
@@ -108,25 +168,50 @@ export function ListingTable(): JSX.Element {
           className: tab.className,
         };
       }),
-    [groupedDynamicSegments],
+    [dynamicSegmentsGroups],
   );
 
   const renderTabs = useCallback(
     (tab) => {
       const filteredDynamicSegments: DynamicSegment[] =
         groupedDynamicSegments[tab.name] ?? [];
-      const rowsPerPage = parseInt(pageSearch.get('per_page') ?? '25', 10);
-      const currentPage = parseInt(pageSearch.get('paged') ?? '1', 10);
-      const start = (currentPage - 1) * rowsPerPage;
-      const rows = filteredDynamicSegments
-        .map((dynamicSegment) => getRow(dynamicSegment))
-        .slice(start, start + rowsPerPage);
+      let currentGroup = null;
+      if (dynamicSegmentsGroups) {
+        currentGroup = dynamicSegmentsGroups.find(
+          (group) => tab.name === group.name,
+        );
+      }
 
+      const rowsPerPage =
+        dynamicSegmentQuery !== null ? dynamicSegmentQuery.limit : 10;
+      const rows = filteredDynamicSegments.map((dynamicSegment) =>
+        getRow(dynamicSegment),
+      );
+      const totalRows = currentGroup ? currentGroup.count : 0;
+      const tableQueryParams = {
+        orderby:
+          dynamicSegmentQuery !== null
+            ? dynamicSegmentQuery.sort_by
+            : 'updated_at',
+        order:
+          dynamicSegmentQuery !== null
+            ? dynamicSegmentQuery.sort_order
+            : 'desc',
+        page:
+          dynamicSegmentQuery !== null
+            ? dynamicSegmentQuery.offset / dynamicSegmentQuery.limit + 1
+            : 1,
+        per_page: dynamicSegmentQuery !== null ? dynamicSegmentQuery.limit : 25,
+        paged:
+          dynamicSegmentQuery !== null
+            ? dynamicSegmentQuery.offset / dynamicSegmentQuery.limit + 1
+            : 1,
+      };
       return (
         <TableCard
           className="mailpoet-segments-listing"
           title=""
-          isLoading={!dynamicSegments}
+          isLoading={dynamicSegments === null}
           headers={
             // typed as mutable so doesn't accept our const (readonly) type
             tableHeaders as unknown as ComponentProps<
@@ -134,15 +219,47 @@ export function ListingTable(): JSX.Element {
             >['headers']
           }
           rows={rows}
+          onQueryChange={(query) => (param) => {
+            if (dynamicSegmentQuery === null) {
+              return;
+            }
+            if (query === 'paged') {
+              updateDynamicQuery({
+                offset: dynamicSegmentQuery.limit * (param - 1),
+              });
+            }
+            if (query === 'per_page') {
+              updateDynamicQuery({
+                limit: param,
+                offset: 0,
+              });
+            }
+            if (query === 'sort') {
+              const newParams = {
+                offset: 0,
+                sort_by: param,
+              } as Partial<DynamicSegmentQuery>;
+              if (dynamicSegmentQuery.sort_by === param) {
+                newParams.sort_order =
+                  dynamicSegmentQuery.sort_order === 'asc' ? 'desc' : 'asc';
+              }
+              updateDynamicQuery(newParams);
+            }
+          }}
+          query={tableQueryParams}
           rowKey={(_, i) => dynamicSegments[i].id}
           rowsPerPage={rowsPerPage}
-          totalRows={dynamicSegments.length}
-          query={Object.fromEntries(pageSearch)}
+          totalRows={totalRows}
           showMenu={false}
         />
       );
     },
-    [dynamicSegments, groupedDynamicSegments, pageSearch],
+    [
+      dynamicSegments,
+      dynamicSegmentQuery,
+      dynamicSegmentsGroups,
+      groupedDynamicSegments,
+    ],
   );
 
   return (
@@ -150,6 +267,9 @@ export function ListingTable(): JSX.Element {
       className="mailpoet-filter-tab-panel"
       tabs={tabs}
       initialTabName="all"
+      onSelect={(tab) => {
+        updateDynamicQuery({ group: tab });
+      }}
     >
       {renderTabs}
     </TabPanel>

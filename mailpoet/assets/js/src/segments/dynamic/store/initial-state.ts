@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import { getAvailableFilters } from './all-available-filters';
 import {
   SegmentConnectTypes,
@@ -52,5 +53,23 @@ export const getInitialState = (): StateType => ({
     window.mailpoet_can_use_woocommerce_memberships,
   ),
   previousPage: '',
-  dynamicSegments: [],
+  dynamicSegmentsQuery: null,
+  dynamicSegments: {
+    data: null,
+    meta: {
+      all: 0,
+      groups: [
+        {
+          name: 'all',
+          label: __('All', 'mailpoet'),
+          count: 0,
+        },
+        {
+          name: 'trash',
+          label: __('Trash', 'mailpoet'),
+          count: 0,
+        },
+      ],
+    },
+  },
 });

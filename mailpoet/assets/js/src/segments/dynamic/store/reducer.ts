@@ -9,6 +9,7 @@ import {
   SetSubscriberCountActionType,
   StateType,
   SetPreviousPageActionType,
+  UpdateDynamicSegmentsQueryActionType,
 } from '../types';
 import { getSegmentInitialState } from './initial-state';
 
@@ -26,6 +27,16 @@ function setSegment(state: StateType, action: SetSegmentActionType): StateType {
   return {
     ...state,
     segment: action.segment,
+  };
+}
+
+function setDynamicSegmentsQuery(
+  state: StateType,
+  action: UpdateDynamicSegmentsQueryActionType,
+): StateType {
+  return {
+    ...state,
+    dynamicSegmentsQuery: action.query,
   };
 }
 
@@ -102,6 +113,11 @@ export const createReducer =
         return setDynamicSegments(
           state,
           action as SetDynamicSegmentsActionType,
+        );
+      case Actions.UPDATE_DYNAMIC_SEGMENTS_QUERY:
+        return setDynamicSegmentsQuery(
+          state,
+          action as UpdateDynamicSegmentsQueryActionType,
         );
       case Actions.SET_SEGMENT:
         return setSegment(state, action as SetSegmentActionType);
