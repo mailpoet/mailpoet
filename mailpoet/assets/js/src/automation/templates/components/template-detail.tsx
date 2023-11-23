@@ -1,4 +1,4 @@
-import { MouseEventHandler, useCallback, useState } from 'react';
+import { forwardRef, MouseEventHandler, useCallback, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { Button, Modal, Snackbar } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -46,60 +46,70 @@ const useCreateFromTemplate = () => {
 type Props = {
   template: AutomationTemplate;
   onRequestClose: Modal.Props['onRequestClose'];
+  onPreviousClick?: MouseEventHandler<HTMLButtonElement>;
+  onNextClick?: MouseEventHandler<HTMLButtonElement>;
 };
 
-export function TemplateDetail({
-  template,
-  onRequestClose,
-}: Props): JSX.Element {
-  const [createAutomationFromTemplate, { loading, error }] =
-    useCreateFromTemplate();
+export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
+  ({ template, onRequestClose, onPreviousClick, onNextClick }, ref) => {
+    const [createAutomationFromTemplate, { loading, error }] =
+      useCreateFromTemplate();
 
-  return (
-    <Modal
-      className="mailpoet-automation-template-detail"
-      title=""
-      onRequestClose={onRequestClose}
-    >
-      <div className="mailpoet-automation-template-detail-content">
-        <div className="mailpoet-automation-template-detail-info">
-          <Tag label={getCategory(template)} />
-          <h1>{template.name}</h1>
-          {template.description}
-        </div>
-        <div className="mailpoet-automation-template-detail-preview" />
-        <div className="mailpoet-automation-template-detail-footer">
-          <div className="mailpoet-automation-template-detail-footer-navigation">
-            <Button icon={chevronLeft} />
-            <Button icon={chevronRight} />
+    return (
+      <Modal
+        ref={ref}
+        className="mailpoet-automation-template-detail"
+        title=""
+        onRequestClose={onRequestClose}
+      >
+        <div className="mailpoet-automation-template-detail-content">
+          <div className="mailpoet-automation-template-detail-info">
+            <Tag label={getCategory(template)} />
+            <h1>{template.name}</h1>
+            {template.description}
           </div>
-          <div className="mailpoet-automation-template-detail-footer-actions">
-            {error && (
-              <Snackbar className="mailpoet-automation-template-detail-error">
-                {__(
-                  'An error occurred while creating the automation. Please, try again.',
-                  'mailpoet',
-                )}
-              </Snackbar>
-            )}
-            <Button
-              variant="tertiary"
-              onClick={onRequestClose as MouseEventHandler}
-              disabled={loading}
-            >
-              {__('Cancel', 'mailpoet')}
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => void createAutomationFromTemplate(template.slug)}
-              isBusy={loading}
-              disabled={loading}
-            >
-              {__('Start building', 'mailpoet')}
-            </Button>
+          <div className="mailpoet-automation-template-detail-preview" />
+          <div className="mailpoet-automation-template-detail-footer">
+            <div className="mailpoet-automation-template-detail-footer-navigation">
+              <Button
+                icon={chevronLeft}
+                onClick={onPreviousClick}
+                disabled={!onPreviousClick || loading}
+              />
+              <Button
+                icon={chevronRight}
+                onClick={onNextClick}
+                disabled={!onNextClick || loading}
+              />
+            </div>
+            <div className="mailpoet-automation-template-detail-footer-actions">
+              {error && (
+                <Snackbar className="mailpoet-automation-template-detail-error">
+                  {__(
+                    'An error occurred while creating the automation. Please, try again.',
+                    'mailpoet',
+                  )}
+                </Snackbar>
+              )}
+              <Button
+                variant="tertiary"
+                onClick={onRequestClose as MouseEventHandler}
+                disabled={loading}
+              >
+                {__('Cancel', 'mailpoet')}
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => void createAutomationFromTemplate(template.slug)}
+                isBusy={loading}
+                disabled={loading}
+              >
+                {__('Start building', 'mailpoet')}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </Modal>
-  );
-}
+      </Modal>
+    );
+  },
+);
