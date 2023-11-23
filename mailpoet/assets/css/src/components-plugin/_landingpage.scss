@@ -24,7 +24,7 @@
   }
 
   .landing-footer {
-    background-color: $color-landingpage-background-light;
+    @include full-width-background($color-grey-0);
     padding: $content-padding;
 
     .landing-footer-content {
@@ -34,7 +34,7 @@
   }
 
   .landing-faq {
-    background-color: $color-landingpage-background-light;
+    @include full-width-background($color-grey-0);
     padding: $content-padding;
 
     .mailpoet-faq-accordion {
@@ -61,7 +61,7 @@
   .landing-content {
     .hero-section {
       $hero-image-offset: 6rem;
-      background-color: $color-landingpage-background-light;
+      @include full-width-background($color-grey-0);
       margin-top: $hero-image-offset;
       padding: $content-padding;
 
