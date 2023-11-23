@@ -25,9 +25,10 @@
 
   .landing-footer {
     @include full-width-background($color-grey-0);
-    margin: 0 auto;
+    margin: 0 auto -35px;
     max-width: 900px;
     padding: $content-padding;
+    position: relative;
 
     .landing-footer-content {
       box-shadow: 0 -1px 0 0 $color-tertiary-light;
@@ -40,6 +41,7 @@
     margin: 0 auto;
     max-width: 800px;
     padding: $content-padding;
+    position: relative;
 
     .mailpoet-faq-accordion {
       margin: 25px 0;
@@ -68,6 +70,7 @@
       @include full-width-background($color-grey-0);
       margin-top: $hero-image-offset;
       padding: $content-padding;
+      position: relative;
 
       .hero-image {
         margin-top: -($hero-image-offset + 2rem);
