@@ -1,5 +1,5 @@
 import { ChangeEvent } from 'react';
-import { select } from '@wordpress/data';
+import { select, dispatch } from '@wordpress/data';
 import { MailPoet } from 'mailpoet';
 
 import * as ROUTES from '../../routes';
@@ -16,7 +16,9 @@ import {
   Segment,
   SegmentTemplate,
   SetPreviousPageActionType,
-  DynamicSegment,
+  UpdateDynamicSegmentsQueryActionType,
+  DynamicSegmentQuery,
+  DynamicSegmentsList,
 } from '../types';
 import { storeName } from './constants';
 
@@ -224,33 +226,58 @@ export function setPreviousPage(data: string): SetPreviousPageActionType {
   };
 }
 
-export async function loadDynamicSegments() {
-  let data: DynamicSegment[] = [];
+export function resetDynamicSegments() {
+  return {
+    type: 'SET_DYNAMIC_SEGMENTS',
+    dynamicSegments: {
+      data: null,
+      meta: {
+        all: 0,
+        groups: [],
+      },
+    },
+  } as const;
+}
+
+export async function loadDynamicSegments(query?: DynamicSegmentQuery) {
+  dispatch(storeName).resetDynamicSegments();
+
+  let data: DynamicSegmentsList = {
+    data: [],
+    meta: {
+      all: 0,
+      groups: [],
+    },
+  };
 
   await MailPoet.Ajax.post({
     api_version: 'v1',
     endpoint: 'dynamic_segments',
     action: 'listing',
-    data: {
-      offset: 0,
-      limit: 20,
-      filter: {},
-      search: '',
-      sort_by: 'name',
-      sort_order: 'desc',
-    },
+    data: query ?? select(storeName).getDynamicSegmentsQuery(),
   })
     .done((response) => {
-      data = response.data || [];
-    })
-    .fail((response) => {
-      if (response.errors.length > 0) {
-        // TODO: handle errors
+      const keys = Object.keys(response);
+      if (keys.includes('data') && keys.includes('meta')) {
+        data = response as DynamicSegmentsList;
       }
+    })
+    .catch(() => {
+      // @ToDo: show notice
     });
 
   return {
     type: 'SET_DYNAMIC_SEGMENTS',
     dynamicSegments: data,
   } as const;
+}
+
+export function updateDynamicSegmentsQuery(
+  query: DynamicSegmentQuery,
+): UpdateDynamicSegmentsQueryActionType {
+  void dispatch(storeName).loadDynamicSegments(query);
+  return {
+    type: Actions.UPDATE_DYNAMIC_SEGMENTS_QUERY,
+    query,
+  };
 }
