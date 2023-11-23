@@ -11,7 +11,7 @@ function Footer() {
           {' '}
           {__('Ready to start using MailPoet?', 'mailpoet')}{' '}
         </Heading>
-        <Button onClick={redirectToWelcomeWizard}>
+        <Button onClick={redirectToWelcomeWizard} dimension="hero">
           {__('Begin setup', 'mailpoet')}
         </Button>
       </div>

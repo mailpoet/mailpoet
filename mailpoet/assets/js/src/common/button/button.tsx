@@ -3,7 +3,7 @@ import classnames from 'classnames';
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   children?: ReactNode;
-  dimension?: 'small';
+  dimension?: 'small' | 'large' | 'hero';
   variant?: 'secondary' | 'tertiary' | 'destructive';
   withSpinner?: boolean; // also disables href and onClick (via pointer-events in CSS)
   isDisabled?: boolean; // also disables href and onClick (via pointer-events in CSS)
@@ -58,6 +58,8 @@ export function Button({
         'button-link': variant === 'tertiary',
         'button-link button-link-delete': variant === 'destructive',
         'button-small': dimension === 'small',
+        'button-large': dimension === 'large',
+        'button-hero': dimension === 'hero',
       })}
       data-automation-id={automationId}
       data-tip={dataTip}
