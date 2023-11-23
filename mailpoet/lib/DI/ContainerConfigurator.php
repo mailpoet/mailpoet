@@ -418,6 +418,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Statistics\StatisticsFormsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Statistics\StatisticsBouncesRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Statistics\StatisticsClicksRepository::class)->setPublic(true);
+    $container->autowire(\MailPoet\Statistics\StatisticsNewslettersRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Statistics\StatisticsOpensRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Statistics\StatisticsUnsubscribesRepository::class);
     $container->autowire(\MailPoet\Statistics\StatisticsWooCommercePurchasesRepository::class)->setPublic(true);

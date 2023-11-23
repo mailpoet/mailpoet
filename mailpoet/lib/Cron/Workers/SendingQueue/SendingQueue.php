@@ -15,12 +15,12 @@ use MailPoet\InvalidStateException;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\MetaInfo;
-use MailPoet\Models\StatisticsNewsletters as StatisticsNewslettersModel;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Subscribers\BatchIterator;
 use MailPoet\WP\Functions as WPFunctions;
@@ -84,6 +84,9 @@ class SendingQueue {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var StatisticsNewslettersRepository */
+  private $statisticsNewslettersRepository;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     SendingThrottlingHandler $throttlingHandler,
@@ -100,6 +103,7 @@ class SendingQueue {
     SubscribersRepository $subscribersRepository,
     SendingQueuesRepository $sendingQueuesRepository,
     EntityManager $entityManager,
+    StatisticsNewslettersRepository $statisticsNewslettersRepository,
     $newsletterTask = false
   ) {
     $this->errorHandler = $errorHandler;
@@ -119,6 +123,7 @@ class SendingQueue {
     $this->subscribersRepository = $subscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->entityManager = $entityManager;
+    $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
   }
 
   public function process($timer = false) {
@@ -511,7 +516,7 @@ class SendingQueue {
     }
 
     // log statistics
-    StatisticsNewslettersModel::createMultiple($statistics);
+    $this->statisticsNewslettersRepository->createMultiple($statistics);
     // update the sent count
     $this->mailerTask->updateSentCount();
     // enforce execution limits if queue is still being processed

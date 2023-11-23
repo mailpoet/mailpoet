@@ -23,7 +23,6 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Logging\LoggerFactory;
@@ -43,6 +42,7 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
+use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -106,8 +106,8 @@ class SendingQueueTest extends \MailPoetTest {
   /** @var ScheduledTaskEntity */
   private $scheduledTask;
 
-  /** @var \MailPoetVendor\Doctrine\ORM\EntityRepository<\MailPoet\Entities\StatisticsNewsletterEntity> */
-  private $statisticsNewsletterRepository;
+  /** @var StatisticsNewslettersRepository */
+  private $statisticsNewslettersRepository;
 
   public function _before() {
     parent::_before();
@@ -158,7 +158,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
-    $this->statisticsNewsletterRepository = $this->entityManager->getRepository(StatisticsNewsletterEntity::class);
+    $this->statisticsNewslettersRepository = $this->diContainer->get(StatisticsNewslettersRepository::class);
     $this->sendingQueueWorker = $this->getSendingQueueWorker();
   }
 
@@ -216,7 +216,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->diContainer->get(MailerTask::class),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
-      $this->entityManager
+      $this->entityManager,
+      $this->statisticsNewslettersRepository
     );
     try {
       $sendingQueueWorker->process();
@@ -252,7 +253,8 @@ class SendingQueueTest extends \MailPoetTest {
       ),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
-      $this->entityManager
+      $this->entityManager,
+      $this->statisticsNewslettersRepository
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -300,7 +302,8 @@ class SendingQueueTest extends \MailPoetTest {
       ),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
-      $this->entityManager
+      $this->entityManager,
+      $this->statisticsNewslettersRepository
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -341,7 +344,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->diContainer->get(MailerTask::class),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
-      $this->entityManager
+      $this->entityManager,
+      $this->statisticsNewslettersRepository
     );
     $sendingQueueWorker->process();
   }
@@ -453,7 +457,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created
-    $statistics = $this->statisticsNewsletterRepository->findOneBy([
+    $statistics = $this->statisticsNewslettersRepository->findOneBy([
       'newsletter' => $this->newsletter,
       'subscriber' => $this->subscriber,
       'queue' => $this->sendingQueue,
@@ -564,7 +568,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created
-    $statistics = $this->statisticsNewsletterRepository->findOneBy([
+    $statistics = $this->statisticsNewslettersRepository->findOneBy([
       'newsletter' => $this->newsletter,
       'subscriber' => $this->subscriber,
       'queue' => $this->sendingQueue,
@@ -614,7 +618,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created
-    $statistics = $this->statisticsNewsletterRepository->findOneBy([
+    $statistics = $this->statisticsNewslettersRepository->findOneBy([
       'newsletter' => $this->newsletter,
       'subscriber' => $this->subscriber,
       'queue' => $this->sendingQueue,
@@ -662,7 +666,8 @@ class SendingQueueTest extends \MailPoetTest {
       ),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
-      $this->entityManager
+      $this->entityManager,
+      $this->statisticsNewslettersRepository
     );
 
     $sendingQueueWorker->sendNewsletters(
@@ -756,7 +761,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created
-    $statistics = $this->statisticsNewsletterRepository->findOneBy([
+    $statistics = $this->statisticsNewslettersRepository->findOneBy([
       'newsletter' => $this->newsletter,
       'subscriber' => $this->subscriber,
       'queue' => $this->sendingQueue,
@@ -866,7 +871,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created only for 1 subscriber
-    $statistics = $this->statisticsNewsletterRepository->findAll();
+    $statistics = $this->statisticsNewslettersRepository->findAll();
     verify(count($statistics))->equals(1);
   }
 
@@ -905,7 +910,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->sendingQueue->getCountToProcess())->equals(0);
 
     // statistics entry should be created only for 1 subscriber
-    $statistics = $this->statisticsNewsletterRepository->findAll();
+    $statistics = $this->statisticsNewslettersRepository->findAll();
     verify(count($statistics))->equals(1);
   }
 
@@ -1123,7 +1128,8 @@ class SendingQueueTest extends \MailPoetTest {
       ),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
-      $this->entityManager
+      $this->entityManager,
+      $this->statisticsNewslettersRepository
     );
     try {
       $sendingQueueWorker->sendNewsletters(
@@ -1451,7 +1457,8 @@ class SendingQueueTest extends \MailPoetTest {
       $mailerMock ?? $this->diContainer->get(MailerTask::class),
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
-      $this->entityManager
+      $this->entityManager,
+      $this->statisticsNewslettersRepository
     );
   }
 
