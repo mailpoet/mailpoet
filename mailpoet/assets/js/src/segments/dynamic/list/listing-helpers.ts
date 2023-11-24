@@ -2,16 +2,15 @@ import { select, dispatch } from '@wordpress/data';
 import { DynamicSegmentQuery } from '../types';
 import { storeName } from '../store';
 
+const defaultQuery = {
+  offset: 0,
+  limit: 2,
+  search: '',
+  sort_by: 'updated_at',
+  sort_order: 'desc',
+  group: 'all',
+};
 export function updateDynamicQuery(values: Partial<DynamicSegmentQuery>): void {
-  const defaultQuery = {
-    offset: 0,
-    limit: 2,
-    filter: {},
-    search: '',
-    sort_by: 'updated_at',
-    sort_order: 'desc',
-    group: 'all',
-  };
   const currentQuery = select(storeName).getDynamicSegmentsQuery();
   const query = currentQuery ?? defaultQuery;
   const newQuery = { ...query, ...values };
@@ -26,18 +25,7 @@ export function updateDynamicQuery(values: Partial<DynamicSegmentQuery>): void {
 
 export function updateDynamicQueryFromLocation(pathname: string): void {
   const pathElements = pathname.split('/');
-  if (pathElements[1] !== 'segments') {
-    return;
-  }
-  const defaultQuery = {
-    offset: 0,
-    limit: 2,
-    filter: {},
-    search: '',
-    sort_by: 'updated_at',
-    sort_order: 'desc',
-    group: 'all',
-  };
+
   const currentQuery = select(storeName).getDynamicSegmentsQuery();
   const query = currentQuery !== null ? currentQuery : defaultQuery;
   const queryKeys = Object.keys(query);
@@ -64,4 +52,14 @@ export function updateDynamicQueryFromLocation(pathname: string): void {
     }
   }
   updateDynamicQuery(query);
+}
+
+export function getTabFromLocation(pathname: string): string {
+  const pathElements = pathname.split('/');
+  for (let i = 0; i < pathElements.length; i += 1) {
+    if (pathElements[i].startsWith(`group[`)) {
+      return pathElements[i].replace(`group[`, '').replace(']', '');
+    }
+  }
+  return 'all';
 }

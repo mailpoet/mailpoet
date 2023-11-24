@@ -332,7 +332,6 @@ export interface SegmentFormDataWindow extends Window {
 export type DynamicSegmentQuery = {
   offset: number;
   limit: number;
-  filter: Record<string, string>;
   search: string;
   sort_by: string;
   sort_order: string;
