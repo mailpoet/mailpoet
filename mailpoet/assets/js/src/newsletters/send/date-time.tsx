@@ -37,13 +37,13 @@ type DateTimeState = {
 class DateTime extends Component<DateTimeProps, DateTimeState> {
   DATE_TIME_SEPARATOR = ' ';
 
-  constructor(props) {
+  constructor(props: DateTimeProps) {
     super(props);
 
     this.state = this.buildStateFromProps(props);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: DateTimeProps) {
     if (
       this.props.value !== prevProps.value ||
       this.props.defaultDateTime !== prevProps.defaultDateTime
@@ -57,7 +57,7 @@ class DateTime extends Component<DateTimeProps, DateTimeState> {
   getDateTime = () =>
     [this.state.date, this.state.time].join(this.DATE_TIME_SEPARATOR);
 
-  buildStateFromProps = (props): DateTimeState => {
+  buildStateFromProps = (props: DateTimeProps): DateTimeState => {
     const value = props.value || this.props.defaultDateTime;
     const [date, time] = value.split(this.DATE_TIME_SEPARATOR);
     return {
