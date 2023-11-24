@@ -131,6 +131,7 @@ class SettingsController {
     $flexEmailLayoutStyles = file_get_contents(__DIR__ . '/flex-email-layout.css');
 
     $settings['styles'] = [
+      $coreDefaultSettings['defaultEditorStyles'][0],
       ['css' => wp_get_global_stylesheet(['base-layout-styles'])],
       ['css' => $theme->get_stylesheet()],
       ['css' => $contentVariables],
