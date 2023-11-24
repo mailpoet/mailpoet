@@ -1,16 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 declare module 'wp-js-hooks' {
-  type Hooks = {
-    addFilter: (
-      name: string,
-      namespace: string,
-      callback: (...args: any[]) => any,
-      priority?: number,
-    ) => void;
-    applyFilters: (name: string, ...args: any[]) => any;
-  };
-  export const Hooks: Hooks;
+  import * as WPHooks from '@wordpress/hooks';
+
+  export const Hooks: WPHooks;
 }
 
 type ErrorResponse = {
