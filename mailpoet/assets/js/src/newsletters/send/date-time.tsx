@@ -99,6 +99,7 @@ class DateTime extends Component<DateTimeProps, DateTimeState> {
             validation={this.props.dateValidation}
             maxDate={this.props.maxDate}
           />
+          <div className="mailpoet-gap" />
           <TimeSelect
             name="time"
             value={this.state.time}
