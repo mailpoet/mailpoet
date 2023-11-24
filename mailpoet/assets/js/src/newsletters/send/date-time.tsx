@@ -25,7 +25,6 @@ type DateTimeProps = {
     'data-parsley-required-message': string;
     'data-parsley-errors-container': string;
   };
-  timeValidation?: any;
   timeOfDayItems: { [key: string]: string };
   maxDate?: Date;
 };
@@ -105,7 +104,6 @@ class DateTime extends Component<DateTimeProps, DateTimeState> {
             value={this.state.time}
             onChange={this.handleChange}
             disabled={this.props.disabled}
-            validation={this.props.timeValidation}
             timeOfDayItems={this.props.timeOfDayItems}
           />
         </ErrorBoundary>
