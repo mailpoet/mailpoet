@@ -75,19 +75,23 @@
     animation: fade-in 0.15s ease-in;
     background: none;
     box-sizing: border-box;
+    grid-template-rows: auto;
     padding: 24px;
   }
 
   .mailpoet-automation-editor-automation-wrapper {
+    $scale: 0.7;
+    display: flex;
+    height: calc(100% / $scale);
     margin: 0 auto;
     min-height: 0;
     padding: 0;
-    transform: scale(0.7);
+    transform: scale($scale);
     transform-origin: top center;
   }
 
   .mailpoet-automation-editor-automation-flow {
-    padding-bottom: 24px;
+    padding-bottom: 32px;
   }
 }
 
