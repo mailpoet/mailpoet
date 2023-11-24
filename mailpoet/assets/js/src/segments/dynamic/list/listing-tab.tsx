@@ -1,10 +1,15 @@
 import { useSelect } from '@wordpress/data';
 import { useCallback, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { TabPanel } from '@wordpress/components';
 import { __, _x } from '@wordpress/i18n';
 import { storeName } from '../store';
 import { ListingTable } from './listing-table';
-import { updateDynamicQuery } from './listing-helpers';
+import {
+  getTabFromLocation,
+  updateDynamicQuery,
+  updateDynamicQueryFromLocation,
+} from './listing-helpers';
 
 const tabConfig = [
   {
@@ -20,7 +25,8 @@ const tabConfig = [
 ] as const;
 
 export function ListingTab(): JSX.Element {
-  const { dynamicSegmentsGroups } = useSelect((s) => ({
+  const location = useLocation();
+  const { dynamicSegmentQuery, dynamicSegmentsGroups } = useSelect((s) => ({
     dynamicSegments: s(storeName).getDynamicSegments(),
     dynamicSegmentQuery: s(storeName).getDynamicSegmentsQuery(),
     dynamicSegmentsGroups: s(storeName).getDynamicSegmentsGroups(),
@@ -53,8 +59,15 @@ export function ListingTab(): JSX.Element {
     <TabPanel
       className="mailpoet-filter-tab-panel"
       tabs={tabs}
-      initialTabName="all"
+      initialTabName={getTabFromLocation(location.pathname)}
       onSelect={(tab) => {
+        if (dynamicSegmentQuery === null) {
+          updateDynamicQueryFromLocation(location.pathname);
+          return;
+        }
+        if (dynamicSegmentQuery.group === tab) {
+          return;
+        }
         updateDynamicQuery({ group: tab, offset: 0 });
       }}
     >
