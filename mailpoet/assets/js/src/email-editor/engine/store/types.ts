@@ -36,6 +36,11 @@ export type EmailLayoutStyles = {
   };
 };
 
+export type EmailEditorLayout = {
+  type: string;
+  contentSize: string;
+};
+
 export type State = {
   inserterSidebar: {
     isOpened: boolean;
@@ -46,6 +51,7 @@ export type State = {
   postId: number;
   editorSettings: EmailEditorSettings;
   layoutStyles: EmailLayoutStyles;
+  layout: EmailEditorLayout;
   preview: {
     deviceType: string;
     toEmail: string;

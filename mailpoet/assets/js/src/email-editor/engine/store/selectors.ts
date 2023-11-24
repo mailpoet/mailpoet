@@ -84,3 +84,7 @@ export function getPreviewState(state: State): State['preview'] {
 export function getLayoutStyles(state: State): State['layoutStyles'] {
   return state.layoutStyles;
 }
+
+export function getLayout(state: State): State['layout'] {
+  return state.layout;
+}
