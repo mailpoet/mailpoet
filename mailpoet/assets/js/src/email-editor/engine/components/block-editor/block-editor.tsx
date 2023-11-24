@@ -46,6 +46,7 @@ export function BlockEditor() {
     hasFixedToolbar,
     focusMode,
     layoutStyles,
+    layout,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
@@ -60,6 +61,7 @@ export function BlockEditor() {
       hasFixedToolbar: select(storeName).isFeatureActive('fixedToolbar'),
       focusMode: select(storeName).isFeatureActive('focusMode'),
       layoutStyles: select(storeName).getLayoutStyles(),
+      layout: select(storeName).getLayout(),
     }),
     [],
   );
@@ -164,7 +166,12 @@ export function BlockEditor() {
                     <BlockTools>
                       <WritingFlow>
                         <ObserveTyping>
-                          <BlockList className="is-layout-constrained" />
+                          <BlockList
+                            className="is-layout-constrained"
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore We have an older package of @wordpress/block-editor that doesn't contain the correct type
+                            layout={layout}
+                          />
                         </ObserveTyping>
                       </WritingFlow>
                     </BlockTools>

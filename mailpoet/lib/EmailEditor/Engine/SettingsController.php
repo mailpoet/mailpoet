@@ -111,6 +111,16 @@ class SettingsController {
     return $settings;
   }
 
+  /**
+   * @return array{contentSize: string, layout: string}
+   */
+  public function getLayout(): array {
+    return [
+      'contentSize' => self::EMAIL_WIDTH,
+      'layout' => 'constrained',
+    ];
+  }
+
   public function getEmailContentStyles(): array {
     return self::DEFAULT_EMAIL_CONTENT_STYLES;
   }
