@@ -108,6 +108,9 @@ class SettingsController {
 
     $settings['__experimentalFeatures'] = $coreSettings;
 
+    // Enabling alignWide allows full width for specific blocks such as columns, heading, image, etc.
+    $settings['alignWide'] = true;
+
     return $settings;
   }
 
