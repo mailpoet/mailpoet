@@ -64,6 +64,44 @@ class Automation {
         },
         array_values($this->registry->getTemplateCategories())
       ),
+      'registry' => $this->buildRegistry(),
+      'context' => $this->buildContext(),
     ]);
+  }
+
+  private function buildRegistry(): array {
+    $steps = [];
+    foreach ($this->registry->getSteps() as $key => $step) {
+      $steps[$key] = [
+        'key' => $step->getKey(),
+        'name' => $step->getName(),
+        'args_schema' => $step->getArgsSchema()->toArray(),
+      ];
+    }
+
+    $subjects = [];
+    foreach ($this->registry->getSubjects() as $key => $subject) {
+      $subjects[$key] = [
+        'key' => $subject->getKey(),
+        'name' => $subject->getName(),
+        'args_schema' => $subject->getArgsSchema()->toArray(),
+        'field_keys' => array_map(function ($field) {
+          return $field->getKey();
+        }, $subject->getFields()),
+      ];
+    }
+
+    return [
+      'steps' => $steps,
+      'subjects' => $subjects,
+    ];
+  }
+
+  private function buildContext(): array {
+    $data = [];
+    foreach ($this->registry->getContextFactories() as $key => $factory) {
+      $data[$key] = $factory();
+    }
+    return $data;
   }
 }
