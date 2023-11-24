@@ -272,10 +272,25 @@ export async function loadDynamicSegments(query?: DynamicSegmentQuery) {
   } as const;
 }
 
+function updateUrlWithQueryParams(query: DynamicSegmentQuery) {
+  const currentUrl = window.location.href;
+  let hash = '/segments';
+  const keys = Object.keys(query);
+  for (let i = 0; i < keys.length; i += 1) {
+    const key = keys[i];
+    const value = query[key] as string;
+    if (value) {
+      hash += `/${key}[${value}]`;
+    }
+  }
+  window.history.pushState(null, '', `${currentUrl.split('#')[0]}#${hash}`);
+}
+
 export function updateDynamicSegmentsQuery(
   query: DynamicSegmentQuery,
 ): UpdateDynamicSegmentsQueryActionType {
   void dispatch(storeName).loadDynamicSegments(query);
+  updateUrlWithQueryParams(query);
   return {
     type: Actions.UPDATE_DYNAMIC_SEGMENTS_QUERY,
     query,
