@@ -16,7 +16,9 @@ export const useAutomationScrollCenter = (
 
     // center the scroll to the first step
     const automation = automationRef.current;
-    const firstStep = automation?.querySelector('[data-step-id] > *');
+    const firstStep = automation?.querySelector(
+      '.mailpoet-automation-editor-step',
+    );
     if (firstStep instanceof HTMLElement) {
       firstStep.scrollIntoView({ block: 'nearest', inline: 'center' });
     }
