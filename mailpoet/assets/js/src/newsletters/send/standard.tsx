@@ -4,7 +4,7 @@ import { Hooks } from 'wp-js-hooks';
 import Moment from 'moment';
 import { __ } from '@wordpress/i18n';
 
-import { DateTime } from 'newsletters/send/date-time.jsx';
+import { DateTime } from 'newsletters/send/date-time';
 import { SenderField } from 'newsletters/send/sender-address-field.jsx';
 import { GATrackingField } from 'newsletters/send/ga-tracking';
 import { Toggle } from 'common/form/toggle/toggle';
@@ -15,7 +15,9 @@ import { SendToFieldWithCount } from './send-to-field';
 
 const currentTime = window.mailpoet_current_time || '00:00';
 const tomorrowDateTime = `${window.mailpoet_tomorrow_date} 08:00:00`;
-const timeOfDayItems = window.mailpoet_schedule_time_of_day;
+const timeOfDayItems = window.mailpoet_schedule_time_of_day as unknown as {
+  [key: string]: string;
+};
 const dateDisplayFormat = window.mailpoet_date_format;
 const dateStorageFormat = window.mailpoet_date_storage_format;
 
