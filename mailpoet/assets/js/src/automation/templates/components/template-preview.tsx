@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
+import { Spinner } from '@wordpress/components';
 import { dispatch } from '@wordpress/data';
 import { Hooks } from 'wp-js-hooks';
 import { createStore, storeName } from '../../editor/store';
@@ -60,6 +61,8 @@ export function TemplatePreview({ template }: Props): JSX.Element {
   return isLoaded ? (
     <Automation context="view" showStatistics={false} />
   ) : (
-    <div>Loading...</div>
+    <div className="mailpoet-automation-template-detail-preview-spinner">
+      <Spinner />
+    </div>
   );
 }
