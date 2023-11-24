@@ -16,6 +16,7 @@ class ConfirmLeaveWhenUnsavedChangesCest {
     $i->click('Start with a template');
     $i->see('Start with a template', 'h1');
     $i->click('Welcome new subscribers');
+    $i->click('Start building');
 
     $i->waitForText('Draft');
     $i->click('Trigger');
