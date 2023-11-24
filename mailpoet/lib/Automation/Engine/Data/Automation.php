@@ -68,10 +68,14 @@ class Automation {
   }
 
   public function getId(): int {
-    if (!$this->id) {
+    if ($this->id === null) {
       throw InvalidStateException::create()->withMessage('No automation ID was set');
     }
     return $this->id;
+  }
+
+  public function setId(int $id): void {
+    $this->id = $id;
   }
 
   public function getVersionId(): int {
