@@ -98,9 +98,7 @@ type DateTextProps = {
   validation: {
     'data-parsley-required': boolean;
     'data-parsley-required-message': string;
-    'data-parsley-type': string;
     'data-parsley-errors-container': string;
-    maxLength: number;
   };
   maxDate: Date;
   name?: string;

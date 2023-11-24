@@ -1,12 +1,41 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import { Component, SyntheticEvent } from 'react';
 
 import { Grid } from 'common/grid';
 import { DateText } from 'newsletters/send/date-text';
 import { TimeSelect } from 'newsletters/send/time-select.jsx';
 import { ErrorBoundary } from '../../common';
 
-class DateTime extends Component {
+type DateTimeEvent = SyntheticEvent<HTMLInputElement> & {
+  target: EventTarget & {
+    name?: string;
+    value?: string;
+  };
+};
+
+type DateTimeProps = {
+  value?: string;
+  defaultDateTime: string;
+  dateDisplayFormat: string;
+  dateStorageFormat: string;
+  onChange: (date: DateTimeEvent) => void;
+  name?: string;
+  disabled: boolean;
+  dateValidation: {
+    'data-parsley-required': boolean;
+    'data-parsley-required-message': string;
+    'data-parsley-errors-container': string;
+  };
+  timeValidation?: any;
+  timeOfDayItems: { [key: string]: string };
+  maxDate?: Date;
+};
+
+type DateTimeState = {
+  date?: string;
+  time: string;
+};
+
+class DateTime extends Component<DateTimeProps, DateTimeState> {
   DATE_TIME_SEPARATOR = ' ';
 
   constructor(props) {
@@ -29,7 +58,7 @@ class DateTime extends Component {
   getDateTime = () =>
     [this.state.date, this.state.time].join(this.DATE_TIME_SEPARATOR);
 
-  buildStateFromProps = (props) => {
+  buildStateFromProps = (props): DateTimeState => {
     const value = props.value || this.props.defaultDateTime;
     const [date, time] = value.split(this.DATE_TIME_SEPARATOR);
     return {
@@ -38,7 +67,7 @@ class DateTime extends Component {
     };
   };
 
-  handleChange = (event) => {
+  handleChange = (event: DateTimeEvent) => {
     const newState = {};
     newState[event.target.name] = event.target.value;
 
@@ -52,7 +81,7 @@ class DateTime extends Component {
           name: this.props.name || '',
           value: this.getDateTime(),
         },
-      });
+      } as DateTimeEvent);
     }
   };
 
@@ -83,28 +112,5 @@ class DateTime extends Component {
     );
   }
 }
-
-DateTime.propTypes = {
-  value: PropTypes.string,
-  defaultDateTime: PropTypes.string.isRequired,
-  dateDisplayFormat: PropTypes.string.isRequired,
-  dateStorageFormat: PropTypes.string.isRequired,
-  onChange: PropTypes.func,
-  name: PropTypes.string,
-  disabled: PropTypes.bool,
-  dateValidation: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  timeValidation: PropTypes.any, // eslint-disable-line react/forbid-prop-types
-  timeOfDayItems: PropTypes.objectOf(PropTypes.string).isRequired,
-  maxDate: PropTypes.instanceOf(Date),
-};
-
-DateTime.defaultProps = {
-  onChange: undefined,
-  name: '',
-  disabled: false,
-  timeValidation: undefined,
-  value: undefined,
-  maxDate: null,
-};
 
 export { DateTime };
