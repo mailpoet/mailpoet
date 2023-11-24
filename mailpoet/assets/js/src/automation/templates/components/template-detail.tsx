@@ -1,13 +1,27 @@
-import { forwardRef, MouseEventHandler, useCallback, useState } from 'react';
+import {
+  ComponentType,
+  forwardRef,
+  MouseEventHandler,
+  ReactNode,
+  useCallback,
+  useState,
+} from 'react';
 import apiFetch from '@wordpress/api-fetch';
-import { Button, Modal, Snackbar } from '@wordpress/components';
+import { Button, Modal, Snackbar as WpSnackbar } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { chevronLeft, chevronRight } from '@wordpress/icons';
+import { chevronLeft, chevronRight, warning } from '@wordpress/icons';
 import { Tag } from '@woocommerce/components';
 import { addQueryArgs } from '@wordpress/url';
 import { TemplatePreview } from './template-preview';
 import { AutomationTemplate, automationTemplateCategories } from '../config';
 import { MailPoet } from '../../../mailpoet';
+
+// snackbar icon is not annotated in the types
+const Snackbar = WpSnackbar as ComponentType<
+  WpSnackbar.Props & {
+    icon: ReactNode;
+  }
+>;
 
 const getCategory = (template: AutomationTemplate): string =>
   automationTemplateCategories.find(({ slug }) => slug === template.category)
@@ -87,7 +101,10 @@ export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
             </div>
             <div className="mailpoet-automation-template-detail-footer-actions">
               {error && (
-                <Snackbar className="mailpoet-automation-template-detail-error">
+                <Snackbar
+                  className="mailpoet-automation-template-detail-error"
+                  icon={warning}
+                >
                   {__(
                     'An error occurred while creating the automation. Please, try again.',
                     'mailpoet',

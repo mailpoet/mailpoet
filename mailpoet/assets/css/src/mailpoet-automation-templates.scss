@@ -128,4 +128,15 @@
   bottom: 80px;
   position: absolute;
   right: 24px;
+
+  .components-snackbar__icon {
+    left: 15px;
+    top: 13px;
+  }
+
+  svg {
+    fill: currentColor;
+    height: 24px;
+    width: 24px;
+  }
 }
