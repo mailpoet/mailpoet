@@ -67,6 +67,7 @@ class MailpoetMenuCest {
     $i->wantTo('Check if the menu is still selected if I go to the workflow editor');
     $i->waitForElementClickable(Locator::contains('button', 'Welcome new subscribers'));
     $i->click(Locator::contains('button', 'Welcome new subscribers'));
+    $i->click('Start building');
     $i->waitForElement('#mailpoet_automation_editor');
     $i->seeInCurrentUrl('?page=mailpoet-automation-editor');
     $this->assertSelectedMenuItem($i, 'Automations');
