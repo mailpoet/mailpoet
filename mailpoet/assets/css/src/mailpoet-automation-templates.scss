@@ -1,3 +1,22 @@
+// settings & mixins
+
+@import 'settings/breakpoints';
+@import 'settings/colors';
+@import 'mixins/breakpoints';
+
+// automation editor styles
+
+@import './components-automation/statistics';
+@import './components-automation-editor/editor';
+
+// automation integration styles
+
+@import './components-automation-integrations/core';
+@import './components-automation-integrations/mailpoet';
+@import './components-automation-integrations/woocommerce';
+
+// template styles
+
 @import './mailpoet-templates';
 
 .mailpoet-automation-template-detail {
@@ -6,9 +25,13 @@
   width: 800px;
 
   .components-modal__content {
-    display: grid;
+    height: 100%;
     margin: 0;
     padding: 0;
+
+    > div:not(.components-modal__header) {
+      height: 100%;
+    }
   }
 
   .components-modal__header {
@@ -33,6 +56,7 @@
 }
 
 .mailpoet-automation-template-detail-info {
+  overflow: auto;
   padding: 32px;
 
   h1 {
@@ -44,6 +68,27 @@
 
 .mailpoet-automation-template-detail-preview {
   background: #f6f7f7;
+  display: grid;
+  overflow: auto;
+
+  .mailpoet-automation-editor-automation {
+    animation: fade-in 0.15s ease-in;
+    background: none;
+    box-sizing: border-box;
+    padding: 24px;
+  }
+
+  .mailpoet-automation-editor-automation-wrapper {
+    margin: 0 auto;
+    min-height: 0;
+    padding: 0;
+    transform: scale(0.7);
+    transform-origin: top center;
+  }
+
+  .mailpoet-automation-editor-automation-flow {
+    padding-bottom: 24px;
+  }
 }
 
 .mailpoet-automation-template-detail-footer {

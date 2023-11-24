@@ -5,6 +5,7 @@ import { __ } from '@wordpress/i18n';
 import { chevronLeft, chevronRight } from '@wordpress/icons';
 import { Tag } from '@woocommerce/components';
 import { addQueryArgs } from '@wordpress/url';
+import { TemplatePreview } from './template-preview';
 import { AutomationTemplate, automationTemplateCategories } from '../config';
 import { MailPoet } from '../../../mailpoet';
 
@@ -68,7 +69,9 @@ export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
             <h1>{template.name}</h1>
             {template.description}
           </div>
-          <div className="mailpoet-automation-template-detail-preview" />
+          <div className="mailpoet-automation-template-detail-preview">
+            <TemplatePreview template={template} />
+          </div>
           <div className="mailpoet-automation-template-detail-footer">
             <div className="mailpoet-automation-template-detail-footer-navigation">
               <Button

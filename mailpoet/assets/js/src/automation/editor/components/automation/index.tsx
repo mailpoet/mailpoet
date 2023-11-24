@@ -19,12 +19,14 @@ type AutomationProps = {
   context: 'edit' | 'view';
   scroll?: boolean;
   drag?: boolean;
+  showStatistics?: boolean;
 };
 
 export function Automation({
   context,
   scroll = true,
   drag = true,
+  showStatistics = true,
 }: AutomationProps): JSX.Element {
   const automationData = useSelect(
     (select) => select(storeName).getAutomationData(),
@@ -60,7 +62,7 @@ export function Automation({
           aria-orientation="vertical"
           className="mailpoet-automation-editor-automation"
         >
-          <Statistics />
+          {showStatistics && <Statistics />}
           <div className="mailpoet-automation-editor-automation-wrapper">
             <div className="mailpoet-automation-editor-automation-flow">
               <Flow stepData={automationData.steps.root} row={0} />
