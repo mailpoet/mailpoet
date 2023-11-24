@@ -218,10 +218,11 @@ fi
 [[ -d wp-content/plugins/mailpoet-premium/lang ]] || mkdir -p wp-content/plugins/mailpoet-premium/lang
 [[ -d wp-content/languages ]] || mkdir wp-content/languages
 [[ -d wp-content/upgrade ]] || mkdir wp-content/upgrade
-chmod -R 755 wp-content/plugins/mailpoet/lang
-chmod -R 755 wp-content/plugins/mailpoet-premium/lang
-chmod -R 755 wp-content/languages
-chmod -R 755 wp-content/upgrade
+chown www-data:www-data wp-content/upgrade
+chmod -R 777 wp-content/plugins/mailpoet/lang
+chmod -R 777 wp-content/plugins/mailpoet-premium/lang
+chmod -R 777 wp-content/languages
+chmod -R 777 wp-content/upgrade
 
 echo "MySQL Configuration";
 # print sql_mode
