@@ -11,11 +11,14 @@ const findTemplate = (
   position: 'previous' | 'next',
 ): AutomationTemplate | undefined => {
   const index = templates.findIndex(({ slug }) => slug === template.slug);
-  const slice =
+  const search =
     position === 'previous'
-      ? templates.slice(0, index).reverse()
-      : templates.slice(index + 1);
-  return slice.find(
+      ? [
+          ...templates.slice(0, index).reverse(),
+          ...templates.slice(index).reverse(),
+        ]
+      : [...templates.slice(index + 1), ...templates.slice(0, index + 1)];
+  return search.find(
     ({ type }) =>
       type !== 'coming-soon' && (premiumValidAndActive || type !== 'premium'),
   );
