@@ -17,7 +17,7 @@ function Faq() {
         'mailpoet',
       ),
       text: __(
-        'MailPoet allows you to create five different types of campaigns: Newsletter, Welcome Email, Latest Post Notifications, Re-engagement Emails and WooCommerce.',
+        'MailPoet allows you to create five different types of campaigns: Newsletter, Welcome Email, Latest Post Notifications, Re-engagement Emails, and WooCommerce behavior-based emails.',
         'mailpoet',
       ),
       readMoreText: __('Read More', 'mailpoet'),
@@ -61,7 +61,7 @@ function Faq() {
       slug: 'item-5',
       title: __('How do I customize emails for my store?', 'mailpoet'),
       text: __(
-        'You can create and send the following 4 WooCommerce Automatic emails with MailPoet: Abandoned Shopping Cart, First Purchase, Purchased In This Category, Purchased This Product. You can read more about each in our article.',
+        'You can create and send the following four WooCommerce Automatic emails with MailPoet: Abandoned Shopping Cart, First Purchase, Purchased In This Category, Purchased This Product. You can read more about each in our article.',
         'mailpoet',
       ),
       readMoreText: __('Read More', 'mailpoet'),
