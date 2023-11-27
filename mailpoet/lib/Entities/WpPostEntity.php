@@ -2,10 +2,11 @@
 
 namespace MailPoet\Entities;
 
+use MailPoet\RuntimeException;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(readOnly=true)
  * @ORM\Table(name="posts")
  */
 class WpPostEntity {
@@ -23,12 +24,8 @@ class WpPostEntity {
    */
   private $postTitle;
 
-  public function __construct(
-    int $id,
-    string $postTitle
-  ) {
-    $this->id = $id;
-    $this->$postTitle = $postTitle;
+  public function __construct() {
+    throw new RuntimeException('WpPostEntity is read only and cannot be instantiated.');
   }
 
   public function getId(): int {
