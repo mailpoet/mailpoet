@@ -91,6 +91,11 @@ parameters:
       message: '/function add_(sub)?menu_page expects callable\(\): mixed, ''''\|\(callable\(\): mixed\) given/'
       count: 2
       path: ../../lib/WP/Functions.php
+    -
+      # We don't allow seting properties for read-only entity WpPostEntity
+      message: '#^Property MailPoet\\Entities\\WpPostEntity::\$postTitle is never written, only read\.$#'
+      count: 1
+      path: ../../lib/Entities/WpPostEntity.php
 
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
