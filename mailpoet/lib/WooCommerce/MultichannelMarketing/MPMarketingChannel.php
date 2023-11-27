@@ -6,6 +6,8 @@ use Automattic\WooCommerce\Admin\Marketing\MarketingCampaign;
 use Automattic\WooCommerce\Admin\Marketing\MarketingCampaignType;
 use Automattic\WooCommerce\Admin\Marketing\MarketingChannelInterface;
 use MailPoet\Config\Menu;
+use MailPoet\Mailer\Mailer;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\CdnAssetUrl;
 
@@ -91,7 +93,18 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return string
    */
   public function get_product_listings_status(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return self::PRODUCT_LISTINGS_NOT_APPLICABLE; // will be updated in MAILPOET-5696
+    if (!$this->isUserSendingWithMSS()) {
+      return self::PRODUCT_LISTINGS_NOT_APPLICABLE;
+    }
+
+    // Check for error status. It's null by default when there isn't an error
+    $sendingStatus = $this->settings->get('mta_log.status');
+
+    if ($sendingStatus) {
+      return self::PRODUCT_LISTINGS_SYNC_FAILED;
+    }
+
+    return self::PRODUCT_LISTINGS_SYNCED;
   }
 
   /**
@@ -100,7 +113,21 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return int The number of issues to resolve, or 0 if there are no issues with the channel.
    */
   public function get_errors_count(): int { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return 0; // will be updated in MAILPOET-5696
+    $error = $this->settings->get('mta_log.error');
+
+    $count = 0;
+
+    if (!empty($error)) {
+      $count++;
+    }
+
+    $validationError = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
+
+    if ($validationError && isset($validationError['invalid_sender_address'])) {
+      $count++;
+    }
+
+    return $count;
   }
 
   /**
@@ -130,5 +157,14 @@ class MPMarketingChannel implements MarketingChannelInterface {
     $version = $this->settings->get('version');
 
     return $version !== null;
+  }
+
+  /**
+   * Check if user is sending with the MailPoet sending method
+   * @return bool
+   */
+  protected function isUserSendingWithMSS(): bool {
+    $sendingMethod = $this->settings->get('mta.method', SettingsController::DEFAULT_SENDING_METHOD);
+    return $sendingMethod === Mailer::METHOD_MAILPOET;
   }
 }
