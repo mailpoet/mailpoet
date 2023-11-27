@@ -24,4 +24,15 @@
       grid-template-columns: 1fr;
     }
   }
+
+  .mailpoet-form-actions {
+    grid-column: 2 / -1;
+    padding-top: $grid-gap + ($heading-font-size-h4 * $heading-line-height) +
+      ($font-size * $line-height * 2);
+    text-align: right;
+
+    @include respond-to(small-screen) {
+      grid-column: 1;
+    }
+  }
 }
