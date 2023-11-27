@@ -72,6 +72,9 @@ class SchedulerTest extends \MailPoetTest {
   /** @var NewsletterFactory */
   private $newsletterFactory;
 
+  /** @var int */
+  private $wpUserId;
+
   public function _before() {
     parent::_before();
     $this->loggerFactory = LoggerFactory::getInstance();
@@ -867,6 +870,7 @@ class SchedulerTest extends \MailPoetTest {
         'role' => $role,
       ]
     );
+    $this->wpUserId = $user->ID;
     verify($user->ID)->notNull();
     return $user;
   }
@@ -911,5 +915,13 @@ class SchedulerTest extends \MailPoetTest {
       Scheduler::class,
       ['subscribersFinder' => $finder]
     );
+  }
+
+  public function _after() {
+    if (is_int($this->wpUserId)) {
+      wp_delete_user($this->wpUserId);
+    }
+
+    parent::_after();
   }
 }
