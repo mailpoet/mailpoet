@@ -14,3 +14,14 @@
 .send-newsletter-buttons {
   justify-content: flex-end;
 }
+
+.mailpoet-form-send-email {
+  .mailpoet-form-grid {
+    grid-template-columns: $grid-column $grid-column;
+    max-width: 976px;
+
+    @include respond-to(small-screen) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
