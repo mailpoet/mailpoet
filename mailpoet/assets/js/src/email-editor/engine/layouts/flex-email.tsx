@@ -9,7 +9,14 @@ import classnames from 'classnames';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';
 import { Block, getBlockSupport, hasBlockSupport } from '@wordpress/blocks';
-import { InspectorControls } from '@wordpress/block-editor';
+
+import {
+  BlockControls,
+  InspectorControls,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  JustifyContentControl,
+} from '@wordpress/block-editor';
 import { justifyLeft, justifyCenter, justifyRight } from '@wordpress/icons';
 
 import {
@@ -33,7 +40,64 @@ function hasLayoutBlockSupport(blockName: string) {
   return hasBlockSupport(blockName, layoutBlockSupportKey);
 }
 
-function LayoutPanel({ setAttributes, attributes, name: blockName }) {
+function JustificationControls({
+  justificationValue,
+  onChange,
+  isToolbar = false,
+}) {
+  const justificationOptions = [
+    {
+      value: 'left',
+      icon: justifyLeft,
+      label: __('Justify items left'),
+    },
+    {
+      value: 'center',
+      icon: justifyCenter,
+      label: __('Justify items center'),
+    },
+    {
+      value: 'right',
+      icon: justifyRight,
+      label: __('Justify items right'),
+    },
+  ];
+
+  if (isToolbar) {
+    const allowedValues = justificationOptions.map((option) => option.value);
+    return (
+      <JustifyContentControl
+        value={justificationValue}
+        onChange={onChange}
+        allowedControls={allowedValues}
+        popoverProps={{
+          placement: 'bottom-start',
+        }}
+      />
+    );
+  }
+
+  return (
+    <ToggleGroupControl
+      __nextHasNoMarginBottom
+      label={__('Justification')}
+      value={justificationValue}
+      onChange={onChange}
+      className="block-editor-hooks__flex-layout-justification-controls"
+    >
+      {justificationOptions.map(({ value, icon, label }) => (
+        <ToggleGroupControlOptionIcon
+          key={value}
+          value={value}
+          icon={icon}
+          label={label}
+        />
+      ))}
+    </ToggleGroupControl>
+  );
+}
+
+function LayoutControls({ setAttributes, attributes, name: blockName }) {
   const layoutBlockSupport = getBlockSupport(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     blockName,
@@ -58,49 +122,30 @@ function LayoutPanel({ setAttributes, attributes, name: blockName }) {
     });
   };
 
-  const justificationOptions = [
-    {
-      value: 'left',
-      icon: justifyLeft,
-      label: __('Justify items left'),
-    },
-    {
-      value: 'center',
-      icon: justifyCenter,
-      label: __('Justify items center'),
-    },
-    {
-      value: 'right',
-      icon: justifyRight,
-      label: __('Justify items right'),
-    },
-  ];
-
   return (
-    <InspectorControls>
-      <PanelBody title={__('Layout')}>
-        <Flex>
-          <FlexItem>
-            <ToggleGroupControl
-              __nextHasNoMarginBottom
-              label={__('Justification')}
-              value={justifyContent}
-              onChange={onJustificationChange}
-              className="block-editor-hooks__flex-layout-justification-controls"
-            >
-              {justificationOptions.map(({ value, icon, label }) => (
-                <ToggleGroupControlOptionIcon
-                  key={value}
-                  value={value}
-                  icon={icon}
-                  label={label}
-                />
-              ))}
-            </ToggleGroupControl>
-          </FlexItem>
-        </Flex>
-      </PanelBody>
-    </InspectorControls>
+    <>
+      <InspectorControls>
+        <PanelBody title={__('Layout')}>
+          <Flex>
+            <FlexItem>
+              <JustificationControls
+                justificationValue={justifyContent}
+                onChange={onJustificationChange}
+              />
+            </FlexItem>
+          </Flex>
+        </PanelBody>
+      </InspectorControls>
+      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+      {/* @ts-ignore */}
+      <BlockControls group="block" __experimentalShareWithChildBlocks>
+        <JustificationControls
+          justificationValue={justifyContent}
+          onChange={onJustificationChange}
+          isToolbar
+        />
+      </BlockControls>
+    </>
   );
 }
 
@@ -141,7 +186,7 @@ export const withLayoutControls = createHigherOrderComponent(
     const supportLayout = hasLayoutBlockSupport(props.name);
 
     return [
-      supportLayout && <LayoutPanel key="layout" {...props} />,
+      supportLayout && <LayoutControls key="layout" {...props} />,
       <BlockEdit key="edit" {...props} />,
     ];
   },
