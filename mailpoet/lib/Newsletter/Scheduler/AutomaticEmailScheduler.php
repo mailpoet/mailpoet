@@ -127,10 +127,6 @@ class AutomaticEmailScheduler {
           $this->sendingQueuesRepository->remove($queue);
         }
         $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
-        // In case any of task associated SchedulesTaskSubscriberEntity was loaded we need to detach them
-        foreach ($task->getSubscribers() as $taskSubscriber) {
-          $this->scheduledTaskSubscribersRepository->detach($taskSubscriber);
-        }
         $this->scheduledTasksRepository->remove($task);
         $this->scheduledTasksRepository->flush();
       }
