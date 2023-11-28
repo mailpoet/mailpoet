@@ -22,8 +22,9 @@ use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\WpPostEntity;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -306,11 +307,11 @@ class NewsletterRepositoryTest extends \MailPoetTest {
       NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
     ];
 
-    list($newsletters, $sendingQueues) = $this->createNewslettersAndSendingTasks($types);
+    list($newsletters, $scheduledTasks) = $this->createNewslettersAndSendingTasks($types);
 
     // set the sending queue status of the first newsletter to null
-    $sendingQueues[0]->status = null;
-    $sendingQueues[0]->save();
+    $scheduledTasks[0]->setStatus(null);
+    $this->entityManager->persist($scheduledTasks[0]);
 
     // trash the last newsletter
     end($newsletters)->setDeletedAt(new Carbon());
@@ -345,17 +346,15 @@ class NewsletterRepositoryTest extends \MailPoetTest {
 
   private function createNewslettersAndSendingTasks(array $types): array {
     $newsletters = [];
-    $sendingQueues = [];
+    $scheduledTasks = [];
     for ($i = 0; $i < count($types); $i++) {
       $newsletters[$i] = $this->createNewsletter($types[$i]);
 
-      $sendingQueues[$i] = SendingTask::create();
-      $sendingQueues[$i]->newsletter_id = $newsletters[$i]->getId();
-      $sendingQueues[$i]->status = SendingQueueEntity::STATUS_COMPLETED;
-      $sendingQueues[$i]->save();
+      $scheduledTasks[$i] = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, SendingQueueEntity::STATUS_COMPLETED);
+      (new SendingQueueFactory())->create($scheduledTasks[$i], $newsletters[$i]);
     }
 
-    return [$newsletters, $sendingQueues];
+    return [$newsletters, $scheduledTasks];
   }
 
   private function createQueueWithTaskAndSegmentAndSubscribers(NewsletterEntity $newsletter, $status = ScheduledTaskEntity::STATUS_SCHEDULED): SendingQueueEntity {
