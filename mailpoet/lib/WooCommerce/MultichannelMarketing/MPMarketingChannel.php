@@ -5,11 +5,15 @@ namespace MailPoet\WooCommerce\MultichannelMarketing;
 use Automattic\WooCommerce\Admin\Marketing\MarketingCampaign;
 use Automattic\WooCommerce\Admin\Marketing\MarketingCampaignType;
 use Automattic\WooCommerce\Admin\Marketing\MarketingChannelInterface;
+use Automattic\WooCommerce\Admin\Marketing\Price;
 use MailPoet\Config\Menu;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\CdnAssetUrl;
+use MailPoet\WooCommerce\Helper;
 
 class MPMarketingChannel implements MarketingChannelInterface {
 
@@ -31,6 +35,16 @@ class MPMarketingChannel implements MarketingChannelInterface {
    */
   private $campaignTypes;
 
+  /**
+   * @var NewslettersRepository
+   */
+  private $newsletterRepository;
+
+  /**
+   * @var Helper
+   */
+  private $woocommerceHelper;
+
   const CAMPAIGN_TYPE_NEWSLETTERS = 'mailpoet-newsletters';
   const CAMPAIGN_TYPE_POST_NOTIFICATIONS = 'mailpoet-post-notifications';
   const CAMPAIGN_TYPE_AUTOMATIONS = 'mailpoet-automations';
@@ -38,11 +52,15 @@ class MPMarketingChannel implements MarketingChannelInterface {
   public function __construct(
     CdnAssetUrl $cdnAssetUrl,
     SettingsController $settings,
-    Bridge $bridge
+    Bridge $bridge,
+    NewslettersRepository $newsletterRepository,
+    Helper $woocommerceHelper
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->settings = $settings;
     $this->bridge = $bridge;
+    $this->newsletterRepository = $newsletterRepository;
+    $this->woocommerceHelper = $woocommerceHelper;
     $this->campaignTypes = $this->generateCampaignTypes();
   }
 
@@ -162,7 +180,13 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return MarketingCampaign[]
    */
   public function get_campaigns(): array { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return []; // will be updated in MAILPOET-5698
+      $allCampaigns = $this->generateCampaigns();
+
+    if (empty($allCampaigns)) {
+        return [];
+    }
+
+    return $allCampaigns;
   }
 
   /**
@@ -214,5 +238,76 @@ class MPMarketingChannel implements MarketingChannelInterface {
         $this->get_icon_url()
       ),
     ];
+  }
+
+  protected function getStandardNewsletterList(): array {
+      $result = [];
+    foreach ($this->newsletterRepository->getStandardNewsletterList() as $newsletter) {
+        $newsLetterId = (string)$newsletter->getId();
+        $result[] = [
+            'id' => $newsLetterId,
+            'name' => $newsletter->getSubject(),
+            'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_NEWSLETTERS],
+            'url' => admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '/#/stats/' . $newsLetterId),
+            'price' => [
+                // TODO: fetch the correct value
+                'amount' => 0,
+                'currency' => $this->woocommerceHelper->getWoocommerceCurrency(),
+            ],
+        ];
+    }
+      return $result;
+  }
+
+  protected function getPostNotificationNewsletters(): array {
+      $newsletters = $this->newsletterRepository->findActiveByTypes([NewsletterEntity::TYPE_NOTIFICATION]);
+
+      $result = [];
+
+    foreach ($newsletters as $newsletter) {
+        $newsLetterId = (string)$newsletter->getId();
+        $result[] = [
+            'id' => $newsLetterId,
+            'name' => $newsletter->getSubject(),
+            'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_POST_NOTIFICATIONS],
+            'url' => admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '/#/stats/' . $newsLetterId),
+            'price' => [
+                // TODO: fetch the correct value
+                'amount' => 0,
+                'currency' => $this->woocommerceHelper->getWoocommerceCurrency(),
+            ],
+        ];
+    }
+      return $result;
+  }
+
+  protected function getAutomationNewsletters(): array {
+      // TODO: Implement me
+      return [];
+  }
+
+  protected function generateCampaigns(): array {
+      return array_map(
+          function (array $data) {
+              $cost = null;
+
+            if (isset( $data['price'] )) {
+                $cost = new Price( (string)$data['price']['amount'], $data['price']['currency'] );
+            }
+
+              return new MarketingCampaign(
+                  $data['id'],
+                  $data['campaignType'],
+                  $data['name'],
+                  $data['url'],
+                  $cost,
+              );
+          },
+          array_merge(
+              $this->getAutomationNewsletters(),
+              $this->getPostNotificationNewsletters(),
+              $this->getStandardNewsletterList()
+          )
+      );
   }
 }
