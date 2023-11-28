@@ -2,19 +2,24 @@
 
 namespace MailPoet\Test\Models;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Models\Newsletter;
 use MailPoet\Models\NewsletterSegment;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
 use MailPoet\Models\SendingQueue;
-use MailPoet\Tasks\Sending as SendingTask;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class NewsletterTest extends \MailPoetTest {
+  /** @var SendingQueueEntity */
   public $sendingQueue;
   public $segment2;
   public $segment1;
@@ -24,8 +29,15 @@ class NewsletterTest extends \MailPoetTest {
   /** @var NewsletterOptionFactory */
   private $newsletterOptionFactory;
 
+  /** @var NewslettersRepository */
+  private $newslettersRepository;
+
+  /** @var NewsletterEntity */
+  private $newsletterEntity;
+
   public function _before() {
     parent::_before();
+    $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
     $this->newsletter = Newsletter::createOrUpdate([
       'subject' => 'My Standard Newsletter',
       'preheader' => 'Pre Header',
@@ -48,10 +60,11 @@ class NewsletterTest extends \MailPoetTest {
     $association->segmentId = $this->segment2->id;
     $association->save();
 
-    $this->sendingQueue = SendingTask::create();
-    $this->sendingQueue->newsletter_id = $this->newsletter->id;
-    $this->sendingQueue->status = ScheduledTask::STATUS_SCHEDULED;
-    $this->sendingQueue->save();
+    $newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->id);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
+    $this->newsletterEntity = $newsletterEntity;
+    $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueueWorker::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED);
+    $this->sendingQueue = (new SendingQueueFactory())->create($scheduledTask, $this->newsletterEntity);
 
     $this->newsletterOptionFactory = new NewsletterOptionFactory();
   }
@@ -203,7 +216,7 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItGetsQueueFromNewsletter() {
-    verify($this->newsletter->queue()->findOne()->id)->equals($this->sendingQueue->id);
+    verify($this->newsletter->queue()->findOne()->id)->equals($this->sendingQueue->getId());
   }
 
   public function testItCanBeRestored() {
@@ -248,9 +261,8 @@ class NewsletterTest extends \MailPoetTest {
 
     // create multiple sending queues
     for ($i = 1; $i <= 5; $i++) {
-      $sendingQueue = SendingTask::create();
-      $sendingQueue->newsletterId = $newsletter->id;
-      $sendingQueue->save();
+      $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueueWorker::TASK_TYPE, null);
+      (new SendingQueueFactory())->create($scheduledTask, $this->newsletterEntity);
     }
 
     // make sure relations exist
@@ -276,9 +288,9 @@ class NewsletterTest extends \MailPoetTest {
           'parent_id' => $parentNewsletter->id,
         ]
       );
-      $sendingQueue = SendingTask::create();
-      $sendingQueue->newsletterId = $newsletter->id;
-      $sendingQueue->save();
+      $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->id);
+      $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueueWorker::TASK_TYPE, null);
+      (new SendingQueueFactory())->create($scheduledTask, $newsletterEntity);
       $newsletterSegment = NewsletterSegment::create();
       $newsletterSegment->newsletterId = $newsletter->id;
       $newsletterSegment->segmentId = 1;
@@ -302,9 +314,8 @@ class NewsletterTest extends \MailPoetTest {
     // create multiple sending queues
     $newsletter = $this->newsletter;
     for ($i = 1; $i <= 5; $i++) {
-      $sendingQueue = SendingTask::create();
-      $sendingQueue->newsletterId = $newsletter->id;
-      $sendingQueue->save();
+      $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueueWorker::TASK_TYPE, null);
+      (new SendingQueueFactory())->create($scheduledTask, $this->newsletterEntity);
     }
     verify(SendingQueue::whereNull('deleted_at')->findArray())->arrayCount(6);
 
@@ -325,9 +336,8 @@ class NewsletterTest extends \MailPoetTest {
           'parent_id' => $parentNewsletter->id,
         ]
       );
-      $sendingQueue = SendingTask::create();
-      $sendingQueue->newsletterId = $newsletter->id;
-      $sendingQueue->save();
+      $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueueWorker::TASK_TYPE, null);
+      (new SendingQueueFactory())->create($scheduledTask, $this->newsletterEntity);
     }
     // 1 parent and 5 children queues/newsletters
     verify(Newsletter::whereNull('deleted_at')->findArray())->arrayCount(6);
@@ -342,19 +352,19 @@ class NewsletterTest extends \MailPoetTest {
 
   public function testItRestoresTrashedQueueAssociationsWhenNewsletterIsRestored() {
     // create multiple sending queues
-    $sendingTasks = [];
+    $scheduledTasks = [];
     $newsletter = $this->newsletter;
     for ($i = 1; $i <= 5; $i++) {
-      $sendingTask = SendingTask::create();
-      $sendingTask->newsletterId = $newsletter->id;
-      $sendingTask->deletedAt = date('Y-m-d H:i:s');
-      $sendingTask->status = ScheduledTask::STATUS_SCHEDULED;
-      $sendingTask->save();
-      $sendingTasks[] = $sendingTask;
+      $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueueWorker::TASK_TYPE, ScheduledTask::STATUS_SCHEDULED);
+      (new SendingQueueFactory())->create($scheduledTask, $this->newsletterEntity, new Carbon());
+
+      $scheduledTasks[] = $scheduledTask;
     }
-    $inProgressTask = $sendingTasks[1];
-    $inProgressTask->status = null;
-    $inProgressTask->save();
+    $inProgressTask = $scheduledTasks[1];
+    $inProgressTask->setStatus(null);
+    $this->entityManager->persist($inProgressTask);
+    $this->entityManager->flush();
+
     verify(SendingQueue::whereNotNull('deleted_at')->findArray())->arrayCount(5);
     // restore newsletter and check that relations are restored
     $newsletter->restore();
@@ -369,9 +379,9 @@ class NewsletterTest extends \MailPoetTest {
     $parentNewsletter = $this->newsletter;
     $parentNewsletter->deletedAt = date('Y-m-d H:i:s');
     $parentNewsletter->save();
-    $parentSendingQueue = $this->sendingQueue;
-    $parentSendingQueue->deletedAt = date('Y-m-d H:i:s');
-    $parentSendingQueue->save();
+    $this->sendingQueue->setDeletedAt(new Carbon());
+    $this->entityManager->persist($this->sendingQueue);
+    $this->entityManager->flush();
 
     // create multiple children (post notification history) newsletters and sending queues
     for ($i = 1; $i <= 5; $i++) {
@@ -383,10 +393,8 @@ class NewsletterTest extends \MailPoetTest {
           'deleted_at' => date('Y-m-d H:i:s'),
         ]
       );
-      $sendingQueue = SendingTask::create();
-      $sendingQueue->newsletterId = $newsletter->id;
-      $sendingQueue->deletedAt = date('Y-m-d H:i:s');
-      $sendingQueue->save();
+      $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueueWorker::TASK_TYPE, null);
+      (new SendingQueueFactory())->create($scheduledTask, $this->newsletterEntity, new Carbon());
     }
     // 1 parent and 5 children queues/newsletters
     verify(Newsletter::whereNotNull('deleted_at')->findArray())->arrayCount(6);
