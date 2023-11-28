@@ -2,14 +2,16 @@
 
 namespace MailPoet\Test\Statistics\Track;
 
-use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Statistics\StatisticsUnsubscribesRepository;
 use MailPoet\Statistics\Track\Unsubscribes;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 
 class UnsubscribesTest extends \MailPoetTest {
@@ -19,10 +21,11 @@ class UnsubscribesTest extends \MailPoetTest {
   /** @var StatisticsUnsubscribesRepository */
   private $statisticsUnsubscribesRepository;
 
-  public $queue;
-
   /** @var SubscriberEntity */
   public $subscriber;
+
+  /** @var SendingQueueEntity */
+  private $sendingQueue;
 
   public function _before() {
     parent::_before();
@@ -40,15 +43,11 @@ class UnsubscribesTest extends \MailPoetTest {
       ->create();
 
     // create queue
-    $queue = SendingTask::create();
-    $queue->newsletterId = $newsletter->getId();
-    $queue->setSubscribers([$this->subscriber->getId()]);
-    $queue->updateProcessedSubscribers([$this->subscriber->getId()]);
-    $this->queue = $queue->save();
-    $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
-    $scheduledTask = $scheduledTasksRepository->findOneById($this->queue->task()->id);
-    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
-    $scheduledTasksRepository->refresh($scheduledTask);
+    $scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
+    $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null);
+    $this->sendingQueue = (new SendingQueueFactory())->create($scheduledTask, $newsletter);
+    $scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [$this->subscriber->getId()]);
+    $scheduledTaskSubscribersRepository->updateProcessedSubscribers($scheduledTask, [(int)$this->subscriber->getId()]);
 
     // instantiate class
     $this->unsubscribes = $this->diContainer->get(Unsubscribes::class);
@@ -61,7 +60,7 @@ class UnsubscribesTest extends \MailPoetTest {
     $this->unsubscribes->track(
       $subscriberId,
       'source',
-      (int)$this->queue->id,
+      (int)$this->sendingQueue->getId(),
       null,
       StatisticsUnsubscribeEntity::METHOD_ONE_CLICK
     );
@@ -78,7 +77,7 @@ class UnsubscribesTest extends \MailPoetTest {
       $this->unsubscribes->track(
         $subscriberId,
         'source',
-        (int)$this->queue->id
+        (int)$this->sendingQueue->getId()
       );
     }
     verify(count($this->statisticsUnsubscribesRepository->findAll()))->equals(1);
