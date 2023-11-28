@@ -6,8 +6,8 @@ use Automattic\WooCommerce\Admin\Marketing\MarketingCampaign;
 use Automattic\WooCommerce\Admin\Marketing\MarketingCampaignType;
 use Automattic\WooCommerce\Admin\Marketing\MarketingChannelInterface;
 use MailPoet\Config\Menu;
-use MailPoet\Mailer\Mailer;
 use MailPoet\Services\AuthorizedEmailsController;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\CdnAssetUrl;
 
@@ -21,12 +21,19 @@ class MPMarketingChannel implements MarketingChannelInterface {
    */
   private $settings;
 
+  /**
+   * @var Bridge
+   */
+  private $bridge;
+
   public function __construct(
     CdnAssetUrl $cdnAssetUrl,
-    SettingsController $settings
+    SettingsController $settings,
+    Bridge $bridge
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->settings = $settings;
+    $this->bridge = $bridge;
   }
 
   /**
@@ -93,7 +100,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return string
    */
   public function get_product_listings_status(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    if (!$this->isUserSendingWithMSS()) {
+    if (!$this->bridge->isMailpoetSendingServiceEnabled()) {
       return self::PRODUCT_LISTINGS_NOT_APPLICABLE;
     }
 
@@ -157,14 +164,5 @@ class MPMarketingChannel implements MarketingChannelInterface {
     $version = $this->settings->get('version');
 
     return $version !== null;
-  }
-
-  /**
-   * Check if user is sending with the MailPoet sending method
-   * @return bool
-   */
-  protected function isUserSendingWithMSS(): bool {
-    $sendingMethod = $this->settings->get('mta.method', SettingsController::DEFAULT_SENDING_METHOD);
-    return $sendingMethod === Mailer::METHOD_MAILPOET;
   }
 }
