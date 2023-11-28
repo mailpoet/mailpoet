@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -9,11 +10,13 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\NewsletterOption;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -41,6 +44,9 @@ class WelcomeTest extends \MailPoetTest {
   /** @var NewsletterEntity */
   private $newsletter;
 
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
+
   public function _before() {
     parent::_before();
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
@@ -52,6 +58,7 @@ class WelcomeTest extends \MailPoetTest {
     $this->wpSegment->setType(SegmentEntity::TYPE_WP_USERS);
     $this->segmentRepository->flush();
     $this->newsletter = $this->createWelcomeNewsletter();
+    $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
   }
 
   public function testItDoesNotCreateDuplicateWelcomeNotificationSendingTasks() {
@@ -63,10 +70,10 @@ class WelcomeTest extends \MailPoetTest {
     ]);
 
     $existingSubscriber = $this->subscriber->getId();
-    $existingQueue = SendingTask::create();
-    $existingQueue->newsletterId = $newsletter->getId();
-    $existingQueue->setSubscribers([$existingSubscriber]);
-    $existingQueue->save();
+
+    $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null);
+    (new SendingQueueFactory())->create($scheduledTask, $newsletter);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($scheduledTask, [$existingSubscriber]);
 
     // queue is not scheduled
     $this->welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $existingSubscriber);
