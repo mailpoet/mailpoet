@@ -9,12 +9,13 @@ use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\ResponseBuilders\NewslettersResponseBuilder;
 use MailPoet\API\JSON\v1\Newsletters;
 use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
-use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Preview\SendPreviewController;
@@ -29,9 +30,10 @@ use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOption;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WP\Emoji;
@@ -290,23 +292,32 @@ class NewslettersTest extends \MailPoetTest {
 
   public function testItReschedulesPastDuePostNotificationsWhenStatusIsSetBackToActive() {
     $schedule = sprintf('0 %d * * *', Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->hour); // every day at current hour
-    $randomFutureDate = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addDays(10)->format('Y-m-d H:i:s'); // 10 days from now
+    $randomFutureDate = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addDays(10); // 10 days from now
     (new NewsletterOption())->create($this->postNotification, NewsletterOptionFieldEntity::NAME_SCHEDULE, $schedule);
 
-    $sendingQueue1 = SendingTask::create();
-    $sendingQueue1->newsletterId = $this->postNotification->getId();
-    $sendingQueue1->scheduledAt = $this->scheduler->getPreviousRunDate($schedule);
-    $sendingQueue1->status = SendingQueueEntity::STATUS_SCHEDULED;
-    $sendingQueue1->save();
-    $sendingQueue2 = SendingTask::create();
-    $sendingQueue2->newsletterId = $this->postNotification->getId();
-    $sendingQueue2->scheduledAt = $randomFutureDate;
-    $sendingQueue2->status = SendingQueueEntity::STATUS_SCHEDULED;
-    $sendingQueue2->save();
-    $sendingQueue3 = SendingTask::create();
-    $sendingQueue3->newsletterId = $this->postNotification->getId();
-    $sendingQueue3->scheduledAt = $this->scheduler->getPreviousRunDate($schedule);
-    $sendingQueue3->save();
+    $scheduledTask1 = (new ScheduledTaskFactory())
+      ->create(
+        SendingQueueWorker::TASK_TYPE,
+        ScheduledTaskEntity::STATUS_SCHEDULED,
+        new Carbon($this->scheduler->getPreviousRunDate($schedule))
+      );
+    (new SendingQueueFactory())->create($scheduledTask1, $this->postNotification);
+
+    $scheduledTask2 = (new ScheduledTaskFactory())
+      ->create(
+        SendingQueueWorker::TASK_TYPE,
+        ScheduledTaskEntity::STATUS_SCHEDULED,
+        $randomFutureDate
+      );
+    (new SendingQueueFactory())->create($scheduledTask2, $this->postNotification);
+
+    $scheduledTask3 = (new ScheduledTaskFactory())
+      ->create(
+        SendingQueueWorker::TASK_TYPE,
+        null,
+        new Carbon($this->scheduler->getPreviousRunDate($schedule))
+      );
+    (new SendingQueueFactory())->create($scheduledTask3, $this->postNotification);
 
     $this->entityManager->clear();
     $this->endpoint->setStatus(
@@ -321,7 +332,7 @@ class NewslettersTest extends \MailPoetTest {
     verify($tasks[0]->getScheduledAt()->format('Y-m-d H:i:s'))->equals($this->scheduler->getNextRunDate($schedule));
     // future scheduled notifications are left intact
     $this->assertInstanceOf(\DateTimeInterface::class, $tasks[1]->getScheduledAt());
-    verify($tasks[1]->getScheduledAt()->format('Y-m-d H:i:s'))->equals($randomFutureDate);
+    verify($tasks[1]->getScheduledAt())->equals($randomFutureDate);
     // previously unscheduled (e.g., sent/sending) notifications are left intact
     $this->assertInstanceOf(\DateTimeInterface::class, $tasks[2]->getScheduledAt());
     verify($tasks[2]->getScheduledAt()->format('Y-m-d H:i:s'))->equals($this->scheduler->getPreviousRunDate($schedule));
