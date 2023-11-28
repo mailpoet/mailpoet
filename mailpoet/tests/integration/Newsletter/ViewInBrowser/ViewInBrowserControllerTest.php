@@ -3,16 +3,20 @@
 namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub\Expected;
+use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\Util\Security;
 
 class ViewInBrowserControllerTest extends \MailPoetTest {
@@ -28,9 +32,6 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   /** @var SubscriberEntity */
   private $subscriber;
 
-  /** @var SendingTask */
-  private $sendingTask;
-
   /** @var mixed[] */
   private $browserPreviewData;
 
@@ -43,6 +44,15 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
   /** @var Url */
   private $newsletterUrl;
 
+  /** @var ScheduledTaskSubscribersRepository */
+  private $scheduledTaskSubscribersRepository;
+
+  /** @var ScheduledTaskEntity */
+  private $scheduledTask;
+
+  /** @var SendingQueueEntity */
+  private $sendingQueue;
+
   public function _before() {
     // instantiate class
     $this->viewInBrowserController = $this->diContainer->get(ViewInBrowserController::class);
@@ -50,6 +60,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->newslettersRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
     $this->newsletterUrl = $this->diContainer->get(Url::class);
 
     // create newsletter
@@ -66,16 +77,14 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
     $this->subscribersRepository->flush();
     $this->subscriber = $subscriber;
 
-    // create task & queue
-    $sendingTask = SendingTask::create();
-    $sendingTask->newsletterId = $newsletter->getId();
-    $sendingTask->setSubscribers([$subscriber->getId()]);
-    $sendingTask->updateProcessedSubscribers([$subscriber->getId()]);
-    $this->sendingTask = $sendingTask->save();
+    $this->scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, null);
+    $this->sendingQueue = (new SendingQueueFactory())->create($this->scheduledTask, $newsletter);
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, [$subscriber->getId()]);
+    $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($this->scheduledTask, [(int)$subscriber->getId()]);
 
     // build browser preview data
     $this->browserPreviewData = [
-      'queue_id' => $sendingTask->queue()->id,
+      'queue_id' => $this->sendingQueue->getId(),
       'subscriber_id' => $subscriber->getId(),
       'newsletter_id' => $newsletter->getId(),
       'newsletter_hash' => $newsletter->getHash(),
@@ -120,10 +129,8 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
 
   public function testItThrowsWhenSubscriberIsNotOnProcessedList() {
     $data = $this->browserPreviewData;
-    $sendingTask = $this->sendingTask;
-    $sendingTask->setSubscribers([]);
-    $sendingTask->updateProcessedSubscribers([]);
-    $sendingTask->save();
+    $this->scheduledTaskSubscribersRepository->setSubscribers($this->scheduledTask, []);
+    $this->scheduledTaskSubscribersRepository->updateProcessedSubscribers($this->scheduledTask, []);
     $this->expectViewThrowsExceptionWithMessage($this->viewInBrowserController, $data, 'Subscriber did not receive the newsletter yet');
   }
 
@@ -171,14 +178,14 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
       'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
         $this->assertNotNull($queue); // PHPStan
         verify($queue)->notNull();
-        verify($queue->getId())->equals($this->sendingTask->id);
+        verify($queue->getId())->equals($this->sendingQueue->getId());
       }),
     ]);
 
     $viewInBrowserController = $this->createController($viewInBrowserRenderer);
 
     $data = $this->browserPreviewData;
-    $data['queueId'] = $this->sendingTask->queue()->id;
+    $data['queueId'] = $this->sendingQueue->getId();
     $viewInBrowserController->view($data);
   }
 
@@ -187,7 +194,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
       'render' => Expected::once(function (bool $isPreview, NewsletterEntity $newsletter, SubscriberEntity $subscriber = null, SendingQueueEntity $queue = null) {
         $this->assertNotNull($queue); // PHPStan
         verify($queue)->notNull();
-        verify($queue->getId())->equals($this->sendingTask->queue()->id);
+        verify($queue->getId())->equals($this->sendingQueue->getId());
       }),
     ]);
 
