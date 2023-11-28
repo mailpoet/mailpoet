@@ -26,6 +26,15 @@ class MPMarketingChannel implements MarketingChannelInterface {
    */
   private $bridge;
 
+  /**
+   * @var MarketingCampaignType[]
+   */
+  private $campaignTypes;
+
+  const CAMPAIGN_TYPE_NEWSLETTERS = 'mailpoet-newsletters';
+  const CAMPAIGN_TYPE_POST_NOTIFICATIONS = 'mailpoet-post-notifications';
+  const CAMPAIGN_TYPE_AUTOMATIONS = 'mailpoet-automations';
+
   public function __construct(
     CdnAssetUrl $cdnAssetUrl,
     SettingsController $settings,
@@ -34,6 +43,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->settings = $settings;
     $this->bridge = $bridge;
+    $this->campaignTypes = $this->generateCampaignTypes();
   }
 
   /**
@@ -143,7 +153,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return MarketingCampaignType[] Array of marketing campaign type objects.
    */
   public function get_supported_campaign_types(): array { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return []; // will be updated in MAILPOET-5697
+    return $this->campaignTypes;
   }
 
   /**
@@ -164,5 +174,39 @@ class MPMarketingChannel implements MarketingChannelInterface {
     $version = $this->settings->get('version');
 
     return $version !== null;
+  }
+
+  /**
+   * Generate the marketing channel campaign types
+   *
+   * @return MarketingCampaignType[]
+   */
+  protected function generateCampaignTypes(): array {
+    return [
+      self::CAMPAIGN_TYPE_NEWSLETTERS => new MarketingCampaignType(
+        'mailpoet-newsletters',
+        $this,
+        'MailPoet Newsletters',
+        'Send a newsletter with images, buttons, dividers, and social bookmarks. Or, just send a basic text email.',
+        admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '#/new'),
+        $this->get_icon_url()
+      ),
+      self::CAMPAIGN_TYPE_POST_NOTIFICATIONS => new MarketingCampaignType(
+        'mailpoet-post-notifications',
+        $this,
+        'MailPoet Post notifications',
+        'Email your subscribers your latest content. You can send daily, weekly, monthly, or even immediately after publication.',
+        admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '#/new/notification'),
+        $this->get_icon_url()
+      ),
+      self::CAMPAIGN_TYPE_AUTOMATIONS => new MarketingCampaignType(
+        'mailpoet-automations',
+        $this,
+        'MailPoet Automations',
+        'Set up automations to send abandoned cart reminders, welcome new subscribers, celebrate first-time buyers, and much more.',
+        admin_url('admin.php?page=' . Menu::AUTOMATION_TEMPLATES_PAGE_SLUG),
+        $this->get_icon_url()
+      ),
+    ];
   }
 }
