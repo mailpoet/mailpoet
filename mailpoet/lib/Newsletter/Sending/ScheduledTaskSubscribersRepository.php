@@ -124,6 +124,11 @@ class ScheduledTaskSubscribersRepository extends Repository {
       ->setParameter('task', $scheduledTask)
       ->getQuery()
       ->execute();
+
+    // delete was done via DQL, make sure the entities are also detached from the entity manager
+    $this->detachAll(function (ScheduledTaskSubscriberEntity $entity) use ($scheduledTask) {
+      return $entity->getTask() === $scheduledTask;
+    });
   }
 
   public function deleteByScheduledTaskAndSubscriberIds(ScheduledTaskEntity $scheduledTask, array $subscriberIds): void {
@@ -135,6 +140,11 @@ class ScheduledTaskSubscribersRepository extends Repository {
       ->setParameter('subscriberIds', $subscriberIds, Connection::PARAM_INT_ARRAY)
       ->getQuery()
       ->execute();
+
+    // delete was done via DQL, make sure the entities are also detached from the entity manager
+    $this->detachAll(function (ScheduledTaskSubscriberEntity $entity) use ($scheduledTask, $subscriberIds) {
+      return $entity->getTask() === $scheduledTask && in_array($entity->getSubscriberId(), $subscriberIds, true);
+    });
 
     $this->checkCompleted($scheduledTask);
   }
