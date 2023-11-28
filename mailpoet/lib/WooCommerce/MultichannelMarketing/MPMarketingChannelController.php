@@ -3,6 +3,7 @@
 namespace MailPoet\WooCommerce\MultichannelMarketing;
 
 use MailPoet\Features\FeaturesController;
+use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\CdnAssetUrl;
 
@@ -19,14 +20,21 @@ class MPMarketingChannelController {
    */
   protected $settings;
 
+  /**
+   * @var Bridge
+   */
+  protected $bridge;
+
   public function __construct(
     CdnAssetUrl $cdnAssetUrl,
     FeaturesController $featuresController,
-    SettingsController $settings
+    SettingsController $settings,
+    Bridge $bridge
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->featuresController = $featuresController;
     $this->settings = $settings;
+    $this->bridge = $bridge;
   }
 
   public function registerMarketingChannel($registeredMarketingChannels): array {
@@ -37,7 +45,8 @@ class MPMarketingChannelController {
     return array_merge($registeredMarketingChannels, [
       new MPMarketingChannel(
         $this->cdnAssetUrl,
-        $this->settings
+        $this->settings,
+        $this->bridge
       ),
     ]);
   }
