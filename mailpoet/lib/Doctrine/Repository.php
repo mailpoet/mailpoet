@@ -127,6 +127,24 @@ abstract class Repository {
   }
 
   /**
+   * @param callable(T): bool|null $filter
+   */
+  public function detachAll(callable $filter = null): void {
+    $className = $this->getEntityClassName();
+    $rootClassName = $this->entityManager->getClassMetadata($className)->rootEntityName;
+    $entities = $this->entityManager->getUnitOfWork()->getIdentityMap()[$rootClassName] ?? [];
+    foreach ($entities as $entity) {
+      if (!($entity instanceof $className)) {
+        continue;
+      }
+      if ($filter && !$filter($entity)) {
+        continue;
+      }
+      $this->entityManager->detach($entity);
+    }
+  }
+
+  /**
    * @return class-string<T>
    */
   abstract protected function getEntityClassName();
