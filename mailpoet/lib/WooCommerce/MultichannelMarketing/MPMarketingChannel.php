@@ -186,24 +186,30 @@ class MPMarketingChannel implements MarketingChannelInterface {
       self::CAMPAIGN_TYPE_NEWSLETTERS => new MarketingCampaignType(
         'mailpoet-newsletters',
         $this,
-        'MailPoet Newsletters',
-        'Send a newsletter with images, buttons, dividers, and social bookmarks. Or, just send a basic text email.',
+          __('MailPoet Newsletters', 'mailpoet'),
+          __(
+              'Send a newsletter with images, buttons, dividers, and social bookmarks. Or, just send a basic text email.',
+              'mailpoet',
+          ),
         admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '#/new/standard'),
         $this->get_icon_url()
       ),
       self::CAMPAIGN_TYPE_POST_NOTIFICATIONS => new MarketingCampaignType(
         'mailpoet-post-notifications',
         $this,
-        'MailPoet Post notifications',
-        'Email your subscribers your latest content. You can send daily, weekly, monthly, or even immediately after publication.',
+          __('MailPoet Post notifications', 'mailpoet'),
+          __(
+              'Let MailPoet email your subscribers with your latest content. You can send daily, weekly, monthly, or even immediately after publication.',
+              'mailpoet',
+          ),
         admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '#/new/notification'),
         $this->get_icon_url()
       ),
       self::CAMPAIGN_TYPE_AUTOMATIONS => new MarketingCampaignType(
         'mailpoet-automations',
         $this,
-        'MailPoet Automations',
-        'Set up automations to send abandoned cart reminders, welcome new subscribers, celebrate first-time buyers, and much more.',
+          __('MailPoet Automations', 'mailpoet'),
+          __('Set up automations to send abandoned cart reminders, welcome new subscribers, celebrate first-time buyers, and much more.', 'mailpoet'),
         admin_url('admin.php?page=' . Menu::AUTOMATION_TEMPLATES_PAGE_SLUG),
         $this->get_icon_url()
       ),
