@@ -243,8 +243,6 @@ class NewslettersResponseBuilder {
     if ($task === null) {
       return null;
     }
-    // the following crazy mix of '$queue' and '$task' comes from 'array_merge($task, $queue)'
-    // (MailPoet\Tasks\Sending) which means all equal-named fields will be taken from '$queue'
     return [
       'id' => (string)$queue->getId(), // (string) for BC
       'type' => $task->getType(),
