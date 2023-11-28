@@ -84,4 +84,25 @@ class MPMarketingChannelCest {
     $i->see('Sync failed', '.woocommerce-marketing-registered-channel-card-body');
     $i->see('2 issues to resolve', '.woocommerce-marketing-registered-channel-card-body');
   }
+
+  public function itCanCreateMailPoetCampaigns(\AcceptanceTester $i) {
+      (new Features())->withFeatureEnabled(FeaturesController::MAILPOET_WOOCOMMERCE_MULTICHANNEL_INTEGRATION);
+
+      $i->login();
+
+      $i->amOnPage('/wp-admin/admin.php?page=wc-admin&path=%2Fmarketing');
+      $i->see('Create a campaign', '.woocommerce-marketing-introduction-banner-buttons');
+      $i->click('Create a campaign', '.woocommerce-marketing-introduction-banner-buttons');
+      $i->waitForText('Create a new campaign');
+      $i->see('Where would you like to promote your products?');
+      $i->see('MailPoet Newsletters'); // campaign types
+      $i->see('MailPoet Post notifications');
+      $i->see('MailPoet Automations');
+      $i->click('Create', '.woocommerce-marketing-new-campaign-type');
+      $i->seeInCurrentUrl('page=mailpoet-newsletters#/new/standard'); // will be redirected to page=mailpoet-newsletters#/template
+      $i->waitForText('Simple text'); // on template selection page
+      $i->see('Template'); // on template selection page
+      $i->see('Newsletters');
+      $i->see('Your saved templates');
+  }
 }
