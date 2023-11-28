@@ -49,17 +49,28 @@ class SendingQueuesRepository extends Repository {
     return SendingQueueEntity::class;
   }
 
-  public function findOneByNewsletterAndTaskStatus(NewsletterEntity $newsletter, string $status): ?SendingQueueEntity {
-    return $this->entityManager->createQueryBuilder()
+  /**
+   * @param NewsletterEntity $newsletter
+   * @param string|null $status
+   * @return SendingQueueEntity|null
+   * @throws \MailPoetVendor\Doctrine\ORM\NonUniqueResultException
+   */
+  public function findOneByNewsletterAndTaskStatus(NewsletterEntity $newsletter, $status): ?SendingQueueEntity {
+    $queryBuilder = $this->entityManager->createQueryBuilder()
       ->select('s')
       ->from(SendingQueueEntity::class, 's')
       ->join('s.task', 't')
-      ->where('t.status = :status')
       ->andWhere('s.newsletter = :newsletter')
-      ->setParameter('status', $status)
-      ->setParameter('newsletter', $newsletter)
-      ->getQuery()
-      ->getOneOrNullResult();
+      ->setParameter('newsletter', $newsletter);
+
+    if (is_null($status)) {
+      $queryBuilder->andWhere('t.status IS NULL');
+    } else {
+      $queryBuilder->andWhere('t.status = :status')
+        ->setParameter('status', $status);
+    }
+
+    return $queryBuilder->getQuery()->getOneOrNullResult();
   }
 
   public function countAllByNewsletterAndTaskStatus(NewsletterEntity $newsletter, string $status): int {
