@@ -5,6 +5,7 @@ import { ListingHeadingStepsRoute } from 'newsletters/listings/heading-steps-rou
 import { MailPoet } from 'mailpoet';
 import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context';
+import { __ } from '@wordpress/i18n';
 
 class NewsletterStandardComponent extends Component {
   componentDidMount() {
@@ -15,6 +16,7 @@ class NewsletterStandardComponent extends Component {
       action: 'create',
       data: {
         type: 'standard',
+        subject: __('Subject', 'mailpoet'),
       },
     })
       .done((response) => {

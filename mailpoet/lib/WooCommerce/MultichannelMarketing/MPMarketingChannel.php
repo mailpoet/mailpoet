@@ -188,7 +188,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
         $this,
         'MailPoet Newsletters',
         'Send a newsletter with images, buttons, dividers, and social bookmarks. Or, just send a basic text email.',
-        admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '#/new'),
+        admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '#/new/standard'),
         $this->get_icon_url()
       ),
       self::CAMPAIGN_TYPE_POST_NOTIFICATIONS => new MarketingCampaignType(
