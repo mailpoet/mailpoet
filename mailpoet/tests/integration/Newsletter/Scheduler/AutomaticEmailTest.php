@@ -57,12 +57,17 @@ class AutomaticEmailTest extends \MailPoetTest {
     $this->automaticEmailScheduler->createAutomaticEmailScheduledTask($newsletter, $subscriber);
     // new scheduled task should be created
     $task = $this->scheduledTasksRepository->findOneByNewsletter($newsletter);
+    $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
     $expectedTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(2);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getId())->greaterThanOrEqual(1);
     verify($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
     verify($task->getStatus())->equals(SendingQueueEntity::STATUS_SCHEDULED);
     $this->tester->assertEqualDateTimes($expectedTime, $task->getScheduledAt(), 1);
+    $this->assertInstanceOf(SendingQueueEntity::class, $queue);
+    verify($queue->getCountTotal())->equals(1);
+    verify($queue->getCountToProcess())->equals(1);
+    verify($queue->getCountProcessed())->equals(0);
     // task should have 1 associated user
     $subscribers = $task->getSubscribers()->toArray();
     verify($subscribers)->arrayCount(1);
