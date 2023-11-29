@@ -10,10 +10,8 @@ $config['parameters']['phpVersion'] = $phpVersion;
 # we need to load different baseline file based on the php version
 if ($phpVersion >= 70100 && $phpVersion < 80000) {
   $config['includes'][] = 'phpstan-7-baseline.neon';
-} elseif ($phpVersion >= 80000 && $phpVersion < 80100) {
-  $config['includes'][] = 'phpstan-8-baseline.neon';
 } else {
-  $config['includes'][] = 'phpstan-8.1-baseline.neon';
+  $config['includes'][] = 'phpstan-8-baseline.neon';
 }
 
 return $config;
