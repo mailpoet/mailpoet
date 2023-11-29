@@ -654,11 +654,11 @@ class WPTest extends \MailPoetTest {
     global $wpdb;
 
     $this->entityManager->getConnection()->executeQuery(
-      "DELETE FROM {$wpdb->usermeta} WHERE user_id IN (select id from {$wpdb->users} WHERE user_email LIKE 'user-sync-test%')",
+      "DELETE FROM {$wpdb->users} WHERE user_login != 'admin'"
     );
 
     $this->entityManager->getConnection()->executeQuery(
-      "DELETE FROM {$wpdb->users} WHERE user_email LIKE 'user-sync-test%' OR user_login LIKE 'user-sync-test%'"
+      "DELETE FROM {$wpdb->usermeta} WHERE user_id NOT IN (select id from {$wpdb->users})",
     );
   }
 
