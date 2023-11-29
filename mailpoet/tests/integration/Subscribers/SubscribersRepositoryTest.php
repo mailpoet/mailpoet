@@ -398,6 +398,23 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     verify($this->repository->getMaxSubscriberId())->equals($subscriberTwo->getId());
   }
 
+  public function testRemoveOrphanedSubscribersFromWpSegment(): void {
+    $wpUserId1 = $this->tester->createWordPressUser('subscriber1@email.com', 'author');
+    $wpUserId2 = $this->tester->createWordPressUser('subscriber2@email.com', 'author');
+    $wpUserId3 = $this->tester->createWordPressUser('subscriber3@email.com', 'author');
+    $subscriber2 = $this->repository->findOneBy(['wpUserId' => $wpUserId2]);
+    $subscriber3 = $this->repository->findOneBy(['wpUserId' => $wpUserId3]);
+
+    $this->tester->deleteWPUserFromDatabase($wpUserId1);
+
+    $this->repository->removeOrphanedSubscribersFromWpSegment();
+
+    $subscribers = $this->repository->findAll();
+    $this->assertCount(2, $subscribers);
+    $this->assertSame($subscribers[0], $subscriber2);
+    $this->assertSame($subscribers[1], $subscriber3);
+  }
+
   private function createSubscriber(string $email, ?DateTimeImmutable $deletedAt = null): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);

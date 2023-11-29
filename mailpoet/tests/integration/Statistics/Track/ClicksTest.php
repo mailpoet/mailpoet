@@ -509,7 +509,12 @@ class ClicksTest extends \MailPoetTest {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = 'User Agent';
-    $subscribersRepository = new SubscribersRepository($this->entityManager, new SubscriberChangesNotifier($wpMock), $wpMock);
+    $subscribersRepository = $this->getServiceWithOverrides(SubscribersRepository::class,
+      [
+        'changesNotifier' => new SubscriberChangesNotifier($wpMock),
+        'wp' => $wpMock,
+      ]
+    );
     $statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
     $opens = new Opens(
       $statisticsOpensRepository,
@@ -547,7 +552,12 @@ class ClicksTest extends \MailPoetTest {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = null;
-    $subscribersRepository = new SubscribersRepository($this->entityManager, new SubscriberChangesNotifier($wpMock), $wpMock);
+    $subscribersRepository = $this->getServiceWithOverrides(SubscribersRepository::class,
+      [
+        'changesNotifier' => new SubscriberChangesNotifier($wpMock),
+        'wp' => $wpMock,
+      ]
+    );
     $statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
     $opens = new Opens(
       $statisticsOpensRepository,
@@ -585,7 +595,12 @@ class ClicksTest extends \MailPoetTest {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
-    $subscribersRepository = new SubscribersRepository($this->entityManager, new SubscriberChangesNotifier($wpMock), $wpMock);
+    $subscribersRepository = $this->getServiceWithOverrides(SubscribersRepository::class,
+      [
+        'changesNotifier' => new SubscriberChangesNotifier($wpMock),
+        'wp' => $wpMock,
+      ]
+    );
     $statisticsOpensRepository = $this->diContainer->get(StatisticsOpensRepository::class);
     $opens = new Opens(
       $statisticsOpensRepository,
