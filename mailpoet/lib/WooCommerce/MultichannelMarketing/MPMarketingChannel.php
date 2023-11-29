@@ -10,6 +10,8 @@ use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Config\Menu;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
+use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -51,6 +53,11 @@ class MPMarketingChannel implements MarketingChannelInterface {
    */
   private $automationStorage;
 
+  /**
+   * @var NewsletterStatisticsRepository
+   */
+  private $newsletterStatisticsRepository;
+
   const CAMPAIGN_TYPE_NEWSLETTERS = 'mailpoet-newsletters';
   const CAMPAIGN_TYPE_POST_NOTIFICATIONS = 'mailpoet-post-notifications';
   const CAMPAIGN_TYPE_AUTOMATIONS = 'mailpoet-automations';
@@ -61,7 +68,8 @@ class MPMarketingChannel implements MarketingChannelInterface {
     Bridge $bridge,
     NewslettersRepository $newsletterRepository,
     Helper $woocommerceHelper,
-    AutomationStorage $automationStorage
+    AutomationStorage $automationStorage,
+    NewsletterStatisticsRepository $newsletterStatisticsRepository
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->settings = $settings;
@@ -69,6 +77,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
     $this->newsletterRepository = $newsletterRepository;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->automationStorage = $automationStorage;
+    $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
     $this->campaignTypes = $this->generateCampaignTypes();
   }
 
@@ -251,18 +260,23 @@ class MPMarketingChannel implements MarketingChannelInterface {
   protected function getStandardNewsletterList(): array {
     $result = [];
 
+    $userCurrency = $this->woocommerceHelper->getWoocommerceCurrency();
+
     // fetch the most recent newsletters limited to ten
     foreach ($this->newsletterRepository->getStandardNewsletterListWithMultipleStatuses(10) as $newsletter) {
         $newsLetterId = (string)$newsletter->getId();
+
+        /** @var ?WooCommerceRevenue $wooRevenue */
+        $wooRevenue = $this->newsletterStatisticsRepository->getWooCommerceRevenue($newsletter);
+
         $result[] = [
             'id' => $newsLetterId,
             'name' => $newsletter->getSubject(),
             'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_NEWSLETTERS],
             'url' => admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '/#/stats/' . $newsLetterId),
             'price' => [
-                // TODO: fetch the correct value
-                'amount' => 0,
-                'currency' => $this->woocommerceHelper->getWoocommerceCurrency(),
+                'amount' => $wooRevenue ? $wooRevenue->getValue() : 0,
+                'currency' => $userCurrency,
             ],
         ];
     }
@@ -273,18 +287,23 @@ class MPMarketingChannel implements MarketingChannelInterface {
   protected function getPostNotificationNewsletters(): array {
     $result = [];
 
+    $userCurrency = $this->woocommerceHelper->getWoocommerceCurrency();
+
     // fetch the most recently sent post-notification history newsletters limited to ten
     foreach ($this->newsletterRepository->getNotificationHistoryItems(10) as $newsletter) {
       $newsLetterId = (string)$newsletter->getId();
+
+      /** @var ?WooCommerceRevenue $wooRevenue */
+      $wooRevenue = $this->newsletterStatisticsRepository->getWooCommerceRevenue($newsletter);
+
       $result[] = [
         'id' => $newsLetterId,
         'name' => $newsletter->getSubject(),
         'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_POST_NOTIFICATIONS],
         'url' => admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '/#/stats/' . $newsLetterId),
         'price' => [
-          // TODO: fetch the correct value
-          'amount' => 0,
-          'currency' => $this->woocommerceHelper->getWoocommerceCurrency(),
+          'amount' => $wooRevenue ? $wooRevenue->getValue() : 0,
+          'currency' => $userCurrency,
         ],
       ];
     }

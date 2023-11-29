@@ -5,6 +5,7 @@ namespace MailPoet\WooCommerce\MultichannelMarketing;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\CdnAssetUrl;
@@ -43,6 +44,11 @@ class MPMarketingChannelController {
    */
   private $automationStorage;
 
+  /**
+   * @var NewsletterStatisticsRepository
+   */
+  private $newsletterStatisticsRepository;
+
   public function __construct(
     CdnAssetUrl $cdnAssetUrl,
     FeaturesController $featuresController,
@@ -50,7 +56,8 @@ class MPMarketingChannelController {
     Bridge $bridge,
     NewslettersRepository $newsletterRepository,
     Helper $woocommerceHelper,
-    AutomationStorage $automationStorage
+    AutomationStorage $automationStorage,
+    NewsletterStatisticsRepository $newsletterStatisticsRepository
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->featuresController = $featuresController;
@@ -59,6 +66,7 @@ class MPMarketingChannelController {
     $this->newsletterRepository = $newsletterRepository;
     $this->automationStorage = $automationStorage;
     $this->woocommerceHelper = $woocommerceHelper;
+    $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
   }
 
   public function registerMarketingChannel($registeredMarketingChannels): array {
@@ -73,7 +81,8 @@ class MPMarketingChannelController {
         $this->bridge,
         $this->newsletterRepository,
         $this->woocommerceHelper,
-        $this->automationStorage
+        $this->automationStorage,
+        $this->newsletterStatisticsRepository
       ),
     ]);
   }
