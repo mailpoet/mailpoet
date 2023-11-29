@@ -20,7 +20,6 @@ use MailPoet\WooCommerce\Helper;
 use MailPoet\WooCommerce\Subscription;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Idiorm\ORM;
 
 class WPTest extends \MailPoetTest {
   /** @var array<int> */
@@ -631,20 +630,14 @@ class WPTest extends \MailPoetTest {
     $this->truncateEntity(SubscriberEntity::class);
     $this->truncateEntity(SubscriberSegmentEntity::class);
     global $wpdb;
-    $db = ORM::getDb();
-    $db->exec(sprintf('
-       DELETE FROM
-         %s
-       WHERE
-         user_id IN (select id from %s WHERE user_email LIKE "user-sync-test%%")
-    ', $wpdb->usermeta, $wpdb->users));
-    $db->exec(sprintf('
-       DELETE FROM
-         %s
-       WHERE
-         user_email LIKE "user-sync-test%%"
-         OR user_login LIKE "user-sync-test%%"
-    ', $wpdb->users));
+
+    $this->entityManager->getConnection()->executeQuery(
+      "DELETE FROM {$wpdb->usermeta} WHERE user_id IN (select id from {$wpdb->users} WHERE user_email LIKE 'user-sync-test%')",
+    );
+
+    $this->entityManager->getConnection()->executeQuery(
+      "DELETE FROM {$wpdb->users} WHERE user_email LIKE 'user-sync-test%' OR user_login LIKE 'user-sync-test%'"
+    );
   }
 
   private function getSubscribersCount(): int {
@@ -667,22 +660,20 @@ class WPTest extends \MailPoetTest {
    */
   private function insertUser(?int $number = null): int {
     global $wpdb;
-    $db = ORM::getDb();
     $numberSql = !is_null($number) ? (int)$number : 'rand()';
-    $db->exec(sprintf('
-         INSERT INTO
-           %s (user_login, user_nicename, user_email, user_registered)
-           VALUES
-           (
-             CONCAT("user-sync-test", ' . $numberSql . '),
-             CONCAT("user-sync-test", ' . $numberSql . '),
-             CONCAT("user-sync-test", ' . $numberSql . ', "@example.com"),
-             "2017-01-02 12:31:12"
-           )', $wpdb->users));
-    $id = $db->lastInsertId();
-    if (!is_string($id)) {
-      throw new \RuntimeException('Unexpected error when creating WP user.');
-    }
+
+    $sql =
+      "INSERT INTO {$wpdb->users} (user_login, user_nicename, user_email, user_registered)
+        VALUES (
+          CONCAT('user-sync-test', {$numberSql}),
+          CONCAT('user-sync-test', {$numberSql}),
+          CONCAT('user-sync-test', {$numberSql}, '@example.com'),
+          '2017-01-02 12:31:12'
+        )";
+
+    $this->connection->executeStatement($sql);
+    $id = $this->connection->lastInsertId();
+
     $this->userIds[] = (int)$id;
     return (int)$id;
   }
@@ -700,26 +691,22 @@ class WPTest extends \MailPoetTest {
 
   private function updateWPUserEmail(int $id, string $email): void {
     global $wpdb;
-    $db = ORM::getDb();
-    $db->exec(sprintf('
-       UPDATE
-         %s
-       SET user_email = "%s"
-       WHERE
-         id = %s
-    ', $wpdb->users, $email, $id));
+
+    $this->entityManager->getConnection()->executeQuery(
+      "UPDATE {$wpdb->users} SET user_email = :userEmail WHERE id = :id",
+      ['userEmail' => $email, 'id' => $id],
+      [\PDO::PARAM_STR, \PDO::PARAM_INT]
+    );
   }
 
   private function updateWPUserDisplayName(int $id, string $name): void {
     global $wpdb;
-    $db = ORM::getDb();
-    $db->exec(sprintf('
-       UPDATE
-         %s
-       SET display_name = "%s"
-       WHERE
-         id = %s
-    ', $wpdb->users, $name, $id));
+
+    $this->entityManager->getConnection()->executeQuery(
+      "UPDATE {$wpdb->users} SET display_name = :displayName WHERE id = :id",
+      ['displayName' => $name, 'id' => $id],
+      [\PDO::PARAM_STR, \PDO::PARAM_INT]
+    );
   }
 
   private function clearEmail(SubscriberEntity $subscriber): void {
