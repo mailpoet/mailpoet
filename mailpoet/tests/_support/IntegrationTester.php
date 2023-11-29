@@ -83,6 +83,19 @@ class IntegrationTester extends \Codeception\Actor {
     return $userId;
   }
 
+  /**
+   * Deletes a WP user directly from the database without triggering any hooks.
+   * Needed to be able to test deleting orphaned subscribers.
+   */
+  public function deleteWPUserFromDatabase(int $id): void {
+    global $wpdb;
+
+    $this->entityManager->getConnection()->executeStatement(
+      "DELETE FROM {$wpdb->users} WHERE id = :id",
+      ['id' => $id], ['id' => \PDO::PARAM_INT]
+    );
+  }
+
   public function createWordPressTerm(string $term, string $taxonomy, array $args = []): int {
     $term = wp_insert_term($term, $taxonomy, $args);
     if ($term instanceof WP_Error) {

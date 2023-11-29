@@ -246,7 +246,7 @@ class WPTest extends \MailPoetTest {
     $this->updateWPUserEmail($id, '');
     $this->wpSegment->synchronizeUsers();
     verify($this->subscribersRepository->findOneBy(['wpUserId' => $id]))->null();
-    $this->deleteWPUser($id);
+    $this->tester->deleteWPUserFromDatabase($id);
   }
 
   public function testRemovesUsersWithInvalidEmailsFromSunscribersDuringSynchronization(): void {
@@ -255,7 +255,7 @@ class WPTest extends \MailPoetTest {
     $this->updateWPUserEmail($id, 'ivalid.@email.com');
     $this->wpSegment->synchronizeUsers();
     verify($this->subscribersRepository->findOneBy(['wpUserId' => $id]))->null();
-    $this->deleteWPUser($id);
+    $this->tester->deleteWPUserFromDatabase($id);
   }
 
   public function testItDoesNotSynchronizeEmptyEmailsForNewUsers(): void {
@@ -263,7 +263,7 @@ class WPTest extends \MailPoetTest {
     $this->updateWPUserEmail($id, '');
     $this->wpSegment->synchronizeUsers();
     verify($this->subscribersRepository->findOneBy(['wpUserId' => $id]))->null();
-    $this->deleteWPUser($id);
+    $this->tester->deleteWPUserFromDatabase($id);
   }
 
   public function testItSynchronizeFirstNames(): void {
@@ -372,7 +372,7 @@ class WPTest extends \MailPoetTest {
     $this->insertUser();
     $id = $this->insertUser();
     $this->wpSegment->synchronizeUsers();
-    $this->deleteWPUser($id);
+    $this->tester->deleteWPUserFromDatabase($id);
     $this->wpSegment->synchronizeUsers();
     $subscribers = $this->subscribersRepository->findBy(['wpUserId' => $this->userIds]);
     verify(count($subscribers))->equals(1);
@@ -720,17 +720,6 @@ class WPTest extends \MailPoetTest {
        WHERE
          id = %s
     ', $wpdb->users, $name, $id));
-  }
-
-  private function deleteWPUser(int $id): void {
-    global $wpdb;
-    $db = ORM::getDb();
-    $db->exec(sprintf('
-       DELETE FROM
-         %s
-       WHERE
-         id = %s
-    ', $wpdb->users, $id));
   }
 
   private function clearEmail(SubscriberEntity $subscriber): void {

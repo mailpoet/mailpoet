@@ -6,7 +6,6 @@ use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Models\Segment;
 use MailPoet\Models\Subscriber;
 use MailPoet\Models\SubscriberSegment;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
@@ -43,6 +42,8 @@ class WP {
   /** @var Validator */
   private $validator;
 
+  private $segmentsRepository;
+
   public function __construct(
     WPFunctions $wp,
     WelcomeScheduler $welcomeScheduler,
@@ -50,7 +51,8 @@ class WP {
     SubscribersRepository $subscribersRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
     SubscriberChangesNotifier $subscriberChangesNotifier,
-    Validator $validator
+    Validator $validator,
+    SegmentsRepository $segmentsRepository
   ) {
     $this->wp = $wp;
     $this->welcomeScheduler = $welcomeScheduler;
@@ -59,6 +61,7 @@ class WP {
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
     $this->validator = $validator;
+    $this->segmentsRepository = $segmentsRepository;
   }
 
   /**
@@ -102,8 +105,7 @@ class WP {
    */
   private function createOrUpdateSubscriber(string $currentFilter, \WP_User $wpUser, $subscriber = false, $oldWpUserData = false): void {
     // Add or update
-    $wpSegment = Segment::getWPSegment();
-    if (!$wpSegment) return;
+    $wpSegment = $this->segmentsRepository->getWPUsersSegment();
 
     // find subscriber by email when is false
     if (!$subscriber) {
@@ -138,7 +140,7 @@ class WP {
       unset($data['source']); // don't override status for existing users
     }
 
-    $addingNewUserToDisabledWPSegment = $wpSegment->deletedAt !== null && $currentFilter === 'user_register';
+    $addingNewUserToDisabledWPSegment = $wpSegment->getDeletedAt() !== null && $currentFilter === 'user_register';
 
     $otherActiveSegments = [];
     if ($subscriber) {
@@ -160,13 +162,13 @@ class WP {
       // add subscriber to the WP Users segment
       SubscriberSegment::subscribeToSegments(
         $subscriber,
-        [$wpSegment->id]
+        [$wpSegment->getId()]
       );
 
       if (!$signupConfirmationEnabled && $subscriber->status === Subscriber::STATUS_SUBSCRIBED && $currentFilter === 'user_register') {
         $subscriberSegment = $this->subscriberSegmentRepository->findOneBy([
           'subscriber' => $subscriber->id(),
-          'segment' => $wpSegment->id(),
+          'segment' => $wpSegment->getId(),
         ]);
 
         if (!is_null($subscriberSegment)) {
@@ -264,9 +266,9 @@ class WP {
 
   private function insertSubscribers(): array {
     global $wpdb;
-    $wpSegment = Segment::getWPSegment();
-    if (!$wpSegment) return [];
-    if ($wpSegment->deletedAt !== null) {
+    $wpSegment = $this->segmentsRepository->getWPUsersSegment();
+
+    if ($wpSegment->getDeletedAt() !== null) {
       $subscriberStatus = SubscriberEntity::STATUS_UNCONFIRMED;
       $deletedAt = 'CURRENT_TIMESTAMP()';
     } else {
@@ -338,28 +340,17 @@ class WP {
   }
 
   private function insertUsersToSegment(): void {
-    $wpSegment = Segment::getWPSegment();
+    $wpSegment = $this->segmentsRepository->getWPUsersSegment();
     $subscribersTable = Subscriber::$_table;
     $wpMailpoetSubscriberSegmentTable = SubscriberSegment::$_table;
     Subscriber::rawExecute(sprintf('
      INSERT IGNORE INTO %s(subscriber_id, segment_id, created_at)
       SELECT mps.id, "%s", CURRENT_TIMESTAMP() FROM %s mps
         WHERE mps.wp_user_id > 0
-    ', $wpMailpoetSubscriberSegmentTable, $wpSegment->id, $subscribersTable));
+    ', $wpMailpoetSubscriberSegmentTable, $wpSegment->getId(), $subscribersTable));
   }
 
   private function removeOrphanedSubscribers(): void {
-    // remove orphaned wp segment subscribers (not having a matching wp user id),
-    // e.g. if wp users were deleted directly from the database
-    global $wpdb;
-
-    $wpSegment = Segment::getWPSegment();
-
-    $wpSegment->subscribers()
-      ->leftOuterJoin($wpdb->users, [MP_SUBSCRIBERS_TABLE . '.wp_user_id', '=', 'wu.id'], 'wu')
-      ->whereRaw('(wu.id IS NULL OR ' . MP_SUBSCRIBERS_TABLE . '.email = "")')
-      ->findResultSet()
-      ->set('wp_user_id', null)
-      ->delete();
+    $this->subscribersRepository->removeOrphanedSubscribersFromWpSegment();
   }
 }
