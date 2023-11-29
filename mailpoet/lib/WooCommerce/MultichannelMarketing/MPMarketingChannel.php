@@ -7,7 +7,6 @@ use Automattic\WooCommerce\Admin\Marketing\MarketingCampaignType;
 use Automattic\WooCommerce\Admin\Marketing\MarketingChannelInterface;
 use Automattic\WooCommerce\Admin\Marketing\Price;
 use MailPoet\Config\Menu;
-use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\Bridge;
@@ -241,8 +240,10 @@ class MPMarketingChannel implements MarketingChannelInterface {
   }
 
   protected function getStandardNewsletterList(): array {
-      $result = [];
-    foreach ($this->newsletterRepository->getStandardNewsletterList() as $newsletter) {
+    $result = [];
+
+    // fetch the most recent newsletters limited to ten
+    foreach ($this->newsletterRepository->getStandardNewsletterListWithMultipleStatuses(10) as $newsletter) {
         $newsLetterId = (string)$newsletter->getId();
         $result[] = [
             'id' => $newsLetterId,
@@ -256,29 +257,30 @@ class MPMarketingChannel implements MarketingChannelInterface {
             ],
         ];
     }
-      return $result;
+
+    return $result;
   }
 
   protected function getPostNotificationNewsletters(): array {
-      $newsletters = $this->newsletterRepository->findActiveByTypes([NewsletterEntity::TYPE_NOTIFICATION]);
+    $result = [];
 
-      $result = [];
-
-    foreach ($newsletters as $newsletter) {
-        $newsLetterId = (string)$newsletter->getId();
-        $result[] = [
-            'id' => $newsLetterId,
-            'name' => $newsletter->getSubject(),
-            'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_POST_NOTIFICATIONS],
-            'url' => admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '/#/stats/' . $newsLetterId),
-            'price' => [
-                // TODO: fetch the correct value
-                'amount' => 0,
-                'currency' => $this->woocommerceHelper->getWoocommerceCurrency(),
-            ],
-        ];
+    // fetch the most recently sent post-notification history newsletters limited to ten
+    foreach ($this->newsletterRepository->getNotificationHistoryItems(10) as $newsletter) {
+      $newsLetterId = (string)$newsletter->getId();
+      $result[] = [
+        'id' => $newsLetterId,
+        'name' => $newsletter->getSubject(),
+        'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_POST_NOTIFICATIONS],
+        'url' => admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '/#/stats/' . $newsLetterId),
+        'price' => [
+          // TODO: fetch the correct value
+          'amount' => 0,
+          'currency' => $this->woocommerceHelper->getWoocommerceCurrency(),
+        ],
+      ];
     }
-      return $result;
+
+    return $result;
   }
 
   protected function getAutomationNewsletters(): array {
