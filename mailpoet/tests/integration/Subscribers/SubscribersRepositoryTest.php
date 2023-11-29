@@ -415,6 +415,20 @@ class SubscribersRepositoryTest extends \MailPoetTest {
     $this->assertSame($subscribers[1], $subscriber3);
   }
 
+  public function testRemoveByWpUserIds(): void {
+    $wpUserId1 = $this->tester->createWordPressUser('subscriber1@email.com', 'author');
+    $wpUserId2 = $this->tester->createWordPressUser('subscriber2@email.com', 'author');
+    $wpUserId3 = $this->tester->createWordPressUser('subscriber3@email.com', 'author');
+    $subscriber3 = $this->repository->findOneBy(['wpUserId' => $wpUserId3]);
+
+    $deletedRows = $this->repository->removeByWpUserIds([$wpUserId1, $wpUserId2]);
+
+    $this->assertSame(2, $deletedRows);
+    $subscribers = $this->repository->findAll();
+    $this->assertCount(1, $subscribers);
+    $this->assertSame($subscribers[0], $subscriber3);
+  }
+  
   private function createSubscriber(string $email, ?DateTimeImmutable $deletedAt = null): SubscriberEntity {
     $subscriber = new SubscriberEntity();
     $subscriber->setEmail($email);

@@ -577,6 +577,17 @@ class SubscribersRepository extends Repository {
     );
   }
 
+  public function removeByWpUserIds(array $wpUserIds) {
+    $queryBuilder = $this->entityManager->createQueryBuilder();
+
+    $queryBuilder
+      ->delete(SubscriberEntity::class, 's')
+      ->where('s.wpUserId IN (:wpUserIds)')
+      ->setParameter('wpUserIds', $wpUserIds);
+
+    return $queryBuilder->getQuery()->execute();
+  }
+
   /**
    * @return int - number of processed ids
    */
