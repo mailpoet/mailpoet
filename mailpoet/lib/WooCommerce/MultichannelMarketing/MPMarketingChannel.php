@@ -6,6 +6,8 @@ use Automattic\WooCommerce\Admin\Marketing\MarketingCampaign;
 use Automattic\WooCommerce\Admin\Marketing\MarketingCampaignType;
 use Automattic\WooCommerce\Admin\Marketing\MarketingChannelInterface;
 use Automattic\WooCommerce\Admin\Marketing\Price;
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Config\Menu;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -44,6 +46,11 @@ class MPMarketingChannel implements MarketingChannelInterface {
    */
   private $woocommerceHelper;
 
+  /**
+   * @var AutomationStorage
+   */
+  private $automationStorage;
+
   const CAMPAIGN_TYPE_NEWSLETTERS = 'mailpoet-newsletters';
   const CAMPAIGN_TYPE_POST_NOTIFICATIONS = 'mailpoet-post-notifications';
   const CAMPAIGN_TYPE_AUTOMATIONS = 'mailpoet-automations';
@@ -53,13 +60,15 @@ class MPMarketingChannel implements MarketingChannelInterface {
     SettingsController $settings,
     Bridge $bridge,
     NewslettersRepository $newsletterRepository,
-    Helper $woocommerceHelper
+    Helper $woocommerceHelper,
+    AutomationStorage $automationStorage
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->settings = $settings;
     $this->bridge = $bridge;
     $this->newsletterRepository = $newsletterRepository;
     $this->woocommerceHelper = $woocommerceHelper;
+    $this->automationStorage = $automationStorage;
     $this->campaignTypes = $this->generateCampaignTypes();
   }
 
@@ -283,9 +292,25 @@ class MPMarketingChannel implements MarketingChannelInterface {
     return $result;
   }
 
-  protected function getAutomationNewsletters(): array {
-      // TODO: Implement me
-      return [];
+  protected function getAutomations(): array {
+    $result = [];
+
+    foreach ($this->automationStorage->getAutomations([Automation::STATUS_ACTIVE]) as $automation) {
+      $automationId = (string)$automation->getId();
+      $result[] = [
+        'id' => $automationId,
+        'name' => $automation->getName(),
+        'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_AUTOMATIONS],
+        'url' => admin_url('admin.php?page=' . Menu::AUTOMATION_ANALYTICS_PAGE_SLUG . '&id=' . $automationId),
+        'price' => [
+          // TODO: fetch the correct value
+          'amount' => 0,
+          'currency' => $this->woocommerceHelper->getWoocommerceCurrency(),
+        ],
+      ];
+    }
+
+    return $result;
   }
 
   protected function generateCampaigns(): array {
@@ -306,7 +331,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
               );
           },
           array_merge(
-              $this->getAutomationNewsletters(),
+              $this->getAutomations(),
               $this->getPostNotificationNewsletters(),
               $this->getStandardNewsletterList()
           )
