@@ -571,11 +571,6 @@ parameters:
 			path: ../../lib/Segments/SegmentsSimpleListRepository.php
 
 		-
-			message: "#^Parameter \\#3 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Segments/WP.php
-
-		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
 			path: ../../lib/Segments/WooCommerce.php

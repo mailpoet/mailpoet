@@ -620,6 +620,28 @@ class WPTest extends \MailPoetTest {
     remove_role('customer');
   }
 
+  public function testItDoesntCreateSubscriberForWPUserWithInvalidEmail() {
+    $userId = wp_create_user(
+      'invalid-email',
+      'password',
+      'editor@localhost'
+    );
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $userId]);
+    $this->assertNull($subscriber);
+  }
+
+  public function testItCreatesSubscriberWhenWpUserIsCreated() {
+    $userId = wp_create_user(
+      'editor',
+      'password',
+      'editor@email.com'
+    );
+    $subscriber = $this->subscribersRepository->findOneBy(['wpUserId' => $userId]);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+    $this->assertSame('editor', $subscriber->getFirstName());
+    $this->assertSame('editor@email.com', $subscriber->getEmail());
+  }
+
   public function _after(): void {
     parent::_after();
     $this->cleanData();
