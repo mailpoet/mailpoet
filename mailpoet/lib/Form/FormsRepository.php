@@ -96,10 +96,17 @@ class FormsRepository extends Repository {
       return 0;
     }
 
-    return $this->entityManager->createQueryBuilder()
+    $result = $this->entityManager->createQueryBuilder()
       ->delete(FormEntity::class, 'f')
       ->where('f.id IN (:ids)')
       ->setParameter('ids', $ids)
       ->getQuery()->execute();
+
+    // delete was done via DQL, make sure the entities are also detached from the entity manager
+    $this->detachAll(function (FormEntity $entity) use ($ids) {
+      return in_array($entity->getId(), $ids, true);
+    });
+
+    return $result;
   }
 }
