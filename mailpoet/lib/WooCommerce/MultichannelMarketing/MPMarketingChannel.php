@@ -61,7 +61,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return string
    */
   public function get_name(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return __( 'MailPoet', 'mailpoet' );
+    return __('MailPoet', 'mailpoet');
   }
 
   /**
@@ -70,7 +70,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return string
    */
   public function get_description(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return __( 'Create and send newsletters, post notifications and welcome emails from your WordPress.', 'mailpoet' );
+    return __('Create and send newsletters, post notifications and welcome emails from your WordPress.', 'mailpoet');
   }
 
   /**
@@ -186,30 +186,30 @@ class MPMarketingChannel implements MarketingChannelInterface {
       self::CAMPAIGN_TYPE_NEWSLETTERS => new MarketingCampaignType(
         'mailpoet-newsletters',
         $this,
-          __('MailPoet Newsletters', 'mailpoet'),
-          __(
-              'Send a newsletter with images, buttons, dividers, and social bookmarks. Or, just send a basic text email.',
-              'mailpoet',
-          ),
+        __('MailPoet Newsletters', 'mailpoet'),
+        __(
+          'Send a newsletter with images, buttons, dividers, and social bookmarks. Or, just send a basic text email.',
+          'mailpoet',
+        ),
         admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '#/new/standard'),
         $this->get_icon_url()
       ),
       self::CAMPAIGN_TYPE_POST_NOTIFICATIONS => new MarketingCampaignType(
         'mailpoet-post-notifications',
         $this,
-          __('MailPoet Post notifications', 'mailpoet'),
-          __(
-              'Let MailPoet email your subscribers with your latest content. You can send daily, weekly, monthly, or even immediately after publication.',
-              'mailpoet',
-          ),
+        __('MailPoet Post Notifications', 'mailpoet'),
+        __(
+          'Let MailPoet email your subscribers with your latest content. You can send daily, weekly, monthly, or even immediately after publication.',
+          'mailpoet',
+        ),
         admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '#/new/notification'),
         $this->get_icon_url()
       ),
       self::CAMPAIGN_TYPE_AUTOMATIONS => new MarketingCampaignType(
         'mailpoet-automations',
         $this,
-          __('MailPoet Automations', 'mailpoet'),
-          __('Set up automations to send abandoned cart reminders, welcome new subscribers, celebrate first-time buyers, and much more.', 'mailpoet'),
+        __('MailPoet Automations', 'mailpoet'),
+        __('Set up automations to send abandoned cart reminders, welcome new subscribers, celebrate first-time buyers, and much more.', 'mailpoet'),
         admin_url('admin.php?page=' . Menu::AUTOMATION_TEMPLATES_PAGE_SLUG),
         $this->get_icon_url()
       ),
