@@ -167,6 +167,11 @@ class SendingQueuesRepository extends Repository {
       ->setParameter('task', $scheduledTask)
       ->getQuery()
       ->execute();
+
+    // delete was done via DQL, make sure the entities are also detached from the entity manager
+    $this->detachAll(function (SendingQueueEntity $entity) use ($scheduledTask) {
+      return $entity->getTask() === $scheduledTask;
+    });
   }
 
   public function saveCampaignId(SendingQueueEntity $queue, string $campaignId): void {
