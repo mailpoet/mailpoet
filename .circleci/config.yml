@@ -255,7 +255,7 @@ jobs:
     parameters:
       php_version:
         type: integer
-        default: 70200
+        default: 70400
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -794,13 +794,13 @@ workflows:
       - static_analysis:
           <<: *slack-fail-post-step
           name: static_analysis_php7
-          php_version: 70200
+          php_version: 70400
           requires:
             - build
       - static_analysis:
           <<: *slack-fail-post-step
           name: static_analysis_php8
-          php_version: 80000
+          php_version: 80100
           requires:
             - build
       - security_analysis:
