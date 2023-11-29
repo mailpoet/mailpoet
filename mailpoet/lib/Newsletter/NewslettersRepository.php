@@ -526,6 +526,65 @@ class NewslettersRepository extends Repository {
       ->getResult();
   }
 
+  /**
+   * Returns standard newsletters ordered by sentAt
+   * filter by status STATUS_SCHEDULED, STATUS_SENDING, STATUS_SENT
+   * @return NewsletterEntity[]
+   */
+  public function getStandardNewsletterListWithMultipleStatuses($limit): array {
+    $statuses = [
+      NewsletterEntity::STATUS_SCHEDULED,
+      NewsletterEntity::STATUS_SENDING,
+      NewsletterEntity::STATUS_SENT,
+    ];
+
+    $query = $this->entityManager->createQueryBuilder()
+      ->select('PARTIAL n.{id,subject,sentAt}')
+      ->addSelect('CASE WHEN n.sentAt IS NULL THEN 1 ELSE 0 END as HIDDEN sent_at_is_null')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.type = :typeStandard')
+      ->andWhere('n.status IN (:statuses)')
+      ->andWhere('n.deletedAt IS NULL')
+      ->orderBy('sent_at_is_null', 'DESC')
+      ->addOrderBy('n.sentAt', 'DESC')
+      ->setParameter('typeStandard', NewsletterEntity::TYPE_STANDARD)
+      ->setParameter('statuses', $statuses);
+
+    if (is_int($limit)) {
+      $query->setMaxResults($limit);
+    }
+
+    $result = $query->getQuery()->getResult();
+
+    return is_array($result) ? $result : [];
+  }
+
+  /**
+   * Returns sent post-notification history newsletters ordered by sentAt
+   * @return NewsletterEntity[]
+   */
+  public function getNotificationHistoryItems($limit): array {
+    $query = $this->entityManager->createQueryBuilder()
+      ->select('PARTIAL n.{id,subject,sentAt}')
+      ->addSelect('CASE WHEN n.sentAt IS NULL THEN 1 ELSE 0 END as HIDDEN sent_at_is_null')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.type = :typeNotificationHistory')
+      ->andWhere('n.status = :status')
+      ->andWhere('n.deletedAt IS NULL')
+      ->orderBy('sent_at_is_null', 'DESC')
+      ->addOrderBy('n.sentAt', 'DESC')
+      ->setParameter('typeNotificationHistory', NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+      ->setParameter('status', NewsletterEntity::STATUS_SENT);
+
+    if (is_int($limit)) {
+      $query->setMaxResults($limit);
+    }
+
+    $result = $query->getQuery()->getResult();
+
+    return is_array($result) ? $result : [];
+  }
+
   public function prefetchOptions(array $newsletters) {
     $this->entityManager->createQueryBuilder()
       ->select('PARTIAL n.{id}, o, opf')
