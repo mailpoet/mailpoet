@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "81f7252c6827a7761b1270fff26d5884",
+    "content-hash": "f21c55c1e19f20ecbac19afd25c31138",
     "packages": [
         {
             "name": "mixpanel/mixpanel-php",
@@ -10866,7 +10866,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.3"
+        "php": ">=7.4"
     },
     "platform-dev": {
         "ext-gd": "*",
@@ -10879,7 +10879,7 @@
         "ext-zip": "*"
     },
     "platform-overrides": {
-        "php": "7.3.0"
+        "php": "7.4.0"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
