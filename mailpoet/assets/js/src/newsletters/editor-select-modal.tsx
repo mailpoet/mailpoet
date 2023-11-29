@@ -27,6 +27,8 @@ export function EditorSelectModal({
         <img
           src={`${MailPoet.cdnUrl}email-editor/new-editor-modal-header.png`}
           alt={__('New editor', 'mailpoet')}
+          width="324"
+          height="130"
         />
       </div>
       <p>
