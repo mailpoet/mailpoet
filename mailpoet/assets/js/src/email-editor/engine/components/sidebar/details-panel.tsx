@@ -3,12 +3,10 @@ import {
   ExternalLink,
   PanelBody,
   TextareaControl,
-  Tooltip,
 } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
-import { Icon, help } from '@wordpress/icons';
 import ReactStringReplace from 'react-string-replace';
 import { storeName } from '../../store';
 
@@ -62,22 +60,6 @@ export function DetailsPanel() {
     </>
   );
 
-  const previewTextLabel = (
-    <>
-      <span>{__('Preview text (recommended)', 'mailpoet')}</span>
-      <Tooltip
-        text={__(
-          'This text will appear in the inbox, underneath the subject line. Max length is 250 characters, but we recommend 80 characters.',
-          'mailpoet',
-        )}
-      >
-        <span className="mailpoet-preview-text__help-icon">
-          <Icon icon={help} size={20} />
-        </span>
-      </Tooltip>
-    </>
-  );
-
   return (
     <PanelBody
       title={__('Details', 'mailpoet')}
@@ -91,13 +73,13 @@ export function DetailsPanel() {
         onChange={(value) => updateEmailProperty('subject', value)}
         data-automation-id="email_subject"
       />
-      <div className="mailpoet-settings-panel__subject-help">
+      <div className="mailpoet-settings-panel__help">
         <Text>{subjectHelp}</Text>
       </div>
 
       <TextareaControl
         className="mailpoet-settings-panel__preview-text"
-        label={previewTextLabel}
+        label={<span>{__('Preview text (recommended)', 'mailpoet')}</span>}
         placeholder={__(
           "Add a preview text to capture subscribers' attention and increase open rates.",
           'mailpoet',
@@ -106,6 +88,13 @@ export function DetailsPanel() {
         onChange={(value) => updateEmailProperty('preheader', value)}
         data-automation-id="email_preview_text"
       />
+      <div className="mailpoet-settings-panel__help">
+        <Text>
+          {__(
+            'This text will appear in the inbox, underneath the subject line.',
+          )}
+        </Text>
+      </div>
     </PanelBody>
   );
 }
