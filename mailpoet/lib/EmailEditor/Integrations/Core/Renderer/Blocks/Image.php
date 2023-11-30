@@ -18,8 +18,6 @@ class Image implements BlockRenderer {
     $blockContent = $this->addImageDimensions($blockContent, $parsedBlock, $settingsController);
     $blockContent = $this->addWidthToWrapper($blockContent, $parsedBlock, $settingsController);
     $blockContent = $this->addCaptionFontSize($blockContent, $settingsController);
-    bdump($parsedBlock);
-    bdump($blockContent);
     return str_replace('{image_content}', $blockContent, $this->getBlockWrapper($parsedBlock, $settingsController));
   }
 
