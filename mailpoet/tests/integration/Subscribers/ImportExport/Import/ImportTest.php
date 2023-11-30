@@ -713,7 +713,6 @@ class ImportTest extends \MailPoetTest {
     $import = $this->createImportInstance($data);
     $import->process();
 
-    $this->entityManager->clear();
     $imported = $this->subscriberRepository->findOneBy(['email' => 'mary@jane.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $imported);
     verify($imported->getFirstName())->equals($beforeImport->getFirstName()); // Subscriber name was synchronized from WP
