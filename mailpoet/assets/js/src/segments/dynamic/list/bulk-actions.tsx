@@ -3,38 +3,57 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { SelectControl } from '@woocommerce/components';
 import { Button, Modal } from '@wordpress/components';
 import { dispatch, select } from '@wordpress/data';
+import { store as noticesStore } from '@wordpress/notices';
 import { MailPoet } from '../../../mailpoet';
 import { DynamicSegment } from '../types';
 import { storeName } from '../store';
 
-type ConfirmModalProps = {
-  onClose: () => void;
-  onConfirm: () => void;
-  confirmText: string;
-  title: string;
-  message: string | JSX.Element;
-};
-function ConfirmModal({
-  onClose,
-  onConfirm,
-  confirmText,
-  title,
-  message,
-}: ConfirmModalProps): JSX.Element {
-  return (
-    <Modal title={title} onRequestClose={onClose}>
-      <p>{message}</p>
-      <Button variant="primary" onClick={onConfirm}>
-        {confirmText}
-      </Button>
-      <Button variant="tertiary" onClick={onClose}>
-        {__('Cancel', 'mailpoet')}
-      </Button>
-    </Modal>
-  );
-}
-
 async function bulkAction(action: string, segments: DynamicSegment[]) {
+  let successMessage = '';
+  let errorMessage = '';
+  switch (action) {
+    case 'trash':
+      successMessage = sprintf(
+        /* translators: %d - number of segments */
+        _n(
+          'Segment moved to trash.',
+          '%d segments moved to trash.',
+          segments.length,
+          'mailpoet',
+        ),
+        segments.length,
+      );
+      errorMessage = __('Error moving segment to trash.', 'mailpoet');
+      break;
+    case 'delete':
+      successMessage = sprintf(
+        /* translators: %d - number of segments */
+        _n(
+          'Segment permanently deleted.',
+          '%d segments permanently deleted.',
+          segments.length,
+          'mailpoet',
+        ),
+        segments.length,
+      );
+      errorMessage = __('Error deleting segment.', 'mailpoet');
+      break;
+    case 'restore':
+      successMessage = sprintf(
+        /* translators: %d - number of segments */
+        _n(
+          'Segment restored.',
+          '%d segments restored.',
+          segments.length,
+          'mailpoet',
+        ),
+        segments.length,
+      );
+      errorMessage = __('Error restoring segment.', 'mailpoet');
+      break;
+    default:
+      break;
+  }
   void MailPoet.Ajax.post({
     api_version: 'v1',
     endpoint: 'dynamic_segments',
@@ -45,9 +64,16 @@ async function bulkAction(action: string, segments: DynamicSegment[]) {
         selection: segments.map((segment) => segment.id),
       },
     },
-  }).then(() => {
-    void dispatch(storeName).loadDynamicSegments();
-  });
+  })
+    .then(() => {
+      void dispatch(noticesStore).createSuccessNotice(successMessage);
+      void dispatch(storeName).loadDynamicSegments();
+    })
+    .fail(() => {
+      void dispatch(noticesStore).createErrorNotice(errorMessage, {
+        explicitDismiss: true,
+      });
+    });
 }
 
 type BulkActionsProps = {
@@ -165,18 +191,31 @@ export function BulkActions({ tab }: BulkActionsProps): JSX.Element {
   return (
     <>
       {currentAction !== '' && (
-        <ConfirmModal
+        <Modal
           title={title}
-          message={message}
-          confirmText={confirmText}
-          onClose={() => {
+          onRequestClose={() => {
             setCurrentAction('');
           }}
-          onConfirm={() => {
-            void bulkAction(currentAction, allSelected);
-            setCurrentAction('');
-          }}
-        />
+        >
+          <p>{message}</p>
+          <Button
+            variant="primary"
+            onClick={() => {
+              void bulkAction(currentAction, allSelected);
+              setCurrentAction('');
+            }}
+          >
+            {confirmText}
+          </Button>
+          <Button
+            variant="tertiary"
+            onClick={() => {
+              setCurrentAction('');
+            }}
+          >
+            {__('Cancel', 'mailpoet')}
+          </Button>
+        </Modal>
       )}
       <SelectControl
         multiple={false}

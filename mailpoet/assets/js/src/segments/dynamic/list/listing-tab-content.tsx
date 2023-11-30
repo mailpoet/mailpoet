@@ -11,6 +11,7 @@ import {
   updateDynamicQueryFromLocation,
 } from './listing-helpers';
 import { BulkActions } from './bulk-actions';
+import { DynamicSegmentsListNotices } from './notices';
 
 function SelectAll(): JSX.Element {
   const { dynamicSegments } = useSelect((s) => ({
@@ -137,6 +138,7 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
   return (
     <>
       <div className="mailpoet-segments-listing-header">
+        <DynamicSegmentsListNotices />
         <BulkActions tab={tab} />
         <TextControl
           className="mailpoet-segments-listing-search"
