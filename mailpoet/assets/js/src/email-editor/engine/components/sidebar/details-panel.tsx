@@ -92,6 +92,9 @@ export function DetailsPanel() {
         <Text>
           {__(
             'This text will appear in the inbox, underneath the subject line.',
+          )}{' '}
+          {__(
+            'We recommend to keep it short, and to use it to complement the subject line.',
           )}
         </Text>
       </div>
