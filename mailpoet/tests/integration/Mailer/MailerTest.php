@@ -79,6 +79,27 @@ class MailerTest extends \MailPoetTest {
         'email' => 'test@email.com',
       ])
     )->equals('First Last <test@email.com>');
+
+    $subscriber = (new SubscriberFactory())
+      ->withFirstName('First')
+      ->withLastName('Last')
+      ->withEmail('test1@email.com')
+      ->create();
+    verify($mailer->formatSubscriberNameAndEmailAddress($subscriber))
+      ->equals('First Last <test1@email.com>');
+
+    $subscriber = (new SubscriberFactory())
+      ->withEmail('test2@email.com')
+      ->create();
+    verify($mailer->formatSubscriberNameAndEmailAddress($subscriber))
+      ->equals('test2@email.com');
+
+    $subscriber = (new SubscriberFactory())
+      ->withLastName('Last')
+      ->withEmail('test3@email.com')
+      ->create();
+    verify($mailer->formatSubscriberNameAndEmailAddress($subscriber))
+      ->equals('Last <test3@email.com>');
   }
 
   public function testItCanSend() {

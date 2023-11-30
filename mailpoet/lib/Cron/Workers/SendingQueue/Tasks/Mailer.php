@@ -8,7 +8,6 @@ use MailPoet\Mailer\Mailer as MailerInstance;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Mailer\Methods\MailPoet;
-use MailPoet\Models\Subscriber;
 
 class Mailer {
   /** @var MailerFactory */
@@ -62,9 +61,7 @@ class Mailer {
   }
 
   public function prepareSubscriberForSending(SubscriberEntity $subscriber) {
-    $subscriberModel = Subscriber::findOne($subscriber->getId());
-
-    return $this->mailer->formatSubscriberNameAndEmailAddress($subscriberModel);
+    return $this->mailer->formatSubscriberNameAndEmailAddress($subscriber);
   }
 
   public function sendBulk($preparedNewsletters, $preparedSubscribers, $extraParams = []) {
