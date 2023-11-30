@@ -1,4 +1,4 @@
-import { Button, Modal } from '@wordpress/components';
+import { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/components';
 import { dispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
 import { __, _n, sprintf } from '@wordpress/i18n';
@@ -175,20 +175,19 @@ export function ActionConfirm({
   }
 
   return (
-    <Modal title={title} onRequestClose={onClose}>
+    <ConfirmDialog
+      className="mailpoet-confirm-dialog"
+      isOpen
+      title={title}
+      confirmButtonText={confirmText}
+      __experimentalHideHeader={false}
+      onConfirm={() => {
+        void bulkAction(action, selected);
+        onClose();
+      }}
+      onCancel={onClose}
+    >
       <p>{message}</p>
-      <Button
-        variant="primary"
-        onClick={() => {
-          void bulkAction(action, selected);
-          onClose();
-        }}
-      >
-        {confirmText}
-      </Button>
-      <Button variant="tertiary" onClick={onClose}>
-        {__('Cancel', 'mailpoet')}
-      </Button>
-    </Modal>
+    </ConfirmDialog>
   );
 }
