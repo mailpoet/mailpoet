@@ -125,7 +125,10 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
   const rowsPerPage =
     dynamicSegmentQuery !== null ? dynamicSegmentQuery.limit : 10;
   const rows = filteredDynamicSegments.map((dynamicSegment) =>
-    getRow(dynamicSegment),
+    getRow(dynamicSegment, tab.name, (action, segment) => {
+      setCurrentSelected([segment]);
+      setCurrentAction(action);
+    }),
   );
   const tableQueryParams = {
     orderby:

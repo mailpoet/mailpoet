@@ -1,14 +1,18 @@
 import { Link } from 'react-router-dom';
-import { DynamicSegment } from 'segments/types';
+import { DynamicSegment, DynamicSegmentAction } from 'segments/types';
 import * as ROUTES from 'segments/routes';
-import { Button } from '@wordpress/components';
+import { Button, DropdownMenu } from '@wordpress/components';
 import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { Icon, moreVertical } from '@wordpress/icons';
+import { moreVertical } from '@wordpress/icons';
 import { MailPoet } from '../../../mailpoet';
 import { storeName } from '../store';
 
-export function getRow(dynamicSegment: DynamicSegment): object[] {
+export function getRow(
+  dynamicSegment: DynamicSegment,
+  tab: string,
+  onSelect: (action: DynamicSegmentAction, segment: DynamicSegment) => void,
+): object[] {
   const toggleSelect = (): void => {
     if (dynamicSegment?.selected) {
       dispatch(storeName).unselectDynamicSection(dynamicSegment);
@@ -16,6 +20,37 @@ export function getRow(dynamicSegment: DynamicSegment): object[] {
     }
     dispatch(storeName).selectDynamicSection(dynamicSegment);
   };
+
+  const menuItems =
+    tab !== 'trash'
+      ? [
+          {
+            key: 'trash',
+            control: {
+              title: __('Move to trash', 'mailpoet'),
+              icon: null,
+              onClick: () => onSelect('trash', dynamicSegment),
+            },
+          },
+        ]
+      : [
+          {
+            key: 'restore',
+            control: {
+              title: __('Restore', 'mailpoet'),
+              icon: null,
+              onClick: () => onSelect('restore', dynamicSegment),
+            },
+          },
+          {
+            key: 'delete',
+            control: {
+              title: __('Delete permanently', 'mailpoet'),
+              icon: null,
+              onClick: () => onSelect('delete', dynamicSegment),
+            },
+          },
+        ];
   return [
     {
       value: null,
@@ -79,7 +114,13 @@ export function getRow(dynamicSegment: DynamicSegment): object[] {
           >
             {__('Edit', 'mailpoet')}
           </Button>
-          <Icon icon={moreVertical} />
+          <DropdownMenu
+            className="mailpoet-automation-listing-more-button"
+            label={__('More', 'mailpoet')}
+            icon={moreVertical}
+            controls={menuItems.map(({ control }) => control)}
+            popoverProps={{ position: 'bottom left' }}
+          />
         </div>
       ),
     },
