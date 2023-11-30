@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { SelectControl } from '@woocommerce/components';
+import { SelectControl } from '@wordpress/components';
 import { select } from '@wordpress/data';
 import { storeName } from '../store';
 import { DynamicSegment, DynamicSegmentAction } from '../types';
@@ -19,11 +19,19 @@ export function BulkActions({ tab, onClick }: BulkActionsProps): JSX.Element {
     tab.name !== 'trash'
       ? [
           {
+            value: '0',
+            label: __('Bulk Actions', 'mailpoet'),
+          },
+          {
             label: __('Trash', 'mailpoet'),
             value: 'trash',
           },
         ]
       : [
+          {
+            value: '0',
+            label: __('Bulk Actions', 'mailpoet'),
+          },
           {
             label: __('Restore', 'mailpoet'),
             value: 'restore',
@@ -37,20 +45,16 @@ export function BulkActions({ tab, onClick }: BulkActionsProps): JSX.Element {
   return (
     <SelectControl
       multiple={false}
+      hideLabelFromVision
       className="mailpoet-segments-listing-group"
       label={__('Bulk Actions', 'mailpoet')}
-      value={tab.name}
       options={bulkActions}
-      onChange={(value) => {
-        if (allSelected.length === 0) {
+      value="0"
+      onChange={(action) => {
+        if (allSelected.length === 0 || action === '0') {
           return;
         }
-
-        const action = value[0]?.value as DynamicSegmentAction;
-        if (!action) {
-          return;
-        }
-        onClick(allSelected, action);
+        onClick(allSelected, action as DynamicSegmentAction);
       }}
     />
   );
