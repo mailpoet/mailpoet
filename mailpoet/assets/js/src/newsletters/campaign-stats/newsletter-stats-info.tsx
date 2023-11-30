@@ -1,8 +1,10 @@
 import { __ } from '@wordpress/i18n';
+import { Button, ButtonGroup, Dropdown, MenuItem } from '@wordpress/components';
+import { chevronDown, Icon } from '@wordpress/icons';
 import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
-import { Button, FilterSegmentTag, SegmentTags } from 'common';
+import { FilterSegmentTag, SegmentTags } from 'common';
 import { NewsletterType } from './newsletter-type';
 
 type Props = {
@@ -14,7 +16,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
     newsletter.queue.scheduled_at || newsletter.queue.created_at;
   return (
     <Grid.ThreeColumns className="mailpoet-stats-info">
-      <div className="mailpoet-grid-span-two-columns">
+      <div>
         <Heading level={1}>{newsletter.subject}</Heading>
         <div>
           <b>
@@ -58,15 +60,47 @@ function NewsletterStatsInfo({ newsletter }: Props) {
             {newsletter.ga_campaign ? newsletter.ga_campaign : '-'}
           </div>
         </div>
-        <div>
+      </div>
+      <div className="mailpoet-stats-info-sender-preview">
+        <ButtonGroup>
           <Button
             href={newsletter.preview_url}
             target="_blank"
             rel="noopener noreferrer"
+            variant="secondary"
           >
             {__('Preview', 'mailpoet')}
           </Button>
-        </div>
+          <Dropdown
+            focusOnMount={false}
+            popoverProps={{ placement: 'bottom-end' }}
+            renderToggle={({ isOpen, onToggle }) => (
+              <ButtonGroup>
+                <Button href={newsletter.preview_url} variant="primary">
+                  {__('Edit', 'mailpoet')}
+                </Button>
+                <Button onClick={onToggle} aria-expanded={isOpen}>
+                  <Icon icon={chevronDown} size={24} />
+                </Button>
+              </ButtonGroup>
+            )}
+            renderContent={() => (
+              <>
+                {newsletter.type === 'notification' && (
+                  <MenuItem variant="tertiary" onClick={() => {}}>
+                    {__('Deactivate (Only for Post notifications)', 'mailpoet')}
+                  </MenuItem>
+                )}
+                <MenuItem variant="tertiary" onClick={() => {}}>
+                  {__('Duplicate')}
+                </MenuItem>
+                <MenuItem isDestructive onClick={() => {}}>
+                  {__('Move to Trash')}
+                </MenuItem>
+              </>
+            )}
+          />
+        </ButtonGroup>
       </div>
     </Grid.ThreeColumns>
   );
