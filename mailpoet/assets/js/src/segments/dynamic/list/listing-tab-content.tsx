@@ -1,5 +1,5 @@
 import { ComponentProps, useEffect, useMemo } from 'react';
-import { TableCard } from '@woocommerce/components';
+import { TableCard, TextControl } from '@woocommerce/components';
 import { useSelect } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
 import { __ } from '@wordpress/i18n';
@@ -115,48 +115,61 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
         ? dynamicSegmentQuery.offset / dynamicSegmentQuery.limit + 1
         : 1,
   };
+
   return (
-    <TableCard
-      className="mailpoet-segments-listing"
-      title=""
-      isLoading={dynamicSegments === null}
-      headers={
-        // typed as mutable so doesn't accept our const (readonly) type
-        tableHeaders as unknown as ComponentProps<typeof TableCard>['headers']
-      }
-      rows={rows}
-      onQueryChange={(query) => (param) => {
-        if (dynamicSegmentQuery === null) {
-          return;
-        }
-        if (query === 'paged') {
+    <>
+      <TextControl
+        className="mailpoet-segments-listing-search"
+        placeholder={__('Search', 'mailpoet')}
+        onChange={(value) => {
           updateDynamicQuery({
-            offset: dynamicSegmentQuery.limit * (param - 1),
-          });
-        }
-        if (query === 'per_page') {
-          updateDynamicQuery({
-            limit: param,
+            search: value,
             offset: 0,
           });
+        }}
+      />
+      <TableCard
+        className="mailpoet-segments-listing"
+        title=""
+        isLoading={dynamicSegments === null}
+        headers={
+          // typed as mutable so doesn't accept our const (readonly) type
+          tableHeaders as unknown as ComponentProps<typeof TableCard>['headers']
         }
-        if (query === 'sort') {
-          const newParams = {
-            offset: 0,
-            sort_by: param,
-          } as Partial<DynamicSegmentQuery>;
-          if (dynamicSegmentQuery.sort_by === param) {
-            newParams.sort_order =
-              dynamicSegmentQuery.sort_order === 'asc' ? 'desc' : 'asc';
+        rows={rows}
+        onQueryChange={(query) => (param) => {
+          if (dynamicSegmentQuery === null) {
+            return;
           }
-          updateDynamicQuery(newParams);
-        }
-      }}
-      query={tableQueryParams}
-      rowKey={(_, i) => dynamicSegments[i].id}
-      rowsPerPage={rowsPerPage}
-      totalRows={totalRows}
-      showMenu={false}
-    />
+          if (query === 'paged') {
+            updateDynamicQuery({
+              offset: dynamicSegmentQuery.limit * (param - 1),
+            });
+          }
+          if (query === 'per_page') {
+            updateDynamicQuery({
+              limit: param,
+              offset: 0,
+            });
+          }
+          if (query === 'sort') {
+            const newParams = {
+              offset: 0,
+              sort_by: param,
+            } as Partial<DynamicSegmentQuery>;
+            if (dynamicSegmentQuery.sort_by === param) {
+              newParams.sort_order =
+                dynamicSegmentQuery.sort_order === 'asc' ? 'desc' : 'asc';
+            }
+            updateDynamicQuery(newParams);
+          }
+        }}
+        query={tableQueryParams}
+        rowKey={(_, i) => dynamicSegments[i].id}
+        rowsPerPage={rowsPerPage}
+        totalRows={totalRows}
+        showMenu={false}
+      />
+    </>
   );
 }
