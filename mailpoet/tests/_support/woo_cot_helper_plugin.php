@@ -40,7 +40,6 @@ function mailpoet_create_cot() {
     $dataSynchronizer = wc_get_container()->get(DataSynchronizer::class);
   } catch (\Exception $e) {
     WP_CLI::error('DataSynchronizer for COT not found. Does installed WooCommerce version support COT? ' . $e->getMessage());
-    return;
   }
   $dataSynchronizer->create_database_tables();
   WP_CLI::success('Database tables for COT feature created.');

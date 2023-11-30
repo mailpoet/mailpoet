@@ -90,6 +90,7 @@ class MailerTest extends \MailPoetTest {
   }
 
   public function testItCanPrepareSubscriberForSending() {
+    /** @var Subscriber $subscriber */
     $subscriber = Subscriber::create();
     $subscriber->email = 'test@example.com';
     $subscriber->firstName = 'John';

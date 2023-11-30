@@ -6,6 +6,7 @@ use Helper\WordPress;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -52,6 +53,7 @@ class ShortcodesTest extends \MailPoetTest {
     $this->queue = $this->newsletter->getLatestQueue();
     $shortcodes = ContainerWrapper::getInstance()->get(Shortcodes::class);
     WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
+      /** @var array{0: string, 1:NewsletterEntity, 2:SubscriberEntity|null, 3:SendingQueueEntity|null} $args */
       $args = func_get_args();
       $filterName = array_shift($args);
       switch ($filterName) {
@@ -243,6 +245,7 @@ class ShortcodesTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
+      /** @var array{0: string, 1:NewsletterEntity, 2:SubscriberEntity|null, 3:SendingQueueEntity|null} $args */
       $args = func_get_args();
       $filterName = array_shift($args);
       switch ($filterName) {
@@ -285,6 +288,7 @@ class ShortcodesTest extends \MailPoetTest {
     $this->entityManager->flush();
 
     WordPress::interceptFunction('apply_filters', function() use($shortcodes) {
+      /** @var array{0: string, 1:NewsletterEntity, 2:SubscriberEntity|null, 3:SendingQueueEntity|null} $args */
       $args = func_get_args();
       $filterName = array_shift($args);
       switch ($filterName) {

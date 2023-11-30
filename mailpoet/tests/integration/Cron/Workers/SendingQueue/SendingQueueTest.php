@@ -107,20 +107,28 @@ class SendingQueueTest extends \MailPoetTest {
     $populator->up();
     $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->subscriber = $this->createSubscriber('john@doe.com', 'John', 'Doe');
-    $this->segment = Segment::create();
+    /** @var Segment $segment */
+    $segment = Segment::create();
+    $this->segment = $segment;
     $this->segment->name = 'segment';
     $this->segment->save();
-    $this->subscriberSegment = SubscriberSegment::create();
+    /** @var SubscriberSegment $subscriberSegment */
+    $subscriberSegment = SubscriberSegment::create();
+    $this->subscriberSegment = $subscriberSegment;
     $this->subscriberSegment->subscriberId = (int)$this->subscriber->getId();
     $this->subscriberSegment->segmentId = (int)$this->segment->id;
     $this->subscriberSegment->save();
-    $this->newsletter = Newsletter::create();
+    /** @var Newsletter $newsletter */
+    $newsletter = Newsletter::create();
+    $this->newsletter = $newsletter;
     $this->newsletter->type = Newsletter::TYPE_STANDARD;
     $this->newsletter->status = Newsletter::STATUS_ACTIVE;
     $this->newsletter->subject = Fixtures::get('newsletter_subject_template');
     $this->newsletter->body = Fixtures::get('newsletter_body_template');
     $this->newsletter->save();
-    $this->newsletterSegment = NewsletterSegment::create();
+    /** @var NewsletterSegment $newsletterSegment */
+    $newsletterSegment = NewsletterSegment::create();
+    $this->newsletterSegment = $newsletterSegment;
     $this->newsletterSegment->newsletterId = $this->newsletter->id;
     $this->newsletterSegment->segmentId = (int)$this->segment->id;
     $this->newsletterSegment->save();
@@ -1311,6 +1319,7 @@ class SendingQueueTest extends \MailPoetTest {
   public function testCampaignIdsAreTheSameForDifferentSubscribers() {
     $mailerTaskCampaignIds = [];
     $secondSubscriber = $this->createSubscriber('sub2@example.com', 'Subscriber', 'Two');
+    /** @var SubscriberSegment $segment2 */
     $segment2 = SubscriberSegment::create();
     $segment2->subscriberId = (int)$secondSubscriber->getId();
     $segment2->segmentId = (int)$this->segment->id;

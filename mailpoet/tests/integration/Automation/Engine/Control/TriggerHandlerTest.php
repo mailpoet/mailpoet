@@ -205,7 +205,9 @@ class TriggerHandlerTest extends \MailPoetTest {
   public function testItLogs(): void {
     $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
     $automation1 = $this->tester->createAutomation('Test 1', new Step('trigger-1', Step::TYPE_TRIGGER, $trigger->getKey(), [], []));
+    $this->assertInstanceOf(Automation::class, $automation1);
     $automation2 = $this->tester->createAutomation('Test 2', new Step('trigger-2', Step::TYPE_TRIGGER, $trigger->getKey(), [], []));
+    $this->assertInstanceOf(Automation::class, $automation2);
 
     $segmentSubject = new Subject(SegmentSubject::KEY, ['segment_id' => $this->segments['segment_1']->getId()]);
     $this->testee->processTrigger($trigger, [$segmentSubject]);

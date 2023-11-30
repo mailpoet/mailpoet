@@ -100,6 +100,7 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
 
     $this->assertCount(2, $response);
     foreach ($subscribers as $key => $subscriber) {
+      /** @var array $item - for PHPStan */
       $item = $response[$key];
       $this->assertEquals($subscriber->getId(), $item['id']);
       $this->assertEquals($subscriber->getFirstName(), $item['first_name']);

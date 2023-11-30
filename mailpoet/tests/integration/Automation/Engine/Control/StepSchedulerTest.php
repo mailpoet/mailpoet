@@ -7,6 +7,8 @@ use ActionScheduler_SimpleSchedule;
 use ActionScheduler_Store;
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Control\StepScheduler;
+use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
@@ -141,7 +143,9 @@ class StepSchedulerTest extends MailPoetTest {
       new Step('a1', Step::TYPE_ACTION, 'test:action', [], [new NextStep('a2')]),
       new Step('a2', Step::TYPE_ACTION, 'test:action', [], [])
     );
+    $this->assertInstanceOf(Automation::class, $automation);
     $run = $this->tester->createAutomationRun($automation);
+    $this->assertInstanceOf(AutomationRun::class, $run);
     return new StepRunArgs($automation, $run, $automation->getSteps()['a1'], [], 1);
   }
 

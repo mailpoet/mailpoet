@@ -23,7 +23,9 @@ class ReceiveScheduledEmailCest {
   public function receiveScheduledEmail(\AcceptanceTester $i) {
     $i->wantTo('Receive a scheduled standard newsletter as a subscriber');
     $this->settings->withCronTriggerMethod('Action Scheduler');
-    $currentDateTime = new \DateTime(strval($i->executeJS('return window.mailpoet_current_date_time')));
+    /** @var string $value - for PHPStan because strval() doesn't accept a value of mixed */
+    $value = $i->executeJS('return window.mailpoet_current_date_time');
+    $currentDateTime = new \DateTime(strval($value));
 
     $newsletterTitle = 'Scheduled Test Newsletter';
     $standardTemplate = '[data-automation-id="select_template_0"]';

@@ -117,10 +117,13 @@ class RendererTest extends \MailPoetTest {
     $renderer->render($this->newsletter, 'Heading Text');
     $html = $renderer->getHTMLAfterContent();
 
-    $siteName = strval(get_option('blogname'));
+    /** @var string $blogName - for PHPStan */
+    $blogName = get_option('blogname');
+    $siteName = strval($blogName);
     verify($html)->stringContainsString($siteName); // [site:title]
-
-    $siteUrl = strval(get_option('home'));
+    /** @var string $home - for PHPStan */
+    $home = get_option('home');
+    $siteUrl = strval($home);
     verify($html)->stringContainsString($siteUrl); // [site:homepage_url]
 
     verify($html)->stringContainsString(date_i18n('F', WPFunctions::get()->currentTime('timestamp'))); // [date:mtext]

@@ -55,7 +55,9 @@ class StepHandlerTest extends \MailPoetTest {
     // run step
     $stepHandler = $this->getServiceWithOverrides(StepHandler::class, ['registry' => $registry]);
     $automation = $this->createAutomation();
+    $this->assertInstanceOf(Automation::class, $automation);
     $run = $this->tester->createAutomationRun($automation);
+    $this->assertInstanceOf(AutomationRun::class, $run);
     $stepHandler->handle(['automation_run_id' => $run->getId(), 'step_id' => 'a1', 'run_number' => 1]);
   }
 
@@ -68,7 +70,9 @@ class StepHandlerTest extends \MailPoetTest {
 
     $stepHandler = $this->getServiceWithOverrides(StepHandler::class, ['registry' => $registry]);
     $automation = $this->createAutomation();
+    $this->assertInstanceOf(Automation::class, $automation);
     $run = $this->tester->createAutomationRun($automation);
+    $this->assertInstanceOf(AutomationRun::class, $run);
 
     // create start log and modify "updated_at" to an older date
     $oldDate = new DateTimeImmutable('2000-01-01 00:00:00');
@@ -100,7 +104,9 @@ class StepHandlerTest extends \MailPoetTest {
 
     $stepHandler = $this->getServiceWithOverrides(StepHandler::class, ['registry' => $registry]);
     $automation = $this->createAutomation();
+    $this->assertInstanceOf(Automation::class, $automation);
     $run = $this->tester->createAutomationRun($automation);
+    $this->assertInstanceOf(AutomationRun::class, $run);
 
     // create start log and modify "updated_at" to an older date
     $oldDate = new DateTimeImmutable('2000-01-01 00:00:00');

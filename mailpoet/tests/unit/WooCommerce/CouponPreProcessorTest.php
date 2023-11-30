@@ -4,17 +4,12 @@ namespace unit\WooCommerce;
 
 use Codeception\Stub;
 use Helper\WordPress;
-use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Logging\LoggerFactory;
-use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\NewsletterProcessingException;
-use MailPoet\Settings\SettingsController;
 use MailPoet\WooCommerce\CouponPreProcessor;
 use MailPoet\WooCommerce\Helper;
-use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class CouponPreProcessorTest extends \MailPoetUnitTest {
 
@@ -238,18 +233,5 @@ class CouponPreProcessorTest extends \MailPoetUnitTest {
         'save',
       ])
       ->getMock();
-  }
-
-  private function getLoggerFactory(Stub\StubMarshaler $expectedPersistence): LoggerFactory {
-    $settings = $this->make(SettingsController::class, ['get' => 'errors']);
-    $repository = $this->makeEmpty(LogRepository::class, ['persist' => $expectedPersistence]);
-    $entityManager = $this->make(EntityManager::class);
-    $entityManagerFactory = $this->make(EntityManagerFactory::class, ['createEntityManager' => $entityManager]);
-    return $this->make(LoggerFactory::class, [
-      'logRepository' => $repository,
-      'entityManager' => $entityManager,
-      'entityManagerFactory' => $entityManagerFactory,
-      'settings' => $settings,
-    ]);
   }
 }

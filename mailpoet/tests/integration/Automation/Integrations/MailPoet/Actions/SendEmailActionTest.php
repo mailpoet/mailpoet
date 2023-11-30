@@ -334,13 +334,6 @@ class SendEmailActionTest extends \MailPoetTest {
     ];
   }
 
-  private function getSubjects(): array {
-    return [
-      $this->segmentSubject,
-      $this->subscriberSubject,
-    ];
-  }
-
   private function getSubjectData(SubscriberEntity $subscriber, SegmentEntity $segment): array {
     return [
       new Subject('mailpoet:segment', ['segment_id' => $segment->getId()]),

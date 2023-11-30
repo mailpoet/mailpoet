@@ -28,11 +28,11 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
     $this->automationRunStorage = $this->diContainer->get(AutomationRunStorage::class);
     $this->testee = $this->diContainer->get(AutomationStatisticsStorage::class);
 
-    $this->automations = [
-      $this->tester->createAutomation('1')->getId(),
-      $this->tester->createAutomation('2')->getId(),
-      $this->tester->createAutomation('3')->getId(),
-    ];
+    for ($i = 1; $i <= 3; $i++) {
+      $automation = $this->tester->createAutomation((string)$i);
+      $this->assertInstanceOf(Automation::class, $automation);
+      $this->automations[] = $automation->getId();
+    }
   }
 
   /**
