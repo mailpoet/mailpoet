@@ -31,4 +31,5 @@ export type NewsletterType = {
       count: number;
     };
   };
+  type: string;
 };
