@@ -10,6 +10,9 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
  * @property int $processed
  * @property int $failed
  * @property string $error
+ *
+ * @deprecated This model is deprecated. Use \MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository
+ * and \MailPoet\Entities\ScheduledTaskSubscriberEntity instead. This class can be removed after 2024-05-30.
  */
 class ScheduledTaskSubscriber extends Model {
   const STATUS_UNPROCESSED = ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED;
@@ -25,11 +28,19 @@ class ScheduledTaskSubscriber extends Model {
   public static $_table = MP_SCHEDULED_TASK_SUBSCRIBERS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
   public static $_id_column = ['task_id', 'subscriber_id']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps,PSR2.Classes.PropertyDeclaration
 
+  /**
+   * @deprecated
+   */
   public function task() {
+    self::deprecationError(__METHOD__);
     return $this->hasOne(__NAMESPACE__ . '\ScheduledTask', 'id', 'task_id');
   }
 
+  /**
+   * @deprecated
+   */
   public static function createOrUpdate($data = []) {
+    self::deprecationError(__METHOD__);
     if (!is_array($data) || empty($data['task_id']) || empty($data['subscriber_id'])) {
       return;
     }
@@ -52,8 +63,11 @@ class ScheduledTaskSubscriber extends Model {
 
   /**
    * For large batches use MailPoet\Segments\SubscribersFinder::addSubscribersToTaskFromSegments()
+   *
+   * @deprecated
    */
   public static function addSubscribers($taskId, array $subscriberIds) {
+    self::deprecationError(__METHOD__);
     foreach ($subscriberIds as $subscriberId) {
       self::createOrUpdate([
         'task_id' => $taskId,
@@ -62,24 +76,56 @@ class ScheduledTaskSubscriber extends Model {
     }
   }
 
+  /**
+   * @deprecated
+   */
   public static function clearSubscribers($taskId) {
+    self::deprecationError(__METHOD__);
     return self::where('task_id', $taskId)->deleteMany();
   }
 
+  /**
+   * @deprecated
+   */
   public static function getUnprocessedCount($taskId) {
+    self::deprecationError(__METHOD__);
     return self::getCount($taskId, self::STATUS_UNPROCESSED);
   }
 
+  /**
+   * @deprecated
+   */
   public static function getProcessedCount($taskId) {
+    self::deprecationError(__METHOD__);
     return self::getCount($taskId, self::STATUS_PROCESSED);
   }
 
+  /**
+   * @deprecated
+   */
   private static function getCount($taskId, $processed = null) {
+    self::deprecationError(__METHOD__);
     $orm = self::where('task_id', $taskId);
     if (!is_null($processed)) {
       $orm->where('processed', $processed);
     }
     return $orm->count();
+  }
+
+  /**
+   * @deprecated This is here for displaying the deprecation warning for properties.
+   */
+  public function __get($key) {
+    self::deprecationError('property "' . $key . '"');
+    return parent::__get($key);
+  }
+
+  /**
+   * @deprecated This is here for displaying the deprecation warning for static calls.
+   */
+  public static function __callStatic($name, $arguments) {
+    self::deprecationError($name);
+    return parent::__callStatic($name, $arguments);
   }
 
   private static function deprecationError($methodName) {
