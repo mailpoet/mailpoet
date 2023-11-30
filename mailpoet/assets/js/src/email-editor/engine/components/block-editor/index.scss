@@ -84,6 +84,11 @@
   ol.has-background {
     padding-left: 40px;
   }
+
+  // Override default button border radius which is set in core to 9999px
+  .wp-block-button__link {
+    border-radius: 0;
+  }
 }
 
 // For the WYSIWYG experience we don't want to display any margins between blocks in the editor
