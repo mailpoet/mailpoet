@@ -39,8 +39,10 @@ use MailPoet\Util\Security;
  * @property string $gaCampaign
  * @property string $event
  * @property string $unsubscribeToken
+ *
+ * @deprecated This model is deprecated. Use \MailPoet\Newsletter\NewslettersRepository and
+ * \MailPoet\Entities\NewsletterEntity instead. This class can be removed after 2024-05-30.
  */
-
 class Newsletter extends Model {
   public static $_table = MP_NEWSLETTERS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
   const TYPE_AUTOMATIC = NewsletterEntity::TYPE_AUTOMATIC;
@@ -61,18 +63,30 @@ class Newsletter extends Model {
   // automatic newsletters status
   const STATUS_ACTIVE = NewsletterEntity::STATUS_ACTIVE;
 
+  /**
+   * @deprecated
+   */
   public function __construct() {
+    self::deprecationError(__METHOD__);
     parent::__construct();
     $this->addValidations('type', [
       'required' => __('Please specify a type.', 'mailpoet'),
     ]);
   }
 
+  /**
+   * @deprecated
+   */
   public function queue() {
+    self::deprecationError(__METHOD__);
     return $this->hasOne(__NAMESPACE__ . '\SendingQueue', 'newsletter_id', 'id');
   }
 
+  /**
+   * @deprecated
+   */
   public function children() {
+    self::deprecationError(__METHOD__);
     return $this->hasMany(
       __NAMESPACE__ . '\Newsletter',
       'parent_id',
@@ -80,7 +94,11 @@ class Newsletter extends Model {
     );
   }
 
+  /**
+   * @deprecated
+   */
   public function parent() {
+    self::deprecationError(__METHOD__);
     return $this->hasOne(
       __NAMESPACE__ . '\Newsletter',
       'id',
@@ -88,7 +106,11 @@ class Newsletter extends Model {
     );
   }
 
+  /**
+   * @deprecated
+   */
   public function segments() {
+    self::deprecationError(__METHOD__);
     return $this->hasManyThrough(
       __NAMESPACE__ . '\Segment',
       __NAMESPACE__ . '\NewsletterSegment',
@@ -97,7 +119,11 @@ class Newsletter extends Model {
     );
   }
 
+  /**
+   * @deprecated
+   */
   public function segmentRelations() {
+    self::deprecationError(__METHOD__);
     return $this->hasMany(
       __NAMESPACE__ . '\NewsletterSegment',
       'newsletter_id',
@@ -105,7 +131,11 @@ class Newsletter extends Model {
     );
   }
 
+  /**
+   * @deprecated
+   */
   public function save() {
+    self::deprecationError(__METHOD__);
     if (is_string($this->deletedAt) && strlen(trim($this->deletedAt)) === 0) {
       $this->set_expr('deleted_at', 'NULL');
     }
@@ -126,6 +156,9 @@ class Newsletter extends Model {
     return parent::save();
   }
 
+  /**
+   * @deprecated
+   */
   public function trash() {
     $this->save();
     trigger_error('Calling Newsletter::trash() is deprecated and will be removed. Use \MailPoet\Newsletter\NewslettersRepository instead.', E_USER_DEPRECATED);
@@ -133,6 +166,9 @@ class Newsletter extends Model {
     return $this;
   }
 
+  /**
+   * @deprecated
+   */
   public function restore() {
     $this->save();
     trigger_error('Calling Newsletter::restore() is deprecated and will be removed. Use \MailPoet\Newsletter\NewslettersRepository instead.', E_USER_DEPRECATED);
@@ -140,13 +176,20 @@ class Newsletter extends Model {
     return $this;
   }
 
+  /**
+   * @deprecated
+   */
   public function delete() {
     trigger_error('Calling Newsletter::delete() is deprecated and will be removed. Use \MailPoet\Newsletter\NewslettersRepository instead.', E_USER_DEPRECATED);
     ContainerWrapper::getInstance()->get(NewsletterDeleteController::class)->bulkDelete([$this->id]);
     return null;
   }
 
+  /**
+   * @deprecated
+   */
   public function setStatus($status = null) {
+    self::deprecationError(__METHOD__);
     if ($status === self::STATUS_ACTIVE) {
       if (!$this->body || empty(json_decode($this->getBodyString()))) {
         $this->setError(
@@ -182,7 +225,11 @@ class Newsletter extends Model {
     return $this;
   }
 
+  /**
+   * @deprecated
+   */
   public function asArray() {
+    self::deprecationError(__METHOD__);
     $model = parent::asArray();
 
     if (isset($model['body'])) {
@@ -191,7 +238,11 @@ class Newsletter extends Model {
     return $model;
   }
 
+  /**
+   * @deprecated
+   */
   public function withSegments($inclDeleted = false) {
+    self::deprecationError(__METHOD__);
     $this->segments = $this->segments()->findArray();
     if ($inclDeleted) {
       $this->withDeletedSegments();
@@ -199,7 +250,11 @@ class Newsletter extends Model {
     return $this;
   }
 
+  /**
+   * @deprecated
+   */
   public function withDeletedSegments() {
+    self::deprecationError(__METHOD__);
     if (!empty($this->segments)) {
       $segmentIds = array_column($this->segments, 'id');
       $links = $this->segmentRelations()
@@ -225,7 +280,11 @@ class Newsletter extends Model {
     self::deprecationError(__METHOD__);
   }
 
+  /**
+   * @deprecated
+   */
   public function getBodyString(): string {
+    self::deprecationError(__METHOD__);
     if (is_array($this->body)) {
       return (string)json_encode($this->body);
     }
@@ -249,7 +308,11 @@ class Newsletter extends Model {
     return $this;
   }
 
+  /**
+   * @deprecated
+   */
   public static function filterWithOptions($orm, $type) {
+    self::deprecationError(__METHOD__);
     $orm = $orm->select(MP_NEWSLETTERS_TABLE . '.*');
     $optionFieldsRepository = ContainerWrapper::getInstance()->get(NewsletterOptionFieldsRepository::class);
     $optionFieldsEntities = $optionFieldsRepository->findAll();
@@ -283,7 +346,11 @@ class Newsletter extends Model {
     return $orm;
   }
 
+  /**
+   * @deprecated
+   */
   public static function filterStatus($orm, $status = false) {
+    self::deprecationError(__METHOD__);
     if (
       in_array($status, [
       self::STATUS_DRAFT,
@@ -298,7 +365,11 @@ class Newsletter extends Model {
     return $orm;
   }
 
+  /**
+   * @deprecated
+   */
   public static function createOrUpdate($data = []) {
+    self::deprecationError(__METHOD__);
     $data['unsubscribe_token'] = Security::generateUnsubscribeToken(self::class);
     return parent::_createOrUpdate($data, false, function($data) {
       $settings = SettingsController::getInstance();
@@ -336,22 +407,57 @@ class Newsletter extends Model {
     });
   }
 
+  /**
+   * @deprecated
+   */
   public static function getByHash($hash) {
+    self::deprecationError(__METHOD__);
     return parent::where('hash', $hash)
       ->findOne();
   }
 
+  /**
+   * @deprecated
+   */
   public function getMeta() {
+    self::deprecationError(__METHOD__);
     if (!$this->meta) return;
 
     return (Helpers::isJson($this->meta) && is_string($this->meta)) ? json_decode($this->meta, true) : $this->meta;
   }
 
+  /**
+   * @deprecated
+   */
   public static function findOneWithOptions($id) {
+    self::deprecationError(__METHOD__);
     $newsletter = self::findOne($id);
     if (!$newsletter instanceof self) {
       return false;
     }
     return self::filter('filterWithOptions', $newsletter->type)->findOne($id);
+  }
+
+  /**
+   * @deprecated This is here for displaying the deprecation warning for properties.
+   */
+  public function __get($key) {
+    self::deprecationError('property "' . $key . '"');
+    return parent::__get($key);
+  }
+
+  /**
+   * @deprecated This is here for displaying the deprecation warning for static calls.
+   */
+  public static function __callStatic($name, $arguments) {
+    self::deprecationError($name);
+    return parent::__callStatic($name, $arguments);
+  }
+
+  private static function deprecationError($methodName) {
+    trigger_error(
+      'Calling ' . esc_html($methodName) . ' is deprecated and will be removed. Use \MailPoet\Newsletter\NewslettersRepository and \MailPoet\Entities\NewsletterEntity instead.',
+      E_USER_DEPRECATED
+    );
   }
 }
