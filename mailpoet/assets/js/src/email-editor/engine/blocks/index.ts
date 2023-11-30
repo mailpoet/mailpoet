@@ -4,6 +4,7 @@ import { disableColumnsLayout, deactivateStackOnMobile } from './core/columns';
 import { disableImageFilter, hideExpandOnClick } from './core/image';
 import { disableCertainRichTextFormats } from './core/rich-text';
 import { enhanceButtonBlock } from './core/button';
+import { enhanceButtonsBlock } from './core/buttons';
 
 export function initBlocks() {
   disableNestedColumns();
@@ -13,5 +14,6 @@ export function initBlocks() {
   disableCertainRichTextFormats();
   disableColumnsLayout();
   enhanceButtonBlock();
+  enhanceButtonsBlock();
   registerCoreBlocks();
 }
