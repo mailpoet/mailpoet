@@ -46,7 +46,7 @@ export function BulkActions({ tab, onClick }: BulkActionsProps): JSX.Element {
     <SelectControl
       multiple={false}
       hideLabelFromVision
-      className="mailpoet-segments-listing-group"
+      className="mailpoet-segments-listing-bulk-actions"
       label={__('Bulk Actions', 'mailpoet')}
       options={bulkActions}
       value="0"
