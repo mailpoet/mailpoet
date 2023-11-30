@@ -73,12 +73,12 @@ class WelcomeWizardCest {
     // wizard finished and the user was redirect to the home page
     $i->waitForText('Welcome to MailPoet', 10, '.mailpoet-homepage__container');
 
-    Assert::assertSame($senderName, $this->settingsRepository->findOneByName('sender')->getValue()['name']);
-    Assert::assertSame($senderAddress, $this->settingsRepository->findOneByName('sender')->getValue()['address']);
-    Assert::assertSame(['enabled' => '1'], $this->settingsRepository->findOneByName('3rd_party_libs')->getValue());
-    Assert::assertSame(['enabled' => '1'], $this->settingsRepository->findOneByName('analytics')->getValue());
-    Assert::assertSame(['level' => 'full'], $this->settingsRepository->findOneByName('tracking')->getValue());
-    Assert::assertSame($mailPoetSendingKey, $this->settingsRepository->findOneByName('mta')->getValue()['mailpoet_api_key']);
+    Assert::assertSame($senderName, $this->findSetting('sender')->getValue()['name']);
+    Assert::assertSame($senderAddress, $this->findSetting('sender')->getValue()['address']);
+    Assert::assertSame(['enabled' => '1'], $this->findSetting('3rd_party_libs')->getValue());
+    Assert::assertSame(['enabled' => '1'], $this->findSetting('analytics')->getValue());
+    Assert::assertSame(['level' => 'full'], $this->findSetting('tracking')->getValue());
+    Assert::assertSame($mailPoetSendingKey, $this->findSetting('mta')->getValue()['mailpoet_api_key']);
   }
 
   public function welcomeWizardShouldSkipMssStepIfKeyAlreadyExists(\AcceptanceTester $i, Scenario $scenario) {
@@ -114,11 +114,19 @@ class WelcomeWizardCest {
     // wizard finished and the user was redirect to the home page
     $i->waitForText('Welcome to MailPoet', 10, '.mailpoet-homepage__container');
 
-    Assert::assertSame($senderName, $this->settingsRepository->findOneByName('sender')->getValue()['name']);
-    Assert::assertSame($senderAddress, $this->settingsRepository->findOneByName('sender')->getValue()['address']);
-    Assert::assertSame(['enabled' => '1'], $this->settingsRepository->findOneByName('3rd_party_libs')->getValue());
-    Assert::assertSame(['enabled' => '1'], $this->settingsRepository->findOneByName('analytics')->getValue());
-    Assert::assertSame(['level' => 'full'], $this->settingsRepository->findOneByName('tracking')->getValue());
-    Assert::assertSame($mailPoetSendingKey, $this->settingsRepository->findOneByName('mta')->getValue()['mailpoet_api_key']);
+    Assert::assertSame($senderName, $this->findSetting('sender')->getValue()['name']);
+    Assert::assertSame($senderAddress, $this->findSetting('sender')->getValue()['address']);
+    Assert::assertSame(['enabled' => '1'], $this->findSetting('3rd_party_libs')->getValue());
+    Assert::assertSame(['enabled' => '1'], $this->findSetting('analytics')->getValue());
+    Assert::assertSame(['level' => 'full'], $this->findSetting('tracking')->getValue());
+    Assert::assertSame($mailPoetSendingKey, $this->findSetting('mta')->getValue()['mailpoet_api_key']);
+  }
+
+  private function findSetting(string $name) {
+    $setting = $this->settingsRepository->findOneByName($name);
+    if (!$setting) {
+      throw new \Exception("Setting '$name' not found");
+    }
+    return $setting;
   }
 }
