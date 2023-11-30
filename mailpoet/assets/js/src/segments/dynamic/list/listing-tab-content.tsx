@@ -1,10 +1,14 @@
-import { ComponentProps, useEffect, useMemo } from 'react';
+import { ComponentProps, useEffect, useMemo, useState } from 'react';
 import { TableCard, TextControl } from '@woocommerce/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
 import { __ } from '@wordpress/i18n';
 import { useLocation } from 'react-router-dom';
-import { DynamicSegment, DynamicSegmentQuery } from 'segments/types';
+import {
+  DynamicSegment,
+  DynamicSegmentAction,
+  DynamicSegmentQuery,
+} from 'segments/types';
 import { getRow } from 'segments/dynamic/list/get-row';
 import {
   updateDynamicQuery,
@@ -12,6 +16,7 @@ import {
 } from './listing-helpers';
 import { BulkActions } from './bulk-actions';
 import { DynamicSegmentsListNotices } from './notices';
+import { ActionConfirm } from './action-confirm';
 
 function SelectAll(): JSX.Element {
   const { dynamicSegments } = useSelect((s) => ({
@@ -82,6 +87,9 @@ type ListingTableProps = {
   };
 };
 export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
+  const [currentAction, setCurrentAction] =
+    useState<DynamicSegmentAction>(null);
+  const [currentSelected, setCurrentSelected] = useState<DynamicSegment[]>([]);
   const location = useLocation();
 
   const { dynamicSegments, dynamicSegmentQuery, dynamicSegmentsCount } =
@@ -139,7 +147,13 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
     <>
       <div className="mailpoet-segments-listing-header">
         <DynamicSegmentsListNotices />
-        <BulkActions tab={tab} />
+        <BulkActions
+          tab={tab}
+          onClick={(selected, action) => {
+            setCurrentSelected(selected);
+            setCurrentAction(action);
+          }}
+        />
         <TextControl
           className="mailpoet-segments-listing-search"
           placeholder={__('Search', 'mailpoet')}
@@ -192,6 +206,11 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
         rowsPerPage={rowsPerPage}
         totalRows={dynamicSegmentsCount}
         showMenu={false}
+      />
+      <ActionConfirm
+        action={currentAction}
+        selected={currentSelected}
+        onClose={() => setCurrentAction(null)}
       />
     </>
   );
