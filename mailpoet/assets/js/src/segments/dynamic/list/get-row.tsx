@@ -3,10 +3,36 @@ import { DynamicSegment, DynamicSegmentAction } from 'segments/types';
 import * as ROUTES from 'segments/routes';
 import { Button, DropdownMenu } from '@wordpress/components';
 import { dispatch } from '@wordpress/data';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { moreVertical } from '@wordpress/icons';
+import { store as noticesStore } from '@wordpress/notices';
 import { MailPoet } from '../../../mailpoet';
 import { storeName } from '../store';
+
+function duplicateDynamicSegment(segment: DynamicSegment): void {
+  void MailPoet.Ajax.post({
+    api_version: 'v1',
+    endpoint: 'dynamic_segments',
+    action: 'duplicate',
+    data: {
+      id: segment.id,
+    },
+  })
+    .then((data) => {
+      const newSegment = data.data as DynamicSegment;
+      const successMessage = sprintf(
+        __('Segment "%s" has been duplicated.', 'mailpoet'),
+        newSegment.name,
+      );
+      void dispatch(noticesStore).createSuccessNotice(successMessage);
+      void dispatch(storeName).loadDynamicSegments();
+    })
+    .catch((error: { errors: { error: string; message: string }[] }) => {
+      error.errors.map(
+        (e) => void dispatch(noticesStore).createErrorNotice(e.message),
+      );
+    });
+}
 
 export function getRow(
   dynamicSegment: DynamicSegment,
@@ -24,6 +50,16 @@ export function getRow(
   const menuItems =
     tab !== 'trash'
       ? [
+          {
+            key: 'duplicate',
+            control: {
+              title: __('Duplicate', 'mailpoet'),
+              icon: null,
+              onClick: () => {
+                duplicateDynamicSegment(dynamicSegment);
+              },
+            },
+          },
           {
             key: 'trash',
             control: {
