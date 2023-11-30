@@ -24,6 +24,34 @@ function setDynamicSegments(
   };
 }
 
+function setAllDynamicSegmentsSelected(state: StateType): StateType {
+  const data = state.dynamicSegments.data.map((segment) => ({
+    ...segment,
+    selected: true,
+  }));
+  return {
+    ...state,
+    dynamicSegments: {
+      ...state.dynamicSegments,
+      data: [...data],
+    },
+  };
+}
+
+function setAllDynamicSegmentsUnselected(state: StateType): StateType {
+  const data = state.dynamicSegments.data.map((segment) => ({
+    ...segment,
+    selected: false,
+  }));
+  return {
+    ...state,
+    dynamicSegments: {
+      ...state.dynamicSegments,
+      data: [...data],
+    },
+  };
+}
+
 function setSelectDynamicSegment(
   state: StateType,
   action: SelectDynamicSegmentActionType,
@@ -147,6 +175,10 @@ export const createReducer =
     action: ActionType,
   ): StateType => {
     switch (action.type) {
+      case Actions.UNSELECT_ALL_DYNAMIC_SEGMENTS:
+        return setAllDynamicSegmentsUnselected(state);
+      case Actions.SELECT_ALL_DYNAMIC_SEGMENTS:
+        return setAllDynamicSegmentsSelected(state);
       case Actions.SET_DYNAMIC_SEGMENTS:
         return setDynamicSegments(
           state,

@@ -1,6 +1,6 @@
 import { ComponentProps, useEffect, useMemo } from 'react';
 import { TableCard, TextControl } from '@woocommerce/components';
-import { useSelect } from '@wordpress/data';
+import { dispatch, useSelect } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
 import { __ } from '@wordpress/i18n';
 import { useLocation } from 'react-router-dom';
@@ -11,10 +11,33 @@ import {
   updateDynamicQueryFromLocation,
 } from './listing-helpers';
 
+function SelectAll(): JSX.Element {
+  const { dynamicSegments } = useSelect((s) => ({
+    dynamicSegments: s(storeName).getDynamicSegments(),
+  }));
+  const allSelected =
+    dynamicSegments !== null &&
+    dynamicSegments.filter((segment) => segment.selected).length ===
+      dynamicSegments.length;
+  return (
+    <input
+      checked={allSelected}
+      type="checkbox"
+      onChange={() => {
+        if (allSelected) {
+          dispatch(storeName).unselectAllDynamicSections();
+          return;
+        }
+        dispatch(storeName).selectAllDynamicSections();
+      }}
+    />
+  );
+}
+
 const tableHeaders = [
   {
     key: 'checkbox',
-    label: <input type="checkbox" />,
+    label: <SelectAll />,
     cellClassName: 'mailpoet-listing-checkbox',
   },
   {

@@ -316,3 +316,15 @@ export function unselectDynamicSection(
     segment,
   };
 }
+
+export function selectAllDynamicSections(): ActionType {
+  return {
+    type: Actions.SELECT_ALL_DYNAMIC_SEGMENTS,
+  };
+}
+
+export function unselectAllDynamicSections(): ActionType {
+  return {
+    type: Actions.UNSELECT_ALL_DYNAMIC_SEGMENTS,
+  };
+}
