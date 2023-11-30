@@ -105,21 +105,6 @@ class Newsletter extends Model {
     );
   }
 
-  /**
-   * @deprecated This method can be removed after 2023-10-28. Make sure it is removed together with
-   * \MailPoet\Models\NewsletterOption and \MailPoet\Models\NewsletterOptionField.
-   */
-  public function options() {
-    self::deprecationError(__METHOD__);
-
-    return $this->hasManyThrough(
-      __NAMESPACE__ . '\NewsletterOptionField',
-      __NAMESPACE__ . '\NewsletterOption',
-      'newsletter_id',
-      'option_field_id'
-    )->select_expr(MP_NEWSLETTER_OPTION_TABLE . '.value');
-  }
-
   public function save() {
     if (is_string($this->deletedAt) && strlen(trim($this->deletedAt)) === 0) {
       $this->set_expr('deleted_at', 'NULL');
@@ -257,22 +242,6 @@ class Newsletter extends Model {
     return $this;
   }
 
-  /**
-   * @deprecated This method can be removed after 2023-10-28. Make sure it is removed together with
-   * \MailPoet\Models\NewsletterOption and \MailPoet\Models\NewsletterOptionField.
-   */
-  public function withOptions() {
-    self::deprecationError(__METHOD__);
-
-    $options = $this->options()->findArray();
-    if (empty($options)) {
-      $this->options = [];
-    } else {
-      $this->options = array_column($options, 'value', 'name');
-    }
-    return $this;
-  }
-
   public static function filterWithOptions($orm, $type) {
     $orm = $orm->select(MP_NEWSLETTERS_TABLE . '.*');
     $optionFieldsRepository = ContainerWrapper::getInstance()->get(NewsletterOptionFieldsRepository::class);
@@ -377,12 +346,5 @@ class Newsletter extends Model {
       return false;
     }
     return self::filter('filterWithOptions', $newsletter->type)->findOne($id);
-  }
-
-  private static function deprecationError($methodName) {
-    trigger_error(
-      'Calling ' . esc_html($methodName) . ' is deprecated and will be removed. Use \MailPoet\Newsletter\NewslettersRepository and \MailPoet\Entities\NewsletterEntity instead.',
-      E_USER_DEPRECATED
-    );
   }
 }
