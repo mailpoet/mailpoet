@@ -150,7 +150,7 @@ ol {
   background: #fff;
 }
 
-@media screen and (max-width: 599px) {
+@media screen and (max-width: 660px) {
   .email_column {
     max-width: 100% !important;
   }
@@ -158,5 +158,27 @@ ol {
     display: block;
     width: 100% !important;
   }
+
+  /* Flex Layout */
+  .layout-flex-wrapper,
+  .layout-flex-wrapper tbody,
+  .layout-flex-wrapper tr {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .layout-flex-item {
+    display: block !important;
+    padding-bottom: 8px !important; /* Half of the flex gap between blocks */
+    padding-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .layout-flex-item table,
+  .layout-flex-item td {
+    display: block !important;
+    width: 100% !important;
+  }
+  /* Flex Layout End */
 }
 /* stylelint-enable property-no-unknown */

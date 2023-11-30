@@ -51,6 +51,12 @@ class SettingsController {
   const EMAIL_PADDING = '10px';
 
   /**
+   * Gap between blocks in flex layouts
+   * @var string
+   */
+  const FLEX_GAP = '16px';
+
+  /**
    * Default styles applied to the email. These are going to be replaced by style settings.
    * This is currently more af a proof of concept that we can apply styles to the email.
    * We will gradually replace these hardcoded values with styles saved as global styles or styles saved with the email.
@@ -118,13 +124,17 @@ class SettingsController {
     $contentVariables .= 'padding-bottom: var(--wp--style--root--padding-bottom);';
     $contentVariables .= 'padding-top: var(--wp--style--root--padding-top);';
     $contentVariables .= '}';
+    $contentVariables .= '--mp-flex-layout-gap:' . self::FLEX_GAP . ';';
 
     $settings = array_merge($coreDefaultSettings, self::DEFAULT_SETTINGS);
     $settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
+    $flexEmailLayoutStyles = file_get_contents(__DIR__ . '/flex-email-layout.css');
+
     $settings['styles'] = [
+      ['css' => wp_get_global_stylesheet(['base-layout-styles'])],
       ['css' => $theme->get_stylesheet()],
       ['css' => $contentVariables],
-      ['css' => wp_get_global_stylesheet(['base-layout-styles'])],
+      ['css' => $flexEmailLayoutStyles],
     ];
 
     $settings['__experimentalFeatures'] = $coreSettings;
