@@ -17,7 +17,7 @@ class Button implements BlockRenderer {
     $buttonDom->loadHTML($parsedBlock['innerHTML']);
     $buttonLink = $buttonDom->getElementsByTagName('a')->item(0);
 
-    if (!$buttonLink instanceof \DOMElement || !$buttonLink->attributes) {
+    if (!$buttonLink instanceof \DOMElement) {
       return '';
     }
 
@@ -28,7 +28,13 @@ class Button implements BlockRenderer {
     $markup = str_replace('{linkUrl}', $buttonLink->getAttribute('href') ?: '#', $markup);
 
     // Width
-    $markup = str_replace('{width}', $parsedBlock['email_attrs']['width'] ?? '100%', $markup);
+    // Parent block prepares container with proper width. If the width is set let's use full width of the container
+    // otherwise let's use auto width.
+    $width = 'auto';
+    if (($parsedBlock['attrs']['width'] ?? null)) {
+      $width = '100%';
+    }
+    $markup = str_replace('{width}', $width, $markup);
 
     // Background
     $bgColor = $parsedBlock['attrs']['style']['color']['background'] ?? 'transparent';
@@ -38,10 +44,10 @@ class Button implements BlockRenderer {
     $wrapperStyles = [
       "background: $bgColor",
       'cursor: auto',
+      'word-break: break-word',
     ];
     $linkStyles = [
-      "background: $bgColor",
-      'display: inline-block',
+      'display: block',
       'line-height: 120%',
       'margin: 0',
       'mso-padding-alt: 0px',
@@ -52,7 +58,11 @@ class Button implements BlockRenderer {
     // Border
     if ($parsedBlock['attrs']['style']['border'] ?? '') {
       $wrapperStyles[] = wp_style_engine_get_styles(['border' => $parsedBlock['attrs']['style']['border']])['css'];
+    }
+    if ($parsedBlock['attrs']['style']['border']['width'] ?? '') {
       $wrapperStyles[] = 'border-style: solid';
+    } else {
+      $wrapperStyles[] = 'border: none';
     }
 
     // Spacing
@@ -84,7 +94,7 @@ class Button implements BlockRenderer {
   }
 
   private function getMarkup(): string {
-    return '<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate;line-height:100%;width:{width};">
+    return '<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:middle;border-collapse:separate;line-height:100%;width:{width};">
         <tr>
           <td align="center" bgcolor="{backgroundColor}" role="presentation" style="{wrapperStyles}" valign="middle">
             <a href="{linkUrl}" style="{linkStyles}" target="_blank">{linkText}</a>
