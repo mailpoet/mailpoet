@@ -4,7 +4,6 @@ namespace MailPoet\Mailer;
 
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Methods\MailerMethod;
-use MailPoet\Models\Subscriber;
 
 class Mailer {
   /** @var MailerMethod */
@@ -25,20 +24,23 @@ class Mailer {
   }
 
   public function send($newsletter, $subscriber, $extraParams = []) {
-    // This if adds support for code that calls this method to use SubscriberEntity while the Mailer class is still using the old model.
-    // Once we add support for SubscriberEntity in the Mailer class, this if can be removed.
-    if ($subscriber instanceof SubscriberEntity) {
-      $subscriber = Subscriber::findOne($subscriber->getId());
-    }
     $subscriber = $this->formatSubscriberNameAndEmailAddress($subscriber);
     return $this->mailerMethod->send($newsletter, $subscriber, $extraParams);
   }
 
   /**
-   * @param  \MailPoet\Models\Subscriber|array|string $subscriber
+   * @param SubscriberEntity|array|string $subscriber
    */
   public function formatSubscriberNameAndEmailAddress($subscriber) {
-    $subscriber = (is_object($subscriber)) ? $subscriber->asArray() : $subscriber;
+    if ($subscriber instanceof SubscriberEntity) {
+      $prepareSubscriber = [];
+      $prepareSubscriber['email'] = $subscriber->getEmail();
+      $prepareSubscriber['first_name'] = $subscriber->getFirstName();
+      $prepareSubscriber['last_name'] = $subscriber->getLastName();
+
+      $subscriber = $prepareSubscriber;
+    }
+
     if (!is_array($subscriber)) return $subscriber;
     if (isset($subscriber['address'])) $subscriber['email'] = $subscriber['address'];
     $firstName = (isset($subscriber['first_name'])) ? $subscriber['first_name'] : '';
