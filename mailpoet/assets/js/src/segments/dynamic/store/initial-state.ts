@@ -57,7 +57,7 @@ export const getInitialState = (): StateType => ({
   dynamicSegments: {
     data: null,
     meta: {
-      all: 0,
+      count: 0,
       groups: [
         {
           name: 'all',

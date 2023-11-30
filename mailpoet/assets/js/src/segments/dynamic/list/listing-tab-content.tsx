@@ -58,11 +58,11 @@ type ListingTableProps = {
 export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
   const location = useLocation();
 
-  const { dynamicSegments, dynamicSegmentQuery, dynamicSegmentsGroups } =
+  const { dynamicSegments, dynamicSegmentQuery, dynamicSegmentsCount } =
     useSelect((s) => ({
       dynamicSegments: s(storeName).getDynamicSegments(),
       dynamicSegmentQuery: s(storeName).getDynamicSegmentsQuery(),
-      dynamicSegmentsGroups: s(storeName).getDynamicSegmentsGroups(),
+      dynamicSegmentsCount: s(storeName).getDynamicSegmentsCount(),
     }));
 
   useEffect(() => {
@@ -87,19 +87,12 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
 
   const filteredDynamicSegments: DynamicSegment[] =
     groupedDynamicSegments[tab.name] ?? [];
-  let currentGroup = null;
-  if (dynamicSegmentsGroups) {
-    currentGroup = dynamicSegmentsGroups.find(
-      (group) => tab.name === group.name,
-    );
-  }
 
   const rowsPerPage =
     dynamicSegmentQuery !== null ? dynamicSegmentQuery.limit : 10;
   const rows = filteredDynamicSegments.map((dynamicSegment) =>
     getRow(dynamicSegment),
   );
-  const totalRows = currentGroup ? currentGroup.count : 0;
   const tableQueryParams = {
     orderby:
       dynamicSegmentQuery !== null ? dynamicSegmentQuery.sort_by : 'updated_at',
@@ -118,16 +111,18 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
 
   return (
     <>
-      <TextControl
-        className="mailpoet-segments-listing-search"
-        placeholder={__('Search', 'mailpoet')}
-        onChange={(value) => {
-          updateDynamicQuery({
-            search: value,
-            offset: 0,
-          });
-        }}
-      />
+      <div className="mailpoet-segments-listing-header">
+        <TextControl
+          className="mailpoet-segments-listing-search"
+          placeholder={__('Search', 'mailpoet')}
+          onChange={(value) => {
+            updateDynamicQuery({
+              search: value,
+              offset: 0,
+            });
+          }}
+        />
+      </div>
       <TableCard
         className="mailpoet-segments-listing"
         title=""
@@ -167,7 +162,7 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
         query={tableQueryParams}
         rowKey={(_, i) => dynamicSegments[i].id}
         rowsPerPage={rowsPerPage}
-        totalRows={totalRows}
+        totalRows={dynamicSegmentsCount}
         showMenu={false}
       />
     </>

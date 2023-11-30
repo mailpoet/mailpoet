@@ -118,6 +118,9 @@ export const getDynamicSegmentsGroups = (
   state: StateType,
 ): DynamicSegmentGroup[] => state.dynamicSegments.meta.groups;
 
+export const getDynamicSegmentsCount = (state: StateType): number =>
+  state.dynamicSegments.meta.count;
+
 export const getDynamicSegmentsQuery = (
   state: StateType,
 ): DynamicSegmentQuery => state.dynamicSegmentsQuery;
