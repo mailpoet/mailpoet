@@ -43,6 +43,23 @@
       color: #757575;
     }
   }
+
+  .mailpoet-settings-panel__preview-text-length {
+    background: white; // make sure it is visible in all themes
+    border-radius: 6px;
+    color: black; // make sure it is visible in all themes
+    display: inline-block;
+    font-size: smaller;
+    padding: 3px;
+  }
+
+  .mailpoet-settings-panel__preview-text-length-warning {
+    color: #dba617; // from wp-core warning color
+  }
+
+  .mailpoet-settings-panel__preview-text-length-error {
+    color: #d63638; // from wp-core error color
+  }
 }
 
 .edit-post-visual-editor__content-area {

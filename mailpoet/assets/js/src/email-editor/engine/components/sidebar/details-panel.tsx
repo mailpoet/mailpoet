@@ -8,9 +8,11 @@ import { useDispatch } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
+import classnames from 'classnames';
 import { storeName } from '../../store';
 
 const previewTextMaxLength = 150;
+const previewTextRecommendedLength = 80;
 
 export function DetailsPanel() {
   const [mailpoetEmailData] = useEntityProp(
@@ -92,9 +94,16 @@ export function DetailsPanel() {
         onChange={(value) => updateEmailProperty('preheader', value)}
         data-automation-id="email_preview_text"
       />
-      {previewTextLength}
-      {'/'}
-      {previewTextMaxLength}
+      <span
+        className={classnames('mailpoet-settings-panel__preview-text-length', {
+          'mailpoet-settings-panel__preview-text-length-warning':
+            previewTextLength > previewTextRecommendedLength,
+          'mailpoet-settings-panel__preview-text-length-error':
+            previewTextLength > previewTextMaxLength,
+        })}
+      >
+        {previewTextLength}/{previewTextMaxLength}
+      </span>
       <div className="mailpoet-settings-panel__help">
         <Text>
           {__(
