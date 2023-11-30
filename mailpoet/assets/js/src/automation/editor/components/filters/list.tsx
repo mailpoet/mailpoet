@@ -33,9 +33,7 @@ export function FiltersList({
     (select) => ({
       fields: select(storeName).getRegistry().fields,
       filters: select(storeName).getRegistry().filters,
-      errors: select(storeName).getStepError(
-        select(storeName).getSelectedStep().id,
-      ),
+      errors: select(storeName).getStepError(step.id),
     }),
     [],
   );
