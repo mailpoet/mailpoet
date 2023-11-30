@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { TabPanel } from '@wordpress/components';
 import { __, _x } from '@wordpress/i18n';
 import { storeName } from '../store';
-import { ListingTable } from './listing-table';
+import { ListingTabContent } from './listing-tab-content';
 import {
   getTabFromLocation,
   updateDynamicQuery,
@@ -24,7 +24,7 @@ const tabConfig = [
   },
 ] as const;
 
-export function ListingTab(): JSX.Element {
+export function ListingTabs(): JSX.Element {
   const location = useLocation();
   const { dynamicSegmentQuery, dynamicSegmentsGroups } = useSelect((s) => ({
     dynamicSegments: s(storeName).getDynamicSegments(),
@@ -53,7 +53,7 @@ export function ListingTab(): JSX.Element {
     [dynamicSegmentsGroups],
   );
 
-  const renderTabs = useCallback((tab) => <ListingTable tab={tab} />, []);
+  const renderTabs = useCallback((tab) => <ListingTabContent tab={tab} />, []);
 
   return (
     <TabPanel
