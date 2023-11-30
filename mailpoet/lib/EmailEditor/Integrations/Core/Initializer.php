@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Integrations\Core;
 
 use MailPoet\EmailEditor\Engine\Renderer\BlocksRegistry;
+use MailPoet\EmailEditor\Engine\Renderer\Layout\FlexLayoutRenderer;
 
 class Initializer {
   public function initialize(): void {
@@ -19,7 +20,7 @@ class Initializer {
     $blocksRegistry->addBlockRenderer('core/columns', new Renderer\Blocks\Columns());
     $blocksRegistry->addBlockRenderer('core/list', new Renderer\Blocks\ListBlock());
     $blocksRegistry->addBlockRenderer('core/image', new Renderer\Blocks\Image());
-    $blocksRegistry->addBlockRenderer('core/buttons', new Renderer\Blocks\Buttons());
+    $blocksRegistry->addBlockRenderer('core/buttons', new Renderer\Blocks\Buttons(new FlexLayoutRenderer()));
     $blocksRegistry->addBlockRenderer('core/button', new Renderer\Blocks\Button());
   }
 }
