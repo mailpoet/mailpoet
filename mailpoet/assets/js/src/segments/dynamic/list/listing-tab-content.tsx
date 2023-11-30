@@ -1,5 +1,6 @@
 import { ComponentProps, useEffect, useMemo, useState } from 'react';
-import { TableCard, TextControl } from '@woocommerce/components';
+import { TableCard } from '@woocommerce/components';
+import { TextControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
 import { __ } from '@wordpress/i18n';
@@ -148,8 +149,8 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
 
   return (
     <>
+      <DynamicSegmentsListNotices />
       <div className="mailpoet-segments-listing-header">
-        <DynamicSegmentsListNotices />
         <BulkActions
           tab={tab}
           onClick={(selected, action) => {
