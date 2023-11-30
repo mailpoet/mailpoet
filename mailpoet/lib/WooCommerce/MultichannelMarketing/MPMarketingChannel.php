@@ -285,7 +285,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
             'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_NEWSLETTERS],
             'url' => admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '/#/stats/' . $newsLetterId),
             'price' => [
-                'amount' => $wooRevenue ? $wooRevenue->getValue() : 0,
+                'amount' => $wooRevenue ? $this->formatPrice($wooRevenue->getValue()) : 0,
                 'currency' => $userCurrency,
             ],
         ];
@@ -312,7 +312,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
         'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_POST_NOTIFICATIONS],
         'url' => admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '/#/stats/' . $newsLetterId),
         'price' => [
-          'amount' => $wooRevenue ? $wooRevenue->getValue() : 0,
+          'amount' => $wooRevenue ? $this->formatPrice($wooRevenue->getValue()) : 0,
           'currency' => $userCurrency,
         ],
       ];
@@ -343,7 +343,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
         'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_AUTOMATIONS],
         'url' => admin_url('admin.php?page=' . Menu::AUTOMATION_ANALYTICS_PAGE_SLUG . '&id=' . $automationId),
         'price' => [
-          'amount' => $automationStatistics['revenue']['current'] ?? 0,
+          'amount' => isset($automationStatistics['revenue']['current']) ? $this->formatPrice($automationStatistics['revenue']['current']) : 0,
           'currency' => $userCurrency,
         ],
       ];
@@ -375,5 +375,14 @@ class MPMarketingChannel implements MarketingChannelInterface {
               $this->getStandardNewsletterList()
           )
       );
+  }
+
+  /**
+   * Format amount to 2 dp
+   * @param string|int|float $amount
+   * @return string
+   */
+  private function formatPrice($amount): string {
+    return number_format((float)$amount, 2, '.', '');
   }
 }
