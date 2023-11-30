@@ -49,7 +49,7 @@ class WooCommerceNumberOfReviewsTest extends \MailPoetTest {
     $this->tester->createWooProductReview($customerId, 'greaterthantest@e.com', $this->productId, 2, Carbon::now()->subDay());
     $customerId = $this->tester->createCustomer('oneReviewTest@e.com');
     $this->tester->createWooProductReview($customerId, 'onereviewtest@e.com', $this->productId, 1, Carbon::now()->subDay());
-    $this->assertFilterReturnsEmails('any', '>', 1, 200, 'inTheLast', ['greaterthantest@e.com']);
+    $this->assertFilterReturnsEmails('any', '>', 1, 200, 'inTheLast', ['greaterThanTest@e.com']);
   }
 
   public function testItHandlesLessThan(): void {
