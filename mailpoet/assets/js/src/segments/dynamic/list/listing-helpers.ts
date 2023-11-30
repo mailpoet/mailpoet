@@ -30,6 +30,7 @@ export function updateDynamicQueryFromLocation(pathname: string): void {
   const query = currentQuery !== null ? currentQuery : defaultQuery;
   const queryKeys = Object.keys(query);
 
+  const integerKeys = ['limit', 'offset'];
   for (
     let pathElementsIndex = 0;
     pathElementsIndex < pathElements.length;
@@ -40,17 +41,18 @@ export function updateDynamicQueryFromLocation(pathname: string): void {
       queryKeysIndex < queryKeys.length;
       queryKeysIndex += 1
     ) {
-      if (
-        pathElements[pathElementsIndex].startsWith(
-          `${queryKeys[queryKeysIndex]}[`,
-        )
-      ) {
-        query[queryKeys[queryKeysIndex]] = pathElements[pathElementsIndex]
-          .replace(`${queryKeys[queryKeysIndex]}[`, '')
+      const currentKey = queryKeys[queryKeysIndex];
+      if (pathElements[pathElementsIndex].startsWith(`${currentKey}[`)) {
+        const currentValue = pathElements[pathElementsIndex]
+          .replace(`${currentKey}[`, '')
           .replace(']', '');
+        query[currentKey] = integerKeys.includes(currentKey)
+          ? parseInt(currentValue, 10)
+          : currentValue;
       }
     }
   }
+
   updateDynamicQuery(query);
 }
 
