@@ -2,13 +2,31 @@ import { Link } from 'react-router-dom';
 import { DynamicSegment } from 'segments/types';
 import * as ROUTES from 'segments/routes';
 import { Button } from '@wordpress/components';
+import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { Icon, moreVertical } from '@wordpress/icons';
 import { MailPoet } from '../../../mailpoet';
+import { storeName } from '../store';
 
 export function getRow(dynamicSegment: DynamicSegment): object[] {
+  const toggleSelect = (): void => {
+    if (dynamicSegment?.selected) {
+      dispatch(storeName).unselectDynamicSection(dynamicSegment);
+      return;
+    }
+    dispatch(storeName).selectDynamicSection(dynamicSegment);
+  };
   return [
-    { value: null, display: <input type="checkbox" /> },
+    {
+      value: null,
+      display: (
+        <input
+          type="checkbox"
+          checked={dynamicSegment?.selected}
+          onChange={toggleSelect}
+        />
+      ),
+    },
     {
       value: dynamicSegment.name,
       display: (

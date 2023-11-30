@@ -2,7 +2,6 @@ import { assign } from 'lodash/fp';
 import {
   Actions,
   ActionType,
-  SetDynamicSegmentsActionType,
   SetSegmentActionType,
   SetErrorsActionType,
   SetSegmentFilerActionType,
@@ -10,6 +9,8 @@ import {
   StateType,
   SetPreviousPageActionType,
   UpdateDynamicSegmentsQueryActionType,
+  SelectDynamicSegmentActionType,
+  SetDynamicSegmentsActionType,
 } from '../types';
 import { getSegmentInitialState } from './initial-state';
 
@@ -20,6 +21,43 @@ function setDynamicSegments(
   return {
     ...state,
     dynamicSegments: action.dynamicSegments,
+  };
+}
+
+function setSelectDynamicSegment(
+  state: StateType,
+  action: SelectDynamicSegmentActionType,
+): StateType {
+  const data = state.dynamicSegments.data;
+  const index = data.findIndex((segment) => segment.id === action.segment.id);
+  data.splice(index, 1, {
+    ...action.segment,
+    selected: true,
+  });
+  return {
+    ...state,
+    dynamicSegments: {
+      ...state.dynamicSegments,
+      data: [...data],
+    },
+  };
+}
+function setUnselectDynamicSegment(
+  state: StateType,
+  action: SelectDynamicSegmentActionType,
+): StateType {
+  const data = state.dynamicSegments.data;
+  const index = data.findIndex((segment) => segment.id === action.segment.id);
+  data.splice(index, 1, {
+    ...action.segment,
+    selected: false,
+  });
+  return {
+    ...state,
+    dynamicSegments: {
+      ...state.dynamicSegments,
+      data: [...data],
+    },
   };
 }
 
@@ -113,6 +151,16 @@ export const createReducer =
         return setDynamicSegments(
           state,
           action as SetDynamicSegmentsActionType,
+        );
+      case Actions.SELECT_DYNAMIC_SEGMENT:
+        return setSelectDynamicSegment(
+          state,
+          action as SelectDynamicSegmentActionType,
+        );
+      case Actions.UNSELECT_DYNAMIC_SEGMENT:
+        return setUnselectDynamicSegment(
+          state,
+          action as SelectDynamicSegmentActionType,
         );
       case Actions.UPDATE_DYNAMIC_SEGMENTS_QUERY:
         return setDynamicSegmentsQuery(
