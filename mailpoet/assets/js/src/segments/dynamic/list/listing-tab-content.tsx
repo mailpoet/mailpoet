@@ -149,8 +149,8 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
 
   return (
     <>
-      <DynamicSegmentsListNotices />
       <div className="mailpoet-segments-listing-header">
+        <DynamicSegmentsListNotices />
         <BulkActions
           tab={tab}
           onClick={(selected, action) => {
