@@ -5,16 +5,53 @@ namespace MailPoet\Logging;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\LogEntity;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\InvalidStateException;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Driver\PDO\Connection;
+use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 /**
  * @extends Repository<LogEntity>
  */
 class LogRepository extends Repository {
-  protected function getEntityClassName() {
-    return LogEntity::class;
+  /** @var Functions */
+  private $wp;
+
+  public function __construct(
+    EntityManager $entityManager,
+    Functions $wp
+  ) {
+    parent::__construct($entityManager);
+    $this->wp = $wp;
+  }
+
+  public function saveLog(LogEntity $log): void {
+    // Save log entity using DBAL to avoid calling "flush()" on the entity manager.
+    // Calling "flush()" can have unintended side effects, such as saving unwanted
+    // changes or trying to save entities that were detached from the entity manager.
+    $this->entityManager->getConnection()->insert(
+      $this->entityManager->getClassMetadata(LogEntity::class)->getTableName(),
+      [
+        'name' => $log->getName(),
+        'level' => $log->getLevel(),
+        'message' => $log->getMessage(),
+        'raw_message' => $log->getRawMessage(),
+        'context' => json_encode($log->getContext()),
+        'created_at' => (
+          $log->getCreatedAt() ?? Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
+        )->format('Y-m-d H:i:s'),
+      ],
+    );
+
+    // sync the changes with the entity manager
+    if ($this->entityManager->isOpen()) {
+      $lastInsertId = (int)$this->entityManager->getConnection()->lastInsertId();
+      $log->setId($lastInsertId);
+      $this->entityManager->getUnitOfWork()->registerManaged($log, ['id' => $log->getId()], []);
+      $this->entityManager->refresh($log);
+    }
   }
 
   /**
@@ -93,5 +130,17 @@ class LogRepository extends Repository {
       ->setParameter('topic', $topic)
       ->getQuery()
       ->getSingleColumnResult();
+  }
+
+  public function persist($entity): void {
+    throw new InvalidStateException('Use saveLog() instead to avoid unintended side effects');
+  }
+
+  public function flush(): void {
+    throw new InvalidStateException('Use saveLog() instead to avoid unintended side effects');
+  }
+
+  protected function getEntityClassName() {
+    return LogEntity::class;
   }
 }

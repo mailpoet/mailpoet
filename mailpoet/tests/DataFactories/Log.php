@@ -33,13 +33,11 @@ class Log {
 
   public function create(): LogEntity {
     $entity = new LogEntity();
-    $entity->setName( $this->data['name']);
+    $entity->setName($this->data['name']);
     $entity->setLevel($this->data['level']);
     $entity->setMessage($this->data['message']);
     $entity->setCreatedAt($this->data['created_at']);
-
-    $this->repository->persist($entity);
-    $this->repository->flush();
+    $this->repository->saveLog($entity);
     return $entity;
   }
 
