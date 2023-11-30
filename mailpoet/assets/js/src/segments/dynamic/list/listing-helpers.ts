@@ -4,7 +4,7 @@ import { storeName } from '../store';
 
 const defaultQuery = {
   offset: 0,
-  limit: 2,
+  limit: 25,
   search: '',
   sort_by: 'updated_at',
   sort_order: 'desc',
