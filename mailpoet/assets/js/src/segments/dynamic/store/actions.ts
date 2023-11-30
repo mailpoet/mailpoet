@@ -232,7 +232,7 @@ export function resetDynamicSegments() {
     dynamicSegments: {
       data: null,
       meta: {
-        all: 0,
+        count: 0,
         groups: [],
       },
     },
@@ -245,7 +245,7 @@ export async function loadDynamicSegments(query?: DynamicSegmentQuery) {
   let data: DynamicSegmentsList = {
     data: [],
     meta: {
-      all: 0,
+      count: 0,
       groups: [],
     },
   };
