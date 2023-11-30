@@ -7,7 +7,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\Security;
 
@@ -218,8 +217,11 @@ class Newsletter extends Model {
     return $this;
   }
 
+  /**
+   * @deprecated This method is deprecated. \MailPoet\Entities\NewsletterEntity::getLatestQueue() instead. This method can be removed after 2024-05-30.
+   */
   public function getQueue($columns = '*') {
-    return SendingTask::getByNewsletterId($this->id);
+    self::deprecationError(__METHOD__);
   }
 
   public function getBodyString(): string {
@@ -232,7 +234,11 @@ class Newsletter extends Model {
     return $this->body;
   }
 
+  /**
+   * @deprecated This method is deprecated. It method can be removed after 2024-05-30.
+   */
   public function withSendingQueue() {
+    self::deprecationError(__METHOD__);
     $queue = $this->getQueue();
     if ($queue === false) {
       $this->queue = false;
