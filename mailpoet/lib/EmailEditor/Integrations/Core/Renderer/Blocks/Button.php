@@ -72,10 +72,8 @@ class Button implements BlockRenderer {
     }
 
     // Typography
-    $contentStyles = $settingsController->getEmailContentStyles();
     $typography = $parsedBlock['attrs']['style']['typography'] ?? [];
-    $typography['textDecoration'] = $typography['textDecoration'] ?? 'inherit'; // TODO FIX inherit doesn't work
-    $typography['textTransform'] = $typography['textTransform'] ?? 'inherit'; // TODO FIX inherit doesn't work
+    $typography['textDecoration'] = $typography['textDecoration'] ?? ($parsedBlock['email_attrs']['text-decoration'] ?? 'inherit');
     $linkStyles[] = wp_style_engine_get_styles(['typography' => $typography])['css'];
     if ($parsedBlock['attrs']['style']['color']['text'] ?? '') {
       $linkStyles[] = "color: {$parsedBlock['attrs']['style']['color']['text']}";
@@ -85,6 +83,7 @@ class Button implements BlockRenderer {
     $wrapperStyles = array_map('esc_attr', $wrapperStyles);
     $linkStyles = array_map('esc_attr', $linkStyles);
     // Font family may contain single quotes
+    $contentStyles = $settingsController->getEmailContentStyles();
     $linkStyles[] = str_replace('&#039;', "'", esc_attr("font-family: {$contentStyles['typography']['fontFamily']}"));
 
     $markup = str_replace('{linkStyles}', join(';', $linkStyles) . ';', $markup);
