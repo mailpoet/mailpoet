@@ -20,6 +20,8 @@ import { MailPoet } from '../../../mailpoet';
 const Snackbar = WpSnackbar as ComponentType<
   WpSnackbar.Props & {
     icon: ReactNode;
+    isDismissible?: boolean;
+    explicitDismiss?: boolean;
   }
 >;
 
@@ -32,6 +34,7 @@ const useCreateFromTemplate = () => {
     data: undefined,
     loading: false,
     error: undefined,
+    resetError: () => setState((prevState) => ({ ...prevState, error: null })),
   });
 
   const create = useCallback(async (slug: string) => {
@@ -67,7 +70,7 @@ type Props = {
 
 export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
   ({ template, onRequestClose, onPreviousClick, onNextClick }, ref) => {
-    const [createAutomationFromTemplate, { loading, error }] =
+    const [createAutomationFromTemplate, { loading, error, resetError }] =
       useCreateFromTemplate();
 
     return (
@@ -104,6 +107,9 @@ export const TemplateDetail = forwardRef<HTMLDivElement, Props>(
                 <Snackbar
                   className="mailpoet-automation-template-detail-error"
                   icon={warning}
+                  onRemove={resetError}
+                  isDismissible
+                  explicitDismiss
                 >
                   {__(
                     'An error occurred while creating the automation. Please, try again.',
