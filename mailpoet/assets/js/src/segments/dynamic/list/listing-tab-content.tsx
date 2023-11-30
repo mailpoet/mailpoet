@@ -10,6 +10,7 @@ import {
   updateDynamicQuery,
   updateDynamicQueryFromLocation,
 } from './listing-helpers';
+import { BulkActions } from './bulk-actions';
 
 function SelectAll(): JSX.Element {
   const { dynamicSegments } = useSelect((s) => ({
@@ -18,7 +19,8 @@ function SelectAll(): JSX.Element {
   const allSelected =
     dynamicSegments !== null &&
     dynamicSegments.filter((segment) => segment.selected).length ===
-      dynamicSegments.length;
+      dynamicSegments.length &&
+    dynamicSegments.length > 0;
   return (
     <input
       checked={allSelected}
@@ -135,6 +137,7 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
   return (
     <>
       <div className="mailpoet-segments-listing-header">
+        <BulkActions tab={tab} />
         <TextControl
           className="mailpoet-segments-listing-search"
           placeholder={__('Search', 'mailpoet')}
