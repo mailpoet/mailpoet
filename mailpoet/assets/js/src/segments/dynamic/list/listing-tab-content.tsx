@@ -188,7 +188,7 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
           }
           if (query === 'per_page') {
             updateDynamicQuery({
-              limit: param,
+              limit: parseInt(param as string, 10),
               offset: 0,
             });
           }
