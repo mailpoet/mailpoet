@@ -5,6 +5,7 @@ namespace MailPoet\Logging;
 use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Entities\LogEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -21,11 +22,7 @@ class LogHandlerTest extends \MailPoetTest {
   }
 
   public function testItCreatesLog() {
-    $logHandler = new LogHandler(
-      $this->repository,
-      $this->entityManager,
-      $this->entityManagerFactory
-    );
+    $logHandler = new LogHandler($this->repository);
     $time = new \DateTime();
     $logHandler->handle([
       'level' => \MailPoetVendor\Monolog\Logger::EMERGENCY,
@@ -49,9 +46,7 @@ class LogHandlerTest extends \MailPoetTest {
     $entity->setLevel(5);
     $entity->setMessage('xyz');
     $entity->setCreatedAt(Carbon::now()->subDays(100));
-
-    $this->repository->persist($entity);
-    $this->repository->flush();
+    $this->repository->saveLog($entity);
 
     $random = function() {
       return 0;
@@ -59,8 +54,6 @@ class LogHandlerTest extends \MailPoetTest {
 
     $logHandler = new LogHandler(
       $this->repository,
-      $this->entityManager,
-      $this->entityManagerFactory,
       \MailPoetVendor\Monolog\Logger::DEBUG,
       true,
       $random
@@ -84,9 +77,7 @@ class LogHandlerTest extends \MailPoetTest {
     $entity->setLevel(5);
     $entity->setMessage('xyz');
     $entity->setCreatedAt(Carbon::now()->subDays(100));
-
-    $this->repository->persist($entity);
-    $this->repository->flush();
+    $this->repository->saveLog($entity);
 
     $random = function() {
       return 100;
@@ -94,8 +85,6 @@ class LogHandlerTest extends \MailPoetTest {
 
     $logHandler = new LogHandler(
       $this->repository,
-      $this->entityManager,
-      $this->entityManagerFactory,
       \MailPoetVendor\Monolog\Logger::DEBUG,
       true,
       $random
@@ -115,12 +104,8 @@ class LogHandlerTest extends \MailPoetTest {
 
   public function testItResilientToSqlError(): void {
     $entityManager = $this->entityManagerFactory->createEntityManager();
-    $logRepository = new LogRepository($entityManager);
-    $logHandler = new LogHandler(
-      $logRepository,
-      $entityManager,
-      $this->entityManagerFactory
-    );
+    $logRepository = new LogRepository($entityManager, new WPFunctions());
+    $logHandler = new LogHandler($logRepository);
     $time = new \DateTime();
 
     try {
