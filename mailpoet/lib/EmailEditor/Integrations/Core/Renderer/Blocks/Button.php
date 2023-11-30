@@ -51,8 +51,6 @@ class Button implements BlockRenderer {
       'line-height: 120%',
       'margin: 0',
       'mso-padding-alt: 0px',
-      'text-decoration: none',
-      'text-transform: none',
     ];
 
     // Border
@@ -72,20 +70,21 @@ class Button implements BlockRenderer {
       $linkStyles[] = "padding: {$padding['top']} {$padding['right']} {$padding['bottom']} {$padding['left']}";
     }
 
-    // Font
+    // Typography
     $contentStyles = $settingsController->getEmailContentStyles();
-    $linkStyles[] = "font-family: {$contentStyles['typography']['fontFamily']}";
-    $linkStyles[] = "font-size: {$contentStyles['typography']['fontSize']}";
-    if ($parsedBlock['attrs']['style']['typography']) {
-      $linkStyles[] = wp_style_engine_get_styles(['typography' => $parsedBlock['attrs']['style']['typography']])['css'];
-    }
+    $typography = $parsedBlock['attrs']['style']['typography'] ?? [];
+    $typography['textDecoration'] = $typography['textDecoration'] ?? 'inherit'; // TODO FIX inherit doesn't work
+    $typography['textTransform'] = $typography['textTransform'] ?? 'inherit'; // TODO FIX inherit doesn't work
+    $linkStyles[] = wp_style_engine_get_styles(['typography' => $typography])['css'];
     if ($parsedBlock['attrs']['style']['color']['text'] ?? '') {
       $linkStyles[] = "color: {$parsedBlock['attrs']['style']['color']['text']}";
     }
 
     // Escaping
-    $linkStyles = array_map('esc_attr', $linkStyles);
     $wrapperStyles = array_map('esc_attr', $wrapperStyles);
+    $linkStyles = array_map('esc_attr', $linkStyles);
+    // Font family may contain single quotes
+    $linkStyles[] = str_replace('&#039;', "'", esc_attr("font-family: {$contentStyles['typography']['fontFamily']}"));
 
     $markup = str_replace('{linkStyles}', join(';', $linkStyles) . ';', $markup);
     $markup = str_replace('{wrapperStyles}', join(';', $wrapperStyles) . ';', $markup);
