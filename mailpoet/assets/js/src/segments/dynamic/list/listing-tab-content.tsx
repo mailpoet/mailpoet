@@ -166,6 +166,7 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
               offset: 0,
             });
           }}
+          value={dynamicSegmentQuery?.search ?? ''}
         />
       </div>
       <TableCard
