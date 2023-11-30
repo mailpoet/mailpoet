@@ -25,6 +25,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
           'typography' => [
             'fontFamily' => 'Arial',
             'fontSize' => '12px',
+            'textDecoration' => 'underline',
           ],
         ],
       ],
@@ -49,6 +50,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
       'color' => '#aa00dd',
       'font-family' => 'Arial',
       'font-size' => '12px',
+      'text-decoration' => 'underline',
     ];
     $result = $this->preprocessor->preprocess($blocks, []);
     $result = $result[0];

@@ -11,6 +11,7 @@ class TypographyPreprocessor implements Preprocessor {
     'color',
     'font-size',
     'font-family',
+    'text-decoration',
   ];
 
   public function preprocess(array $parsedBlocks, array $layoutStyles): array {
@@ -44,6 +45,9 @@ class TypographyPreprocessor implements Preprocessor {
     }
     if (isset($block['attrs']['style']['typography']['fontSize'])) {
       $emailAttrs['font-size'] = $block['attrs']['style']['typography']['fontSize'];
+    }
+    if (isset($block['attrs']['style']['typography']['textDecoration'])) {
+      $emailAttrs['text-decoration'] = $block['attrs']['style']['typography']['textDecoration'];
     }
     $block['email_attrs'] = array_merge($emailAttrs, $block['email_attrs'] ?? []);
     return $block;
