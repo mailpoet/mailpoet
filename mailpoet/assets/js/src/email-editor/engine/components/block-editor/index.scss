@@ -46,9 +46,14 @@
     }
   }
 
+  .mailpoet-settings-panel__preview-text .components-base-control__label {
+    width: 100%;
+  }
+
   .mailpoet-settings-panel__preview-text-length {
     color: $black;
     display: inline-block;
+    float: right;
     padding: 3px;
   }
 
