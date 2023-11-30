@@ -72,4 +72,5 @@ export const getInitialState = (): StateType => ({
       ],
     },
   },
+  dynamicSegmentSelection: [],
 });

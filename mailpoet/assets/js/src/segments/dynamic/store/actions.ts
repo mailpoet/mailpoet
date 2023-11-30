@@ -19,6 +19,8 @@ import {
   UpdateDynamicSegmentsQueryActionType,
   DynamicSegmentQuery,
   DynamicSegmentsList,
+  SelectDynamicSegmentActionType,
+  DynamicSegment,
 } from '../types';
 import { storeName } from './constants';
 
@@ -294,5 +296,23 @@ export function updateDynamicSegmentsQuery(
   return {
     type: Actions.UPDATE_DYNAMIC_SEGMENTS_QUERY,
     query,
+  };
+}
+
+export function selectDynamicSection(
+  segment: DynamicSegment,
+): SelectDynamicSegmentActionType {
+  return {
+    type: Actions.SELECT_DYNAMIC_SEGMENT,
+    segment,
+  };
+}
+
+export function unselectDynamicSection(
+  segment: DynamicSegment,
+): SelectDynamicSegmentActionType {
+  return {
+    type: Actions.UNSELECT_DYNAMIC_SEGMENT,
+    segment,
   };
 }
