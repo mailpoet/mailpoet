@@ -183,6 +183,7 @@ class ImportExportRepository {
       " . implode(' AND ', $keyColumnsConditions) . "
     ", $parameters, $parameterTypes);
     $this->notifyUpdates($className, $columns, $data);
+    $this->entityManager->clear($className);
     return $count;
   }
 
