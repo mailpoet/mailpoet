@@ -7,7 +7,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\SettingEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Carbon\Carbon;
@@ -295,18 +294,5 @@ class InactiveSubscribersControllerTest extends \MailPoetTest {
     $this->entityManager->persist($opened);
     $this->entityManager->flush();
     return $opened;
-  }
-
-  private function createSetting($name, $value, $createdAt) {
-    $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
-    $this->connection->executeStatement(
-      "INSERT INTO $tableName (name, value, created_at) VALUES (?, ?, ?)",
-      [$name, $value, $createdAt]
-    );
-  }
-
-  private function removeSetting($name) {
-    $tableName = $this->entityManager->getClassMetadata(SettingEntity::class)->getTableName();
-    $this->connection->executeStatement("DELETE FROM $tableName WHERE name = ?", [$name]);
   }
 }

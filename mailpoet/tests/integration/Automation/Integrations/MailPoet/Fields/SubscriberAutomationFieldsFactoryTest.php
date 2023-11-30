@@ -71,6 +71,7 @@ class SubscriberAutomationFieldsFactoryTest extends MailPoetTest {
 
   private function createAutomation(string $name, string $status): Automation {
     $automation = $this->tester->createAutomation($name);
+    $this->assertInstanceOf(Automation::class, $automation);
     $automation->setStatus($status);
     $this->diContainer->get(AutomationStorage::class)->updateAutomation($automation);
     return $automation;
@@ -78,6 +79,7 @@ class SubscriberAutomationFieldsFactoryTest extends MailPoetTest {
 
   private function createAutomationRun(Automation $automation, string $status, array $subjects): AutomationRun {
     $run = $this->tester->createAutomationRun($automation, $subjects);
+    $this->assertInstanceOf(AutomationRun::class, $run);
     $this->diContainer->get(AutomationRunStorage::class)->updateStatus($run->getId(), $status);
     return $run;
   }

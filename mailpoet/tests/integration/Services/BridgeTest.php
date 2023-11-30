@@ -236,6 +236,7 @@ class BridgeTest extends \MailPoetTest {
   }
 
   public function testItAllowsChangingRequestTimeout() {
+    /** @var array $wpRemotePostArgs */
     $wpRemotePostArgs = [];
     $wp = Stub::make(new WPFunctions, [
       'wpRemotePost' => function() use (&$wpRemotePostArgs) {

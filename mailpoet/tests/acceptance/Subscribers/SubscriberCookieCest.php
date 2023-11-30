@@ -53,7 +53,9 @@ class SubscriberCookieCest {
       $i->click(Locator::contains('a', 'wp-activate.php'));
       $i->switchToNextTab();
       $i->waitForText('Your account is now active');
-      $password = str_replace([' ', 'Password:'], '', strval($i->grabTextFrom("//div[@id='signup-welcome'] /p[2]")));
+      /** @var string $text - for PHPStan because strval() doesn't accept a value of mixed */
+      $text = $i->grabTextFrom("//div[@id='signup-welcome'] /p[2]");
+      $password = str_replace([' ', 'Password:'], '', strval($text));
       $i->click('Log in');
       $i->wait(1);// this needs to be here, Username is not filled properly without this line
       $i->fillField('Username', 'mutestuser');

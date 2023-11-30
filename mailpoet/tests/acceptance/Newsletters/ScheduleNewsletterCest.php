@@ -44,7 +44,9 @@ class ScheduleNewsletterCest {
     $newsletter = $newsletterFactory->withSubject($newsletterTitle)
       ->create();
     $segmentName = $i->createListWithSubscriber();
-    $currentDateTime = new \DateTime(strval($i->executeJS('return window.mailpoet_current_date_time')));
+    /** @var string $value - for PHPStan because strval() doesn't accept a value of mixed */
+    $value = $i->executeJS('return window.mailpoet_current_date_time');
+    $currentDateTime = new \DateTime(strval($value));
 
     // step 2 - Go to newsletter send page
     $i->login();

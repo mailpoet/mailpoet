@@ -162,6 +162,9 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     return Stub::copy($instance, $overrides);
   }
 
+  /**
+   * @param class-string $entityName
+   */
   public function truncateEntity(string $entityName) {
     $classMetadata = $this->entityManager->getClassMetadata($entityName);
     $tableName = $classMetadata->getTableName();
@@ -177,6 +180,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
    * so it is not possible to set it manually using a setter.
    */
   public function setUpdatedAtForEntity($entity, DateTimeInterface $updatedAt) {
+    /** @var class-string $className */
     $className = (string)get_class($entity);
     $classMetadata = $this->entityManager->getClassMetadata($className);
     if (!$classMetadata instanceof ClassMetadata) {

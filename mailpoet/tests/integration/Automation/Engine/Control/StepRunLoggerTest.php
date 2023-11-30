@@ -126,15 +126,13 @@ class StepRunLoggerTest extends MailPoetTest {
 
     $logger->logSuccess();
 
-    /** @var int $runs PHPStan thinks $runs === 0 from the previous assert */
-    $this->assertSame(1, $runs);
+    $this->assertSame(1, $runs); // @phpstan-ignore-line - PHPStan thinks $runs === 0 from the previous assert
     $this->assertNotNull($lastLog);
     $this->assertLogData($lastLog, ['step_key' => 'step-key', 'status' => 'complete', 'data' => '{"test":"value"}']);
 
     $error = new Exception('test error');
     $logger->logFailure($error);
 
-    /** @var int $runs PHPStan thinks $runs === 1 from the previous assert */
     $this->assertSame(2, $runs);
     $this->assertNotNull($lastLog);
     $this->assertLogData($lastLog, ['step_key' => 'step-key', 'status' => 'failed', 'data' => '{"test":"value"}', 'error' => $error]);
@@ -159,8 +157,7 @@ class StepRunLoggerTest extends MailPoetTest {
 
     $logger->logSuccess();
 
-    /** @var int $runs PHPStan thinks $runs === 0 from the previous assert */
-    $this->assertSame(1, $runs);
+    $this->assertSame(1, $runs); // @phpstan-ignore-line - PHPStan thinks $runs === 0 from the previous assert
 
     $logs = $this->storage->getLogsForAutomationRun(1);
     $this->assertCount(1, $logs);

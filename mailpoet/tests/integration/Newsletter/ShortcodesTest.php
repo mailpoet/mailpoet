@@ -315,6 +315,7 @@ class ShortcodesTest extends \MailPoetTest {
     $parsedUrlQuery = parse_url($link, PHP_URL_QUERY);
     $queryData = [];
     parse_str((string)$parsedUrlQuery, $queryData);
+    $queryData['data'] = is_string($queryData['data']) ? $queryData['data'] : implode('', $queryData['data']);
     return $this->newsletterUrl->transformUrlDataObject(json_decode(base64_decode($queryData['data']), true));
   }
 
@@ -421,8 +422,12 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testItCanProcessSiteHomepageLinkShortcode() {
-    $siteUrl = strval(get_option('home'));
-    $siteName = strval(get_option('blogname'));
+    /** @var string $home */
+    $home = get_option('home');
+    $siteUrl = strval($home);
+    /** @var string $blogName */
+    $blogName = get_option('blogname');
+    $siteName = strval($blogName);
 
     $shortcode = '[site:homepage_link]';
     $shortcodesObject = $this->shortcodesObject;

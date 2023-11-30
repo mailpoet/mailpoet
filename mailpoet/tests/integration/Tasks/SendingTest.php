@@ -316,6 +316,7 @@ class SendingTest extends \MailPoetTest {
   }
 
   public function createNewScheduledTask() {
+    /** @var ScheduledTask $task - for PHPStan */
     $task = ScheduledTask::create();
     $task->type = SendingQueueWorker::TASK_TYPE;
     return $task->save();
@@ -325,6 +326,7 @@ class SendingTest extends \MailPoetTest {
     $newsletter = isset($args['newsletter']) ? $args['newsletter'] : $this->newsletterFactory->create();
     $task = isset($args['task']) ? $args['task'] : $this->createNewScheduledTask();
 
+    /** @var SendingQueue $queue - for PHPStan */
     $queue = SendingQueue::create();
     $queue->newsletterId = $newsletter->getId();
     $queue->taskId = $task->id;

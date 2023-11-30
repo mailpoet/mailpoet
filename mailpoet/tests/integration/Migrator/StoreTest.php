@@ -45,6 +45,7 @@ class StoreTest extends MailPoetTest {
     $migrations = $this->connection->executeQuery("SELECT * FROM {$this->table}")->fetchAllAssociative();
     $this->assertCount(1, $migrations);
 
+    /** @var array{name:string, started_at:string, completed_at:string|null, error:string|null} $data */
     $data = $migrations[0];
     $this->assertSame('TestingMigration', $data['name']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, strval($data['started_at']));
@@ -60,6 +61,7 @@ class StoreTest extends MailPoetTest {
     $migrations = $this->connection->executeQuery("SELECT * FROM {$this->table}")->fetchAllAssociative();
     $this->assertCount(1, $migrations);
 
+    /** @var array{name:string, started_at:string, completed_at:string|null, error:string|null} $data */
     $data = $migrations[0];
     $this->assertSame('TestingMigration', $data['name']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, strval($data['started_at']));
@@ -75,6 +77,7 @@ class StoreTest extends MailPoetTest {
     $migrations = $this->connection->executeQuery("SELECT * FROM {$this->table}")->fetchAllAssociative();
     $this->assertCount(1, $migrations);
 
+    /** @var array{name:string, started_at:string, completed_at:string|null, error:string|null} $data */
     $data = $migrations[0];
     $this->assertSame('TestingMigration', $data['name']);
     $this->assertStringMatchesFormat(self::DATE_TIME_FORMAT, strval($data['started_at']));

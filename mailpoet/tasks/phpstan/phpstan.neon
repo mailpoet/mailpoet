@@ -22,6 +22,7 @@ parameters:
     - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
     - custom-stubs.php
   inferPrivatePropertyTypeFromConstructor: true
+  checkGenericClassInNonGenericObjectType: false
   parallel:
     processTimeout: 300.0
     maximumNumberOfProcesses: 4
@@ -100,16 +101,19 @@ parameters:
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED
+    - MAILPOET_PREMIUM_VERSION
   doctrine:
     objectManagerLoader: create-entity-manager.php
 
   # exclude level 6 errors
   checkMissingIterableValueType: false
+  treatPhpDocTypesAsCertain: false # We have some incorrect phpdoc types, but I want to address them later
 
   excludePaths:
     analyseAndScan:
       - ../../lib/Config/PopulatorData/Templates # analysis of templates is extremely slow, let's skip them for now
       - ../../tests/_support/_generated
+      - ../../tests/integration/Models # Old models are deprecated and will be removed soon
       - ../../tests/unit/Entities/SubscriberEntityTest.php
       - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php # does not yet offer support for PHP 8.1
 includes:
