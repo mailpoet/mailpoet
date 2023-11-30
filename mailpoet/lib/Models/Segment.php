@@ -13,8 +13,10 @@ use MailPoet\WP\Functions;
  * @property string $type
  * @property string $description
  * @property string $countConfirmations
+ *
+ * @deprecated This model is deprecated. Use \MailPoet\Newsletter\Segment\SegmentsRepository and
+ * \MailPoet\Entities\SegmentEntity instead. This class can be removed after 2024-05-30.
  */
-
 class Segment extends Model {
   public static $_table = MP_SEGMENTS_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
   const TYPE_WP_USERS = SegmentEntity::TYPE_WP_USERS;
@@ -22,7 +24,11 @@ class Segment extends Model {
   const TYPE_WC_MEMBERSHIPS = SegmentEntity::TYPE_WC_MEMBERSHIPS;
   const TYPE_DEFAULT = SegmentEntity::TYPE_DEFAULT;
 
+  /**
+   * @deprecated
+   */
   public function __construct() {
+    self::deprecationError(__METHOD__);
     parent::__construct();
 
     $this->addValidations('name', [
@@ -30,13 +36,21 @@ class Segment extends Model {
     ]);
   }
 
+  /**
+   * @deprecated
+   */
   public function delete() {
+    self::deprecationError(__METHOD__);
     // delete all relations to subscribers
     SubscriberSegment::where('segment_id', $this->id)->deleteMany();
     return parent::delete();
   }
 
+  /**
+   * @deprecated
+   */
   public function newsletters() {
+    self::deprecationError(__METHOD__);
     return $this->has_many_through(
       __NAMESPACE__ . '\Newsletter',
       __NAMESPACE__ . '\NewsletterSegment',
@@ -45,7 +59,11 @@ class Segment extends Model {
     );
   }
 
+  /**
+   * @deprecated
+   */
   public function subscribers() {
+    self::deprecationError(__METHOD__);
     return $this->has_many_through(
       __NAMESPACE__ . '\Subscriber',
       __NAMESPACE__ . '\SubscriberSegment',
@@ -54,7 +72,11 @@ class Segment extends Model {
     );
   }
 
+  /**
+   * @deprecated
+   */
   public function duplicate($data = []) {
+    self::deprecationError(__METHOD__);
     $duplicate = parent::duplicate($data);
 
     if ($duplicate !== false) {
@@ -70,20 +92,32 @@ class Segment extends Model {
     return false;
   }
 
+  /**
+   * @deprecated
+   */
   public function addSubscriber($subscriberId) {
+    self::deprecationError(__METHOD__);
     $relation = SubscriberSegment::create();
     $relation->set('subscriber_id', $subscriberId);
     $relation->set('segment_id', $this->id);
     return $relation->save();
   }
 
+  /**
+   * @deprecated
+   */
   public function removeSubscriber($subscriberId) {
+    self::deprecationError(__METHOD__);
     return SubscriberSegment::where('subscriber_id', $subscriberId)
       ->where('segment_id', $this->id)
       ->delete();
   }
 
+  /**
+   * @deprecated
+   */
   public static function getWPSegment() {
+    self::deprecationError(__METHOD__);
     $wpSegment = self::where('type', self::TYPE_WP_USERS)->findOne();
 
     if ($wpSegment === false) {
@@ -101,7 +135,11 @@ class Segment extends Model {
     return $wpSegment;
   }
 
+  /**
+   * @deprecated
+   */
   public static function getWooCommerceSegment() {
+    self::deprecationError(__METHOD__);
     $wcSegment = self::where('type', self::TYPE_WC_USERS)->findOne();
 
     if ($wcSegment === false) {
@@ -123,6 +161,7 @@ class Segment extends Model {
    * @deprecated Use the non static implementation in \MailPoet\Segments\WooCommerce::shouldShowWooCommerceSegment instead
    */
   public static function shouldShowWooCommerceSegment() {
+    self::deprecationError(__METHOD__);
     $woocommerceHelper = new WCHelper(Functions::get());
     $isWoocommerceActive = $woocommerceHelper->isWooCommerceActive();
     $woocommerceUserExists = Segment::tableAlias('segment')
@@ -141,7 +180,11 @@ class Segment extends Model {
     return true;
   }
 
+  /**
+   * @deprecated
+   */
   public static function getSegmentTypes() {
+    self::deprecationError(__METHOD__);
     $types = [Segment::TYPE_DEFAULT, Segment::TYPE_WP_USERS];
     if (Segment::shouldShowWooCommerceSegment()) {
       $types[] = Segment::TYPE_WC_USERS;
@@ -149,7 +192,11 @@ class Segment extends Model {
     return $types;
   }
 
+  /**
+   * @deprecated
+   */
   public static function groupBy($orm, $group = null) {
+    self::deprecationError(__METHOD__);
     if ($group === 'trash') {
       $orm->whereNotNull('deleted_at');
     } else {
@@ -158,11 +205,19 @@ class Segment extends Model {
     return $orm;
   }
 
+  /**
+   * @deprecated
+   */
   public static function getPublic() {
+    self::deprecationError(__METHOD__);
     return self::getPublished()->where('type', self::TYPE_DEFAULT)->orderByAsc('name');
   }
 
+  /**
+   * @deprecated
+   */
   public static function bulkTrash($orm) {
+    self::deprecationError(__METHOD__);
     $count = parent::bulkAction($orm, function($ids) {
       Segment::rawExecute(join(' ', [
         'UPDATE `' . Segment::$_table . '`',
@@ -175,7 +230,11 @@ class Segment extends Model {
     return ['count' => $count];
   }
 
+  /**
+   * @deprecated
+   */
   public static function bulkDelete($orm) {
+    self::deprecationError(__METHOD__);
     $count = parent::bulkAction($orm, function($ids) {
       // delete segments (only default)
       $segments = Segment::whereIn('id', $ids)
@@ -193,5 +252,28 @@ class Segment extends Model {
     });
 
     return ['count' => $count];
+  }
+
+  /**
+   * @deprecated This is here for displaying the deprecation warning for properties.
+   */
+  public function __get($key) {
+    self::deprecationError('property "' . $key . '"');
+    return parent::__get($key);
+  }
+
+  /**
+   * @deprecated This is here for displaying the deprecation warning for static calls.
+   */
+  public static function __callStatic($name, $arguments) {
+    self::deprecationError($name);
+    return parent::__callStatic($name, $arguments);
+  }
+
+  private static function deprecationError($methodName) {
+    trigger_error(
+      'Calling ' . esc_html($methodName) . ' is deprecated and will be removed. Use \MailPoet\Newsletter\Segment\SegmentsRepository and \MailPoet\Entities\SegmentEntity instead.',
+      E_USER_DEPRECATED
+    );
   }
 }
