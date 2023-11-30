@@ -155,6 +155,7 @@
     "@types/wordpress__notices": "^3.5.1",
     "@types/wordpress__rich-text": "^6.0.0",
     "@wordpress/babel-preset-default": "^7.12.0",
+    "@wordpress/base-styles": "4.20.0",
     "@wordpress/browserslist-config": "^5.11.0",
     "@wordpress/dependency-extraction-webpack-plugin": "^4.11.0",
     "autoprefixer": "^10.4.15",
