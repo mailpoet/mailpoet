@@ -39,6 +39,7 @@ export function TemplatePreview({ template }: Props): JSX.Element {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    const controller = new AbortController();
     const loadTemplate = async () => {
       setIsLoaded(false);
 
@@ -49,13 +50,17 @@ export function TemplatePreview({ template }: Props): JSX.Element {
       const data = await apiFetch<{ data: { automation: unknown } }>({
         path: `/automation-templates/${template.slug}`,
         method: 'GET',
+        signal: controller.signal,
       });
       dispatch(storeName).updateAutomation(data.data.automation);
       setIsLoaded(true);
     };
     void loadTemplate();
 
-    return cleanupHooks;
+    return () => {
+      controller.abort();
+      cleanupHooks();
+    };
   }, [template.slug]);
 
   return isLoaded ? (
