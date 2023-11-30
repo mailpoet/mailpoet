@@ -28,16 +28,16 @@ export function DynamicSegmentsListNotices(): JSX.Element {
     <>
       <NoticeList
         notices={nonDismissibleNotices}
-        className="mailpoet-automation-editor-notices__notice-list"
+        className="mailpoet-segments-listing-notices__notice-list"
       />
       <NoticeList
         notices={dismissibleNotices}
-        className="mailpoet-automation-editor-notices__notice-list"
+        className="mailpoet-segments-listing-notices__notice-list"
         onRemove={removeNotice}
       />
       <SnackbarList
         notices={snackbarNotices}
-        className="mailpoet-automation-editor-notices__snackbar-list"
+        className="mailpoet-segments-listing-notices__notice-list"
         onRemove={removeNotice}
       />
     </>

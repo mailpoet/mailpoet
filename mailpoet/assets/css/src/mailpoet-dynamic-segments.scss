@@ -38,3 +38,37 @@
 .mailpoet-confirm-dialog {
   max-width: 600px;
 }
+
+.mailpoet-segments-listing-header {
+  display: grid;
+  grid-gap: 16px;
+  grid-template-columns: 120px auto auto;
+  grid-template-rows: auto auto;
+  padding: 8px 16px 24px;
+
+  .mailpoet-segments-listing-bulk-actions {
+    grid-column: 1/2;
+    grid-row: 2/2;
+  }
+
+  .mailpoet-segments-listing-notices__notice-list {
+    grid-column: 1/4;
+    grid-row: 1/1;
+
+    .components-notice {
+      margin: 0;
+    }
+  }
+
+  .mailpoet-segments-listing-search {
+    grid-column: 2/3;
+    grid-row: 2/2;
+    max-width: 430px;
+  }
+}
+
+.woocommerce-table {
+  .components-card__header {
+    display: none;
+  }
+}
