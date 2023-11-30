@@ -124,3 +124,7 @@ export const getDynamicSegmentsCount = (state: StateType): number =>
 export const getDynamicSegmentsQuery = (
   state: StateType,
 ): DynamicSegmentQuery => state.dynamicSegmentsQuery;
+
+export const getDynamicSelection = (
+  state: StateType,
+): Record<number, boolean> => state.dynamicSegmentSelection;

@@ -196,6 +196,7 @@ export type DynamicSegment = {
   created_at: string;
   deleted_at: string;
   subscribers_url: string;
+  selected?: boolean;
 };
 
 export type Segment = {
@@ -372,6 +373,7 @@ export interface StateType {
   previousPage: string;
   dynamicSegmentsQuery: DynamicSegmentQuery | null;
   dynamicSegments: DynamicSegmentsList;
+  dynamicSegmentSelection: Record<number, boolean>;
 }
 
 export type DynamicSegmentsList = {
@@ -392,6 +394,8 @@ export enum Actions {
   UPDATE_SEGMENT = 'UPDATE_SEGMENT',
   UPDATE_SEGMENT_FILTER = 'UPDATE_SEGMENT_FILTER',
   UPDATE_SUBSCRIBER_COUNT = 'UPDATE_SUBSCRIBER_COUNT',
+  SELECT_DYNAMIC_SEGMENT = 'SELECT_DYNAMIC_SEGMENT',
+  UNSELECT_DYNAMIC_SEGMENT = 'UNSELECT_DYNAMIC_SEGMENT',
 }
 
 export interface ActionType {
@@ -404,6 +408,10 @@ export type UpdateSegmentActionData =
   | { description: string }
   | { filters: AnyFormItem[] }
   | { filters_connect: SegmentConnectTypes };
+
+export interface SelectDynamicSegmentActionType extends ActionType {
+  segment: DynamicSegment;
+}
 
 export interface SetDynamicSegmentsActionType extends ActionType {
   dynamicSegments: DynamicSegmentsList;
