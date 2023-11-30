@@ -66,6 +66,22 @@ export function DetailsPanel() {
 
   const previewTextLength = mailpoetEmailData?.preheader?.length ?? 0;
 
+  const preheaderLabel = (
+    <>
+      <span>{__('Preview text', 'mailpoet')}</span>
+      <span
+        className={classnames('mailpoet-settings-panel__preview-text-length', {
+          'mailpoet-settings-panel__preview-text-length-warning':
+            previewTextLength > previewTextRecommendedLength,
+          'mailpoet-settings-panel__preview-text-length-error':
+            previewTextLength > previewTextMaxLength,
+        })}
+      >
+        {previewTextLength}/{previewTextMaxLength}
+      </span>
+    </>
+  );
+
   return (
     <PanelBody
       title={__('Details', 'mailpoet')}
@@ -85,7 +101,7 @@ export function DetailsPanel() {
 
       <TextareaControl
         className="mailpoet-settings-panel__preview-text"
-        label={<span>{__('Preview text (recommended)', 'mailpoet')}</span>}
+        label={preheaderLabel}
         placeholder={__(
           "Add a preview text to capture subscribers' attention and increase open rates.",
           'mailpoet',
@@ -94,23 +110,15 @@ export function DetailsPanel() {
         onChange={(value) => updateEmailProperty('preheader', value)}
         data-automation-id="email_preview_text"
       />
-      <span
-        className={classnames('mailpoet-settings-panel__preview-text-length', {
-          'mailpoet-settings-panel__preview-text-length-warning':
-            previewTextLength > previewTextRecommendedLength,
-          'mailpoet-settings-panel__preview-text-length-error':
-            previewTextLength > previewTextMaxLength,
-        })}
-      >
-        {previewTextLength}/{previewTextMaxLength}
-      </span>
       <div className="mailpoet-settings-panel__help">
         <Text>
           {__(
             'This text will appear in the inbox, underneath the subject line.',
+            'mailpoet',
           )}{' '}
           {__(
             'We recommend to keep it short, and to use it to complement the subject line.',
+            'mailpoet',
           )}
         </Text>
       </div>
