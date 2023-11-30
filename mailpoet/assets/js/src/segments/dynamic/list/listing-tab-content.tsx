@@ -55,7 +55,7 @@ type ListingTableProps = {
     name: string;
   };
 };
-export function ListingTable({ tab }: ListingTableProps): JSX.Element {
+export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
   const location = useLocation();
 
   const { dynamicSegments, dynamicSegmentQuery, dynamicSegmentsGroups } =
