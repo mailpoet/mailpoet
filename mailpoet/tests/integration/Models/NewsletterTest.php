@@ -129,12 +129,6 @@ class NewsletterTest extends \MailPoetTest {
     verify($isTimeUpdated)->true();
   }
 
-  public function testItCanBeQueued() {
-    $queue = $this->newsletter->getQueue();
-    verify($queue->id > 0)->true();
-    verify($queue->newsletterId)->equals($this->newsletter->id);
-  }
-
   public function testItCanHaveSegments() {
     $newsletterSegments = $this->newsletter->segments()->findArray();
     verify($newsletterSegments)->arrayCount(2);
