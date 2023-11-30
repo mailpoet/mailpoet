@@ -8,6 +8,8 @@ use Automattic\WooCommerce\Admin\Marketing\MarketingChannelInterface;
 use Automattic\WooCommerce\Admin\Marketing\Price;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\OverviewStatisticsController;
+use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\QueryWithCompare;
 use MailPoet\Config\Menu;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
@@ -17,6 +19,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WooCommerce\Helper;
+use MailPoetVendor\Carbon\Carbon;
 
 class MPMarketingChannel implements MarketingChannelInterface {
 
@@ -58,6 +61,11 @@ class MPMarketingChannel implements MarketingChannelInterface {
    */
   private $newsletterStatisticsRepository;
 
+  /**
+   * @var OverviewStatisticsController
+   */
+  private $overviewStatisticsController;
+
   const CAMPAIGN_TYPE_NEWSLETTERS = 'mailpoet-newsletters';
   const CAMPAIGN_TYPE_POST_NOTIFICATIONS = 'mailpoet-post-notifications';
   const CAMPAIGN_TYPE_AUTOMATIONS = 'mailpoet-automations';
@@ -69,7 +77,8 @@ class MPMarketingChannel implements MarketingChannelInterface {
     NewslettersRepository $newsletterRepository,
     Helper $woocommerceHelper,
     AutomationStorage $automationStorage,
-    NewsletterStatisticsRepository $newsletterStatisticsRepository
+    NewsletterStatisticsRepository $newsletterStatisticsRepository,
+    OverviewStatisticsController $overviewStatisticsController
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->settings = $settings;
@@ -78,6 +87,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
     $this->woocommerceHelper = $woocommerceHelper;
     $this->automationStorage = $automationStorage;
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
+    $this->overviewStatisticsController = $overviewStatisticsController;
     $this->campaignTypes = $this->generateCampaignTypes();
   }
 
@@ -314,17 +324,27 @@ class MPMarketingChannel implements MarketingChannelInterface {
   protected function getAutomations(): array {
     $result = [];
 
+    // Fetch Automation stats within the last 90 days
+    $primaryAfter = new \DateTimeImmutable((string)Carbon::now()->subDays(90)->toISOString());
+    $primaryBefore = new \DateTimeImmutable((string)Carbon::now()->toISOString());
+    $now = new \DateTimeImmutable('');
+
+    $query = new QueryWithCompare($primaryAfter, $primaryBefore, $now, $now);
+    $userCurrency = $this->woocommerceHelper->getWoocommerceCurrency();
+
     foreach ($this->automationStorage->getAutomations([Automation::STATUS_ACTIVE]) as $automation) {
       $automationId = (string)$automation->getId();
+
+      $automationStatistics = $this->overviewStatisticsController->getStatisticsForAutomation($automation, $query);
+
       $result[] = [
         'id' => $automationId,
         'name' => $automation->getName(),
         'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_AUTOMATIONS],
         'url' => admin_url('admin.php?page=' . Menu::AUTOMATION_ANALYTICS_PAGE_SLUG . '&id=' . $automationId),
         'price' => [
-          // TODO: fetch the correct value
-          'amount' => 0,
-          'currency' => $this->woocommerceHelper->getWoocommerceCurrency(),
+          'amount' => $automationStatistics['revenue']['current'] ?? 0,
+          'currency' => $userCurrency,
         ],
       ];
     }
