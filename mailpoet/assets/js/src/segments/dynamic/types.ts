@@ -400,6 +400,8 @@ export enum Actions {
   UNSELECT_ALL_DYNAMIC_SEGMENTS = 'UNSELECT_ALL_DYNAMIC_SEGMENTS',
 }
 
+export type DynamicSegmentAction = 'trash' | 'restore' | 'delete' | null;
+
 export interface ActionType {
   type: Actions;
 }
