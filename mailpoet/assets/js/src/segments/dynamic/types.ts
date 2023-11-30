@@ -377,7 +377,7 @@ export interface StateType {
 export type DynamicSegmentsList = {
   data: DynamicSegment[] | null;
   meta: {
-    all: number;
+    count: number;
     groups: DynamicSegmentGroup[];
   };
 };
