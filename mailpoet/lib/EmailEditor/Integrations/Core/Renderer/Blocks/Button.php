@@ -45,6 +45,7 @@ class Button implements BlockRenderer {
       "background: $bgColor",
       'cursor: auto',
       'word-break: break-word',
+      'box-sizing: border-box',
     ];
     $linkStyles = [
       'display: block',
