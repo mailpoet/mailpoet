@@ -120,7 +120,9 @@ type Props = {
 
 function NewsletterStatsInfo({ newsletter }: Props) {
   const newsletterDate =
-    newsletter.queue.scheduled_at || newsletter.queue.created_at;
+    newsletter?.queue?.scheduled_at ||
+    newsletter?.queue?.created_at ||
+    newsletter?.created_at;
   return (
     <Grid.ThreeColumns className="mailpoet-stats-info">
       <div>

@@ -9,7 +9,6 @@ import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-option
 import { RemoveWrapMargin } from 'common/remove-wrap-margin/remove-wrap-margin';
 import { Tabs } from 'common/tabs/tabs';
 import { Tab } from 'common/tabs/tab';
-import { Heading } from 'common/typography/heading/heading';
 import { ErrorBoundary } from 'common';
 import { NewsletterGeneralStats } from './newsletter-general-stats';
 import { NewsletterType } from './newsletter-type';
@@ -53,6 +52,7 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
         action: window.mailpoet_display_detailed_stats ? 'get' : 'getWithStats',
         data: {
           id,
+          accept: 'all',
         },
       })
         .always(() => {
@@ -91,14 +91,6 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
   const newsletter = item;
 
   if (loading) return null;
-
-  if (newsletter?.subject && !newsletter?.queue) {
-    return (
-      <div>
-        <Heading level={1}>{newsletter.subject}</Heading>
-      </div>
-    );
-  }
 
   if (!newsletter) {
     return <h3> {__('This email does not exist.', 'mailpoet')} </h3>;

@@ -35,4 +35,5 @@ export type NewsletterType = {
   type: string;
   status: string;
   wp_post_id?: number;
+  created_at: string;
 };
