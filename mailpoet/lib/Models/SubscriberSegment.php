@@ -7,16 +7,26 @@ namespace MailPoet\Models;
  * @property int $subscriberId
  * @property int $segmentId
  * @property string $status
+ *
+ * @deprecated This model is deprecated. Use \MailPoet\Subscribers\SubscriberSegmentRepository
+ * and \MailPoet\Entities\SubscriberSegmentEntity instead. This class can be removed after 2024-05-30.
  */
-
 class SubscriberSegment extends Model {
   public static $_table = MP_SUBSCRIBER_SEGMENT_TABLE; // phpcs:ignore PSR2.Classes.PropertyDeclaration
 
+  /**
+   * @deprecated
+   */
   public function subscriber() {
+    self::deprecationError(__METHOD__);
     return $this->has_one(__NAMESPACE__ . '\Subscriber', 'id', 'subscriber_id');
   }
 
+  /**
+   * @deprecated
+   */
   public static function unsubscribeFromSegments($subscriber, $segmentIds = []) {
+    self::deprecationError(__METHOD__);
     if (!$subscriber) return false;
 
     // Reset confirmation emails count, so user can resubscribe
@@ -59,7 +69,11 @@ class SubscriberSegment extends Model {
     return true;
   }
 
+  /**
+   * @deprecated
+   */
   public static function resubscribeToAllSegments($subscriber) {
+    self::deprecationError(__METHOD__);
     if ($subscriber === false) return false;
     // (re)subscribe to all segments linked to the subscriber
     return self::where('subscriber_id', $subscriber->id)
@@ -68,7 +82,11 @@ class SubscriberSegment extends Model {
       ->save();
   }
 
+  /**
+   * @deprecated
+   */
   public static function subscribeToSegments($subscriber, $segmentIds = []) {
+    self::deprecationError(__METHOD__);
     if ($subscriber === false) return false;
     if (!empty($segmentIds)) {
       // subscribe to specified segments
@@ -85,15 +103,23 @@ class SubscriberSegment extends Model {
     }
   }
 
+  /**
+   * @deprecated
+   */
   public static function resetSubscriptions($subscriber, $segmentIds = []) {
+    self::deprecationError(__METHOD__);
     self::unsubscribeFromSegments($subscriber);
     return self::subscribeToSegments($subscriber, $segmentIds);
   }
 
+  /**
+   * @deprecated
+   */
   public static function subscribeManyToSegments(
     $subscriberIds = [],
     $segmentIds = []
   ) {
+    self::deprecationError(__METHOD__);
     if (empty($subscriberIds) || empty($segmentIds)) {
       return false;
     }
@@ -119,7 +145,11 @@ class SubscriberSegment extends Model {
     return true;
   }
 
+  /**
+   * @deprecated
+   */
   public static function deleteManySubscriptions($subscriberIds = [], $segmentIds = []) {
+    self::deprecationError(__METHOD__);
     if (empty($subscriberIds)) return false;
 
     // delete subscribers' relations to segments (except WP and WooCommerce segments)
@@ -147,7 +177,11 @@ class SubscriberSegment extends Model {
     return $subscriptions->deleteMany();
   }
 
+  /**
+   * @deprecated
+   */
   public static function deleteSubscriptions($subscriber, $segmentIds = []) {
+    self::deprecationError(__METHOD__);
     if ($subscriber === false) return false;
 
     $wpSegment = Segment::getWPSegment();
@@ -162,11 +196,19 @@ class SubscriberSegment extends Model {
     return $subscriptions->deleteMany();
   }
 
+  /**
+   * @deprecated
+   */
   public static function subscribed($orm) {
+    self::deprecationError(__METHOD__);
     return $orm->where('status', Subscriber::STATUS_SUBSCRIBED);
   }
 
+  /**
+   * @deprecated
+   */
   public static function createOrUpdate($data = []) {
+    self::deprecationError(__METHOD__);
     $keys = false;
     if (isset($data['subscriber_id']) && isset($data['segment_id'])) {
       $keys = [
@@ -175,5 +217,28 @@ class SubscriberSegment extends Model {
       ];
     }
     return parent::_createOrUpdate($data, $keys);
+  }
+
+  /**
+   * @deprecated This is here for displaying the deprecation warning for properties.
+   */
+  public function __get($key) {
+    self::deprecationError('property "' . $key . '"');
+    return parent::__get($key);
+  }
+
+  /**
+   * @deprecated This is here for displaying the deprecation warning for static calls.
+   */
+  public static function __callStatic($name, $arguments) {
+    self::deprecationError($name);
+    return parent::__callStatic($name, $arguments);
+  }
+
+  private static function deprecationError($methodName) {
+    trigger_error(
+      'Calling ' . esc_html($methodName) . ' is deprecated and will be removed. Use \MailPoet\Subscribers\SubscriberSegmentRepository and \MailPoet\Entities\SubscriberSegmentEntity instead.',
+      E_USER_DEPRECATED
+    );
   }
 }
