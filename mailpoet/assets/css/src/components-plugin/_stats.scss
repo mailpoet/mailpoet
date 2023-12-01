@@ -90,6 +90,21 @@
   }
 }
 
+.mailpoet-no-box-shadow {
+  box-shadow: none !important;
+}
+
+.mailpoet-stats-buttons-header {
+  margin-left: 0.5rem;
+}
+
+.mailpoet-stats-button-group {
+  align-content: center;
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+}
+
 .mailpoet-stats-general-read-more {
   font-weight: bold;
   margin-bottom: 0;
