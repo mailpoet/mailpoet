@@ -63,20 +63,30 @@ class ImportExportRepository {
   }
 
   /**
+   * @param class-string<object> $className
    * @return ClassMetadata<object>
    */
   protected function getClassMetadata(string $className): ClassMetadata {
     return $this->entityManager->getClassMetadata($className);
   }
 
+  /**
+   * @param class-string<object> $className
+   */
   protected function getTableName(string $className): string {
     return $this->getClassMetadata($className)->getTableName();
   }
 
+  /**
+   * @param class-string<object> $className
+   */
   protected function getTableColumns(string $className): array {
     return $this->getClassMetadata($className)->getColumnNames();
   }
 
+  /**
+   * @param class-string<object> $className
+   */
   public function insertMultiple(
     string $className,
     array $columns,
@@ -109,6 +119,9 @@ class ImportExportRepository {
     return $count;
   }
 
+  /**
+   * @param class-string<object> $className
+   */
   public function updateMultiple(
     string $className,
     array $columns,
@@ -218,7 +231,6 @@ class ImportExportRepository {
   private function createSubscribersQueryBuilder(int $limit, int $offset): QueryBuilder {
     $subscriberSegmentTable = $this->getTableName(SubscriberSegmentEntity::class);
     $subscriberTable = $this->getTableName(SubscriberEntity::class);
-    $segmentTable = $this->getTableName(SegmentEntity::class);
 
     return $this->entityManager->getConnection()->createQueryBuilder()
       ->select("
@@ -278,6 +290,9 @@ class ImportExportRepository {
     }
   }
 
+  /**
+   * @param class-string<object> $className
+   */
   private function getIdsByEmail(string $className, array $columns, array $data): array {
     $tableName = $this->getTableName($className);
     $emailIndex = array_search('email', $columns);

@@ -467,6 +467,7 @@ class NewslettersRepository extends Repository {
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       // Fetch WP Posts IDs and delete them
+      /** @var int[] $wpPostsIds */
       $wpPostsIds = $entityManager->createQueryBuilder()->select('n.wpPostId')
         ->from(NewsletterEntity::class, 'n')
         ->where('n.id IN (:ids)')

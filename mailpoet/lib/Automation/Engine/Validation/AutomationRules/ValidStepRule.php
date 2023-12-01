@@ -57,6 +57,7 @@ class ValidStepRule implements AutomationNodeVisitor {
         }
 
         $key = $rule instanceof ValidStepFiltersRule ? 'filters' : 'fields';
+        /** @phpstan-ignore-next-line - PHPStan detects inconsistency in merged array */
         $this->errors[$stepId][$key] = array_merge(
           $this->mapErrorCodesToErrorMessages($e->getErrors()),
           $this->errors[$stepId][$key]

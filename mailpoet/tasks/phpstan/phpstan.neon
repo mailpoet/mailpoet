@@ -28,7 +28,6 @@ parameters:
     maximumNumberOfProcesses: 4
   ignoreErrors:
     - '#Function members_register_.+ not found#'
-    - '#Call to an undefined method MailPoetVendor\\Idiorm\\IdiormResultSet::set\(\)#'
     - '#Argument of an invalid type MailPoetVendor\\pQuery\\IQuery supplied for foreach, only iterables are supported#'
 
     # exclude level 6 errors (but keep them for Automation)
@@ -92,11 +91,6 @@ parameters:
       message: '/function add_(sub)?menu_page expects callable\(\): mixed, ''''\|\(callable\(\): mixed\) given/'
       count: 2
       path: ../../lib/WP/Functions.php
-    -
-      # WP Stubs contain incorrect definition form apply_filters: apply_filters( string $tag, array $args )
-      message: "#^Function apply_filters invoked with 3 parameters, 2 required\\.$#"
-      count: 1
-      path: ../../lib/EmailEditor/Engine/Renderer/Renderer.php
 
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
@@ -104,6 +98,7 @@ parameters:
     - MAILPOET_PREMIUM_VERSION
   doctrine:
     objectManagerLoader: create-entity-manager.php
+    allowNullablePropertyForRequiredField: false
 
   # exclude level 6 errors
   checkMissingIterableValueType: false
@@ -112,6 +107,7 @@ parameters:
   excludePaths:
     analyseAndScan:
       - ../../lib/Config/PopulatorData/Templates # analysis of templates is extremely slow, let's skip them for now
+      - ../../lib/Models # Old models are deprecated and will be removed soon
       - ../../tests/_support/_generated
       - ../../tests/integration/Models # Old models are deprecated and will be removed soon
       - ../../tests/unit/Entities/SubscriberEntityTest.php
@@ -122,5 +118,4 @@ includes:
   - vendor/phpstan/phpstan-phpunit/extension.neon
   - vendor/phpstan/phpstan-doctrine/rules.neon
   - vendor/szepeviktor/phpstan-wordpress/extension.neon
-  - php-version-dependent-config.php # PHP version detection + configuraton dependent on PHP version
   - phpstan-baseline-fix-lib.php # include baseline files

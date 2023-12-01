@@ -154,6 +154,7 @@ class Activator {
     $tablesSql = implode(
       ',',
       array_map(function ($table): string {
+        /** @var string $table */
         return $this->wp->escSql(strval($table));
       }, $tables)
     );

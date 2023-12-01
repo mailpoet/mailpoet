@@ -134,7 +134,7 @@ class API {
 
   public function sendMessages($messageBody) {
     $this->curlHandle = null;
-    add_action('requests-curl.before_request', [$this, 'setCurlHandle'], 10, 2);
+    add_action('requests-curl.before_request', [$this, 'setCurlHandle'], 10, 1);
     add_action('requests-curl.after_request', [$this, 'logCurlInformation'], 10, 2);
     $result = $this->request(
       $this->urlMessages,

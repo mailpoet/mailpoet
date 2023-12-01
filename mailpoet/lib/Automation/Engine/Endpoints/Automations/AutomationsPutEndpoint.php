@@ -27,7 +27,9 @@ class AutomationsPutEndpoint extends Endpoint {
 
   public function handle(Request $request): Response {
     $data = $request->getParams();
-    $automation = $this->updateController->updateAutomation(intval($request->getParam('id')), $data);
+    /** @var int $automationId */
+    $automationId = $request->getParam('id');
+    $automation = $this->updateController->updateAutomation(intval($automationId), $data);
     return new Response($this->automationMapper->buildAutomation($automation));
   }
 

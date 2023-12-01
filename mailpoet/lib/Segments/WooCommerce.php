@@ -329,7 +329,9 @@ class WooCommerce {
     $now = (Carbon::createFromTimestamp($this->wp->currentTime('timestamp')))->format('Y-m-d H:i:s');
     $source = Source::WOOCOMMERCE_USER;
     foreach ($emails as $email) {
-      $email = strval($this->connection->quote($email));
+      /** @var string $email */
+      $email = $this->connection->quote($email);
+      $email = strval($email);
       $subscribersValues[] = "(1, {$email}, '{$status}', '{$now}', '{$now}', '{$source}')";
     }
 

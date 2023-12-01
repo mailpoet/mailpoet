@@ -19,7 +19,9 @@ class AutomationsDeleteEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
-    $automationId = intval($request->getParam('id'));
+    /** @var int $automationId */
+    $automationId = $request->getParam('id');
+    $automationId = intval($automationId);
     $this->deleteController->deleteAutomation($automationId);
     return new Response(null);
   }

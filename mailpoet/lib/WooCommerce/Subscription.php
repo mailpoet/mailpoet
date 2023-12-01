@@ -2,11 +2,9 @@
 
 namespace MailPoet\WooCommerce;
 
-use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Statistics\Track\Unsubscribes;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
@@ -61,9 +59,6 @@ class Subscription {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
-  /** @var Unsubscribes */
-  private $unsubscribesTracker;
-
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
@@ -76,7 +71,6 @@ class Subscription {
     WPFunctions $wp,
     Helper $wcHelper,
     SubscribersRepository $subscribersRepository,
-    Unsubscribes $unsubscribesTracker,
     SegmentsRepository $segmentsRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository
   ) {
@@ -85,7 +79,6 @@ class Subscription {
     $this->wcHelper = $wcHelper;
     $this->confirmationEmailMailer = $confirmationEmailMailer;
     $this->subscribersRepository = $subscribersRepository;
-    $this->unsubscribesTracker = $unsubscribesTracker;
     $this->segmentsRepository = $segmentsRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
   }
@@ -260,17 +253,6 @@ class Subscription {
       $this->confirmationEmailMailer->sendConfirmationEmailOnce($subscriber);
     } catch (\Exception $e) {
       // ignore errors
-    }
-  }
-
-  private function updateSubscriberStatus(SubscriberEntity $subscriber) {
-    $segmentsCount = $subscriber->getSubscriberSegments(SubscriberEntity::STATUS_SUBSCRIBED)->count();
-
-    if (!$segmentsCount) {
-      $subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
-      $this->subscribersRepository->persist($subscriber);
-      $this->subscribersRepository->flush();
-      $this->unsubscribesTracker->track((int)$subscriber->getId(), StatisticsUnsubscribeEntity::SOURCE_ORDER_CHECKOUT);
     }
   }
 }

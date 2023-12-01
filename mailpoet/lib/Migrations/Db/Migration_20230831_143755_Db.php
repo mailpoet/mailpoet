@@ -85,6 +85,7 @@ class Migration_20230831_143755_Db extends DbMigration {
       }
 
       $queries = [];
+      /** @var array<int, array{id:int, automation_run_id:int, step_id:int, started_at:string, steps:string}> $data */
       foreach ($data as $item) {
         /** @var array $steps */
         $steps = json_decode(strval($item['steps']), true);

@@ -66,6 +66,9 @@ class Migration_20231128_120355_App extends AppMigration {
     ]);
   }
 
+  /**
+   * @param class-string $entityClassName
+   */
   private function getTableName(string $entityClassName): string {
     return $this->entityManager->getClassMetadata($entityClassName)->getTableName();
   }

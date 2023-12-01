@@ -453,7 +453,8 @@ class NewsletterEntity {
    * @return int[]
    */
   public function getSegmentIds() {
-    return array_filter($this->newsletterSegments->map(function(NewsletterSegmentEntity $newsletterSegment) {
+    return array_filter($this->newsletterSegments->map(function(NewsletterSegmentEntity $newsletterSegment = null) {
+      if (!$newsletterSegment) return null;
       $segment = $newsletterSegment->getSegment();
       return $segment ? (int)$segment->getId() : null;
     })->toArray());
@@ -467,7 +468,8 @@ class NewsletterEntity {
   }
 
   public function getOption(string $name): ?NewsletterOptionEntity {
-    $option = $this->options->filter(function (NewsletterOptionEntity $option) use ($name): bool {
+    $option = $this->options->filter(function (NewsletterOptionEntity $option = null) use ($name): bool {
+      if (!$option) return false;
       return ($field = $option->getOptionField()) ? $field->getName() === $name : false;
     })->first();
     return $option ?: null;

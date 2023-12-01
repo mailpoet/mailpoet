@@ -43,6 +43,7 @@ class RecaptchaValidator implements CaptchaValidator {
     if ($this->wp->isWpError($response)) {
       throw new ValidationError(__('Error while validating the CAPTCHA.', 'mailpoet'));
     }
+    /** @var \stdClass $response */
     $response = json_decode($this->wp->wpRemoteRetrieveBody($response));
     if (empty($response->success)) {
       throw new ValidationError(__('Error while validating the CAPTCHA.', 'mailpoet'));

@@ -36,6 +36,7 @@ class Beamer extends SimpleWorker {
     $posts = $this->wp->wpRemoteRetrieveBody($response);
     if (empty($posts)) return false;
     $posts = json_decode($posts);
+    /** @var \stdClass[] $posts */
     if (empty($posts) || empty($posts[0]->date)) return false;
     $this->settings->set('last_announcement_date', Carbon::createFromTimeString($posts[0]->date)->getTimestamp());
     return true;
