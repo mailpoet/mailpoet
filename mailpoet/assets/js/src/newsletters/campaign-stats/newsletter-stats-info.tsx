@@ -185,6 +185,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
             renderToggle={({ isOpen, onToggle }) => (
               <ButtonGroup>
                 <Button
+                  disabled={newsletter.type !== 'standard'}
                   onClick={() => {
                     editNewsletter(newsletter);
                   }}
@@ -204,18 +205,10 @@ function NewsletterStatsInfo({ newsletter }: Props) {
             )}
             renderContent={() => (
               <MenuGroup>
-                {newsletter.type === 'notification' && (
-                  <MenuItem
-                    className="mailpoet-no-box-shadow"
-                    variant="tertiary"
-                    onClick={() => {}}
-                  >
-                    {__('Deactivate', 'mailpoet')}
-                  </MenuItem>
-                )}
                 <MenuItem
                   className="mailpoet-no-box-shadow"
                   variant="tertiary"
+                  disabled={newsletter.type !== 'standard'}
                   onClick={() => {
                     duplicateNewsletter(newsletter);
                   }}
