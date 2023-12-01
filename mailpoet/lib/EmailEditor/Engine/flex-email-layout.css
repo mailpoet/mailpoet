@@ -3,7 +3,7 @@
 }
 
 :where(body .is-layout-flex) {
-  gap: var(--mp-flex-layout-gap, 16px);
+  gap: var(--wp--style--block-gap, 16px);
 }
 
 .is-mobile-preview .is-layout-email-flex {
