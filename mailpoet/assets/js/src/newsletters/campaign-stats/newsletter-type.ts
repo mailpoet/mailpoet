@@ -11,6 +11,7 @@ export type NewsletterType = {
         name?: string;
       };
     };
+    status?: string;
   };
   sender_address?: string;
   reply_to_address?: string;
@@ -32,4 +33,6 @@ export type NewsletterType = {
     };
   };
   type: string;
+  status: string;
+  wp_post_id?: number;
 };

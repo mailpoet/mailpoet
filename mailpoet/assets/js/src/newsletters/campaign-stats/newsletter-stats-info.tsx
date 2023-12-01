@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
   Button,
   ButtonGroup,
@@ -10,8 +10,109 @@ import { chevronDown, Icon } from '@wordpress/icons';
 import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
-import { FilterSegmentTag, SegmentTags } from 'common';
+import { confirmAlert, FilterSegmentTag, SegmentTags } from 'common';
 import { NewsletterType } from './newsletter-type';
+
+const redirectToNewsletterHome = () => {
+  window.location.href = '?page=mailpoet-newsletters';
+};
+
+const getEditorLink = (newsletter: NewsletterType) => {
+  let editorHref = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
+  if (
+    MailPoet.FeaturesController.isSupported('gutenberg_email_editor') &&
+    newsletter.wp_post_id
+  ) {
+    editorHref = `admin.php?page=mailpoet-email-editor&postId=${newsletter.wp_post_id}`;
+  }
+
+  return editorHref;
+};
+
+const editNewsletter = (newsletter: NewsletterType) => {
+  const editorHref = getEditorLink(newsletter);
+
+  if (
+    !newsletter.queue ||
+    newsletter.status !== 'sending' ||
+    newsletter.queue.status !== null
+  ) {
+    window.location.href = editorHref;
+  } else {
+    confirmAlert({
+      message: __(
+        'Sending is in progress. Do you want to pause sending and edit the newsletter?',
+        'mailpoet',
+      ),
+      onConfirm: () => {
+        window.location.href = `${editorHref}&pauseConfirmed=yes`;
+      },
+    });
+  }
+};
+
+const duplicateNewsletter = (newsletter: NewsletterType) => {
+  void MailPoet.Ajax.post({
+    api_version: window.mailpoet_api_version,
+    endpoint: 'newsletters',
+    action: 'duplicate',
+    data: {
+      id: newsletter.id,
+    },
+  })
+    .done((response) => {
+      const editorHref = getEditorLink(response.data as NewsletterType);
+
+      MailPoet.Notice.success(
+        sprintf(
+          __(
+            'Email "%s" has been duplicated. New email: <a href="%s"> %s </a>',
+            'mailpoet',
+          ),
+          newsletter.subject,
+          editorHref,
+          response.data.subject,
+        ),
+        { static: true },
+      );
+    })
+    .fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map((error) => error.message),
+          { scroll: true },
+        );
+      }
+    });
+};
+
+const trashNewsletter = (newsletter: NewsletterType) => {
+  void MailPoet.Ajax.post({
+    api_version: window.mailpoet_api_version,
+    endpoint: 'newsletters',
+    action: 'delete',
+    data: {
+      id: newsletter.id,
+    },
+  })
+    .done(() => {
+      MailPoet.Notice.success(
+        __('Email "%1$s" has been deleted.', 'mailpoet').replace(
+          '%1$s',
+          newsletter.subject,
+        ),
+      );
+      redirectToNewsletterHome();
+    })
+    .fail((response) => {
+      if (response.errors.length > 0) {
+        MailPoet.Notice.error(
+          response.errors.map((error) => error.message),
+          { scroll: true },
+        );
+      }
+    });
+};
 
 type Props = {
   newsletter: NewsletterType;
@@ -83,7 +184,12 @@ function NewsletterStatsInfo({ newsletter }: Props) {
             popoverProps={{ placement: 'bottom-end' }}
             renderToggle={({ isOpen, onToggle }) => (
               <ButtonGroup>
-                <Button href={newsletter.preview_url} variant="primary">
+                <Button
+                  onClick={() => {
+                    editNewsletter(newsletter);
+                  }}
+                  variant="primary"
+                >
                   {__('Edit', 'mailpoet')}
                 </Button>
                 <Button
@@ -110,11 +216,18 @@ function NewsletterStatsInfo({ newsletter }: Props) {
                 <MenuItem
                   className="mailpoet-no-box-shadow"
                   variant="tertiary"
-                  onClick={() => {}}
+                  onClick={() => {
+                    duplicateNewsletter(newsletter);
+                  }}
                 >
                   {__('Duplicate', 'mailpoet')}
                 </MenuItem>
-                <MenuItem isDestructive onClick={() => {}}>
+                <MenuItem
+                  isDestructive
+                  onClick={() => {
+                    trashNewsletter(newsletter);
+                  }}
+                >
                   {__('Move to Trash', 'mailpoet')}
                 </MenuItem>
               </MenuGroup>
