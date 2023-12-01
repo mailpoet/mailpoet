@@ -28,9 +28,10 @@ class FlexLayoutRenderer {
     $outputHtml .= '</tr></table></div>
     <!--[if mso | IE]></td></tr></table><![endif]-->';
 
-    $styles = wp_style_engine_get_styles($parsedBlock['attrs']['style'])['css'];
-    $justify = $parsedBlock['attrs']['layout']['justifyContent'] ?? 'left';
-    $styles .= 'text-align: ' . esc_attr($justify);
+    $wpGeneratedStyles = wp_style_engine_get_styles($parsedBlock['attrs']['style'] ?? []);
+    $styles = $wpGeneratedStyles['css'] ?? '';
+    $justify = esc_attr($parsedBlock['attrs']['layout']['justifyContent'] ?? 'left');
+    $styles .= 'text-align: ' . $justify;
     $outputHtml = str_replace('{style}', $styles, $outputHtml);
     $outputHtml = str_replace('{align}', $justify, $outputHtml);
 
@@ -39,7 +40,6 @@ class FlexLayoutRenderer {
 
   private function computeWidthsForFlexLayout(array $parsedBlock, SettingsController $settingsController): array {
     $blocksCount = count($parsedBlock['innerBlocks']);
-    $totalSetWidth = 0; // Total width set by user. Excludes items that have no width set
     $totalUsedWidth = 0; // Total width assuming items without set width would consume proportional width
     $parentWidth = $settingsController->parseNumberFromStringWithPixels($parsedBlock['email_attrs']['width'] ?? SettingsController::EMAIL_WIDTH);
     $flexGap = $settingsController->parseNumberFromStringWithPixels(SettingsController::FLEX_GAP);
@@ -48,7 +48,6 @@ class FlexLayoutRenderer {
     foreach ($innerBlocks as $key => $block) {
       $blockWidthPercent = ($block['attrs']['width'] ?? 0) ? intval($block['attrs']['width']) : 0;
       $blockWidth = floor($parentWidth * ($blockWidthPercent / 100));
-      $totalSetWidth += $blockWidth;
       // If width is not set, we assume it's 25% of the parent width
       $totalUsedWidth += $blockWidth ?: floor($parentWidth * (25 / 100));
 
@@ -56,22 +55,32 @@ class FlexLayoutRenderer {
         $innerBlocks[$key]['email_attrs']['layout_width'] = null; // Will be rendered as auto
         continue;
       }
-      // How many percent of width we will strip to keep some space fot the gap
-      // Todo add more precise comment
-      $widthGapReduction = $flexGap * ((100 - $blockWidthPercent) / 100);
-      $innerBlocks[$key]['email_attrs']['layout_width'] = floor($blockWidth - $widthGapReduction) . 'px';
+      $innerBlocks[$key]['email_attrs']['layout_width'] = $this->getWidthWithoutGap($blockWidth, $flexGap, $blockWidthPercent) . 'px';
     }
 
     // When there is only one block, or percentage is set reasonably we don't need to adjust and just render as set by user
-    if ($blocksCount <= 1 || ($totalSetWidth < $parentWidth)) {
+    if ($blocksCount <= 1 || ($totalUsedWidth <= $parentWidth)) {
       return $innerBlocks;
     }
 
     foreach ($innerBlocks as $key => $block) {
       $proportionalSpaceOverflow = $parentWidth / $totalUsedWidth;
       $blockWidth = $block['email_attrs']['layout_width'] ? $settingsController->parseNumberFromStringWithPixels($block['email_attrs']['layout_width']) : 0;
-      $innerBlocks[$key]['email_attrs']['layout_width'] = $blockWidth ? intval(round($blockWidth * $proportionalSpaceOverflow)) . 'px' : null;
+      $blockProportionalWidth = $blockWidth * $proportionalSpaceOverflow;
+      $blockProportionalPercentage = ($blockProportionalWidth / $parentWidth) * 100;
+      $innerBlocks[$key]['email_attrs']['layout_width'] = $blockWidth ? $this->getWidthWithoutGap($blockProportionalWidth, $flexGap, $blockProportionalPercentage) . 'px' : null;
     }
     return $innerBlocks;
+  }
+
+  /**
+   * How much of width we will strip to keep some space for the gap
+   * This is computed based on CSS rule used in the editor:
+   * For block with width set to X percent
+   * width: calc(X% - (var(--wp--style--block-gap) * (100 - X)/100)));
+   */
+  private function getWidthWithoutGap(float $blockWidth, float $flexGap, float $blockWidthPercent): int {
+    $widthGapReduction = $flexGap * ((100 - $blockWidthPercent) / 100);
+    return intval(floor($blockWidth - $widthGapReduction));
   }
 }

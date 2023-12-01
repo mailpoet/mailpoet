@@ -123,8 +123,8 @@ class SettingsController {
     $contentVariables = 'body {';
     $contentVariables .= 'padding-bottom: var(--wp--style--root--padding-bottom);';
     $contentVariables .= 'padding-top: var(--wp--style--root--padding-top);';
+    $contentVariables .= '--wp--style--block-gap:' . self::FLEX_GAP . ';';
     $contentVariables .= '}';
-    $contentVariables .= '--mp-flex-layout-gap:' . self::FLEX_GAP . ';';
 
     $settings = array_merge($coreDefaultSettings, self::DEFAULT_SETTINGS);
     $settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
