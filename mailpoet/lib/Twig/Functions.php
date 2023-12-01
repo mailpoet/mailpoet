@@ -221,6 +221,7 @@ class Functions extends AbstractExtension {
   }
 
   public function getSendingFrequency() {
+    /** @var string[] $args */
     $args = func_get_args();
     $value = (int)array_shift($args);
 

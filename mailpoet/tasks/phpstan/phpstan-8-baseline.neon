@@ -146,6 +146,21 @@ parameters:
 			path: ../../lib/Config/Populator.php
 
 		-
+			message: "#^Binary operation \"\\.\" between non-falsy-string and array\\|string results in an error\\.$#"
+			count: 2
+			path: ../../lib/Config/Populator.php
+
+		-
+			message: "#^Binary operation \"\\.\" between '`t1`\\.`' and array\\|string results in an error\\.$#"
+			count: 2
+			path: ../../lib/Config/Populator.php
+
+		-
+			message: "#^Part \\$table \\(array\\|string\\) of encapsed string cannot be cast to string\\.$#"
+			count: 2
+			path: ../../lib/Config/Populator.php
+
+		-
 			message: "#^Parameter \\#2 \\$args of method MailPoet\\\\WP\\\\Functions\\:\\:wpRemotePost\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Cron/CronHelper.php
@@ -156,19 +171,9 @@ parameters:
 			path: ../../lib/Cron/CronHelper.php
 
 		-
-			message: "#^Expression in empty\\(\\) is not falsy\\.$#"
-			count: 2
-			path: ../../lib/Cron/CronWorkerRunner.php
-
-		-
 			message: "#^Parameter \\#2 \\$string of function explode expects string, class\\-string\\|false given\\.$#"
 			count: 1
 			path: ../../lib/Cron/Daemon.php
-
-		-
-			message: "#^Cannot access offset 0 on mixed\\.$#"
-			count: 2
-			path: ../../lib/Cron/Workers/Beamer.php
 
 		-
 			message: "#^Method MailPoet\\\\Cron\\\\Workers\\\\SendingQueue\\\\SendingThrottlingHandler\\:\\:getMaxBatchSize\\(\\) should return int but returns mixed\\.$#"
@@ -271,24 +276,9 @@ parameters:
 			path: ../../lib/Form/DisplayFormInWPContent.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 1
-			path: ../../lib/Form/FormsRepository.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 2
-			path: ../../lib/Form/Listing/FormListingRepository.php
-
-		-
 			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
 			count: 1
 			path: ../../lib/Form/Renderer.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 1
-			path: ../../lib/Listing/ListingRepository.php
 
 		-
 			message: "#^Method MailPoet\\\\Listing\\\\ListingRepository\\:\\:getData\\(\\) should return array but returns mixed\\.$#"
@@ -299,16 +289,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$array of function implode expects array\\<string\\>, array\\<array\\<int, mixed\\>\\|string\\> given\\.$#"
 			count: 1
 			path: ../../lib/Models/Subscriber.php
-
-		-
-			message: "#^Parameter \\#3 \\$priority of method MailPoet\\\\WP\\\\Functions\\:\\:addAction\\(\\) expects int, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/AutomatedLatestContent.php
-
-		-
-			message: "#^Parameter \\#3 \\$priority of method MailPoet\\\\WP\\\\Functions\\:\\:removeAction\\(\\) expects int, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/AutomatedLatestContent.php
 
 		-
 			message: "#^Variable \\$terms in empty\\(\\) always exists and is not falsy\\.$#"
@@ -324,16 +304,6 @@ parameters:
 			message: "#^Cannot call method getMeta\\(\\) on mixed\\.$#"
 			count: 1
 			path: ../../lib/Newsletter/AutomaticEmailsRepository.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/AutomaticEmailsRepository.php
-
-		-
-			message: "#^Property MailPoet\\\\Newsletter\\\\Editor\\\\PostTransformer\\:\\:\\$withLayout is never read, only written\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/Editor/PostTransformer.php
 
 		-
 			message: "#^Parameter \\#1 \\$string of function strip_tags expects string, mixed given\\.$#"
@@ -367,7 +337,7 @@ parameters:
 
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
-			count: 3
+			count: 1
 			path: ../../lib/Newsletter/Listing/NewsletterListingRepository.php
 
 		-
@@ -389,11 +359,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$body of method MailPoet\\\\Newsletter\\\\ApiDataSanitizer\\:\\:sanitizeBody\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Newsletter/NewsletterSaveController.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 2
-			path: ../../lib/Newsletter/NewslettersRepository.php
 
 		-
 			message: "#^Method MailPoet\\\\Newsletter\\\\Renderer\\\\Renderer\\:\\:postProcessTemplate\\(\\) should return string but returns mixed\\.$#"
@@ -431,16 +396,6 @@ parameters:
 			path: ../../lib/Newsletter/Shortcodes/Categories/Link.php
 
 		-
-			message: "#^Parameter \\#3 \\$priority of method MailPoet\\\\WP\\\\Functions\\:\\:addAction\\(\\) expects int, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/Shortcodes/Categories/Newsletter.php
-
-		-
-			message: "#^Parameter \\#3 \\$priority of method MailPoet\\\\WP\\\\Functions\\:\\:removeAction\\(\\) expects int, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/Shortcodes/Categories/Newsletter.php
-
-		-
 			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
 			count: 1
 			path: ../../lib/Newsletter/Statistics/NewsletterStatisticsRepository.php
@@ -457,23 +412,13 @@ parameters:
 
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
-			count: 3
+			count: 2
 			path: ../../lib/Newsletter/Statistics/NewsletterStatisticsRepository.php
 
 		-
 			message: "#^Method MailPoet\\\\Newsletter\\\\Statistics\\\\NewsletterStatisticsRepository\\:\\:getStatisticsMachineOpenCount\\(\\) should return int but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Newsletter/Statistics/NewsletterStatisticsRepository.php
-
-		-
-			message: "#^Else branch is unreachable because previous condition is always true\\.$#"
-			count: 1
-			path: ../../lib/Newsletter/ViewInBrowser/ViewInBrowserRenderer.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 1
-			path: ../../lib/NewsletterTemplates/NewsletterTemplatesRepository.php
 
 		-
 			message: "#^Method MailPoet\\\\NewsletterTemplates\\\\NewsletterTemplatesRepository\\:\\:findAllForListing\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterTemplateEntity\\> but returns mixed\\.$#"
@@ -581,21 +526,6 @@ parameters:
 			path: ../../lib/Segments/DynamicSegments/Filters/WooCommerceTotalSpent.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 2
-			path: ../../lib/Segments/SegmentListingRepository.php
-
-		-
-			message: "#^Cannot access offset 'all' on mixed\\.$#"
-			count: 1
-			path: ../../lib/Segments/SegmentSubscribersRepository.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 3
-			path: ../../lib/Segments/SegmentSubscribersRepository.php
-
-		-
 			message: "#^Method MailPoet\\\\Segments\\\\SegmentSubscribersRepository\\:\\:getSubscribersGlobalStatusStatisticsCount\\(\\) should return array but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Segments/SegmentSubscribersRepository.php
@@ -614,11 +544,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$y of method MailPoetVendor\\\\Doctrine\\\\DBAL\\\\Query\\\\Expression\\\\ExpressionBuilder\\:\\:notIn\\(\\) expects array\\<string\\>\\|string, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Segments/SegmentSubscribersRepository.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 1
-			path: ../../lib/Segments/SegmentsRepository.php
 
 		-
 			message: "#^Cannot access offset 'id' on mixed\\.$#"
@@ -686,11 +611,6 @@ parameters:
 			path: ../../lib/Settings/Hosts.php
 
 		-
-			message: "#^Cannot cast mixed to float\\.$#"
-			count: 1
-			path: ../../lib/Statistics/StatisticsOpensRepository.php
-
-		-
 			message: "#^Method MailPoet\\\\Subscribers\\\\ImportExport\\\\Import\\\\MailChimp\\:\\:getApiData\\(\\) should return array\\|null but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Subscribers/ImportExport/Import/MailChimp.php
@@ -711,22 +631,7 @@ parameters:
 			path: ../../lib/Subscribers/InactiveSubscribersController.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 3
-			path: ../../lib/Subscribers/Statistics/SubscriberStatisticsRepository.php
-
-		-
-			message: "#^Method MailPoet\\\\Subscribers\\\\Statistics\\\\SubscriberStatisticsRepository\\:\\:getTotalSentCount\\(\\) should return int but returns mixed\\.$#"
-			count: 1
-			path: ../../lib/Subscribers/Statistics/SubscriberStatisticsRepository.php
-
-		-
 			message: "#^Method MailPoet\\\\Subscribers\\\\SubscriberIPsRepository\\:\\:findOneByIPAndCreatedAtAfterTimeInSeconds\\(\\) should return MailPoet\\\\Entities\\\\SubscriberIPEntity\\|null but returns mixed\\.$#"
-			count: 1
-			path: ../../lib/Subscribers/SubscriberIPsRepository.php
-
-		-
-			message: "#^Method MailPoet\\\\Subscribers\\\\SubscriberIPsRepository\\:\\:getCountByIPAndCreatedAtAfterTimeInSeconds\\(\\) should return int but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Subscribers/SubscriberIPsRepository.php
 
@@ -756,7 +661,7 @@ parameters:
 			path: ../../lib/Subscribers/SubscribersRepository.php
 
 		-
-			message: "#^Method MailPoet\\\\Subscribers\\\\SubscribersRepository\\:\\:findIdsOfDeletedByEmails\\(\\) should return array\\<int\\> but returns array\\<array\\<string, int\\>\\>\\.$#"
+			message: "#^Method MailPoet\\\\Subscribers\\\\SubscribersRepository\\:\\:findIdsOfDeletedByEmails\\(\\) should return array\\<int\\> but returns array\\<int, array\\<string, int\\>\\>\\.$#"
 			count: 1
 			path: ../../lib/Subscribers/SubscribersRepository.php
 
@@ -826,11 +731,6 @@ parameters:
 			path: ../../lib/Tracy/DIPanel/DIPanel.php
 
 		-
-			message: "#^Parameter \\#3 \\$priority of method MailPoet\\\\WP\\\\Functions\\:\\:addAction\\(\\) expects int, mixed given\\.$#"
-			count: 4
-			path: ../../lib/Util/ConflictResolver.php
-
-		-
 			message: "#^Parameter \\#2 \\$string of function explode expects string, mixed given\\.$#"
 			count: 2
 			path: ../../lib/Util/DBCollationChecker.php
@@ -839,16 +739,6 @@ parameters:
 			message: "#^Part \\$sourceCollation \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
 			count: 1
 			path: ../../lib/Util/DBCollationChecker.php
-
-		-
-			message: "#^While loop condition is always true\\.$#"
-			count: 1
-			path: ../../lib/Util/DOM.php
-
-		-
-			message: "#^Method MailPoet\\\\Util\\\\ProgressBar\\:\\:readProgress\\(\\) should return array\\|false but returns mixed\\.$#"
-			count: 1
-			path: ../../lib/Util/ProgressBar.php
 
 		-
 			message: "#^Parameter \\#1 \\$length of function random_bytes expects int\\<1, max\\>, int given\\.$#"
@@ -869,11 +759,6 @@ parameters:
 			message: "#^Method MailPoet\\\\WP\\\\Functions\\:\\:addAction\\(\\) should return bool but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/WP/Functions.php
-
-		-
-			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
-			count: 1
-			path: ../../lib/WooCommerce/Helper.php
 
 		-
 			message: "#^Property MailPoet\\\\Test\\\\Doctrine\\\\EventListeners\\\\TimestampEntity\\:\\:\\$id is never written, only read\\.$#"
@@ -899,3 +784,23 @@ parameters:
 			message: "#^Method MailPoet\\\\Newsletter\\\\NewslettersRepository\\:\\:getStandardNewsletterList\\(\\) should return array\\<MailPoet\\\\Entities\\\\NewsletterEntity\\> but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+			message: "#^Cannot access offset string on non-empty-array\\<string, int\\>|int\\.$#"
+			count: 1
+			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+			message: "#^Parameter \\#1 $array of function array_sum expects array, array\\<string, int\\>|int given\\.$#"
+			count: 2
+			path: ../../lib/Newsletter/NewslettersRepository.php
+
+		-
+			message: "#^Parameter \\#1 \\$args of function get_comments expects array\\{author_email\\?\\: string, author_url\\?\\: string, author__in\\?\\: array\\<int\\>, author__not_in\\?\\: array\\<int\\>, comment__in\\?\\: array\\<int\\>, comment__not_in\\?\\: array\\<int\\>, count\\?\\: bool, date_query\\?\\: array, \\.\\.\\.\\}, array\\|string given\\.$#"
+			count: 1
+			path: ../../lib/Automation/Engine/WordPress.php
+
+		-
+			message: "#^Parameter \\#1 \\$args of function get_terms expects array\\{taxonomy\\?\\: array\\<string\\>\\|string, object_ids\\?\\: array\\<int\\>\\|int, orderby\\?\\: string, order\\?\\: string, hide_empty\\?\\: bool\\|int, include\\?\\: array\\<int\\>\\|string, exclude\\?\\: array\\<int\\>\\|string, exclude_tree\\?\\: array\\<int\\>\\|string, \\.\\.\\.\\}, array\\|string given\\.$#"
+			count: 1
+			path: ../../lib/Automation/Engine/WordPress.php

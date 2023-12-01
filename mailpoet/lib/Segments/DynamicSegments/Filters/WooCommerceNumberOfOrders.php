@@ -38,8 +38,12 @@ class WooCommerceNumberOfOrders implements Filter {
     global $wpdb;
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $filterData = $filter->getFilterData();
-    $type = strval($filterData->getParam('number_of_orders_type'));
-    $count = intval($filterData->getParam('number_of_orders_count'));
+    /** @var string $type - for PHPStan because strval() doesn't accept a value of mixed */
+    $type = $filterData->getParam('number_of_orders_type');
+    $type = strval($type);
+    /** @var string $count - for PHPStan because intval() doesn't accept a value of mixed */
+    $count = $filterData->getParam('number_of_orders_count');
+    $count = intval($count);
     $isAllTime = $filterData->getParam('timeframe') === DynamicSegmentFilterData::TIMEFRAME_ALL_TIME;
     $parameterSuffix = $filter->getId() ?? Security::generateRandomString();
     $collation = $this->collationChecker->getCollateIfNeeded(

@@ -31,10 +31,18 @@ class WooCommerceNumberOfReviews implements Filter {
     $commentMetaTable = $this->filterHelper->getPrefixedTable('commentmeta');
     $filterData = $filter->getFilterData();
     $this->validateFilterData((array)$filterData->getData());
-    $type = strval($filterData->getParam('count_type'));
-    $rating = strval($filterData->getParam('rating'));
-    $days = intval($filterData->getParam('days'));
-    $count = intval($filterData->getParam('count'));
+    /** @var string $type - for PHPStan because strval() doesn't accept a value of mixed */
+    $type = $filterData->getParam('count_type');
+    $type = strval($type);
+    /** @var string $rating - for PHPStan because strval() doesn't accept a value of mixed */
+    $rating = $filterData->getParam('rating');
+    $rating = strval($rating);
+    /** @var int $days - for PHPStan because intval() doesn't accept a value of mixed */
+    $days = $filterData->getParam('days');
+    $days = intval($days);
+    /** @var int $count - for PHPStan because intval() doesn't accept a value of mixed */
+    $count = $filterData->getParam('count');
+    $count = intval($count);
 
     $subscribersTable = $this->filterHelper->getSubscribersTable();
     $collation = $this->collationChecker->getCollateIfNeeded(

@@ -226,7 +226,8 @@ class ScheduledTaskEntity {
   public function getSubscribersByProcessed(int $processed): array {
     $criteria = Criteria::create()
       ->where(Criteria::expr()->eq('processed', $processed));
-    $subscribers = $this->subscribers->matching($criteria)->map(function (ScheduledTaskSubscriberEntity $taskSubscriber): ?SubscriberEntity {
+    $subscribers = $this->subscribers->matching($criteria)->map(function (ScheduledTaskSubscriberEntity $taskSubscriber = null): ?SubscriberEntity {
+      if (!$taskSubscriber) return null;
       return $taskSubscriber->getSubscriber();
     });
     return array_filter($subscribers->toArray());

@@ -22,12 +22,14 @@ class TermParentsLoader {
     $idsPlaceholder = implode(',', array_fill(0, count($termIds), '%s'));
 
     $wpdb = $this->wordPress->getWpdb();
-    $statement = (string)$wpdb->prepare("
+    /** @var literal-string $query - PHPStan expects literal-string */
+    $query = "
       SELECT DISTINCT tt.parent
       FROM {$wpdb->term_taxonomy} AS tt
       WHERE tt.parent != 0
       AND tt.term_id IN ($idsPlaceholder)
-    ", $termIds);
+    ";
+    $statement = (string)$wpdb->prepare($query, $termIds);
 
     $parentIds = array_map('intval', $wpdb->get_col($statement));
     if (count($parentIds) === 0) {

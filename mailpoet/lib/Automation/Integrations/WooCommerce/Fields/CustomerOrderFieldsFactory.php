@@ -131,7 +131,8 @@ class CustomerOrderFieldsFactory {
     $statusesPlaceholder = implode(',', array_fill(0, count($statuses), '%s'));
 
     if ($this->wooCommerce->isWooCommerceCustomOrdersTableEnabled()) {
-      $statement = (string)$wpdb->prepare("
+      /** @var literal-string $query */
+      $query = "
         SELECT o.date_created_gmt
         FROM {$wpdb->prefix}wc_orders o
         WHERE o.customer_id = %d
@@ -139,9 +140,11 @@ class CustomerOrderFieldsFactory {
         AND o.total_amount > 0
         ORDER BY o.date_created_gmt {$sorting}
         LIMIT 1
-      ", array_merge([$customer->get_id()], $statuses));
+      ";
+      $statement = (string)$wpdb->prepare($query, array_merge([$customer->get_id()], $statuses));
     } else {
-      $statement = (string)$wpdb->prepare("
+      /** @var literal-string $query */
+      $query = "
         SELECT p.post_date_gmt
         FROM {$wpdb->prefix}posts p
         LEFT JOIN {$wpdb->prefix}postmeta pm_total ON p.ID = pm_total.post_id AND pm_total.meta_key = '_order_total'
@@ -152,7 +155,8 @@ class CustomerOrderFieldsFactory {
         AND pm_total.meta_value > 0
         ORDER BY p.post_date_gmt {$sorting}
         LIMIT 1
-      ", array_merge($statuses, [$customer->get_id()]));
+      ";
+      $statement = (string)$wpdb->prepare($query, array_merge($statuses, [$customer->get_id()]));
     }
 
     $date = $wpdb->get_var($statement);
@@ -186,7 +190,8 @@ class CustomerOrderFieldsFactory {
       ";
     }
 
-    $statement = (string)$wpdb->prepare("
+    /** @var literal-string $query */
+    $query = "
       SELECT DISTINCT tt.term_id
       FROM {$wpdb->prefix}term_taxonomy tt
       JOIN {$wpdb->prefix}woocommerce_order_items AS oi ON oi.order_id IN ($orderIdsSubquery) AND oi.order_item_type = 'line_item'
@@ -195,7 +200,8 @@ class CustomerOrderFieldsFactory {
       JOIN {$wpdb->prefix}term_relationships tr ON IF(p.post_type = 'product_variation', p.post_parent, p.ID) = tr.object_id AND tr.term_taxonomy_id = tt.term_taxonomy_id
       WHERE tt.taxonomy = %s
       ORDER BY tt.term_id ASC
-    ", array_merge($statuses, [$customer->get_id(), $taxonomy]));
+    ";
+    $statement = (string)$wpdb->prepare($query, array_merge($statuses, [$customer->get_id(), $taxonomy]));
 
     return array_map('intval', $wpdb->get_col($statement));
   }

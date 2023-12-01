@@ -28,7 +28,7 @@ class SubscriberIPsRepository extends Repository {
   }
 
   public function getCountByIPAndCreatedAtAfterTimeInSeconds(string $ip, int $seconds): int {
-    return $this->entityManager->createQueryBuilder()
+    return (int)$this->entityManager->createQueryBuilder()
       ->select('COUNT(sip)')
       ->from(SubscriberIPEntity::class, 'sip')
       ->where('sip.ip = :ip')

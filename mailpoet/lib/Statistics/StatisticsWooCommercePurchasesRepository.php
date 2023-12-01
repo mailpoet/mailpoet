@@ -72,6 +72,7 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
 
     // The "SELECT MIN(click_id)..." sub-query is used to count each purchase only once.
     // In the data we track a purchase to multiple newsletters if clicks from multiple newsletters occurred.
+    /** @var array<int, array{revenue: float|int, campaign_id:int, orders_count:int}> $data */
     $data = $this->entityManager->getConnection()->executeQuery('
       SELECT
         SUM(swp.order_price_total) AS revenue,

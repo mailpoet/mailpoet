@@ -268,6 +268,7 @@ class Widget extends \WP_Widget {
     }
 
     if ($formType === 'widget') {
+      /** @var string $output */
       // We control the template and the data is sanitized
       // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
       echo $output;

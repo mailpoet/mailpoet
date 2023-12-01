@@ -202,6 +202,7 @@ class Subscribers {
       }
 
       // when global status changes to subscribed, fire subscribed hook for all subscribed segments
+      /** @var SubscriberEntity $subscriber - From some reason PHPStan evaluates $subscriber->getStatus() as mixed */
       if ($subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
         $subscriberSegments = $subscriber->getSubscriberSegments();
         foreach ($subscriberSegments as $subscriberSegment) {

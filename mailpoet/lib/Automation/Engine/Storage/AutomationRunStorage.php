@@ -57,12 +57,16 @@ class AutomationRunStorage {
   public function getAutomationRun(int $id): ?AutomationRun {
     $table = esc_sql($this->table);
     $subjectTable = esc_sql($this->subjectTable);
-    $query = (string)$this->wpdb->prepare("SELECT * FROM $table  WHERE id = %d", $id);
+    /** @var literal-string $sql */
+    $sql = "SELECT * FROM $table  WHERE id = %d";
+    $query = (string)$this->wpdb->prepare($sql, $id);
     $data = $this->wpdb->get_row($query, ARRAY_A);
     if (!is_array($data) || !$data) {
       return null;
     }
-    $query = (string)$this->wpdb->prepare("SELECT * FROM $subjectTable WHERE automation_run_id = %d", $id);
+    /** @var literal-string $sql */
+    $sql = "SELECT * FROM $subjectTable WHERE automation_run_id = %d";
+    $query = (string)$this->wpdb->prepare($sql, $id);
     $subjects = $this->wpdb->get_results($query, ARRAY_A);
     $data['subjects'] = is_array($subjects) ? $subjects : [];
     return AutomationRun::fromArray((array)$data);
@@ -75,7 +79,9 @@ class AutomationRunStorage {
   public function getAutomationRunsForAutomation(Automation $automation): array {
     $table = esc_sql($this->table);
     $subjectTable = esc_sql($this->subjectTable);
-    $query = (string)$this->wpdb->prepare("SELECT * FROM $table WHERE automation_id = %d order by id", $automation->getId());
+    /** @var literal-string $sql */
+    $sql = "SELECT * FROM $table WHERE automation_id = %d order by id";
+    $query = (string)$this->wpdb->prepare($sql, $automation->getId());
     $automationRuns = $this->wpdb->get_results($query, ARRAY_A);
     if (!is_array($automationRuns) || !$automationRuns) {
       return [];
@@ -83,6 +89,7 @@ class AutomationRunStorage {
 
     $automationRunIds = array_column($automationRuns, 'id');
 
+    /** @var literal-string $sql */
     $sql = sprintf(
       "SELECT * FROM $subjectTable WHERE automation_run_id in (%s) order by automation_run_id, id",
       implode(
@@ -100,10 +107,12 @@ class AutomationRunStorage {
     $subjects = $this->wpdb->get_results($query, ARRAY_A);
 
     return array_map(
-      function(array $runData) use ($subjects): AutomationRun {
+      function($runData) use ($subjects): AutomationRun {
+        /** @var array $runData - PHPStan expects as array_map first parameter (callable(mixed): mixed)|null */
         $runData['subjects'] = array_values(array_filter(
           is_array($subjects) ? $subjects : [],
-          function(array $subjectData) use ($runData): bool {
+          function($subjectData) use ($runData): bool {
+            /** @var array $subjectData - PHPStan expects as array_map first parameter (callable(mixed): mixed)|null */
             return (int)$subjectData['automation_run_id'] === (int)$runData['id'];
           }
         ));
@@ -120,7 +129,7 @@ class AutomationRunStorage {
   public function getCountByAutomationAndSubject(Automation $automation, Subject $subject): int {
     $table = esc_sql($this->table);
     $subjectTable = esc_sql($this->subjectTable);
-
+    /** @var literal-string $sql */
     $sql = "SELECT count(DISTINCT runs.id) as count from $table as runs
       JOIN $subjectTable as subjects on runs.id = subjects.automation_run_id
       WHERE runs.automation_id = %d
@@ -137,33 +146,39 @@ class AutomationRunStorage {
     $table = esc_sql($this->table);
 
     if (!count($status)) {
-      $query = (string)$this->wpdb->prepare("
-      SELECT COUNT(id) as count
-      FROM $table
-      WHERE automation_id = %d
-    ", $automation->getId());
+      /** @var literal-string $sql */
+      $sql = "
+        SELECT COUNT(id) as count
+        FROM $table
+        WHERE automation_id = %d
+      ";
+      $query = (string)$this->wpdb->prepare($sql, $automation->getId());
       $result = $this->wpdb->get_col($query);
       return $result ? (int)current($result) : 0;
     }
 
     $statusSql = (string)$this->wpdb->prepare(implode(',', array_fill(0, count($status), '%s')), ...$status);
-    $query = (string)$this->wpdb->prepare("
+    /** @var literal-string $sql */
+    $sql = "
       SELECT COUNT(id) as count
       FROM $table
       WHERE automation_id = %d
       AND status IN ($statusSql)
-    ", $automation->getId());
+    ";
+    $query = (string)$this->wpdb->prepare($sql, $automation->getId());
     $result = $this->wpdb->get_col($query);
     return $result ? (int)current($result) : 0;
   }
 
   public function updateStatus(int $id, string $status): void {
     $table = esc_sql($this->table);
-    $query = (string)$this->wpdb->prepare("
+    /** @var literal-string $sql */
+    $sql = "
       UPDATE $table
       SET status = %s, updated_at = current_timestamp()
       WHERE id = %d
-    ", $status, $id);
+    ";
+    $query = (string)$this->wpdb->prepare($sql, $status, $id);
     $result = $this->wpdb->query($query);
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
@@ -172,11 +187,13 @@ class AutomationRunStorage {
 
   public function updateNextStep(int $id, ?string $nextStepId): void {
     $table = esc_sql($this->table);
-    $query = (string)$this->wpdb->prepare("
+    /** @var literal-string $sql */
+    $sql = "
       UPDATE $table
       SET next_step_id = %s, updated_at = current_timestamp()
       WHERE id = %d
-    ", $nextStepId, $id);
+    ";
+    $query = (string)$this->wpdb->prepare($sql, $nextStepId, $id);
     $result = $this->wpdb->query($query);
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
@@ -192,6 +209,7 @@ class AutomationRunStorage {
     if ($versionId) {
       $where .= " AND version_id = %d";
     }
+    /** @var literal-string $sql */
     $sql = "
       SELECT
         COUNT(id) AS `count`,

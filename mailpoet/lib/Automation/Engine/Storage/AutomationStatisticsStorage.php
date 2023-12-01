@@ -73,16 +73,24 @@ class AutomationStatisticsStorage {
       LEFT JOIN ($runningSubquery) r ON t.id = r.id
     ", ARRAY_A);
 
+    /** @var array{id: int, total: int, running: int} $results */
     return array_combine(array_column($results, 'id'), $results) ?: [];
   }
 
   private function getStatsQuery(array $automationIds, int $versionId = null, \DateTimeImmutable $after = null, \DateTimeImmutable $before = null, string $status = null): string {
     $table = esc_sql($this->table);
     $placeholders = implode(',', array_fill(0, count($automationIds), '%d'));
-    $versionCondition = strval($versionId ? $this->wpdb->prepare('AND version_id = %d', $versionId) : '');
-    $statusCondition = strval($status ? $this->wpdb->prepare('AND status = %s', $status) : '');
-    $dateCondition = $after !== null && $before !== null ? strval($this->wpdb->prepare('AND created_at BETWEEN %s AND %s', $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'))) : '';
-    $query = $this->wpdb->prepare("
+    /** @var string $versionCondition */
+    $versionCondition = $versionId ? $this->wpdb->prepare('AND version_id = %d', $versionId) : '';
+    $versionCondition = strval($versionCondition);
+    /** @var string $statusCondition */
+    $statusCondition = $status ? $this->wpdb->prepare('AND status = %s', $status) : '';
+    $statusCondition = strval($statusCondition);
+    /** @var string $dateCondition */
+    $dateCondition = $after !== null && $before !== null ? $this->wpdb->prepare('AND created_at BETWEEN %s AND %s', $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s')) : '';
+    $dateCondition = strval($dateCondition);
+    /** @var literal-string $sql */
+    $sql = "
       SELECT automation_id AS id, COUNT(*) AS count
       FROM $table
       WHERE automation_id IN ($placeholders)
@@ -90,7 +98,9 @@ class AutomationStatisticsStorage {
       $statusCondition
       $dateCondition
       GROUP BY automation_id
-    ", $automationIds);
+    ";
+    /** @var string $query */
+    $query = $this->wpdb->prepare($sql, $automationIds);
     return strval($query);
   }
 }

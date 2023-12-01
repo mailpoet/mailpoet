@@ -33,7 +33,9 @@ class WooCommerceAverageSpent implements Filter {
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
 
     if ($timeframe !== DynamicSegmentFilterData::TIMEFRAME_ALL_TIME) {
-      $days = intval($filterData->getParam('days'));
+      /** @var int $days */
+      $days = $filterData->getParam('days');
+      $days = intval($days);
       $date = Carbon::now()->subDays($days);
       $dateParam = $this->filterHelper->getUniqueParameterName('date');
       $queryBuilder

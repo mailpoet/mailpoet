@@ -38,11 +38,13 @@ class AbandonedCartContent {
       // Do not display the block if not an automatic email
       return [];
     }
-    $groupOption = $newsletter->getOptions()->filter(function (NewsletterOptionEntity $newsletterOption) {
+    $groupOption = $newsletter->getOptions()->filter(function (NewsletterOptionEntity $newsletterOption = null) {
+      if (!$newsletterOption) return false;
       $optionField = $newsletterOption->getOptionField();
       return $optionField && $optionField->getName() === 'group';
     })->first();
-    $eventOption = $newsletter->getOptions()->filter(function (NewsletterOptionEntity $newsletterOption) {
+    $eventOption = $newsletter->getOptions()->filter(function (NewsletterOptionEntity $newsletterOption = null) {
+      if (!$newsletterOption) return false;
       $optionField = $newsletterOption->getOptionField();
       return $optionField && $optionField->getName() === 'event';
     })->first();

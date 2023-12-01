@@ -11,6 +11,7 @@ define('DB_HOST', 'localhost');
 define('DB_NAME', 'wordpress');
 define('DB_USER', 'wordpress');
 define('DB_PASSWORD', '12345');
+define('MAILPOET_PREMIUM_VERSION', '1.0.0');
 
 // Define Database Tables constants
 $dbConfig = new \MailPoet\Config\Database();

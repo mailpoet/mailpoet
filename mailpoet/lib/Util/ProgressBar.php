@@ -28,11 +28,11 @@ if (!class_exists('ProgressBar', false)) {
       $this->filename = Env::$tempPath . '/' . $filename;
       $this->url = Env::$tempUrl . '/' . $filename;
       $counters = $this->readProgress();
-      if (isset($counters->total)) {
-        $this->totalCount = $counters->total;
+      if (isset($counters['total'])) {
+        $this->totalCount = $counters['total'];
       }
-      if (isset($counters->current)) {
-        $this->currentCount = $counters->current;
+      if (isset($counters['current'])) {
+        $this->currentCount = $counters['current'];
       }
     }
 
@@ -56,7 +56,9 @@ if (!class_exists('ProgressBar', false)) {
       }
       $jsonContent = file_get_contents($this->filename);
       if (is_string($jsonContent)) {
-        return json_decode($jsonContent);
+        /** @var array $data */
+        $data = json_decode($jsonContent, true);
+        return $data;
       }
       return false;
     }

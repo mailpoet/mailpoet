@@ -72,11 +72,13 @@ class Sending {
     SendingQueue $queue = null
   ) {
     if (!$task instanceof ScheduledTask) {
+      /** @var ScheduledTask $task */
       $task = ScheduledTask::create();
       $task->type = self::TASK_TYPE;
       $task->save();
     }
     if (!$queue instanceof SendingQueue) {
+      /** @var SendingQueue $queue */
       $queue = SendingQueue::create();
       $queue->newsletterId = 0;
       $queue->taskId = $task->id;

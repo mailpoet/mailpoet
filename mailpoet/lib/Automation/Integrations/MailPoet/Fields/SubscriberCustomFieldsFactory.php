@@ -141,8 +141,8 @@ class SubscriberCustomFieldsFactory {
 
   private function getCustomFieldValue(SubscriberPayload $payload, CustomFieldEntity $customField): ?string {
     $subscriberCustomField = $payload->getSubscriber()->getSubscriberCustomFields()->filter(
-      function (SubscriberCustomFieldEntity $subscriberCustomField) use ($customField) {
-        return $subscriberCustomField->getCustomField() === $customField;
+      function (SubscriberCustomFieldEntity $subscriberCustomField = null) use ($customField) {
+        return $subscriberCustomField && $subscriberCustomField->getCustomField() === $customField;
       }
     )->first() ?: null;
     return $subscriberCustomField ? $subscriberCustomField->getValue() : null;

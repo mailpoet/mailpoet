@@ -25,6 +25,7 @@ class Handlebars extends AbstractExtension {
 
   public function generatePartial($env, $context) {
     // get arguments (minus env & $context)
+    /** @var array{0:string, 1:array|string, 2:string} $args */
     $args = array_slice(func_get_args(), 2);
     $argsCount = count($args);
 

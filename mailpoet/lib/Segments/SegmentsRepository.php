@@ -335,6 +335,7 @@ class SegmentsRepository extends Repository {
       ->from($segmentFiltersTable, 'sf')
       ->groupBy('sf.segment_id')
       ->having('COUNT(sf.id) > 1');
+    /** @var null|int $result */
     $result = $this->entityManager->getConnection()->createQueryBuilder()
       ->select('count(*)')
       ->from(sprintf('(%s) as subCounts', $qbInner->getSQL()))

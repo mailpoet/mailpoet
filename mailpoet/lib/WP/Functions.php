@@ -74,7 +74,7 @@ class Functions {
   }
 
   /**
-   * @param bool|array $crop
+   * @param bool|array{string, string} $crop
    */
   public function addImageSize($name, $width = 0, $height = 0, $crop = false) {
     return add_image_size($name, $width, $height, $crop);
@@ -99,11 +99,11 @@ class Functions {
   }
 
   public function addScreenOption($option, $args = []) {
-    return add_screen_option($option, $args);
+    add_screen_option($option, $args);
   }
 
   public function addShortcode($tag, callable $callback) {
-    return add_shortcode($tag, $callback);
+    add_shortcode($tag, $callback);
   }
 
   /**
@@ -483,7 +483,7 @@ class Functions {
   }
 
   public function statusHeader($code, $description = '') {
-    return status_header($code, $description);
+    status_header($code, $description);
   }
 
   public function stripslashesDeep($value) {
@@ -519,7 +519,7 @@ class Functions {
   }
 
   public function wpEnqueueMedia(array $args = []) {
-    return wp_enqueue_media($args);
+    wp_enqueue_media($args);
   }
 
   public function wpEnqueueScript($handle, $src = '', array $deps = [], $ver = false, $inFooter = false) {
@@ -660,7 +660,7 @@ class Functions {
   }
 
   /**
-   * @param string $action
+   * @param 'hot_categories'|'hot_tags'|'plugin_information'|'query_plugins' $action
    * @param array|object $args
    * @return object|array|WP_Error
    */
@@ -814,7 +814,7 @@ class Functions {
     return wp_register_script($handle, $src, $deps, $ver, $in_footer);
   }
 
-  public function wpSetScriptTranslations(string $handle, string $domain = 'default', string $path = null): bool {
+  public function wpSetScriptTranslations(string $handle, string $domain = 'default', string $path = ''): bool {
     return wp_set_script_translations($handle, $domain, $path);
   }
 

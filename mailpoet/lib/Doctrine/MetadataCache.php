@@ -41,6 +41,7 @@ class MetadataCache extends CacheProvider {
 
     // in dev mode invalidate cache if source file has changed
     if ($fileExists && $this->isDevMode) {
+      /** @var \stdClass $classMetadata */
       $classMetadata = unserialize((string)file_get_contents($filename));
       if (!isset($classMetadata->name) || (!class_exists($classMetadata->name) && !interface_exists($classMetadata->name))) {
         return false;
