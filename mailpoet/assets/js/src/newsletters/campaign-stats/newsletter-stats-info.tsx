@@ -1,5 +1,11 @@
 import { __ } from '@wordpress/i18n';
-import { Button, ButtonGroup, Dropdown, MenuItem } from '@wordpress/components';
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  MenuItem,
+  MenuGroup,
+} from '@wordpress/components';
 import { chevronDown, Icon } from '@wordpress/icons';
 import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
@@ -61,7 +67,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
           </div>
         </div>
       </div>
-      <div className="mailpoet-stats-info-sender-preview">
+      <div className="mailpoet-stats-button-group">
         <ButtonGroup>
           <Button
             href={newsletter.preview_url}
@@ -72,6 +78,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
             {__('Preview', 'mailpoet')}
           </Button>
           <Dropdown
+            className="mailpoet-stats-buttons-header"
             focusOnMount={false}
             popoverProps={{ placement: 'bottom-end' }}
             renderToggle={({ isOpen, onToggle }) => (
@@ -79,25 +86,38 @@ function NewsletterStatsInfo({ newsletter }: Props) {
                 <Button href={newsletter.preview_url} variant="primary">
                   {__('Edit', 'mailpoet')}
                 </Button>
-                <Button onClick={onToggle} aria-expanded={isOpen}>
-                  <Icon icon={chevronDown} size={24} />
+                <Button
+                  onClick={onToggle}
+                  aria-expanded={isOpen}
+                  variant="primary"
+                >
+                  <br />
+                  <Icon icon={chevronDown} size={18} />
                 </Button>
               </ButtonGroup>
             )}
             renderContent={() => (
-              <>
+              <MenuGroup>
                 {newsletter.type === 'notification' && (
-                  <MenuItem variant="tertiary" onClick={() => {}}>
-                    {__('Deactivate (Only for Post notifications)', 'mailpoet')}
+                  <MenuItem
+                    className="mailpoet-no-box-shadow"
+                    variant="tertiary"
+                    onClick={() => {}}
+                  >
+                    {__('Deactivate', 'mailpoet')}
                   </MenuItem>
                 )}
-                <MenuItem variant="tertiary" onClick={() => {}}>
-                  {__('Duplicate')}
+                <MenuItem
+                  className="mailpoet-no-box-shadow"
+                  variant="tertiary"
+                  onClick={() => {}}
+                >
+                  {__('Duplicate', 'mailpoet')}
                 </MenuItem>
                 <MenuItem isDestructive onClick={() => {}}>
-                  {__('Move to Trash')}
+                  {__('Move to Trash', 'mailpoet')}
                 </MenuItem>
-              </>
+              </MenuGroup>
             )}
           />
         </ButtonGroup>
