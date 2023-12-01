@@ -3,7 +3,6 @@
 // Constants
 define('WPINC', 'wp-includes');
 define('WP_LANG_DIR', 'wp-content/languages');
-define('WP_PLUGIN_DIR', 'wp-content/plugins');
 define('WP_MEMORY_LIMIT', 268435456);
 define('WP_MAX_MEMORY_LIMIT', 268435456);
 define('MAILPOET_VERSION', '1.0.0');
