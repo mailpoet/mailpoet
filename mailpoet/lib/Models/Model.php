@@ -127,8 +127,9 @@ use MailPoet\Util\Helpers;
  * @property string|null $id
  * @property string|null $first
  * @property string|null $last
+ *
+ * @deprecated This class is deprecated. Use Doctrine instead. This class can be removed after 2024-05-30.
  */
-
 class Model extends \MailPoetVendor\Sudzy\ValidModel {
   const DUPLICATE_RECORD = 23000;
 
@@ -136,7 +137,11 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
   protected $_errors; // phpcs:ignore PSR2.Classes.PropertyDeclaration
   protected $newRecord;
 
+  /**
+   * @deprecated
+   */
   public function __construct() {
+    self::deprecationError(__METHOD__);
     $this->_errors = [];
     $validator = new ModelValidator();
     parent::__construct($validator);
@@ -144,8 +149,11 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
 
   /**
    * @return static
+   *
+   * @deprecated
    */
   public static function create() {
+    self::deprecationError(__METHOD__);
     $created = parent::create();
     if (is_bool($created)) {
       throw new \Exception('ORM is not initialised');
@@ -162,8 +170,10 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
    * @param array|bool $keys
    * @param  callable|bool $onCreate
    * @return self
+   * @deprecated
    */
   static protected function _createOrUpdate($data = [], $keys = false, $onCreate = false) {
+    self::deprecationError(__METHOD__);
     $model = false;
 
     if (isset($data['id']) && (int)$data['id'] > 0) {
@@ -195,11 +205,19 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return $model->save();
   }
 
+  /**
+   * @deprecated
+   */
   static public function createOrUpdate($data = []) {
+    self::deprecationError(__METHOD__);
     return self::_createOrUpdate($data);
   }
 
+  /**
+   * @deprecated
+   */
   public function getErrors() {
+    self::deprecationError(__METHOD__);
     if (empty($this->_errors)) {
       return false;
     } else {
@@ -207,7 +225,11 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     }
   }
 
+  /**
+   * @deprecated
+   */
   public function setError($error = '', $errorCode = null) {
+    self::deprecationError(__METHOD__);
     if (!$errorCode) {
       $errorCode = count($this->_errors);
     }
@@ -224,8 +246,11 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
   /**
    * @return static
    * @phpstan-ignore-next-line Our Model has incompatible return type with parent
+   *
+   * @deprecated
    */
   public function save() {
+    self::deprecationError(__METHOD__);
     $this->setTimestamp();
     $this->newRecord = $this->isNew();
     try {
@@ -257,17 +282,29 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return $this;
   }
 
+  /**
+   * @deprecated
+   */
   public function isNew() {
+    self::deprecationError(__METHOD__);
     return (isset($this->newRecord)) ?
       $this->newRecord :
       parent::isNew();
   }
 
+  /**
+   * @deprecated
+   */
   public function trash() {
+    self::deprecationError(__METHOD__);
     return $this->set_expr('deleted_at', 'NOW()')->save();
   }
 
+  /**
+   * @deprecated
+   */
   public static function bulkTrash($orm) {
+    self::deprecationError(__METHOD__);
     $model = get_called_class();
     $count = self::bulkAction($orm, function($ids) use ($model) {
       $model::rawExecute(join(' ', [
@@ -280,7 +317,11 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return ['count' => $count];
   }
 
+  /**
+   * @deprecated
+   */
   public static function bulkDelete($orm) {
+    self::deprecationError(__METHOD__);
     $model = get_called_class();
     $count = self::bulkAction($orm, function($ids) use ($model) {
       $model::whereIn('id', $ids)->deleteMany();
@@ -289,11 +330,19 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return ['count' => $count];
   }
 
+  /**
+   * @deprecated
+   */
   public function restore() {
+    self::deprecationError(__METHOD__);
     return $this->set_expr('deleted_at', 'NULL')->save();
   }
 
+  /**
+   * @deprecated
+   */
   public static function bulkRestore($orm) {
+    self::deprecationError(__METHOD__);
     $model = get_called_class();
     $count = self::bulkAction($orm, function($ids) use ($model) {
       $model::rawExecute(join(' ', [
@@ -306,7 +355,11 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return ['count' => $count];
   }
 
+  /**
+   * @deprecated
+   */
   public static function bulkAction($orm, $callback = false) {
+    self::deprecationError(__METHOD__);
     $total = $orm->count();
 
     if ($total === 0) return false;
@@ -329,7 +382,11 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
       ->rowCount();
   }
 
+  /**
+   * @deprecated
+   */
   public function duplicate($data = []) {
+    self::deprecationError(__METHOD__);
     $model = get_called_class();
     $modelData = array_merge($this->asArray(), $data);
     unset($modelData['id']);
@@ -346,24 +403,39 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return $duplicate;
   }
 
+  /**
+   * @deprecated
+   */
   public function setTimestamp() {
+    self::deprecationError(__METHOD__);
     if ($this->createdAt === null) {
       $this->set_expr('created_at', 'NOW()');
     }
   }
 
+  /**
+   * @deprecated
+   */
   public static function getPublished() {
+    self::deprecationError(__METHOD__);
     return static::whereNull('deleted_at');
   }
 
+  /**
+   * @deprecated
+   */
   public static function getTrashed() {
+    self::deprecationError(__METHOD__);
     return static::whereNotNull('deleted_at');
   }
 
   /**
    * Rethrow PDOExceptions to prevent exposing sensitive data in stack traces
+   *
+   * @deprecated
    */
   public static function __callStatic($method, $parameters) {
+    self::deprecationError($method);
     try {
       return parent::__callStatic($method, $parameters);
     } catch (\PDOException $e) {
@@ -371,7 +443,11 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     }
   }
 
+  /**
+   * @deprecated
+   */
   public function validate() {
+    self::deprecationError(__METHOD__);
     $success = true;
     foreach (array_keys($this->_validations) as $field) {
       $success = $success && $this->validateField($field, $this->$field);
@@ -380,7 +456,11 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return $success;
   }
 
+  /**
+   * @deprecated
+   */
   public function __get($name) {
+    self::deprecationError('property "' . $name . '"');
     $value = parent::__get($name);
     if ($value !== null) {
       return $value;
@@ -389,13 +469,28 @@ class Model extends \MailPoetVendor\Sudzy\ValidModel {
     return parent::__get($name);
   }
 
+  /**
+   * @deprecated
+   */
   public function __set($name, $value) {
+    self::deprecationError(__METHOD__);
     $name = Helpers::camelCaseToUnderscore($name);
     parent::__set($name, $value);
   }
 
+  /**
+   * @deprecated
+   */
   public function __isset($name) {
+    self::deprecationError(__METHOD__);
     $name = Helpers::camelCaseToUnderscore($name);
     return parent::__isset($name);
+  }
+
+  private static function deprecationError($methodName) {
+    trigger_error(
+      'Calling ' . esc_html($methodName) . ' is deprecated and will be removed. Use Doctrine instead.',
+      E_USER_DEPRECATED
+    );
   }
 }
