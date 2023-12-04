@@ -6,35 +6,9 @@ use Automattic\WooCommerce\Admin\Marketing\MarketingCampaign;
 use Automattic\WooCommerce\Admin\Marketing\MarketingCampaignType;
 use Automattic\WooCommerce\Admin\Marketing\MarketingChannelInterface;
 use Automattic\WooCommerce\Admin\Marketing\Price;
-use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Storage\AutomationStorage;
-use MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\OverviewStatisticsController;
-use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\QueryWithCompare;
 use MailPoet\Config\Menu;
-use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
-use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
-use MailPoet\Services\AuthorizedEmailsController;
-use MailPoet\Services\Bridge;
-use MailPoet\Settings\SettingsController;
-use MailPoet\Util\CdnAssetUrl;
-use MailPoet\WooCommerce\Helper;
-use MailPoetVendor\Carbon\Carbon;
 
 class MPMarketingChannel implements MarketingChannelInterface {
-
-  /** @var CdnAssetUrl */
-  private $cdnAssetUrl;
-
-  /**
-   * @var SettingsController
-   */
-  private $settings;
-
-  /**
-   * @var Bridge
-   */
-  private $bridge;
 
   /**
    * @var MarketingCampaignType[]
@@ -42,52 +16,18 @@ class MPMarketingChannel implements MarketingChannelInterface {
   private $campaignTypes;
 
   /**
-   * @var NewslettersRepository
+   * @var MPMarketingChannelDataController
    */
-  private $newsletterRepository;
-
-  /**
-   * @var Helper
-   */
-  private $woocommerceHelper;
-
-  /**
-   * @var AutomationStorage
-   */
-  private $automationStorage;
-
-  /**
-   * @var NewsletterStatisticsRepository
-   */
-  private $newsletterStatisticsRepository;
-
-  /**
-   * @var OverviewStatisticsController
-   */
-  private $overviewStatisticsController;
+  private $channelDataController;
 
   const CAMPAIGN_TYPE_NEWSLETTERS = 'mailpoet-newsletters';
   const CAMPAIGN_TYPE_POST_NOTIFICATIONS = 'mailpoet-post-notifications';
   const CAMPAIGN_TYPE_AUTOMATIONS = 'mailpoet-automations';
 
   public function __construct(
-    CdnAssetUrl $cdnAssetUrl,
-    SettingsController $settings,
-    Bridge $bridge,
-    NewslettersRepository $newsletterRepository,
-    Helper $woocommerceHelper,
-    AutomationStorage $automationStorage,
-    NewsletterStatisticsRepository $newsletterStatisticsRepository,
-    OverviewStatisticsController $overviewStatisticsController
+    MPMarketingChannelDataController $channelDataController
   ) {
-    $this->cdnAssetUrl = $cdnAssetUrl;
-    $this->settings = $settings;
-    $this->bridge = $bridge;
-    $this->newsletterRepository = $newsletterRepository;
-    $this->woocommerceHelper = $woocommerceHelper;
-    $this->automationStorage = $automationStorage;
-    $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
-    $this->overviewStatisticsController = $overviewStatisticsController;
+    $this->channelDataController = $channelDataController;
     $this->campaignTypes = $this->generateCampaignTypes();
   }
 
@@ -124,7 +64,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return string
    */
   public function get_icon_url(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return $this->cdnAssetUrl->generateCdnUrl('icon-white-123x128.png');
+    return $this->channelDataController->getIconUrl();
   }
 
   /**
@@ -133,7 +73,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return bool
    */
   public function is_setup_completed(): bool { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return $this->isMPSetupComplete();
+    return $this->channelDataController->isMPSetupComplete();
   }
 
   /**
@@ -142,7 +82,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return string
    */
   public function get_setup_url(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    if ($this->isMPSetupComplete()) {
+    if ($this->channelDataController->isMPSetupComplete()) {
       return admin_url('admin.php?page=' . Menu::MAIN_PAGE_SLUG);
     }
 
@@ -155,12 +95,12 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return string
    */
   public function get_product_listings_status(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    if (!$this->bridge->isMailpoetSendingServiceEnabled()) {
+    if (!$this->channelDataController->isMailPoetSendingServiceEnabled()) {
       return self::PRODUCT_LISTINGS_NOT_APPLICABLE;
     }
 
     // Check for error status. It's null by default when there isn't an error
-    $sendingStatus = $this->settings->get('mta_log.status');
+    $sendingStatus = $this->channelDataController->getMailPoetSendingStatus();
 
     if ($sendingStatus) {
       return self::PRODUCT_LISTINGS_SYNC_FAILED;
@@ -175,21 +115,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
    * @return int The number of issues to resolve, or 0 if there are no issues with the channel.
    */
   public function get_errors_count(): int { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    $error = $this->settings->get('mta_log.error');
-
-    $count = 0;
-
-    if (!empty($error)) {
-      $count++;
-    }
-
-    $validationError = $this->settings->get(AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING);
-
-    if ($validationError && isset($validationError['invalid_sender_address'])) {
-      $count++;
-    }
-
-    return $count;
+    return $this->channelDataController->getErrorCount();
   }
 
   /**
@@ -214,17 +140,6 @@ class MPMarketingChannel implements MarketingChannelInterface {
     }
 
     return $allCampaigns;
-  }
-
-  /**
-   * Whether the task is completed.
-   * If the setting 'version' is not null it means the welcome wizard
-   * was already completed so we mark this task as completed as well.
-   */
-  protected function isMPSetupComplete(): bool {
-    $version = $this->settings->get('version');
-
-    return $version !== null;
   }
 
   /**
@@ -267,91 +182,6 @@ class MPMarketingChannel implements MarketingChannelInterface {
     ];
   }
 
-  protected function getStandardNewsletterList(): array {
-    $result = [];
-
-    $userCurrency = $this->woocommerceHelper->getWoocommerceCurrency();
-
-    // fetch the most recent newsletters limited to ten
-    foreach ($this->newsletterRepository->getStandardNewsletterListWithMultipleStatuses(10) as $newsletter) {
-        $newsLetterId = (string)$newsletter->getId();
-
-        /** @var ?WooCommerceRevenue $wooRevenue */
-        $wooRevenue = $this->newsletterStatisticsRepository->getWooCommerceRevenue($newsletter);
-
-        $result[] = [
-            'id' => $newsLetterId,
-            'name' => $newsletter->getSubject(),
-            'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_NEWSLETTERS],
-            'url' => admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '/#/stats/' . $newsLetterId),
-            'price' => [
-                'amount' => $wooRevenue ? $this->formatPrice($wooRevenue->getValue()) : 0,
-                'currency' => $userCurrency,
-            ],
-        ];
-    }
-
-    return $result;
-  }
-
-  protected function getPostNotificationNewsletters(): array {
-    $result = [];
-
-    $userCurrency = $this->woocommerceHelper->getWoocommerceCurrency();
-
-    // fetch the most recently sent post-notification history newsletters limited to ten
-    foreach ($this->newsletterRepository->getNotificationHistoryItems(10) as $newsletter) {
-      $newsLetterId = (string)$newsletter->getId();
-
-      /** @var ?WooCommerceRevenue $wooRevenue */
-      $wooRevenue = $this->newsletterStatisticsRepository->getWooCommerceRevenue($newsletter);
-
-      $result[] = [
-        'id' => $newsLetterId,
-        'name' => $newsletter->getSubject(),
-        'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_POST_NOTIFICATIONS],
-        'url' => admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '/#/stats/' . $newsLetterId),
-        'price' => [
-          'amount' => $wooRevenue ? $this->formatPrice($wooRevenue->getValue()) : 0,
-          'currency' => $userCurrency,
-        ],
-      ];
-    }
-
-    return $result;
-  }
-
-  protected function getAutomations(): array {
-    $result = [];
-
-    // Fetch Automation stats within the last 90 days
-    $primaryAfter = new \DateTimeImmutable((string)Carbon::now()->subDays(90)->toISOString());
-    $primaryBefore = new \DateTimeImmutable((string)Carbon::now()->toISOString());
-    $now = new \DateTimeImmutable('');
-
-    $query = new QueryWithCompare($primaryAfter, $primaryBefore, $now, $now);
-    $userCurrency = $this->woocommerceHelper->getWoocommerceCurrency();
-
-    foreach ($this->automationStorage->getAutomations([Automation::STATUS_ACTIVE]) as $automation) {
-      $automationId = (string)$automation->getId();
-
-      $automationStatistics = $this->overviewStatisticsController->getStatisticsForAutomation($automation, $query);
-
-      $result[] = [
-        'id' => $automationId,
-        'name' => $automation->getName(),
-        'campaignType' => $this->campaignTypes[self::CAMPAIGN_TYPE_AUTOMATIONS],
-        'url' => admin_url('admin.php?page=' . Menu::AUTOMATION_ANALYTICS_PAGE_SLUG . '&id=' . $automationId),
-        'price' => [
-          'amount' => isset($automationStatistics['revenue']['current']) ? $this->formatPrice($automationStatistics['revenue']['current']) : 0,
-          'currency' => $userCurrency,
-        ],
-      ];
-    }
-
-    return $result;
-  }
-
   protected function generateCampaigns(): array {
       return array_map(
           function (array $data) {
@@ -370,19 +200,10 @@ class MPMarketingChannel implements MarketingChannelInterface {
               );
           },
           array_merge(
-              $this->getAutomations(),
-              $this->getPostNotificationNewsletters(),
-              $this->getStandardNewsletterList()
+              $this->channelDataController->getAutomations($this->campaignTypes[self::CAMPAIGN_TYPE_AUTOMATIONS]),
+              $this->channelDataController->getPostNotificationNewsletters($this->campaignTypes[self::CAMPAIGN_TYPE_POST_NOTIFICATIONS]),
+              $this->channelDataController->getStandardNewsletterList($this->campaignTypes[self::CAMPAIGN_TYPE_NEWSLETTERS])
           )
       );
-  }
-
-  /**
-   * Format amount to 2 dp
-   * @param string|int|float $amount
-   * @return string
-   */
-  private function formatPrice($amount): string {
-    return number_format((float)$amount, 2, '.', '');
   }
 }
