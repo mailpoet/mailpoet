@@ -7,8 +7,11 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { storeName } from '../../store';
 
-export function TrashButton(): JSX.Element {
+export function TrashButton({
+  performActionAfterDelete = () => {},
+}): JSX.Element {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
   const { automation } = useSelect(
     (select) => ({
       automation: select(storeName).getAutomationData(),
@@ -24,8 +27,11 @@ export function TrashButton(): JSX.Element {
         title={__('Delete automation', 'mailpoet')}
         confirmButtonText={__('Yes, delete', 'mailpoet')}
         onConfirm={async () => {
+          setIsBusy(true);
           trash(() => {
             setShowConfirmDialog(false);
+            setIsBusy(false);
+            performActionAfterDelete();
           });
         }}
         onCancel={() => setShowConfirmDialog(false)}
@@ -40,6 +46,7 @@ export function TrashButton(): JSX.Element {
       </ConfirmDialog>
 
       <Button
+        isBusy={isBusy}
         variant="secondary"
         isDestructive
         onClick={() => setShowConfirmDialog(true)}
