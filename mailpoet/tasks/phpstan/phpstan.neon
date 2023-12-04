@@ -98,7 +98,6 @@ parameters:
     - MAILPOET_PREMIUM_VERSION
   doctrine:
     objectManagerLoader: create-entity-manager.php
-    allowNullablePropertyForRequiredField: false
 
   # exclude level 6 errors
   checkMissingIterableValueType: false
