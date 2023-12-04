@@ -35,6 +35,15 @@ const tabs = [
 ];
 
 function Templates(): JSX.Element {
+  if (window.location.search.includes('loadedvia=woo_multichannel_dashboard')) {
+    window.MailPoet.trackEvent(
+      'MailPoet - WooCommerce Multichannel Marketing dashboard > Automation template selection page',
+      {
+        'WooCommerce version': window.mailpoet_woocommerce_version,
+      },
+    );
+  }
+
   return (
     <div className="mailpoet-main-container">
       <TopBarWithBeamer />

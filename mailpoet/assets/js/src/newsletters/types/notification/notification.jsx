@@ -33,6 +33,17 @@ class NewsletterNotificationComponent extends Component {
     };
   }
 
+  componentDidMount() {
+    if (window.location.hash.includes('loadedvia=woo_multichannel_dashboard')) {
+      window.MailPoet.trackEvent(
+        'MailPoet - WooCommerce Multichannel Marketing dashboard > Create post notification page',
+        {
+          'WooCommerce version': window.mailpoet_woocommerce_version,
+        },
+      );
+    }
+  }
+
   handleValueChange = (event) => {
     const state = this.state;
     state[event.target.name] = event.target.value;
