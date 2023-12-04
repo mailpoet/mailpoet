@@ -800,7 +800,7 @@ workflows:
       - static_analysis:
           <<: *slack-fail-post-step
           name: static_analysis_php8
-          php_version: 80100
+          php_version: 80200
           requires:
             - build
       - security_analysis:
