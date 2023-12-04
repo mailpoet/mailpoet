@@ -268,15 +268,24 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
         )}
         {!isWoocommerceActive && <div />}
       </Grid.ThreeColumns>
-      <p className="mailpoet-stats-general-read-more">
-        <a
-          href="https://kb.mailpoet.com/article/190-whats-a-good-email-open-rate"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {__('Read more on stats.', 'mailpoet')}
-        </a>
-      </p>
+      <div className="mailpoet-stats-general-read-more">
+        <p className="mailpoet-stats-has-margin-left">
+          <a
+            href="https://kb.mailpoet.com/article/190-whats-a-good-email-open-rate"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {__('Read more on stats.', 'mailpoet')}
+          </a>
+        </p>
+        <p>
+          <a
+            href={`admin.php?page=mailpoet-newsletters#/sending-status/${newsletter.id}`}
+          >
+            {__('Sending stats', 'mailpoet')}
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
