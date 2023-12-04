@@ -10,7 +10,13 @@ import { chevronDown, Icon } from '@wordpress/icons';
 import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
-import { confirmAlert, FilterSegmentTag, SegmentTags } from 'common';
+import {
+  capitalizeFirstLetter,
+  confirmAlert,
+  FilterSegmentTag,
+  SegmentTags,
+  Tag,
+} from 'common';
 import { NewsletterType } from './newsletter-type';
 
 const redirectToNewsletterHome = () => {
@@ -128,6 +134,10 @@ function NewsletterStatsInfo({ newsletter }: Props) {
       <div>
         <Heading level={1}>{newsletter.subject}</Heading>
         <div>
+          <Tag isInverted={false}>
+            {capitalizeFirstLetter(newsletter.status)}
+          </Tag>
+          &nbsp;
           <b>
             {MailPoet.Date.short(newsletterDate)}
             {' • '}
