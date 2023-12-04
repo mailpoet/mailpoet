@@ -3,7 +3,6 @@ import {
   ButtonGroup,
   Dropdown,
   MenuGroup,
-  MenuItem,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
@@ -18,6 +17,7 @@ import {
   DeactivateButton,
   DeactivateNowButton,
 } from '../../../../../editor/components/header';
+import { TrashButton } from '../../../../../editor/components/actions/trash-button';
 
 export function Header(): JSX.Element {
   const { automation } = useSelect((s) => ({
@@ -57,9 +57,11 @@ export function Header(): JSX.Element {
                 <ActivateButton label={__('Update & Activate', 'mailpoet')} />
               </>
             )}
-            <MenuItem isDestructive onClick={() => {}}>
-              {__('Move to Trash', 'mailpoet')}
-            </MenuItem>
+            <TrashButton
+              performActionAfterDelete={() => {
+                window.location.href = MailPoet.urls.automationListing;
+              }}
+            />
           </MenuGroup>
         )}
       />
