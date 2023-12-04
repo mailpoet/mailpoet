@@ -625,6 +625,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\WooCommerce\WooSystemInfo::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\WooSystemInfoController::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannelController::class)->setPublic(true);
+    $container->autowire(\MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannelDataController::class)->setPublic(true);
 
     // WooCommerce Subscriptions
     $container->autowire(\MailPoet\WooCommerce\WooCommerceSubscriptions\Helper::class)->setPublic(true);
