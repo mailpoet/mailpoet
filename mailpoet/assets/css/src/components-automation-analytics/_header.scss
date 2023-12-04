@@ -2,11 +2,11 @@
 
 .mailpoet-automation-analytics-title {
   color: $color-gutenberg-grey-700;
+  font-size: 16px;
   a {
     color: inherit;
     text-decoration: none;
   }
-  font-size: 16px;
 
   strong {
     color: $color-gutenberg-grey-900;
@@ -33,6 +33,12 @@
 
     * {
       box-sizing: border-box;
+    }
+  }
+
+  .components-dropdown {
+    .components-button.is-primary {
+      box-shadow: none;
     }
   }
 }
