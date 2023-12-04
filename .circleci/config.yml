@@ -250,7 +250,7 @@ jobs:
 
   static_analysis:
     executor: wpcli_php_latest
-    resource_class: medium
+    resource_class: medium+
     working_directory: /home/circleci/mailpoet/mailpoet
     parameters:
       php_version:

@@ -25,7 +25,7 @@ parameters:
   checkGenericClassInNonGenericObjectType: false
   parallel:
     processTimeout: 300.0
-    maximumNumberOfProcesses: 4
+    maximumNumberOfProcesses: 3 # Static analysis is running on Circle CI medium+ that has 3 CPUs
   ignoreErrors:
     - '#Function members_register_.+ not found#'
     - '#Argument of an invalid type MailPoetVendor\\pQuery\\IQuery supplied for foreach, only iterables are supported#'
