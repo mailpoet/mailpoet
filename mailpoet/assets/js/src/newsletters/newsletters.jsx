@@ -195,11 +195,11 @@ const routes = [
   },
   /* New newsletter: types */
   {
-    path: '/new/standard',
+    path: '/new/standard/(.*)?',
     render: withBoundary(NewsletterTypeStandard),
   },
   {
-    path: '/new/notification',
+    path: '/new/notification/(.*)?',
     render: withBoundary(NewsletterNotification),
   },
   {
