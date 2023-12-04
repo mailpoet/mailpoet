@@ -27,7 +27,7 @@ import {
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/header/index.js
 //   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/header/index.js
 
-function ActivateButton({ label }): JSX.Element {
+export function ActivateButton({ label }): JSX.Element {
   const { errors, isDeactivating } = useSelect(
     (select) => ({
       errors: select(storeName).getErrors(),
@@ -67,7 +67,7 @@ function ActivateButton({ label }): JSX.Element {
   return button;
 }
 
-function UpdateButton(): JSX.Element {
+export function UpdateButton(): JSX.Element {
   const { save } = useDispatch(storeName);
 
   const { automation, savedState } = useSelect(
@@ -166,7 +166,7 @@ function SaveDraftButton(): JSX.Element {
   );
 }
 
-function DeactivateButton(): JSX.Element {
+export function DeactivateButton(): JSX.Element {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const { hasUsersInProgress } = useSelect(
@@ -206,7 +206,7 @@ function DeactivateButton(): JSX.Element {
   );
 }
 
-function DeactivateNowButton(): JSX.Element {
+export function DeactivateNowButton(): JSX.Element {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const { hasUsersInProgress } = useSelect(
