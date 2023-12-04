@@ -29,7 +29,7 @@ class Migration_20231128_120355_App extends AppMigration {
     $sendingQueuesTable = $this->getTableName(SendingQueueEntity::class);
     $scheduledTasksTable = $this->getTableName(ScheduledTaskEntity::class);
     $newslettersTable = $this->getTableName(NewsletterEntity::class);
-    $typeAutomatic = NewsletterEntity::TYPE_AUTOMATIC;
+    $newsletterTypes = [NewsletterEntity::TYPE_AUTOMATIC, NewsletterEntity::TYPE_WELCOME];
     $statusCompleted = ScheduledTaskEntity::STATUS_COMPLETED;
     $connection->executeStatement("
       UPDATE {$sendingQueuesTable}
@@ -38,11 +38,13 @@ class Migration_20231128_120355_App extends AppMigration {
       SET {$sendingQueuesTable}.count_total = 1,
       {$sendingQueuesTable}.count_processed = 1,
       {$sendingQueuesTable}.count_to_process = 0
-      WHERE {$newslettersTable}.type = :newsletterType
+      WHERE {$newslettersTable}.type IN (:newsletterTypes)
       AND {$scheduledTasksTable}.status = :taskStatus
     ", [
-      'newsletterType' => $typeAutomatic,
+      'newsletterTypes' => $newsletterTypes,
       'taskStatus' => $statusCompleted,
+    ], [
+      'newsletterTypes' => Connection::PARAM_STR_ARRAY,
     ]);
 
     // Fix data for scheduled tasks
@@ -54,11 +56,13 @@ class Migration_20231128_120355_App extends AppMigration {
       SET {$sendingQueuesTable}.count_total = 1,
       {$sendingQueuesTable}.count_processed = 0,
       {$sendingQueuesTable}.count_to_process = 1
-      WHERE {$newslettersTable}.type = :newsletterType
+      WHERE {$newslettersTable}.type IN (:newsletterTypes)
       AND {$scheduledTasksTable}.status = :taskStatus
     ", [
-      'newsletterType' => $typeAutomatic,
+      'newsletterTypes' => $newsletterTypes,
       'taskStatus' => $statusScheduled,
+    ], [
+      'newsletterTypes' => Connection::PARAM_STR_ARRAY,
     ]);
   }
 
