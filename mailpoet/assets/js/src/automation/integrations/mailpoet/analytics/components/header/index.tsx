@@ -12,6 +12,12 @@ import { chevronDown, Icon } from '@wordpress/icons';
 import { Filter } from './filter';
 import { MailPoet } from '../../../../../../mailpoet';
 import { storeName as editorStoreName } from '../../../../../editor/store/constants';
+import { AutomationStatus } from '../../../../../listing/automation';
+import {
+  ActivateButton,
+  DeactivateButton,
+  DeactivateNowButton,
+} from '../../../../../editor/components/header';
 
 export function Header(): JSX.Element {
   const { automation } = useSelect((s) => ({
@@ -41,9 +47,16 @@ export function Header(): JSX.Element {
         )}
         renderContent={() => (
           <MenuGroup>
-            <MenuItem variant="tertiary" onClick={() => {}}>
-              {__('Deactivate', 'mailpoet')}
-            </MenuItem>
+            {automation.status === AutomationStatus.ACTIVE && (
+              <DeactivateButton />
+            )}
+            {automation.status === AutomationStatus.DEACTIVATING && (
+              <>
+                <DeactivateNowButton />
+                <br />
+                <ActivateButton label={__('Update & Activate', 'mailpoet')} />
+              </>
+            )}
             <MenuItem isDestructive onClick={() => {}}>
               {__('Move to Trash', 'mailpoet')}
             </MenuItem>
