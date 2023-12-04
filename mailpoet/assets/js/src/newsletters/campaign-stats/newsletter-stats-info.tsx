@@ -181,7 +181,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
             {__('Preview', 'mailpoet')}
           </Button>
           <Dropdown
-            className="mailpoet-stats-buttons-header"
+            className="mailpoet-stats-has-margin-left"
             focusOnMount={false}
             popoverProps={{ placement: 'bottom-end' }}
             renderToggle={({ isOpen, onToggle }) => (
