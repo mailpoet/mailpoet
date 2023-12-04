@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import {
   Button,
@@ -57,7 +58,10 @@ const editNewsletter = (newsletter: NewsletterType) => {
   }
 };
 
-const duplicateNewsletter = (newsletter: NewsletterType) => {
+const duplicateNewsletter = (
+  newsletter: NewsletterType,
+  performActionAfterUpdate = () => {},
+) => {
   void MailPoet.Ajax.post({
     api_version: window.mailpoet_api_version,
     endpoint: 'newsletters',
@@ -89,10 +93,16 @@ const duplicateNewsletter = (newsletter: NewsletterType) => {
           { scroll: true },
         );
       }
+    })
+    .always(() => {
+      performActionAfterUpdate();
     });
 };
 
-const trashNewsletter = (newsletter: NewsletterType) => {
+const trashNewsletter = (
+  newsletter: NewsletterType,
+  performActionAfterUpdate = () => {},
+) => {
   void MailPoet.Ajax.post({
     api_version: window.mailpoet_api_version,
     endpoint: 'newsletters',
@@ -117,6 +127,9 @@ const trashNewsletter = (newsletter: NewsletterType) => {
           { scroll: true },
         );
       }
+    })
+    .always(() => {
+      performActionAfterUpdate();
     });
 };
 
@@ -125,6 +138,7 @@ type Props = {
 };
 
 function NewsletterStatsInfo({ newsletter }: Props) {
+  const [isBusy, setIsBusy] = useState(false);
   const newsletterDate =
     newsletter?.queue?.scheduled_at ||
     newsletter?.queue?.created_at ||
@@ -218,19 +232,27 @@ function NewsletterStatsInfo({ newsletter }: Props) {
             renderContent={() => (
               <MenuGroup>
                 <MenuItem
+                  isBusy={isBusy}
                   className="mailpoet-no-box-shadow"
                   variant="tertiary"
                   disabled={newsletter.type !== 'standard'}
                   onClick={() => {
-                    duplicateNewsletter(newsletter);
+                    setIsBusy(true);
+                    duplicateNewsletter(newsletter, () => {
+                      setIsBusy(false);
+                    });
                   }}
                 >
                   {__('Duplicate', 'mailpoet')}
                 </MenuItem>
                 <MenuItem
+                  isBusy={isBusy}
                   isDestructive
                   onClick={() => {
-                    trashNewsletter(newsletter);
+                    setIsBusy(true);
+                    trashNewsletter(newsletter, () => {
+                      setIsBusy(false);
+                    });
                   }}
                 >
                   {__('Move to Trash', 'mailpoet')}

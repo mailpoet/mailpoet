@@ -40,6 +40,12 @@
       }
     }
   }
+
+  .components-dropdown {
+    .components-button.is-primary {
+      box-shadow: none;
+    }
+  }
 }
 
 .mailpoet-stats-info,
