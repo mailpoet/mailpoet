@@ -11,11 +11,11 @@ import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
 import {
-  capitalizeFirstLetter,
   confirmAlert,
   FilterSegmentTag,
   SegmentTags,
   Tag,
+  getNewsletterStatusString,
 } from 'common';
 import { NewsletterType } from './newsletter-type';
 
@@ -135,7 +135,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
         <Heading level={1}>{newsletter.subject}</Heading>
         <div>
           <Tag isInverted={false}>
-            {capitalizeFirstLetter(newsletter.status)}
+            {getNewsletterStatusString(newsletter.status)}
           </Tag>
           &nbsp;
           <b>

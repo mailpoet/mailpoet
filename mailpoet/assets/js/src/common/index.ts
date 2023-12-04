@@ -15,3 +15,4 @@ export * from './utils';
 export * from './thumbnail';
 export * from './controls';
 export * from './confirm-alert';
+export * from './newsletter-status-string';
