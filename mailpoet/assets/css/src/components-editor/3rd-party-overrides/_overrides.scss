@@ -183,4 +183,19 @@
       border-top-left-radius: 0;
     }
   }
+
+  /* Fix TinyMCE toolbar breaks when changing page zoom
+     We can remove this code after following issues are fixed:
+      - https://github.com/tinymce/tinymce/issues/8909
+      - https://github.com/tinymce/tinymce/issues/8865
+     We can also try removing this code after each update of tinymce
+  */
+  @include respond-to(not-small-screen) {
+    .tox .tox-toolbar {
+      flex-wrap: nowrap;
+    }
+    .tox .tox-toolbar__group {
+      flex-wrap: nowrap;
+    }
+  }
 }
