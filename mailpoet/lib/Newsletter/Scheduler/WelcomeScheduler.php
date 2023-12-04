@@ -135,6 +135,10 @@ class WelcomeScheduler {
     $queue = new SendingQueueEntity();
     $queue->setTask($task);
     $queue->setNewsletter($newsletter);
+    // Because we changed the way how to updateCounts after sending we need to set initial counts
+    $queue->setCountTotal(1);
+    $queue->setCountToProcess(1);
+
     $task->setSendingQueue($queue);
     $this->entityManager->persist($queue);
 

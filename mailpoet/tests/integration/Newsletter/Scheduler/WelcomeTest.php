@@ -97,6 +97,9 @@ class WelcomeTest extends \MailPoetTest {
     $queue = $newsletter->getLatestQueue();
     $this->assertInstanceOf(SendingQueueEntity::class, $queue);
     verify($queue->getId())->greaterThanOrEqual(1);
+    verify($queue->getCountProcessed())->equals(0);
+    verify($queue->getCountToProcess())->equals(1);
+    verify($queue->getCountTotal())->equals(1);
     $task = $queue->getTask();
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getPriority())->equals(ScheduledTaskEntity::PRIORITY_HIGH);
