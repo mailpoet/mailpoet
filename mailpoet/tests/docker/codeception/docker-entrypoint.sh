@@ -59,10 +59,6 @@ if [[ -z "${SKIP_DEPS}" ]]; then
   cd - >/dev/null
 fi
 
-# Install a fix plugin for PHPMailer on WP 5.6
-cp /project/tests/docker/codeception/wp-56-phpmailer-fix.php /wp-core/wp-content/plugins/wp-56-phpmailer-fix.php
-wp plugin activate wp-56-phpmailer-fix
-
 # Install, activate and print info about plugins that we want to use in tests runtime.
 # The plugin activation could be skipped by setting env. variable SKIP_PLUGINS
 # E.g. we want to run some tests without the plugins to make sure we are not dependent on those
