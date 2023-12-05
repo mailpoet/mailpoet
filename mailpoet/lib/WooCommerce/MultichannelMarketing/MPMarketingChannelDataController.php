@@ -141,6 +141,7 @@ class MPMarketingChannelDataController {
 
   public function getStandardNewsletterList($campaignType): array {
     return $this->getNewsletterTypeLists(
+      // fetch the most recently sent post-notification history newsletters limited to ten
       $this->newsletterRepository->getStandardNewsletterListWithMultipleStatuses(10),
       $campaignType
     );

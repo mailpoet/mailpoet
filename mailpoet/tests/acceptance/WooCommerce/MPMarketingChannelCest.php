@@ -2,9 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Features\FeaturesController;
 use MailPoet\Mailer\Mailer;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Settings;
 
@@ -26,7 +24,6 @@ class MPMarketingChannelCest {
 
   public function itShowsMailPoetSetup(\AcceptanceTester $i) {
     $this->settingsFactory->withWelcomeWizard();
-    (new Features())->withFeatureEnabled(FeaturesController::MAILPOET_WOOCOMMERCE_MULTICHANNEL_INTEGRATION);
 
     $i->login();
     $i->amOnPage('/wp-admin/admin.php?page=wc-admin&path=%2Fmarketing');
@@ -40,7 +37,6 @@ class MPMarketingChannelCest {
 
   public function itShowsErrorCount(\AcceptanceTester $i) {
     (new Newsletter())->create();
-    (new Features())->withFeatureEnabled(FeaturesController::MAILPOET_WOOCOMMERCE_MULTICHANNEL_INTEGRATION);
 
     $i->login();
 
@@ -57,7 +53,6 @@ class MPMarketingChannelCest {
 
   public function itShowsMailPoetSyncStatus(\AcceptanceTester $i) {
     (new Newsletter())->create();
-    (new Features())->withFeatureEnabled(FeaturesController::MAILPOET_WOOCOMMERCE_MULTICHANNEL_INTEGRATION);
 
     $i->login();
 
@@ -71,7 +66,6 @@ class MPMarketingChannelCest {
 
   public function itShowsMailPoetSyncStatusWithErrorCount(\AcceptanceTester $i) {
     (new Newsletter())->create();
-    (new Features())->withFeatureEnabled(FeaturesController::MAILPOET_WOOCOMMERCE_MULTICHANNEL_INTEGRATION);
 
     $i->login();
 
@@ -86,8 +80,6 @@ class MPMarketingChannelCest {
   }
 
   public function itCanCreateMailPoetCampaigns(\AcceptanceTester $i) {
-      (new Features())->withFeatureEnabled(FeaturesController::MAILPOET_WOOCOMMERCE_MULTICHANNEL_INTEGRATION);
-
       $i->login();
 
       $i->amOnPage('/wp-admin/admin.php?page=wc-admin&path=%2Fmarketing');
