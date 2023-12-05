@@ -1,5 +1,22 @@
 import { MutableRefObject, useEffect } from 'react';
 
+const findClosestScrollable = (element: HTMLElement): HTMLElement | null => {
+  const style = window.getComputedStyle(element);
+  const canScroll = [style.overflow, style.overflowX, style.overflowY].find(
+    (value) => value === 'auto' || value === 'scroll',
+  );
+  const overflows =
+    element.scrollHeight > element.clientHeight ||
+    element.scrollWidth > element.clientWidth;
+
+  if (canScroll && overflows) {
+    return element;
+  }
+  return element.parentElement
+    ? findClosestScrollable(element.parentElement)
+    : null;
+};
+
 // Handle automation scrolling, including both X and Y axes simultaneously.
 // Use animation frames to sync with browser repaints for smooth scrolling.
 export const useAutomationScroll = (
@@ -12,7 +29,13 @@ export const useAutomationScroll = (
     }
 
     let frameId: number;
-    const scrollHandler = (event) => {
+    const scrollHandler = (event: WheelEvent) => {
+      // do not hijack wheel event inside other scrollable elements
+      const scrollTarget = findClosestScrollable(event.target as HTMLElement);
+      if (scrollTarget !== automation) {
+        return;
+      }
+
       event.preventDefault();
       frameId = requestAnimationFrame(() => {
         automation.scrollLeft += event.deltaX;
