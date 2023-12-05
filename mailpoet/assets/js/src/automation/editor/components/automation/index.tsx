@@ -2,6 +2,8 @@ import { useMemo, useRef } from 'react';
 import {
   __unstableComposite as Composite,
   __unstableUseCompositeState as useCompositeState,
+  Popover,
+  SlotFillProvider,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
@@ -54,23 +56,26 @@ export function Automation({
   return (
     <AutomationContext.Provider value={automationContext}>
       <AutomationCompositeContext.Provider value={compositeState}>
-        <Composite
-          ref={automationRef}
-          state={compositeState}
-          role="tree"
-          aria-label={__('Automation', 'mailpoet')}
-          aria-orientation="vertical"
-          className="mailpoet-automation-editor-automation"
-        >
-          {showStatistics && <Statistics />}
-          <div className="mailpoet-automation-editor-automation-wrapper">
-            <div className="mailpoet-automation-editor-automation-flow">
-              <Flow stepData={automationData.steps.root} row={0} />
+        <SlotFillProvider>
+          <Composite
+            ref={automationRef}
+            state={compositeState}
+            role="tree"
+            aria-label={__('Automation', 'mailpoet')}
+            aria-orientation="vertical"
+            className="mailpoet-automation-editor-automation"
+          >
+            {showStatistics && <Statistics />}
+            <div className="mailpoet-automation-editor-automation-wrapper">
+              <div className="mailpoet-automation-editor-automation-flow">
+                <Flow stepData={automationData.steps.root} row={0} />
+              </div>
+              <div />
+              <Popover.Slot />
             </div>
-            <div />
-          </div>
-          <InserterPopover />
-        </Composite>
+            <InserterPopover />
+          </Composite>
+        </SlotFillProvider>
       </AutomationCompositeContext.Provider>
     </AutomationContext.Provider>
   );
