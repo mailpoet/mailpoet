@@ -8,10 +8,6 @@ use MailPoet\Test\DataFactories\Settings;
 
 class CreateAndSendEmailUsingGutenbergCest {
   public function createAndSendStandardNewsletter(\AcceptanceTester $i) {
-    $wordPressVersion = $i->getWordPressVersion();
-    if (version_compare($wordPressVersion, '6.3', '<')) {
-      return;
-    }
     $settings = new Settings();
     $settings->withCronTriggerMethod('Action Scheduler');
     $settings->withSender('John Doe', 'john@doe.com');
@@ -63,10 +59,6 @@ class CreateAndSendEmailUsingGutenbergCest {
   }
 
   public function displayNewsletterPreview(\AcceptanceTester $i) {
-    $wordPressVersion = $i->getWordPressVersion();
-    if (version_compare($wordPressVersion, '6.2', '<')) {
-      return;
-    }
     $settings = new Settings();
     $settings->withCronTriggerMethod('Action Scheduler');
     $settings->withSender('John Doe', 'john@doe.com');
