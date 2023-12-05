@@ -3,7 +3,7 @@
   display: grid;
   flex-grow: 1;
   grid-template-rows: auto 1fr;
-  overflow: scroll;
+  overflow: auto;
   width: 100%;
 }
 
