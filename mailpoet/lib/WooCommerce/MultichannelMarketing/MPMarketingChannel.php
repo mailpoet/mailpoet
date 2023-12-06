@@ -157,7 +157,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
           'Send a newsletter with images, buttons, dividers, and social bookmarks. Or, just send a basic text email.',
           'mailpoet',
         ),
-        admin_url('admin.php?loadedvia=woo_multichannel_dashboard&page=' . Menu::EMAILS_PAGE_SLUG . '#/new/standard'),
+        admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '&loadedvia=woo_multichannel_dashboard#/new/standard'),
         $this->get_icon_url()
       ),
       self::CAMPAIGN_TYPE_POST_NOTIFICATIONS => new MarketingCampaignType(
@@ -168,7 +168,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
           'Let MailPoet email your subscribers with your latest content. You can send daily, weekly, monthly, or even immediately after publication.',
           'mailpoet',
         ),
-        admin_url('admin.php?loadedvia=woo_multichannel_dashboard&page=' . Menu::EMAILS_PAGE_SLUG . '#/new/notification'),
+        admin_url('admin.php?page=' . Menu::EMAILS_PAGE_SLUG . '&loadedvia=woo_multichannel_dashboard#/new/notification'),
         $this->get_icon_url()
       ),
       self::CAMPAIGN_TYPE_AUTOMATIONS => new MarketingCampaignType(
@@ -176,7 +176,7 @@ class MPMarketingChannel implements MarketingChannelInterface {
         $this,
         __('MailPoet Automations', 'mailpoet'),
         __('Set up automations to send abandoned cart reminders, welcome new subscribers, celebrate first-time buyers, and much more.', 'mailpoet'),
-        admin_url('admin.php?loadedvia=woo_multichannel_dashboard&page=' . Menu::AUTOMATION_TEMPLATES_PAGE_SLUG),
+        admin_url('admin.php?page=' . Menu::AUTOMATION_TEMPLATES_PAGE_SLUG . '&loadedvia=woo_multichannel_dashboard'),
         $this->get_icon_url()
       ),
     ];
