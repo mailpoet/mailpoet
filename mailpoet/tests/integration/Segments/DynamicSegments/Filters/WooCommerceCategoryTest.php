@@ -86,10 +86,17 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   public function testItGetsSubscribersThatPurchasedAllProducts(): void {
     $segmentFilterData = $this->getSegmentFilterData($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ALL);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
-    verify($emails)->arrayCount(0);
+    verify($emails)->arrayCount(1); // customer5
     $expectedEmails = ['customer1@example.com', 'customer5@example.com'];
     $segmentFilterData = $this->getSegmentFilterData([$this->categoryIds[0]], DynamicSegmentFilterData::OPERATOR_ALL);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
+    $this->assertEqualsCanonicalizing($expectedEmails, $emails);
+  }
+
+  public function testItGetsSubscribersThatPurchasesAllProductsInMultipleOrders(): void {
+    $segmentFilterData = $this->getSegmentFilterData($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ALL);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
+    $expectedEmails = ['customer5@example.com'];
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
