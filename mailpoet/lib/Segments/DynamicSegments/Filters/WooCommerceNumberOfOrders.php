@@ -78,6 +78,12 @@ class WooCommerceNumberOfOrders implements Filter {
         $joinCondition
       );
 
+    $action = $filterData->getAction();
+
+    if ($action === self::ACTION_NUMBER_OF_ORDERS_WITH_COUPON) {
+      $subQuery->innerJoin('orderStats', $wpdb->prefix . 'wc_order_coupon_lookup', 'couponLookup', 'orderStats.order_id = couponLookup.order_id');
+    }
+
     $queryBuilder->add('join', [
       $subscribersTable => [
         /**
