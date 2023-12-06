@@ -237,14 +237,33 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     ];
     $productId = wp_insert_post($productData);
     if (is_int($productId)) {
-      wp_set_object_terms($productId, $terms, 'category');
+      wp_set_object_terms($productId, $terms, 'product_cat');
     }
     $this->productIds[] = $productId;
     return $productId;
   }
 
-  private function createCategory(string $name): int {
-    $categoryId = wp_create_category($name);
+  private function createCategory(string $name, int $categoryParentId = 0): int {
+    // Check if the term already exists
+    $existingTerm = get_term_by('name', $name, 'product_cat');
+
+    if ($existingTerm instanceof \WP_Term) {
+      //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $categoryId = $existingTerm->term_id;
+    } else {
+      // Term does not exist, create a new one
+      $result = wp_insert_term(
+        $name,
+        'product_cat',
+        ['parent' => $categoryParentId]
+      );
+
+      if (is_wp_error($result)) {
+        throw new \Exception('Unable to create category: ' . $result->get_error_message());
+      }
+
+      $categoryId = $result['term_id'];
+    }
     $this->assertIsInt($categoryId);
     $this->categoryIds[] = $categoryId;
     return $categoryId;
@@ -288,7 +307,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
 
     if (!empty($this->categoryIds)) {
       foreach ($this->categoryIds as $categoryId) {
-        wp_delete_category($categoryId);
+        wp_delete_term($categoryId, 'product_cat');
       }
     }
 
