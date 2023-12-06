@@ -38,6 +38,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
     $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com', 'customer');
     $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com', 'customer');
+    $customerId5 = $this->tester->createCustomer('customer5@example.com');
 
     $this->createSubscriber('a1@example.com');
     $this->createSubscriber('a2@example.com');
@@ -56,10 +57,14 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->addToOrder(3, $this->orderIds[2], $this->productIds[1], $customerId3OnHold);
     $this->orderIds[] = $this->createOrder($customerId4PendingPayment, Carbon::now(), 'wc-pending');
     $this->addToOrder(4, $this->orderIds[3], $this->productIds[1], $customerId4PendingPayment);
+    $this->orderIds[] = $this->createOrder($customerId5, Carbon::now());
+    $this->addToOrder(5, $this->orderIds[4], $this->productIds[0], $customerId5);
+    $this->orderIds[] = $this->createOrder($customerId5, Carbon::now());
+    $this->addToOrder(6, $this->orderIds[5], $this->productIds[1], $customerId5);
   }
 
   public function testItGetsSubscribersThatPurchasedProductsInAnyCategory(): void {
-    $expectedEmails = ['customer1@example.com', 'customer2@example.com'];
+    $expectedEmails = ['customer1@example.com', 'customer2@example.com', 'customer5@example.com'];
     $segmentFilterData = $this->getSegmentFilterData($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ANY);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
@@ -82,7 +87,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $segmentFilterData = $this->getSegmentFilterData($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ALL);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
     verify($emails)->arrayCount(0);
-    $expectedEmails = ['customer1@example.com'];
+    $expectedEmails = ['customer1@example.com', 'customer5@example.com'];
     $segmentFilterData = $this->getSegmentFilterData([$this->categoryIds[0]], DynamicSegmentFilterData::OPERATOR_ALL);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
