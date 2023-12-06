@@ -1,13 +1,11 @@
 import { ButtonGroup, Dropdown, MenuItem } from '@wordpress/components';
-import { ComponentType, Fragment, useState } from 'react';
+import { ComponentType, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { chevronDown, Icon } from '@wordpress/icons';
 import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
 import _ from 'underscore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-
-import { AutomaticEmailEventsList } from 'newsletters/types/automatic-emails/events-list.jsx';
 import { AutomaticEmailEventGroupLogos } from 'newsletters/types/automatic-emails/event-group-logos.jsx';
 import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
@@ -196,36 +194,6 @@ function NewsletterTypesComponent({
       additionalTypes.push(getRedirectToAutomateWooType());
     }
     return additionalTypes;
-  };
-
-  const getAutomaticEmails = (): JSX.Element[] => {
-    if (!window.mailpoet_woocommerce_automatic_emails) return [];
-    let automaticEmails = window.mailpoet_woocommerce_automatic_emails;
-    if (filter) {
-      automaticEmails = _.filter(automaticEmails, filter);
-    }
-
-    return _.map(automaticEmails, (automaticEmail) => {
-      const email = automaticEmail;
-      return (
-        <Fragment key={email.slug}>
-          {!filter && (
-            <div className="mailpoet-newsletter-types-separator">
-              <div className="mailpoet-newsletter-types-separator-line" />
-              <div className="mailpoet-newsletter-types-separator-logo">
-                {AutomaticEmailEventGroupLogos[email.slug] || null}
-              </div>
-              <div className="mailpoet-newsletter-types-separator-line" />
-            </div>
-          )}
-          {email.slug === 'woocommerce' && !MailPoet.hideAutomations && (
-            <AutomaticEmailEventsList email={email} history={history} />
-          )}
-          {email.slug === 'woocommerce' &&
-            getAdditionalTypes().map((type) => renderType(type), this)}
-        </Fragment>
-      );
-    });
   };
 
   const createNewsletter = (type): void => {
@@ -465,7 +433,17 @@ function NewsletterTypesComponent({
 
         {types.map((type) => renderType(type), this)}
 
-        {getAutomaticEmails()}
+        {!filter && (
+          <div className="mailpoet-newsletter-types-separator">
+            <div className="mailpoet-newsletter-types-separator-line" />
+            <div className="mailpoet-newsletter-types-separator-logo">
+              {AutomaticEmailEventGroupLogos.woocommerce}
+            </div>
+            <div className="mailpoet-newsletter-types-separator-line" />
+          </div>
+        )}
+
+        {getAdditionalTypes().map((type) => renderType(type), this)}
       </div>
 
       <link rel="prefetch" href={templatesGETUrl} as="fetch" />

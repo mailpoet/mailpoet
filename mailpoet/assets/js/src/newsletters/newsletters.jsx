@@ -18,8 +18,6 @@ import { NewsletterTypeStandard } from 'newsletters/types/standard.jsx';
 import { NewsletterNotification } from 'newsletters/types/notification/notification.jsx';
 import { NewsletterWelcome } from 'newsletters/types/welcome/welcome.jsx';
 import { NewsletterTypeReEngagement } from 'newsletters/types/re-engagement/re-engagement';
-import { AutomaticEmailEventsList } from 'newsletters/types/automatic-emails/events-list.jsx';
-import { EventsConditions } from 'newsletters/automatic-emails/events-conditions.jsx';
 import { NewsletterListStandard } from 'newsletters/listings/standard.jsx';
 import { NewsletterListNotification } from 'newsletters/listings/notification.jsx';
 import { NewsletterListReEngagement } from 'newsletters/listings/re-engagement.jsx';
@@ -90,53 +88,6 @@ const Tabs = withNpsPoll(() => {
 });
 Tabs.displayName = 'NewsletterTabs';
 
-const getAutomaticEmailsRoutes = () => {
-  const routes = [];
-  _.each(automaticEmails, (email) => {
-    routes.push({
-      path: `/${email.slug}/(.*)?`,
-      component: withBoundary(Tabs),
-    });
-
-    const { events } = email;
-    if (_.isObject(events)) {
-      _.each(events, (event) => {
-        routes.push({
-          path: `/new/${email.slug}/${event.slug}/conditions`,
-          render: (props) => {
-            const componentProps = {
-              ...props,
-              email,
-              name: event.slug,
-            };
-            return (
-              <ErrorBoundary>
-                <EventsConditions {...componentProps} />
-              </ErrorBoundary>
-            );
-          },
-        });
-      });
-    }
-
-    routes.push({
-      path: `/new/${email.slug}`,
-      render: (props) => {
-        const componentProps = {
-          ...props,
-          email,
-        };
-        return (
-          <ErrorBoundary>
-            <AutomaticEmailEventsList {...componentProps} />
-          </ErrorBoundary>
-        );
-      },
-    });
-  });
-  return routes;
-};
-
 function NewNewsletter({ history }) {
   return (
     <ErrorBoundary>
@@ -157,8 +108,6 @@ NewNewsletter.propTypes = {
 NewNewsletter.displayName = 'NewNewsletter';
 
 const routes = [
-  ...getAutomaticEmailsRoutes(),
-
   /* Listings */
   {
     path: '/notification/history/:parentId/(.*)?',
