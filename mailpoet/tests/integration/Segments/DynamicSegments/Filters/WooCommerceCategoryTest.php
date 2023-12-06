@@ -43,24 +43,24 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->createSubscriber('a1@example.com');
     $this->createSubscriber('a2@example.com');
 
-    $this->categoryIds[] = $this->createCategory('productCat1');
-    $this->categoryIds[] = $this->createCategory('productCat2');
+    $category1 = $this->createCategory('productCat1');
+    $category2 = $this->createCategory('productCat2');
 
-    $this->productIds[] = $this->createProduct('testProduct1', [$this->categoryIds[0]]);
-    $this->productIds[] = $this->createProduct('testProduct2', [$this->categoryIds[1]]);
+    $productId1 = $this->createProduct('testProduct1', [$category1]);
+    $productId2 = $this->createProduct('testProduct2', [$category2]);
 
-    $this->orderIds[] = $this->createOrder($customerId1, Carbon::now());
-    $this->addToOrder(1, $this->orderIds[0], $this->productIds[0], $customerId1);
-    $this->orderIds[] = $this->createOrder($customerId2, Carbon::now());
-    $this->addToOrder(2, $this->orderIds[1], $this->productIds[1], $customerId2);
-    $this->orderIds[] = $this->createOrder($customerId3OnHold, Carbon::now(), 'wc-on-hold');
-    $this->addToOrder(3, $this->orderIds[2], $this->productIds[1], $customerId3OnHold);
-    $this->orderIds[] = $this->createOrder($customerId4PendingPayment, Carbon::now(), 'wc-pending');
-    $this->addToOrder(4, $this->orderIds[3], $this->productIds[1], $customerId4PendingPayment);
-    $this->orderIds[] = $this->createOrder($customerId5, Carbon::now());
-    $this->addToOrder(5, $this->orderIds[4], $this->productIds[0], $customerId5);
-    $this->orderIds[] = $this->createOrder($customerId5, Carbon::now());
-    $this->addToOrder(6, $this->orderIds[5], $this->productIds[1], $customerId5);
+    $orderId1 = $this->createOrder($customerId1, Carbon::now());
+    $this->addToOrder(1, $orderId1, $productId1, $customerId1);
+    $orderId2 = $this->createOrder($customerId2, Carbon::now());
+    $this->addToOrder(2, $orderId2, $productId2, $customerId2);
+    $orderId3 = $this->createOrder($customerId3OnHold, Carbon::now(), 'wc-on-hold');
+    $this->addToOrder(3, $orderId3, $productId2, $customerId3OnHold);
+    $orderId4 = $this->createOrder($customerId4PendingPayment, Carbon::now(), 'wc-pending');
+    $this->addToOrder(4, $orderId4, $productId2, $customerId4PendingPayment);
+    $orderId5 = $this->createOrder($customerId5, Carbon::now());
+    $this->addToOrder(5, $orderId5, $productId1, $customerId5);
+    $orderId6 = $this->createOrder($customerId5, Carbon::now());
+    $this->addToOrder(6, $orderId6, $productId2, $customerId5);
   }
 
   public function testItGetsSubscribersThatPurchasedProductsInAnyCategory(): void {
@@ -140,9 +140,11 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $order->set_date_created($createdAt->toDateTimeString());
     $order->set_status($status);
     $order->save();
-    $this->tester->updateWooOrderStats($order->get_id());
+    $orderId = $order->get_id();
+    $this->tester->updateWooOrderStats($orderId);
+    $this->orderIds[] = $orderId;
 
-    return $order->get_id();
+    return $orderId;
   }
 
   private function createProduct(string $name, array $terms): int {
@@ -155,12 +157,14 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     if (is_int($productId)) {
       wp_set_object_terms($productId, $terms, 'category');
     }
+    $this->productIds[] = $productId;
     return $productId;
   }
 
   private function createCategory(string $name): int {
     $categoryId = wp_create_category($name);
     $this->assertIsInt($categoryId);
+    $this->categoryIds[] = $categoryId;
     return $categoryId;
   }
 
@@ -188,14 +192,14 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   private function cleanUp(): void {
     global $wpdb;
 
-    if (!empty($this->orders)) {
-      foreach ($this->orders as $orderId) {
+    if (!empty($this->orderIds)) {
+      foreach ($this->orderIds as $orderId) {
         wp_delete_post($orderId);
       }
     }
 
-    if (!empty($this->products)) {
-      foreach ($this->products as $productId) {
+    if (!empty($this->productIds)) {
+      foreach ($this->productIds as $productId) {
         wp_delete_post($productId);
       }
     }
