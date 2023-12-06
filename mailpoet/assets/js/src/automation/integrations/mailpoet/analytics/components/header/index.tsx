@@ -13,7 +13,6 @@ import { MailPoet } from '../../../../../../mailpoet';
 import { storeName as editorStoreName } from '../../../../../editor/store/constants';
 import { AutomationStatus } from '../../../../../listing/automation';
 import {
-  ActivateButton,
   DeactivateButton,
   DeactivateNowButton,
 } from '../../../../../editor/components/header';
@@ -40,7 +39,7 @@ export function Header(): JSX.Element {
               {__('Edit automation', 'mailpoet')}
             </Button>
             <Button onClick={onToggle} aria-expanded={isOpen} variant="primary">
-              <br />
+              &nbsp;
               <Icon icon={chevronDown} size={18} />
             </Button>
           </ButtonGroup>
@@ -51,11 +50,7 @@ export function Header(): JSX.Element {
               <DeactivateButton />
             )}
             {automation.status === AutomationStatus.DEACTIVATING && (
-              <>
-                <DeactivateNowButton />
-                <br />
-                <ActivateButton label={__('Update & Activate', 'mailpoet')} />
-              </>
+              <DeactivateNowButton />
             )}
             <TrashButton
               performActionAfterDelete={() => {
