@@ -60,13 +60,20 @@ class WooCommerceCategory implements Filter {
       $this->applyTermTaxonomyJoin($queryBuilder, $parameterSuffix);
 
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
-      $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
-      $this->applyProductJoin($queryBuilder, $orderStatsAlias);
-      $this->applyTermRelationshipsJoin($queryBuilder);
-      $this->applyTermTaxonomyJoin($queryBuilder, $parameterSuffix)
-        ->groupBy("$subscribersTable.id")
-        ->having("COUNT(DISTINCT term_taxonomy.term_id) = :count_" . $parameterSuffix)
-        ->setParameter('count_' . $parameterSuffix, count($categoryIdswithChildrenIds));
+      $subQueries = [];
+      foreach ($categoryIds as $categoryId) {
+        $uniqueParamaterSuffix = Security::generateRandomString();
+        $categoryIdWithChildrenIds = $this->getCategoriesWithChildren([$categoryId]);
+        $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
+        $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($subQuery);
+        $this->applyProductJoin($subQuery, $orderStatsAlias);
+        $this->applyTermRelationshipsJoin($subQuery);
+        $this->applyTermTaxonomyJoin($subQuery, $uniqueParamaterSuffix);
+        $subQuery->setParameter("category_$uniqueParamaterSuffix", $categoryIdWithChildrenIds, Connection::PARAM_STR_ARRAY);
+        $subQueries[] = $this->filterHelper->getInterpolatedSQL($subQuery);
+      }
+      $combinedSubqueries = implode(' INTERSECT ', $subQueries);
+      $queryBuilder->where("$subscribersTable.id IN ($combinedSubqueries)");
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
       // subQuery with subscriber ids that bought products
       $subQuery = $this->createQueryBuilder($subscribersTable);
@@ -132,7 +139,7 @@ class WooCommerceCategory implements Filter {
   }
 
   private function getAllCategoryIds(int $categoryId): array {
-    $subcategories = $this->wp->getTerms('product_cat', ['child_of' => $categoryId]);
+    $subcategories = $this->wp->getTerms(['taxonomy' => 'product_cat', 'child_of' => $categoryId, 'hide_empty' => false]);
     if (!is_array($subcategories) || empty($subcategories)) {
       return [$categoryId];
     }
