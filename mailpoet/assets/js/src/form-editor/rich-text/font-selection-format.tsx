@@ -1,4 +1,4 @@
-import { applyFormat, FormatConfiguration, Value } from '@wordpress/rich-text';
+import { applyFormat, RichTextValue } from '@wordpress/rich-text';
 import { MailPoet } from 'mailpoet';
 import { BlockFormatControls } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
@@ -11,7 +11,7 @@ const title = 'Font Selection';
 const supportedBlocks = ['core/paragraph', 'core/heading'];
 
 type Props = {
-  value: Value;
+  value: RichTextValue;
   onChange: (object) => void;
   activeAttributes: {
     font?: string;
@@ -41,6 +41,9 @@ function Edit({ value, onChange, activeAttributes }: Props): JSX.Element {
                   style: `font-family: ${font}`,
                   font,
                 },
+              } as {
+                // Internal RichTextFormat type in @wordpress/rich-text is missing attributes
+                type: string;
               }),
             );
           }}
@@ -52,11 +55,12 @@ function Edit({ value, onChange, activeAttributes }: Props): JSX.Element {
   );
 }
 
-const settings: FormatConfiguration & { name: string } = {
+const settings = {
   name,
   title,
   tagName: 'span',
   className: 'mailpoet-has-font',
+  interactive: false,
   attributes: {
     style: 'style',
     font: 'data-font',
