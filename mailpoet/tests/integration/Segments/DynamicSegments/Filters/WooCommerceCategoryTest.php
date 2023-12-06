@@ -33,7 +33,9 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
 
     $this->cleanUp();
+  }
 
+  public function testItGetsSubscribersThatPurchasedProductsInAnyCategory(): void {
     $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
     $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
     $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com', 'customer');
@@ -61,9 +63,7 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->addToOrder(5, $orderId5, $productId1, $customerId5);
     $orderId6 = $this->createOrder($customerId5, Carbon::now());
     $this->addToOrder(6, $orderId6, $productId2, $customerId5);
-  }
 
-  public function testItGetsSubscribersThatPurchasedProductsInAnyCategory(): void {
     $expectedEmails = ['customer1@example.com', 'customer2@example.com', 'customer5@example.com'];
     $segmentFilterData = $this->getSegmentFilterData($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ANY);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
@@ -71,6 +71,33 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersThatDidNotPurchaseProducts(): void {
+    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
+    $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com', 'customer');
+    $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com', 'customer');
+    $customerId5 = $this->tester->createCustomer('customer5@example.com');
+
+    $this->createSubscriber('a1@example.com');
+    $this->createSubscriber('a2@example.com');
+
+    $category1 = $this->createCategory('productCat1');
+    $category2 = $this->createCategory('productCat2');
+
+    $productId1 = $this->createProduct('testProduct1', [$category1]);
+    $productId2 = $this->createProduct('testProduct2', [$category2]);
+
+    $orderId1 = $this->createOrder($customerId1, Carbon::now());
+    $this->addToOrder(1, $orderId1, $productId1, $customerId1);
+    $orderId2 = $this->createOrder($customerId2, Carbon::now());
+    $this->addToOrder(2, $orderId2, $productId2, $customerId2);
+    $orderId3 = $this->createOrder($customerId3OnHold, Carbon::now(), 'wc-on-hold');
+    $this->addToOrder(3, $orderId3, $productId2, $customerId3OnHold);
+    $orderId4 = $this->createOrder($customerId4PendingPayment, Carbon::now(), 'wc-pending');
+    $this->addToOrder(4, $orderId4, $productId2, $customerId4PendingPayment);
+    $orderId5 = $this->createOrder($customerId5, Carbon::now());
+    $this->addToOrder(5, $orderId5, $productId1, $customerId5);
+    $orderId6 = $this->createOrder($customerId5, Carbon::now());
+    $this->addToOrder(6, $orderId6, $productId2, $customerId5);
     $expectedEmails = [
       'a1@example.com',
       'a2@example.com',
@@ -84,6 +111,34 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersThatPurchasedAllProducts(): void {
+    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
+    $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com', 'customer');
+    $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com', 'customer');
+    $customerId5 = $this->tester->createCustomer('customer5@example.com');
+
+    $this->createSubscriber('a1@example.com');
+    $this->createSubscriber('a2@example.com');
+
+    $category1 = $this->createCategory('productCat1');
+    $category2 = $this->createCategory('productCat2');
+
+    $productId1 = $this->createProduct('testProduct1', [$category1]);
+    $productId2 = $this->createProduct('testProduct2', [$category2]);
+
+    $orderId1 = $this->createOrder($customerId1, Carbon::now());
+    $this->addToOrder(1, $orderId1, $productId1, $customerId1);
+    $orderId2 = $this->createOrder($customerId2, Carbon::now());
+    $this->addToOrder(2, $orderId2, $productId2, $customerId2);
+    $orderId3 = $this->createOrder($customerId3OnHold, Carbon::now(), 'wc-on-hold');
+    $this->addToOrder(3, $orderId3, $productId2, $customerId3OnHold);
+    $orderId4 = $this->createOrder($customerId4PendingPayment, Carbon::now(), 'wc-pending');
+    $this->addToOrder(4, $orderId4, $productId2, $customerId4PendingPayment);
+    $orderId5 = $this->createOrder($customerId5, Carbon::now());
+    $this->addToOrder(5, $orderId5, $productId1, $customerId5);
+    $orderId6 = $this->createOrder($customerId5, Carbon::now());
+    $this->addToOrder(6, $orderId6, $productId2, $customerId5);
+
     $segmentFilterData = $this->getSegmentFilterData($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ALL);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
     verify($emails)->arrayCount(1); // customer5
@@ -94,6 +149,33 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersThatPurchasesAllProductsInMultipleOrders(): void {
+    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
+    $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com', 'customer');
+    $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com', 'customer');
+    $customerId5 = $this->tester->createCustomer('customer5@example.com');
+
+    $this->createSubscriber('a1@example.com');
+    $this->createSubscriber('a2@example.com');
+
+    $category1 = $this->createCategory('productCat1');
+    $category2 = $this->createCategory('productCat2');
+
+    $productId1 = $this->createProduct('testProduct1', [$category1]);
+    $productId2 = $this->createProduct('testProduct2', [$category2]);
+
+    $orderId1 = $this->createOrder($customerId1, Carbon::now());
+    $this->addToOrder(1, $orderId1, $productId1, $customerId1);
+    $orderId2 = $this->createOrder($customerId2, Carbon::now());
+    $this->addToOrder(2, $orderId2, $productId2, $customerId2);
+    $orderId3 = $this->createOrder($customerId3OnHold, Carbon::now(), 'wc-on-hold');
+    $this->addToOrder(3, $orderId3, $productId2, $customerId3OnHold);
+    $orderId4 = $this->createOrder($customerId4PendingPayment, Carbon::now(), 'wc-pending');
+    $this->addToOrder(4, $orderId4, $productId2, $customerId4PendingPayment);
+    $orderId5 = $this->createOrder($customerId5, Carbon::now());
+    $this->addToOrder(5, $orderId5, $productId1, $customerId5);
+    $orderId6 = $this->createOrder($customerId5, Carbon::now());
+    $this->addToOrder(6, $orderId6, $productId2, $customerId5);
     $segmentFilterData = $this->getSegmentFilterData($this->categoryIds, DynamicSegmentFilterData::OPERATOR_ALL);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
     $expectedEmails = ['customer5@example.com'];
