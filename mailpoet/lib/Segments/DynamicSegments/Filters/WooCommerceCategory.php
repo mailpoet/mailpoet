@@ -64,10 +64,9 @@ class WooCommerceCategory implements Filter {
       $this->applyProductJoin($queryBuilder, $orderStatsAlias);
       $this->applyTermRelationshipsJoin($queryBuilder);
       $this->applyTermTaxonomyJoin($queryBuilder, $parameterSuffix)
-        ->groupBy("$subscribersTable.id, $orderStatsAlias.order_id")
-        ->having("COUNT($orderStatsAlias.order_id) = :count_" . $parameterSuffix)
-        ->setParameter('count_' . $parameterSuffix, count($categoryIds));
-
+        ->groupBy("$subscribersTable.id")
+        ->having("COUNT(DISTINCT term_taxonomy.term_id) = :count_" . $parameterSuffix)
+        ->setParameter('count_' . $parameterSuffix, count($categoryIdswithChildrenIds));
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
       // subQuery with subscriber ids that bought products
       $subQuery = $this->createQueryBuilder($subscribersTable);
@@ -134,7 +133,9 @@ class WooCommerceCategory implements Filter {
 
   private function getAllCategoryIds(int $categoryId): array {
     $subcategories = $this->wp->getTerms('product_cat', ['child_of' => $categoryId]);
-    if (!is_array($subcategories) || empty($subcategories)) return [$categoryId];
+    if (!is_array($subcategories) || empty($subcategories)) {
+      return [$categoryId];
+    }
     $ids = array_map(function($category) {
       return $category->term_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }, $subcategories);
