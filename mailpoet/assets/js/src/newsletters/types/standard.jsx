@@ -21,7 +21,9 @@ class NewsletterStandardComponent extends Component {
     })
       .done((response) => {
         if (
-          window.location.hash.includes('loadedvia=woo_multichannel_dashboard')
+          window.location.search.includes(
+            'loadedvia=woo_multichannel_dashboard',
+          )
         ) {
           window.MailPoet.trackEvent(
             'MailPoet - WooCommerce Multichannel Marketing dashboard > Newsletter template selection page',
