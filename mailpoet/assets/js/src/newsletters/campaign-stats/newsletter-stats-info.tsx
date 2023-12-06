@@ -224,7 +224,7 @@ function NewsletterStatsInfo({ newsletter }: Props) {
                   aria-expanded={isOpen}
                   variant="primary"
                 >
-                  <br />
+                  &nbsp;
                   <Icon icon={chevronDown} size={18} />
                 </Button>
               </ButtonGroup>
