@@ -259,11 +259,14 @@ function NewsletterTypesComponent({
     setupNewsletter,
     'notification',
   );
-  const createWelcomeNewsletter = _.partial(setupNewsletter, 'welcome');
   const createReEngagementNewsletter = _.partial(
     setupNewsletter,
     're-engagement',
   );
+  const createAutomation = () => {
+    setIsCreating(true);
+    window.location.href = 'admin.php?page=mailpoet-automation-templates';
+  };
 
   const standardAction = isNewEmailEditorEnabled ? (
     <ButtonGroup className="mailpoet-dropdown-button-group">
@@ -339,18 +342,16 @@ function NewsletterTypesComponent({
       action: standardAction,
     },
     {
-      slug: 'welcome',
-      title: __('Welcome Email', 'mailpoet'),
+      slug: 'automations',
+      title: __('Automations', 'mailpoet'),
       description: __(
-        'Automatically send an email (or series of emails) to new subscribers or WordPress users. Send a day, a week, or a month after they sign up.',
+        'Set up automated emails like welcome emails, abandoned cart reminders or one of our many automation templates to inform, engage and reward your audience.',
         'mailpoet',
       ),
-      videoGuide:
-        'https://kb.mailpoet.com/article/254-video-guide-to-welcome-emails',
       action: (
         <Button
-          onClick={createWelcomeNewsletter}
-          automationId="create_welcome"
+          onClick={createAutomation}
+          automationId="create_automation"
           withSpinner={isCreating}
           onKeyDown={(event): void => {
             if (
@@ -358,7 +359,7 @@ function NewsletterTypesComponent({
               ['Enter', ' '].includes(event.key)
             ) {
               event.preventDefault();
-              createWelcomeNewsletter();
+              createAutomation();
             }
           }}
           tabIndex={0}
