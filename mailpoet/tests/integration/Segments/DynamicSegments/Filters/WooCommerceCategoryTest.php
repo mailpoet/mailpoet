@@ -182,6 +182,39 @@ class WooCommerceCategoryTest extends \MailPoetTest {
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
   }
 
+  public function testItWorksWithHierarchicalCategories(): void {
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $category1 = $this->createCategory('productCat1');
+    $category1child = $this->createCategory('productCat1Child', $category1);
+    $product1 = $this->createProduct('testProduct1', [$category1child]);
+    $orderId1 = $this->createOrder($customerId1, Carbon::now());
+    $this->addToOrder(1, $orderId1, $product1, $customerId1);
+    $segmentFilterData = $this->getSegmentFilterData([$category1], DynamicSegmentFilterData::OPERATOR_ANY);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
+    $expectedEmails = ['customer1@example.com'];
+    $this->assertEqualsCanonicalizing($expectedEmails, $emails);
+  }
+
+  public function testItWorksWithMultipleChildCategories(): void {
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $category1 = $this->createCategory('productCat1');
+    $category1child1 = $this->createCategory('productCat1Child1', $category1);
+    $category2 = $this->createCategory('productCat2');
+
+    $product1 = $this->createProduct('testProduct1', [$category1child1]);
+    $product2 = $this->createProduct('testProduct2', [$category2]);
+
+    $orderId1 = $this->createOrder($customerId1, Carbon::now());
+    $this->addToOrder(1, $orderId1, $product1, $customerId1);
+    $orderId2 = $this->createOrder($customerId1, Carbon::now());
+    $this->addToOrder(2, $orderId2, $product2, $customerId1);
+
+    $segmentFilterData = $this->getSegmentFilterData([$category1, $category2], DynamicSegmentFilterData::OPERATOR_ALL);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCategoryFilter);
+    $expectedEmails = ['customer1@example.com'];
+    $this->assertEqualsCanonicalizing($expectedEmails, $emails);
+  }
+
   public function testItRetrievesLookupData(): void {
     $category1name = 'category' . rand();
     $category2name = 'category' . rand();
