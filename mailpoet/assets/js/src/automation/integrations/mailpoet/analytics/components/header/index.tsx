@@ -17,6 +17,7 @@ import {
   DeactivateNowButton,
 } from '../../../../../editor/components/header';
 import { TrashButton } from '../../../../../editor/components/actions/trash-button';
+import { EditorNotices } from '../../../../../editor/components/notices';
 
 export function Header(): JSX.Element {
   const { automation } = useSelect((s) => ({
@@ -25,6 +26,7 @@ export function Header(): JSX.Element {
   return (
     <header className="mailpoet-analytics-header">
       <Filter />
+      <EditorNotices />
       <Dropdown
         focusOnMount={false}
         popoverProps={{ placement: 'bottom-end' }}
