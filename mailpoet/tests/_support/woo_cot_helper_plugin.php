@@ -48,3 +48,8 @@ function mailpoet_create_cot() {
 if (class_exists(WP_CLI::class)) {
   WP_CLI::add_command('create_cot', 'mailpoet_create_cot');
 }
+
+// Related PR in WooCommerce: https://github.com/woocommerce/woocommerce/pull/39988
+// Sometimes during tests can happen that orders are out of sync. This state can trigger and exception
+// The following filter avoids this state
+add_filter('wc_allow_changing_orders_storage_while_sync_is_pending', '__return_true');
