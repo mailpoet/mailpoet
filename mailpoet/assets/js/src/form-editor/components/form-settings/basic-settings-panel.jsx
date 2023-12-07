@@ -26,10 +26,7 @@ function BasicSettingsPanel({ onToggle, isOpened }) {
     [],
   );
 
-  const pages = useSelect(
-    (select) => select(storeName).getAllAvailablePages(),
-    [],
-  );
+  const pages = useSelect((select) => select(storeName).getAllWPPages(), []);
 
   const missingListError = useSelect(
     (select) => select(storeName).getNotice('missing-lists'),
@@ -147,7 +144,7 @@ function BasicSettingsPanel({ onToggle, isOpened }) {
             value={settings.success_page}
             options={pages.map((page) => ({
               value: page.id.toString(),
-              label: page.title,
+              label: page.name,
             }))}
             onChange={onSuccessPageChange}
           />
