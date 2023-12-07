@@ -15,36 +15,6 @@ declare module '@wordpress/block-editor' {
   }>;
 }
 
-// We need to use code/editor store but types are not available yet
-declare module '@wordpress/editor' {
-  import * as editorActions from '@wordpress/editor/store/actions';
-  import * as editorSelectors from '@wordpress/editor/store/selectors';
-  import { StoreDescriptor as GenericStoreDescriptor } from '@wordpress/data/build-types/types';
-
-  export * from '@wordpress/editor/index';
-
-  export const store: { name: 'core/editor' } & GenericStoreDescriptor<{
-    reducer: () => unknown;
-    actions: typeof editorActions;
-    selectors: typeof editorSelectors;
-  }>;
-}
-
-// We need to use code/edit-post store but types are not available yet
-declare module '@wordpress/edit-post' {
-  import * as editPostActions from '@wordpress/edit-post/store/actions';
-  import * as editPostSelectors from '@wordpress/edit-post/store/selectors';
-  import { StoreDescriptor as GenericStoreDescriptor } from '@wordpress/data/build-types/types';
-
-  export * from '@wordpress/edit-post/index';
-
-  export const store: { name: 'core/edit-post' } & GenericStoreDescriptor<{
-    reducer: () => unknown;
-    actions: typeof editPostActions;
-    selectors: typeof editPostSelectors;
-  }>;
-}
-
 // there are no @types/wordpress__interface yet
 declare module '@wordpress/interface' {
   import { StoreDescriptor } from '@wordpress/data/build-types/types';
