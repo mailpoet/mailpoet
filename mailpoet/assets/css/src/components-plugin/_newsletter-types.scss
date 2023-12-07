@@ -47,6 +47,8 @@
   flex-grow: 1;
 
   .mailpoet-h4 {
+    display: flex;
+    gap: 4px;
     margin: 0;
   }
 
@@ -89,6 +91,18 @@
       box-shadow: none;
     }
   }
+}
+
+.mailpoet-newsletter-type-info {
+  cursor: pointer;
+}
+
+.mailpoet-newsletter-type-info-tooltip {
+  height: auto;
+  max-width: 270px;
+  text-align: start;
+  white-space: normal;
+  width: max-content;
 }
 
 .mailpoet-re-engagement-scheduling-note {
