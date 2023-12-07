@@ -1,5 +1,7 @@
-import { ColorPalette, FontSizePicker } from '@wordpress/components';
 import { ComponentPropsWithoutRef } from 'react';
+import { Color } from '@wordpress/components/build-types/palette-edit/types';
+import { FontSize } from '@wordpress/components/build-types/font-size-picker/types';
+
 import { FormTokenFieldProps } from '@wordpress/components/build-types/form-token-field/types';
 // eslint-disable-next-line import/no-named-default
 import { default as WPPopover } from '@wordpress/components/build-types/popover';
@@ -165,10 +167,8 @@ declare module '@wordpress/block-editor' {
 
   // types for 'useSetting' are missing in @types/wordpress__block-editor
   export function useSetting(path: string): unknown;
-  export function useSetting(path: 'color.palette'): ColorPalette.Color[];
-  export function useSetting(
-    path: 'typography.fontSizes',
-  ): FontSizePicker.FontSize[];
+  export function useSetting(path: 'color.palette'): Color[];
+  export function useSetting(path: 'typography.fontSizes'): FontSize[];
 
   // types for 'gradients' are missing in @types/wordpress__block-editor
   export interface EditorSettings {
