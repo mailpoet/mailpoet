@@ -19,7 +19,7 @@ import { FontFamilySettings } from '../font-family-settings';
 import { storeName } from '../../store';
 
 type StylesSettingsPanelProps = {
-  onToggle: PanelBody.Props['onToggle'];
+  onToggle: (next: boolean) => void;
   isOpened: boolean;
 };
 
