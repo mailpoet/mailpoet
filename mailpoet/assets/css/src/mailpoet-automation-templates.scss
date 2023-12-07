@@ -108,6 +108,18 @@
   }
 }
 
+.mailpoet-automation-template-detail-preview-error {
+  color: #a7aaad;
+  display: grid;
+  gap: 12px;
+  margin: auto;
+  text-align: center;
+
+  svg {
+    fill: currentColor;
+  }
+}
+
 .mailpoet-automation-template-detail-footer {
   align-items: center;
   border-top: 1px solid #dcdcde;
