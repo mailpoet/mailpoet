@@ -17,26 +17,17 @@ import { FormTitle } from '../form-title';
 import { storeName } from '../../store';
 
 function BasicSettingsPanel({ onToggle, isOpened }) {
-  const settings = useSelect(
-    (select) => select(storeName).getFormSettings(),
-    [],
-  );
-  const segments = useSelect(
-    (select) => select(storeName).getAllAvailableSegments(),
-    [],
-  );
-
-  const pages = useSelect((select) => select(storeName).getAllWPPages(), []);
-
-  const missingListError = useSelect(
-    (select) => select(storeName).getNotice('missing-lists'),
-    [],
-  );
-
-  const isFormEnabled = useSelect(
-    (select) => select(storeName).isFormEnabled(),
-    [],
-  );
+  const { settings, segments, pages, missingListError, isFormEnabled } =
+    useSelect(
+      (select) => ({
+        settings: select(storeName).getFormSettings(),
+        segments: select(storeName).getAllAvailableSegments(),
+        pages: select(storeName).getAllWPPages(),
+        missingListError: select(storeName).getNotice('missing-lists'),
+        isFormEnabled: select(storeName).isFormEnabled(),
+      }),
+      [],
+    );
 
   const { changeFormSettings, toggleForm } = useDispatch(storeName);
 
