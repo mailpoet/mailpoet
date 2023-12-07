@@ -2,7 +2,6 @@ import { useMemo, useRef } from 'react';
 import {
   __unstableComposite as Composite,
   __unstableUseCompositeState as useCompositeState,
-  Popover,
   SlotFillProvider,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -71,7 +70,6 @@ export function Automation({
                 <Flow stepData={automationData.steps.root} row={0} />
               </div>
               <div />
-              <Popover.Slot />
             </div>
             <InserterPopover />
           </Composite>

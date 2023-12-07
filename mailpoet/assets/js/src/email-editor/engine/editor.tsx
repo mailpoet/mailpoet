@@ -1,7 +1,7 @@
 import '@wordpress/format-library'; // Enables text formatting capabilities
 import { useSelect } from '@wordpress/data';
 import { StrictMode, createRoot } from '@wordpress/element';
-import { Popover, SlotFillProvider } from '@wordpress/components';
+import { SlotFillProvider } from '@wordpress/components';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import { EntityProvider } from '@wordpress/core-data';
 import { initBlocks } from './blocks';
@@ -26,7 +26,6 @@ function Editor() {
           <KeyboardShortcuts />
           <EntityProvider kind="postType" type="mailpoet_email" id={postId}>
             <BlockEditor />
-            <Popover.Slot />
           </EntityProvider>
         </SlotFillProvider>
       </ShortcutProvider>
