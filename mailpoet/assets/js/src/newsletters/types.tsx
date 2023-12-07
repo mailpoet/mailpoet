@@ -12,6 +12,7 @@ import { modalCloseIcon } from 'common/modal/close-icon';
 import { EditorSelectModal } from 'newsletters/editor-select-modal';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { APIErrorsNotice } from '../notices/api-errors-notice';
+import { Info } from './types/info';
 
 interface Props {
   filter?: () => void;
@@ -244,7 +245,17 @@ function NewsletterTypesComponent({
       ? getRedirectToAutomateWooType()
       : {
           slug: 'automations',
-          title: __('Automations', 'mailpoet'),
+          title: (
+            <>
+              {__('Automations', 'mailpoet')}{' '}
+              <Info>
+                {__(
+                  'Automations such as Welcome emails and WooCommerce emails can be found here, alongside more automation templates powered by our new editor.',
+                  'mailpoet',
+                )}
+              </Info>
+            </>
+          ),
           description: __(
             'Set up automated emails like welcome emails, abandoned cart reminders or one of our many automation templates to inform, engage and reward your audience.',
             'mailpoet',
