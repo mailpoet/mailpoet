@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { createRoot } from 'react-dom/client';
 import {
   HashRouter,
@@ -10,7 +9,6 @@ import {
 import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
 
-import { Listings } from 'newsletters/automatic-emails/listings.jsx';
 import { MailPoet } from 'mailpoet';
 import { NewsletterTypes } from 'newsletters/types';
 import { NewsletterTemplates } from 'newsletters/templates.jsx';
@@ -23,7 +21,6 @@ import { NewsletterTypeReEngagement } from 'newsletters/types/re-engagement/re-e
 import { AutomaticEmailEventsList } from 'newsletters/types/automatic-emails/events-list.jsx';
 import { EventsConditions } from 'newsletters/automatic-emails/events-conditions.jsx';
 import { NewsletterListStandard } from 'newsletters/listings/standard.jsx';
-import { NewsletterListWelcome } from 'newsletters/listings/welcome.jsx';
 import { NewsletterListNotification } from 'newsletters/listings/notification.jsx';
 import { NewsletterListReEngagement } from 'newsletters/listings/re-engagement.jsx';
 import { NewsletterListNotificationHistory } from 'newsletters/listings/notification-history.jsx';
@@ -39,8 +36,6 @@ import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional-ema
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { CampaignStatsPage } from './campaign-stats/page';
 import { CorruptEmailNotice } from '../notices/corrupt-email-notice';
-
-const automaticEmails = window.mailpoet_woocommerce_automatic_emails || [];
 
 const trackTabSwitch = (tabKey) =>
   MailPoet.trackEvent(`Tab Emails > ${tabKey} clicked`);
@@ -70,14 +65,6 @@ const Tabs = withNpsPoll(() => {
           <NewsletterListStandard />
         </Tab>
         <Tab
-          key="welcome"
-          route="welcome/(.*)?"
-          title={__('Welcome Emails', 'mailpoet')}
-          automationId={`tab-${__('Welcome Emails', 'mailpoet')}`}
-        >
-          <NewsletterListWelcome />
-        </Tab>
-        <Tab
           key="notification"
           route="notification/(.*)?"
           title={__('Post Notifications', 'mailpoet')}
@@ -97,18 +84,6 @@ const Tabs = withNpsPoll(() => {
         >
           <NewsletterListReEngagement />
         </Tab>
-        {window.mailpoet_woocommerce_active &&
-          !MailPoet.hideAutomations &&
-          _.map(automaticEmails, (email) => (
-            <Tab
-              key={email.slug}
-              route={`${email.slug}/(.*)?`}
-              title={email.title}
-              automationId={`tab-${email.title}`}
-            >
-              <Listings />
-            </Tab>
-          ))}
       </RoutedTabs>
     </>
   );
