@@ -1,9 +1,10 @@
-import { SelectControl } from '@wordpress/components';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { SelectControlProps } from '@wordpress/components/build-types/select-control/types';
 
-export type DelayTypes = SelectControl.Option & {
+export type DelayTypes = SelectControlProps['options'][number] & {
   subtitle: (value: number) => string;
 };
+
 export const DelayTypeOptions: DelayTypes[] = [
   {
     label: __('Minutes', 'mailpoet'),
