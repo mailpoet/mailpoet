@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import { createRoot } from 'react-dom/client';
 import { useEffect, useState } from 'react';
-import { Button, Icon, Popover, SlotFillProvider } from '@wordpress/components';
+import { Button, Icon, SlotFillProvider } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
 import { dispatch, select as globalSelect, useSelect } from '@wordpress/data';
 import { getSettings, setSettings } from '@wordpress/date';
@@ -167,7 +167,6 @@ function Editor(): JSX.Element {
           }
         />
         {isActivationPanelOpened && <ActivatePanel />}
-        <Popover.Slot />
       </SlotFillProvider>
     </ShortcutProvider>
   );

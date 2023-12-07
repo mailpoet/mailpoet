@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
-import { Popover, SlotFillProvider } from '@wordpress/components';
+import { SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { registerTranslations } from 'common';
 import { initializeApi } from './api';
@@ -82,7 +82,6 @@ function App(): JSX.Element {
     <SlotFillProvider>
       <BrowserRouter>
         <Automations />
-        <Popover.Slot />
       </BrowserRouter>
     </SlotFillProvider>
   );
