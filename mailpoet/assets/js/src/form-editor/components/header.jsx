@@ -38,7 +38,7 @@ function Header({ isInserterOpened, setIsInserterOpened }) {
     <div className="edit-post-header">
       <div className="edit-post-header__settings">
         <Button
-          isSecondary
+          variant="secondary"
           onClick={showPreview}
           isPressed={isPreview}
           className="mailpoet-preview-button"
@@ -47,7 +47,7 @@ function Header({ isInserterOpened, setIsInserterOpened }) {
           {__('Preview')}
         </Button>
         <Button
-          isPrimary
+          variant="primary"
           className="editor-post-publish-button"
           data-automation-id="form_save_button"
           isBusy={isFormSaving}
@@ -90,7 +90,7 @@ function Header({ isInserterOpened, setIsInserterOpened }) {
       <div className="edit-post-header__toolbar">
         <div className="toolbar edit-post-header-toolbar edit-post-header-toolbar__left">
           <Button
-            isSecondary
+            variant="secondary"
             href="?page=mailpoet-forms#/"
             className="mailpoet-editor-header-button"
           >

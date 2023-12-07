@@ -36,7 +36,7 @@ export function Header(): JSX.Element {
               href={addQueryArgs(MailPoet.urls.automationEditor, {
                 id: automation.id,
               })}
-              isPrimary
+              variant="primary"
             >
               {__('Edit automation', 'mailpoet')}
             </Button>

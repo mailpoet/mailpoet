@@ -137,7 +137,7 @@ function InputStylesSettings({ styles, onChange }: InputStylesSettingsProps) {
           ) : null}
           <div>
             <Button
-              isPrimary
+              variant="primary"
               onClick={() => applyStylesToAllTextInputs(localStyles)}
               data-automation-id="styles_apply_to_all"
             >

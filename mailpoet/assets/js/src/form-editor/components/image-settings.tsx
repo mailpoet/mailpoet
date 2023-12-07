@@ -32,7 +32,7 @@ export function ImageSettings({
           }
           allowedTypes={['image']}
           render={({ open }): JSX.Element => (
-            <Button isSecondary isSmall onClick={open}>
+            <Button variant="secondary" size="small" onClick={open}>
               {MailPoet.I18n.t('formSettingsStylesSelectImage')}
             </Button>
           )}

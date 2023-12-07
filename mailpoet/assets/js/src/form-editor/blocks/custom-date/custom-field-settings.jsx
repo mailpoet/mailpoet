@@ -110,7 +110,7 @@ function CustomFieldSettings({
       {createDateFormatsSelect()}
       {onSave ? (
         <Button
-          isPrimary
+          variant="primary"
           onClick={() =>
             onSave({
               mandatory: localMandatory,
