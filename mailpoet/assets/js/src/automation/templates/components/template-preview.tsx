@@ -36,25 +36,32 @@ type Props = {
 };
 
 export function TemplatePreview({ template }: Props): JSX.Element {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [state, setState] = useState<'loading' | 'loaded' | 'error'>('loading');
 
   useEffect(() => {
     const controller = new AbortController();
     const loadTemplate = async () => {
-      setIsLoaded(false);
+      setState('loading');
 
       initializeHooks();
       createStore();
       initializeIntegrations();
 
-      const data = await apiFetch<{ data: { automation: unknown } }>({
-        path: `/automation-templates/${template.slug}`,
-        method: 'GET',
-        signal: controller.signal,
-      });
-      dispatch(storeName).updateAutomation(data.data.automation);
-      setIsLoaded(true);
+      try {
+        const data = await apiFetch<{ data: { automation: unknown } }>({
+          path: `/automation-templates/${template.slug}`,
+          method: 'GET',
+          signal: controller.signal,
+        });
+        dispatch(storeName).updateAutomation(data.data.automation);
+        setState('loaded');
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setState('error');
+        }
+      }
     };
+
     void loadTemplate();
 
     return () => {
@@ -63,7 +70,7 @@ export function TemplatePreview({ template }: Props): JSX.Element {
     };
   }, [template.slug]);
 
-  return isLoaded ? (
+  return state === 'loaded' ? (
     <Automation context="view" showStatistics={false} />
   ) : (
     <div className="mailpoet-automation-template-detail-preview-spinner">
