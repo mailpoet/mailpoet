@@ -66,7 +66,10 @@ export function SegmentTemplates(): JSX.Element {
           />
         }
       >
-        <SearchControl label={__('Search segment templates', 'mailpoet')} />
+        <SearchControl
+          label={__('Search segment templates', 'mailpoet')}
+          onChange={() => null}
+        />
         <Button
           variant="secondary"
           href={`#${ROUTES.NEW_DYNAMIC_SEGMENT}`}
