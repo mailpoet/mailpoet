@@ -6,14 +6,12 @@ import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
 import _ from 'underscore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { AutomaticEmailEventGroupLogos } from 'newsletters/types/automatic-emails/event-group-logos.jsx';
 import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
 import { modalCloseIcon } from 'common/modal/close-icon';
 import { EditorSelectModal } from 'newsletters/editor-select-modal';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { APIErrorsNotice } from '../notices/api-errors-notice';
-import { isErrorResponse } from '../ajax';
 
 interface Props {
   filter?: () => void;
@@ -42,34 +40,6 @@ function NewsletterTypesComponent({
         'Email type': type,
       });
     }
-  };
-
-  const openWooCommerceCustomizer = async (): Promise<JSX.Element> => {
-    MailPoet.trackEvent('Emails > Type selected', {
-      'Email type': 'wc_transactional',
-    });
-    let emailId = window.mailpoet_woocommerce_transactional_email_id;
-    if (!emailId) {
-      try {
-        const response = await MailPoet.Ajax.post({
-          api_version: MailPoet.apiVersion,
-          endpoint: 'settings',
-          action: 'set',
-          data: {
-            'woocommerce.use_mailpoet_editor': 1,
-          },
-        });
-        emailId = response.data.woocommerce.transactional_email_id;
-        MailPoet.trackEvent('Emails > WooCommerce email customizer enabled');
-      } catch (response) {
-        if (isErrorResponse(response) && response.errors.length > 0) {
-          return <APIErrorsNotice errors={response.errors} />;
-        }
-        return null;
-      }
-    }
-    window.location.href = `?page=mailpoet-newsletter-editor&id=${emailId}`;
-    return null;
   };
 
   const renderType = (type): JSX.Element => {
@@ -155,45 +125,6 @@ function NewsletterTypesComponent({
         </Button>
       ),
     };
-  };
-
-  const getAdditionalTypes = (): Record<string, unknown>[] => {
-    const show = MailPoet.isWoocommerceActive;
-    if (!show) {
-      return [];
-    }
-    const additionalTypes = [
-      {
-        slug: 'wc_transactional',
-        title: __('WooCommerce Emails Customizer', 'mailpoet'),
-        description: __(
-          "Customize the template used for your WooCommerce emails using MailPoet's editor. Example of WooCommerce email: Order processing notification, Order failed notification, ...",
-          'mailpoet',
-        ),
-        action: (
-          <Button
-            automationId="customize_woocommerce"
-            onClick={openWooCommerceCustomizer}
-            tabIndex={0}
-            onKeyDown={async (event): Promise<void> => {
-              if (
-                ['keydown', 'keypress'].includes(event.type) &&
-                ['Enter', ' '].includes(event.key)
-              ) {
-                event.preventDefault();
-                await openWooCommerceCustomizer();
-              }
-            }}
-          >
-            {__('Customize', 'mailpoet')}
-          </Button>
-        ),
-      },
-    ];
-    if (MailPoet.hideAutomations) {
-      additionalTypes.push(getRedirectToAutomateWooType());
-    }
-    return additionalTypes;
   };
 
   const createNewsletter = (type): void => {
@@ -309,33 +240,35 @@ function NewsletterTypesComponent({
       ),
       action: standardAction,
     },
-    {
-      slug: 'automations',
-      title: __('Automations', 'mailpoet'),
-      description: __(
-        'Set up automated emails like welcome emails, abandoned cart reminders or one of our many automation templates to inform, engage and reward your audience.',
-        'mailpoet',
-      ),
-      action: (
-        <Button
-          onClick={createAutomation}
-          automationId="create_automation"
-          withSpinner={isCreating}
-          onKeyDown={(event): void => {
-            if (
-              ['keydown', 'keypress'].includes(event.type) &&
-              ['Enter', ' '].includes(event.key)
-            ) {
-              event.preventDefault();
-              createAutomation();
-            }
-          }}
-          tabIndex={0}
-        >
-          {__('Set up', 'mailpoet')}
-        </Button>
-      ),
-    },
+    MailPoet.hideAutomations
+      ? getRedirectToAutomateWooType()
+      : {
+          slug: 'automations',
+          title: __('Automations', 'mailpoet'),
+          description: __(
+            'Set up automated emails like welcome emails, abandoned cart reminders or one of our many automation templates to inform, engage and reward your audience.',
+            'mailpoet',
+          ),
+          action: (
+            <Button
+              onClick={createAutomation}
+              automationId="create_automation"
+              withSpinner={isCreating}
+              onKeyDown={(event): void => {
+                if (
+                  ['keydown', 'keypress'].includes(event.type) &&
+                  ['Enter', ' '].includes(event.key)
+                ) {
+                  event.preventDefault();
+                  createAutomation();
+                }
+              }}
+              tabIndex={0}
+            >
+              {__('Set up', 'mailpoet')}
+            </Button>
+          ),
+        },
     {
       slug: 'notification',
       title: __('Latest Post Notifications', 'mailpoet'),
@@ -432,18 +365,6 @@ function NewsletterTypesComponent({
         )}
 
         {types.map((type) => renderType(type), this)}
-
-        {!filter && (
-          <div className="mailpoet-newsletter-types-separator">
-            <div className="mailpoet-newsletter-types-separator-line" />
-            <div className="mailpoet-newsletter-types-separator-logo">
-              {AutomaticEmailEventGroupLogos.woocommerce}
-            </div>
-            <div className="mailpoet-newsletter-types-separator-line" />
-          </div>
-        )}
-
-        {getAdditionalTypes().map((type) => renderType(type), this)}
       </div>
 
       <link rel="prefetch" href={templatesGETUrl} as="fetch" />
