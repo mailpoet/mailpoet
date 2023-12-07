@@ -22,17 +22,19 @@ use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
  */
 class NewsletterEntity {
   // types
-  const TYPE_AUTOMATIC = 'automatic';
   const TYPE_AUTOMATION = 'automation';
+  const TYPE_AUTOMATION_NOTIFICATION = 'automation_notification';
   const TYPE_AUTOMATION_TRANSACTIONAL = 'automation_transactional';
   const TYPE_STANDARD = 'standard';
-  const TYPE_WELCOME = 'welcome';
   const TYPE_NOTIFICATION = 'notification';
-  const TYPE_AUTOMATION_NOTIFICATION = 'automation_notification';
   const TYPE_NOTIFICATION_HISTORY = 'notification_history';
-  const TYPE_WC_TRANSACTIONAL_EMAIL = 'wc_transactional';
   const TYPE_RE_ENGAGEMENT = 're_engagement';
+  const TYPE_WC_TRANSACTIONAL_EMAIL = 'wc_transactional';
   const TYPE_CONFIRMATION_EMAIL_CUSTOMIZER = 'confirmation_email';
+
+  // legacy types, replaced by automations
+  const TYPE_AUTOMATIC = 'automatic';
+  const TYPE_WELCOME = 'welcome';
 
   // standard newsletters
   const STATUS_DRAFT = 'draft';
