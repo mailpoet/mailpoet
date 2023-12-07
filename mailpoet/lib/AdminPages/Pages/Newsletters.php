@@ -146,6 +146,10 @@ class Newsletters {
 
     $data['corrupt_newsletters'] = $this->getCorruptNewsletterSubjects();
 
+    $data['legacy_automatic_emails_count'] = $this->newslettersRepository->countBy([
+      'type' => [NewsletterEntity::TYPE_WELCOME, NewsletterEntity::TYPE_AUTOMATIC],
+    ]);
+
     $this->pageRenderer->displayPage('newsletters.html', $data);
   }
 

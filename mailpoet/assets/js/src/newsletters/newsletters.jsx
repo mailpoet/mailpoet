@@ -34,6 +34,7 @@ import { TransactionalEmailsProposeOptInNotice } from 'notices/transactional-ema
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { CampaignStatsPage } from './campaign-stats/page';
 import { CorruptEmailNotice } from '../notices/corrupt-email-notice';
+import { LegacyAutomaticEmailsNotice } from '../notices/legacy-automatic-emails-notice';
 
 const trackTabSwitch = (tabKey) =>
   MailPoet.trackEvent(`Tab Emails > ${tabKey} clicked`);
@@ -45,6 +46,9 @@ const Tabs = withNpsPoll(() => {
       <ListingHeadingDisplay>
         <ListingHeading />
       </ListingHeadingDisplay>
+      {window.mailpoet_legacy_automatic_emails_count > 0 && (
+        <LegacyAutomaticEmailsNotice />
+      )}
       {MailPoet.corrupt_newsletters.length > 0 && (
         <CorruptEmailNotice newsletters={MailPoet.corrupt_newsletters} />
       )}
