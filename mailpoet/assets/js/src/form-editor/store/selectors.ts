@@ -61,12 +61,6 @@ export const selectors = {
   getAllAvailableCustomFields(state: State) {
     return state.customFields;
   },
-  getAllAvailablePages(state: State) {
-    return state.allWpPages.map((page) => ({
-      id: page.id,
-      title: page.name,
-    }));
-  },
   getIsFormSaving(state: State) {
     return state.isFormSaving;
   },
