@@ -8,6 +8,7 @@ import { useDispatch } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
+import { createInterpolateElement } from '@wordpress/element';
 import classnames from 'classnames';
 import { storeName } from '../../store';
 
@@ -112,13 +113,25 @@ export function DetailsPanel() {
       />
       <div className="mailpoet-settings-panel__help">
         <Text>
-          {__(
-            'This text will appear in the inbox, underneath the subject line.',
-            'mailpoet',
-          )}{' '}
-          {__(
-            'We recommend to keep it short, and to use it to complement the subject line.',
-            'mailpoet',
+          {createInterpolateElement(
+            __(
+              '<link>This text</link> will appear in the inbox, underneath the subject line.',
+              'mailpoet',
+            ),
+            {
+              link: (
+                // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+                <a
+                  href={new URL(
+                    'article/418-preview-text',
+                    'https://kb.mailpoet.com/',
+                  ).toString()}
+                  key="preview-text-kb"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              ),
+            },
           )}
         </Text>
       </div>
