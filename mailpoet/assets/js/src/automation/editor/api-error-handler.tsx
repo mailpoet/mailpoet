@@ -15,6 +15,11 @@ export const registerApiErrorHandler = (): void =>
         const result = await next(options);
         return result;
       } catch (error) {
+        // do not report aborted requests as errors
+        if (options.signal.aborted) {
+          return undefined;
+        }
+
         const errorObject = error as ApiError;
         const status = errorObject.data?.status;
         const code = errorObject.code;
