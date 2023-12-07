@@ -1,7 +1,5 @@
-import { ComponentProps, ComponentPropsWithoutRef, ComponentType } from 'react';
 import { ColorPalette, FontSizePicker } from '@wordpress/components';
-import { ConfirmDialog } from '@wordpress/components/build-types/confirm-dialog';
-import { NumberControl } from '@wordpress/components/build-types/number-control';
+import { ComponentPropsWithoutRef } from 'react';
 import { FormTokenFieldProps } from '@wordpress/components/build-types/form-token-field/types';
 // eslint-disable-next-line import/no-named-default
 import { default as WPPopover } from '@wordpress/components/build-types/popover';
@@ -36,14 +34,6 @@ import './wordpress-modules';
 export * from '../segments/dynamic/types';
 
 declare module '@wordpress/components' {
-  export const __experimentalConfirmDialog: ComponentType<
-    ComponentProps<typeof ConfirmDialog>
-  >;
-
-  export const __experimentalNumberControl: ComponentType<
-    ComponentProps<typeof NumberControl>
-  >;
-
   // New property for declaring forward compatibility is not set on types
   // eslint-disable-next-line @typescript-eslint/no-shadow,@typescript-eslint/no-namespace
   export namespace CustomSelectControl {
@@ -88,14 +78,10 @@ declare module '@wordpress/components' {
     }
   }
 
-  export const __experimentalText: any;
   export const __unstableComposite: typeof Composite;
   export const __unstableCompositeGroup: typeof CompositeGroup;
   export const __unstableCompositeItem: typeof CompositeItem;
   export const __unstableUseCompositeState: typeof useCompositeState;
-
-  export const SearchControl: any;
-  export const ToolbarItem: any;
 }
 
 // fix and improve some @wordpress/data types
