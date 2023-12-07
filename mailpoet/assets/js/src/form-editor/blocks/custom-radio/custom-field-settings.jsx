@@ -88,7 +88,7 @@ function CustomFieldSettings({
         useDragAndDrop={useDragAndDrop}
       />
       <Button
-        isLink
+        variant="link"
         onClick={() =>
           setLocalValues([
             ...localValues,
@@ -106,7 +106,7 @@ function CustomFieldSettings({
       <br />
       {onSave ? (
         <Button
-          isPrimary
+          variant="primary"
           onClick={() =>
             onSave({
               mandatory: localMandatory,

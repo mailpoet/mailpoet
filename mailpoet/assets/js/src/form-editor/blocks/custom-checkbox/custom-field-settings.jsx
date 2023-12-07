@@ -76,7 +76,7 @@ function CustomFieldSettings({
       </BaseControl>
       {onSave ? (
         <Button
-          isPrimary
+          variant="primary"
           onClick={() => onSave(localData)}
           isBusy={isSaving}
           disabled={isSaving || !hasUnsavedChanges}

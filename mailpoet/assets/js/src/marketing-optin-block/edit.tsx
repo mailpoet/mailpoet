@@ -31,7 +31,7 @@ function EmptyState(): JSX.Element {
         )}
       </span>
       <Button
-        isPrimary
+        variant="primary"
         href={`${adminUrl}admin.php?page=mailpoet-settings#/woocommerce`}
         target="_blank"
         rel="noopener noreferrer"

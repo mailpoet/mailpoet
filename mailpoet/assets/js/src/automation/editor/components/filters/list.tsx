@@ -69,7 +69,7 @@ export function FiltersList({
           {isEditable && (
             <Button
               className="mailpoet-automation-filters-list-item-remove"
-              isSmall
+              size="small"
               onClick={() => setShowPremiumModal(true)}
             >
               <Icon icon={closeSmall} />

@@ -138,7 +138,7 @@ function AddCustomFieldForm({ dateSettings, onSubmit }) {
       <hr />
       {renderSettingsForType()}
       <Button
-        isSecondary
+        variant="secondary"
         disabled={!canSubmit}
         data-automation-id="create_custom_field_submit"
         onClick={() => {
