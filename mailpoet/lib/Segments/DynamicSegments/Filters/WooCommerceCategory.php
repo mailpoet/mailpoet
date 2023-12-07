@@ -60,7 +60,7 @@ class WooCommerceCategory implements Filter {
       $this->applyTermTaxonomyJoin($queryBuilder, $parameterSuffix);
 
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
-      $subQueries = [];
+      $subQueryCount = 1;
       foreach ($categoryIds as $categoryId) {
         $uniqueParamaterSuffix = Security::generateRandomString();
         $categoryIdWithChildrenIds = $this->getCategoriesWithChildren([$categoryId]);
@@ -70,10 +70,15 @@ class WooCommerceCategory implements Filter {
         $this->applyTermRelationshipsJoin($subQuery);
         $this->applyTermTaxonomyJoin($subQuery, $uniqueParamaterSuffix);
         $subQuery->setParameter("category_$uniqueParamaterSuffix", $categoryIdWithChildrenIds, Connection::PARAM_STR_ARRAY);
-        $subQueries[] = $this->filterHelper->getInterpolatedSQL($subQuery);
+        $alias = sprintf("subQuery%s", $subQueryCount);
+        $queryBuilder->innerJoin(
+          $subscribersTable,
+          sprintf("(%s)", $this->filterHelper->getInterpolatedSQL($subQuery)),
+          $alias,
+          "$subscribersTable.id = $alias.id"
+        );
+        $subQueryCount++;
       }
-      $combinedSubqueries = implode(' INTERSECT ', $subQueries);
-      $queryBuilder->where("$subscribersTable.id IN ($combinedSubqueries)");
     } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
       // subQuery with subscriber ids that bought products
       $subQuery = $this->createQueryBuilder($subscribersTable);
