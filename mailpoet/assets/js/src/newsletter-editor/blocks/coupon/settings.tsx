@@ -1,7 +1,7 @@
-import { SelectControl } from '@wordpress/components';
 import { ErrorBoundary } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { useState } from 'react';
+import { SelectControlProps } from '@wordpress/components/build-types/select-control/types';
 import { ExistingCoupons } from './existing-coupons';
 import { General } from './general';
 import { SettingsHeader, SettingsTabs } from './settings-header';
@@ -10,7 +10,7 @@ import { UsageRestriction } from './usage-restriction';
 import { UsageLimits } from './usage-limits';
 
 type Props = {
-  availableDiscountTypes: SelectControl.Option[];
+  availableDiscountTypes: SelectControlProps['options'];
   getValueCallback: GetValueCallback;
   setValueCallback: SetValueCallback;
   priceDecimalSeparator: string;

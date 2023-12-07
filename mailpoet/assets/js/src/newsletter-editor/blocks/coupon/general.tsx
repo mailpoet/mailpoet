@@ -9,10 +9,11 @@ import {
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import jQuery from 'jquery';
+import { SelectControlProps } from '@wordpress/components/build-types/select-control/types';
 import { GetValueCallback, SetValueCallback } from './types';
 
 type Props = {
-  availableDiscountTypes: SelectControl.Option[];
+  availableDiscountTypes: SelectControlProps['options'];
   getValueCallback: GetValueCallback;
   setValueCallback: SetValueCallback;
 };
@@ -26,7 +27,7 @@ type State = {
 };
 
 class General extends Component<Props, State> {
-  private readonly availableDiscountTypes: SelectControl.Option[];
+  private readonly availableDiscountTypes: SelectControlProps['options'];
 
   private readonly getValueCallback: GetValueCallback;
 
