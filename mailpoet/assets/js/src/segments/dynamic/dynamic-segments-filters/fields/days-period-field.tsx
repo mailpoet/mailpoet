@@ -84,5 +84,6 @@ export function validateDaysPeriod(formItems: DaysPeriodItem): boolean {
   if (formItems.timeframe === Timeframe.ALL_TIME) {
     return true;
   }
-  return !!formItems.days;
+  const days = parseInt(formItems.days, 10);
+  return days >= 1;
 }
