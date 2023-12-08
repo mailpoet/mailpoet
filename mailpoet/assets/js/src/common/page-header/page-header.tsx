@@ -1,12 +1,5 @@
-import { ComponentType, ReactNode } from 'react';
-import { Flex as WpFlex, FlexBlock } from '@wordpress/components';
-
-// direction is typed as string but supports string[], which is needed to make the component responsive
-const Flex = WpFlex as ComponentType<
-  Omit<WpFlex.Props, 'direction'> & {
-    direction: WpFlex.Props['direction'] | WpFlex.Props['direction'][];
-  }
->;
+import { ReactNode } from 'react';
+import { Flex, FlexBlock } from '@wordpress/components';
 
 type Props = {
   heading: ReactNode;

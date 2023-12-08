@@ -1,8 +1,9 @@
 import { FormTokenField } from '@wordpress/components';
 import { find, last, slice } from 'lodash';
+import { TokenItem } from '@wordpress/components/build-types/form-token-field/types';
 
 type Event = {
-  value: readonly FormTokenField.Value[] | string[];
+  value: readonly (string | TokenItem)[];
   name: string;
 };
 
@@ -12,8 +13,8 @@ export type TokenFieldProps = {
   name?: string;
   placeholder?: string;
   onChange: (event: Event) => void;
-  selectedValues?: FormTokenField.Value[] | [];
-  suggestedValues?: readonly string[];
+  selectedValues?: (string | TokenItem)[];
+  suggestedValues?: string[];
 };
 
 export function TokenField({
@@ -34,7 +35,7 @@ export function TokenField({
   };
 
   const handleSave = (
-    tokens: readonly FormTokenField.Value[],
+    tokens: readonly (string | TokenItem)[],
     onChangeCallback,
   ) => {
     // Check if the newest value is already in tokens
