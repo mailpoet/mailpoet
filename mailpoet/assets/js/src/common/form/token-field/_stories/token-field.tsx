@@ -1,5 +1,4 @@
 import { action } from '_storybook/action';
-import { FormTokenField } from '@wordpress/components';
 import { TokenField } from '../token-field';
 import { Heading } from '../../../typography/heading/heading';
 import { Grid } from '../../../grid';
@@ -11,7 +10,7 @@ export default {
 
 const suggestedValues = ['Option 1', 'Option 3', 'Option 4'];
 
-const selectedValues: FormTokenField.Value[] = [{ value: 'Option 2' }];
+const selectedValues = [{ value: 'Option 2' }];
 
 export function TokenFields() {
   return (

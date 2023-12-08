@@ -2,7 +2,6 @@ import { ComponentPropsWithoutRef } from 'react';
 import { Color } from '@wordpress/components/build-types/palette-edit/types';
 import { FontSize } from '@wordpress/components/build-types/font-size-picker/types';
 
-import { FormTokenFieldProps } from '@wordpress/components/build-types/form-token-field/types';
 // eslint-disable-next-line import/no-named-default
 import { default as WPPopover } from '@wordpress/components/build-types/popover';
 import { store as blockEditorStore } from '@wordpress/block-editor';
@@ -53,13 +52,6 @@ declare module '@wordpress/components' {
         'children'
       >;
     }
-  }
-
-  // New properties on FormTokenField is not set in @types/wordpress__components
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  export namespace FormTokenField {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface -- There is no other usable way hot to tell define interface using other interface
-    export interface Props extends FormTokenFieldProps {}
   }
 
   // Property "delay" is missing in Tooltip props
