@@ -1,9 +1,7 @@
-import { DropdownMenu } from '@wordpress/components';
-
-import Control = DropdownMenu.Control;
+import { DropdownOption } from '@wordpress/components/build-types/dropdown-menu/types';
 
 export type Item = {
   key: string;
-  control: Control;
+  control: DropdownOption;
   slot?: JSX.Element;
 };

@@ -49,7 +49,7 @@ export function OptionButton({
               ...item.control,
               onClick: () => {
                 setIsBusy(true);
-                item.control.onClick(setIsBusy);
+                item.control.onClick();
               },
             };
 
