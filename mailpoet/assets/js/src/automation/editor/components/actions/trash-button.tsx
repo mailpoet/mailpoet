@@ -1,11 +1,15 @@
 import { useState } from 'react';
-import {
-  __experimentalConfirmDialog as ConfirmDialog,
-  Button,
-} from '@wordpress/components';
+import { __experimentalConfirmDialog, Button } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { storeName } from '../../store';
+
+// With __experimentalConfirmDialog's type from build-types Typescript complains:
+// JSX element type __experimentalConfirmDialog does not have any construct or call signatures
+// Wrapping the type to React.FC fixes the issue
+const ConfirmDialog = __experimentalConfirmDialog as React.FC<
+  React.ComponentProps<typeof __experimentalConfirmDialog>
+>;
 
 export function TrashButton({
   performActionAfterDelete = () => {},
