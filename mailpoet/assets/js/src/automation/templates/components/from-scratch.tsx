@@ -2,6 +2,7 @@ import { Dispatch, useCallback, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { Hooks } from 'wp-js-hooks';
+import { ButtonProps } from '@wordpress/components/build-types/button/types';
 import { PremiumModal } from '../../../common/premium-modal';
 import { Notice } from '../../../notices/notice';
 import { FromScratchHookType } from '../../types/filters';
@@ -42,7 +43,7 @@ function fromScratchHook(callback: () => void, errorHandler: Dispatch<string>) {
 }
 
 type FromScratchButtonProps = {
-  variant?: Button.Props['variant'];
+  variant?: ButtonProps['variant'];
 };
 
 export function FromScratchButton({
