@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "settings": {
+    "layout": {
+      "contentSize": "660px"
+    },
+    "useRootPaddingAwareAlignments": true
+  },
+  "styles": {
+    "spacing": {
+      "padding": {
+        "bottom": "10px",
+        "left": "10px",
+        "right": "10px",
+        "top": "10px"
+      }
+    }
+  }
+}
