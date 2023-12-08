@@ -95,15 +95,10 @@ export function BlockEditor() {
       width: layoutStyles.width,
       display: 'flex',
       flexFlow: 'column',
-      'box-sizing': 'border-box', // Because we want to exact email width, the padding must be included in the width.
     };
   }
   inlineStyles.background = documentBackground;
   inlineStyles.transition = 'all 0.3s ease 0s';
-  inlineStyles['padding-bottom'] = layoutStyles.padding.bottom;
-  inlineStyles['padding-left'] = layoutStyles.padding.left;
-  inlineStyles['padding-right'] = layoutStyles.padding.right;
-  inlineStyles['padding-top'] = layoutStyles.padding.top;
 
   const contentAreaStyles = {
     background:
@@ -167,7 +162,7 @@ export function BlockEditor() {
                       <WritingFlow>
                         <ObserveTyping>
                           <BlockList
-                            className="is-layout-constrained"
+                            className="is-layout-constrained has-global-padding"
                             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                             // @ts-ignore We have an older package of @wordpress/block-editor that doesn't contain the correct type
                             layout={layout}

@@ -102,9 +102,25 @@ class SettingsController {
     $coreSettings['spacing']['units'] = ['px'];
     $coreSettings['spacing']['padding'] = true;
 
+    $themeJson = (string)file_get_contents(dirname(__FILE__) . '/theme.json');
+    $themeJson = json_decode($themeJson, true);
+    /** @var array $themeJson */
+    $theme = new \WP_Theme_JSON($themeJson);
+
+    // body selector is later transformed to .editor-styles-wrapper
+    // setting padding for bottom and top is needed because \WP_Theme_JSON::get_stylesheet() set them only for .wp-site-blocks selector
+    $contentVariables = 'body {';
+    $contentVariables .= 'padding-bottom: var(--wp--style--root--padding-bottom);';
+    $contentVariables .= 'padding-top: var(--wp--style--root--padding-top);';
+    $contentVariables .= '}';
+
     $settings = array_merge($coreDefaultSettings, self::DEFAULT_SETTINGS);
     $settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
-    $settings['styles'] = [['css' => wp_get_global_stylesheet(['base-layout-styles'])]];
+    $settings['styles'] = [
+      ['css' => $theme->get_stylesheet()],
+      ['css' => $contentVariables],
+      ['css' => wp_get_global_stylesheet(['base-layout-styles'])],
+    ];
 
     $settings['__experimentalFeatures'] = $coreSettings;
 
