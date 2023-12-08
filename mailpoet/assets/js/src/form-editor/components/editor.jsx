@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import '@wordpress/core-data';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { Popover, SlotFillProvider } from '@wordpress/components';
+import { SlotFillProvider } from '@wordpress/components';
 import { uploadMedia } from '@wordpress/media-utils';
 import {
   BlockEditorKeyboardShortcuts,
@@ -170,7 +170,6 @@ export function Editor() {
                 <Fullscreen />
               </ErrorBoundary>
             </div>
-            <Popover.Slot />
           </div>
         </SlotFillProvider>
       </ShortcutProvider>
