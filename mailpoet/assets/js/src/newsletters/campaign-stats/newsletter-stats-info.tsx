@@ -4,7 +4,7 @@ import {
   Button,
   ButtonGroup,
   Dropdown,
-  MenuItem,
+  MenuItem as WpMenuItem,
   MenuGroup,
 } from '@wordpress/components';
 import { chevronDown, Icon } from '@wordpress/icons';
@@ -19,6 +19,14 @@ import {
   getNewsletterStatusString,
 } from 'common';
 import { NewsletterType } from './newsletter-type';
+
+// Menu Item type definition in @wordpress/components is missing variant and isBusy property
+const MenuItem = WpMenuItem as React.FC<
+  React.ComponentProps<typeof WpMenuItem> & {
+    variant?: string;
+    isBusy?: boolean;
+  }
+>;
 
 const redirectToNewsletterHome = () => {
   window.location.href = '?page=mailpoet-newsletters';
