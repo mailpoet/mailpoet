@@ -1,10 +1,10 @@
-import { ComponentType, useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
   __unstableComposite as Composite,
   __unstableCompositeItem as CompositeItem,
   __unstableUseCompositeState as useCompositeState,
   Button,
-  Popover as WpPopover,
+  Popover,
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { createContext } from '@wordpress/element';
@@ -17,14 +17,6 @@ import {
   stepSidebarKey,
   storeName,
 } from '../../store';
-
-// properties "offset" and "placement" are missing in WpPopover type definition
-const Popover: ComponentType<
-  WpPopover.Props & {
-    offset?: number;
-    placement?: string;
-  }
-> = WpPopover;
 
 export const ErrorsCompositeContext =
   createContext<ReturnType<typeof useCompositeState>>(undefined);
