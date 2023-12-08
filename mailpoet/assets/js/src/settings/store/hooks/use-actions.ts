@@ -1,8 +1,9 @@
+import { PromisifiedActionCreators } from '@wordpress/data/build-types/types';
 import { useDispatch } from '@wordpress/data';
 import * as actions from '../actions';
 import { STORE_NAME } from '../store-name';
 
-type Actions = typeof actions;
+type Actions = PromisifiedActionCreators<typeof actions>;
 
 export function useActions(): Actions {
   return useDispatch(STORE_NAME);
