@@ -3,18 +3,15 @@
  * filters.
  */
 
-import { ComponentType, Dispatch, ReactNode, SetStateAction } from 'react';
-import { DropdownMenu } from '@wordpress/components';
+import { ComponentType, Dispatch, ReactNode } from 'react';
+import { DropdownOption } from '@wordpress/components/build-types/dropdown-menu/types';
 import { Item } from '../editor/components/inserter/item';
 import { Filter, Step } from '../editor/components/automation/types';
 import { EditorStoreConfig } from '../editor/store';
 
-interface ControlWithSetIsBusy extends Omit<DropdownMenu.Control, 'onClick'> {
-  onClick: (setIsBusy?: Dispatch<SetStateAction<boolean>>) => void;
-}
 export type MoreControlType = {
   key: string;
-  control: ControlWithSetIsBusy;
+  control: DropdownOption;
   slot: () => JSX.Element | undefined;
 };
 
