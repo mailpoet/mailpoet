@@ -1,6 +1,6 @@
 import { useRef } from '@wordpress/element';
 import { PinnedItems } from '@wordpress/interface';
-import { Button, ToolbarItem } from '@wordpress/components';
+import { Button, ToolbarItem as WpToolbarItem } from '@wordpress/components';
 import { NavigableToolbar } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
@@ -12,6 +12,14 @@ import { PreviewDropdown } from '../preview';
 import { SaveButton } from './save-button';
 import { CampaignName } from './campaign-name';
 import { SendButton } from './send-button';
+
+// Build type for ToolbarItem contains only "as" and "children" properties but it takes all props from
+// component passed to "as" property (in this case Button). So as fix for TS errors we need to pass all props from Button to ToolbarItem.
+// We should be able to remove this fix when ToolbarItem will be fixed in Gutenberg.
+const ToolbarItem = WpToolbarItem as React.ForwardRefExoticComponent<
+  React.ComponentProps<typeof WpToolbarItem> &
+    React.ComponentProps<typeof Button>
+>;
 
 export function Header() {
   const inserterButton = useRef();
