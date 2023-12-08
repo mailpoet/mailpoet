@@ -1,4 +1,9 @@
-import { Button, ButtonGroup, Dropdown, MenuItem } from '@wordpress/components';
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  MenuItem as WpMenuItem,
+} from '@wordpress/components';
 import { ComponentType, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { chevronDown, Icon } from '@wordpress/icons';
@@ -17,6 +22,11 @@ interface Props {
   history: RouteComponentProps['history'];
   hideScreenOptions?: boolean;
 }
+
+// Menu Item type definition in @wordpress/components is missing variant property
+const MenuItem = WpMenuItem as React.FC<
+  React.ComponentProps<typeof WpMenuItem> & { variant: string }
+>;
 
 function NewsletterTypesComponent({
   filter,
