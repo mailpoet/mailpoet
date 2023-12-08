@@ -1,14 +1,13 @@
 import classnames from 'classnames';
 import { Button as WpButton } from '@wordpress/components';
+import { ButtonAsAnchorProps } from '@wordpress/components/build-types/button/types';
 
 type ExtendedProps = {
-  variant: WpButton.ButtonVariant | 'sidebar-primary';
+  variant: ButtonAsAnchorProps['variant'] | 'sidebar-primary';
   centered?: boolean;
 };
 
-type Props =
-  | (Omit<WpButton.ButtonProps, keyof ExtendedProps> & ExtendedProps)
-  | (Omit<WpButton.AnchorProps, keyof ExtendedProps> & ExtendedProps);
+type Props = Omit<ButtonAsAnchorProps, keyof ExtendedProps> & ExtendedProps;
 
 export function Button({ centered, variant, ...props }: Props): JSX.Element {
   return (
