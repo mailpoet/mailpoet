@@ -33,7 +33,7 @@ export function FiltersChip({ step, strings }: Props): JSX.Element | null {
 
   return (
     <Dropdown
-      focusOnMount="container"
+      focusOnMount
       popoverProps={{ offset: 6 }}
       renderToggle={({ onToggle, isOpen }) => (
         <Chip
