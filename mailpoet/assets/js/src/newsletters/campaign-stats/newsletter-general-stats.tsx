@@ -282,7 +282,7 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
           <a
             href={`admin.php?page=mailpoet-newsletters#/sending-status/${newsletter.id}`}
           >
-            {__('Sending stats', 'mailpoet')}
+            {__('Sending status', 'mailpoet')}
           </a>
         </p>
       </div>
