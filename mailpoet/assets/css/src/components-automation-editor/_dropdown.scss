@@ -1,3 +1,39 @@
+.mailpoet-automation-editor-edit-site-document-actions {
+  background: none;
+
+  &:hover {
+    background: none;
+  }
+
+  .edit-site-document-actions__title:hover {
+    color: var(--wp-admin-theme-color);
+  }
+
+  .components-dropdown {
+    align-items: center;
+    display: inline-flex;
+  }
+
+  .edit-site-document-actions__get-info {
+    min-width: 24px;
+    padding: 0;
+
+    &:hover {
+      background: none;
+      color: var(--wp-admin-theme-color);
+    }
+  }
+
+  .mailpoet-automation-editor-chip-gray {
+    padding: 0 4px;
+  }
+}
+
+.mailpoet-automation-editor-edit-site-document-actions__info-dropdown {
+  .components-popover__content {
+    min-width: 240px;
+  }
+}
 .mailpoet-automation-editor-dropdown-name-edit {
   padding: 16px;
 }
@@ -9,6 +45,15 @@
 .mailpoet-automation-editor-dropdown-toggle-link {
   display: inline-flex;
   height: fit-content;
-  margin-top: 10px;
+  padding: 6px 0;
   text-decoration: none;
+
+  &:hover {
+    background: none !important;
+  }
+
+  .edit-site-document-actions__title {
+    margin: 0 0.5em;
+    padding: 0;
+  }
 }
