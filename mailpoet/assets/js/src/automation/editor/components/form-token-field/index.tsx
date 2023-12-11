@@ -6,7 +6,7 @@ export type FormTokenItem = {
 };
 
 export type FormTokenFieldProps = Omit<
-  WpFormTokenField.Props,
+  React.ComponentProps<typeof WpFormTokenField>,
   'value' | 'suggestions' | 'onChange'
 > & {
   value: FormTokenItem[];

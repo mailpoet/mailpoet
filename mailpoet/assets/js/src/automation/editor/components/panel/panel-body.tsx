@@ -1,7 +1,7 @@
 import { PanelBody as WpPanelBody } from '@wordpress/components';
 import { useEffect, useState } from 'react';
 
-type Props = WpPanelBody.Props & {
+type Props = React.ComponentProps<typeof WpPanelBody> & {
   hasErrors?: boolean;
 };
 

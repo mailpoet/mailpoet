@@ -1,11 +1,12 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Button, DropdownMenu } from '@wordpress/components';
+import { ButtonProps } from '@wordpress/components/build-types/button/types';
 import { chevronDown } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { StepMoreControlsType } from '../../types/filters';
 
 type OptionButtonPropType = {
-  variant: Button.ButtonVariant;
+  variant: ButtonProps['variant'];
   controls: StepMoreControlsType;
   title: string;
   onClick: (setIsBusy: Dispatch<SetStateAction<boolean>>) => void;
