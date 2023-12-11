@@ -22,13 +22,22 @@ class TopLevelPreprocessor implements Preprocessor {
     $wrappedParsedBlocks = [];
     $nonColumnsBlocksBuffer = [];
     foreach ($parsedBlocks as $block) {
+      $blockAlignment = $block['attrs']['align'] ?? null;
       // The next block is columns so we can flush the buffer and add the columns block
-      if ($block['blockName'] === 'core/columns') {
+      if ($block['blockName'] === 'core/columns' || $blockAlignment === 'full') {
         if ($nonColumnsBlocksBuffer) {
           $columnsBlock = self::SINGLE_COLUMN_TEMPLATE;
           $columnsBlock['innerBlocks'][0]['innerBlocks'] = $nonColumnsBlocksBuffer;
           $nonColumnsBlocksBuffer = [];
           $wrappedParsedBlocks[] = $columnsBlock;
+        }
+        // If the block is full width and is not core/columns, we need to wrap it in a single column block, and it the columns block has to contain only the block
+        if ($blockAlignment === 'full' && $block['blockName'] !== 'core/columns') {
+          $columnsBlock = self::SINGLE_COLUMN_TEMPLATE;
+          $columnsBlock['attrs']['align'] = 'full';
+          $columnsBlock['innerBlocks'][0]['innerBlocks'] = [$block];
+          $wrappedParsedBlocks[] = $columnsBlock;
+          continue;
         }
         $wrappedParsedBlocks[] = $block;
         continue;
