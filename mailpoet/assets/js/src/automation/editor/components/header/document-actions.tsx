@@ -35,7 +35,7 @@ function DocumentActions({ children }): JSX.Element {
   }
 
   return (
-    <div className="edit-site-document-actions has-secondary-label">
+    <div className="edit-site-document-actions has-secondary-label mailpoet-automation-editor-edit-site-document-actions">
       <div ref={titleRef} className="edit-site-document-actions__title-wrapper">
         {children && (
           <Dropdown
@@ -84,7 +84,7 @@ function DocumentActions({ children }): JSX.Element {
                 </Button>
               </>
             )}
-            contentClassName="edit-site-document-actions__info-dropdown"
+            contentClassName="edit-site-document-actions__info-dropdown mailpoet-automation-editor-edit-site-document-actions__info-dropdown"
             renderContent={children}
           />
         )}
