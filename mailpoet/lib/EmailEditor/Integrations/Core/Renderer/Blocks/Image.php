@@ -41,7 +41,7 @@ class Image implements BlockRenderer {
     $html = new \WP_HTML_Tag_Processor($blockContent);
     if ($html->next_tag(['tag_name' => 'img'])) {
       // Getting height from styles and if it's set, we set the height attribute
-      $styles = $html->get_attribute('style');
+      $styles = $html->get_attribute('style') ?? '';
       $styles = $settingsController->parseStylesToArray($styles);
       $height = $styles['height'] ?? null;
       if ($height && is_numeric($settingsController->parseNumberFromStringWithPixels($height))) {
