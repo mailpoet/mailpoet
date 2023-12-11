@@ -3,7 +3,7 @@ import { Button as WpButton } from '@wordpress/components';
 import {
   ButtonAsAnchorProps,
   ButtonAsButtonProps,
-} from '@wordpress/components/src/button/types';
+} from '@wordpress/components/build-types/button/types';
 import { WordPressComponentProps } from '@wordpress/components/build-types/ui/context';
 
 type ExtendedProps = {
@@ -11,17 +11,17 @@ type ExtendedProps = {
   centered?: boolean;
 };
 
-type Props =
-  | WordPressComponentProps<
-      Omit<ButtonAsButtonProps, keyof ExtendedProps> & ExtendedProps,
-      'button',
-      false
+type Props = (
+  | Omit<
+      WordPressComponentProps<ButtonAsButtonProps, 'button', false>,
+      keyof ExtendedProps
     >
-  | WordPressComponentProps<
-      Omit<ButtonAsAnchorProps, keyof ExtendedProps> & ExtendedProps,
-      'a',
-      false
-    >;
+  | Omit<
+      WordPressComponentProps<ButtonAsAnchorProps, 'a', false>,
+      keyof ExtendedProps
+    >
+) &
+  ExtendedProps;
 
 export function Button({ centered, variant, ...props }: Props): JSX.Element {
   return (
