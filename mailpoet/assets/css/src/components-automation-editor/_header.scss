@@ -1,3 +1,9 @@
 #mailpoet_automation_editor .interface-interface-skeleton__header {
   border-bottom: none;
 }
+
+// In automation editor we don't display the WP toolbar, but there is a css that adds space to the top of the page
+// for the toolbar so we need to override it
+.interface-interface-skeleton__html-container.wp-toolbar {
+  padding-top: 0;
+}
