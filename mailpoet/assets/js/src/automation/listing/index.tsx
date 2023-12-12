@@ -74,7 +74,9 @@ export function AutomationListing(): JSX.Element {
     [location],
   );
 
-  const automations = useSelect((select) => select(storeName).getAutomations());
+  const automations = useSelect((select) =>
+    select(storeName).getAllAutomations(),
+  );
   const { loadAutomations } = useDispatch(storeName);
 
   const status = pageSearch.get('status');
