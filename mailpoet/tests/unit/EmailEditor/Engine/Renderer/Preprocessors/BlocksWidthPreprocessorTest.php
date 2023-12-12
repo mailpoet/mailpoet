@@ -241,4 +241,26 @@ class BlocksWidthPreprocessorTest extends \MailPoetUnitTest {
     verify($innerBlocks[1]['email_attrs']['width'])->equals('200px'); // already defined
     verify($innerBlocks[2]['email_attrs']['width'])->equals('200px'); // 600 -200 - 200
   }
+
+  public function testItDoesNotSubtractPaddingForFullWidthBlocks(): void {
+    $blocks = [
+      [
+        'blockName' => 'core/columns',
+        'attrs' => [
+          'align' => 'full',
+        ],
+        'innerBlocks' => [],
+      ],
+      [
+        'blockName' => 'core/columns',
+        'attrs' => [],
+        'innerBlocks' => [],
+      ],
+    ];
+    $result = $this->preprocessor->preprocess($blocks, ['width' => '660px', 'padding' => ['left' => '15px', 'right' => '15px']]);
+
+    verify($result)->arrayCount(2);
+    verify($result[0]['email_attrs']['width'])->equals('660px'); // full width
+    verify($result[1]['email_attrs']['width'])->equals('630px'); // 660 - 15 - 15
+  }
 }
