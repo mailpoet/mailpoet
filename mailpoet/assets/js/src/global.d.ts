@@ -240,7 +240,7 @@ interface Window {
       slug: string;
       title: string;
       description: string;
-      events: string[];
+      events: Record<string, Record<string, unknown>>;
     }
   >;
   corrupt_newsletters: Array<{
