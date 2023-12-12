@@ -11,7 +11,7 @@ import { storeName } from '../../store';
 export function FormSettings(): JSX.Element {
   const dispatchResult = useDispatch(storeName);
   const toggleSidebarPanel: (t1: string, ...ts: []) => void =
-    dispatchResult.toggleSidebarPanel;
+    void dispatchResult.toggleSidebarPanel;
   const openedPanels = useSelect(
     (select) => select(storeName).getSidebarOpenedPanels(),
     [],

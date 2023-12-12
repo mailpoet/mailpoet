@@ -29,7 +29,7 @@ export function GoogleAnalyticsPanel(): JSX.Element {
     <PremiumModal
       onRequestClose={() => {
         setEnabled(false);
-        updateStepArgs(selectedStep.id, 'ga_campaign', undefined);
+        void updateStepArgs(selectedStep.id, 'ga_campaign', undefined);
       }}
     >
       {__(
@@ -51,7 +51,7 @@ export function GoogleAnalyticsPanel(): JSX.Element {
         onChange={(value) => {
           setEnabled(value);
           if (!value) {
-            updateStepArgs(selectedStep.id, 'ga_campaign', undefined);
+            void updateStepArgs(selectedStep.id, 'ga_campaign', undefined);
           }
         }}
       />

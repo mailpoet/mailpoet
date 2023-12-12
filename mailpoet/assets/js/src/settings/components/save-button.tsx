@@ -69,7 +69,7 @@ export function SaveButton() {
   ]);
   const onClick = () => {
     setClicked(true);
-    save();
+    void save();
   };
   return (
     <div className="mailpoet-settings-save">

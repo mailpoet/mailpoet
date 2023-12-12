@@ -16,7 +16,7 @@ const sections: Record<string, Section> = {
         return;
       }
       const { automation } = data;
-      dispatch(editorStoreName).updateAutomation(automation);
+      void dispatch(editorStoreName).updateAutomation(automation);
     },
   },
   overview: {

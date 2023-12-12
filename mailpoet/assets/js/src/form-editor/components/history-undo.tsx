@@ -27,7 +27,7 @@ export function HistoryUndo(props: Record<string, unknown>): JSX.Element {
   );
 
   useEffect((): void => {
-    registerShortcut({
+    void registerShortcut({
       name: 'mailpoet-form-editor/undo',
       category: 'block',
       description: __('Undo your last changes.'),

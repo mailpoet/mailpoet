@@ -28,7 +28,7 @@ export function PreviewDropdown() {
   const newsletterPreviewUrl: string = mailpoetEmailData?.preview_url || '';
 
   const changeDeviceType = (newDeviceType: string) => {
-    changePreviewDeviceType(newDeviceType);
+    void changePreviewDeviceType(newDeviceType);
   };
 
   const openInNewTab = (url: string) => {
@@ -69,7 +69,7 @@ export function PreviewDropdown() {
               <MenuItem
                 className="block-editor-post-preview__button-resize"
                 onClick={() => {
-                  togglePreviewModal(true);
+                  void togglePreviewModal(true);
                   onClose();
                 }}
               >

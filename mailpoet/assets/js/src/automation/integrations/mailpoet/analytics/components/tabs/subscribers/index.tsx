@@ -69,7 +69,7 @@ export function Subscribers(): JSX.Element {
                   : 'asc',
             };
           }
-          dispatch(storeName).updateSection({
+          void dispatch(storeName).updateSection({
             ...subscriberSection,
             customQuery: {
               ...subscriberSection.customQuery,

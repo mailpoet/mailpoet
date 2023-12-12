@@ -18,7 +18,7 @@ export function NewSubscriberNotifications() {
   const hasError = enabled === '1' && email.trim() === '';
   const invalidEmail = email && !isEmail(email);
   useEffect(() => {
-    setErrorFlag(hasError || invalidEmail);
+    void setErrorFlag(hasError || invalidEmail);
   }, [hasError, invalidEmail, setErrorFlag]);
 
   return (

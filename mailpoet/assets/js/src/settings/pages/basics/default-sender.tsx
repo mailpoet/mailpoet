@@ -63,7 +63,7 @@ export function DefaultSender({ showModal }) {
   };
 
   useEffect(() => {
-    setErrorFlag(
+    void setErrorFlag(
       invalidSenderEmail ||
         invalidReplyToEmail ||
         (!isAuthorized && isMssActive),

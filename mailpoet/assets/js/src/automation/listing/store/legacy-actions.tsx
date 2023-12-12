@@ -64,7 +64,7 @@ export function* trashLegacyAutomation(automation: Automation) {
     }),
   );
 
-  createSuccessNotice(
+  void createSuccessNotice(
     sprintf(
       __('Automation "%s" was moved to the trash.', 'mailpoet'),
       automation.name,
@@ -89,7 +89,7 @@ export function* restoreLegacyAutomation(automation: Automation) {
 
   void removeNotice(`automation-trashed-${automation.id}`);
 
-  createSuccessNotice(
+  void createSuccessNotice(
     sprintf(
       __('Automation "%s" was restored from the trash.', 'mailpoet'),
       automation.name,

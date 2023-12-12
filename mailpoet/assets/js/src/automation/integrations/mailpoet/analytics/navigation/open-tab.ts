@@ -15,7 +15,7 @@ export function openTab(tab: ValidTabs, currentView?: CurrentView): void {
       },
       currentView,
     };
-    dispatch(storeName).updateSection(payload);
+    void dispatch(storeName).updateSection(payload);
   }
 
   const classMap: Record<ValidTabs, string> = {

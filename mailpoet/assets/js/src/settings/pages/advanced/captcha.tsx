@@ -35,7 +35,7 @@ export function Captcha() {
   const missingRecaptchaInvisibleSecret =
     type === 'recaptcha-invisible' && recaptchaInvisibleSecret.trim() === '';
   useEffect(() => {
-    setErrorFlag(
+    void setErrorFlag(
       missingRecaptchaCheckboxToken ||
         missingRecaptchaCheckboxSecret ||
         missingRecaptchaInvisibleSecret ||

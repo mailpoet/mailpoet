@@ -89,7 +89,7 @@ function boot() {
   select(storeName)
     .getSections()
     .forEach((section: Section) => {
-      dispatch(storeName).updateSection(section);
+      void dispatch(storeName).updateSection(section);
     });
 }
 

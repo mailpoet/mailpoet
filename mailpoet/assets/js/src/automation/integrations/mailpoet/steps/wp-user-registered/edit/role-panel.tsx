@@ -57,7 +57,7 @@ export function RolePanel(): JSX.Element {
         suggestions={userRoles}
         placeholder={__('Any user role', 'mailpoet')}
         onChange={(items) => {
-          dispatch(storeName).updateStepArgs(
+          void dispatch(storeName).updateStepArgs(
             selectedStep.id,
             'roles',
             items.map((item) => item.id),

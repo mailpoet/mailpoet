@@ -4,7 +4,7 @@ import { storeName } from './constants';
 import { StepType } from './types';
 
 export const registerStepType = (stepType: StepType): void => {
-  dispatch(storeName).registerStepType(
+  void dispatch(storeName).registerStepType(
     Hooks.applyFilters('mailpoet.automation.register_step_type', stepType),
   );
 };

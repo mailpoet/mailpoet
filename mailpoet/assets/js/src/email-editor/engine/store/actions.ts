@@ -68,14 +68,17 @@ export function* saveEditedEmail() {
   );
 
   result.then(() => {
-    dispatch(noticesStore).createErrorNotice(__('Email saved!', 'mailpoet'), {
-      type: 'snackbar',
-      isDismissible: true,
-    });
+    void dispatch(noticesStore).createErrorNotice(
+      __('Email saved!', 'mailpoet'),
+      {
+        type: 'snackbar',
+        isDismissible: true,
+      },
+    );
   });
 
   result.catch(() => {
-    dispatch(noticesStore).createErrorNotice(
+    void dispatch(noticesStore).createErrorNotice(
       __('There was an error saving email!', 'mailpoet'),
       {
         type: 'default',

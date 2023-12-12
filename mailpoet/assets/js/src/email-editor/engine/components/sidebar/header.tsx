@@ -23,7 +23,9 @@ export function Header({ sidebarKey }: Props) {
 
   // Switch tab based on selected block.
   useEffect(() => {
-    openSidebar(selectedBlockId ? mainSidebarBlockKey : mainSidebarEmailKey);
+    void openSidebar(
+      selectedBlockId ? mainSidebarBlockKey : mainSidebarEmailKey,
+    );
   }, [selectedBlockId, openSidebar]);
 
   return (
@@ -32,7 +34,7 @@ export function Header({ sidebarKey }: Props) {
         <li>
           <button
             onClick={() => {
-              openSidebar(mainSidebarEmailKey);
+              void openSidebar(mainSidebarEmailKey);
             }}
             className={classnames(
               'components-button edit-post-sidebar__panel-tab',
@@ -47,7 +49,7 @@ export function Header({ sidebarKey }: Props) {
         <li>
           <button
             onClick={() => {
-              openSidebar(mainSidebarBlockKey);
+              void openSidebar(mainSidebarBlockKey);
             }}
             className={classnames(
               'components-button edit-post-sidebar__panel-tab',

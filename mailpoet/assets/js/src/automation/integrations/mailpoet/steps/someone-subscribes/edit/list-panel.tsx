@@ -39,7 +39,7 @@ export function ListPanel(): JSX.Element {
         value={selected}
         suggestions={validSegments}
         onChange={(values) => {
-          dispatch(storeName).updateStepArgs(
+          void dispatch(storeName).updateStepArgs(
             selectedStep.id,
             'segment_ids',
             values.map((item) => item.id),

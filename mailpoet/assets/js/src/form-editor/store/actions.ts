@@ -185,7 +185,7 @@ export function changeActiveSidebar(
 ): CHANGE_ACTIVE_SIDEBAR {
   // Ensure no blocks are selected
   if (sidebar === 'placement_settings') {
-    dispatch(blockEditorStore).clearSelectedBlock();
+    void dispatch(blockEditorStore).clearSelectedBlock();
   }
   return {
     type: 'CHANGE_ACTIVE_SIDEBAR',

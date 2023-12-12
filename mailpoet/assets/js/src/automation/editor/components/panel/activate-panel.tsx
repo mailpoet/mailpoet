@@ -22,7 +22,7 @@ function PreStep({ onClose }): JSX.Element {
             autoFocus={!isActivating}
             onClick={() => {
               setIsActivating(true);
-              activate();
+              void activate();
             }}
           >
             {isActivating && __('Activating…', 'mailpoet')}
@@ -113,7 +113,7 @@ export function ActivatePanel(): JSX.Element {
 
   useEffect(() => {
     if (errors) {
-      closeActivationPanel();
+      void closeActivationPanel();
     }
   }, [errors, closeActivationPanel]);
 

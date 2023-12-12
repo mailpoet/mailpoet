@@ -32,7 +32,7 @@ export function TrashButton({
         confirmButtonText={__('Yes, delete', 'mailpoet')}
         onConfirm={async () => {
           setIsBusy(true);
-          trash(() => {
+          void trash(() => {
             setShowConfirmDialog(false);
             setIsBusy(false);
             performActionAfterDelete();

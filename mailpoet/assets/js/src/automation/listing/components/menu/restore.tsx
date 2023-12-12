@@ -22,7 +22,7 @@ export const useRestoreButton = (
     control: {
       title: __('Restore', 'mailpoet'),
       icon: null,
-      onClick: () => restore(automation, AutomationStatus.DRAFT),
+      onClick: () => void restore(automation, AutomationStatus.DRAFT),
     },
   };
 };

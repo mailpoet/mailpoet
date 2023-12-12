@@ -25,7 +25,9 @@ export const registerApiErrorHandler = (): void =>
         const code = errorObject.code;
 
         if (code === 'mailpoet_automation_not_valid') {
-          dispatch(storeName).setErrors({ steps: errorObject.data.errors });
+          void dispatch(storeName).setErrors({
+            steps: errorObject.data.errors,
+          });
           return undefined;
         }
 
@@ -35,7 +37,7 @@ export const registerApiErrorHandler = (): void =>
             message ?? __('An unknown error occurred.', 'mailpoet'),
             { explicitDismiss: true },
           );
-          dispatch(storeName).setErrors({ steps: [] });
+          void dispatch(storeName).setErrors({ steps: [] });
           return undefined;
         }
 

@@ -18,7 +18,7 @@ export const useDuplicateButton = (
     control: {
       title: __('Duplicate', 'mailpoet'),
       icon: null,
-      onClick: () => duplicateAutomation(automation),
+      onClick: () => void duplicateAutomation(automation),
     },
   };
 };
