@@ -3,16 +3,20 @@ import { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/compone
 import { useDispatch } from '@wordpress/data';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { Item } from './item';
-import { storeName } from '../../store';
-import { Automation, AutomationStatus } from '../../automation';
+import { AutomationItem, storeName } from '../../store';
+import { AutomationStatus } from '../../automation';
 
-export const useTrashButton = (automation: Automation): Item | undefined => {
+export const useTrashButton = (
+  automation: AutomationItem,
+): Item | undefined => {
   const [showDialog, setShowDialog] = useState(false);
-  const { trashAutomation } = useDispatch(storeName);
+  const { trashAutomation, trashLegacyAutomation } = useDispatch(storeName);
 
   if (automation.status === AutomationStatus.TRASH) {
     return undefined;
   }
+
+  const trash = automation.isLegacy ? trashLegacyAutomation : trashAutomation;
 
   return {
     key: 'trash',
@@ -27,7 +31,7 @@ export const useTrashButton = (automation: Automation): Item | undefined => {
         title={__('Trash automation', 'mailpoet')}
         confirmButtonText={__('Yes, move to trash', 'mailpoet')}
         __experimentalHideHeader={false}
-        onConfirm={() => trashAutomation(automation)}
+        onConfirm={() => trash(automation)}
         onCancel={() => setShowDialog(false)}
       >
         {sprintf(
