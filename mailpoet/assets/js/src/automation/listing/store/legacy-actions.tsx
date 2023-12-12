@@ -9,6 +9,8 @@ import { Automation, AutomationStatus } from '../automation';
 const createSuccessNotice = (content: string, options?: unknown) =>
   dispatch(noticesStore).createSuccessNotice(content, options);
 
+const removeNotice = (id: string) => dispatch(noticesStore).removeNotice(id);
+
 const mapToAutomation = (item: ListingItem): AutomationItem => ({
   id: item.id,
   name: item.subject,
@@ -53,6 +55,25 @@ export function* trashLegacyAutomation(automation: Automation) {
   );
 
   createSuccessNotice(__('1 automation moved to the Trash.', 'mailpoet'));
+
+  return {
+    type: 'UPDATE_LEGACY_AUTOMATION',
+    automation: mapToAutomation(data.data),
+  } as const;
+}
+
+export function* restoreLegacyAutomation(automation: Automation) {
+  const data: { data: ListingItem } = yield AwaitPromise(
+    legacyApiFetch({
+      endpoint: 'newsletters',
+      method: 'restore',
+      'data[id]': `${automation.id}`,
+    }),
+  );
+
+  void removeNotice(`automation-trashed-${automation.id}`);
+
+  createSuccessNotice(__('1 automation restored from the Trash.', 'mailpoet'));
 
   return {
     type: 'UPDATE_LEGACY_AUTOMATION',

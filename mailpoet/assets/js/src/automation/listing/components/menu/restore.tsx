@@ -1,11 +1,17 @@
 import { useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { Item } from './item';
-import { storeName } from '../../store';
-import { Automation, AutomationStatus } from '../../automation';
+import { AutomationStatus } from '../../automation';
+import { AutomationItem, storeName } from '../../store';
 
-export const useRestoreButton = (automation: Automation): Item | undefined => {
-  const { restoreAutomation } = useDispatch(storeName);
+export const useRestoreButton = (
+  automation: AutomationItem,
+): Item | undefined => {
+  const { restoreAutomation, restoreLegacyAutomation } = useDispatch(storeName);
+
+  const restore = automation.isLegacy
+    ? restoreLegacyAutomation
+    : restoreAutomation;
 
   if (automation.status !== AutomationStatus.TRASH) {
     return undefined;
@@ -16,7 +22,7 @@ export const useRestoreButton = (automation: Automation): Item | undefined => {
     control: {
       title: __('Restore', 'mailpoet'),
       icon: null,
-      onClick: () => restoreAutomation(automation, AutomationStatus.DRAFT),
+      onClick: () => restore(automation, AutomationStatus.DRAFT),
     },
   };
 };
