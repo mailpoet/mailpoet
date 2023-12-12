@@ -80,3 +80,22 @@ export function* restoreLegacyAutomation(automation: Automation) {
     automation: mapToAutomation(data.data),
   } as const;
 }
+
+export function* deleteLegacyAutomation(automation: Automation) {
+  const data: { data: ListingItem } = yield AwaitPromise(
+    legacyApiFetch({
+      endpoint: 'newsletters',
+      method: 'delete',
+      'data[id]': `${automation.id}`,
+    }),
+  );
+
+  void createSuccessNotice(
+    __('1 automation and all associated data permanently deleted.', 'mailpoet'),
+  );
+
+  return {
+    type: 'DELETE_LEGACY_AUTOMATION',
+    automation: mapToAutomation(data.data),
+  } as const;
+}
