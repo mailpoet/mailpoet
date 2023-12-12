@@ -3,16 +3,22 @@ import { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/compone
 import { useDispatch } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { Item } from './item';
-import { storeName } from '../../store';
-import { Automation, AutomationStatus } from '../../automation';
+import { AutomationItem, storeName } from '../../store';
+import { AutomationStatus } from '../../automation';
 
-export const useDeleteButton = (automation: Automation): Item | undefined => {
+export const useDeleteButton = (
+  automation: AutomationItem,
+): Item | undefined => {
   const [showDialog, setShowDialog] = useState(false);
-  const { deleteAutomation } = useDispatch(storeName);
+  const { deleteAutomation, deleteLegacyAutomation } = useDispatch(storeName);
 
   if (automation.status !== AutomationStatus.TRASH) {
     return undefined;
   }
+
+  const permanentlyDelete = automation.isLegacy
+    ? deleteLegacyAutomation
+    : deleteAutomation;
 
   return {
     key: 'delete',
@@ -27,7 +33,7 @@ export const useDeleteButton = (automation: Automation): Item | undefined => {
         title={__('Permanently delete automation', 'mailpoet')}
         confirmButtonText={__('Yes, permanently delete', 'mailpoet')}
         __experimentalHideHeader={false}
-        onConfirm={() => deleteAutomation(automation)}
+        onConfirm={() => permanentlyDelete(automation)}
         onCancel={() => setShowDialog(false)}
       >
         {sprintf(
