@@ -18,7 +18,7 @@ import { MailPoet } from '../../../mailpoet';
 
 // snackbar icon is not annotated in the types
 const Snackbar = WpSnackbar as ComponentType<
-  WpSnackbar.Props & {
+  React.ComponentProps<typeof WpSnackbar> & {
     icon: ReactNode;
     isDismissible?: boolean;
     explicitDismiss?: boolean;
@@ -63,7 +63,7 @@ const useCreateFromTemplate = () => {
 
 type Props = {
   template: AutomationTemplate;
-  onRequestClose: Modal.Props['onRequestClose'];
+  onRequestClose: React.ComponentProps<typeof Modal>['onRequestClose'];
   onPreviousClick?: MouseEventHandler<HTMLButtonElement>;
   onNextClick?: MouseEventHandler<HTMLButtonElement>;
 };
