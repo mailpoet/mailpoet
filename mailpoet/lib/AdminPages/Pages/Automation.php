@@ -4,6 +4,7 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Data\AutomationTemplateCategory;
 use MailPoet\Automation\Engine\Registry;
@@ -14,6 +15,8 @@ use MailPoet\WP\Functions as WPFunctions;
 class Automation {
   /** @var AssetsController */
   private $assetsController;
+
+  private AutomaticEmails $automaticEmails;
 
   /** @var PageRenderer */
   private $pageRenderer;
@@ -31,6 +34,7 @@ class Automation {
 
   public function __construct(
     AssetsController $assetsController,
+    AutomaticEmails $automaticEmails,
     PageRenderer $pageRenderer,
     WPFunctions $wp,
     AutomationStorage $automationStorage,
@@ -38,6 +42,7 @@ class Automation {
     SegmentsSimpleListRepository $segmentsListRepository
   ) {
     $this->assetsController = $assetsController;
+    $this->automaticEmails = $automaticEmails;
     $this->pageRenderer = $pageRenderer;
     $this->wp = $wp;
     $this->automationStorage = $automationStorage;
@@ -75,6 +80,7 @@ class Automation {
       'context' => $this->buildContext(),
       'segments' => $this->segmentsListRepository->getListWithSubscribedSubscribersCounts(),
       'roles' => $wp_roles->get_names() + ['mailpoet_all' => __('In any WordPress role', 'mailpoet')],
+      'automatic_emails' => $this->automaticEmails->getAutomaticEmails(),
     ]);
   }
 

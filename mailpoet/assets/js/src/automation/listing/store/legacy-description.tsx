@@ -4,6 +4,7 @@ import { ListingItem } from './legacy-api';
 
 const mailpoetRoles = window.mailpoet_roles || {};
 const mailpoetSegments = window.mailpoet_segments || [];
+const automaticEmails = window.mailpoet_woocommerce_automatic_emails || {};
 
 const getSendingDelay = (item: ListingItem): ReactNode => {
   const options = item.options;
@@ -65,8 +66,48 @@ const getWelcomeInfo = (item: ListingItem): ReactNode => {
   );
 };
 
+const getAutomaticInfo = (item: ListingItem): ReactNode => {
+  const options = item.options;
+  const event = automaticEmails[options.group].events[options.event];
+
+  let meta;
+  try {
+    meta = JSON.parse(options.meta ?? null);
+  } catch (e) {
+    meta = options.meta ?? null;
+  }
+
+  const metaOptionValues =
+    meta && meta.option
+      ? meta.option.map(({ name }: { name: string }) => name)
+      : [];
+
+  if (meta && metaOptionValues.length === 0) {
+    return (
+      <span className="mailpoet-listing-error">
+        {__(
+          'You need to configure email options before this email can be sent.',
+          'mailpoet',
+        )}
+      </span>
+    );
+  }
+
+  // set sending event
+  const text =
+    metaOptionValues.length > 1 && 'listingScheduleDisplayTextPlural' in event
+      ? (event.listingScheduleDisplayTextPlural as string)
+      : (event.listingScheduleDisplayText as string);
+
+  return sprintf(
+    text.endsWith('.') ? text : `${text}.`,
+    metaOptionValues.join(', '),
+  );
+};
+
 export const getDescription = (item: ListingItem): ReactNode => {
-  const info = getWelcomeInfo(item);
+  const info =
+    item.type === 'welcome' ? getWelcomeInfo(item) : getAutomaticInfo(item);
   const delay = info ? getSendingDelay(item) : undefined;
 
   return info ? (

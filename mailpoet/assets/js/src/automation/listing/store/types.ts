@@ -10,6 +10,15 @@ declare global {
       type: 'default' | 'wp_users' | 'woocommerce_users' | 'dynamic';
     }[];
     mailpoet_roles: Record<string, string>;
+    mailpoet_woocommerce_automatic_emails?: Record<
+      string,
+      {
+        slug: string;
+        title: string;
+        description: string;
+        events: Record<string, Record<string, unknown>>;
+      }
+    >;
   }
 }
 
