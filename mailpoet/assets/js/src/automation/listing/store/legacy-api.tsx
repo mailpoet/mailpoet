@@ -13,6 +13,15 @@ export type ListingItem = {
   subject: string;
   status: AutomationStatus;
   deleted_at: string | null;
+  options: {
+    event: string;
+    group: string;
+    segment: string;
+    role: string;
+    afterTimeType: string;
+    afterTimeNumber: number;
+    meta?: string;
+  };
 };
 
 export const legacyApiFetch = ({ endpoint, method, ...params }: ApiOptions) =>

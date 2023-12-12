@@ -3,6 +3,7 @@ import { __unstableAwaitPromise as AwaitPromise } from '@wordpress/data-controls
 import { dispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
 import { legacyApiFetch, ListingItem } from './legacy-api';
+import { getDescription } from './legacy-description';
 import { AutomationItem } from './types';
 import { Automation, AutomationStatus } from '../automation';
 
@@ -17,6 +18,7 @@ const mapToAutomation = (item: ListingItem): AutomationItem => ({
   status: item.deleted_at ? AutomationStatus.TRASH : item.status,
   stats: { totals: { entered: 0, in_progress: 0, exited: 0 } },
   isLegacy: true,
+  description: getDescription(item),
 });
 
 export function* loadLegacyAutomations() {

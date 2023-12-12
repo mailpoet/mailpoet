@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Data\AutomationTemplateCategory;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Automation {
@@ -26,21 +27,27 @@ class Automation {
   /** @var Registry  */
   private $registry;
 
+  private SegmentsSimpleListRepository $segmentsListRepository;
+
   public function __construct(
     AssetsController $assetsController,
     PageRenderer $pageRenderer,
     WPFunctions $wp,
     AutomationStorage $automationStorage,
-    Registry $registry
+    Registry $registry,
+    SegmentsSimpleListRepository $segmentsListRepository
   ) {
     $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
     $this->wp = $wp;
     $this->automationStorage = $automationStorage;
     $this->registry = $registry;
+    $this->segmentsListRepository = $segmentsListRepository;
   }
 
   public function render() {
+    global $wp_roles; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
     $this->assetsController->setupAutomationListingDependencies();
     $this->pageRenderer->displayPage('automation.html', [
       'locale_full' => $this->wp->getLocale(),
@@ -66,6 +73,8 @@ class Automation {
       ),
       'registry' => $this->buildRegistry(),
       'context' => $this->buildContext(),
+      'segments' => $this->segmentsListRepository->getListWithSubscribedSubscribersCounts(),
+      'roles' => $wp_roles->get_names() + ['mailpoet_all' => __('In any WordPress role', 'mailpoet')],
     ]);
   }
 
