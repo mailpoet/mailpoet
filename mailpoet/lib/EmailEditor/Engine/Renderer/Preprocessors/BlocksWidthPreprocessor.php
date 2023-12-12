@@ -13,11 +13,16 @@ class BlocksWidthPreprocessor implements Preprocessor {
   ];
 
   public function preprocess(array $parsedBlocks, array $layoutStyles): array {
-    $layoutWidth = $this->parseNumberFromStringWithPixels($layoutStyles['width']);
-    // Subtract padding from the width of the layout element
-    $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['left'] ?? '0px');
-    $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['right'] ?? '0px');
     foreach ($parsedBlocks as $key => $block) {
+      // Layout width is recalculated for each block because full-width blocks don't exclude padding
+      $layoutWidth = $this->parseNumberFromStringWithPixels($layoutStyles['width']);
+      $alignment = $block['attrs']['align'] ?? null;
+      // Subtract padding from the block width if it's not full-width
+      if ($alignment !== 'full') {
+        $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['left'] ?? '0px');
+        $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['right'] ?? '0px');
+      }
+
       $width = $this->convertWidthToPixels($block['attrs']['width'] ?? '100%', $layoutWidth);
 
       if ($block['blockName'] === 'core/columns') {
