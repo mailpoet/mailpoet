@@ -56,15 +56,15 @@ export function ReplyToPanel(): JSX.Element {
           if (value) {
             const name = prevValue.current?.name ?? defaultName;
             const address = prevValue.current?.address ?? defaultAddress;
-            updateStepArgs(stepId, 'reply_to_name', name);
-            updateStepArgs(stepId, 'reply_to_address', address);
+            void updateStepArgs(stepId, 'reply_to_name', name);
+            void updateStepArgs(stepId, 'reply_to_address', address);
           } else {
             prevValue.current = {
               name: args.reply_to_name,
               address: args.reply_to_address,
             };
-            updateStepArgs(stepId, 'reply_to_name', undefined);
-            updateStepArgs(stepId, 'reply_to_address', undefined);
+            void updateStepArgs(stepId, 'reply_to_name', undefined);
+            void updateStepArgs(stepId, 'reply_to_address', undefined);
           }
         }}
       />

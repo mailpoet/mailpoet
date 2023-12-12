@@ -56,19 +56,19 @@ export function KeyboardShortcuts(): null {
   }, [registerShortcut]);
 
   useShortcut('mailpoet/automation-editor/toggle-fullscreen', () => {
-    toggleFeature('fullscreenMode');
+    void toggleFeature('fullscreenMode');
   });
 
   useShortcut('mailpoet/automation-editor/toggle-sidebar', (event) => {
     event.preventDefault();
 
     if (isSidebarOpened()) {
-      closeSidebar();
+      void closeSidebar();
     } else {
       const sidebarToOpen = selectedStep()
         ? stepSidebarKey
         : automationSidebarKey;
-      openSidebar(sidebarToOpen);
+      void openSidebar(sidebarToOpen);
     }
   });
 
@@ -76,7 +76,7 @@ export function KeyboardShortcuts(): null {
     event.preventDefault();
 
     if (savedState === 'unsaved') {
-      save();
+      void save();
     }
   });
 

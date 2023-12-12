@@ -54,7 +54,7 @@ export function Edit(): JSX.Element {
                 rawValue.length === 0 || parseInt(rawValue, 10) < 1
                   ? 1
                   : parseInt(rawValue, 10);
-              dispatch(storeName).updateStepArgs(
+              void dispatch(storeName).updateStepArgs(
                 selectedStep.id,
                 'delay',
                 value,

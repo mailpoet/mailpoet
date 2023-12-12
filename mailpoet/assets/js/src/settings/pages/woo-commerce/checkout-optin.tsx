@@ -24,7 +24,7 @@ export function CheckoutOptin() {
   const setErrorFlag = useAction('setErrorFlag');
   const emptyMessage = message.trim() === '';
   useEffect(() => {
-    setErrorFlag(emptyMessage);
+    void setErrorFlag(emptyMessage);
   }, [emptyMessage, setErrorFlag]);
 
   return (

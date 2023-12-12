@@ -23,7 +23,7 @@ function HistoryListener() {
   useEffect(
     () =>
       history.listen((location) => {
-        setPreviousPage(previousPageRef.current);
+        void setPreviousPage(previousPageRef.current);
 
         previousPageRef.current = location.pathname;
       }),

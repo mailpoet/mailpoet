@@ -19,7 +19,11 @@ export function Edit(): JSX.Element {
       toLabel={__('Status changes to:', 'mailpoet')}
       fromLabel={__('Status changes from:', 'mailpoet')}
       onChange={(status, property) => {
-        dispatch(storeName).updateStepArgs(selectedStep.id, property, status);
+        void dispatch(storeName).updateStepArgs(
+          selectedStep.id,
+          property,
+          status,
+        );
       }}
     />
   );

@@ -17,7 +17,7 @@ export function StatsNotifications() {
     (enabled === '1' || automated === '1') && email.trim() === '';
   const invalidEmail = email && !isEmail(email);
   useEffect(() => {
-    setErrorFlag(hasError || invalidEmail);
+    void setErrorFlag(hasError || invalidEmail);
   }, [hasError, invalidEmail, setErrorFlag]);
 
   return (

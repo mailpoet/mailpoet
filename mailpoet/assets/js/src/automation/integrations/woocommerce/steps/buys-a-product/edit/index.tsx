@@ -58,7 +58,7 @@ export function Edit(): JSX.Element {
           selected={current}
           onChange={(items: Product[]) => {
             setCurrent(items);
-            dispatch(storeName).updateStepArgs(
+            void dispatch(storeName).updateStepArgs(
               selectedStep.id,
               'product_ids',
               items.map((item) => item.key),
@@ -75,7 +75,11 @@ export function Edit(): JSX.Element {
         showTo
         toLabel={__('Order status', 'mailpoet')}
         onChange={(status, property) => {
-          dispatch(storeName).updateStepArgs(selectedStep.id, property, status);
+          void dispatch(storeName).updateStepArgs(
+            selectedStep.id,
+            property,
+            status,
+          );
         }}
       />
     </>

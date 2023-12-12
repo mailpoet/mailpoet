@@ -143,7 +143,10 @@ export const controls = {
         });
         const blockName = registerCustomFieldBlock(customField);
         const customFieldBlock = createBlock(blockName);
-        dispatch(blockEditorStore).replaceBlock(clientId, customFieldBlock);
+        void dispatch(blockEditorStore).replaceBlock(
+          clientId,
+          customFieldBlock,
+        );
         void dispatch(storeName).createCustomFieldDone(response.data);
       })
       .fail((response) => {
@@ -183,7 +186,7 @@ export const controls = {
         if (customFieldBlock) {
           unregisterBlockType(customFieldBlockName);
         }
-        dispatch(blockEditorStore).removeBlock(clientId);
+        void dispatch(blockEditorStore).removeBlock(clientId);
       })
       .fail((response) => {
         void dispatch(storeName).deleteCustomFieldFailed(
@@ -214,7 +217,7 @@ export const controls = {
       }
       return updatedBlock;
     });
-    dispatch(blockEditorStore).resetBlocks(updatedBlocks);
+    void dispatch(blockEditorStore).resetBlocks(updatedBlocks);
   },
 
   async TUTORIAL_DISMISS() {
@@ -263,7 +266,7 @@ export const controls = {
       }
       fixedBlocks.push(currentSubmit);
     }
-    dispatch(blockEditorStore).resetBlocks(fixedBlocks);
+    void dispatch(blockEditorStore).resetBlocks(fixedBlocks);
   },
 
   STORE_LOCALLY(actionData) {

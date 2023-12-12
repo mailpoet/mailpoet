@@ -56,16 +56,16 @@ export function KeyboardShortcuts(): null {
   }, [registerShortcut]);
 
   useShortcut('mailpoet/email-editor/toggle-fullscreen', () => {
-    toggleFeature('fullscreenMode');
+    void toggleFeature('fullscreenMode');
   });
 
   useShortcut('mailpoet/email-editor/toggle-sidebar', (event) => {
     event.preventDefault();
 
     if (isSidebarOpened) {
-      closeSidebar();
+      void closeSidebar();
     } else {
-      openSidebar();
+      void openSidebar();
     }
   });
 
@@ -74,7 +74,7 @@ export function KeyboardShortcuts(): null {
     if (!hasEdits || isSaving) {
       return;
     }
-    saveEditedEmail();
+    void saveEditedEmail();
   });
 
   return null;

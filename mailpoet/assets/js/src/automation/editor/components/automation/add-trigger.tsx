@@ -29,7 +29,7 @@ export function AddTrigger({ step, index }: Props): JSX.Element {
         context === 'edit'
           ? (event) => {
               event.stopPropagation();
-              setInserterPopover({
+              void setInserterPopover({
                 anchor: (event.target as HTMLElement).closest('button'),
                 type: 'triggers',
               });

@@ -101,8 +101,8 @@ export function Step({ step, isSelected }: Props): JSX.Element {
           context === 'edit'
             ? () =>
                 batch(() => {
-                  openSidebar(stepSidebarKey);
-                  selectStep(step);
+                  void openSidebar(stepSidebarKey);
+                  void selectStep(step);
                 })
             : undefined
         }

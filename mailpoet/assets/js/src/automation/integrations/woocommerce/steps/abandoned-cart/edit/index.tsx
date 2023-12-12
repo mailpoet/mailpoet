@@ -14,7 +14,7 @@ export function Edit(): JSX.Element {
       <PlainBodyTitle title={__('Settings', 'mailpoet')} />
       <SelectControl
         onChange={(id: string) => {
-          dispatch(storeName).updateStepArgs(
+          void dispatch(storeName).updateStepArgs(
             selectedStep.id,
             'wait',
             parseInt(id, 10),

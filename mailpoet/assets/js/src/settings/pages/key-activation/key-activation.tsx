@@ -53,7 +53,7 @@ export function KeyActivation({ subscribersCount }: Props) {
   const setAuthorizedAddress = async (address: string) => {
     await setSenderAddress(address);
     await setUnauthorizedAddresses(null);
-    setSaveDone();
+    void setSaveDone();
   };
 
   const showFromAddressModal =
@@ -98,8 +98,8 @@ export function KeyActivation({ subscribersCount }: Props) {
       {showFromAddressModal && (
         <SetFromAddressModal
           onRequestClose={() => {
-            setState({ fromAddressModalCanBeShown: false });
-            sendCongratulatoryMssEmail();
+            void setState({ fromAddressModalCanBeShown: false });
+            void sendCongratulatoryMssEmail();
           }}
           setAuthorizedAddress={setAuthorizedAddress}
         />

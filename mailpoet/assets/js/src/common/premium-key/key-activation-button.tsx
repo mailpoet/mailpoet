@@ -33,8 +33,8 @@ export function KeyActivationButton({
 
   async function activationCallback() {
     await verifyMssKey(state.key);
-    sendCongratulatoryMssEmail();
-    setState({ fromAddressModalCanBeShown: true });
+    void sendCongratulatoryMssEmail();
+    void setState({ fromAddressModalCanBeShown: true });
   }
 
   const showPendingApprovalNotice =
@@ -62,7 +62,7 @@ export function KeyActivationButton({
       premiumInstallationStatus: null,
     });
     MailPoet.Modal.loading(true);
-    setState({ inProgress: true });
+    void setState({ inProgress: true });
     await verifyMssKey(state.key);
     const currentMssStatus =
       select(STORE_NAME).getKeyActivationState().mssStatus;
@@ -70,9 +70,9 @@ export function KeyActivationButton({
       await sendCongratulatoryMssEmail();
     }
     await verifyPremiumKey(state.key);
-    setState({ inProgress: false });
+    void setState({ inProgress: false });
     MailPoet.Modal.loading(false);
-    setState({ fromAddressModalCanBeShown: true });
+    void setState({ fromAddressModalCanBeShown: true });
     // pending approval refresh link should only show on refresh of the page and should get hidden after the refresh button is clicked
     setShowRefreshMessage(false);
   };

@@ -37,7 +37,7 @@ export function RunAutomationOnce(): JSX.Element {
       label={__('Run this automation only once per subscriber.', 'mailpoet')}
       checked={checked}
       onChange={(value) => {
-        dispatch(storeName).updateAutomationMeta(
+        void dispatch(storeName).updateAutomationMeta(
           'mailpoet:run-once-per-subscriber',
           value,
         );

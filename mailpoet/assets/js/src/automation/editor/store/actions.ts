@@ -41,7 +41,7 @@ export const closeActivationPanel = () => ({
 });
 
 export const openSidebar = (key) => {
-  dispatch(storeName).closeActivationPanel();
+  void dispatch(storeName).closeActivationPanel();
   return ({ registry }) =>
     registry.dispatch(interfaceStore).enableComplementaryArea(storeName, key);
 };

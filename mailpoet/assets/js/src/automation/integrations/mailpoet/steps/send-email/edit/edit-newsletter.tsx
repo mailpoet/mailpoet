@@ -65,13 +65,13 @@ export function EditNewsletter(): JSX.Element {
       },
     });
 
-    dispatch(storeName).updateStepArgs(
+    void dispatch(storeName).updateStepArgs(
       automationStepId,
       'email_id',
       parseInt(response.data.id as string, 10),
     );
 
-    dispatch(storeName).save();
+    void dispatch(storeName).save();
   }, [automationId, automationStepId]);
 
   // This component is rendered only when no email ID is set. Once we have the ID

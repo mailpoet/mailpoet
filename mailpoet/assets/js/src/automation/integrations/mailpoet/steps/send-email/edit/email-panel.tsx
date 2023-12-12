@@ -55,7 +55,11 @@ export function EmailPanel(): JSX.Element {
         currentName={(selectedStep.args.name as string) ?? ''}
         defaultName={__('Send email', 'mailpoet')}
         update={(value) => {
-          dispatch(storeName).updateStepArgs(selectedStep.id, 'name', value);
+          void dispatch(storeName).updateStepArgs(
+            selectedStep.id,
+            'name',
+            value,
+          );
         }}
       />
       <TextControl

@@ -150,7 +150,7 @@ function PremiumModalForStepEdit({
       return;
     }
     const { selectStep } = dispatch(storeName);
-    selectStep(undefined);
+    void selectStep(undefined);
     setShowModal(true);
   }, [showModal]);
   if (!showModal) {

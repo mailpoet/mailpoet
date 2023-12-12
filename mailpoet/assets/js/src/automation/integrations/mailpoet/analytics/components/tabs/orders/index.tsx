@@ -81,7 +81,7 @@ export function Orders(): JSX.Element {
                   : 'asc',
             };
           }
-          dispatch(storeName).updateSection({
+          void dispatch(storeName).updateSection({
             ...ordersSection,
             customQuery: {
               ...ordersSection.customQuery,

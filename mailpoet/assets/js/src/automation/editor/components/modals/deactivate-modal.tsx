@@ -30,7 +30,7 @@ export function DeactivateImmediatelyModal({
         variant="primary"
         onClick={() => {
           setIsBusy(true);
-          dispatch(storeName).deactivate(true);
+          void dispatch(storeName).deactivate(true);
         }}
       >
         {__('Deactivate now', 'mailpoet')}
@@ -139,7 +139,7 @@ export function DeactivateModal({
         variant="primary"
         onClick={() => {
           setIsBusy(true);
-          dispatch(storeName).deactivate(
+          void dispatch(storeName).deactivate(
             selected !== AutomationStatus.DEACTIVATING,
           );
         }}

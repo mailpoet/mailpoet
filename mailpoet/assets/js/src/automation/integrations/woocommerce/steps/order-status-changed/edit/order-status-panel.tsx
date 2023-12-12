@@ -61,7 +61,7 @@ export function OrderStatusPanel({
           value={fromSelected}
           label={fromLabel}
           options={[...options.values()]}
-          onChange={(value) => update(value, 'from')}
+          onChange={(value) => update(value as string, 'from')}
         />
       )}
       {showTo && (
@@ -69,7 +69,7 @@ export function OrderStatusPanel({
           value={toSelected}
           label={toLabel}
           options={[...options.values()]}
-          onChange={(value) => update(value, 'to')}
+          onChange={(value) => update(value as string, 'to')}
         />
       )}
       {showPremiumModal && (

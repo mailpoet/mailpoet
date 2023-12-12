@@ -54,7 +54,7 @@ export function* updateSection(
   section: Section,
   queryParam: Query | undefined = undefined,
 ) {
-  dispatch(storeName).resetSectionData(section);
+  void dispatch(storeName).resetSectionData(section);
 
   const sampleData = Hooks.applyFilters(
     'mailpoet_analytics_section_sample_data',

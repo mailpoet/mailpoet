@@ -27,7 +27,7 @@ export function HistoryRedo(props: Record<string, unknown>): JSX.Element {
   );
 
   useEffect((): void => {
-    registerShortcut({
+    void registerShortcut({
       name: 'mailpoet-form-editor/redo',
       category: 'block',
       description: __('Redo your last undo.'),

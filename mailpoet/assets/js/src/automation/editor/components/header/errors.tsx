@@ -47,8 +47,8 @@ function StepError({ stepId }: StepErrorProps): JSX.Element {
       role="listitem"
       state={compositeState}
       onClick={() => {
-        openSidebar(stepSidebarKey);
-        selectStep(stepData);
+        void openSidebar(stepSidebarKey);
+        void selectStep(stepData);
       }}
     >
       <ColoredIcon

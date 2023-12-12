@@ -46,7 +46,7 @@ export function Checkbox({ filterIndex }: FilterProps): JSX.Element {
         key="select-operator"
         value={segment.operator}
         onChange={(e) => {
-          updateSegmentFilterFromEvent('operator', filterIndex, e);
+          void updateSegmentFilterFromEvent('operator', filterIndex, e);
         }}
       >
         <option value="equals">{__('is', 'mailpoet')}</option>
