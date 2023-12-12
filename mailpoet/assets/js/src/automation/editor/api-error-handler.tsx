@@ -16,7 +16,7 @@ export const registerApiErrorHandler = (): void =>
         return result;
       } catch (error) {
         // do not report aborted requests as errors
-        if (options.signal.aborted) {
+        if (options.signal?.aborted) {
           return undefined;
         }
 

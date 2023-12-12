@@ -58,7 +58,7 @@ export function TemplatePreview({ template }: Props): JSX.Element {
         dispatch(storeName).updateAutomation(data.data.automation);
         setState('loaded');
       } catch (error) {
-        if (!controller.signal.aborted) {
+        if (!controller.signal?.aborted) {
           setState('error');
         }
       }
