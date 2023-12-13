@@ -101,6 +101,8 @@ class SettingsController {
     // Enable custom spacing
     $coreSettings['spacing']['units'] = ['px'];
     $coreSettings['spacing']['padding'] = true;
+    // Typography
+    $coreSettings['typography']['dropCap'] = false; // Showing large initial letter cannot be implemented in emails
 
     $themeJson = (string)file_get_contents(dirname(__FILE__) . '/theme.json');
     $themeJson = json_decode($themeJson, true);
