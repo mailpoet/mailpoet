@@ -65,10 +65,8 @@ export function CampaignName() {
         )}
         renderContent={() => (
           <div className="mailpoet-email-editor-email-title-edit">
-            <div className="mailpoet-email-editor-dropdown-name-edit-title">
-              {__('Campaign name', 'mailpoet')}
-            </div>
             <TextControl
+              label={__('Campaign name', 'mailpoet')}
               value={emailTitle}
               onChange={(newTitle) => {
                 setTitle(newTitle);
