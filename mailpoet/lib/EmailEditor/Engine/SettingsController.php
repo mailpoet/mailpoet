@@ -103,6 +103,7 @@ class SettingsController {
     $coreSettings['spacing']['padding'] = true;
     // Typography
     $coreSettings['typography']['dropCap'] = false; // Showing large initial letter cannot be implemented in emails
+    $coreSettings['typography']['fontWeight'] = false; // Font weight will be handled by the font family later
 
     $themeJson = (string)file_get_contents(dirname(__FILE__) . '/theme.json');
     $themeJson = json_decode($themeJson, true);
