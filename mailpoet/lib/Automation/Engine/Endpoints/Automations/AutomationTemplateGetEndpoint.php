@@ -32,7 +32,9 @@ class AutomationTemplateGetEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
-    $slug = strval($request->getParam('slug'));
+    /** @var string|null $slug - for PHPStan because strval() doesn't accept a value of mixed */
+    $slug = $request->getParam('slug');
+    $slug = strval($slug);
     $template = $this->registry->getTemplate($slug);
     if (!$template) {
       throw Exceptions::automationTemplateNotFound($slug);
