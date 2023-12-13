@@ -14,7 +14,7 @@ import { storeName } from '../../store';
 
 // @see https://github.com/WordPress/gutenberg/blob/5e0ffdbc36cb2e967dfa6a6b812a10a2e56a598f/packages/edit-post/src/components/header/document-actions/index.js
 
-export function DocumentActions() {
+export function CampaignName() {
   const { showIconLabels } = useSelect(
     (select) => ({
       showIconLabels: select(storeName).isFeatureActive('showIconLabels'),
@@ -31,18 +31,18 @@ export function DocumentActions() {
 
   const titleRef = useRef(null);
   return (
-    <div ref={titleRef} className="mailpoet-email-editor-document-actions">
+    <div ref={titleRef} className="mailpoet-email-editor-campaign-name">
       <Dropdown
         popoverProps={{
           placement: 'bottom',
           anchor: titleRef.current,
         }}
-        contentClassName="mailpoet-email-editor-document-actions__dropdown"
+        contentClassName="mailpoet-email-editor-campaign-name__dropdown"
         renderToggle={({ isOpen, onToggle }) => (
           <>
             <Button
               onClick={onToggle}
-              className="mailpoet-email-document-actions__link"
+              className="mailpoet-email-campaign-name__link"
             >
               <Text size="body" as="h1">
                 <VisuallyHidden as="span">
@@ -52,7 +52,7 @@ export function DocumentActions() {
               </Text>
             </Button>
             <Button
-              className="mailpoet-email-document-actions__toggle"
+              className="mailpoet-email-campaign-name__toggle"
               icon={chevronDown}
               aria-expanded={isOpen}
               aria-haspopup="true"

@@ -1,5 +1,5 @@
 // Document actions - Component in header for displaying email/campaign title edit popup
-.mailpoet-email-editor-document-actions {
+.mailpoet-email-editor-campaign-name {
   align-items: center;
   display: flex;
   flex-direction: row;
@@ -15,7 +15,7 @@
     padding: 0;
   }
 
-  .mailpoet-email-document-actions__link {
+  .mailpoet-email-campaign-name__link {
     display: inline-flex;
     height: fit-content;
     margin-right: 10px;
@@ -24,7 +24,7 @@
 }
 
 // Document actions - Popup for editing email/campaign title
-.mailpoet-email-editor-document-actions__dropdown {
+.mailpoet-email-editor-campaign-name__dropdown {
   .components-popover__content {
     min-width: 240px;
     padding: 0;

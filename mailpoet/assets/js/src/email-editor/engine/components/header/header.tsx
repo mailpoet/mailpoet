@@ -10,7 +10,7 @@ import { MailPoetEmailData, storeName } from '../../store';
 import { MoreMenu } from './more-menu';
 import { PreviewDropdown } from '../preview';
 import { SaveButton } from './save-button';
-import { DocumentActions } from './document-actions';
+import { CampaignName } from './campaign-name';
 
 export function Header() {
   const inserterButton = useRef();
@@ -106,7 +106,7 @@ export function Header() {
           </div>
         </NavigableToolbar>
         <div className="edit-post-header__center">
-          <DocumentActions />
+          <CampaignName />
         </div>
       </div>
       <div className="edit-post-header__settings">
