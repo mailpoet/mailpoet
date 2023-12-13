@@ -8,15 +8,16 @@ use MailPoet\Util\Helpers;
 
 class Heading implements BlockRenderer {
   public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    $contentStyles = $settingsController->getEmailContentStyles();
-    $availableStylesheets = $settingsController->getAvailableStylesheets();
-    return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($parsedBlock, $contentStyles, $availableStylesheets));
+    return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($parsedBlock, $settingsController));
   }
 
   /**
    * Based on MJML <mj-text>
    */
-  private function getBlockWrapper(array $parsedBlock, array $contentStyles, ?string $availableStylesheets): string {
+  private function getBlockWrapper(array $parsedBlock, SettingsController $settingsController): string {
+    $contentStyles = $settingsController->getEmailContentStyles();
+    $availableStylesheets = $settingsController->getAvailableStylesheets();
+
     $styles = [];
     foreach ($parsedBlock['email_attrs'] ?? [] as $property => $value) {
       $styles[$property] = $value;
@@ -37,7 +38,7 @@ class Heading implements BlockRenderer {
         border="0"
         cellpadding="0"
         cellspacing="0"
-        style="' . $this->convertStylesToString($styles) . '"
+        style="' . $settingsController->convertStylesToString($styles) . '"
       >
         <tr>
           <td>
@@ -46,14 +47,6 @@ class Heading implements BlockRenderer {
         </tr>
       </table>
     ';
-  }
-
-  private function convertStylesToString(array $styles): string {
-    $cssString = '';
-    foreach ($styles as $property => $value) {
-      $cssString .= $property . ':' . $value . '; ';
-    }
-    return trim($cssString); // Remove trailing space and return the formatted string
   }
 
   private function fetchStylesFromBlockAttrs(?string $availableStylesheets, array $attrs = []): array {
