@@ -186,7 +186,7 @@ class DynamicSegments {
       $result[] = [
         'id' => (string)$newsletter->getId(),
         'subject' => $newsletter->getSubject(),
-        'name' => $newsletter->getPresentableName(),
+        'name' => $newsletter->getCampaignNameOrSubject(),
         'sent_at' => ($sentAt = $newsletter->getSentAt()) ? $sentAt->format('Y-m-d H:i:s') : null,
       ];
     }
