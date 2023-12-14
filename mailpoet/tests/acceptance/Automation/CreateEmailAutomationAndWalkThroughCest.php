@@ -4,10 +4,18 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * This test contains active AutomateWoo plugin
+ * in order to potentially catch issue with
+ * blank page when managing automation with
+ * the plugin AutomateWoo active.
+ */
 class CreateEmailAutomationAndWalkThroughCest {
-  public function _before() {
+  public function _before(\AcceptanceTester $i) {
     $settings = new Settings();
     $settings->withCronTriggerMethod('Action Scheduler');
+    $i->activateWooCommerce();
+    $i->activateAutomateWoo();
   }
 
   public function createEmailAutomationAndReceiveAnAutomatedEmail(\AcceptanceTester $i) {

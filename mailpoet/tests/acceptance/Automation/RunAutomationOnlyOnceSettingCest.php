@@ -9,6 +9,12 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Test\DataFactories;
 
+/**
+ * This test contains active AutomateWoo plugin
+ * in order to potentially catch issue with
+ * blank page when managing automation with
+ * the plugin AutomateWoo active.
+ */
 class RunAutomationOnlyOnceSettingCest {
 
   /** @var DataFactories\Settings */
@@ -32,6 +38,8 @@ class RunAutomationOnlyOnceSettingCest {
   private $segment;
 
   public function _before(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
+    $i->activateAutomateWoo();
     $this->container = ContainerWrapper::getInstance();
     $this->settingsFactory = new DataFactories\Settings();
     $this->settingsFactory->withCronTriggerMethod('Action Scheduler');
