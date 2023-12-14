@@ -1,5 +1,5 @@
-import ReactStringReplace from 'react-string-replace';
 import { Button, Loader, TypographyHeading as Heading } from 'common';
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Grid } from 'common/grid';
 import { SenderDomainEntity } from './manage-sender-domain-types';
@@ -30,23 +30,28 @@ function ManageSenderDomain({
     <div>
       <Heading level={2}> {__('Manage Sender Domain ', 'mailpoet')} </Heading>
       <p>
-        {ReactStringReplace(
+        {__(
+          'Authenticate your sender domain to send emails from your email address. This helps your recipients verify you are the author of these emails and helps mailbox providers fight spam and improves your email delivery rates',
+          'mailpoet',
+        )}
+      </p>
+      <p>
+        {createInterpolateElement(
           __(
-            'To help your audience and MailPoet authenticate you as the domain owner, please add the following DNS records to your domain’s DNS and click “Verify the DNS records”. Please note that it may take up to 24 hours for DNS changes to propagate after you make the change. [link]Read the guide[/link].',
+            'Please add the following DNS records to your domain’s DNS and click “Verify the DNS records”. Do note that it may take up to 24 hours for DNS changes to propagate after you make the change. <link>Read the guide</link>.',
             'mailpoet',
           ),
-          /\[link](.*?)\[\/link]/g,
-          (match) => (
-            <a
-              key={match}
-              className="mailpoet-link"
-              href="https://kb.mailpoet.com/article/188-how-to-set-up-mailpoet-sending-service#dns"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {match}
-            </a>
-          ),
+          {
+            link: (
+              // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+              <a
+                className="mailpoet-link"
+                href="https://kb.mailpoet.com/article/188-how-to-set-up-mailpoet-sending-service#dns"
+                target="_blank"
+                rel="noopener noreferrer"
+              />
+            ),
+          },
         )}
       </p>
 
@@ -77,7 +82,7 @@ function ManageSenderDomain({
               <td className="dns_record_type_column">{dnsRecord.type}</td>
               <td>
                 <DomainKeyComponent
-                  name={`dkim_host_${index}`}
+                  name={`${dnsRecord.type}_host_${index}`}
                   value={dnsRecord.host}
                   readOnly
                   tooltip={__('Click here to copy', 'mailpoet')}
@@ -85,7 +90,7 @@ function ManageSenderDomain({
               </td>
               <td>
                 <DomainKeyComponent
-                  name={`dkim_value_${index}`}
+                  name={`${dnsRecord.type}_value_${index}`}
                   value={dnsRecord.value}
                   readOnly
                   tooltip={__('Click here to copy', 'mailpoet')}
@@ -102,9 +107,11 @@ function ManageSenderDomain({
           ))}
         </tbody>
       </table>
-      <Button withSpinner={loadingButton} onClick={verifyDnsButtonClicked}>
-        {__('Verify the DNS records', 'mailpoet')}
-      </Button>
+      <div className="mailpoet_manage_sender_domain_actions">
+        <Button withSpinner={loadingButton} onClick={verifyDnsButtonClicked}>
+          {__('Verify the DNS records', 'mailpoet')}
+        </Button>
+      </div>
     </div>
   );
 }

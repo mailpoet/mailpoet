@@ -102,6 +102,10 @@ p.sender_email_address_warning:first-child {
   }
 }
 
+.mailpoet_manage_sender_domain_actions {
+  margin-top: 16px;
+}
+
 body .components-modal__screen-overlay {
   z-index: 9999999; // increased to overlay Gutenberg block inserter
 }

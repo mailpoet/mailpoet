@@ -131,3 +131,10 @@
 .authorize-sender-email-and-domain-modal-overlay {
   z-index: $modal-screen-overlay-z-index + 4; // overlay other modals
 }
+
+.authorize-sender-domain-modal {
+  p {
+    max-width: 1005px;
+    padding-right: 48px;
+  }
+}
