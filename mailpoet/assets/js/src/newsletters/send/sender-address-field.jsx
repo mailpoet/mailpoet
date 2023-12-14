@@ -138,7 +138,10 @@ class SenderField extends Component {
             emailAddress={this.state.emailAddress}
             mssActive={window.mailpoet_mss_active}
             isEmailAuthorized={!this.state.showAuthEmailsError}
-            showSenderDomainWarning={this.state.showSenderDomainWarning}
+            showSenderDomainWarning={
+              this.state.showSenderDomainWarning &&
+              !this.state.showAuthEmailsError
+            }
             onSuccessfulEmailOrDomainAuthorization={(data) => {
               if (data.type === 'email') {
                 this.setState({ showAuthEmailsError: false });

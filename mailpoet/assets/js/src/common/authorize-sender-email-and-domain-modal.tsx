@@ -1,11 +1,6 @@
 import { useEffect } from 'react';
-import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
-import classnames from 'classnames';
 import { extractEmailDomain, extractPageNameFromUrl } from 'common/functions';
-import { Tabs } from './tabs/tabs';
-import { Tab } from './tabs/tab';
-import { Modal } from './modal/modal';
 import { AuthorizeSenderEmailModal } from './authorize-sender-email-modal';
 import { AuthorizeSenderDomainModal } from './authorize-sender-domain-modal';
 
@@ -89,54 +84,27 @@ function AuthorizeSenderEmailAndDomainModal({
 
   const emailAddressDomain = extractEmailDomain(senderEmail);
 
-  return (
-    <Modal
+  return showSenderEmailTab ? (
+    <AuthorizeSenderEmailModal
+      useModal
+      senderEmail={senderEmail}
       onRequestClose={onRequestClose}
-      contentClassName="authorize-sender-email-and-domain-modal"
-      overlayClassName="authorize-sender-email-and-domain-modal-overlay"
-    >
-      <Tabs activeKey={initialTab}>
-        <Tab
-          key="sender_email"
-          className={classnames({
-            mailpoet_hidden: !showSenderEmailTab,
-          })}
-          title={__('Authorized emails', 'mailpoet')}
-        >
-          {showSenderEmailTab && (
-            <AuthorizeSenderEmailModal
-              useModal={false}
-              senderEmail={senderEmail}
-              onRequestClose={onRequestClose}
-              setAuthorizedAddress={(authorizedEmailAddress) => {
-                onSuccessAction({
-                  type: 'email',
-                  data: authorizedEmailAddress,
-                });
-              }}
-            />
-          )}
-        </Tab>
-        <Tab
-          key="sender_domain"
-          className={classnames({
-            mailpoet_hidden: !showSenderDomainTab,
-          })}
-          title={__('Sender Domains', 'mailpoet')}
-        >
-          {showSenderDomainTab && (
-            <AuthorizeSenderDomainModal
-              useModal={false}
-              senderDomain={emailAddressDomain}
-              onRequestClose={onRequestClose}
-              setVerifiedSenderDomain={(verifiedSenderDomain) => {
-                onSuccessAction({ type: 'domain', data: verifiedSenderDomain });
-              }}
-            />
-          )}
-        </Tab>
-      </Tabs>
-    </Modal>
+      setAuthorizedAddress={(authorizedEmailAddress) => {
+        onSuccessAction({
+          type: 'email',
+          data: authorizedEmailAddress,
+        });
+      }}
+    />
+  ) : (
+    <AuthorizeSenderDomainModal
+      useModal
+      senderDomain={emailAddressDomain}
+      onRequestClose={onRequestClose}
+      setVerifiedSenderDomain={(verifiedSenderDomain) => {
+        onSuccessAction({ type: 'domain', data: verifiedSenderDomain });
+      }}
+    />
   );
 }
 
