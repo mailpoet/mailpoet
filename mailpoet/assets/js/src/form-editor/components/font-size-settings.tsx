@@ -7,6 +7,11 @@ type Props = Pick<FontSizePickerProps, 'value' | 'onChange'>;
 export function FontSizeSettings({ value, onChange }: Props): JSX.Element {
   const fontSizes = useSetting('typography.fontSizes');
   return (
-    <FontSizePicker value={value} onChange={onChange} fontSizes={fontSizes} />
+    <FontSizePicker
+      value={value}
+      onChange={onChange}
+      fontSizes={fontSizes}
+      __nextHasNoMarginBottom
+    />
   );
 }
