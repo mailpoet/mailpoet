@@ -263,6 +263,7 @@ class WP {
     $this->insertUsersToSegment();
     $this->removeOrphanedSubscribers();
     $this->subscribersRepository->invalidateTotalSubscribersCache();
+    $this->subscribersRepository->detachAll();
 
     return true;
   }

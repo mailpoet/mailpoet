@@ -10,6 +10,8 @@ use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
+use MailPoet\Subscribers\SubscriberCustomFieldRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -52,14 +54,24 @@ class ImportExportRepository {
   /** @var FilterHandler */
   private $filterHandler;
 
+  /** @var SubscribersRepository */
+  private $subscribersRepository;
+
+  /** @var SubscriberCustomFieldRepository */
+  private $subscriberCustomFieldRepository;
+
   public function __construct(
     EntityManager $entityManager,
     SubscriberChangesNotifier $changesNotifier,
-    FilterHandler $filterHandler
+    FilterHandler $filterHandler,
+    SubscribersRepository $subscribersRepository,
+    SubscriberCustomFieldRepository $subscriberCustomFieldRepository
   ) {
     $this->entityManager = $entityManager;
     $this->subscriberChangesNotifier = $changesNotifier;
     $this->filterHandler = $filterHandler;
+    $this->subscribersRepository = $subscribersRepository;
+    $this->subscriberCustomFieldRepository = $subscriberCustomFieldRepository;
   }
 
   /**
@@ -183,7 +195,8 @@ class ImportExportRepository {
       " . implode(' AND ', $keyColumnsConditions) . "
     ", $parameters, $parameterTypes);
     $this->notifyUpdates($className, $columns, $data);
-    $this->entityManager->clear($className);
+    $this->subscribersRepository->detachAll();
+    $this->subscriberCustomFieldRepository->detachAll();
     return $count;
   }
 
