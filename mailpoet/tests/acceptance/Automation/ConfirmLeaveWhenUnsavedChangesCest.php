@@ -2,9 +2,23 @@
 
 namespace MailPoet\Test\Acceptance;
 
+/**
+ * This test contains active AutomateWoo plugin
+ * in order to potentially catch issue with
+ * blank page when managing automation with
+ * the plugin AutomateWoo active.
+ */
 class ConfirmLeaveWhenUnsavedChangesCest {
+  public function _before(\AcceptanceTester $i) {
+    $i->activateWooCommerce();
+    $i->activateAutomateWoo();
+  }
+
   public function confirmationIsRequiredIfAutomationNotSaved(\AcceptanceTester $i) {
     $i->wantTo('Edit a new automation draft');
+
+    $automationTitle = 'Welcome new subscribers';
+
     $i->login();
 
     $i->amOnMailpoetPage('Automation');
@@ -15,7 +29,7 @@ class ConfirmLeaveWhenUnsavedChangesCest {
 
     $i->click('Start with a template');
     $i->see('Start with a template', 'h1');
-    $i->click('Welcome new subscribers');
+    $i->click($automationTitle);
     $i->click('Start building');
 
     $i->waitForText('Draft');
@@ -31,7 +45,13 @@ class ConfirmLeaveWhenUnsavedChangesCest {
     $i->wantTo('Leave the page after saving.');
     $i->click('Save');
     $i->waitForText('saved');
-    $i->reloadPage();
+    $i->amOnMailpoetPage('Automation');
+    $i->waitForText('Automations');
+    $i->waitForText($automationTitle);
+    $i->click($automationTitle);
     $i->waitForText('Draft');
+    $i->waitForText('Move to Trash');
+    $i->waitForText('Welcome email');
+    $i->waitForText('Wait for 2 days');
   }
 }
