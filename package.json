@@ -30,7 +30,8 @@
       "react-dom": "18.2.0",
       "@types/react": "18.0.28",
       "@types/react-dom": "18.0.11",
-      "@wordpress/hooks": "3.39.0",
+      "@wordpress/hooks": "wp-6.4",
+      "@wordpress/components": "wp-6.4",
       "typescript": "$typescript"
     }
   }
