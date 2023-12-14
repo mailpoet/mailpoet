@@ -9,7 +9,7 @@
     "**/*": "prettier --write --ignore-unknown"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^25.5.1",
+    "@wordpress/scripts": "wp-6.4",
     "lint-staged": "^12.5.0",
     "prettier": "2.6.2",
     "typescript": "^5.0.2"
