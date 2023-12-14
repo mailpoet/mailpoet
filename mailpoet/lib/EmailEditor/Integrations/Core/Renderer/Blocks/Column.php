@@ -42,7 +42,7 @@ class Column implements BlockRenderer {
     ];
     // The default column alignment is `stretch to fill` which means that we need to set the background color to the main cell
     // to create a feeling of a stretched column
-    if (!isset($parsedBlock['attrs']['verticalAlignment'])) {
+    if (!isset($parsedBlock['attrs']['verticalAlignment']) || $parsedBlock['attrs']['verticalAlignment'] === 'stretch') {
       $mainCellStyles['background-color'] = $backgroundColor;
     }
 
