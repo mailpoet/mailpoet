@@ -63,7 +63,7 @@ function SenderEmailAddressWarning({
         </div>,
       );
     }
-    if (showSenderDomainWarning) {
+    if (showSenderDomainWarning && isEmailAuthorized) {
       displayElements.push(
         <div key="authorizeSenderDomain">
           <p className="sender_email_address_warning">
@@ -100,7 +100,7 @@ function SenderEmailAddressWarning({
               setShowAuthorizedEmailModal(null);
             }}
             showSenderEmailTab={!isEmailAuthorized}
-            showSenderDomainTab={showSenderDomainWarning}
+            showSenderDomainTab={showSenderDomainWarning && isEmailAuthorized}
             initialTab={showAuthorizedEmailModal}
             onSuccessAction={onSuccessfulEmailOrDomainAuthorization}
             autoSwitchTab={switchToNewTab}
