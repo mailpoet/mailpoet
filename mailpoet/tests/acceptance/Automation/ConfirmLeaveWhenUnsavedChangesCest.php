@@ -51,7 +51,7 @@ class ConfirmLeaveWhenUnsavedChangesCest {
     $i->click($automationTitle);
     $i->waitForText('Draft');
     $i->waitForText('Move to Trash');
-    $i->waitForText('Welcome email');
-    $i->waitForText('Wait for 2 days');
+    $i->waitForText('Someone subscribes');
+    $i->waitForText('Wait for 5 minutes');
   }
 }
