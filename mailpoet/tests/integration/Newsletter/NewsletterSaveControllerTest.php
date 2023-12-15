@@ -406,12 +406,8 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $this->entityManager->persist($queue);
 
     $newsletter->getQueues()->add($queue);
+    $task->setSendingQueue($queue);
     $this->entityManager->flush();
-
-    // I'm not sure why this is needed, but without it a test fails as $task->getSendingQueue() returns
-    // null in \MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter::preProcessNewsletter()
-    $this->entityManager->refresh($task);
-
     return $queue;
   }
 
