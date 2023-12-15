@@ -22,6 +22,7 @@ class SendingQueue {
   public function create(ScheduledTaskEntity $task, ?NewsletterEntity $newsletter = null, \DateTimeInterface $deletedAt = null): SendingQueueEntity {
     $queue = new SendingQueueEntity();
     $queue->setTask($task);
+    $task->setSendingQueue($queue);
 
     $newsletter = $newsletter ?: $this->entityManager->getReference(NewsletterEntity::class, rand(1, 9999));
     if ($newsletter) { // for phpstan because getReference can return null
@@ -34,7 +35,6 @@ class SendingQueue {
 
     $this->entityManager->persist($queue);
     $this->entityManager->flush();
-    $this->entityManager->refresh($task);
 
     return $queue;
   }
