@@ -1,21 +1,28 @@
 import { useState } from 'react';
 import { __, _x } from '@wordpress/i18n';
+import { extractEmailDomain } from 'common/functions';
 import { MailPoet } from 'mailpoet';
-import PropTypes from 'prop-types';
-import { noop } from 'lodash';
 import ReactStringReplace from 'react-string-replace';
 import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize-sender-email-and-domain-modal';
 
 const userHostDomain = window.location.hostname.replace('www.', '');
 const suggestedEmailAddress = `contact@${userHostDomain}`;
 
+type Props = {
+  emailAddress: string;
+  mssActive: boolean;
+  isEmailAuthorized?: boolean;
+  showSenderDomainWarning?: boolean;
+  onSuccessfulEmailOrDomainAuthorization?: (data) => void;
+};
+
 function SenderEmailAddressWarning({
   emailAddress,
   mssActive,
-  isEmailAuthorized,
-  showSenderDomainWarning,
-  onSuccessfulEmailOrDomainAuthorization,
-}) {
+  isEmailAuthorized = true,
+  showSenderDomainWarning = false,
+  onSuccessfulEmailOrDomainAuthorization = () => {},
+}: Props) {
   const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] =
     useState(null);
 
@@ -28,7 +35,7 @@ function SenderEmailAddressWarning({
     setShowAuthorizedEmailModal(newTab);
   };
 
-  const emailAddressDomain = emailAddress.split('@').pop().toLowerCase();
+  const emailAddressDomain = extractEmailDomain(emailAddress);
 
   const displayElements = [];
 
@@ -164,18 +171,5 @@ function SenderEmailAddressWarning({
   return null;
 }
 
-SenderEmailAddressWarning.propTypes = {
-  emailAddress: PropTypes.string.isRequired,
-  mssActive: PropTypes.bool.isRequired,
-  isEmailAuthorized: PropTypes.bool,
-  showSenderDomainWarning: PropTypes.bool,
-  onSuccessfulEmailOrDomainAuthorization: PropTypes.func,
-};
-
-SenderEmailAddressWarning.defaultProps = {
-  isEmailAuthorized: true, // don't show error message by default
-  showSenderDomainWarning: false,
-  onSuccessfulEmailOrDomainAuthorization: noop,
-};
 SenderEmailAddressWarning.displayName = 'SenderEmailAddressWarning';
 export { SenderEmailAddressWarning };
