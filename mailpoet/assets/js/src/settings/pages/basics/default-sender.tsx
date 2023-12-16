@@ -10,7 +10,7 @@ import {
 } from 'common/functions';
 import { Input } from 'common/form/input/input';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
-import { SenderEmailAddressWarning } from 'common/sender-email-address-warning.jsx';
+import { SenderEmailAddressWarning } from 'common/sender-email-address-warning';
 import { checkSenderEmailDomainDmarcPolicy } from 'common/check-sender-domain-dmarc-policy';
 
 export function DefaultSender() {
