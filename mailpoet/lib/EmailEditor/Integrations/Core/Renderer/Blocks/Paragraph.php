@@ -54,6 +54,7 @@ class Paragraph implements BlockRenderer {
         cellpadding="0"
         cellspacing="0"
         style="width:100%;"
+        width="100%"
       >
         <tr>
           <td style="' . $settingsController->convertStylesToString($styles) . '" align="' . $align . '">
