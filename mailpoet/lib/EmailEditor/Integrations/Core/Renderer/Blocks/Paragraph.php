@@ -34,6 +34,7 @@ class Paragraph implements BlockRenderer {
     ];
 
     foreach ($parsedBlock['email_attrs'] ?? [] as $property => $value) {
+      if ($property === 'width') continue; // width is handled by the wrapping blocks (columns, column)
       $styles[$property] = $value;
     }
 
