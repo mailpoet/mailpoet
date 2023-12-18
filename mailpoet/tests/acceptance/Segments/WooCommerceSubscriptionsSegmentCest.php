@@ -93,9 +93,8 @@ class WooCommerceSubscriptionsSegmentCest {
     $i->click('Save');
 
     $i->wantTo('Check that segment contains correct subscribers');
-    $i->waitForElement('[data-automation-id="filters_all"]');
     $i->waitForText($segmentTitle);
-    $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
+    $i->click('View Subscribers');
     $i->waitForText('subscriber1@example.com');
     $i->waitForText('subscriber2@example.com');
 

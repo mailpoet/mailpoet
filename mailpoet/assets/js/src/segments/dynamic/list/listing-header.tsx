@@ -18,6 +18,7 @@ export function ListingHeader(): JSX.Element {
           href={`#${ROUTES.DYNAMIC_SEGMENT_TEMPLATES}`}
           icon={plusIcon}
           variant="primary"
+          data-automation-id="new-segment"
           className="mailpoet-add-new-button"
         >
           {__('New segment', 'mailpoet')}
