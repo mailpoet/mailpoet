@@ -101,17 +101,25 @@ export function getRow(
     {
       value: dynamicSegment.name,
       display: (
-        <>
+        <div
+          data-automation-id={`mailpoet_dynamic_segment_name_${dynamicSegment.id}`}
+        >
           <Link to={`${ROUTES.EDIT_DYNAMIC_SEGMENT}/${dynamicSegment.id}`}>
             {dynamicSegment.name}
           </Link>
           {dynamicSegment.description && <p>{dynamicSegment.description}</p>}
-        </>
+        </div>
       ),
     },
     {
       value: dynamicSegment.count_all,
-      display: <p>{dynamicSegment.count_all}</p>,
+      display: (
+        <p
+          data-automation-id={`mailpoet_dynamic_segment_count_all_${dynamicSegment.id}`}
+        >
+          {dynamicSegment.count_all}
+        </p>
+      ),
     },
     {
       value: dynamicSegment.count_subscribed,
@@ -120,6 +128,7 @@ export function getRow(
           dynamicSegment.count_subscribed
         ) : (
           <Button
+            data-automation-id={`mailpoet_dynamic_segment_count_subscribed_${dynamicSegment.id}`}
             className="mailpoet-listing-text-right-align"
             variant="link"
             href={dynamicSegment.subscribers_url}
@@ -131,7 +140,9 @@ export function getRow(
     {
       value: dynamicSegment.created_at,
       display: (
-        <p>
+        <p
+          data-automation-id={`mailpoet_dynamic_segment_created_at_${dynamicSegment.id}`}
+        >
           {MailPoet.Date.short(dynamicSegment.created_at)} /{' '}
           {MailPoet.Date.time(dynamicSegment.created_at)}
         </p>
@@ -140,7 +151,10 @@ export function getRow(
     {
       value: null,
       display: (
-        <div className="mailpoet-listing-actions-cell">
+        <div
+          className="mailpoet-listing-actions-cell"
+          data-automation-id={`mailpoet_dynamic_segment_actions_${dynamicSegment.id}`}
+        >
           <Button variant="tertiary" href={dynamicSegment.subscribers_url}>
             {__('View subscribers', 'mailpoet')}
           </Button>

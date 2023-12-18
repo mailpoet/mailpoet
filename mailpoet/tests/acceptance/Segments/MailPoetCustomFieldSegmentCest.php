@@ -45,7 +45,7 @@ class MailPoetCustomFieldSegmentCest {
     $i->wantTo('Edit the segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
-    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->click('Edit');
     $i->waitForElementVisible('[data-automation-id="text-custom-field-operator"]');
     $i->seeInField('[data-automation-id="text-custom-field-operator"]', 'contains');
     $i->seeInField('[data-automation-id="text-custom-field-value"]', 'value1');
@@ -55,7 +55,7 @@ class MailPoetCustomFieldSegmentCest {
     $i->wantTo('Check subscribers of the segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
-    $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
+    $i->click('View Subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
     $i->see($segmentTitle, ['css' => 'select[name=segment]']);
     $i->see('test2@example.com');
