@@ -95,16 +95,6 @@ class Installer {
   public function retrievePluginInformation() {
     $key = $this->settings->get(Bridge::PREMIUM_KEY_SETTING_NAME);
     $api = new API($key);
-    $info = $api->getPluginInformation($this->slug);
-    $info = $this->formatInformation($info);
-    return $info;
-  }
-
-  private function formatInformation($info) {
-    // cast sections object to array for WP to understand
-    if (isset($info->sections)) {
-      $info->sections = (array)$info->sections;
-    }
-    return $info;
+    return $api->getPluginInformation($this->slug);
   }
 }
