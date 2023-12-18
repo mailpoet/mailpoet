@@ -39,10 +39,7 @@ class BlocksWidthPreprocessor implements Preprocessor {
       $modifiedLayoutStyles['padding']['left'] = $block['attrs']['style']['spacing']['padding']['left'] ?? '0px';
       $modifiedLayoutStyles['padding']['right'] = $block['attrs']['style']['spacing']['padding']['right'] ?? '0px';
 
-      // Set current block values and reassign it to $parsedBlocks, but don't set width for blocks that are not supposed to have it
-      if (!in_array($block['blockName'], self::BLOCKS_WITHOUT_WIDTH, true)) {
-        $block['email_attrs']['width'] = "{$width}px";
-      }
+      $block['email_attrs']['width'] = "{$width}px";
       $block['innerBlocks'] = $this->preprocess($block['innerBlocks'], $modifiedLayoutStyles);
       $parsedBlocks[$key] = $block;
     }
