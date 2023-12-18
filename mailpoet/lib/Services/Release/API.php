@@ -26,7 +26,7 @@ class API {
       case 200:
         $body = $this->wp->wpRemoteRetrieveBody($result);
         if ($body) {
-          $body = json_decode($body);
+          $body = $this->formatPluginInformation(json_decode($body));
         }
         break;
       default:
@@ -43,6 +43,20 @@ class API {
 
   public function getKey() {
     return $this->apiKey;
+  }
+
+  private function formatPluginInformation($info) {
+    // cast sections object to array for WP to understand
+    if (isset($info->sections)) {
+      $info->sections = (array)$info->sections;
+    }
+
+    // cast icons object to array for WP to understand
+    if (isset($info->icons)) {
+      $info->icons = (array)$info->icons;
+    }
+
+    return $info;
   }
 
   private function request($url, $params = []) {
