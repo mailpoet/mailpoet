@@ -2,7 +2,7 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import { FormFieldText } from 'form/fields/text.jsx';
-import { SenderEmailAddressWarning } from 'common/sender-email-address-warning.tsx';
+import { SenderEmailAddressWarning } from 'common/sender-email-address-warning';
 import {
   isFieldValid,
   addOrUpdateError,
