@@ -141,9 +141,9 @@ class BlocksWidthPreprocessorTest extends \MailPoetUnitTest {
 
     verify($innerBlocks)->arrayCount(2);
     verify($innerBlocks[0]['email_attrs']['width'])->equals('252px'); // (660 - 15 - 15) * 0.4
-    verify($innerBlocks[0]['innerBlocks'][0])->arrayHasNotKey('email_attrs'); // paragraph block should not have width
+    verify($innerBlocks[0]['innerBlocks'][0]['email_attrs']['width'])->equals('232px'); // 252 - 10 - 10
     verify($innerBlocks[1]['email_attrs']['width'])->equals('378px'); // (660 - 15 - 15) * 0.6
-    verify($innerBlocks[1]['innerBlocks'][0])->arrayHasNotKey('email_attrs'); // paragraph block should not have width
+    verify($innerBlocks[1]['innerBlocks'][0]['email_attrs']['width'])->equals('338px'); // 378 - 25 - 15
   }
 
   public function testItAddsMissingColumnWidth(): void {
@@ -191,11 +191,11 @@ class BlocksWidthPreprocessorTest extends \MailPoetUnitTest {
 
     verify($innerBlocks)->arrayCount(3);
     verify($innerBlocks[0]['email_attrs']['width'])->equals('200px'); // (660 - 30 - 30) * 0.33
-    verify($innerBlocks[0]['innerBlocks'][0])->arrayHasNotKey('email_attrs'); // paragraph block should not have width
+    verify($innerBlocks[0]['innerBlocks'][0]['email_attrs']['width'])->equals('200px');
     verify($innerBlocks[1]['email_attrs']['width'])->equals('200px'); // (660 - 30 - 30) * 0.33
-    verify($innerBlocks[1]['innerBlocks'][0])->arrayHasNotKey('email_attrs'); // paragraph block should not have width
+    verify($innerBlocks[1]['innerBlocks'][0]['email_attrs']['width'])->equals('200px');
     verify($innerBlocks[2]['email_attrs']['width'])->equals('200px'); // (660 - 30 - 30) * 0.33
-    verify($innerBlocks[2]['innerBlocks'][0])->arrayHasNotKey('email_attrs'); // paragraph block should not have width
+    verify($innerBlocks[2]['innerBlocks'][0]['email_attrs']['width'])->equals('200px');
   }
 
   public function testItCalculatesMissingColumnWidth(): void {
