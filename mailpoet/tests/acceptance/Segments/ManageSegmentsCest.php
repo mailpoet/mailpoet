@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
@@ -147,6 +148,14 @@ class ManageSegmentsCest {
     $i->seeNoJSErrors();
   }
 
+  private function clickMoreMenuItem(\AcceptanceTester $i, SegmentEntity $segmentEntity, $menuItem) {
+
+    $column = sprintf('[data-automation-id="mailpoet_dynamic_segment_actions_%d"]', $segmentEntity->getId());
+
+    $i->click($column . ' .components-dropdown-menu__toggle');
+    $i->click($menuItem, $column);
+  }
+
   public function deleteExistingSegment(\AcceptanceTester $i) {
     $segmentFactory = new DynamicSegment();
     $segment1 = $segmentFactory
@@ -163,15 +172,16 @@ class ManageSegmentsCest {
     $i->amOnMailpoetPage('Segments');
 
     $i->wantTo('Trash and delete existing segment');
-    $i->clickItemRowActionByItemName($segment1->getName(), 'Move to trash');
-    $i->waitForNoticeAndClose('1 segment was moved to the trash.');
-    $i->waitForText('No segments found');
-    $i->changeGroupInListingFilter('trash');
+    $this->clickMoreMenuItem($i, $segment1, 'Move to trash');
+    $i->waitForText('Trash selected segment');
+    $i->click('Trash');
+    $i->waitForText('Segment moved to trash.');
+    $i->waitForText('No data to display');
+    $i->click('Trash');
     $i->waitForText($segment1->getName());
-    $i->waitForListingItemsToLoad();
-    $i->clickItemRowActionByItemName($segment1->getName(), 'Delete permanently');
-    $i->waitForListingItemsToLoad();
-    $i->waitForNoticeAndClose('1 segment was permanently deleted.');
+    $this->clickMoreMenuItem($i, $segment1, 'Delete permanently');
+    $i->waitForText('Delete selected segment permanently');
+    $i->waitForText('Segment permanently deleted.');
     $i->waitForText($segment2->getName());
     $i->seeNoJSErrors();
 
