@@ -20,6 +20,7 @@ class Heading implements BlockRenderer {
 
     $styles = [];
     foreach ($parsedBlock['email_attrs'] ?? [] as $property => $value) {
+      if ($property === 'width') continue; // width is handled by the wrapping blocks (columns, column)
       $styles[$property] = $value;
     }
 
@@ -38,10 +39,10 @@ class Heading implements BlockRenderer {
         border="0"
         cellpadding="0"
         cellspacing="0"
-        style="' . $settingsController->convertStylesToString($styles) . '"
+        style="width: 100%;"
       >
         <tr>
-          <td>
+          <td style="' . $settingsController->convertStylesToString($styles) . '">
             {heading_content}
           </td>
         </tr>
