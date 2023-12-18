@@ -29,9 +29,11 @@ export function validateEmail(formItems: EmailFormItem): boolean {
   }
 
   if (
-    [EmailActionTypes.OPENED, EmailActionTypes.MACHINE_OPENED].includes(
-      formItems.action as EmailActionTypes,
-    )
+    [
+      EmailActionTypes.OPENED,
+      EmailActionTypes.MACHINE_OPENED,
+      EmailActionTypes.WAS_SENT,
+    ].includes(formItems.action as EmailActionTypes)
   ) {
     return (
       Array.isArray(formItems.newsletters) && formItems.newsletters.length > 0
