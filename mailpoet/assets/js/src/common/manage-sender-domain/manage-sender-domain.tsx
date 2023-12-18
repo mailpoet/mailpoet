@@ -31,7 +31,7 @@ function ManageSenderDomain({
       <Heading level={2}> {__('Manage Sender Domain ', 'mailpoet')} </Heading>
       <p>
         {__(
-          'Authenticate your sender domain to send emails from your email address. This helps your recipients verify you are the author of these emails and helps mailbox providers fight spam and improves your email delivery rates',
+          'Authenticate your sender domain to send emails from your email address. This helps your recipients verify you are the author of these emails and helps mailbox providers fight spam and improves your email delivery rates.',
           'mailpoet',
         )}
       </p>
