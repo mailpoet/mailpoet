@@ -49,7 +49,7 @@ class Column implements BlockRenderer {
     return '
       <td class="block" style="' . $settingsController->convertStylesToString($mainCellStyles) . '">
         <div class="email_column" style="background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';width:100%;max-width:' . $width . ';font-size:0px;text-align:left;display:inline-block;">
-          <table class="email_column" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';width:100%;max-width:' . $width . ';vertical-align:top;" width="' . $width . '">
+          <table class="email_column" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';min-width:100%;width:100%;max-width:' . $width . ';vertical-align:top;" width="' . $width . '">
             <tbody>
               <tr>
                 <td align="left" style="font-size:0px;padding-left:' . $paddingLeft . ';padding-right:' . $paddingRight . ';padding-bottom:' . $paddingBottom . ';padding-top:' . $paddingTop . ';">

@@ -8,6 +8,8 @@ use MailPoet\Util\Helpers;
 
 class Heading implements BlockRenderer {
   public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
+    $level = $parsedBlock['attrs']['level'] ?? 2; // default level is 2
+    $blockContent = $this->removePaddingFromElement($blockContent, ['tag_name' => "h{$level}"]);
     return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($parsedBlock, $settingsController));
   }
 
@@ -18,7 +20,20 @@ class Heading implements BlockRenderer {
     $contentStyles = $settingsController->getEmailContentStyles();
     $availableStylesheets = $settingsController->getAvailableStylesheets();
 
-    $styles = [];
+    // Styles for padding need to be set on the wrapping table cell due to support in Outlook
+    $paddingBottom = $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px';
+    $paddingLeft = $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px';
+    $paddingRight = $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px';
+    $paddingTop = $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px';
+
+    $styles = [
+      'min-width' => '100%', // prevent Gmail App from shrinking the table on mobile devices
+      'padding-bottom' => $paddingBottom,
+      'padding-left' => $paddingLeft,
+      'padding-right' => $paddingRight,
+      'padding-top' => $paddingTop,
+    ];
+
     foreach ($parsedBlock['email_attrs'] ?? [] as $property => $value) {
       if ($property === 'width') continue; // width is handled by the wrapping blocks (columns, column)
       $styles[$property] = $value;
@@ -39,7 +54,8 @@ class Heading implements BlockRenderer {
         border="0"
         cellpadding="0"
         cellspacing="0"
-        style="width: 100%;"
+        style="min-width: 100%;"
+        width="100%"
       >
         <tr>
           <td style="' . $settingsController->convertStylesToString($styles) . '">
@@ -97,5 +113,20 @@ class Heading implements BlockRenderer {
     }
 
     return $styles;
+  }
+
+  /**
+   * @param array{tag_name: string, class_name?: string} $tag
+   */
+  private function removePaddingFromElement($blockContent, array $tag) {
+    $html = new \WP_HTML_Tag_Processor($blockContent);
+    if ($html->next_tag($tag)) {
+      $elementStyle = $html->get_attribute('style') ?? '';
+      $elementStyle = preg_replace('/padding.*:.?[0-9]+px;?/', '', $elementStyle);
+      $html->set_attribute('style', $elementStyle);
+      $blockContent = $html->get_updated_html();
+    }
+
+    return $blockContent;
   }
 }
