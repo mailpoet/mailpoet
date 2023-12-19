@@ -1,9 +1,7 @@
-import { ComponentPropsWithoutRef } from 'react';
 import { Color } from '@wordpress/components/build-types/palette-edit/types';
 import { FontSize } from '@wordpress/components/build-types/font-size-picker/types';
 
 // eslint-disable-next-line import/no-named-default
-import { default as WPPopover } from '@wordpress/components/build-types/popover';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as keyboardShortutsStore } from '@wordpress/keyboard-shortcuts';
 import { store as interfaceStore } from '@wordpress/interface';
@@ -18,14 +16,6 @@ import {
   UseSelectReturn,
 } from '@wordpress/data/build-types/types';
 
-/* eslint-disable-next-line import/no-extraneous-dependencies -- we're only defining types here  */
-import {
-  Composite,
-  CompositeGroup,
-  CompositeItem,
-  useCompositeState,
-} from 'reakit/Composite';
-
 import './wordpress-modules';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- some general types in this file need to use "any"  */
@@ -33,50 +23,6 @@ import './wordpress-modules';
 /* eslint-disable no-underscore-dangle -- we have no control over 3rd-party naming conventions */
 
 export * from '../segments/dynamic/types';
-
-declare module '@wordpress/components' {
-  // New property for declaring forward compatibility is not set on types
-  // eslint-disable-next-line @typescript-eslint/no-shadow,@typescript-eslint/no-namespace
-  export namespace CustomSelectControl {
-    interface Props {
-      __nextUnconstrainedWidth: boolean;
-    }
-  }
-
-  // New property on Dropdown is not set in @types/wordpress__components
-  // eslint-disable-next-line @typescript-eslint/no-shadow,@typescript-eslint/no-namespace
-  export namespace Dropdown {
-    interface Props {
-      popoverProps?: Omit<
-        ComponentPropsWithoutRef<typeof WPPopover>,
-        'children'
-      >;
-    }
-  }
-
-  // Property "delay" is missing in Tooltip props
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  export namespace Tooltip {
-    export interface Props {
-      delay?: number;
-    }
-  }
-
-  // Property "className" is missing in Slot props
-  // See https://github.com/WordPress/gutenberg/tree/c5c8c167e35980ea144975169543fb842c5297fa/packages/components/src/slot-fill
-  // "Slot with bubblesVirtually set to true also accept an optional className to add to the slot container."
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  export namespace Slot {
-    export interface Props {
-      className?: string;
-    }
-  }
-
-  export const __unstableComposite: typeof Composite;
-  export const __unstableCompositeGroup: typeof CompositeGroup;
-  export const __unstableCompositeItem: typeof CompositeItem;
-  export const __unstableUseCompositeState: typeof useCompositeState;
-}
 
 // fix and improve some @wordpress/data types
 declare module '@wordpress/data' {
