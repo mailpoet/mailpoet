@@ -46,17 +46,19 @@ class API {
   }
 
   private function formatPluginInformation($info) {
-    // cast sections object to array for WP to understand
-    if (isset($info->sections)) {
-      $info->sections = (array)$info->sections;
+    if (!$info instanceof \stdClass) return $info;
+
+    $propKeys = array_keys(get_object_vars($info));
+    $newInfo = clone $info;
+
+    foreach ($propKeys as $key) {
+      if (gettype($newInfo->{$key}) === 'object') {
+        // cast objects to array for WP to understand
+        $newInfo->{$key} = (array)$newInfo->{$key};
+      }
     }
 
-    // cast icons object to array for WP to understand
-    if (isset($info->icons)) {
-      $info->icons = (array)$info->icons;
-    }
-
-    return $info;
+    return $newInfo;
   }
 
   private function request($url, $params = []) {
