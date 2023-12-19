@@ -122,8 +122,9 @@ class NewsletterSaveController {
     }
 
     if (!empty($data['body'])) {
-      $body = $this->dataSanitizer->sanitizeBody(json_decode($data['body'], true));
-      $data['body'] = $this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', json_encode($body));
+      $body = $this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', $data['body']);
+      $body = $this->dataSanitizer->sanitizeBody(json_decode($body, true));
+      $data['body'] = json_encode($body);
     }
 
     $newsletter = isset($data['id']) ? $this->getNewsletter($data) : $this->createNewsletter($data);
