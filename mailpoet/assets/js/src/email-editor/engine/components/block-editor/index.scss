@@ -99,6 +99,8 @@
 
     .wp-block-column {
       box-sizing: border-box;
+      // override flex-basis set in style attribute to fix the height of the column in mobile preview. Blocks overriding is as a part of style.css in blocks-library
+      flex-basis: auto !important;
     }
   }
 }
