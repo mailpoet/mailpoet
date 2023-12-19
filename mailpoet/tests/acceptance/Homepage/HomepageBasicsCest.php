@@ -42,8 +42,8 @@ class HomepageBasicsCest {
     $i->see('Connect MailPoet Sending Service');
     $i->wantTo('Hide task list');
     $i->click('button', '.mailpoet-task-list__heading');
-    $i->waitForText('Hide setup list', 5, '.mailpoet-task-list__heading .components-popover__content');
-    $i->click('.components-popover__content button', '.mailpoet-task-list__heading');
+    $i->waitForText('Hide setup list', 5, '.components-popover__content');
+    $i->click('Hide setup list', '.components-popover__content');
     $i->dontSee('Begin by completing your setup');
 
     $i->wantTo('Check homepage renders product discovery section');
@@ -54,8 +54,8 @@ class HomepageBasicsCest {
     $i->wantTo('Hide product discovery list');
     $productDiscoveryHeadingContext = '.mailpoet-homepage-product-discovery .mailpoet-homepage-section__heading';
     $i->click('button', $productDiscoveryHeadingContext);
-    $i->waitForText('Hide setup list', 5, '.mailpoet-homepage-product-discovery .components-popover__content');
-    $i->click('.components-popover__content button', $productDiscoveryHeadingContext);
+    $i->waitForText('Hide setup list', 5, '.components-popover__content');
+    $i->click('Hide setup list', '.components-popover__content');
     $i->dontSee('Start engaging with your customers');
 
     $i->wantTo('Check homepage subscribers stats section');
