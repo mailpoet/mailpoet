@@ -40,6 +40,8 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('rm -rf ' . __DIR__ . '/generated/*');
     $this->say('Cleaning up PHPStan cache.');
     $this->_exec('rm -rf ' . __DIR__ . '/temp/*');
+    $this->say('Cleaning up old testing plugins.');
+    $this->_exec('rm -rf ' . __DIR__ . '/tests/plugins/*');
   }
 
   public function update() {
@@ -493,9 +495,12 @@ class RoboFile extends \Robo\Tasks {
    * Deletes docker containers and volumes used in tests
    */
   public function resetTestDocker() {
-    return $this->taskExec(
+    return $this
+      ->taskExec(
       'docker-compose down -v --remove-orphans'
-    )->dir(__DIR__ . '/tests/docker')->run();
+      )->dir(__DIR__ . '/tests/docker')
+      ->addCode([$this, 'cleanupCachedFiles'])
+      ->run();
   }
 
   public function testFailedUnit() {
