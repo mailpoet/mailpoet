@@ -31,8 +31,10 @@ class FormWithColumnsCest {
     $i->click('.block-editor-block-variation-picker__variations li:nth-child(2) button');
     $i->waitForElement('.block-editor-block-list__block');
 
-    $i->wantTo('Add inputs into column');
+    $i->wantTo('Add first name input into the first column');
     $this->addFieldInColumn($i, 'First name');
+    $i->wantTo('Add last name input into the second column');
+    $i->click('[aria-label="Block: Column (2 of 2)"]');
     $this->addFieldInColumn($i, 'Last name');
     $i->seeNoJSErrors();
     $i->saveFormInEditor();
@@ -64,7 +66,9 @@ class FormWithColumnsCest {
   }
 
   private function addFieldInColumn(\AcceptanceTester $i, $name) {
-    $i->click('(//button[@class="components-button block-editor-button-block-appender"])[1]');
+    $appenderElementPath = '(//button[@class="components-button block-editor-button-block-appender"])[1]';
+    $i->waitForElementClickable($appenderElementPath);
+    $i->click($appenderElementPath);
     $blockInserterSearchInput = '.block-editor-inserter__search .components-search-control__input';
     $i->waitForElementVisible($blockInserterSearchInput);
     $i->fillField($blockInserterSearchInput, $name);
