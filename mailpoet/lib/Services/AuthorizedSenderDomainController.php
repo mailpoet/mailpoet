@@ -10,6 +10,10 @@ class AuthorizedSenderDomainController {
   const DOMAIN_VERIFICATION_STATUS_INVALID = 'invalid';
   const DOMAIN_VERIFICATION_STATUS_PENDING = 'pending';
 
+  const OVERALL_STATUS_VERIFIED = 'verified';
+  const OVERALL_STATUS_PARTIALLY_VERIFIED = 'partially-verified';
+  const OVERALL_STATUS_UNVERIFIED = 'unverified';
+
   const AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_CREATED = 'Sender domain exist';
   const AUTHORIZED_SENDER_DOMAIN_ERROR_NOT_CREATED = 'Sender domain does not exist';
   const AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_VERIFIED = 'Sender domain already verified';
@@ -22,6 +26,9 @@ class AuthorizedSenderDomainController {
 
   /** @var null|array Cached response for with authorized domains */
   private $currentRecords = null;
+
+  /** @var null|array */
+  private $currentRawData = null;
 
   public function __construct(
     Bridge $bridge,
@@ -156,6 +163,36 @@ class AuthorizedSenderDomainController {
     return $this->dmarcPolicyChecker->getDomainDmarcPolicy($domain);
   }
 
+  public function getSenderDomainsByStatus(string $status): array {
+    return array_filter($this->getAllRawData(), function(array $senderDomainData) use ($status) {
+      return ($senderDomainData['domain_status'] ?? null) === $status;
+    });
+  }
+
+  public function getFullyVerifiedSenderDomains(): array {
+    return $this->getSenderDomainsByStatus(self::OVERALL_STATUS_VERIFIED);
+  }
+
+  public function getPartiallyVerifiedSenderDomains(): array {
+    return $this->getSenderDomainsByStatus(self::OVERALL_STATUS_PARTIALLY_VERIFIED);
+  }
+
+  public function getUnverifiedSenderDomains(): array {
+    return $this->getSenderDomainsByStatus(self::OVERALL_STATUS_UNVERIFIED);
+  }
+
+  public function getSenderDomainsGroupedByStatus(): array {
+    $groupedDomains = [];
+    foreach ($this->getAllRawData() as $senderDomainData) {
+      $status = $senderDomainData['domain_status'] ?? 'unknown';
+      if (!isset($groupedDomains[$status])) {
+        $groupedDomains[$status] = [];
+      }
+      $groupedDomains[$status][] = $senderDomainData;
+    }
+    return $groupedDomains;
+  }
+
   /**
    * Little helper function to return All Domains. alias to `array_keys`
    *
@@ -185,6 +222,13 @@ class AuthorizedSenderDomainController {
     }
 
     return $verifiedDomains;
+  }
+
+  private function getAllRawData(): array {
+    if ($this->currentRawData === null) {
+      $this->currentRawData = $this->bridge->getRawSenderDomainData();
+    }
+    return $this->currentRawData;
   }
 
   private function getAllRecords(): array {

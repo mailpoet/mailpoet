@@ -146,6 +146,54 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $controller->verifyAuthorizedSenderDomain('testdomain.com');
   }
 
+  public function testItCanGetDomainsByOverallStatus(): void {
+    $verifiedDomain = [
+      'domain' => 'example1.com',
+      'domain_status' => 'verified',
+      'dns' => [],
+    ];
+    $partiallyVerifiedDomain = [
+      'domain' => 'example2.com',
+      'domain_status' => 'partially-verified',
+      'dns' => [],
+    ];
+    $unverifiedDomain = [
+      'domain' => 'example3.com',
+      'domain_status' => 'unverified',
+      'dns' => [],
+    ];
+
+    $mockResponse = [
+      $verifiedDomain,
+      $partiallyVerifiedDomain,
+      $unverifiedDomain,
+    ];
+
+    $getRawSenderDomainData = Expected::once($mockResponse);
+
+    $bridgeMock = $this->make(Bridge::class, [
+      'getRawSenderDomainData' => $getRawSenderDomainData,
+    ]);
+
+    $controller = $this->getController($bridgeMock);
+
+    $domainsByStatus = $controller->getSenderDomainsByStatus('verified');
+    $this->assertEqualsCanonicalizing([$verifiedDomain], $domainsByStatus);
+
+    $domainsByStatus = $controller->getSenderDomainsByStatus('partially-verified');
+    $this->assertEqualsCanonicalizing([$partiallyVerifiedDomain], $domainsByStatus);
+
+    $domainsByStatus = $controller->getSenderDomainsByStatus('unverified');
+    $this->assertEqualsCanonicalizing([$unverifiedDomain], $domainsByStatus);
+
+    $grouped = $controller->getSenderDomainsGroupedByStatus();
+    $this->assertEqualsCanonicalizing([
+      'verified' => [$verifiedDomain],
+      'partially-verified' => [$partiallyVerifiedDomain],
+      'unverified' => [$unverifiedDomain],
+    ], $grouped);
+  }
+
   public function testVerifyAuthorizedSenderDomainThrowsForOtherErrors() {
     $errorMessage = 'This is a test message';
     $this->expectException(InvalidArgumentException::class);
