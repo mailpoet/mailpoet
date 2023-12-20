@@ -452,7 +452,9 @@ const emailEditorCustom = Object.assign({}, wpScriptConfig, {
     ...wpScriptConfig.resolve,
     modules: ['node_modules', 'assets/js/src'],
   },
-  plugins: [...wpScriptConfig.plugins, ...[new ForkTsCheckerWebpackPlugin()]],
+  plugins: PRODUCTION_ENV
+    ? wpScriptConfig.plugins
+    : [...wpScriptConfig.plugins, ...[new ForkTsCheckerWebpackPlugin()]],
 });
 
 const configs = [
