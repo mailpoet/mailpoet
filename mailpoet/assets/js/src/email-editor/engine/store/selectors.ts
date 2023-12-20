@@ -55,9 +55,32 @@ export const isEmpty = createRegistrySelector((select) => (): boolean => {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const { content, mailpoet_data: mailpoetData } = post;
-  return !content.raw && !mailpoetData.subject && !mailpoetData.preheader;
+  const { content, mailpoet_data: mailpoetData, title } = post;
+  return (
+    !content.raw &&
+    !mailpoetData.subject &&
+    !mailpoetData.preheader &&
+    !title.raw
+  );
 });
+
+export const hasEmptyContent = createRegistrySelector(
+  (select) => (): boolean => {
+    const postId = select(storeName).getEmailPostId();
+
+    const post = select(coreDataStore).getEntityRecord(
+      'postType',
+      'mailpoet_email',
+      postId,
+    );
+    if (!post) return true;
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const { content } = post;
+    return !content.raw;
+  },
+);
 
 export function getEmailPostId(state: State): number {
   return state.postId;
