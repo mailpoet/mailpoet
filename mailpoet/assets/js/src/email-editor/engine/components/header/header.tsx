@@ -3,14 +3,15 @@ import { PinnedItems } from '@wordpress/interface';
 import { Button, ToolbarItem } from '@wordpress/components';
 import { NavigableToolbar } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useEntityProp, store as coreDataStore } from '@wordpress/core-data';
+import { store as coreDataStore } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
 import { plus, listView, undo, redo } from '@wordpress/icons';
-import { MailPoetEmailData, storeName } from '../../store';
+import { storeName } from '../../store';
 import { MoreMenu } from './more-menu';
 import { PreviewDropdown } from '../preview';
 import { SaveButton } from './save-button';
 import { CampaignName } from './campaign-name';
+import { SendButton } from './send-button';
 
 export function Header() {
   const inserterButton = useRef();
@@ -31,12 +32,6 @@ export function Header() {
       }),
       [],
     );
-  const [mailpoetEmailDa] = useEntityProp(
-    'postType',
-    'mailpoet_email',
-    'mailpoet_data',
-  );
-  const mailpoetEmailData: MailPoetEmailData = mailpoetEmailDa;
 
   const preventDefault = (event) => {
     event.preventDefault();
@@ -112,14 +107,7 @@ export function Header() {
       <div className="edit-post-header__settings">
         <SaveButton />
         <PreviewDropdown />
-        <Button
-          variant="primary"
-          onClick={() => {
-            window.location.href = `admin.php?page=mailpoet-newsletters#/send/${mailpoetEmailData.id}`;
-          }}
-        >
-          {__('Send', 'mailpoet')}
-        </Button>
+        <SendButton />
         <PinnedItems.Slot scope={storeName} />
         <MoreMenu />
       </div>
