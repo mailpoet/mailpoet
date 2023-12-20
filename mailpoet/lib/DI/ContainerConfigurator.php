@@ -397,6 +397,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Notices
     $container->autowire(\MailPoet\Util\Notices\PermanentNotices::class);
     $container->autowire(\MailPoet\Util\Notices\PendingApprovalNotice::class)->setPublic(true);
+    $container->autowire(\MailPoet\Util\Notices\SenderDomainAuthenticationNotices::class)->setPublic(true);
     //Referrals
     $container->autowire(\MailPoet\Referrals\ReferralDetector::class);
     // Router
@@ -597,6 +598,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     // Util
     $container->autowire(\MailPoet\Util\Cookies::class);
     $container->autowire(\MailPoet\Util\DBCollationChecker::class);
+    $container->autowire(\MailPoet\Util\FreeDomains::class);
     $container->autowire(\MailPoet\Util\Url::class)->setPublic(true);
     $container->autowire(\MailPoet\Util\Installation::class);
     $container->autowire(\MailPoet\Util\Security::class);
