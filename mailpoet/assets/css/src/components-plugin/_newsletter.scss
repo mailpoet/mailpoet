@@ -16,6 +16,16 @@
 }
 
 .mailpoet-form-send-email {
+  .mailpoet-send-campaign-name {
+    margin-bottom: -$grid-gap-large;
+    margin-top: $grid-gap-xl;
+
+    h1 {
+      font-size: $heading-font-size-h0;
+      font-weight: 600;
+    }
+  }
+
   .mailpoet-form-grid {
     grid-template-columns: $grid-column $grid-column;
     max-width: 976px;
