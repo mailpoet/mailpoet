@@ -811,6 +811,11 @@ class NewsletterSendComponent extends Component<
           automationId="newsletter_send_heading"
         />
         <ErrorBoundary>
+          {this.state.item.campaign_name ? (
+            <div className="mailpoet-form-grid mailpoet-send-campaign-name">
+              <h1>{this.state.item.campaign_name}</h1>
+            </div>
+          ) : null}
           <SendContext.Provider value={this.state.sendContextValue}>
             <Form
               id="mailpoet_newsletter"

@@ -25,6 +25,7 @@ export enum NewsletterOptionGroup {
 }
 
 export type NewsLetter = {
+  campaign_name: string | null;
   body: {
     blockDefaults: unknown;
     content: unknown;
