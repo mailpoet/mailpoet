@@ -5,8 +5,8 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\WpPostEntity;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Newsletter\NewsletterSaveController;
 use MailPoet\Newsletter\NewslettersRepository;
-use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -28,18 +28,23 @@ class EmailEditor {
   /** @var EntityManager */
   private $entityManager;
 
+  /** @var NewsletterSaveController */
+  private $newsletterSaveController;
+
   public function __construct(
     WPFunctions $wp,
     FeaturesController $featuresController,
     NewslettersRepository $newsletterRepository,
     EmailApiController $emailApiController,
-    EntityManager $entityManager
+    EntityManager $entityManager,
+    NewsletterSaveController $newsletterSaveController
   ) {
     $this->wp = $wp;
     $this->featuresController = $featuresController;
     $this->newsletterRepository = $newsletterRepository;
     $this->emailApiController = $emailApiController;
     $this->entityManager = $entityManager;
+    $this->newsletterSaveController = $newsletterSaveController;
   }
 
   public function initialize(): void {
@@ -77,12 +82,11 @@ class EmailEditor {
     if ($newsletter) {
       return;
     }
-    $newsletter = new NewsletterEntity();
+    $newsletter = $this->newsletterSaveController->save([
+      'subject' => __('Subject', 'mailpoet'),
+      'type' => NewsletterEntity::TYPE_STANDARD, // We allow only standard emails in the new editor for now
+    ]);
     $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $postId));
-    $newsletter->setSubject(__('Subject', 'mailpoet'));
-    $newsletter->setType(NewsletterEntity::TYPE_STANDARD); // We allow only standard emails in the new editor for now
-    $newsletter->setHash(Security::generateHash());
-    $this->newsletterRepository->persist($newsletter);
     $this->newsletterRepository->flush();
   }
 
