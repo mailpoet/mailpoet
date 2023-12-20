@@ -233,6 +233,11 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     verify($isRestricted)->same('none');
   }
 
+  public function testItCanRewriteEmailAddresses(): void {
+    $email = 'jane.doe@gmail.com';
+    $this->assertSame('jane.doe=gmail.com@replies.sendingservice.net', $this->getController()->getRewrittenEmailAddress($email));
+  }
+
   private function getController($bridgeMock = null): AuthorizedSenderDomainController {
     $dmarcPolicyChecker = $this->diContainer->get(DmarcPolicyChecker::class);
     return new AuthorizedSenderDomainController($bridgeMock ?? $this->bridge, $dmarcPolicyChecker);
