@@ -192,6 +192,15 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
       'partially-verified' => [$partiallyVerifiedDomain],
       'unverified' => [$unverifiedDomain],
     ], $grouped);
+
+    $domains = $controller->getFullyVerifiedSenderDomains(true);
+    $this->assertEqualsCanonicalizing(['example1.com'], $domains);
+
+    $domains = $controller->getPartiallyVerifiedSenderDomains(true);
+    $this->assertEqualsCanonicalizing(['example2.com'], $domains);
+
+    $domains = $controller->getUnverifiedSenderDomains(true);
+    $this->assertEqualsCanonicalizing(['example3.com'], $domains);
   }
 
   public function testVerifyAuthorizedSenderDomainThrowsForOtherErrors() {

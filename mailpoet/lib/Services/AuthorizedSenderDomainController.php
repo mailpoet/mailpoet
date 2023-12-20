@@ -173,16 +173,32 @@ class AuthorizedSenderDomainController {
     });
   }
 
-  public function getFullyVerifiedSenderDomains(): array {
-    return $this->getSenderDomainsByStatus(self::OVERALL_STATUS_VERIFIED);
+  public function getFullyVerifiedSenderDomains($domainsOnly = false): array {
+    $domainData = $this->getSenderDomainsByStatus(self::OVERALL_STATUS_VERIFIED);
+    if ($domainsOnly) {
+      return array_map([$this, 'domainExtractor'], $domainData);
+    }
+    return $domainData;
   }
 
-  public function getPartiallyVerifiedSenderDomains(): array {
-    return $this->getSenderDomainsByStatus(self::OVERALL_STATUS_PARTIALLY_VERIFIED);
+  public function getPartiallyVerifiedSenderDomains($domainsOnly = false): array {
+    $domainData = $this->getSenderDomainsByStatus(self::OVERALL_STATUS_PARTIALLY_VERIFIED);
+    if ($domainsOnly) {
+      return array_map([$this, 'domainExtractor'], $domainData);
+    }
+    return $domainData;
   }
 
-  public function getUnverifiedSenderDomains(): array {
-    return $this->getSenderDomainsByStatus(self::OVERALL_STATUS_UNVERIFIED);
+  public function getUnverifiedSenderDomains($domainsOnly = false): array {
+    $domainData = $this->getSenderDomainsByStatus(self::OVERALL_STATUS_UNVERIFIED);
+    if ($domainsOnly) {
+      return array_map([$this, 'domainExtractor'], $domainData);
+    }
+    return $domainData;
+  }
+
+  private function domainExtractor(array $domainData): string {
+    return $domainData['domain'] ?? '';
   }
 
   public function getSenderDomainsGroupedByStatus(): array {
