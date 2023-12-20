@@ -104,6 +104,10 @@ class AuthorizedSenderDomainController {
     return $response;
   }
 
+  public function getRewrittenEmailAddress(string $email): string {
+    return sprintf('%s@replies.sendingservice.net', str_replace('@', '=', $email));
+  }
+
   /**
    * Verify Sender Domain
    *
