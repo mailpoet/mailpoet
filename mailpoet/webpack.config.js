@@ -462,27 +462,32 @@ const configs = [
   adminConfig,
   emailEditorCustom,
   formPreviewConfig,
-  testConfig,
   postEditorBlock,
   marketingOptinBlock,
 ];
 
-module.exports = configs.map((conf) => {
-  const config = Object.assign({}, conf);
-  if (
-    config.name === 'marketing_optin_block' ||
-    config.name === 'email_editor'
-  ) {
-    return config;
+module.exports = (env) => {
+  // Include tests build only if requested
+  if (env && env.BUILD_TESTS === 'build') {
+    configs.push(testConfig);
   }
-  if (config.name !== 'test') {
-    config.plugins = config.plugins || [];
-    config.plugins.push(
-      new WebpackManifestPlugin({
-        // create single manifest file for all Webpack configs
-        seed: manifestSeed,
-      }),
-    );
-  }
-  return Object.assign({}, baseConfig, config);
-});
+  return configs.map((conf) => {
+    const config = Object.assign({}, conf);
+    if (
+      config.name === 'marketing_optin_block' ||
+      config.name === 'email_editor'
+    ) {
+      return config;
+    }
+    if (config.name !== 'test') {
+      config.plugins = config.plugins || [];
+      config.plugins.push(
+        new WebpackManifestPlugin({
+          // create single manifest file for all Webpack configs
+          seed: manifestSeed,
+        }),
+      );
+    }
+    return Object.assign({}, baseConfig, config);
+  });
+};
