@@ -138,7 +138,7 @@ class SendingQueuesRepository extends Repository {
     if (!$task instanceof ScheduledTaskEntity) return;
 
     if ($queue->getCountProcessed() === $queue->getCountTotal()) {
-      $processedAt = Carbon::createFromTimestamp($this->wp->currentTime('mysql'));
+      $processedAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
       $task->setProcessedAt($processedAt);
       $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
       // Update also status of newsletter if necessary

@@ -182,7 +182,7 @@ class Worker {
 
   private function markTaskAsFinished(ScheduledTaskEntity $task) {
     $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
-    $task->setProcessedAt(new Carbon);
+    $task->setProcessedAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
     $task->setScheduledAt(null);
     $this->entityManager->flush();
   }
