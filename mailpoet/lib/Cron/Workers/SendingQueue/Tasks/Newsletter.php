@@ -281,15 +281,14 @@ class Newsletter {
     ];
   }
 
-  public function markNewsletterAsSent(NewsletterEntity $newsletter, Sending $sendingTask) {
+  public function markNewsletterAsSent(NewsletterEntity $newsletter) {
     // if it's a standard or notification history newsletter, update its status
     if (
       $newsletter->getType() === NewsletterEntity::TYPE_STANDARD ||
        $newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY
     ) {
-      $scheduledTask = $sendingTask->task();
       $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
-      $newsletter->setSentAt(new Carbon($scheduledTask->processedAt));
+      $newsletter->setSentAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
       $this->newslettersRepository->persist($newsletter);
       $this->newslettersRepository->flush();
     }
