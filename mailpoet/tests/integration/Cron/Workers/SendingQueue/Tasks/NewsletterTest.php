@@ -265,7 +265,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->setStatus('not_sent');
     $this->newslettersRepository->persist($newsletter);
     $this->newslettersRepository->flush();
-    $this->newsletterTask->markNewsletterAsSent($newsletter, $this->sendingTask);
+    $this->newsletterTask->markNewsletterAsSent($newsletter);
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
     verify($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
@@ -278,7 +278,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->setStatus('not_sent');
     $this->newslettersRepository->persist($newsletter);
     $this->newslettersRepository->flush();
-    $this->newsletterTask->markNewsletterAsSent($newsletter, $this->sendingTask);
+    $this->newsletterTask->markNewsletterAsSent($newsletter);
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
     verify($updatedNewsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
@@ -291,7 +291,7 @@ class NewsletterTest extends \MailPoetTest {
     $newsletter->setStatus('not_sent');
     $this->newslettersRepository->persist($newsletter);
     $this->newslettersRepository->flush();
-    $this->newsletterTask->markNewsletterAsSent($newsletter, $this->sendingTask);
+    $this->newsletterTask->markNewsletterAsSent($newsletter);
     $updatedNewsletter = $this->newslettersRepository->findOneById($newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter);
     verify($updatedNewsletter->getStatus())->notEquals(NewsletterEntity::STATUS_SENT);
