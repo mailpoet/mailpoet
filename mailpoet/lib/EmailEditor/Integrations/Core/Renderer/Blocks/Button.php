@@ -13,6 +13,10 @@ use MailPoet\EmailEditor\Engine\SettingsController;
 
 class Button implements BlockRenderer {
   public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
+    // Don't render empty buttons
+    if (empty($parsedBlock['innerHTML'])) {
+      return '';
+    }
     $buttonDom = new \DOMDocument();
     $buttonDom->loadHTML($parsedBlock['innerHTML']);
     $buttonLink = $buttonDom->getElementsByTagName('a')->item(0);
