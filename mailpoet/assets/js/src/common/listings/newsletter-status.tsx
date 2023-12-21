@@ -81,11 +81,17 @@ function NewsletterStatus({
   const scheduled = scheduledFor && isFuture(scheduledFor);
   const inProgress =
     (!scheduledFor || isPast(scheduledFor)) && processed < total && !isCorrupt;
-  const sent = (!scheduledFor || isPast(scheduledFor)) && processed >= total;
+  const sent = status === 'sent' && processed >= total;
   const sentWithoutQueue = status === 'sent' && total === undefined;
   let percentage = 0;
   let label: string | JSX.Element = __('Not sent yet!', 'mailpoet');
-  if (scheduled) {
+
+  if (sent) {
+    label = `${MailPoet.Num.toLocaleFixed(
+      total,
+    )} / ${MailPoet.Num.toLocaleFixed(total)}`;
+    percentage = 100;
+  } else if (scheduled) {
     const scheduledDate = MailPoet.Date.short(scheduledFor);
     const scheduledTime = MailPoet.Date.time(scheduledFor);
     const now = new Date();
@@ -131,11 +137,6 @@ function NewsletterStatus({
       processed,
     )} / ${MailPoet.Num.toLocaleFixed(total)}`;
     percentage = 100 * (processed / total);
-  } else if (sent) {
-    label = `${MailPoet.Num.toLocaleFixed(
-      total,
-    )} / ${MailPoet.Num.toLocaleFixed(total)}`;
-    percentage = 100;
   } else if (sentWithoutQueue) {
     label = __('Sent', 'mailpoet');
     percentage = 100;
@@ -159,7 +160,7 @@ function NewsletterStatus({
         'mailpoet-listing-status-corrupt': isCorrupt,
       })}
     >
-      {scheduled && <ScheduledIcon />}
+      {scheduled && !sent && <ScheduledIcon />}
       {!isCorrupt && <CircularProgress percentage={percentage} />}
       <div className="mailpoet-listing-status-label">{label}</div>
       {isCorrupt && logs.length > 0 && (
