@@ -3,6 +3,7 @@
 namespace unit\EmailEditor\Engine\Renderer\Preprocessors;
 
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TypographyPreprocessor;
+use MailPoet\EmailEditor\Engine\SettingsController;
 
 class TypographyPreprocessorTest extends \MailPoetUnitTest {
 
@@ -11,7 +12,17 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->preprocessor = new TypographyPreprocessor();
+    $settingsMock = $this->createMock(SettingsController::class);
+    $themeMock = $this->createMock(\WP_Theme_JSON::class);
+    $themeMock->method('get_data')->willReturn([
+      'styles' => [
+        'color' => [
+          'text' => '#000000',
+        ],
+      ],
+    ]);
+    $settingsMock->method('getTheme')->willReturn($themeMock);
+    $this->preprocessor = new TypographyPreprocessor($settingsMock);
   }
 
   public function testItCopiesColumnsTypography(): void {
@@ -88,10 +99,10 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     $result = $this->preprocessor->preprocess($blocks, []);
     $result = $result[0];
     verify($result['innerBlocks'])->arrayCount(2);
-    verify($result['email_attrs'])->equals(['width' => '640px']);
-    verify($result['innerBlocks'][0]['email_attrs'])->equals([]);
-    verify($result['innerBlocks'][1]['email_attrs'])->equals([]);
-    verify($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals([]);
+    verify($result['email_attrs'])->equals(['width' => '640px', 'color' => '#000000']);
+    verify($result['innerBlocks'][0]['email_attrs'])->equals(['color' => '#000000']);
+    verify($result['innerBlocks'][1]['email_attrs'])->equals(['color' => '#000000']);
+    verify($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals(['color' => '#000000']);
   }
 
   public function testItOverridesColumnsTypography(): void {
@@ -191,7 +202,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     verify($child1['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs1);
     verify($child1['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs1);
     verify($child2['innerBlocks'])->arrayCount(1);
-    verify($child2['email_attrs'])->equals([]);
+    verify($child2['email_attrs'])->equals(['color' => '#000000']);
     verify($child2['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
     verify($child2['innerBlocks'][0]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
   }
