@@ -82,9 +82,8 @@ export function BlockEditor() {
     { id: postId },
   );
 
-  // These will be set by the user in the future in email or global styles.
+  // This will be set by the user in the future in email or global styles.
   const layoutBackground = layoutStyles.background;
-  const documentBackground = '#ffffff';
 
   let inlineStyles = useResizeCanvas(previewDeviceType);
   // UseResizeCanvas returns null if the previewDeviceType is Desktop.
@@ -97,7 +96,6 @@ export function BlockEditor() {
       flexFlow: 'column',
     };
   }
-  inlineStyles.background = documentBackground;
   inlineStyles.transition = 'all 0.3s ease 0s';
 
   const contentAreaStyles = {
