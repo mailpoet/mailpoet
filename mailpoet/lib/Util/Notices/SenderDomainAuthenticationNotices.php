@@ -71,17 +71,30 @@ class SenderDomainAuthenticationNotices {
     $contactCount = $this->subscribersFeatures->getSubscribersCount();
     $isFreeMailUser = $this->isFreeMailUser();
 
-    $isErrorStyle = $contactCount > self::UPPER_LIMIT;
-
     $noticeContent = $isFreeMailUser
       ? $this->getNoticeContentForFreeMailUsers($contactCount)
-      : $this->getNoticeContentForBrandedDomainUsers(in_array($this->getDefaultFromDomain(), $this->authorizedSenderDomainController->getPartiallyVerifiedSenderDomains(true)), $contactCount);
+      : $this->getNoticeContentForBrandedDomainUsers($this->isPartiallyVerified(), $contactCount);
 
-    if ($isErrorStyle) {
+    if ($this->isErrorStyle()) {
       return Notice::displayError($noticeContent, '', '', true, false);
     }
 
     return Notice::displayWarning($noticeContent);
+  }
+
+  public function isErrorStyle(): bool {
+    if (
+      $this->subscribersFeatures->getSubscribersCount() < self::UPPER_LIMIT
+      || $this->isPartiallyVerified()
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  public function isPartiallyVerified(): bool {
+    return in_array($this->getDefaultFromDomain(), $this->authorizedSenderDomainController->getPartiallyVerifiedSenderDomains(true));
   }
 
   public function getNoticeContentForFreeMailUsers(int $contactCount): string {
@@ -154,7 +167,7 @@ class SenderDomainAuthenticationNotices {
   }
 
   public function getAuthenticateDomainButton() {
-    $buttonClass = $this->subscribersFeatures->getSubscribersCount() > self::UPPER_LIMIT
+    $buttonClass = $this->isErrorStyle()
       ? 'button-primary'
       : 'button-secondary';
     $button = sprintf('<a href="#" class="button %s mailpoet-js-button-authorize-email-and-sender-domain" data-email="%s" data-type="domain">%s</a>',
