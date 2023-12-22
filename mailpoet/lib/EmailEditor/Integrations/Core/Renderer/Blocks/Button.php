@@ -85,9 +85,7 @@ class Button implements BlockRenderer {
     $typography = $parsedBlock['attrs']['style']['typography'] ?? [];
     $typography['textDecoration'] = $typography['textDecoration'] ?? ($parsedBlock['email_attrs']['text-decoration'] ?? 'inherit');
     $linkStyles = array_merge($linkStyles, wp_style_engine_get_styles(['typography' => $typography])['declarations']);
-    if ($parsedBlock['attrs']['style']['color']['text'] ?? '') {
-      $linkStyles['color'] = $parsedBlock['attrs']['style']['color']['text'];
-    }
+    $linkStyles['color'] = $parsedBlock['email_attrs']['color'];
 
     // Escaping
     $wrapperStyles = array_map('esc_attr', $wrapperStyles);
