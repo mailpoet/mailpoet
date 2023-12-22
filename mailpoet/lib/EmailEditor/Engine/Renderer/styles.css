@@ -146,10 +146,6 @@ ol {
   visibility: hidden;
 }
 
-.email_content_wrapper {
-  background: #fff;
-}
-
 @media screen and (max-width: 660px) {
   .email_column {
     max-width: 100% !important;

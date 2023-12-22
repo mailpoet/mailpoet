@@ -17,8 +17,8 @@
       {{email_template_styles}}
     </style>
   </head>
-  <body style="word-spacing:normal;background:{{background}};">
-    <div class="email_layout_wrapper" style="background:{{background}}">
+  <body style="word-spacing:normal;background:{{layout_background}};">
+    <div class="email_layout_wrapper" style="background:{{layout_background}}">
       <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" class="" style="width:{{width}};" width="{{width}}" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
       <div style="margin: 0px auto; max-width: {{width}}">
         <table
@@ -53,6 +53,7 @@
                   padding-bottom: {{padding_bottom}};
                   padding-top: {{padding_top}};
                   text-align: center;
+                  background: {{content_background}};
                 "
               >
                 {{email_body}}
