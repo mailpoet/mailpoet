@@ -75,11 +75,13 @@ class SenderDomainAuthenticationNotices {
       ? $this->getNoticeContentForFreeMailUsers($contactCount)
       : $this->getNoticeContentForBrandedDomainUsers($this->isPartiallyVerified(), $contactCount);
 
+    $extraClasses = 'mailpoet-dismissible-notice is-dismissible';
+
     if ($this->isErrorStyle()) {
-      return Notice::displayError($noticeContent, '', '', true, false);
+      return Notice::displayError($noticeContent, $extraClasses, '', true, false);
     }
 
-    return Notice::displayWarning($noticeContent);
+    return Notice::displayWarning($noticeContent, $extraClasses);
   }
 
   public function isErrorStyle(): bool {
