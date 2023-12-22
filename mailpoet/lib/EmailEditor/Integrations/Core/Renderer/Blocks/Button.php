@@ -60,11 +60,14 @@ class Button implements BlockRenderer {
 
     // Border
     if ($parsedBlock['attrs']['style']['border'] ?? '') {
+      // Use text color if border color is not set
+      if (!($parsedBlock['attrs']['style']['border']['color'] ?? '')) {
+        $parsedBlock['attrs']['style']['border']['color'] = $parsedBlock['attrs']['style']['color']['text'] ?? null;
+      }
       $wrapperStyles = array_merge($wrapperStyles, wp_style_engine_get_styles(['border' => $parsedBlock['attrs']['style']['border']])['declarations']);
-    }
-    if ($parsedBlock['attrs']['style']['border']['width'] ?? '') {
       $wrapperStyles['border-style'] = 'solid';
     } else {
+      // Some clients render 1px border when not set as none
       $wrapperStyles['border'] = 'none';
     }
 
@@ -72,7 +75,10 @@ class Button implements BlockRenderer {
     if ($parsedBlock['attrs']['style']['spacing']['padding'] ?? '') {
       $padding = $parsedBlock['attrs']['style']['spacing']['padding'];
       $wrapperStyles['mso-padding-alt'] = "{$padding['top']} {$padding['right']} {$padding['bottom']} {$padding['left']}";
-      $linkStyles['padding'] = "{$padding['top']} {$padding['right']} {$padding['bottom']} {$padding['left']}";
+      $linkStyles['padding-top'] = $padding['top'];
+      $linkStyles['padding-right'] = $padding['right'];
+      $linkStyles['padding-bottom'] = $padding['bottom'];
+      $linkStyles['padding-left'] = $padding['left'];
     }
 
     // Typography
