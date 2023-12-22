@@ -46,41 +46,41 @@ class Button implements BlockRenderer {
 
     // Styles attributes
     $wrapperStyles = [
-      "background: $bgColor",
-      'cursor: auto',
-      'word-break: break-word',
-      'box-sizing: border-box',
+      'background' => $bgColor,
+      'cursor' => 'auto',
+      'word-break' => 'break-word',
+      'box-sizing' => 'border-box',
     ];
     $linkStyles = [
-      'display: block',
-      'line-height: 120%',
-      'margin: 0',
-      'mso-padding-alt: 0px',
+      'display' => 'block',
+      'line-height' => '120%',
+      'margin' => '0',
+      'mso-padding-alt' => '0px',
     ];
 
     // Border
     if ($parsedBlock['attrs']['style']['border'] ?? '') {
-      $wrapperStyles[] = wp_style_engine_get_styles(['border' => $parsedBlock['attrs']['style']['border']])['css'];
+      $wrapperStyles = array_merge($wrapperStyles, wp_style_engine_get_styles(['border' => $parsedBlock['attrs']['style']['border']])['declarations']);
     }
     if ($parsedBlock['attrs']['style']['border']['width'] ?? '') {
-      $wrapperStyles[] = 'border-style: solid';
+      $wrapperStyles['border-style'] = 'solid';
     } else {
-      $wrapperStyles[] = 'border: none';
+      $wrapperStyles['border'] = 'none';
     }
 
     // Spacing
     if ($parsedBlock['attrs']['style']['spacing']['padding'] ?? '') {
       $padding = $parsedBlock['attrs']['style']['spacing']['padding'];
-      $wrapperStyles[] = "mso-padding-alt: {$padding['top']} {$padding['right']} {$padding['bottom']} {$padding['left']}";
-      $linkStyles[] = "padding: {$padding['top']} {$padding['right']} {$padding['bottom']} {$padding['left']}";
+      $wrapperStyles['mso-padding-alt'] = "{$padding['top']} {$padding['right']} {$padding['bottom']} {$padding['left']}";
+      $linkStyles['padding'] = "{$padding['top']} {$padding['right']} {$padding['bottom']} {$padding['left']}";
     }
 
     // Typography
     $typography = $parsedBlock['attrs']['style']['typography'] ?? [];
     $typography['textDecoration'] = $typography['textDecoration'] ?? ($parsedBlock['email_attrs']['text-decoration'] ?? 'inherit');
-    $linkStyles[] = wp_style_engine_get_styles(['typography' => $typography])['css'];
+    $linkStyles = array_merge($linkStyles, wp_style_engine_get_styles(['typography' => $typography])['declarations']);
     if ($parsedBlock['attrs']['style']['color']['text'] ?? '') {
-      $linkStyles[] = "color: {$parsedBlock['attrs']['style']['color']['text']}";
+      $linkStyles['color'] = $parsedBlock['attrs']['style']['color']['text'];
     }
 
     // Escaping
@@ -88,10 +88,10 @@ class Button implements BlockRenderer {
     $linkStyles = array_map('esc_attr', $linkStyles);
     // Font family may contain single quotes
     $contentStyles = $settingsController->getEmailContentStyles();
-    $linkStyles[] = str_replace('&#039;', "'", esc_attr("font-family: {$contentStyles['typography']['fontFamily']}"));
+    $linkStyles['font-family'] = str_replace('&#039;', "'", esc_attr("{$contentStyles['typography']['fontFamily']}"));
 
-    $markup = str_replace('{linkStyles}', join(';', $linkStyles) . ';', $markup);
-    $markup = str_replace('{wrapperStyles}', join(';', $wrapperStyles) . ';', $markup);
+    $markup = str_replace('{linkStyles}', $settingsController->convertStylesToString($linkStyles), $markup);
+    $markup = str_replace('{wrapperStyles}', $settingsController->convertStylesToString($wrapperStyles), $markup);
 
     return $markup;
   }
