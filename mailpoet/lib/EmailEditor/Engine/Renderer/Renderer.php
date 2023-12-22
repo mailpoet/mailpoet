@@ -43,6 +43,8 @@ class Renderer {
     $parsedBlocks = $parser->parse($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     $layoutStyles = $this->settingsController->getEmailLayoutStyles();
+    $themeData = $this->settingsController->getTheme()->get_data();
+    $contentBackground = $themeData['styles']['color']['background'] ?? $layoutStyles['background'];
     $parsedBlocks = $this->preprocessManager->preprocess($parsedBlocks, $layoutStyles);
     $renderedBody = $this->renderBlocks($parsedBlocks);
 
@@ -53,8 +55,8 @@ class Renderer {
 
     // Apply layout styles
     $template = str_replace(
-      ['{{width}}', '{{background}}', '{{padding_top}}', '{{padding_right}}', '{{padding_bottom}}', '{{padding_left}}'],
-      [$layoutStyles['width'], $layoutStyles['background'], $layoutStyles['padding']['top'], $layoutStyles['padding']['right'], $layoutStyles['padding']['bottom'], $layoutStyles['padding']['left']],
+      ['{{width}}', '{{layout_background}}', '{{content_background}}', '{{padding_top}}', '{{padding_right}}', '{{padding_bottom}}', '{{padding_left}}'],
+      [$layoutStyles['width'], $layoutStyles['background'], $contentBackground, $layoutStyles['padding']['top'], $layoutStyles['padding']['right'], $layoutStyles['padding']['bottom'], $layoutStyles['padding']['left']],
       $template
     );
 

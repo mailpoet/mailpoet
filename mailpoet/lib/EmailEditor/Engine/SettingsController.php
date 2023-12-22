@@ -39,10 +39,10 @@ class SettingsController {
   const EMAIL_WIDTH = '660px';
 
   /**
-   * Width of the email in pixels.
+   * Color of email layout background.
    * @var string
    */
-  const EMAIL_BACKGROUND = '#cccccc';
+  const EMAIL_LAYOUT_BACKGROUND = '#cccccc';
 
   /**
    * Padding of the email in pixels.
@@ -113,10 +113,7 @@ class SettingsController {
     $coreSettings['typography']['dropCap'] = false; // Showing large initial letter cannot be implemented in emails
     $coreSettings['typography']['fontWeight'] = false; // Font weight will be handled by the font family later
 
-    $themeJson = (string)file_get_contents(dirname(__FILE__) . '/theme.json');
-    $themeJson = json_decode($themeJson, true);
-    /** @var array $themeJson */
-    $theme = new \WP_Theme_JSON($themeJson);
+    $theme = $this->getTheme();
 
     // body selector is later transformed to .editor-styles-wrapper
     // setting padding for bottom and top is needed because \WP_Theme_JSON::get_stylesheet() set them only for .wp-site-blocks selector
@@ -180,7 +177,7 @@ class SettingsController {
   public function getEmailLayoutStyles(): array {
     return [
       'width' => self::EMAIL_WIDTH,
-      'background' => self::EMAIL_BACKGROUND,
+      'background' => self::EMAIL_LAYOUT_BACKGROUND,
       'padding' => [
         'bottom' => self::EMAIL_PADDING,
         'left' => self::EMAIL_PADDING,
@@ -223,5 +220,12 @@ class SettingsController {
 
   public function parseNumberFromStringWithPixels(string $string): float {
     return (float)str_replace('px', '', $string);
+  }
+
+  public function getTheme(): \WP_Theme_JSON {
+    $themeJson = (string)file_get_contents(dirname(__FILE__) . '/theme.json');
+    $themeJson = json_decode($themeJson, true);
+    /** @var array $themeJson */
+    return new \WP_Theme_JSON($themeJson);
   }
 }
