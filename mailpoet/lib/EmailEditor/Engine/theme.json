@@ -15,6 +15,10 @@
         "right": "10px",
         "top": "10px"
       }
+    },
+    "color": {
+      "background": "#ffffff",
+      "text": "#000000"
     }
   }
 }
