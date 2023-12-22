@@ -115,6 +115,7 @@ parameters:
       - ../../tests/_support/_generated
       - ../../tests/integration/Models # Old models are deprecated and will be removed soon
       - ../../tests/unit/Entities/SubscriberEntityTest.php
+      - ../../tests/unit/_stubs.php # Contains stubs for WP classes etc.
       - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php # does not yet offer support for PHP 8.1
 includes:
   - extensions/CodeceptionExtension/extension.neon

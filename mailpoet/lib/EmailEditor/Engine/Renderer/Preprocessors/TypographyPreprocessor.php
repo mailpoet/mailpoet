@@ -2,6 +2,8 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer\Preprocessors;
 
+use MailPoet\EmailEditor\Engine\SettingsController;
+
 class TypographyPreprocessor implements Preprocessor {
   /**
    * List of styles that should be copied from parent to children.
@@ -14,9 +16,21 @@ class TypographyPreprocessor implements Preprocessor {
     'text-decoration',
   ];
 
+  /** @var SettingsController */
+  private $settingsController;
+
+  public function __construct(
+    SettingsController $settingsController
+  ) {
+    $this->settingsController = $settingsController;
+  }
+
   public function preprocess(array $parsedBlocks, array $layoutStyles): array {
     foreach ($parsedBlocks as $key => $block) {
       $block = $this->preprocessParent($block);
+      // Set defaults from theme - this needs to be done on top level blocks only
+      $block = $this->setDefaultsFromTheme($block);
+
       $block['innerBlocks'] = $this->copyTypographyFromParent($block['innerBlocks'], $block);
       $parsedBlocks[$key] = $block;
     }
@@ -55,5 +69,13 @@ class TypographyPreprocessor implements Preprocessor {
 
   private function filterStyles(array $styles): array {
     return array_intersect_key($styles, array_flip(self::TYPOGRAPHY_STYLES));
+  }
+
+  private function setDefaultsFromTheme(array $block): array {
+    $themeData = $this->settingsController->getTheme()->get_data();
+    if (!($block['email_attrs']['color'] ?? '')) {
+      $block['email_attrs']['color'] = $themeData['styles']['color']['text'] ?? null;
+    }
+    return $block;
   }
 }

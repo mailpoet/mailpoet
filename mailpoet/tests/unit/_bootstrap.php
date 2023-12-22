@@ -38,3 +38,4 @@ abstract class MailPoetUnitTest extends \Codeception\TestCase\Test {
 }
 
 include '_fixtures.php';
+include '_stubs.php';
