@@ -2,6 +2,7 @@
 
 namespace MailPoet\Util\Notices;
 
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -18,6 +19,8 @@ class SenderDomainAuthenticationNotices {
   const FREE_MAIL_KB_URL = 'https://kb.mailpoet.com/article/259-your-from-address-cannot-be-yahoo-com-gmail-com-outlook-com';
   const SPF_DKIM_DMARC_KB_URL = 'https://kb.mailpoet.com/article/295-spf-dkim-dmarc';
 
+  const INSTALLED_AFTER_NEW_RESTRICTIONS_OPTION = 'installed_after_new_domain_restrictions';
+
   private SettingsController $settingsController;
 
   private Subscribers $subscribersFeatures;
@@ -28,18 +31,22 @@ class SenderDomainAuthenticationNotices {
 
   private Bridge $bridge;
 
+  private NewsletterStatisticsRepository $newsletterStatisticsRepository;
+
   public function __construct(
     SettingsController $settingsController,
     Subscribers $subscribersFeatures,
     FreeDomains $freeDomains,
     AuthorizedSenderDomainController $authorizedEmailsController,
-    Bridge $bridge
+    Bridge $bridge,
+    NewsletterStatisticsRepository $newsletterStatisticsRepository
   ) {
     $this->settingsController = $settingsController;
     $this->subscribersFeatures = $subscribersFeatures;
     $this->freeDomains = $freeDomains;
     $this->authorizedSenderDomainController = $authorizedEmailsController;
     $this->bridge = $bridge;
+    $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
   }
 
   public function getDefaultFromAddress(): string {
@@ -54,11 +61,29 @@ class SenderDomainAuthenticationNotices {
     return $this->freeDomains->isEmailOnFreeDomain($this->getDefaultFromDomain());
   }
 
+  public function isNewUser(): bool {
+    $installedVersion = $this->settingsController->get('version');
+
+    // Setup wizard has not been completed
+    if ($installedVersion === null) {
+      return true;
+    }
+
+    $installedAfterNewDomainRestrictions = $this->settingsController->get(self::INSTALLED_AFTER_NEW_RESTRICTIONS_OPTION, false);
+
+    if ($installedAfterNewDomainRestrictions) {
+      return true;
+    }
+
+    return $this->newsletterStatisticsRepository->countBy([]) === 0;
+  }
+
   public function init($shouldDisplay): ?Notice {
     if (
       !$shouldDisplay
       || !$this->bridge->isMailpoetSendingServiceEnabled()
       || in_array($this->getDefaultFromDomain(), $this->authorizedSenderDomainController->getFullyVerifiedSenderDomains(true))
+      || $this->isNewUser()
       || $this->isFreeMailUser() && $this->subscribersFeatures->getSubscribersCount() <= self::LOWER_LIMIT
     ) {
       return null;
