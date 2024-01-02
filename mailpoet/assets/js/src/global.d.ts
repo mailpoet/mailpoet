@@ -134,7 +134,6 @@ interface Window {
   mailpoet_premium_plugin_download_url: string;
   mailpoet_premium_plugin_activation_url: string;
   mailpoet_plugin_partial_key: string;
-  mailpoet_hide_automations: boolean;
   mailpoet_email_volume_limit: string;
   mailpoet_email_volume_limit_reached: boolean;
   mailpoet_current_wp_user_email: string;
