@@ -32,9 +32,6 @@ class NewslettersListingCest {
     // Standard newsletters is the default tab
     $i->waitForText('Standard newsletter', 5, '[data-automation-id="listing_item_' . $standardNewsletter->getId() . '"]');
 
-    $i->click('Welcome Emails', '[data-automation-id="newsletters_listing_tabs"]');
-    $i->waitForText('Welcome email', 5, '[data-automation-id="listing_item_' . $welcomeEmail->getId() . '"]');
-
     $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
     $i->waitForText('Post notification', 5, '[data-automation-id="listing_item_' . $postNotificationEmail->getId() . '"]');
     $i->seeNoJSErrors();

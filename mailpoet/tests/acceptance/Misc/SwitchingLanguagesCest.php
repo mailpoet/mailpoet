@@ -105,7 +105,6 @@ class SwitchingLanguagesCest {
     $i->wantTo('Check Emails listing strings (translated with MailPoet.i18n)');
     $i->waitForText('Geklickt, Geöffnet');
     $i->waitForText('Newsletter');
-    $i->waitForText('Willkommens-E-Mail');
     $i->waitForText('Beitrags-Benachrichtigungen');
     $i->waitForText('Wiederaufnahme-E-Mails');
 
