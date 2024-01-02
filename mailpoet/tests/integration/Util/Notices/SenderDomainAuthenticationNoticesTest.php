@@ -4,6 +4,9 @@ namespace integration\Util\Notices;
 
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\StatisticsNewsletters;
+use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Util\Notices\SenderDomainAuthenticationNotices;
 
 class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
@@ -127,5 +130,28 @@ class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
     $message = $this->notice->getNoticeContentForBrandedDomainUsers(true, 1200);
     $this->assertStringContainsString('Authenticate your sender domain to improve email delivery rates.', $message);
     $this->assertStringContainsString('Authenticate domain', $message);
+  }
+
+  public function testUserIsNewIfTheyHaveNotCompletedWelcomeWizard(): void {
+    $this->settings->delete('version');
+    $this->assertTrue($this->notice->isNewUser());
+  }
+
+  public function testUserIsNewIfTheyInstalledAfterNewRestrictionsImplemented(): void {
+    $this->settings->set('version', MAILPOET_VERSION);
+    $this->settings->set('installed_after_new_domain_restrictions', '1');
+    $this->assertTrue($this->notice->isNewUser());
+    // also true even if they've sent emails
+    (new StatisticsNewsletters((new Newsletter())->withSendingQueue()->create(), (new Subscriber())->create()))->create();
+    $this->assertTrue($this->notice->isNewUser());
+  }
+
+  public function testUserIsNotNewIfTheyDoNotHaveTheSettingAndHaveSentEmails(): void {
+    $this->settings->set('version', MAILPOET_VERSION);
+    $this->settings->delete('installed_after_new_domain_restrictions');
+    // No emails yet, so they are still "new"
+    $this->assertTrue($this->notice->isNewUser());
+    (new StatisticsNewsletters((new Newsletter())->withSendingQueue()->create(), (new Subscriber())->create()))->create();
+    $this->assertFalse($this->notice->isNewUser());
   }
 }
