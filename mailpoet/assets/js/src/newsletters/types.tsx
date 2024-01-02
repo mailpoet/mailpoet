@@ -84,50 +84,6 @@ function NewsletterTypesComponent({
     );
   };
 
-  const getRedirectToAutomateWooType = () => {
-    const redirectToAutomateWoo = (): void => {
-      MailPoet.trackEvent(
-        'Emails > Type selected',
-        {
-          'Email type': 'woocommerce_automatewoo',
-        },
-        { send_immediately: true }, // This tell Mixpanel client to send events from buffer immediately
-        () => {
-          // Anonymous callback which does the redirect
-          window.location.href = `edit.php?post_type=aw_workflow#presets`;
-        },
-      );
-    };
-    return {
-      slug: 'woocommerce_automatewoo',
-      title: __('Automations', 'mailpoet'),
-      description: __(
-        'Convert and retain customers with automated marketing that does the hard work for you. AutomateWoo has the tools you need to grow your store and make more money.',
-        'mailpoet',
-      ),
-      kbLink:
-        'https://kb.mailpoet.com/article/408-integration-with-automatewoo',
-      action: (
-        <Button
-          automationId="woocommerce_automatewoo"
-          onClick={redirectToAutomateWoo}
-          tabIndex={0}
-          onKeyDown={(event): void => {
-            if (
-              ['keydown', 'keypress'].includes(event.type) &&
-              ['Enter', ' '].includes(event.key)
-            ) {
-              event.preventDefault();
-              redirectToAutomateWoo();
-            }
-          }}
-        >
-          {__('Set up', 'mailpoet')}
-        </Button>
-      ),
-    };
-  };
-
   const createNewsletter = (type): void => {
     setIsCreating(true);
     MailPoet.trackEvent('Emails > Type selected', {
@@ -241,45 +197,43 @@ function NewsletterTypesComponent({
       ),
       action: standardAction,
     },
-    MailPoet.hideAutomations
-      ? getRedirectToAutomateWooType()
-      : {
-          slug: 'automations',
-          title: (
-            <>
-              {__('Automations', 'mailpoet')}{' '}
-              <Info>
-                {__(
-                  'Automations such as Welcome emails and WooCommerce emails can be found here, alongside more automation templates powered by our new editor.',
-                  'mailpoet',
-                )}
-              </Info>
-            </>
-          ),
-          description: __(
-            'Set up automated emails like welcome emails, abandoned cart reminders or one of our many automation templates to inform, engage and reward your audience.',
-            'mailpoet',
-          ),
-          action: (
-            <Button
-              onClick={createAutomation}
-              automationId="create_automation"
-              withSpinner={isCreating}
-              onKeyDown={(event): void => {
-                if (
-                  ['keydown', 'keypress'].includes(event.type) &&
-                  ['Enter', ' '].includes(event.key)
-                ) {
-                  event.preventDefault();
-                  createAutomation();
-                }
-              }}
-              tabIndex={0}
-            >
-              {__('Set up', 'mailpoet')}
-            </Button>
-          ),
-        },
+    {
+      slug: 'automations',
+      title: (
+        <>
+          {__('Automations', 'mailpoet')}{' '}
+          <Info>
+            {__(
+              'Automations such as Welcome emails and WooCommerce emails can be found here, alongside more automation templates powered by our new editor.',
+              'mailpoet',
+            )}
+          </Info>
+        </>
+      ),
+      description: __(
+        'Set up automated emails like welcome emails, abandoned cart reminders or one of our many automation templates to inform, engage and reward your audience.',
+        'mailpoet',
+      ),
+      action: (
+        <Button
+          onClick={createAutomation}
+          automationId="create_automation"
+          withSpinner={isCreating}
+          onKeyDown={(event): void => {
+            if (
+              ['keydown', 'keypress'].includes(event.type) &&
+              ['Enter', ' '].includes(event.key)
+            ) {
+              event.preventDefault();
+              createAutomation();
+            }
+          }}
+          tabIndex={0}
+        >
+          {__('Set up', 'mailpoet')}
+        </Button>
+      ),
+    },
     {
       slug: 'notification',
       title: __('Latest Post Notifications', 'mailpoet'),

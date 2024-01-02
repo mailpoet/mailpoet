@@ -521,18 +521,8 @@ class Menu {
   }
 
   private function registerAutomationMenu() {
-    $parentSlug = self::MAIN_PAGE_SLUG;
-    // Automations menu is hidden when the subscription is part of a bundle and AutomateWoo is active but pages can be accessed directly
-    $showAutomations = !($this->wp->isPluginActive('automatewoo/automatewoo.php') &&
-      $this->servicesChecker->isBundledSubscription());
-    if (
-      !$this->wp->applyFilters('mailpoet_show_automations', $showAutomations)
-    ) {
-      $parentSlug = self::NO_PARENT_PAGE_SLUG;
-    }
-
     $automationPage = $this->wp->addSubmenuPage(
-      $parentSlug,
+      self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Automations', 'mailpoet')),
       // @ToDo Remove Beta once Automation is no longer beta.
       '<span>' . esc_html__('Automations', 'mailpoet') . '</span><span class="mailpoet-beta-badge">Beta</span>',
@@ -562,7 +552,6 @@ class Menu {
     );
 
     // Automation templates
-
     $this->wp->addSubmenuPage(
       self::AUTOMATIONS_PAGE_SLUG,
       $this->setPageTitle(__('Automation Templates', 'mailpoet')),

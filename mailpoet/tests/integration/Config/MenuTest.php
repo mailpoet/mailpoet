@@ -3,12 +3,8 @@
 namespace MailPoet\Test\Config;
 
 use Codeception\Util\Stub;
-use MailPoet\Config\AccessControl;
 use MailPoet\Config\Menu;
-use MailPoet\Config\Router;
 use MailPoet\Config\ServicesChecker;
-use MailPoet\Form\Util\CustomFonts;
-use MailPoet\WP\Functions as WPFunctions;
 
 class MenuTest extends \MailPoetTest {
   public function testItReturnsTrueIfCurrentPageBelongsToMailpoet() {
@@ -59,84 +55,5 @@ class MenuTest extends \MailPoetTest {
     );
     $menu->checkPremiumKey($checker);
     verify($menu->premiumKeyValid)->false();
-  }
-
-  public function testItHidesAutomationIfBundledSubscriptionAndAutomateWooActive() {
-    $checker = Stub::make(
-      new ServicesChecker(),
-      [
-        'isPremiumKeyValid' => true,
-        'isBundledSubscription' => true,
-      ],
-      $this
-    );
-
-    $wpMock = $this->createMock(WPFunctions::class);
-    $wpMock->method('isPluginActive')->willReturn(true);
-
-    $accessControlMock = $this->createMock(AccessControl::class);
-    $accessControlMock->method('validatePermission')->willReturn(true);
-
-    $wpMock->expects($this->any())->method('addSubmenuPage')->withConsecutive(
-      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [Menu::NO_PARENT_PAGE_SLUG, $this->anything(), $this->anything(), $this->anything(), Menu::AUTOMATIONS_PAGE_SLUG, $this->anything()]
-    )->willReturn(true);
-
-    $menu = new Menu(
-      $accessControlMock,
-      $wpMock,
-      $checker,
-      $this->diContainer,
-      $this->diContainer->get(Router::class),
-      $this->diContainer->get(CustomFonts::class)
-    );
-
-    $menu->setup();
-
-  }
-
-  public function testItShowsAutomationIfFilterIsTrue() {
-    $checker = Stub::make(
-      new ServicesChecker(),
-      [
-        'isPremiumKeyValid' => true,
-        'isBundledSubscription' => true,
-      ],
-      $this
-    );
-
-    $wpMock = $this->createMock(WPFunctions::class);
-    $wpMock->method('isPluginActive')->willReturn(true);
-    $wpMock->method('applyFilters')->willReturn(true);
-
-    $accessControlMock = $this->createMock(AccessControl::class);
-    $accessControlMock->method('validatePermission')->willReturn(true);
-
-    $wpMock->expects($this->any())->method('addSubmenuPage')->withConsecutive(
-      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [$this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything(), $this->anything()],
-      [Menu::MAIN_PAGE_SLUG, $this->anything(), $this->anything(), $this->anything(), Menu::AUTOMATIONS_PAGE_SLUG, $this->anything()]
-    )->willReturn(true);
-
-    $menu = new Menu(
-      $accessControlMock,
-      $wpMock,
-      $checker,
-      $this->diContainer,
-      $this->diContainer->get(Router::class),
-      $this->diContainer->get(CustomFonts::class)
-    );
-
-    $menu->setup();
-
   }
 }

@@ -3,8 +3,6 @@ import { MailPoet } from 'mailpoet';
 import { Notice } from 'notices/notice';
 
 function AutomationsInfoNotice() {
-  if (!MailPoet.hideAutomations) return null;
-
   const automationsInfo = createInterpolateElement(
     MailPoet.I18n.t('automationsInfoNotice'),
     {
