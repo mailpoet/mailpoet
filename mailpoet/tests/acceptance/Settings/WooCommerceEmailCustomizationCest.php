@@ -34,14 +34,8 @@ class WooCommerceEmailCustomizationCest {
 
     $this->settings->withWooCommerceEmailCustomizerEnabled();
 
-    $i->amOnMailpoetPage('Emails');
-    $i->click('[data-automation-id="new_email"]');
-
-    $buttonSelector = '[data-automation-id="customize_woocommerce"]';
-    $i->seeNoJSErrors();
-    $i->waitForText('Customize', 30);
-    $i->dontSee('Activate', $buttonSelector);
-    $i->click($buttonSelector);
+    $i->amOnMailpoetPage('Settings#/woocommerce');
+    $i->click('Open template editor');
 
     $i->waitForText('Edit template for WooCommerce emails');
     $i->seeInCurrentUrl('?page=mailpoet-newsletter-editor&id=' . $this->woocommerceEmailTemplateId);
@@ -69,8 +63,8 @@ class WooCommerceEmailCustomizationCest {
 
   private function createEmailTemplate(\AcceptanceTester $i) {
     $i->login();
-    $i->amOnMailpoetPage('Emails');
-    $i->click('[data-automation-id="customize_woocommerce"]');
+    $i->amOnMailpoetPage('Settings#/woocommerce');
+    $i->click('Open template editor');
     $i->waitForText('Edit template for WooCommerce emails');
   }
 
