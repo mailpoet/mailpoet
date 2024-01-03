@@ -35,6 +35,8 @@ import { MssAccessNotices } from 'notices/mss-access-notices';
 import { CampaignStatsPage } from './campaign-stats/page';
 import { CorruptEmailNotice } from '../notices/corrupt-email-notice';
 import { LegacyAutomaticEmailsNotice } from '../notices/legacy-automatic-emails-notice';
+import { TopBarWithBeamer } from '../common/top-bar/top-bar';
+import { BackButton, PageHeader } from '../common/page-header';
 
 const trackTabSwitch = (tabKey) =>
   MailPoet.trackEvent(`Tab Emails > ${tabKey} clicked`);
@@ -95,10 +97,23 @@ Tabs.displayName = 'NewsletterTabs';
 function NewNewsletter({ history }) {
   return (
     <ErrorBoundary>
-      <NewsletterTypes
-        history={history}
-        hideClosingButton={window.mailpoet_newsletters_count === 0}
-      />
+      <TopBarWithBeamer />
+      <div className="mailpoet-main-container">
+        <PageHeader
+          heading={__('What would you like to create?', 'mailpoet')}
+          headingPrefix={
+            <BackButton
+              href="#/"
+              label={__('Listing', 'mailpoet')}
+              aria-label={__('Go back to email listing page', 'mailpoet')}
+            />
+          }
+        />
+        <NewsletterTypes
+          history={history}
+          hideClosingButton={window.mailpoet_newsletters_count === 0}
+        />
+      </div>
     </ErrorBoundary>
   );
 }
