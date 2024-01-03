@@ -9,6 +9,8 @@ use MailPoet\Automation\Engine\Data\AutomationTemplate;
 use MailPoet\Automation\Engine\Data\AutomationTemplateCategory;
 use MailPoet\Automation\Engine\Registry;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SegmentsSimpleListRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -30,6 +32,8 @@ class Automation {
   /** @var Registry  */
   private $registry;
 
+  private NewslettersRepository $newslettersRepository;
+
   private SegmentsSimpleListRepository $segmentsListRepository;
 
   public function __construct(
@@ -39,6 +43,7 @@ class Automation {
     WPFunctions $wp,
     AutomationStorage $automationStorage,
     Registry $registry,
+    NewslettersRepository $newslettersRepository,
     SegmentsSimpleListRepository $segmentsListRepository
   ) {
     $this->assetsController = $assetsController;
@@ -47,6 +52,7 @@ class Automation {
     $this->wp = $wp;
     $this->automationStorage = $automationStorage;
     $this->registry = $registry;
+    $this->newslettersRepository = $newslettersRepository;
     $this->segmentsListRepository = $segmentsListRepository;
   }
 
@@ -61,6 +67,9 @@ class Automation {
         'nonce' => $this->wp->wpCreateNonce('wp_rest'),
       ],
       'automationCount' => $this->automationStorage->getAutomationCount(),
+      'legacyAutomationCount' => $this->newslettersRepository->countBy([
+        'type' => [NewsletterEntity::TYPE_WELCOME, NewsletterEntity::TYPE_AUTOMATIC],
+      ]),
       'templates' => array_map(
         function(AutomationTemplate $template): array {
           return $template->toArray();
