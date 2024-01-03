@@ -49,14 +49,14 @@
   align-self: flex-end;
   justify-self: flex-end;
   margin-top: $grid-gap-medium;
-  .mailpoet-dropdown-button-group > button {
-    border-radius: 3px 0 0 3px;
+  .mailpoet-dropdown-button-group {
+    display: inline-flex;
   }
-  .mailpoet-dropdown-button {
+  .mailpoet-dropdown-button-group > .mailpoet-dropdown-button {
     button,
     button:hover {
-      border-left: 1px solid $color-white;
-      border-radius: 0 3px 3px 0;
+      border-radius: 0 2px 2px 0;
+      margin-left: -1px;
     }
   }
   .mailpoet-button-with-wordpress-icon {
