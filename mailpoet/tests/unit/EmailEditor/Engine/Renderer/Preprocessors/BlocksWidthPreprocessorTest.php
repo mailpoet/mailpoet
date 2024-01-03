@@ -263,4 +263,103 @@ class BlocksWidthPreprocessorTest extends \MailPoetUnitTest {
     verify($result[0]['email_attrs']['width'])->equals('660px'); // full width
     verify($result[1]['email_attrs']['width'])->equals('630px'); // 660 - 15 - 15
   }
+
+  public function testItCalculatesWidthForColumnWithoutDefinition(): void {
+    $blocks = [[
+      'blockName' => 'core/columns',
+      'attrs' => [
+        'style' => [
+          'spacing' => [
+            'padding' => [
+              'left' => '25px',
+              'right' => '15px',
+            ],
+          ],
+        ],
+      ],
+      'innerBlocks' => [
+        [
+          'blockName' => 'core/column',
+          'attrs' => [
+            'width' => '140px',
+            'style' => [
+              'spacing' => [
+                'padding' => [
+                  'left' => '25px',
+                  'right' => '15px',
+                ],
+              ],
+            ],
+          ],
+          'innerBlocks' => [],
+        ],
+        [
+          'blockName' => 'core/column',
+          'attrs' => [
+            'style' => [
+              'spacing' => [
+                'padding' => [
+                  'left' => '10px',
+                  'right' => '10px',
+                ],
+              ],
+            ],
+          ],
+          'innerBlocks' => [],
+        ],
+        [
+          'blockName' => 'core/column',
+          'attrs' => [
+            'style' => [
+              'spacing' => [
+                'padding' => [
+                  'left' => '20px',
+                  'right' => '20px',
+                ],
+              ],
+            ],
+          ],
+          'innerBlocks' => [],
+        ],
+      ],
+    ]];
+
+    $result = $this->preprocessor->preprocess($blocks, ['width' => '660px', 'padding' => ['left' => '10px', 'right' => '10px']]);
+    verify($result[0]['innerBlocks'])->arrayCount(3);
+    verify($result[0]['innerBlocks'][0]['email_attrs']['width'])->equals('140px');
+    verify($result[0]['innerBlocks'][1]['email_attrs']['width'])->equals('220px');
+    verify($result[0]['innerBlocks'][2]['email_attrs']['width'])->equals('240px');
+
+    $blocks = [[
+      'blockName' => 'core/columns',
+      'attrs' => [],
+      'innerBlocks' => [
+        [
+          'blockName' => 'core/column',
+          'attrs' => [
+            'width' => '140px',
+            'style' => [
+              'spacing' => [
+                'padding' => [
+                  'left' => '25px',
+                  'right' => '15px',
+                ],
+              ],
+            ],
+          ],
+          'innerBlocks' => [],
+        ],
+        [
+          'blockName' => 'core/column',
+          'attrs' => [],
+          'innerBlocks' => [],
+        ],
+      ],
+    ]];
+
+    $result = $this->preprocessor->preprocess($blocks, ['width' => '660px', 'padding' => ['left' => '10px', 'right' => '10px']]);
+    verify($result[0]['innerBlocks'])->arrayCount(2);
+    verify($result[0]['innerBlocks'][0]['email_attrs']['width'])->equals('140px');
+    verify($result[0]['innerBlocks'][1]['email_attrs']['width'])->equals('500px');
+  }
 }
