@@ -74,6 +74,10 @@ class BlocksWidthPreprocessor implements Preprocessor {
       if (isset($column['attrs']['width']) && !empty($column['attrs']['width'])) {
         $columnsCountWithDefinedWidth++;
         $definedColumnWidth += $this->convertWidthToPixels($column['attrs']['width'], $columnsWidth);
+      } else {
+        // When width is not set we need to add padding to the defined column width for better ratio accuracy
+        $definedColumnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['spacing']['padding']['left'] ?? '0px');
+        $definedColumnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['spacing']['padding']['right'] ?? '0px');
       }
     }
 
@@ -81,7 +85,11 @@ class BlocksWidthPreprocessor implements Preprocessor {
       $defaultColumnsWidth = round(($columnsWidth - $definedColumnWidth) / ($columnsCount - $columnsCountWithDefinedWidth), 2);
       foreach ($columns as $key => $column) {
         if (!isset($column['attrs']['width']) || empty($column['attrs']['width'])) {
-          $columns[$key]['attrs']['width'] = "{$defaultColumnsWidth}px";
+          // Add padding to the specific column width because it's not included in the default width
+          $columnWidth = $defaultColumnsWidth;
+          $columnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['spacing']['padding']['left'] ?? '0px');
+          $columnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['spacing']['padding']['right'] ?? '0px');
+          $columns[$key]['attrs']['width'] = "{$columnWidth}px";
         }
       }
     }
