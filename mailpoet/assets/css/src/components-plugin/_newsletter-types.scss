@@ -1,10 +1,7 @@
 .mailpoet-newsletter-types {
-  clear: both;
   display: grid;
   grid-gap: $grid-gap;
-  grid-template-columns: repeat(auto-fill, 464px);
-  justify-content: center;
-  padding: $grid-gap-medium ($modal-close-button-size + $grid-gap) 0;
+  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
 }
 
 .mailpoet-newsletter-types-close {
