@@ -6,6 +6,7 @@ use AcceptanceTester;
 use DateTimeImmutable;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
+use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Test\DataFactories;
 
 class AutomationListingCest {
@@ -87,6 +88,10 @@ class AutomationListingCest {
       ->withSubject('Welcome')
       ->withWelcomeTypeForSegment()
       ->withCreatedAt('2020-01-20 12:00:00')
+      ->withActiveStatus()
+      ->withScheduledQueue()
+      ->withScheduledQueue()
+      ->withScheduledQueue(['status' => ScheduledTaskEntity::STATUS_COMPLETED, 'count_processed' => 1])
       ->create();
 
     (new DataFactories\Newsletter())
@@ -125,6 +130,9 @@ class AutomationListingCest {
     $welcomeRow = '.mailpoet-automation-listing tr:nth-child(2)';
     $i->see('Welcome', $welcomeRow);
     $i->see('Sent when someone subscribes to the list: WooCommerce Customers.', $welcomeRow);
+    $i->see('Entered 3', $welcomeRow);
+    $i->see('Processing 2', $welcomeRow);
+    $i->see('Exited 1', $welcomeRow);
 
     // abandoned cart email
     $abandonedCartRow = '.mailpoet-automation-listing tr:nth-child(3)';
