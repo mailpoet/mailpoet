@@ -117,3 +117,10 @@
     text-align: center;
   }
 }
+
+.editor-styles-wrapper {
+  .wp-block-columns:not(.is-not-stacked-on-mobile)
+    > .wp-block-column[style*='flex-basis'] {
+    box-sizing: border-box;
+  }
+}
