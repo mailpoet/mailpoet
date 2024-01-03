@@ -8,7 +8,6 @@ import _ from 'underscore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
-import { modalCloseIcon } from 'common/modal/close-icon';
 import { EditorSelectModal } from 'newsletters/editor-select-modal';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { APIErrorsNotice } from '../notices/api-errors-notice';
@@ -18,13 +17,11 @@ interface Props {
   filter?: () => void;
   history: RouteComponentProps['history'];
   hideScreenOptions?: boolean;
-  hideClosingButton?: boolean;
 }
 
 function NewsletterTypesComponent({
   filter,
   history,
-  hideClosingButton = false,
   hideScreenOptions = true,
 }: Props): JSX.Element {
   const [isCreating, setIsCreating] = useState(false);
@@ -317,18 +314,6 @@ function NewsletterTypesComponent({
       />
 
       <div className="mailpoet-newsletter-types">
-        {!hideClosingButton && (
-          <div className="mailpoet-newsletter-types-close">
-            <button
-              type="button"
-              onClick={(): void => history.push('/')}
-              className="mailpoet-modal-close"
-            >
-              {modalCloseIcon}
-            </button>
-          </div>
-        )}
-
         {types.map((type) => renderType(type), this)}
       </div>
 

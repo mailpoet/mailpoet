@@ -276,7 +276,6 @@ class NewsletterListStandardComponent extends Component {
           <NewsletterTypes
             filter={(type) => type.slug === 'standard'}
             hideScreenOptions={false}
-            hideClosingButton
           />
         )}
         {this.state.newslettersCount !== 0 && (

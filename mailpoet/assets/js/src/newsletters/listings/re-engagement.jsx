@@ -375,7 +375,6 @@ class NewsletterListReEngagementComponent extends Component {
           <NewsletterTypes
             filter={(type) => type.slug === 're_engagement'}
             hideScreenOptions={false}
-            hideClosingButton
           />
         )}
         {this.state.newslettersCount !== 0 && (
