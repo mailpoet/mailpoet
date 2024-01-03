@@ -6,12 +6,14 @@ import { Popover, SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { registerTranslations } from 'common';
 import { initializeApi } from './api';
+import { legacyAutomationCount } from './config';
 import { createStore, storeName } from './listing/store';
 import { AutomationListing, AutomationListingHeader } from './listing';
 import { registerApiErrorHandler } from './listing/api-error-handler';
 import { Notices } from './listing/components/notices';
 import { BuildYourOwnSection, HeroSection, TemplatesSection } from './sections';
 import { MailPoet } from '../mailpoet';
+import { LegacyAutomationsNotice } from './listing/legacy-automations-notice';
 
 const trackOpenEvent = () => {
   MailPoet.trackEvent('Automations > Listing viewed');
@@ -32,6 +34,7 @@ function Content(): JSX.Element {
     count > 0 ? (
       <>
         <AutomationListingHeader />
+        {legacyAutomationCount > 0 && <LegacyAutomationsNotice />}
         <AutomationListing />
       </>
     ) : (
