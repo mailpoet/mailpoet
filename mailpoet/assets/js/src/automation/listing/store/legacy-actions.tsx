@@ -16,7 +16,13 @@ const mapToAutomation = (item: ListingItem): AutomationItem => ({
   id: item.id,
   name: item.subject,
   status: item.deleted_at ? AutomationStatus.TRASH : item.status,
-  stats: { totals: { entered: 0, in_progress: 0, exited: 0 } },
+  stats: {
+    totals: {
+      entered: item.total_scheduled + item.total_sent,
+      in_progress: item.total_scheduled,
+      exited: item.total_sent,
+    },
+  },
   isLegacy: true,
   description: getDescription(item),
 });

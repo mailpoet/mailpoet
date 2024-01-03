@@ -13,6 +13,8 @@ export type ListingItem = {
   subject: string;
   status: AutomationStatus;
   deleted_at: string | null;
+  total_scheduled: number;
+  total_sent: number;
   options: {
     event: string;
     group: string;
