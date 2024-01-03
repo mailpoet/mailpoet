@@ -4,17 +4,6 @@
   grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
 }
 
-.mailpoet-newsletter-types-close {
-  grid-column: 1 / -1;
-  position: relative;
-
-  .mailpoet-modal-close {
-    margin-top: 0;
-    right: -($modal-close-button-size + $grid-gap);
-    top: $grid-gap;
-  }
-}
-
 .mailpoet-newsletter-type {
   background: #fff;
   border: 1px solid $color-tertiary-light;

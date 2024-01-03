@@ -109,10 +109,7 @@ function NewNewsletter({ history }) {
             />
           }
         />
-        <NewsletterTypes
-          history={history}
-          hideClosingButton={window.mailpoet_newsletters_count === 0}
-        />
+        <NewsletterTypes history={history} />
       </div>
     </ErrorBoundary>
   );

@@ -384,7 +384,6 @@ class NewsletterListNotificationComponent extends Component {
           <NewsletterTypes
             filter={(type) => type.slug === 'notification'}
             hideScreenOptions={false}
-            hideClosingButton
           />
         )}
         {this.state.newslettersCount !== 0 && (
