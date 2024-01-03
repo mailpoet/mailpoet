@@ -1,4 +1,4 @@
-import { ButtonGroup, Dropdown, MenuItem } from '@wordpress/components';
+import { Button, ButtonGroup, Dropdown, MenuItem } from '@wordpress/components';
 import { ComponentType, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { chevronDown, Icon } from '@wordpress/icons';
@@ -6,7 +6,6 @@ import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
 import _ from 'underscore';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
 import { EditorSelectModal } from 'newsletters/editor-select-modal';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
@@ -124,19 +123,10 @@ function NewsletterTypesComponent({
   const standardAction = isNewEmailEditorEnabled ? (
     <ButtonGroup className="mailpoet-dropdown-button-group">
       <Button
-        automationId="create_standard"
+        variant="secondary"
         onClick={createStandardNewsletter}
-        tabIndex={0}
-        withSpinner={isCreating}
-        onKeyDown={(event): void => {
-          if (
-            ['keydown', 'keypress'].includes(event.type) &&
-            ['Enter', ' '].includes(event.key)
-          ) {
-            event.preventDefault();
-            createStandardNewsletter();
-          }
-        }}
+        isBusy={isCreating}
+        data-automation-id="create_standard"
       >
         {__('Create', 'mailpoet')}
       </Button>
@@ -147,10 +137,11 @@ function NewsletterTypesComponent({
         popoverProps={{ placement: 'bottom-end' }}
         renderToggle={({ isOpen, onToggle }) => (
           <Button
+            variant="secondary"
             className="mailpoet-button-with-wordpress-icon"
             onClick={onToggle}
             aria-expanded={isOpen}
-            automationId="create_standard_email_dropdown"
+            data-automation-id="create_standard_email_dropdown"
           >
             <Icon icon={chevronDown} size={24} />
           </Button>
@@ -167,19 +158,9 @@ function NewsletterTypesComponent({
     </ButtonGroup>
   ) : (
     <Button
-      automationId="create_standard"
       onClick={createStandardNewsletter}
-      tabIndex={0}
-      withSpinner={isCreating}
-      onKeyDown={(event): void => {
-        if (
-          ['keydown', 'keypress'].includes(event.type) &&
-          ['Enter', ' '].includes(event.key)
-        ) {
-          event.preventDefault();
-          createStandardNewsletter();
-        }
-      }}
+      isBusy={isCreating}
+      data-automation-id="create_standard"
     >
       {__('Create', 'mailpoet')}
     </Button>
@@ -213,21 +194,12 @@ function NewsletterTypesComponent({
       ),
       action: (
         <Button
+          variant="secondary"
           onClick={createAutomation}
-          automationId="create_automation"
-          withSpinner={isCreating}
-          onKeyDown={(event): void => {
-            if (
-              ['keydown', 'keypress'].includes(event.type) &&
-              ['Enter', ' '].includes(event.key)
-            ) {
-              event.preventDefault();
-              createAutomation();
-            }
-          }}
-          tabIndex={0}
+          isBusy={isCreating}
+          data-automation-id="create_automation"
         >
-          {__('Set up', 'mailpoet')}
+          {__('Create', 'mailpoet')}
         </Button>
       ),
     },
@@ -242,21 +214,12 @@ function NewsletterTypesComponent({
         'https://kb.mailpoet.com/article/210-video-guide-to-post-notifications',
       action: (
         <Button
-          automationId="create_notification"
+          variant="secondary"
           onClick={createNotificationNewsletter}
-          withSpinner={isCreating}
-          tabIndex={0}
-          onKeyDown={(event): void => {
-            if (
-              ['keydown', 'keypress'].includes(event.type) &&
-              ['Enter', ' '].includes(event.key)
-            ) {
-              event.preventDefault();
-              createNotificationNewsletter();
-            }
-          }}
+          isBusy={isCreating}
+          data-automation-id="create_notification"
         >
-          {__('Set up', 'mailpoet')}
+          {__('Create', 'mailpoet')}
         </Button>
       ),
     },
@@ -269,21 +232,12 @@ function NewsletterTypesComponent({
       ),
       action: (
         <Button
-          automationId="create_notification"
+          variant="secondary"
           onClick={createReEngagementNewsletter}
-          withSpinner={isCreating}
-          tabIndex={0}
-          onKeyDown={(event): void => {
-            if (
-              ['keydown', 'keypress'].includes(event.type) &&
-              ['Enter', ' '].includes(event.key)
-            ) {
-              event.preventDefault();
-              createReEngagementNewsletter();
-            }
-          }}
+          isBusy={isCreating}
+          data-automation-id="create_notification"
         >
-          {__('Set up', 'mailpoet')}
+          {__('Create', 'mailpoet')}
         </Button>
       ),
     },
@@ -329,7 +283,6 @@ function NewsletterTypesComponent({
 NewsletterTypesComponent.defaultProps = {
   filter: null,
   hideScreenOptions: true,
-  hideClosingButton: false,
 };
 
 export const NewsletterTypes = withRouter(
