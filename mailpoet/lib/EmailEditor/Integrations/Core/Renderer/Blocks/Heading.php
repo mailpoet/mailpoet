@@ -7,7 +7,7 @@ use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\Util\Helpers;
 
 class Heading implements BlockRenderer {
-  public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
+  public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $level = $parsedBlock['attrs']['level'] ?? 2; // default level is 2
     $blockContent = $this->removePaddingFromElement($blockContent, ['tag_name' => "h{$level}"]);
     return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($parsedBlock, $settingsController));
@@ -118,7 +118,7 @@ class Heading implements BlockRenderer {
   /**
    * @param array{tag_name: string, class_name?: string} $tag
    */
-  private function removePaddingFromElement($blockContent, array $tag) {
+  private function removePaddingFromElement($blockContent, array $tag): string {
     $html = new \WP_HTML_Tag_Processor($blockContent);
     if ($html->next_tag($tag)) {
       $elementStyle = $html->get_attribute('style') ?? '';
