@@ -7,11 +7,6 @@ namespace MailPoet\EmailEditor\Engine\Renderer\Preprocessors;
  * The final width in pixels is stored in the email_attrs array because we would like to avoid changing the original attributes.
  */
 class BlocksWidthPreprocessor implements Preprocessor {
-
-  const BLOCKS_WITHOUT_WIDTH = [
-    'core/paragraph',
-  ];
-
   public function preprocess(array $parsedBlocks, array $layoutStyles): array {
     foreach ($parsedBlocks as $key => $block) {
       // Layout width is recalculated for each block because full-width blocks don't exclude padding
