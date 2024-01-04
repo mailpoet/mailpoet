@@ -65,21 +65,23 @@ class Paragraph implements BlockRenderer {
     ';
   }
 
-  private function fetchStylesFromBlockAttrs(?string $availableStylesheets, array $attrs = []): array {
+  /**
+   * @param string $availableStylesheets contains CSS styles generated from the core theme.json file
+   */
+  private function fetchStylesFromBlockAttrs(string $availableStylesheets, array $attrs = []): array {
     $styles = [];
 
-    // using custom rules because colors do not automatically resolve to hex value
+    // Fetching matched color variables by slug stored in the block attrs to the color value.
     $supportedColorValues = ['backgroundColor', 'textColor'];
     foreach ($supportedColorValues as $supportedColorValue) {
       if (array_key_exists($supportedColorValue, $attrs)) {
-        $colorKey = $attrs[$supportedColorValue];
+        $colorSlug = $attrs[$supportedColorValue];
 
-        $cssString = $availableStylesheets ?? '';
-
-        $colorRegex = "/--wp--preset--color--$colorKey: (#[0-9a-fA-F]{6});/";
+        // CSS variables are stored by current pattern `--wp--preset--{type}--{slug}` More info: https://developer.wordpress.org/themes/global-settings-and-styles/settings/color/#registering-custom-color-presets
+        $colorRegex = "/--wp--preset--color--$colorSlug: (#[0-9a-fA-F]{6});/";
 
         // fetch color hex from available stylesheets
-        preg_match($colorRegex, $cssString, $colorMatch);
+        preg_match($colorRegex, $availableStylesheets, $colorMatch);
 
         $colorValue = '';
         if ($colorMatch) {
