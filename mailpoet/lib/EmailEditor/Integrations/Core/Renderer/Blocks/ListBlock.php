@@ -7,7 +7,7 @@ use MailPoet\EmailEditor\Engine\SettingsController;
 
 // We have to avoid using keyword `List`
 class ListBlock implements BlockRenderer {
-  public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
+  public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     return str_replace('{list_content}', $blockContent, $this->getBlockWrapper($parsedBlock, $settingsController));
   }
 

@@ -7,7 +7,7 @@ use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\Util\Helpers;
 
 class Paragraph implements BlockRenderer {
-  public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
+  public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $blockContent = $this->removePaddingFromElement($blockContent, ['tag_name' => 'p']);
     return str_replace('{paragraph_content}', $blockContent, $this->getBlockWrapper($parsedBlock, $settingsController));
   }
@@ -109,7 +109,7 @@ class Paragraph implements BlockRenderer {
   /**
    * @param array{tag_name: string, class_name?: string} $tag
    */
-  private function removePaddingFromElement($blockContent, array $tag) {
+  private function removePaddingFromElement($blockContent, array $tag): string {
     $html = new \WP_HTML_Tag_Processor($blockContent);
     if ($html->next_tag($tag)) {
       $elementStyle = $html->get_attribute('style') ?? '';

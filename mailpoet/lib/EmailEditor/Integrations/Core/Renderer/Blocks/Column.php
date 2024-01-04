@@ -6,7 +6,7 @@ use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 class Column implements BlockRenderer {
-  public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
+  public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $content = '';
     foreach ($parsedBlock['innerBlocks'] ?? [] as $block) {
       $content .= render_block($block);
