@@ -25,8 +25,6 @@ class ImageTest extends \MailPoetTest {
       'sizeSlug' => 'full',
       'linkDestination' => 'none',
       'className' => 'is-style-default',
-    ],
-    'email_attrs' => [
       'width' => '640px',
     ],
     'innerBlocks' => [],
@@ -70,7 +68,7 @@ class ImageTest extends \MailPoetTest {
     $this->assertStringContainsString('width="640"', $rendered);
     $this->assertStringContainsString('width:640px;', $rendered);
     $this->assertStringContainsString('<img ', $rendered);
-    $this->assertStringContainsString('border-radius: 100%;', $rendered);
+    $this->assertStringContainsString('border-radius: 9999px;', $rendered);
   }
 
   public function testItRendersCaption(): void {
@@ -79,7 +77,7 @@ class ImageTest extends \MailPoetTest {
     $parsedImage['innerHTML'] = $imageContent; // To avoid repetition of the image content in the test we need to add it to the parsed block
 
     $rendered = $this->imageRenderer->render($imageContent, $parsedImage, $this->settingsController);
-    $this->assertStringContainsString('>Caption</div>', $rendered);
+    $this->assertStringContainsString('>Caption</span>', $rendered);
     $this->assertStringContainsString('text-align:center;', $rendered);
   }
 
@@ -87,7 +85,7 @@ class ImageTest extends \MailPoetTest {
     $imageContent = str_replace('style=""', 'style="width:400px;height:300px;"', $this->imageContent);
     $parsedImage = $this->parsedImage;
     $parsedImage['attrs']['align'] = 'center';
-    $parsedImage['email_attrs']['width'] = '400px';
+    $parsedImage['attrs']['width'] = '400px';
     $parsedImage['innerHTML'] = $imageContent; // To avoid repetition of the image content in the test we need to add it to the parsed block
 
     $rendered = $this->imageRenderer->render($imageContent, $parsedImage, $this->settingsController);
