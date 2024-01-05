@@ -121,6 +121,10 @@
     margin-inline-start: 0;
     text-align: center;
   }
+  &.aligncenter {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 .editor-styles-wrapper {
