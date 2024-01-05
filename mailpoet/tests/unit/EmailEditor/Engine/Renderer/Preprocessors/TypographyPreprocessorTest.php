@@ -22,6 +22,11 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
       ],
     ]);
     $settingsMock->method('getTheme')->willReturn($themeMock);
+    $settingsMock->method('getEmailContentStyles')->willReturn([
+      'typography' => [
+        'fontSize' => '13px',
+      ],
+    ]);
     $this->preprocessor = new TypographyPreprocessor($settingsMock);
   }
 
@@ -99,10 +104,10 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     $result = $this->preprocessor->preprocess($blocks, []);
     $result = $result[0];
     verify($result['innerBlocks'])->arrayCount(2);
-    verify($result['email_attrs'])->equals(['width' => '640px', 'color' => '#000000']);
-    verify($result['innerBlocks'][0]['email_attrs'])->equals(['color' => '#000000']);
-    verify($result['innerBlocks'][1]['email_attrs'])->equals(['color' => '#000000']);
-    verify($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals(['color' => '#000000']);
+    verify($result['email_attrs'])->equals(['width' => '640px', 'color' => '#000000', 'font-size' => '13px']);
+    verify($result['innerBlocks'][0]['email_attrs'])->equals(['color' => '#000000', 'font-size' => '13px']);
+    verify($result['innerBlocks'][1]['email_attrs'])->equals(['color' => '#000000', 'font-size' => '13px']);
+    verify($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals(['color' => '#000000', 'font-size' => '13px']);
   }
 
   public function testItOverridesColumnsTypography(): void {
@@ -202,7 +207,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     verify($child1['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs1);
     verify($child1['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs1);
     verify($child2['innerBlocks'])->arrayCount(1);
-    verify($child2['email_attrs'])->equals(['color' => '#000000']);
+    verify($child2['email_attrs'])->equals(['color' => '#000000', 'font-size' => '13px']);
     verify($child2['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
     verify($child2['innerBlocks'][0]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
   }
