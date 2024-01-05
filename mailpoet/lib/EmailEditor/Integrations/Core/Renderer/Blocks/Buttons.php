@@ -17,10 +17,12 @@ class Buttons implements BlockRenderer {
   }
 
   public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    $contentStyles = $settingsController->getEmailContentStyles();
-    $typography = $parsedBlock['attrs']['style']['typography'] ?? [];
-    $typography['fontSize'] = $typography['fontSize'] ?? $contentStyles['typography']['fontSize'];
-    $parsedBlock['attrs']['style']['typography'] = $typography;
+    // Ignore font size set on the buttons block
+    // We rely on TypographyPreprocessor to set the font size on the buttons
+    // Rendering font size on the wrapper causes unwanted whitespace below the buttons
+    if (isset($parsedBlock['attrs']['style']['typography']['fontSize'])) {
+      unset($parsedBlock['attrs']['style']['typography']['fontSize']);
+    }
     return $this->flexLayoutRenderer->renderInnerBlocksInLayout($parsedBlock, $settingsController);
   }
 }
