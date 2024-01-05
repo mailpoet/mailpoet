@@ -35,7 +35,7 @@ class Button implements BlockRenderer {
     // Parent block prepares container with proper width. If the width is set let's use full width of the container
     // otherwise let's use auto width.
     $width = 'auto';
-    if (($parsedBlock['attrs']['width'] ?? null)) {
+    if (isset($parsedBlock['attrs']['width'])) {
       $width = '100%';
     }
     $markup = str_replace('{width}', $width, $markup);
@@ -59,7 +59,7 @@ class Button implements BlockRenderer {
     ];
 
     // Border
-    if ($parsedBlock['attrs']['style']['border'] ?? '') {
+    if (isset($parsedBlock['attrs']['style']['border']) && !empty($parsedBlock['attrs']['style']['border'])) {
       // Use text color if border color is not set
       if (!($parsedBlock['attrs']['style']['border']['color'] ?? '')) {
         $parsedBlock['attrs']['style']['border']['color'] = $parsedBlock['attrs']['style']['color']['text'] ?? null;
@@ -72,7 +72,7 @@ class Button implements BlockRenderer {
     }
 
     // Spacing
-    if ($parsedBlock['attrs']['style']['spacing']['padding'] ?? '') {
+    if (isset($parsedBlock['attrs']['style']['spacing']['padding'])) {
       $padding = $parsedBlock['attrs']['style']['spacing']['padding'];
       $wrapperStyles['mso-padding-alt'] = "{$padding['top']} {$padding['right']} {$padding['bottom']} {$padding['left']}";
       $linkStyles['padding-top'] = $padding['top'];
