@@ -19,6 +19,8 @@ class BlocksWidthPreprocessor implements Preprocessor {
       }
 
       $widthInput = $block['attrs']['width'] ?? '100%';
+      // Currently we support only % and px units in case only the number is provided we assume it's %
+      // because editor saves percent values as a number.
       $widthInput = is_numeric($widthInput) ? "$widthInput%" : $widthInput;
       $width = $this->convertWidthToPixels($widthInput, $layoutWidth);
 
