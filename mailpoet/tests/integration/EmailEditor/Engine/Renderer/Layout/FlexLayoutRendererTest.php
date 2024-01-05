@@ -19,7 +19,7 @@ class FlexLayoutRendererTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settingsController;
 
-  public function _before() {
+  public function _before(): void {
     parent::_before();
     $this->settingsController = new SettingsController();
     $this->registry = new BlocksRegistry($this->settingsController);
@@ -28,7 +28,7 @@ class FlexLayoutRendererTest extends \MailPoetTest {
     register_block_type('dummy/block', []);
   }
 
-  public function testItRendersInnerBlocks() {
+  public function testItRendersInnerBlocks(): void {
     $parsedBlock = [
       'innerBlocks' => [
         [
@@ -47,7 +47,7 @@ class FlexLayoutRendererTest extends \MailPoetTest {
     verify($output)->stringContainsString('Dummy 2');
   }
 
-  public function testItHandlesJustification() {
+  public function testItHandlesJustification(): void {
     $parsedBlock = [
       'innerBlocks' => [
         [
@@ -73,7 +73,7 @@ class FlexLayoutRendererTest extends \MailPoetTest {
     verify($output)->stringContainsString('align="center"');
   }
 
-  public function testItEscapesAttributes() {
+  public function testItEscapesAttributes(): void {
     $parsedBlock = [
       'innerBlocks' => [
         [
@@ -88,7 +88,7 @@ class FlexLayoutRendererTest extends \MailPoetTest {
     verify($output)->stringNotContainsString('<script>alert("XSS")</script>');
   }
 
-  public function testInComputesProperWidthsForReasonableSettings() {
+  public function testInComputesProperWidthsForReasonableSettings(): void {
     $parsedBlock = [
       'innerBlocks' => [],
       'email_attrs' => [
@@ -157,7 +157,7 @@ class FlexLayoutRendererTest extends \MailPoetTest {
     verify($flexItems[1])->stringContainsString('width:312px;');
   }
 
-  public function testInComputesWidthsForStrangeSettingsValues() {
+  public function testInComputesWidthsForStrangeSettingsValues(): void {
     $parsedBlock = [
       'innerBlocks' => [],
       'email_attrs' => [
@@ -227,7 +227,7 @@ class FlexLayoutRendererTest extends \MailPoetTest {
     return explode('><', $matches[0][0] ?? []);
   }
 
-  public function _after() {
+  public function _after(): void {
     parent::_after();
     unregister_block_type('dummy/block');
   }
