@@ -73,8 +73,12 @@ class TypographyPreprocessor implements Preprocessor {
 
   private function setDefaultsFromTheme(array $block): array {
     $themeData = $this->settingsController->getTheme()->get_data();
+    $contentStyles = $this->settingsController->getEmailContentStyles();
     if (!($block['email_attrs']['color'] ?? '')) {
       $block['email_attrs']['color'] = $themeData['styles']['color']['text'] ?? null;
+    }
+    if (!($block['email_attrs']['font-size'] ?? '')) {
+      $block['email_attrs']['font-size'] = $contentStyles['typography']['fontSize'];
     }
     return $block;
   }
