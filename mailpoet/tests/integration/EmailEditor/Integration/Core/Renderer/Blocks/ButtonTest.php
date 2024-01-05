@@ -41,19 +41,19 @@ class ButtonTest extends \MailPoetTest {
   /** @var SettingsController */
   private $settingsController;
 
-  public function _before() {
+  public function _before(): void {
     $this->diContainer->get(EmailEditor::class)->initialize();
     $this->buttonRenderer = new Button();
     $this->settingsController = $this->diContainer->get(SettingsController::class);
   }
 
-  public function testItRendersLink() {
+  public function testItRendersLink(): void {
     $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
     verify($output)->stringContainsString('href="http://example.com"');
     verify($output)->stringContainsString('Button Text');
   }
 
-  public function testItRendersPaddingBasedOnAttributesValue() {
+  public function testItRendersPaddingBasedOnAttributesValue(): void {
     $this->parsedButton['attrs']['style']['spacing']['padding'] = [
       'left' => '10px',
       'right' => '20px',
@@ -67,7 +67,7 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('padding-bottom:40px;');
   }
 
-  public function testItRendersColors() {
+  public function testItRendersColors(): void {
     $this->parsedButton['attrs']['style']['color'] = [
       'background' => '#000000',
       'text' => '#111111',
@@ -78,7 +78,7 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('color:#111111;');
   }
 
-  public function testItRendersBorder() {
+  public function testItRendersBorder(): void {
     $this->parsedButton['attrs']['style']['border'] = [
       'width' => '10px',
       'color' => '#111111',
@@ -89,13 +89,13 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('border-style:solid;');
   }
 
-  public function testItRendersBorderNone() {
+  public function testItRendersBorderNone(): void {
     $this->parsedButton['attrs']['style']['border'] = [];
     $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
     verify($output)->stringContainsString('border:none;');
   }
 
-  public function testItRendersBorderWithTextColorFallback() {
+  public function testItRendersBorderWithTextColorFallback(): void {
     $this->parsedButton['attrs']['style']['border'] = [
       'width' => '10px',
     ];
@@ -106,7 +106,7 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('border-color:#111111;');
   }
 
-  public function testItRendersEachSideSpecificBorder() {
+  public function testItRendersEachSideSpecificBorder(): void {
     $this->parsedButton['attrs']['style']['border'] = [
       'top' => ['width' => '1px', 'color' => '#111111'],
       'right' => ['width' => '2px', 'color' => '#222222'],
@@ -129,7 +129,7 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('border-style:solid;');
   }
 
-  public function testItRendersBorderRadius() {
+  public function testItRendersBorderRadius(): void {
     $this->parsedButton['attrs']['style']['border'] = [
       'radius' => '10px',
     ];
@@ -137,13 +137,13 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('border-radius:10px;');
   }
 
-  public function testItRendersCornerSpecificBorderRadius() {
+  public function testItRendersCornerSpecificBorderRadius(): void {
     $this->parsedButton['attrs']['style']['border']['radius'] = [
       'topLeft' => '1px',
       'topRight' => '2px',
       'bottomLeft' => '3px',
       'bottomRight' => '4px',
-      ];
+    ];
     $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
     verify($output)->stringContainsString('border-top-left-radius:1px;');
     verify($output)->stringContainsString('border-top-right-radius:2px;');
@@ -151,7 +151,7 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('border-bottom-right-radius:4px;');
   }
 
-  public function testItAllowsSingleQuotesInFontFamilyDefinition() {
+  public function testItAllowsSingleQuotesInFontFamilyDefinition(): void {
     $settingsControllerMock = $this->createPartialMock(SettingsController::class, ['getEmailContentStyles']);
     $settingsControllerMock->method('getEmailContentStyles')->willReturn([
       'typography' => [
