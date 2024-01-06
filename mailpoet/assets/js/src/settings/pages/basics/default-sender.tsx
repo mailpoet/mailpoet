@@ -11,14 +11,19 @@ import {
 import { Input } from 'common/form/input/input';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import { SenderEmailAddressWarning } from 'common/sender-email-address-warning';
-import { checkSenderEmailDomainDmarcPolicy } from 'common/check-sender-domain-dmarc-policy';
 
 export function DefaultSender() {
   const isMssActive = useSelector('isMssActive')();
   const [senderName, setSenderName] = useSetting('sender', 'name');
   const [senderEmail, setSenderEmail] = useSetting('sender', 'address');
   const [isAuthorized, setIsAuthorized] = useState(true);
-  const [showSenderDomainWarning, setShowSenderDomainWarning] = useState(false);
+  const senderDomain = extractEmailDomain(senderEmail);
+  const [showSenderDomainWarning, setShowSenderDomainWarning] = useState(
+    !window.mailpoet_verified_sender_domains.includes(senderDomain),
+  );
+  const [isPartiallyVerifiedDomain, setIsPartiallyVerifiedDomain] = useState(
+    window.mailpoet_partially_verified_sender_domains.includes(senderDomain),
+  );
   const [replyToName, setReplyToName] = useSetting('reply_to', 'name');
   const [replyToEmail, setReplyToEmail] = useSetting('reply_to', 'address');
   const setErrorFlag = useAction('setErrorFlag');
@@ -43,23 +48,17 @@ export function DefaultSender() {
 
     isAuthorizedEmail(email);
 
-    // Skip domain DMARC validation if the email is a freemail
-    const isFreeDomain = MailPoet.freeMailDomains.indexOf(emailDomain) > -1;
-    if (isFreeDomain) return;
-
-    checkSenderEmailDomainDmarcPolicy(email, isMssActive)
-      .then((status) => {
-        setShowSenderDomainWarning(status);
-      })
-      .catch(() => {
-        // do nothing for now when the request fails
-      });
+    setShowSenderDomainWarning(true);
+    setIsPartiallyVerifiedDomain(
+      window.mailpoet_partially_verified_sender_domains.includes(emailDomain),
+    );
   };
 
   const updateSenderEmailController = (email: string) => {
     // Reset email related states
     setIsAuthorized(true);
     setShowSenderDomainWarning(false);
+    setIsPartiallyVerifiedDomain(false);
     setSenderEmail(email);
   };
 
@@ -117,6 +116,7 @@ export function DefaultSender() {
             mssActive={isMssActive}
             isEmailAuthorized={isAuthorized}
             showSenderDomainWarning={showSenderDomainWarning}
+            isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
             onSuccessfulEmailOrDomainAuthorization={(data) => {
               if (data.type === 'email') {
                 setIsAuthorized(true);
@@ -127,6 +127,7 @@ export function DefaultSender() {
               }
               if (data.type === 'domain') {
                 setShowSenderDomainWarning(false);
+                setIsPartiallyVerifiedDomain(false);
                 MailPoet.trackEvent('MSS in plugin verify sender domain', {
                   'verify sender domain source': 'settings',
                   wasSuccessful: 'yes',
