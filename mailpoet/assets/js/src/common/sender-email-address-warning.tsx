@@ -4,6 +4,7 @@ import { extractEmailDomain } from 'common/functions';
 import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize-sender-email-and-domain-modal';
+import { SenderDomainInlineNotice } from 'common/sender-domain-notice';
 
 const userHostDomain = window.location.hostname.replace('www.', '');
 const suggestedEmailAddress = `contact@${userHostDomain}`;
@@ -13,6 +14,7 @@ type Props = {
   mssActive: boolean;
   isEmailAuthorized?: boolean;
   showSenderDomainWarning?: boolean;
+  isPartiallyVerifiedDomain?: boolean;
   onSuccessfulEmailOrDomainAuthorization?: (data) => void;
 };
 
@@ -21,6 +23,7 @@ function SenderEmailAddressWarning({
   mssActive,
   isEmailAuthorized = true,
   showSenderDomainWarning = false,
+  isPartiallyVerifiedDomain = false,
   onSuccessfulEmailOrDomainAuthorization = () => {},
 }: Props) {
   const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] =
@@ -72,29 +75,14 @@ function SenderEmailAddressWarning({
     }
     if (showSenderDomainWarning && isEmailAuthorized) {
       displayElements.push(
-        <div key="authorizeSenderDomain">
-          <p className="sender_email_address_warning">
-            {ReactStringReplace(
-              __(
-                'Email violates Sender Domain’s DMARC policy. Please set up [link]sender authentication[/link].',
-                'mailpoet',
-              ),
-              /\[link](.*?)\[\/link]/g,
-              (match) => (
-                <a
-                  key={match}
-                  className="mailpoet-link"
-                  href="https://kb.mailpoet.com/article/369-how-to-fix-email-violates-sender-domains-dmarc-policy-error"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => loadModal(e, 'sender_domain')}
-                >
-                  {match}
-                </a>
-              ),
-            )}
-          </p>
-        </div>,
+        <SenderDomainInlineNotice
+          emailAddress={emailAddress}
+          emailAddressDomain={emailAddressDomain}
+          isFreeDomain={isFreeDomain}
+          isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
+          authorizeAction={(e) => loadModal(e, 'sender_domain')}
+          subscribersCount={window.mailpoet_subscribers_count}
+        />,
       );
     }
 
