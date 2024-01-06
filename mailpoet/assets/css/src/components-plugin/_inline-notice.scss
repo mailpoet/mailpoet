@@ -1,0 +1,77 @@
+@import '../components-automation-analytics/colors';
+
+.mailpoet-inline-notice {
+  color: $color-gutenberg-grey-900;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 5px;
+
+  .mailpoet-inline-notice--small {
+    width: $grid-column-small;
+  }
+
+  .mailpoet-inline-notice__top > p {
+    font-size: 13px;
+    margin: 0;
+    overflow-wrap: break-word;
+  }
+
+  .mailpoet-inline-notice__card {
+    --mp-inline-notice-color: #{$color-wp-yellow-50};
+    --mp-inline-notice-background-color: #{$color-wp-yellow-0};
+    background-color: var(--mp-inline-notice-background-color);
+    border-radius: 4px;
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+
+    &.is-alert {
+      --mp-inline-notice-background-color: #{$color-wp-red-0};
+      --mp-inline-notice-color: #{$color-wp-red-70};
+    }
+
+    .mailpoet-inline-notice__card-icon {
+      fill: var(--mp-inline-notice-color);
+      width: 20px;
+    }
+
+    .mailpoet-inline-notice__card-content {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 8px;
+
+      .mailpoet-inline-notice__card-content-body {
+        font-size: 13px;
+      }
+
+      .mailpoet-inline-notice__card-content-actions {
+        align-items: center;
+        color: var(--mp-inline-notice-color);
+        display: flex;
+        gap: 8px;
+
+        .components-button.is-secondary {
+          box-shadow: inset 0 0 0 1px var(--mp-inline-notice-color);
+          color: var(--mp-inline-notice-color);
+          padding: 8px;
+          &:hover,
+          &:focus {
+            box-shadow: inset 0 0 0 var(--wp-admin-border-width-focus)
+              var(--mp-inline-notice-color);
+          }
+        }
+
+        a {
+          color: inherit;
+          text-decoration: none;
+          &:focus {
+            box-shadow: inset 0 0 0 var(--wp-admin-border-width-focus)
+              var(--mp-inline-notice-color);
+          }
+        }
+      }
+    }
+  }
+}
