@@ -95,11 +95,13 @@ class Settings {
 
     $data['authorized_emails'] = [];
     $data['verified_sender_domains'] = [];
+    $data['partially_verified_sender_domains'] = [];
     $data['all_sender_domains'] = [];
 
     if ($this->bridge->isMailpoetSendingServiceEnabled() && $mpApiKeyValid) {
       $data['authorized_emails'] = $this->bridge->getAuthorizedEmailAddresses();
-      $data['verified_sender_domains'] = $this->senderDomainController->getVerifiedSenderDomains();
+      $data['verified_sender_domains'] = array_values($this->senderDomainController->getFullyVerifiedSenderDomains(true));
+      $data['partially_verified_sender_domains'] = array_values($this->senderDomainController->getPartiallyVerifiedSenderDomains(true));
       $data['all_sender_domains'] = $this->senderDomainController->getAllSenderDomains();
     }
 
