@@ -10,14 +10,18 @@ import {
   validateField,
 } from 'common/functions/parsley-helper-functions';
 import { extractEmailDomain } from 'common/functions';
-import { checkSenderEmailDomainDmarcPolicy } from 'common/check-sender-domain-dmarc-policy';
 
 class SenderField extends Component {
   constructor(props) {
     super(props);
+    const emailDomain = extractEmailDomain(props.item.sender_address);
+
     this.state = {
       emailAddress: props.item.sender_address,
-      showSenderDomainWarning: false,
+      showSenderDomainWarning:
+        !window.mailpoet_verified_sender_domains.includes(emailDomain),
+      isPartiallyVerifiedDomain:
+        window.mailpoet_partially_verified_sender_domains.includes(emailDomain),
       showAuthEmailsError: false,
     };
     this.onChange = this.onChange.bind(this);
@@ -107,17 +111,12 @@ class SenderField extends Component {
 
     this.showSenderFieldError(emailAddressIsAuthorized, emailAddress);
 
-    // Skip domain DMARC validation if the email is a freemail
-    const isFreeDomain = MailPoet.freeMailDomains.indexOf(emailDomain) > -1;
-    if (isFreeDomain) return;
+    this.setState({
+      isPartiallyVerifiedDomain:
+        window.mailpoet_partially_verified_sender_domains.includes(emailDomain),
+    });
 
-    checkSenderEmailDomainDmarcPolicy(emailAddress)
-      .then((status) => {
-        this.showSenderDomainError(status, emailAddress);
-      })
-      .catch(() => {
-        // do nothing for now when the request fails
-      });
+    this.showSenderDomainError(true, emailAddress);
   }
 
   render() {
@@ -142,6 +141,7 @@ class SenderField extends Component {
               this.state.showSenderDomainWarning &&
               !this.state.showAuthEmailsError
             }
+            isPartiallyVerifiedDomain={this.state.isPartiallyVerifiedDomain}
             onSuccessfulEmailOrDomainAuthorization={(data) => {
               if (data.type === 'email') {
                 this.setState({ showAuthEmailsError: false });
@@ -153,6 +153,7 @@ class SenderField extends Component {
               }
               if (data.type === 'domain') {
                 this.setState({ showSenderDomainWarning: false });
+                this.setState({ isPartiallyVerifiedDomain: false });
 
                 MailPoet.trackEvent('MSS in plugin verify sender domain', {
                   'verify sender domain source': 'newsletter',
