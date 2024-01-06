@@ -16,3 +16,5 @@ export * from './thumbnail';
 export * from './controls';
 export * from './confirm-alert';
 export * from './newsletter-status-string';
+export * from './notices/inline-notice';
+export * from './sender-domain-notice';
