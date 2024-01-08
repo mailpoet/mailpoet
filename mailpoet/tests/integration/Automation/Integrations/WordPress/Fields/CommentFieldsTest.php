@@ -187,6 +187,9 @@ class CommentFieldsTest extends \MailPoetTest {
   }
 
   public function testHasChildrenField() {
+    $postId = wp_insert_post([
+      'post_title' => 'Hello World!',
+    ]);
     $fields = $this->getFieldsMap();
 
     $field = $fields['wordpress:comment:has-children'];
@@ -196,7 +199,7 @@ class CommentFieldsTest extends \MailPoetTest {
 
     $this->assertFalse($field->getValue(new CommentPayload(0, $this->wp)));
     $commentId = wp_insert_comment([
-      'comment_post_ID' => 1,
+      'comment_post_ID' => $postId,
     ]);
     $this->assertNotFalse($commentId);
     $comment = get_comment($commentId);
@@ -205,7 +208,7 @@ class CommentFieldsTest extends \MailPoetTest {
 
     $childId = wp_insert_comment([
       'comment_parent' => $commentId,
-      'comment_post_ID' => 1,
+      'comment_post_ID' => $postId,
     ]);
     $this->assertNotFalse($childId);
     $this->assertTrue($field->getValue(new CommentPayload($commentId, $this->wp)));
