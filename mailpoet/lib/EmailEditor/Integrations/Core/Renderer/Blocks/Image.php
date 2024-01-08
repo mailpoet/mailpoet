@@ -44,8 +44,10 @@ class Image implements BlockRenderer {
    */
   private function addImageSizeWhenMissing(array $parsedBlock, string $imageUrl): array {
     if (!isset($parsedBlock['attrs']['width'])) {
+      $maxWidth = $parsedBlock['email_attrs']['width'] ?? '660px';
       $imageSize = wp_getimagesize($imageUrl);
-      $parsedBlock['attrs']['width'] = $imageSize ? "{$imageSize[0]}px" : '100%';
+      $imageSize = $imageSize ? "{$imageSize[0]}px" : $maxWidth;
+      $parsedBlock['attrs']['width'] = ($imageSize > $maxWidth) ? $maxWidth : $imageSize;
     }
     return $parsedBlock;
   }
