@@ -80,12 +80,16 @@ class SenderField extends Component {
 
     if (!isFieldValid(this.domElementSelector)) {
       validateField(this.domElementSelector);
+      // Hide domain error to not stack error messages
+      this.showSenderDomainError(false);
       return;
     }
 
     if (!emailAddressIsAuthorized) {
       this.showInvalidFromAddressError(emailAddress);
+      return;
     }
+    this.showSenderDomainError(true);
   };
 
   showSenderDomainError = (status) => {
@@ -115,8 +119,6 @@ class SenderField extends Component {
       isPartiallyVerifiedDomain:
         window.mailpoet_partially_verified_sender_domains.includes(emailDomain),
     });
-
-    this.showSenderDomainError(true, emailAddress);
   }
 
   render() {
