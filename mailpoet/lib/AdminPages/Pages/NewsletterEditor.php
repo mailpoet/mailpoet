@@ -92,6 +92,7 @@ class NewsletterEditor {
   }
 
   public function render() {
+    $this->setupImageSize();
     $this->assetsController->setupNewsletterEditorDependencies();
     $newsletterId = (isset($_GET['id']) ? (int)$_GET['id'] : 0);
     $woocommerceTemplateId = (int)$this->settings->get(TransactionalEmails::SETTING_EMAIL_ID, null);
@@ -187,5 +188,16 @@ class NewsletterEditor {
       'unsubscribe_token' => $subscriber->getUnsubscribeToken(),
       'link_token' => $subscriber->getLinkToken(),
     ];
+  }
+
+  private function setupImageSize(): void {
+    $this->wp->addFilter(
+      'image_size_names_choose',
+      function ($sizes): array {
+        return array_merge($sizes, [
+          'mailpoet_newsletter_max' => __('MailPoet Newsletter', 'mailpoet'),
+        ]);
+      }
+    );
   }
 }
