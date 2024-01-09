@@ -113,6 +113,11 @@ export function* requestSendingNewsletterPreview(
   newsletterId: number,
   email: string,
 ) {
+  // If preview is already sending do nothing
+  const previewState = select(storeName).getPreviewState();
+  if (previewState.isSendingPreviewEmail) {
+    return;
+  }
   // Initiate sending
   yield {
     type: 'CHANGE_PREVIEW_STATE',
