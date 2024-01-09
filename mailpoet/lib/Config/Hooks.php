@@ -108,7 +108,6 @@ class Hooks {
     $this->setupWooCommercePurchases();
     $this->setupWooCommerceSubscriberEngagement();
     $this->setupWooCommerceTracking();
-    $this->setupImageSize();
     $this->setupListing();
     $this->setupSubscriptionEvents();
     $this->setupWooCommerceSubscriptionEvents();
@@ -454,20 +453,6 @@ class Hooks {
       [$this->hooksWooCommerce, 'addTrackingData'],
       10
     );
-  }
-
-  public function setupImageSize() {
-    $this->wp->addFilter(
-      'image_size_names_choose',
-      [$this, 'appendImageSize'],
-      10, 1
-    );
-  }
-
-  public function appendImageSize($sizes) {
-    return array_merge($sizes, [
-      'mailpoet_newsletter_max' => __('MailPoet Newsletter', 'mailpoet'),
-    ]);
   }
 
   public function setupListing() {
