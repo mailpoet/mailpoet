@@ -134,12 +134,58 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
       ['status' => 'valid'],
       ['status' => 'valid'],
       ['status' => 'valid'],
+      ['status' => 'valid'],
     ]];
+
+    $domainsRawData = [
+      'testdomain.com' => [
+        'domain' => 'testdomain.com',
+        'domain_status' => 'verified',
+        'dns' => [],
+      ],
+    ];
+
     $getSenderDomainsExpectation = Expected::once($domains);
+    $getSenderDomainsRawDataExpectation = Expected::once($domainsRawData);
     $verifySenderDomainsExpectation = Expected::never();
 
     $bridgeMock = $this->make(Bridge::class, [
       'getAuthorizedSenderDomains' => $getSenderDomainsExpectation,
+      'getRawSenderDomainData' => $getSenderDomainsRawDataExpectation,
+      'verifyAuthorizedSenderDomain' => $verifySenderDomainsExpectation,
+    ]);
+    $controller = $this->getController($bridgeMock);
+    $controller->verifyAuthorizedSenderDomain('testdomain.com');
+  }
+
+  public function testVerifyAuthorizedSenderDomainVerifiesPartiallyVerifiedDomains() {
+    $domains = ['testdomain.com' => [
+      ['status' => 'valid'],
+      ['status' => 'valid'],
+      ['status' => 'valid'],
+      ['status' => 'pending'],
+    ]];
+
+    $domainsRawData = [
+      'testdomain.com' => [
+        'domain' => 'testdomain.com',
+        'domain_status' => 'partially_verified',
+        'dns' => [],
+      ],
+    ];
+
+    $response = [
+      'status' => API::RESPONSE_STATUS_OK,
+      'dns' => [],
+    ];
+
+    $getSenderDomainsExpectation = Expected::once($domains);
+    $getSenderDomainsRawDataExpectation = Expected::once($domainsRawData);
+    $verifySenderDomainsExpectation = Expected::once($response);
+
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedSenderDomains' => $getSenderDomainsExpectation,
+      'getRawSenderDomainData' => $getSenderDomainsRawDataExpectation,
       'verifyAuthorizedSenderDomain' => $verifySenderDomainsExpectation,
     ]);
     $controller = $this->getController($bridgeMock);
@@ -209,7 +255,15 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $this->expectExceptionMessage($errorMessage);
 
     $domains = ['testdomain.com' => []];
+    $domainsRawData = [
+      'testdomain.com' => [
+        'domain' => 'testdomain.com',
+        'domain_status' => 'unverified',
+        'dns' => [],
+      ],
+    ];
     $getSenderDomainsExpectation = Expected::once($domains);
+    $getSenderDomainsRawDataExpectation = Expected::once($domainsRawData);
     $verifySenderDomainsExpectation = Expected::once([
       'error' => $errorMessage,
       'message' => $errorMessage,
@@ -218,6 +272,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     $bridgeMock = $this->make(Bridge::class, [
       'getAuthorizedSenderDomains' => $getSenderDomainsExpectation,
+      'getRawSenderDomainData' => $getSenderDomainsRawDataExpectation,
       'verifyAuthorizedSenderDomain' => $verifySenderDomainsExpectation,
     ]);
     $controller = $this->getController($bridgeMock);

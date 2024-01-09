@@ -121,8 +121,6 @@ class AuthorizedSenderDomainController {
     $records = $this->bridge->getAuthorizedSenderDomains();
 
     $allDomains = $this->returnAllDomains($records);
-    $verifiedDomains = $this->returnVerifiedDomains($records);
-
     $alreadyExist = in_array($domain, $allDomains);
 
     if (!$alreadyExist) {
@@ -130,6 +128,7 @@ class AuthorizedSenderDomainController {
       throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_NOT_CREATED);
     }
 
+    $verifiedDomains = $this->getFullyVerifiedSenderDomains(true);
     $alreadyVerified = in_array($domain, $verifiedDomains);
 
     if ($alreadyVerified) {
