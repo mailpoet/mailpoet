@@ -3,6 +3,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { check, Icon } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
+import { ENTER } from '@wordpress/keycodes';
 import { isEmail } from '@wordpress/url';
 import { useEntityProp } from '@wordpress/core-data';
 import {
@@ -124,6 +125,13 @@ export function SendPreviewEmail() {
         label={__('Send to', 'mailpoet')}
         onChange={(email) => {
           updateSendPreviewEmail(email);
+        }}
+        onKeyDown={(event) => {
+          const { keyCode } = event;
+          if (keyCode === ENTER) {
+            event.preventDefault();
+            handleSendPreviewEmail();
+          }
         }}
         value={previewToEmail}
         type="email"
