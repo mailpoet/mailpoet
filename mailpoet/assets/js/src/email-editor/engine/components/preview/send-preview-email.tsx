@@ -47,6 +47,9 @@ export function SendPreviewEmail() {
       className="mailpoet-send-preview-email"
       title={__('Send a test email', 'mailpoet')}
       onRequestClose={closeCallback}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - the value can be by docs: boolean, "firstElement", "firstContentElement"
+      focusOnMount="firstContentElement"
     >
       {sendingPreviewStatus === SendingPreviewStatus.ERROR ? (
         <div className="mailpoet-send-preview-modal-notice-error">
@@ -108,6 +111,7 @@ export function SendPreviewEmail() {
                 href="https://www.mail-tester.com/"
                 target="_blank"
                 rel="noopener noreferrer"
+                tabIndex={-1}
               />
             ),
             link2: (
@@ -116,6 +120,7 @@ export function SendPreviewEmail() {
                 href="https://kb.mailpoet.com/article/147-test-your-spam-score-with-mail-tester"
                 target="_blank"
                 rel="noopener noreferrer"
+                tabIndex={-1}
               />
             ),
           },
