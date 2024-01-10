@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter;
 
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterQueueTask;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
@@ -151,6 +152,9 @@ class NewsletterSaveController {
     $this->rescheduleIfNeeded($newsletter);
     $this->updateQueue($newsletter, $data['options'] ?? []);
     $this->authorizedEmailsController->onNewsletterSenderAddressUpdate($newsletter, $oldSenderAddress);
+    if (isset($data['new_editor']) && $data['new_editor']) {
+      $this->ensureWpPost($newsletter);
+    }
     return $newsletter;
   }
 
@@ -431,6 +435,22 @@ class NewsletterSaveController {
 
       $newsletterQueueTask->preProcessNewsletter($newsletter, $task);
     }
+    $this->entityManager->flush();
+  }
+
+  private function ensureWpPost(NewsletterEntity $newsletter): void {
+    if ($newsletter->getWpPostId()) {
+      return;
+    }
+
+    $newPostId = $this->wp->wpInsertPost([
+      'post_content' => '',
+      'post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE,
+      'post_status' => 'draft',
+      'post_author' => $this->wp->getCurrentUserId(),
+      'post_title' => __('New Email', 'mailpoet'),
+    ]);
+    $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $newPostId));
     $this->entityManager->flush();
   }
 }
