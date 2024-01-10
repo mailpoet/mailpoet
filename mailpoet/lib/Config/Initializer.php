@@ -368,7 +368,6 @@ class Initializer {
       $this->automationEngine->initialize();
       if ($this->featureController->isSupported(FeaturesController::GUTENBERG_EMAIL_EDITOR)) {
         $this->emailEditor->initialize();
-        $this->maybeRedirectEditor();
       }
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
@@ -584,25 +583,5 @@ class Initializer {
   private function setupDeactivationPoll(): void {
     $deactivationPoll = new DeactivationPoll($this->wpFunctions, $this->renderer);
     $deactivationPoll->init();
-  }
-
-  private function maybeRedirectEditor() {
-    if (!isset($_GET['page']) || $_GET['page'] !== 'mailpoet-email-editor') {
-      return;
-    }
-    $postId = isset($_GET['postId']) ? intval($_GET['postId']) : 0;
-    $post = get_post($postId);
-    if (!$post instanceof \WP_Post || $post->post_type !== \MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      $postId = wp_insert_post([
-        'post_title' => 'New Email',
-        'post_content' => '',
-        'post_status' => 'draft',
-        'post_author' => get_current_user_id(),
-        'post_type' => \MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor::MAILPOET_EMAIL_POST_TYPE,
-      ]);
-      wp_safe_redirect(
-        admin_url('admin.php?page=mailpoet-email-editor&postId=' . $postId)
-      );
-    }
   }
 }
