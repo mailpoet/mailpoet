@@ -360,6 +360,30 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($newsletter->getId())->notNull();
   }
 
+  public function testItCreatesNewNewsletterForBlockEditor() {
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $data = [
+      'subject' => 'My First Newsletter',
+      'type' => NewsletterEntity::TYPE_STANDARD,
+      'new_editor' => true,
+    ];
+
+    $newsletter = $this->saveController->save($data);
+    verify($newsletter->getSubject())->equals($data['subject']);
+    verify($newsletter->getType())->equals($data['type']);
+    verify($newsletter->getHash())->notNull();
+    verify($newsletter->getId())->notNull();
+    verify($newsletter->getWpPostId())->notNull();
+    $postEntity = $newsletter->getWpPost();
+    $this->assertInstanceOf(WpPostEntity::class, $postEntity);
+    verify($postEntity->getPostTitle())->equals('New Email');
+    $wpPost = $postEntity->getWpPostInstance();
+    $this->assertInstanceOf(\WP_Post::class, $wpPost);
+    verify($wpPost->post_content)->equals(''); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($wpPost->post_author)->equals($wp->getCurrentUserId()); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($wpPost->post_status)->equals('draft'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  }
+
   public function testItCreatesNewsletterWithDefaultSender() {
     $settings = $this->diContainer->get(SettingsController::class);
     $settings->set('sender', [
