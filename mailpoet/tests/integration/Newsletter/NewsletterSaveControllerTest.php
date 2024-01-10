@@ -345,6 +345,8 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $post = $wp->getPost($duplicate->getWpPostId());
     verify($duplicate->getCampaignName())->equals('Copy of Newsletter Title');
     verify($post->post_content)->equals('newsletter content'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($post->post_author)->equals($wp->getCurrentUserId()); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($post->post_status)->equals('draft'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function testItCreatesNewNewsletter() {

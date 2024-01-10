@@ -197,6 +197,8 @@ class NewsletterSaveController {
     $post = $this->wp->getPost($newsletter->getWpPostId());
     if ($post instanceof \WP_Post) {
       $newPostId = $this->wp->wpInsertPost([
+        'post_status' => NewsletterEntity::STATUS_DRAFT,
+        'post_author' => $this->wp->getCurrentUserId(),
         'post_content' => $post->post_content, // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         'post_type' => $post->post_type, // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         // translators: %s is the campaign name of the mail which has been copied.
