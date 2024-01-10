@@ -1,4 +1,4 @@
-FROM php:8.2.0RC6-apache
+FROM wordpress:php8.2-apache
 
 ARG UID=1000
 ARG GID=1000
