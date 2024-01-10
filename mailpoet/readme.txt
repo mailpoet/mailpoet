@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.3
 Tested up to: 6.4
-Stable tag: 4.41.0
+Stable tag: 4.41.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.41.1 - 2024-01-10 =
+* Fixed: Partially verified domains could not be re-verified
 
 = 4.41.0 - 2024-01-03 =
 * Added: notices about new sender domain requirements;
