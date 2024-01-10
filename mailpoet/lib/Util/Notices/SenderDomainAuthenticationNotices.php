@@ -10,6 +10,7 @@ use MailPoet\Util\FreeDomains;
 use MailPoet\Util\Helpers;
 use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WP\Notice;
+use MailPoetVendor\Carbon\Carbon;
 
 class SenderDomainAuthenticationNotices {
 
@@ -18,6 +19,8 @@ class SenderDomainAuthenticationNotices {
 
   const FREE_MAIL_KB_URL = 'https://kb.mailpoet.com/article/259-your-from-address-cannot-be-yahoo-com-gmail-com-outlook-com';
   const SPF_DKIM_DMARC_KB_URL = 'https://kb.mailpoet.com/article/295-spf-dkim-dmarc';
+
+  const ENFORCEMENT_START_TIME = '2024-02-01 00:00:00 UTC';
 
   const INSTALLED_AFTER_NEW_RESTRICTIONS_OPTION = 'installed_after_new_domain_restrictions';
 
@@ -59,6 +62,11 @@ class SenderDomainAuthenticationNotices {
 
   public function isFreeMailUser(): bool {
     return $this->freeDomains->isEmailOnFreeDomain($this->getDefaultFromDomain());
+  }
+
+  // TODO: Remove after the enforcement date has passed
+  public function isEnforcementOfNewRestrictionsInEffect(): bool {
+    return Carbon::now() >= Carbon::parse(self::ENFORCEMENT_START_TIME);
   }
 
   public function isNewUser(): bool {
@@ -110,6 +118,9 @@ class SenderDomainAuthenticationNotices {
   }
 
   public function isErrorStyle(): bool {
+    if (!$this->isEnforcementOfNewRestrictionsInEffect()) {
+      return false;
+    }
     if (
       $this->subscribersFeatures->getSubscribersCount() < self::UPPER_LIMIT
       || $this->isPartiallyVerified()
@@ -125,6 +136,17 @@ class SenderDomainAuthenticationNotices {
   }
 
   public function getNoticeContentForFreeMailUsers(int $contactCount): string {
+    if (!$this->isEnforcementOfNewRestrictionsInEffect()) {
+      // translators: %1$s is the domain of the user's default from address, %2$s is a rewritten version of their default from address, %3$s is HTML for an 'update sender' button, and %4$s is HTML for a Learn More button
+      return sprintf(__("<strong>Update your sender email address to a branded domain by February 1st, 2024 to continue sending your campaigns.</strong>
+<span>Starting on February 1st, 2024, MailPoet will no longer be able to send from email addresses on shared 3rd party domains like <strong>%1\$s</strong>. Please change your campaigns to send from an email address on your site's branded domain. Your emails will temporarily be sent from <strong>%2\$s</strong>.</span> <p>%3\$s &nbsp; %4\$s</p>", 'mailpoet'),
+        "@" . $this->getDefaultFromDomain(),
+        $this->authorizedSenderDomainController->getRewrittenEmailAddress($this->getDefaultFromAddress()),
+        $this->getUpdateSenderButton(),
+        $this->getLearnMoreAboutFreeMailButton()
+      );
+    }
+
     if ($contactCount <= self::UPPER_LIMIT) {
       // translators: %1$s is the domain of the user's default from address, %2$s is a rewritten version of their default from address, %3$s is HTML for an 'update sender' button, and %4$s is HTML for a Learn More button
       return sprintf(__("<strong>Update your sender email address to a branded domain to continue sending your campaigns.</strong>
@@ -147,7 +169,7 @@ class SenderDomainAuthenticationNotices {
   }
 
   public function getNoticeContentForBrandedDomainUsers(bool $isPartiallyVerified, int $contactCount): string {
-    if ($isPartiallyVerified || $contactCount <= self::LOWER_LIMIT) {
+    if (!$this->isEnforcementOfNewRestrictionsInEffect() || $isPartiallyVerified || $contactCount <= self::LOWER_LIMIT) {
       // translators: %1$s is HTML for an 'authenticate domain' button, %2$s is HTML for a Learn More button
       return sprintf(__("<strong>Authenticate your sender domain to improve email delivery rates.</strong>
 <span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the \"Spam\" folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts.</span><p>%1\$s &nbsp; %2\$s</p>", 'mailpoet'),
