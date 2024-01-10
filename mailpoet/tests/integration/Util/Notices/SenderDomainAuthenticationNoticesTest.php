@@ -8,6 +8,7 @@ use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\StatisticsNewsletters;
 use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Util\Notices\SenderDomainAuthenticationNotices;
+use MailPoetVendor\Carbon\Carbon;
 
 class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
   /** @var SenderDomainAuthenticationNotices */
@@ -63,10 +64,18 @@ class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
       'address' => $email,
     ]);
     $rewrittenEmail = $this->authorizedSenderDomainController->getRewrittenEmailAddress($email);
-    $message = $this->notice->getNoticeContentForFreeMailUsers(1001);
-    $this->assertStringContainsString('Your newsletters and post notifications have been paused. Update your sender email address to a branded domain to continue sending your campaigns', $message);
-    $this->assertStringContainsString(sprintf('Your marketing automations and transactional emails will temporarily be sent from <strong>%s</strong>', $rewrittenEmail), $message);
-    $this->assertStringContainsString('Update sender email', $message);
+
+    Carbon::setTestNow(Carbon::parse('2024-01-31 00:00:00 UTC'));
+    $beforeRestrictionsInEffectMessage = $this->notice->getNoticeContentForFreeMailUsers(999);
+    $this->assertStringContainsString('Update your sender email address to a branded domain by February 1st, 2024 to continue sending your campaigns.', $beforeRestrictionsInEffectMessage);
+    $this->assertStringContainsString(sprintf('Your emails will temporarily be sent from <strong>%s</strong>', $rewrittenEmail), $beforeRestrictionsInEffectMessage);
+    $this->assertStringContainsString('Update sender email', $beforeRestrictionsInEffectMessage);
+
+    Carbon::setTestNow(Carbon::parse('2024-02-01 00:00:00 UTC'));
+    $afterRestrictionsInEffectMessage = $this->notice->getNoticeContentForFreeMailUsers(1001);
+    $this->assertStringContainsString('Your newsletters and post notifications have been paused. Update your sender email address to a branded domain to continue sending your campaigns', $afterRestrictionsInEffectMessage);
+    $this->assertStringContainsString(sprintf('Your marketing automations and transactional emails will temporarily be sent from <strong>%s</strong>', $rewrittenEmail), $afterRestrictionsInEffectMessage);
+    $this->assertStringContainsString('Update sender email', $afterRestrictionsInEffectMessage);
   }
 
   public function testItRetrievesAppropriateMessageForFreeMailUsersWithLessThan1000Contacts(): void {
@@ -76,10 +85,18 @@ class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
       'address' => $email,
     ]);
     $rewrittenEmail = $this->authorizedSenderDomainController->getRewrittenEmailAddress($email);
-    $message = $this->notice->getNoticeContentForFreeMailUsers(999);
-    $this->assertStringContainsString('Update your sender email address to a branded domain to continue sending your campaigns', $message);
-    $this->assertStringContainsString(sprintf('Your existing scheduled and active emails will temporarily be sent from <strong>%s</strong>', $rewrittenEmail), $message);
-    $this->assertStringContainsString('Update sender email', $message);
+
+    Carbon::setTestNow(Carbon::parse('2024-01-31 00:00:00 UTC'));
+    $beforeRestrictionsInEffectMessage = $this->notice->getNoticeContentForFreeMailUsers(999);
+    $this->assertStringContainsString('Update your sender email address to a branded domain by February 1st, 2024 to continue sending your campaigns.', $beforeRestrictionsInEffectMessage);
+    $this->assertStringContainsString(sprintf('Your emails will temporarily be sent from <strong>%s</strong>', $rewrittenEmail), $beforeRestrictionsInEffectMessage);
+    $this->assertStringContainsString('Update sender email', $beforeRestrictionsInEffectMessage);
+
+    Carbon::setTestNow(Carbon::parse('2024-02-01 00:00:00 UTC'));
+    $afterRestrictionsInEffectMessage = $this->notice->getNoticeContentForFreeMailUsers(999);
+    $this->assertStringContainsString('Update your sender email address to a branded domain to continue sending your campaigns', $afterRestrictionsInEffectMessage);
+    $this->assertStringContainsString(sprintf('Your existing scheduled and active emails will temporarily be sent from <strong>%s</strong>', $rewrittenEmail), $afterRestrictionsInEffectMessage);
+    $this->assertStringContainsString('Update sender email', $afterRestrictionsInEffectMessage);
   }
 
   public function testItRetrievesAppropriateMessageForBrandedDomainsWithMoreThan1000Contacts(): void {
@@ -89,11 +106,18 @@ class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
       'address' => $email,
     ]);
     $rewrittenEmail = $this->authorizedSenderDomainController->getRewrittenEmailAddress($email);
-    $message = $this->notice->getNoticeContentForBrandedDomainUsers(false, 1001);
-    $this->assertStringContainsString('Your newsletters and post notifications have been paused. Authenticate your sender domain to continue sending.', $message);
-    $this->assertStringContainsString('Your marketing automations and transactional emails will temporarily be sent from', $message);
-    $this->assertStringContainsString($rewrittenEmail, $message);
-    $this->assertStringContainsString('Authenticate domain', $message);
+
+    Carbon::setTestNow(Carbon::parse('2024-01-31 00:00:00 UTC'));
+    $beforeRestrictionsInEffectMessage = $this->notice->getNoticeContentForBrandedDomainUsers(false, 1001);
+    $this->assertStringContainsString('Authenticate your sender domain to improve email delivery rates.', $beforeRestrictionsInEffectMessage);
+    $this->assertStringContainsString('Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts', $beforeRestrictionsInEffectMessage);
+
+    Carbon::setTestNow(Carbon::parse('2024-02-01 00:00:00 UTC'));
+    $afterRestrictionsInEffectMessage = $this->notice->getNoticeContentForBrandedDomainUsers(false, 1001);
+    $this->assertStringContainsString('Your newsletters and post notifications have been paused. Authenticate your sender domain to continue sending.', $afterRestrictionsInEffectMessage);
+    $this->assertStringContainsString('Your marketing automations and transactional emails will temporarily be sent from', $afterRestrictionsInEffectMessage);
+    $this->assertStringContainsString($rewrittenEmail, $afterRestrictionsInEffectMessage);
+    $this->assertStringContainsString('Authenticate domain', $afterRestrictionsInEffectMessage);
   }
 
   public function testItRetrievesAppropriateMessageForBrandedDomainsWithLessThan1000Contacts(): void {
@@ -103,11 +127,18 @@ class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
       'address' => $email,
     ]);
     $rewrittenEmail = $this->authorizedSenderDomainController->getRewrittenEmailAddress($email);
-    $message = $this->notice->getNoticeContentForBrandedDomainUsers(false, 999);
-    $this->assertStringContainsString('Authenticate your sender domain to send new emails.', $message);
-    $this->assertStringContainsString('Your existing scheduled and active emails will temporarily be sent from', $message);
-    $this->assertStringContainsString($rewrittenEmail, $message);
-    $this->assertStringContainsString('Authenticate domain', $message);
+
+    Carbon::setTestNow(Carbon::parse('2024-01-31 00:00:00 UTC'));
+    $beforeRestrictionsInEffectMessage = $this->notice->getNoticeContentForBrandedDomainUsers(false, 1001);
+    $this->assertStringContainsString('Authenticate your sender domain to improve email delivery rates.', $beforeRestrictionsInEffectMessage);
+    $this->assertStringContainsString('Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts', $beforeRestrictionsInEffectMessage);
+
+    Carbon::setTestNow(Carbon::parse('2024-02-01 00:00:00 UTC'));
+    $afterRestrictionsInEffectMessage = $this->notice->getNoticeContentForBrandedDomainUsers(false, 999);
+    $this->assertStringContainsString('Authenticate your sender domain to send new emails.', $afterRestrictionsInEffectMessage);
+    $this->assertStringContainsString('Your existing scheduled and active emails will temporarily be sent from', $afterRestrictionsInEffectMessage);
+    $this->assertStringContainsString($rewrittenEmail, $afterRestrictionsInEffectMessage);
+    $this->assertStringContainsString('Authenticate domain', $afterRestrictionsInEffectMessage);
   }
 
   public function testItRetrievesAppropriateMessageForBrandedDomainsWithLessThan500Contacts(): void {
@@ -153,5 +184,12 @@ class SenderDomainAuthenticationNoticesTest extends \MailPoetTest {
     $this->assertTrue($this->notice->isNewUser());
     (new StatisticsNewsletters((new Newsletter())->withSendingQueue()->create(), (new Subscriber())->create()))->create();
     $this->assertFalse($this->notice->isNewUser());
+  }
+
+  public function testItKnowsWhenNewRestrictionsStartGettingEnforced(): void {
+    Carbon::setTestNow(Carbon::parse('2024-01-31 00:00:00 UTC'));
+    $this->assertFalse($this->notice->isEnforcementOfNewRestrictionsInEffect());
+    Carbon::setTestNow(Carbon::parse('2024-02-01 00:00:01 UTC'));
+    $this->assertTrue($this->notice->isEnforcementOfNewRestrictionsInEffect());
   }
 }

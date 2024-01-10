@@ -238,6 +238,8 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
   public function _after() {
     parent::_after();
     $this->tester->cleanup();
+    // Reset any overrides
+    Carbon::setTestNow();
   }
 }
 
