@@ -78,7 +78,7 @@ function SenderDomainInlineNotice({
           emailAddressDomain={emailAddressDomain}
           isFreeDomain={isFreeDomain}
           isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
-          subscribersCount={subscribersCount}
+          isSmallSender={isSmallSender}
         />
       </InlineNotice>
     </div>
