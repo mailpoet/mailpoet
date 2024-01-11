@@ -55,7 +55,7 @@ class TypographyPreprocessor implements Preprocessor {
       $emailAttrs['color'] = $block['attrs']['style']['color']['text'];
     }
     if (isset($block['attrs']['fontFamily'])) {
-      $emailAttrs['font-family'] = $block['attrs']['fontFamily'];
+      $emailAttrs['font-family'] = $this->getFontFamilyBySlug($block['attrs']['fontFamily']);
     }
     if (isset($block['attrs']['style']['typography']['fontSize'])) {
       $emailAttrs['font-size'] = $block['attrs']['style']['typography']['fontSize'];
@@ -84,5 +84,16 @@ class TypographyPreprocessor implements Preprocessor {
       $block['email_attrs']['font-family'] = $contentStyles['typography']['fontFamily'];
     }
     return $block;
+  }
+
+  private function getFontFamilyBySlug(string $slug): ?string {
+    $themeData = $this->settingsController->getTheme()->get_data();
+    $fontFamilies = $themeData['settings']['typography']['fontFamilies'] ?? [];
+    foreach ($fontFamilies as $fontFamily) {
+      if ($fontFamily['slug'] === $slug) {
+        return $fontFamily['fontFamily'];
+      }
+    }
+    return null;
   }
 }
