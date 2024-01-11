@@ -153,6 +153,10 @@ interface Window {
   mailpoet_authorized_emails?: string[];
   mailpoet_verified_sender_domains?: string[];
   mailpoet_partially_verified_sender_domains?: string[];
+  mailpoet_sender_restrictions?: {
+    lowerLimit: number;
+    upperLimit: number;
+  };
   mailpoet_all_sender_domains?: string[];
   mailpoet_mss_active: boolean;
   mailpoet_free_domains?: string[];

@@ -44,13 +44,15 @@ function SenderDomainInlineNotice({
   const showAuthorizeButton = !isFreeDomain;
   let isAlert = true;
 
-  const LOWER_LIMIT = 500;
+  const LOWER_LIMIT = window.mailpoet_sender_restrictions?.lowerLimit || 500;
 
-  if (subscribersCount <= LOWER_LIMIT || isPartiallyVerifiedDomain) {
+  const isSmallSender = subscribersCount <= LOWER_LIMIT;
+
+  if (isSmallSender || isPartiallyVerifiedDomain) {
     isAlert = false;
   }
 
-  if (subscribersCount <= LOWER_LIMIT && !isPartiallyVerifiedDomain) {
+  if (isSmallSender && !isPartiallyVerifiedDomain) {
     showRewrittenEmail = true;
   }
 
