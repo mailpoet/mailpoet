@@ -13,7 +13,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\StatisticsNewsletters;
 use MailPoet\Test\DataFactories\Subscriber;
-use MailPoet\Util\DmarcPolicyChecker;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -284,21 +283,14 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $controller->verifyAuthorizedSenderDomain('testdomain.com');
   }
 
-  public function testItReturnsDmarcStatus() {
-    $controller = $this->getController();
-    $isRestricted = $controller->getDmarcPolicyForDomain('example.com');
-    verify($isRestricted)->same('none');
-  }
-
   public function testItCanRewriteEmailAddresses(): void {
     $email = 'jane.doe@gmail.com';
     $this->assertSame('jane.doe=gmail.com@replies.sendingservice.net', $this->getController()->getRewrittenEmailAddress($email));
   }
 
   private function getController($bridgeMock = null): AuthorizedSenderDomainController {
-    $dmarcPolicyChecker = $this->diContainer->get(DmarcPolicyChecker::class);
     $newsletterStatisticsRepository = $this->diContainer->get(NewsletterStatisticsRepository::class);
-    return new AuthorizedSenderDomainController($bridgeMock ?? $this->bridge, $dmarcPolicyChecker, $newsletterStatisticsRepository, $this->settings);
+    return new AuthorizedSenderDomainController($bridgeMock ?? $this->bridge, $newsletterStatisticsRepository, $this->settings);
   }
 
   public function testUserIsNewIfTheyHaveNotCompletedWelcomeWizard(): void {

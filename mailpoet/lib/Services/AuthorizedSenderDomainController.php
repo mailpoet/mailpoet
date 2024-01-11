@@ -5,7 +5,6 @@ namespace MailPoet\Services;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Util\DmarcPolicyChecker;
 use MailPoetVendor\Carbon\Carbon;
 
 class AuthorizedSenderDomainController {
@@ -31,9 +30,6 @@ class AuthorizedSenderDomainController {
   /** @var Bridge */
   private $bridge;
 
-  /** @var DmarcPolicyChecker */
-  private $dmarcPolicyChecker;
-
   /** @var NewsletterStatisticsRepository  */
   private $newsletterStatisticsRepository;
 
@@ -48,12 +44,10 @@ class AuthorizedSenderDomainController {
 
   public function __construct(
     Bridge $bridge,
-    DmarcPolicyChecker $dmarcPolicyChecker,
     NewsletterStatisticsRepository $newsletterStatisticsRepository,
     SettingsController $settingsController
   ) {
     $this->bridge = $bridge;
-    $this->dmarcPolicyChecker = $dmarcPolicyChecker;
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
     $this->settingsController = $settingsController;
   }
@@ -164,15 +158,6 @@ class AuthorizedSenderDomainController {
     }
 
     return $response;
-  }
-
-  /**
-   * Fetch Domain DMARC Policy
-   *
-   * returns reject or quarantine or none
-   */
-  public function getDmarcPolicyForDomain(string $domain): string {
-    return $this->dmarcPolicyChecker->getDomainDmarcPolicy($domain);
   }
 
   public function getSenderDomainsByStatus(string $status): array {
