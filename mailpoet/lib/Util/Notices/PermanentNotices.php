@@ -143,8 +143,13 @@ class PermanentNotices {
     $this->premiumFeaturesAvailableNotice->init(
       Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
+    $excludeDomainAuthenticationNotices = [
+      'mailpoet-settings',
+      'mailpoet-newsletter-editor',
+      ...$excludeSetupWizard,
+    ];
     $this->senderDomainAuthenticationNotices->init(
-      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
+      Menu::isOnMailPoetAdminPage($excludeDomainAuthenticationNotices)
     );
   }
 
