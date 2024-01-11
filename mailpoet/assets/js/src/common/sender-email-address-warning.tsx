@@ -77,7 +77,6 @@ function SenderEmailAddressWarning({
       displayElements.push(
         <SenderDomainInlineNotice
           emailAddress={emailAddress}
-          emailAddressDomain={emailAddressDomain}
           isFreeDomain={isFreeDomain}
           isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
           authorizeAction={(e) => loadModal(e, 'sender_domain')}

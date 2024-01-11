@@ -1,6 +1,7 @@
 import { escapeHTML } from '@wordpress/escape-html';
 import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
+import { extractEmailDomain } from 'common/functions';
 import { InlineNotice } from 'common/notices/inline-notice';
 import { SenderDomainNoticeBody } from './sender-domain-notice-body';
 import { SenderActions } from './sender-domain-notice-actions';
@@ -8,7 +9,6 @@ import { SenderActions } from './sender-domain-notice-actions';
 type SenderDomainInlineNoticeProps = {
   authorizeAction: (e) => void;
   emailAddress: string;
-  emailAddressDomain: string;
   subscribersCount: number;
   isFreeDomain: boolean;
   isPartiallyVerifiedDomain: boolean;
@@ -34,7 +34,6 @@ function SenderEmailRewriteInfo({ emailAddress = '' }): JSX.Element {
 
 function SenderDomainInlineNotice({
   emailAddress,
-  emailAddressDomain,
   authorizeAction,
   subscribersCount,
   isFreeDomain,
@@ -43,6 +42,8 @@ function SenderDomainInlineNotice({
   let showRewrittenEmail = false;
   const showAuthorizeButton = !isFreeDomain;
   let isAlert = true;
+
+  const emailAddressDomain = extractEmailDomain(emailAddress);
 
   const LOWER_LIMIT = window.mailpoet_sender_restrictions?.lowerLimit || 500;
 
