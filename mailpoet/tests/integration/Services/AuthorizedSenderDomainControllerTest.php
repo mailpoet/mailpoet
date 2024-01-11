@@ -284,18 +284,6 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $controller->verifyAuthorizedSenderDomain('testdomain.com');
   }
 
-  public function testItReturnsTrueWhenDmarcIsEnabled() {
-    $controller = $this->getController();
-    $isRestricted = $controller->isDomainDmarcRestricted('mailpoet.com');
-    verify($isRestricted)->same(true);
-  }
-
-  public function testItReturnsFalseWhenDmarcIsNotEnabled() {
-    $controller = $this->getController();
-    $isRestricted = $controller->isDomainDmarcRestricted('example.com');
-    verify($isRestricted)->same(false);
-  }
-
   public function testItReturnsDmarcStatus() {
     $controller = $this->getController();
     $isRestricted = $controller->getDmarcPolicyForDomain('example.com');

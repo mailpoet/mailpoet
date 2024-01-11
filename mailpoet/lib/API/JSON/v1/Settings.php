@@ -289,22 +289,6 @@ class Settings extends APIEndpoint {
     return $this->successResponse($response);
   }
 
-  public function checkDomainDmarcPolicy($data = []) {
-    $domain = $data['domain'] ?? null;
-
-    if (!$domain) {
-      return $this->badRequest([
-        APIError::BAD_REQUEST => __('No sender domain specified.', 'mailpoet'),
-      ]);
-    }
-
-    $domain = strtolower(trim($domain));
-
-    $response = ['isDmarcPolicyRestricted' => $this->senderDomainController->isDomainDmarcRestricted($domain)];
-
-    return $this->successResponse($response);
-  }
-
   public function getAuthorizedSenderDomains($data = []) {
     $domain = $data['domain'] ?? null;
 
