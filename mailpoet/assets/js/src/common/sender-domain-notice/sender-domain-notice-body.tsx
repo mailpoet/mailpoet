@@ -18,7 +18,7 @@ function SenderDomainNoticeBody({
   const renderMessage = (messageKey: string) => {
     const messages: { [key: string]: string } = {
       freeSmall:
-        "Shared 3rd-party domains like <emailDomain/> will send from MailPoet's shared domain. We recommend you to use your site's branded domain instead.",
+        "Shared 3rd-party domains like <emailDomain/> will send from MailPoet's shared domain. We recommend that you use your site's branded domain instead.",
       free: "MailPoet cannot send email campaigns from shared 3rd-party domains like <emailDomain/>. Please send from your site's branded domain instead.",
       // TODO: Remove freeWarning after the enforcement date has passed
       freeWarning:
