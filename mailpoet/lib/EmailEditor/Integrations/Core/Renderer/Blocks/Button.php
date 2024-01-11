@@ -25,7 +25,11 @@ class Button implements BlockRenderer {
       return '';
     }
 
+    $buttonOriginalWrapper = $buttonDom->getElementsByTagName('div')->item(0);
+    $buttonClasses = $buttonOriginalWrapper instanceof \DOMElement ? $buttonOriginalWrapper->getAttribute('class') : '';
+
     $markup = $this->getMarkup();
+    $markup = str_replace('{classes}', $buttonClasses, $markup);
 
     // Add Link Text
     $markup = str_replace('{linkText}', $buttonLink->textContent ?: '', $markup);
@@ -91,8 +95,6 @@ class Button implements BlockRenderer {
     // Escaping
     $wrapperStyles = array_map('esc_attr', $wrapperStyles);
     $linkStyles = array_map('esc_attr', $linkStyles);
-    // Font family may contain single quotes
-    $linkStyles['font-family'] = str_replace('&#039;', "'", esc_attr("{$parsedBlock['email_attrs']['font-family']}"));
 
     $markup = str_replace('{linkStyles}', $settingsController->convertStylesToString($linkStyles), $markup);
     $markup = str_replace('{wrapperStyles}', $settingsController->convertStylesToString($wrapperStyles), $markup);
@@ -103,7 +105,7 @@ class Button implements BlockRenderer {
   private function getMarkup(): string {
     return '<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:middle;border-collapse:separate;line-height:100%;width:{width};">
         <tr>
-          <td align="center" bgcolor="{backgroundColor}" role="presentation" style="{wrapperStyles}" valign="middle">
+          <td align="center" class="{classes}" bgcolor="{backgroundColor}" role="presentation" style="{wrapperStyles}" valign="middle">
             <a href="{linkUrl}" style="{linkStyles}" target="_blank">{linkText}</a>
           </td>
         </tr>

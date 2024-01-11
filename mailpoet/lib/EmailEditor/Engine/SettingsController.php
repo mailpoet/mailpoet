@@ -236,4 +236,14 @@ class SettingsController {
     /** @var array $themeJson */
     return new \WP_Theme_JSON($themeJson);
   }
+
+  public function getStylesheetForRendering(): string {
+    $settings = $this->getTheme()->get_settings();
+    $css = '';
+    // Font family classes
+    foreach ($settings['typography']['fontFamilies']['theme'] as $fontFamily) {
+      $css .= ".has-{$fontFamily['slug']}-font-family { font-family: {$fontFamily['fontFamily']}; } \n";
+    }
+    return $css;
+  }
 }

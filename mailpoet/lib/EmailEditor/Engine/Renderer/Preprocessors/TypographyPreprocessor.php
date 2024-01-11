@@ -12,7 +12,6 @@ class TypographyPreprocessor implements Preprocessor {
   private const TYPOGRAPHY_STYLES = [
     'color',
     'font-size',
-    'font-family',
     'text-decoration',
   ];
 
@@ -54,9 +53,6 @@ class TypographyPreprocessor implements Preprocessor {
     if (isset($block['attrs']['style']['color']['text'])) {
       $emailAttrs['color'] = $block['attrs']['style']['color']['text'];
     }
-    if (isset($block['attrs']['fontFamily'])) {
-      $emailAttrs['font-family'] = $this->getFontFamilyBySlug($block['attrs']['fontFamily']);
-    }
     if (isset($block['attrs']['style']['typography']['fontSize'])) {
       $emailAttrs['font-size'] = $block['attrs']['style']['typography']['fontSize'];
     }
@@ -80,20 +76,6 @@ class TypographyPreprocessor implements Preprocessor {
     if (!($block['email_attrs']['font-size'] ?? '')) {
       $block['email_attrs']['font-size'] = $contentStyles['typography']['fontSize'];
     }
-    if (!($block['email_attrs']['font-family'] ?? '')) {
-      $block['email_attrs']['font-family'] = $contentStyles['typography']['fontFamily'];
-    }
     return $block;
-  }
-
-  private function getFontFamilyBySlug(string $slug): ?string {
-    $themeData = $this->settingsController->getTheme()->get_data();
-    $fontFamilies = $themeData['settings']['typography']['fontFamilies'] ?? [];
-    foreach ($fontFamilies as $fontFamily) {
-      if ($fontFamily['slug'] === $slug) {
-        return $fontFamily['fontFamily'];
-      }
-    }
-    return null;
   }
 }

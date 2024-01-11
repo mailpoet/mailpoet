@@ -23,9 +23,6 @@ class ListBlock implements BlockRenderer {
       if (!isset($styles['font-size'])) {
         $styles['font-size'] = $contentStyles['typography']['fontSize'];
       }
-      if (!isset($styles['font-family'])) {
-        $styles['font-family'] = $contentStyles['typography']['fontFamily'];
-      }
 
       $html->set_attribute('style', $settingsController->convertStylesToString($styles));
       $blockContent = $html->get_updated_html();

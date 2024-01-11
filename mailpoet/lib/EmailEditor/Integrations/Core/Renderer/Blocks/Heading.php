@@ -42,9 +42,6 @@ class Heading implements BlockRenderer {
     if (!isset($styles['font-size'])) {
       $styles['font-size'] = $contentStyles['typography']['fontSize'];
     }
-    if (!isset($styles['font-family'])) {
-      $styles['font-family'] = $contentStyles['typography']['fontFamily'];
-    }
 
     $styles = array_merge($styles, $this->fetchStylesFromBlockAttrs($availableStylesheets, $parsedBlock['attrs']));
 

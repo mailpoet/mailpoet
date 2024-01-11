@@ -150,15 +150,4 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('border-bottom-left-radius:3px;');
     verify($output)->stringContainsString('border-bottom-right-radius:4px;');
   }
-
-  public function testItAllowsSingleQuotesInFontFamilyDefinition(): void {
-    $settingsControllerMock = $this->createPartialMock(SettingsController::class, ['getEmailContentStyles']);
-    $settingsControllerMock->method('getEmailContentStyles')->willReturn([
-      'typography' => [
-        'fontFamily' => '"Font\'", serif',
-      ],
-    ]);
-    $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $settingsControllerMock);
-    verify($output)->stringContainsString('&quot;Font\'&quot;, serif');
-  }
 }
