@@ -46,9 +46,17 @@ function SenderDomainInlineNotice({
 
   const LOWER_LIMIT = window.mailpoet_sender_restrictions?.lowerLimit || 500;
 
+  const isNewUser = window.mailpoet_sender_restrictions?.isNewUser ?? true;
+  const isEnforcementOfNewRestrictionsInEffect =
+    window.mailpoet_sender_restrictions
+      ?.isEnforcementOfNewRestrictionsInEffect ?? true;
+  // TODO: Remove after the enforcement date has passed
+  const onlyShowWarnings =
+    !isNewUser && !isEnforcementOfNewRestrictionsInEffect;
+
   const isSmallSender = subscribersCount <= LOWER_LIMIT;
 
-  if (isSmallSender || isPartiallyVerifiedDomain) {
+  if (isSmallSender || isPartiallyVerifiedDomain || onlyShowWarnings) {
     isAlert = false;
   }
 
@@ -79,6 +87,7 @@ function SenderDomainInlineNotice({
           isFreeDomain={isFreeDomain}
           isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
           isSmallSender={isSmallSender}
+          onlyShowWarnings={onlyShowWarnings}
         />
       </InlineNotice>
     </div>
