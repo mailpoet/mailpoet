@@ -80,8 +80,6 @@ class SenderField extends Component {
 
     if (!isFieldValid(this.domElementSelector)) {
       validateField(this.domElementSelector);
-      // Hide domain error to not stack error messages
-      this.showSenderDomainError(false);
       return;
     }
 
