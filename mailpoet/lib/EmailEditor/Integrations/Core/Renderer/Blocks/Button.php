@@ -92,8 +92,7 @@ class Button implements BlockRenderer {
     $wrapperStyles = array_map('esc_attr', $wrapperStyles);
     $linkStyles = array_map('esc_attr', $linkStyles);
     // Font family may contain single quotes
-    $contentStyles = $settingsController->getEmailContentStyles();
-    $linkStyles['font-family'] = str_replace('&#039;', "'", esc_attr("{$contentStyles['typography']['fontFamily']}"));
+    $linkStyles['font-family'] = str_replace('&#039;', "'", esc_attr("{$parsedBlock['email_attrs']['font-family']}"));
 
     $markup = str_replace('{linkStyles}', $settingsController->convertStylesToString($linkStyles), $markup);
     $markup = str_replace('{wrapperStyles}', $settingsController->convertStylesToString($wrapperStyles), $markup);
