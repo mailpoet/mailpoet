@@ -106,14 +106,16 @@ class SettingsController {
     $coreThemeData = \WP_Theme_JSON_Resolver::get_core_data();
     $coreSettings = $coreThemeData->get_settings();
 
+    // Email Editor Theme
+    $editorTheme = $this->getTheme();
+
     // Enable custom spacing
     $coreSettings['spacing']['units'] = ['px'];
     $coreSettings['spacing']['padding'] = true;
     // Typography
     $coreSettings['typography']['dropCap'] = false; // Showing large initial letter cannot be implemented in emails
     $coreSettings['typography']['fontWeight'] = false; // Font weight will be handled by the font family later
-
-    $theme = $this->getTheme();
+    $coreSettings['typography']['fontFamilies']['default'] = $editorTheme->get_data()['settings']['typography']['fontFamilies'];
 
     // body selector is later transformed to .editor-styles-wrapper
     // setting padding for bottom and top is needed because \WP_Theme_JSON::get_stylesheet() set them only for .wp-site-blocks selector
@@ -130,7 +132,7 @@ class SettingsController {
     $settings['styles'] = [
       $coreDefaultSettings['defaultEditorStyles'][0],
       ['css' => wp_get_global_stylesheet(['base-layout-styles'])],
-      ['css' => $theme->get_stylesheet()],
+      ['css' => $editorTheme->get_stylesheet()],
       ['css' => $contentVariables],
       ['css' => $flexEmailLayoutStyles],
     ];
