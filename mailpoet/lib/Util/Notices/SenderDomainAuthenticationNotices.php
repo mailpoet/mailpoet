@@ -13,10 +13,6 @@ use MailPoet\WP\Notice;
 use MailPoetVendor\Carbon\Carbon;
 
 class SenderDomainAuthenticationNotices {
-
-  const LOWER_LIMIT = 500;
-  const UPPER_LIMIT = 1000;
-
   const FREE_MAIL_KB_URL = 'https://kb.mailpoet.com/article/259-your-from-address-cannot-be-yahoo-com-gmail-com-outlook-com';
   const SPF_DKIM_DMARC_KB_URL = 'https://kb.mailpoet.com/article/295-spf-dkim-dmarc';
 
@@ -92,7 +88,7 @@ class SenderDomainAuthenticationNotices {
       || !$this->bridge->isMailpoetSendingServiceEnabled()
       || in_array($this->getDefaultFromDomain(), $this->authorizedSenderDomainController->getFullyVerifiedSenderDomains(true))
       || $this->isNewUser()
-      || $this->isFreeMailUser() && $this->subscribersFeatures->getSubscribersCount() <= self::LOWER_LIMIT
+      || $this->isFreeMailUser() && $this->subscribersFeatures->getSubscribersCount() <= AuthorizedSenderDomainController::LOWER_LIMIT
     ) {
       return null;
     }
@@ -122,7 +118,7 @@ class SenderDomainAuthenticationNotices {
       return false;
     }
     if (
-      $this->subscribersFeatures->getSubscribersCount() < self::UPPER_LIMIT
+      $this->subscribersFeatures->getSubscribersCount() < AuthorizedSenderDomainController::UPPER_LIMIT
       || $this->isPartiallyVerified()
     ) {
       return false;
@@ -147,7 +143,7 @@ class SenderDomainAuthenticationNotices {
       );
     }
 
-    if ($contactCount <= self::UPPER_LIMIT) {
+    if ($contactCount <= AuthorizedSenderDomainController::UPPER_LIMIT) {
       // translators: %1$s is the domain of the user's default from address, %2$s is a rewritten version of their default from address, %3$s is HTML for an 'update sender' button, and %4$s is HTML for a Learn More button
       return sprintf(__("<strong>Update your sender email address to a branded domain to continue sending your campaigns.</strong>
 <span>MailPoet can no longer send from email addresses on shared 3rd party domains like <strong>%1\$s</strong>. Please change your campaigns to send from an email address on your site's branded domain. Your existing scheduled and active emails will temporarily be sent from <strong>%2\$s</strong>.</span> <p>%3\$s &nbsp; %4\$s</p>", 'mailpoet'),
@@ -169,7 +165,7 @@ class SenderDomainAuthenticationNotices {
   }
 
   public function getNoticeContentForBrandedDomainUsers(bool $isPartiallyVerified, int $contactCount): string {
-    if (!$this->isEnforcementOfNewRestrictionsInEffect() || $isPartiallyVerified || $contactCount <= self::LOWER_LIMIT) {
+    if (!$this->isEnforcementOfNewRestrictionsInEffect() || $isPartiallyVerified || $contactCount <= AuthorizedSenderDomainController::LOWER_LIMIT) {
       // translators: %1$s is HTML for an 'authenticate domain' button, %2$s is HTML for a Learn More button
       return sprintf(__("<strong>Authenticate your sender domain to improve email delivery rates.</strong>
 <span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the \"Spam\" folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts.</span><p>%1\$s &nbsp; %2\$s</p>", 'mailpoet'),
@@ -178,7 +174,7 @@ class SenderDomainAuthenticationNotices {
       );
     }
 
-    if ($contactCount <= self::UPPER_LIMIT) {
+    if ($contactCount <= AuthorizedSenderDomainController::UPPER_LIMIT) {
       // translators: %1$s is a rewritten version of the user's default from address, %2$s is HTML for an 'authenticate domain' button, %3$s is HTML for a Learn More button
       return sprintf(__("<strong>Authenticate your sender domain to send new emails.</strong>
       <span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the \"Spam\" folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts. Your existing scheduled and active emails will temporarily be sent from <strong>%1\$s</strong>.</span> <p>%2\$s &nbsp; %3\$s</span>", 'mailpoet'),
@@ -198,7 +194,7 @@ class SenderDomainAuthenticationNotices {
   }
 
   public function getUpdateSenderButton(): string {
-    $buttonClass = $this->subscribersFeatures->getSubscribersCount() > self::UPPER_LIMIT
+    $buttonClass = $this->subscribersFeatures->getSubscribersCount() > AuthorizedSenderDomainController::UPPER_LIMIT
       ? 'button-primary'
       : 'button-secondary';
     $button = sprintf('<a href="admin.php?page=mailpoet-settings" class="button %1$s">%2$s</a>', $buttonClass, __('Update sender email', 'mailpoet'));

@@ -18,6 +18,9 @@ class AuthorizedSenderDomainController {
   const AUTHORIZED_SENDER_DOMAIN_ERROR_NOT_CREATED = 'Sender domain does not exist';
   const AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_VERIFIED = 'Sender domain already verified';
 
+  const LOWER_LIMIT = 500;
+  const UPPER_LIMIT = 1000;
+
   /** @var Bridge */
   private $bridge;
 
