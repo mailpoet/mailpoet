@@ -20,6 +20,22 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
           'text' => '#000000',
         ],
       ],
+      'settings' => [
+        'typography' => [
+          'fontFamilies' => [
+            [
+              'slug' => 'arial-slug',
+              'name' => 'Arial Name',
+              'fontFamily' => 'Arial',
+            ],
+            [
+              'slug' => 'georgia-slug',
+              'name' => 'Georgia Name',
+              'fontFamily' => 'Georgia',
+            ],
+          ],
+        ],
+      ],
     ]);
     $settingsMock->method('getTheme')->willReturn($themeMock);
     $settingsMock->method('getEmailContentStyles')->willReturn([
@@ -35,7 +51,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     $blocks = [[
       'blockName' => 'core/columns',
       'attrs' => [
-        'fontFamily' => 'Arial',
+        'fontFamily' => 'arial-slug',
         'style' => [
           'color' => [
             'text' => '#aa00dd',
@@ -117,7 +133,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
       [
         'blockName' => 'core/columns',
         'attrs' => [
-          'fontFamily' => 'Arial',
+          'fontFamily' => 'arial-slug',
           'style' => [
             'color' => [
               'text' => '#aa00dd',
@@ -131,7 +147,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
           [
             'blockName' => 'core/column',
             'attrs' => [
-              'fontFamily' => 'Georgia',
+              'fontFamily' => 'georgia-slug',
               'style' => [
                 'color' => [
                   'text' => '#cc22aa',
@@ -168,7 +184,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
           [
             'blockName' => 'core/column',
             'attrs' => [
-              'fontFamily' => 'Georgia',
+              'fontFamily' => 'georgia-slug',
               'style' => [
                 'color' => [
                   'text' => '#cc22aa',
