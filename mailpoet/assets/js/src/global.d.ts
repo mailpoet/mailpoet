@@ -156,6 +156,8 @@ interface Window {
   mailpoet_sender_restrictions?: {
     lowerLimit: number;
     upperLimit: number;
+    isNewUser: boolean;
+    isEnforcementOfNewRestrictionsInEffect: boolean;
   };
   mailpoet_all_sender_domains?: string[];
   mailpoet_mss_active: boolean;

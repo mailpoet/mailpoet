@@ -107,6 +107,8 @@ class Settings {
       $data['sender_restrictions'] = [
         'lowerLimit' => AuthorizedSenderDomainController::LOWER_LIMIT,
         'upperLimit' => AuthorizedSenderDomainController::UPPER_LIMIT,
+        'isNewUser' => $this->senderDomainController->isNewUser(),
+        'isEnforcementOfNewRestrictionsInEffect' => $this->senderDomainController->isEnforcementOfNewRestrictionsInEffect(),
       ];
     }
 
