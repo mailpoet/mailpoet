@@ -5,12 +5,17 @@ namespace MailPoet\Test\Services;
 use Codeception\Stub\Expected;
 use InvalidArgumentException;
 use MailPoet\Mailer\Mailer;
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\StatisticsNewsletters;
+use MailPoet\Test\DataFactories\Subscriber;
 use MailPoet\Util\DmarcPolicyChecker;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Carbon\Carbon;
 
 require_once('BridgeTestMockAPI.php');
 
@@ -304,6 +309,37 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
   private function getController($bridgeMock = null): AuthorizedSenderDomainController {
     $dmarcPolicyChecker = $this->diContainer->get(DmarcPolicyChecker::class);
-    return new AuthorizedSenderDomainController($bridgeMock ?? $this->bridge, $dmarcPolicyChecker);
+    $newsletterStatisticsRepository = $this->diContainer->get(NewsletterStatisticsRepository::class);
+    return new AuthorizedSenderDomainController($bridgeMock ?? $this->bridge, $dmarcPolicyChecker, $newsletterStatisticsRepository, $this->settings);
+  }
+
+  public function testUserIsNewIfTheyHaveNotCompletedWelcomeWizard(): void {
+    $this->settings->delete('version');
+    $this->assertTrue($this->getController()->isNewUser());
+  }
+
+  public function testUserIsNewIfTheyInstalledAfterNewRestrictionsImplemented(): void {
+    $this->settings->set('version', MAILPOET_VERSION);
+    $this->settings->set('installed_after_new_domain_restrictions', '1');
+    $this->assertTrue($this->getController()->isNewUser());
+    // also true even if they've sent emails
+    (new StatisticsNewsletters((new Newsletter())->withSendingQueue()->create(), (new Subscriber())->create()))->create();
+    $this->assertTrue($this->getController()->isNewUser());
+  }
+
+  public function testUserIsNotNewIfTheyDoNotHaveTheSettingAndHaveSentEmails(): void {
+    $this->settings->set('version', MAILPOET_VERSION);
+    $this->settings->delete('installed_after_new_domain_restrictions');
+    // No emails yet, so they are still "new"
+    $this->assertTrue($this->getController()->isNewUser());
+    (new StatisticsNewsletters((new Newsletter())->withSendingQueue()->create(), (new Subscriber())->create()))->create();
+    $this->assertFalse($this->getController()->isNewUser());
+  }
+
+  public function testItKnowsWhenNewRestrictionsStartGettingEnforced(): void {
+    Carbon::setTestNow(Carbon::parse('2024-01-31 00:00:00 UTC'));
+    $this->assertFalse($this->getController()->isEnforcementOfNewRestrictionsInEffect());
+    Carbon::setTestNow(Carbon::parse('2024-02-01 00:00:01 UTC'));
+    $this->assertTrue($this->getController()->isEnforcementOfNewRestrictionsInEffect());
   }
 }
