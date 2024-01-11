@@ -2,8 +2,11 @@
 
 namespace MailPoet\Services;
 
+use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Services\Bridge\API;
+use MailPoet\Settings\SettingsController;
 use MailPoet\Util\DmarcPolicyChecker;
+use MailPoetVendor\Carbon\Carbon;
 
 class AuthorizedSenderDomainController {
   const DOMAIN_VERIFICATION_STATUS_VALID = 'valid';
@@ -21,11 +24,21 @@ class AuthorizedSenderDomainController {
   const LOWER_LIMIT = 500;
   const UPPER_LIMIT = 1000;
 
+  const ENFORCEMENT_START_TIME = '2024-02-01 00:00:00 UTC';
+
+  const INSTALLED_AFTER_NEW_RESTRICTIONS_OPTION = 'installed_after_new_domain_restrictions';
+
   /** @var Bridge */
   private $bridge;
 
   /** @var DmarcPolicyChecker */
   private $dmarcPolicyChecker;
+
+  /** @var NewsletterStatisticsRepository  */
+  private $newsletterStatisticsRepository;
+
+  /** @var SettingsController  */
+  private $settingsController;
 
   /** @var null|array Cached response for with authorized domains */
   private $currentRecords = null;
@@ -35,10 +48,14 @@ class AuthorizedSenderDomainController {
 
   public function __construct(
     Bridge $bridge,
-    DmarcPolicyChecker $dmarcPolicyChecker
+    DmarcPolicyChecker $dmarcPolicyChecker,
+    NewsletterStatisticsRepository $newsletterStatisticsRepository,
+    SettingsController $settingsController
   ) {
     $this->bridge = $bridge;
     $this->dmarcPolicyChecker = $dmarcPolicyChecker;
+    $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
+    $this->settingsController = $settingsController;
   }
 
   /**
@@ -258,5 +275,27 @@ class AuthorizedSenderDomainController {
       $this->currentRecords = $this->bridge->getAuthorizedSenderDomains();
     }
     return $this->currentRecords;
+  }
+
+  // TODO: Remove after the enforcement date has passed
+  public function isEnforcementOfNewRestrictionsInEffect(): bool {
+    return Carbon::now() >= Carbon::parse(self::ENFORCEMENT_START_TIME);
+  }
+
+  public function isNewUser(): bool {
+    $installedVersion = $this->settingsController->get('version');
+
+    // Setup wizard has not been completed
+    if ($installedVersion === null) {
+      return true;
+    }
+
+    $installedAfterNewDomainRestrictions = $this->settingsController->get(self::INSTALLED_AFTER_NEW_RESTRICTIONS_OPTION, false);
+
+    if ($installedAfterNewDomainRestrictions) {
+      return true;
+    }
+
+    return $this->newsletterStatisticsRepository->countBy([]) === 0;
   }
 }
