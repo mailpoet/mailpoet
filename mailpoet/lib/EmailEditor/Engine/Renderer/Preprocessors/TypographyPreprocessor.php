@@ -54,8 +54,8 @@ class TypographyPreprocessor implements Preprocessor {
     if (isset($block['attrs']['style']['color']['text'])) {
       $emailAttrs['color'] = $block['attrs']['style']['color']['text'];
     }
-    if (isset($block['attrs']['style']['typography']['fontFamily'])) {
-      $emailAttrs['font-family'] = $block['attrs']['style']['typography']['fontFamily'];
+    if (isset($block['attrs']['fontFamily'])) {
+      $emailAttrs['font-family'] = $block['attrs']['fontFamily'];
     }
     if (isset($block['attrs']['style']['typography']['fontSize'])) {
       $emailAttrs['font-size'] = $block['attrs']['style']['typography']['fontSize'];
@@ -79,6 +79,9 @@ class TypographyPreprocessor implements Preprocessor {
     }
     if (!($block['email_attrs']['font-size'] ?? '')) {
       $block['email_attrs']['font-size'] = $contentStyles['typography']['fontSize'];
+    }
+    if (!($block['email_attrs']['font-family'] ?? '')) {
+      $block['email_attrs']['font-family'] = $contentStyles['typography']['fontFamily'];
     }
     return $block;
   }

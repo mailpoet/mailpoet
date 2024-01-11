@@ -25,6 +25,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     $settingsMock->method('getEmailContentStyles')->willReturn([
       'typography' => [
         'fontSize' => '13px',
+        'fontFamily' => 'Arial',
       ],
     ]);
     $this->preprocessor = new TypographyPreprocessor($settingsMock);
@@ -34,12 +35,12 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     $blocks = [[
       'blockName' => 'core/columns',
       'attrs' => [
+        'fontFamily' => 'Arial',
         'style' => [
           'color' => [
             'text' => '#aa00dd',
           ],
           'typography' => [
-            'fontFamily' => 'Arial',
             'fontSize' => '12px',
             'textDecoration' => 'underline',
           ],
@@ -104,10 +105,11 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     $result = $this->preprocessor->preprocess($blocks, []);
     $result = $result[0];
     verify($result['innerBlocks'])->arrayCount(2);
-    verify($result['email_attrs'])->equals(['width' => '640px', 'color' => '#000000', 'font-size' => '13px']);
-    verify($result['innerBlocks'][0]['email_attrs'])->equals(['color' => '#000000', 'font-size' => '13px']);
-    verify($result['innerBlocks'][1]['email_attrs'])->equals(['color' => '#000000', 'font-size' => '13px']);
-    verify($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals(['color' => '#000000', 'font-size' => '13px']);
+    verify($result['email_attrs'])->equals(['width' => '640px', 'color' => '#000000', 'font-size' => '13px', 'font-family' => 'Arial']);
+    $defaultFontStyles = ['color' => '#000000', 'font-size' => '13px', 'font-family' => 'Arial'];
+    verify($result['innerBlocks'][0]['email_attrs'])->equals($defaultFontStyles);
+    verify($result['innerBlocks'][1]['email_attrs'])->equals($defaultFontStyles);
+    verify($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($defaultFontStyles);
   }
 
   public function testItOverridesColumnsTypography(): void {
@@ -115,12 +117,12 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
       [
         'blockName' => 'core/columns',
         'attrs' => [
+          'fontFamily' => 'Arial',
           'style' => [
             'color' => [
               'text' => '#aa00dd',
             ],
             'typography' => [
-              'fontFamily' => 'Arial',
               'fontSize' => '12px',
             ],
           ],
@@ -129,12 +131,12 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
           [
             'blockName' => 'core/column',
             'attrs' => [
+              'fontFamily' => 'Georgia',
               'style' => [
                 'color' => [
                   'text' => '#cc22aa',
                 ],
                 'typography' => [
-                  'fontFamily' => 'Georgia',
                   'fontSize' => '18px',
                 ],
               ],
@@ -166,12 +168,12 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
           [
             'blockName' => 'core/column',
             'attrs' => [
+              'fontFamily' => 'Georgia',
               'style' => [
                 'color' => [
                   'text' => '#cc22aa',
                 ],
                 'typography' => [
-                  'fontFamily' => 'Georgia',
                   'fontSize' => '18px',
                 ],
               ],
@@ -207,7 +209,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     verify($child1['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs1);
     verify($child1['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs1);
     verify($child2['innerBlocks'])->arrayCount(1);
-    verify($child2['email_attrs'])->equals(['color' => '#000000', 'font-size' => '13px']);
+    verify($child2['email_attrs'])->equals(['color' => '#000000', 'font-size' => '13px', 'font-family' => 'Arial']);
     verify($child2['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
     verify($child2['innerBlocks'][0]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
   }
