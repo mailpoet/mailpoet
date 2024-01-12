@@ -1,0 +1,6 @@
+// Colors for default theme as it is not included in wordpress-admin-schemes mixins
+:root {
+  @include admin-scheme(#007cba);
+}
+// Colors for other admin themes
+@include wordpress-admin-schemes();

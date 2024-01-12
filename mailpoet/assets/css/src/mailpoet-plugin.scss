@@ -23,8 +23,12 @@
 @import '../../../node_modules/select2/dist/css/select2';
 @import '../../../node_modules/@wordpress/components/build-style/style';
 
-// Generic
+// WordPress Admin Theme Color Variables
+// Needed for the WordPress Admin color scheme support for @wordpress/components.
+@import '../../../node_modules/@wordpress/base-styles/mixins';
 
+// Generic
+@import 'generic/admin-colors'; // Has to be after @wordpress/components/build-style/style
 @import 'generic/typography';
 @import 'generic/buttons';
 @import 'generic/buttons-spinners';
