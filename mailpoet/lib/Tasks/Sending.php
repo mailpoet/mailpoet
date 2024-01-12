@@ -14,6 +14,7 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Util\Helpers;
+use MailPoetVendor\Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
  * A facade class containing all necessary models to work with a sending queue
@@ -211,10 +212,14 @@ class Sending {
     $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($this->scheduledTaskEntity);
     $this->scheduledTasksRepository->remove($this->scheduledTaskEntity);
 
-    $sendingQueueEntity = $this->scheduledTaskEntity->getSendingQueue();
-
-    if ($sendingQueueEntity) {
-      $this->sendingQueuesRepository->remove($sendingQueueEntity);
+    try {
+      $sendingQueueEntity = $this->scheduledTaskEntity->getSendingQueue();
+      if ($sendingQueueEntity) {
+        $this->sendingQueuesRepository->remove($sendingQueueEntity);
+      }
+    } catch (ORMInvalidArgumentException $e) {
+      // This entity can already be removed. E.g. in the NewslettersRepository when deleting newsletters in bulk
+      ;
     }
 
     $this->scheduledTasksRepository->flush();
