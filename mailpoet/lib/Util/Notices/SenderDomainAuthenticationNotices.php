@@ -172,7 +172,7 @@ class SenderDomainAuthenticationNotices {
     if (!$this->isEnforcementOfNewRestrictionsInEffect() || $isPartiallyVerified || $contactCount <= self::LOWER_LIMIT) {
       // translators: %1$s is HTML for an 'authenticate domain' button, %2$s is HTML for a Learn More button
       return sprintf(__("<strong>Authenticate your sender domain to improve email delivery rates.</strong>
-<span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the \"Spam\" folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts.</span><p>%1\$s &nbsp; %2\$s</p>", 'mailpoet'),
+<span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the “Spam” folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts.</span><p>%1\$s &nbsp; %2\$s</p>", 'mailpoet'),
         $this->getAuthenticateDomainButton(),
         $this->getLearnMoreAboutSpfDkimDmarcButton()
       );
@@ -181,7 +181,7 @@ class SenderDomainAuthenticationNotices {
     if ($contactCount <= self::UPPER_LIMIT) {
       // translators: %1$s is a rewritten version of the user's default from address, %2$s is HTML for an 'authenticate domain' button, %3$s is HTML for a Learn More button
       return sprintf(__("<strong>Authenticate your sender domain to send new emails.</strong>
-      <span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the \"Spam\" folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts. Your existing scheduled and active emails will temporarily be sent from <strong>%1\$s</strong>.</span> <p>%2\$s &nbsp; %3\$s</span>", 'mailpoet'),
+      <span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the “Spam” folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts. Your existing scheduled and active emails will temporarily be sent from <strong>%1\$s</strong>.</span> <p>%2\$s &nbsp; %3\$s</p>", 'mailpoet'),
         $this->authorizedSenderDomainController->getRewrittenEmailAddress($this->getDefaultFromAddress()),
         $this->getAuthenticateDomainButton(),
         $this->getLearnMoreAboutSpfDkimDmarcButton()
@@ -190,7 +190,7 @@ class SenderDomainAuthenticationNotices {
 
     // translators: %1$s is a rewritten version of the user's default from address, %2$s is HTML for an 'authenticate domain' button, %3$s is HTML for a Learn More button
     return sprintf(__("<strong>Your newsletters and post notifications have been paused. Authenticate your sender domain to continue sending.</strong>
-<span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the \"Spam\" folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts. Your marketing automations and transactional emails will temporarily be sent from <strong>%1\$s</strong>.</span> <p>%2\$s &nbsp; %3\$s</p>", 'mailpoet'),
+<span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the “Spam” folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts. Your marketing automations and transactional emails will temporarily be sent from <strong>%1\$s</strong>.</span> <p>%2\$s &nbsp; %3\$s</p>", 'mailpoet'),
       $this->authorizedSenderDomainController->getRewrittenEmailAddress($this->getDefaultFromAddress()),
       $this->getAuthenticateDomainButton(),
       $this->getLearnMoreAboutSpfDkimDmarcButton()
