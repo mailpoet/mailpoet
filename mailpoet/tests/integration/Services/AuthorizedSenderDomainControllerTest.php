@@ -227,13 +227,13 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     $controller = $this->getController($bridgeMock);
 
-    $domainsByStatus = $controller->getSenderDomainsByStatus('verified');
+    $domainsByStatus = $controller->getSenderDomainsByStatus(['verified']);
     $this->assertEqualsCanonicalizing([$verifiedDomain], $domainsByStatus);
 
-    $domainsByStatus = $controller->getSenderDomainsByStatus('partially-verified');
+    $domainsByStatus = $controller->getSenderDomainsByStatus(['partially-verified']);
     $this->assertEqualsCanonicalizing([$partiallyVerifiedDomain], $domainsByStatus);
 
-    $domainsByStatus = $controller->getSenderDomainsByStatus('unverified');
+    $domainsByStatus = $controller->getSenderDomainsByStatus(['unverified']);
     $this->assertEqualsCanonicalizing([$unverifiedDomain], $domainsByStatus);
 
     $grouped = $controller->getSenderDomainsGroupedByStatus();
@@ -248,6 +248,9 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     $domains = $controller->getPartiallyVerifiedSenderDomains(true);
     $this->assertEqualsCanonicalizing(['example2.com'], $domains);
+
+    $domains = $controller->getFullyOrPartiallyVerifiedSenderDomains(true);
+    $this->assertEqualsCanonicalizing(['example1.com', 'example2.com'], $domains);
 
     $domains = $controller->getUnverifiedSenderDomains(true);
     $this->assertEqualsCanonicalizing(['example3.com'], $domains);
