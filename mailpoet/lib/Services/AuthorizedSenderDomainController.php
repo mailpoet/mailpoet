@@ -160,24 +160,29 @@ class AuthorizedSenderDomainController {
     return $response;
   }
 
-  public function getSenderDomainsByStatus(string $status): array {
+  public function getSenderDomainsByStatus(array $status): array {
     return array_filter($this->getAllRawData(), function(array $senderDomainData) use ($status) {
-      return ($senderDomainData['domain_status'] ?? null) === $status;
+      return in_array($senderDomainData['domain_status'] ?? null, $status);
     });
   }
 
   public function getFullyVerifiedSenderDomains($domainsOnly = false): array {
-    $domainData = $this->getSenderDomainsByStatus(self::OVERALL_STATUS_VERIFIED);
+    $domainData = $this->getSenderDomainsByStatus([self::OVERALL_STATUS_VERIFIED]);
     return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
   }
 
   public function getPartiallyVerifiedSenderDomains($domainsOnly = false): array {
-    $domainData = $this->getSenderDomainsByStatus(self::OVERALL_STATUS_PARTIALLY_VERIFIED);
+    $domainData = $this->getSenderDomainsByStatus([self::OVERALL_STATUS_PARTIALLY_VERIFIED]);
     return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
   }
 
   public function getUnverifiedSenderDomains($domainsOnly = false): array {
-    $domainData = $this->getSenderDomainsByStatus(self::OVERALL_STATUS_UNVERIFIED);
+    $domainData = $this->getSenderDomainsByStatus([self::OVERALL_STATUS_UNVERIFIED]);
+    return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
+  }
+
+  public function getFullyOrPartiallyVerifiedSenderDomains($domainsOnly = false): array {
+    $domainData = $this->getSenderDomainsByStatus([self::OVERALL_STATUS_PARTIALLY_VERIFIED,self::OVERALL_STATUS_VERIFIED]);
     return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
   }
 
