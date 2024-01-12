@@ -1,5 +1,7 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
+. "$(dirname "$0")/../mailpoet/.env"
+[ "$MP_GIT_HOOKS_ENABLE" != "true" ] && exit 0
 
 npx lint-staged -c mailpoet/package.json --cwd mailpoet
 npx lint-staged -c package.json
