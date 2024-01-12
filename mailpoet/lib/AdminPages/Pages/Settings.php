@@ -101,8 +101,8 @@ class Settings {
 
     if ($this->bridge->isMailpoetSendingServiceEnabled() && $mpApiKeyValid) {
       $data['authorized_emails'] = $this->bridge->getAuthorizedEmailAddresses();
-      $data['verified_sender_domains'] = array_values($this->senderDomainController->getFullyVerifiedSenderDomains(true));
-      $data['partially_verified_sender_domains'] = array_values($this->senderDomainController->getPartiallyVerifiedSenderDomains(true));
+      $data['verified_sender_domains'] = $this->senderDomainController->getFullyVerifiedSenderDomains(true);
+      $data['partially_verified_sender_domains'] = $this->senderDomainController->getPartiallyVerifiedSenderDomains(true);
       $data['all_sender_domains'] = $this->senderDomainController->getAllSenderDomains();
       $data['sender_restrictions'] = [
         'lowerLimit' => AuthorizedSenderDomainController::LOWER_LIMIT,
