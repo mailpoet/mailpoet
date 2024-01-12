@@ -13,14 +13,14 @@ fileChanged() {
 installIfUpdates() {
   local changedFiles="$(git diff-tree -r --name-only --no-commit-id HEAD@{1} HEAD)"
 
-  if fileChanged "pnpm-lock.yaml" "$changedFiles"; then
+  if [ "$MP_GIT_HOOKS_INSTALL_JS" = "true" ] && fileChanged "pnpm-lock.yaml" "$changedFiles"; then
     echo "Change detected in pnpm-lock.yaml, running do install:js"
     pushd mailpoet
     ./do install:js
     popd
   fi
 
-  if fileChanged "mailpoet/composer.lock" "$changedFiles"; then
+  if [ "$MP_GIT_HOOKS_INSTALL_PHP" = "true" ] && fileChanged "mailpoet/composer.lock" "$changedFiles"; then
     echo "Change detected in mailpoet/composer.lock, running do install:php"
     pushd mailpoet
     ./do install:php
