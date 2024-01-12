@@ -1,6 +1,15 @@
-import { Tooltip } from '@wordpress/components';
+import { Tooltip as WPTooltip } from '@wordpress/components';
 import { Icon, info } from '@wordpress/icons';
-import { ReactNode } from 'react';
+import { ReactNode, ComponentType } from 'react';
+import { TooltipProps } from '@wordpress/components/src/tooltip/types';
+
+// Types provided with original Tooltip component define text property as string
+// but it supports ReactNode as well
+const Tooltip = WPTooltip as ComponentType<
+  Omit<TooltipProps, 'text'> & {
+    text: ReactNode;
+  }
+>;
 
 type Props = {
   children: ReactNode;
