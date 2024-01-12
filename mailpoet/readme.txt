@@ -150,13 +150,13 @@ Have a question for us? Reach us at security@ our domain, or report security iss
 
 To improve user experience, MailPoet may use the following 3rd party libraries if the _Load 3rd-party libraries_ setting is enabled:
 
-* [Google Fonts](https://fonts.google.com/) - used in Form Editor which you can use to customize your forms, and in the Email Editor to style emails. This can be individually [disabled by a filter](https://kb.mailpoet.com/article/332-how-to-disable-google-fonts)
+* [Google Fonts](https://fonts.google.com/) - used in Form Editor which you can use to customize your forms, and in the Email Editor to style emails. This can be individually [disabled by a filter](https://kb.mailpoet.com/article/332-how-to-disable-google-fonts). [TOS](https://policies.google.com/terms?hl=en) and [Privacy Policy](https://policies.google.com/privacy?hl=en)
 
-* [DocsBot](https://docsbot.ai) - used for searching in Knowledge Base with the help of AI. This functionality may load scripts from [https://widget.docsbot.ai/chat.js](https://widget.docsbot.ai/chat.js)
+* [DocsBot](https://docsbot.ai) - used for searching in Knowledge Base with the help of AI. This functionality may load scripts from [https://widget.docsbot.ai/chat.js](https://widget.docsbot.ai/chat.js). [TOS and Privacy Policy](https://docsbot.ai/legal)
 
-* [Mixpanel](https://mixpanel.com/) - used to send data about the usage of the MailPoet plugin when you [agree with sharing usage data with us](https://kb.mailpoet.com/article/130-sharing-your-data-with-us)
+* [Mixpanel](https://mixpanel.com/) - used to send data about the usage of the MailPoet plugin when you [agree with sharing usage data with us](https://kb.mailpoet.com/article/130-sharing-your-data-with-us). [TOS](https://mixpanel.com/legal/terms-of-use/) and [Privacy Policy](https://mixpanel.com/legal/privacy-policy/)
 
-* [Satismeter](https://www.satismeter.com/) - used to ask for feedback.
+* [Satismeter](https://www.satismeter.com/) - used to ask for feedback. [TOS](https://www.satismeter.com/terms/) and [Privacy Policy](https://www.satismeter.com/privacy-policy/)
 
 Loading all these libraries is disabled by default. The option can be enabled in the _MailPoet's Settings > Advanced > Load 3rd-party libraries_.
 
