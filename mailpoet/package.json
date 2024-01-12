@@ -17,14 +17,9 @@
     "prepare": "cd .. && husky install"
   },
   "lint-staged": {
-    "*.{scss,css}": "pnpm run stylelint",
-    "*.{js,jsx,ts,tsx}": "eslint --max-warnings 0",
-    "*.php": [
-      "phplint",
-      "./do qa:code-sniffer",
-      "./do qa:minimal-plugin-standard",
-      "bash -c './do qa:phpstan'"
-    ]
+    "*.{scss,css}": "tasks/lint-staged-styles.sh",
+    "*.{js,jsx,ts,tsx}": "tasks/lint-staged-scripts.sh",
+    "*.php": "tasks/lint-staged-php.sh"
   },
   "dependencies": {
     "@babel/runtime": "^7.22.11",
