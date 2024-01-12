@@ -168,26 +168,25 @@ class AuthorizedSenderDomainController {
 
   public function getFullyVerifiedSenderDomains($domainsOnly = false): array {
     $domainData = $this->getSenderDomainsByStatus(self::OVERALL_STATUS_VERIFIED);
-    if ($domainsOnly) {
-      return array_map([$this, 'domainExtractor'], $domainData);
-    }
-    return $domainData;
+    return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
   }
 
   public function getPartiallyVerifiedSenderDomains($domainsOnly = false): array {
     $domainData = $this->getSenderDomainsByStatus(self::OVERALL_STATUS_PARTIALLY_VERIFIED);
-    if ($domainsOnly) {
-      return array_map([$this, 'domainExtractor'], $domainData);
-    }
-    return $domainData;
+    return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
   }
 
   public function getUnverifiedSenderDomains($domainsOnly = false): array {
     $domainData = $this->getSenderDomainsByStatus(self::OVERALL_STATUS_UNVERIFIED);
-    if ($domainsOnly) {
-      return array_map([$this, 'domainExtractor'], $domainData);
+    return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
+  }
+
+  private function extractDomains(array $domainData): array {
+    $extractedDomains = [];
+    foreach ($domainData as $data) {
+      $extractedDomains[] = $this->domainExtractor($data);
     }
-    return $domainData;
+    return $extractedDomains;
   }
 
   private function domainExtractor(array $domainData): string {
