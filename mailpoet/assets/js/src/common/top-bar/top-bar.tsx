@@ -6,6 +6,7 @@ import { MailPoetLogoResponsive } from './mailpoet-logo-responsive';
 import { BeamerIcon } from './beamer-icon';
 import { ScreenOptionsFix } from './screen-options-fix';
 import { withBoundary } from '../error-boundary';
+import { MailPoet } from '../../mailpoet';
 
 type Props = {
   children?: ReactNode;
@@ -29,7 +30,7 @@ export function TopBar({
       <MailPoetLogoResponsive withLink={logoWithLink} />
       <div className="mailpoet-top-bar-children">{children}</div>
       <div className="mailpoet-flex-grow" />
-      {onBeamerClick && (
+      {onBeamerClick && MailPoet.libs3rdPartyEnabled && (
         <div>
           <a
             role="button"
