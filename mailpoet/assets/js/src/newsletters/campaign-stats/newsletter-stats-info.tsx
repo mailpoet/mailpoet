@@ -106,17 +106,14 @@ const trashNewsletter = (
   void MailPoet.Ajax.post({
     api_version: window.mailpoet_api_version,
     endpoint: 'newsletters',
-    action: 'delete',
+    action: 'trash',
     data: {
       id: newsletter.id,
     },
   })
     .done(() => {
       MailPoet.Notice.success(
-        __('Email "%1$s" has been deleted.', 'mailpoet').replace(
-          '%1$s',
-          newsletter.subject,
-        ),
+        __('1 email was moved to the trash.', 'mailpoet'),
       );
       redirectToNewsletterHome();
     })
