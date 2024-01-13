@@ -51,6 +51,15 @@ class NewsletterEntity {
     NewsletterEntity::TYPE_STANDARD,
   ];
 
+  /**
+   * Newsletters that have additional restrictions for activation and sending
+   */
+  const CAMPAIGN_TYPES = [
+    NewsletterEntity::TYPE_STANDARD,
+    NewsletterEntity::TYPE_NOTIFICATION,
+    NewsletterEntity::TYPE_RE_ENGAGEMENT,
+  ];
+
   // automatic newsletters status
   const STATUS_ACTIVE = 'active';
 
