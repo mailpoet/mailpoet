@@ -237,6 +237,90 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     verify($this->settings->get('sender.address'))->same('authorized@email.com');
   }
 
+  public function testSenderAddressIsNotValidForActivationIfRestrictionsApplyAndNotAuthorizedSender() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $verifiedDomains = ['email.com'];
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'isAuthorizedDomainRequiredForNewCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once($verifiedDomains),
+    ]);
+
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress('contact@unauthorized.com');
+
+    $mocks = [
+      'AuthorizedSenderDomainController' => $senderDomainMock,
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
+    verify($controller->isSenderAddressValidForActivation($newsletter))->false();
+  }
+
+  public function testSenderAddressIsValidForActivationIfRestrictionsApplyAndAuthorizedSender() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $verifiedDomains = ['email.com'];
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'isAuthorizedDomainRequiredForNewCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once($verifiedDomains),
+    ]);
+
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress('contact@email.com');
+
+    $mocks = [
+      'AuthorizedSenderDomainController' => $senderDomainMock,
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
+    verify($controller->isSenderAddressValidForActivation($newsletter))->true();
+  }
+
+  public function testSenderAddressIsValidForActivationIfNotACampaign() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'isAuthorizedDomainRequiredForNewCampaigns' => Expected::never(),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::never(),
+    ]);
+
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATIC);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress('contact@unauthorized.com');
+
+    $mocks = [
+      'AuthorizedSenderDomainController' => $senderDomainMock,
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
+    verify($controller->isSenderAddressValidForActivation($newsletter))->true();
+  }
+
+  public function testSenderAddressIsValidForActivationIfRestrictionsDoNotApply() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'isAuthorizedDomainRequiredForNewCampaigns' => Expected::once(false),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::never(),
+    ]);
+
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_NOTIFICATION);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress('contact@unauthorized.com');
+
+    $mocks = [
+      'AuthorizedSenderDomainController' => $senderDomainMock,
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
+    verify($controller->isSenderAddressValidForActivation($newsletter))->true();
+  }
+
   public function testItSetsFromAddressInScheduledEmails() {
     $newsletter = new NewsletterEntity();
     $newsletter->setSubject('Subject');

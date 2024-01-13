@@ -153,6 +153,23 @@ class AuthorizedEmailsController {
     }
   }
 
+  public function isSenderAddressValidForActivation(NewsletterEntity $newsletter): bool {
+    if ($this->settings->get('mta.method') !== Mailer::METHOD_MAILPOET) {
+      return true;
+    }
+
+    if (!in_array($newsletter->getType(), NewsletterEntity::CAMPAIGN_TYPES)) {
+      return true;
+    }
+
+    if (!$this->senderDomainController->isAuthorizedDomainRequiredForNewCampaigns()) {
+      return true;
+    }
+
+    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
+    return $this->validateEmailDomainIsVerified($verifiedDomains, $newsletter->getSenderAddress());
+  }
+
   private function validateAddressesInSettings($authorizedEmails, $verifiedDomains, $result = []) {
     $defaultSenderAddress = $this->settings->get('sender.address');
 
