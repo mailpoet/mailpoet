@@ -236,6 +236,20 @@ class NewsletterSendComponent extends Component<
 
   isValid = () => jQuery('#mailpoet_newsletter').parsley().isValid();
 
+  isCampaign = () => {
+    const campaignTypes =
+      window.mailpoet_sender_restrictions?.campaignTypes ?? [];
+    return campaignTypes.includes(this.state?.item?.type);
+  };
+
+  isAuthorizedDomainRequired = () => {
+    const isAuthorizedDomainRequiredForNewCampaigns =
+      window.mailpoet_sender_restrictions
+        ?.isAuthorizedDomainRequiredForNewCampaigns || false;
+
+    return this.isCampaign() && isAuthorizedDomainRequiredForNewCampaigns;
+  };
+
   isValidFromAddress = async () => {
     if (window.mailpoet_mta_method !== 'MailPoet') {
       return true;
@@ -248,7 +262,8 @@ class NewsletterSendComponent extends Component<
     }
     const addresses = await this.loadAuthorizedEmailAddresses();
     const fromAddress = this.state.item.sender_address;
-    return addresses.indexOf(fromAddress) !== -1;
+    const isFromAddressAuthorized = addresses.indexOf(fromAddress) !== -1;
+    return isFromAddressAuthorized && !this.isAuthorizedDomainRequired();
   };
 
   loadItem = (id) => {
