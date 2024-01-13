@@ -150,6 +150,8 @@ class Newsletters {
         'upperLimit' => AuthorizedSenderDomainController::UPPER_LIMIT,
         'isNewUser' => $this->senderDomainController->isNewUser(),
         'isEnforcementOfNewRestrictionsInEffect' => $this->senderDomainController->isEnforcementOfNewRestrictionsInEffect(),
+        'isAuthorizedDomainRequiredForNewCampaigns' => $this->senderDomainController->isAuthorizedDomainRequiredForNewCampaigns(),
+        'campaignTypes' => NewsletterEntity::CAMPAIGN_TYPES,
       ];
     }
 

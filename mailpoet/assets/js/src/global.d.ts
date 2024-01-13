@@ -158,6 +158,8 @@ interface Window {
     upperLimit: number;
     isNewUser: boolean;
     isEnforcementOfNewRestrictionsInEffect: boolean;
+    isAuthorizedDomainRequiredForNewCampaigns?: boolean;
+    campaignTypes?: string[];
   };
   mailpoet_all_sender_domains?: string[];
   mailpoet_mss_active: boolean;
