@@ -2,9 +2,11 @@
 
 namespace MailPoet\Services;
 
+use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\License\Features\Subscribers;
 use MailPoetVendor\Carbon\Carbon;
 
 class AuthorizedSenderDomainController {
@@ -42,14 +44,19 @@ class AuthorizedSenderDomainController {
   /** @var null|array */
   private $currentRawData = null;
 
+  /** @var Subscribers */
+  private $subscribers;
+
   public function __construct(
     Bridge $bridge,
     NewsletterStatisticsRepository $newsletterStatisticsRepository,
-    SettingsController $settingsController
+    SettingsController $settingsController,
+    Subscribers $subscribers
   ) {
     $this->bridge = $bridge;
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
     $this->settingsController = $settingsController;
+    $this->subscribers = $subscribers;
   }
 
   /**
@@ -275,5 +282,22 @@ class AuthorizedSenderDomainController {
     }
 
     return $this->newsletterStatisticsRepository->countBy([]) === 0;
+  }
+
+  public function isSmallSender(): bool {
+    return $this->subscribers->getSubscribersCount() <= self::LOWER_LIMIT;
+  }
+
+  public function isAuthorizedDomainRequiredForNewCampaigns(): bool {
+    if ($this->settingsController->get('mta.method') !== Mailer::METHOD_MAILPOET) {
+      return false;
+    }
+
+    // TODO: Remove after the enforcement date has passed
+    if (!$this->isNewUser() && !$this->isEnforcementOfNewRestrictionsInEffect()) {
+      return false;
+    }
+
+    return !$this->isSmallSender();
   }
 }
