@@ -23,6 +23,7 @@ use MailPoet\Newsletter\Preview\SendPreviewException;
 use MailPoet\Newsletter\Scheduler\PostNotificationScheduler;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Newsletter\Url as NewsletterUrl;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
@@ -81,6 +82,9 @@ class Newsletters extends APIEndpoint {
   /** @var Scheduler */
   private $scheduler;
 
+  /** @var AuthorizedEmailsController */
+  private $authorizedEmailsController;
+
   public function __construct(
     Listing\Handler $listingHandler,
     WPFunctions $wp,
@@ -96,7 +100,8 @@ class Newsletters extends APIEndpoint {
     NewsletterSaveController $newsletterSaveController,
     NewsletterUrl $newsletterUrl,
     Scheduler $scheduler,
-    NewsletterValidator $newsletterValidator
+    NewsletterValidator $newsletterValidator,
+    AuthorizedEmailsController $authorizedEmailsController
   ) {
     $this->listingHandler = $listingHandler;
     $this->wp = $wp;
@@ -113,6 +118,7 @@ class Newsletters extends APIEndpoint {
     $this->newsletterUrl = $newsletterUrl;
     $this->scheduler = $scheduler;
     $this->newsletterValidator = $newsletterValidator;
+    $this->authorizedEmailsController = $authorizedEmailsController;
   }
 
   public function get($data = []) {
@@ -183,6 +189,12 @@ class Newsletters extends APIEndpoint {
       return $this->errorResponse([
         APIError::NOT_FOUND => __('This email does not exist.', 'mailpoet'),
       ]);
+    }
+
+    if ($status === NewsletterEntity::STATUS_ACTIVE && !$this->authorizedEmailsController->isSenderAddressValidForActivation($newsletter)) {
+          return $this->errorResponse([
+            APIError::FORBIDDEN => __('The sender address is not an authorized sender domain.', 'mailpoet'),
+          ], [], Response::STATUS_FORBIDDEN);
     }
 
     if ($status === NewsletterEntity::STATUS_ACTIVE) {
