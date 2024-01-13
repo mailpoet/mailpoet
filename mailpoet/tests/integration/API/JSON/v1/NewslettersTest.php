@@ -27,6 +27,7 @@ use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Url;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Tasks\Sending as SendingTask;
 use MailPoet\Test\DataFactories\Newsletter;
@@ -219,6 +220,21 @@ class NewslettersTest extends \MailPoetTest {
     ]);
     $res = $endpoint->setStatus([
       'id' => $this->newsletter->getId(),
+      'status' => NewsletterEntity::STATUS_ACTIVE,
+    ]);
+    verify($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
+  }
+
+  public function testItReturnsErrorIfSenderAddressNotValidForActivation() {
+    $endpoint = $this->getServiceWithOverrides(Newsletters::class, [
+      'cronHelper' => $this->cronHelper,
+      'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true]),
+      'authorizedEmailsController' => Stub::make(AuthorizedEmailsController::class, [
+        'isSenderAddressValidForActivation' => Expected::once(false),
+      ]),
+    ]);
+    $res = $endpoint->setStatus([
+      'id' => $this->postNotification->getId(),
       'status' => NewsletterEntity::STATUS_ACTIVE,
     ]);
     verify($res->status)->equals(APIResponse::STATUS_FORBIDDEN);
