@@ -52,7 +52,8 @@ class WooCommerceBlocksIntegration {
   public function init() {
     $this->wp->addAction(
       'woocommerce_blocks_checkout_block_registration',
-      [$this, 'registerCheckoutFrontendBlocks']
+      [$this, 'registerCheckoutFrontendBlocks'],
+      15 // Run after AutomateWoo hooks
     );
     $addDataAttributesToBlockHook = '__experimental_woocommerce_blocks_checkout_update_order_from_request';
     $hooksVersionMatrix = [
@@ -70,7 +71,7 @@ class WooCommerceBlocksIntegration {
     $this->wp->addAction(
       $addDataAttributesToBlockHook,
       [$this, 'processCheckoutBlockOptin'],
-      10,
+      5, // Run before AutomateWoo hooks
       2
     );
     $this->wp->addFilter(
@@ -98,6 +99,21 @@ class WooCommerceBlocksIntegration {
       ],
       $this->wp
     ));
+
+    $this->unregisterAutomateWooCheckoutBlock($integration_registry);
+  }
+
+  public function unregisterAutomateWooCheckoutBlock($integration_registry) {
+    if (!$this->settings->get('woocommerce.optin_on_checkout.enabled', false)) {
+      return;
+    }
+
+    $blockName = 'automatewoo';
+
+    $isAutomateWooRegistered = $integration_registry->is_registered($blockName);
+    if ($isAutomateWooRegistered) {
+      $integration_registry->unregister($blockName);
+    }
   }
 
   public function addDataAttributesToBlock(array $blocks) {
@@ -125,10 +141,32 @@ class WooCommerceBlocksIntegration {
         },
       ]
     );
+
+    $this->unregisterAutomateWooCheckoutApiEndpoint();
+  }
+
+  public function unregisterAutomateWooCheckoutApiEndpoint() {
+    $extend = StoreApi::container()->get(ExtendSchema::class);
+    $extend->register_endpoint_data(
+      [
+        'endpoint' => CheckoutSchema::IDENTIFIER,
+        'namespace' => 'automatewoo',
+        'schema_callback' => null,
+      ]
+    );
   }
 
   public function processCheckoutBlockOptin(\WC_Order $order, $request) {
     $checkoutOptin = isset($request['extensions']['mailpoet']['optin']) ? (bool)$request['extensions']['mailpoet']['optin'] : false;
+
+    // Emulate checkout opt-in triggering for AutomateWoo
+    if ($checkoutOptin) {
+      // Multi-dimensional array inside an ArrayAccess object
+      // cannot be modified directly, so an intermediate variable is used
+      $requestExtensions = $request['extensions'];
+      $requestExtensions['automatewoo']['optin'] = 'On';
+      $request['extensions'] = $requestExtensions;
+    }
 
     if (!$order->get_billing_email()) {
       return;

@@ -48,7 +48,6 @@ class WooCheckoutAutomateWooSubscriptionsCest {
   }
 
   public function checkoutOptInEnabled(\AcceptanceTester $i, $scenario) {
-    $scenario->skip('Skip until resolved: Both AutomateWoo and MailPoet checkboxes are present in the checkout');
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $i->addProductToCart($this->product);
     $i->goToCheckout();
@@ -69,7 +68,6 @@ class WooCheckoutAutomateWooSubscriptionsCest {
   }
 
   public function checkoutOptInChecked(\AcceptanceTester $i, $scenario) {
-    $scenario->skip('Skip until resolved: Both AutomateWoo and MailPoet checkboxes are present in the checkout');
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $this->settingsFactory->withConfirmationEmailEnabled();
     $customerEmail = 'woo_guest_check@example.com';
