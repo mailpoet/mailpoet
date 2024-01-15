@@ -1,58 +1,36 @@
-import { getQueryArg, removeQueryArgs } from '@wordpress/url';
+import { useEffect } from 'react';
+import { dispatch } from '@wordpress/data';
+import { store as noticesStore } from '@wordpress/notices';
 import { __ } from '@wordpress/i18n';
-import { Notice } from '../../notices/notice';
+import { getQueryArg, removeQueryArgs } from '@wordpress/url';
 
-export const LISTING_NOTICE_PARAMETERS = {
-  automationHadBeenDeleted: 'mailpoet-had-been-deleted',
-  automationDeleted: 'mailpoet-automation-deleted',
-};
+export const LISTING_NOTICES = {
+  automationDeleted: 'deleted',
+  automationHadBeenDeleted: 'had-been-deleted',
+} as const;
 
-export function AutomationListingNotices(): JSX.Element {
-  const automationHadBeenDeleted = parseInt(
-    getQueryArg(
-      window.location.href,
-      LISTING_NOTICE_PARAMETERS.automationHadBeenDeleted,
-    ) as string,
-    10,
-  );
-  const automationDeleted = parseInt(
-    getQueryArg(
-      window.location.href,
-      LISTING_NOTICE_PARAMETERS.automationDeleted,
-    ) as string,
-    10,
-  );
+export function useAutomationListingNotices(): void {
+  const { createNotice } = dispatch(noticesStore);
 
-  if (
-    Number.isNaN(automationHadBeenDeleted) &&
-    Number.isNaN(automationDeleted)
-  ) {
-    return null;
-  }
+  useEffect(() => {
+    const notice = getQueryArg(window.location.href, 'notice');
 
-  const urlWithoutNotices = removeQueryArgs(
-    window.location.href,
-    ...Object.values(LISTING_NOTICE_PARAMETERS),
-  );
-  window.history.pushState('', '', urlWithoutNotices);
-  if (automationHadBeenDeleted) {
-    return (
-      <Notice type="error" closable timeout={false}>
-        <p>
-          {__(
-            'You cannot edit this automation because it is in the Trash.',
-            'mailpoet',
-          )}
-        </p>
-      </Notice>
-    );
-  }
-  if (automationDeleted) {
-    return (
-      <Notice type="success" closable timeout={false}>
-        <p>{__('1 automation moved to the Trash.', 'mailpoet')}</p>
-      </Notice>
-    );
-  }
-  return null;
+    if (notice === LISTING_NOTICES.automationDeleted) {
+      createNotice(
+        'success',
+        __('1 automation moved to the Trash.', 'mailpoet'),
+      );
+    } else if (notice === LISTING_NOTICES.automationHadBeenDeleted) {
+      createNotice(
+        'error',
+        __(
+          'You cannot edit this automation because it is in the Trash.',
+          'mailpoet',
+        ),
+      );
+    }
+
+    const urlWithoutNotices = removeQueryArgs(window.location.href, 'notice');
+    window.history.replaceState('', '', urlWithoutNotices);
+  }, [createNotice]);
 }

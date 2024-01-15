@@ -26,7 +26,7 @@ import { Automation } from './components/automation';
 import { automationSidebarKey, createStore, storeName } from './store';
 import { initializeApi } from '../api';
 import { MailPoet } from '../../mailpoet';
-import { LISTING_NOTICE_PARAMETERS } from '../listing/automation-listing-notices';
+import { LISTING_NOTICES } from '../listing/automation-listing-notices';
 import { registerApiErrorHandler } from './api-error-handler';
 import { ActivatePanel } from './components/panel/activate-panel';
 import { AutomationStatus } from '../listing/automation';
@@ -125,7 +125,7 @@ function Editor(): JSX.Element {
 
   if (automation.status === 'trash') {
     window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
-      [LISTING_NOTICE_PARAMETERS.automationHadBeenDeleted]: automation.id,
+      notice: LISTING_NOTICES.automationHadBeenDeleted,
     });
     return null;
   }

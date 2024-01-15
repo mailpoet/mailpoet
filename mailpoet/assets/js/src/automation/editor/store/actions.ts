@@ -7,7 +7,7 @@ import { store as preferencesStore } from '@wordpress/preferences';
 import { addQueryArgs } from '@wordpress/url';
 import { storeName } from './constants';
 import { Feature, State } from './types';
-import { LISTING_NOTICE_PARAMETERS } from '../../listing/automation-listing-notices';
+import { LISTING_NOTICES } from '../../listing/automation-listing-notices';
 import { MailPoet } from '../../../mailpoet';
 import { AutomationStatus } from '../../listing/automation';
 
@@ -216,7 +216,7 @@ export function* trash(onTrashed: () => void = undefined) {
 
   if (data?.status === AutomationStatus.TRASH) {
     window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
-      [LISTING_NOTICE_PARAMETERS.automationDeleted]: automation.id,
+      notice: LISTING_NOTICES.automationDeleted,
     });
   }
 

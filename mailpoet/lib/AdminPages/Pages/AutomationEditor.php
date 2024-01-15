@@ -73,7 +73,7 @@ class AutomationEditor {
     }
 
     if ($automation->getStatus() === Automation::STATUS_TRASH) {
-      $this->wp->wpSafeRedirect($this->wp->adminUrl('admin.php?page=mailpoet-automation&status=trash'));
+      $this->wp->wpSafeRedirect($this->wp->adminUrl('admin.php?page=mailpoet-automation&status=trash&notice=had-been-deleted'));
       exit();
     }
 
