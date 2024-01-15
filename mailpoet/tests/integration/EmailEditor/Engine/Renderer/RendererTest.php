@@ -75,7 +75,18 @@ class RendererTest extends \MailPoetTest {
     verify($style)->stringContainsString('margin:0;padding:0;');
   }
 
-  public function testItAppliesLayoutStyles() {
+  public function testItInlinesMainStyles() {
+    $themeJsonMock = $this->createMock(\WP_Theme_JSON::class);
+    $themeJsonMock->method('get_data')->willReturn([
+      'styles' => [
+        'typography' => [
+          'fontFamily' => 'Test Font Family',
+        ],
+        'color' => [
+          'background' => '#654321',
+        ],
+      ],
+    ]);
     $settingsControllerMock = $this->createMock(SettingsController::class);
     $settingsControllerMock->method('getEmailLayoutStyles')->willReturn([
       'width' => '123px',
@@ -87,6 +98,8 @@ class RendererTest extends \MailPoetTest {
         'bottom' => '4px',
       ],
     ]);
+    $settingsControllerMock->method('getTheme')->willReturn($themeJsonMock);
+
     $renderer = $this->getServiceWithOverrides(Renderer::class, [
       'settingsController' => $settingsControllerMock,
     ]);
@@ -104,6 +117,7 @@ class RendererTest extends \MailPoetTest {
     verify($style)->stringContainsString('background:#123456');
 
     $xpath = new \DOMXPath($doc);
+    // Verify layout element
     $wrapper = null;
     $nodes = $xpath->query('//div[contains(@class, "email_layout_wrapper")]//div');
     if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
@@ -112,5 +126,18 @@ class RendererTest extends \MailPoetTest {
     $this->assertInstanceOf(\DOMElement::class, $wrapper);
     $style = $wrapper->getAttribute('style');
     verify($style)->stringContainsString('max-width:123px');
+
+    // Verify content wrapper element
+    $contentWrapper = null;
+    $nodes = $xpath->query('//td[contains(@class, "email_content_wrapper")]');
+    if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
+      $contentWrapper = $nodes->item(0);
+    }
+    $this->assertInstanceOf(\DOMElement::class, $contentWrapper);
+    $style = $contentWrapper->getAttribute('style');
+    verify($style)->stringContainsString('font-family:Test Font Family;');
+    verify($style)->stringContainsString('background:#654321');
+    verify($style)->stringContainsString('padding-top:3px;');
+    verify($style)->stringContainsString('padding-bottom:4px;');
   }
 }
