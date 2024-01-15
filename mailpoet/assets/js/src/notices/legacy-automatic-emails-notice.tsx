@@ -4,7 +4,7 @@ import { Notice } from './notice';
 
 export function LegacyAutomaticEmailsNotice(): JSX.Element {
   return (
-    <Notice type="info" timeout={false} closable={false} renderInPlace>
+    <Notice type="info" timeout={false} closable renderInPlace>
       <p>
         {createInterpolateElement(
           __(
