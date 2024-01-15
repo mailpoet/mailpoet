@@ -138,6 +138,10 @@
     "color": {
       "background": "#ffffff",
       "text": "#000000"
+    },
+    "typography": {
+      "fontFamily": "Arial, 'Helvetica Neue', Helvetica, sans-serif",
+      "fontSize": "16px"
     }
   }
 }

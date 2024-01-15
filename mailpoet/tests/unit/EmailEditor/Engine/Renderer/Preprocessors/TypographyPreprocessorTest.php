@@ -19,6 +19,10 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
         'color' => [
           'text' => '#000000',
         ],
+        'typography' => [
+          'fontSize' => '13px',
+          'fontFamily' => 'Arial',
+        ],
       ],
       'settings' => [
         'typography' => [
@@ -38,12 +42,6 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
       ],
     ]);
     $settingsMock->method('getTheme')->willReturn($themeMock);
-    $settingsMock->method('getEmailContentStyles')->willReturn([
-      'typography' => [
-        'fontSize' => '13px',
-        'fontFamily' => 'Arial',
-      ],
-    ]);
     $this->preprocessor = new TypographyPreprocessor($settingsMock);
   }
 

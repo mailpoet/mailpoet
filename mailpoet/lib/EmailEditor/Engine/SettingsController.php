@@ -63,10 +63,6 @@ class SettingsController {
    * @var array
    */
   const DEFAULT_EMAIL_CONTENT_STYLES = [
-    'typography' => [
-      'fontFamily' => "Arial, 'Helvetica Neue', Helvetica, sans-serif",
-      'fontSize' => '16px',
-    ],
     'h1' => [
       'typography' => [
         'fontSize' => '32px',
