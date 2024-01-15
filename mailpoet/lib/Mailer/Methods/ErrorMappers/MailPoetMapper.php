@@ -172,7 +172,7 @@ class MailPoetMapper {
     );
     $message = Helpers::replaceLinkTags(
       $message,
-      'https://www.mailpoet.com/support/',
+      'https://www.mailpoet.com/support-for-banned-users/',
       [
         'target' => '_blank',
         'rel' => 'noopener noreferrer',
