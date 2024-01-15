@@ -16,7 +16,7 @@ class Paragraph implements BlockRenderer {
    * Based on MJML <mj-text>
    */
   private function getBlockWrapper(array $parsedBlock, SettingsController $settingsController): string {
-    $contentStyles = $settingsController->getEmailContentStyles();
+    $themeData = $settingsController->getTheme()->get_data();
     $availableStylesheets = $settingsController->getAvailableStylesheets();
 
     $align = $parsedBlock['attrs']['align'] ?? 'left';
@@ -39,7 +39,7 @@ class Paragraph implements BlockRenderer {
     }
 
     if (!isset($styles['font-size'])) {
-      $styles['font-size'] = $contentStyles['typography']['fontSize'];
+      $styles['font-size'] = $themeData['styles']['typography']['fontSize'];
     }
 
     $styles = array_merge($styles, $this->fetchStylesFromBlockAttrs($availableStylesheets, $parsedBlock['attrs'] ?? []));

@@ -18,10 +18,10 @@ class ListBlock implements BlockRenderer {
       // List block does not need width specification and it can cause issues for nested lists
       unset($styles['width'] );
 
-      // Use font-size and font-family from Settings when those properties are not set
-      $contentStyles = $settingsController->getEmailContentStyles();
+      // Use font-size from email theme when those properties are not set
+      $themeData = $settingsController->getTheme()->get_data();
       if (!isset($styles['font-size'])) {
-        $styles['font-size'] = $contentStyles['typography']['fontSize'];
+        $styles['font-size'] = $themeData['styles']['typography']['fontSize'];
       }
 
       $html->set_attribute('style', $settingsController->convertStylesToString($styles));
