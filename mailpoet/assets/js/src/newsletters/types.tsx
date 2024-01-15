@@ -158,6 +158,7 @@ function NewsletterTypesComponent({
     </ButtonGroup>
   ) : (
     <Button
+      variant="secondary"
       onClick={createStandardNewsletter}
       isBusy={isCreating}
       data-automation-id="create_standard"
