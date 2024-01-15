@@ -13,6 +13,7 @@ import { registerApiErrorHandler } from './listing/api-error-handler';
 import { Notices } from './listing/components/notices';
 import { BuildYourOwnSection, HeroSection, TemplatesSection } from './sections';
 import { MailPoet } from '../mailpoet';
+import { useAutomationListingNotices } from './listing/automation-listing-notices';
 import { LegacyAutomationsNotice } from './listing/legacy-automations-notice';
 
 const trackOpenEvent = () => {
@@ -62,6 +63,8 @@ function Content(): JSX.Element {
 }
 
 function Automations(): JSX.Element {
+  useAutomationListingNotices();
+
   return (
     <>
       <TopBarWithBeamer />
