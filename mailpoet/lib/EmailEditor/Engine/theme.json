@@ -8,14 +8,119 @@
     "typography": {
       "fontFamilies": [
         {
-          "fontFamily": "-apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif",
-          "name": "System Sans-serif",
-          "slug": "system-sans-serif"
+          "name": "Arial",
+          "slug": "arial",
+          "fontFamily": "Arial, 'Helvetica Neue', Helvetica, sans-serif"
         },
         {
-          "fontFamily": "Iowan Old Style, Apple Garamond, Baskerville, Times New Roman, Droid Serif, Times, Source Serif Pro, serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-          "name": "System Serif",
-          "slug": "system-Serif"
+          "name": "Comic Sans MS",
+          "slug": "comic-sans-ms",
+          "fontFamily": "'Comic Sans MS', 'Marker Felt-Thin', Arial, sans-serif"
+        },
+        {
+          "name": "Courier New",
+          "slug": "courier-new",
+          "fontFamily": "'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace"
+        },
+        {
+          "name": "Georgia",
+          "slug": "georgia",
+          "fontFamily": "Georgia, Times, 'Times New Roman', serif"
+        },
+        {
+          "name": "Lucida",
+          "slug": "lucida",
+          "fontFamily": "'Lucida Sans Unicode', 'Lucida Grande', sans-serif"
+        },
+        {
+          "name": "Tahoma",
+          "slug": "tahoma",
+          "fontFamily": "'Tahoma, Verdana, Segoe, sans-serif'"
+        },
+        {
+          "name": "Times New Roman",
+          "slug": "times-new-roman",
+          "fontFamily": "'Times New Roman', Times, Baskerville, Georgia, serif"
+        },
+        {
+          "name": "Trebuchet MS",
+          "slug": "trebuchet-ms",
+          "fontFamily": "'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif"
+        },
+        {
+          "name": "Verdana",
+          "slug": "verdana",
+          "fontFamily": "'Verdana, Geneva, sans-serif'"
+        },
+        {
+          "name": "Arvo",
+          "slug": "arvo",
+          "fontFamily": "'arvo, courier, georgia, serif'"
+        },
+        {
+          "name": "Lato",
+          "slug": "lato",
+          "fontFamily": "lato, 'helvetica neue', helvetica, arial, sans-serif"
+        },
+        {
+          "name": "Lora",
+          "slug": "lora",
+          "fontFamily": "lora, georgia, 'times new roman', serif"
+        },
+        {
+          "name": "Merriweather",
+          "slug": "merriweather",
+          "fontFamily": "merriweather, georgia, 'times new roman', serif"
+        },
+        {
+          "name": "Merriweather Sans",
+          "slug": "merriweather-sans",
+          "fontFamily": "'merriweather sans', 'helvetica neue', helvetica, arial, sans-serif"
+        },
+        {
+          "name": "Noticia Text",
+          "slug": "noticia-text",
+          "fontFamily": "'noticia text', georgia, 'times new roman', serif"
+        },
+        {
+          "name": "Open Sans",
+          "slug": "open-sans",
+          "fontFamily": "'open sans', 'helvetica neue', helvetica, arial, sans-serif"
+        },
+        {
+          "name": "Playfair Display",
+          "slug": "playfair-display",
+          "fontFamily": "'playfair display', georgia, 'times new roman', serif"
+        },
+        {
+          "name": "Roboto",
+          "slug": "roboto",
+          "fontFamily": "roboto, 'helvetica neue', helvetica, arial, sans-serif"
+        },
+        {
+          "name": "Source Sans Pro",
+          "slug": "source-sans-pro",
+          "fontFamily": "'source sans pro', 'helvetica neue', helvetica, arial, sans-serif"
+        },
+        {
+          "name": "Oswald",
+          "slug": "oswald",
+          "fontFamily": "Oswald, 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif"
+        },
+        {
+          "name": "Raleway",
+          "slug": "raleway",
+          "fontFamily": "Raleway, 'Century Gothic', CenturyGothic, AppleGothic, sans-serif"
+        },
+        {
+          "name": "Permanent Marker",
+          "slug": "permanent-marker",
+          "fontFamily": "'Permanent Marker', Tahoma, Verdana, Segoe, sans-serif"
+        },
+        {
+          "name": "Pacifico",
+          "slug": "pacifico",
+          "fontFamily": "Pacifico, 'Arial Narrow', Arial, sans-serif"
         }
       ]
     },
