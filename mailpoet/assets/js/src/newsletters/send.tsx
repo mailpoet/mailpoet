@@ -445,7 +445,7 @@ class NewsletterSendComponent extends Component<
             this.props.history.push(`/send/congratulate/${this.state.item.id}`);
             return;
           }
-          this.redirectToListing();
+          this.redirectToListing('activated');
 
           // prepare segments
           let filters = [];
@@ -504,7 +504,7 @@ class NewsletterSendComponent extends Component<
             this.props.history.push(`/send/congratulate/${this.state.item.id}`);
             return;
           }
-          this.redirectToListing();
+          this.redirectToListing('activated');
 
           // display success message depending on newsletter type
           const opts = this.state.item.options;
@@ -579,7 +579,7 @@ class NewsletterSendComponent extends Component<
             },
           })
             .done(() => {
-              this.redirectToListing();
+              this.redirectToListing('activated');
               this.context.notices.success(
                 <p>
                   {__('The newsletter sending has been resumed.', 'mailpoet')}
@@ -610,17 +610,17 @@ class NewsletterSendComponent extends Component<
         );
       })
       .done(() => {
-        this.redirectToListing();
+        this.redirectToListing('saved');
       })
       .fail((err) => {
         this.showError(err);
       });
   };
 
-  redirectToListing = () => {
+  redirectToListing = (action: 'activated' | 'saved') => {
     // redirect to listing based on newsletter type
     if (['automatic', 'welcome'].includes(this.state.item.type)) {
-      window.location.href = 'admin.php?page=mailpoet-automation';
+      window.location.href = `admin.php?page=mailpoet-automation&notice=${action}`;
     } else {
       this.props.history.push(`/${this.state.item.type}`);
     }
