@@ -56,45 +56,6 @@ class SettingsController {
    */
   const FLEX_GAP = '16px';
 
-  /**
-   * Default styles applied to the email. These are going to be replaced by style settings.
-   * This is currently more af a proof of concept that we can apply styles to the email.
-   * We will gradually replace these hardcoded values with styles saved as global styles or styles saved with the email.
-   * @var array
-   */
-  const DEFAULT_EMAIL_CONTENT_STYLES = [
-    'h1' => [
-      'typography' => [
-        'fontSize' => '32px',
-      ],
-    ],
-    'h2' => [
-      'typography' => [
-        'fontSize' => '24px',
-      ],
-    ],
-    'h3' => [
-      'typography' => [
-        'fontSize' => '18px',
-      ],
-    ],
-    'h4' => [
-      'typography' => [
-        'fontSize' => '16px',
-      ],
-    ],
-    'h5' => [
-      'typography' => [
-        'fontSize' => '14px',
-      ],
-    ],
-    'h6' => [
-      'typography' => [
-        'fontSize' => '12px',
-      ],
-    ],
-  ];
-
   private $availableStylesheets = '';
 
   public function getSettings(): array {
@@ -162,10 +123,6 @@ class SettingsController {
       'contentSize' => self::EMAIL_WIDTH,
       'layout' => 'constrained',
     ];
-  }
-
-  public function getEmailContentStyles(): array {
-    return self::DEFAULT_EMAIL_CONTENT_STYLES;
   }
 
   public function getAvailableStylesheets(): string {
