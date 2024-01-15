@@ -12,7 +12,7 @@ import {
 import { useHistory, useLocation } from 'react-router-dom';
 import { plusIcon } from 'common/button/icon/plus';
 import { getRow } from './get-row';
-import { storeName } from './store';
+import { AutomationItem, storeName } from './store';
 import { Automation, AutomationStatus } from './automation';
 import { MailPoet } from '../../mailpoet';
 import { PageHeader } from '../../common/page-header';
@@ -146,7 +146,7 @@ export function AutomationListing(): JSX.Element {
 
   const renderTabs = useCallback(
     (tab) => {
-      const filteredAutomations: Automation[] =
+      const filteredAutomations: AutomationItem[] =
         groupedAutomations[tab.name] ?? [];
       const rowsPerPage = parseInt(pageSearch.get('per_page') ?? '25', 10);
       const currentPage = parseInt(pageSearch.get('paged') ?? '1', 10);
@@ -167,7 +167,10 @@ export function AutomationListing(): JSX.Element {
             >['headers']
           }
           rows={rows}
-          rowKey={(_, i) => filteredAutomations[i].id}
+          rowKey={(_, i) =>
+            filteredAutomations[i].id *
+            (filteredAutomations[i].isLegacy ? -1 : 1)
+          }
           rowsPerPage={rowsPerPage}
           onQueryChange={(key) => (value) => {
             updateUrlSearchString({ [key]: value });
