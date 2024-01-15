@@ -445,8 +445,8 @@ class NewsletterSendComponent extends Component<
             this.props.history.push(`/send/congratulate/${this.state.item.id}`);
             return;
           }
-          // redirect to listing based on newsletter type
-          this.props.history.push(`/${this.state.item.type || ''}`);
+          this.redirectToListing();
+
           // prepare segments
           let filters = [];
           saveResponse.data.segments.map((segment) =>
@@ -504,14 +504,10 @@ class NewsletterSendComponent extends Component<
             this.props.history.push(`/send/congratulate/${this.state.item.id}`);
             return;
           }
-          // redirect to listing based on newsletter type
-          const opts = this.state.item.options;
-          this.props.history.push(
-            this.state.item.type === 'automatic'
-              ? `/${opts.group}`
-              : `/${this.state.item.type || ''}`,
-          );
+          this.redirectToListing();
+
           // display success message depending on newsletter type
+          const opts = this.state.item.options;
           if (
             this.state.item.type === 'automatic' &&
             automaticEmails[opts.group]
@@ -583,7 +579,7 @@ class NewsletterSendComponent extends Component<
             },
           })
             .done(() => {
-              this.props.history.push(`/${this.state.item.type || ''}`);
+              this.redirectToListing();
               this.context.notices.success(
                 <p>
                   {__('The newsletter sending has been resumed.', 'mailpoet')}
@@ -614,15 +610,20 @@ class NewsletterSendComponent extends Component<
         );
       })
       .done(() => {
-        const path =
-          this.state.item.type === 'automatic'
-            ? this.state.item.options.group
-            : this.state.item.type;
-        this.props.history.push(`/${path || ''}`);
+        this.redirectToListing();
       })
       .fail((err) => {
         this.showError(err);
       });
+  };
+
+  redirectToListing = () => {
+    // redirect to listing based on newsletter type
+    if (['automatic', 'welcome'].includes(this.state.item.type)) {
+      window.location.href = 'admin.php?page=mailpoet-automation';
+    } else {
+      this.props.history.push(`/${this.state.item.type}`);
+    }
   };
 
   handleRedirectToDesign = (e) => {
