@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.3
 Tested up to: 6.4
-Stable tag: 4.41.2
+Stable tag: 4.41.3
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.41.3 - 2024-01-16 =
+* Added: a new segment for "Number of orders with coupon code";
+* Improved: Sender email input validation for DMARC and other verification records;
+* Improved: move legacy Welcome and WooCommerce emails to Automations;
+* Fixed: Some HTML markup fixes in the admin;
+* Fixed: Do not attempt to queue a newsletter notification for already published posts;
+* Fixed: The trash button on the newsletter stats page deleted a newsletter permanently.
 
 = 4.41.2 - 2024-01-11 =
 * Improved: notices in the banners now indicate that the new sending rules will be enforced on February 1st.
