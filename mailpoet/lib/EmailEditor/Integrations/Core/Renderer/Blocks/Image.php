@@ -169,6 +169,8 @@ class Image implements BlockRenderer {
    * @return array{imageUrl: string, image: string, caption: string}|null
    */
   private function parseBlockContent(string $blockContent): ?array {
+    // If block's image is not set, we don't need to parse the content
+    if (!$blockContent) return null;
     // Suppress warnings for invalid HTML tags
     libxml_use_internal_errors(true);
     $dom = new \DOMDocument();
