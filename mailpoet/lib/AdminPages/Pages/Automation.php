@@ -12,6 +12,7 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\SegmentsSimpleListRepository;
+use MailPoet\Settings\UserFlagsController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Automation {
@@ -36,6 +37,8 @@ class Automation {
 
   private SegmentsSimpleListRepository $segmentsListRepository;
 
+  private UserFlagsController $userFlagsController;
+
   public function __construct(
     AssetsController $assetsController,
     AutomaticEmails $automaticEmails,
@@ -44,7 +47,8 @@ class Automation {
     AutomationStorage $automationStorage,
     Registry $registry,
     NewslettersRepository $newslettersRepository,
-    SegmentsSimpleListRepository $segmentsListRepository
+    SegmentsSimpleListRepository $segmentsListRepository,
+    UserFlagsController $userFlagsController
   ) {
     $this->assetsController = $assetsController;
     $this->automaticEmails = $automaticEmails;
@@ -54,6 +58,7 @@ class Automation {
     $this->registry = $registry;
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsListRepository = $segmentsListRepository;
+    $this->userFlagsController = $userFlagsController;
   }
 
   public function render() {
@@ -90,6 +95,7 @@ class Automation {
       'segments' => $this->segmentsListRepository->getListWithSubscribedSubscribersCounts(),
       'roles' => $wp_roles->get_names() + ['mailpoet_all' => __('In any WordPress role', 'mailpoet')],
       'automatic_emails' => $this->automaticEmails->getAutomaticEmails(),
+      'legacy_automations_notice_dismissed' => (bool)$this->userFlagsController->get('legacy_automations_notice_dismissed'),
     ]);
   }
 

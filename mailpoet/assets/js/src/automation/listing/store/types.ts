@@ -19,6 +19,7 @@ declare global {
         events: Record<string, Record<string, unknown>>;
       }
     >;
+    mailpoet_legacy_automations_notice_dismissed: boolean;
   }
 }
 
