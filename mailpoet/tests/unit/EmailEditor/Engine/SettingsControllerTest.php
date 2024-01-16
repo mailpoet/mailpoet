@@ -16,8 +16,9 @@ class SettingsControllerTest extends \MailPoetUnitTest {
   public function testItGetsCorrectLayoutWidthWithoutPadding(): void {
     $settingsController = new SettingsController();
     $layoutWidth = $settingsController->getLayoutWidthWithoutPadding();
-    // default width is 660px and padding for left and right is 10px
-    verify($layoutWidth)->equals('640px');
+    // default width is 660px and if we subtract padding from left and right we must get the correct value
+    $expectedWidth = (int)SettingsController::EMAIL_WIDTH - (int)SettingsController::FLEX_GAP * 2;
+    verify($layoutWidth)->equals($expectedWidth . 'px');
   }
 
   public function testItConvertsStylesToString(): void {
