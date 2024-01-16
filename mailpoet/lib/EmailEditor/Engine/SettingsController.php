@@ -193,7 +193,6 @@ class SettingsController {
   }
 
   public function getStylesheetForRendering(): string {
-    $coreThemeSettings = \WP_Theme_JSON_Resolver::get_core_data()->get_settings();
     $emailThemeSettings = $this->getTheme()->get_settings();
     $css = '';
     // Font family classes
@@ -201,16 +200,15 @@ class SettingsController {
       $css .= ".has-{$fontFamily['slug']}-font-family { font-family: {$fontFamily['fontFamily']}; } \n";
     }
     // Font size classes
-    foreach ($coreThemeSettings['typography']['fontSizes']['default'] as $fontSize) {
+    foreach ($emailThemeSettings['typography']['fontSizes']['default'] as $fontSize) {
       $css .= ".has-{$fontSize['slug']}-font-size { font-size: {$fontSize['size']}; } \n";
     }
     return $css;
   }
 
   public function translateSlugToFontSize(string $fontSize): string {
-    $coreTheme = \WP_Theme_JSON_Resolver::get_core_data();
-    $coreSettings = $coreTheme->get_settings();
-    foreach ($coreSettings['typography']['fontSizes']['default'] as $fontSizeDefinition) {
+    $settings = $this->getTheme()->get_settings();
+    foreach ($settings['typography']['fontSizes']['default'] as $fontSizeDefinition) {
       if ($fontSizeDefinition['slug'] === $fontSize) {
         return $fontSizeDefinition['size'];
       }
