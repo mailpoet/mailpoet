@@ -149,10 +149,10 @@
     "spacing": {
       "blockGap": "var(--wp--style--block-gap)",
       "padding": {
-        "bottom": "10px",
-        "left": "10px",
-        "right": "10px",
-        "top": "10px"
+        "bottom": "var(--wp--style--block-gap)",
+        "left": "var(--wp--style--block-gap)",
+        "right": "var(--wp--style--block-gap)",
+        "top": "var(--wp--style--block-gap)"
       }
     },
     "color": {

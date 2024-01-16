@@ -33,12 +33,6 @@ class SettingsController {
   const EMAIL_LAYOUT_BACKGROUND = '#cccccc';
 
   /**
-   * Padding of the email in pixels.
-   * @var string
-   */
-  const EMAIL_PADDING = '10px';
-
-  /**
    * Gap between blocks in flex layouts
    * @var string
    */
@@ -105,10 +99,10 @@ class SettingsController {
       'width' => self::EMAIL_WIDTH,
       'background' => self::EMAIL_LAYOUT_BACKGROUND,
       'padding' => [
-        'bottom' => self::EMAIL_PADDING,
-        'left' => self::EMAIL_PADDING,
-        'right' => self::EMAIL_PADDING,
-        'top' => self::EMAIL_PADDING,
+        'bottom' => self::FLEX_GAP,
+        'left' => self::FLEX_GAP,
+        'right' => self::FLEX_GAP,
+        'top' => self::FLEX_GAP,
       ],
     ];
   }
