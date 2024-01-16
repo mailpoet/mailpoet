@@ -18,14 +18,10 @@
 }
 
 .mailpoet-automation-listing-cell-name.woocommerce-table__item {
-  position: relative;
   width: 100%;
 
   > a:only-child {
-    display: flex;
-    inset: 0 0 2px;
-    padding: 16px 24px;
-    position: absolute;
+    display: inline-flex;
   }
 }
 

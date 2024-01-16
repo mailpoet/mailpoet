@@ -12,9 +12,9 @@ type Props = {
 export function EditAutomation({ automation, label }: Props): JSX.Element {
   const { id, isLegacy } = automation;
   return isLegacy ? (
-    <a href={`?page=mailpoet-newsletter-editor&id=${id}`}>
+    <Button variant="link" href={`?page=mailpoet-newsletter-editor&id=${id}`}>
       {label ?? __('Edit', 'mailpoet')}
-    </a>
+    </Button>
   ) : (
     <Button
       variant="link"
