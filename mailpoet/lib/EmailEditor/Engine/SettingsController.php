@@ -199,4 +199,15 @@ class SettingsController {
     }
     return $css;
   }
+
+  public function translateSlugToFontSize(string $fontSize): string {
+    $coreTheme = \WP_Theme_JSON_Resolver::get_core_data();
+    $coreSettings = $coreTheme->get_settings();
+    foreach ($coreSettings['typography']['fontSizes']['default'] as $fontSizeDefinition) {
+      if ($fontSizeDefinition['slug'] === $fontSize) {
+        return $fontSizeDefinition['size'];
+      }
+    }
+    return $fontSize;
+  }
 }

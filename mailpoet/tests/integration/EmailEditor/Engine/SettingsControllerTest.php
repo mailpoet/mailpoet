@@ -36,4 +36,12 @@ class SettingsControllerTest extends \MailPoetTest {
     verify($css)->stringContainsString('.has-permanent-marker-font-family');
     verify($css)->stringContainsString('.has-pacifico-font-family');
   }
+
+  public function testItCanTranslateFontSizeSlug() {
+    verify($this->settingsController->translateSlugToFontSize('small'))->equals('13px');
+    verify($this->settingsController->translateSlugToFontSize('medium'))->equals('20px');
+    verify($this->settingsController->translateSlugToFontSize('large'))->equals('36px');
+    verify($this->settingsController->translateSlugToFontSize('x-large'))->equals('42px');
+    verify($this->settingsController->translateSlugToFontSize('unknown'))->equals('unknown');
+  }
 }

@@ -42,6 +42,10 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
       ],
     ]);
     $settingsMock->method('getTheme')->willReturn($themeMock);
+    // This slug translate mock expect slugs in format slug-10px and will return 10px
+    $settingsMock->method('translateSlugToFontSize')->willReturnCallback(function($slug) {
+      return str_replace('slug-', '', $slug);
+    });
     $this->preprocessor = new TypographyPreprocessor($settingsMock);
   }
 
@@ -81,6 +85,43 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
       'color' => '#aa00dd',
       'font-size' => '12px',
       'text-decoration' => 'underline',
+    ];
+    $result = $this->preprocessor->preprocess($blocks, []);
+    $result = $result[0];
+    verify($result['innerBlocks'])->arrayCount(2);
+    verify($result['email_attrs'])->equals($expectedEmailAttrs);
+    verify($result['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs);
+    verify($result['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs);
+    verify($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs);
+  }
+
+  public function testItReplacesFontSizeSlugsWithValues(): void {
+    $blocks = [[
+      'blockName' => 'core/columns',
+      'attrs' => [
+        'fontSize' => 'slug-20px',
+        'style' => [],
+      ],
+      'innerBlocks' => [
+        [
+          'blockName' => 'core/column',
+          'innerBlocks' => [],
+        ],
+        [
+          'blockName' => 'core/column',
+          'innerBlocks' => [
+            [
+              'blockName' => 'core/paragraph',
+              'attrs' => [],
+              'innerBlocks' => [],
+            ],
+          ],
+        ],
+      ],
+    ]];
+    $expectedEmailAttrs = [
+      'color' => '#000000',
+      'font-size' => '20px',
     ];
     $result = $this->preprocessor->preprocess($blocks, []);
     $result = $result[0];
