@@ -29,6 +29,13 @@ class BridgeTestMockAPI extends API {
         'status' => 'valid',
         'message' => '',
       ],
+      [
+        'host' => '_dmarc.example.com',
+        'value' => 'v=DMARC1; p=none;',
+        'type' => 'TXT',
+        'status' => 'valid',
+        'message' => '',
+      ],
     ],
     'status' => API::RESPONSE_STATUS_OK,
   ];
