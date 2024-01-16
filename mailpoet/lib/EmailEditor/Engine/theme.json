@@ -5,7 +5,14 @@
     "layout": {
       "contentSize": "660px"
     },
+    "spacing": {
+      "units": ["px"],
+      "padding": true,
+      "margin": false
+    },
     "typography": {
+      "dropCap": false,
+      "fontWeight": false,
       "fontFamilies": [
         {
           "name": "Arial",
