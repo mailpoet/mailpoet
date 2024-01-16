@@ -87,7 +87,7 @@ class Button implements BlockRenderer {
 
     // Typography
     $typography = $parsedBlock['attrs']['style']['typography'] ?? [];
-    $typography['fontSize'] = $typography['fontSize'] ?? ($parsedBlock['email_attrs']['font-size'] ?? 'inherit');
+    $typography['fontSize'] = $parsedBlock['email_attrs']['font-size'] ?? 'inherit';
     $typography['textDecoration'] = $typography['textDecoration'] ?? ($parsedBlock['email_attrs']['text-decoration'] ?? 'inherit');
     $linkStyles = array_merge($linkStyles, wp_style_engine_get_styles(['typography' => $typography])['declarations']);
     $linkStyles['color'] = $parsedBlock['email_attrs']['color'];
