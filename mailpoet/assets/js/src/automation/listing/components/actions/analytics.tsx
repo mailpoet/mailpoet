@@ -12,7 +12,7 @@ type Props = {
 export function Analytics({ automation, label }: Props): JSX.Element {
   const { id, isLegacy } = automation;
   return isLegacy ? (
-    <a href={`?page=mailpoet-newsletters#/stats/${id}`}>
+    <a href={`?page=mailpoet-newsletters&context=automation#/stats/${id}`}>
       {label ?? __('Analytics', 'mailpoet')}
     </a>
   ) : (
