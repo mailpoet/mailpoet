@@ -47,7 +47,7 @@ class Image implements BlockRenderer {
       $maxWidth = $parsedBlock['email_attrs']['width'] ?? SettingsController::EMAIL_WIDTH;
       $imageSize = wp_getimagesize($imageUrl);
       $imageSize = $imageSize ? "{$imageSize[0]}px" : $maxWidth;
-      $parsedBlock['attrs']['width'] = ($imageSize > $maxWidth) ? $maxWidth : $imageSize;
+      $parsedBlock['attrs']['width'] = min($imageSize, $maxWidth);
     }
     return $parsedBlock;
   }
