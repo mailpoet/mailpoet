@@ -184,10 +184,12 @@ class SettingsController {
   }
 
   public function getTheme(): \WP_Theme_JSON {
+    $coreThemeData = \WP_Theme_JSON_Resolver::get_core_data();
     $themeJson = (string)file_get_contents(dirname(__FILE__) . '/theme.json');
     $themeJson = json_decode($themeJson, true);
     /** @var array $themeJson */
-    return new \WP_Theme_JSON($themeJson);
+    $coreThemeData->merge(new \WP_Theme_JSON($themeJson, 'default'));
+    return $coreThemeData;
   }
 
   public function getStylesheetForRendering(): string {
@@ -195,7 +197,7 @@ class SettingsController {
     $emailThemeSettings = $this->getTheme()->get_settings();
     $css = '';
     // Font family classes
-    foreach ($emailThemeSettings['typography']['fontFamilies']['theme'] as $fontFamily) {
+    foreach ($emailThemeSettings['typography']['fontFamilies']['default'] as $fontFamily) {
       $css .= ".has-{$fontFamily['slug']}-font-family { font-family: {$fontFamily['fontFamily']}; } \n";
     }
     // Font size classes
