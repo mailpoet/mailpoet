@@ -201,7 +201,13 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_OK);
     $updatedNewsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $updatedNewsletter); // PHPStan
-    verify($response->data)->equals($this->newslettersResponseBuilder->build($updatedNewsletter, [NewslettersResponseBuilder::RELATION_SEGMENTS]));
+    verify($response->data)->equals(
+      $this->newslettersResponseBuilder->build($updatedNewsletter, [
+        NewslettersResponseBuilder::RELATION_SEGMENTS,
+        NewslettersResponseBuilder::RELATION_OPTIONS,
+        NewslettersResponseBuilder::RELATION_QUEUE,
+      ])
+    );
     verify($updatedNewsletter->getType())->equals('Updated type');
     verify($updatedNewsletter->getSubject())->equals('Updated subject');
     verify($updatedNewsletter->getPreheader())->equals('Updated preheader');
@@ -347,7 +353,13 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_OK);
     $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    verify($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
+    verify($response->data)->equals(
+      $this->newslettersResponseBuilder->build($newsletter, [
+        NewslettersResponseBuilder::RELATION_SEGMENTS,
+        NewslettersResponseBuilder::RELATION_OPTIONS,
+        NewslettersResponseBuilder::RELATION_QUEUE,
+      ])
+    );
     verify($response->data['deleted_at'])->null();
     verify($response->meta['count'])->equals(1);
   }
@@ -357,7 +369,13 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_OK);
     $newsletter = $this->newsletterRepository->findOneById($this->newsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    verify($response->data)->equals($this->newslettersResponseBuilder->build($newsletter));
+    verify($response->data)->equals(
+      $this->newslettersResponseBuilder->build($newsletter, [
+        NewslettersResponseBuilder::RELATION_SEGMENTS,
+        NewslettersResponseBuilder::RELATION_OPTIONS,
+        NewslettersResponseBuilder::RELATION_QUEUE,
+      ])
+    );
     verify($response->data['deleted_at'])->notNull();
     verify($response->meta['count'])->equals(1);
   }
@@ -382,7 +400,13 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_OK);
     $newsletterCopy = $this->newsletterRepository->findOneBy(['subject' => 'Copy of My Standard Newsletter']);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterCopy);
-    verify($response->data)->equals($this->newslettersResponseBuilder->build($newsletterCopy));
+    verify($response->data)->equals(
+      $this->newslettersResponseBuilder->build($newsletterCopy, [
+        NewslettersResponseBuilder::RELATION_SEGMENTS,
+        NewslettersResponseBuilder::RELATION_OPTIONS,
+        NewslettersResponseBuilder::RELATION_QUEUE,
+      ])
+    );
     verify($response->meta['count'])->equals(1);
 
     $hookName = 'mailpoet_api_newsletters_duplicate_after';
@@ -393,7 +417,13 @@ class NewslettersTest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_OK);
     $newsletterCopy = $this->newsletterRepository->findOneBy(['subject' => 'Copy of My Post Notification']);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterCopy);
-    verify($response->data)->equals($this->newslettersResponseBuilder->build($newsletterCopy));
+    verify($response->data)->equals(
+      $this->newslettersResponseBuilder->build($newsletterCopy, [
+        NewslettersResponseBuilder::RELATION_SEGMENTS,
+        NewslettersResponseBuilder::RELATION_OPTIONS,
+        NewslettersResponseBuilder::RELATION_QUEUE,
+      ])
+    );
     verify($response->meta['count'])->equals(1);
   }
 
