@@ -70,9 +70,8 @@
   display: block; // Override flex to achieve height follow the length of the document
 
   // Because block editor uses .has-background class after setting a background color
-  // we want to reset margin and padding for this class to avoid unexpected spacing
+  // we want to reset padding for this class to avoid unexpected spacing
   .has-background {
-    margin: 0;
     padding: 0;
   }
 
@@ -94,7 +93,6 @@
 // For the WYSIWYG experience we don't want to display any margins between blocks in the editor
 .wp-block {
   clear: both; // for ensuring that floated elements (images) are cleared
-  margin: 0;
 }
 
 .edit-post-visual-editor__content-area .is-mobile-preview {
