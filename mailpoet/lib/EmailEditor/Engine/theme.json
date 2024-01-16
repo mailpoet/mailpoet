@@ -12,6 +12,7 @@
     },
     "spacing": {
       "units": ["px"],
+      "blockGap": true,
       "padding": true,
       "margin": false
     },
@@ -146,6 +147,7 @@
   },
   "styles": {
     "spacing": {
+      "blockGap": "var(--wp--style--block-gap)",
       "padding": {
         "bottom": "10px",
         "left": "10px",
