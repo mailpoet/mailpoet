@@ -137,6 +137,12 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('border-radius:10px;');
   }
 
+  public function testItRendersFontSizeFromEmailAttrs(): void {
+    $this->parsedButton['email_attrs']['font-size'] = '10px';
+    $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
+    verify($output)->stringContainsString('font-size:10px;');
+  }
+
   public function testItRendersCornerSpecificBorderRadius(): void {
     $this->parsedButton['attrs']['style']['border']['radius'] = [
       'topLeft' => '1px',
