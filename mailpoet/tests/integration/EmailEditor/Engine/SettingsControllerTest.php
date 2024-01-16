@@ -11,7 +11,7 @@ class SettingsControllerTest extends \MailPoetTest {
     $this->settingsController = $this->diContainer->get(SettingsController::class);
   }
 
-  public function testItGeneratesCssStylesForThemeWithFontFamilies() {
+  public function testItGeneratesCssStylesForRenderer() {
     $css = $this->settingsController->getStylesheetForRendering();
     verify($css)->stringContainsString('.has-arial-font-family');
     verify($css)->stringContainsString('.has-comic-sans-ms-font-family');
@@ -35,6 +35,11 @@ class SettingsControllerTest extends \MailPoetTest {
     verify($css)->stringContainsString('.has-raleway-font-family');
     verify($css)->stringContainsString('.has-permanent-marker-font-family');
     verify($css)->stringContainsString('.has-pacifico-font-family');
+
+    verify($css)->stringContainsString('.has-small-font-size');
+    verify($css)->stringContainsString('.has-medium-font-size');
+    verify($css)->stringContainsString('.has-large-font-size');
+    verify($css)->stringContainsString('.has-x-large-font-size');
   }
 
   public function testItCanTranslateFontSizeSlug() {
