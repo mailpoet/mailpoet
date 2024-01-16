@@ -85,15 +85,17 @@ class AuthorizedSenderDomainController {
   }
 
   /**
-   * Get all Verified Sender Domains
+   * Get all Verified Sender Domains.
+   *
+   * Note: This includes partially or fully verified domains.
    */
   public function getVerifiedSenderDomains(): array {
-    return $this->returnVerifiedDomains($this->getAllRecords());
+    return $this->getFullyOrPartiallyVerifiedSenderDomains(true);
   }
 
   public function getVerifiedSenderDomainsIgnoringCache(): array {
     $this->currentRecords = null;
-    return $this->getVerifiedSenderDomains();
+    return $this->getFullyOrPartiallyVerifiedSenderDomains(true);
   }
 
   /**
@@ -173,11 +175,17 @@ class AuthorizedSenderDomainController {
     });
   }
 
+  /**
+   * Returns sender domains that have all required records, including DMARC.
+   */
   public function getFullyVerifiedSenderDomains($domainsOnly = false): array {
     $domainData = $this->getSenderDomainsByStatus([self::OVERALL_STATUS_VERIFIED]);
     return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
   }
 
+  /**
+   * Returns sender domains that were verified before DMARC record was required.
+   */
   public function getPartiallyVerifiedSenderDomains($domainsOnly = false): array {
     $domainData = $this->getSenderDomainsByStatus([self::OVERALL_STATUS_PARTIALLY_VERIFIED]);
     return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
@@ -225,27 +233,6 @@ class AuthorizedSenderDomainController {
   private function returnAllDomains(array $records): array {
     $domains = array_keys($records);
     return $domains;
-  }
-
-  /**
-   * Little helper function to return All verified domains
-   */
-  private function returnVerifiedDomains(array $records): array {
-    $verifiedDomains = [];
-
-    foreach ($records as $key => $value) {
-      if (count($value) < 3) continue;
-      [$domainKey1, $domainKey2, $secretRecord] = $value;
-      if (
-        $domainKey1['status'] === self::DOMAIN_VERIFICATION_STATUS_VALID &&
-        $domainKey2['status'] === self::DOMAIN_VERIFICATION_STATUS_VALID &&
-        $secretRecord['status'] === self::DOMAIN_VERIFICATION_STATUS_VALID
-      ) {
-        $verifiedDomains[] = $key;
-      }
-    }
-
-    return $verifiedDomains;
   }
 
   private function getAllRawData(): array {

@@ -67,13 +67,20 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
   public function testItReturnsVerifiedSenderDomains() {
     $bridgeResponse = [
-      'mailpoet.com' => Bridge\BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE['dns'],
-      'good' => ['data'],
-      'testdomain.com' => ['data'],
+      [
+        'domain' => 'mailpoet.com',
+        'domain_status' => 'verified',
+        'dns' => Bridge\BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE['dns'],
+        ],
+      [
+        'domain' => 'testdomain.com',
+        'domain_status' => 'unverified',
+        'dns' => [],
+      ],
     ];
 
     $bridgeMock = $this->make(Bridge::class, [
-      'getAuthorizedSenderDomains' => Expected::once($bridgeResponse),
+      'getRawSenderDomainData' => Expected::once($bridgeResponse),
     ]);
 
     $controller = $this->getController($bridgeMock);
@@ -84,16 +91,22 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
   public function testItReturnsEmptyArrayWhenNoVerifiedSenderDomains() {
     $expectation = Expected::once([]); // with empty array
 
-    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedSenderDomains' => $expectation]);
+    $bridgeMock = $this->make(Bridge::class, ['getRawSenderDomainData' => $expectation]);
     $controller = $this->getController($bridgeMock);
 
     $verifiedDomains = $controller->getVerifiedSenderDomains();
     verify($verifiedDomains)->same([]);
 
-    $domains = ['testdomain.com' => []];
+    $domains = [
+      [
+        'domain' => 'testdomain.com',
+        'domain_status' => 'unverified',
+        'dns' => [],
+      ],
+    ];
     $expectation = Expected::once($domains);
 
-    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedSenderDomains' => $expectation]);
+    $bridgeMock = $this->make(Bridge::class, ['getRawSenderDomainData' => $expectation]);
     $controller = $this->getController($bridgeMock);
     $verifiedDomains = $controller->getVerifiedSenderDomains();
     verify($verifiedDomains)->same([]);

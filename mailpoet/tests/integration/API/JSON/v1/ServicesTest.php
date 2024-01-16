@@ -551,7 +551,7 @@ class ServicesTest extends \MailPoetTest {
 
     $verifiedDomains = ['email.com'];
     $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
-      'getVerifiedSenderDomains' => Expected::once($verifiedDomains),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once($verifiedDomains),
     ]);
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks([
