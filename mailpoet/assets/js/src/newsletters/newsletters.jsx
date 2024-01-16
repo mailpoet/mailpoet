@@ -48,9 +48,10 @@ const Tabs = withNpsPoll(() => {
       <ListingHeadingDisplay>
         <ListingHeading />
       </ListingHeadingDisplay>
-      {window.mailpoet_legacy_automatic_emails_count > 0 && (
-        <LegacyAutomaticEmailsNotice />
-      )}
+      {window.mailpoet_legacy_automatic_emails_count > 0 &&
+        !window.mailpoet_legacy_automatic_emails_notice_dismissed && (
+          <LegacyAutomaticEmailsNotice />
+        )}
       {MailPoet.corrupt_newsletters.length > 0 && (
         <CorruptEmailNotice newsletters={MailPoet.corrupt_newsletters} />
       )}

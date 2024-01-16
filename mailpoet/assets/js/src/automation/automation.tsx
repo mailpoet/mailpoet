@@ -35,7 +35,10 @@ function Content(): JSX.Element {
     count > 0 ? (
       <>
         <AutomationListingHeader />
-        {legacyAutomationCount > 0 && <LegacyAutomationsNotice />}
+        {legacyAutomationCount > 0 &&
+          !window.mailpoet_legacy_automations_notice_dismissed && (
+            <LegacyAutomationsNotice />
+          )}
         <AutomationListing />
       </>
     ) : (
