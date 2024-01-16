@@ -191,11 +191,16 @@ class SettingsController {
   }
 
   public function getStylesheetForRendering(): string {
-    $settings = $this->getTheme()->get_settings();
+    $coreThemeSettings = \WP_Theme_JSON_Resolver::get_core_data()->get_settings();
+    $emailThemeSettings = $this->getTheme()->get_settings();
     $css = '';
     // Font family classes
-    foreach ($settings['typography']['fontFamilies']['theme'] as $fontFamily) {
+    foreach ($emailThemeSettings['typography']['fontFamilies']['theme'] as $fontFamily) {
       $css .= ".has-{$fontFamily['slug']}-font-family { font-family: {$fontFamily['fontFamily']}; } \n";
+    }
+    // Font size classes
+    foreach ($coreThemeSettings['typography']['fontSizes']['default'] as $fontSize) {
+      $css .= ".has-{$fontSize['slug']}-font-size { font-size: {$fontSize['size']}; } \n";
     }
     return $css;
   }
