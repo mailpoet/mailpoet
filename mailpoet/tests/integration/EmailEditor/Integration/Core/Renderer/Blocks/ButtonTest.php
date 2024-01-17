@@ -156,4 +156,14 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('border-bottom-left-radius:3px;');
     verify($output)->stringContainsString('border-bottom-right-radius:4px;');
   }
+
+  public function testItRendersDefaultBackgroundColor(): void {
+    unset($this->parsedButton['attrs']['style']['color']);
+    unset($this->parsedButton['attrs']['style']['spacing']['padding']);
+    $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
+    // Verify default background colors theme.json for email editor
+    // These can't be set via CSS inliner because of special email HTML markup
+    verify($output)->stringContainsString('bgcolor="#32373c"');
+    verify($output)->stringContainsString('background:#32373c;');
+  }
 }

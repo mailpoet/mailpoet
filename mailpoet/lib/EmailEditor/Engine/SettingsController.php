@@ -183,16 +183,25 @@ class SettingsController {
 
   public function getStylesheetForRendering(): string {
     $emailThemeSettings = $this->getTheme()->get_settings();
-    $css = '';
+
+    $cssPresets = '';
     // Font family classes
     foreach ($emailThemeSettings['typography']['fontFamilies']['default'] as $fontFamily) {
-      $css .= ".has-{$fontFamily['slug']}-font-family { font-family: {$fontFamily['fontFamily']}; } \n";
+      $cssPresets .= ".has-{$fontFamily['slug']}-font-family { font-family: {$fontFamily['fontFamily']}; } \n";
     }
     // Font size classes
     foreach ($emailThemeSettings['typography']['fontSizes']['default'] as $fontSize) {
-      $css .= ".has-{$fontSize['slug']}-font-size { font-size: {$fontSize['size']}; } \n";
+      $cssPresets .= ".has-{$fontSize['slug']}-font-size { font-size: {$fontSize['size']}; } \n";
     }
-    return $css;
+
+    // Block specific styles
+    $cssBlocks = '';
+    $blocks = $this->getTheme()->get_styles_block_nodes();
+    foreach ($blocks as $blockMetadata) {
+      $cssBlocks .= $this->getTheme()->get_styles_for_block($blockMetadata);
+    }
+
+    return $cssPresets . $cssBlocks;
   }
 
   public function translateSlugToFontSize(string $fontSize): string {
