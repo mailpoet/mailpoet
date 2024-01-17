@@ -8,13 +8,13 @@ export function legacyReducer(state: State, action): State {
         ...state,
         legacyAutomations: action.automations,
       };
-    case 'UPDATE_LEGACY_AUTOMATION':
+    case 'UPDATE_LEGACY_AUTOMATION_STATUS':
       return {
         ...state,
         legacyAutomations: state.legacyAutomations.map(
           (automation: Automation) =>
-            automation.id === action.automation.id
-              ? (action.automation as Automation)
+            automation.id === action.id
+              ? { ...automation, status: action.status }
               : automation,
         ),
       };
@@ -22,7 +22,7 @@ export function legacyReducer(state: State, action): State {
       return {
         ...state,
         legacyAutomations: state.automations.filter(
-          (automation: Automation) => automation.id !== action.automation.id,
+          (automation: Automation) => automation.id !== action.id,
         ),
       };
     default:
