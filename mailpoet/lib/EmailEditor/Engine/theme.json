@@ -149,23 +149,6 @@
     "typography": {
       "fontFamily": "Arial, 'Helvetica Neue', Helvetica, sans-serif",
       "fontSize": "16px"
-    },
-    "blocks": {
-      "core/button": {
-        "variations": {},
-        "color": {
-          "background": "#32373c",
-          "text": "#ffffff"
-        },
-        "spacing": {
-          "padding": {
-            "bottom": "0.7em",
-            "left": "1.4em",
-            "right": "1.4em",
-            "top": "0.7em"
-          }
-        }
-      }
     }
   }
 }
