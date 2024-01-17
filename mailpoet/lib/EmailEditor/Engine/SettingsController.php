@@ -18,18 +18,6 @@ class SettingsController {
 
   const DEFAULT_SETTINGS = [
     'enableCustomUnits' => ['px', '%'],
-    '__experimentalFeatures' => [
-      'color' => [
-        'custom' => true,
-        'text' => true,
-        'background' => true,
-        'customGradient' => false,
-        'defaultPalette' => true,
-        'palette' => [
-          'default' => [],
-        ],
-      ],
-    ],
   ];
 
   /**
