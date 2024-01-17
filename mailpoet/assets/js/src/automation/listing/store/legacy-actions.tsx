@@ -56,7 +56,7 @@ export function* loadLegacyAutomations() {
 }
 
 export function* trashLegacyAutomation(automation: Automation) {
-  const data: { data: ListingItem } = yield AwaitPromise(
+  yield AwaitPromise(
     legacyApiFetch({
       endpoint: 'newsletters',
       method: 'trash',
@@ -67,8 +67,9 @@ export function* trashLegacyAutomation(automation: Automation) {
   createSuccessNotice(__('1 automation moved to the Trash.', 'mailpoet'));
 
   return {
-    type: 'UPDATE_LEGACY_AUTOMATION',
-    automation: mapToAutomation(data.data),
+    type: 'UPDATE_LEGACY_AUTOMATION_STATUS',
+    id: automation.id,
+    status: AutomationStatus.TRASH,
   } as const;
 }
 
@@ -86,8 +87,9 @@ export function* restoreLegacyAutomation(automation: Automation) {
   createSuccessNotice(__('1 automation restored from the Trash.', 'mailpoet'));
 
   return {
-    type: 'UPDATE_LEGACY_AUTOMATION',
-    automation: mapToAutomation(data.data),
+    type: 'UPDATE_LEGACY_AUTOMATION_STATUS',
+    id: automation.id,
+    status: data.data.status,
   } as const;
 }
 
