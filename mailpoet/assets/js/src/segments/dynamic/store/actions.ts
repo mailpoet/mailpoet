@@ -157,6 +157,7 @@ export function* handleSave(
     if (newsletterId && savedSegmentId) {
       window.location.href = `admin.php?page=mailpoet-newsletters#/send/${newsletterId}?filterSegmentId=${savedSegmentId}`;
     } else {
+      void dispatch(storeName).loadDynamicSegments();
       window.location.href = 'admin.php?page=mailpoet-segments#/segments';
 
       if (isNewSegment) {
