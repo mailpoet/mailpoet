@@ -258,12 +258,11 @@ class SendingQueue {
         }
 
         $foundSubscribers = $queryBuilder->getQuery()->getResult();
-        $foundSubscribersIds = array_filter(
-          array_map(function(SubscriberEntity $subscriber) {
-            return (!empty($subscriber->getId())) ? $subscriber->getId() : false;
-          }, $foundSubscribers)
-        );
+        $foundSubscribersIds = array_map(function(SubscriberEntity $subscriber) {
+          return $subscriber->getId();
+        }, $foundSubscribers);
       }
+
       // if some subscribers weren't found, remove them from the processing list
       if (count($foundSubscribersIds) !== count($subscribersToProcessIds)) {
         $subscribersToRemove = array_diff(
