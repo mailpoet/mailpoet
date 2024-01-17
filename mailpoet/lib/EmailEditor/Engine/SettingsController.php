@@ -178,7 +178,7 @@ class SettingsController {
     $themeJson = json_decode($themeJson, true);
     /** @var array $themeJson */
     $coreThemeData->merge(new \WP_Theme_JSON($themeJson, 'default'));
-    return $coreThemeData;
+    return apply_filters('mailpoet_email_editor_theme_json', $coreThemeData);
   }
 
   public function getStylesheetForRendering(): string {
