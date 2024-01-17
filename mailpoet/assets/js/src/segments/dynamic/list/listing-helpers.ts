@@ -25,33 +25,18 @@ export function updateDynamicQuery(values: Partial<DynamicSegmentQuery>): void {
 
 export function updateDynamicQueryFromLocation(pathname: string): void {
   const pathElements = pathname.split('/');
-
   const currentQuery = select(storeName).getDynamicSegmentsQuery();
   const query = currentQuery !== null ? currentQuery : defaultQuery;
-  const queryKeys = Object.keys(query);
 
   const integerKeys = ['limit', 'offset'];
-  for (
-    let pathElementsIndex = 0;
-    pathElementsIndex < pathElements.length;
-    pathElementsIndex += 1
-  ) {
-    for (
-      let queryKeysIndex = 0;
-      queryKeysIndex < queryKeys.length;
-      queryKeysIndex += 1
-    ) {
-      const currentKey = queryKeys[queryKeysIndex];
-      if (pathElements[pathElementsIndex].startsWith(`${currentKey}[`)) {
-        const currentValue = pathElements[pathElementsIndex]
-          .replace(`${currentKey}[`, '')
-          .replace(']', '');
-        query[currentKey] = integerKeys.includes(currentKey)
-          ? parseInt(currentValue, 10)
-          : currentValue;
-      }
+
+  pathElements.forEach((element) => {
+    const match = element.match(/(\w+)\[(.*?)]/);
+    if (match) {
+      const [, key, value] = match;
+      query[key] = integerKeys.includes(key) ? parseInt(value, 10) : value;
     }
-  }
+  });
 
   updateDynamicQuery(query);
 }
