@@ -148,6 +148,10 @@ Have a question for us? Reach us at security@ our domain, or report security iss
 
 = Use of 3rd Party Services =
 
+MailPoet uses the following services that are necessary for its full functionality:
+
+* [Translate WordPress.com](https://translate.wordpress.com/) - used to download translations for the plugin.
+
 To improve user experience, MailPoet may use the following 3rd party libraries if the _Load 3rd-party libraries_ setting is enabled:
 
 * [Google Fonts](https://fonts.google.com/) - used in Form Editor which you can use to customize your forms, and in the Email Editor to style emails. This can be individually [disabled by a filter](https://kb.mailpoet.com/article/332-how-to-disable-google-fonts). [TOS](https://policies.google.com/terms?hl=en) and [Privacy Policy](https://policies.google.com/privacy?hl=en)
