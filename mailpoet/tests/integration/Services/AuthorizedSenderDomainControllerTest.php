@@ -362,12 +362,25 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $this->settings->set('version', MAILPOET_VERSION);
     $this->settings->set('installed_after_new_domain_restrictions', '1');
 
-    // Is big sender
+    // Is not small sender
     $subscribersMock = $this->make(Subscribers::class, [
       'getSubscribersCount' => Expected::once(501),
     ]);
 
     $this->assertTrue($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForNewCampaigns());
+  }
+
+  public function testIsAuthorizedDomainRequiredForExistingCampaigns(): void {
+    // Is new user
+    $this->settings->set('version', MAILPOET_VERSION);
+    $this->settings->set('installed_after_new_domain_restrictions', '1');
+
+    // Is Big Sender
+    $subscribersMock = $this->make(Subscribers::class, [
+      'getSubscribersCount' => Expected::once(1001),
+    ]);
+
+    $this->assertTrue($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForExistingCampaigns());
   }
 
   public function testNotIsAuthorizedDomainRequiredForNewCampaignsForExistingUsersBeforeEnforcementDate(): void {
@@ -391,7 +404,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     // After EnforcementDate
     Carbon::setTestNow(Carbon::parse('2024-02-01 00:00:01 UTC'));
 
-    // Is big sender
+    // Is not small sender
     $subscribersMock = $this->make(Subscribers::class, [
       'getSubscribersCount' => Expected::once(501),
     ]);
