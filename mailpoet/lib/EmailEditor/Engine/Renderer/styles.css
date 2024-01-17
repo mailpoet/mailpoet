@@ -2,91 +2,6 @@
 /* Created based on original MailPoet template for rendering emails */
 /* StyleLint is disabled because some rules contain properties that linter marks as unknown, but they are valid for email rendering */
 /* stylelint-disable property-no-unknown */
-
-/* Base CSS resets to fix Browser quirks and ensure consistent display between email editor and email preview */
-html,
-body,
-div,
-span,
-applet,
-object,
-iframe,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-blockquote,
-pre,
-a,
-abbr,
-acronym,
-address,
-big,
-cite,
-code,
-del,
-dfn,
-em,
-img,
-ins,
-kbd,
-q,
-s,
-samp,
-small,
-strike,
-strong,
-sub,
-sup,
-tt,
-var,
-b,
-u,
-i,
-center,
-dl,
-dt,
-dd,
-fieldset,
-form,
-label,
-legend,
-table,
-caption,
-tbody,
-tfoot,
-thead,
-tr,
-th,
-td,
-article,
-aside,
-canvas,
-details,
-embed,
-figure,
-figcaption,
-footer,
-header,
-hgroup,
-menu,
-nav,
-output,
-ruby,
-section,
-summary,
-time,
-mark,
-audio,
-video {
-  border: 0;
-  margin: 0;
-  padding: 0;
-}
-
 body {
   margin: 0;
   padding: 0;
@@ -120,6 +35,16 @@ img {
 p {
   display: block;
   margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-bottom: 0;
+  margin-top: 0;
 }
 
 /* Wa want ensure the same design for all email clients */
