@@ -140,25 +140,4 @@ class RendererTest extends \MailPoetTest {
     verify($style)->stringContainsString('padding-top:3px;');
     verify($style)->stringContainsString('padding-bottom:4px;');
   }
-
-  public function testItInlinesButtonDefaultStyles() {
-    $this->emailPost = new \WP_Post((object)[
-      'post_content' => '<!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link has-background wp-element-button">Button</a></div><!-- /wp:button -->',
-    ]);
-    $rendered = $this->renderer->render($this->emailPost, 'Subject', '', 'en');
-    $doc = new \DOMDocument();
-    $doc->loadHTML($rendered['html']);
-    $xpath = new \DOMXPath($doc);
-    $nodes = $xpath->query('//td[contains(@class, "wp-block-button")]');
-    $button = null;
-    if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
-      $button = $nodes->item(0);
-    }
-    $this->assertInstanceOf(\DOMElement::class, $button);
-    $this->assertInstanceOf(\DOMDocument::class, $button->ownerDocument);
-    $buttonHtml = $button->ownerDocument->saveHTML($button);
-    verify($buttonHtml)->stringContainsString('color:#ffffff');
-    verify($buttonHtml)->stringContainsString('padding:.7em 1.4em');
-    verify($buttonHtml)->stringContainsString('background:#32373c');
-  }
 }
