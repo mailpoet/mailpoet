@@ -919,7 +919,7 @@ class SchedulerTest extends \MailPoetTest {
 
   public function _after() {
     if (is_int($this->wpUserId)) {
-      wp_delete_user($this->wpUserId);
+      is_multisite() ? wpmu_delete_user($this->wpUserId) : wp_delete_user($this->wpUserId);
     }
 
     parent::_after();
