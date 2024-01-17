@@ -111,32 +111,48 @@ export function getRow(
         </div>
       ),
     },
-    {
-      value: dynamicSegment.count_all,
-      display: (
-        <p
-          data-automation-id={`mailpoet_dynamic_segment_count_all_${dynamicSegment.id}`}
-        >
-          {dynamicSegment.count_all}
-        </p>
-      ),
-    },
-    {
-      value: dynamicSegment.count_subscribed,
-      display:
-        dynamicSegment.count_subscribed === '0' ? (
-          dynamicSegment.count_subscribed
-        ) : (
-          <Button
-            data-automation-id={`mailpoet_dynamic_segment_count_subscribed_${dynamicSegment.id}`}
-            className="mailpoet-listing-text-right-align"
-            variant="link"
-            href={dynamicSegment.subscribers_url}
-          >
-            {dynamicSegment.count_subscribed}
-          </Button>
-        ),
-    },
+    dynamicSegment.is_plugin_missing
+      ? {
+          value: dynamicSegment.missing_plugin_message,
+          display: (
+            <p
+              data-automation-id={`mailpoet_dynamic_segment_plugin_missing_message_${dynamicSegment.id}`}
+            >
+              {dynamicSegment.missing_plugin_message.message}
+            </p>
+          ),
+        }
+      : {
+          value: dynamicSegment.count_all,
+          display: (
+            <p
+              data-automation-id={`mailpoet_dynamic_segment_count_all_${dynamicSegment.id}`}
+            >
+              {dynamicSegment.count_all}
+            </p>
+          ),
+        },
+    dynamicSegment.is_plugin_missing
+      ? {
+          value: null,
+          display: null,
+        }
+      : {
+          value: dynamicSegment.count_subscribed,
+          display:
+            dynamicSegment.count_subscribed === '0' ? (
+              dynamicSegment.count_subscribed
+            ) : (
+              <Button
+                data-automation-id={`mailpoet_dynamic_segment_count_subscribed_${dynamicSegment.id}`}
+                className="mailpoet-listing-text-right-align"
+                variant="link"
+                href={dynamicSegment.subscribers_url}
+              >
+                {dynamicSegment.count_subscribed}
+              </Button>
+            ),
+        },
     {
       value: dynamicSegment.created_at,
       display: (
@@ -159,6 +175,8 @@ export function getRow(
             {__('View subscribers', 'mailpoet')}
           </Button>
           <Button
+            data-automation-id={`mailpoet_dynamic_segment_edit_button_${dynamicSegment.id}`}
+            disabled={dynamicSegment.is_plugin_missing}
             variant="tertiary"
             href={`#${ROUTES.EDIT_DYNAMIC_SEGMENT}/${dynamicSegment.id}`}
           >

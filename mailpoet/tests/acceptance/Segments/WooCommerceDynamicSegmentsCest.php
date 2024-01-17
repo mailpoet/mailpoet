@@ -256,23 +256,23 @@ class WooCommerceDynamicSegmentsCest {
     $i->wantTo('Check that message is visible instead of count of subscribers');
     $i->waitForText(self::CATEGORY_SEGMENT);
     $message = 'Activate the WooCommerce plugin to see the number of subscribers and enable the editing of this segment.';
-    $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->getId()}']";
-    $i->see($message, $categorySegmentRow . " [data-colname='Missing plugin message']");
-    $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
-    $i->see($message, $productSegmentRow . " [data-colname='Missing plugin message']");
-    $numberOfOrdersSegmentRow = "[data-automation-id='listing_item_{$this->numberOfOrdersSegment->getId()}']";
-    $i->see($message, $numberOfOrdersSegmentRow . " [data-colname='Missing plugin message']");
-    $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->totalSpentSegment->getId()}']";
-    $i->see($message, $totalSpentSegmentRow . " [data-colname='Missing plugin message']");
-    $customerCountrySegmentRow = "[data-automation-id='listing_item_{$this->customerCountrySegment->getId()}']";
-    $i->see($message, $customerCountrySegmentRow . " [data-colname='Missing plugin message']");
+    $categorySegmentRow = "[data-automation-id='mailpoet_dynamic_segment_plugin_missing_message_{$this->categorySegment->getId()}']";
+    $i->see($message, $categorySegmentRow);
+    $productSegmentRow = "[data-automation-id='mailpoet_dynamic_segment_plugin_missing_message_{$this->productSegment->getId()}']";
+    $i->see($message, $productSegmentRow);
+    $numberOfOrdersSegmentRow = "[data-automation-id='mailpoet_dynamic_segment_plugin_missing_message_{$this->numberOfOrdersSegment->getId()}']";
+    $i->see($message, $numberOfOrdersSegmentRow);
+    $totalSpentSegmentRow = "[data-automation-id='mailpoet_dynamic_segment_plugin_missing_message_{$this->totalSpentSegment->getId()}']";
+    $i->see($message, $totalSpentSegmentRow);
+    $customerCountrySegmentRow = "[data-automation-id='mailpoet_dynamic_segment_plugin_missing_message_{$this->customerCountrySegment->getId()}']";
+    $i->see($message, $customerCountrySegmentRow);
 
     $i->wantTo('Check that Edit links are not clickable');
-    $i->assertAttributeContains($categorySegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
-    $i->assertAttributeContains($productSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
-    $i->assertAttributeContains($numberOfOrdersSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
-    $i->assertAttributeContains($totalSpentSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
-    $i->assertAttributeContains($customerCountrySegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
+    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->categorySegment->getId()}]", 'disabled', '');
+    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->productSegment->getId()}]", 'disabled', '');
+    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->numberOfOrdersSegment->getId()}]", 'disabled', '');
+    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->totalSpentSegment->getId()}]", 'disabled', '');
+    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->customerCountrySegment->getId()}]", 'disabled', '');
     $i->seeNoJSErrors();
   }
 

@@ -197,6 +197,10 @@ export type DynamicSegment = {
   deleted_at: string;
   subscribers_url: string;
   selected?: boolean;
+  is_plugin_missing: boolean;
+  missing_plugin_message?: {
+    message: string;
+  };
 };
 
 export type Segment = {
