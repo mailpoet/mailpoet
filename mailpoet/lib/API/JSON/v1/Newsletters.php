@@ -193,7 +193,7 @@ class Newsletters extends APIEndpoint {
       ]);
     }
 
-    if ($status === NewsletterEntity::STATUS_ACTIVE && !$this->authorizedEmailsController->isSenderAddressValidForActivation($newsletter)) {
+    if ($status === NewsletterEntity::STATUS_ACTIVE && !$this->authorizedEmailsController->isSenderAddressValid($newsletter)) {
           return $this->errorResponse([
             APIError::FORBIDDEN => __('The sender address is not an authorized sender domain.', 'mailpoet'),
           ], [], Response::STATUS_FORBIDDEN);

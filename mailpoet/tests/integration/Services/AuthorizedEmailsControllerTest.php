@@ -255,7 +255,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       'AuthorizedSenderDomainController' => $senderDomainMock,
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
-    verify($controller->isSenderAddressValidForActivation($newsletter))->false();
+    verify($controller->isSenderAddressValid($newsletter))->false();
   }
 
   public function testSenderAddressIsValidForActivationIfRestrictionsApplyAndAuthorizedSender() {
@@ -276,7 +276,28 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       'AuthorizedSenderDomainController' => $senderDomainMock,
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
-    verify($controller->isSenderAddressValidForActivation($newsletter))->true();
+    verify($controller->isSenderAddressValid($newsletter))->true();
+  }
+
+  public function testSenderAddressIsValidForSendingIfRestrictionsApplyAndAuthorizedSender() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $verifiedDomains = ['email.com'];
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomainsIgnoringCache' => Expected::once($verifiedDomains),
+    ]);
+
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress('contact@email.com');
+
+    $mocks = [
+      'AuthorizedSenderDomainController' => $senderDomainMock,
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
+    verify($controller->isSenderAddressValid($newsletter, 'sending'))->true();
   }
 
   public function testSenderAddressIsValidForActivationIfNotACampaign() {
@@ -297,7 +318,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       'AuthorizedSenderDomainController' => $senderDomainMock,
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
-    verify($controller->isSenderAddressValidForActivation($newsletter))->true();
+    verify($controller->isSenderAddressValid($newsletter))->true();
   }
 
   public function testSenderAddressIsValidForActivationIfRestrictionsDoNotApply() {
@@ -318,7 +339,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
       'AuthorizedSenderDomainController' => $senderDomainMock,
     ];
     $controller = $this->getControllerWithCustomMocks($mocks);
-    verify($controller->isSenderAddressValidForActivation($newsletter))->true();
+    verify($controller->isSenderAddressValid($newsletter))->true();
   }
 
   public function testItSetsFromAddressInScheduledEmails() {

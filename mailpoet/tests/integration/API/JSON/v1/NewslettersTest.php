@@ -236,7 +236,7 @@ class NewslettersTest extends \MailPoetTest {
       'cronHelper' => $this->cronHelper,
       'subscribersFeature' => Stub::make(Subscribers::class, ['check' => true]),
       'authorizedEmailsController' => Stub::make(AuthorizedEmailsController::class, [
-        'isSenderAddressValidForActivation' => Expected::once(false),
+        'isSenderAddressValid' => Expected::once(false),
       ]),
     ]);
     $res = $endpoint->setStatus([
