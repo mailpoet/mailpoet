@@ -20,6 +20,7 @@ use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tasks\Subscribers\BatchIterator;
@@ -87,6 +88,9 @@ class SendingQueue {
   /** @var StatisticsNewslettersRepository */
   private $statisticsNewslettersRepository;
 
+  /** @var AuthorizedEmailsController */
+  private $authorizedEmailsController;
+
   public function __construct(
     SendingErrorHandler $errorHandler,
     SendingThrottlingHandler $throttlingHandler,
@@ -104,6 +108,7 @@ class SendingQueue {
     SendingQueuesRepository $sendingQueuesRepository,
     EntityManager $entityManager,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
+    AuthorizedEmailsController $authorizedEmailsController,
     $newsletterTask = false
   ) {
     $this->errorHandler = $errorHandler;
@@ -124,6 +129,7 @@ class SendingQueue {
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     $this->entityManager = $entityManager;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
+    $this->authorizedEmailsController = $authorizedEmailsController;
   }
 
   public function process($timer = false) {
@@ -205,6 +211,17 @@ class SendingQueue {
       $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
       $this->scheduledTasksRepository->flush();
       $this->wp->setTransient(self::EMAIL_WITH_INVALID_SEGMENT_OPTION, $newsletter->getSubject());
+      return;
+    }
+
+    // Pause task if sender domain requirements are not met
+    if (!$this->authorizedEmailsController->isSenderAddressValid($newsletter, 'sending')) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
+        'pause task in sending queue due to sender domain requirements',
+        ['task_id' => $task->getId()]
+      );
+      $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      $this->scheduledTasksRepository->flush();
       return;
     }
 
