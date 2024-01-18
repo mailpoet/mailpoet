@@ -21,7 +21,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\StatisticsOpenEntity;
-use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
@@ -32,6 +31,7 @@ use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Statistics\StatisticsOpensRepository;
+use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -54,6 +54,7 @@ class NewslettersRepository extends Repository {
   private StatisticsClicksRepository $statisticsClicksRepository;
   private StatisticsNewslettersRepository $statisticsNewslettersRepository;
   private StatisticsOpensRepository $statisticsOpensRepository;
+  private StatisticsWooCommercePurchasesRepository $statisticsWooCommercePurchasesRepository;
   private WPFunctions $wp;
 
   public function __construct(
@@ -68,6 +69,7 @@ class NewslettersRepository extends Repository {
     StatisticsClicksRepository $statisticsClicksRepository,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
     StatisticsOpensRepository $statisticsOpensRepository,
+    StatisticsWooCommercePurchasesRepository $statisticsWooCommercePurchasesRepository,
     WPFunctions $wp
   ) {
     parent::__construct($entityManager);
@@ -82,6 +84,7 @@ class NewslettersRepository extends Repository {
     $this->statisticsClicksRepository = $statisticsClicksRepository;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
     $this->statisticsOpensRepository = $statisticsOpensRepository;
+    $this->statisticsWooCommercePurchasesRepository = $statisticsWooCommercePurchasesRepository;
     $this->wp = $wp;
   }
 
@@ -419,11 +422,7 @@ class NewslettersRepository extends Repository {
       $this->statisticsClicksRepository->deleteByNewsletterIds($ids);
 
       // Update WooCommerce statistics and remove newsletter and click id
-      $statisticsPurchasesTable = $entityManager->getClassMetadata(StatisticsWooCommercePurchaseEntity::class)->getTableName();
-      $entityManager->getConnection()->executeStatement("
-         UPDATE $statisticsPurchasesTable s
-         SET s.`newsletter_id` = 0 WHERE s.`newsletter_id` IN (:ids)
-      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+      $this->statisticsWooCommercePurchasesRepository->removeNewsletterDataByNewsletterIds($ids);
 
       // Delete newsletter posts, options, links, and segments
       $this->newsletterPostsRepository->deleteByNewsletterIds($ids);
