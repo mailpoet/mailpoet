@@ -23,6 +23,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Statistics\StatisticsOpensRepository;
@@ -38,6 +39,7 @@ use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
  */
 class NewslettersRepository extends Repository {
   private LoggerFactory $loggerFactory;
+  private NewsletterOptionsRepository $newsletterOptionsRepository;
   private NewsletterPostsRepository $newsletterPostsRepository;
   private StatisticsClicksRepository $statisticsClicksRepository;
   private StatisticsNewslettersRepository $statisticsNewslettersRepository;
@@ -46,6 +48,7 @@ class NewslettersRepository extends Repository {
 
   public function __construct(
     EntityManager $entityManager,
+    NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterPostsRepository $newsletterPostsRepository,
     StatisticsClicksRepository $statisticsClicksRepository,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
@@ -54,6 +57,7 @@ class NewslettersRepository extends Repository {
   ) {
     parent::__construct($entityManager);
     $this->loggerFactory = LoggerFactory::getInstance();
+    $this->newsletterOptionsRepository = $newsletterOptionsRepository;
     $this->newsletterPostsRepository = $newsletterPostsRepository;
     $this->statisticsClicksRepository = $statisticsClicksRepository;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
@@ -401,15 +405,9 @@ class NewslettersRepository extends Repository {
          SET s.`newsletter_id` = 0 WHERE s.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
-      // Delete newsletter posts
+      // Delete newsletter posts and options
       $this->newsletterPostsRepository->deleteByNewsletterIds($ids);
-
-      // Delete newsletter options
-      $optionsTable = $entityManager->getClassMetadata(NewsletterOptionEntity::class)->getTableName();
-      $entityManager->getConnection()->executeStatement("
-         DELETE no FROM $optionsTable no
-         WHERE no.`newsletter_id` IN (:ids)
-      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+      $this->newsletterOptionsRepository->deleteByNewsletterIds($ids);
 
       // Delete newsletter links
       $linksTable = $entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
