@@ -5,6 +5,7 @@ namespace unit\EmailEditor\Engine\Renderer;
 use MailPoet\EmailEditor\Engine\Renderer\PreprocessManager;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\BlocksWidthPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\CleanupPreprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\SpacingPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TopLevelPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TypographyPreprocessor;
 
@@ -32,10 +33,13 @@ class PreprocessManagerTest extends \MailPoetUnitTest {
     $typography = $this->createMock(TypographyPreprocessor::class);
     $typography->expects($this->once())->method('preprocess')->willReturn([]);
 
+    $spacing = $this->createMock(SpacingPreprocessor::class);
+    $spacing->expects($this->once())->method('preprocess')->willReturn([]);
+
     $secondPreprocessor = $this->createMock(TopLevelPreprocessor::class);
     $secondPreprocessor->expects($this->once())->method('preprocess')->willReturn([]);
 
-    $preprocessManager = new PreprocessManager($cleanup, $topLevel, $blocksWidth, $typography);
+    $preprocessManager = new PreprocessManager($cleanup, $topLevel, $blocksWidth, $typography, $spacing);
     $preprocessManager->registerPreprocessor($secondPreprocessor);
     verify($preprocessManager->preprocess([], $layoutStyles))->equals([]);
   }

@@ -5,6 +5,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\BlocksWidthPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\CleanupPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\Preprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\SpacingPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TopLevelPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TypographyPreprocessor;
 
@@ -16,12 +17,14 @@ class PreprocessManager {
     CleanupPreprocessor $cleanupPreprocessor,
     TopLevelPreprocessor $topLevelPreprocessor,
     BlocksWidthPreprocessor $blocksWidthPreprocessor,
-    TypographyPreprocessor $typographyPreprocessor
+    TypographyPreprocessor $typographyPreprocessor,
+    SpacingPreprocessor $spacingPreprocessor
   ) {
     $this->registerPreprocessor($cleanupPreprocessor);
     $this->registerPreprocessor($topLevelPreprocessor);
     $this->registerPreprocessor($blocksWidthPreprocessor);
     $this->registerPreprocessor($typographyPreprocessor);
+    $this->registerPreprocessor($spacingPreprocessor);
   }
 
   /**
