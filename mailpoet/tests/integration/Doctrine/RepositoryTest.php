@@ -56,6 +56,80 @@ class RepositoryTest extends \MailPoetTest {
     $this->assertSame($this->getEntityFromIdentityMap($setting3->getId()), $setting3);
   }
 
+  public function testItCanRefreshAll(): void {
+    $repository = $this->createRepository();
+
+    $setting1 = $this->createSetting('name-1', 'value-1');
+    $setting2 = $this->createSetting('name-2', 'value-2');
+    $setting3 = $this->createSetting('name-3', 'value-3');
+
+    $this->entityManager->createQueryBuilder()
+      ->update(SettingEntity::class, 's')
+      ->set('s.value', ':value')
+      ->where('s.name = :name')
+      ->setParameter('value', 'new-value-1')
+      ->setParameter('name', 'name-1')
+      ->getQuery()
+      ->execute();
+
+    $this->entityManager->createQueryBuilder()
+      ->update(SettingEntity::class, 's')
+      ->set('s.value', ':value')
+      ->where('s.name = :name')
+      ->setParameter('value', 'new-value-2')
+      ->setParameter('name', 'name-2')
+      ->getQuery()
+      ->execute();
+
+    $this->assertSame($setting1->getValue(), 'value-1');
+    $this->assertSame($setting2->getValue(), 'value-2');
+    $this->assertSame($setting3->getValue(), 'value-3');
+
+    $repository->refreshAll();
+
+    $this->assertSame($setting1->getValue(), 'new-value-1');
+    $this->assertSame($setting2->getValue(), 'new-value-2');
+    $this->assertSame($setting3->getValue(), 'value-3');
+  }
+
+  public function testItCanRefreshSelectively(): void {
+    $repository = $this->createRepository();
+
+    $setting1 = $this->createSetting('name-1', 'value-1');
+    $setting2 = $this->createSetting('name-2', 'value-2');
+    $setting3 = $this->createSetting('name-3', 'value-3');
+
+    $this->entityManager->createQueryBuilder()
+      ->update(SettingEntity::class, 's')
+      ->set('s.value', ':value')
+      ->where('s.name = :name')
+      ->setParameter('value', 'new-value-1')
+      ->setParameter('name', 'name-1')
+      ->getQuery()
+      ->execute();
+
+    $this->entityManager->createQueryBuilder()
+      ->update(SettingEntity::class, 's')
+      ->set('s.value', ':value')
+      ->where('s.name = :name')
+      ->setParameter('value', 'new-value-2')
+      ->setParameter('name', 'name-2')
+      ->getQuery()
+      ->execute();
+
+    $this->assertSame($setting1->getValue(), 'value-1');
+    $this->assertSame($setting2->getValue(), 'value-2');
+    $this->assertSame($setting3->getValue(), 'value-3');
+
+    $repository->refreshAll(function (SettingEntity $setting) {
+      return in_array($setting->getName(), ['name-1', 'name-3'], true);
+    });
+
+    $this->assertSame($setting1->getValue(), 'new-value-1');
+    $this->assertSame($setting2->getValue(), 'value-2');
+    $this->assertSame($setting3->getValue(), 'value-3');
+  }
+
   private function createSetting(string $name, string $value): SettingEntity {
     $setting = new SettingEntity();
     $setting->setName($name);
