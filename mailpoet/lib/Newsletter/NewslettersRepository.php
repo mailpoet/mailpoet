@@ -23,6 +23,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -35,14 +36,17 @@ use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
  */
 class NewslettersRepository extends Repository {
   private LoggerFactory $loggerFactory;
+  private StatisticsNewslettersRepository $statisticsNewslettersRepository;
   private WPFunctions $wp;
 
   public function __construct(
     EntityManager $entityManager,
+    StatisticsNewslettersRepository $statisticsNewslettersRepository,
     WPFunctions $wp
   ) {
     parent::__construct($entityManager);
     $this->loggerFactory = LoggerFactory::getInstance();
+    $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
     $this->wp = $wp;
   }
 
@@ -375,11 +379,7 @@ class NewslettersRepository extends Repository {
     };
     $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids, $isRelatedNewsletterToBeDeleted) {
       // Delete statistics data
-      $newsletterStatisticsTable = $entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
-      $entityManager->getConnection()->executeStatement("
-         DELETE s FROM $newsletterStatisticsTable s
-         WHERE s.`newsletter_id` IN (:ids)
-      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+      $this->statisticsNewslettersRepository->deleteByNewsletterIds($ids);
 
       $statisticsOpensTable = $entityManager->getClassMetadata(StatisticsOpenEntity::class)->getTableName();
       $entityManager->getConnection()->executeStatement("
