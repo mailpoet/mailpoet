@@ -55,6 +55,11 @@ ol {
   margin-top: 0;
   padding: 0 0 0 40px;
 }
+/* Outlook was adding weird spaces around lists in some versions. Resetting vertical margin for list items solved it */
+li {
+  margin-bottom: 0;
+  margin-top: 0;
+}
 
 /* https://www.emailonacid.com/blog/article/email-development/tips-for-coding-email-preheaders */
 .email_preheader,
