@@ -14,6 +14,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Links\Links as NewsletterLinks;
+use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
@@ -50,6 +51,9 @@ class Newsletter {
 
   /** @var NewslettersRepository */
   private $newslettersRepository;
+
+  /** @var NewsletterDeleteController  */
+  private $newsletterDeleteController;
 
   /** @var Emoji */
   private $emoji;
@@ -96,6 +100,7 @@ class Newsletter {
     $this->emoji = $emoji;
     $this->renderer = ContainerWrapper::getInstance()->get(Renderer::class);
     $this->newslettersRepository = ContainerWrapper::getInstance()->get(NewslettersRepository::class);
+    $this->newsletterDeleteController = ContainerWrapper::getInstance()->get(NewsletterDeleteController::class);
     $this->linksTask = ContainerWrapper::getInstance()->get(LinksTask::class);
     $this->newsletterLinks = ContainerWrapper::getInstance()->get(NewsletterLinks::class);
     $this->sendingQueuesRepository = ContainerWrapper::getInstance()->get(SendingQueuesRepository::class);
@@ -191,7 +196,7 @@ class Newsletter {
         'no posts in post notification, deleting it',
         ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
       );
-      $this->newslettersRepository->bulkDelete([(int)$newsletter->getId()]);
+      $this->newsletterDeleteController->bulkDelete([(int)$newsletter->getId()]);
       return false;
     }
     // extract and save newsletter posts

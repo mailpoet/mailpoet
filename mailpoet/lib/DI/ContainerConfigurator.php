@@ -543,6 +543,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Newsletter\ApiDataSanitizer::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\AutomatedLatestContent::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\NewsletterSaveController::class)->setPublic(true);
+    $container->autowire(\MailPoet\Newsletter\NewsletterDeleteController::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\NewsletterPostsRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\NewslettersRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Newsletter\AutomaticEmailsRepository::class)->setPublic(true);
