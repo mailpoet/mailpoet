@@ -19,44 +19,45 @@ class Heading implements BlockRenderer {
   private function getBlockWrapper(array $parsedBlock, SettingsController $settingsController): string {
 
     $availableStylesheets = $settingsController->getAvailableStylesheets();
+    $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
 
     // Styles for padding need to be set on the wrapping table cell due to support in Outlook
-    $paddingBottom = $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px';
-    $paddingLeft = $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px';
-    $paddingRight = $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px';
-    $paddingTop = $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px';
-
     $styles = [
       'background-color' => $parsedBlock['attrs']['style']['color']['background'] ?? 'transparent',
       'min-width' => '100%', // prevent Gmail App from shrinking the table on mobile devices
-      'padding-bottom' => $paddingBottom,
-      'padding-left' => $paddingLeft,
-      'padding-right' => $paddingRight,
-      'padding-top' => $paddingTop,
+      'padding-bottom' => $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px',
+      'padding-left' => $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px',
+      'padding-right' => $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px',
+      'padding-top' => $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px',
     ];
 
     foreach ($parsedBlock['email_attrs'] ?? [] as $property => $value) {
       if ($property === 'width') continue; // width is handled by the wrapping blocks (columns, column)
+      if ($property === 'margin-top') continue; // margin-top is set on the wrapping div co we need to avoid duplication
       $styles[$property] = $value;
     }
 
     $styles = array_merge($styles, $this->fetchStylesFromBlockAttrs($availableStylesheets, $parsedBlock['attrs']));
 
     return '
-      <table
-        role="presentation"
-        border="0"
-        cellpadding="0"
-        cellspacing="0"
-        style="min-width: 100%;"
-        width="100%"
-      >
-        <tr>
-          <td style="' . $settingsController->convertStylesToString($styles) . '">
-            {heading_content}
-          </td>
-        </tr>
-      </table>
+      <!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><![endif]-->
+        <div style="margin-top: ' . $marginTop . ';">
+          <table
+            role="presentation"
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            style="min-width: 100%;"
+            width="100%"
+          >
+            <tr>
+              <td style="' . $settingsController->convertStylesToString($styles) . '">
+                {heading_content}
+              </td>
+            </tr>
+          </table>
+        </div>
+      <!--[if mso | IE]></td></tr></table><![endif]-->
     ';
   }
 
