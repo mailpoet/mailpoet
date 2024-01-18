@@ -57,6 +57,7 @@ class NewsletterEntity {
   const CAMPAIGN_TYPES = [
     NewsletterEntity::TYPE_STANDARD,
     NewsletterEntity::TYPE_NOTIFICATION,
+    NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
     NewsletterEntity::TYPE_RE_ENGAGEMENT,
   ];
 

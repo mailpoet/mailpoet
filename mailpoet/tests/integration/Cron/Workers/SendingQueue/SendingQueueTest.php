@@ -39,6 +39,7 @@ use MailPoet\Router\Endpoints\Track;
 use MailPoet\Router\Router;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SubscribersFinder;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsNewslettersRepository;
@@ -108,6 +109,9 @@ class SendingQueueTest extends \MailPoetTest {
   /** @var StatisticsNewslettersRepository */
   private $statisticsNewslettersRepository;
 
+  /** @var AuthorizedEmailsController */
+  private $authorizedEmailsController;
+
   public function _before() {
     parent::_before();
     $wpUsers = get_users();
@@ -147,6 +151,7 @@ class SendingQueueTest extends \MailPoetTest {
     $this->entityManager->persist($this->newsletterLink);
     $this->entityManager->flush();
 
+    $this->authorizedEmailsController = $this->diContainer->get(AuthorizedEmailsController::class);
     $this->subscribersFinder = $this->diContainer->get(SubscribersFinder::class);
     $this->sendingErrorHandler = $this->diContainer->get(SendingErrorHandler::class);
     $this->sendingThrottlingHandler = $this->diContainer->get(SendingThrottlingHandler::class);
@@ -216,7 +221,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
       $this->entityManager,
-      $this->statisticsNewslettersRepository
+      $this->statisticsNewslettersRepository,
+      $this->authorizedEmailsController
     );
     try {
       $sendingQueueWorker->process();
@@ -253,7 +259,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
       $this->entityManager,
-      $this->statisticsNewslettersRepository
+      $this->statisticsNewslettersRepository,
+      $this->authorizedEmailsController
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -302,7 +309,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
       $this->entityManager,
-      $this->statisticsNewslettersRepository
+      $this->statisticsNewslettersRepository,
+      $this->authorizedEmailsController
     );
     $sendingQueueWorker->sendNewsletters(
       $this->scheduledTask,
@@ -344,7 +352,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
       $this->entityManager,
-      $this->statisticsNewslettersRepository
+      $this->statisticsNewslettersRepository,
+      $this->authorizedEmailsController
     );
     $sendingQueueWorker->process();
   }
@@ -652,7 +661,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
       $this->entityManager,
-      $this->statisticsNewslettersRepository
+      $this->statisticsNewslettersRepository,
+      $this->authorizedEmailsController
     );
 
     $sendingQueueWorker->sendNewsletters(
@@ -1114,7 +1124,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
       $this->entityManager,
-      $this->statisticsNewslettersRepository
+      $this->statisticsNewslettersRepository,
+      $this->authorizedEmailsController
     );
     try {
       $sendingQueueWorker->sendNewsletters(
@@ -1244,6 +1255,22 @@ class SendingQueueTest extends \MailPoetTest {
     verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
     verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
     verify($this->wp->getTransient(SendingQueueWorker::EMAIL_WITH_INVALID_SEGMENT_OPTION))->equals('Subject With Deleted');
+  }
+
+  public function testItPausesSendingTaskWhenSenderAddressDoesNotMeetRequirements() {
+    $authorizedEmailControllerMock = $this->make(
+      AuthorizedEmailsController::class,
+      ['isSenderAddressValid' => false]);
+    $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $this->entityManager->flush();
+
+    $sendingQueueWorker = $this->getSendingQueueWorker(null, $authorizedEmailControllerMock);
+    $sendingQueueWorker->process();
+
+    $this->entityManager->refresh($this->scheduledTask);
+    $this->entityManager->refresh($this->newsletter);
+    verify($this->scheduledTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
+    verify($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 
   public function testItGeneratesPartOfAnMD5CampaignIdStoredAsSendingQueueMeta() {
@@ -1426,7 +1453,7 @@ class SendingQueueTest extends \MailPoetTest {
     return $queue;
   }
 
-  private function getSendingQueueWorker($mailerMock = null): SendingQueueWorker {
+  private function getSendingQueueWorker($mailerMock = null, $authorizedEmailControllerMock = null): SendingQueueWorker {
     return new SendingQueueWorker(
       $this->sendingErrorHandler,
       $this->sendingThrottlingHandler,
@@ -1443,7 +1470,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->subscribersRepository,
       $this->sendingQueuesRepository,
       $this->entityManager,
-      $this->statisticsNewslettersRepository
+      $this->statisticsNewslettersRepository,
+      $authorizedEmailControllerMock ?? $this->authorizedEmailsController
     );
   }
 
