@@ -464,15 +464,19 @@ class NewslettersRepository extends Repository {
       $this->sendingQueuesRepository->deleteByNewsletterIds($ids);
 
       // Fetch WP Posts IDs and delete them
-      /** @var int[] $wpPostsIds */
-      $wpPostsIds = $entityManager->createQueryBuilder()->select('wpp.id')
+      /** @var string[] $wpPostIds */
+      $wpPostIds = $this->entityManager->createQueryBuilder()
+        ->select('IDENTITY(n.wpPost) AS id')
         ->from(NewsletterEntity::class, 'n')
-        ->join('n.wpPost', 'wpp')
         ->where('n.id IN (:ids)')
+        ->andWhere('n.wpPost IS NOT NULL')
         ->setParameter('ids', $ids)
-        ->getQuery()->getSingleColumnResult();
-      foreach ($wpPostsIds as $wpPostId) {
-        $this->wp->wpDeletePost(intval($wpPostId), true);
+        ->getQuery()
+        ->getSingleColumnResult();
+      $wpPostIds = array_map('intval', $wpPostIds);
+
+      foreach ($wpPostIds as $wpPostId) {
+        $this->wp->wpDeletePost($wpPostId, true);
       }
 
       // Delete newsletter entities
