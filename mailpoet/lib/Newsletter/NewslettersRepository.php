@@ -480,12 +480,17 @@ class NewslettersRepository extends Repository {
       }
 
       // Delete newsletter entities
-      $queryBuilder = $entityManager->createQueryBuilder();
-      $queryBuilder->delete(NewsletterEntity::class, 'n')
+      $this->entityManager->createQueryBuilder()
+        ->delete(NewsletterEntity::class, 'n')
         ->where('n.id IN (:ids)')
         ->setParameter('ids', $ids)
-        ->getQuery()->execute();
+        ->getQuery()
+        ->execute();
 
+      // delete was done via DQL, make sure the entities are also detached from the entity manager
+      $this->detachAll(function (NewsletterEntity $entity) use ($ids) {
+        return in_array($entity->getId(), $ids, true);
+      });
 
       $entityTypesToBeDetached = [
         StatisticsNewsletterEntity::class,
