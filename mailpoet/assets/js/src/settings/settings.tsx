@@ -27,6 +27,7 @@ export function Settings() {
       <RoutedTabs activeKey="basics">
         <Tab
           key="basics"
+          route="basics/:showModal?"
           title={t('basicsTab')}
           automationId="basic_settings_tab"
         >

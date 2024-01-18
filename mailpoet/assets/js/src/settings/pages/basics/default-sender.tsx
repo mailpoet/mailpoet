@@ -12,7 +12,7 @@ import { Input } from 'common/form/input/input';
 import { useSetting, useSelector, useAction } from 'settings/store/hooks';
 import { SenderEmailAddressWarning } from 'common/sender-email-address-warning';
 
-export function DefaultSender() {
+export function DefaultSender({ showModal }) {
   const isMssActive = useSelector('isMssActive')();
   const [senderName, setSenderName] = useSetting('sender', 'name');
   const [senderEmail, setSenderEmail] = useSetting('sender', 'address');
@@ -114,6 +114,7 @@ export function DefaultSender() {
           <SenderEmailAddressWarning
             emailAddress={senderEmail}
             mssActive={isMssActive}
+            showModal={showModal}
             isEmailAuthorized={isAuthorized}
             showSenderDomainWarning={showSenderDomainWarning}
             isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}

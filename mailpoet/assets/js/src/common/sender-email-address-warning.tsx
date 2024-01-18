@@ -12,29 +12,34 @@ const suggestedEmailAddress = `contact@${userHostDomain}`;
 type Props = {
   emailAddress: string;
   mssActive: boolean;
+  showModal: string;
   isEmailAuthorized?: boolean;
   showSenderDomainWarning?: boolean;
   isPartiallyVerifiedDomain?: boolean;
   onSuccessfulEmailOrDomainAuthorization?: (data) => void;
 };
 
+type TabProps = 'sender_email' | 'sender_domain';
+
 function SenderEmailAddressWarning({
   emailAddress,
   mssActive,
+  showModal,
   isEmailAuthorized = true,
   showSenderDomainWarning = false,
   isPartiallyVerifiedDomain = false,
   onSuccessfulEmailOrDomainAuthorization = () => {},
 }: Props) {
-  const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] =
-    useState(null);
+  const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] = useState(
+    showModal === 'authorizedEmailModal' ? ('sender_domain' as TabProps) : null,
+  );
 
-  const loadModal = (event, tab) => {
+  const loadModal = (event, tab: TabProps) => {
     event.preventDefault();
     setShowAuthorizedEmailModal(tab);
   };
 
-  const switchToNewTab = (newTab) => {
+  const switchToNewTab = (newTab: TabProps) => {
     setShowAuthorizedEmailModal(newTab);
   };
 
