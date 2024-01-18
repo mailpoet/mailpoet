@@ -25,6 +25,7 @@ use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
+use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -46,6 +47,7 @@ class NewslettersRepository extends Repository {
   private NewsletterLinkRepository $newsletterLinkRepository;
   private NewsletterOptionsRepository $newsletterOptionsRepository;
   private NewsletterPostsRepository $newsletterPostsRepository;
+  private NewsletterSegmentRepository $newsletterSegmentRepository;
   private ScheduledTasksRepository $scheduledTasksRepository;
   private ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository;
   private SendingQueuesRepository $sendingQueuesRepository;
@@ -59,6 +61,7 @@ class NewslettersRepository extends Repository {
     NewsletterLinkRepository $newsletterLinkRepository,
     NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterPostsRepository $newsletterPostsRepository,
+    NewsletterSegmentRepository $newsletterSegmentRepository,
     ScheduledTasksRepository $scheduledTasksRepository,
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
     SendingQueuesRepository $sendingQueuesRepository,
@@ -72,6 +75,7 @@ class NewslettersRepository extends Repository {
     $this->newsletterLinkRepository = $newsletterLinkRepository;
     $this->newsletterOptionsRepository = $newsletterOptionsRepository;
     $this->newsletterPostsRepository = $newsletterPostsRepository;
+    $this->newsletterSegmentRepository = $newsletterSegmentRepository;
     $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
@@ -421,10 +425,11 @@ class NewslettersRepository extends Repository {
          SET s.`newsletter_id` = 0 WHERE s.`newsletter_id` IN (:ids)
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
-      // Delete newsletter posts, options, and links
+      // Delete newsletter posts, options, links, and segments
       $this->newsletterPostsRepository->deleteByNewsletterIds($ids);
       $this->newsletterOptionsRepository->deleteByNewsletterIds($ids);
       $this->newsletterLinkRepository->deleteByNewsletterIds($ids);
+      $this->newsletterSegmentRepository->deleteByNewsletterIds($ids);
 
       // Delete stats notifications tasks
       $scheduledTasksTable = $entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
@@ -459,13 +464,6 @@ class NewslettersRepository extends Repository {
       $this->scheduledTaskSubscribersRepository->deleteByTaskIds($taskIds);
       $this->scheduledTasksRepository->deleteByIds($taskIds);
       $this->sendingQueuesRepository->deleteByNewsletterIds($ids);
-
-      // Delete newsletter segments
-      $newsletterSegmentsTable = $entityManager->getClassMetadata(NewsletterSegmentEntity::class)->getTableName();
-      $entityManager->getConnection()->executeStatement("
-         DELETE ns FROM $newsletterSegmentsTable ns
-         WHERE ns.`newsletter_id` IN (:ids)
-      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       // Fetch WP Posts IDs and delete them
       /** @var int[] $wpPostsIds */
