@@ -10,6 +10,10 @@ export function getInitialState(): State {
         window.mailpoet_homepage_data.wooCustomersCount > 0,
       hasImportedSubscribers:
         window.mailpoet_homepage_data.subscribersCount > 10,
+      isNewUserForSenderDomainAuth:
+        window.mailpoet_homepage_data.isNewUserForSenderDomainAuth,
+      mssActive: window.mailpoet_mss_active,
+      isFreeMailUser: window.mailpoet_homepage_data.isFreeMailUser,
     },
     productDiscovery: {
       isHidden: window.mailpoet_homepage_data.productDiscoveryDismissed,

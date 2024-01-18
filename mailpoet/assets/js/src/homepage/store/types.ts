@@ -3,6 +3,9 @@ export type TaskListState = {
   tasksStatus: TaskListTasksStatus | null;
   canImportWooCommerceSubscribers: boolean;
   hasImportedSubscribers: boolean;
+  isNewUserForSenderDomainAuth: boolean;
+  mssActive: boolean;
+  isFreeMailUser: boolean;
 };
 
 export type ProductDiscoveryState = {
@@ -30,6 +33,7 @@ export type TaskListTasksStatus = {
   mssConnected: boolean;
   subscribersAdded: boolean;
   wooSubscribersImported: boolean;
+  senderDomainAuthenticated: boolean;
 };
 
 export type ProductDiscoveryTasksStatus = {

@@ -16,6 +16,9 @@ export function TaskList({ onHide }: Props): JSX.Element {
     currentTask,
     hasImportedSubscribers,
     canImportWooCommerceSubscribers,
+    isNewUserForSenderDomainAuth,
+    isFreeMailUser,
+    mssActive,
   } = useSelect(
     (select) => ({
       tasksStatus: select(storeName).getTasksStatus(),
@@ -23,6 +26,10 @@ export function TaskList({ onHide }: Props): JSX.Element {
       hasImportedSubscribers: select(storeName).getHasImportedSubscribers(),
       canImportWooCommerceSubscribers:
         select(storeName).getCanImportWooCommerceSubscribers(),
+      isNewUserForSenderDomainAuth:
+        select(storeName).getIsNewUserForSenderDomainAuth(),
+      isFreeMailUser: select(storeName).getIsFreeMailUser(),
+      mssActive: select(storeName).getMssActive(),
     }),
     [],
   );
@@ -102,6 +109,29 @@ export function TaskList({ onHide }: Props): JSX.Element {
       )}
     </Task>,
   );
+  if (isNewUserForSenderDomainAuth && mssActive) {
+    let taskLink = 'admin.php?page=mailpoet-settings#/basics';
+    if (!isFreeMailUser) {
+      taskLink =
+        'admin.php?page=mailpoet-settings#/basics/authorizedEmailModal';
+    }
+    taskListItems.push(
+      <Task
+        key="senderDomainAuthenticated"
+        slug="authenticate sender domain"
+        title={MailPoet.I18n.t('senderDomainAuthenticatedTask')}
+        titleCompleted={MailPoet.I18n.t('senderDomainAuthenticatedTaskDone')}
+        link={taskLink}
+        order={canImportWooCommerceSubscribers ? 5 : 4}
+        isCompleted={tasksStatus.senderDomainAuthenticated}
+        isActive={currentTask === 'senderDomainAuthenticated'}
+      >
+        {!tasksStatus.senderDomainAuthenticated && (
+          <p>{MailPoet.I18n.t('improveDeliveryRates')}</p>
+        )}
+      </Task>,
+    );
+  }
 
   return (
     <>
