@@ -30,6 +30,8 @@ class FlexLayoutRenderer {
 
     $wpGeneratedStyles = wp_style_engine_get_styles($parsedBlock['attrs']['style'] ?? []);
     $styles = $wpGeneratedStyles['css'] ?? '';
+    $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
+    $styles .= 'margin-top: ' . $marginTop . ';';
     $justify = esc_attr($parsedBlock['attrs']['layout']['justifyContent'] ?? 'left');
     $styles .= 'text-align: ' . $justify;
     $outputHtml = str_replace('{style}', $styles, $outputHtml);

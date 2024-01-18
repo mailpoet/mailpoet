@@ -112,6 +112,7 @@ class Image implements BlockRenderer {
 
     $styles['width'] = '100%';
     $align = $parsedBlock['attrs']['align'] ?? 'left';
+    $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
 
     return '
       <table
@@ -133,7 +134,7 @@ class Image implements BlockRenderer {
               width="' . $wrapperWidth . '"
             >
               <tr>
-                <td>{image_content}</td>
+                <td style="padding-top:' . $marginTop . '">{image_content}</td>
               </tr>
               <tr>
                 <td style="' . $captionStyles . '">{caption_content}</td>
