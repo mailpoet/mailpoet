@@ -32,6 +32,7 @@ use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
+use Throwable;
 
 /**
  * @extends Repository<NewsletterEntity>
@@ -404,7 +405,8 @@ class NewslettersRepository extends Repository {
     $childrenIds = $this->fetchChildrenIds($ids);
     $ids = array_merge($ids, $childrenIds);
 
-    $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids) {
+    $this->entityManager->beginTransaction();
+    try {
       // Delete statistics data
       $this->statisticsNewslettersRepository->deleteByNewsletterIds($ids);
       $this->statisticsOpensRepository->deleteByNewsletterIds($ids);
@@ -476,7 +478,12 @@ class NewslettersRepository extends Repository {
       $this->detachAll(function (NewsletterEntity $entity) use ($ids) {
         return in_array($entity->getId(), $ids, true);
       });
-    });
+
+      $this->entityManager->commit();
+    } catch (Throwable $e) {
+      $this->entityManager->rollback();
+      throw $e;
+    }
 
     return count($ids);
   }
