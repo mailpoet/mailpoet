@@ -38,6 +38,7 @@ use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
  */
 class NewslettersRepository extends Repository {
   private LoggerFactory $loggerFactory;
+  private NewsletterPostsRepository $newsletterPostsRepository;
   private StatisticsClicksRepository $statisticsClicksRepository;
   private StatisticsNewslettersRepository $statisticsNewslettersRepository;
   private StatisticsOpensRepository $statisticsOpensRepository;
@@ -45,6 +46,7 @@ class NewslettersRepository extends Repository {
 
   public function __construct(
     EntityManager $entityManager,
+    NewsletterPostsRepository $newsletterPostsRepository,
     StatisticsClicksRepository $statisticsClicksRepository,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
     StatisticsOpensRepository $statisticsOpensRepository,
@@ -52,6 +54,7 @@ class NewslettersRepository extends Repository {
   ) {
     parent::__construct($entityManager);
     $this->loggerFactory = LoggerFactory::getInstance();
+    $this->newsletterPostsRepository = $newsletterPostsRepository;
     $this->statisticsClicksRepository = $statisticsClicksRepository;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
     $this->statisticsOpensRepository = $statisticsOpensRepository;
@@ -399,11 +402,7 @@ class NewslettersRepository extends Repository {
       ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       // Delete newsletter posts
-      $postsTable = $entityManager->getClassMetadata(NewsletterPostEntity::class)->getTableName();
-      $entityManager->getConnection()->executeStatement("
-         DELETE np FROM $postsTable np
-         WHERE np.`newsletter_id` IN (:ids)
-      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+      $this->newsletterPostsRepository->deleteByNewsletterIds($ids);
 
       // Delete newsletter options
       $optionsTable = $entityManager->getClassMetadata(NewsletterOptionEntity::class)->getTableName();
