@@ -23,6 +23,7 @@ use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Util\Helpers;
@@ -37,18 +38,21 @@ use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
  */
 class NewslettersRepository extends Repository {
   private LoggerFactory $loggerFactory;
+  private StatisticsClicksRepository $statisticsClicksRepository;
   private StatisticsNewslettersRepository $statisticsNewslettersRepository;
   private StatisticsOpensRepository $statisticsOpensRepository;
   private WPFunctions $wp;
 
   public function __construct(
     EntityManager $entityManager,
+    StatisticsClicksRepository $statisticsClicksRepository,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
     StatisticsOpensRepository $statisticsOpensRepository,
     WPFunctions $wp
   ) {
     parent::__construct($entityManager);
     $this->loggerFactory = LoggerFactory::getInstance();
+    $this->statisticsClicksRepository = $statisticsClicksRepository;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
     $this->statisticsOpensRepository = $statisticsOpensRepository;
     $this->wp = $wp;
@@ -385,12 +389,7 @@ class NewslettersRepository extends Repository {
       // Delete statistics data
       $this->statisticsNewslettersRepository->deleteByNewsletterIds($ids);
       $this->statisticsOpensRepository->deleteByNewsletterIds($ids);
-
-      $statisticsClicksTable = $entityManager->getClassMetadata(StatisticsClickEntity::class)->getTableName();
-      $entityManager->getConnection()->executeStatement("
-         DELETE s FROM $statisticsClicksTable s
-         WHERE s.`newsletter_id` IN (:ids)
-      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+      $this->statisticsClicksRepository->deleteByNewsletterIds($ids);
 
       // Update WooCommerce statistics and remove newsletter and click id
       $statisticsPurchasesTable = $entityManager->getClassMetadata(StatisticsWooCommercePurchaseEntity::class)->getTableName();
