@@ -112,4 +112,21 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
     }, $data);
     return $data;
   }
+
+  /** @param int[] $ids */
+  public function removeNewsletterDataByNewsletterIds(array $ids): void {
+    $this->entityManager->createQueryBuilder()
+      ->update(StatisticsWooCommercePurchaseEntity::class, 'swp')
+      ->set('swp.newsletter', 0)
+      ->where('swp.newsletter IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()
+      ->execute();
+
+    // update was done via DQL, make sure the entities are also refreshed in the entity manager
+    $this->refreshAll(function (StatisticsWooCommercePurchaseEntity $entity) use ($ids) {
+      $newsletter = $entity->getNewsletter();
+      return $newsletter && in_array($newsletter->getId(), $ids, true);
+    });
+  }
 }
