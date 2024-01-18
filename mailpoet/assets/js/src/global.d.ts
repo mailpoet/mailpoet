@@ -202,6 +202,7 @@ interface Window {
       mssConnected: boolean;
       subscribersAdded: boolean;
       wooSubscribersImported: boolean;
+      senderDomainAuthenticated: boolean;
     } | null;
     productDiscoveryStatus: {
       setUpWelcomeCampaign: boolean;
@@ -231,6 +232,8 @@ interface Window {
     wooCustomersCount: number;
     subscribersCount: number;
     formsCount: number;
+    isNewUserForSenderDomainAuth: boolean;
+    isFreeMailUser: boolean;
   };
   templates?: Record<string, string> & { sidebar: string };
   is_wc_active?: boolean;

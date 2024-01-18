@@ -29,6 +29,18 @@ export function getHasImportedSubscribers(state: State): boolean {
   return state.taskList.hasImportedSubscribers;
 }
 
+export function getIsNewUserForSenderDomainAuth(state: State): boolean {
+  return state.taskList.isNewUserForSenderDomainAuth;
+}
+
+export function getIsFreeMailUser(state: State): boolean {
+  return state.taskList.isFreeMailUser;
+}
+
+export function getMssActive(state: State): boolean {
+  return state.taskList.mssActive;
+}
+
 export function getHasForms(state: State): boolean {
   return state.formsCount > 0;
 }
