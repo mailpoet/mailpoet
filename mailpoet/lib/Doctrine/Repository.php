@@ -111,6 +111,24 @@ abstract class Repository {
     $this->entityManager->refresh($entity);
   }
 
+  /**
+   * @param callable(T): bool|null $filter
+   */
+  public function refreshAll(callable $filter = null): void {
+    $className = $this->getEntityClassName();
+    $rootClassName = $this->entityManager->getClassMetadata($className)->rootEntityName;
+    $entities = $this->entityManager->getUnitOfWork()->getIdentityMap()[$rootClassName] ?? [];
+    foreach ($entities as $entity) {
+      if (!($entity instanceof $className)) {
+        continue;
+      }
+      if ($filter && !$filter($entity)) {
+        continue;
+      }
+      $this->entityManager->refresh($entity);
+    }
+  }
+
   public function flush() {
     $this->entityManager->flush();
   }
