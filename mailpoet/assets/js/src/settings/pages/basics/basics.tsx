@@ -1,3 +1,4 @@
+import { useParams } from 'react-router-dom';
 import { SaveButton } from 'settings/components';
 import { t } from 'common/functions';
 import { DefaultSender } from './default-sender';
@@ -11,9 +12,10 @@ import { GdprCompliant } from './gdpr-compliant';
 import { ReEngagementPage } from './re-engagement-page';
 
 export function Basics() {
+  const { showModal } = useParams<{ showModal: string }>();
   return (
     <div className="mailpoet-settings-grid">
-      <DefaultSender />
+      <DefaultSender showModal={showModal} />
       <SubscribeOn
         event="on_comment"
         title={t('subscribeInCommentsTitle')}
