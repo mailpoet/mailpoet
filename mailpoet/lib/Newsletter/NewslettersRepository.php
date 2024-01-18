@@ -8,6 +8,7 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
+use MailPoet\Cron\Workers\StatsNotifications\StatsNotificationsRepository;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
@@ -55,6 +56,7 @@ class NewslettersRepository extends Repository {
   private StatisticsNewslettersRepository $statisticsNewslettersRepository;
   private StatisticsOpensRepository $statisticsOpensRepository;
   private StatisticsWooCommercePurchasesRepository $statisticsWooCommercePurchasesRepository;
+  private StatsNotificationsRepository $statsNotificationsRepository;
   private WPFunctions $wp;
 
   public function __construct(
@@ -70,6 +72,7 @@ class NewslettersRepository extends Repository {
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
     StatisticsOpensRepository $statisticsOpensRepository,
     StatisticsWooCommercePurchasesRepository $statisticsWooCommercePurchasesRepository,
+    StatsNotificationsRepository $statsNotificationsRepository,
     WPFunctions $wp
   ) {
     parent::__construct($entityManager);
@@ -85,6 +88,7 @@ class NewslettersRepository extends Repository {
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
     $this->statisticsOpensRepository = $statisticsOpensRepository;
     $this->statisticsWooCommercePurchasesRepository = $statisticsWooCommercePurchasesRepository;
+    $this->statsNotificationsRepository = $statsNotificationsRepository;
     $this->wp = $wp;
   }
 
@@ -430,24 +434,19 @@ class NewslettersRepository extends Repository {
       $this->newsletterLinkRepository->deleteByNewsletterIds($ids);
       $this->newsletterSegmentRepository->deleteByNewsletterIds($ids);
 
-      // Delete stats notifications tasks
-      $scheduledTasksTable = $entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
-      $statsNotificationsTable = $entityManager->getClassMetadata(StatsNotificationEntity::class)->getTableName();
-      $taskIds = $entityManager->getConnection()->executeQuery("
-         SELECT task_id FROM $statsNotificationsTable sn
-         WHERE sn.`newsletter_id` IN (:ids)
-      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY])->fetchAllAssociative();
-      $taskIds = array_column($taskIds, 'task_id');
-      $entityManager->getConnection()->executeStatement("
-         DELETE st FROM $scheduledTasksTable st
-         WHERE st.`id` IN (:ids)
-      ", ['ids' => $taskIds], ['ids' => Connection::PARAM_INT_ARRAY]);
+      // Delete stats notifications and related tasks
+      /** @var string[] $taskIds */
+      $taskIds = $this->entityManager->createQueryBuilder()
+        ->select('IDENTITY(sn.task)')
+        ->from(StatsNotificationEntity::class, 'sn')
+        ->where('sn.newsletter IN (:ids)')
+        ->setParameter('ids', $ids)
+        ->getQuery()
+        ->getSingleColumnResult();
+      $taskIds = array_map('intval', $taskIds);
 
-      // Delete stats notifications
-      $entityManager->getConnection()->executeStatement("
-         DELETE sn FROM $statsNotificationsTable sn
-         WHERE sn.`newsletter_id` IN (:ids)
-      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+      $this->scheduledTasksRepository->deleteByIds($taskIds);
+      $this->statsNotificationsRepository->deleteByNewsletterIds($ids);
 
       // Delete scheduled task subscribers, scheduled tasks, and sending queues
       /** @var string[] $taskIds */
