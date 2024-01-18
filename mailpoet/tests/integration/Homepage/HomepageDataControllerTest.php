@@ -2,10 +2,12 @@
 
 namespace MailPoet\Homepage;
 
+use Codeception\Stub;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Newsletter;
@@ -36,6 +38,8 @@ class HomepageDataControllerTest extends \MailPoetTest {
     verify($data['subscribersCount'])->isInt();
     verify($data['subscribersStats'])->isArray();
     verify($data['taskListStatus'])->notEmpty();
+    verify($data['isNewUserForSenderDomainAuth'])->isBool();
+    verify($data['isFreeMailUser'])->isBool();
   }
 
   public function testItFetchesSenderTaskListStatus(): void {
@@ -86,6 +90,24 @@ class HomepageDataControllerTest extends \MailPoetTest {
     $data = $this->homepageDataController->getPageData();
     $taskListStatus = $data['taskListStatus'];
     verify($taskListStatus['subscribersAdded'])->true();
+  }
+
+  public function testItFetchesSenderDomainAuthenticatedTaskListStatus(): void {
+    $senderDomainControllerStub = $this->createStub(AuthorizedSenderDomainController::class);
+    $senderDomainControllerStub->method('getFullyVerifiedSenderDomains')
+      ->willReturnOnConsecutiveCalls([], ['example.com']);
+
+    $homepageDataController = Stub::copy($this->homepageDataController, [
+      'senderDomainController' => $senderDomainControllerStub,
+    ]);
+
+    $data = $homepageDataController->getPageData();
+    $taskListStatus = $data['taskListStatus'];
+    verify($taskListStatus['senderDomainAuthenticated'])->false();
+
+    $data = $homepageDataController->getPageData();
+    $taskListStatus = $data['taskListStatus'];
+    verify($taskListStatus['senderDomainAuthenticated'])->true();
   }
 
   public function testItFetchesProductDiscoveryStatusForWelcomeCampaign(): void {
