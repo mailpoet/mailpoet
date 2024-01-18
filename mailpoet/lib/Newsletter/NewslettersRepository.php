@@ -34,11 +34,8 @@ use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
  * @extends Repository<NewsletterEntity>
  */
 class NewslettersRepository extends Repository {
-  /** @var LoggerFactory */
-  private $loggerFactory;
-
-  /** @var WPFunctions */
-  private $wp;
+  private LoggerFactory $loggerFactory;
+  private WPFunctions $wp;
 
   public function __construct(
     EntityManager $entityManager,
