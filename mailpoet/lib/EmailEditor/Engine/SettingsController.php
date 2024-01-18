@@ -147,6 +147,12 @@ class SettingsController {
     // Enabling alignWide allows full width for specific blocks such as columns, heading, image, etc.
     $settings['alignWide'] = true;
 
+    // Disable gradients. We cannot render them in emails.
+    $settings['disableCustomGradients'] = true;
+    $settings['__experimentalFeatures']['color']['customGradient'] = false;
+    $settings['__experimentalFeatures']['color']['defaultGradients'] = false;
+    $settings['__experimentalFeatures']['color']['gradients'] = [];
+
     return $settings;
   }
 
