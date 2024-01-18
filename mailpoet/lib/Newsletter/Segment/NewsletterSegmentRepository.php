@@ -65,4 +65,20 @@ class NewsletterSegmentRepository extends Repository {
     }
     return $nameMap;
   }
+
+  /** @param int[] $ids */
+  public function deleteByNewsletterIds(array $ids): void {
+    $this->entityManager->createQueryBuilder()
+      ->delete(NewsletterSegmentEntity::class, 's')
+      ->where('s.newsletter IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()
+      ->execute();
+
+    // delete was done via DQL, make sure the entities are also detached from the entity manager
+    $this->detachAll(function (NewsletterSegmentEntity $entity) use ($ids) {
+      $newsletter = $entity->getNewsletter();
+      return $newsletter && in_array($newsletter->getId(), $ids, true);
+    });
+  }
 }
