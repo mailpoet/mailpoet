@@ -27,6 +27,7 @@ class Heading implements BlockRenderer {
     $paddingTop = $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px';
 
     $styles = [
+      'background-color' => $parsedBlock['attrs']['style']['color']['background'] ?? 'transparent',
       'min-width' => '100%', // prevent Gmail App from shrinking the table on mobile devices
       'padding-bottom' => $paddingBottom,
       'padding-left' => $paddingLeft,

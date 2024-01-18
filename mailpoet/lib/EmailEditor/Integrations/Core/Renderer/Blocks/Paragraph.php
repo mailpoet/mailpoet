@@ -26,6 +26,7 @@ class Paragraph implements BlockRenderer {
     $paddingTop = $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px';
 
     $styles = [
+      'background-color' => $parsedBlock['attrs']['style']['color']['background'] ?? 'transparent',
       'text-align' => $align,
       'padding-bottom' => $paddingBottom,
       'padding-left' => $paddingLeft,
