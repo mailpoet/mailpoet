@@ -25,6 +25,7 @@ use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
+use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
 use MailPoet\Statistics\StatisticsClicksRepository;
 use MailPoet\Statistics\StatisticsNewslettersRepository;
@@ -44,6 +45,7 @@ class NewslettersRepository extends Repository {
   private NewsletterLinkRepository $newsletterLinkRepository;
   private NewsletterOptionsRepository $newsletterOptionsRepository;
   private NewsletterPostsRepository $newsletterPostsRepository;
+  private ScheduledTasksRepository $scheduledTasksRepository;
   private ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository;
   private StatisticsClicksRepository $statisticsClicksRepository;
   private StatisticsNewslettersRepository $statisticsNewslettersRepository;
@@ -55,6 +57,7 @@ class NewslettersRepository extends Repository {
     NewsletterLinkRepository $newsletterLinkRepository,
     NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterPostsRepository $newsletterPostsRepository,
+    ScheduledTasksRepository $scheduledTasksRepository,
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
     StatisticsClicksRepository $statisticsClicksRepository,
     StatisticsNewslettersRepository $statisticsNewslettersRepository,
@@ -66,6 +69,7 @@ class NewslettersRepository extends Repository {
     $this->newsletterLinkRepository = $newsletterLinkRepository;
     $this->newsletterOptionsRepository = $newsletterOptionsRepository;
     $this->newsletterPostsRepository = $newsletterPostsRepository;
+    $this->scheduledTasksRepository = $scheduledTasksRepository;
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
     $this->statisticsClicksRepository = $statisticsClicksRepository;
     $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
@@ -449,13 +453,9 @@ class NewslettersRepository extends Repository {
       $taskIds = array_map('intval', $taskIds);
 
       $this->scheduledTaskSubscribersRepository->deleteByTaskIds($taskIds);
+      $this->scheduledTasksRepository->deleteByIds($taskIds);
 
       $sendingQueueTable = $entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
-      $entityManager->getConnection()->executeStatement("
-         DELETE t FROM $scheduledTasksTable t
-         JOIN $sendingQueueTable q ON t.`id` = q.`task_id`
-         WHERE q.`newsletter_id` IN (:ids)
-      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
       // Delete sending queues
       $entityManager->getConnection()->executeStatement("
