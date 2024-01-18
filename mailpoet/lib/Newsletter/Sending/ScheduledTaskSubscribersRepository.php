@@ -94,6 +94,11 @@ class ScheduledTaskSubscribersRepository extends Repository {
         ->setParameter('task', $task)
         ->getQuery()
         ->execute();
+
+      // update was done via DQL, make sure the entities are also refreshed in the entity manager
+      $this->refreshAll(function (ScheduledTaskSubscriberEntity $entity) use ($task, $subscriberIds) {
+        return $entity->getTask() === $task && in_array($entity->getSubscriberId(), $subscriberIds, true);
+      });
     }
 
     $this->checkCompleted($task);

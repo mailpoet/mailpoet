@@ -308,6 +308,11 @@ class ScheduledTasksRepository extends Repository {
       ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
       ->getQuery()
       ->execute();
+
+    // update was done via DQL, make sure the entities are also refreshed in the entity manager
+    $this->refreshAll(function (ScheduledTaskEntity $entity) use ($ids) {
+      return in_array($entity->getId(), $ids, true);
+    });
   }
 
   /**
