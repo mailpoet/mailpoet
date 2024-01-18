@@ -93,6 +93,11 @@ class NewsletterTemplatesRepository extends Repository {
       ->setParameter('recentIds', array_column($recentIds, 'id'))
       ->getQuery()
       ->execute();
+
+    // delete was done via DQL, make sure the entities are also detached from the entity manager
+    $this->detachAll(function (NewsletterTemplateEntity $entity) use ($recentIds) {
+      return $entity->getCategories() === self::RECENTLY_SENT_CATEGORIES && !in_array($entity->getId(), $recentIds, true);
+    });
   }
 
   public function getRecentlySentCount(): int {
