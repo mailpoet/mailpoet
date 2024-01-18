@@ -118,6 +118,22 @@ class ScheduledTaskSubscribersRepository extends Repository {
     $stmt->executeQuery();
   }
 
+  /** @param int[] $ids */
+  public function deleteByTaskIds(array $ids): void {
+    $this->entityManager->createQueryBuilder()
+      ->delete(ScheduledTaskSubscriberEntity::class, 'sts')
+      ->where('sts.task IN (:taskIds)')
+      ->setParameter('taskIds', $ids)
+      ->getQuery()
+      ->execute();
+
+    // delete was done via DQL, make sure the entities are also detached from the entity manager
+    $this->detachAll(function (ScheduledTaskSubscriberEntity $entity) use ($ids) {
+      $task = $entity->getTask();
+      return $task && in_array($task->getId(), $ids, true);
+    });
+  }
+
   public function deleteByScheduledTask(ScheduledTaskEntity $scheduledTask): void {
     $this->entityManager->createQueryBuilder()
       ->delete(ScheduledTaskSubscriberEntity::class, 'sts')
