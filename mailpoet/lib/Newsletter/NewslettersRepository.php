@@ -467,17 +467,7 @@ class NewslettersRepository extends Repository {
       }
 
       // Delete newsletter entities
-      $this->entityManager->createQueryBuilder()
-        ->delete(NewsletterEntity::class, 'n')
-        ->where('n.id IN (:ids)')
-        ->setParameter('ids', $ids)
-        ->getQuery()
-        ->execute();
-
-      // delete was done via DQL, make sure the entities are also detached from the entity manager
-      $this->detachAll(function (NewsletterEntity $entity) use ($ids) {
-        return in_array($entity->getId(), $ids, true);
-      });
+      $this->deleteByIds($ids);
 
       $this->entityManager->commit();
     } catch (Throwable $e) {
@@ -486,6 +476,22 @@ class NewslettersRepository extends Repository {
     }
 
     return count($ids);
+  }
+
+
+  /** @param int[] $ids */
+  public function deleteByIds(array $ids): void {
+    $this->entityManager->createQueryBuilder()
+      ->delete(NewsletterEntity::class, 'n')
+      ->where('n.id IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()
+      ->execute();
+
+    // delete was done via DQL, make sure the entities are also detached from the entity manager
+    $this->detachAll(function (NewsletterEntity $entity) use ($ids) {
+      return in_array($entity->getId(), $ids, true);
+    });
   }
 
   /**
