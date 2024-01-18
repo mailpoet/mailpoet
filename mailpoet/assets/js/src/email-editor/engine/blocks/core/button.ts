@@ -3,7 +3,7 @@ import { Block } from '@wordpress/blocks';
 
 /**
  * Disables Styles for button
- * Currently we are not able read these styles in renderer
+ * Currently we are not able to read these styles in renderer
  */
 function enhanceButtonBlock() {
   addFilter(
