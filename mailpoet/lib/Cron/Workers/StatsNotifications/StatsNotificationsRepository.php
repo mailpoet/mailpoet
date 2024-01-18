@@ -65,4 +65,20 @@ class StatsNotificationsRepository extends Repository {
        WHERE sn.id IS NULL AND st.type = :taskType;
     ", ['taskType' => Worker::TASK_TYPE]);
   }
+
+  /** @param int[] $ids */
+  public function deleteByNewsletterIds(array $ids): void {
+    $this->entityManager->createQueryBuilder()
+      ->delete(StatsNotificationEntity::class, 'n')
+      ->where('n.newsletter IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()
+      ->execute();
+
+    // delete was done via DQL, make sure the entities are also detached from the entity manager
+    $this->detachAll(function (StatsNotificationEntity $entity) use ($ids) {
+      $newsletter = $entity->getNewsletter();
+      return $newsletter && in_array($newsletter->getId(), $ids, true);
+    });
+  }
 }
