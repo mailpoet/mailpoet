@@ -277,6 +277,24 @@ class MailPoetAPITest extends \MailPoetTest {
     verify($result['error']->getOperation())->equals(MailerError::OPERATION_SEND);
   }
 
+  public function testFormatPayloadDomainAuthenticationError() {
+    $this->mailer->api = Stub::makeEmpty(
+      'MailPoet\Services\Bridge\API',
+      ['sendMessages' => [
+        'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
+        'status' => API::SENDING_STATUS_SEND_ERROR,
+        'error' => API::ERROR_MESSAGE_BULK_EMAIL_FORBIDDEN,
+        'message' => 'Api Error',
+      ]],
+      $this
+    );
+    $result = $this->mailer->send([$this->newsletter, $this->newsletter], ['a@example.com', 'c d <b@example.com>']);
+    verify($result['response'])->false();
+    verify($result['error'])->instanceOf(MailerError::class);
+    verify($result['error']->getOperation())->equals(MailerError::OPERATION_DOMAIN_AUTHORIZATION);
+    verify($result['error']->getLevel())->equals(MailerError::LEVEL_SOFT);
+  }
+
   public function testFormatPayloadErrorWithErrorMessage() {
     $this->mailer->api = Stub::makeEmpty(
       'MailPoet\Services\Bridge\API',
