@@ -8,7 +8,7 @@ use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Test\DataFactories\Newsletter;
@@ -200,8 +200,8 @@ class TrackerTest extends \MailPoetTest {
     $this->createRevenueRecord($newsletter2, $this->createOrderData(2, 'USD', 10));
     $this->createRevenueRecord($newsletter3, $this->createOrderData(3, 'USD', 10));
 
-    $newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
-    $newsletterRepository->bulkDelete([$newsletter1->getId(), $newsletter2->getId()]);
+    $newsletterDeleteController = $this->diContainer->get(NewsletterDeleteController::class);
+    $newsletterDeleteController->bulkDelete([$newsletter1->getId(), $newsletter2->getId()]);
 
     $tracker = $this->diContainer->get(Tracker::class);
     $mailPoetData = $tracker->addTrackingData(['extensions' => []])['extensions']['mailpoet'];
