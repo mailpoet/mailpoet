@@ -307,6 +307,11 @@ class SendingQueue {
       // reschedule bounce task to run sooner, if needed
       $this->reScheduleBounceTask();
 
+      // Check task has not been paused before continue processing
+      if ($task->getStatus() === ScheduledTaskEntity::STATUS_PAUSED) {
+        return;
+      }
+
       if ($newsletter->getStatus() !== NewsletterEntity::STATUS_CORRUPT) {
         $this->processQueue(
           $task,
