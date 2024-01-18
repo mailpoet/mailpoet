@@ -11,17 +11,10 @@ use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\Cron\Workers\StatsNotifications\StatsNotificationsRepository;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Entities\NewsletterLinkEntity;
-use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
-use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\StatisticsClickEntity;
-use MailPoet\Entities\StatisticsNewsletterEntity;
-use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
@@ -411,15 +404,7 @@ class NewslettersRepository extends Repository {
     $childrenIds = $this->fetchChildrenIds($ids);
     $ids = array_merge($ids, $childrenIds);
 
-    $isRelatedNewsletterToBeDeleted = function($entity) use ($ids): bool {
-      if (is_string($entity) || !method_exists($entity, 'getNewsletter')) {
-        return false;
-      }
-      $newsletter = $entity->getNewsletter();
-      $newsletterId = $newsletter ? $newsletter->getId() : null;
-      return in_array($newsletterId, $ids, true);
-    };
-    $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids, $isRelatedNewsletterToBeDeleted) {
+    $this->entityManager->transactional(function (EntityManager $entityManager) use ($ids) {
       // Delete statistics data
       $this->statisticsNewslettersRepository->deleteByNewsletterIds($ids);
       $this->statisticsOpensRepository->deleteByNewsletterIds($ids);
@@ -491,27 +476,8 @@ class NewslettersRepository extends Repository {
       $this->detachAll(function (NewsletterEntity $entity) use ($ids) {
         return in_array($entity->getId(), $ids, true);
       });
-
-      $entityTypesToBeDetached = [
-        StatisticsNewsletterEntity::class,
-        StatisticsOpenEntity::class,
-        StatisticsClickEntity::class,
-        NewsletterPostEntity::class,
-        NewsletterOptionEntity::class,
-        NewsletterLinkEntity::class,
-        StatsNotificationEntity::class,
-        SendingQueueEntity::class,
-        ScheduledTaskSubscriberEntity::class,
-        NewsletterSegmentEntity::class,
-      ];
-      foreach ($entityTypesToBeDetached as $entityType) {
-        $this->detachEntitiesOfType($entityType, $isRelatedNewsletterToBeDeleted);
-      }
-
-      $this->detachEntitiesOfType(ScheduledTaskEntity::class, function($entity) use ($taskIds): bool {
-        return !is_string($entity) && method_exists($entity, 'getId') && in_array($entity->getId(), $taskIds, true);
-      });
     });
+
     return count($ids);
   }
 
