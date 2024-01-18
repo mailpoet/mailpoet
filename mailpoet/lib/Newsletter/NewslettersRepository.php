@@ -7,83 +7,30 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\AutomaticEmails\WooCommerce\Events\FirstPurchase;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedInCategory;
 use MailPoet\AutomaticEmails\WooCommerce\Events\PurchasedProduct;
-use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
-use MailPoet\Cron\Workers\StatsNotifications\StatsNotificationsRepository;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
-use MailPoet\Entities\StatsNotificationEntity;
 use MailPoet\Logging\LoggerFactory;
-use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
-use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
-use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\Newsletter\Sending\ScheduledTaskSubscribersRepository;
-use MailPoet\Newsletter\Sending\SendingQueuesRepository;
-use MailPoet\Statistics\StatisticsClicksRepository;
-use MailPoet\Statistics\StatisticsNewslettersRepository;
-use MailPoet\Statistics\StatisticsOpensRepository;
-use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
 use MailPoet\Util\Helpers;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
-use Throwable;
 
 /**
  * @extends Repository<NewsletterEntity>
  */
 class NewslettersRepository extends Repository {
   private LoggerFactory $loggerFactory;
-  private NewsletterLinkRepository $newsletterLinkRepository;
-  private NewsletterOptionsRepository $newsletterOptionsRepository;
-  private NewsletterPostsRepository $newsletterPostsRepository;
-  private NewsletterSegmentRepository $newsletterSegmentRepository;
-  private ScheduledTasksRepository $scheduledTasksRepository;
-  private ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository;
-  private SendingQueuesRepository $sendingQueuesRepository;
-  private StatisticsClicksRepository $statisticsClicksRepository;
-  private StatisticsNewslettersRepository $statisticsNewslettersRepository;
-  private StatisticsOpensRepository $statisticsOpensRepository;
-  private StatisticsWooCommercePurchasesRepository $statisticsWooCommercePurchasesRepository;
-  private StatsNotificationsRepository $statsNotificationsRepository;
-  private WPFunctions $wp;
 
   public function __construct(
-    EntityManager $entityManager,
-    NewsletterLinkRepository $newsletterLinkRepository,
-    NewsletterOptionsRepository $newsletterOptionsRepository,
-    NewsletterPostsRepository $newsletterPostsRepository,
-    NewsletterSegmentRepository $newsletterSegmentRepository,
-    ScheduledTasksRepository $scheduledTasksRepository,
-    ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
-    SendingQueuesRepository $sendingQueuesRepository,
-    StatisticsClicksRepository $statisticsClicksRepository,
-    StatisticsNewslettersRepository $statisticsNewslettersRepository,
-    StatisticsOpensRepository $statisticsOpensRepository,
-    StatisticsWooCommercePurchasesRepository $statisticsWooCommercePurchasesRepository,
-    StatsNotificationsRepository $statsNotificationsRepository,
-    WPFunctions $wp
+    EntityManager $entityManager
   ) {
     parent::__construct($entityManager);
     $this->loggerFactory = LoggerFactory::getInstance();
-    $this->newsletterLinkRepository = $newsletterLinkRepository;
-    $this->newsletterOptionsRepository = $newsletterOptionsRepository;
-    $this->newsletterPostsRepository = $newsletterPostsRepository;
-    $this->newsletterSegmentRepository = $newsletterSegmentRepository;
-    $this->scheduledTasksRepository = $scheduledTasksRepository;
-    $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
-    $this->sendingQueuesRepository = $sendingQueuesRepository;
-    $this->statisticsClicksRepository = $statisticsClicksRepository;
-    $this->statisticsNewslettersRepository = $statisticsNewslettersRepository;
-    $this->statisticsOpensRepository = $statisticsOpensRepository;
-    $this->statisticsWooCommercePurchasesRepository = $statisticsWooCommercePurchasesRepository;
-    $this->statsNotificationsRepository = $statsNotificationsRepository;
-    $this->wp = $wp;
   }
 
   protected function getEntityClassName() {
@@ -397,88 +344,6 @@ class NewslettersRepository extends Repository {
     return count($ids);
   }
 
-  public function bulkDelete(array $ids) {
-    if (empty($ids)) {
-      return 0;
-    }
-    // Fetch children ids for deleting
-    $childrenIds = $this->fetchChildrenIds($ids);
-    $ids = array_merge($ids, $childrenIds);
-
-    $this->entityManager->beginTransaction();
-    try {
-      // Delete statistics data
-      $this->statisticsNewslettersRepository->deleteByNewsletterIds($ids);
-      $this->statisticsOpensRepository->deleteByNewsletterIds($ids);
-      $this->statisticsClicksRepository->deleteByNewsletterIds($ids);
-
-      // Update WooCommerce statistics and remove newsletter and click id
-      $this->statisticsWooCommercePurchasesRepository->removeNewsletterDataByNewsletterIds($ids);
-
-      // Delete newsletter posts, options, links, and segments
-      $this->newsletterPostsRepository->deleteByNewsletterIds($ids);
-      $this->newsletterOptionsRepository->deleteByNewsletterIds($ids);
-      $this->newsletterLinkRepository->deleteByNewsletterIds($ids);
-      $this->newsletterSegmentRepository->deleteByNewsletterIds($ids);
-
-      // Delete stats notifications and related tasks
-      /** @var string[] $taskIds */
-      $taskIds = $this->entityManager->createQueryBuilder()
-        ->select('IDENTITY(sn.task)')
-        ->from(StatsNotificationEntity::class, 'sn')
-        ->where('sn.newsletter IN (:ids)')
-        ->setParameter('ids', $ids)
-        ->getQuery()
-        ->getSingleColumnResult();
-      $taskIds = array_map('intval', $taskIds);
-
-      $this->scheduledTasksRepository->deleteByIds($taskIds);
-      $this->statsNotificationsRepository->deleteByNewsletterIds($ids);
-
-      // Delete scheduled task subscribers, scheduled tasks, and sending queues
-      /** @var string[] $taskIds */
-      $taskIds = $this->entityManager->createQueryBuilder()
-        ->select('IDENTITY(q.task)')
-        ->from(SendingQueueEntity::class, 'q')
-        ->where('q.newsletter IN (:ids)')
-        ->setParameter('ids', $ids)
-        ->getQuery()
-        ->getSingleColumnResult();
-      $taskIds = array_map('intval', $taskIds);
-
-      $this->scheduledTaskSubscribersRepository->deleteByTaskIds($taskIds);
-      $this->scheduledTasksRepository->deleteByIds($taskIds);
-      $this->sendingQueuesRepository->deleteByNewsletterIds($ids);
-
-      // Fetch WP Posts IDs and delete them
-      /** @var string[] $wpPostIds */
-      $wpPostIds = $this->entityManager->createQueryBuilder()
-        ->select('IDENTITY(n.wpPost) AS id')
-        ->from(NewsletterEntity::class, 'n')
-        ->where('n.id IN (:ids)')
-        ->andWhere('n.wpPost IS NOT NULL')
-        ->setParameter('ids', $ids)
-        ->getQuery()
-        ->getSingleColumnResult();
-      $wpPostIds = array_map('intval', $wpPostIds);
-
-      foreach ($wpPostIds as $wpPostId) {
-        $this->wp->wpDeletePost($wpPostId, true);
-      }
-
-      // Delete newsletter entities
-      $this->deleteByIds($ids);
-
-      $this->entityManager->commit();
-    } catch (Throwable $e) {
-      $this->entityManager->rollback();
-      throw $e;
-    }
-
-    return count($ids);
-  }
-
-
   /** @param int[] $ids */
   public function deleteByIds(array $ids): void {
     $this->entityManager->createQueryBuilder()
@@ -665,12 +530,19 @@ class NewslettersRepository extends Repository {
     $this->flush();
   }
 
-  private function fetchChildrenIds(array $parentIds) {
-    $ids = $this->entityManager->createQueryBuilder()->select('n.id')
+  /**
+   * @param int[] $parentIds
+   * @return int[]
+   */
+  public function fetchChildrenIds(array $parentIds): array {
+    /** @var string[] $ids */
+    $ids = $this->entityManager->createQueryBuilder()
+      ->select('n.id')
       ->from(NewsletterEntity::class, 'n')
       ->where('n.parent IN (:ids)')
       ->setParameter('ids', $parentIds)
-      ->getQuery()->getScalarResult();
-    return array_column($ids, 'id');
+      ->getQuery()
+      ->getSingleColumnResult();
+    return array_map('intval', $ids);
   }
 }

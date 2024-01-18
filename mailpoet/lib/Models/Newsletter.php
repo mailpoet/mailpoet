@@ -4,6 +4,7 @@ namespace MailPoet\Models;
 
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Newsletter\NewsletterDeleteController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Settings\SettingsController;
@@ -141,7 +142,7 @@ class Newsletter extends Model {
 
   public function delete() {
     trigger_error('Calling Newsletter::delete() is deprecated and will be removed. Use \MailPoet\Newsletter\NewslettersRepository instead.', E_USER_DEPRECATED);
-    ContainerWrapper::getInstance()->get(NewslettersRepository::class)->bulkDelete([$this->id]);
+    ContainerWrapper::getInstance()->get(NewsletterDeleteController::class)->bulkDelete([$this->id]);
     return null;
   }
 
