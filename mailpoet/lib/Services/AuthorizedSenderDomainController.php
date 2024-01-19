@@ -291,7 +291,7 @@ class AuthorizedSenderDomainController {
     return $this->subscribers->getSubscribersCount() > self::UPPER_LIMIT;
   }
 
-  private function restrictionsApply() {
+  private function restrictionsApply(): bool {
     if ($this->settingsController->get('mta.method') !== Mailer::METHOD_MAILPOET) {
       return false;
     }
