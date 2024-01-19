@@ -308,6 +308,8 @@ class SendingQueue {
       $this->reScheduleBounceTask();
 
       // Check task has not been paused before continue processing
+      // This is needed because the task can be paused in the middle of the batch processing,
+      // for example on API error ERROR_MESSAGE_BULK_EMAIL_FORBIDDEN
       if ($task->getStatus() === ScheduledTaskEntity::STATUS_PAUSED) {
         return;
       }
