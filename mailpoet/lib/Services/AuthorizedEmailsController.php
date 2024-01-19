@@ -166,7 +166,10 @@ class AuthorizedEmailsController {
       return true;
     }
 
-    $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
+    $verifiedDomains = $context === 'activation' ?
+      $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache() :
+      $this->senderDomainController->getVerifiedSenderDomains();
+
     return $this->validateEmailDomainIsVerified($verifiedDomains, $newsletter->getSenderAddress());
   }
 

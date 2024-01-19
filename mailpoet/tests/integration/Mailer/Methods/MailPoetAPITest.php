@@ -333,6 +333,28 @@ class MailPoetAPITest extends \MailPoetTest {
     $mailer->send([$this->newsletter], [$this->subscriber]);
   }
 
+  public function testItCallsAuthorizedEmailsValidationOnBulkEmailRelatedError() {
+    $mailer = new MailPoet(
+      $this->settings['api_key'],
+      $this->sender,
+      $this->replyTo,
+      $this->diContainer->get(MailPoetMapper::class),
+      $this->makeEmpty(AuthorizedEmailsController::class, ['checkAuthorizedEmailAddresses' => Expected::once()]),
+      $this->diContainer->get(Bridge::class),
+      $this->diContainer->get(Url::class)
+    );
+    $mailer->api = $this->makeEmpty(
+      API::class,
+      ['sendMessages' => [
+        'code' => API::RESPONSE_CODE_PAYLOAD_ERROR,
+        'status' => API::SENDING_STATUS_SEND_ERROR,
+        'message' => API::ERROR_MESSAGE_BULK_EMAIL_FORBIDDEN,
+        'error' => API::ERROR_MESSAGE_BULK_EMAIL_FORBIDDEN,
+      ]]
+    );
+    $mailer->send([$this->newsletter], [$this->subscriber]);
+  }
+
   public function testItChecksBlacklistBeforeSendingToASingleSubscriber() {
     $blacklistedSubscriber = 'blacklist_test@example.com';
     $blacklist = Stub::make(new BlacklistCheck(), ['isBlacklisted' => true], $this);
