@@ -284,7 +284,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $verifiedDomains = ['email.com'];
     $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
       'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
-      'getVerifiedSenderDomainsIgnoringCache' => Expected::once($verifiedDomains),
+      'getVerifiedSenderDomains' => Expected::once($verifiedDomains),
     ]);
 
     $newsletter = new NewsletterEntity();
