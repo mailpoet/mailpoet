@@ -9,7 +9,7 @@ use MailPoet\Util\Helpers;
 class Heading implements BlockRenderer {
   public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $level = $parsedBlock['attrs']['level'] ?? 2; // default level is 2
-    $blockContent = $this->removePaddingFromElement($blockContent, ['tag_name' => "h{$level}"]);
+    $blockContent = $this->adjustStyleAttribute($blockContent, $parsedBlock, $settingsController, ['tag_name' => "h{$level}"]);
     return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($parsedBlock, $settingsController));
   }
 
@@ -17,7 +17,7 @@ class Heading implements BlockRenderer {
    * Based on MJML <mj-text>
    */
   private function getBlockWrapper(array $parsedBlock, SettingsController $settingsController): string {
-    $themeData = $settingsController->getTheme()->get_data();
+
     $availableStylesheets = $settingsController->getAvailableStylesheets();
 
     // Styles for padding need to be set on the wrapping table cell due to support in Outlook
@@ -37,10 +37,6 @@ class Heading implements BlockRenderer {
     foreach ($parsedBlock['email_attrs'] ?? [] as $property => $value) {
       if ($property === 'width') continue; // width is handled by the wrapping blocks (columns, column)
       $styles[$property] = $value;
-    }
-
-    if (!isset($styles['font-size'])) {
-      $styles['font-size'] = $themeData['styles']['typography']['fontSize'];
     }
 
     $styles = array_merge($styles, $this->fetchStylesFromBlockAttrs($availableStylesheets, $parsedBlock['attrs']));
@@ -113,13 +109,21 @@ class Heading implements BlockRenderer {
   }
 
   /**
+   * 1) We need to remove padding because we render padding on wrapping table cell
+   * 2) We also need to replace font-size to avoid clamp() because clamp() is not supported in many email clients.
+   * The font size values is automatically converted to clamp() when WP site theme is configured to use fluid layouts.
+   * Currently (WP 6.4), there is no way to disable this behavior.
    * @param array{tag_name: string, class_name?: string} $tag
    */
-  private function removePaddingFromElement($blockContent, array $tag): string {
+  private function adjustStyleAttribute($blockContent, array $parsedBlock, SettingsController $settingsController, array $tag): string {
     $html = new \WP_HTML_Tag_Processor($blockContent);
+    $themeData = $settingsController->getTheme()->get_data();
+    $fontSize = 'font-size:' . ($parsedBlock['email_attrs']['font-size'] ?? $themeData['styles']['typography']['fontSize']) . ';';
+
     if ($html->next_tag($tag)) {
       $elementStyle = $html->get_attribute('style') ?? '';
       $elementStyle = preg_replace('/padding.*:.?[0-9]+px;?/', '', $elementStyle);
+      $elementStyle = preg_replace('/font-size:[^;]+;?/', $fontSize, $elementStyle);
       $html->set_attribute('style', $elementStyle);
       $blockContent = $html->get_updated_html();
     }

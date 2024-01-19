@@ -70,6 +70,8 @@ class SettingsController {
       ['css' => $flexEmailLayoutStyles],
     ];
 
+    $settings['styles'] = apply_filters('mailpoet_email_editor_editor_styles', $settings['styles']);
+
     $settings['__experimentalFeatures'] = $themeSettings;
     // Enable border radius, color, style and width where possible
     $settings['__experimentalFeatures']['border'] = [
