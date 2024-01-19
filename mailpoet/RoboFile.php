@@ -191,7 +191,7 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('./node_modules/webpack/bin/webpack.js --watch');
   }
 
-  public function compileAll($opts = ['env' => null, 'tests' => 'build']) {
+  public function compileAll($opts = ['env' => null, 'skip-tests' => false]) {
     $collection = $this->collectionBuilder();
     $collection->addCode(function() use ($opts) {
       return call_user_func([$this, 'compileJs'], $opts);
@@ -202,7 +202,7 @@ class RoboFile extends \Robo\Tasks {
     return $collection->run();
   }
 
-  public function compileJs($opts = ['env' => null]) {
+  public function compileJs($opts = ['env' => null, 'skip-tests' => false]) {
     if (!is_dir('assets/dist/js')) {
       mkdir('assets/dist/js', 0777, true);
     }
@@ -210,7 +210,7 @@ class RoboFile extends \Robo\Tasks {
     $env = ($opts['env']) ?
       sprintf('./node_modules/.bin/cross-env NODE_ENV="%s"', $opts['env']) :
       null;
-    return $this->_exec($env . ' ./node_modules/webpack/bin/webpack.js --env BUILD_TESTS=' . ($opts['tests'] === 'build' ? 'build' : 'skip'));
+    return $this->_exec($env . ' ./node_modules/webpack/bin/webpack.js --env BUILD_TESTS=' . ($opts['skip-tests'] ? 'skip' : 'build'));
   }
 
   public function compileCss($opts = ['env' => null]) {
