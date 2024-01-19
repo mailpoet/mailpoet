@@ -11,10 +11,6 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class AuthorizedSenderDomainController {
-  const DOMAIN_VERIFICATION_STATUS_VALID = 'valid';
-  const DOMAIN_VERIFICATION_STATUS_INVALID = 'invalid';
-  const DOMAIN_VERIFICATION_STATUS_PENDING = 'pending';
-
   const OVERALL_STATUS_VERIFIED = 'verified';
   const OVERALL_STATUS_PARTIALLY_VERIFIED = 'partially-verified';
   const OVERALL_STATUS_UNVERIFIED = 'unverified';
@@ -85,11 +81,6 @@ class AuthorizedSenderDomainController {
    */
   public function getAllSenderDomains(): array {
     return $this->returnAllDomains($this->getAllRecords());
-  }
-
-  public function getAllSenderDomainsIgnoringCache(): array {
-    $this->currentRecords = null;
-    return $this->getAllSenderDomains();
   }
 
   /**
