@@ -73,13 +73,6 @@ class SettingsController {
     $settings['styles'] = apply_filters('mailpoet_email_editor_editor_styles', $settings['styles']);
 
     $settings['__experimentalFeatures'] = $themeSettings;
-    // Enable border radius, color, style and width where possible
-    $settings['__experimentalFeatures']['border'] = [
-      "radius" => true,
-      "color" => true,
-      "style" => true,
-      "width" => true,
-    ];
 
     // Enabling alignWide allows full width for specific blocks such as columns, heading, image, etc.
     $settings['alignWide'] = true;
