@@ -158,17 +158,17 @@ class AuthorizedEmailsController {
       return true;
     }
 
-    $isAuthorizedDomainRequired = $context === 'activation' ?
-      $this->senderDomainController->isAuthorizedDomainRequiredForNewCampaigns() :
-      $this->senderDomainController->isAuthorizedDomainRequiredForExistingCampaigns();
+    $isAuthorizedDomainRequired = $context === 'activation'
+      ? $this->senderDomainController->isAuthorizedDomainRequiredForNewCampaigns()
+      : $this->senderDomainController->isAuthorizedDomainRequiredForExistingCampaigns();
 
     if (!$isAuthorizedDomainRequired) {
       return true;
     }
 
-    $verifiedDomains = $context === 'activation' ?
-      $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache() :
-      $this->senderDomainController->getVerifiedSenderDomains();
+    $verifiedDomains = $context === 'activation'
+      ? $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache()
+      : $this->senderDomainController->getVerifiedSenderDomains();
 
     return $this->validateEmailDomainIsVerified($verifiedDomains, $newsletter->getSenderAddress());
   }
