@@ -2,6 +2,11 @@
   "$schema": "https://schemas.wp.org/trunk/theme.json",
   "version": 2,
   "settings": {
+    "color": {
+      "customGradient": false,
+      "defaultGradients": false,
+      "gradients": []
+    },
     "layout": {
       "contentSize": "660px"
     },
