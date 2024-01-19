@@ -20,7 +20,7 @@ class StatisticsWooCommercePurchaseEntity {
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\NewsletterEntity")
-   * @ORM\JoinColumn(name="newsletter_id", referencedColumnName="id")
+   * @ORM\JoinColumn(name="newsletter_id", referencedColumnName="id", nullable=true)
    * @var NewsletterEntity|null
    */
   private $newsletter;
