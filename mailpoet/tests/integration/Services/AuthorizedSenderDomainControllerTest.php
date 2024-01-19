@@ -29,6 +29,9 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
   private $apiKey;
 
+  /**@var WPFunctions */
+  private $wp;
+
   public function _before() {
     parent::_before();
 
@@ -45,6 +48,10 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
         'mailpoet_api_key' => $this->apiKey,
       ]
     );
+    $this->wp = $this->make(WPFunctions::class, [
+      'getTransient' => false,
+      'setTransient' => true,
+    ]);
   }
 
   public function testItFetchSenderDomains() {
@@ -86,6 +93,78 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $controller = $this->getController($bridgeMock);
     $verifiedDomains = $controller->getVerifiedSenderDomains();
     verify($verifiedDomains)->same(['mailpoet.com']); // only this is Verified for now
+  }
+
+  public function testItReturnsVerifiedSenderDomainsFromTransient() {
+    $bridgeResponse = [
+      [
+        'domain' => 'mailpoet.com',
+        'domain_status' => 'verified',
+        'dns' => Bridge\BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE['dns'],
+      ],
+      [
+        'domain' => 'testdomain.com',
+        'domain_status' => 'unverified',
+        'dns' => [],
+      ],
+    ];
+
+    $bridgeMock = $this->make(Bridge::class, [
+      'getRawSenderDomainData' => Expected::never(),
+    ]);
+    $this->wp = $this->make(WPFunctions::class, [
+      'getTransient' => $bridgeResponse,
+      'setTransient' => true,
+    ]);
+
+    $controller = $this->getController($bridgeMock);
+    $verifiedDomains = $controller->getVerifiedSenderDomains();
+    verify($verifiedDomains)->same(['mailpoet.com']);
+  }
+
+  public function testItReturnsVerifiedSenderDomainsIgnoringCache() {
+    $oldBridgeResponse = [
+      [
+        'domain' => 'mailpoet.com',
+        'domain_status' => 'verified',
+        'dns' => Bridge\BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE['dns'],
+      ],
+      [
+        'domain' => 'testdomain.com',
+        'domain_status' => 'unverified',
+        'dns' => [],
+      ],
+    ];
+
+    $newBridgeResponse = [
+      [
+        'domain' => 'mailpoet.com',
+        'domain_status' => 'verified',
+        'dns' => Bridge\BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE['dns'],
+      ],
+      [
+        'domain' => 'testdomain.com',
+        'domain_status' => 'verified',
+        'dns' => [],
+      ],
+    ];
+
+    $bridgeMock = $this->make(Bridge::class, [
+      'getRawSenderDomainData' => Expected::once($newBridgeResponse),
+    ]);
+    $this->wp = $this->make(WPFunctions::class, [
+      'getTransient' => $oldBridgeResponse,
+      'setTransient' => true,
+    ]);
+
+    $controller = $this->getController($bridgeMock);
+    $verifiedDomains = $controller->getVerifiedSenderDomainsIgnoringCache();
+    verify($verifiedDomains)->same(['mailpoet.com', 'testdomain.com']);
+    // Reset mock
+    $this->wp = $this->make(WPFunctions::class, [
+      'getTransient' => false,
+      'setTransient' => true,
+    ]);
   }
 
   public function testItReturnsEmptyArrayWhenNoVerifiedSenderDomains() {
@@ -308,7 +387,13 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
   private function getController($bridgeMock = null, $subscribersMock = null): AuthorizedSenderDomainController {
     $newsletterStatisticsRepository = $this->diContainer->get(NewsletterStatisticsRepository::class);
     $subscribers = $this->diContainer->get(Subscribers::class);
-    return new AuthorizedSenderDomainController($bridgeMock ?? $this->bridge, $newsletterStatisticsRepository, $this->settings, $subscribersMock ?? $subscribers);
+    return new AuthorizedSenderDomainController(
+      $bridgeMock ?? $this->bridge,
+      $newsletterStatisticsRepository,
+      $this->settings,
+        $subscribersMock ?? $subscribers,
+      $this->wp
+    );
   }
 
   public function testUserIsNewIfTheyHaveNotCompletedWelcomeWizard(): void {

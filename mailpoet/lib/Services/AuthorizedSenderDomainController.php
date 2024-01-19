@@ -7,6 +7,7 @@ use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\Features\Subscribers;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class AuthorizedSenderDomainController {
@@ -29,6 +30,8 @@ class AuthorizedSenderDomainController {
 
   const INSTALLED_AFTER_NEW_RESTRICTIONS_OPTION = 'installed_after_new_domain_restrictions';
 
+  const SENDER_DOMAINS_KEY = 'mailpoet_sender_domains';
+
   /** @var Bridge */
   private $bridge;
 
@@ -47,16 +50,21 @@ class AuthorizedSenderDomainController {
   /** @var Subscribers */
   private $subscribers;
 
+  /** @var WPFunctions */
+  private $wp;
+
   public function __construct(
     Bridge $bridge,
     NewsletterStatisticsRepository $newsletterStatisticsRepository,
     SettingsController $settingsController,
-    Subscribers $subscribers
+    Subscribers $subscribers,
+    WPFunctions $wp
   ) {
     $this->bridge = $bridge;
     $this->newsletterStatisticsRepository = $newsletterStatisticsRepository;
     $this->settingsController = $settingsController;
     $this->subscribers = $subscribers;
+    $this->wp = $wp;
   }
 
   /**
@@ -94,7 +102,7 @@ class AuthorizedSenderDomainController {
   }
 
   public function getVerifiedSenderDomainsIgnoringCache(): array {
-    $this->currentRecords = null;
+    $this->reloadCache();
     return $this->getFullyOrPartiallyVerifiedSenderDomains(true);
   }
 
@@ -151,6 +159,7 @@ class AuthorizedSenderDomainController {
       throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_NOT_CREATED);
     }
 
+    $this->reloadCache();
     $verifiedDomains = $this->getFullyVerifiedSenderDomains(true);
     $alreadyVerified = in_array($domain, $verifiedDomains);
 
@@ -235,9 +244,21 @@ class AuthorizedSenderDomainController {
     return $domains;
   }
 
+  private function reloadCache() {
+    $this->currentRecords = null;
+    $this->currentRawData = $this->bridge->getRawSenderDomainData();
+    $this->wp->setTransient(self::SENDER_DOMAINS_KEY, $this->currentRawData, 60 * 60 * 24);
+  }
+
   private function getAllRawData(): array {
     if ($this->currentRawData === null) {
-      $this->currentRawData = $this->bridge->getRawSenderDomainData();
+      $currentData = $this->wp->getTransient(self::SENDER_DOMAINS_KEY);
+      if (is_array($currentData)) {
+        $this->currentRawData = $currentData;
+      } else {
+        $this->currentRawData = $this->bridge->getRawSenderDomainData();
+        $this->wp->setTransient(self::SENDER_DOMAINS_KEY, $this->currentRawData, 60 * 60 * 24);
+      }
     }
     return $this->currentRawData;
   }
