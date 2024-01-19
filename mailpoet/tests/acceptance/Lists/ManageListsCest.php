@@ -33,7 +33,7 @@ class ManageListsCest {
     $i->click('New List');
     $i->click('[aria-label="Navigate to the lists page"]');
     $i->click('New List');
-    $i->fillField('Name', $newListTitle);
+    $i->fillField('Public list name', $newListTitle);
     $i->fillField('Description', $newListDesc);
     $i->click('Save');
     $i->waitForText('WordPress Users', 5, '[data-automation-id="listing_item_1"]');
@@ -62,7 +62,7 @@ class ManageListsCest {
     $i->clickItemRowActionByItemName($newListTitle, 'Edit');
     $i->waitForText($newListTitle);
     $i->clearFormField('#field_name');
-    $i->fillField('Name', $editedListTitle);
+    $i->fillField('Public list name', $editedListTitle);
     $i->fillField('Description', $editedListDesc);
     $i->click('Save');
     $i->waitForNoticeAndClose('List successfully updated!');
