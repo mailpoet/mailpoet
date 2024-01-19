@@ -10,6 +10,12 @@
       "padding": true,
       "margin": false
     },
+    "border": {
+      "radius": true,
+      "color": true,
+      "style": true,
+      "width": true
+    },
     "typography": {
       "dropCap": false,
       "fontWeight": false,
