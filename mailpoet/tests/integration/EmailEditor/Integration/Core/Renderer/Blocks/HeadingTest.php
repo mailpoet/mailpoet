@@ -20,11 +20,13 @@ class HeadingTest extends \MailPoetTest {
       'style' => [
         'typography' => [
           'textTransform' => 'lowercase',
+          'fontSize' => '24px',
         ],
       ],
     ],
     'email_attrs' => [
       'width' => '640px',
+      'font-size' => '24px',
     ],
     'innerBlocks' => [],
     'innerHTML' => '<h1 class="has-pale-cyan-blue-color has-vivid-red-background-color has-text-color has-background">This is Heading 1</h1>',
@@ -46,6 +48,7 @@ class HeadingTest extends \MailPoetTest {
     $rendered = $this->headingRenderer->render('<h1>This is Heading 1</h1>', $this->parsedHeading, $this->settingsController);
     verify($rendered)->stringContainsString('This is Heading 1');
     verify($rendered)->stringContainsString('width: 100%;');
+    verify($rendered)->stringContainsString('font-size:24px;');
     verify($rendered)->stringNotContainsString('width:640px;');
   }
 
@@ -55,5 +58,10 @@ class HeadingTest extends \MailPoetTest {
     verify($rendered)->stringContainsString('color:#8ed1fc;'); // color from theme.json matching pale-cyan-blue
     verify($rendered)->stringContainsString('text-transform:lowercase;');
     verify($rendered)->stringContainsString('text-align:center;');
+  }
+
+  public function testItReplacesFluidFontSizeInContent(): void {
+    $rendered = $this->headingRenderer->render('<h1 style="font-size:clamp(10px, 20px, 24px)">This is Heading 1</h1>', $this->parsedHeading, $this->settingsController);
+    verify($rendered)->stringContainsString('font-size:24px');
   }
 }
