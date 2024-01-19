@@ -10,8 +10,9 @@ import { TopBarWithBeamer } from '../../common/top-bar/top-bar';
 const fields = [
   {
     name: 'name',
-    label: MailPoet.I18n.t('name'),
+    label: MailPoet.I18n.t('segmentFormName'),
     type: 'text',
+    tip: MailPoet.I18n.t('segmentFormNameTip'),
   },
   {
     name: 'description',
