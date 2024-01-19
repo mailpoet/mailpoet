@@ -50,13 +50,13 @@ class Tracker {
   }
 
   /**
-   * @param array<int, array{revenue: float, campaign_id: string, campaign_type: string, orders_count: int}> $campaignsData
+   * @param array<int, array{revenue: float, campaign_id: string|null, campaign_type: string, orders_count: int}> $campaignsData
    * @return array<string, string|int|float>
    */
   private function formatCampaignsData(array $campaignsData): array {
     return array_reduce($campaignsData, function($result, array $campaign): array {
       $newsletter = $this->newslettersRepository->findOneById((int)$campaign['campaign_id']);
-      $keyPrefix = 'campaign_' . $campaign['campaign_id'];
+      $keyPrefix = 'campaign_' . ($campaign['campaign_id'] ?? 0);
       $result[$keyPrefix . '_revenue'] = $campaign['revenue'];
       $result[$keyPrefix . '_orders_count'] = $campaign['orders_count'];
       $result[$keyPrefix . '_type'] = $campaign['campaign_type'];

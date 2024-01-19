@@ -117,8 +117,9 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
   public function removeNewsletterDataByNewsletterIds(array $ids): void {
     $this->entityManager->createQueryBuilder()
       ->update(StatisticsWooCommercePurchaseEntity::class, 'swp')
-      ->set('swp.newsletter', 0)
+      ->set('swp.newsletter', ':newsletter')
       ->where('swp.newsletter IN (:ids)')
+      ->setParameter('newsletter', null)
       ->setParameter('ids', $ids)
       ->getQuery()
       ->execute();
