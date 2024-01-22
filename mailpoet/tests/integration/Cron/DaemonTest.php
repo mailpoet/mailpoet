@@ -9,15 +9,11 @@ use MailPoet\Cron\Daemon;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Cron\Workers\WorkersFactory;
 use MailPoet\Entities\LogEntity;
-use MailPoet\Logging\LoggerFactory;
 use MailPoet\Logging\LogRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WpFunctions;
 
 class DaemonTest extends \MailPoetTest {
-  /** @var CronHelper */
-  private $cronHelper;
-
   /** @var SettingsController */
   private $settings;
 
@@ -30,7 +26,6 @@ class DaemonTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->settings = SettingsController::getInstance();
-    $this->cronHelper = $this->diContainer->get(CronHelper::class);
     $this->logRepository = $this->diContainer->get(LogRepository::class);
     $this->wp = $this->diContainer->get(WpFunctions::class);
   }
@@ -43,7 +38,10 @@ class DaemonTest extends \MailPoetTest {
       'token' => 123,
     ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon = new Daemon($this->cronHelper, $cronWorkerRunner, $this->createWorkersFactoryMock(), $this->diContainer->get(LoggerFactory::class));
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunner,
+      'workersFactory' => $this->createWorkersFactoryMock(),
+    ]);
     $daemon->run($data);
   }
 
@@ -57,7 +55,10 @@ class DaemonTest extends \MailPoetTest {
       'token' => 123,
     ];
     $this->settings->set(CronHelper::DAEMON_SETTING, $data);
-    $daemon = new Daemon($this->cronHelper, $cronWorkerRunner, $this->createWorkersFactoryMock(), $this->diContainer->get(LoggerFactory::class));
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunner,
+      'workersFactory' => $this->createWorkersFactoryMock(),
+    ]);
     $daemon->run($data);
     $log = $this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]);
     $this->assertInstanceOf(LogEntity::class, $log);
@@ -82,7 +83,10 @@ class DaemonTest extends \MailPoetTest {
         'createScheduleWorker' => function () {throw new \Exception('createScheduleWorker should not be called');
         },
     ]);
-    $daemon = new Daemon($this->cronHelper, $cronWorkerRunner, $factoryMock, $this->diContainer->get(LoggerFactory::class));
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunner,
+      'workersFactory' => $factoryMock,
+    ]);
     $daemon->run($data);
     $log = $this->logRepository->findOneBy(['name' => 'cron', 'level' => 400]);
     verify($log)->null();
