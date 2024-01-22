@@ -143,7 +143,6 @@
     "@types/wordpress__block-editor": "^11.5.10",
     "@types/wordpress__block-library": "^2.6.3",
     "@types/wordpress__blocks": "^12.5.13",
-    "@types/wordpress__components": "^23.0.11",
     "@types/wordpress__edit-post": "^7.5.6",
     "@types/wordpress__editor": "^13.6.7",
     "@types/wordpress__media-utils": "^4.14.4",
