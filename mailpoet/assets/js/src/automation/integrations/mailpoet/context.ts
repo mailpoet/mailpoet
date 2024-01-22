@@ -30,7 +30,7 @@ export const useSelectContext = (): Context =>
 export const updateSenderDomainsConfig = (
   senderDomainsConfig: SenderDomainsConfig,
 ) => {
-  dispatch(storeName).alterContext('mailpoet', 'senderDomainsConfig', {
+  void dispatch(storeName).alterContext('mailpoet', 'senderDomainsConfig', {
     ...senderDomainsConfig,
   });
 };

@@ -17,7 +17,7 @@ export function useAutomationListingNotices(): void {
     const args = getQueryArg(window.location.href, 'notice-args') ?? [];
     const automationName = args[0] ?? 'Unknown';
     if (notice === LISTING_NOTICES.automationDeleted) {
-      createNotice(
+      void createNotice(
         'success',
         sprintf(
           __('Automation "%s" was moved to the trash.', 'mailpoet'),
@@ -25,7 +25,7 @@ export function useAutomationListingNotices(): void {
         ),
       );
     } else if (notice === LISTING_NOTICES.automationHadBeenDeleted) {
-      createNotice(
+      void createNotice(
         'error',
         sprintf(
           __(

@@ -15,7 +15,7 @@ export function SentEmailNotice() {
 
   useEffect(() => {
     if (isEmailSent) {
-      dispatch(noticesStore).createNotice(
+      void dispatch(noticesStore).createNotice(
         'warning',
         __(
           'This email has already been sent. It can be edited, but not sent again. Duplicate this email if you want to send it again.',
