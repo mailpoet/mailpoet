@@ -11,7 +11,6 @@ use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Cron\Workers\SimpleWorker;
 use MailPoet\Cron\Workers\WorkersFactory;
-use MailPoet\Logging\LoggerFactory;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -82,7 +81,10 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
         }
       });
 
-    $daemon = new Daemon($this->cronHelper, $cronWorkerRunnerMock, $this->createWorkersFactoryMock(), $this->diContainer->get(LoggerFactory::class));
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunnerMock,
+      'workersFactory' => $this->createWorkersFactoryMock(),
+    ]);
     $daemonHttpRunner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => null,
       'callSelf' => null,
@@ -208,7 +210,10 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $cronWorkerRunner = $this->make(CronWorkerRunner::class, [
       'run' => null,
     ]);
-    $daemon = new Daemon($this->cronHelper, $cronWorkerRunner, $this->createWorkersFactoryMock(), $this->diContainer->get(LoggerFactory::class));
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunner,
+      'workersFactory' => $this->createWorkersFactoryMock(),
+    ]);
     $daemonHttpRunner->__construct($daemon, $this->cronHelper, SettingsController::getInstance(), $this->diContainer->get(WordPress::class));
     $daemonHttpRunner->run($data);
     $updatedDaemon = $this->settings->get(CronHelper::DAEMON_SETTING);
@@ -228,7 +233,10 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
           throw new \Exception();
         }
       });
-    $daemon = new Daemon($this->cronHelper, $cronWorkerRunnerMock, $this->createWorkersFactoryMock(), $this->diContainer->get(LoggerFactory::class));
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunnerMock,
+      'workersFactory' => $this->createWorkersFactoryMock(),
+    ]);
     $daemonHttpRunner = $this->make(DaemonHttpRunner::class, [
       'pauseExecution' => null,
       'callSelf' => null,
@@ -264,7 +272,10 @@ class DaemonHttpRunnerTest extends \MailPoetTest {
     $cronWorkerRunnerMock = $this->make(CronWorkerRunner::class, [
       'run' => null,
     ]);
-    $daemon = new Daemon($this->cronHelper, $cronWorkerRunnerMock, $this->createWorkersFactoryMock(), $this->diContainer->get(LoggerFactory::class));
+    $daemon = $this->getServiceWithOverrides(Daemon::class, [
+      'cronWorkerRunner' => $cronWorkerRunnerMock,
+      'workersFactory' => $this->createWorkersFactoryMock(),
+    ]);
     $daemonHttpRunner->__construct($daemon, $this->cronHelper, SettingsController::getInstance(), $this->diContainer->get(WordPress::class));
     $daemonHttpRunner->run($data);
     verify(ignore_user_abort())->equals(true);
