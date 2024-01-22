@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.3
 Tested up to: 6.4
-Stable tag: 4.41.3
+Stable tag: 4.42.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.42.0 - 2024-01-22 =
+* Updated: minimum required WooCommerce version to 8.4;
+* Improved: Made it obvious that list names may be visible to subscribers;
+* Improved: Sending rules for big senders;
+* Improved: AutomateWoo and MailPoet work now together in the Checkout-Block of WooCommerce;
+* Fixed: A notice was not closeable;
+* Fixed: In some instances sending seemed blocked by a SendingQueue error related to a NewsletterLinkEntity.
 
 = 4.41.3 - 2024-01-16 =
 * Added: a new segment for "Number of orders with coupon code";
