@@ -24,7 +24,7 @@ export function AutosaveMonitor() {
 
     if (hasEdits && autosaveInterval > 0) {
       autosaveTimer = setTimeout(() => {
-        saveEditedEmail();
+        void saveEditedEmail();
       }, autosaveInterval * 1000);
     }
 
