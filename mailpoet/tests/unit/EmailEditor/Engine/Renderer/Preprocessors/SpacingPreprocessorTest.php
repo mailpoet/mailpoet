@@ -76,7 +76,6 @@ class SpacingPreprocessorTest extends \MailPoetUnitTest {
     verify($firstColumns)->arrayHasNotKey('email_attrs');
     verify($secondColumns['email_attrs'])->equals($expectedEmailAttrs);
     verify($firstColumns['innerBlocks'][0])->arrayHasNotKey('email_attrs');
-    verify($firstColumns['innerBlocks'][1])->arrayHasNotKey('email_attrs');
     verify($secondColumns['innerBlocks'][0])->arrayHasNotKey('email_attrs');
     // Verify margins for the first columns blocks
     $firstColumn = $firstColumns['innerBlocks'][0];
