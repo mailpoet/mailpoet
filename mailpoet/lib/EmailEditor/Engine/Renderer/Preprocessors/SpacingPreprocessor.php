@@ -16,8 +16,8 @@ class SpacingPreprocessor implements Preprocessor {
 
   private function addMarginTopToBlocks(array $parsedBlocks): array {
     foreach ($parsedBlocks as $key => $block) {
-      // We don't want to add margin-top to column block
-      if ($key !== 0 && $block['blockName'] !== 'core/column') {
+      // We don't want to add margin-top to the first block in the email or to the first block in the columns block
+      if ($key !== 0) {
         $block['email_attrs']['margin-top'] = SettingsController::FLEX_GAP;
       }
 
