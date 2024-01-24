@@ -34,11 +34,13 @@ export function* loadLegacyAutomations() {
         endpoint: 'newsletters',
         method: 'listing',
         'data[params][type]': 'welcome',
+        'data[limit]': '400',
       }),
       legacyApiFetch({
         endpoint: 'newsletters',
         method: 'listing',
         'data[params][type]': 'automatic',
+        'data[limit]': '400',
       }),
     ]),
   );
