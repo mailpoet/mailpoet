@@ -15,6 +15,7 @@ import {
   // @ts-ignore No types for this exist yet.
   __unstableEditorStyles as EditorStyles,
 } from '@wordpress/block-editor';
+import { UnsavedChangesWarning } from '@wordpress/editor';
 import { uploadMedia } from '@wordpress/media-utils';
 import classnames from 'classnames';
 import { useSelect } from '@wordpress/data';
@@ -125,6 +126,7 @@ export function BlockEditor() {
       useSubRegistry={false}
     >
       <FullscreenMode isActive={isFullscreenActive} />
+      <UnsavedChangesWarning />
       <AutosaveMonitor />
       <Sidebar />
       <InterfaceSkeleton
