@@ -520,7 +520,7 @@ class NewslettersRepository extends Repository {
   /**
    * @return NewsletterEntity[]
    */
-  public function findSendingNotificationHistoryWithoutPausedTask(NewsletterEntity $newsletter): array {
+  public function findSendingNotificationHistoryWithoutPausedOrInvalidTask(NewsletterEntity $newsletter): array {
     return $this->entityManager->createQueryBuilder()
       ->select('n')
       ->from(NewsletterEntity::class, 'n')
@@ -530,11 +530,13 @@ class NewslettersRepository extends Repository {
       ->andWhere('n.type = :type')
       ->andWhere('n.status = :status')
       ->andWhere('n.deletedAt IS NULL')
-      ->andWhere('t.status != :taskStatus')
+      ->andWhere('t.status != :taskStatusPaused')
+      ->andWhere('t.status != :taskStatusInvalid')
       ->setParameter('parent', $newsletter)
       ->setParameter('type', NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
       ->setParameter('status', NewsletterEntity::STATUS_SENDING)
-      ->setParameter('taskStatus', ScheduledTaskEntity::STATUS_PAUSED)
+      ->setParameter('taskStatusPaused', ScheduledTaskEntity::STATUS_PAUSED)
+      ->setParameter('taskStatusInvalid', ScheduledTaskEntity::STATUS_INVALID)
       ->getQuery()->getResult();
   }
 

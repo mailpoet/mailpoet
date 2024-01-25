@@ -111,7 +111,7 @@ class PostNotificationScheduler {
   }
 
   public function createPostNotificationSendingTask(NewsletterEntity $newsletter): ?ScheduledTaskEntity {
-    $notificationHistory = $this->newslettersRepository->findSendingNotificationHistoryWithoutPausedTask($newsletter);
+    $notificationHistory = $this->newslettersRepository->findSendingNotificationHistoryWithoutPausedOrInvalidTask($newsletter);
     if (count($notificationHistory) > 0) {
       return null;
     }
