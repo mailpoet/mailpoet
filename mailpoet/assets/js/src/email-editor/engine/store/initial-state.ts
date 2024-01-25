@@ -19,6 +19,7 @@ export function getInitialState(): State {
     editorSettings: getEditorSettings(),
     layoutStyles: getEmailLayoutStyles(),
     layout: getEditorLayout(),
+    autosaveInterval: 60,
     preview: {
       deviceType: 'Desktop',
       toEmail: window.MailPoetEmailEditor.current_wp_user_email,
