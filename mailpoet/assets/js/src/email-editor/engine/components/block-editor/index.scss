@@ -131,3 +131,8 @@
     box-sizing: border-box;
   }
 }
+
+// Hide the advanced settings in the sidebar. This panel is not used in the email editor at this moment.
+.block-editor-block-inspector__advanced {
+  display: none;
+}
