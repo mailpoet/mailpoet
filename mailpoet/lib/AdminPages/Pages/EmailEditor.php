@@ -65,6 +65,8 @@ class EmailEditor {
 
     // Load CSS from Post Editor
     $this->wp->wpEnqueueStyle('wp-edit-post');
+    // Load CSS for the format library - used for example in popover
+    $this->wp->wpEnqueueStyle('wp-format-library');
 
     // Enqueue media library scripts
     $this->wp->wpEnqueueMedia();
