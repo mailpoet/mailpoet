@@ -136,3 +136,7 @@
 .block-editor-block-inspector__advanced {
   display: none;
 }
+// Hide the footer that can overlay the part of the sidebar
+body.js.admin_page_mailpoet-email-editor #wpfooter {
+  display: none;
+}
