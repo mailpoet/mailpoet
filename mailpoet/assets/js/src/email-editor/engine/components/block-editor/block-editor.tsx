@@ -26,6 +26,7 @@ import {
 
 import { useEntityBlockEditor, store as coreStore } from '@wordpress/core-data';
 import { storeName } from '../../store';
+import { AutosaveMonitor } from '../autosave';
 import { Sidebar } from '../sidebar/sidebar';
 import { Header } from '../header';
 import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
@@ -124,6 +125,7 @@ export function BlockEditor() {
       useSubRegistry={false}
     >
       <FullscreenMode isActive={isFullscreenActive} />
+      <AutosaveMonitor />
       <Sidebar />
       <InterfaceSkeleton
         className={className}
