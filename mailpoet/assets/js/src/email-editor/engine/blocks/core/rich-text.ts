@@ -13,9 +13,6 @@ function disableCertainRichTextFormats() {
 
   // remove support for Language - Not supported for now
   unregisterFormatType('core/language');
-
-  // remove support for Highlight - We can't apply inline text colors yet
-  unregisterFormatType('core/text-color');
 }
 
 export { disableCertainRichTextFormats };
