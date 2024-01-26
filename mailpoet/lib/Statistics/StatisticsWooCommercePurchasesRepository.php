@@ -8,6 +8,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\WooCommerce\Helper;
+use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -125,9 +126,9 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
       ->execute();
 
     // update was done via DQL, make sure the entities are also refreshed in the entity manager
-    $this->refreshAll(function (StatisticsWooCommercePurchaseEntity $entity) use ($ids) {
-      $newsletter = $entity->getNewsletter();
-      return $newsletter && in_array($newsletter->getId(), $ids, true);
-    });
+    $newsletterRefs = array_map(function ($id) {
+      return $this->entityManager->getReference(NewsletterEntity::class, $id);
+    }, $ids);
+    $this->refreshAll(new Criteria(Criteria::expr()->in('newsletter', $newsletterRefs)));
   }
 }

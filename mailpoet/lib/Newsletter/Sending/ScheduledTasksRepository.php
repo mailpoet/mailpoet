@@ -300,6 +300,7 @@ class ScheduledTasksRepository extends Repository {
   }
 
   public function touchAllByIds(array $ids): void {
+    $ids = array_map('intval', $ids);
     $now = CarbonImmutable::createFromTimestamp((int)$this->wp->currentTime('timestamp'));
     $this->entityManager->createQueryBuilder()
       ->update(ScheduledTaskEntity::class, 'st')
@@ -311,9 +312,7 @@ class ScheduledTasksRepository extends Repository {
       ->execute();
 
     // update was done via DQL, make sure the entities are also refreshed in the entity manager
-    $this->refreshAll(function (ScheduledTaskEntity $entity) use ($ids) {
-      return in_array($entity->getId(), $ids, true);
-    });
+    $this->refreshAll(new Criteria(Criteria::expr()->in('id', $ids)));
   }
 
   /**

@@ -69,6 +69,7 @@ class FormsRepository extends Repository {
     if (empty($ids)) {
       return 0;
     }
+    $ids = array_map('intval', $ids);
 
     $result = $this->entityManager->createQueryBuilder()
       ->update(FormEntity::class, 'f')
@@ -78,10 +79,7 @@ class FormsRepository extends Repository {
       ->getQuery()->execute();
 
     // update was done via DQL, make sure the entities are also refreshed in the entity manager
-    $this->refreshAll(function (FormEntity $entity) use ($ids) {
-      return in_array($entity->getId(), $ids, true);
-    });
-
+    $this->refreshAll(new Criteria(Criteria::expr()->in('id', $ids)));
     return $result;
   }
 
@@ -89,6 +87,7 @@ class FormsRepository extends Repository {
     if (empty($ids)) {
       return 0;
     }
+    $ids = array_map('intval', $ids);
 
     $result = $this->entityManager->createQueryBuilder()
       ->update(FormEntity::class, 'f')
@@ -99,10 +98,7 @@ class FormsRepository extends Repository {
       ->getQuery()->execute();
 
     // update was done via DQL, make sure the entities are also refreshed in the entity manager
-    $this->refreshAll(function (FormEntity $entity) use ($ids) {
-      return in_array($entity->getId(), $ids, true);
-    });
-
+    $this->refreshAll(new Criteria(Criteria::expr()->in('id', $ids)));
     return $result;
   }
 

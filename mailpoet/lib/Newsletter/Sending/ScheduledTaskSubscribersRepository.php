@@ -97,9 +97,13 @@ class ScheduledTaskSubscribersRepository extends Repository {
         ->execute();
 
       // update was done via DQL, make sure the entities are also refreshed in the entity manager
-      $this->refreshAll(function (ScheduledTaskSubscriberEntity $entity) use ($task, $subscriberIds) {
-        return $entity->getTask() === $task && in_array($entity->getSubscriberId(), $subscriberIds, true);
-      });
+      $subscriberRefs = array_map(function ($id) {
+        return $this->entityManager->getReference(SubscriberEntity::class, $id);
+      }, $subscriberIds);
+      $criteria = (new Criteria())
+        ->where(Criteria::expr()->eq('task', $task))
+        ->andWhere(Criteria::expr()->in('subscriberId', $subscriberRefs));
+      $this->refreshAll($criteria);
     }
 
     $this->checkCompleted($task);
