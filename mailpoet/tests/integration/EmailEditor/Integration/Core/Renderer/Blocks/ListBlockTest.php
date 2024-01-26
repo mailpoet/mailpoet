@@ -57,19 +57,23 @@ class ListBlockTest extends \MailPoetTest {
     $this->assertStringContainsString('Item 2', $rendered);
   }
 
-  public function testItRendersConfiguredStyles(): void {
+  public function testItRendersFontSizeFromPreprocessor(): void {
     $parsedList = $this->parsedList;
     $parsedList['email_attrs'] = [
       'font-size' => '20px',
-      'font-family' => 'Arial',
-      'color' => '#00aa00',
     ];
     $rendered = $this->listRenderer->render('<ul><li>Item 1</li><li>Item 2</li></ul>', $parsedList, $this->settingsController);
     $this->checkValidHTML($rendered);
     $this->assertStringContainsString('Item 1', $rendered);
     $this->assertStringContainsString('Item 2', $rendered);
     $this->assertStringContainsString('font-size:20px;', $rendered);
-    $this->assertStringContainsString('font-family:Arial;', $rendered);
-    $this->assertStringContainsString('color:#00aa00;', $rendered);
+  }
+
+  public function testItPreservesCustomSetColors(): void {
+    $parsedList = $this->parsedList;
+    $rendered = $this->listRenderer->render('<ul style="color:#ff0000;background-color:#000000"><li>Item 1</li><li>Item 2</li></ul>', $parsedList, $this->settingsController);
+    $this->checkValidHTML($rendered);
+    $this->assertStringContainsString('color:#ff0000;', $rendered);
+    $this->assertStringContainsString('background-color:#000000', $rendered);
   }
 }

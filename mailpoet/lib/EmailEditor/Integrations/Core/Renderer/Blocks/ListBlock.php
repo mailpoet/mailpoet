@@ -13,14 +13,13 @@ class ListBlock implements BlockRenderer {
     if ($html->next_tag(['tag_name' => $tagName])) {
       $styles = $html->get_attribute('style') ?? '';
       $styles = $settingsController->parseStylesToArray($styles);
-      $styles = array_merge($styles, $parsedBlock['email_attrs'] ?? []);
 
-      // List block does not need width specification and it can cause issues for nested lists
-      unset($styles['width'] );
-
-      // Use font-size from email theme when those properties are not set
-      $themeData = $settingsController->getTheme()->get_data();
-      if (!isset($styles['font-size'])) {
+      // Font size
+      if (isset($parsedBlock['email_attrs']['font-size'])) {
+        $styles['font-size'] = $parsedBlock['email_attrs']['font-size'];
+      } else {
+        // Use font-size from email theme when those properties are not set
+        $themeData = $settingsController->getTheme()->get_data();
         $styles['font-size'] = $themeData['styles']['typography']['fontSize'];
       }
 
