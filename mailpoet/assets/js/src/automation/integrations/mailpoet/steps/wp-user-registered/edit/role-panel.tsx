@@ -63,6 +63,7 @@ export function RolePanel(): JSX.Element {
             items.map((item) => item.id),
           );
         }}
+        __experimentalShowHowTo={false}
       />
     </PanelBody>
   );

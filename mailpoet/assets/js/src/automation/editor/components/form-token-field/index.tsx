@@ -31,6 +31,7 @@ export function FormTokenField({
       suggestions={suggestions.map((item) => item.name)}
       __experimentalExpandOnFocus
       __experimentalAutoSelectFirstMatch
+      __experimentalShowHowTo={false}
       placeholder={placeholder}
       onChange={(raw: string[]) => {
         const allSelected: FormTokenItem[] = raw

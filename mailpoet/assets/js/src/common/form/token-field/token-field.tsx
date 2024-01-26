@@ -57,6 +57,7 @@ export function TokenField({
       value={selectedValues}
       suggestions={suggestedValues}
       onChange={(tokens) => handleSave(tokens, onChange)}
+      __experimentalShowHowTo={false}
     />
   );
 }
