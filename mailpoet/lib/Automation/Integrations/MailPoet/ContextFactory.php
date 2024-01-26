@@ -47,7 +47,7 @@ class ContextFactory {
   }
 
   private function getSenderDomainsConfig(): array {
-    $senderDomainsConfig = $this->authorizedSenderDomainController->getContextData();
+    $senderDomainsConfig = $this->authorizedSenderDomainController->getContextDataForAutomations();
     $senderDomainsConfig['authorizedEmails'] = $this->bridge->getAuthorizedEmailAddresses();
     return $senderDomainsConfig;
   }

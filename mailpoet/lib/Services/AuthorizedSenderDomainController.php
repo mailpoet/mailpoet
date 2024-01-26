@@ -322,7 +322,14 @@ class AuthorizedSenderDomainController {
         'upperLimit' => self::UPPER_LIMIT,
         'isNewUser' => $this->isNewUser(),
         'isEnforcementOfNewRestrictionsInEffect' => $this->isEnforcementOfNewRestrictionsInEffect(),
+        'alwaysRewrite' => false,
       ],
     ];
+  }
+
+  public function getContextDataForAutomations(): array {
+    $data = $this->getContextData();
+    $data['senderRestrictions']['alwaysRewrite'] = true;
+    return $data;
   }
 }
