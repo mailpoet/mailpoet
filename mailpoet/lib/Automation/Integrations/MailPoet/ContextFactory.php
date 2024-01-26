@@ -2,24 +2,59 @@
 
 namespace MailPoet\Automation\Integrations\MailPoet;
 
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\Services\AuthorizedSenderDomainController;
+use MailPoet\Services\Bridge;
 
 class ContextFactory {
   /** @var SegmentsRepository */
   private $segmentsRepository;
 
+  /** @var Bridge */
+  private $bridge;
+
+  /** @var ServicesChecker */
+  private $servicesChecker;
+
+  /** @var AuthorizedSenderDomainController */
+  private $authorizedSenderDomainController;
+
   public function __construct(
-    SegmentsRepository $segmentsRepository
+    SegmentsRepository $segmentsRepository,
+    Bridge $bridge,
+    ServicesChecker $servicesChecker,
+    AuthorizedSenderDomainController $authorizedSenderDomainController
   ) {
     $this->segmentsRepository = $segmentsRepository;
+    $this->servicesChecker = $servicesChecker;
+    $this->bridge = $bridge;
+    $this->authorizedSenderDomainController = $authorizedSenderDomainController;
   }
 
   /** @return mixed[] */
   public function getContextData(): array {
-    return [
+    $data = [
       'segments' => $this->getSegments(),
       'userRoles' => $this->getUserRoles(),
     ];
+
+    if ($this->isMSSEnabled()) {
+      $data['senderDomainsConfig'] = $this->getSenderDomainsConfig();
+    }
+
+    return $data;
+  }
+
+  private function getSenderDomainsConfig(): array {
+    $senderDomainsConfig = $this->authorizedSenderDomainController->getContextData();
+    $senderDomainsConfig['authorizedEmails'] = $this->bridge->getAuthorizedEmailAddresses();
+    return $senderDomainsConfig;
+  }
+
+  private function isMSSEnabled(): bool {
+    $mpApiKeyValid = $this->servicesChecker->isMailPoetAPIKeyValid(false, true);
+    return $mpApiKeyValid && $this->bridge->isMailpoetSendingServiceEnabled();
   }
 
   private function getSegments(): array {
