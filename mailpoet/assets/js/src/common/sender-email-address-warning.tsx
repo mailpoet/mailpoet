@@ -4,7 +4,10 @@ import { extractEmailDomain } from 'common/functions';
 import { MailPoet } from 'mailpoet';
 import ReactStringReplace from 'react-string-replace';
 import { AuthorizeSenderEmailAndDomainModal } from 'common/authorize-sender-email-and-domain-modal';
-import { SenderDomainInlineNotice } from 'common/sender-domain-notice';
+import {
+  SenderDomainInlineNotice,
+  SenderRestrictionsType,
+} from 'common/sender-domain-notice';
 
 const userHostDomain = window.location.hostname.replace('www.', '');
 const suggestedEmailAddress = `contact@${userHostDomain}`;
@@ -16,6 +19,7 @@ type Props = {
   isEmailAuthorized?: boolean;
   showSenderDomainWarning?: boolean;
   isPartiallyVerifiedDomain?: boolean;
+  senderRestrictions?: SenderRestrictionsType;
   onSuccessfulEmailOrDomainAuthorization?: (data) => void;
 };
 
@@ -28,6 +32,7 @@ function SenderEmailAddressWarning({
   isEmailAuthorized = true,
   showSenderDomainWarning = false,
   isPartiallyVerifiedDomain = false,
+  senderRestrictions,
   onSuccessfulEmailOrDomainAuthorization = () => {},
 }: Props) {
   const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] = useState(
@@ -87,6 +92,7 @@ function SenderEmailAddressWarning({
             isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
             authorizeAction={(e) => loadModal(e, 'sender_domain')}
             subscribersCount={window.mailpoet_subscribers_count}
+            senderRestrictions={senderRestrictions}
           />
         </div>,
       );

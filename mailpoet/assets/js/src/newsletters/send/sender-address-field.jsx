@@ -142,6 +142,7 @@ class SenderField extends Component {
               !this.state.showAuthEmailsError
             }
             isPartiallyVerifiedDomain={this.state.isPartiallyVerifiedDomain}
+            senderRestrictions={window.mailpoet_sender_restrictions}
             onSuccessfulEmailOrDomainAuthorization={(data) => {
               if (data.type === 'email') {
                 this.setState({ showAuthEmailsError: false });

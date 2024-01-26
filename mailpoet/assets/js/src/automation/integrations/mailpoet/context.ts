@@ -1,14 +1,10 @@
 import { select } from '@wordpress/data';
 import { FormTokenItem } from '../../editor/components';
 import { storeName } from '../../editor/store';
+import { SenderRestrictionsType } from '../../../common';
 
 type Segment = FormTokenItem & {
   type: string;
-};
-
-type SenderRestrictions = {
-  lowerLimit: number;
-  upperLimit: number;
 };
 
 type SenderDomainsConfig = {
@@ -16,7 +12,7 @@ type SenderDomainsConfig = {
   verifiedSenderDomains: string[];
   partiallyVerifiedSenderDomains: string[];
   allSenderDomains: string[];
-  senderRestrictions: SenderRestrictions;
+  senderRestrictions: SenderRestrictionsType;
 };
 
 export type Context = {
