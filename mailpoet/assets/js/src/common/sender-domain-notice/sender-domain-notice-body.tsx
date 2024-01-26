@@ -19,17 +19,31 @@ function SenderDomainNoticeBody({
 }) {
   const renderMessage = (messageKey: string) => {
     const messages: { [key: string]: string } = {
-      freeSmall:
+      freeSmall: __(
         "Shared 3rd-party domains like <emailDomain/> will send from MailPoet's shared domain. We recommend that you use your site's branded domain instead.",
-      free: "MailPoet cannot send email campaigns from shared 3rd-party domains like <emailDomain/>. Please send from your site's branded domain instead.",
+        'mailpoet',
+      ),
+      free: __(
+        "MailPoet cannot send email campaigns from shared 3rd-party domains like <emailDomain/>. Please send from your site's branded domain instead.",
+        'mailpoet',
+      ),
       // TODO: Remove freeWarning after the enforcement date has passed
-      freeWarning:
+      freeWarning: __(
         "Starting on February 1st, 2024, MailPoet will no longer be able to send from email addresses on shared 3rd party domains like <emailDomain/>. Please send from your site's branded domain instead.",
-      partiallyVerified:
+        'mailpoet',
+      ),
+      partiallyVerified: __(
         'Update your domain settings to improve email deliverability and meet new sending requirements.',
-      smallSender:
+        'mailpoet',
+      ),
+      smallSender: __(
         'Authenticate to send as <emailDomain/> and improve email deliverability.',
-      default: 'Authenticate domain to send new emails as <emailDomain/>.',
+        'mailpoet',
+      ),
+      default: __(
+        'Authenticate domain to send new emails as <emailDomain/>.',
+        'mailpoet',
+      ),
     };
 
     const defaultMessage = messages[messageKey] || messages.default;
