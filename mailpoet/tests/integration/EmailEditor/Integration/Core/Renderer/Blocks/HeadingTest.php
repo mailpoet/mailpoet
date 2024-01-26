@@ -54,10 +54,16 @@ class HeadingTest extends \MailPoetTest {
 
   public function testItRendersBlockAttributes(): void {
     $rendered = $this->headingRenderer->render('<h1>This is Heading 1</h1>', $this->parsedHeading, $this->settingsController);
-    verify($rendered)->stringContainsString('background-color:#cf2e2e'); // background color from theme.json matching vivid-red
-    verify($rendered)->stringContainsString('color:#8ed1fc;'); // color from theme.json matching pale-cyan-blue
     verify($rendered)->stringContainsString('text-transform:lowercase;');
     verify($rendered)->stringContainsString('text-align:center;');
+  }
+
+  public function testItRendersCustomSetColors(): void {
+    $this->parsedHeading['attrs']['style']['color']['background'] = '#000000';
+    $this->parsedHeading['attrs']['style']['color']['text'] = '#ff0000';
+    $rendered = $this->headingRenderer->render('<h1>This is Heading 1</h1>', $this->parsedHeading, $this->settingsController);
+    verify($rendered)->stringContainsString('background-color:#000000');
+    verify($rendered)->stringContainsString('color:#ff0000;');
   }
 
   public function testItReplacesFluidFontSizeInContent(): void {

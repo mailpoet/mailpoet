@@ -37,6 +37,16 @@ class RendererTest extends \MailPoetTest {
     verify($headingHtml)->stringContainsString('font-size:48px'); // large is 48px
   }
 
+  public function testItInlinesHeadingColors() {
+    $emailPost = new \WP_Post((object)[
+      'post_content' => '<!-- wp:heading {"level":1, "backgroundColor":"black", "textColor":"luminous-vivid-orange"} --><h1 class="wp-block-heading has-luminous-vivid-orange-color has-black-background-color">Hello</h1><!-- /wp:heading -->',
+    ]);
+    $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
+    $headingWrapperStyle = $this->extractBlockStyle($rendered['html'], 'has-luminous-vivid-orange-color', 'td');
+    verify($headingWrapperStyle)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
+    verify($headingWrapperStyle)->stringContainsString('background-color:#000000'); // black is #000000
+  }
+
   public function testItInlinesParagraphColors() {
     $emailPost = new \WP_Post((object)[
       'post_content' => '<!-- wp:paragraph {style":{"color":{"background":"black", "text":"luminous-vivid-orange"}}} --><p class="has-luminous-vivid-orange-color has-black-background-color">Hello</p><!-- /wp:paragraph -->',
