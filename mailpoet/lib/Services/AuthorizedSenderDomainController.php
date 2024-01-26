@@ -116,12 +116,12 @@ class AuthorizedSenderDomainController {
 
     $response = $this->bridge->createAuthorizedSenderDomain($domain);
 
-    if ($response['status'] === API::RESPONSE_STATUS_ERROR) {
+    if (isset($response['status']) && $response['status'] === API::RESPONSE_STATUS_ERROR) {
       throw new \InvalidArgumentException($response['message']);
     }
 
     // Reset cached value since a new domain was added
-    $this->currentRecords = null;
+    $this->reloadCache();
 
     return $response;
   }
