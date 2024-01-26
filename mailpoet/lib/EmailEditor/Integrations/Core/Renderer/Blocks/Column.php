@@ -53,7 +53,7 @@ class Column implements BlockRenderer {
             <tbody>
               <tr>
                 <td align="left" style="font-size:0px;padding-left:' . $paddingLeft . ';padding-right:' . $paddingRight . ';padding-bottom:' . $paddingBottom . ';padding-top:' . $paddingTop . ';">
-                  <div style="line-height:1;text-align:left;">{column_content}</div>
+                  <div style="text-align:left;">{column_content}</div>
                 </td>
               </tr>
             </tbody>

@@ -41,7 +41,7 @@ class Columns implements BlockRenderer {
     }
 
     return '
-      <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="width:' . $width . ';" width="' . $width . '"><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
+      <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="width:' . $width . ';" width="' . $width . '"><tr><td style="font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
       <div style="margin-top:' . $marginTop . ';max-width:' . $width . ';padding-left:' . $layoutPaddingLeft . ';padding-right:' . $layoutPaddingRight . ';">
         <table
           align="center"
