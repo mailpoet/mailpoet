@@ -163,6 +163,11 @@ class SettingsController {
     foreach ($emailThemeSettings['typography']['fontSizes']['default'] as $fontSize) {
       $cssPresets .= ".has-{$fontSize['slug']}-font-size { font-size: {$fontSize['size']}; } \n";
     }
+    // Color palette classes
+    foreach ($emailThemeSettings['color']['palette']['default'] as $color) {
+      $cssPresets .= ".has-{$color['slug']}-color { color: {$color['color']}; } \n";
+      $cssPresets .= ".has-{$color['slug']}-background-color { background-color: {$color['color']}; } \n";
+    }
 
     // Block specific styles
     $cssBlocks = '';
