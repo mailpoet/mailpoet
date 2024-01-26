@@ -75,13 +75,15 @@ function SenderEmailAddressWarning({
     }
     if (showSenderDomainWarning && isEmailAuthorized) {
       displayElements.push(
-        <SenderDomainInlineNotice
-          emailAddress={emailAddress}
-          isFreeDomain={isFreeDomain}
-          isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
-          authorizeAction={(e) => loadModal(e, 'sender_domain')}
-          subscribersCount={window.mailpoet_subscribers_count}
-        />,
+        <div key="authorizeSenderDomain">
+          <SenderDomainInlineNotice
+            emailAddress={emailAddress}
+            isFreeDomain={isFreeDomain}
+            isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
+            authorizeAction={(e) => loadModal(e, 'sender_domain')}
+            subscribersCount={window.mailpoet_subscribers_count}
+          />
+        </div>,
       );
     }
 

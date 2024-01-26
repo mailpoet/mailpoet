@@ -66,32 +66,30 @@ function SenderDomainInlineNotice({
   }
 
   return (
-    <div key="authorizeSenderDomain">
-      <InlineNotice
-        status={isAlert ? 'alert' : 'info'}
-        topMessage={
-          showRewrittenEmail ? (
-            <SenderEmailRewriteInfo emailAddress={emailAddress} />
-          ) : undefined
-        }
-        actions={
-          <SenderActions
-            showAuthorizeButton={showAuthorizeButton}
-            authorizeAction={authorizeAction}
-            isFreeDomain={isFreeDomain}
-            isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
-          />
-        }
-      >
-        <SenderDomainNoticeBody
-          emailAddressDomain={emailAddressDomain}
+    <InlineNotice
+      status={isAlert ? 'alert' : 'info'}
+      topMessage={
+        showRewrittenEmail ? (
+          <SenderEmailRewriteInfo emailAddress={emailAddress} />
+        ) : undefined
+      }
+      actions={
+        <SenderActions
+          showAuthorizeButton={showAuthorizeButton}
+          authorizeAction={authorizeAction}
           isFreeDomain={isFreeDomain}
           isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
-          isSmallSender={isSmallSender}
-          onlyShowWarnings={onlyShowWarnings}
         />
-      </InlineNotice>
-    </div>
+      }
+    >
+      <SenderDomainNoticeBody
+        emailAddressDomain={emailAddressDomain}
+        isFreeDomain={isFreeDomain}
+        isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
+        isSmallSender={isSmallSender}
+        onlyShowWarnings={onlyShowWarnings}
+      />
+    </InlineNotice>
   );
 }
 
