@@ -117,6 +117,7 @@ export function DefaultSender() {
             isEmailAuthorized={isAuthorized}
             showSenderDomainWarning={showSenderDomainWarning}
             isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
+            senderRestrictions={window.mailpoet_sender_restrictions}
             onSuccessfulEmailOrDomainAuthorization={(data) => {
               if (data.type === 'email') {
                 setIsAuthorized(true);

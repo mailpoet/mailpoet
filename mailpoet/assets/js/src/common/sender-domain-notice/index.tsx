@@ -6,12 +6,19 @@ import { InlineNotice } from 'common/notices/inline-notice';
 import { SenderDomainNoticeBody } from './sender-domain-notice-body';
 import { SenderActions } from './sender-domain-notice-actions';
 
+export type SenderRestrictionsType = {
+  lowerLimit: number;
+  isNewUser: boolean;
+  isEnforcementOfNewRestrictionsInEffect: boolean;
+};
+
 type SenderDomainInlineNoticeProps = {
   authorizeAction: (e) => void;
   emailAddress: string;
   subscribersCount: number;
   isFreeDomain: boolean;
   isPartiallyVerifiedDomain: boolean;
+  senderRestrictions: SenderRestrictionsType;
 };
 
 function SenderEmailRewriteInfo({ emailAddress = '' }): JSX.Element {
@@ -38,6 +45,7 @@ function SenderDomainInlineNotice({
   subscribersCount,
   isFreeDomain,
   isPartiallyVerifiedDomain,
+  senderRestrictions,
 }: SenderDomainInlineNoticeProps) {
   let showRewrittenEmail = false;
   const showAuthorizeButton = !isFreeDomain;
@@ -45,12 +53,11 @@ function SenderDomainInlineNotice({
 
   const emailAddressDomain = extractEmailDomain(emailAddress);
 
-  const LOWER_LIMIT = window.mailpoet_sender_restrictions?.lowerLimit || 500;
+  const LOWER_LIMIT = senderRestrictions?.lowerLimit || 500;
 
-  const isNewUser = window.mailpoet_sender_restrictions?.isNewUser ?? true;
+  const isNewUser = senderRestrictions?.isNewUser ?? true;
   const isEnforcementOfNewRestrictionsInEffect =
-    window.mailpoet_sender_restrictions
-      ?.isEnforcementOfNewRestrictionsInEffect ?? true;
+    senderRestrictions?.isEnforcementOfNewRestrictionsInEffect ?? true;
   // TODO: Remove after the enforcement date has passed
   const onlyShowWarnings =
     !isNewUser && !isEnforcementOfNewRestrictionsInEffect;

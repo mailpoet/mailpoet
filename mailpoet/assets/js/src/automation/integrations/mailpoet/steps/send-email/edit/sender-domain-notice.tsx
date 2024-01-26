@@ -51,6 +51,7 @@ function SenderDomainStatusNotice({
       isEmailAuthorized={isAuthorized}
       showSenderDomainWarning={showSenderDomainWarning && isAuthorized}
       isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
+      senderRestrictions={senderDomainsConfig.senderRestrictions}
       onSuccessfulEmailOrDomainAuthorization={(data) => {
         if (data.type === 'email') {
           senderDomainsConfig.authorizedEmails.push(email);
