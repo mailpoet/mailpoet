@@ -13,3 +13,8 @@
 .mailpoet-sendmail-description-type {
   color: #787c82;
 }
+
+.components-panel__body.is-opened .mailpoet-inline-notice {
+  margin-top: -16px;
+  padding-bottom: 24px;
+}
