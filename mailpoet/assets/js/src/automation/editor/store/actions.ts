@@ -271,3 +271,12 @@ export function removeStepErrors(stepId) {
     stepId,
   };
 }
+
+export function alterContext(context: string, key: string, value: unknown) {
+  return {
+    type: 'UPDATE_CONTEXT',
+    context,
+    key,
+    value,
+  };
+}

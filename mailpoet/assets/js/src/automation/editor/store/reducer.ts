@@ -143,6 +143,17 @@ export function reducer(state: State, action): State {
             : undefined,
       };
     }
+    case 'UPDATE_CONTEXT':
+      return {
+        ...state,
+        context: {
+          ...state.context,
+          [action.context as string]: {
+            ...(state.context[action.context as string] as object),
+            [action.key as string]: action.value as string,
+          },
+        },
+      };
     default:
       return state;
   }
