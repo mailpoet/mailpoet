@@ -17,6 +17,7 @@ use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
 use MailPoet\WP\Functions as WPFunctions;
+use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use Throwable;
 
@@ -83,19 +84,23 @@ class NewsletterDeleteController {
 
     $this->entityManager->beginTransaction();
     try {
+      $newsletterCriteria = new Criteria(
+        Criteria::expr()->in('newsletter', $this->newslettersRepository->getReferences($ids))
+      );
+
       // Delete statistics data
-      $this->statisticsNewslettersRepository->deleteByNewsletterIds($ids);
-      $this->statisticsOpensRepository->deleteByNewsletterIds($ids);
-      $this->statisticsClicksRepository->deleteByNewsletterIds($ids);
+      $this->statisticsNewslettersRepository->deleteAll($newsletterCriteria);
+      $this->statisticsOpensRepository->deleteAll($newsletterCriteria);
+      $this->statisticsClicksRepository->deleteAll($newsletterCriteria);
 
       // Update WooCommerce statistics and remove newsletter and click id
       $this->statisticsWooCommercePurchasesRepository->removeNewsletterDataByNewsletterIds($ids);
 
       // Delete newsletter posts, options, links, and segments
-      $this->newsletterPostsRepository->deleteByNewsletterIds($ids);
-      $this->newsletterOptionsRepository->deleteByNewsletterIds($ids);
-      $this->newsletterLinkRepository->deleteByNewsletterIds($ids);
-      $this->newsletterSegmentRepository->deleteByNewsletterIds($ids);
+      $this->newsletterPostsRepository->deleteAll($newsletterCriteria);
+      $this->newsletterOptionsRepository->deleteAll($newsletterCriteria);
+      $this->newsletterLinkRepository->deleteAll($newsletterCriteria);
+      $this->newsletterSegmentRepository->deleteAll($newsletterCriteria);
 
       // Delete stats notifications and related tasks
       /** @var string[] $taskIds */
@@ -109,7 +114,7 @@ class NewsletterDeleteController {
       $taskIds = array_map('intval', $taskIds);
 
       $this->scheduledTasksRepository->deleteByIds($taskIds);
-      $this->statsNotificationsRepository->deleteByNewsletterIds($ids);
+      $this->statsNotificationsRepository->deleteAll($newsletterCriteria);
 
       // Delete scheduled task subscribers, scheduled tasks, and sending queues
       /** @var string[] $taskIds */
@@ -124,7 +129,7 @@ class NewsletterDeleteController {
 
       $this->scheduledTaskSubscribersRepository->deleteByTaskIds($taskIds);
       $this->scheduledTasksRepository->deleteByIds($taskIds);
-      $this->sendingQueuesRepository->deleteByNewsletterIds($ids);
+      $this->sendingQueuesRepository->deleteAll($newsletterCriteria);
 
       // Fetch WP Posts IDs and delete them
       /** @var string[] $wpPostIds */

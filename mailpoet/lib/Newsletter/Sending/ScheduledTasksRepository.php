@@ -13,6 +13,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Carbon\CarbonImmutable;
+use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
@@ -344,17 +345,8 @@ class ScheduledTasksRepository extends Repository {
 
   /** @param int[] $ids */
   public function deleteByIds(array $ids): void {
-    $this->entityManager->createQueryBuilder()
-      ->delete(ScheduledTaskEntity::class, 't')
-      ->where('t.id IN (:ids)')
-      ->setParameter('ids', $ids)
-      ->getQuery()
-      ->execute();
-
-    // delete was done via DQL, make sure the entities are also detached from the entity manager
-    $this->detachAll(function (ScheduledTaskEntity $entity) use ($ids) {
-      return in_array($entity->getId(), $ids, true);
-    });
+    $ids = array_map('intval', $ids);
+    $this->deleteAll(new Criteria(Criteria::expr()->in('id', $ids)));
   }
 
   protected function findByTypeAndStatus($type, $status, $limit = null, $future = false) {

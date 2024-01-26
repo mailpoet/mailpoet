@@ -145,8 +145,14 @@ abstract class Repository {
     $this->entityManager->flush();
   }
 
+  /** @return T|null */
   public function getReference($id) {
     return $this->entityManager->getReference($this->getEntityClassName(), $id);
+  }
+
+  /** @return T[] */
+  public function getReferences(array $ids): array {
+    return array_values(array_filter(array_map([$this, 'getReference'], $ids)));
   }
 
   /**

@@ -9,6 +9,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
@@ -125,35 +126,20 @@ class ScheduledTaskSubscribersRepository extends Repository {
 
   /** @param int[] $ids */
   public function deleteByTaskIds(array $ids): void {
-    $this->entityManager->createQueryBuilder()
-      ->delete(ScheduledTaskSubscriberEntity::class, 'sts')
-      ->where('sts.task IN (:taskIds)')
-      ->setParameter('taskIds', $ids)
-      ->getQuery()
-      ->execute();
-
-    // delete was done via DQL, make sure the entities are also detached from the entity manager
-    $this->detachAll(function (ScheduledTaskSubscriberEntity $entity) use ($ids) {
-      $task = $entity->getTask();
-      return $task && in_array($task->getId(), $ids, true);
-    });
+    $taskRefs = array_map(function ($id) {
+      return $this->entityManager->getReference(ScheduledTaskEntity::class, $id);
+    }, $ids);
+    $this->deleteAll(new Criteria(Criteria::expr()->in('task', $taskRefs)));
   }
 
   public function deleteByScheduledTask(ScheduledTaskEntity $scheduledTask): void {
-    $this->entityManager->createQueryBuilder()
-      ->delete(ScheduledTaskSubscriberEntity::class, 'sts')
-      ->where('sts.task = :task')
-      ->setParameter('task', $scheduledTask)
-      ->getQuery()
-      ->execute();
-
-    // delete was done via DQL, make sure the entities are also detached from the entity manager
-    $this->detachAll(function (ScheduledTaskSubscriberEntity $entity) use ($scheduledTask) {
-      return $entity->getTask() === $scheduledTask;
-    });
+    $this->deleteAll(new Criteria(Criteria::expr()->eq('task', $scheduledTask)));
   }
 
   public function deleteByScheduledTaskAndSubscriberIds(ScheduledTaskEntity $scheduledTask, array $subscriberIds): void {
+    // Query and detach entities manually, rather than using criteria, because the criteria
+    // evaluation logic uses "SafeToOneAssociationLoadTrait" which can set subscriber to null.
+    // (The criteria evaluation uses getters on entities in memory.)
     $this->entityManager->createQueryBuilder()
       ->delete(ScheduledTaskSubscriberEntity::class, 'sts')
       ->where('sts.task = :task')
@@ -163,12 +149,11 @@ class ScheduledTaskSubscribersRepository extends Repository {
       ->getQuery()
       ->execute();
 
-    // delete was done via DQL, make sure the entities are also detached from the entity manager
-    $this->detachAll(function (ScheduledTaskSubscriberEntity $entity) use ($scheduledTask, $subscriberIds) {
-      return $entity->getTask() === $scheduledTask && in_array($entity->getSubscriberId(), $subscriberIds, true);
-    });
-
-    $this->checkCompleted($scheduledTask);
+    foreach ($this->getAllFromIdentityMap() as $entity) {
+      if ($entity->getTask() === $scheduledTask && in_array($entity->getSubscriberId(), $subscriberIds, true)) {
+        $this->detach($entity);
+      }
+    }
   }
 
   public function setSubscribers(ScheduledTaskEntity $task, array $subscriberIds): void {

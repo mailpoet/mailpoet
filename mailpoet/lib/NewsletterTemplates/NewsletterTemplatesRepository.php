@@ -5,6 +5,7 @@ namespace MailPoet\NewsletterTemplates;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterTemplateEntity;
+use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 
 /**
  * @extends Repository<NewsletterTemplateEntity>
@@ -83,21 +84,13 @@ class NewsletterTemplatesRepository extends Repository {
       ->setMaxResults(self::RECENTLY_SENT_COUNT)
       ->getQuery()
       ->getResult();
+    $recentIds = array_map('intval', array_column($recentIds, 'id'));
 
     // delete all 'RECENTLY_SENT_CATEGORIES' templates except the latest ones selected above
-    $this->entityManager->createQueryBuilder()
-      ->delete(NewsletterTemplateEntity::class, 'nt')
-      ->where('nt.categories = :categories')
-      ->andWhere('nt.id NOT IN (:recentIds)')
-      ->setParameter('categories', self::RECENTLY_SENT_CATEGORIES)
-      ->setParameter('recentIds', array_column($recentIds, 'id'))
-      ->getQuery()
-      ->execute();
-
-    // delete was done via DQL, make sure the entities are also detached from the entity manager
-    $this->detachAll(function (NewsletterTemplateEntity $entity) use ($recentIds) {
-      return $entity->getCategories() === self::RECENTLY_SENT_CATEGORIES && !in_array($entity->getId(), $recentIds, true);
-    });
+    $criteria = (new Criteria())
+      ->where(Criteria::expr()->eq('categories', self::RECENTLY_SENT_CATEGORIES))
+      ->andWhere(Criteria::expr()->notIn('id', $recentIds));
+    $this->deleteAll($criteria);
   }
 
   public function getRecentlySentCount(): int {

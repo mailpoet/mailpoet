@@ -160,20 +160,6 @@ class SendingQueuesRepository extends Repository {
     }
   }
 
-  public function deleteByTask(ScheduledTaskEntity $scheduledTask): void {
-    $this->entityManager->createQueryBuilder()
-      ->delete(SendingQueueEntity::class, 'sq')
-      ->where('sq.task = :task')
-      ->setParameter('task', $scheduledTask)
-      ->getQuery()
-      ->execute();
-
-    // delete was done via DQL, make sure the entities are also detached from the entity manager
-    $this->detachAll(function (SendingQueueEntity $entity) use ($scheduledTask) {
-      return $entity->getTask() === $scheduledTask;
-    });
-  }
-
   public function saveCampaignId(SendingQueueEntity $queue, string $campaignId): void {
     $meta = $queue->getMeta();
     if (!is_array($meta)) {
@@ -226,21 +212,5 @@ class SendingQueuesRepository extends Repository {
       $queue->setCountTotal($processed + $unprocessed);
     }
     $this->entityManager->flush();
-  }
-
-  /** @param int[] $ids */
-  public function deleteByNewsletterIds(array $ids): void {
-    $this->entityManager->createQueryBuilder()
-      ->delete(SendingQueueEntity::class, 'q')
-      ->where('q.newsletter IN (:ids)')
-      ->setParameter('ids', $ids)
-      ->getQuery()
-      ->execute();
-
-    // delete was done via DQL, make sure the entities are also detached from the entity manager
-    $this->detachAll(function (SendingQueueEntity $entity) use ($ids) {
-      $newsletter = $entity->getNewsletter();
-      return $newsletter && in_array($newsletter->getId(), $ids, true);
-    });
   }
 }

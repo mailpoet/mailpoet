@@ -4,6 +4,7 @@ namespace MailPoet\Form;
 
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\FormEntity;
+use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 
 /**
  * @extends Repository<FormEntity>
@@ -109,18 +110,7 @@ class FormsRepository extends Repository {
     if (empty($ids)) {
       return 0;
     }
-
-    $result = $this->entityManager->createQueryBuilder()
-      ->delete(FormEntity::class, 'f')
-      ->where('f.id IN (:ids)')
-      ->setParameter('ids', $ids)
-      ->getQuery()->execute();
-
-    // delete was done via DQL, make sure the entities are also detached from the entity manager
-    $this->detachAll(function (FormEntity $entity) use ($ids) {
-      return in_array($entity->getId(), $ids, true);
-    });
-
-    return $result;
+    $ids = array_map('intval', $ids);
+    return $this->deleteAll(new Criteria(Criteria::expr()->in('id', $ids)));
   }
 }

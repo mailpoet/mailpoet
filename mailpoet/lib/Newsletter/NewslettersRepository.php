@@ -16,6 +16,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
@@ -346,17 +347,8 @@ class NewslettersRepository extends Repository {
 
   /** @param int[] $ids */
   public function deleteByIds(array $ids): void {
-    $this->entityManager->createQueryBuilder()
-      ->delete(NewsletterEntity::class, 'n')
-      ->where('n.id IN (:ids)')
-      ->setParameter('ids', $ids)
-      ->getQuery()
-      ->execute();
-
-    // delete was done via DQL, make sure the entities are also detached from the entity manager
-    $this->detachAll(function (NewsletterEntity $entity) use ($ids) {
-      return in_array($entity->getId(), $ids, true);
-    });
+    $ids = array_map('intval', $ids);
+    $this->deleteAll(new Criteria(Criteria::expr()->in('id', $ids)));
   }
 
   /**
