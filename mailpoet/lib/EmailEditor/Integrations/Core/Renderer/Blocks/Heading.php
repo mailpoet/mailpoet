@@ -9,21 +9,21 @@ use MailPoet\Util\Helpers;
 class Heading implements BlockRenderer {
   public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $level = $parsedBlock['attrs']['level'] ?? 2; // default level is 2
-    $blockContent = $this->adjustStyleAttribute($blockContent, $parsedBlock, $settingsController, ['tag_name' => "h{$level}"]);
-    return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($parsedBlock, $settingsController));
+    $blockContent = $this->adjustStyleAttribute($blockContent, $parsedBlock, $settingsController, ['tag_name' => "h$level"]);
+
+    return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($blockContent, $parsedBlock, $settingsController));
   }
 
   /**
    * Based on MJML <mj-text>
    */
-  private function getBlockWrapper(array $parsedBlock, SettingsController $settingsController): string {
-
-    $availableStylesheets = $settingsController->getAvailableStylesheets();
+  private function getBlockWrapper($blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
+    $level = $parsedBlock['attrs']['level'] ?? 2; // default level is 2
+    $classes = $this->getClassesFromElement($blockContent, ['tag_name' => "h$level"]);
 
     // Styles for padding need to be set on the wrapping table cell due to support in Outlook
     $styles = [
-      'background-color' => $parsedBlock['attrs']['style']['color']['background'] ?? 'transparent',
       'min-width' => '100%', // prevent Gmail App from shrinking the table on mobile devices
       'padding-bottom' => $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px',
       'padding-left' => $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px',
@@ -31,13 +31,26 @@ class Heading implements BlockRenderer {
       'padding-top' => $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px',
     ];
 
-    foreach ($parsedBlock['email_attrs'] ?? [] as $property => $value) {
-      if ($property === 'width') continue; // width is handled by the wrapping blocks (columns, column)
-      if ($property === 'margin-top') continue; // margin-top is set on the wrapping div co we need to avoid duplication
-      $styles[$property] = $value;
+    if (isset($parsedBlock['attrs']['textAlign'])) {
+      $styles['text-align'] = $parsedBlock['attrs']['textAlign'];
     }
 
-    $styles = array_merge($styles, $this->fetchStylesFromBlockAttrs($availableStylesheets, $parsedBlock['attrs']));
+    if (isset($parsedBlock['attrs']['style']['color']['background'])) {
+      $styles['background-color'] = $parsedBlock['attrs']['style']['color']['background'];
+    }
+
+    if (isset($parsedBlock['attrs']['style']['color']['text'])) {
+      $styles['color'] = $parsedBlock['attrs']['style']['color']['text'];
+    }
+
+    // fetch Block Style Typography e.g., fontStyle, fontWeight, etc
+    $attrs = $parsedBlock['attrs'] ?? [];
+    if (isset($attrs['style']['typography'])) {
+      $blockStyleTypographyKeys = array_keys($attrs['style']['typography']);
+      foreach ($blockStyleTypographyKeys as $blockStyleTypographyKey) {
+        $styles[Helpers::camelCaseToKebabCase($blockStyleTypographyKey)] = $attrs['style']['typography'][$blockStyleTypographyKey];
+      }
+    }
 
     return '
       <!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><![endif]-->
@@ -51,7 +64,7 @@ class Heading implements BlockRenderer {
             width="100%"
           >
             <tr>
-              <td style="' . $settingsController->convertStylesToString($styles) . '">
+              <td class="' . esc_attr($classes) . '" style="' . $settingsController->convertStylesToString($styles) . '">
                 {heading_content}
               </td>
             </tr>
@@ -59,55 +72,6 @@ class Heading implements BlockRenderer {
         </div>
       <!--[if mso | IE]></td></tr></table><![endif]-->
     ';
-  }
-
-  private function fetchStylesFromBlockAttrs(?string $availableStylesheets, array $attrs = []): array {
-    $styles = [];
-
-    $supportedValues = ['textAlign'];
-
-    foreach ($supportedValues as $supportedValue) {
-      if (array_key_exists($supportedValue, $attrs)) {
-        $styles[Helpers::camelCaseToKebabCase($supportedValue)] = $attrs[$supportedValue];
-      }
-    }
-
-    // using custom rules because colors do not automatically resolve to hex value
-    $supportedColorValues = ['backgroundColor', 'textColor'];
-    foreach ($supportedColorValues as $supportedColorValue) {
-      if (array_key_exists($supportedColorValue, $attrs)) {
-        $colorKey = $attrs[$supportedColorValue];
-
-        $cssString = $availableStylesheets ?? '';
-
-        $colorRegex = "/--wp--preset--color--$colorKey: (#[0-9a-fA-F]{6});/";
-
-        // fetch color hex from available stylesheets
-        preg_match($colorRegex, $cssString, $colorMatch);
-
-        $colorValue = '';
-        if ($colorMatch) {
-          $colorValue = $colorMatch[1];
-        }
-
-        if ($supportedColorValue === 'textColor') {
-          $styles['color'] = $colorValue; // use color instead of textColor. textColor not valid CSS property
-        } else {
-          $styles[Helpers::camelCaseToKebabCase($supportedColorValue)] = $colorValue;
-        }
-
-      }
-    }
-
-    // fetch Block Style Typography e.g., fontStyle, fontWeight, etc
-    if (isset($attrs['style']['typography'])) {
-      $blockStyleTypographyKeys = array_keys($attrs['style']['typography']);
-      foreach ($blockStyleTypographyKeys as $blockStyleTypographyKey) {
-        $styles[Helpers::camelCaseToKebabCase($blockStyleTypographyKey)] = $attrs['style']['typography'][$blockStyleTypographyKey];
-      }
-    }
-
-    return $styles;
   }
 
   /**
@@ -131,5 +95,17 @@ class Heading implements BlockRenderer {
     }
 
     return $blockContent;
+  }
+
+  /**
+   * @param array{tag_name: string, class_name?: string} $tag
+   */
+  private function getClassesFromElement($blockContent, array $tag): string {
+    $html = new \WP_HTML_Tag_Processor($blockContent);
+    $elementClass = '';
+    if ($html->next_tag($tag)) {
+      $elementClass = $html->get_attribute('class') ?? '';
+    }
+    return $elementClass;
   }
 }
