@@ -2,6 +2,7 @@
 
 namespace MailPoet\Doctrine;
 
+use MailPoetVendor\Doctrine\Common\Collections\ArrayCollection;
 use MailPoetVendor\Doctrine\Common\Collections\Collection;
 use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -81,6 +82,17 @@ abstract class Repository {
     return $this->doctrineRepository->findAll();
   }
 
+  public function deleteAll(Criteria $criteria = null): int {
+    $qb = $this->entityManager->createQueryBuilder()->delete($this->getEntityClassName(), 'e');
+    if ($criteria) {
+      $qb->addCriteria($criteria);
+    }
+    $result = $qb->getQuery()->execute();
+
+    $this->detachAll($criteria);
+    return is_numeric($result) ? (int)$result : 0;
+  }
+
   /**
    * @param T $entity
    */
@@ -144,22 +156,29 @@ abstract class Repository {
     $this->entityManager->detach($entity);
   }
 
-  /**
-   * @param callable(T): bool|null $filter
-   */
-  public function detachAll(callable $filter = null): void {
+  public function detachAll(Criteria $criteria = null): void {
+    $entities = $this->getAllFromIdentityMap();
+    if ($criteria) {
+      $entities = (new ArrayCollection($entities))->matching($criteria);
+    }
+    foreach ($entities as $entity) {
+      $this->entityManager->detach($entity);
+    }
+  }
+
+  /** @return T[] */
+  public function getAllFromIdentityMap(): array {
     $className = $this->getEntityClassName();
     $rootClassName = $this->entityManager->getClassMetadata($className)->rootEntityName;
     $entities = $this->entityManager->getUnitOfWork()->getIdentityMap()[$rootClassName] ?? [];
+
+    $result = [];
     foreach ($entities as $entity) {
-      if (!($entity instanceof $className)) {
-        continue;
+      if ($entity instanceof $className) {
+        $result[] = $entity;
       }
-      if ($filter && !$filter($entity)) {
-        continue;
-      }
-      $this->entityManager->detach($entity);
     }
+    return $result;
   }
 
   /**

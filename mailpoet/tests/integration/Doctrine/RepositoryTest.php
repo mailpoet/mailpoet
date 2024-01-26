@@ -4,6 +4,7 @@ namespace MailPoet\Test\Doctrine;
 
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\SettingEntity;
+use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 
 class RepositoryTest extends \MailPoetTest {
   public function testItCanPersistAndFlush(): void {
@@ -47,9 +48,9 @@ class RepositoryTest extends \MailPoetTest {
     $this->assertSame($this->getEntityFromIdentityMap($setting2->getId()), $setting2);
     $this->assertSame($this->getEntityFromIdentityMap($setting3->getId()), $setting3);
 
-    $repository->detachAll(function (SettingEntity $setting) use ($setting1, $setting3) {
-      return !in_array($setting->getId(), [$setting1->getId(), $setting3->getId()], true);
-    });
+    $repository->detachAll(
+      new Criteria(Criteria::expr()->notIn('id', [$setting1->getId(), $setting3->getId()]))
+    );
 
     $this->assertSame($this->getEntityFromIdentityMap($setting1->getId()), $setting1);
     $this->assertNull($this->getEntityFromIdentityMap($setting2->getId()));
