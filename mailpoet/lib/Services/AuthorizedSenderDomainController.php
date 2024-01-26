@@ -311,4 +311,18 @@ class AuthorizedSenderDomainController {
   public function isAuthorizedDomainRequiredForExistingCampaigns(): bool {
     return $this->restrictionsApply() && $this->isBigSender();
   }
+
+  public function getContextData(): array {
+    return [
+      'verifiedSenderDomains' => $this->getFullyVerifiedSenderDomains(true),
+      'partiallyVerifiedSenderDomains' => $this->getPartiallyVerifiedSenderDomains(true),
+      'allSenderDomains' => $this->getAllSenderDomains(),
+      'senderRestrictions' => [
+        'lowerLimit' => self::LOWER_LIMIT,
+        'upperLimit' => self::UPPER_LIMIT,
+        'isNewUser' => $this->isNewUser(),
+        'isEnforcementOfNewRestrictionsInEffect' => $this->isEnforcementOfNewRestrictionsInEffect(),
+      ],
+    ];
+  }
 }
