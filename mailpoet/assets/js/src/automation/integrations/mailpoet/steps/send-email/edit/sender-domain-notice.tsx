@@ -1,10 +1,8 @@
-import { useState, useMemo, useEffect } from 'react';
-import { dispatch } from '@wordpress/data';
+import { useMemo } from 'react';
 import { extractEmailDomain } from 'common/functions';
 import { SenderEmailAddressWarning } from '../../../../../../common/sender-email-address-warning';
 import { MailPoet } from '../../../../../../mailpoet';
-import { getContext } from '../../../context';
-import { storeName } from '../../../../../editor/store';
+import { useSelectContext, updateSenderDomainsConfig } from '../../../context';
 
 type SenderDomainInlineNoticeProps = {
   email: string;
@@ -25,9 +23,7 @@ type SenderDomainInlineNoticeProps = {
 function SenderDomainStatusNotice({
   email,
 }: SenderDomainInlineNoticeProps): JSX.Element {
-  const [senderDomainsConfig, setSendersDomainConfig] = useState(
-    getContext().senderDomainsConfig,
-  );
+  const { senderDomainsConfig } = useSelectContext();
 
   const domain = extractEmailDomain(email);
   const isPartiallyVerifiedDomain =
@@ -37,12 +33,6 @@ function SenderDomainStatusNotice({
     senderDomainsConfig.verifiedSenderDomains.includes(domain);
   const showSenderDomainWarning =
     !senderDomainsConfig.verifiedSenderDomains.includes(domain);
-
-  useEffect(() => {
-    dispatch(storeName).alterContext('mailpoet', 'senderDomainsConfig', {
-      ...senderDomainsConfig,
-    });
-  }, [senderDomainsConfig]);
 
   return (
     <SenderEmailAddressWarning
@@ -55,7 +45,7 @@ function SenderDomainStatusNotice({
       onSuccessfulEmailOrDomainAuthorization={(data) => {
         if (data.type === 'email') {
           senderDomainsConfig.authorizedEmails.push(email);
-          setSendersDomainConfig({ ...senderDomainsConfig });
+          updateSenderDomainsConfig({ ...senderDomainsConfig });
           MailPoet.trackEvent('MSS in plugin authorize email', {
             'authorized email source': 'Automations',
             wasSuccessful: 'yes',
@@ -70,7 +60,7 @@ function SenderDomainStatusNotice({
           if (!senderDomainsConfig.allSenderDomains.includes(domain)) {
             senderDomainsConfig.allSenderDomains.push(domain);
           }
-          setSendersDomainConfig({ ...senderDomainsConfig });
+          updateSenderDomainsConfig({ ...senderDomainsConfig });
           MailPoet.trackEvent('MSS in plugin verify sender domain', {
             'verify sender domain source': 'Automations',
             wasSuccessful: 'yes',
