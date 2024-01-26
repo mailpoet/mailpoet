@@ -8,12 +8,14 @@ function SenderDomainNoticeBody({
   isPartiallyVerifiedDomain,
   isSmallSender,
   onlyShowWarnings = false,
+  alwaysRewrite = false,
 }: {
   emailAddressDomain: string;
   isFreeDomain: boolean;
   isPartiallyVerifiedDomain: boolean;
   isSmallSender: boolean;
   onlyShowWarnings?: boolean;
+  alwaysRewrite?: boolean;
 }) {
   const renderMessage = (messageKey: string) => {
     const messages: { [key: string]: string } = {
@@ -49,14 +51,16 @@ function SenderDomainNoticeBody({
   }
 
   if (isFreeDomain) {
-    return renderMessage(isSmallSender ? 'freeSmall' : 'free');
+    return renderMessage(isSmallSender || alwaysRewrite ? 'freeSmall' : 'free');
   }
 
   if (isPartiallyVerifiedDomain) {
     return renderMessage('partiallyVerified');
   }
 
-  return renderMessage(isSmallSender ? 'smallSender' : 'default');
+  return renderMessage(
+    isSmallSender || alwaysRewrite ? 'smallSender' : 'default',
+  );
 }
 
 export { SenderDomainNoticeBody };
