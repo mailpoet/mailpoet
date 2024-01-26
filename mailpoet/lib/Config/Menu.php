@@ -270,7 +270,7 @@ class Menu {
     );
 
     // newsletter editor
-    $this->wp->addSubmenuPage(
+    $emailEditorPage = $this->wp->addSubmenuPage(
       self::EMAILS_PAGE_SLUG,
       $this->setPageTitle(__('Email', 'mailpoet')),
       esc_html__('Email Editor', 'mailpoet'),
@@ -281,6 +281,13 @@ class Menu {
         'emailEditor',
       ]
     );
+
+    // add body class for form editor page
+    $this->wp->addAction('load-' . $emailEditorPage, function() {
+      $this->wp->addFilter('admin_body_class', function ($classes) {
+        return ltrim($classes . ' block-editor-page');
+      });
+    });
 
     $this->registerAutomationMenu();
 
