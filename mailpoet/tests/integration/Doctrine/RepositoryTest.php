@@ -122,9 +122,9 @@ class RepositoryTest extends \MailPoetTest {
     $this->assertSame($setting2->getValue(), 'value-2');
     $this->assertSame($setting3->getValue(), 'value-3');
 
-    $repository->refreshAll(function (SettingEntity $setting) {
-      return in_array($setting->getName(), ['name-1', 'name-3'], true);
-    });
+    $repository->refreshAll(
+      new Criteria(Criteria::expr()->in('name', ['name-1', 'name-3']))
+    );
 
     $this->assertSame($setting1->getValue(), 'new-value-1');
     $this->assertSame($setting2->getValue(), 'value-2');
