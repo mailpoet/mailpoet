@@ -330,7 +330,7 @@ class Forms extends APIEndpoint {
     } elseif ($data['action'] === 'restore') {
       $this->formsRepository->bulkRestore($ids);
     } elseif ($data['action'] === 'delete') {
-      $this->formsRepository->bulkDelete($ids);
+      $this->formsRepository->deleteByIds($ids);
     } else {
       throw UnexpectedValueException::create()
         ->withErrors([APIError::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);

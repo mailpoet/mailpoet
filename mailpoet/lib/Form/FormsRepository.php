@@ -101,12 +101,4 @@ class FormsRepository extends Repository {
     $this->refreshAll(new Criteria(Criteria::expr()->in('id', $ids)));
     return $result;
   }
-
-  public function bulkDelete(array $ids): int {
-    if (empty($ids)) {
-      return 0;
-    }
-    $ids = array_map('intval', $ids);
-    return $this->deleteAll(new Criteria(Criteria::expr()->in('id', $ids)));
-  }
 }

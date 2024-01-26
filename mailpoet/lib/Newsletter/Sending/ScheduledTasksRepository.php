@@ -342,12 +342,6 @@ class ScheduledTasksRepository extends Repository {
     $this->flush();
   }
 
-  /** @param int[] $ids */
-  public function deleteByIds(array $ids): void {
-    $ids = array_map('intval', $ids);
-    $this->deleteAll(new Criteria(Criteria::expr()->in('id', $ids)));
-  }
-
   protected function findByTypeAndStatus($type, $status, $limit = null, $future = false) {
     $queryBuilder = $this->doctrineRepository->createQueryBuilder('st')
       ->select('st')

@@ -16,7 +16,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\Common\Collections\Criteria;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
@@ -343,12 +342,6 @@ class NewslettersRepository extends Repository {
     ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
 
     return count($ids);
-  }
-
-  /** @param int[] $ids */
-  public function deleteByIds(array $ids): void {
-    $ids = array_map('intval', $ids);
-    $this->deleteAll(new Criteria(Criteria::expr()->in('id', $ids)));
   }
 
   /**

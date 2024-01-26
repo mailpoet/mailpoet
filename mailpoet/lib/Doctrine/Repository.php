@@ -82,6 +82,14 @@ abstract class Repository {
     return $this->doctrineRepository->findAll();
   }
 
+  public function deleteByIds(array $ids): int {
+    if (count($ids) === 0) {
+      return 0;
+    }
+    $ids = array_map('intval', $ids);
+    return $this->deleteAll(new Criteria(Criteria::expr()->in('id', $ids)));
+  }
+
   public function deleteAll(Criteria $criteria = null): int {
     $qb = $this->entityManager->createQueryBuilder()->delete($this->getEntityClassName(), 'e');
     if ($criteria) {
