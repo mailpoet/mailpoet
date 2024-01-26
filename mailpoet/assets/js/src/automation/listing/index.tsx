@@ -17,29 +17,6 @@ import { Automation, AutomationStatus } from './automation';
 import { MailPoet } from '../../mailpoet';
 import { PageHeader } from '../../common/page-header';
 
-const tabConfig = [
-  {
-    name: 'all',
-    title: __('All', 'mailpoet'),
-    className: 'mailpoet-tab-all',
-  },
-  {
-    name: AutomationStatus.ACTIVE,
-    title: __('Active', 'mailpoet'),
-    className: 'mailpoet-tab-active',
-  },
-  {
-    name: AutomationStatus.DRAFT,
-    title: _x('Draft', 'noun', 'mailpoet'),
-    className: 'mailpoet-tab-draft',
-  },
-  {
-    name: AutomationStatus.TRASH,
-    title: _x('Trash', 'noun', 'mailpoet'),
-    className: 'mailpoet-tab-trash',
-  },
-] as const;
-
 const tableHeaders = [
   {
     key: 'name',
@@ -126,23 +103,44 @@ export function AutomationListing(): JSX.Element {
     return grouped;
   }, [automations]);
 
-  const tabs = useMemo(
-    () =>
-      tabConfig.map((tab) => {
-        const count = (groupedAutomations[tab.name] ?? []).length;
-        return {
-          name: tab.name,
-          title: (
-            <>
-              <span>{tab.title}</span>
-              {count > 0 && <span className="count">{count}</span>}
-            </>
-          ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports JSX
-          className: tab.className,
-        };
-      }),
-    [groupedAutomations],
-  );
+  const tabs = useMemo(() => {
+    const tabConfig = [
+      {
+        name: 'all',
+        title: __('All', 'mailpoet'),
+        className: 'mailpoet-tab-all',
+      },
+      {
+        name: AutomationStatus.ACTIVE,
+        title: __('Active', 'mailpoet'),
+        className: 'mailpoet-tab-active',
+      },
+      {
+        name: AutomationStatus.DRAFT,
+        title: _x('Draft', 'noun', 'mailpoet'),
+        className: 'mailpoet-tab-draft',
+      },
+      {
+        name: AutomationStatus.TRASH,
+        title: _x('Trash', 'noun', 'mailpoet'),
+        className: 'mailpoet-tab-trash',
+      },
+    ] as const;
+
+    return tabConfig.map((tab) => {
+      const count = (groupedAutomations[tab.name] ?? []).length;
+      return {
+        name: tab.name,
+        title: (
+          <>
+            <span>{tab.title}</span>
+            {count > 0 && <span className="count">{count}</span>}
+          </>
+        ) as any, // eslint-disable-line @typescript-eslint/no-explicit-any -- typed as string but supports JSX
+        className: tab.className,
+      };
+    });
+  }, [groupedAutomations]);
 
   const renderTabs = useCallback(
     (tab) => {
