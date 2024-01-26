@@ -57,6 +57,24 @@ class RendererTest extends \MailPoetTest {
     verify($paragraphWrapperStyle)->stringContainsString('background-color:#000000'); // black is #000000
   }
 
+  public function testItInlinesListColors() {
+    $emailPost = new \WP_Post((object)[
+      'post_content' => '<!-- wp:list {"backgroundColor":"black","textColor":"luminous-vivid-orange","style":{"elements":{"link":{"color":{"text":"var:preset|color|vivid-red"}}}}} -->
+        <ul class="has-black-background-color has-luminous-vivid-orange-color has-text-color has-background has-link-color"><!-- wp:list-item -->
+        <li>Item 1</li>
+        <!-- /wp:list-item -->
+
+        <!-- wp:list-item -->
+        <li>Item 2</li>
+        <!-- /wp:list-item --></ul>
+        <!-- /wp:list -->',
+    ]);
+    $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
+    $listStyle = $this->extractBlockStyle($rendered['html'], 'has-luminous-vivid-orange-color', 'ul');
+    verify($listStyle)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
+    verify($listStyle)->stringContainsString('background-color:#000000'); // black is #000000
+  }
+
   private function extractBlockHtml(string $html, string $blockClass, string $tag): string {
     $doc = new \DOMDocument();
     $doc->loadHTML($html);
