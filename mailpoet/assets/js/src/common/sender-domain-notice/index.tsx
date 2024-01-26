@@ -10,6 +10,7 @@ export type SenderRestrictionsType = {
   lowerLimit: number;
   isNewUser: boolean;
   isEnforcementOfNewRestrictionsInEffect: boolean;
+  alwaysRewrite?: boolean;
 };
 
 type SenderDomainInlineNoticeProps = {
@@ -64,11 +65,19 @@ function SenderDomainInlineNotice({
 
   const isSmallSender = subscribersCount <= LOWER_LIMIT;
 
-  if (isSmallSender || isPartiallyVerifiedDomain || onlyShowWarnings) {
+  if (
+    isSmallSender ||
+    isPartiallyVerifiedDomain ||
+    senderRestrictions.alwaysRewrite ||
+    onlyShowWarnings
+  ) {
     isAlert = false;
   }
 
-  if (isSmallSender && !isPartiallyVerifiedDomain) {
+  if (
+    (isSmallSender || senderRestrictions.alwaysRewrite) &&
+    !isPartiallyVerifiedDomain
+  ) {
     showRewrittenEmail = true;
   }
 
