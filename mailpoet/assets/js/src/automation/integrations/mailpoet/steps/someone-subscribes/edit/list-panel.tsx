@@ -45,6 +45,7 @@ export function ListPanel(): JSX.Element {
             values.map((item) => item.id),
           );
         }}
+        __experimentalShowHowTo={false}
       />
     </PanelBody>
   );
