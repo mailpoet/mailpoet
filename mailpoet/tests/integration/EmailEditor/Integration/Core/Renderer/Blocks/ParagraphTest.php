@@ -13,7 +13,6 @@ class ParagraphTest extends \MailPoetTest {
   private $parsedParagraph = [
     'blockName' => 'core/paragraph',
     'email_attrs' => [
-      'font-family' => 'Arial',
       'font-size' => '16px',
     ],
     'innerBlocks' => [],
@@ -37,7 +36,6 @@ class ParagraphTest extends \MailPoetTest {
     $this->assertStringContainsString('width:100%', $rendered);
     $this->assertStringContainsString('Lorem Ipsum', $rendered);
     $this->assertStringContainsString('font-size:16px;', $rendered);
-    $this->assertStringContainsString('font-family:Arial;', $rendered);
     $this->assertStringContainsString('text-align:left;', $rendered); // Check the default text-align
     $this->assertStringContainsString('align="left"', $rendered); // Check the default align
   }
@@ -69,7 +67,6 @@ class ParagraphTest extends \MailPoetTest {
       'fontStyle' => 'italic',
       'fontWeight' => 'bold',
       'fontSize' => '20px',
-      'fontFamily' => 'Times New Roman',
     ];
 
     $rendered = $this->paragraphRenderer->render('<p>Lorem Ipsum</p>', $parsedParagraph, $this->settingsController);
@@ -79,7 +76,6 @@ class ParagraphTest extends \MailPoetTest {
     $this->assertStringContainsString('font-style:italic;', $rendered);
     $this->assertStringContainsString('font-weight:bold;', $rendered);
     $this->assertStringContainsString('font-size:20px;', $rendered);
-    $this->assertStringContainsString('font-family:Times New Roman;', $rendered);
     $this->assertStringContainsString('Lorem Ipsum', $rendered);
   }
 }

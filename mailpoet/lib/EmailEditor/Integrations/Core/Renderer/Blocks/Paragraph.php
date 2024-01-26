@@ -9,21 +9,20 @@ use MailPoet\Util\Helpers;
 class Paragraph implements BlockRenderer {
   public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $blockContent = $this->removePaddingFromElement($blockContent, ['tag_name' => 'p']);
-    return str_replace('{paragraph_content}', $blockContent, $this->getBlockWrapper($parsedBlock, $settingsController));
+    return str_replace('{paragraph_content}', $blockContent, $this->getBlockWrapper($blockContent, $parsedBlock, $settingsController));
   }
 
   /**
    * Based on MJML <mj-text>
    */
-  private function getBlockWrapper(array $parsedBlock, SettingsController $settingsController): string {
+  private function getBlockWrapper(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $themeData = $settingsController->getTheme()->get_data();
-    $availableStylesheets = $settingsController->getAvailableStylesheets();
+    $classes = $this->getClassesFromElement($blockContent, ['tag_name' => 'p']);
 
     $align = $parsedBlock['attrs']['align'] ?? 'left';
     $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
 
     $styles = [
-      'background-color' => $parsedBlock['attrs']['style']['color']['background'] ?? 'transparent',
       'text-align' => $align,
       'padding-bottom' => $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px',
       'padding-left' => $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px',
@@ -31,66 +30,16 @@ class Paragraph implements BlockRenderer {
       'padding-top' => $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px',
     ];
 
-    foreach ($parsedBlock['email_attrs'] ?? [] as $property => $value) {
-      if ($property === 'width') continue; // width is handled by the wrapping blocks (columns, column)
-      if ($property === 'margin-top') continue; // margin-top is set on the wrapping div co we need to avoid duplication
-      $styles[$property] = $value;
+    if (isset($parsedBlock['attrs']['style']['color']['text'])) {
+      $styles['color'] = $parsedBlock['attrs']['style']['color']['text'];
     }
 
-    if (!isset($styles['font-size'])) {
-      $styles['font-size'] = $themeData['styles']['typography']['fontSize'];
-    }
-
-    $styles = array_merge($styles, $this->fetchStylesFromBlockAttrs($availableStylesheets, $parsedBlock['attrs'] ?? []));
-
-    return '
-      <!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><![endif]-->
-        <div style="margin-top: ' . $marginTop . ';">
-          <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;"width="100%">
-            <tr>
-              <td style="' . $settingsController->convertStylesToString($styles) . '" align="' . $align . '">
-                {paragraph_content}
-              </td>
-            </tr>
-          </table>
-        </div>
-      <!--[if mso | IE]></td></tr></table><![endif]-->
-    ';
-  }
-
-  /**
-   * @param string $availableStylesheets contains CSS styles generated from the core theme.json file
-   */
-  private function fetchStylesFromBlockAttrs(string $availableStylesheets, array $attrs = []): array {
-    $styles = [];
-
-    // Fetching matched color variables by slug stored in the block attrs to the color value.
-    $supportedColorValues = ['backgroundColor', 'textColor'];
-    foreach ($supportedColorValues as $supportedColorValue) {
-      if (array_key_exists($supportedColorValue, $attrs)) {
-        $colorSlug = $attrs[$supportedColorValue];
-
-        // CSS variables are stored by current pattern `--wp--preset--{type}--{slug}` More info: https://developer.wordpress.org/themes/global-settings-and-styles/settings/color/#registering-custom-color-presets
-        $colorRegex = "/--wp--preset--color--$colorSlug: (#[0-9a-fA-F]{6});/";
-
-        // fetch color hex from available stylesheets
-        preg_match($colorRegex, $availableStylesheets, $colorMatch);
-
-        $colorValue = '';
-        if ($colorMatch) {
-          $colorValue = $colorMatch[1];
-        }
-
-        if ($supportedColorValue === 'textColor') {
-          $styles['color'] = $colorValue; // use color instead of textColor. textColor not valid CSS property
-        } else {
-          $styles[Helpers::camelCaseToKebabCase($supportedColorValue)] = $colorValue;
-        }
-
-      }
+    if (isset($parsedBlock['attrs']['style']['color']['background'])) {
+      $styles['background-color'] = $parsedBlock['attrs']['style']['color']['background'];
     }
 
     // fetch Block Style Typography e.g., fontStyle, fontWeight, etc
+    $attrs = $parsedBlock['attrs'] ?? [];
     if (isset($attrs['style']['typography'])) {
       $blockStyleTypographyKeys = array_keys($attrs['style']['typography']);
       foreach ($blockStyleTypographyKeys as $blockStyleTypographyKey) {
@@ -98,7 +47,23 @@ class Paragraph implements BlockRenderer {
       }
     }
 
-    return $styles;
+    if (!isset($styles['font-size'])) {
+      $styles['font-size'] = $themeData['styles']['typography']['fontSize'];
+    }
+
+    return '
+      <!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><![endif]-->
+        <div style="margin-top: ' . $marginTop . ';">
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;"width="100%">
+            <tr>
+              <td class="' . esc_attr($classes) . '" style="' . $settingsController->convertStylesToString($styles) . '" align="' . $align . '">
+                {paragraph_content}
+              </td>
+            </tr>
+          </table>
+        </div>
+      <!--[if mso | IE]></td></tr></table><![endif]-->
+    ';
   }
 
   /**
@@ -114,5 +79,17 @@ class Paragraph implements BlockRenderer {
     }
 
     return $blockContent;
+  }
+
+  /**
+   * @param array{tag_name: string, class_name?: string} $tag
+   */
+  private function getClassesFromElement($blockContent, array $tag): string {
+    $html = new \WP_HTML_Tag_Processor($blockContent);
+    $elementClass = '';
+    if ($html->next_tag($tag)) {
+      $elementClass = $html->get_attribute('class') ?? '';
+    }
+    return $elementClass;
   }
 }

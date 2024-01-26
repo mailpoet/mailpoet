@@ -37,6 +37,16 @@ class RendererTest extends \MailPoetTest {
     verify($headingHtml)->stringContainsString('font-size:48px'); // large is 48px
   }
 
+  public function testItInlinesParagraphColors() {
+    $emailPost = new \WP_Post((object)[
+      'post_content' => '<!-- wp:paragraph {style":{"color":{"background":"black", "text":"luminous-vivid-orange"}}} --><p class="has-luminous-vivid-orange-color has-black-background-color">Hello</p><!-- /wp:paragraph -->',
+    ]);
+    $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
+    $paragraphWrapperStyle = $this->extractBlockStyle($rendered['html'], 'has-luminous-vivid-orange-color', 'td');
+    verify($paragraphWrapperStyle)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
+    verify($paragraphWrapperStyle)->stringContainsString('background-color:#000000'); // black is #000000
+  }
+
   private function extractBlockHtml(string $html, string $blockClass, string $tag): string {
     $doc = new \DOMDocument();
     $doc->loadHTML($html);
@@ -49,5 +59,18 @@ class RendererTest extends \MailPoetTest {
     $this->assertInstanceOf(\DOMElement::class, $block);
     $this->assertInstanceOf(\DOMDocument::class, $block->ownerDocument);
     return (string)$block->ownerDocument->saveHTML($block);
+  }
+
+  private function extractBlockStyle(string $html, string $blockClass, string $tag): string {
+    $doc = new \DOMDocument();
+    $doc->loadHTML($html);
+    $xpath = new \DOMXPath($doc);
+    $nodes = $xpath->query('//' . $tag . '[contains(@class, "' . $blockClass . '")]');
+    $block = null;
+    if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
+      $block = $nodes->item(0);
+    }
+    $this->assertInstanceOf(\DOMElement::class, $block);
+    return $block->getAttribute('style');
   }
 }
