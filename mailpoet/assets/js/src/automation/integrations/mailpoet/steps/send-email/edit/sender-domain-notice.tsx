@@ -22,8 +22,12 @@ type SenderDomainInlineNoticeProps = {
  */
 function SenderDomainStatusNotice({
   email,
-}: SenderDomainInlineNoticeProps): JSX.Element {
+}: SenderDomainInlineNoticeProps): JSX.Element | null {
   const { senderDomainsConfig } = useSelectContext();
+
+  if (!senderDomainsConfig) {
+    return null;
+  }
 
   const domain = extractEmailDomain(email);
   const isPartiallyVerifiedDomain =
