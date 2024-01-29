@@ -9,7 +9,7 @@ use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\SpacingPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TopLevelPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TypographyPreprocessor;
 
-class PreprocessManager {
+class ProcessManager {
   /** @var Preprocessor[] */
   private $preprocessors = [];
 
