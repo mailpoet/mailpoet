@@ -15,7 +15,7 @@ const suggestedEmailAddress = `contact@${userHostDomain}`;
 type Props = {
   emailAddress: string;
   mssActive: boolean;
-  showModal: string;
+  showModal?: string;
   isEmailAuthorized?: boolean;
   showSenderDomainWarning?: boolean;
   isPartiallyVerifiedDomain?: boolean;
