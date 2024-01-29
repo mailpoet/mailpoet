@@ -14,7 +14,7 @@ class Renderer {
   /** @var BlocksRegistry */
   private $blocksRegistry;
 
-  /** @var PreprocessManager */
+  /** @var ProcessManager */
   private $preprocessManager;
 
   /** @var SettingsController */
@@ -28,7 +28,7 @@ class Renderer {
    */
   public function __construct(
     \MailPoetVendor\CSS $cssInliner,
-    PreprocessManager $preprocessManager,
+    ProcessManager $preprocessManager,
     BlocksRegistry $blocksRegistry,
     SettingsController $settingsController
   ) {
@@ -109,7 +109,7 @@ class Renderer {
   }
 
   private function injectContentIntoTemplate($template, array $content) {
-    return preg_replace_callback('/{{\w+}}/', function($matches) use (&$content) {
+    return preg_replace_callback('/{{\w+}}/', function ($matches) use (&$content) {
       return array_shift($content);
     }, $template);
   }
