@@ -32,7 +32,7 @@ import { Sidebar } from '../sidebar/sidebar';
 import { Header } from '../header';
 import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
-import { EditorNotices, EditorSnackbars } from '../notices';
+import { EditorNotices, EditorSnackbars, SentEmailNotice } from '../notices';
 
 export function BlockEditor() {
   const {
@@ -128,6 +128,7 @@ export function BlockEditor() {
       <FullscreenMode isActive={isFullscreenActive} />
       <UnsavedChangesWarning />
       <AutosaveMonitor />
+      <SentEmailNotice />
       <Sidebar />
       <InterfaceSkeleton
         className={className}
