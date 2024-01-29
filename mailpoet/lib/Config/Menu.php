@@ -282,7 +282,8 @@ class Menu {
       ]
     );
 
-    // add body class for form editor page
+    // Add body class for email editor page
+    // We need to mark the page as a block editor page so that some of the block editor styles are applied properly
     $this->wp->addAction('load-' . $emailEditorPage, function() {
       $this->wp->addFilter('admin_body_class', function ($classes) {
         return ltrim($classes . ' block-editor-page');
