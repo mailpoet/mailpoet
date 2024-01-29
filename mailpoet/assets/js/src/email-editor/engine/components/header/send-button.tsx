@@ -16,6 +16,12 @@ export function SendButton() {
     }),
     [],
   );
+  const { isEmailSent } = useSelect(
+    (select) => ({
+      isEmailSent: select(storeName).isEmailSent(),
+    }),
+    [],
+  );
 
   const mailpoetEmailData: MailPoetEmailData = mailpoetEmail;
   return (
@@ -24,7 +30,7 @@ export function SendButton() {
       onClick={() => {
         window.location.href = `admin.php?page=mailpoet-newsletters#/send/${mailpoetEmailData.id}`;
       }}
-      disabled={hasEmptyContent}
+      disabled={hasEmptyContent || isEmailSent}
     >
       {__('Send', 'mailpoet')}
     </Button>
