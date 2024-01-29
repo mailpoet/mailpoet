@@ -82,6 +82,23 @@ export const hasEmptyContent = createRegistrySelector(
   },
 );
 
+export const isEmailSent = createRegistrySelector((select) => (): boolean => {
+  const postId = select(storeName).getEmailPostId();
+
+  const post = select(coreDataStore).getEntityRecord(
+    'postType',
+    'mailpoet_email',
+    postId,
+  );
+  if (!post) return false;
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const status = post.status;
+
+  return status === 'sent';
+});
+
 export function getEmailPostId(state: State): number {
   return state.postId;
 }
