@@ -19,8 +19,8 @@ class AuthorizedSenderDomainController {
   const AUTHORIZED_SENDER_DOMAIN_ERROR_NOT_CREATED = 'Sender domain does not exist';
   const AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_VERIFIED = 'Sender domain already verified';
 
-  const LOWER_LIMIT = 500;
-  const UPPER_LIMIT = 1000;
+  const LOWER_LIMIT = 100;
+  const UPPER_LIMIT = 200;
 
   const ENFORCEMENT_START_TIME = '2024-02-01 00:00:00 UTC';
 
