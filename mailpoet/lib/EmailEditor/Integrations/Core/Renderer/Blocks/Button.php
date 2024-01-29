@@ -11,7 +11,6 @@ use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
  * @see https://www.activecampaign.com/blog/email-buttons
  * @see https://documentation.mjml.io/#mj-button
  */
-
 class Button implements BlockRenderer {
   public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
     // Don't render empty buttons
@@ -30,7 +29,7 @@ class Button implements BlockRenderer {
     $markup = str_replace('{classes}', $buttonClasses, $markup);
 
     // Add Link Text
-    $markup = str_replace('{linkText}', $buttonLink->textContent ?: '', $markup);
+    $markup = str_replace('{linkText}', $this->getElementInnerHTML($buttonLink) ?: '', $markup);
     $markup = str_replace('{linkUrl}', $buttonLink->getAttribute('href') ?: '#', $markup);
 
     // Width
@@ -110,5 +109,20 @@ class Button implements BlockRenderer {
           </td>
         </tr>
       </table>';
+  }
+
+  /**
+   * Because the button text can contain highlighted text, we need to get the inner HTML of the button
+   */
+  private function getElementInnerHTML(\DOMElement $element): string {
+    $innerHTML = '';
+    $children = $element->childNodes;
+    foreach ($children as $child) {
+      if (!$child instanceof \DOMNode) continue;
+      $ownerDocument = $child->ownerDocument;
+      if (!$ownerDocument instanceof \DOMDocument) continue;
+      $innerHTML .= $ownerDocument->saveXML($child);
+    }
+    return $innerHTML;
   }
 }
