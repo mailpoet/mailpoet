@@ -252,6 +252,10 @@ class Functions {
     return get_post($post, $output, $filter);
   }
 
+  public function wpUpdatePost($postarr = [], bool $wp_error = false, bool $fire_after_hooks = true) {
+    return wp_update_post($postarr, $wp_error, $fire_after_hooks);
+  }
+
   public function hasCategory($category = '', $post = null): bool {
     return has_category($category, $post);
   }

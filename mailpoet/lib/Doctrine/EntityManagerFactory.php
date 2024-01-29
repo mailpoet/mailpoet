@@ -4,6 +4,7 @@ namespace MailPoet\Doctrine;
 
 use MailPoet\Doctrine\EventListeners\EmojiEncodingListener;
 use MailPoet\Doctrine\EventListeners\LastSubscribedAtListener;
+use MailPoet\Doctrine\EventListeners\NewsletterListener;
 use MailPoet\Doctrine\EventListeners\SubscriberListener;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
 use MailPoet\Doctrine\EventListeners\ValidationListener;
@@ -37,6 +38,8 @@ class EntityManagerFactory {
   /** @var SubscriberListener */
   private $subscriberListener;
 
+  private NewsletterListener $newsletterListener;
+
   public function __construct(
     Connection $connection,
     Configuration $configuration,
@@ -44,6 +47,7 @@ class EntityManagerFactory {
     ValidationListener $validationListener,
     EmojiEncodingListener $emojiEncodingListener,
     LastSubscribedAtListener $lastSubscribedAtListener,
+    NewsletterListener $newsletterListener,
     SubscriberListener $subscriberListener
   ) {
     $this->connection = $connection;
@@ -53,6 +57,7 @@ class EntityManagerFactory {
     $this->emojiEncodingListener = $emojiEncodingListener;
     $this->lastSubscribedAtListener = $lastSubscribedAtListener;
     $this->subscriberListener = $subscriberListener;
+    $this->newsletterListener = $newsletterListener;
   }
 
   public function createEntityManager(): EntityManager {
@@ -105,6 +110,11 @@ class EntityManagerFactory {
     $entityManager->getEventManager()->addEventListener(
       [Events::prePersist, Events::preUpdate],
       $this->lastSubscribedAtListener
+    );
+
+    $entityManager->getEventManager()->addEventListener(
+      [Events::preUpdate],
+      $this->newsletterListener
     );
 
     $entityManager->getConfiguration()->getEntityListenerResolver()->register($this->subscriberListener);
