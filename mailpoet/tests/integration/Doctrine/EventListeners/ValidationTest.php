@@ -9,6 +9,7 @@ use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Doctrine\EventListeners\EmojiEncodingListener;
 use MailPoet\Doctrine\EventListeners\LastSubscribedAtListener;
+use MailPoet\Doctrine\EventListeners\NewsletterListener;
 use MailPoet\Doctrine\EventListeners\SubscriberListener;
 use MailPoet\Doctrine\EventListeners\TimestampListener;
 use MailPoet\Doctrine\EventListeners\ValidationListener;
@@ -82,6 +83,7 @@ class ValidationTest extends \MailPoetTest {
     $validationListener = new ValidationListener($validatorFactory->createValidator());
     $emojiEncodingListener = new EmojiEncodingListener(new Emoji($this->wp));
     $lastSubscribedAtListener = new LastSubscribedAtListener($this->wp);
+    $newsletterListener = new NewsletterListener($this->wp);
     $subscriberListener = new SubscriberListener(new SubscriberChangesNotifier($this->wp));
     $entityManagerFactory = new EntityManagerFactory(
       $this->connection,
@@ -90,6 +92,7 @@ class ValidationTest extends \MailPoetTest {
       $validationListener,
       $emojiEncodingListener,
       $lastSubscribedAtListener,
+      $newsletterListener,
       $subscriberListener
     );
     return $entityManagerFactory->createEntityManager();
