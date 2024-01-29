@@ -32,6 +32,10 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
   /**@var WPFunctions */
   private $wp;
 
+  private int $lowerLimit;
+
+  private int $upperLimit;
+
   public function _before() {
     parent::_before();
 
@@ -52,6 +56,9 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
       'getTransient' => false,
       'setTransient' => true,
     ]);
+
+    $this->lowerLimit = AuthorizedSenderDomainController::LOWER_LIMIT;
+    $this->upperLimit = AuthorizedSenderDomainController::UPPER_LIMIT;
   }
 
   public function testItFetchSenderDomains() {
@@ -428,7 +435,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
   public function testIsSmallSenderIfSubscribersUnderLowerLimit(): void {
     $subscribersMock = $this->make(Subscribers::class, [
-      'getSubscribersCount' => Expected::once(500),
+      'getSubscribersCount' => Expected::once($this->lowerLimit),
     ]);
 
     $this->assertTrue($this->getController(null, $subscribersMock)->isSmallSender());
@@ -436,7 +443,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
   public function testIsNotSmallSenderIfSubscribersOverLowerLimit(): void {
     $subscribersMock = $this->make(Subscribers::class, [
-      'getSubscribersCount' => Expected::once(501),
+      'getSubscribersCount' => Expected::once($this->lowerLimit + 1),
     ]);
 
     $this->assertFalse($this->getController(null, $subscribersMock)->isSmallSender());
@@ -449,7 +456,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     // Is not small sender
     $subscribersMock = $this->make(Subscribers::class, [
-      'getSubscribersCount' => Expected::once(501),
+      'getSubscribersCount' => Expected::once($this->lowerLimit + 1),
     ]);
 
     $this->assertTrue($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForNewCampaigns());
@@ -462,7 +469,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     // Is Big Sender
     $subscribersMock = $this->make(Subscribers::class, [
-      'getSubscribersCount' => Expected::once(1001),
+      'getSubscribersCount' => Expected::once($this->upperLimit + 1),
     ]);
 
     $this->assertTrue($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForExistingCampaigns());
@@ -491,7 +498,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     // Is not small sender
     $subscribersMock = $this->make(Subscribers::class, [
-      'getSubscribersCount' => Expected::once(501),
+      'getSubscribersCount' => Expected::once($this->lowerLimit + 1),
     ]);
 
     $this->assertTrue($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForNewCampaigns());
@@ -508,7 +515,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     // Is small sender
     $subscribersMock = $this->make(Subscribers::class, [
-      'getSubscribersCount' => Expected::once(500),
+      'getSubscribersCount' => Expected::once($this->lowerLimit),
     ]);
 
     $this->assertFalse($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForNewCampaigns());
@@ -521,7 +528,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
 
     // Is small sender
     $subscribersMock = $this->make(Subscribers::class, [
-      'getSubscribersCount' => Expected::once(500),
+      'getSubscribersCount' => Expected::once($this->lowerLimit),
     ]);
 
     $this->assertFalse($this->getController(null, $subscribersMock)->isAuthorizedDomainRequiredForNewCampaigns());
