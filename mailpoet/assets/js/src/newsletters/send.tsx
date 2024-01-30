@@ -349,12 +349,13 @@ class NewsletterSendComponent extends Component<
             body: JSON.stringify(response.data.body),
             categories: '["recent"]',
           },
-        }).fail((err) => {
-          this.showError(err);
-          this.setState({ loading: false });
-          MailPoet.Modal.loading(false);
-        });
-        done();
+        })
+          .then(() => done())
+          .fail((err) => {
+            this.showError(err);
+            this.setState({ loading: false });
+            MailPoet.Modal.loading(false);
+          });
       })
       .catch((err) => {
         this.showError({ errors: [err] });
