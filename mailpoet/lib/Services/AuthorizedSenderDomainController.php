@@ -10,9 +10,9 @@ use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AuthorizedSenderDomainController {
-  const OVERALL_STATUS_VERIFIED = 'verified';
-  const OVERALL_STATUS_PARTIALLY_VERIFIED = 'partially-verified';
-  const OVERALL_STATUS_UNVERIFIED = 'unverified';
+  const DOMAIN_STATUS_VERIFIED = 'verified';
+  const DOMAIN_STATUS_PARTIALLY_VERIFIED = 'partially-verified';
+  const DOMAIN_STATUS_UNVERIFIED = 'unverified';
 
   const AUTHORIZED_SENDER_DOMAIN_ERROR_ALREADY_CREATED = 'Sender domain exist';
   const AUTHORIZED_SENDER_DOMAIN_ERROR_NOT_CREATED = 'Sender domain does not exist';
@@ -176,7 +176,7 @@ class AuthorizedSenderDomainController {
    * Returns sender domains that have all required records, including DMARC.
    */
   public function getFullyVerifiedSenderDomains($domainsOnly = false): array {
-    $domainData = $this->getSenderDomainsByStatus([self::OVERALL_STATUS_VERIFIED]);
+    $domainData = $this->getSenderDomainsByStatus([self::DOMAIN_STATUS_VERIFIED]);
     return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
   }
 
@@ -184,17 +184,17 @@ class AuthorizedSenderDomainController {
    * Returns sender domains that were verified before DMARC record was required.
    */
   public function getPartiallyVerifiedSenderDomains($domainsOnly = false): array {
-    $domainData = $this->getSenderDomainsByStatus([self::OVERALL_STATUS_PARTIALLY_VERIFIED]);
+    $domainData = $this->getSenderDomainsByStatus([self::DOMAIN_STATUS_PARTIALLY_VERIFIED]);
     return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
   }
 
   public function getUnverifiedSenderDomains($domainsOnly = false): array {
-    $domainData = $this->getSenderDomainsByStatus([self::OVERALL_STATUS_UNVERIFIED]);
+    $domainData = $this->getSenderDomainsByStatus([self::DOMAIN_STATUS_UNVERIFIED]);
     return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
   }
 
   public function getFullyOrPartiallyVerifiedSenderDomains($domainsOnly = false): array {
-    $domainData = $this->getSenderDomainsByStatus([self::OVERALL_STATUS_PARTIALLY_VERIFIED,self::OVERALL_STATUS_VERIFIED]);
+    $domainData = $this->getSenderDomainsByStatus([self::DOMAIN_STATUS_PARTIALLY_VERIFIED,self::DOMAIN_STATUS_VERIFIED]);
     return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
   }
 
