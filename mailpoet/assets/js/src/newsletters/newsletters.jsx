@@ -16,7 +16,6 @@ import { NewsletterSend } from 'newsletters/send';
 import { Congratulate } from 'newsletters/send/congratulate/congratulate.jsx';
 import { NewsletterTypeStandard } from 'newsletters/types/standard.jsx';
 import { NewsletterNotification } from 'newsletters/types/notification/notification.jsx';
-import { NewsletterWelcome } from 'newsletters/types/welcome/welcome.jsx';
 import { NewsletterTypeReEngagement } from 'newsletters/types/re-engagement/re-engagement';
 import { NewsletterListStandard } from 'newsletters/listings/standard.jsx';
 import { NewsletterListNotification } from 'newsletters/listings/notification.jsx';
@@ -131,7 +130,7 @@ const routes = [
     render: withBoundary(Tabs),
   },
   {
-    path: '/(standard|welcome|notification|re_engagement)/(.*)?',
+    path: '/(standard|notification|re_engagement)/(.*)?',
     render: withBoundary(Tabs),
   },
   /* New newsletter: types */
@@ -142,10 +141,6 @@ const routes = [
   {
     path: '/new/notification',
     render: withBoundary(NewsletterNotification),
-  },
-  {
-    path: '/new/welcome',
-    render: withBoundary(NewsletterWelcome),
   },
   {
     path: '/new/re-engagement',
