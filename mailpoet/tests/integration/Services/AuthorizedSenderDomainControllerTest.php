@@ -426,13 +426,6 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     $this->assertFalse($this->getController()->isNewUser());
   }
 
-  public function testItKnowsWhenNewRestrictionsStartGettingEnforced(): void {
-    Carbon::setTestNow(Carbon::parse('2024-01-31 00:00:00 UTC'));
-    $this->assertFalse($this->getController()->isEnforcementOfNewRestrictionsInEffect());
-    Carbon::setTestNow(Carbon::parse('2024-02-01 00:00:01 UTC'));
-    $this->assertTrue($this->getController()->isEnforcementOfNewRestrictionsInEffect());
-  }
-
   public function testIsSmallSenderIfSubscribersUnderLowerLimit(): void {
     $subscribersMock = $this->make(Subscribers::class, [
       'getSubscribersCount' => Expected::once($this->lowerLimit),

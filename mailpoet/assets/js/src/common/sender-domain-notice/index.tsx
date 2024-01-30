@@ -8,8 +8,8 @@ import { SenderActions } from './sender-domain-notice-actions';
 
 export type SenderRestrictionsType = {
   lowerLimit: number;
-  isNewUser: boolean;
-  isEnforcementOfNewRestrictionsInEffect: boolean;
+  isAuthorizedDomainRequiredForNewCampaigns?: boolean;
+  campaignTypes?: string[];
   alwaysRewrite?: boolean;
 };
 
@@ -56,20 +56,12 @@ function SenderDomainInlineNotice({
 
   const LOWER_LIMIT = senderRestrictions?.lowerLimit || 500;
 
-  const isNewUser = senderRestrictions?.isNewUser ?? true;
-  const isEnforcementOfNewRestrictionsInEffect =
-    senderRestrictions?.isEnforcementOfNewRestrictionsInEffect ?? true;
-  // TODO: Remove after the enforcement date has passed
-  const onlyShowWarnings =
-    !isNewUser && !isEnforcementOfNewRestrictionsInEffect;
-
   const isSmallSender = subscribersCount <= LOWER_LIMIT;
 
   if (
     isSmallSender ||
     isPartiallyVerifiedDomain ||
-    senderRestrictions.alwaysRewrite ||
-    onlyShowWarnings
+    senderRestrictions.alwaysRewrite
   ) {
     isAlert = false;
   }
@@ -103,7 +95,6 @@ function SenderDomainInlineNotice({
         isFreeDomain={isFreeDomain}
         isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
         isSmallSender={isSmallSender}
-        onlyShowWarnings={onlyShowWarnings}
       />
     </InlineNotice>
   );

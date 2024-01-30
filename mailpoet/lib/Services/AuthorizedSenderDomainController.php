@@ -8,7 +8,6 @@ use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
 
 class AuthorizedSenderDomainController {
   const OVERALL_STATUS_VERIFIED = 'verified';
@@ -21,8 +20,6 @@ class AuthorizedSenderDomainController {
 
   const LOWER_LIMIT = 100;
   const UPPER_LIMIT = 200;
-
-  const ENFORCEMENT_START_TIME = '2024-02-01 00:00:00 UTC';
 
   const INSTALLED_AFTER_NEW_RESTRICTIONS_OPTION = 'installed_after_new_domain_restrictions';
 
@@ -261,11 +258,6 @@ class AuthorizedSenderDomainController {
     return $this->currentRecords;
   }
 
-  // TODO: Remove after the enforcement date has passed
-  public function isEnforcementOfNewRestrictionsInEffect(): bool {
-    return Carbon::now() >= Carbon::parse(self::ENFORCEMENT_START_TIME);
-  }
-
   public function isNewUser(): bool {
     $installedVersion = $this->settingsController->get('version');
 
@@ -306,9 +298,6 @@ class AuthorizedSenderDomainController {
       'allSenderDomains' => $this->getAllSenderDomains(),
       'senderRestrictions' => [
         'lowerLimit' => self::LOWER_LIMIT,
-        'upperLimit' => self::UPPER_LIMIT,
-        'isNewUser' => $this->isNewUser(),
-        'isEnforcementOfNewRestrictionsInEffect' => $this->isEnforcementOfNewRestrictionsInEffect(),
         'alwaysRewrite' => false,
       ],
     ];
