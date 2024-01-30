@@ -14,6 +14,7 @@ import { plusIcon } from 'common/button/icon/plus';
 import { getRow } from './get-row';
 import { AutomationItem, storeName } from './store';
 import { Automation, AutomationStatus } from './automation';
+import { automationCount, legacyAutomationCount } from '../config';
 import { MailPoet } from '../../mailpoet';
 import { PageHeader } from '../../common/page-header';
 
@@ -146,6 +147,7 @@ export function AutomationListing(): JSX.Element {
 
   const renderTabs = useCallback(
     (tab) => {
+      const totalCount = automationCount + legacyAutomationCount;
       const filteredAutomations: AutomationItem[] =
         groupedAutomations[tab.name] ?? [];
       const rowsPerPage = parseInt(pageSearch.get('per_page') ?? '25', 10);
@@ -171,11 +173,11 @@ export function AutomationListing(): JSX.Element {
             filteredAutomations[i].id *
             (filteredAutomations[i].isLegacy ? -1 : 1)
           }
-          rowsPerPage={rowsPerPage}
+          rowsPerPage={Math.min(rowsPerPage, totalCount)}
           onQueryChange={(key) => (value) => {
             updateUrlSearchString({ [key]: value });
           }}
-          totalRows={filteredAutomations.length}
+          totalRows={automations ? filteredAutomations.length : totalCount}
           query={Object.fromEntries(pageSearch)}
           showMenu={false}
         />
