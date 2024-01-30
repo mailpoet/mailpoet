@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { ChangeEvent, Component, ContextType } from 'react';
 import jQuery from 'jquery';
-import { __, _x, sprintf } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { History, Location } from 'history';
 import ReactStringReplace from 'react-string-replace';
 import slugify from 'slugify';
@@ -513,22 +513,11 @@ class NewsletterSendComponent extends Component<
             this.state.item.type === 'automatic' &&
             automaticEmails[opts.group]
           ) {
-            this.context.notices.success(
-              <p>
-                {sprintf(
-                  __('Your %1s Automatic Email is now activated!', 'mailpoet'),
-                  automaticEmails[opts.group]?.title ?? '',
-                )}
-              </p>,
-            );
             MailPoet.trackEvent('Emails > Automatic email activated', {
               Type: slugify(`${opts.group}-${opts.event}`),
               Delay: getTimingValueForTracking(opts),
             });
           } else if (response.data.type === 'welcome') {
-            this.context.notices.success(
-              <p>{__('Your Welcome Email is now activated!', 'mailpoet')}</p>,
-            );
             MailPoet.trackEvent('Emails > Welcome email activated', {
               'List type': opts.event,
               Delay: getTimingValueForTracking(opts),
