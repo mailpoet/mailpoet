@@ -7,14 +7,12 @@ function SenderDomainNoticeBody({
   isFreeDomain,
   isPartiallyVerifiedDomain,
   isSmallSender,
-  onlyShowWarnings = false,
   alwaysRewrite = false,
 }: {
   emailAddressDomain: string;
   isFreeDomain: boolean;
   isPartiallyVerifiedDomain: boolean;
   isSmallSender: boolean;
-  onlyShowWarnings?: boolean;
   alwaysRewrite?: boolean;
 }) {
   const renderMessage = (messageKey: string) => {
@@ -25,11 +23,6 @@ function SenderDomainNoticeBody({
       ),
       free: __(
         "MailPoet cannot send email campaigns from shared 3rd-party domains like <emailDomain/>. Please send from your site's branded domain instead.",
-        'mailpoet',
-      ),
-      // TODO: Remove freeWarning after the enforcement date has passed
-      freeWarning: __(
-        "Starting on February 1st, 2024, MailPoet will no longer be able to send from email addresses on shared 3rd party domains like <emailDomain/>. Please send from your site's branded domain instead.",
         'mailpoet',
       ),
       partiallyVerified: __(
@@ -48,21 +41,10 @@ function SenderDomainNoticeBody({
 
     const defaultMessage = messages[messageKey] || messages.default;
 
-    return createInterpolateElement(__(defaultMessage, 'mailpoet'), {
+    return createInterpolateElement(defaultMessage, {
       emailDomain: <strong>{escapeHTML(emailAddressDomain)}</strong>,
     });
   };
-
-  // TODO: Remove after the enforcement date has passed
-  if (onlyShowWarnings) {
-    if (isFreeDomain) {
-      return renderMessage(isSmallSender ? 'freeSmall' : 'freeWarning');
-    }
-    if (isPartiallyVerifiedDomain) {
-      return renderMessage('partiallyVerified');
-    }
-    return renderMessage('smallSender');
-  }
 
   if (isFreeDomain) {
     return renderMessage(isSmallSender || alwaysRewrite ? 'freeSmall' : 'free');

@@ -152,9 +152,6 @@ class Newsletters {
       $data['all_sender_domains'] = $this->senderDomainController->getAllSenderDomains();
       $data['sender_restrictions'] = [
         'lowerLimit' => AuthorizedSenderDomainController::LOWER_LIMIT,
-        'upperLimit' => AuthorizedSenderDomainController::UPPER_LIMIT,
-        'isNewUser' => $this->senderDomainController->isNewUser(),
-        'isEnforcementOfNewRestrictionsInEffect' => $this->senderDomainController->isEnforcementOfNewRestrictionsInEffect(),
         'isAuthorizedDomainRequiredForNewCampaigns' => $this->senderDomainController->isAuthorizedDomainRequiredForNewCampaigns(),
         'campaignTypes' => NewsletterEntity::CAMPAIGN_TYPES,
       ];

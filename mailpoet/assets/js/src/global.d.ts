@@ -155,9 +155,6 @@ interface Window {
   mailpoet_partially_verified_sender_domains?: string[];
   mailpoet_sender_restrictions?: {
     lowerLimit: number;
-    upperLimit: number;
-    isNewUser: boolean;
-    isEnforcementOfNewRestrictionsInEffect: boolean;
     isAuthorizedDomainRequiredForNewCampaigns?: boolean;
     campaignTypes?: string[];
   };
