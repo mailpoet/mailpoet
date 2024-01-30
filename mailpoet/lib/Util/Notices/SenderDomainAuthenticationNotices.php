@@ -82,9 +82,6 @@ class SenderDomainAuthenticationNotices {
   }
 
   public function isErrorStyle(): bool {
-    if (!$this->authorizedSenderDomainController->isEnforcementOfNewRestrictionsInEffect()) {
-      return false;
-    }
     if (
       $this->subscribersFeatures->getSubscribersCount() < AuthorizedSenderDomainController::UPPER_LIMIT
       || $this->isPartiallyVerified()
@@ -100,17 +97,6 @@ class SenderDomainAuthenticationNotices {
   }
 
   public function getNoticeContentForFreeMailUsers(int $contactCount): string {
-    if (!$this->authorizedSenderDomainController->isEnforcementOfNewRestrictionsInEffect()) {
-      // translators: %1$s is the domain of the user's default from address, %2$s is a rewritten version of their default from address, %3$s is HTML for an 'update sender' button, and %4$s is HTML for a Learn More button
-      return sprintf(__("<strong>Update your sender email address to a branded domain by February 1st, 2024 to continue sending your campaigns.</strong>
-<span>Starting on February 1st, 2024, MailPoet will no longer be able to send from email addresses on shared 3rd party domains like <strong>%1\$s</strong>. Please change your campaigns to send from an email address on your site's branded domain. Your emails will temporarily be sent from <strong>%2\$s</strong>.</span> <p>%3\$s &nbsp; %4\$s</p>", 'mailpoet'),
-        "@" . $this->getDefaultFromDomain(),
-        $this->authorizedSenderDomainController->getRewrittenEmailAddress($this->getDefaultFromAddress()),
-        $this->getUpdateSenderButton(),
-        $this->getLearnMoreAboutFreeMailButton()
-      );
-    }
-
     if ($contactCount <= AuthorizedSenderDomainController::UPPER_LIMIT) {
       // translators: %1$s is the domain of the user's default from address, %2$s is a rewritten version of their default from address, %3$s is HTML for an 'update sender' button, and %4$s is HTML for a Learn More button
       return sprintf(__("<strong>Update your sender email address to a branded domain to continue sending your campaigns.</strong>
@@ -133,7 +119,7 @@ class SenderDomainAuthenticationNotices {
   }
 
   public function getNoticeContentForBrandedDomainUsers(bool $isPartiallyVerified, int $contactCount): string {
-    if (!$this->authorizedSenderDomainController->isEnforcementOfNewRestrictionsInEffect() || $isPartiallyVerified || $contactCount <= AuthorizedSenderDomainController::LOWER_LIMIT) {
+    if ($isPartiallyVerified || $contactCount <= AuthorizedSenderDomainController::LOWER_LIMIT) {
       // translators: %1$s is HTML for an 'authenticate domain' button, %2$s is HTML for a Learn More button
       return sprintf(__("<strong>Authenticate your sender domain to improve email delivery rates.</strong>
 <span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the “Spam” folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts.</span><p>%1\$s &nbsp; %2\$s</p>", 'mailpoet'),
