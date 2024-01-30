@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.3
 Tested up to: 6.4
-Stable tag: 4.42.0
+Stable tag: 4.42.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,12 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.42.1 - 2024-01-30 =
+* Improved: Display sender domain authentication notices in Automations;
+* Improved: Added Domain Authentication to the onboarding tasks;
+* Fixed: Post notification emails can become stuck;
+* Fixed: Some legacy automatic emails where not visible in the new automations listing page.
 
 = 4.42.0 - 2024-01-22 =
 * Updated: minimum required WooCommerce version to 8.4;
