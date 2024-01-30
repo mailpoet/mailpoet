@@ -291,25 +291,12 @@ class AuthorizedSenderDomainController {
     return $this->subscribers->getSubscribersCount() > self::UPPER_LIMIT;
   }
 
-  private function restrictionsApply(): bool {
-    if ($this->settingsController->get('mta.method') !== Mailer::METHOD_MAILPOET) {
-      return false;
-    }
-
-    // TODO: Remove after the enforcement date has passed
-    if (!$this->isNewUser() && !$this->isEnforcementOfNewRestrictionsInEffect()) {
-      return false;
-    }
-
-    return true;
-  }
-
   public function isAuthorizedDomainRequiredForNewCampaigns(): bool {
-    return $this->restrictionsApply() && !$this->isSmallSender();
+    return $this->settingsController->get('mta.method') === Mailer::METHOD_MAILPOET && !$this->isSmallSender();
   }
 
   public function isAuthorizedDomainRequiredForExistingCampaigns(): bool {
-    return $this->restrictionsApply() && $this->isBigSender();
+    return $this->settingsController->get('mta.method') === Mailer::METHOD_MAILPOET && $this->isBigSender();
   }
 
   public function getContextData(): array {
