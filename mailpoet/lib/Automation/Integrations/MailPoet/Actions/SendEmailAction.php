@@ -293,7 +293,7 @@ class SendEmailAction implements Action {
     return (bool)array_filter(
       $automation->getTriggers(),
       function(Step $step): bool {
-        return in_array($step->getKey(), ['woocommerce:order-status-changed', 'woocommerce:abandoned-cart'], true);
+        return strpos($step->getKey(), 'woocommerce:') === 0;
       }
     );
   }
