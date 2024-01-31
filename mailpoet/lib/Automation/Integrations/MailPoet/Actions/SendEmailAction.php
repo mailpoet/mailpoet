@@ -33,6 +33,13 @@ use Throwable;
 class SendEmailAction implements Action {
   const KEY = 'mailpoet:send-email';
 
+  private const TRANSACTIONAL_TRIGGERS = [
+    'woocommerce:order-status-changed',
+    'woocommerce:order-created',
+    'woocommerce:order-completed',
+    'woocommerce:order-cancelled',
+  ];
+
   /** @var SettingsController */
   private $settings;
 
@@ -266,7 +273,7 @@ class SendEmailAction implements Action {
     $transactionalTriggers = array_filter(
       $triggers,
       function(Step $step): bool {
-        return in_array($step->getKey(), ['woocommerce:order-status-changed'], true);
+        return in_array($step->getKey(), self::TRANSACTIONAL_TRIGGERS, true);
       }
     );
 
