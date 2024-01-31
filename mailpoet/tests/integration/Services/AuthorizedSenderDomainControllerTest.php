@@ -284,7 +284,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     ];
 
     $getSenderDomainsExpectation = Expected::once($domains);
-    $getSenderDomainsRawDataExpectation = Expected::once($domainsRawData);
+    $getSenderDomainsRawDataExpectation = Expected::exactly(2, $domainsRawData);
     $verifySenderDomainsExpectation = Expected::once($response);
 
     $bridgeMock = $this->make(Bridge::class, [
