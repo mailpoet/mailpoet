@@ -5,8 +5,8 @@ set -e
 source $PWD/.env
 
 if [ "$MP_GIT_HOOKS_ENABLE" != "true" ]; then
-    echo "MP_GIT_HOOKS_ENABLE is not set to 'true'. Skipping lint-staged-php."
-    exit 0
+  echo "MP_GIT_HOOKS_ENABLE is not set to 'true'. Skipping lint-staged-php."
+  exit 0
 fi
 
 if [ "$MP_GIT_HOOKS_PHPLINT" = "true" ]; then
