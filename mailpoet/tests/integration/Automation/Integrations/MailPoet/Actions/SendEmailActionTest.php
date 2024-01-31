@@ -252,6 +252,40 @@ class SendEmailActionTest extends \MailPoetTest {
     verify($scheduled)->arrayCount(0);
   }
 
+  public function testItSchedulesTransactionalEmailsWhenNotSubscribedToSegment(): void {
+    $segment = (new Segment())->create();
+    $subscriber = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNSUBSCRIBED)
+      ->create();
+    $subjects = $this->getSubjectData($subscriber, $segment);
+    $email = (new Newsletter())->withAutomationTransactionalType()->create();
+
+    $root = new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep('trigger')]);
+    $trigger = new Step('trigger-id', Step::TYPE_TRIGGER, 'woocommerce:order-status-changed', [], [new NextStep('step-id')]);
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
+    $automation = new Automation(
+      'some-automation',
+      [
+        'root' => $root,
+        $trigger->getId() => $trigger,
+        $step->getId() => $step,
+      ],
+      new \WP_User()
+    );
+    $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
+
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
+    verify($scheduled)->arrayCount(0);
+
+    $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
+    $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+
+    $action->run($args, $controller);
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
+    verify($scheduled)->arrayCount(1);
+  }
+
   /**
    * @dataProvider dataForTestItStoresAnTransactionalEmail
    *

@@ -167,26 +167,34 @@ class SendEmailAction implements Action {
     $subscriberId = $args->getSinglePayloadByClass(SubscriberPayload::class)->getId();
     try {
       $segmentId = $args->getSinglePayloadByClass(SegmentPayload::class)->getId();
-
-      $subscriberSegment = $this->subscriberSegmentRepository->findOneBy([
-        'subscriber' => $subscriberId,
-        'segment' => $segmentId,
-        'status' => SubscriberEntity::STATUS_SUBSCRIBED,
-      ]);
-
-      if (!$subscriberSegment) {
-        throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' is not subscribed to segment ID '%s'.", $subscriberId, $segmentId));
-      }
-
-      $subscriber = $subscriberSegment->getSubscriber();
-      if (!$subscriber) {
-        throw InvalidStateException::create();
-      }
     } catch (NotFoundException $e) {
+      $segmentId = null;
+    }
+
+    // Without segment, fetch subscriber by ID (needed e.g. for "mailpoet:custom-trigger").
+    // Transactional emails don't need to be checked against segment, no matter if it's set.
+    if (!$segmentId || $this->isTransactional($args->getStep(), $args->getAutomation())) {
       $subscriber = $this->subscribersRepository->findOneById($subscriberId);
       if (!$subscriber) {
         throw InvalidStateException::create();
       }
+      return $subscriber;
+    }
+
+    // With segment, fetch subscriber segment and check if they are subscribed.
+    $subscriberSegment = $this->subscriberSegmentRepository->findOneBy([
+      'subscriber' => $subscriberId,
+      'segment' => $segmentId,
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+    ]);
+
+    if (!$subscriberSegment) {
+      throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' is not subscribed to segment ID '%s'.", $subscriberId, $segmentId));
+    }
+
+    $subscriber = $subscriberSegment->getSubscriber();
+    if (!$subscriber) {
+      throw InvalidStateException::create();
     }
     return $subscriber;
   }
