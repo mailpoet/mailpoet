@@ -17,8 +17,8 @@
     "prepare": "cd .. && husky install"
   },
   "lint-staged": {
-    "*.{scss,css}": "tasks/lint-staged-styles.sh",
-    "*.{js,jsx,ts,tsx}": "tasks/lint-staged-scripts.sh",
+    "*.{scss,css}": "tasks/lint-staged-css.sh",
+    "*.{js,jsx,ts,tsx}": "tasks/lint-staged-js.sh",
     "*.php": "tasks/lint-staged-php.sh"
   },
   "dependencies": {
