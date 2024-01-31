@@ -184,6 +184,11 @@ class Newsletter {
     return $this;
   }
 
+  public function withAutomationTransactionalType() {
+    $this->data['type'] = NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL;
+    return $this;
+  }
+
   public function withReengagementType() {
     $this->data['type'] = NewsletterEntity::TYPE_RE_ENGAGEMENT;
     return $this;
