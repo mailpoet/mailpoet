@@ -113,14 +113,11 @@ class StepRunArgs {
   public function getSinglePayloadByClass(string $class): Payload {
     $payloads = [];
     foreach ($this->subjectEntries as $entries) {
-      if (count($entries) > 1) {
-        throw Exceptions::multiplePayloadsFound($class, $this->automationRun->getId());
-      }
-
-      $entry = $entries[0];
-      $payload = $entry->getPayload();
-      if (get_class($payload) === $class) {
-        $payloads[] = $payload;
+      foreach ($entries as $entry) {
+        $payload = $entry->getPayload();
+        if (get_class($payload) === $class) {
+          $payloads[] = $payload;
+        }
       }
     }
 
