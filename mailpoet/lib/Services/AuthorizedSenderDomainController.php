@@ -118,6 +118,7 @@ class AuthorizedSenderDomainController {
     }
 
     // Reset cached value since a new domain was added
+    $this->currentRecords = null;
     $this->reloadCache();
 
     return $response;
@@ -147,7 +148,6 @@ class AuthorizedSenderDomainController {
       throw new \InvalidArgumentException(self::AUTHORIZED_SENDER_DOMAIN_ERROR_NOT_CREATED);
     }
 
-    $this->reloadCache();
     $verifiedDomains = $this->getFullyVerifiedSenderDomains(true);
     $alreadyVerified = in_array($domain, $verifiedDomains);
 
@@ -162,6 +162,9 @@ class AuthorizedSenderDomainController {
     if ($response['status'] === API::RESPONSE_STATUS_ERROR && !isset($response['dns'])) {
       throw new \InvalidArgumentException($response['message']);
     }
+
+    $this->currentRecords = null;
+    $this->reloadCache();
 
     return $response;
   }
@@ -233,7 +236,6 @@ class AuthorizedSenderDomainController {
   }
 
   private function reloadCache() {
-    $this->currentRecords = null;
     $this->currentRawData = $this->bridge->getRawSenderDomainData();
     $this->wp->setTransient(self::SENDER_DOMAINS_KEY, $this->currentRawData, 60 * 60 * 24);
   }
