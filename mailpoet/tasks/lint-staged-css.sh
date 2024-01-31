@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 source $PWD/.env
 
 if [ "$MP_GIT_HOOKS_ENABLE" != "true" ]; then
