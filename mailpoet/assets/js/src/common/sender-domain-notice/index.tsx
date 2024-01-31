@@ -94,7 +94,7 @@ function SenderDomainInlineNotice({
         emailAddressDomain={emailAddressDomain}
         isFreeDomain={isFreeDomain}
         isPartiallyVerifiedDomain={isPartiallyVerifiedDomain}
-        isSmallSender={isSmallSender}
+        isSmallSender={isSmallSender || senderRestrictions.alwaysRewrite}
       />
     </InlineNotice>
   );
