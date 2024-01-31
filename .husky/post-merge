@@ -1,8 +1,7 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
-. "$(dirname "$0")/../mailpoet/.env"
+. "$(dirname "$0")/common.sh"
 [ "$MP_GIT_HOOKS_ENABLE" != "true" ] && exit 0
 
-. "$(dirname "$0")/common.sh"
 
 installIfUpdates
