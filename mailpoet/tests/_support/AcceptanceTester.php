@@ -152,6 +152,27 @@ class AcceptanceTester extends \Codeception\Actor {
     }
   }
 
+  public function clickWooTableActionByItemName($itemName, $actionLinkText) {
+    $i = $this;
+    $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//a[text()="' . $actionLinkText . '"]'];
+    $i->click($xpath);
+  }
+
+  public function clickWooTableMoreButtonByItemName($itemName) {
+    $i = $this;
+    $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//div[contains(@class, "mailpoet-automation-listing-more-button")]'];
+    $i->click($xpath);
+  }
+
+  public function clickWooTableActionInsideMoreButton(string $itemName, string $moreButtonAction, string $confirmAction = null) {
+    $i = $this;
+    $i->clickWooTableMoreButtonByItemName($itemName);
+    $i->click($moreButtonAction);
+    if ($confirmAction) {
+      $i->click($confirmAction);
+    }
+  }
+
   /**
    * Select a value from select2 input field.
    * For multiple selection the element is textarea.select2-search__field (default),
@@ -377,6 +398,12 @@ class AcceptanceTester extends \Codeception\Actor {
     $this->_waitForText($text, $this->getDefaultTimeout($timeout), $selector);
     $this->waitForElementVisible('.notice-dismiss', 1);
     $this->click('.notice-dismiss');
+  }
+
+  public function waitForWooTableNoticeAndClose(string $text): void {
+    $i = $this;
+    $i->waitForText($text);
+    $i->click('button[aria-label="Dismiss this notice"]');
   }
 
   public function scrollToTop() {
@@ -863,6 +890,17 @@ class AcceptanceTester extends \Codeception\Actor {
       }
     }
     $i->seeInCurrentURL(urlencode('group[' . $name . ']'));
+  }
+
+  public function checkWooTableCheckboxForItemName(string $itemName): void {
+    $i = $this;
+    $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//input[@type="checkbox"]'];
+    $i->click($xpath);
+  }
+
+  public function changeWooTableTab(string $name): void {
+    $i = $this;
+    $i->click('button.mailpoet-tab-' . $name);
   }
 
   public function clearTransientCache(): void {
