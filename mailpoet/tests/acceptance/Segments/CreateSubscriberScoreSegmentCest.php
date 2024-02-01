@@ -41,7 +41,7 @@ class CreateSubscriberScoreSegmentCest {
     $i->wantTo('Edit the segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
-    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementVisible('[data-automation-id="segment-subscriber-score-operator"]');
     $i->seeInField('[data-automation-id="segment-subscriber-score-value"]', '20.51');
     $i->waitForText('This segment has');
@@ -51,7 +51,7 @@ class CreateSubscriberScoreSegmentCest {
     $i->wantTo('Check subscribers of the segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
-    $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
+    $i->clickWooTableActionByItemName($segmentTitle, 'View Subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
     $i->see($segmentTitle, ['css' => 'select[name=segment]']);
     $i->see('score_test1@example.com');
@@ -79,7 +79,7 @@ class CreateSubscriberScoreSegmentCest {
     $i->wantTo('Edit the segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
-    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementVisible('[data-automation-id="segment-subscriber-score-operator"]');
     $i->dontSeeElement('[data-automation-id="segment-subscriber-score-value"]');
     $i->waitForText('This segment has');
@@ -89,7 +89,7 @@ class CreateSubscriberScoreSegmentCest {
     $i->wantTo('Check subscribers of the segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
-    $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
+    $i->clickWooTableActionByItemName($segmentTitle, 'View Subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
     $i->see($segmentTitle, ['css' => 'select[name=segment]']);
     $i->dontSee('score_test1@example.com');
