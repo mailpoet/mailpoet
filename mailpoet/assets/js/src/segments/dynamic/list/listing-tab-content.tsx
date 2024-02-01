@@ -32,6 +32,7 @@ function SelectAll(): JSX.Element {
     <input
       checked={allSelected}
       type="checkbox"
+      data-automation-id="select_all"
       onChange={() => {
         if (allSelected) {
           dispatch(storeName).unselectAllDynamicSections();
