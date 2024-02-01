@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Entities\SegmentEntity;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
@@ -36,9 +35,9 @@ class ManageSegmentsCest {
 
     $i->login();
     $i->amOnMailpoetPage('Segments');
-    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->getId() . '"]';
+    $listingAutomationSelector = '[data-automation-id="mailpoet_dynamic_segment_name_' . $segment->getId() . '"]';
     $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
-    $i->clickItemRowActionByItemName($segmentTitle, 'View Subscribers');
+    $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
     $i->seeInCurrentUrl('segment=' . $segment->getId());
     $i->waitForText($wpEditorEmail, 20);
@@ -97,7 +96,7 @@ class ManageSegmentsCest {
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Edit existing segment');
-    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForText('This segment has 3 subscribers');
     $i->clearFormField($nameElement);
     $i->clearField($descriptionElement, '');
@@ -131,29 +130,21 @@ class ManageSegmentsCest {
     $i->amOnMailpoetPage('Segments');
 
     $i->wantTo('Trash existing segment');
-    $i->clickItemRowActionByItemName($segment->getName(), 'Move to trash');
-    $i->waitForNoticeAndClose('1 segment was moved to the trash.');
-    $i->waitForText('No segments found');
-    $i->changeGroupInListingFilter('trash');
+    $i->clickWooTableActionInsideMoreButton($segment->getName(), 'Move to trash', 'Trash');
+    $i->waitForWooTableNoticeAndClose('Segment moved to trash.');
+    $i->waitForText('No data to display');
+    $i->changeWooTableTab('trash');
 
     $i->waitForText($segment->getName());
     $i->seeNoJSErrors();
 
     $i->wantTo('Restore trashed segment');
-    $i->clickItemRowActionByItemName($segment->getName(), 'Restore');
-    $i->waitForNoticeAndClose('1 segment has been restored from the Trash.');
+    $i->clickWooTableActionInsideMoreButton($segment->getName(), 'Restore', 'Restore');
+    $i->waitForWooTableNoticeAndClose('Segment restored.');
     $i->seeInCurrentURL(urlencode('group[trash]'));
-    $i->changeGroupInListingFilter('all');
+    $i->changeWooTableTab('all');
     $i->waitForText($segment->getName());
     $i->seeNoJSErrors();
-  }
-
-  private function clickMoreMenuItem(\AcceptanceTester $i, SegmentEntity $segmentEntity, $menuItem) {
-
-    $column = sprintf('[data-automation-id="mailpoet_dynamic_segment_actions_%d"]', $segmentEntity->getId());
-
-    $i->click($column . ' .components-dropdown-menu__toggle');
-    $i->click($menuItem, $column);
   }
 
   public function deleteExistingSegment(\AcceptanceTester $i) {
@@ -172,29 +163,13 @@ class ManageSegmentsCest {
     $i->amOnMailpoetPage('Segments');
 
     $i->wantTo('Trash and delete existing segment');
-    $this->clickMoreMenuItem($i, $segment1, 'Move to trash');
-    $i->waitForText('Trash selected segment');
-    $i->click('Trash');
-    $i->waitForText('Segment moved to trash.');
+    $i->clickWooTableActionInsideMoreButton($segment1->getName(), 'Move to trash', 'Trash');
+    $i->waitForWooTableNoticeAndClose('Segment moved to trash.');
     $i->waitForText('No data to display');
-    $i->click('Trash');
+    $i->changeWooTableTab('trash');
     $i->waitForText($segment1->getName());
-    $this->clickMoreMenuItem($i, $segment1, 'Delete permanently');
-    $i->waitForText('Delete selected segment permanently');
-    $i->waitForText('Segment permanently deleted.');
-    $i->waitForText($segment2->getName());
-    $i->seeNoJSErrors();
-
-    $i->wantTo('Empty trash from other segments');
-    $i->waitForElementVisible('[data-automation-id="empty_trash"]');
-    $i->waitForElementClickable('[data-automation-id="empty_trash"]');
-    $i->moveMouseOver('[data-automation-id="empty_trash"]');
-    $i->click('[data-automation-id="empty_trash"]');
-    $i->waitForListingItemsToLoad();
-    $i->waitForNoticeAndClose('1 segment was permanently deleted.');
-    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment1->getId() . '"]';
-    $i->dontSeeElement($listingAutomationSelector);
-    $i->seeInCurrentURL(urlencode('group[all]'));
+    $i->clickWooTableActionInsideMoreButton($segment1->getName(), 'Delete permanently', 'Delete permanently');
+    $i->waitForWooTableNoticeAndClose('Segment permanently deleted.');
     $i->seeNoJSErrors();
   }
 
@@ -285,40 +260,37 @@ class ManageSegmentsCest {
 
     $i->login();
 
-    $bulkActionsContainer = '[data-automation-id="listing-bulk-actions"]';
-
     $i->wantTo('Select trashed segments one by one and bulk restore them');
     $i->amOnMailpoetPage('Segments');
-    $i->changeGroupInListingFilter('trash');
+    $i->changeWooTableTab('trash');
     $i->waitForText($segment1Name);
-    $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment1->getId() . '"]');
-    $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment2->getId() . '"]');
-    $i->waitForText('Restore', 10, $bulkActionsContainer);
-    $i->click('Restore', $bulkActionsContainer);
+    $i->checkWooTableCheckboxForItemName($segment1Name);
+    $i->checkWooTableCheckboxForItemName($segment2Name);
+    $i->selectOption('Bulk Actions', 'Restore');
+    $i->click('Restore'); // confirmation modal
     $i->wantTo('Check that segments were restored and trash filter is not present');
-    $i->waitForElementNotVisible('[data-automation-id="filters_trash"]');
+    $i->waitForText('No data to display');
+    $i->changeWooTableTab('all');
     $i->waitForText($segment1Name);
     $i->waitForText($segment2Name);
 
     $i->wantTo('Select all segments and move them back to trash');
-    $i->waitForElement('[data-automation-id="filters_all"]');
-    $i->waitForText($segment1Name);
     $i->click('[data-automation-id="select_all"]');
-    $i->waitForText('Move to trash', 10, $bulkActionsContainer);
-    $i->click('Move to trash', $bulkActionsContainer);
-    $i->waitForText('No segments found');
+    $i->selectOption('Bulk Actions', 'Trash');
+    $i->waitForText('Are you sure you want to trash the selected segments');
+    $i->click(['xpath' => '//button[text()="Trash"]']); // confirmation modal, xpath to avoid clicking the Trash tab
+    $i->waitForText('No data to display');
 
     $i->wantTo('Select all segments in trash and bulk delete them permanently');
-    $i->changeGroupInListingFilter('trash');
+    $i->changeWooTableTab('trash');
     $i->waitForText($segment1Name);
     $i->click('[data-automation-id="select_all"]');
-    $i->waitForText('Delete permanently', 10, $bulkActionsContainer);
-    $i->click('Delete permanently', $bulkActionsContainer);
-    $i->waitForText('No segments found');
+    $i->selectOption('Bulk Actions', 'Delete permanently');
+    $i->click('Delete permanently'); // modal confirmation
+    $i->waitForText('No data to display');
   }
 
   public function cantTrashOrBulkTrashActivelyUsedSegment(\AcceptanceTester $i) {
-
     $segmentTitle = 'Active Segment';
     $subject = 'Post notification';
     $segmentFactory = new DynamicSegment();
@@ -334,9 +306,8 @@ class ManageSegmentsCest {
     $i->wantTo('Check that user can’t delete actively used list');
     $i->login();
     $i->amOnMailpoetPage('Segments');
-    $i->waitForElement('[data-automation-id="filters_all"]');
-    $i->waitForText($segmentTitle, 5, '[data-automation-id="listing_item_' . $segment->getId() . '"]');
-    $i->clickItemRowActionByItemName($segmentTitle, 'Move to trash');
+    $i->waitForText($segmentTitle, 5, '[data-automation-id="mailpoet_dynamic_segment_name_' . $segment->getId() . '"]');
+    $i->clickWooTableActionInsideMoreButton($segmentTitle, 'Move to trash');
     $i->waitForText("Segment cannot be deleted because it’s used for '{$subject}' email");
     $i->seeNoJSErrors();
     $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment->getId() . '"]');
@@ -388,9 +359,9 @@ class ManageSegmentsCest {
 
     $i->login();
     $i->amOnMailpoetPage('Segments');
-    $listingAutomationSelector = '[data-automation-id="listing_item_' . $segment->getId() . '"]';
+    $listingAutomationSelector = '[data-automation-id="mailpoet_dynamic_segment_name_' . $segment->getId() . '"]';
     $i->waitForText($segmentTitle, 10, $listingAutomationSelector);
-    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementNotVisible('.mailpoet_form_loading');
     $i->waitForText('This segment has 2 subscribers.');
     $i->seeNoJSErrors();
