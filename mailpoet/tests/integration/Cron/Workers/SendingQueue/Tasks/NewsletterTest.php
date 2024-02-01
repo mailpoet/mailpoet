@@ -26,6 +26,7 @@ use MailPoet\Newsletter\Renderer\Blocks\Coupon;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Router\Router;
+use MailPoet\RuntimeException;
 use MailPoet\Test\DataFactories\DynamicSegment;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
@@ -308,7 +309,9 @@ class NewsletterTest extends \MailPoetTest {
   public function testItDoesNotRenderSubscriberShortcodeInSubjectWhenPreprocessingNewsletter() {
     $this->newsletter->setSubject('Newsletter for [subscriber:firstname] [date:dordinal]');
     $this->newslettersRepository->persist($this->newsletter);
-    $this->newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->newsletter = $newsletter;
 
     $sendingQueue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $this->newsletter]);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
@@ -320,7 +323,9 @@ class NewsletterTest extends \MailPoetTest {
   public function testItUsesADefaultSubjectIfRenderedSubjectIsEmptyWhenPreprocessingNewsletter() {
     $this->newsletter->setSubject('  [custom_shortcode:should_render_empty]  ');
     $this->newslettersRepository->persist($this->newsletter);
-    $this->newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $this->newsletter = $newsletter;
 
     $sendingQueue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $this->newsletter]);
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
@@ -357,8 +362,7 @@ class NewsletterTest extends \MailPoetTest {
   }
 
   public function testItRendersShortcodesAndReplacesSubscriberDataInLinks() {
-    $newsletter = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
-    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->getId());
+    $newsletterEntity = $this->newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
     $result = $this->newsletterTask->prepareNewsletterForSending(
       $newsletterEntity,
@@ -375,8 +379,7 @@ class NewsletterTest extends \MailPoetTest {
   public function testItDoesNotReplaceSubscriberDataInLinksWhenTrackingIsNotEnabled() {
     $newsletterTask = $this->newsletterTask;
     $newsletterTask->trackingEnabled = false;
-    $newsletter = $newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
-    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->getId());
+    $newsletterEntity = $newsletterTask->preProcessNewsletter($this->newsletter, $this->scheduledTaskEntity);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
     $result = $newsletterTask->prepareNewsletterForSending(
       $newsletterEntity,
@@ -455,8 +458,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->sendingQueueEntity->setNewsletter($newsletter);
     $this->sendingQueuesRepository->persist($this->sendingQueueEntity);
 
-    $newsletter = $newsletterTask->preProcessNewsletter($newsletter, $this->scheduledTaskEntity);
-    $newsletterEntity = $this->newslettersRepository->findOneById($newsletter->getId());
+    $newsletterEntity = $newsletterTask->preProcessNewsletter($newsletter, $this->scheduledTaskEntity);
     $this->assertInstanceOf(NewsletterEntity::class, $newsletterEntity);
     $result = $newsletterTask->prepareNewsletterForSending(
       $newsletterEntity,
@@ -617,5 +619,19 @@ class NewsletterTest extends \MailPoetTest {
     $this->entityManager->clear();
     $this->assertNull($this->scheduledTasksRepository->findOneById($scheduledTaskId));
     $this->assertNull($this->sendingQueuesRepository->findOneById($sendingQueueId));
+  }
+
+  public function testItThrowsExceptionWhenTaskHasNoQueue(): void {
+    $scheduledTask = new ScheduledTaskEntity();
+    $this->entityManager->persist($scheduledTask);
+    $newsletter = (new NewsletterFactory())
+      ->withType(NewsletterEntity::TYPE_STANDARD)
+      ->withStatus(NewsletterEntity::STATUS_SENDING)
+      ->withSubject(Fixtures::get('newsletter_subject_template'))
+      ->withBody(json_decode(Fixtures::get('newsletter_body_template'), true))
+      ->create();
+    $this->expectException(RuntimeException::class);
+    $this->expectExceptionMessage('Can‘t pre-process newsletter without queue.');
+    $this->newsletterTask->preProcessNewsletter($newsletter, $scheduledTask);
   }
 }
