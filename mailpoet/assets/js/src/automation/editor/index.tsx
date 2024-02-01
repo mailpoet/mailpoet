@@ -126,6 +126,7 @@ function Editor(): JSX.Element {
   if (automation.status === 'trash') {
     window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
       notice: LISTING_NOTICES.automationHadBeenDeleted,
+      'notice-args': [automation.name],
     });
     return null;
   }
