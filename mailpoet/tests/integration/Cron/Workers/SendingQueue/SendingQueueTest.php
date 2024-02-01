@@ -1395,6 +1395,30 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertSame(false, $this->scheduledTask->getInProgress());
   }
 
+  public function testItCanProcessPostNotificationHistoryWithoutPosts() {
+    // Cleanup data from self::before
+    $this->truncateEntity(NewsletterEntity::class);
+    $this->truncateEntity(SendingQueueEntity::class);
+    $this->truncateEntity(ScheduledTaskEntity::class);
+    $this->entityManager->clear();
+
+    // Prepare post notification history for sending
+    // The body added via createNewsletter doesn't contain ALC block so there will be no posts inserted and the newsletter will be deleted
+    $parentNewsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION, 'Post Notification', NewsletterEntity::STATUS_ACTIVE);
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY, 'To Delete', NewsletterEntity::STATUS_SENDING);
+    $newsletter->setParent($parentNewsletter);
+    $queue = $this->createQueueWithTask($newsletter);
+    $sendingQueueWorker = $this->getSendingQueueWorker();
+    $sendingQueueWorker->process();
+
+    $task = $queue->getTask();
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    // Re-fetch newsletter, task and queue from DB and verify they were deleted
+    verify($this->entityManager->find(ScheduledTaskEntity::class, $task->getId()))->null();
+    verify($this->entityManager->find(SendingQueueEntity::class, $queue->getId()))->null();
+    verify($this->entityManager->find(NewsletterEntity::class, $newsletter->getId()))->null();
+  }
+
   private function createNewsletter(string $type, $subject, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType($type);
