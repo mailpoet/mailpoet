@@ -20,6 +20,7 @@ use MailPoet\Newsletter\Renderer\PostProcess\OpenTracking;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\RuntimeException;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\GATracking;
@@ -139,11 +140,22 @@ class Newsletter {
     return $newsletter;
   }
 
+  /**
+   * Pre-processes the newsletter before sending.
+   * - Renders the newsletter
+   * - Adds tracking
+   * - Extracts links
+   * - Checks if the newsletter is a post notification and if it contains at least 1 ALC post.
+   *   If not it deletes the notification history record and all associate entities.
+   *
+   * @return NewsletterEntity|false - Returns false only if the newsletter is a post notification history and was deleted.
+   *
+   */
   public function preProcessNewsletter(NewsletterEntity $newsletter, ScheduledTaskEntity $task) {
     // return the newsletter if it was previously rendered
     $queue = $task->getSendingQueue();
     if (!$queue) {
-      return false;
+      throw new RuntimeException('Can‘t pre-process newsletter without queue.');
     }
     if ($queue->getNewsletterRenderedBody() !== null) {
       return $newsletter;
