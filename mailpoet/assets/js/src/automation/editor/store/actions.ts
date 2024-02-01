@@ -214,9 +214,10 @@ export function* trash(onTrashed: () => void = undefined) {
 
   onTrashed?.();
 
-  if (data?.status === AutomationStatus.TRASH) {
+  if (data?.data?.status === AutomationStatus.TRASH) {
     window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
       notice: LISTING_NOTICES.automationDeleted,
+      'notice-args': [automation.name],
     });
   }
 
