@@ -42,11 +42,6 @@ export function updateDynamicQueryFromLocation(pathname: string): void {
 }
 
 export function getTabFromLocation(pathname: string): string {
-  const pathElements = pathname.split('/');
-  for (let i = 0; i < pathElements.length; i += 1) {
-    if (pathElements[i].startsWith(`group[`)) {
-      return pathElements[i].replace(`group[`, '').replace(']', '');
-    }
-  }
-  return 'all';
+  const match = pathname.match(/\/group\[(.*?)]/);
+  return match ? match[1] : 'all';
 }
