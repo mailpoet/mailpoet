@@ -105,7 +105,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->waitForText(self::CATEGORY_SEGMENT);
     $categorySegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->categorySegment->getId()}']";
     $i->see('2', $categorySegmentSubscribedElement);
-    $this->clickAction($i, $this->categorySegment, 'View Subscribers');
+    $this->clickAction($i, $this->categorySegment, 'View subscribers');
     $i->waitForText($customerEmail);
 
     $i->wantTo('Check subscriber is in product segment');
@@ -113,7 +113,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->waitForText(self::PRODUCT_SEGMENT);
     $productSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->productSegment->getId()}']";
     $i->see('2', $productSegmentSubscribedElement);
-    $this->clickAction($i, $this->productSegment, 'View Subscribers');
+    $this->clickAction($i, $this->productSegment, 'View subscribers');
     $i->waitForText($customerEmail);
     $i->waitForText($guestEmail);
   }
@@ -139,7 +139,7 @@ class WooCommerceDynamicSegmentsCest {
     $categorySegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->categorySegment->getId()}']";
 
     $i->see('2', $categorySegmentSubscribedElement);
-    $this->clickAction($i, $this->categorySegment, 'View Subscribers');
+    $this->clickAction($i, $this->categorySegment, 'View subscribers');
     $i->waitForText($customerEmail);
     $i->waitForText($guestEmail);
 
@@ -169,7 +169,7 @@ class WooCommerceDynamicSegmentsCest {
     $numberOfOrdersSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->numberOfOrdersSegment->getId()}']";
 
     $i->see('1', $numberOfOrdersSegmentSubscribedElement);
-    $this->clickAction($i, $this->numberOfOrdersSegment, 'View Subscribers');
+    $this->clickAction($i, $this->numberOfOrdersSegment, 'View subscribers');
     $i->waitForText($customer1Email);
   }
 
@@ -195,7 +195,7 @@ class WooCommerceDynamicSegmentsCest {
     $singleOrderValueSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->singleOrderValueSegment->getId()}']";
 
     $i->see('1', $singleOrderValueSegmentSubscribedElement);
-    $this->clickAction($i, $this->singleOrderValueSegment, 'View Subscribers');
+    $this->clickAction($i, $this->singleOrderValueSegment, 'View subscribers');
     $i->waitForText($customerEmail2);
     $i->dontSee($customerEmail1);
   }
@@ -218,7 +218,7 @@ class WooCommerceDynamicSegmentsCest {
     $totalSpentSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->totalSpentSegment->getId()}']";
 
     $i->see('1', $totalSpentSegmentSubscribedElement);
-    $this->clickAction($i, $this->totalSpentSegment, 'View Subscribers');
+    $this->clickAction($i, $this->totalSpentSegment, 'View subscribers');
     $i->waitForText($customerEmail);
   }
 
@@ -241,7 +241,7 @@ class WooCommerceDynamicSegmentsCest {
     $i->waitForText(self::CUSTOMER_IN_COUNTRY);
     $customerInCountryCountElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->customerCountrySegment->getId()}']";
     $i->see('2', $customerInCountryCountElement);
-    $this->clickAction($i, $this->customerCountrySegment, 'View Subscribers');
+    $this->clickAction($i, $this->customerCountrySegment, 'View subscribers');
     $i->waitForText($customerEmail);
     $i->waitForText($guestEmail);
   }
@@ -280,7 +280,7 @@ class WooCommerceDynamicSegmentsCest {
     $column = sprintf('[data-automation-id="mailpoet_dynamic_segment_actions_%d"]', $segmentEntity->getId());
 
     switch ($actionName) {
-      case 'View Subscribers':
+      case 'View subscribers':
         $actionName = 'a';
         break;
       case 'Edit':
