@@ -181,8 +181,9 @@ class SendingQueue {
     // pre-process newsletter (render, replace shortcodes/links, etc.)
     $newsletter = $this->newsletterTask->preProcessNewsletter($newsletter, $task);
 
+    // During pre-processing we may find that the newsletter can't be sent and we delete it including all associated entities
+    // E.g. post notification history newsletter when there are no posts to send
     if (!$newsletter) {
-      $this->deleteTask($task);
       return;
     }
 
@@ -575,6 +576,11 @@ class SendingQueue {
   }
 
   private function stopProgress(ScheduledTaskEntity $task): void {
+    // if task is not managed by entity manager, it's already deleted and detached
+    // it can be deleted in self::processSending method
+    if (!$this->entityManager->contains($task)) {
+      return;
+    }
     $task->setInProgress(false);
     $this->scheduledTasksRepository->flush();
   }
