@@ -5,8 +5,6 @@ import { __ } from '@wordpress/i18n';
 import { getQueryArg, removeQueryArgs } from '@wordpress/url';
 
 export const LISTING_NOTICES = {
-  automationActivated: 'activated',
-  automationSaved: 'saved',
   automationDeleted: 'deleted',
   automationHadBeenDeleted: 'had-been-deleted',
 } as const;
@@ -16,14 +14,7 @@ export function useAutomationListingNotices(): void {
 
   useEffect(() => {
     const notice = getQueryArg(window.location.href, 'notice');
-    if (notice === LISTING_NOTICES.automationActivated) {
-      createNotice('success', __('Your automation is now active.', 'mailpoet'));
-    } else if (notice === LISTING_NOTICES.automationSaved) {
-      createNotice(
-        'success',
-        __('Your automation has been saved.', 'mailpoet'),
-      );
-    } else if (notice === LISTING_NOTICES.automationDeleted) {
+    if (notice === LISTING_NOTICES.automationDeleted) {
       createNotice(
         'success',
         __('1 automation moved to the Trash.', 'mailpoet'),
