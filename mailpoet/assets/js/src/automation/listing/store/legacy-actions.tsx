@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { __unstableAwaitPromise as AwaitPromise } from '@wordpress/data-controls';
 import { dispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
@@ -64,7 +64,12 @@ export function* trashLegacyAutomation(automation: Automation) {
     }),
   );
 
-  createSuccessNotice(__('1 automation moved to the Trash.', 'mailpoet'));
+  createSuccessNotice(
+    sprintf(
+      __('Automation "%s" was moved to the trash.', 'mailpoet'),
+      automation.name,
+    ),
+  );
 
   return {
     type: 'UPDATE_LEGACY_AUTOMATION_STATUS',
@@ -84,7 +89,12 @@ export function* restoreLegacyAutomation(automation: Automation) {
 
   void removeNotice(`automation-trashed-${automation.id}`);
 
-  createSuccessNotice(__('1 automation restored from the Trash.', 'mailpoet'));
+  createSuccessNotice(
+    sprintf(
+      __('Automation "%s" was restored from the trash.', 'mailpoet'),
+      automation.name,
+    ),
+  );
 
   return {
     type: 'UPDATE_LEGACY_AUTOMATION_STATUS',
@@ -103,7 +113,13 @@ export function* deleteLegacyAutomation(automation: Automation) {
   );
 
   void createSuccessNotice(
-    __('1 automation and all associated data permanently deleted.', 'mailpoet'),
+    sprintf(
+      __(
+        'Automation "%s" and all associated data were permanently deleted.',
+        'mailpoet',
+      ),
+      automation.name,
+    ),
   );
 
   return {

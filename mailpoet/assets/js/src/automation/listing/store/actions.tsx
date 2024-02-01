@@ -47,7 +47,10 @@ export function* trashAutomation(automation: Automation) {
     },
   });
 
-  const message = __('1 automation moved to the Trash.', 'mailpoet');
+  const message = sprintf(
+    __('Automation "%s" was moved to the trash.', 'mailpoet'),
+    automation.name,
+  );
   void createSuccessNotice(message, {
     id: `automation-trashed-${automation.id}`,
     __unstableHTML: (
@@ -81,7 +84,10 @@ export function* restoreAutomation(
 
   void removeNotice(`automation-trashed-${automation.id}`);
 
-  const message = __('1 automation restored from the Trash.', 'mailpoet');
+  const message = sprintf(
+    __('Automation "%s" was restored from the trash.', 'mailpoet'),
+    automation.name,
+  );
   void createSuccessNotice(message, {
     __unstableHTML: (
       <p>
@@ -107,7 +113,13 @@ export function* deleteAutomation(automation: Automation) {
   });
 
   void createSuccessNotice(
-    __('1 automation and all associated data permanently deleted.', 'mailpoet'),
+    sprintf(
+      __(
+        'Automation "%s" and all associated data were permanently deleted.',
+        'mailpoet',
+      ),
+      automation.name,
+    ),
   );
 
   return {
