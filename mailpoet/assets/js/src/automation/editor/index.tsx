@@ -115,21 +115,24 @@ function Editor(): JSX.Element {
     if (!isBooting) {
       return;
     }
+    if (automation.status === 'trash') {
+      window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
+        notice: LISTING_NOTICES.automationHadBeenDeleted,
+        'notice-args': [automation.name],
+      });
+    }
     updatingActiveAutomationNotPossible();
     setIsBooting(false);
-  }, [isBooting]);
+  }, [automation.name, automation.status, isBooting]);
+
+  if (automation.status === 'trash') {
+    return null;
+  }
+
   const className = classnames('interface-interface-skeleton', {
     'is-sidebar-opened': isSidebarOpened,
     'show-icon-labels': showIconLabels,
   });
-
-  if (automation.status === 'trash') {
-    window.location.href = addQueryArgs(MailPoet.urls.automationListing, {
-      notice: LISTING_NOTICES.automationHadBeenDeleted,
-      'notice-args': [automation.name],
-    });
-    return null;
-  }
 
   return (
     <ShortcutProvider>
