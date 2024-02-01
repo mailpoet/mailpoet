@@ -47,7 +47,7 @@ class ManageWooCommerceSegmentsCest {
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
-    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForElement($categorySelectElement);
     $i->seeInField(['name' => 'name'], $segmentTitle);
     $i->seeInField(['name' => 'description'], $segmentDesc);
@@ -68,7 +68,7 @@ class ManageWooCommerceSegmentsCest {
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
-    $i->clickItemRowActionByItemName($editedTitle, 'Edit');
+    $i->clickWooTableActionByItemName($editedTitle, 'Edit');
     $i->waitForElement($categorySelectElement);
     $i->seeInField(['name' => 'name'], $editedTitle);
     $i->seeInField(['name' => 'description'], $editedDesc);
@@ -109,7 +109,7 @@ class ManageWooCommerceSegmentsCest {
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
-    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForElement($productSelectElement);
     $i->seeInField($segmentNameField, $segmentTitle);
     $i->seeInField($segmentDescriptionField, $segmentDesc);
@@ -135,7 +135,7 @@ class ManageWooCommerceSegmentsCest {
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
-    $i->clickItemRowActionByItemName($editedTitle, 'Edit');
+    $i->clickWooTableActionByItemName($editedTitle, 'Edit');
     $i->waitForElement($productSelectElement);
     $i->seeInField($segmentNameField, $editedTitle);
     $i->seeInField($segmentDescriptionField, $editedDesc);
@@ -175,7 +175,7 @@ class ManageWooCommerceSegmentsCest {
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
-    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForElement($numberOfOrdersTypeElement);
     $i->seeInField($segmentNameField, $segmentTitle);
     $i->seeInField($segmentDescriptionField, $segmentDesc);
@@ -205,7 +205,7 @@ class ManageWooCommerceSegmentsCest {
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
-    $i->clickItemRowActionByItemName($editedTitle, 'Edit');
+    $i->clickWooTableActionByItemName($editedTitle, 'Edit');
     $i->waitForElement($numberOfOrdersTypeElement);
     $i->seeInField($segmentNameField, $editedTitle);
     $i->seeInField($segmentDescriptionField, $editedDesc);
@@ -245,7 +245,7 @@ class ManageWooCommerceSegmentsCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
-    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForElement($totalSpentTypeElement);
     $i->seeInField($segmentNameField, $segmentTitle);
     $i->seeInField($segmentDescriptionField, $segmentDesc);
@@ -276,7 +276,7 @@ class ManageWooCommerceSegmentsCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
-    $i->clickItemRowActionByItemName($editedTitle, 'Edit');
+    $i->clickWooTableActionByItemName($editedTitle, 'Edit');
     $i->waitForElement($totalSpentTypeElement);
     $i->seeInField($segmentNameField, $editedTitle);
     $i->seeInField($segmentDescriptionField, $editedDesc);
@@ -316,7 +316,7 @@ class ManageWooCommerceSegmentsCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
-    $i->clickItemRowActionByItemName($segmentTitle, 'Edit');
+    $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForElement($singleOrderValueTypeElement);
     $i->seeInField($segmentNameField, $segmentTitle);
     $i->seeInField($segmentDescriptionField, $segmentDesc);
@@ -347,7 +347,7 @@ class ManageWooCommerceSegmentsCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Open edit form and check that all values were saved correctly');
-    $i->clickItemRowActionByItemName($editedTitle, 'Edit');
+    $i->clickWooTableActionByItemName($editedTitle, 'Edit');
     $i->waitForElement($singleOrderValueTypeElement);
     $i->seeInField($segmentNameField, $editedTitle);
     $i->seeInField($segmentDescriptionField, $editedDesc);
