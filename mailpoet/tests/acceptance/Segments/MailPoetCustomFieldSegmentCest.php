@@ -55,7 +55,7 @@ class MailPoetCustomFieldSegmentCest {
     $i->wantTo('Check subscribers of the segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
-    $i->click('View Subscribers');
+    $i->click('View subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
     $i->see($segmentTitle, ['css' => 'select[name=segment]']);
     $i->see('test2@example.com');
