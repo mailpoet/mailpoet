@@ -99,7 +99,7 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->waitForText($segmentTitle);
 
     $i->wantTo('Check there is one subscriber on the segment');
-    $i->clickWooTableActionByItemName($segmentTitle, 'View Subscribers');
+    $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->waitForText('stats_test5@example.com');
 
     $i->wantTo('Edit the segment again');
@@ -121,7 +121,7 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->wantTo('Check subscribers of the segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
-    $i->clickWooTableActionByItemName($segmentTitle, 'View Subscribers');
+    $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
     $i->see($segmentTitle, ['css' => 'select[name=segment]']);
     $i->see('stats_test1@example.com');

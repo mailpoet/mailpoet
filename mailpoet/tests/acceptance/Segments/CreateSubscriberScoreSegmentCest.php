@@ -51,7 +51,7 @@ class CreateSubscriberScoreSegmentCest {
     $i->wantTo('Check subscribers of the segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
-    $i->clickWooTableActionByItemName($segmentTitle, 'View Subscribers');
+    $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
     $i->see($segmentTitle, ['css' => 'select[name=segment]']);
     $i->see('score_test1@example.com');
@@ -89,7 +89,7 @@ class CreateSubscriberScoreSegmentCest {
     $i->wantTo('Check subscribers of the segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
-    $i->clickWooTableActionByItemName($segmentTitle, 'View Subscribers');
+    $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
     $i->see($segmentTitle, ['css' => 'select[name=segment]']);
     $i->dontSee('score_test1@example.com');

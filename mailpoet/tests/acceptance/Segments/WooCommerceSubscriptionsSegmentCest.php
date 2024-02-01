@@ -94,7 +94,7 @@ class WooCommerceSubscriptionsSegmentCest {
 
     $i->wantTo('Check that segment contains correct subscribers');
     $i->waitForText($segmentTitle);
-    $i->click('View Subscribers');
+    $i->click('View subscribers');
     $i->waitForText('subscriber1@example.com');
     $i->waitForText('subscriber2@example.com');
 
