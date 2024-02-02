@@ -75,12 +75,15 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
 
     // 100 years
     $this->assertSame(162.3, $spentTotalField->getValue($customerPayload, ['in_the_last_seconds' => 100 * YEAR_IN_SECONDS]));
+    $this->assertSame(3, $orderCountField->getValue($customerPayload, ['in_the_last_seconds' => 100 * YEAR_IN_SECONDS]));
 
     // 3 months
     $this->assertSame(150.0, $spentTotalField->getValue($customerPayload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS]));
+    $this->assertSame(2, $orderCountField->getValue($customerPayload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS]));
 
     // 3 weeks
     $this->assertSame(150.0, $spentTotalField->getValue($customerPayload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
+    $this->assertSame(1, $orderCountField->getValue($customerPayload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
   }
 
   public function testOrderDateFields(): void {
