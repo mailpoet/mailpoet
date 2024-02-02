@@ -70,11 +70,18 @@ class GATracking {
         continue;
       }
 
+      $processedLink = $this->wp->applyFilters(
+        'mailpoet_ga_tracking_link',
+        $this->wp->addQueryArg($params, $extractedLink['link']),
+        $extractedLink['link'],
+        $params,
+        $extractedLink['type']
+      );
       $link = $extractedLink['link'];
       $processedLinks[$link] = [
         'type' => $extractedLink['type'],
         'link' => $link,
-        'processed_link' => $this->wp->addQueryArg($params, $extractedLink['link']),
+        'processed_link' => $processedLink,
       ];
     }
     return $processedLinks;
