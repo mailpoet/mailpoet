@@ -56,6 +56,33 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame(3, $orderCountField->getValue($customerPayload));
   }
 
+  public function testOrderStatsFieldsWithInTheLastParameter(): void {
+    $fields = $this->getFieldsMap();
+
+    $spentTotalField = $fields['woocommerce:customer:spent-total'];
+    $spentAverageField = $fields['woocommerce:customer:spent-average'];
+    $orderCountField = $fields['woocommerce:customer:order-count'];
+
+    // check values (registered)
+    $id = $this->tester->createCustomer('customer@example.com');
+    $id2 = $this->tester->createCustomer('other_user@example.com');
+    $this->createOrder($id, 12.3, date('Y-m-d H:i:s', strtotime('-1 year')));
+    $this->createOrder($id, 0, date('Y-m-d H:i:s', strtotime('-1 month')));
+    $this->createOrder($id, 150.0, date('Y-m-d H:i:s', strtotime('-1 week')));
+    $this->createOrder($id2, 12345.0, date('Y-m-d H:i:s', strtotime('-1 day'))); // other user
+
+    $customerPayload = new CustomerPayload(new WC_Customer($id));
+
+    // 100 years
+    $this->assertSame(162.3, $spentTotalField->getValue($customerPayload, ['in_the_last_seconds' => 100 * YEAR_IN_SECONDS]));
+
+    // 3 months
+    $this->assertSame(150.0, $spentTotalField->getValue($customerPayload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS]));
+
+    // 3 weeks
+    $this->assertSame(150.0, $spentTotalField->getValue($customerPayload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
+  }
+
   public function testOrderDateFields(): void {
     $fields = $this->getFieldsMap();
 
