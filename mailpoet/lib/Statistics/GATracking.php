@@ -56,6 +56,7 @@ class GATracking {
     $params = [
       'utm_source' => 'mailpoet',
       'utm_medium' => 'email',
+      'utm_source_platform' => 'mailpoet',
     ];
     if ($gaCampaign) {
       $params['utm_campaign'] = $gaCampaign;
