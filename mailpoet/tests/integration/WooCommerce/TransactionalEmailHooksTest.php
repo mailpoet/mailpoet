@@ -154,6 +154,7 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
         L::row([L::col([['type' => 'text', 'text' => 'Some text after content']])]),
       ]),
     ]);
+    $newsletter->setUpdatedAt(new \DateTimeImmutable());
     $this->newslettersRepository->persist($newsletter);
     $this->newslettersRepository->flush();
     $this->settings->set(TransactionalEmails::SETTING_EMAIL_ID, $newsletter->getId());
