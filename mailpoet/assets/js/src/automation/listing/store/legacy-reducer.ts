@@ -21,7 +21,7 @@ export function legacyReducer(state: State, action): State {
     case 'DELETE_LEGACY_AUTOMATION':
       return {
         ...state,
-        legacyAutomations: state.automations.filter(
+        legacyAutomations: state.legacyAutomations.filter(
           (automation: Automation) => automation.id !== action.id,
         ),
       };

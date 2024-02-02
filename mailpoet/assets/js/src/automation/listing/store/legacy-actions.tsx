@@ -104,7 +104,7 @@ export function* restoreLegacyAutomation(automation: Automation) {
 }
 
 export function* deleteLegacyAutomation(automation: Automation) {
-  const data: { data: ListingItem } = yield AwaitPromise(
+  yield AwaitPromise(
     legacyApiFetch({
       endpoint: 'newsletters',
       method: 'delete',
@@ -124,6 +124,6 @@ export function* deleteLegacyAutomation(automation: Automation) {
 
   return {
     type: 'DELETE_LEGACY_AUTOMATION',
-    automation: mapToAutomation(data.data),
+    id: automation.id,
   } as const;
 }
