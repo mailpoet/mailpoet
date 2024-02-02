@@ -13,10 +13,14 @@ class Newsletter implements CategoryInterface {
   /** @var NewslettersRepository */
   private $newslettersRepository;
 
+  private WPFunctions $wp;
+
   public function __construct(
-    NewslettersRepository $newslettersRepository
+    NewslettersRepository $newslettersRepository,
+    WPFunctions $wp
   ) {
     $this->newslettersRepository = $newslettersRepository;
+    $this->wp = $wp;
   }
 
   public function process(
@@ -38,7 +42,14 @@ class Newsletter implements CategoryInterface {
         preg_match_all('/data-post-id="(\d+)"/ism', $content, $posts);
         $postIds = array_unique($posts[1]);
         $latestPost = (!empty($postIds)) ? $this->getLatestWPPost($postIds) : null;
-        return ($latestPost) ? $latestPost['post_title'] : null;
+        if ($latestPost) {
+          // When a user with role author publish a post containing "&" in the title, the character is saved as "&amp;" in the database.
+          // Removing HTML tags from the title because
+          $title = $this->wp->wpStripAllTags($latestPost['post_title']);
+          // Decoding special characters such as &amp; to &, etc.
+          return htmlspecialchars_decode($title);
+        }
+        return null;
 
       case 'number':
         if (!($newsletter instanceof NewsletterEntity)) return null;
@@ -67,7 +78,7 @@ class Newsletter implements CategoryInterface {
   private function getLatestWPPost($postIds) {
     // set low priority to execute 'ensureConstistentQueryType' before any other filter
     $filterPriority = defined('PHP_INT_MIN') ? constant('PHP_INT_MIN') : ~PHP_INT_MAX;
-    WPFunctions::get()->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
+    $this->wp->addAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
     $posts = new \WP_Query(
       [
         'post_type' => WPPosts::getTypes(),
@@ -78,7 +89,7 @@ class Newsletter implements CategoryInterface {
         'order' => 'DESC',
       ]
     );
-    WPFunctions::get()->removeAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
+    $this->wp->removeAction('pre_get_posts', [$this, 'ensureConsistentQueryType'], $filterPriority);
     return (!empty($posts->posts[0])) && ($posts->posts[0] instanceof \WP_Post) ?
       $posts->posts[0]->to_array() :
       false;
