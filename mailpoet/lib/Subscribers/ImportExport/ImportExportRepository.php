@@ -195,8 +195,12 @@ class ImportExportRepository {
       " . implode(' AND ', $keyColumnsConditions) . "
     ", $parameters, $parameterTypes);
     $this->notifyUpdates($className, $columns, $data);
-    $this->subscribersRepository->detachAll();
-    $this->subscriberCustomFieldRepository->detachAll();
+    if ($className === SubscriberEntity::class) {
+      $this->subscribersRepository->refreshAll();
+    }
+    if ($className === SubscriberCustomFieldEntity::class) {
+      $this->subscriberCustomFieldRepository->refreshAll();
+    }
     return $count;
   }
 
