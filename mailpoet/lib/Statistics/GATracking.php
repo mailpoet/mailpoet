@@ -70,14 +70,26 @@ class GATracking {
         continue;
       }
 
+      $link = $extractedLink['link'];
+
+      // Do not overwrite existing query parameters
+      $parsedUrl = parse_url($link);
+      $linkParams = $params;
+      if (isset($parsedUrl['query'])) {
+        foreach (array_keys($params) as $param) {
+          if (strpos($parsedUrl['query'], $param) !== false) {
+            unset($linkParams[$param]);
+          }
+        }
+      }
+
       $processedLink = $this->wp->applyFilters(
         'mailpoet_ga_tracking_link',
-        $this->wp->addQueryArg($params, $extractedLink['link']),
+        $this->wp->addQueryArg($linkParams, $link),
         $extractedLink['link'],
-        $params,
+        $linkParams,
         $extractedLink['type']
       );
-      $link = $extractedLink['link'];
       $processedLinks[$link] = [
         'type' => $extractedLink['type'],
         'link' => $link,
