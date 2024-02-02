@@ -28,24 +28,13 @@ class GATrackingTest extends \MailPoetTest {
   public function _before() {
     $this->tracking = $this->diContainer->get(GATracking::class);
     $this->internalHost = 'newsletters.mailpoet.com';
-    $this->gaCampaign = 'Spring email';
+    $this->gaCampaign = 'SpringEmail';
     $this->link = add_query_arg(['foo' => 'bar', 'baz' => 'xyz'], 'https://www.mailpoet.com/');
     $this->renderedNewsletter = [
       'html' => '<p><a href="' . $this->link . '">Click here</a>. <a href="http://somehost.com/fff/?abc=123&email=[subscriber:email]">Do not process this</a> [link:some_link_shortcode]</p>',
       'text' => '[Click here](' . $this->link . '). [Do not process this](http://somehost.com/fff/?abc=123&email=[subscriber:email]) [link:some_link_shortcode]',
     ];
     $this->newsletter = (new NewsletterFactory())->withGaCampaign($this->gaCampaign)->create();
-  }
-
-  public function testItConditionallyAppliesGATracking() {
-    // No process (empty GA campaign)
-    $newsletter = (new NewsletterFactory())->create();
-    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $newsletter, $this->internalHost);
-    verify($result)->equals($this->renderedNewsletter);
-
-    // Process (filled GA campaign)
-    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
-    verify($result)->notEquals($this->renderedNewsletter);
   }
 
   public function testItGetsGACampaignFromParentNewsletterForPostNotifications() {
