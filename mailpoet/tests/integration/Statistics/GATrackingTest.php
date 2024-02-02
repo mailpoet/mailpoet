@@ -58,4 +58,23 @@ class GATrackingTest extends \MailPoetTest {
     verify($result['text'])->stringContainsString('email=[subscriber:email]');
     verify($result['html'])->stringContainsString('email=[subscriber:email]');
   }
+
+  public function testItDoesNotOverwriteExistingParameters() {
+    $link = add_query_arg(
+      [
+        'utm_source' => 'another_source',
+        'utm_medium' => 'another_medium',
+      ],
+      $this->link
+    );
+    $renderedNewsletter = [
+      'html' => '<p><a href="' . $link . '">Click here</a></p>',
+      'text' => '[Click here](' . $link . ')',
+    ];
+    $result = $this->tracking->applyGATracking($renderedNewsletter, $this->newsletter, $this->internalHost);
+    verify($result['text'])->stringNotContainsString('utm_source=mailpoet');
+    verify($result['html'])->stringContainsString('utm_source=another_source');
+    verify($result['text'])->stringNotContainsString('utm_medium=email');
+    verify($result['html'])->stringContainsString('utm_medium=another_medium');
+  }
 }
