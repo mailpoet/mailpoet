@@ -137,7 +137,7 @@ class StepRunArgs {
   }
 
   /** @return mixed */
-  public function getFieldValue(string $key) {
+  public function getFieldValue(string $key, array $params = []) {
     $field = $this->fields[$key] ?? null;
     $subjectKey = $this->fieldToSubjectMap[$key] ?? null;
     if (!$field || !$subjectKey) {
@@ -146,7 +146,7 @@ class StepRunArgs {
 
     $entry = $this->getSingleSubjectEntry($subjectKey);
     try {
-      $value = $field->getValue($entry->getPayload());
+      $value = $field->getValue($entry->getPayload(), $params);
     } catch (Throwable $e) {
       throw Exceptions::fieldLoadFailed($field->getKey(), $field->getArgs());
     }
