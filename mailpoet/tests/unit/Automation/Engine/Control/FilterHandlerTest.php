@@ -114,6 +114,42 @@ class FilterHandlerTest extends MailPoetUnitTest {
     $this->assertSame($expectation, $result);
   }
 
+  public function testItPassesFieldParams(): void {
+    $filter = new FilterData('f', Field::TYPE_STRING, 'test:field-string', '', ['value' => 'abc']);
+    $filters = new Filters('and', [new FilterGroup('g1', 'and', [$filter])]);
+    $step = new Step('step', Step::TYPE_TRIGGER, 'test:step', [], [], $filters);
+
+    $fieldParams = null;
+    $subject = $this->createSubject('subject', [
+      new Field('test:field-string', Field::TYPE_STRING, 'Test field string', function ($payload, $params) use (&$fieldParams) {
+        $fieldParams = $params;
+        return 'abc';
+      }),
+    ]);
+
+    $stepRunArgs = new StepRunArgs(
+      $this->createMock(Automation::class),
+      $this->createMock(AutomationRun::class),
+      $step,
+      [new SubjectEntry($subject, new SubjectData($subject->getKey(), []))],
+      1
+    );
+
+    $registry = Stub::make(Registry::class, [
+      'filters' => [
+        Field::TYPE_STRING => $this->createFilter(Field::TYPE_STRING),
+      ],
+    ]);
+
+    $handler = new FilterHandler($registry);
+    $result = $handler->matchesFilters($stepRunArgs);
+    $this->assertSame(true, $result);
+    $this->assertSame([
+      'test-param' => 'test-param-value',
+      'test-param-data' => $filter,
+    ], $fieldParams);
+  }
+
   public function dataForTestItFilters(): array {
     return [
       // no filters
@@ -287,7 +323,10 @@ class FilterHandlerTest extends MailPoetUnitTest {
       }
 
       public function getFieldParams(FilterData $data): array {
-        return [];
+        return [
+          'test-param' => 'test-param-value',
+          'test-param-data' => $data,
+        ];
       }
 
       public function matches(FilterData $data, $value): bool {

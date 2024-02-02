@@ -60,8 +60,8 @@ class Field {
   }
 
   /** @return mixed */
-  public function getValue(Payload $payload) {
-    return $this->getFactory()($payload);
+  public function getValue(Payload $payload, array $params = []) {
+    return $this->getFactory()($payload, $params);
   }
 
   public function getArgs(): array {
