@@ -58,10 +58,20 @@ class CustomerOrderFieldsFactory {
         'woocommerce:customer:spent-average',
         Field::TYPE_NUMBER,
         __('Average spent', 'mailpoet'),
-        function (CustomerPayload $payload) {
+        function (CustomerPayload $payload, array $params = []) {
           $customer = $payload->getCustomer();
-          $totalSpent = $customer ? (float)$customer->get_total_spent() : 0.0;
-          $orderCount = $customer ? (int)$customer->get_order_count() : 0;
+          if (!$customer) {
+            return 0.0;
+          }
+
+          $inTheLastSeconds = isset($params['in_the_last_seconds']) ? (int)$params['in_the_last_seconds'] : null;
+          if ($inTheLastSeconds === null) {
+            $totalSpent = (float)$customer->get_total_spent();
+            $orderCount = (int)$customer->get_order_count();
+          } else {
+            $totalSpent = $this->getRecentSpentTotal($customer, $inTheLastSeconds);
+            $orderCount = $this->getRecentOrderCount($customer, $inTheLastSeconds);
+          }
           return $orderCount > 0 ? ($totalSpent / $orderCount) : 0.0;
         }
       ),
