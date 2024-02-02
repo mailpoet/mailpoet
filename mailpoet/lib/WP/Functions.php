@@ -937,4 +937,12 @@ class Functions {
   public function getQueriedObjectId() {
     return get_queried_object_id();
   }
+
+  /**
+   * @param string $string
+   * @param bool $removeBreaks
+   */
+  public function wpStripAllTags($string, $removeBreaks = false): string {
+    return wp_strip_all_tags($string, $removeBreaks);
+  }
 }

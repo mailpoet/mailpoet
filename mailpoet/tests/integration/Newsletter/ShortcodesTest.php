@@ -160,7 +160,7 @@ class ShortcodesTest extends \MailPoetTest {
       $shortcodesObject->process(['[newsletter:post_title]'], $content);
     $wpPost = get_post($this->wPPost);
     $this->assertInstanceOf(WP_Post::class, $wpPost);
-    verify($result['0'])->equals($wpPost->post_title); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($result['0'])->equals('Sample Post &, <, >, strong');
   }
 
   public function itCanProcessPostNotificationNewsletterNumberShortcode() {
@@ -446,8 +446,9 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function _createWPPost() {
+    // Because when a user with role author publish a post containing in the title the character "&", the title is saved as "&amp;"
     $data = [
-      'post_title' => 'Sample Post',
+      'post_title' => 'Sample Post &amp;, &lt;, &gt;, <strong>strong</strong>',
       'post_content' => 'contents',
       'post_status' => 'publish',
     ];
