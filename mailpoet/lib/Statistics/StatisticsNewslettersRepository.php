@@ -7,6 +7,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoetVendor\Carbon\Carbon;
 
 /**
  * @extends Repository<StatisticsNewsletterEntity>
@@ -29,7 +30,8 @@ class StatisticsNewslettersRepository extends Repository {
           continue;
         }
 
-        $entity = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber);
+        $sentAt = Carbon::createFromTimestamp((int)current_time('timestamp'));
+        $entity = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber, $sentAt);
 
         $this->entityManager->persist($entity);
         $entities[] = $entity;

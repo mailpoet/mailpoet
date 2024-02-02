@@ -36,19 +36,21 @@ class StatisticsNewsletterEntity {
   private $subscriber;
 
   /**
-   * @ORM\Column(type="datetimetz", nullable=true)
-   * @var \DateTimeInterface|null
+   * @ORM\Column(type="datetimetz", nullable=false)
+   * @var \DateTimeInterface
    */
   private $sentAt;
 
   public function __construct(
     NewsletterEntity $newsletter,
     SendingQueueEntity $queue,
-    SubscriberEntity $subscriber
+    SubscriberEntity $subscriber,
+    \DateTimeInterface $sentAt = null
   ) {
     $this->newsletter = $newsletter;
     $this->queue = $queue;
     $this->subscriber = $subscriber;
+    $this->sentAt = $sentAt ?: new \DateTimeImmutable();
   }
 
   /**
