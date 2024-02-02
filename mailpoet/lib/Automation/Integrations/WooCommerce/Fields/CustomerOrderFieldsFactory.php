@@ -42,9 +42,16 @@ class CustomerOrderFieldsFactory {
         'woocommerce:customer:spent-total',
         Field::TYPE_NUMBER,
         __('Total spent', 'mailpoet'),
-        function (CustomerPayload $payload) {
+        function (CustomerPayload $payload, array $params = []) {
           $customer = $payload->getCustomer();
-          return $customer ? (float)$customer->get_total_spent() : 0.0;
+          if (!$customer) {
+            return 0.0;
+          }
+
+          $inTheLastSeconds = isset($params['in_the_last_seconds']) ? (int)$params['in_the_last_seconds'] : null;
+          return $inTheLastSeconds === null
+            ? (float)$customer->get_total_spent()
+            : $this->getRecentSpentTotal($customer, $inTheLastSeconds);
         }
       ),
       new Field(
@@ -120,6 +127,40 @@ class CustomerOrderFieldsFactory {
         ]
       ),
     ];
+  }
+
+  private function getRecentSpentTotal(WC_Customer $customer, int $inTheLastSeconds): float {
+    $wpdb = $this->wordPress->getWpdb();
+    $statuses = array_map(function (string $status) {
+      return "wc-$status";
+    }, $this->wooCommerce->wcGetIsPaidStatuses());
+    $statusesPlaceholder = implode(',', array_fill(0, count($statuses), '%s'));
+
+    if ($this->wooCommerce->isWooCommerceCustomOrdersTableEnabled()) {
+      /** @var literal-string $query */
+      $query = "
+        SELECT SUM(o.total_amount)
+        FROM {$wpdb->prefix}wc_orders o
+        WHERE o.customer_id = %d
+        AND o.status IN ($statusesPlaceholder)
+        AND o.date_created_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
+      ";
+      $statement = (string)$wpdb->prepare($query, array_merge([$customer->get_id()], $statuses, [$inTheLastSeconds]));
+    } else {
+      /** @var literal-string $query */
+      $query = "
+        SELECT SUM(pm_total.meta_value)
+        FROM {$wpdb->posts} p
+        LEFT JOIN {$wpdb->postmeta} pm_user ON p.ID = pm_user.post_id AND pm_user.meta_key = '_customer_user'
+        LEFT JOIN {$wpdb->postmeta} pm_total ON p.ID = pm_total.post_id AND pm_total.meta_key = '_order_total'
+        WHERE p.post_type = 'shop_order'
+        AND p.post_status IN ($statusesPlaceholder)
+        AND pm_user.meta_value = %d
+        AND p.post_date_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
+      ";
+      $statement = (string)$wpdb->prepare($query, array_merge($statuses, [$customer->get_id(), $inTheLastSeconds]));
+    }
+    return (float)$wpdb->get_var($statement);
   }
 
   private function getPaidOrderDate(WC_Customer $customer, bool $fetchFirst): ?DateTimeImmutable {

@@ -76,7 +76,7 @@ parameters:
       path: ../../lib/Logging/PluginVersionProcessor.php
     -
       message: "#^Cannot cast string|void to string\\.$#"
-      count: 3
+      count: 5
       path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerOrderFieldsFactory.php
     -
       message: "#^Cannot cast string|void to string\\.$#"
