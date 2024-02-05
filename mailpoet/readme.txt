@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.3
 Tested up to: 6.4
-Stable tag: 4.42.1
+Stable tag: 4.43.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,14 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.43.0 - 2024-02-05 =
+* Improved: during import, "Update existing subscriber status" no longer requires "Update existing subscriber info" to be enabled;
+* Fixed: error "EntityManager is Closed" during sending on MySQL 8;
+* Fixed: error "new entity was found through the relationship" during email sending;
+* Fixed: Some strings where not translateable;
+* Fixed: errors when sending some emails;
+* Fixed: automation listing trash and delete action UI behavior.
 
 = 4.42.1 - 2024-01-30 =
 * Improved: Display sender domain authentication notices in Automations;
