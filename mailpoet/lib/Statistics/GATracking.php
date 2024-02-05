@@ -78,7 +78,7 @@ class GATracking {
       $linkParams = $params;
       if (isset($parsedUrl['query'])) {
         foreach (array_keys($params) as $param) {
-          if (strpos($parsedUrl['query'], $param) !== false) {
+          if (strpos($parsedUrl['query'], $param . '=') !== false) {
             unset($linkParams[$param]);
           }
         }
