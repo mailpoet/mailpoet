@@ -41,6 +41,14 @@ class Functions {
     return did_action($hookName);
   }
 
+  /**
+   * @param string $hookName
+   * @return int
+   */
+  public function didFilter($hookName) {
+    return did_filter($hookName);
+  }
+
   public function trailingslashit(string $url) {
     return trailingslashit($url);
   }

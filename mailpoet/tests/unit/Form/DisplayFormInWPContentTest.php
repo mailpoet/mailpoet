@@ -894,6 +894,35 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     verify($result)->stringEndsWith($formHtml);
   }
 
+  public function testFormRendersOnProductPageWithoutContent(): void {
+    $formHtml = '<form id="test-form"></form>';
+    $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
+    $this->wp->expects($this->once())->method('didAction')->with($this->equalTo('wp_footer'))->willReturn(true);
+    $this->wp->expects($this->once())->method('didFilter')->with($this->equalTo('the_content'))->willReturn(false);
+    $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
+    $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
+    $this->wp
+      ->expects($this->never())
+      ->method('setTransient');
+    $form = new FormEntity('My Form');
+    $form->setSettings([
+      'segments' => ['3'],
+      'form_placement' => [
+        'below_posts' => ['enabled' => '', 'pages' => ['all' => ''], 'posts' => ['all' => '']],
+        'popup' => ['enabled' => '1', 'pages' => ['all' => ''], 'posts' => ['all' => '']],
+        'fixed_bar' => ['enabled' => '1', 'pages' => ['all' => '1'], 'posts' => ['all' => '1']]],
+      'success_message' => 'Hello',
+    ]);
+    $form->setBody([['type' => 'submit', 'params' => ['label' => 'Subscribe!'], 'id' => 'submit', 'name' => 'Submit']]);
+    $this->repository->expects($this->once())->method('findBy')->willReturn([$form]);
+
+    ob_start();
+    $this->hook->maybeRenderFormsInFooter();
+    $renderedFormHtml = ob_get_clean();
+    verify($renderedFormHtml)->notEquals('content');
+    verify($renderedFormHtml)->stringEndsWith($formHtml);
+  }
+
   public function _after() {
     parent::_after();
     WPFunctions::set(new WPFunctions());
