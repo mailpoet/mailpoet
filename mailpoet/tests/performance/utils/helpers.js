@@ -46,3 +46,28 @@ export async function waitAndClick(page, elementName) {
 export async function waitForSelectorToBeVisible(page, element) {
   await page.locator(element).waitFor({ state: 'visible' });
 }
+
+// Add an item to the automation workflow
+export async function addActionTriggerItemToWorkflow(page, actionName) {
+  await page.locator('.components-search-control__input').type(actionName);
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Enter');
+}
+
+// Add value to an action in automations workflow
+export async function addValueToActionInWorkflow(page, actionValue) {
+  await page.locator('.components-form-token-field__input').type(actionValue);
+  await page.keyboard.press('Enter');
+}
+
+// Activate the automation workflow while in the workflow
+export async function activateWorkflow(page) {
+  await Promise.all([
+    page.locator('.editor-post-publish-button').click(),
+    page
+      .locator('.mailpoet-automation-activate-panel__header-activate-button')
+      .click(),
+    page.waitForSelector('.components-snackbar__content'),
+  ]);
+}
