@@ -71,3 +71,36 @@ export async function activateWorkflow(page) {
     page.waitForSelector('.components-snackbar__content'),
   ]);
 }
+
+// Click button with text
+export async function buttonWithText(page, buttonText) {
+  const button = page.locator(`//button[text()="${buttonText}"]`);
+  await button.click();
+}
+
+// Click to design email in the workflow and save it
+export async function designEmailInWorkflow(page) {
+  // Click Design automation email button
+  await Promise.all([
+    page.waitForNavigation(),
+    page.locator('.mailpoet-automation-button-sidebar-primary').click(),
+  ]);
+  await page.waitForLoadState('networkidle');
+  await page.waitForSelector('[data-automation-id="templates-standard"]');
+
+  // Switch to a Standard templates tab and select the 2nd template
+  await page.locator('[data-automation-id="templates-standard"]').click();
+  await Promise.all([
+    page.waitForNavigation(),
+    page.locator('[data-automation-id="select_template_1"]').click(),
+  ]);
+  await page.waitForSelector('.mailpoet_loading');
+  await page.waitForLoadState('networkidle');
+
+  // Click to save and get back to the workflow
+  await Promise.all([
+    page.waitForNavigation(),
+    page.locator('input[value="Save and continue"').click(),
+  ]);
+  await page.waitForLoadState('networkidle');
+}

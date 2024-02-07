@@ -18,6 +18,7 @@ import { newsletterStatistics } from './tests/newsletter-statistics.js';
 import { onboardingWizard } from './tests/onboarding-wizard.js';
 import { subscribersTrashingRestoring } from './tests/subscribers-trashing-restoring.js';
 import { automationCreateCustom } from './tests/automation-create-custom.js';
+import { automationCreateWelcome } from './tests/automation-create-welcome.js';
 
 // Scenarios, Thresholds, Tags and Project ID used for K6 Cloud
 export let options = {
@@ -84,6 +85,7 @@ export async function pullRequests() {
   await onboardingWizard();
   await newsletterListing();
   await newsletterSearching();
+  await automationCreateWelcome();
   await listsViewSubscribers();
   await subscribersListing();
   await subscribersFiltering();
@@ -98,6 +100,7 @@ export async function nightly() {
   await newsletterSearching();
   await newsletterSending();
   await automationCreateCustom();
+  await automationCreateWelcome();
   await subscribersListing();
   await subscribersFiltering();
   await subscribersAdding();
