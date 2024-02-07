@@ -21,10 +21,17 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login } from '../utils/helpers.js';
+import {
+  login,
+  addActionTriggerItemToWorkflow,
+  addValueToActionInWorkflow,
+  activateWorkflow,
+  waitForSelectorToBeVisible,
+} from '../utils/helpers.js';
 
 export async function automationCreateCustom() {
   const page = browser.newPage();
+  const triggerbutton = '.mailpoet-automation-add-trigger';
 
   try {
     // Log in to WP Admin
@@ -38,17 +45,20 @@ export async function automationCreateCustom() {
       },
     );
 
+    // Wait for page to load and for template to show up
     await page.waitForLoadState('networkidle');
+    await page.waitForSelector('.mailpoet-templates-card-grid');
+
     await page.screenshot({
       path: screenshotPath + 'Automation_Create_Custom_01.png',
       fullPage: fullPageSet,
     });
 
-    await page.waitForSelector('.mailpoet-templates-card-grid');
-    await page
-      .locator('//button[text()="Create custom automation"]')
-      .first()
-      .click();
+    // Click on the button to start custom template
+    await Promise.all([
+      page.waitForNavigation(),
+      page.locator('.mailpoet-page-header > button').click(),
+    ]);
     await page.waitForSelector(
       '.mailpoet-automation-editor-step-transition-wrapper',
     );
@@ -56,7 +66,7 @@ export async function automationCreateCustom() {
 
     describe(automationsPageTitle, () => {
       describe('automation-create-custom: should be able to see Add Trigger button', () => {
-        expect(page.locator('.mailpoet-automation-add-trigger')).to.exist;
+        expect(page.locator(triggerbutton)).to.exist;
       });
     });
 
@@ -65,33 +75,62 @@ export async function automationCreateCustom() {
       fullPage: fullPageSet,
     });
 
-    await page.locator('.mailpoet-automation-add-trigger').click();
-    await page
-      .locator('.editor-block-list-item-mailpoet:someone-subscribes')
-      .click();
+    // Click trigger button to see all possible actions
+    await page.locator(triggerbutton).click();
 
-    await page.locator('[placeholder="Any list"]').type(defaultListName);
-    await page.keyboard.press('Enter');
+    // Add Someone Subscribers action to the workflow
+    await addActionTriggerItemToWorkflow(page, 'subscribe');
 
+    // Make sure the action is selected in the workflow
+    await page.locator('.is-selected-step').click();
+
+    // Add Newsletter mailing list as a subscribe to list
+    await addValueToActionInWorkflow(page, defaultListName);
+
+    await page.screenshot({
+      path: screenshotPath + 'Automation_Create_Custom_03.png',
+      fullPage: fullPageSet,
+    });
+
+    // Click to trigger another action
     await page.locator('.mailpoet-automation-editor-add-step-button').click();
-    await page.locator('.editor-block-list-item-mailpoet:add-tag').click();
 
-    await page.locator('[placeholder="Please select a tag"]').type('test');
-    await page.keyboard.press('Enter');
+    // Add adding a new tag to a subscriber
+    await addActionTriggerItemToWorkflow(page, 'add tag');
 
-    await page.locator('//button[text()="Activate"]');
-    await page.locator('//button[text()="Activate"]');
+    // Make sure the action is selected in the workflow
+    await page.locator('.is-selected-step').click();
+
+    // Add existing test1 tag to the action
+    await addValueToActionInWorkflow(page, 'test1');
+
+    await page.screenshot({
+      path: screenshotPath + 'Automation_Create_Custom_04.png',
+      fullPage: fullPageSet,
+    });
+
+    // Activate the automation workflow
+    await activateWorkflow(page);
+
+    await page.waitForLoadState('networkidle');
 
     describe(automationsPageTitle, () => {
       describe('automation-create-custom: should be able to see Automation added message', () => {
-        expect(page.locator('.mailpoet-automation-add-trigger')).to.exist;
+        expect(
+          page.locator('.components-snackbar__content').innerText(),
+        ).to.contain('Well done! Automation is now activated!');
       });
     });
 
-    page
-      .locator('.components-snackbar__content')
-      .innerText()
-      .to.contain('Automation is now activated!');
+    await page.screenshot({
+      path: screenshotPath + 'Automation_Create_Custom_05.png',
+      fullPage: fullPageSet,
+    });
+
+    // Go to Automations listing to measure performance from workflow to listing
+    await page.locator('.is-secondary').click();
+    await waitForSelectorToBeVisible(page, '.wp-heading-inline');
+    await page.waitForLoadState('networkidle');
 
     // Thinking time and closing
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));

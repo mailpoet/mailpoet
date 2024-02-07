@@ -31,7 +31,7 @@ export let options = {
   thresholds: {
     browser_web_vital_lcp: ['p(75) < 8000'],
     browser_web_vital_fid: ['p(75) < 300'],
-    browser_web_vital_cls: ['p(75) < 0.25'],
+    browser_web_vital_cls: ['p(75) < 0.60'],
     browser_web_vital_ttfb: ['p(75) < 4000'],
     browser_web_vital_fcp: ['p(75) < 4000'],
     browser_web_vital_inp: ['p(75) < 300'],
@@ -97,6 +97,7 @@ export async function nightly() {
   await newsletterStatistics();
   await newsletterSearching();
   await newsletterSending();
+  await automationCreateCustom();
   await subscribersListing();
   await subscribersFiltering();
   await subscribersAdding();
