@@ -17,6 +17,7 @@ import { listsComplexSegment } from './tests/lists-complex-segment.js';
 import { newsletterStatistics } from './tests/newsletter-statistics.js';
 import { onboardingWizard } from './tests/onboarding-wizard.js';
 import { subscribersTrashingRestoring } from './tests/subscribers-trashing-restoring.js';
+import { automationCreateCustom } from './tests/automation-create-custom.js';
 
 // Scenarios, Thresholds, Tags and Project ID used for K6 Cloud
 export let options = {
