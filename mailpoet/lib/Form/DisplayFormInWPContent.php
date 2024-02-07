@@ -130,7 +130,7 @@ class DisplayFormInWPContent {
    * @return void
    */
   public function maybeRenderFormsInFooter(): void {
-    if ($this->wp->isArchive() || $this->wp->isFrontPage() || $this->wp->isHome()) {
+    if ($this->wp->isArchive() || $this->wp->isFrontPage() || $this->wp->isHome() || $this->isWooProductPageWithoutContent()) {
       $formMarkup = $this->getFormMarkup();
       if (!empty($formMarkup)) {
         $this->assetsController->setupFrontEndDependencies();
@@ -139,6 +139,20 @@ class DisplayFormInWPContent {
         echo $formMarkup;
       }
     }
+  }
+
+  /**
+   * @return bool
+   */
+  public function isWooProductPageWithoutContent(): bool {
+    if (
+      !$this->wp->isSingular('product')
+      || !$this->wp->didAction('wp_footer')
+    ) {
+      return false;
+    }
+
+    return !$this->wp->didFilter('the_content');
   }
 
   private function shouldDisplay(): bool {
