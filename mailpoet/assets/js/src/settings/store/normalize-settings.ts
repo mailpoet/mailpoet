@@ -219,6 +219,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       }),
     }),
     authorized_emails_addresses_check: asIs,
+    welcome_wizard_current_step: asString(''),
   });
   return settingsSchema(data) as Settings;
 }

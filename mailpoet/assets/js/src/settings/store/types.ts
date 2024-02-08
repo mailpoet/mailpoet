@@ -148,6 +148,7 @@ export type Settings = {
     }>;
   };
   woocommerce_import_screen_displayed: '1' | '';
+  welcome_wizard_current_step?: string;
 };
 type Segment = {
   id: string;
