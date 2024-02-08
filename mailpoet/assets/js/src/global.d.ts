@@ -190,6 +190,7 @@ interface Window {
     forceUpdate: () => void;
   };
   mailpoet_welcome_wizard_url: string;
+  mailpoet_welcome_wizard_current_step: string;
   mailpoet_homepage_data: {
     taskListDismissed: boolean;
     productDiscoveryDismissed: boolean;
