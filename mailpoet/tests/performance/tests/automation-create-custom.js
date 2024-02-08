@@ -112,8 +112,6 @@ export async function automationCreateCustom() {
     // Activate the automation workflow
     await activateWorkflow(page);
 
-    await page.waitForLoadState('networkidle');
-
     describe(automationsPageTitle, () => {
       describe('automation-create-custom: should be able to see Automation added message', () => {
         expect(
