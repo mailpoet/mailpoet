@@ -13,7 +13,8 @@ import { WelcomeWizardStepLayout } from './layout/step-layout.jsx';
 import { createSenderSettings } from './create-sender-settings.jsx';
 import {
   getStepsCount,
-  mapStepNumberToStepName, navigateToPath,
+  mapStepNumberToStepName,
+  navigateToPath,
   redirectToNextStep,
 } from './steps-numbers';
 import { Steps } from '../common/steps/steps';
@@ -43,7 +44,7 @@ function WelcomeWizardStepsController({
 
   useEffect(() => {
     if (step > stepsCount || step < 1) {
-      void navigateToPath(history, '/steps/1');
+      navigateToPath(history, '/steps/1');
     }
   }, [step, stepsCount, history]);
 

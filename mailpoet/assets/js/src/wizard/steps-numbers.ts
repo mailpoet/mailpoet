@@ -20,14 +20,18 @@ export const getStepsCount = (): number => getSteps().length;
 export const mapStepNumberToStepName = (stepNumber: number): string | null =>
   getSteps()[stepNumber - 1] || null;
 
-export const navigateToPath = async (history: History, path: string, replaceCurrent = false) => {
-  await updateSettings({ welcome_wizard_current_step: path });
+export const navigateToPath = (
+  history: History,
+  path: string,
+  replaceCurrent = false,
+) => {
+  void updateSettings({ welcome_wizard_current_step: path });
   if (replaceCurrent) {
     history.replace(path);
   } else {
     history.push(path);
   }
-}
+};
 
 export const redirectToNextStep = async (
   history: History,
@@ -37,9 +41,8 @@ export const redirectToNextStep = async (
   const stepsCount = getStepsCount();
   if (currentStep < stepsCount) {
     const nextPath = `/steps/${currentStep + 1}`;
-    await navigateToPath(history, nextPath);
+    navigateToPath(history, nextPath);
   } else {
     finishWizard();
   }
 };
-
