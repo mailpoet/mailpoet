@@ -78,27 +78,28 @@ export async function automationCreateWelcome() {
       fullPage: fullPageSet,
     });
 
-    // Click Send Email actionable item
-    await activateWorkflow(page);
-    await page.waitForSelector('.mailpoet-automation-step-error');
-    await page.$$('.mailpoet-automation-step-error')[0].click();
+    if (page.url().includes('localhost')) {
+      // Click Send Email actionable item and design it
+      await activateWorkflow(page);
+      await page.waitForSelector('.mailpoet-automation-errors-header');
+      await page.locator('.mailpoet-automation-step-error').click();
+      await designEmailInWorkflow(page);
+    } else {
+      // Click Send Email actionable item and design it
+      await activateWorkflow(page);
+      await page.waitForSelector('.mailpoet-automation-errors-header');
+      await page.$$('.mailpoet-automation-step-error')[0].click();
+      await designEmailInWorkflow(page);
 
-    await designEmailInWorkflow(page);
+      // Click Follow up email actionable item and design it
+      await activateWorkflow(page);
+      await page.waitForSelector('.mailpoet-automation-errors-header');
+      await page.locator('.mailpoet-automation-step-error').click();
+      await designEmailInWorkflow(page);
+    }
 
     await page.screenshot({
       path: screenshotPath + 'Automation_Create_Welcome_03.png',
-      fullPage: fullPageSet,
-    });
-
-    // Click Follow up email actionable item
-    await activateWorkflow(page);
-    await page.waitForSelector('.mailpoet-automation-step-error');
-    await page.locator('.mailpoet-automation-step-error').click();
-
-    await designEmailInWorkflow(page);
-
-    await page.screenshot({
-      path: screenshotPath + 'Automation_Create_Welcome_04.png',
       fullPage: fullPageSet,
     });
 
@@ -114,7 +115,7 @@ export async function automationCreateWelcome() {
     });
 
     await page.screenshot({
-      path: screenshotPath + 'Automation_Create_Welcome_05.png',
+      path: screenshotPath + 'Automation_Create_Welcome_04.png',
       fullPage: fullPageSet,
     });
 
