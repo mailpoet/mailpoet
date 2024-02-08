@@ -4,16 +4,18 @@ import { external, Icon } from '@wordpress/icons';
 import { Heading } from 'common/typography/heading/heading';
 import { MailPoet } from 'mailpoet';
 import { Button, List } from 'common';
+import { History } from 'history';
 import { OwnEmailServiceNote } from './own-email-service-note';
 import { useSelector } from '../../../settings/store/hooks';
+import { navigateToPath } from '../../steps-numbers';
 
 const mailpoetAccountUrl =
   'https://account.mailpoet.com/?ref=plugin-wizard&utm_source=plugin&utm_medium=onboarding&utm_campaign=purchase';
 
-function openMailPoetShopAndGoToTheNextPart(event, history, step: string) {
+function openMailPoetShopAndGoToTheNextPart(event, history: History, step: string) {
   event.preventDefault();
   window.open(mailpoetAccountUrl);
-  history.push(`/steps/${step}/part/2`);
+  void navigateToPath(history, `/steps/${step}/part/2`);
 }
 
 function MSSStepFirstPart(): JSX.Element {
@@ -23,7 +25,7 @@ function MSSStepFirstPart(): JSX.Element {
 
   useEffect(() => {
     if (state.isKeyValid === true) {
-      history.replace(`/steps/${step}/part/3`);
+      void navigateToPath(history, `/steps/${step}/part/3`, true);
     }
   }, [state.isKeyValid, history, step]);
 

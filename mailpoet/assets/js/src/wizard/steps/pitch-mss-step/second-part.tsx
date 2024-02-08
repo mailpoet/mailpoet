@@ -7,6 +7,7 @@ import { KeyInput } from 'common/premium-key/key-input';
 import { useEffect } from 'react';
 import { useSelector } from 'settings/store/hooks';
 import { OwnEmailServiceNote } from './own-email-service-note';
+import { navigateToPath } from '../../steps-numbers';
 
 function MSSStepSecondPart(): JSX.Element {
   const history = useHistory();
@@ -15,7 +16,7 @@ function MSSStepSecondPart(): JSX.Element {
 
   useEffect(() => {
     if (state.isKeyValid === true) {
-      history.push(`/steps/${step}/part/3`);
+      void navigateToPath(history, `/steps/${step}/part/3`, true);
     }
   }, [state.isKeyValid, history, step]);
 
