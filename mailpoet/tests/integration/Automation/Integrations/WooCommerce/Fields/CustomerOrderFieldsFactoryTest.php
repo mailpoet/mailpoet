@@ -44,10 +44,11 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
 
     // check values (registered)
     $id = $this->tester->createCustomer('customer@example.com');
+    $id2 = $this->tester->createCustomer('other_user@example.com');
     $this->createOrder($id, 12.3);
     $this->createOrder($id, 0);
     $this->createOrder($id, 150.0);
-    $this->createOrder($id + 1, 12345.0); // other user
+    $this->createOrder($id2, 12345.0); // other user
 
     $customerPayload = new CustomerPayload(new WC_Customer($id));
     $this->assertSame(162.3, $spentTotalField->getValue($customerPayload));
@@ -77,12 +78,13 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
 
     // check values (registered)
     $id = $this->tester->createCustomer('customer@example.com');
+    $id2 = $this->tester->createCustomer('other_user@example.com');
     $this->createOrder($id, 0, '2023-05-03 08:22:38');
     $this->createOrder($id, 12.3, '2023-05-12 17:42:11');
     $this->createOrder($id, 0, '2023-05-19 21:35:03');
     $this->createOrder($id, 150.0, '2023-05-26 11:13:53');
     $this->createOrder($id, 0, '2023-06-01 14:05:01');
-    $this->createOrder($id + 1, 0, '2023-06-05 15:42:56'); // other user
+    $this->createOrder($id2, 0, '2023-06-05 15:42:56'); // other user
 
     $customerPayload = new CustomerPayload(new WC_Customer($id));
     $this->assertEquals(new DateTimeImmutable('2023-05-12 17:42:11'), $firstPaidOrderDateField->getValue($customerPayload));
@@ -137,6 +139,7 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
 
     // check values (registered)
     $id = $this->tester->createCustomer('customer@example.com');
+    $id2 = $this->tester->createCustomer('other_user@example.com');
 
     $o1 = $this->createOrder($id, 123);
     $o1->add_product($p1);
@@ -146,7 +149,7 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $o2->add_product($p3);
     $o2->add_product($p4);
 
-    $o3 = $this->createOrder($id + 1, 12345); // other user
+    $o3 = $this->createOrder($id2, 12345); // other user
     $o3->add_product($p5);
 
     $customerPayload = new CustomerPayload(new WC_Customer($id));
@@ -200,6 +203,7 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
 
     // check values (registered)
     $id = $this->tester->createCustomer('customer@example.com');
+    $id2 = $this->tester->createCustomer('other_user@example.com');
 
     $o1 = $this->createOrder($id, 123);
     $o1->add_product($p1);
@@ -208,7 +212,7 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $o2 = $this->createOrder($id, 999);
     $o2->add_product($p3);
 
-    $o3 = $this->createOrder($id + 1, 12345); // other user
+    $o3 = $this->createOrder($id2, 12345); // other user
     $o3->add_product($p4);
 
     $customerPayload = new CustomerPayload(new WC_Customer($id));
