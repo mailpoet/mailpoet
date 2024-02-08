@@ -20,7 +20,7 @@ function WelcomeWizardPitchMSSStep(): JSX.Element {
 
   useEffect(() => {
     if (!location.pathname.includes('part')) {
-      navigateToPath(history, `/steps/${step}/part/1`);
+      navigateToPath(history, `/steps/${step}/part/1`, true);
     }
   }, [step, path, history, location]);
 
