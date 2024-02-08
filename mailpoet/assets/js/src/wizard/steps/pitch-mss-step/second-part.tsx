@@ -7,7 +7,7 @@ import { KeyInput } from 'common/premium-key/key-input';
 import { useEffect } from 'react';
 import { useSelector } from 'settings/store/hooks';
 import { OwnEmailServiceNote } from './own-email-service-note';
-import { navigateToPath } from '../../steps-numbers';
+import { navigateToPath } from '../../navigate-to-path';
 
 function MSSStepSecondPart(): JSX.Element {
   const history = useHistory();

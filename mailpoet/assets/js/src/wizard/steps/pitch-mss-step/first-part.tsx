@@ -7,7 +7,7 @@ import { Button, List } from 'common';
 import { History } from 'history';
 import { OwnEmailServiceNote } from './own-email-service-note';
 import { useSelector } from '../../../settings/store/hooks';
-import { navigateToPath } from '../../steps-numbers';
+import { navigateToPath } from '../../navigate-to-path';
 
 const mailpoetAccountUrl =
   'https://account.mailpoet.com/?ref=plugin-wizard&utm_source=plugin&utm_medium=onboarding&utm_campaign=purchase';
