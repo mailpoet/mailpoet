@@ -14,7 +14,6 @@ import { createSenderSettings } from './create-sender-settings.jsx';
 import {
   getStepsCount,
   mapStepNumberToStepName,
-  navigateToPath,
   redirectToNextStep,
 } from './steps-numbers';
 import { Steps } from '../common/steps/steps';
@@ -24,6 +23,7 @@ import { ErrorBoundary } from '../common';
 import { HideScreenOptions } from '../common/hide-screen-options/hide-screen-options';
 import { finishWizard } from './finish-wizard';
 import { updateSettings } from './update-settings';
+import { navigateToPath } from './navigate-to-path';
 
 type WelcomeWizardStepsControllerPropType = {
   match: { params: { step: string } };

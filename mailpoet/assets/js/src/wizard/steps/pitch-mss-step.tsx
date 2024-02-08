@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import { MSSStepFirstPart } from './pitch-mss-step/first-part';
 import { MSSStepSecondPart } from './pitch-mss-step/second-part';
 import { MSSStepThirdPart } from './pitch-mss-step/third-part';
-import { navigateToPath } from '../steps-numbers';
+import { navigateToPath } from '../navigate-to-path';
 
 function WelcomeWizardPitchMSSStep(): JSX.Element {
   const { path } = useRouteMatch();
