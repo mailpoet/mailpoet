@@ -1,3 +1,5 @@
+import { updateSettings } from './update-settings';
+
 const getSteps = (): string[] => {
   const steps = ['WelcomeWizardSenderStep'];
   if (!window.mailpoet_is_dotcom) {
@@ -17,15 +19,29 @@ export const getStepsCount = (): number => getSteps().length;
 export const mapStepNumberToStepName = (stepNumber: number): string | null =>
   getSteps()[stepNumber - 1] || null;
 
-export const redirectToNextStep = (
-  history: { push: (string) => void },
+export const navigateToPath = async (history: {
+  push: (string) => void,
+  replace: (string) => void
+}, path: string, replaceCurrent = false) => {
+  await updateSettings({ welcome_wizard_current_step: path });
+  if (replaceCurrent) {
+    history.replace(path);
+  } else {
+    history.push(path);
+  }
+}
+
+export const redirectToNextStep = async (
+  history: { push: (string) => void, replace: (string) => void },
   finishWizard: () => void,
   currentStep: number,
-): void => {
+) => {
   const stepsCount = getStepsCount();
   if (currentStep < stepsCount) {
-    history.push(`/steps/${currentStep + 1}`);
+    const nextPath = `/steps/${currentStep + 1}`;
+    await navigateToPath(history, nextPath);
   } else {
     finishWizard();
   }
 };
+
