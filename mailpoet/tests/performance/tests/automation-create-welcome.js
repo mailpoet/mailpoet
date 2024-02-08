@@ -79,8 +79,9 @@ export async function automationCreateWelcome() {
     });
 
     // Click Send Email actionable item
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-    await page.$$('.mailpoet-automation-editor-step')[1].click();
+    await activateWorkflow(page);
+    await page.waitForSelector('.mailpoet-automation-step-error');
+    await page.$$('.mailpoet-automation-step-error')[0].click();
 
     await designEmailInWorkflow(page);
 
@@ -90,8 +91,9 @@ export async function automationCreateWelcome() {
     });
 
     // Click Follow up email actionable item
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
-    await page.$$('.mailpoet-automation-editor-step')[3].click();
+    await activateWorkflow(page);
+    await page.waitForSelector('.mailpoet-automation-step-error');
+    await page.locator('.mailpoet-automation-step-error').click();
 
     await designEmailInWorkflow(page);
 
@@ -102,8 +104,6 @@ export async function automationCreateWelcome() {
 
     // Activate the automation workflow
     await activateWorkflow(page);
-
-    await page.waitForLoadState('networkidle');
 
     describe(automationsPageTitle, () => {
       describe('automation-create-welcome: should be able to see Automation added message', () => {
@@ -117,11 +117,6 @@ export async function automationCreateWelcome() {
       path: screenshotPath + 'Automation_Create_Welcome_05.png',
       fullPage: fullPageSet,
     });
-
-    // Go to Automations listing to measure performance from workflow to listing
-    await page.locator('.is-secondary').click();
-    await waitForSelectorToBeVisible(page, '.wp-heading-inline');
-    await page.waitForLoadState('networkidle');
 
     // Thinking time and closing
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));

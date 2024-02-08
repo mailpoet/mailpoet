@@ -68,14 +68,8 @@ export async function activateWorkflow(page) {
     page
       .locator('.mailpoet-automation-activate-panel__header-activate-button')
       .click(),
-    page.waitForSelector('.components-snackbar__content'),
+    page.waitForLoadState('networkidle'),
   ]);
-}
-
-// Click button with text
-export async function buttonWithText(page, buttonText) {
-  const button = page.locator(`//button[text()="${buttonText}"]`);
-  await button.click();
 }
 
 // Click to design email in the workflow and save it
