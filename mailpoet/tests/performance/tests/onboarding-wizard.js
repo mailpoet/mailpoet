@@ -20,7 +20,7 @@ import {
   fullPageSet,
   screenshotPath,
   fromName,
-  adminEmail
+  adminEmail,
 } from '../config.js';
 import { login } from '../utils/helpers.js';
 

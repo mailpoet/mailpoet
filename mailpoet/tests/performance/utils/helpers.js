@@ -1,7 +1,13 @@
 /**
  * Internal dependencies
  */
-import { baseURL, adminUsername, adminPassword, fromName, adminEmail } from '../config.js';
+import {
+  baseURL,
+  adminUsername,
+  adminPassword,
+  fromName,
+  adminEmail,
+} from '../config.js';
 /* global Promise */
 
 // WordPress login authorization
