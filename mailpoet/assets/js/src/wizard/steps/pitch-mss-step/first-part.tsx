@@ -12,10 +12,14 @@ import { navigateToPath } from '../../steps-numbers';
 const mailpoetAccountUrl =
   'https://account.mailpoet.com/?ref=plugin-wizard&utm_source=plugin&utm_medium=onboarding&utm_campaign=purchase';
 
-function openMailPoetShopAndGoToTheNextPart(event, history: History, step: string) {
+function openMailPoetShopAndGoToTheNextPart(
+  event,
+  history: History,
+  step: string,
+) {
   event.preventDefault();
   window.open(mailpoetAccountUrl);
-  void navigateToPath(history, `/steps/${step}/part/2`);
+  navigateToPath(history, `/steps/${step}/part/2`);
 }
 
 function MSSStepFirstPart(): JSX.Element {
@@ -25,7 +29,7 @@ function MSSStepFirstPart(): JSX.Element {
 
   useEffect(() => {
     if (state.isKeyValid === true) {
-      void navigateToPath(history, `/steps/${step}/part/3`, true);
+      navigateToPath(history, `/steps/${step}/part/3`, true);
     }
   }, [state.isKeyValid, history, step]);
 

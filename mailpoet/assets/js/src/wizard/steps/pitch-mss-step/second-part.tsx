@@ -16,7 +16,7 @@ function MSSStepSecondPart(): JSX.Element {
 
   useEffect(() => {
     if (state.isKeyValid === true) {
-      void navigateToPath(history, `/steps/${step}/part/3`, true);
+      navigateToPath(history, `/steps/${step}/part/3`, true);
     }
   }, [state.isKeyValid, history, step]);
 
