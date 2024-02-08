@@ -79,17 +79,16 @@ export async function designEmailInWorkflow(page) {
     page.waitForNavigation(),
     page.locator('.mailpoet-automation-button-sidebar-primary').click(),
   ]);
-  await page.waitForLoadState('networkidle');
-  await page.waitForSelector('[data-automation-id="templates-standard"]');
 
   // Switch to a Standard templates tab and select the 2nd template
+  await page.waitForLoadState('networkidle');
   await page.locator('[data-automation-id="templates-standard"]').click();
   await Promise.all([
     page.waitForNavigation(),
     page.locator('[data-automation-id="select_template_1"]').click(),
   ]);
-  await page.waitForSelector('.mailpoet_loading');
   await page.waitForLoadState('networkidle');
+  await page.waitForSelector('input[value="Save and continue"');
 
   // Click to save and get back to the workflow
   await Promise.all([
