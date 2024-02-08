@@ -3,6 +3,7 @@ import { useSetting } from 'settings/store/hooks';
 import { Settings } from 'settings/store/types';
 import { partial } from 'underscore';
 
+import { History } from 'history';
 import { WelcomeWizardSenderStep } from './steps/sender-step';
 import { WelcomeWizardUsageTrackingStep } from './steps/usage-tracking-step';
 import { WelcomeWizardPitchMSSStep } from './steps/pitch-mss-step';
@@ -12,7 +13,7 @@ import { WelcomeWizardStepLayout } from './layout/step-layout.jsx';
 import { createSenderSettings } from './create-sender-settings.jsx';
 import {
   getStepsCount,
-  mapStepNumberToStepName,
+  mapStepNumberToStepName, navigateToPath,
   redirectToNextStep,
 } from './steps-numbers';
 import { Steps } from '../common/steps/steps';
@@ -25,7 +26,7 @@ import { updateSettings } from './update-settings';
 
 type WelcomeWizardStepsControllerPropType = {
   match: { params: { step: string } };
-  history: { push: (string) => void };
+  history: History;
 };
 
 function WelcomeWizardStepsController({
@@ -42,7 +43,7 @@ function WelcomeWizardStepsController({
 
   useEffect(() => {
     if (step > stepsCount || step < 1) {
-      history.push('/steps/1');
+      void navigateToPath(history, '/steps/1');
     }
   }, [step, stepsCount, history]);
 

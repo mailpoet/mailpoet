@@ -1,3 +1,4 @@
+import { History } from 'history';
 import { updateSettings } from './update-settings';
 
 const getSteps = (): string[] => {
@@ -19,10 +20,7 @@ export const getStepsCount = (): number => getSteps().length;
 export const mapStepNumberToStepName = (stepNumber: number): string | null =>
   getSteps()[stepNumber - 1] || null;
 
-export const navigateToPath = async (history: {
-  push: (string) => void,
-  replace: (string) => void
-}, path: string, replaceCurrent = false) => {
+export const navigateToPath = async (history: History, path: string, replaceCurrent = false) => {
   await updateSettings({ welcome_wizard_current_step: path });
   if (replaceCurrent) {
     history.replace(path);
@@ -32,7 +30,7 @@ export const navigateToPath = async (history: {
 }
 
 export const redirectToNextStep = async (
-  history: { push: (string) => void, replace: (string) => void },
+  history: History,
   finishWizard: () => void,
   currentStep: number,
 ) => {
