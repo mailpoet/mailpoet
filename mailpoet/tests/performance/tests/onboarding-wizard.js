@@ -19,6 +19,8 @@ import {
   settingsPageTitle,
   fullPageSet,
   screenshotPath,
+  fromName,
+  adminEmail
 } from '../config.js';
 import { login } from '../utils/helpers.js';
 
@@ -38,6 +40,9 @@ export async function onboardingWizard() {
     );
 
     await page.waitForLoadState('networkidle');
+    await page.waitForSelector('#mailpoet_sender_form');
+    await page.locator('input[name="senderName"]').fill(fromName);
+    await page.locator('input[name="senderAddress"]').fill(adminEmail);
     await page.screenshot({
       path: screenshotPath + 'Onboarding_Wizard_01.png',
       fullPage: fullPageSet,

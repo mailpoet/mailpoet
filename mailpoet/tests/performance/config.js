@@ -8,6 +8,7 @@ export const k6CloudID = __ENV.K6_CLOUD_ID; // eslint-disable-line
 export const fullPageSet = 'true';
 export const screenshotPath = 'tests/performance/_screenshots/';
 
+export const fromName = 'MP Perf Testing';
 export const adminUsername = 'admin';
 export const adminPassword = __ENV.PW || 'password'; // eslint-disable-line
 export const adminEmail = 'test@test.com';

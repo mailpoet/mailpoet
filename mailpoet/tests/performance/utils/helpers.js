@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { baseURL, adminUsername, adminPassword } from '../config.js';
+import { baseURL, adminUsername, adminPassword, fromName, adminEmail } from '../config.js';
 /* global Promise */
 
 // WordPress login authorization
@@ -74,6 +74,10 @@ export async function activateWorkflow(page) {
 
 // Click to design email in the workflow and save it
 export async function designEmailInWorkflow(page) {
+  // Fill the sender email and name
+  await page.locator('input[type="text"]').fill(fromName);
+  await page.locator('input[type="email"]').fill(adminEmail);
+
   // Click Design automation email button
   await Promise.all([
     page.waitForNavigation(),
