@@ -6,6 +6,7 @@
 <script type="text/javascript">
   <% autoescape 'js' %>
     var mailpoet_welcome_wizard_url = <%= json_encode(welcome_wizard_url) %>;
+    var mailpoet_welcome_wizard_current_step = <%= json_encode(welcome_wizard_current_step) %>;
   <% endautoescape %>
 </script>
 <% endblock %>

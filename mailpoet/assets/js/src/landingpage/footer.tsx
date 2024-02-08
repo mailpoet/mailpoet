@@ -1,7 +1,6 @@
 import { __ } from '@wordpress/i18n';
-import { Button } from 'common';
 import { Heading } from 'common/typography/heading/heading';
-import { redirectToWelcomeWizard } from './util';
+import { WelcomeWizardButton } from './welcome-wizard-button';
 
 function Footer() {
   return (
@@ -11,9 +10,7 @@ function Footer() {
           {' '}
           {__('Ready to start using MailPoet?', 'mailpoet')}{' '}
         </Heading>
-        <Button onClick={redirectToWelcomeWizard} dimension="hero">
-          {__('Begin setup', 'mailpoet')}
-        </Button>
+        <WelcomeWizardButton />
       </div>
     </section>
   );
