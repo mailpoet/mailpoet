@@ -109,11 +109,13 @@ export async function designEmailInWorkflow(page) {
   await page
     .locator('input[value="Save and continue"')
     .waitFor({ state: 'visible' });
-
-  await page.screenshot({
-    path: screenshotPath + `Design_Email_In_Workflow_${Math.random()}.png`,
-    fullPage: fullPageSet,
-  });
+  try {
+    await page
+      .locator('#mailpoet_modal_close')
+      .click({ timeout: 5000 });
+  } catch (error) {
+    console.log("Newsletter tutorial video wasn't present.");
+  }
 
   await Promise.all([
     page.waitForNavigation(),
