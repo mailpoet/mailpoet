@@ -1,6 +1,4 @@
-<% extends 'layout.html' %>
-
-<% block content %>
+<% extends 'layout.html' %> <% block content %>
 <script>
   var mailpoet_logo_url = '<%= cdn_url('welcome-wizard/mailpoet-logo.20200623.png') %>';
   var wizard_sender_illustration_url = '<%= cdn_url('welcome-wizard/sender.20200623.png') %>';
@@ -16,12 +14,18 @@
   var mailpoet_premium_key_valid = <%= json_encode(premium_key_valid) %>;
   var mailpoet_mss_key_valid = <%= json_encode(mss_key_valid) %>;
   var wizard_has_tracking_settings = <%= json_encode(has_tracking_settings) %>;
+  var mailpoet_welcome_wizard_current_step = <%= json_encode(welcome_wizard_current_step) %>;
 </script>
 
 <div id="mailpoet-wizard-container"></div>
 
 <div class="mailpoet-wizard-video">
-    <iframe width="1" height="1" src="https://player.vimeo.com/video/279123953" frameborder="0"></iframe>
+  <iframe
+    width="1"
+    height="1"
+    src="https://player.vimeo.com/video/279123953"
+    frameborder="0"
+  ></iframe>
 </div>
 
 <% include 'mss_pitch_translations.html' %>
