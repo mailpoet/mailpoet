@@ -73,6 +73,16 @@ class Migration_20240207_105912_App extends AppMigration {
       ->getQuery()
       ->getSingleColumnResult();
 
+    // update sending queue counts
+    $this->entityManager->createQueryBuilder()
+      ->update(SendingQueueEntity::class, 'q')
+      ->set('q.countProcessed', 'q.countTotal')
+      ->set('q.countToProcess', 0)
+      ->where('q.task IN (:ids)')
+      ->setParameter('ids', $ids)
+      ->getQuery()
+      ->execute();
+
     // complete the invalid tasks
     $this->entityManager->createQueryBuilder()
       ->update(ScheduledTaskEntity::class, 't')

@@ -191,6 +191,37 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
     $this->assertNull($newsletter4->getSentAt());
   }
 
+  public function testItUpdatesCountsWhenCompletingInvalidTasks(): void {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY, NewsletterEntity::STATUS_SENDING);
+    $task = $this->createTask($newsletter, [
+      'status' => ScheduledTaskEntity::STATUS_INVALID,
+      'processedSubscribers' => 3,
+      'unprocessedSubscribers' => 0,
+      'failedSubscribers' => 1,
+    ]);
+
+    $queue = $task->getSendingQueue();
+    $this->assertNotNull($queue);
+
+    // incorrect processed/to-process counts
+    $queue->setCountProcessed(0);
+    $queue->setCountToProcess(4);
+    $queue->setCountTotal(4);
+    $this->entityManager->flush();
+
+    $this->migration->run();
+
+    $this->refreshAll([$newsletter, $task, $queue]);
+    $this->assertSame(NewsletterEntity::STATUS_SENT, $newsletter->getStatus());
+    $this->assertEquals($task->getUpdatedAt(), $newsletter->getSentAt());
+    $this->assertSame(ScheduledTaskEntity::STATUS_COMPLETED, $task->getStatus());
+
+    // counts should be correct now
+    $this->assertSame(4, $queue->getCountProcessed());
+    $this->assertSame(0, $queue->getCountToProcess());
+    $this->assertSame(4, $queue->getCountTotal());
+  }
+
   private function createNewsletter(string $newsletterType, string $newsletterStatus, bool $isDeleted = false): NewsletterEntity {
     $newsletterFactory = (new NewsletterFactory())
       ->withType($newsletterType)
