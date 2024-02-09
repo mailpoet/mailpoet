@@ -119,9 +119,8 @@ const stepsListingHeading = (
         {' '}
       </h1>
       <div className="mailpoet-flex-grow" />
-      {!['automation', 'automation_transactional'].includes(emailType) && (
-        <TutorialIcon />
-      )}
+      {!['automation', 'automation_transactional'].includes(emailType) &&
+        step === 3 && <TutorialIcon />}
     </div>
   );
 };
