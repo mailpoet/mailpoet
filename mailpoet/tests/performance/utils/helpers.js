@@ -110,9 +110,7 @@ export async function designEmailInWorkflow(page) {
     .locator('input[value="Save and continue"')
     .waitFor({ state: 'visible' });
   try {
-    await page
-      .locator('#mailpoet_modal_close')
-      .click({ timeout: 5000 });
+    await page.locator('#mailpoet_modal_close').click({ timeout: 5000 });
   } catch (error) {
     console.log("Newsletter tutorial video wasn't present.");
   }
