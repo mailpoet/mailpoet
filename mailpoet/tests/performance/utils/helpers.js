@@ -92,13 +92,18 @@ export async function designEmailInWorkflow(page) {
 
   // Switch to a Standard templates tab and select the 2nd template
   await page.waitForLoadState('networkidle');
+  await page
+    .locator('[data-automation-id="templates-standard"]')
+    .waitFor({ state: 'visible' });
   await page.locator('[data-automation-id="templates-standard"]').click();
   await Promise.all([
     page.waitForNavigation(),
     page.locator('[data-automation-id="select_template_1"]').click(),
   ]);
   await page.waitForLoadState('networkidle');
-  await page.waitForSelector('input[value="Save and continue"');
+  await page
+    .locator('input[value="Save and continue"')
+    .waitFor({ state: 'visible' });
 
   // Click to save and get back to the workflow
   await Promise.all([
