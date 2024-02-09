@@ -121,7 +121,13 @@ function WelcomeWizardStepsController({
     <>
       <HideScreenOptions />
       <TopBar logoWithLink={false}>
-        <Steps count={stepsCount} current={step} />
+        <Steps
+          count={stepsCount}
+          current={step}
+          doneCallback={(stepString: string) => {
+            navigateToPath(history, `/steps/${stepString}`);
+          }}
+        />
       </TopBar>
       <StepsContent>
         {stepName === 'WelcomeWizardSenderStep' ? (

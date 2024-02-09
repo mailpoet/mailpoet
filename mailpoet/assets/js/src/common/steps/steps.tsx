@@ -7,31 +7,49 @@ type Props = {
   count: number;
   current: number;
   titles?: string[];
+  doneCallback?: (step: string) => void;
 };
 
-function StepsComponent({ count, current, titles }: Props) {
+function StepsComponent({ count, current, titles, doneCallback }: Props) {
   return (
     <div className="mailpoet-steps">
       <ContentWrapperFix />
-      {range(1, count + 1).map((i) => (
-        <div
-          key={i}
-          className={classnames('mailpoet-step', {
-            'mailpoet-step-done': i < current,
-            'mailpoet-step-active': i === current,
-          })}
-        >
-          <div className="mailpoet-step-badge">{i >= current ? i : ''}</div>
-          {titles[i - 1] && (
-            <div
-              className="mailpoet-step-title"
-              data-title={titles[i - 1] || ''}
+      {range(1, count + 1).map((i) => {
+        const isDone = i < current;
+        const BadgeComponent = isDone && doneCallback ? 'button' : 'div';
+
+        return (
+          <div
+            key={i}
+            className={classnames('mailpoet-step', {
+              'mailpoet-step-done': isDone,
+              'mailpoet-step-active': i === current,
+            })}
+          >
+            <BadgeComponent
+              className={classnames('mailpoet-step-badge', {
+                'mailpoet-step-badge-has-callback': isDone && doneCallback,
+              })}
+              onClick={() => {
+                if (isDone && doneCallback) {
+                  doneCallback(i.toString());
+                }
+              }}
+              {...(isDone && doneCallback ? { type: 'button' } : {})}
             >
-              {titles[i - 1] || ''}
-            </div>
-          )}
-        </div>
-      ))}
+              {i >= current ? i : ''}
+            </BadgeComponent>
+            {titles[i - 1] && (
+              <div
+                className="mailpoet-step-title"
+                data-title={titles[i - 1] || ''}
+              >
+                {titles[i - 1] || ''}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
