@@ -6,6 +6,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\StatisticsNewsletterEntity;
 use MailPoet\Migrator\AppMigration;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 
@@ -22,6 +23,7 @@ class Migration_20240207_105912_App extends AppMigration {
   public function run(): void {
     $this->pauseInvalidTasksWithUnprocessedSubscribers();
     $this->completeInvalidTasksWithAllSubscribersProcessed();
+    $this->backfillMissingDataForMigratedNewsletters();
   }
 
   private function pauseInvalidTasksWithUnprocessedSubscribers(): void {
@@ -110,5 +112,46 @@ class Migration_20240207_105912_App extends AppMigration {
       ['sent' => NewsletterEntity::STATUS_SENT, 'ids' => $ids],
       ['ids' => Connection::PARAM_INT_ARRAY]
     );
+  }
+
+  private function backfillMissingDataForMigratedNewsletters(): void {
+    // In https://mailpoet.atlassian.net/browse/MAILPOET-5886 we fixed missing "sent" status
+    // by https://github.com/mailpoet/mailpoet/pull/5416, but didn't backfill missing data.
+
+    // get affected newsletter IDs
+    $ids = $this->entityManager->createQueryBuilder()
+      ->select('n.id')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.status = :sent')
+      ->andWhere('n.sentAt IS NULL')
+      ->setParameter('sent', NewsletterEntity::STATUS_SENT)
+      ->getQuery()
+      ->getSingleColumnResult();
+
+    // get missing newsletter statistics IDs
+    $data = $this->entityManager->createQueryBuilder()
+      ->select('IDENTITY(q.newsletter) AS nid, q.id AS qid, IDENTITY(s.subscriber) AS sid, s.updatedAt AS sentAt')
+      ->from(SendingQueueEntity::class, 'q')
+      ->join('q.task', 't')
+      ->join('t.subscribers', 's')
+      ->leftJoin(StatisticsNewsletterEntity::class, 'ns', 'WITH', 'ns.queue = q AND ns.subscriber = s.subscriber')
+      ->where('q.newsletter IN (:ids)')
+      ->andWhere('ns.id IS NULL')
+      ->andWhere('s.processed = :processed')
+      ->andWhere('s.failed = :ok')
+      ->setParameter('ids', $ids)
+      ->setParameter('processed', ScheduledTaskSubscriberEntity::STATUS_PROCESSED)
+      ->setParameter('ok', ScheduledTaskSubscriberEntity::FAIL_STATUS_OK)
+      ->getQuery()
+      ->getResult();
+
+    // insert missing newsletter statistics
+    $newsletterStatisticsTable = $this->entityManager->getClassMetadata(StatisticsNewsletterEntity::class)->getTableName();
+    foreach ($data as $row) {
+      $this->entityManager->getConnection()->executeStatement("
+        INSERT IGNORE INTO $newsletterStatisticsTable (newsletter_id, queue_id, subscriber_id, sent_at)
+        VALUES (?, ?, ?, ?)
+      ", [$row['nid'], $row['qid'], $row['sid'], $row['sentAt']->format('Y-m-d H:i:s')]);
+    }
   }
 }

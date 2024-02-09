@@ -6,7 +6,9 @@ use DateTimeImmutable;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Migrations\App\Migration_20240207_105912_App;
+use MailPoet\Statistics\StatisticsNewslettersRepository;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\ScheduledTaskSubscriber;
@@ -220,6 +222,36 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
     $this->assertSame(4, $queue->getCountProcessed());
     $this->assertSame(0, $queue->getCountToProcess());
     $this->assertSame(4, $queue->getCountTotal());
+  }
+
+  public function testItBackfillsMissingNewsletterStatistics(): void {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY, NewsletterEntity::STATUS_SENT);
+    $task = $this->createTask($newsletter, [
+      'status' => ScheduledTaskEntity::STATUS_COMPLETED,
+      'processedSubscribers' => 3,
+      'unprocessedSubscribers' => 2,
+      'failedSubscribers' => 1,
+    ]);
+
+    $repository = $this->diContainer->get(StatisticsNewslettersRepository::class);
+    $this->assertCount(0, $repository->findAll());
+
+    $this->migration->run();
+
+    $this->refreshAll([$newsletter, $task]);
+    $this->assertSame(NewsletterEntity::STATUS_SENT, $newsletter->getStatus());
+    $this->assertSame(ScheduledTaskEntity::STATUS_COMPLETED, $task->getStatus());
+
+    $stats = $repository->findAll();
+    $processedSubscribers = $task->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
+    $this->assertCount(3, $stats);
+    $this->assertCount(4, $processedSubscribers); // 3 ok + 1 failed
+    for ($i = 0; $i < 3; $i++) {
+      $this->assertSame($newsletter, $stats[$i]->getNewsletter());
+      $this->assertSame($task->getSendingQueue(), $stats[$i]->getQueue());
+      $this->assertEquals($task->getUpdatedAt(), $stats[$i]->getSentAt());
+      $this->assertContains($stats[$i]->getSubscriber(), $processedSubscribers);
+    }
   }
 
   private function createNewsletter(string $newsletterType, string $newsletterStatus, bool $isDeleted = false): NewsletterEntity {
