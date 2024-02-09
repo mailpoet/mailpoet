@@ -7,6 +7,8 @@ import {
   adminPassword,
   fromName,
   adminEmail,
+  fullPageSet,
+  screenshotPath,
 } from '../config.js';
 /* global Promise */
 
@@ -100,12 +102,19 @@ export async function designEmailInWorkflow(page) {
     page.waitForNavigation(),
     page.locator('[data-automation-id="select_template_1"]').click(),
   ]);
+
   await page.waitForLoadState('networkidle');
+
+  // Click to save and get back to the workflow
   await page
     .locator('input[value="Save and continue"')
     .waitFor({ state: 'visible' });
 
-  // Click to save and get back to the workflow
+  await page.screenshot({
+    path: screenshotPath + `Design_Email_In_Workflow_${Math.random()}.png`,
+    fullPage: fullPageSet,
+  });
+
   await Promise.all([
     page.waitForNavigation(),
     page.locator('input[value="Save and continue"').click(),
