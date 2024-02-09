@@ -138,10 +138,8 @@ class Migration_20240207_105912_App extends AppMigration {
       ->where('q.newsletter IN (:ids)')
       ->andWhere('ns.id IS NULL')
       ->andWhere('s.processed = :processed')
-      ->andWhere('s.failed = :ok')
       ->setParameter('ids', $ids)
       ->setParameter('processed', ScheduledTaskSubscriberEntity::STATUS_PROCESSED)
-      ->setParameter('ok', ScheduledTaskSubscriberEntity::FAIL_STATUS_OK)
       ->getQuery()
       ->getResult();
 

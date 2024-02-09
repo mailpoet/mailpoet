@@ -246,9 +246,9 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
 
     $stats = $repository->findAll();
     $processedSubscribers = $task->getSubscribersByProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
-    $this->assertCount(3, $stats);
+    $this->assertCount(4, $stats); // 3 ok + 1 failed
     $this->assertCount(4, $processedSubscribers); // 3 ok + 1 failed
-    for ($i = 0; $i < 3; $i++) {
+    for ($i = 0; $i < 4; $i++) {
       $this->assertSame($newsletter, $stats[$i]->getNewsletter());
       $this->assertSame($task->getSendingQueue(), $stats[$i]->getQueue());
       $this->assertEquals($task->getUpdatedAt(), $stats[$i]->getSentAt());
