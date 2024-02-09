@@ -153,5 +153,21 @@ class Migration_20240207_105912_App extends AppMigration {
         VALUES (?, ?, ?, ?)
       ", [$row['nid'], $row['qid'], $row['sid'], $row['sentAt']->format('Y-m-d H:i:s')]);
     }
+
+    // add missing "sentAt" (DBAL needed to be able to use JOIN)
+    $newslettersTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $sendingQueuesTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "
+        UPDATE $newslettersTable n
+        JOIN $sendingQueuesTable q ON n.id = q.newsletter_id
+        JOIN $scheduledTasksTable t ON q.task_id = t.id
+        SET n.sent_at = t.updated_at
+        WHERE q.newsletter_id IN (:ids)
+      ",
+      ['ids' => $ids],
+      ['ids' => Connection::PARAM_INT_ARRAY]
+    );
   }
 }
