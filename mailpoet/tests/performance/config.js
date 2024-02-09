@@ -9,7 +9,7 @@ export const fullPageSet = 'true';
 export const screenshotPath = 'tests/performance/_screenshots/';
 
 export const fromName = 'MP Perf Testing';
-export const adminUsername = 'admin';
+export const adminUsername = __ENV.US || 'admin'; // eslint-disable-line
 export const adminPassword = __ENV.PW || 'password'; // eslint-disable-line
 export const adminEmail = 'test@test.com';
 
