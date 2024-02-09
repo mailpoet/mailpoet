@@ -972,6 +972,8 @@ workflows:
           woo_memberships_version: latest
           woo_blocks_version: latest
           automate_woo_version: latest
+          mysql_image: mysql:8.3
+          mysql_command: --default-authentication-plugin=mysql_native_password
           requires:
             - build
       - acceptance_tests:
@@ -1010,6 +1012,8 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_latest
+          mysql_image: mysql:8.3
+          mysql_command: --default-authentication-plugin=mysql_native_password
           requires:
             - build
       - integration_tests:
