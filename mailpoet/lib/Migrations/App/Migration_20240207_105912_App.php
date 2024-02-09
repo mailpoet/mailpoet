@@ -18,7 +18,11 @@ use MailPoet\Migrator\AppMigration;
  */
 class Migration_20240207_105912_App extends AppMigration {
   public function run(): void {
-    // pause invalid tasks with unprocessed subscribers
+    $this->pauseInvalidTasksWithUnprocessedSubscribers();
+    $this->completeInvalidTasksWithAllSubscribersProcessed();
+  }
+
+  private function pauseInvalidTasksWithUnprocessedSubscribers(): void {
     $ids = $this->entityManager->createQueryBuilder()
       ->select('DISTINCT t.id')
       ->from(ScheduledTaskEntity::class, 't')
@@ -45,8 +49,9 @@ class Migration_20240207_105912_App extends AppMigration {
       ->setParameter('ids', $ids)
       ->getQuery()
       ->execute();
+  }
 
-    // complete invalid tasks with all subscribers processed, mark newsletters as sent
+  private function completeInvalidTasksWithAllSubscribersProcessed(): void {
     $result = $this->entityManager->createQueryBuilder()
       ->select('DISTINCT t.id, n.id AS nid')
       ->from(ScheduledTaskEntity::class, 't')
