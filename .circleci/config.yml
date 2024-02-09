@@ -517,6 +517,9 @@ jobs:
       url:
         type: string
         default: 'http://localhost:9500'
+      us:
+        type: string
+        default: 'admin'
       pw:
         type: string
         default: 'password'
