@@ -411,7 +411,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->runTestsInContainer($opts);
   }
 
-  public function testPerformance($path = null, $opts = ['url' => null, 'pw' => null, 'head' => false, 'scenario' => null]) {
+  public function testPerformance($path = null, $opts = ['url' => null, 'us' => null, 'pw' => null, 'head' => false, 'scenario' => null]) {
     $dir = __DIR__;
     if ((getenv('K6_CLOUD_TOKEN')) === false) {
       return $this->collectionBuilder()
@@ -420,6 +420,7 @@ class RoboFile extends \Robo\Tasks {
       ->arg('run')
       ->option('env', 'K6_BROWSER_ENABLED=1')
       ->option('env', 'URL=' . $opts['url'])
+      ->option('env', 'US=' . $opts['us'])
       ->option('env', 'PW=' . $opts['pw'])
       ->option('env', 'K6_BROWSER_HEADLESS=' . ($opts['head'] ? 'false' : 'true'))
       ->option('env', 'K6_BROWSER_TIMEOUT=120s')
@@ -433,6 +434,7 @@ class RoboFile extends \Robo\Tasks {
       ->arg('run')
       ->option('env', 'K6_BROWSER_ENABLED=1')
       ->option('env', 'URL=' . $opts['url'])
+      ->option('env', 'US=' . $opts['us'])
       ->option('env', 'PW=' . $opts['pw'])
       ->option('env', 'HEADLESS=' . ($opts['head'] ? 'false' : 'true'))
       ->option('env', 'SCENARIO=' . $opts['scenario'])
