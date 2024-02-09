@@ -84,11 +84,9 @@ export async function activateWorkflow(page) {
 export async function designEmailInWorkflow(page) {
   // Fill the sender email and name
   await page.locator('input[type="text"]').waitFor({ state: 'visible' });
-  await page.locator('input[type="text"]').dblclick();
   await page.locator('input[type="text"]').fill(fromName);
-  await page.locator('input[type="email"]').dblclick();
+  await page.locator('input[type="text"]').type(' '); // to avoid flakiness
   await page.locator('input[type="email"]').fill(adminEmail);
-  await page.locator('input[type="text"]').click();
 
   await page.screenshot({
     path: screenshotPath + `Design_Email_In_Workflow_${Date.now()}`,
