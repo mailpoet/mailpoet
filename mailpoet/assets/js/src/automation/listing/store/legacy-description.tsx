@@ -78,7 +78,7 @@ const getAutomaticInfo = (item: ListingItem): ReactNode => {
   }
 
   const metaOptionValues =
-    meta && meta.option
+    meta && meta.option && Array.isArray(meta.option)
       ? meta.option.map(({ name }: { name: string }) => name)
       : [];
 
