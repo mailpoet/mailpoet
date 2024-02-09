@@ -52,6 +52,7 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
 
     $this->refreshAll([$newsletter, $task]);
     $this->assertSame(NewsletterEntity::STATUS_SENT, $newsletter->getStatus());
+    $this->assertEquals($task->getUpdatedAt(), $newsletter->getSentAt());
     $this->assertSame(ScheduledTaskEntity::STATUS_COMPLETED, $task->getStatus());
   }
 
@@ -76,8 +77,10 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
 
     $this->refreshAll([$newsletter1, $task1, $newsletter2, $task2]);
     $this->assertSame(NewsletterEntity::STATUS_SCHEDULED, $newsletter1->getStatus());
+    $this->assertNull($newsletter1->getSentAt());
     $this->assertSame(ScheduledTaskEntity::STATUS_INVALID, $task1->getStatus());
     $this->assertSame(NewsletterEntity::STATUS_ACTIVE, $newsletter2->getStatus());
+    $this->assertNull($newsletter2->getSentAt());
     $this->assertSame(ScheduledTaskEntity::STATUS_INVALID, $task2->getStatus());
   }
 
@@ -94,6 +97,7 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
 
     $this->refreshAll([$newsletter, $task]);
     $this->assertSame(NewsletterEntity::STATUS_SENDING, $newsletter->getStatus());
+    $this->assertNull($newsletter->getSentAt());
     $this->assertSame(ScheduledTaskEntity::STATUS_INVALID, $task->getStatus());
   }
 
@@ -111,6 +115,7 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
 
     $this->refreshAll([$newsletter, $task]);
     $this->assertSame(NewsletterEntity::STATUS_SENDING, $newsletter->getStatus());
+    $this->assertNull($newsletter->getSentAt());
     $this->assertSame(ScheduledTaskEntity::STATUS_INVALID, $task->getStatus());
     $this->assertNotNull($task->getDeletedAt());
   }
@@ -128,8 +133,8 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
 
     $this->refreshAll([$newsletter, $task]);
     $this->assertSame(NewsletterEntity::STATUS_SENDING, $newsletter->getStatus());
+    $this->assertNull($newsletter->getSentAt());
     $this->assertSame(ScheduledTaskEntity::STATUS_INVALID, $task->getStatus());
-    $this->assertNotNull($newsletter->getDeletedAt());
   }
 
   public function testMultipleNewslettersAtOnce(): void {
@@ -174,12 +179,16 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
     $this->refreshAll([$newsletter1, $task1, $newsletter2, $task2, $newsletter3, $task3, $newsletter4, $task4]);
     $this->assertSame(NewsletterEntity::STATUS_SENDING, $newsletter1->getStatus());
     $this->assertSame(ScheduledTaskEntity::STATUS_PAUSED, $task1->getStatus());
+    $this->assertNull($newsletter1->getSentAt());
     $this->assertSame(NewsletterEntity::STATUS_SENT, $newsletter2->getStatus());
     $this->assertSame(ScheduledTaskEntity::STATUS_COMPLETED, $task2->getStatus());
+    $this->assertEquals($task2->getUpdatedAt(), $newsletter2->getSentAt());
     $this->assertSame(NewsletterEntity::STATUS_SCHEDULED, $newsletter3->getStatus());
     $this->assertSame(ScheduledTaskEntity::STATUS_INVALID, $task3->getStatus());
+    $this->assertNull($newsletter3->getSentAt());
     $this->assertSame(NewsletterEntity::STATUS_SENDING, $newsletter4->getStatus());
     $this->assertSame(ScheduledTaskEntity::STATUS_INVALID, $task4->getStatus());
+    $this->assertNull($newsletter4->getSentAt());
   }
 
   private function createNewsletter(string $newsletterType, string $newsletterStatus, bool $isDeleted = false): NewsletterEntity {
