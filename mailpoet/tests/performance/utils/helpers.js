@@ -83,8 +83,17 @@ export async function activateWorkflow(page) {
 // Click to design email in the workflow and save it
 export async function designEmailInWorkflow(page) {
   // Fill the sender email and name
+  await page.locator('input[type="text"]').waitFor({ state: 'visible' });
+  await page.locator('input[type="text"]').dblclick();
   await page.locator('input[type="text"]').fill(fromName);
+  await page.locator('input[type="email"]').dblclick();
   await page.locator('input[type="email"]').fill(adminEmail);
+  await page.locator('input[type="text"]').click();
+
+  await page.screenshot({
+    path: screenshotPath + `Design_Email_In_Workflow_${Date.now()}`,
+    fullPage: fullPageSet,
+  });
 
   // Click Design automation email button
   await Promise.all([
@@ -92,8 +101,14 @@ export async function designEmailInWorkflow(page) {
     page.locator('.mailpoet-automation-button-sidebar-primary').click(),
   ]);
 
-  // Switch to a Standard templates tab and select the 2nd template
   await page.waitForLoadState('networkidle');
+
+  await page.screenshot({
+    path: screenshotPath + `Design_Email_In_Workflow_${Date.now()}`,
+    fullPage: fullPageSet,
+  });
+
+  // Switch to a Standard templates tab and select the 2nd template
   await page
     .locator('[data-automation-id="templates-standard"]')
     .waitFor({ state: 'visible' });
@@ -105,12 +120,17 @@ export async function designEmailInWorkflow(page) {
 
   await page.waitForLoadState('networkidle');
 
+  await page.screenshot({
+    path: screenshotPath + `Design_Email_In_Workflow_${Date.now()}`,
+    fullPage: fullPageSet,
+  });
+
   // Click to save and get back to the workflow
   await page
     .locator('input[value="Save and continue"')
     .waitFor({ state: 'visible' });
   try {
-    await page.locator('#mailpoet_modal_close').click({ timeout: 5000 });
+    await page.locator('#mailpoet_modal_close').click({ timeout: 3000 });
   } catch (error) {
     console.log("Newsletter tutorial video wasn't present.");
   }
