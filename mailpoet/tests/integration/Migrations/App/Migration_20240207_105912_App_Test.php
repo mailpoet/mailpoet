@@ -235,11 +235,13 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
 
     $repository = $this->diContainer->get(StatisticsNewslettersRepository::class);
     $this->assertCount(0, $repository->findAll());
+    $this->assertNull($newsletter->getSentAt());
 
     $this->migration->run();
 
     $this->refreshAll([$newsletter, $task]);
     $this->assertSame(NewsletterEntity::STATUS_SENT, $newsletter->getStatus());
+    $this->assertEquals($task->getUpdatedAt(), $newsletter->getSentAt());
     $this->assertSame(ScheduledTaskEntity::STATUS_COMPLETED, $task->getStatus());
 
     $stats = $repository->findAll();
