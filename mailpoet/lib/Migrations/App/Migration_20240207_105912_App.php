@@ -5,7 +5,9 @@ namespace MailPoet\Migrations\App;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Migrator\AppMigration;
+use MailPoetVendor\Doctrine\DBAL\Connection;
 
 /**
  * We've had a set of bugs where campaign type newsletters (see NewsletterEntity::CAMPAIGN_TYPES),
@@ -52,8 +54,8 @@ class Migration_20240207_105912_App extends AppMigration {
   }
 
   private function completeInvalidTasksWithAllSubscribersProcessed(): void {
-    $result = $this->entityManager->createQueryBuilder()
-      ->select('DISTINCT t.id, n.id AS nid')
+    $ids = $this->entityManager->createQueryBuilder()
+      ->select('DISTINCT t.id, n.id AS nid, t.updatedAt')
       ->from(ScheduledTaskEntity::class, 't')
       ->leftJoin('t.subscribers', 's', 'WITH', 's.processed = :unprocessed')
       ->join('t.sendingQueue', 'q')
@@ -69,11 +71,9 @@ class Migration_20240207_105912_App extends AppMigration {
       ->setParameter('sending', NewsletterEntity::STATUS_SENDING)
       ->setParameter('campaignTypes', NewsletterEntity::CAMPAIGN_TYPES)
       ->getQuery()
-      ->getResult();
+      ->getSingleColumnResult();
 
-    $ids = array_column($result, 'id');
-    $newsletterIds = array_column($result, 'nid');
-
+    // complete the invalid tasks
     $this->entityManager->createQueryBuilder()
       ->update(ScheduledTaskEntity::class, 't')
       ->set('t.status', ':completed')
@@ -83,14 +83,22 @@ class Migration_20240207_105912_App extends AppMigration {
       ->getQuery()
       ->execute();
 
-    $this->entityManager->createQueryBuilder()
-      ->update(NewsletterEntity::class, 'n')
-      ->set('n.status', ':sent')
-      ->where('n.deletedAt IS NULL')
-      ->andWhere('n.id IN (:newsletterIds)')
-      ->setParameter('sent', NewsletterEntity::STATUS_SENT)
-      ->setParameter('newsletterIds', $newsletterIds)
-      ->getQuery()
-      ->execute();
+    // mark newsletters as sent, update "sentAt" (DBAL needed to be able to use JOIN)
+    $newslettersTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $sendingQueuesTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "
+        UPDATE $newslettersTable n
+        JOIN $sendingQueuesTable q ON n.id = q.newsletter_id
+        JOIN $scheduledTasksTable t ON q.task_id = t.id
+        SET
+          n.status = :sent,
+          n.sent_at = t.updated_at
+        WHERE t.id IN (:ids)
+      ",
+      ['sent' => NewsletterEntity::STATUS_SENT, 'ids' => $ids],
+      ['ids' => Connection::PARAM_INT_ARRAY]
+    );
   }
 }
