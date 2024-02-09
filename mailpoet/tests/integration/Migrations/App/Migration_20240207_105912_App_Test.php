@@ -3,6 +3,7 @@
 namespace integration\Migrations\App;
 
 use DateTimeImmutable;
+use DateTimeInterface;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -54,7 +55,7 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
 
     $this->refreshAll([$newsletter, $task]);
     $this->assertSame(NewsletterEntity::STATUS_SENT, $newsletter->getStatus());
-    $this->assertEquals($task->getUpdatedAt(), $newsletter->getSentAt());
+    $this->assertEquals($this->getMaxUpdatedDateFromTaskSubscribers($task), $newsletter->getSentAt());
     $this->assertSame(ScheduledTaskEntity::STATUS_COMPLETED, $task->getStatus());
   }
 
@@ -184,7 +185,7 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
     $this->assertNull($newsletter1->getSentAt());
     $this->assertSame(NewsletterEntity::STATUS_SENT, $newsletter2->getStatus());
     $this->assertSame(ScheduledTaskEntity::STATUS_COMPLETED, $task2->getStatus());
-    $this->assertEquals($task2->getUpdatedAt(), $newsletter2->getSentAt());
+    $this->assertEquals($this->getMaxUpdatedDateFromTaskSubscribers($task2), $newsletter2->getSentAt());
     $this->assertSame(NewsletterEntity::STATUS_SCHEDULED, $newsletter3->getStatus());
     $this->assertSame(ScheduledTaskEntity::STATUS_INVALID, $task3->getStatus());
     $this->assertNull($newsletter3->getSentAt());
@@ -215,7 +216,7 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
 
     $this->refreshAll([$newsletter, $task, $queue]);
     $this->assertSame(NewsletterEntity::STATUS_SENT, $newsletter->getStatus());
-    $this->assertEquals($task->getUpdatedAt(), $newsletter->getSentAt());
+    $this->assertEquals($this->getMaxUpdatedDateFromTaskSubscribers($task), $newsletter->getSentAt());
     $this->assertSame(ScheduledTaskEntity::STATUS_COMPLETED, $task->getStatus());
 
     // counts should be correct now
@@ -241,7 +242,7 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
 
     $this->refreshAll([$newsletter, $task]);
     $this->assertSame(NewsletterEntity::STATUS_SENT, $newsletter->getStatus());
-    $this->assertEquals($task->getUpdatedAt(), $newsletter->getSentAt());
+    $this->assertEquals($this->getMaxUpdatedDateFromTaskSubscribers($task), $newsletter->getSentAt());
     $this->assertSame(ScheduledTaskEntity::STATUS_COMPLETED, $task->getStatus());
 
     $stats = $repository->findAll();
@@ -309,5 +310,13 @@ class Migration_20240207_105912_App_Test extends \MailPoetTest {
     foreach ($entities as $entity) {
       $this->entityManager->refresh($entity);
     }
+  }
+
+  private function getMaxUpdatedDateFromTaskSubscribers(ScheduledTaskEntity $task): DateTimeInterface {
+    $date = new DateTimeImmutable('1900-01-01');
+    foreach ($task->getSubscribers() as $subscriber) {
+      $date = max($date, $subscriber->getUpdatedAt());
+    }
+    return $date;
   }
 }

@@ -98,6 +98,7 @@ class Migration_20240207_105912_App extends AppMigration {
     // mark newsletters as sent, update "sentAt" (DBAL needed to be able to use JOIN)
     $newslettersTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
     $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
     $sendingQueuesTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
     $this->entityManager->getConnection()->executeStatement(
       "
@@ -106,7 +107,10 @@ class Migration_20240207_105912_App extends AppMigration {
         JOIN $scheduledTasksTable t ON q.task_id = t.id
         SET
           n.status = :sent,
-          n.sent_at = t.updated_at
+          n.sent_at = COALESCE(
+            (SELECT MAX(updated_at) FROM $scheduledTaskSubscribersTable WHERE task_id = t.id),
+            t.updated_at
+          )
         WHERE t.id IN (:ids)
       ",
       ['sent' => NewsletterEntity::STATUS_SENT, 'ids' => $ids],
@@ -155,13 +159,17 @@ class Migration_20240207_105912_App extends AppMigration {
     // add missing "sentAt" (DBAL needed to be able to use JOIN)
     $newslettersTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
     $scheduledTasksTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $scheduledTaskSubscribersTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
     $sendingQueuesTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
     $this->entityManager->getConnection()->executeStatement(
       "
         UPDATE $newslettersTable n
         JOIN $sendingQueuesTable q ON n.id = q.newsletter_id
         JOIN $scheduledTasksTable t ON q.task_id = t.id
-        SET n.sent_at = t.updated_at
+        SET n.sent_at = COALESCE(
+          (SELECT MAX(updated_at) FROM $scheduledTaskSubscribersTable WHERE task_id = t.id),
+          t.updated_at
+        )
         WHERE q.newsletter_id IN (:ids)
       ",
       ['ids' => $ids],
