@@ -108,7 +108,12 @@ class Migration_20240207_105912_App extends AppMigration {
         SET
           n.status = :sent,
           n.sent_at = COALESCE(
-            (SELECT MAX(updated_at) FROM $scheduledTaskSubscribersTable WHERE task_id = t.id),
+            (
+              -- use 'updated_at' of processed subscriber with the highest ID ('MAX(subscriber_id)' can use index)
+              SELECT updated_at FROM $scheduledTaskSubscribersTable WHERE task_id = t.id AND subscriber_id = (
+                SELECT MAX(subscriber_id) FROM $scheduledTaskSubscribersTable WHERE task_id = t.id
+              )
+            ),
             t.updated_at
           )
         WHERE t.id IN (:ids)
@@ -167,7 +172,12 @@ class Migration_20240207_105912_App extends AppMigration {
         JOIN $sendingQueuesTable q ON n.id = q.newsletter_id
         JOIN $scheduledTasksTable t ON q.task_id = t.id
         SET n.sent_at = COALESCE(
-          (SELECT MAX(updated_at) FROM $scheduledTaskSubscribersTable WHERE task_id = t.id),
+          (
+            -- use 'updated_at' of processed subscriber with the highest ID ('MAX(subscriber_id)' can use index)
+            SELECT updated_at FROM $scheduledTaskSubscribersTable WHERE task_id = t.id AND subscriber_id = (
+              SELECT MAX(subscriber_id) FROM $scheduledTaskSubscribersTable WHERE task_id = t.id
+            )
+          ),
           t.updated_at
         )
         WHERE q.newsletter_id IN (:ids)
