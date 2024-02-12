@@ -172,12 +172,13 @@ class AutomationStorage {
   }
 
   /** @return int[] */
-  public function getAutomationIdsBySubject(Subject $subject, array $runStatus = null): array {
+  public function getAutomationIdsBySubject(Subject $subject, array $runStatus = null, int $inTheLastSeconds = null): array {
     $automationsTable = esc_sql($this->automationsTable);
     $runsTable = esc_sql($this->runsTable);
     $subjectTable = esc_sql($this->subjectsTable);
 
     $statusFilter = $runStatus ? 'AND r.status IN(' . implode(',', array_fill(0, count($runStatus), '%s')) . ')' : '';
+    $inTheLastFilter = isset($inTheLastSeconds) ? 'AND r.created_at > DATE_SUB(NOW(), INTERVAL %d SECOND)' : '';
 
     /** @var literal-string $sql */
     $sql = "
@@ -187,9 +188,17 @@ class AutomationStorage {
       INNER JOIN $subjectTable s ON s.automation_run_id = r.id
       WHERE s.hash = %s
       $statusFilter
+      $inTheLastFilter
       ORDER BY a.id DESC
     ";
-    $query = (string)$this->wpdb->prepare($sql, $subject->getHash(), ...($runStatus ?? []));
+    $query = (string)$this->wpdb->prepare(
+      $sql,
+      array_merge(
+        [$subject->getHash()],
+        $runStatus ?? [],
+        isset($inTheLastSeconds) ? [$inTheLastSeconds] : [],
+      )
+    );
     return array_map('intval', $this->wpdb->get_col($query));
   }
 
