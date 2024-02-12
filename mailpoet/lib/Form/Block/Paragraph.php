@@ -52,7 +52,7 @@ class Paragraph {
     if (isset($block['params']['drop_cap']) && $block['params']['drop_cap'] === '1') {
       $classes[] = 'has-drop-cap';
     }
-    if (!empty($block['params']['background_color'])) {
+    if (!empty($block['params']['background_color']) || !empty($block['params']['gradient'])) {
       $classes[] = 'mailpoet-has-background-color';
     }
     if (!empty($block['params']['font_size'])) {
@@ -70,6 +70,9 @@ class Paragraph {
     $styles = [];
     if (!empty($block['params']['background_color'])) {
       $styles[] = 'background-color: ' . $block['params']['background_color'];
+    }
+    if (!empty($block['params']['gradient'])) {
+      $styles[] = "background: {$block['params']['gradient']};";
     }
     if (!empty($block['params']['align'])) {
       $styles[] = 'text-align: ' . $block['params']['align'];
