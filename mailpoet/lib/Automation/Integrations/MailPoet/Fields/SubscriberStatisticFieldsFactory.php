@@ -5,6 +5,7 @@ namespace MailPoet\Automation\Integrations\MailPoet\Fields;
 use MailPoet\Automation\Engine\Data\Field;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Subscribers\Statistics\SubscriberStatisticsRepository;
+use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberStatisticFieldsFactory {
   /** @var SubscriberStatisticsRepository */
@@ -23,9 +24,9 @@ class SubscriberStatisticFieldsFactory {
         'mailpoet:subscriber:email-sent-count',
         Field::TYPE_INTEGER,
         __('Email — sent count', 'mailpoet'),
-        function (SubscriberPayload $payload) {
-          $stats = $this->subscriberStatisticsRepository->getStatistics($payload->getSubscriber());
-          return $stats->getTotalSentCount();
+        function (SubscriberPayload $payload, array $params = []) {
+          $startTime = $this->getStartTime($params);
+          return $this->subscriberStatisticsRepository->getTotalSentCount($payload->getSubscriber(), $startTime);
         }
       ),
       new Field(
@@ -56,5 +57,10 @@ class SubscriberStatisticFieldsFactory {
         }
       ),
     ];
+  }
+
+  private function getStartTime(array $params): ?Carbon {
+    $inTheLastSeconds = $params['in_the_last_seconds'] ?? null;
+    return $inTheLastSeconds ? Carbon::now()->subSeconds((int)$inTheLastSeconds) : null;
   }
 }
