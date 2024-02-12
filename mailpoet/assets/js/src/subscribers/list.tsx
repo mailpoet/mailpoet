@@ -50,6 +50,7 @@ type Response = {
     count: number;
     segment: string;
     tag: string;
+    errors?: string[];
   };
 };
 
