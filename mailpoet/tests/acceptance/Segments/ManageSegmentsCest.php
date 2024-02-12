@@ -308,12 +308,13 @@ class ManageSegmentsCest {
     $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle, 5, '[data-automation-id="mailpoet_dynamic_segment_name_' . $segment->getId() . '"]');
     $i->clickWooTableActionInsideMoreButton($segmentTitle, 'Move to trash');
-    $i->waitForText("Segment cannot be deleted because it’s used for '{$subject}' email");
+    $i->click(['xpath' => '//button[text()="Trash"]']); // confirmation modal, xpath to avoid clicking the Trash tab
+    $i->waitForText("Segment '{$segmentTitle}' cannot be deleted because it’s used for '{$subject}' email");
     $i->seeNoJSErrors();
-    $i->checkOption('[data-automation-id="listing-row-checkbox-' . $segment->getId() . '"]');
-    $i->waitForText('Move to trash');
-    $i->click('Move to trash');
-    $i->waitForText('0 segments were moved to the trash.');
+    $i->checkWooTableCheckboxForItemName($segment->getName());
+    $i->selectOption('Bulk Actions', 'Trash');
+    $i->click(['xpath' => '//button[text()="Trash"]']); // confirmation modal, xpath to avoid clicking the Trash tab
+    $i->waitForText("Segment '{$segmentTitle}' cannot be deleted because it’s used for '{$subject}' email");
   }
 
   public function createUserSegmentAndCheckCount(\AcceptanceTester $i) {
