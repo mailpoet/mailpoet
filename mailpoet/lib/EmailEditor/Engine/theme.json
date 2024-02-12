@@ -14,7 +14,39 @@
       "units": ["px"],
       "blockGap": true,
       "padding": true,
-      "margin": false
+      "margin": false,
+      "spacingSizes": [
+        {
+          "name": "1",
+          "size": "10px",
+          "slug": "10"
+        },
+        {
+          "name": "2",
+          "size": "20px",
+          "slug": "20"
+        },
+        {
+          "name": "3",
+          "size": "30px",
+          "slug": "30"
+        },
+        {
+          "name": "4",
+          "size": "40px",
+          "slug": "40"
+        },
+        {
+          "name": "5",
+          "size": "50px",
+          "slug": "50"
+        },
+        {
+          "name": "6",
+          "size": "60px",
+          "slug": "60"
+        }
+      ]
     },
     "border": {
       "radius": true,
