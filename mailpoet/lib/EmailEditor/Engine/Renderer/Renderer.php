@@ -85,6 +85,7 @@ class Renderer {
 
     $templateWithContentsDom = $this->inlineCSSStyles($templateWithContents);
     $templateWithContents = $this->postProcessTemplate($templateWithContentsDom);
+    $templateWithContents = $this->preprocessManager->postprocess($templateWithContents);
     return [
       'html' => $templateWithContents,
       'text' => $this->renderTextVersion($templateWithContents),
