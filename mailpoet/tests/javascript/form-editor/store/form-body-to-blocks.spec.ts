@@ -639,6 +639,20 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.fontSize).to.equal('small');
   });
 
+  it('It should map heading gradient', () => {
+    const heading = {
+      ...headingInput,
+      params: {
+        ...headingInput.params,
+        gradient: 'linear-gradient(#fff, #000)',
+      },
+    };
+    const [block] = formBodyToBlocks([heading]);
+    expect(block.attributes.style.color.gradient).to.equal(
+      'linear-gradient(#fff, #000)',
+    );
+  });
+
   it('It should map heading custom font size and line height', () => {
     const heading = {
       ...headingInput,
@@ -660,6 +674,20 @@ describe('Form Body To Blocks', () => {
     expect(block.attributes.dropCap).to.equal(true);
     expect(block.attributes.align).to.equal('center');
     expect(block.attributes.className).to.equal('class name');
+  });
+
+  it('It should map paragraph gradient', () => {
+    const paragraph = {
+      ...paragraphInput,
+      params: {
+        ...paragraphInput.params,
+        gradient: 'linear-gradient(#fff, #000)',
+      },
+    };
+    const [block] = formBodyToBlocks([paragraph]);
+    expect(block.attributes.style.color.gradient).to.equal(
+      'linear-gradient(#fff, #000)',
+    );
   });
 
   it('It should map paragraph font size', () => {

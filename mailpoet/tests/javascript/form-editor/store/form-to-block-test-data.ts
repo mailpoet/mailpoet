@@ -262,6 +262,7 @@ export const headingInput = {
   type: 'heading',
   id: 'heading',
   position: null,
+  params: {},
 };
 
 export const paragraphInput = {
