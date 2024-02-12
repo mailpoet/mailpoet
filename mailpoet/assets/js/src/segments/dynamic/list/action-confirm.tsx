@@ -5,6 +5,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { DynamicSegment, DynamicSegmentAction } from '../types';
 import { MailPoet } from '../../../mailpoet';
 import { storeName } from '../store';
+import { DynamicSegmentResponse } from '../../../ajax';
 
 async function bulkAction(
   action: DynamicSegmentAction,
@@ -12,51 +13,6 @@ async function bulkAction(
 ) {
   if (!action) {
     return;
-  }
-  let successMessage = '';
-  let errorMessage = '';
-  switch (action) {
-    case 'trash':
-      successMessage = sprintf(
-        /* translators: %d - number of segments */
-        _n(
-          'Segment moved to trash.',
-          '%d segments moved to trash.',
-          segments.length,
-          'mailpoet',
-        ),
-        segments.length,
-      );
-      errorMessage = __('Error moving segment to trash.', 'mailpoet');
-      break;
-    case 'delete':
-      successMessage = sprintf(
-        /* translators: %d - number of segments */
-        _n(
-          'Segment permanently deleted.',
-          '%d segments permanently deleted.',
-          segments.length,
-          'mailpoet',
-        ),
-        segments.length,
-      );
-      errorMessage = __('Error deleting segment.', 'mailpoet');
-      break;
-    case 'restore':
-      successMessage = sprintf(
-        /* translators: %d - number of segments */
-        _n(
-          'Segment restored.',
-          '%d segments restored.',
-          segments.length,
-          'mailpoet',
-        ),
-        segments.length,
-      );
-      errorMessage = __('Error restoring segment.', 'mailpoet');
-      break;
-    default:
-      break;
   }
   void MailPoet.Ajax.post({
     api_version: 'v1',
@@ -69,14 +25,86 @@ async function bulkAction(
       },
     },
   })
-    .then(() => {
-      void dispatch(noticesStore).createSuccessNotice(successMessage);
-      void dispatch(storeName).loadDynamicSegments();
+    .then((response: DynamicSegmentResponse) => {
+      if (response.meta.errors && response.meta.errors.length > 0) {
+        response.meta.errors.forEach(
+          (error: string) =>
+            void dispatch(noticesStore).createErrorNotice(error),
+        );
+      }
+      const count = response.meta.count;
+      if (count > 0) {
+        let successMessage = '';
+        switch (action) {
+          case 'trash':
+            successMessage = sprintf(
+              /* translators: %d - number of segments */
+              _n(
+                'Segment moved to trash.',
+                '%d segments moved to trash.',
+                count,
+                'mailpoet',
+              ),
+              count,
+            );
+            break;
+          case 'delete':
+            successMessage = sprintf(
+              /* translators: %d - number of segments */
+              _n(
+                'Segment permanently deleted.',
+                '%d segments permanently deleted.',
+                count,
+                'mailpoet',
+              ),
+              count,
+            );
+            break;
+          case 'restore':
+            successMessage = sprintf(
+              /* translators: %d - number of segments */
+              _n(
+                'Segment restored.',
+                '%d segments restored.',
+                count,
+                'mailpoet',
+              ),
+              count,
+            );
+            break;
+          default:
+            break;
+        }
+        void dispatch(noticesStore).createSuccessNotice(successMessage);
+        void dispatch(storeName).loadDynamicSegments();
+      }
     })
-    .fail(() => {
-      void dispatch(noticesStore).createErrorNotice(errorMessage, {
-        explicitDismiss: true,
-      });
+    .fail((response: ErrorResponse) => {
+      let errorMessage = '';
+      if (response.errors) {
+        response.errors.forEach(
+          (error) =>
+            void dispatch(noticesStore).createErrorNotice(error.message),
+          { explicitDismiss: true },
+        );
+      } else {
+        switch (action) {
+          case 'trash':
+            errorMessage = __('Error moving segment to trash.', 'mailpoet');
+            break;
+          case 'delete':
+            errorMessage = __('Error deleting segment.', 'mailpoet');
+            break;
+          case 'restore':
+            errorMessage = __('Error restoring segment.', 'mailpoet');
+            break;
+          default:
+            break;
+        }
+        void dispatch(noticesStore).createErrorNotice(errorMessage, {
+          explicitDismiss: true,
+        });
+      }
     });
 }
 

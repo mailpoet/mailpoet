@@ -121,7 +121,7 @@ class DynamicSegmentsTest extends \MailPoetTest {
     $response = $this->endpoint->trash(['id' => $dynamicSegment->getId()]);
     $this->entityManager->refresh($dynamicSegment);
     verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
-    verify($response->errors[0]['message'])->equals("Segment cannot be deleted because it’s used for 'Subject' email");
+    verify($response->errors[0]['message'])->equals("Segment '{$dynamicSegment->getName()}' cannot be deleted because it’s used for 'Subject' email");
   }
 
   public function testItCanRestoreASegment() {

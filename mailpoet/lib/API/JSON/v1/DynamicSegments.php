@@ -198,16 +198,9 @@ class DynamicSegments extends APIEndpoint {
       ]);
     }
 
-    $activelyUsedNewslettersSubjects = $this->newsletterSegmentRepository->getSubjectsOfActivelyUsedEmailsForSegments([$segment->getId()]);
-    if (isset($activelyUsedNewslettersSubjects[$segment->getId()])) {
-      return $this->badRequest([
-        Error::BAD_REQUEST => str_replace(
-          '%1$s',
-          "'" . join("', '", $activelyUsedNewslettersSubjects[$segment->getId()]) . "'",
-          // translators: %1$s is a comma-seperated list of emails for which the segment is used.
-          _x('Segment cannot be deleted because it’s used for %1$s email', 'Alert shown when trying to delete segment, which is assigned to any automatic emails.', 'mailpoet')
-        ),
-      ]);
+    $activelyUsedErrors = $this->getErrorMessagesForSegmentsUsedInActiveNewsletters([$segment->getId()]);
+    if (count($activelyUsedErrors) > 0) {
+      return $this->badRequest($activelyUsedErrors);
     }
 
     $this->segmentsRepository->bulkTrash([$segment->getId()], SegmentEntity::TYPE_DYNAMIC);
@@ -215,6 +208,26 @@ class DynamicSegments extends APIEndpoint {
       $this->segmentsResponseBuilder->build($segment),
       ['count' => 1]
     );
+  }
+
+  public function getErrorMessagesForSegmentsUsedInActiveNewsletters(array $segmentIds): array {
+    $errors = [];
+    $activelyUsedNewslettersSubjects = $this->newsletterSegmentRepository->getSubjectsOfActivelyUsedEmailsForSegments($segmentIds);
+    foreach ($segmentIds as $segmentId) {
+      if (isset($activelyUsedNewslettersSubjects[$segmentId])) {
+        $segment = $this->getSegment(['id' => $segmentId]);
+        if ($segment) {
+          $errors[] = sprintf(
+            // translators: %1$s is the name of the segment, %2$s is a comma-seperated list of emails for which the segment is used.
+            _x('Segment \'%1$s\' cannot be deleted because it’s used for \'%2$s\' email', 'Alert shown when trying to delete segment, which is assigned to any automatic emails.', 'mailpoet'),
+            $segment->getName(),
+            join("', '", $activelyUsedNewslettersSubjects[$segmentId])
+          );
+        }
+      }
+    }
+
+    return $errors;
   }
 
   public function restore($data = []) {
@@ -275,17 +288,22 @@ class DynamicSegments extends APIEndpoint {
   public function bulkAction($data = []) {
     $definition = $this->listingHandler->getListingDefinition($data['listing']);
     $ids = $this->dynamicSegmentsListingRepository->getActionableIds($definition);
+    $meta = [];
     if ($data['action'] === 'trash') {
-      $count = $this->segmentsRepository->bulkTrash($ids, SegmentEntity::TYPE_DYNAMIC);
+      $errors = $this->getErrorMessagesForSegmentsUsedInActiveNewsletters($ids);
+      if (count($errors) > 0) {
+        $meta['errors'] = $errors;
+      }
+      $meta['count'] = $this->segmentsRepository->bulkTrash($ids, SegmentEntity::TYPE_DYNAMIC);
     } elseif ($data['action'] === 'restore') {
-      $count = $this->segmentsRepository->bulkRestore($ids, SegmentEntity::TYPE_DYNAMIC);
+      $meta['count'] = $this->segmentsRepository->bulkRestore($ids, SegmentEntity::TYPE_DYNAMIC);
     } elseif ($data['action'] === 'delete') {
-      $count = $this->segmentsRepository->bulkDelete($ids, SegmentEntity::TYPE_DYNAMIC);
+      $meta['count'] = $this->segmentsRepository->bulkDelete($ids, SegmentEntity::TYPE_DYNAMIC);
     } else {
       throw UnexpectedValueException::create()
         ->withErrors([Error::BAD_REQUEST => "Invalid bulk action '{$data['action']}' provided."]);
     }
-    return $this->successResponse(null, ['count' => $count]);
+    return $this->successResponse(null, $meta);
   }
 
   private function getSegment(array $data): ?SegmentEntity {
