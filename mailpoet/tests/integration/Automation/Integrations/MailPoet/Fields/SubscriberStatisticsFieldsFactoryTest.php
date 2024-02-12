@@ -82,6 +82,10 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     (new StatisticsOpensFacctory($newsletter1, $subscriber))->withMachineUserAgentType()->create(); // machine open
     (new StatisticsOpensFacctory($newsletter2, $subscriber))->withMachineUserAgentType()->create(); // machine open
 
+    // open dates are filtered by newsletter stats dates
+    (new StatisticsNewslettersFactory($newsletter1, $subscriber))->withSentAt(new Carbon('-1 week'))->create();
+    (new StatisticsNewslettersFactory($newsletter2, $subscriber))->withSentAt(new Carbon('-1 day'))->create();
+
     // check definitions
     $field = $fields['mailpoet:subscriber:email-machine-opened-count'];
     $this->assertSame('Email — machine opened count', $field->getName());
@@ -91,6 +95,9 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     // check values
     $payload = new SubscriberPayload($subscriber);
     $this->assertSame(2, $field->getValue($payload));
+    $this->assertSame(2, $field->getValue($payload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
+    $this->assertSame(1, $field->getValue($payload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
+    $this->assertSame(0, $field->getValue($payload, ['in_the_last_seconds' => 3 * HOUR_IN_SECONDS]));
   }
 
   public function testItCreatesClickedCountField(): void {
