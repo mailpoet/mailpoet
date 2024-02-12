@@ -65,7 +65,7 @@ class Heading {
       $classes[] = $block['params']['class_name'];
     }
 
-    if (!empty($block['params']['background_color'])) {
+    if (!empty($block['params']['background_color']) || !empty($block['params']['gradient'])) {
       $classes[] = 'mailpoet-has-background-color';
     }
 
@@ -100,6 +100,9 @@ class Heading {
     }
     if (!empty($block['params']['background_color'])) {
       $styles[] = 'background-color: ' . $block['params']['background_color'];
+    }
+    if (!empty($block['params']['gradient'])) {
+      $styles[] = "background: {$block['params']['gradient']};";
     }
     if (empty($styles)) {
       return '';

@@ -70,6 +70,17 @@ class ParagraphTest extends \MailPoetUnitTest {
     verify($html)->stringContainsString('style="background-color: red');
   }
 
+  public function testItShouldRenderGradient() {
+    $html = $this->paragraph->render([
+      'params' => [
+        'content' => 'Paragraph',
+        'gradient' => 'linear-gradient(#fff, #000)',
+      ],
+    ]);
+    verify($html)->stringContainsString('style="background: linear-gradient(#fff, #000)');
+    verify($html)->stringContainsString('class="mailpoet_form_paragraph mailpoet-has-background-color"');
+  }
+
   public function testItShouldRenderFontSize() {
     $html = $this->paragraph->render([
       'params' => [

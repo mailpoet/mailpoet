@@ -95,6 +95,17 @@ class HeadingTest extends \MailPoetUnitTest {
     verify($html)->stringContainsString('class="mailpoet-heading mailpoet-has-background-color"');
   }
 
+  public function testItShouldRenderGradient() {
+    $html = $this->heading->render([
+      'params' => [
+        'content' => 'Header',
+        'gradient' => 'linear-gradient(#fff, #000)',
+      ],
+    ]);
+    verify($html)->stringContainsString('style="background: linear-gradient(#fff, #000)');
+    verify($html)->stringContainsString('class="mailpoet-heading mailpoet-has-background-color"');
+  }
+
   public function testItShouldRenderFontSize() {
     $html = $this->heading->render([
       'params' => [
