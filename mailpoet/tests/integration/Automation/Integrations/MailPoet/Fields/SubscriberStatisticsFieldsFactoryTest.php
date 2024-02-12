@@ -23,8 +23,8 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     $newsletter2 = (new NewsletterFactory())->withSendingQueue()->create();
     (new NewsletterFactory())->withSendingQueue()->create();
 
-    (new StatisticsNewslettersFactory($newsletter1, $subscriber))->withSentAt(Carbon::now())->create();
-    (new StatisticsNewslettersFactory($newsletter2, $subscriber))->withSentAt(Carbon::now())->create();
+    (new StatisticsNewslettersFactory($newsletter1, $subscriber))->withSentAt(new Carbon('-1 week'))->create();
+    (new StatisticsNewslettersFactory($newsletter2, $subscriber))->withSentAt(new Carbon('-1 day'))->create();
 
     // check definitions
     $field = $fields['mailpoet:subscriber:email-sent-count'];
