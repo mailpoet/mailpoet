@@ -161,6 +161,7 @@ export const blocksToFormBodyFactory = (
                 ),
                 anchor: block.attributes.anchor || null,
                 class_name: block.attributes.className || null,
+                padding: block.attributes.style?.spacing?.padding || null,
               },
             };
           case 'core/paragraph':
@@ -197,6 +198,7 @@ export const blocksToFormBodyFactory = (
                     ?.gradient as unknown as string) || null,
                 ),
                 class_name: block.attributes.className || null,
+                padding: block.attributes.style?.spacing?.padding || null,
               },
             };
           case 'core/image':

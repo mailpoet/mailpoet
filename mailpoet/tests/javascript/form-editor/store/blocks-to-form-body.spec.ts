@@ -376,6 +376,24 @@ describe('Blocks to Form Body', () => {
     expect(input.params.gradient).to.be.equal('linear-gradient(#fff, #000)');
   });
 
+  it('Should map paragraph padding', () => {
+    const paddingValue = {
+      top: '1em',
+      right: '2em',
+      bottom: '3em',
+      left: '4em',
+    };
+    const [input] = formBlocksToBody([
+      {
+        ...paragraphBlock,
+        attributes: {
+          style: { spacing: { padding: paddingValue } },
+        },
+      },
+    ]);
+    expect(input.params.padding).to.be.deep.equal(paddingValue);
+  });
+
   it('Should map custom font size and line height in paragraph block', () => {
     const [input] = formBlocksToBody([
       {
@@ -460,6 +478,24 @@ describe('Blocks to Form Body', () => {
       },
     ]);
     expect(input.params.gradient).to.be.equal('linear-gradient(#fff, #000)');
+  });
+
+  it('Should map heading padding', () => {
+    const paddingValue = {
+      top: '1em',
+      right: '2em',
+      bottom: '3em',
+      left: '4em',
+    };
+    const [input] = formBlocksToBody([
+      {
+        ...headingBlock,
+        attributes: {
+          style: { spacing: { padding: paddingValue } },
+        },
+      },
+    ]);
+    expect(input.params.padding).to.be.deep.equal(paddingValue);
   });
 
   it('Should map custom font size in heading block', () => {

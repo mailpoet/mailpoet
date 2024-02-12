@@ -267,6 +267,9 @@ export const formBodyToBlocksFactory = (
             mapped.attributes.style.color.gradient = item.params.gradient;
           }
         }
+        if (has(item.params, 'padding')) {
+          mapped.attributes.style.spacing = { padding: item.params.padding };
+        }
         if (item.params && has(item.params, 'font_size')) {
           const fontSize = `${item.params.font_size}${
             Number.isNaN(Number(`${item.params.font_size}` || NaN)) ? '' : 'px'
