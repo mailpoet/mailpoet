@@ -86,6 +86,13 @@ class Paragraph {
     if (!empty($block['params']['line_height'])) {
       $styles[] = 'line-height: ' . $block['params']['line_height'];
     }
+    if (!empty($block['params']['padding']) && is_array($block['params']['padding'])) {
+      $top = $block['params']['padding']['top'] ?? 0;
+      $right = $block['params']['padding']['right'] ?? 0;
+      $bottom = $block['params']['padding']['bottom'] ?? 0;
+      $left = $block['params']['padding']['left'] ?? 0;
+      $styles[] = "padding:{$top} {$right} {$bottom} {$left};";
+    }
     if (empty($styles)) {
       return null;
     }

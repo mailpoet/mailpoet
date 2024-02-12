@@ -116,6 +116,16 @@ class HeadingTest extends \MailPoetUnitTest {
     verify($html)->equals('<h2 class="mailpoet-heading mailpoet-has-font-size" style="font-size: 33px">Header</h2>');
   }
 
+  public function testItShouldRenderPadding() {
+    $html = $this->heading->render([
+      'params' => [
+        'content' => 'Paragraph',
+        'padding' => ['top' => '10px', 'right' => '20px', 'bottom' => '30px', 'left' => '40px'],
+      ],
+    ]);
+    verify($html)->stringContainsString('padding:10px 20px 30px 40px;');
+  }
+
   public function testItShouldRenderFontSizeWithUnit() {
     $html = $this->heading->render([
       'params' => [
