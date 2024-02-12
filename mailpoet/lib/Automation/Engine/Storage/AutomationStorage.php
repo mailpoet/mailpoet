@@ -171,35 +171,26 @@ class AutomationStorage {
     }, (array)$data);
   }
 
-  /** @return Automation[] */
-  public function getAutomationsBySubject(Subject $subject, array $runStatus = null): array {
+  /** @return int[] */
+  public function getAutomationIdsBySubject(Subject $subject, array $runStatus = null): array {
     $automationsTable = esc_sql($this->automationsTable);
-    $versionsTable = esc_sql($this->versionsTable);
     $runsTable = esc_sql($this->runsTable);
     $subjectTable = esc_sql($this->subjectsTable);
 
     $statusFilter = $runStatus ? 'AND r.status IN(' . implode(',', array_fill(0, count($runStatus), '%s')) . ')' : '';
+
     /** @var literal-string $sql */
     $sql = "
-      SELECT DISTINCT a.*, v.id AS version_id, v.steps
+      SELECT DISTINCT a.id
       FROM $automationsTable a
-      INNER JOIN $versionsTable v ON v.automation_id = a.id
       INNER JOIN $runsTable r ON r.automation_id = a.id
       INNER JOIN $subjectTable s ON s.automation_run_id = r.id
-      WHERE v.id = (
-        SELECT MAX(id) FROM $versionsTable WHERE automation_id = v.automation_id
-      )
-      AND s.hash = %s
+      WHERE s.hash = %s
       $statusFilter
       ORDER BY a.id DESC
     ";
-    $query = (string)$this->wpdb->prepare($sql, ...array_merge([$subject->getHash()], $runStatus ?? []));
-
-    $data = $this->wpdb->get_results($query, ARRAY_A);
-    return array_map(function ($automationData) {
-      /** @var array $automationData - for PHPStan because it conflicts with expected callable(mixed): mixed)|null */
-      return Automation::fromArray($automationData);
-    }, (array)$data);
+    $query = (string)$this->wpdb->prepare($sql, $subject->getHash(), ...($runStatus ?? []));
+    return array_map('intval', $this->wpdb->get_col($query));
   }
 
   public function getAutomationCount(): int {
