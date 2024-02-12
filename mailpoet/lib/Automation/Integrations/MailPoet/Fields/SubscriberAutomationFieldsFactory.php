@@ -67,9 +67,6 @@ class SubscriberAutomationFieldsFactory {
 
   private function getAutomationIds(SubscriberPayload $payload, array $status = null): array {
     $subject = new Subject(SubscriberSubject::KEY, ['subscriber_id' => $payload->getId()]);
-    $automations = $this->automationStorage->getAutomationsBySubject($subject, $status);
-    return array_map(function (Automation $automation) {
-      return $automation->getId();
-    }, $automations);
+    return $this->automationStorage->getAutomationIdsBySubject($subject, $status);
   }
 }
