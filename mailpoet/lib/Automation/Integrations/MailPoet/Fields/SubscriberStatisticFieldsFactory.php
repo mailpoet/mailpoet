@@ -33,9 +33,9 @@ class SubscriberStatisticFieldsFactory {
         'mailpoet:subscriber:email-opened-count',
         Field::TYPE_INTEGER,
         __('Email — opened count', 'mailpoet'),
-        function (SubscriberPayload $payload) {
-          $stats = $this->subscriberStatisticsRepository->getStatistics($payload->getSubscriber());
-          return $stats->getOpenCount();
+        function (SubscriberPayload $payload, array $params = []) {
+          $startTime = $this->getStartTime($params);
+          return $this->subscriberStatisticsRepository->getStatisticsOpenCount($payload->getSubscriber(), $startTime);
         }
       ),
       new Field(
