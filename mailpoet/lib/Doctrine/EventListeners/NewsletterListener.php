@@ -8,8 +8,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\Event\LifecycleEventArgs;
 
 class NewsletterListener {
-  /** @var WPFunctions */
-  private $wp;
+  private WPFunctions $wp;
 
   public function __construct(
     WPFunctions $wp
