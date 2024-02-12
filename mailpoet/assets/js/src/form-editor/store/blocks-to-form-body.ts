@@ -153,6 +153,12 @@ export const blocksToFormBodyFactory = (
                   (block.attributes.style?.color
                     ?.background as unknown as string) || null,
                 ),
+                gradient: mapGradientSlugToValue(
+                  gradientDefinitions,
+                  block.attributes.gradient as unknown as string,
+                  (block.attributes.style?.color
+                    ?.gradient as unknown as string) || null,
+                ),
                 anchor: block.attributes.anchor || null,
                 class_name: block.attributes.className || null,
               },
@@ -183,6 +189,12 @@ export const blocksToFormBodyFactory = (
                   block.attributes.backgroundColor as unknown as string,
                   (block.attributes.style?.color
                     ?.background as unknown as string) || null,
+                ),
+                gradient: mapGradientSlugToValue(
+                  gradientDefinitions,
+                  block.attributes.gradient as unknown as string,
+                  (block.attributes.style?.color
+                    ?.gradient as unknown as string) || null,
                 ),
                 class_name: block.attributes.className || null,
               },

@@ -257,6 +257,16 @@ export const formBodyToBlocksFactory = (
               item.params.background_color;
           }
         }
+        if (item.params && has(item.params, 'gradient')) {
+          const gradientSlug = mapGradientSlug(
+            gradientsDefinitions,
+            item.params.gradient,
+          );
+          mapped.attributes.gradient = gradientSlug;
+          if (!gradientSlug) {
+            mapped.attributes.style.color.gradient = item.params.gradient;
+          }
+        }
         if (item.params && has(item.params, 'font_size')) {
           const fontSize = `${item.params.font_size}${
             Number.isNaN(Number(`${item.params.font_size}` || NaN)) ? '' : 'px'
