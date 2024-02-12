@@ -91,6 +91,16 @@ class ParagraphTest extends \MailPoetUnitTest {
     verify($html)->equals('<p class="mailpoet_form_paragraph mailpoet-has-font-size" style="font-size: 33px">Paragraph</p>');
   }
 
+  public function testItShouldRenderPadding() {
+    $html = $this->paragraph->render([
+      'params' => [
+        'content' => 'Paragraph',
+        'padding' => ['top' => '10px', 'right' => '20px', 'bottom' => '30px', 'left' => '40px'],
+      ],
+    ]);
+    verify($html)->stringContainsString('padding:10px 20px 30px 40px;');
+  }
+
   public function testItShouldRenderFontSizeWithUnit() {
     $html = $this->paragraph->render([
       'params' => [
