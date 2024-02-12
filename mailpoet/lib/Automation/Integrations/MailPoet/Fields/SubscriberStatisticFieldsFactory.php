@@ -51,9 +51,9 @@ class SubscriberStatisticFieldsFactory {
         'mailpoet:subscriber:email-clicked-count',
         Field::TYPE_INTEGER,
         __('Email — clicked count', 'mailpoet'),
-        function (SubscriberPayload $payload) {
-          $stats = $this->subscriberStatisticsRepository->getStatistics($payload->getSubscriber());
-          return $stats->getClickCount();
+        function (SubscriberPayload $payload, array $params = []) {
+          $startTime = $this->getStartTime($params);
+          return $this->subscriberStatisticsRepository->getStatisticsClickCount($payload->getSubscriber(), $startTime);
         }
       ),
     ];

@@ -113,6 +113,10 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     (new StatisticsClicksFactory($link1, $subscriber))->create(); // click 1
     (new StatisticsClicksFactory($link2, $subscriber))->create(); // click 2
 
+    // click dates are filtered by newsletter stats dates
+    (new StatisticsNewslettersFactory($newsletter1, $subscriber))->withSentAt(new Carbon('-1 week'))->create();
+    (new StatisticsNewslettersFactory($newsletter2, $subscriber))->withSentAt(new Carbon('-1 day'))->create();
+
     // check definitions
     $field = $fields['mailpoet:subscriber:email-clicked-count'];
     $this->assertSame('Email — clicked count', $field->getName());
@@ -122,6 +126,9 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     // check values
     $payload = new SubscriberPayload($subscriber);
     $this->assertSame(2, $field->getValue($payload));
+    $this->assertSame(2, $field->getValue($payload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
+    $this->assertSame(1, $field->getValue($payload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
+    $this->assertSame(0, $field->getValue($payload, ['in_the_last_seconds' => 3 * HOUR_IN_SECONDS]));
   }
 
   /** @return array<string, Field> */
