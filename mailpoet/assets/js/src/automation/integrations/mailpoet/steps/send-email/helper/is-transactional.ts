@@ -2,7 +2,12 @@ import { select } from '@wordpress/data';
 import { Step } from '../../../../../editor/components/automation/types';
 import { storeName } from '../../../../../editor/store';
 
-const transactionalTriggers = ['woocommerce:order-status-changed'];
+const transactionalTriggers = [
+  'woocommerce:order-status-changed',
+  'woocommerce:order-created',
+  'woocommerce:order-completed',
+  'woocommerce:order-cancelled',
+];
 
 export function isTransactional(step: Step): boolean {
   const automation = select(storeName).getAutomationData();
