@@ -12,8 +12,7 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 require_once __DIR__ . '/EventListenersBaseTest.php';
 
 class NewsletterListenerTest extends EventListenersBaseTest {
-  /** @var WPFunctions */
-  private $wp;
+  private WPFunctions $wp;
 
   public function _before() {
     parent::_before();
