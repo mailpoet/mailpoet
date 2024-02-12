@@ -39,8 +39,8 @@ class SubscriberAutomationFieldsFactory {
         'mailpoet:subscriber:automations-entered',
         Field::TYPE_ENUM_ARRAY,
         __('Automations — entered', 'mailpoet'),
-        function (SubscriberPayload $payload) {
-          return $this->getAutomationIds($payload);
+        function (SubscriberPayload $payload, array $params = []) {
+          return $this->getAutomationIds($payload, null, $params);
         },
         $args
       ),
@@ -65,8 +65,9 @@ class SubscriberAutomationFieldsFactory {
     ];
   }
 
-  private function getAutomationIds(SubscriberPayload $payload, array $status = null): array {
+  private function getAutomationIds(SubscriberPayload $payload, array $status = null, array $params = []): array {
+    $inTheLastSeconds = isset($params['in_the_last_seconds']) ? (int)$params['in_the_last_seconds'] : null;
     $subject = new Subject(SubscriberSubject::KEY, ['subscriber_id' => $payload->getId()]);
-    return $this->automationStorage->getAutomationIdsBySubject($subject, $status);
+    return $this->automationStorage->getAutomationIdsBySubject($subject, $status, $inTheLastSeconds);
   }
 }
