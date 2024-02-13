@@ -57,8 +57,8 @@ class SubscriberAutomationFieldsFactory {
         'mailpoet:subscriber:automations-exited',
         Field::TYPE_ENUM_ARRAY,
         __('Automations — exited', 'mailpoet'),
-        function (SubscriberPayload $payload) {
-          return $this->getAutomationIds($payload, [AutomationRun::STATUS_COMPLETE]);
+        function (SubscriberPayload $payload, array $params = []) {
+          return $this->getAutomationIds($payload, [AutomationRun::STATUS_COMPLETE], $params);
         },
         $args
       ),
