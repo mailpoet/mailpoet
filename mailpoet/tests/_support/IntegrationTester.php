@@ -341,14 +341,8 @@ class IntegrationTester extends \Codeception\Actor {
   }
 
   public function createAutomationRun(Automation $automation, $subjects = []): ?AutomationRun {
-    $trigger = array_filter($automation->getSteps(), function(Step $step): bool { return $step->getType() === Step::TYPE_TRIGGER;
-
-    });
-    $triggerKeys = array_map(function(Step $step): string { return $step->getKey();
-
-    }, $trigger);
-    $triggerKey = count($triggerKeys) > 0 ? current($triggerKeys) : '';
-
+    $trigger = array_values($automation->getTriggers())[0] ?? null;
+    $triggerKey = $trigger ? $trigger->getKey() : '';
     $automationRun = new AutomationRun(
       $automation->getId(),
       $automation->getVersionId(),
