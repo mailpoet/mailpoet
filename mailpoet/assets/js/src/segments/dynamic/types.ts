@@ -153,7 +153,7 @@ export interface WooCommerceFormItem extends FormItem {
   days?: string;
   coupon_code_ids?: string[];
   attribute_id?: string;
-  attribute_term_id?: string;
+  attribute_term_ids?: string[];
 }
 
 export interface AutomationsFormItem extends FormItem {
