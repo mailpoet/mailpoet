@@ -19,7 +19,7 @@ export function validatePurchasedWithAttribute(
   const purchasedProductWithAttributeIsInvalid =
     !formItems.operator ||
     formItems.attribute_id === undefined ||
-    formItems.attribute_term_id === undefined;
+    formItems.attribute_term_ids === undefined;
 
   return !purchasedProductWithAttributeIsInvalid;
 }
@@ -100,6 +100,7 @@ export function PurchasedWithAttributeFields({
           void updateSegmentFilter(
             {
               attribute_id: option.value,
+              attribute_term_ids: [],
             },
             filterIndex,
           );
@@ -108,24 +109,29 @@ export function PurchasedWithAttributeFields({
       {productAttributeTermsOptionsRef.current && (
         <ReactSelect
           dimension="small"
+          isMulti
           key="select-segment-product-attribute-terms"
           placeholder={__('Search attributes terms', 'mailpoet')}
           options={productAttributeTermsOptionsRef.current}
           value={filter(
             (productAttributeTermOption: { value: string; label: string }) => {
-              if (segment.attribute_term_id === undefined) {
+              if (segment.attribute_term_ids === undefined) {
                 return undefined;
               }
               return (
-                segment.attribute_term_id === productAttributeTermOption.value
+                segment.attribute_term_ids.indexOf(
+                  productAttributeTermOption.value,
+                ) !== -1
               );
             },
             productAttributeTermsOptionsRef.current,
           )}
-          onChange={(option: SelectOption): void => {
+          onChange={(options: SelectOption[]): void => {
             void updateSegmentFilter(
               {
-                attribute_term_id: option.value,
+                attribute_term_ids: (options || []).map(
+                  (x: SelectOption) => x.value,
+                ),
               },
               filterIndex,
             );
