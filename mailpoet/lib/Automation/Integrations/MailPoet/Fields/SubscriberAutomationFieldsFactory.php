@@ -48,8 +48,8 @@ class SubscriberAutomationFieldsFactory {
         'mailpoet:subscriber:automations-processing',
         Field::TYPE_ENUM_ARRAY,
         __('Automations — processing', 'mailpoet'),
-        function (SubscriberPayload $payload) {
-          return $this->getAutomationIds($payload, [AutomationRun::STATUS_RUNNING]);
+        function (SubscriberPayload $payload, array $params = []) {
+          return $this->getAutomationIds($payload, [AutomationRun::STATUS_RUNNING], $params);
         },
         $args
       ),
