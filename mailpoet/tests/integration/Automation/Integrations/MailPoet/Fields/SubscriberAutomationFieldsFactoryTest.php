@@ -96,6 +96,7 @@ class SubscriberAutomationFieldsFactoryTest extends MailPoetTest {
     $payload = new SubscriberPayload($subscriber);
     $entered = $fields['mailpoet:subscriber:automations-entered'];
     $processing = $fields['mailpoet:subscriber:automations-processing'];
+    $exited = $fields['mailpoet:subscriber:automations-exited'];
 
     // all time
     $this->assertSame(
@@ -105,6 +106,10 @@ class SubscriberAutomationFieldsFactoryTest extends MailPoetTest {
     $this->assertSame(
       [$deactivating2->getId(), $deactivating1->getId(), $active3->getId(), $active1->getId()],
       $processing->getValue($payload)
+    );
+    $this->assertSame(
+      [$active3->getId(), $active2->getId(), $draft2->getId(), $draft1->getId()],
+      $exited->getValue($payload)
     );
 
     // 3 months
@@ -116,6 +121,10 @@ class SubscriberAutomationFieldsFactoryTest extends MailPoetTest {
       [$deactivating2->getId(), $deactivating1->getId(), $active3->getId(), $active1->getId()],
       $processing->getValue($payload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS])
     );
+    $this->assertSame(
+      [$active3->getId(), $active2->getId(), $draft2->getId(), $draft1->getId()],
+      $exited->getValue($payload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS])
+    );
 
     // 3 weeks
     $this->assertSame(
@@ -126,10 +135,15 @@ class SubscriberAutomationFieldsFactoryTest extends MailPoetTest {
       [$deactivating2->getId(), $active3->getId()],
       $processing->getValue($payload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS])
     );
+    $this->assertSame(
+      [$active3->getId(), $draft2->getId()],
+      $exited->getValue($payload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS])
+    );
 
     // 3 days
     $this->assertSame([], $entered->getValue($payload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
     $this->assertSame([], $processing->getValue($payload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
+    $this->assertSame([], $exited->getValue($payload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
   }
 
   private function getFieldsMap(): array {
