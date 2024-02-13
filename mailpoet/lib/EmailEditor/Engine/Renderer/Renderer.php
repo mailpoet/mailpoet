@@ -15,7 +15,7 @@ class Renderer {
   private $blocksRegistry;
 
   /** @var ProcessManager */
-  private $preprocessManager;
+  private $processManager;
 
   /** @var SettingsController */
   private $settingsController;
@@ -33,7 +33,7 @@ class Renderer {
     SettingsController $settingsController
   ) {
     $this->cssInliner = $cssInliner;
-    $this->preprocessManager = $preprocessManager;
+    $this->processManager = $preprocessManager;
     $this->blocksRegistry = $blocksRegistry;
     $this->settingsController = $settingsController;
   }
@@ -46,7 +46,7 @@ class Renderer {
     $themeData = $this->settingsController->getTheme()->get_data();
     $contentBackground = $themeData['styles']['color']['background'] ?? $layoutStyles['background'];
     $contentFontFamily = $themeData['styles']['typography']['fontFamily'];
-    $parsedBlocks = $this->preprocessManager->preprocess($parsedBlocks, $layoutStyles);
+    $parsedBlocks = $this->processManager->preprocess($parsedBlocks, $layoutStyles);
     $renderedBody = $this->renderBlocks($parsedBlocks);
 
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
@@ -85,7 +85,7 @@ class Renderer {
 
     $templateWithContentsDom = $this->inlineCSSStyles($templateWithContents);
     $templateWithContents = $this->postProcessTemplate($templateWithContentsDom);
-    $templateWithContents = $this->preprocessManager->postprocess($templateWithContents);
+    $templateWithContents = $this->processManager->postprocess($templateWithContents);
     return [
       'html' => $templateWithContents,
       'text' => $this->renderTextVersion($templateWithContents),
