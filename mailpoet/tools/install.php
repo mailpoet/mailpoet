@@ -7,7 +7,7 @@ if (PHP_VERSION_ID < 80000) {
 }
 
 $tools = [
-  'https://github.com/composer/composer/releases/download/2.6.4/composer.phar' => 'composer.phar',
+  'https://github.com/composer/composer/releases/download/2.7.1/composer.phar' => 'composer.phar',
   'https://github.com/humbug/php-scoper/releases/download/0.17.2/php-scoper.phar' => 'php-scoper.phar',
   "https://github.com/nette/tracy/releases/download/v$tracyVersion/tracy.phar" => 'tracy.phar',
 ];
