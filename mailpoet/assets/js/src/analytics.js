@@ -123,6 +123,8 @@ export function mapFilterType(filter) {
         return 'used coupon code';
       case 'numberOfOrders':
         return 'number of orders';
+      case 'purchasedWithAttribute':
+        return 'purchased with attribute';
       default:
         return '';
     }
