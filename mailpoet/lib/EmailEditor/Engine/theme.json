@@ -24,7 +24,7 @@
     },
     "typography": {
       "dropCap": false,
-      "fontWeight": false,
+      "fontWeight": true,
       "fontFamilies": [
         {
           "name": "Arial",
