@@ -19,6 +19,9 @@ class TermParentsLoader {
    * @return int[]
    */
   public function getParentIds(array $termIds): array {
+    if (count($termIds) === 0) {
+      return [];
+    }
     $idsPlaceholder = implode(',', array_fill(0, count($termIds), '%s'));
 
     $wpdb = $this->wordPress->getWpdb();
