@@ -2,6 +2,8 @@
 
 namespace MailPoet\EmailEditor\Engine;
 
+use MailPoet\Entities\NewsletterEntity;
+
 /**
  * @phpstan-type EmailPostType array{name: string, args: array}
  * See register_post_type for details about EmailPostType args.
@@ -19,6 +21,7 @@ class EmailEditor {
   public function initialize(): void {
     do_action('mailpoet_email_editor_initialized');
     $this->registerEmailPostTypes();
+    $this->registerEmailPostSendStatus();
     $this->extendEmailPostApi();
   }
 
@@ -54,6 +57,17 @@ class EmailEditor {
       'has_archive' => true,
       'show_in_rest' => true, // Important to enable Gutenberg editor
     ];
+  }
+
+  private function registerEmailPostSendStatus(): void {
+    register_post_status( NewsletterEntity::STATUS_SENT, [
+        'public' => false,
+        'exclude_from_search' => true,
+        'internal' => true, // for now, we hide it, if we use the status in the listings we may flip this and following values
+        'show_in_admin_all_list' => false,
+        'show_in_admin_status_list' => false,
+      ]
+    );
   }
 
   public function extendEmailPostApi() {
