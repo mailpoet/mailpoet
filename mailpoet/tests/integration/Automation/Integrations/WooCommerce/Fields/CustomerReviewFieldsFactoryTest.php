@@ -38,6 +38,29 @@ class CustomerReviewFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame(3, $reviewCountField->getValue($customerPayload));
   }
 
+  public function testReviewCountFieldWithInTheLastParameter(): void {
+    $reviewCountField = $this->getFieldsMap()['woocommerce:customer:review-count'];
+
+    $getDate = function (string $date): string {
+      return (new DateTimeImmutable($date))->format('Y-m-d H:i:s');
+    };
+
+    $id = $this->tester->createCustomer('customer@example.com');
+    $this->createProductReview($id, 'customer@example.com', 1, $getDate('-1 month')); // product 1 (by ID and email)
+    $this->createProductReview(0, 'customer@example.com', 1, $getDate('-1 week')); // product 1 (by email; duplicate, but different date)
+    $this->createProductReview($id, '', 1, $getDate('-1 month')); // product 1 (by ID; duplicate, same date)
+    $this->createProductReview($id, 'customer@example.com', 2, $getDate('-1 month')); // product 2 (by ID and email)
+    $this->createProductReview(0, 'customer@example.com', 2, $getDate('-1 month')); // product 2 (by email; duplicate, same date)
+    $this->createProductReview($id, '', 2, $getDate('-1 month')); // product 2 (by ID; duplicate, same date)
+    $this->createProductReview(0, 'customer@example.com', 3, $getDate('-1 year')); // product 3 (by email; long time ago)
+
+    $customerPayload = new CustomerPayload(new WC_Customer($id));
+    $this->assertSame(3, $reviewCountField->getValue($customerPayload));
+    $this->assertSame(2, $reviewCountField->getValue($customerPayload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS]));
+    $this->assertSame(1, $reviewCountField->getValue($customerPayload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
+    $this->assertSame(0, $reviewCountField->getValue($customerPayload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
+  }
+
   public function testLastReviewDateField(): void {
     $fields = $this->getFieldsMap();
 
@@ -69,6 +92,12 @@ class CustomerReviewFieldsFactoryTest extends \MailPoetTest {
 
     $customerPayload = new CustomerPayload(new WC_Customer($id));
     $this->assertEquals(new DateTimeImmutable('2023-05-19 23:14:27'), $lastReviewDateField->getValue($customerPayload));
+  }
+
+  public function _after(): void {
+    parent::_after();
+    global $wpdb;
+    $wpdb->query("TRUNCATE $wpdb->comments");
   }
 
   private function createProductReview(int $customerId, string $customerEmail, int $productId, string $date = '2023-06-01 14:03:27'): void {
