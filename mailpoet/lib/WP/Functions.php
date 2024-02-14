@@ -961,4 +961,8 @@ class Functions {
   public function getTheContent($more_link_text = null, $strip_teaser = false, $post = null) {
     return get_the_content($more_link_text, $strip_teaser, $post);
   }
+
+  public function getTaxonomy($taxonomy) {
+    return get_taxonomy($taxonomy);
+  }
 }

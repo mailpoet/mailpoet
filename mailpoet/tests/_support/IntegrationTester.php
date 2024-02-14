@@ -149,9 +149,71 @@ class IntegrationTester extends \Codeception\Actor {
       $product->set_price($data['price']);
     }
 
+    if (isset($data['attributes'])) {
+      $product->set_attributes($data['attributes']);
+    }
+
     $product->save();
+
+    if (isset($data['attributes'])) {
+      // Manually trigger the updating of the product attributes lookup table because we can't depend on the scheduled task running by the time we need the data in tests
+      // 1 corresponds to the action to insert lookup data, \Automattic\WooCommerce\Internal\ProductAttributesLookup\LookupDataStore::ACTION_INSERT
+      do_action('woocommerce_run_product_attribute_lookup_update_callback', $product->get_id(), 1);
+    }
+
     $this->wooProductIds[] = $product->get_id();
     return $product;
+  }
+
+  public function getWooCommerceProductAttribute($name, $options = []): WC_Product_Attribute {
+    $attributeId = $this->ensureProductAttributeTaxonomyExists($name, $options);
+    $attribute = new WC_Product_Attribute();
+    $attribute->set_name('pa_' . $name);
+    $attribute->set_id($attributeId);
+    $attribute->set_options($options);
+    $attribute->set_visible(true);
+    $attribute->set_variation(false);
+    return $attribute;
+  }
+
+  public function getWooCommerceProductAttributeTermId(string $name, string $value): int {
+    $term = get_term_by('slug', $value, 'pa_' . $name);
+    if (!$term instanceof \WP_Term) {
+      throw new \Exception(sprintf("Failed to get term '%s' for attribute '%s'", $value, $name));
+    }
+    //phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    return $term->term_id;
+  }
+
+  private function ensureProductAttributeTaxonomyExists(string $name, array $options): int {
+    $attributeTaxonomy = 'pa_' . $name;
+    $attributeId = wc_attribute_taxonomy_id_by_name($name);
+    if (!$attributeId) {
+      $args = [
+        'name' => $name,
+        'slug' => wc_sanitize_taxonomy_name($name),
+        'type' => 'select', // or 'text' depending on your needs
+        'order_by' => 'menu_order',
+        'has_archives' => true,
+      ];
+
+      $attributeId = wc_create_attribute($args);
+      if (!is_int($attributeId)) {
+        throw new \Exception(sprintf("Failed to create attribute '%s'", $name));
+      }
+    }
+
+    if (!taxonomy_exists($attributeTaxonomy)) {
+      register_taxonomy($attributeTaxonomy, 'product');
+    }
+
+    foreach ($options as $option) {
+      if (!term_exists($option, $attributeTaxonomy)) {
+        $this->createWordPressTerm($option, $attributeTaxonomy);
+      }
+    }
+
+    return $attributeId;
   }
 
   /**
@@ -241,6 +303,9 @@ class IntegrationTester extends \Codeception\Actor {
     }
     if (class_exists('Automattic\WooCommerce\Admin\API\Reports\Coupons\DataStore')) {
       \Automattic\WooCommerce\Admin\API\Reports\Coupons\DataStore::sync_order_coupons($orderId);
+    }
+    if (class_exists('Automattic\WooCommerce\Admin\API\Reports\Products\DataStore')) {
+      \Automattic\WooCommerce\Admin\API\Reports\Products\DataStore::sync_order_products($orderId);
     }
   }
 

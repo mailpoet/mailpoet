@@ -30,6 +30,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfReviews;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchaseDate;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchasedWithAttribute;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
@@ -128,6 +129,8 @@ class FilterFactory {
   /** @var NumberOfClicks */
   private $numberOfClicks;
 
+  private WooCommercePurchasedWithAttribute $wooCommercePurchasedWithAttribute;
+
   public function __construct(
     EmailAction $emailAction,
     EmailActionClickAny $emailActionClickAny,
@@ -158,7 +161,8 @@ class FilterFactory {
     SubscriberDateField $subscriberDateField,
     AutomationsEvents $automationsEvents,
     EmailsReceived $emailsReceived,
-    NumberOfClicks $numberOfClicks
+    NumberOfClicks $numberOfClicks,
+    WooCommercePurchasedWithAttribute $wooCommercePurchasedWithAttribute
   ) {
     $this->emailAction = $emailAction;
     $this->userRole = $userRole;
@@ -190,6 +194,7 @@ class FilterFactory {
     $this->wooCommerceFirstOrder = $wooCommerceFirstOrder;
     $this->emailsReceived = $emailsReceived;
     $this->numberOfClicks = $numberOfClicks;
+    $this->wooCommercePurchasedWithAttribute = $wooCommercePurchasedWithAttribute;
   }
 
   public function getFilterForFilterEntity(DynamicSegmentFilterEntity $filter): Filter {
@@ -295,6 +300,8 @@ class FilterFactory {
       return $this->wooCommerceUsedCouponCode;
     } elseif ($action === WooCommerceFirstOrder::ACTION) {
       return $this->wooCommerceFirstOrder;
+    } elseif ($action === WooCommercePurchasedWithAttribute::ACTION) {
+      return $this->wooCommercePurchasedWithAttribute;
     }
     return $this->wooCommerceCategory;
   }
