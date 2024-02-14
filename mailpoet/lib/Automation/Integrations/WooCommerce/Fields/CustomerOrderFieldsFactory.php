@@ -138,9 +138,15 @@ class CustomerOrderFieldsFactory {
         'woocommerce:customer:purchased-tags',
         Field::TYPE_ENUM_ARRAY,
         __('Purchased tags', 'mailpoet'),
-        function (CustomerPayload $payload) {
+        function (CustomerPayload $payload, array $params = []) {
           $customer = $payload->getCustomer();
-          return $customer ? $this->getOrderProductTermIds($customer, 'product_tag') : [];
+          if (!$customer) {
+            return [];
+          }
+          $inTheLastSeconds = isset($params['in_the_last_seconds']) ? (int)$params['in_the_last_seconds'] : null;
+          $ids = $this->getOrderProductTermIds($customer, 'product_tag', $inTheLastSeconds);
+          sort($ids);
+          return $ids;
         },
         [
           'options' => $this->termOptionsBuilder->getTermOptions('product_tag'),
