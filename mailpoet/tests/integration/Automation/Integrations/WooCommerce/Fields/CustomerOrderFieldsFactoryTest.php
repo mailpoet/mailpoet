@@ -247,24 +247,37 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $id = $this->tester->createCustomer('customer@example.com');
     $id2 = $this->tester->createCustomer('other_user@example.com');
 
-    $o1 = $this->createOrder($id, 123);
+    $getDate = function (string $date): string {
+      return (new DateTimeImmutable($date))->format('Y-m-d H:i:s');
+    };
+
+    $o1 = $this->createOrder($id, 123, $getDate('-1 month'));
     $o1->add_product($p1);
     $o1->add_product($p2);
 
-    $o2 = $this->createOrder($id, 999);
+    $o2 = $this->createOrder($id, 999, $getDate('-1 week'));
     $o2->add_product($p3);
 
-    $o3 = $this->createOrder($id2, 12345); // other user
+    $o3 = $this->createOrder($id2, 12345, $getDate('-1 day')); // other user
     $o3->add_product($p4);
 
     $customerPayload = new CustomerPayload(new WC_Customer($id));
-    $value = $purchasedTags->getValue($customerPayload);
 
-    $this->assertIsArray($value);
-    $this->assertCount(2, $value);
-    $this->assertContains($tag1Id, $value);
-    $this->assertContains($tag2Id, $value);
-    $this->assertNotContains($tag3Id, $value);
+    // all time
+    $value = $purchasedTags->getValue($customerPayload);
+    $this->assertSame([$tag1Id, $tag2Id], $value);
+
+    // 3 months
+    $value = $purchasedTags->getValue($customerPayload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS]);
+    $this->assertSame([$tag1Id, $tag2Id], $value);
+
+    // 3 weeks
+    $value = $purchasedTags->getValue($customerPayload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]);
+    $this->assertSame([$tag2Id], $value);
+
+    // 3 days
+    $value = $purchasedTags->getValue($customerPayload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]);
+    $this->assertSame([], $value);
   }
 
   public function testPurchasedCategoriesAndTagsForProductVariations(): void {
