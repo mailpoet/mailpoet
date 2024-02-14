@@ -8,6 +8,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\WpPostEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use MailPoetVendor\Doctrine\ORM\Events;
 
 require_once __DIR__ . '/EventListenersBaseTest.php';
 
@@ -20,7 +21,7 @@ class NewsletterListenerTest extends EventListenersBaseTest {
     $this->wp = $this->diContainer->get(WPFunctions::class);
     $newsletterListener = new NewsletterListener($this->wp);
     $originalListener = $this->diContainer->get(NewsletterListener::class);
-    $this->replaceListeners($originalListener, $newsletterListener);
+    $this->replaceListeners($originalListener, $newsletterListener, [Events::preUpdate]);
   }
 
   public function testItUpdatesPost() {
