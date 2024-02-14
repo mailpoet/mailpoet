@@ -16,10 +16,6 @@ class NewsletterListener {
     $this->wp = $wp;
   }
 
-  public function prePersist(): void {
-    // the tests fail without this method
-  }
-
   public function preUpdate(LifecycleEventArgs $eventArgs): void {
     $entity = $eventArgs->getEntity();
     if (!$entity instanceof NewsletterEntity) {
