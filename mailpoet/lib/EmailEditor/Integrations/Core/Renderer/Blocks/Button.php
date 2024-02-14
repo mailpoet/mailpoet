@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 
 /**
  * Renders a button block.
@@ -17,16 +18,13 @@ class Button implements BlockRenderer {
     if (empty($parsedBlock['innerHTML'])) {
       return '';
     }
-    $buttonDom = new \DOMDocument();
-    $buttonDom->loadHTML($parsedBlock['innerHTML']);
-    $buttonLink = $buttonDom->getElementsByTagName('a')->item(0);
+    $domHelper = new DomDocumentHelper($parsedBlock['innerHTML']);
+    $buttonLink = $domHelper->findElement('a');
 
-    if (!$buttonLink instanceof \DOMElement) {
-      return '';
-    }
+    if (!$buttonLink) return '';
 
-    $buttonOriginalWrapper = $buttonDom->getElementsByTagName('div')->item(0);
-    $buttonClasses = $buttonOriginalWrapper instanceof \DOMElement ? $buttonOriginalWrapper->getAttribute('class') : '';
+    $buttonOriginalWrapper = $domHelper->findElement('div');
+    $buttonClasses = $buttonOriginalWrapper ? $domHelper->getAttributeValue($buttonOriginalWrapper, 'class') : '';
 
     $markup = $this->getMarkup();
     $markup = str_replace('{classes}', $buttonClasses, $markup);

@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 
 class Image implements BlockRenderer {
   public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
@@ -169,28 +170,28 @@ class Image implements BlockRenderer {
    */
   private function parseBlockContent(string $blockContent): ?array {
     // If block's image is not set, we don't need to parse the content
-    if (!$blockContent) return null;
-    // Suppress warnings for invalid HTML tags
-    libxml_use_internal_errors(true);
-    $dom = new \DOMDocument();
-    $dom->loadHTML($blockContent);
-    $figureTag = $dom->getElementsByTagName('figure')->item(0);
-    libxml_clear_errors();
+    if (empty($blockContent)) return null;
 
+    $domHelper = new DomDocumentHelper($blockContent);
+
+    $figureTag = $domHelper->findElement('figure');
     if (!$figureTag) return null;
 
-    $imgTag = $figureTag->getElementsByTagName('img')->item(0);
-    $image = $dom->saveHTML($imgTag);
-    if (!$image) return null;
+    $imgTag = $domHelper->findElement('img');
+    if (!$imgTag) return null;
 
-    $figcaption = $figureTag->getElementsByTagName('figcaption')->item(0);
-    $figcaptionText = $figcaption ? $dom->saveHTML($figcaption) : '';
-    $figcaptionText = str_replace(['<figcaption', '</figcaption>'], ['<span', '</span>'], (string)$figcaptionText);
+    $imageSrc = $domHelper->getAttributeValue($imgTag, 'src');
+    $imageHtml = $domHelper->getOuterHtml($imgTag);
+
+    $figcaption = $domHelper->findElement('figcaption');
+    $figcaptionHtml = $figcaption ? $domHelper->getOuterHtml($figcaption) : '';
+    $figcaptionHtml = str_replace(['<figcaption', '</figcaption>'], ['<span', '</span>'], $figcaptionHtml);
+
 
     return [
-      'imageUrl' => $imgTag ? $imgTag->getAttribute('src') : '',
-      'image' => $image,
-      'caption' => $figcaptionText ?: '',
+      'imageUrl' => $imageSrc ?: '',
+      'image' => $imageHtml,
+      'caption' => $figcaptionHtml ?: '',
     ];
   }
 }
