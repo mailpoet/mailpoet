@@ -119,13 +119,16 @@ class CustomerOrderFieldsFactory {
         'woocommerce:customer:purchased-categories',
         Field::TYPE_ENUM_ARRAY,
         __('Purchased categories', 'mailpoet'),
-        function (CustomerPayload $payload) {
+        function (CustomerPayload $payload, array $params = []) {
           $customer = $payload->getCustomer();
           if (!$customer) {
             return [];
           }
-          $ids = $this->getOrderProductTermIds($customer, 'product_cat');
-          return array_merge($ids, $this->termParentsLoader->getParentIds($ids));
+          $inTheLastSeconds = isset($params['in_the_last_seconds']) ? (int)$params['in_the_last_seconds'] : null;
+          $ids = $this->getOrderProductTermIds($customer, 'product_cat', $inTheLastSeconds);
+          $ids = array_merge($ids, $this->termParentsLoader->getParentIds($ids));
+          sort($ids);
+          return $ids;
         },
         [
           'options' => $this->termOptionsBuilder->getTermOptions('product_cat'),
@@ -252,7 +255,7 @@ class CustomerOrderFieldsFactory {
     return $date ? new DateTimeImmutable($date, new DateTimeZone('GMT')) : null;
   }
 
-  private function getOrderProductTermIds(WC_Customer $customer, string $taxonomy): array {
+  private function getOrderProductTermIds(WC_Customer $customer, string $taxonomy, int $inTheLastSeconds = null): array {
     $wpdb = $this->wordPress->getWpdb();
 
     $statuses = array_map(function (string $status) {
@@ -262,13 +265,16 @@ class CustomerOrderFieldsFactory {
 
     // get all product categories that the customer has purchased
     if ($this->wooCommerce->isWooCommerceCustomOrdersTableEnabled()) {
+      $inTheLastFilter = isset($inTheLastSeconds) ? 'AND o.date_created_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)' : '';
       $orderIdsSubquery = "
         SELECT o.id
         FROM {$wpdb->prefix}wc_orders o
         WHERE o.status IN ($statusesPlaceholder)
         AND o.customer_id = %d
+        $inTheLastFilter
       ";
     } else {
+      $inTheLastFilter = isset($inTheLastSeconds) ? 'AND p.post_date_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)' : '';
       $orderIdsSubquery = "
         SELECT p.ID
         FROM {$wpdb->prefix}posts p
@@ -276,6 +282,7 @@ class CustomerOrderFieldsFactory {
         WHERE p.post_type = 'shop_order'
         AND p.post_status IN ($statusesPlaceholder)
         AND pm_user.meta_value = %d
+        $inTheLastFilter
       ";
     }
 
@@ -290,7 +297,15 @@ class CustomerOrderFieldsFactory {
       WHERE tt.taxonomy = %s
       ORDER BY tt.term_id ASC
     ";
-    $statement = (string)$wpdb->prepare($query, array_merge($statuses, [$customer->get_id(), $taxonomy]));
+    $statement = (string)$wpdb->prepare(
+      $query,
+      array_merge(
+        $statuses,
+        [$customer->get_id()],
+        isset($inTheLastSeconds) ? [$inTheLastSeconds] : [],
+        [$taxonomy]
+      )
+    );
 
     return array_map('intval', $wpdb->get_col($statement));
   }

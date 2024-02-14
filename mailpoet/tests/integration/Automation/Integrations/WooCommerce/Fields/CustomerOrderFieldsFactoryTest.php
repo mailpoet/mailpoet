@@ -174,29 +174,38 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $id = $this->tester->createCustomer('customer@example.com');
     $id2 = $this->tester->createCustomer('other_user@example.com');
 
-    $o1 = $this->createOrder($id, 123);
+    $getDate = function (string $date): string {
+      return (new DateTimeImmutable($date))->format('Y-m-d H:i:s');
+    };
+
+    $o1 = $this->createOrder($id, 123, $getDate('-1 month'));
     $o1->add_product($p1);
     $o1->add_product($p2);
 
-    $o2 = $this->createOrder($id, 999);
+    $o2 = $this->createOrder($id, 999, $getDate('-1 week'));
     $o2->add_product($p3);
     $o2->add_product($p4);
 
-    $o3 = $this->createOrder($id2, 12345); // other user
+    $o3 = $this->createOrder($id2, 12345, $getDate('-1 day')); // other user
     $o3->add_product($p5);
 
     $customerPayload = new CustomerPayload(new WC_Customer($id));
-    $value = $purchasedCategories->getValue($customerPayload);
 
-    $this->assertIsArray($value);
-    $this->assertCount(5, $value);
-    $this->assertContains($uncategorizedId, $value);
-    $this->assertContains($cat1Id, $value); // auto-included parent
-    $this->assertContains($cat2Id, $value);
-    $this->assertContains($subCat1Id, $value); // auto-included parent
-    $this->assertContains($subSubCat1Id, $value);
-    $this->assertNotContains($cat3Id, $value);
-    $this->assertNotContains($subCat2Id, $value);
+    // all time
+    $value = $purchasedCategories->getValue($customerPayload);
+    $this->assertSame([$uncategorizedId, $cat1Id, $cat2Id, $subCat1Id, $subSubCat1Id], $value);
+
+    // 3 months
+    $value = $purchasedCategories->getValue($customerPayload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS]);
+    $this->assertSame([$uncategorizedId, $cat1Id, $cat2Id, $subCat1Id, $subSubCat1Id], $value);
+
+    // 3 weeks
+    $value = $purchasedCategories->getValue($customerPayload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]);
+    $this->assertSame([$cat1Id, $cat2Id, $subCat1Id, $subSubCat1Id], $value);
+
+    // 3 days
+    $value = $purchasedCategories->getValue($customerPayload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]);
+    $this->assertSame([], $value);
   }
 
   public function testPurchasedTags(): void {
