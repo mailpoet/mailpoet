@@ -18,8 +18,9 @@ export function validatePurchasedWithAttribute(
 ): boolean {
   const purchasedProductWithAttributeIsInvalid =
     !formItems.operator ||
-    formItems.attribute_id === undefined ||
-    formItems.attribute_term_ids === undefined;
+    formItems.attribute_taxonomy_slug === undefined ||
+    !Array.isArray(formItems.attribute_term_ids) === undefined ||
+    formItems.attribute_term_ids.length === 0;
 
   return !purchasedProductWithAttributeIsInvalid;
 }
@@ -40,7 +41,7 @@ export function PurchasedWithAttributeFields({
 
   const productAttributesOptions = Object.values(productAttributes).map(
     (attribute) => ({
-      value: attribute.id,
+      value: attribute.taxonomy,
       label: attribute.label,
     }),
   );
@@ -48,18 +49,18 @@ export function PurchasedWithAttributeFields({
   const productAttributeTermsOptionsRef = useRef(null);
 
   useEffect(() => {
-    if (segment.attribute_id === undefined) {
+    if (segment.attribute_taxonomy_slug === undefined) {
       productAttributeTermsOptionsRef.current = null;
       return;
     }
 
     productAttributeTermsOptionsRef.current = productAttributes[
-      segment.attribute_id
+      segment.attribute_taxonomy_slug
     ].terms.map((term) => ({
       value: term.term_id,
       label: term.name,
     }));
-  }, [segment.attribute_id, productAttributes]);
+  }, [segment.attribute_taxonomy_slug, productAttributes]);
 
   useEffect(() => {
     if (
@@ -91,15 +92,17 @@ export function PurchasedWithAttributeFields({
         placeholder={__('Search attributes', 'mailpoet')}
         options={productAttributesOptions}
         value={filter((productAttributeOption) => {
-          if (segment.attribute_id === undefined) {
+          if (segment.attribute_taxonomy_slug === undefined) {
             return undefined;
           }
-          return segment.attribute_id === productAttributeOption.value;
+          return (
+            segment.attribute_taxonomy_slug === productAttributeOption.value
+          );
         }, productAttributesOptions)}
         onChange={(option: SelectOption): void => {
           void updateSegmentFilter(
             {
-              attribute_id: option.value,
+              attribute_taxonomy_slug: option.value,
               attribute_term_ids: [],
             },
             filterIndex,
