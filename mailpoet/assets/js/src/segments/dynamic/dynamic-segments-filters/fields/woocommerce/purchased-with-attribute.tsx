@@ -57,7 +57,7 @@ export function PurchasedWithAttributeFields({
     productAttributeTermsOptionsRef.current = productAttributes[
       segment.attribute_taxonomy_slug
     ].terms.map((term) => ({
-      value: term.term_id,
+      value: term.term_id.toString(),
       label: term.name,
     }));
   }, [segment.attribute_taxonomy_slug, productAttributes]);
