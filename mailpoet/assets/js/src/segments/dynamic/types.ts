@@ -152,7 +152,7 @@ export interface WooCommerceFormItem extends FormItem {
   count?: string;
   days?: string;
   coupon_code_ids?: string[];
-  attribute_id?: string;
+  attribute_taxonomy_slug?: string;
   attribute_term_ids?: string[];
 }
 
@@ -231,6 +231,7 @@ export type WindowSubscriptionProducts = {
 export type WindowProductAttributes = {
   id: string;
   label: string;
+  taxonomy: string;
   terms: [];
 }[];
 
