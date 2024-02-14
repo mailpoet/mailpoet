@@ -48,7 +48,9 @@ class Emoji {
   public function encodeForUTF8Column($table, $field, $value) {
     global $wpdb;
     $charset = $wpdb->get_col_charset($table, $field);
-    if ($charset === 'utf8') {
+    // utf8 doesn't support emojis, so we need to encode them
+    // utf8 was an alias for utf8mb3, but it was dropped in MySQL 8.0.28 so we need to check both
+    if ($charset === 'utf8' || $charset === 'utf8mb3') {
       $value = $this->wp->wpEncodeEmoji($value);
     }
     return $value;
