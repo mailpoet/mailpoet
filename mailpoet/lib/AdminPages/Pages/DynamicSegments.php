@@ -127,24 +127,26 @@ class DynamicSegments {
     }
 
     $data['product_attributes'] = [];
-    $productAttributes = $this->woocommerceHelper->wcGetAttributeTaxonomies();
+    if ($this->woocommerceHelper->isWooCommerceActive()) {
+      $productAttributes = $this->woocommerceHelper->wcGetAttributeTaxonomies();
 
-    foreach ($productAttributes as $attribute) {
-      $taxonomy = 'pa_' . $attribute->attribute_name;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      $attributeTerms = $this->wp->getTerms(
-        [
-          'taxonomy' => $taxonomy,
-          'hide_empty' => false,
-        ]
-      );
+      foreach ($productAttributes as $attribute) {
+        $taxonomy = 'pa_' . $attribute->attribute_name;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        $attributeTerms = $this->wp->getTerms(
+          [
+            'taxonomy' => $taxonomy,
+            'hide_empty' => false,
+          ]
+        );
 
-      if (!isset($attributeTerms['errors'])) {
-        $data['product_attributes'][$taxonomy] = [ // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          'id' => $attribute->attribute_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          'label' => $attribute->attribute_label, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-          'terms' => $attributeTerms,
-          'taxonomy' => $taxonomy,
-        ];
+        if (!isset($attributeTerms['errors'])) {
+          $data['product_attributes'][$taxonomy] = [ // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+            'id' => $attribute->attribute_id, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+            'label' => $attribute->attribute_label, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+            'terms' => $attributeTerms,
+            'taxonomy' => $taxonomy,
+          ];
+        }
       }
     }
 
