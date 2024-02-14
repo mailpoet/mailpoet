@@ -29,6 +29,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfReviews;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchaseDate;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchasedWithAttribute;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTotalSpent;
@@ -509,6 +510,10 @@ class FilterDataMapper {
       $filterData['coupon_code_ids'] = $data['coupon_code_ids'];
       $filterData['days'] = $data['days'];
       $filterData['timeframe'] = $data['timeframe'];
+    } elseif ($data['action'] === WooCommercePurchasedWithAttribute::ACTION) {
+      $filterData['operator'] = $data['operator'];
+      $filterData['attribute_taxonomy_slug'] = $data['attribute_taxonomy_slug'];
+      $filterData['attribute_term_ids'] = $data['attribute_term_ids'];
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }
