@@ -1,5 +1,5 @@
 import { ComponentType } from 'react';
-import { Step, Automation } from '../components/automation/types';
+import { Step, Automation, Filter } from '../components/automation/types';
 
 export interface AutomationEditorWindow extends Window {
   mailpoet_automation_registry: Registry;
@@ -82,6 +82,13 @@ export type StepType = {
   createStep?: (step: Step, state: State) => Step;
 };
 
+export type FilterType = {
+  key: string;
+  fieldType: Registry['fields'][string]['type'];
+  formatValue: (filter: Filter, field: Registry['fields'][string]) => string;
+  edit: ComponentType;
+};
+
 export type StepErrors = {
   step_id: string;
   message: string;
@@ -98,6 +105,7 @@ export type State = {
   registry: Registry;
   context: Context;
   stepTypes: Record<string, StepType>;
+  filterTypes: Record<string, FilterType>;
   automationData: Automation;
   selectedStep: Step | undefined;
   inserterSidebar: {

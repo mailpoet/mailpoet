@@ -10,6 +10,7 @@ import {
   StepErrors,
   StepType,
   State as EditorState,
+  FilterType,
 } from './types';
 import { Item } from '../components/inserter/item';
 import { Step, Automation } from '../components/automation/types';
@@ -91,6 +92,13 @@ export function getStepById(state: State, id: string): Step | undefined {
 
 export function getStepType(state: State, key: string): StepType | undefined {
   return state.stepTypes[key] ?? undefined;
+}
+
+export function getFilterType(
+  state: State,
+  key: string,
+): FilterType | undefined {
+  return state.filterTypes[key] ?? undefined;
 }
 
 export function getSelectedStepType(state: State): StepType | undefined {
