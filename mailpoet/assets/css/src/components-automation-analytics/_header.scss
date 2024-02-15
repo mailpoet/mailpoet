@@ -26,6 +26,10 @@
 
   .woocommerce-filters-filter {
     width: 100%;
+
+    * {
+      box-sizing: border-box;
+    }
   }
 
   .components-dropdown {
@@ -38,9 +42,9 @@
 .admin_page_mailpoet-automation-analytics {
   .woocommerce-filters-date__content .components-popover__content {
     padding: 0;
-  }
 
-  * {
-    box-sizing: border-box;
+    * {
+      box-sizing: border-box;
+    }
   }
 }
