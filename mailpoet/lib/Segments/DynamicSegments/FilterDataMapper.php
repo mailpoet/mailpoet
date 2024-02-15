@@ -54,18 +54,22 @@ class FilterDataMapper {
   /** @var WooCommerceUsedCouponCode */
   private $wooCommerceUsedCouponCode;
 
+  private WooCommercePurchasedWithAttribute $wooCommercePurchasedWithAttribute;
+
   public function __construct(
     WPFunctions $wp,
     DateFilterHelper $dateFilterHelper,
     FilterHelper $filterHelper,
     WooCommerceNumberOfReviews $wooCommerceNumberOfReviews,
-    WooCommerceUsedCouponCode $wooCommerceUsedCouponCode
+    WooCommerceUsedCouponCode $wooCommerceUsedCouponCode,
+    WooCommercePurchasedWithAttribute $wooCommercePurchasedWithAttribute
   ) {
     $this->wp = $wp;
     $this->dateFilterHelper = $dateFilterHelper;
     $this->filterHelper = $filterHelper;
     $this->wooCommerceNumberOfReviews = $wooCommerceNumberOfReviews;
     $this->wooCommerceUsedCouponCode = $wooCommerceUsedCouponCode;
+    $this->wooCommercePurchasedWithAttribute = $wooCommercePurchasedWithAttribute;
   }
 
   /**
@@ -511,6 +515,7 @@ class FilterDataMapper {
       $filterData['days'] = $data['days'];
       $filterData['timeframe'] = $data['timeframe'];
     } elseif ($data['action'] === WooCommercePurchasedWithAttribute::ACTION) {
+      $this->wooCommercePurchasedWithAttribute->validateFilterData($data);
       $filterData['operator'] = $data['operator'];
       $filterData['attribute_taxonomy_slug'] = $data['attribute_taxonomy_slug'];
       $filterData['attribute_term_ids'] = $data['attribute_term_ids'];
