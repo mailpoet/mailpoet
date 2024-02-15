@@ -68,7 +68,7 @@ class CustomerReviewFieldsFactory {
         $sql,
         array_merge(
           [$customer->get_id(), $customer->get_email()],
-          isset($inTheLastSeconds) ? [$inTheLastSeconds] : []
+          isset($inTheLastSeconds) ? [intval($inTheLastSeconds)] : []
         )
       )
     );

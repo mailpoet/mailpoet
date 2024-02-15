@@ -196,7 +196,7 @@ class AutomationStorage {
       array_merge(
         [$subject->getHash()],
         $runStatus ?? [],
-        isset($inTheLastSeconds) ? [$inTheLastSeconds] : [],
+        isset($inTheLastSeconds) ? [intval($inTheLastSeconds)] : [],
       )
     );
     return array_map('intval', $this->wpdb->get_col($query));
