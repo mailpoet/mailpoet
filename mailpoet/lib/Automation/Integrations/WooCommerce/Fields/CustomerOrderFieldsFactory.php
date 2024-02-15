@@ -308,8 +308,8 @@ class CustomerOrderFieldsFactory {
       array_merge(
         $statuses,
         [$customer->get_id()],
-        isset($inTheLastSeconds) ? [$inTheLastSeconds] : [],
-        [$taxonomy]
+        isset($inTheLastSeconds) ? [intval($inTheLastSeconds)] : [],
+        [(string)($taxonomy)]
       )
     );
 
