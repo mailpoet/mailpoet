@@ -86,7 +86,11 @@ export type FilterType = {
   key: string;
   fieldType: Registry['fields'][string]['type'];
   formatValue: (filter: Filter, field: Registry['fields'][string]) => string;
-  edit: ComponentType;
+  edit: ComponentType<{
+    field: Registry['fields'][string];
+    args: Record<string, unknown>;
+    onChange: (args: unknown) => void;
+  }>;
 };
 
 export type StepErrors = {

@@ -10,6 +10,7 @@ import { storeName } from './constants';
 import { getInitialState } from './initial-state';
 import { reducer } from './reducer';
 import * as selectors from './selectors';
+import { initializeFilters } from '../filters';
 
 const getConfig = () =>
   ({
@@ -30,6 +31,7 @@ export const createStore = () => {
   ) as EditorStoreConfig;
   const store = createReduxStore(storeName, storeConfig);
   register(store);
+  initializeFilters();
   return store;
 };
 
