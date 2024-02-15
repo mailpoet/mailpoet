@@ -3,6 +3,7 @@
 namespace integration\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchasedWithAttribute;
 
 /**
@@ -124,6 +125,27 @@ class WooCommercePurchasedWithAttributeTest extends \MailPoetTest {
       'attribute' => 'pa_color',
       'terms' => ['blue', 'red'],
     ], $lookupData);
+  }
+
+  public function testItValidatesOperator(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing operator');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_OPERATOR);
+    $this->filter->validateFilterData(['operator' => '', 'attribute_taxonomy_slug' => 'pa_color', 'attribute_term_ids' => ['1']]);
+  }
+
+  public function testItValidatesAttribute(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing attribute');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->filter->validateFilterData(['operator' => 'any', 'attribute_taxonomy_slug' => '', 'attribute_term_ids' => ['1']]);
+  }
+
+  public function testItValidatesTerms(): void {
+    $this->expectException(InvalidFilterException::class);
+    $this->expectExceptionMessage('Missing attribute terms');
+    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
+    $this->filter->validateFilterData(['operator' => 'any', 'attribute_taxonomy_slug' => 'pa_color', 'attribute_term_ids' => []]);
   }
 
   private function assertFilterReturnsEmails(string $operator, string $attributeTaxonomySlug, array $termIds, array $expectedEmails): void {

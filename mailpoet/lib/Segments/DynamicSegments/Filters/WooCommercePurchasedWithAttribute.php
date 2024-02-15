@@ -4,6 +4,7 @@ namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
+use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
@@ -29,6 +30,8 @@ class WooCommercePurchasedWithAttribute implements Filter {
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): QueryBuilder {
     $filterData = $filter->getFilterData();
+    $this->validateFilterData((array)$filterData->getData());
+
     $operator = $filterData->getOperator();
     $attributeTaxonomySlug = $filterData->getStringParam('attribute_taxonomy_slug');
     $attributeTermIds = $filterData->getArrayParam('attribute_term_ids');
@@ -101,5 +104,25 @@ class WooCommercePurchasedWithAttribute implements Filter {
     }, $terms);
 
     return $lookupData;
+  }
+
+  public function validateFilterData(array $data): void {
+    $operator = $data['operator'] ?? null;
+    if (
+      !in_array($operator, [
+        DynamicSegmentFilterData::OPERATOR_ANY,
+        DynamicSegmentFilterData::OPERATOR_ALL,
+        DynamicSegmentFilterData::OPERATOR_NONE,
+      ])
+    ) {
+      throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
+    }
+    $attribute_taxonomy_slug = $data['attribute_taxonomy_slug'] ?? null;
+    if (!is_string($attribute_taxonomy_slug) || strlen($attribute_taxonomy_slug) === 0) {
+      throw new InvalidFilterException('Missing attribute', InvalidFilterException::MISSING_VALUE);
+    }
+    if (!isset($data['attribute_term_ids']) || !is_array($data['attribute_term_ids']) || count($data['attribute_term_ids']) === 0) {
+      throw new InvalidFilterException('Missing attribute terms', InvalidFilterException::MISSING_VALUE);
+    }
   }
 }
