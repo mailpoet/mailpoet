@@ -71,6 +71,14 @@ export function reducer(state: State, action): State {
           [action.stepType.key]: action.stepType,
         },
       };
+    case 'REGISTER_FILTER_TYPE':
+      return {
+        ...state,
+        filterTypes: {
+          ...state.filterTypes,
+          [action.filterType.key]: action.filterType,
+        },
+      };
     case 'UPDATE_STEP_ARGS': {
       const prevArgs = state.automationData.steps[action.stepId].args ?? {};
 

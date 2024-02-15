@@ -7,6 +7,7 @@ export const getInitialState = (): State => ({
   registry: { ...window.mailpoet_automation_registry },
   context: { ...window.mailpoet_automation_context },
   stepTypes: {},
+  filterTypes: {},
   automationData: { ...window.mailpoet_automation },
   selectedStep: undefined,
   inserterSidebar: {

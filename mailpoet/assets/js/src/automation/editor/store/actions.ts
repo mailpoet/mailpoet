@@ -241,6 +241,13 @@ export function registerStepType(stepType) {
   };
 }
 
+export function registerFilterType(filterType) {
+  return {
+    type: 'REGISTER_FILTER_TYPE',
+    filterType,
+  };
+}
+
 export function updateStepArgs(stepId, name, value) {
   return {
     type: 'UPDATE_STEP_ARGS',
