@@ -519,6 +519,9 @@ class FilterDataMapper {
       $filterData['operator'] = $data['operator'];
       $filterData['attribute_taxonomy_slug'] = $data['attribute_taxonomy_slug'];
       $filterData['attribute_term_ids'] = $data['attribute_term_ids'];
+      $filterData['attribute_type'] = $data['attribute_type'];
+      $filterData['attribute_local_name'] = $data['attribute_local_name'];
+      $filterData['attribute_local_values'] = $data['attribute_local_values'];
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }

@@ -148,6 +148,16 @@ class DynamicSegments {
           ];
         }
       }
+
+      // Fetch local attributes used for product variations
+      $data['local_product_attributes'] = [];
+      $localAttributes = $this->getLocalAttributesUsedInProductVariations();
+      foreach ($localAttributes as $localAttribute => $values) {
+        $data['local_product_attributes'][$localAttribute] = [
+          'name' => $localAttribute,
+          'values' => $values,
+        ];
+      }
     }
 
     $data['product_categories'] = $this->wpPostListLoader->getWooCommerceCategories();
@@ -202,6 +212,35 @@ class DynamicSegments {
 
     $this->assetsController->setupDynamicSegmentsDependencies();
     $this->pageRenderer->displayPage('segments/dynamic.html', $data);
+  }
+
+  private function getLocalAttributesUsedInProductVariations(): array {
+    $attributes = [];
+
+    if (!$this->woocommerceHelper->isWooCommerceActive()) {
+      return $attributes;
+    }
+    global $wpdb;
+
+    $query = "
+    SELECT DISTINCT pm.meta_key, pm.meta_value
+    FROM {$wpdb->postmeta} pm
+    INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+    WHERE pm.meta_key LIKE 'attribute_%'
+    AND p.post_type = 'product_variation'
+    GROUP BY pm.meta_key, pm.meta_value";
+
+    $results = $wpdb->get_results($query, ARRAY_A);
+
+    foreach ($results as $result) {
+      $attribute = substr($result['meta_key'], 10);
+      if (!isset($attributes[$attribute])) {
+        $attributes[$attribute] = [];
+      }
+      $attributes[$attribute][] = $result['meta_value'];
+    }
+
+    return $attributes;
   }
 
   private function getNewslettersList(): array {

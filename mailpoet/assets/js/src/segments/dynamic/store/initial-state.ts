@@ -28,6 +28,7 @@ export const getInitialState = (): StateType => ({
   membershipPlans: window.mailpoet_membership_plans,
   subscriptionProducts: window.mailpoet_subscription_products,
   productAttributes: window.mailpoet_product_attributes,
+  localProductAttributes: window.mailpoet_local_product_attributes,
   productCategories: window.mailpoet_product_categories,
   newslettersList: window.mailpoet_newsletters_list,
   wordpressRoles: window.wordpress_editable_roles_list,

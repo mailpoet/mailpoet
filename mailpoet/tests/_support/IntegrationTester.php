@@ -161,6 +161,12 @@ class IntegrationTester extends \Codeception\Actor {
       do_action('woocommerce_run_product_attribute_lookup_update_callback', $product->get_id(), 1);
     }
 
+    if (isset($data['local_attributes'])) {
+      foreach ($data['local_attributes'] as $name => $value) {
+        update_post_meta($product->get_id(), sprintf('attribute_%s', $name), $value);
+      }
+    }
+
     $this->wooProductIds[] = $product->get_id();
     return $product;
   }

@@ -11,14 +11,13 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommercePurchasedWithAttribute;
  */
 class WooCommercePurchasedWithAttributeTest extends \MailPoetTest {
 
-
   private WooCommercePurchasedWithAttribute $filter;
 
   public function _before(): void {
     $this->filter = $this->diContainer->get(WooCommercePurchasedWithAttribute::class);
   }
 
-  public function testItWorksWithAnyOperator(): void {
+  public function testItWorksWithAnyOperatorForTaxonomies(): void {
     $product1 = $this->tester->createWooCommerceProduct([
       'price' => 20,
       'attributes' => [
@@ -41,10 +40,10 @@ class WooCommercePurchasedWithAttributeTest extends \MailPoetTest {
 
     $this->createOrder($customer1, [$product1]);
     $this->createOrder($customer2, [$product2]);
-    $this->assertFilterReturnsEmails('any', 'pa_color', [$blueTermId, $redTermId], ['customer1@example.com', 'customer2@example.com']);
+    $this->assertFilterReturnsEmailsForTaxonomyAttributes('any', 'pa_color', [$blueTermId, $redTermId], ['customer1@example.com', 'customer2@example.com']);
   }
 
-  public function testItWorksWithNoneOperator(): void {
+  public function testItWorksWithNoneOperatorForTaxonomies(): void {
     $product1 = $this->tester->createWooCommerceProduct([
       'price' => 20,
       'attributes' => [
@@ -67,10 +66,10 @@ class WooCommercePurchasedWithAttributeTest extends \MailPoetTest {
 
     $this->createOrder($customer1, [$product1]);
     $this->createOrder($customer2, [$product2]);
-    $this->assertFilterReturnsEmails('none', 'pa_color', [$blueTermId, $redTermId], ['customer3@example.com']);
+    $this->assertFilterReturnsEmailsForTaxonomyAttributes('none', 'pa_color', [$blueTermId, $redTermId], ['customer3@example.com']);
   }
 
-  public function testItWorksWithAllOperator(): void {
+  public function testItWorksWithAllOperatorForTaxonomies(): void {
     $product1 = $this->tester->createWooCommerceProduct([
       'price' => 20,
       'attributes' => [
@@ -93,7 +92,88 @@ class WooCommercePurchasedWithAttributeTest extends \MailPoetTest {
 
     $this->createOrder($customer1, [$product1, $product2]);
     $this->createOrder($customer2, [$product2]);
-    $this->assertFilterReturnsEmails('all', 'pa_color', [$blueTermId, $redTermId], ['customer1@example.com']);
+    $this->assertFilterReturnsEmailsForTaxonomyAttributes('all', 'pa_color', [$blueTermId, $redTermId], ['customer1@example.com']);
+  }
+
+  public function testItWorksWithAnyOperatorForLocalAttributes(): void {
+    $product1 = $this->tester->createWooCommerceProduct([
+      'price' => 20,
+      'local_attributes' => [
+        'color' => 'red',
+      ],
+    ]);
+    $product2 = $this->tester->createWooCommerceProduct([
+      'price' => 20,
+      'local_attributes' => [
+        'color' => 'blue',
+      ],
+    ]);
+
+    $customer1 = $this->tester->createCustomer('customer1@example.com');
+    $customer2 = $this->tester->createCustomer('customer2@example.com');
+    $customer3 = $this->tester->createCustomer('customer3@example.com');
+
+    $this->createOrder($customer1, [$product1]);
+    $this->createOrder($customer2, [$product2]);
+
+    $this->assertFilterReturnsEmailsForLocalAttributes('any', 'color', ['red', 'blue'], ['customer1@example.com', 'customer2@example.com']);
+    $this->assertFilterReturnsEmailsForLocalAttributes('any', 'color', ['red'], ['customer1@example.com']);
+    $this->assertFilterReturnsEmailsForLocalAttributes('any', 'color', ['blue'], ['customer2@example.com']);
+  }
+
+  public function testItWorksWithAllOperatorForLocalAttributes(): void {
+    $product1 = $this->tester->createWooCommerceProduct([
+      'price' => 20,
+      'local_attributes' => [
+        'color' => 'red',
+      ],
+    ]);
+    $product2 = $this->tester->createWooCommerceProduct([
+      'price' => 20,
+      'local_attributes' => [
+        'color' => 'blue',
+      ],
+    ]);
+
+    $customer1 = $this->tester->createCustomer('customer1@example.com');
+    $customer2 = $this->tester->createCustomer('customer2@example.com');
+    $customer3 = $this->tester->createCustomer('customer3@example.com');
+
+    $this->createOrder($customer1, [$product1, $product2]);
+    $this->createOrder($customer2, [$product1]);
+    $this->createOrder($customer3, [$product2]);
+
+    $this->assertFilterReturnsEmailsForLocalAttributes('all', 'color', ['red', 'blue'], ['customer1@example.com']);
+    $this->assertFilterReturnsEmailsForLocalAttributes('all', 'color', ['red'], ['customer1@example.com', 'customer2@example.com']);
+    $this->assertFilterReturnsEmailsForLocalAttributes('all', 'color', ['blue'], ['customer1@example.com', 'customer3@example.com']);
+  }
+
+  public function testItWorksWithNoneOperatorForLocalAttributes(): void {
+    $redProduct = $this->tester->createWooCommerceProduct([
+      'price' => 20,
+      'local_attributes' => [
+        'color' => 'red',
+      ],
+    ]);
+    $blueProduct = $this->tester->createWooCommerceProduct([
+      'price' => 20,
+      'local_attributes' => [
+        'color' => 'blue',
+      ],
+    ]);
+
+    $customer1 = $this->tester->createCustomer('customer1@example.com');
+    $customer2 = $this->tester->createCustomer('customer2@example.com');
+    $customer3 = $this->tester->createCustomer('customer3@example.com');
+    $customer4 = $this->tester->createCustomer('customer4@example.com');
+
+    $this->createOrder($customer1, [$redProduct, $blueProduct]);
+    $this->createOrder($customer2, [$redProduct]);
+    $this->createOrder($customer3, [$blueProduct]);
+
+    $this->assertFilterReturnsEmailsForLocalAttributes('none', 'color', ['red', 'blue'], ['customer4@example.com']);
+    $this->assertFilterReturnsEmailsForLocalAttributes('none', 'color', ['red'], ['customer3@example.com', 'customer4@example.com']);
+    $this->assertFilterReturnsEmailsForLocalAttributes('none', 'color', ['blue'], ['customer2@example.com', 'customer4@example.com']);
   }
 
   public function testItRetrievesLookupData(): void {
@@ -117,6 +197,7 @@ class WooCommercePurchasedWithAttributeTest extends \MailPoetTest {
       'operator' => 'any',
       'attribute_taxonomy_slug' => 'pa_color',
       'attribute_term_ids' => [$blueTermId, $redTermId],
+      'attribute_type' => 'taxonomy',
     ]);
 
     $lookupData = $this->filter->getLookupData($filterData);
@@ -127,32 +208,142 @@ class WooCommercePurchasedWithAttributeTest extends \MailPoetTest {
     ], $lookupData);
   }
 
-  public function testItValidatesOperator(): void {
-    $this->expectException(InvalidFilterException::class);
-    $this->expectExceptionMessage('Missing operator');
-    $this->expectExceptionCode(InvalidFilterException::MISSING_OPERATOR);
-    $this->filter->validateFilterData(['operator' => '', 'attribute_taxonomy_slug' => 'pa_color', 'attribute_term_ids' => ['1']]);
+  public function testItDoesNotGenerateLookupDataForLocalAttributes(): void {
+    $redProduct = $this->tester->createWooCommerceProduct([
+      'price' => 20,
+      'local_attributes' => [
+        'color' => 'red',
+      ],
+    ]);
+    $blueProduct = $this->tester->createWooCommerceProduct([
+      'price' => 20,
+      'local_attributes' => [
+        'color' => 'blue',
+      ],
+    ]);
+
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommercePurchasedWithAttribute::ACTION, [
+      'operator' => 'any',
+      'attribute_local_name' => 'color',
+      'attribute_local_values' => ['red', 'blue'],
+      'attribute_type' => 'local',
+    ]);
+
+    $lookupData = $this->filter->getLookupData($filterData);
+    $this->assertSame([], $lookupData);
   }
 
-  public function testItValidatesAttribute(): void {
-    $this->expectException(InvalidFilterException::class);
-    $this->expectExceptionMessage('Missing attribute');
-    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
-    $this->filter->validateFilterData(['operator' => 'any', 'attribute_taxonomy_slug' => '', 'attribute_term_ids' => ['1']]);
+  /**
+   * @dataProvider filterDataProvider
+   */
+  public function testItValidatesFilterData(array $data, bool $isValid): void {
+    if (!$isValid) {
+      $this->expectException(InvalidFilterException::class);
+    }
+    $this->filter->validateFilterData($data);
   }
 
-  public function testItValidatesTerms(): void {
-    $this->expectException(InvalidFilterException::class);
-    $this->expectExceptionMessage('Missing attribute terms');
-    $this->expectExceptionCode(InvalidFilterException::MISSING_VALUE);
-    $this->filter->validateFilterData(['operator' => 'any', 'attribute_taxonomy_slug' => 'pa_color', 'attribute_term_ids' => []]);
+  public function filterDataProvider(): array {
+    return [
+      'missing term ids' =>
+        [
+          [
+            'operator' => 'any',
+            'attribute_type' => 'taxonomy',
+            'attribute_taxonomy_slug' => 'pa_color',
+            'attribute_term_ids' => [],
+          ],
+          false,
+        ],
+      'missing taxonomy slug' =>
+        [
+          [
+            'operator' => 'any',
+            'attribute_type' => 'taxonomy',
+            'attribute_taxonomy_slug' => '',
+            'attribute_term_ids' => ['1'],
+          ],
+          false,
+        ],
+      'valid taxonomy' => [
+        [
+          'operator' => 'any',
+          'attribute_type' => 'taxonomy',
+          'attribute_taxonomy_slug' => 'pa_something',
+          'attribute_term_ids' => ['1'],
+        ],
+        true,
+      ],
+      'missing operator' =>
+        [
+          [
+            'operator' => '',
+            'attribute_type' => 'taxonomy',
+            'attribute_taxonomy_slug' => 'pa_color',
+            'attribute_term_ids' => ['1'],
+          ],
+          false,
+        ],
+      'invalid operator' =>
+        [
+          [
+            'operator' => 'anyyyyy',
+            'attribute_type' => 'taxonomy',
+            'attribute_taxonomy_slug' => 'pa_color',
+            'attribute_term_ids' => ['1'],
+          ],
+          false,
+        ],
+      'missing name' =>
+        [
+          [
+            'operator' => 'any',
+            'attribute_type' => 'local',
+            'attribute_local_name' => '',
+            'attribute_local_values' => ['1'],
+          ],
+          false,
+        ],
+      'missing values' =>
+        [
+          [
+            'operator' => 'any',
+            'attribute_type' => 'local',
+            'attribute_local_name' => 'color',
+            'attribute_local_values' => [],
+          ],
+          false,
+        ],
+      'valid local' =>
+        [
+          [
+            'operator' => 'any',
+            'attribute_type' => 'local',
+            'attribute_local_name' => 'color',
+            'attribute_local_values' => ['red'],
+          ],
+          true,
+        ],
+    ];
   }
 
-  private function assertFilterReturnsEmails(string $operator, string $attributeTaxonomySlug, array $termIds, array $expectedEmails): void {
+  private function assertFilterReturnsEmailsForTaxonomyAttributes(string $operator, string $attributeTaxonomySlug, array $termIds, array $expectedEmails): void {
     $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommercePurchasedWithAttribute::ACTION, [
       'operator' => $operator,
       'attribute_taxonomy_slug' => $attributeTaxonomySlug,
       'attribute_term_ids' => $termIds,
+      'attribute_type' => 'taxonomy',
+    ]);
+    $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
+    $this->assertEqualsCanonicalizing($expectedEmails, $emails);
+  }
+
+  private function assertFilterReturnsEmailsForLocalAttributes(string $operator, string $localAttributeName, array $localAttributeValues, array $expectedEmails): void {
+    $filterData = new DynamicSegmentFilterData(DynamicSegmentFilterData::TYPE_WOOCOMMERCE, WooCommercePurchasedWithAttribute::ACTION, [
+      'operator' => $operator,
+      'attribute_local_name' => $localAttributeName,
+      'attribute_local_values' => $localAttributeValues,
+      'attribute_type' => 'local',
     ]);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($filterData, $this->filter);
     $this->assertEqualsCanonicalizing($expectedEmails, $emails);
