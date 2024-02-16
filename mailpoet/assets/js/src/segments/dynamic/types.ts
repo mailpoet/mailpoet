@@ -152,8 +152,11 @@ export interface WooCommerceFormItem extends FormItem {
   count?: string;
   days?: string;
   coupon_code_ids?: string[];
+  attribute_type?: 'local' | 'taxonomy';
   attribute_taxonomy_slug?: string;
   attribute_term_ids?: string[];
+  attribute_local_name?: string;
+  attribute_local_values?: string[];
 }
 
 export interface AutomationsFormItem extends FormItem {
@@ -235,6 +238,11 @@ export type WindowProductAttributes = {
   terms: [];
 }[];
 
+export type WindowLocalProductAttributes = {
+  name: string;
+  values: string[];
+}[];
+
 export type WindowProductCategories = {
   id: string;
   name: string;
@@ -274,6 +282,7 @@ export interface SegmentFormDataWindow extends Window {
   mailpoet_membership_plans: WindowMembershipPlans;
   mailpoet_subscription_products: WindowSubscriptionProducts;
   mailpoet_product_attributes: WindowProductAttributes;
+  mailpoet_local_product_attributes: WindowLocalProductAttributes;
   mailpoet_product_categories: WindowProductCategories;
   mailpoet_woocommerce_countries: WindowWooCommerceCountries;
   mailpoet_woocommerce_payment_methods: WooPaymentMethod[];
@@ -295,6 +304,7 @@ export interface StateType {
   subscriptionProducts: WindowSubscriptionProducts;
   wordpressRoles: WindowEditableRoles;
   productAttributes: WindowProductAttributes;
+  localProductAttributes: WindowLocalProductAttributes;
   productCategories: WindowProductCategories;
   newslettersList: WindowNewslettersList;
   canUseWooMemberships: boolean;

@@ -12,6 +12,9 @@ use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 class WooCommercePurchasedWithAttribute implements Filter {
   const ACTION = 'purchasedWithAttribute';
 
+  const TYPE_LOCAL = 'local';
+  const TYPE_TAXONOMY = 'taxonomy';
+
   private WooFilterHelper $wooFilterHelper;
 
   private FilterHelper $filterHelper;
@@ -32,34 +35,24 @@ class WooCommercePurchasedWithAttribute implements Filter {
     $filterData = $filter->getFilterData();
     $this->validateFilterData((array)$filterData->getData());
 
-    $operator = $filterData->getOperator();
-    $attributeTaxonomySlug = $filterData->getStringParam('attribute_taxonomy_slug');
-    $attributeTermIds = $filterData->getArrayParam('attribute_term_ids');
+    $type = $filterData->getStringParam('attribute_type');
 
-    if ($operator === DynamicSegmentFilterData::OPERATOR_ANY) {
-      $this->applyForAnyOperator($queryBuilder, $attributeTaxonomySlug, $attributeTermIds);
-    } elseif ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
-      $this->applyForAnyOperator($queryBuilder, $attributeTaxonomySlug, $attributeTermIds);
-      $countParam = $this->filterHelper->getUniqueParameterName('count');
-      $queryBuilder
-        ->groupBy('inner_subscriber_id')
-        ->having("COUNT(DISTINCT attribute.term_id) = :$countParam")
-        ->setParameter($countParam, count($attributeTermIds));
-    } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
-      $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
-      $this->applyForAnyOperator($subQuery, $attributeTaxonomySlug, $attributeTermIds);
-      $subscribersTable = $this->filterHelper->getSubscribersTable();
-      $queryBuilder->where("{$subscribersTable}.id NOT IN ({$this->filterHelper->getInterpolatedSQL($subQuery)})");
+    if ($type === self::TYPE_LOCAL) {
+      $this->applyForLocalAttribute($queryBuilder, $filterData);
+    } elseif ($type === self::TYPE_TAXONOMY) {
+      $this->applyForTaxonomyAttribute($queryBuilder, $filterData);
     }
 
     return $queryBuilder;
   }
 
-  private function applyForAnyOperator(QueryBuilder $queryBuilder, string $attributeTaxonomySlug, array $attributeTermIds): void {
+  private function applyForTaxonomyAnyOperator(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData): void {
+    $attributeTaxonomySlug = $filterData->getStringParam('attribute_taxonomy_slug');
+    $attributeTermIds = $filterData->getArrayParam('attribute_term_ids');
     $termIdsParam = $this->filterHelper->getUniqueParameterName('attribute_term_ids');
     $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
     $productAlias = $this->applyProductJoin($queryBuilder, $orderStatsAlias);
-    $attributeAlias = $this->applyAttributeJoin($queryBuilder, $productAlias, $attributeTaxonomySlug);
+    $attributeAlias = $this->applyTaxonomyAttributeJoin($queryBuilder, $productAlias, $attributeTaxonomySlug);
     $queryBuilder->andWhere("$attributeAlias.term_id IN (:$termIdsParam)");
     $queryBuilder->setParameter($termIdsParam, $attributeTermIds, Connection::PARAM_STR_ARRAY);
   }
@@ -74,7 +67,7 @@ class WooCommercePurchasedWithAttribute implements Filter {
     return $alias;
   }
 
-  private function applyAttributeJoin(QueryBuilder $queryBuilder, string $productAlias, $taxonomySlug, string $alias = 'attribute'): string {
+  private function applyTaxonomyAttributeJoin(QueryBuilder $queryBuilder, string $productAlias, $taxonomySlug, string $alias = 'attribute'): string {
     $queryBuilder->innerJoin(
       $productAlias,
       $this->filterHelper->getPrefixedTable('wc_product_attributes_lookup'),
@@ -86,6 +79,12 @@ class WooCommercePurchasedWithAttribute implements Filter {
   }
 
   public function getLookupData(DynamicSegmentFilterData $filterData): array {
+    $type = $filterData->getStringParam('attribute_type');
+
+    if ($type !== self::TYPE_TAXONOMY) {
+      return [];
+    }
+
     $slug = $filterData->getStringParam('attribute_taxonomy_slug');
 
     $lookupData = [
@@ -117,12 +116,93 @@ class WooCommercePurchasedWithAttribute implements Filter {
     ) {
       throw new InvalidFilterException('Missing operator', InvalidFilterException::MISSING_OPERATOR);
     }
-    $attribute_taxonomy_slug = $data['attribute_taxonomy_slug'] ?? null;
-    if (!is_string($attribute_taxonomy_slug) || strlen($attribute_taxonomy_slug) === 0) {
-      throw new InvalidFilterException('Missing attribute', InvalidFilterException::MISSING_VALUE);
+    $this->validateAttributeData($data);
+  }
+
+  public function validateAttributeData(array $data): void {
+    $type = $data['attribute_type'];
+
+    if (!in_array($type, [self::TYPE_LOCAL, self::TYPE_TAXONOMY], true)) {
+      throw new InvalidFilterException('Invalid attribute type', InvalidFilterException::INVALID_TYPE);
     }
-    if (!isset($data['attribute_term_ids']) || !is_array($data['attribute_term_ids']) || count($data['attribute_term_ids']) === 0) {
-      throw new InvalidFilterException('Missing attribute terms', InvalidFilterException::MISSING_VALUE);
+
+    if ($type === self::TYPE_LOCAL) {
+      $name = $data['attribute_local_name'] ?? null;
+      if (!is_string($name) || strlen($name) === 0) {
+        throw new InvalidFilterException('Missing attribute', InvalidFilterException::MISSING_VALUE);
+      }
+      $values = $data['attribute_local_values'] ?? [];
+      if (!is_array($values) || count($values) === 0) {
+        throw new InvalidFilterException('Missing attribute values', InvalidFilterException::MISSING_VALUE);
+      }
     }
+
+    if ($type === self::TYPE_TAXONOMY) {
+      $attribute_taxonomy_slug = $data['attribute_taxonomy_slug'] ?? null;
+      if (!is_string($attribute_taxonomy_slug) || strlen($attribute_taxonomy_slug) === 0) {
+        throw new InvalidFilterException('Missing attribute', InvalidFilterException::MISSING_VALUE);
+      }
+      if (!isset($data['attribute_term_ids']) || !is_array($data['attribute_term_ids']) || count($data['attribute_term_ids']) === 0) {
+        throw new InvalidFilterException('Missing attribute terms', InvalidFilterException::MISSING_VALUE);
+      }
+    }
+  }
+
+  private function applyForTaxonomyAttribute(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData) {
+    $operator = $filterData->getOperator();
+
+    if ($operator === DynamicSegmentFilterData::OPERATOR_ANY) {
+      $this->applyForTaxonomyAnyOperator($queryBuilder, $filterData);
+    } elseif ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
+      $this->applyForTaxonomyAnyOperator($queryBuilder, $filterData);
+      $countParam = $this->filterHelper->getUniqueParameterName('count');
+      $queryBuilder
+        ->groupBy('inner_subscriber_id')
+        ->having("COUNT(DISTINCT attribute.term_id) = :$countParam")
+        ->setParameter($countParam, count($filterData->getArrayParam('attribute_term_ids')));
+    } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
+      $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
+      $this->applyForTaxonomyAnyOperator($subQuery, $filterData);
+      $subscribersTable = $this->filterHelper->getSubscribersTable();
+      $queryBuilder->where("{$subscribersTable}.id NOT IN ({$this->filterHelper->getInterpolatedSQL($subQuery)})");
+    }
+  }
+
+  private function applyForLocalAttribute(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData): void {
+    $operator = $filterData->getOperator();
+    if ($operator === DynamicSegmentFilterData::OPERATOR_ANY) {
+      $this->applyForLocalAnyAttribute($queryBuilder, $filterData);
+    } elseif ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
+      $this->applyForLocalAnyAttribute($queryBuilder, $filterData);
+      $countParam = $this->filterHelper->getUniqueParameterName('count');
+      $queryBuilder
+        ->groupBy('inner_subscriber_id')
+        ->having("COUNT(DISTINCT postmeta.meta_value) = :$countParam")
+        ->setParameter($countParam, count($filterData->getArrayParam('attribute_local_values')));
+    } elseif ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
+      $subQuery = $this->filterHelper->getNewSubscribersQueryBuilder();
+      $this->applyForLocalAnyAttribute($subQuery, $filterData);
+      $subscribersTable = $this->filterHelper->getSubscribersTable();
+      $queryBuilder->where("{$subscribersTable}.id NOT IN ({$this->filterHelper->getInterpolatedSQL($subQuery)})");
+    }
+  }
+
+  private function applyForLocalAnyAttribute(QueryBuilder $queryBuilder, DynamicSegmentFilterData $filterData): void {
+    $attributeName = $filterData->getStringParam('attribute_local_name');
+    $attributeValues = $filterData->getArrayParam('attribute_local_values');
+    $valuesParam = $this->filterHelper->getUniqueParameterName('attribute_values');
+    $keyParam = $this->filterHelper->getUniqueParameterName('attribute_name');
+    $orderStatsAlias = $this->wooFilterHelper->applyOrderStatusFilter($queryBuilder);
+    $productAlias = $this->applyProductJoin($queryBuilder, $orderStatsAlias);
+
+    $queryBuilder->innerJoin(
+      $productAlias,
+      $this->filterHelper->getPrefixedTable('postmeta'),
+      'postmeta',
+      "$productAlias.product_id = postmeta.post_id AND postmeta.meta_key = :$keyParam AND postmeta.meta_value IN (:$valuesParam)"
+    );
+
+    $queryBuilder->setParameter($keyParam, sprintf("attribute_%s", $attributeName));
+    $queryBuilder->setParameter($valuesParam, $attributeValues, Connection::PARAM_STR_ARRAY);
   }
 }

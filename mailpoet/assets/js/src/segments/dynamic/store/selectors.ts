@@ -12,6 +12,7 @@ import {
   Tag,
   WindowCustomFields,
   WindowEditableRoles,
+  WindowLocalProductAttributes,
   WindowMembershipPlans,
   WindowNewslettersList,
   WindowProductAttributes,
@@ -34,6 +35,9 @@ export const getWordpressRoles = (state: StateType): WindowEditableRoles =>
 export const getProductAttributes = (
   state: StateType,
 ): WindowProductAttributes => state.productAttributes;
+export const getLocalProductAttributes = (
+  state: StateType,
+): WindowLocalProductAttributes => state.localProductAttributes;
 export const getProductCategories = (
   state: StateType,
 ): WindowProductCategories => state.productCategories;
