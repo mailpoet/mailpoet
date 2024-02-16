@@ -86,6 +86,11 @@ export type FilterType = {
   key: string;
   fieldType: Registry['fields'][string]['type'];
   formatValue: (filter: Filter, field: Registry['fields'][string]) => string;
+  validateArgs: (
+    args: Record<string, unknown>,
+    condition: string,
+    field: Registry['fields'][string],
+  ) => boolean;
   edit: ComponentType<{
     field: Registry['fields'][string];
     args: Record<string, unknown>;

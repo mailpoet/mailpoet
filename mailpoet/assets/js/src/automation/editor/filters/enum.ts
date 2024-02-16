@@ -17,5 +17,13 @@ export const filter: FilterType = {
     const label = options.find(({ id }) => id === args.value)?.name;
     return label ?? __('Unknown value', 'mailpoet');
   },
+  validateArgs: (args, _, field) => {
+    const value = args.value;
+    const options = (field.args.options ?? []) as {
+      id: string;
+      name: string;
+    }[];
+    return options.some(({ id }) => id === value);
+  },
   edit: undefined,
 };

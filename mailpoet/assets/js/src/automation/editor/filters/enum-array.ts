@@ -26,5 +26,16 @@ export const filter: FilterType = {
       labels.length < values.length ? __('and unknown values', 'mailpoet') : '';
     return `${labels.join(', ')}${suffix}`;
   },
+  validateArgs: (args, _, field) => {
+    const value = args.value;
+    const options = (field.args.options ?? []) as {
+      id: string;
+      name: string;
+    }[];
+    return (
+      Array.isArray(value) &&
+      value.every((item) => options.some(({ id }) => id === item))
+    );
+  },
   edit: undefined,
 };
