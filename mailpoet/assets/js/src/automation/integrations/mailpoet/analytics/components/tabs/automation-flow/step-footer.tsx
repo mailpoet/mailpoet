@@ -58,6 +58,10 @@ function FailedStep({ step }: { step: Step }): JSX.Element | null {
     );
   }, [data.step_data.total, value]);
 
+  if (failedStats === null) {
+    return null;
+  }
+
   return step.key === 'mailpoet:send-email' && !isTransactional(step) ? (
     <Tooltip
       text={__(
