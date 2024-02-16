@@ -1,3 +1,4 @@
+import { validateInTheLastParam } from './params/in-the-last';
 import { FilterType } from '../store/types';
 
 export const filter: FilterType = {
@@ -12,6 +13,10 @@ export const filter: FilterType = {
       : args.value.toString();
   },
   validateArgs: (args, condition) => {
+    if (!validateInTheLastParam(args)) {
+      return false;
+    }
+
     const value = args.value;
     if (['between', 'not-between'].includes(condition)) {
       return (

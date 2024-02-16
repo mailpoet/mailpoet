@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { validateInTheLastParam } from './params/in-the-last';
 import { FilterType } from '../store/types';
 
 export const filter: FilterType = {
@@ -27,6 +28,10 @@ export const filter: FilterType = {
     return `${labels.join(', ')}${suffix}`;
   },
   validateArgs: (args, _, field) => {
+    if (!validateInTheLastParam(args)) {
+      return false;
+    }
+
     const value = args.value;
     const options = (field.args.options ?? []) as {
       id: string;
