@@ -24,7 +24,31 @@ class Columns implements BlockRenderer {
    * Based on MJML <mj-section>
    */
   private function getBlockWrapper(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
+    // Getting individual border properties
+    $borderColor = $parsedBlock['attrs']['style']['border']['color'] ?? '#000000';
+    $borderWidth = $parsedBlock['attrs']['style']['border']['width'] ?? '0px';
+    $borderRadius = $parsedBlock['attrs']['style']['border']['radius'] ?? '0px';
+    // Because borders can by configured individually, we need to get each one of them and use the main border properties as fallback
+    $borderBottomColor = $parsedBlock['attrs']['style']['border']['bottom']['color'] ?? $borderColor;
+    $borderLeftColor = $parsedBlock['attrs']['style']['border']['left']['color'] ?? $borderColor;
+    $borderRightColor = $parsedBlock['attrs']['style']['border']['right']['color'] ?? $borderColor;
+    $borderTopColor = $parsedBlock['attrs']['style']['border']['top']['color'] ?? $borderColor;
+    $borderBottomWidth = $parsedBlock['attrs']['style']['border']['bottom']['width'] ?? $borderWidth;
+    $borderLeftWidth = $parsedBlock['attrs']['style']['border']['left']['width'] ?? $borderWidth;
+    $borderRightWidth = $parsedBlock['attrs']['style']['border']['right']['width'] ?? $borderWidth;
+    $borderTopWidth = $parsedBlock['attrs']['style']['border']['top']['width'] ?? $borderWidth;
+    $borderBottomLeftRadius = $parsedBlock['attrs']['style']['border']['radius']['bottomLeft'] ?? $borderRadius;
+    $borderBottomRightRadius = $parsedBlock['attrs']['style']['border']['radius']['bottomRight'] ?? $borderRadius;
+    $borderTopLeftRadius = $parsedBlock['attrs']['style']['border']['radius']['topLeft'] ?? $borderRadius;
+    $borderTopRightRadius = $parsedBlock['attrs']['style']['border']['radius']['topRight'] ?? $borderRadius;
+
     $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
+    // Because width is primarily used for the max-width property, we need to add the left and right border width to it
+    $width = $settingsController->parseNumberFromStringWithPixels($width);
+    $width += $settingsController->parseNumberFromStringWithPixels($borderLeftWidth ?? '0px');
+    $width += $settingsController->parseNumberFromStringWithPixels($borderRightWidth ?? '0px');
+    $width = "{$width}px";
+    $backgroundColor = $parsedBlock['attrs']['style']['color']['background'] ?? 'none';
     $paddingBottom = $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px';
     $paddingLeft = $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px';
     $paddingRight = $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px';
@@ -64,7 +88,21 @@ class Columns implements BlockRenderer {
         >
           <tbody>
             <tr>
-              <td style="font-size:0px;padding-left:' . $paddingLeft . ';padding-right:' . $paddingRight . ';padding-bottom:' . $paddingBottom . ';padding-top:' . $paddingTop . ';text-align:left;">
+              <td style="
+                font-size:0px;
+                background:' . $backgroundColor . ';
+                background-color:' . $backgroundColor . ';
+                border-bottom:' . $borderBottomWidth . ' solid ' . $borderBottomColor . ';
+                border-left:' . $borderLeftWidth . ' solid ' . $borderLeftColor . ';
+                border-top:' . $borderTopWidth . ' solid ' . $borderTopColor . ';
+                border-right:' . $borderRightWidth . ' solid ' . $borderRightColor . ';
+                border-radius:' . $borderTopLeftRadius . ' ' . $borderTopRightRadius . ' ' . $borderBottomRightRadius . ' ' . $borderBottomLeftRadius . ';
+                padding-left:' . $paddingLeft . ';
+                padding-right:' . $paddingRight . ';
+                padding-bottom:' . $paddingBottom . ';
+                padding-top:' . $paddingTop . ';
+                text-align:left;
+              ">
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;">
                   <tr>
                     {columns_content}

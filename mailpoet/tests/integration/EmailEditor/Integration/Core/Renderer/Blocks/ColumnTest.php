@@ -56,6 +56,30 @@ class ColumnTest extends \MailPoetTest {
     $parsedColumn = $this->parsedColumn;
     $parsedColumn['attrs'] = [
       'style' => [
+        'border' => [
+          'bottom' => [
+            'color' => '#111111',
+            'width' => '1px',
+          ],
+          'left' => [
+            'color' => '#222222',
+            'width' => '2px',
+          ],
+          'right' => [
+            'color' => '#333333',
+            'width' => '3px',
+          ],
+          'top' => [
+            'color' => '#444444',
+            'width' => '4px',
+          ],
+          'radius' => [
+            'bottomLeft' => '5px',
+            'bottomRight' => '10px',
+            'topLeft' => '15px',
+            'topRight' => '20px',
+          ],
+        ],
         'color' => [
           'background' => '#abcdef',
         ],
@@ -73,6 +97,11 @@ class ColumnTest extends \MailPoetTest {
     $this->checkValidHTML($rendered);
     $this->assertStringContainsString('background:#abcdef;', $rendered);
     $this->assertStringContainsString('background-color:#abcdef;', $rendered);
+    $this->assertStringContainsString('border-bottom:1px solid #111111;', $rendered);
+    $this->assertStringContainsString('border-left:2px solid #222222;', $rendered);
+    $this->assertStringContainsString('border-right:3px solid #333333;', $rendered);
+    $this->assertStringContainsString('border-top:4px solid #444444;', $rendered);
+    $this->assertStringContainsString('border-radius:15px 20px 10px 5px;', $rendered);
     $this->assertStringContainsString('padding-bottom:5px;', $rendered);
     $this->assertStringContainsString('padding-left:15px;', $rendered);
     $this->assertStringContainsString('padding-right:20px;', $rendered);
