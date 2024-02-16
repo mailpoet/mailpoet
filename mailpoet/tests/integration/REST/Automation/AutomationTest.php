@@ -16,7 +16,7 @@ abstract class AutomationTest extends Test {
     $userId = wp_create_user(
       'editor',
       'password',
-      'editor@localhost'
+      'editor@localhost.com'
     );
     $this->assertIsNumeric($userId);
     $user = new \WP_User($userId);
