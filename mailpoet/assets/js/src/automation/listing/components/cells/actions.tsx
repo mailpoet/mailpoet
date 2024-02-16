@@ -32,7 +32,7 @@ export function Actions({ automation }: Props): JSX.Element {
         label={__('More', 'mailpoet')}
         icon={moreVertical}
         controls={menuItems.map(({ control }) => control)}
-        popoverProps={{ position: 'bottom left' }}
+        popoverProps={{ placement: 'bottom-start' }}
       />
     </div>
   );

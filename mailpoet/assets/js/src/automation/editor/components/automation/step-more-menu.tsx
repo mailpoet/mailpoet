@@ -62,7 +62,7 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
       <DropdownMenu
         label={__('More', 'mailpoet')}
         icon={moreVertical}
-        popoverProps={{ position: 'bottom right' }}
+        popoverProps={{ placement: 'bottom-start' }}
         toggleProps={{ isSmall: true }}
         controls={Object.values(controls)}
       />

@@ -35,7 +35,7 @@ export function Actions({ id, previewUrl }: ActionsProps): JSX.Element {
         label={__('More', 'mailpoet')}
         icon={moreVertical}
         controls={controls}
-        popoverProps={{ position: 'bottom left' }}
+        popoverProps={{ placement: 'bottom-start' }}
       />
     </div>
   );

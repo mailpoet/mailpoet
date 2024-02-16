@@ -56,7 +56,7 @@ export function OptionButton({
 
             return control;
           })}
-          popoverProps={{ position: 'bottom left' }}
+          popoverProps={{ placement: 'bottom-start' }}
         />
       )}
     </div>
