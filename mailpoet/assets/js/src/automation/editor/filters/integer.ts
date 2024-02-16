@@ -11,5 +11,21 @@ export const filter: FilterType = {
       ? args.value.join(' and ')
       : args.value.toString();
   },
+  validateArgs: (args, condition) => {
+    const value = args.value;
+    if (['between', 'not-between'].includes(condition)) {
+      return (
+        Array.isArray(value) &&
+        value.length === 2 &&
+        value.every((item) => typeof item === 'number')
+      );
+    }
+
+    if (['is-set', 'is-not-set'].includes(condition)) {
+      return value === undefined;
+    }
+
+    return typeof value === 'number';
+  },
   edit: undefined,
 };

@@ -9,5 +9,12 @@ export const filter: FilterType = {
     }
     return args.value.toString();
   },
+  validateArgs: (args, condition) => {
+    const value = args.value;
+    if (['is-blank', 'is-not-blank'].includes(condition)) {
+      return value === undefined;
+    }
+    return typeof value === 'string';
+  },
   edit: undefined,
 };

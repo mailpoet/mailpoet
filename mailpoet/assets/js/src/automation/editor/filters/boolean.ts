@@ -10,5 +10,6 @@ export const filter: FilterType = {
     }
     return args.value ? __('Yes', 'mailpoet') : __('No', 'mailpoet');
   },
+  validateArgs: (args) => typeof args.value === 'boolean',
   edit: undefined,
 };

@@ -47,5 +47,37 @@ export const filter: FilterType = {
       settings.timezone.string,
     );
   },
+  validateArgs: (args, condition) => {
+    const value = args.value;
+
+    if (['in-the-last', 'not-in-the-last'].includes(condition)) {
+      return (
+        typeof value === 'object' &&
+        'number' in value &&
+        'unit' in value &&
+        typeof value.number === 'number' &&
+        typeof value.unit === 'string' &&
+        ['days', 'weeks', 'months'].includes(value.unit)
+      );
+    }
+
+    if (['is-set', 'is-not-set'].includes(condition)) {
+      return value === undefined;
+    }
+
+    if (condition === 'on-the-days-of-the-week') {
+      return (
+        Array.isArray(value) &&
+        value.every(
+          (day) =>
+            typeof day === 'number' && [0, 1, 2, 3, 4, 5, 6].includes(day),
+        )
+      );
+    }
+
+    return (
+      typeof value === 'string' && new Date(value).toString() !== 'Invalid Date'
+    );
+  },
   edit: undefined,
 };
