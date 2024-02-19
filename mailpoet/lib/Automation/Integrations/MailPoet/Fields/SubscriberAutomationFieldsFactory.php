@@ -32,6 +32,7 @@ class SubscriberAutomationFieldsFactory {
           'name' => $automation->getName() . " (#{$automation->getId()})",
         ];
       }, $automations),
+      'params' => ['in_the_last'],
     ];
 
     return [

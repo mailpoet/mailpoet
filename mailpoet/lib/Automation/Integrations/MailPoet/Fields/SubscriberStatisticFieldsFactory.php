@@ -27,7 +27,10 @@ class SubscriberStatisticFieldsFactory {
         function (SubscriberPayload $payload, array $params = []) {
           $startTime = $this->getStartTime($params);
           return $this->subscriberStatisticsRepository->getTotalSentCount($payload->getSubscriber(), $startTime);
-        }
+        },
+        [
+          'params' => ['in_the_last'],
+        ]
       ),
       new Field(
         'mailpoet:subscriber:email-opened-count',
@@ -36,7 +39,10 @@ class SubscriberStatisticFieldsFactory {
         function (SubscriberPayload $payload, array $params = []) {
           $startTime = $this->getStartTime($params);
           return $this->subscriberStatisticsRepository->getStatisticsOpenCount($payload->getSubscriber(), $startTime);
-        }
+        },
+        [
+          'params' => ['in_the_last'],
+        ]
       ),
       new Field(
         'mailpoet:subscriber:email-machine-opened-count',
@@ -45,7 +51,10 @@ class SubscriberStatisticFieldsFactory {
         function (SubscriberPayload $payload, array $params = []) {
           $startTime = $this->getStartTime($params);
           return $this->subscriberStatisticsRepository->getStatisticsMachineOpenCount($payload->getSubscriber(), $startTime);
-        }
+        },
+        [
+          'params' => ['in_the_last'],
+        ]
       ),
       new Field(
         'mailpoet:subscriber:email-clicked-count',
@@ -54,7 +63,10 @@ class SubscriberStatisticFieldsFactory {
         function (SubscriberPayload $payload, array $params = []) {
           $startTime = $this->getStartTime($params);
           return $this->subscriberStatisticsRepository->getStatisticsClickCount($payload->getSubscriber(), $startTime);
-        }
+        },
+        [
+          'params' => ['in_the_last'],
+        ]
       ),
     ];
   }

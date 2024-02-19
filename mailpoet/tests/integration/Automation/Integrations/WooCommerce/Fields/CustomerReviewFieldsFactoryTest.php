@@ -19,7 +19,9 @@ class CustomerReviewFieldsFactoryTest extends \MailPoetTest {
     $reviewCountField = $fields['woocommerce:customer:review-count'];
     $this->assertSame('Review count', $reviewCountField->getName());
     $this->assertSame('integer', $reviewCountField->getType());
-    $this->assertSame([], $reviewCountField->getArgs());
+    $this->assertSame([
+      'params' => ['in_the_last'],
+    ], $reviewCountField->getArgs());
 
     // check values (guest)
     $this->createProductReview(0, '', 1);

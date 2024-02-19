@@ -30,7 +30,9 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     $field = $fields['mailpoet:subscriber:email-sent-count'];
     $this->assertSame('Email — sent count', $field->getName());
     $this->assertSame('integer', $field->getType());
-    $this->assertSame([], $field->getArgs());
+    $this->assertSame([
+      'params' => ['in_the_last'],
+    ], $field->getArgs());
 
     // check values
     $payload = new SubscriberPayload($subscriber);
@@ -60,7 +62,9 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     $field = $fields['mailpoet:subscriber:email-opened-count'];
     $this->assertSame('Email — opened count', $field->getName());
     $this->assertSame('integer', $field->getType());
-    $this->assertSame([], $field->getArgs());
+    $this->assertSame([
+      'params' => ['in_the_last'],
+    ], $field->getArgs());
 
     // check values
     $payload = new SubscriberPayload($subscriber);
@@ -90,7 +94,9 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     $field = $fields['mailpoet:subscriber:email-machine-opened-count'];
     $this->assertSame('Email — machine opened count', $field->getName());
     $this->assertSame('integer', $field->getType());
-    $this->assertSame([], $field->getArgs());
+    $this->assertSame([
+      'params' => ['in_the_last'],
+    ], $field->getArgs());
 
     // check values
     $payload = new SubscriberPayload($subscriber);
@@ -121,7 +127,9 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     $field = $fields['mailpoet:subscriber:email-clicked-count'];
     $this->assertSame('Email — clicked count', $field->getName());
     $this->assertSame('integer', $field->getType());
-    $this->assertSame([], $field->getArgs());
+    $this->assertSame([
+      'params' => ['in_the_last'],
+    ], $field->getArgs());
 
     // check values
     $payload = new SubscriberPayload($subscriber);
