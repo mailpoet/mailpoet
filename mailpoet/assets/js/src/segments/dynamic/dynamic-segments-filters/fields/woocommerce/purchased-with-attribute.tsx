@@ -1,6 +1,6 @@
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Select } from 'common/form/select/select';
 import { ReactSelect } from 'common/form/react-select/react-select';
 import { filter } from 'lodash/fp';
@@ -80,35 +80,27 @@ export function PurchasedWithAttributeFields({
     ...localAttributeOptions,
   ];
 
-  const productAttributeTermsOptionsRef = useRef(null);
-
-  useEffect(() => {
-    if (
-      segment.attribute_taxonomy_slug === undefined &&
-      segment.attribute_local_name === undefined
-    ) {
-      productAttributeTermsOptionsRef.current = null;
-      return;
-    }
-
+  const attributeValueOptions = useMemo(() => {
     if (segment.attribute_type === 'taxonomy') {
-      productAttributeTermsOptionsRef.current = productAttributes[
-        segment.attribute_taxonomy_slug
-      ].terms.map((term) => ({
-        value: term.term_id.toString(),
-        label: term.name,
-      }));
-    } else if (segment.attribute_type === 'local') {
-      productAttributeTermsOptionsRef.current = localProductAttributes[
-        segment.attribute_local_name
-      ].values.map((value) => ({
-        value,
-        label: value,
-      }));
+      return productAttributes[segment.attribute_taxonomy_slug].terms.map(
+        (term) => ({
+          value: term.term_id.toString(),
+          label: term.name,
+        }),
+      );
     }
+    if (segment.attribute_type === 'local') {
+      return localProductAttributes[segment.attribute_local_name].values.map(
+        (value) => ({
+          value,
+          label: value,
+        }),
+      );
+    }
+    return [];
   }, [
-    segment.attribute_taxonomy_slug,
     segment.attribute_type,
+    segment.attribute_taxonomy_slug,
     segment.attribute_local_name,
     productAttributes,
     localProductAttributes,
@@ -204,13 +196,13 @@ export function PurchasedWithAttributeFields({
         value={initialAttributeValue}
         onChange={attributeOnChange}
       />
-      {productAttributeTermsOptionsRef.current && (
+      {attributeValueOptions.length > 0 && (
         <ReactSelect
           dimension="small"
           isMulti
           key="select-segment-product-attribute-terms"
           placeholder={__('Search attributes terms', 'mailpoet')}
-          options={productAttributeTermsOptionsRef.current}
+          options={attributeValueOptions}
           value={filter(
             (productAttributeTermOption: { value: string; label: string }) => {
               if (segment.attribute_local_values) {
@@ -229,7 +221,7 @@ export function PurchasedWithAttributeFields({
               }
               return undefined;
             },
-            productAttributeTermsOptionsRef.current,
+            attributeValueOptions,
           )}
           onChange={(options: SelectOption[]): void => {
             if (segment.attribute_type === 'local') {
