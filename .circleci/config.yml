@@ -757,7 +757,7 @@ jobs:
           destination: mailhog-data
   build_release_zip:
     executor: wpcli_php_mysql_latest
-    resource_class: medium+
+    resource_class: large
     steps:
       - attach_workspace:
           at: /home/circleci
