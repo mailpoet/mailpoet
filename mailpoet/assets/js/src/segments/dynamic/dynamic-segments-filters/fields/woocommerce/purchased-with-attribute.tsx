@@ -149,7 +149,7 @@ export function PurchasedWithAttributeFields({
     [filterIndex, localAttributeValues, updateSegmentFilter],
   );
 
-  const initialAttributeValue = useMemo(
+  const initialAttribute = useMemo(
     () =>
       segment.attribute_type === 'local'
         ? filter((localAttributeOption) => {
@@ -178,6 +178,32 @@ export function PurchasedWithAttributeFields({
     ],
   );
 
+  const initialAttributeValues = useMemo(
+    () =>
+      filter((productAttributeTermOption: { value: string; label: string }) => {
+        if (segment.attribute_local_values) {
+          return (
+            segment.attribute_local_values.indexOf(
+              productAttributeTermOption.value,
+            ) !== -1
+          );
+        }
+        if (segment.attribute_term_ids) {
+          return (
+            segment.attribute_term_ids.indexOf(
+              productAttributeTermOption.value,
+            ) !== -1
+          );
+        }
+        return undefined;
+      }, attributeValueOptions),
+    [
+      segment.attribute_local_values,
+      segment.attribute_term_ids,
+      attributeValueOptions,
+    ],
+  );
+
   return (
     <>
       <Select
@@ -197,7 +223,7 @@ export function PurchasedWithAttributeFields({
         key="select-segment-product-attribute"
         placeholder={__('Search attributes', 'mailpoet')}
         options={combinedOptions}
-        value={initialAttributeValue}
+        value={initialAttribute}
         onChange={attributeOnChange}
       />
       {attributeValueOptions.length > 0 && (
@@ -207,26 +233,7 @@ export function PurchasedWithAttributeFields({
           key="select-segment-product-attribute-terms"
           placeholder={__('Search attributes terms', 'mailpoet')}
           options={attributeValueOptions}
-          value={filter(
-            (productAttributeTermOption: { value: string; label: string }) => {
-              if (segment.attribute_local_values) {
-                return (
-                  segment.attribute_local_values.indexOf(
-                    productAttributeTermOption.value,
-                  ) !== -1
-                );
-              }
-              if (segment.attribute_term_ids) {
-                return (
-                  segment.attribute_term_ids.indexOf(
-                    productAttributeTermOption.value,
-                  ) !== -1
-                );
-              }
-              return undefined;
-            },
-            attributeValueOptions,
-          )}
+          value={initialAttributeValues}
           onChange={(options: SelectOption[]): void => {
             if (segment.attribute_type === 'local') {
               void updateSegmentFilter(
