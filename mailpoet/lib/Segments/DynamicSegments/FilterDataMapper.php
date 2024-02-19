@@ -517,11 +517,11 @@ class FilterDataMapper {
     } elseif ($data['action'] === WooCommercePurchasedWithAttribute::ACTION) {
       $this->wooCommercePurchasedWithAttribute->validateFilterData($data);
       $filterData['operator'] = $data['operator'];
-      $filterData['attribute_taxonomy_slug'] = $data['attribute_taxonomy_slug'];
-      $filterData['attribute_term_ids'] = $data['attribute_term_ids'];
+      $filterData['attribute_taxonomy_slug'] = $data['attribute_taxonomy_slug'] ?? null;
+      $filterData['attribute_term_ids'] = $data['attribute_term_ids'] ?? null;
       $filterData['attribute_type'] = $data['attribute_type'];
-      $filterData['attribute_local_name'] = $data['attribute_local_name'];
-      $filterData['attribute_local_values'] = $data['attribute_local_values'];
+      $filterData['attribute_local_name'] = $data['attribute_local_name'] ?? null;
+      $filterData['attribute_local_values'] = $data['attribute_local_values'] ?? null;
     } else {
       throw new InvalidFilterException("Unknown action " . $data['action'], InvalidFilterException::MISSING_ACTION);
     }

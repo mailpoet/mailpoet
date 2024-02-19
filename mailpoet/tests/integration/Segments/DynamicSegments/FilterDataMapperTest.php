@@ -1085,4 +1085,60 @@ class FilterDataMapperTest extends \MailPoetTest {
       'timeframe' => 'allTime',
     ]]]);
   }
+
+  public function testItMapsPurchasedWithAttributeForTaxonomyAttributes(): void {
+    $data = ['filters' => [[
+      'segmentType' => 'woocommerce',
+      'action' => 'purchasedWithAttribute',
+      'operator' => 'all',
+      'attribute_type' => 'taxonomy',
+      'attribute_taxonomy_slug' => 'pa_color',
+      'attribute_term_ids' => ['1', '200'],
+    ]]];
+    $filters = $this->mapper->map($data);
+    verify($filters)->isArray();
+    verify($filters)->arrayCount(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter)->instanceOf(DynamicSegmentFilterData::class);
+    verify($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    verify($filter->getAction())->equals('purchasedWithAttribute');
+    verify($filter->getData())->equals([
+      'operator' => 'all',
+      'connect' => 'and',
+      'attribute_taxonomy_slug' => 'pa_color',
+      'attribute_term_ids' => ['1', '200'],
+      'attribute_type' => 'taxonomy',
+      'attribute_local_name' => null,
+      'attribute_local_values' => null,
+    ]);
+  }
+
+  public function testItMapsPurchasedWithAttributeForLocalAttributes(): void {
+    $data = ['filters' => [[
+      'segmentType' => 'woocommerce',
+      'action' => 'purchasedWithAttribute',
+      'operator' => 'any',
+      'attribute_type' => 'local',
+      'attribute_local_name' => 'color',
+      'attribute_local_values' => ['red', 'blue'],
+    ]]];
+    $filters = $this->mapper->map($data);
+    verify($filters)->isArray();
+    verify($filters)->arrayCount(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter)->instanceOf(DynamicSegmentFilterData::class);
+    verify($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    verify($filter->getAction())->equals('purchasedWithAttribute');
+    verify($filter->getData())->equals([
+      'operator' => 'any',
+      'connect' => 'and',
+      'attribute_taxonomy_slug' => null,
+      'attribute_term_ids' => null,
+      'attribute_type' => 'local',
+      'attribute_local_name' => 'color',
+      'attribute_local_values' => ['red', 'blue'],
+    ]);
+  }
 }
