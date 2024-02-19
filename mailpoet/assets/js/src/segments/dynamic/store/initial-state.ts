@@ -30,6 +30,7 @@ export const getInitialState = (): StateType => ({
   productAttributes: window.mailpoet_product_attributes,
   localProductAttributes: window.mailpoet_local_product_attributes,
   productCategories: window.mailpoet_product_categories,
+  productTags: window.mailpoet_product_tags,
   newslettersList: window.mailpoet_newsletters_list,
   wordpressRoles: window.wordpress_editable_roles_list,
   canUseWooMemberships: window.mailpoet_can_use_woocommerce_memberships,

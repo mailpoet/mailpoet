@@ -8,6 +8,7 @@ export enum WooCommerceActionTypes {
   NUMBER_OF_ORDERS_WITH_COUPON = 'numberOfOrdersWithCoupon',
   NUMBER_OF_REVIEWS = 'numberOfReviews',
   PURCHASED_CATEGORY = 'purchasedCategory',
+  PURCHASED_TAG = 'purchasedTag',
   PURCHASE_DATE = 'purchaseDate',
   PURCHASED_PRODUCT = 'purchasedProduct',
   PURCHASED_WITH_ATTRIBUTE = 'purchasedWithAttribute',
@@ -67,6 +68,11 @@ export const WooCommerceOptions = [
   {
     value: WooCommerceActionTypes.PURCHASED_CATEGORY,
     label: __('purchased in category', 'mailpoet'),
+    group: SegmentTypes.WooCommerce,
+  },
+  {
+    value: WooCommerceActionTypes.PURCHASED_TAG,
+    label: __('purchased with tag', 'mailpoet'),
     group: SegmentTypes.WooCommerce,
   },
   {
