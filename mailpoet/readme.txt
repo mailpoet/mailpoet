@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.3
 Tested up to: 6.4
-Stable tag: 4.43.1
+Stable tag: 4.44.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.44.0 - 2024-02-19 =
+* Updated: Gutenberg dependencies;
+* Improved: order created/completed/cancelled automation triggers can now send transactional emails;
+* Fixed: transactional emails in automations fail to send in some cases.
 
 = 4.43.1 - 2024-02-12 =
 * Fixed: automation and legacy emails not rendering if one has an invalid option;
