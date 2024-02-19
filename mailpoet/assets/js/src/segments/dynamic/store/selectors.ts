@@ -41,6 +41,8 @@ export const getLocalProductAttributes = (
 export const getProductCategories = (
   state: StateType,
 ): WindowProductCategories => state.productCategories;
+export const getProductTags = (state: StateType): WindowProductCategories =>
+  state.productTags;
 export const getNewslettersList = (state: StateType): WindowNewslettersList =>
   state.newslettersList;
 export const canUseWooSubscriptions = (state: StateType): boolean =>

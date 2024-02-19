@@ -15,6 +15,10 @@ import {
   validatePurchasedCategory,
 } from './fields/woocommerce/purchased-category';
 import {
+  PurchasedTagFields,
+  validatePurchasedTag,
+} from './fields/woocommerce/purchased-tag';
+import {
   CustomerInCountryFields,
   validateCustomerInCountry,
 } from './fields/woocommerce/customer-in-country';
@@ -117,6 +121,9 @@ export function validateWooCommerce(formItems: WooCommerceFormItem): boolean {
   ) {
     return validateTextField(formItems);
   }
+  if (formItems.action === WooCommerceActionTypes.PURCHASED_TAG) {
+    return validatePurchasedTag(formItems);
+  }
   return true;
 }
 
@@ -132,6 +139,7 @@ const componentsMap = {
   [WooCommerceActionTypes.PURCHASED_CATEGORY]: PurchasedCategoryFields,
   [WooCommerceActionTypes.PURCHASED_WITH_ATTRIBUTE]:
     PurchasedWithAttributeFields,
+  [WooCommerceActionTypes.PURCHASED_TAG]: PurchasedTagFields,
   [WooCommerceActionTypes.SINGLE_ORDER_VALUE]: SingleOrderValueFields,
   [WooCommerceActionTypes.TOTAL_SPENT]: TotalSpentFields,
   [WooCommerceActionTypes.AVERAGE_SPENT]: AverageSpentFields,
