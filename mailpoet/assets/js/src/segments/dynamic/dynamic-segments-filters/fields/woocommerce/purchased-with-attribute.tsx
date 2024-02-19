@@ -1,6 +1,6 @@
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Select } from 'common/form/select/select';
 import { ReactSelect } from 'common/form/react-select/react-select';
 import { filter } from 'lodash/fp';
@@ -46,11 +46,13 @@ export function PurchasedWithAttributeFields({
     [],
   );
 
-  const productAttributesOptions = Object.values(productAttributes).map(
-    (attribute) => ({
-      value: attribute.taxonomy,
-      label: attribute.label,
-    }),
+  const productAttributesOptions = useMemo(
+    () =>
+      Object.values(productAttributes).map((attribute) => ({
+        value: attribute.taxonomy,
+        label: attribute.label,
+      })),
+    [productAttributes],
   );
 
   const localProductAttributes: WindowLocalProductAttributes = useSelect(
@@ -58,16 +60,19 @@ export function PurchasedWithAttributeFields({
     [],
   );
 
-  const localAttributeOptions = Object.values(localProductAttributes).map(
-    (attribute) => ({
-      // Appending @local to avoid conflicts between taxonomy and local attributes with the same name
-      value: `${attribute.name}@local`,
-      label: attribute.name,
-    }),
+  const localAttributeOptions = useMemo(
+    () =>
+      Object.values(localProductAttributes).map((attribute) => ({
+        // Appending @local to avoid conflicts between taxonomy and local attributes with the same name
+        value: `${attribute.name}@local`,
+        label: attribute.name,
+      })),
+    [localProductAttributes],
   );
 
-  const localAttributeValues = Object.values(localAttributeOptions).map(
-    (option) => option.value,
+  const localAttributeValues = useMemo(
+    () => Object.values(localAttributeOptions).map((option) => option.value),
+    [localAttributeOptions],
   );
 
   const combinedOptions = [
@@ -119,6 +124,64 @@ export function PurchasedWithAttributeFields({
     }
   }, [updateSegmentFilter, segment, filterIndex]);
 
+  const attributeOnChange = useCallback(
+    (option: SelectOption) => {
+      if (localAttributeValues.includes(option.value)) {
+        void updateSegmentFilter(
+          {
+            attribute_type: 'local',
+            attribute_local_name: option.value.replace(/@local$/, ''),
+            attribute_local_values: [],
+            attribute_taxonomy_slug: null,
+            attribute_term_ids: null,
+          },
+          filterIndex,
+        );
+      } else {
+        void updateSegmentFilter(
+          {
+            attribute_type: 'taxonomy',
+            attribute_local_name: null,
+            attribute_local_values: null,
+            attribute_taxonomy_slug: option.value,
+            attribute_term_ids: [],
+          },
+          filterIndex,
+        );
+      }
+    },
+    [filterIndex, localAttributeValues, updateSegmentFilter],
+  );
+
+  const initialAttributeValue = useMemo(
+    () =>
+      segment.attribute_type === 'local'
+        ? filter((localAttributeOption) => {
+            if (!segment.attribute_local_name) {
+              return undefined;
+            }
+            return (
+              `${segment.attribute_local_name}@local` ===
+              localAttributeOption.value
+            );
+          }, localAttributeOptions)
+        : filter((productAttributeOption) => {
+            if (segment.attribute_taxonomy_slug === undefined) {
+              return undefined;
+            }
+            return (
+              segment.attribute_taxonomy_slug === productAttributeOption.value
+            );
+          }, productAttributesOptions),
+    [
+      segment.attribute_type,
+      segment.attribute_local_name,
+      segment.attribute_taxonomy_slug,
+      localAttributeOptions,
+      productAttributesOptions,
+    ],
+  );
+
   return (
     <>
       <Select
@@ -138,52 +201,8 @@ export function PurchasedWithAttributeFields({
         key="select-segment-product-attribute"
         placeholder={__('Search attributes', 'mailpoet')}
         options={combinedOptions}
-        value={
-          segment.attribute_type === 'local'
-            ? filter((localAttributeOption) => {
-                if (!segment.attribute_local_name) {
-                  return undefined;
-                }
-                return (
-                  `${segment.attribute_local_name}@local` ===
-                  localAttributeOption.value
-                );
-              }, localAttributeOptions)
-            : filter((productAttributeOption) => {
-                if (segment.attribute_taxonomy_slug === undefined) {
-                  return undefined;
-                }
-                return (
-                  segment.attribute_taxonomy_slug ===
-                  productAttributeOption.value
-                );
-              }, productAttributesOptions)
-        }
-        onChange={(option: SelectOption): void => {
-          if (localAttributeValues.includes(option.value)) {
-            void updateSegmentFilter(
-              {
-                attribute_type: 'local',
-                attribute_local_name: option.value.replace(/@local$/, ''),
-                attribute_local_values: [],
-                attribute_taxonomy_slug: null,
-                attribute_term_ids: null,
-              },
-              filterIndex,
-            );
-          } else {
-            void updateSegmentFilter(
-              {
-                attribute_type: 'taxonomy',
-                attribute_local_name: null,
-                attribute_local_values: null,
-                attribute_taxonomy_slug: option.value,
-                attribute_term_ids: [],
-              },
-              filterIndex,
-            );
-          }
-        }}
+        value={initialAttributeValue}
+        onChange={attributeOnChange}
       />
       {productAttributeTermsOptionsRef.current && (
         <ReactSelect
