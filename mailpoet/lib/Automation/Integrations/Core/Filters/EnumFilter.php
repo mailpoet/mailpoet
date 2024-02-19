@@ -32,6 +32,10 @@ class EnumFilter implements Filter {
     ]);
   }
 
+  public function getFieldParams(FilterData $data): array {
+    return [];
+  }
+
   public function matches(FilterData $data, $value): bool {
     $filterValue = $data->getArgs()['value'] ?? null;
     if (!is_scalar($value) || !is_array($filterValue)) {

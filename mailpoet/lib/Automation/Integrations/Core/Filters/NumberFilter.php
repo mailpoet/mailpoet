@@ -54,6 +54,10 @@ class NumberFilter implements Filter {
     }
   }
 
+  public function getFieldParams(FilterData $data): array {
+    return [];
+  }
+
   /**
    * @param float $value
    */

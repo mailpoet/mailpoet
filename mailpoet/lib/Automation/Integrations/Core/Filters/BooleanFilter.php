@@ -27,6 +27,10 @@ class BooleanFilter implements Filter {
     ]);
   }
 
+  public function getFieldParams(FilterData $data): array {
+    return [];
+  }
+
   public function matches(FilterData $data, $value): bool {
     $filterValue = $data->getArgs()['value'] ?? null;
     if (!is_bool($value) || !is_bool($filterValue)) {

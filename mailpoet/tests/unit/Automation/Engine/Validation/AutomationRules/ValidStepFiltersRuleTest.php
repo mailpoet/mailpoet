@@ -119,6 +119,10 @@ class ValidStepFiltersRuleTest extends AutomationRuleTest {
         return Builder::object();
       }
 
+      public function getFieldParams(FilterData $data): array {
+        return [];
+      }
+
       public function matches(FilterData $data, $value): bool {
         return true;
       }
