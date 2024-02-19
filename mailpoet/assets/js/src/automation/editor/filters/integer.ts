@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import {
   formatInTheLastParam,
   validateInTheLastParam,
@@ -12,7 +13,7 @@ export const filter: FilterType = {
       return undefined;
     }
     return Array.isArray(args.value)
-      ? args.value.join(' and ')
+      ? args.value.join(` ${__('and', 'mailpoet')} `)
       : args.value.toString();
   },
   formatParams: ({ args }) => formatInTheLastParam(args),
