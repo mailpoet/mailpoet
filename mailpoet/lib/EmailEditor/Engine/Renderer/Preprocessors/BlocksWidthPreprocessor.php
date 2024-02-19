@@ -16,6 +16,9 @@ class BlocksWidthPreprocessor implements Preprocessor {
       if ($alignment !== 'full') {
         $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['left'] ?? '0px');
         $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['right'] ?? '0px');
+        $borderWidth = $block['attrs']['style']['border']['width'] ?? '0px';
+        $layoutWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['border']['left']['width'] ?? $borderWidth);
+        $layoutWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['border']['right']['width'] ?? $borderWidth);
       }
 
       $widthInput = $block['attrs']['width'] ?? '100%';
@@ -75,6 +78,9 @@ class BlocksWidthPreprocessor implements Preprocessor {
         $definedColumnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['spacing']['padding']['left'] ?? '0px');
         $definedColumnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['spacing']['padding']['right'] ?? '0px');
       }
+      $borderWidth = $column['attrs']['style']['border']['width'] ?? '0px';
+      $definedColumnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['border']['left']['width'] ?? $borderWidth);
+      $definedColumnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['border']['right']['width'] ?? $borderWidth);
     }
 
     if ($columnsCount - $columnsCountWithDefinedWidth > 0) {
