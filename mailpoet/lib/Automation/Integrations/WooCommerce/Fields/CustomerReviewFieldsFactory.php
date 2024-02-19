@@ -32,7 +32,10 @@ class CustomerReviewFieldsFactory {
           }
           $inTheLastSeconds = isset($params['in_the_last_seconds']) ? (int)$params['in_the_last_seconds'] : null;
           return $this->getUniqueProductReviewCount($customer, $inTheLastSeconds);
-        }
+        },
+        [
+          'params' => ['in_the_last'],
+        ]
       ),
       new Field(
         'woocommerce:customer:last-review-date',

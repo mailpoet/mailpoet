@@ -52,7 +52,10 @@ class CustomerOrderFieldsFactory {
           return $inTheLastSeconds === null
             ? (float)$customer->get_total_spent()
             : $this->getRecentSpentTotal($customer, $inTheLastSeconds);
-        }
+        },
+        [
+          'params' => ['in_the_last'],
+        ]
       ),
       new Field(
         'woocommerce:customer:spent-average',
@@ -73,7 +76,10 @@ class CustomerOrderFieldsFactory {
             $orderCount = $this->getRecentOrderCount($customer, $inTheLastSeconds);
           }
           return $orderCount > 0 ? ($totalSpent / $orderCount) : 0.0;
-        }
+        },
+        [
+          'params' => ['in_the_last'],
+        ]
       ),
       new Field(
         'woocommerce:customer:order-count',
@@ -89,7 +95,10 @@ class CustomerOrderFieldsFactory {
           return $inTheLastSeconds === null
             ? $customer->get_order_count()
             : $this->getRecentOrderCount($customer, $inTheLastSeconds);
-        }
+        },
+        [
+          'params' => ['in_the_last'],
+        ]
       ),
       new Field(
         'woocommerce:customer:first-paid-order-date',
@@ -132,6 +141,7 @@ class CustomerOrderFieldsFactory {
         },
         [
           'options' => $this->termOptionsBuilder->getTermOptions('product_cat'),
+          'params' => ['in_the_last'],
         ]
       ),
       new Field(
@@ -150,6 +160,7 @@ class CustomerOrderFieldsFactory {
         },
         [
           'options' => $this->termOptionsBuilder->getTermOptions('product_tag'),
+          'params' => ['in_the_last'],
         ]
       ),
     ];

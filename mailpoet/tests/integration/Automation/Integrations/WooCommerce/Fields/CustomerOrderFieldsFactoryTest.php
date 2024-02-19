@@ -22,17 +22,23 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $spentTotalField = $fields['woocommerce:customer:spent-total'];
     $this->assertSame('Total spent', $spentTotalField->getName());
     $this->assertSame('number', $spentTotalField->getType());
-    $this->assertSame([], $spentTotalField->getArgs());
+    $this->assertSame([
+      'params' => ['in_the_last'],
+    ], $spentTotalField->getArgs());
 
     $spentAverageField = $fields['woocommerce:customer:spent-average'];
     $this->assertSame('Average spent', $spentAverageField->getName());
     $this->assertSame('number', $spentAverageField->getType());
-    $this->assertSame([], $spentAverageField->getArgs());
+    $this->assertSame([
+      'params' => ['in_the_last'],
+    ], $spentAverageField->getArgs());
 
     $orderCountField = $fields['woocommerce:customer:order-count'];
     $this->assertSame('Order count', $orderCountField->getName());
     $this->assertSame('integer', $orderCountField->getType());
-    $this->assertSame([], $orderCountField->getArgs());
+    $this->assertSame([
+      'params' => ['in_the_last'],
+    ], $orderCountField->getArgs());
 
     // check values (guest)
     $this->createOrder(0, 12.3);
@@ -150,6 +156,7 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
         ['id' => $cat3Id, 'name' => 'Cat 3'],
         ['id' => $uncategorizedId, 'name' => 'Uncategorized'],
       ],
+      'params' => ['in_the_last'],
     ], $purchasedCategories->getArgs());
 
     // create products
@@ -225,6 +232,7 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
         ['id' => $tag2Id, 'name' => 'Tag 2'],
         ['id' => $tag3Id, 'name' => 'Tag 3'],
       ],
+      'params' => ['in_the_last'],
     ], $purchasedTags->getArgs());
 
     // create products
