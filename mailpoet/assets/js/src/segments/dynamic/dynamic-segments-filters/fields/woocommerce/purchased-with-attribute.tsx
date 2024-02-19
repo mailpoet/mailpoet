@@ -48,10 +48,12 @@ export function PurchasedWithAttributeFields({
 
   const productAttributesOptions = useMemo(
     () =>
-      Object.values(productAttributes).map((attribute) => ({
-        value: attribute.taxonomy,
-        label: attribute.label,
-      })),
+      Object.values(productAttributes)
+        .filter((attribute) => attribute.terms.length > 0)
+        .map((attribute) => ({
+          value: attribute.taxonomy,
+          label: attribute.label,
+        })),
     [productAttributes],
   );
 
@@ -62,11 +64,13 @@ export function PurchasedWithAttributeFields({
 
   const localAttributeOptions = useMemo(
     () =>
-      Object.values(localProductAttributes).map((attribute) => ({
-        // Appending @local to avoid conflicts between taxonomy and local attributes with the same name
-        value: `${attribute.name}@local`,
-        label: attribute.name,
-      })),
+      Object.values(localProductAttributes)
+        .filter((attribute) => attribute.values.length > 0)
+        .map((attribute) => ({
+          // Appending @local to avoid conflicts between taxonomy and local attributes with the same name
+          value: `${attribute.name}@local`,
+          label: attribute.name,
+        })),
     [localProductAttributes],
   );
 
