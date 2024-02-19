@@ -18,7 +18,7 @@ class Image implements BlockRenderer {
     $image = $parsedHtml['image'];
     $caption = $parsedHtml['caption'];
 
-    $parsedBlock = $this->addImageSizeWhenMissing($parsedBlock, $imageUrl);
+    $parsedBlock = $this->addImageSizeWhenMissing($parsedBlock, $imageUrl, $settingsController);
     $image = $this->applyRoundedStyle($image, $parsedBlock);
     $image = $this->addImageDimensions($image, $parsedBlock, $settingsController);
     $image = $this->applyImageBorderStyle($image, $parsedBlock, $settingsController);
@@ -44,12 +44,12 @@ class Image implements BlockRenderer {
   /**
    * When the width is not set, it's important to get it for the image to be displayed correctly
    */
-  private function addImageSizeWhenMissing(array $parsedBlock, string $imageUrl): array {
+  private function addImageSizeWhenMissing(array $parsedBlock, string $imageUrl, SettingsController $settingsController): array {
     if (!isset($parsedBlock['attrs']['width'])) {
-      $maxWidth = $parsedBlock['email_attrs']['width'] ?? SettingsController::EMAIL_WIDTH;
+      $maxWidth = $settingsController->parseNumberFromStringWithPixels($parsedBlock['email_attrs']['width'] ?? SettingsController::EMAIL_WIDTH);
       $imageSize = wp_getimagesize($imageUrl);
-      $imageSize = $imageSize ? "{$imageSize[0]}px" : $maxWidth;
-      $parsedBlock['attrs']['width'] = min($imageSize, $maxWidth);
+      $imageSize = $imageSize ? $imageSize[0] : $maxWidth;
+      $parsedBlock['attrs']['width'] = min($imageSize, $maxWidth) . 'px';
     }
     return $parsedBlock;
   }
