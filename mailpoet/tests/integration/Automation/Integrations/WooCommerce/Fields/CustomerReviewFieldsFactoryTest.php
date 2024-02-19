@@ -58,9 +58,9 @@ class CustomerReviewFieldsFactoryTest extends \MailPoetTest {
 
     $customerPayload = new CustomerPayload(new WC_Customer($id));
     $this->assertSame(3, $reviewCountField->getValue($customerPayload));
-    $this->assertSame(2, $reviewCountField->getValue($customerPayload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS]));
-    $this->assertSame(1, $reviewCountField->getValue($customerPayload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
-    $this->assertSame(0, $reviewCountField->getValue($customerPayload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
+    $this->assertSame(2, $reviewCountField->getValue($customerPayload, ['in_the_last' => 3 * MONTH_IN_SECONDS]));
+    $this->assertSame(1, $reviewCountField->getValue($customerPayload, ['in_the_last' => 3 * WEEK_IN_SECONDS]));
+    $this->assertSame(0, $reviewCountField->getValue($customerPayload, ['in_the_last' => 3 * DAY_IN_SECONDS]));
   }
 
   public function testLastReviewDateField(): void {

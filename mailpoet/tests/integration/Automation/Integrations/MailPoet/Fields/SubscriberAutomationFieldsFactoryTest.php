@@ -118,35 +118,35 @@ class SubscriberAutomationFieldsFactoryTest extends MailPoetTest {
     // 3 months
     $this->assertSame(
       [$deactivating2->getId(), $deactivating1->getId(), $active3->getId(), $active2->getId(), $active1->getId(), $draft2->getId(), $draft1->getId()],
-      $entered->getValue($payload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS])
+      $entered->getValue($payload, ['in_the_last' => 3 * MONTH_IN_SECONDS])
     );
     $this->assertSame(
       [$deactivating2->getId(), $deactivating1->getId(), $active3->getId(), $active1->getId()],
-      $processing->getValue($payload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS])
+      $processing->getValue($payload, ['in_the_last' => 3 * MONTH_IN_SECONDS])
     );
     $this->assertSame(
       [$active3->getId(), $active2->getId(), $draft2->getId(), $draft1->getId()],
-      $exited->getValue($payload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS])
+      $exited->getValue($payload, ['in_the_last' => 3 * MONTH_IN_SECONDS])
     );
 
     // 3 weeks
     $this->assertSame(
       [$deactivating2->getId(), $active3->getId(), $active2->getId(), $draft2->getId()],
-      $entered->getValue($payload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS])
+      $entered->getValue($payload, ['in_the_last' => 3 * WEEK_IN_SECONDS])
     );
     $this->assertSame(
       [$deactivating2->getId(), $active3->getId()],
-      $processing->getValue($payload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS])
+      $processing->getValue($payload, ['in_the_last' => 3 * WEEK_IN_SECONDS])
     );
     $this->assertSame(
       [$active3->getId(), $draft2->getId()],
-      $exited->getValue($payload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS])
+      $exited->getValue($payload, ['in_the_last' => 3 * WEEK_IN_SECONDS])
     );
 
     // 3 days
-    $this->assertSame([], $entered->getValue($payload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
-    $this->assertSame([], $processing->getValue($payload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
-    $this->assertSame([], $exited->getValue($payload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
+    $this->assertSame([], $entered->getValue($payload, ['in_the_last' => 3 * DAY_IN_SECONDS]));
+    $this->assertSame([], $processing->getValue($payload, ['in_the_last' => 3 * DAY_IN_SECONDS]));
+    $this->assertSame([], $exited->getValue($payload, ['in_the_last' => 3 * DAY_IN_SECONDS]));
   }
 
   private function getFieldsMap(): array {

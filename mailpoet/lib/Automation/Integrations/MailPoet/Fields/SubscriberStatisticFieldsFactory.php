@@ -72,7 +72,7 @@ class SubscriberStatisticFieldsFactory {
   }
 
   private function getStartTime(array $params): ?Carbon {
-    $inTheLastSeconds = $params['in_the_last_seconds'] ?? null;
+    $inTheLastSeconds = $params['in_the_last'] ?? null;
     return $inTheLastSeconds ? Carbon::now()->subSeconds((int)$inTheLastSeconds) : null;
   }
 }

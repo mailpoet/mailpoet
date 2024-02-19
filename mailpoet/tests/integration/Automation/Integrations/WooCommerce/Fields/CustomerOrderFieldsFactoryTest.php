@@ -80,19 +80,19 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $customerPayload = new CustomerPayload(new WC_Customer($id));
 
     // 100 years
-    $this->assertSame(162.3, $spentTotalField->getValue($customerPayload, ['in_the_last_seconds' => 100 * YEAR_IN_SECONDS]));
-    $this->assertSame(54.1, $spentAverageField->getValue($customerPayload, ['in_the_last_seconds' => 100 * YEAR_IN_SECONDS]));
-    $this->assertSame(3, $orderCountField->getValue($customerPayload, ['in_the_last_seconds' => 100 * YEAR_IN_SECONDS]));
+    $this->assertSame(162.3, $spentTotalField->getValue($customerPayload, ['in_the_last' => 100 * YEAR_IN_SECONDS]));
+    $this->assertSame(54.1, $spentAverageField->getValue($customerPayload, ['in_the_last' => 100 * YEAR_IN_SECONDS]));
+    $this->assertSame(3, $orderCountField->getValue($customerPayload, ['in_the_last' => 100 * YEAR_IN_SECONDS]));
 
     // 3 months
-    $this->assertSame(150.0, $spentTotalField->getValue($customerPayload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS]));
-    $this->assertSame(75.0, $spentAverageField->getValue($customerPayload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS]));
-    $this->assertSame(2, $orderCountField->getValue($customerPayload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS]));
+    $this->assertSame(150.0, $spentTotalField->getValue($customerPayload, ['in_the_last' => 3 * MONTH_IN_SECONDS]));
+    $this->assertSame(75.0, $spentAverageField->getValue($customerPayload, ['in_the_last' => 3 * MONTH_IN_SECONDS]));
+    $this->assertSame(2, $orderCountField->getValue($customerPayload, ['in_the_last' => 3 * MONTH_IN_SECONDS]));
 
     // 3 weeks
-    $this->assertSame(150.0, $spentTotalField->getValue($customerPayload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
-    $this->assertSame(150.0, $spentAverageField->getValue($customerPayload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
-    $this->assertSame(1, $orderCountField->getValue($customerPayload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
+    $this->assertSame(150.0, $spentTotalField->getValue($customerPayload, ['in_the_last' => 3 * WEEK_IN_SECONDS]));
+    $this->assertSame(150.0, $spentAverageField->getValue($customerPayload, ['in_the_last' => 3 * WEEK_IN_SECONDS]));
+    $this->assertSame(1, $orderCountField->getValue($customerPayload, ['in_the_last' => 3 * WEEK_IN_SECONDS]));
   }
 
   public function testOrderDateFields(): void {
@@ -203,15 +203,15 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame([$uncategorizedId, $cat1Id, $cat2Id, $subCat1Id, $subSubCat1Id], $value);
 
     // 3 months
-    $value = $purchasedCategories->getValue($customerPayload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS]);
+    $value = $purchasedCategories->getValue($customerPayload, ['in_the_last' => 3 * MONTH_IN_SECONDS]);
     $this->assertSame([$uncategorizedId, $cat1Id, $cat2Id, $subCat1Id, $subSubCat1Id], $value);
 
     // 3 weeks
-    $value = $purchasedCategories->getValue($customerPayload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]);
+    $value = $purchasedCategories->getValue($customerPayload, ['in_the_last' => 3 * WEEK_IN_SECONDS]);
     $this->assertSame([$cat1Id, $cat2Id, $subCat1Id, $subSubCat1Id], $value);
 
     // 3 days
-    $value = $purchasedCategories->getValue($customerPayload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]);
+    $value = $purchasedCategories->getValue($customerPayload, ['in_the_last' => 3 * DAY_IN_SECONDS]);
     $this->assertSame([], $value);
   }
 
@@ -276,15 +276,15 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame([$tag1Id, $tag2Id], $value);
 
     // 3 months
-    $value = $purchasedTags->getValue($customerPayload, ['in_the_last_seconds' => 3 * MONTH_IN_SECONDS]);
+    $value = $purchasedTags->getValue($customerPayload, ['in_the_last' => 3 * MONTH_IN_SECONDS]);
     $this->assertSame([$tag1Id, $tag2Id], $value);
 
     // 3 weeks
-    $value = $purchasedTags->getValue($customerPayload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]);
+    $value = $purchasedTags->getValue($customerPayload, ['in_the_last' => 3 * WEEK_IN_SECONDS]);
     $this->assertSame([$tag2Id], $value);
 
     // 3 days
-    $value = $purchasedTags->getValue($customerPayload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]);
+    $value = $purchasedTags->getValue($customerPayload, ['in_the_last' => 3 * DAY_IN_SECONDS]);
     $this->assertSame([], $value);
   }
 
