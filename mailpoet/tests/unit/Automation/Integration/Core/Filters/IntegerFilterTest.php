@@ -24,6 +24,19 @@ class IntegerFilterTest extends MailPoetUnitTest {
       'is-not-set' => 'is not set',
     ], $filter->getConditions());
 
+    $paramsSchema = [
+      'type' => 'object',
+      'properties' => [
+        'in_the_last' => [
+          'type' => 'object',
+          'properties' => [
+            'number' => ['type' => 'integer', 'required' => true, 'minimum' => 1],
+            'unit' => ['type' => 'string', 'required' => true, 'pattern' => '^(days)$', 'default' => 'days'],
+          ],
+        ],
+      ],
+    ];
+
     $singleValueArgsSchema = [
       'type' => 'object',
       'properties' => [
@@ -31,6 +44,7 @@ class IntegerFilterTest extends MailPoetUnitTest {
           'type' => 'integer',
           'required' => true,
         ],
+        'params' => $paramsSchema,
       ],
     ];
 
@@ -44,10 +58,16 @@ class IntegerFilterTest extends MailPoetUnitTest {
           'maxItems' => 2,
           'required' => true,
         ],
+        'params' => $paramsSchema,
       ],
     ];
 
-    $emptyArgsSchema = ['type' => 'object', 'properties' => []];
+    $emptyArgsSchema = [
+      'type' => 'object',
+      'properties' => [
+        'params' => $paramsSchema,
+      ],
+    ];
 
     $this->assertSame($singleValueArgsSchema, $filter->getArgsSchema('equals')->toArray());
     $this->assertSame($singleValueArgsSchema, $filter->getArgsSchema('not-equals')->toArray());
@@ -281,6 +301,19 @@ class IntegerFilterTest extends MailPoetUnitTest {
 
     // not a whole number
     $this->assertNotMatches('is-set', null, 0.5);
+  }
+
+  public function testFieldParams(): void {
+    if (!defined('DAY_IN_SECONDS')) {
+      define('DAY_IN_SECONDS', 24 * 60 * 60);
+    }
+
+    $filter = new IntegerFilter();
+    $params = ['in_the_last' => ['number' => 123, 'unit' => 'days']];
+    $this->assertSame(
+      ['in_the_last' => 123 * DAY_IN_SECONDS],
+      $filter->getFieldParams(new Filter('f', 'integer', '', 'equals', ['params' => $params]))
+    );
   }
 
   private function assertMatches(string $condition, $filterValue, $value): void {

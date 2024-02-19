@@ -17,6 +17,19 @@ class EnumFilterTest extends MailPoetUnitTest {
       'is-none-of' => 'is none of',
     ], $filter->getConditions());
 
+    $paramsSchema = [
+      'type' => 'object',
+      'properties' => [
+        'in_the_last' => [
+          'type' => 'object',
+          'properties' => [
+            'number' => ['type' => 'integer', 'required' => true, 'minimum' => 1],
+            'unit' => ['type' => 'string', 'required' => true, 'pattern' => '^(days)$', 'default' => 'days'],
+          ],
+        ],
+      ],
+    ];
+
     $argsSchema = [
       'type' => 'object',
       'properties' => [
@@ -27,6 +40,7 @@ class EnumFilterTest extends MailPoetUnitTest {
           ],
           'required' => true,
         ],
+        'params' => $paramsSchema,
       ],
     ];
 
@@ -79,6 +93,19 @@ class EnumFilterTest extends MailPoetUnitTest {
   public function testUnknownCondition(): void {
     $this->assertNotMatches('unknown', [1], 1);
     $this->assertNotMatches('unknown', [1, 2, 3], 1);
+  }
+
+  public function testFieldParams(): void {
+    if (!defined('DAY_IN_SECONDS')) {
+      define('DAY_IN_SECONDS', 24 * 60 * 60);
+    }
+
+    $filter = new EnumFilter();
+    $params = ['in_the_last' => ['number' => 123, 'unit' => 'days']];
+    $this->assertSame(
+      ['in_the_last' => 123 * DAY_IN_SECONDS],
+      $filter->getFieldParams(new Filter('f', 'integer', '', 'equals', ['params' => $params]))
+    );
   }
 
   private function assertMatches(string $condition, $filterValue, $value): void {
