@@ -26,16 +26,33 @@ class EnumArrayFilter implements Filter {
   }
 
   public function getArgsSchema(string $condition): ObjectSchema {
+    $paramsSchema = Builder::object([
+      'in_the_last' => Builder::object([
+        'number' => Builder::integer()->required()->minimum(1),
+        'unit' => Builder::string()->required()->pattern('^(days)$')->default('days'),
+      ]),
+    ]);
+
     return Builder::object([
       'value' => Builder::oneOf([
         Builder::array(Builder::string())->minItems(1),
         Builder::array(Builder::integer())->minItems(1),
       ])->required(),
+      'params' => $paramsSchema,
     ]);
   }
 
   public function getFieldParams(FilterData $data): array {
-    return [];
+    $paramData = $data->getArgs()['params'] ?? [];
+    $params = [];
+
+    $inTheLastUnit = $paramData['in_the_last']['unit'] ?? null;
+    $inTheLastNumber = $paramData['in_the_last']['number'] ?? null;
+    if ($inTheLastUnit === 'days' && $inTheLastNumber !== null) {
+      $params['in_the_last_seconds'] = $inTheLastNumber * DAY_IN_SECONDS;
+    }
+
+    return $params;
   }
 
   public function matches(FilterData $data, $value): bool {

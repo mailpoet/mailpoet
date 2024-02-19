@@ -40,22 +40,44 @@ class NumberFilter implements Filter {
   }
 
   public function getArgsSchema(string $condition): ObjectSchema {
+    $paramsSchema = Builder::object([
+      'in_the_last' => Builder::object([
+        'number' => Builder::integer()->required()->minimum(1),
+        'unit' => Builder::string()->required()->pattern('^(days)$')->default('days'),
+      ]),
+    ]);
+
     switch ($condition) {
       case self::CONDITION_BETWEEN:
       case self::CONDITION_NOT_BETWEEN:
         return Builder::object([
           'value' => Builder::array(Builder::number())->minItems(2)->maxItems(2)->required(),
+          'params' => $paramsSchema,
         ]);
       case self::CONDITION_IS_SET:
       case self::CONDITION_IS_NOT_SET:
-        return Builder::object([]);
+        return Builder::object([
+          'params' => $paramsSchema,
+        ]);
       default:
-        return Builder::object(['value' => Builder::number()->required()]);
+        return Builder::object([
+          'value' => Builder::number()->required(),
+          'params' => $paramsSchema,
+        ]);
     }
   }
 
   public function getFieldParams(FilterData $data): array {
-    return [];
+    $paramData = $data->getArgs()['params'] ?? [];
+    $params = [];
+
+    $inTheLastUnit = $paramData['in_the_last']['unit'] ?? null;
+    $inTheLastNumber = $paramData['in_the_last']['number'] ?? null;
+    if ($inTheLastUnit === 'days' && $inTheLastNumber !== null) {
+      $params['in_the_last_seconds'] = $inTheLastNumber * DAY_IN_SECONDS;
+    }
+
+    return $params;
   }
 
   /**
