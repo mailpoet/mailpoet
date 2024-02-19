@@ -28,6 +28,7 @@ export function Value({ filter }: Props): JSX.Element | null {
   }
 
   const value = filterType?.formatValue(filter, field);
+  const params = filterType?.formatParams?.(filter, field);
   if (value === undefined) {
     return expectsValue ? (
       <span className="mailpoet-automation-filters-list-item-value-missing">
@@ -36,6 +37,11 @@ export function Value({ filter }: Props): JSX.Element | null {
     ) : null;
   }
   return (
-    <span className="mailpoet-automation-filters-list-item-value">{value}</span>
+    <>
+      <span className="mailpoet-automation-filters-list-item-value">
+        {value}
+      </span>
+      {params && <span> {params}</span>}
+    </>
   );
 }

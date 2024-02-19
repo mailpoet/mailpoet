@@ -1,4 +1,7 @@
-import { validateInTheLastParam } from './params/in-the-last';
+import {
+  formatInTheLastParam,
+  validateInTheLastParam,
+} from './params/in-the-last';
 import { FilterType } from '../store/types';
 
 export const filter: FilterType = {
@@ -12,6 +15,7 @@ export const filter: FilterType = {
       ? args.value.join(' and ')
       : args.value.toString();
   },
+  formatParams: ({ args }) => formatInTheLastParam(args),
   validateArgs: (args, condition) => {
     if (!validateInTheLastParam(args)) {
       return false;
