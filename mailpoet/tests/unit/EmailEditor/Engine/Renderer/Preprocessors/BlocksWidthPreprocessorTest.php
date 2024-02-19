@@ -362,4 +362,92 @@ class BlocksWidthPreprocessorTest extends \MailPoetUnitTest {
     verify($result[0]['innerBlocks'][0]['email_attrs']['width'])->equals('140px');
     verify($result[0]['innerBlocks'][1]['email_attrs']['width'])->equals('500px');
   }
+
+  public function testItCalculatesWidthForColumnWithBorder(): void {
+    $blocks = [[
+      'blockName' => 'core/columns',
+      'attrs' => [
+        'style' => [
+          'border' => [
+            'width' => '10px',
+          ],
+          'spacing' => [
+            'padding' => [
+              'left' => '25px',
+              'right' => '15px',
+            ],
+          ],
+        ],
+      ],
+      'innerBlocks' => [
+        [
+          'blockName' => 'core/column',
+          'attrs' => [
+            'width' => '140px',
+            'style' => [
+              'border' => [
+                'left' => [
+                  'width' => '5px',
+                ],
+                'right' => [
+                  'width' => '5px',
+                ],
+              ],
+              'spacing' => [
+                'padding' => [
+                  'left' => '25px',
+                  'right' => '15px',
+                ],
+              ],
+            ],
+          ],
+          'innerBlocks' => [],
+        ],
+        [
+          'blockName' => 'core/column',
+          'attrs' => [],
+          'innerBlocks' => [
+            [
+              'blockName' => 'core/image',
+              'attrs' => [],
+              'innerBlocks' => [],
+            ],
+          ],
+        ],
+        [
+          'blockName' => 'core/column',
+          'attrs' => [
+            'style' => [
+              'border' => [
+                'width' => '15px',
+              ],
+              'spacing' => [
+                'padding' => [
+                  'left' => '20px',
+                  'right' => '20px',
+                ],
+              ],
+            ],
+          ],
+          'innerBlocks' => [
+            [
+              'blockName' => 'core/image',
+              'attrs' => [],
+              'innerBlocks' => [],
+            ],
+          ],
+        ],
+      ],
+    ]];
+
+    $result = $this->preprocessor->preprocess($blocks, ['width' => '660px', 'padding' => ['left' => '10px', 'right' => '10px']]);
+    verify($result[0]['innerBlocks'])->arrayCount(3);
+    verify($result[0]['innerBlocks'][0]['email_attrs']['width'])->equals('140px');
+    verify($result[0]['innerBlocks'][1]['email_attrs']['width'])->equals('180px');
+    verify($result[0]['innerBlocks'][2]['email_attrs']['width'])->equals('220px');
+    $imageBlock = $result[0]['innerBlocks'][1]['innerBlocks'][0];
+    verify($imageBlock['email_attrs']['width'])->equals('180px');
+    $imageBlock = $result[0]['innerBlocks'][2]['innerBlocks'][0];
+    verify($imageBlock['email_attrs']['width'])->equals('180px');
+  }
 }
