@@ -74,7 +74,7 @@ class NumberFilter implements Filter {
     $inTheLastUnit = $paramData['in_the_last']['unit'] ?? null;
     $inTheLastNumber = $paramData['in_the_last']['number'] ?? null;
     if ($inTheLastUnit === 'days' && $inTheLastNumber !== null) {
-      $params['in_the_last_seconds'] = $inTheLastNumber * DAY_IN_SECONDS;
+      $params['in_the_last'] = $inTheLastNumber * DAY_IN_SECONDS;
     }
 
     return $params;

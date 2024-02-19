@@ -30,7 +30,7 @@ class CustomerReviewFieldsFactory {
           if (!$customer) {
             return 0;
           }
-          $inTheLastSeconds = isset($params['in_the_last_seconds']) ? (int)$params['in_the_last_seconds'] : null;
+          $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
           return $this->getUniqueProductReviewCount($customer, $inTheLastSeconds);
         },
         [

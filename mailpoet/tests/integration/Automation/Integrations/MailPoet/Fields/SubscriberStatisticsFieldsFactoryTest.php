@@ -37,9 +37,9 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     // check values
     $payload = new SubscriberPayload($subscriber);
     $this->assertSame(2, $field->getValue($payload));
-    $this->assertSame(2, $field->getValue($payload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
-    $this->assertSame(1, $field->getValue($payload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
-    $this->assertSame(0, $field->getValue($payload, ['in_the_last_seconds' => 3 * HOUR_IN_SECONDS]));
+    $this->assertSame(2, $field->getValue($payload, ['in_the_last' => 3 * WEEK_IN_SECONDS]));
+    $this->assertSame(1, $field->getValue($payload, ['in_the_last' => 3 * DAY_IN_SECONDS]));
+    $this->assertSame(0, $field->getValue($payload, ['in_the_last' => 3 * HOUR_IN_SECONDS]));
   }
 
   public function testItCreatesOpenedCountField(): void {
@@ -69,9 +69,9 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     // check values
     $payload = new SubscriberPayload($subscriber);
     $this->assertSame(2, $field->getValue($payload));
-    $this->assertSame(2, $field->getValue($payload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
-    $this->assertSame(1, $field->getValue($payload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
-    $this->assertSame(0, $field->getValue($payload, ['in_the_last_seconds' => 3 * HOUR_IN_SECONDS]));
+    $this->assertSame(2, $field->getValue($payload, ['in_the_last' => 3 * WEEK_IN_SECONDS]));
+    $this->assertSame(1, $field->getValue($payload, ['in_the_last' => 3 * DAY_IN_SECONDS]));
+    $this->assertSame(0, $field->getValue($payload, ['in_the_last' => 3 * HOUR_IN_SECONDS]));
   }
 
   public function testItCreatesMachineOpenedCountField(): void {
@@ -101,9 +101,9 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     // check values
     $payload = new SubscriberPayload($subscriber);
     $this->assertSame(2, $field->getValue($payload));
-    $this->assertSame(2, $field->getValue($payload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
-    $this->assertSame(1, $field->getValue($payload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
-    $this->assertSame(0, $field->getValue($payload, ['in_the_last_seconds' => 3 * HOUR_IN_SECONDS]));
+    $this->assertSame(2, $field->getValue($payload, ['in_the_last' => 3 * WEEK_IN_SECONDS]));
+    $this->assertSame(1, $field->getValue($payload, ['in_the_last' => 3 * DAY_IN_SECONDS]));
+    $this->assertSame(0, $field->getValue($payload, ['in_the_last' => 3 * HOUR_IN_SECONDS]));
   }
 
   public function testItCreatesClickedCountField(): void {
@@ -134,9 +134,9 @@ class SubscriberStatisticsFieldsFactoryTest extends MailPoetTest {
     // check values
     $payload = new SubscriberPayload($subscriber);
     $this->assertSame(2, $field->getValue($payload));
-    $this->assertSame(2, $field->getValue($payload, ['in_the_last_seconds' => 3 * WEEK_IN_SECONDS]));
-    $this->assertSame(1, $field->getValue($payload, ['in_the_last_seconds' => 3 * DAY_IN_SECONDS]));
-    $this->assertSame(0, $field->getValue($payload, ['in_the_last_seconds' => 3 * HOUR_IN_SECONDS]));
+    $this->assertSame(2, $field->getValue($payload, ['in_the_last' => 3 * WEEK_IN_SECONDS]));
+    $this->assertSame(1, $field->getValue($payload, ['in_the_last' => 3 * DAY_IN_SECONDS]));
+    $this->assertSame(0, $field->getValue($payload, ['in_the_last' => 3 * HOUR_IN_SECONDS]));
   }
 
   /** @return array<string, Field> */

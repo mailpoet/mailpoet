@@ -48,7 +48,7 @@ class CustomerOrderFieldsFactory {
             return 0.0;
           }
 
-          $inTheLastSeconds = isset($params['in_the_last_seconds']) ? (int)$params['in_the_last_seconds'] : null;
+          $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
           return $inTheLastSeconds === null
             ? (float)$customer->get_total_spent()
             : $this->getRecentSpentTotal($customer, $inTheLastSeconds);
@@ -67,7 +67,7 @@ class CustomerOrderFieldsFactory {
             return 0.0;
           }
 
-          $inTheLastSeconds = isset($params['in_the_last_seconds']) ? (int)$params['in_the_last_seconds'] : null;
+          $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
           if ($inTheLastSeconds === null) {
             $totalSpent = (float)$customer->get_total_spent();
             $orderCount = (int)$customer->get_order_count();
@@ -91,7 +91,7 @@ class CustomerOrderFieldsFactory {
             return 0;
           }
 
-          $inTheLastSeconds = isset($params['in_the_last_seconds']) ? (int)$params['in_the_last_seconds'] : null;
+          $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
           return $inTheLastSeconds === null
             ? $customer->get_order_count()
             : $this->getRecentOrderCount($customer, $inTheLastSeconds);
@@ -133,7 +133,7 @@ class CustomerOrderFieldsFactory {
           if (!$customer) {
             return [];
           }
-          $inTheLastSeconds = isset($params['in_the_last_seconds']) ? (int)$params['in_the_last_seconds'] : null;
+          $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
           $ids = $this->getOrderProductTermIds($customer, 'product_cat', $inTheLastSeconds);
           $ids = array_merge($ids, $this->termParentsLoader->getParentIds($ids));
           sort($ids);
@@ -153,7 +153,7 @@ class CustomerOrderFieldsFactory {
           if (!$customer) {
             return [];
           }
-          $inTheLastSeconds = isset($params['in_the_last_seconds']) ? (int)$params['in_the_last_seconds'] : null;
+          $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
           $ids = $this->getOrderProductTermIds($customer, 'product_tag', $inTheLastSeconds);
           sort($ids);
           return $ids;
