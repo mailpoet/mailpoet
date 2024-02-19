@@ -21,6 +21,7 @@ class Image implements BlockRenderer {
     $parsedBlock = $this->addImageSizeWhenMissing($parsedBlock, $imageUrl);
     $image = $this->applyRoundedStyle($image, $parsedBlock);
     $image = $this->addImageDimensions($image, $parsedBlock, $settingsController);
+    $image = $this->applyImageBorderStyle($image, $parsedBlock, $settingsController);
 
     return str_replace(
       ['{image_content}', '{caption_content}'],
@@ -53,6 +54,35 @@ class Image implements BlockRenderer {
     return $parsedBlock;
   }
 
+  private function applyImageBorderStyle(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
+    // Getting individual border properties
+    $borderColor = $parsedBlock['attrs']['style']['border']['color'] ?? '#000000';
+    $borderWidth = $parsedBlock['attrs']['style']['border']['width'] ?? '0px';
+    $borderRadius = $parsedBlock['attrs']['style']['border']['radius'] ?? '0px';
+    // Because borders can by configured individually, we need to get each one of them and use the main border properties as fallback
+    $borderBottomColor = $parsedBlock['attrs']['style']['border']['bottom']['color'] ?? $borderColor;
+    $borderLeftColor = $parsedBlock['attrs']['style']['border']['left']['color'] ?? $borderColor;
+    $borderRightColor = $parsedBlock['attrs']['style']['border']['right']['color'] ?? $borderColor;
+    $borderTopColor = $parsedBlock['attrs']['style']['border']['top']['color'] ?? $borderColor;
+    $borderBottomWidth = $parsedBlock['attrs']['style']['border']['bottom']['width'] ?? $borderWidth;
+    $borderLeftWidth = $parsedBlock['attrs']['style']['border']['left']['width'] ?? $borderWidth;
+    $borderRightWidth = $parsedBlock['attrs']['style']['border']['right']['width'] ?? $borderWidth;
+    $borderTopWidth = $parsedBlock['attrs']['style']['border']['top']['width'] ?? $borderWidth;
+    $borderBottomLeftRadius = $parsedBlock['attrs']['style']['border']['radius']['bottomLeft'] ?? $borderRadius;
+    $borderBottomRightRadius = $parsedBlock['attrs']['style']['border']['radius']['bottomRight'] ?? $borderRadius;
+    $borderTopLeftRadius = $parsedBlock['attrs']['style']['border']['radius']['topLeft'] ?? $borderRadius;
+    $borderTopRightRadius = $parsedBlock['attrs']['style']['border']['radius']['topRight'] ?? $borderRadius;
+
+    $styles = [
+      'border-bottom' => $borderBottomWidth . ' solid ' . $borderBottomColor,
+      'border-left' => $borderLeftWidth . ' solid ' . $borderLeftColor,
+      'border-top' => $borderTopWidth . ' solid ' . $borderTopColor,
+      'border-right' => $borderRightWidth . ' solid ' . $borderRightColor,
+      'border-radius' => $borderTopLeftRadius . ' ' . $borderTopRightRadius . ' ' . $borderBottomRightRadius . ' ' . $borderBottomLeftRadius,
+    ];
+    return $this->addStyleToElement($blockContent, ['tag_name' => 'img'], $settingsController->convertStylesToString($styles));
+  }
+
   /**
    * Settings width and height attributes for images is important for MS Outlook.
    */
@@ -63,12 +93,14 @@ class Image implements BlockRenderer {
       $styles = $html->get_attribute('style') ?? '';
       $styles = $settingsController->parseStylesToArray($styles);
       $height = $styles['height'] ?? null;
-      if ($height && is_numeric($settingsController->parseNumberFromStringWithPixels($height))) {
-        $html->set_attribute('height', $settingsController->parseNumberFromStringWithPixels($height));
+      if ($height && $height !== 'auto' && is_numeric($settingsController->parseNumberFromStringWithPixels($height))) {
+        $height = $settingsController->parseNumberFromStringWithPixels($height);
+        $html->set_attribute('height', $height);
       }
 
       if (isset($parsedBlock['attrs']['width'])) {
-        $html->set_attribute('width', $settingsController->parseNumberFromStringWithPixels($parsedBlock['attrs']['width']));
+        $width = $settingsController->parseNumberFromStringWithPixels($parsedBlock['attrs']['width']);
+        $html->set_attribute('width', $width);
       }
       $blockContent = $html->get_updated_html();
     }
