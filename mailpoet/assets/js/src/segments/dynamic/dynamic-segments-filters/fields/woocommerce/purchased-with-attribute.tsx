@@ -204,6 +204,33 @@ export function PurchasedWithAttributeFields({
     ],
   );
 
+  const attributeValuesOnChange = useCallback(
+    (options: SelectOption[]): void => {
+      if (segment.attribute_type === 'local') {
+        void updateSegmentFilter(
+          {
+            attribute_term_ids: null,
+            attribute_local_values: (options || []).map(
+              (x: SelectOption) => x.value,
+            ),
+          },
+          filterIndex,
+        );
+      } else {
+        void updateSegmentFilter(
+          {
+            attribute_term_ids: (options || []).map(
+              (x: SelectOption) => x.value,
+            ),
+            attribute_local_values: null,
+          },
+          filterIndex,
+        );
+      }
+    },
+    [segment.attribute_type, updateSegmentFilter, filterIndex],
+  );
+
   return (
     <>
       <Select
@@ -234,29 +261,7 @@ export function PurchasedWithAttributeFields({
           placeholder={__('Search attributes terms', 'mailpoet')}
           options={attributeValueOptions}
           value={initialAttributeValues}
-          onChange={(options: SelectOption[]): void => {
-            if (segment.attribute_type === 'local') {
-              void updateSegmentFilter(
-                {
-                  attribute_term_ids: null,
-                  attribute_local_values: (options || []).map(
-                    (x: SelectOption) => x.value,
-                  ),
-                },
-                filterIndex,
-              );
-            } else {
-              void updateSegmentFilter(
-                {
-                  attribute_term_ids: (options || []).map(
-                    (x: SelectOption) => x.value,
-                  ),
-                  attribute_local_values: null,
-                },
-                filterIndex,
-              );
-            }
-          }}
+          onChange={attributeValuesOnChange}
         />
       )}
     </>
