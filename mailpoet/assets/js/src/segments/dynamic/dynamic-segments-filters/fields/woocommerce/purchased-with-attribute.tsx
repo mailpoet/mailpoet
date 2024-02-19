@@ -79,10 +79,10 @@ export function PurchasedWithAttributeFields({
     [localAttributeOptions],
   );
 
-  const combinedOptions = [
-    ...productAttributesOptions,
-    ...localAttributeOptions,
-  ];
+  const combinedOptions = useMemo(
+    () => [...productAttributesOptions, ...localAttributeOptions],
+    [productAttributesOptions, localAttributeOptions],
+  );
 
   const attributeValueOptions = useMemo(() => {
     if (segment.attribute_type === 'taxonomy') {
