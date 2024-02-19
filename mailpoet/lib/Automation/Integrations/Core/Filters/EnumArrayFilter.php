@@ -34,6 +34,10 @@ class EnumArrayFilter implements Filter {
     ]);
   }
 
+  public function getFieldParams(FilterData $data): array {
+    return [];
+  }
+
   public function matches(FilterData $data, $value): bool {
     $filterValue = $data->getArgs()['value'] ?? null;
     if (!is_array($value) || !is_array($filterValue)) {

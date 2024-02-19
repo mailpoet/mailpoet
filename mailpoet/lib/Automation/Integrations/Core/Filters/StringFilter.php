@@ -48,6 +48,10 @@ class StringFilter implements Filter {
     }
   }
 
+  public function getFieldParams(FilterData $data): array {
+    return [];
+  }
+
   public function matches(FilterData $data, $value): bool {
     $filterValue = $data->getArgs()['value'] ?? null;
     if (!is_string($value) || !is_string($filterValue)) {

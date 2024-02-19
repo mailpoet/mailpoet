@@ -286,6 +286,10 @@ class FilterHandlerTest extends MailPoetUnitTest {
         return Builder::object();
       }
 
+      public function getFieldParams(FilterData $data): array {
+        return [];
+      }
+
       public function matches(FilterData $data, $value): bool {
         return $data->getArgs()['value'] === $value;
       }

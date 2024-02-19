@@ -13,6 +13,8 @@ interface Filter {
 
   public function getArgsSchema(string $condition): ObjectSchema;
 
+  public function getFieldParams(FilterData $data): array;
+
   /** @param mixed $value */
   public function matches(FilterData $data, $value): bool;
 }

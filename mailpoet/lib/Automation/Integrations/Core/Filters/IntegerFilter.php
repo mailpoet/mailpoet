@@ -27,6 +27,10 @@ class IntegerFilter extends NumberFilter {
     }
   }
 
+  public function getFieldParams(FilterData $data): array {
+    return [];
+  }
+
   public function matches(FilterData $data, $value): bool {
     $matches = parent::matches($data, $value);
     if (!$matches) {
