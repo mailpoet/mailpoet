@@ -1,5 +1,8 @@
 import { __ } from '@wordpress/i18n';
-import { validateInTheLastParam } from './params/in-the-last';
+import {
+  formatInTheLastParam,
+  validateInTheLastParam,
+} from './params/in-the-last';
 import { FilterType } from '../store/types';
 
 export const filter: FilterType = {
@@ -18,6 +21,7 @@ export const filter: FilterType = {
     const label = options.find(({ id }) => id === args.value)?.name;
     return label ?? __('Unknown value', 'mailpoet');
   },
+  formatParams: ({ args }) => formatInTheLastParam(args),
   validateArgs: (args, _, field) => {
     if (!validateInTheLastParam(args)) {
       return false;
