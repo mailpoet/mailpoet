@@ -231,17 +231,28 @@ export type WindowSubscriptionProducts = {
   name: string;
 }[];
 
-export type WindowProductAttributes = {
-  id: string;
-  label: string;
+export type Term = {
+  term_id: string;
+  name: string;
+  slug: string;
   taxonomy: string;
-  terms: [];
-}[];
+};
+
+export type WindowProductAttributes = {
+  [key: string]: {
+    id: string;
+    label: string;
+    taxonomy: string;
+    terms: Term[];
+  };
+};
 
 export type WindowLocalProductAttributes = {
-  name: string;
-  values: string[];
-}[];
+  [key: string]: {
+    name: string;
+    values: string[];
+  };
+};
 
 export type WindowProductCategories = {
   id: string;
