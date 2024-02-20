@@ -49,4 +49,11 @@ class SettingsControllerTest extends \MailPoetTest {
     verify($this->settingsController->translateSlugToFontSize('x-large'))->equals('42px');
     verify($this->settingsController->translateSlugToFontSize('unknown'))->equals('unknown');
   }
+
+  public function testItCanTranslateColorSlug() {
+    verify($this->settingsController->translateSlugToColor('black'))->equals('#000000');
+    verify($this->settingsController->translateSlugToColor('white'))->equals('#ffffff');
+    verify($this->settingsController->translateSlugToColor('cyan-bluish-gray'))->equals('#abb8c3');
+    verify($this->settingsController->translateSlugToColor('pale-pink'))->equals('#f78da7');
+  }
 }

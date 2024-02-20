@@ -44,7 +44,9 @@ class Button implements BlockRenderer {
     // Background
     $themeData = $settingsController->getTheme()->get_data();
     $defaultColor = $themeData['styles']['blocks']['core/button']['color']['background'] ?? 'transparent';
-    $bgColor = $parsedBlock['attrs']['style']['color']['background'] ?? $defaultColor;
+    $colorSetBySlug = isset($parsedBlock['attrs']['backgroundColor']) ? $settingsController->translateSlugToColor($parsedBlock['attrs']['backgroundColor']) : null;
+    $colorSetByUser = $colorSetBySlug ?: ($parsedBlock['attrs']['style']['color']['background'] ?? null);
+    $bgColor = $colorSetByUser ?? $defaultColor;
     $markup = str_replace('{backgroundColor}', $bgColor, $markup);
 
     // Styles attributes
@@ -55,6 +57,7 @@ class Button implements BlockRenderer {
       'box-sizing' => 'border-box',
     ];
     $linkStyles = [
+      'background-color' => $bgColor,
       'display' => 'block',
       'line-height' => '120%',
       'margin' => '0',
@@ -87,6 +90,10 @@ class Button implements BlockRenderer {
     // Typography + colors
     $typography = $parsedBlock['attrs']['style']['typography'] ?? [];
     $color = $parsedBlock['attrs']['style']['color'] ?? [];
+    $colorSetBySlug = isset($parsedBlock['attrs']['textColor']) ? $settingsController->translateSlugToColor($parsedBlock['attrs']['textColor']) : null;
+    if ($colorSetBySlug) {
+      $color['text'] = $colorSetBySlug;
+    }
     $typography['fontSize'] = $parsedBlock['email_attrs']['font-size'] ?? 'inherit';
     $typography['textDecoration'] = $typography['textDecoration'] ?? ($parsedBlock['email_attrs']['text-decoration'] ?? 'inherit');
     $linkStyles = array_merge($linkStyles, wp_style_engine_get_styles(['typography' => $typography, 'color' => $color])['declarations']);

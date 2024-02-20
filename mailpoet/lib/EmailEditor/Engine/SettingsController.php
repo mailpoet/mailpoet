@@ -188,4 +188,14 @@ class SettingsController {
     }
     return $fontSize;
   }
+
+  public function translateSlugToColor(string $colorSlug): string {
+    $settings = $this->getTheme()->get_settings();
+    foreach ($settings['color']['palette']['default'] as $colorDefinition) {
+      if ($colorDefinition['slug'] === $colorSlug) {
+        return $colorDefinition['color'];
+      }
+    }
+    return $colorSlug;
+  }
 }
