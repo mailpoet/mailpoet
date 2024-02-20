@@ -22,6 +22,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooCommerceNumberOfOrders;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSingleOrderValue;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceSubscription;
+use MailPoet\Segments\DynamicSegments\Filters\WooCommerceTag;
 
 class FilterDataMapperTest extends \MailPoetTest {
   /** @var FilterDataMapper */
@@ -1139,6 +1140,28 @@ class FilterDataMapperTest extends \MailPoetTest {
       'attribute_type' => 'local',
       'attribute_local_name' => 'color',
       'attribute_local_values' => ['red', 'blue'],
+    ]);
+  }
+
+  public function testItMapsWooCommercePurchaseTag(): void {
+    $data = ['filters' => [[
+      'segmentType' => DynamicSegmentFilterData::TYPE_WOOCOMMERCE,
+      'action' => WooCommerceTag::ACTION,
+      'tag_ids' => ['1', '3'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+    ]]];
+    $filters = $this->mapper->map($data);
+    verify($filters)->isArray();
+    verify($filters)->arrayCount(1);
+    $filter = reset($filters);
+    $this->assertInstanceOf(DynamicSegmentFilterData::class, $filter);
+    verify($filter)->instanceOf(DynamicSegmentFilterData::class);
+    verify($filter->getFilterType())->equals(DynamicSegmentFilterData::TYPE_WOOCOMMERCE);
+    verify($filter->getAction())->equals(WooCommerceTag::ACTION);
+    verify($filter->getData())->equals([
+      'tag_ids' => ['1', '3'],
+      'operator' => DynamicSegmentFilterData::OPERATOR_ANY,
+      'connect' => DynamicSegmentFilterData::CONNECT_TYPE_AND,
     ]);
   }
 }
