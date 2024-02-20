@@ -13,6 +13,8 @@ use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 
 class IfElseAction implements Action {
+  public const KEY = 'core:if-else';
+
   /** @var FilterHandler */
   private $filterHandler;
 
@@ -23,7 +25,7 @@ class IfElseAction implements Action {
   }
 
   public function getKey(): string {
-    return 'core:if-else';
+    return self::KEY;
   }
 
   public function getName(): string {

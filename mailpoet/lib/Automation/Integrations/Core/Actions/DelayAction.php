@@ -12,8 +12,10 @@ use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
 
 class DelayAction implements Action {
+  public const KEY = 'core:delay';
+
   public function getKey(): string {
-    return 'core:delay';
+    return self::KEY;
   }
 
   public function getName(): string {
