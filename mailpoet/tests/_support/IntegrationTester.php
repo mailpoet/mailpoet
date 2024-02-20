@@ -107,6 +107,10 @@ class IntegrationTester extends \Codeception\Actor {
     return $term['term_id'];
   }
 
+  public function createWooTag(string $name): int {
+    return $this->createWordPressTerm($name, 'product_tag');
+  }
+
   public function createCustomer(string $email, string $role = 'customer'): int {
     return $this->createWordPressUser($email, $role);
   }
