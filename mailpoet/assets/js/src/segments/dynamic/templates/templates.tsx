@@ -275,16 +275,26 @@ export const templates: SegmentTemplate[] = [
       },
     ],
   },
-  // {
-  //   name: __('Recent Clickers', 'mailpoet'),
-  //   slug: 'recent-clickers',
-  //   category: SegmentTemplateCategories.ENGAGEMENT,
-  //   description: __(
-  //     'Contacts who have clicked on an email in the last 7 days.',
-  //     'mailpoet',
-  //   ),
-  //   isEssential: false,
-  // },
+  {
+    name: __('Recent Clickers', 'mailpoet'),
+    slug: 'recent-clickers',
+    category: SegmentTemplateCategories.ENGAGEMENT,
+    description: __(
+      'Contacts who have clicked on an email in the last 7 days.',
+      'mailpoet',
+    ),
+    filters: [
+      {
+        segmentType: 'email',
+        action: 'numberOfClicks',
+        operator: 'more',
+        timeframe: Timeframe.IN_THE_LAST,
+        clicks: '0',
+        days: '7',
+      },
+    ],
+    isEssential: false,
+  },
   {
     name: __('Recent Openers', 'mailpoet'),
     slug: 'recent-openers',
