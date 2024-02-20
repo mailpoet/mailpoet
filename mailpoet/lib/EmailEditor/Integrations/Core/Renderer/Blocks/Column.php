@@ -15,20 +15,30 @@ class Column implements BlockRenderer {
     return str_replace(
       '{column_content}',
       $content,
-      $this->getBlockWrapper($parsedBlock, $settingsController)
+      $this->getBlockWrapper($blockContent, $parsedBlock, $settingsController)
     );
   }
 
   /**
    * Based on MJML <mj-column>
    */
-  private function getBlockWrapper(array $parsedBlock, SettingsController $settingsController): string {
+  private function getBlockWrapper(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
-    $backgroundColor = $parsedBlock['attrs']['style']['color']['background'] ?? 'none';
     $paddingBottom = $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px';
     $paddingLeft = $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px';
     $paddingRight = $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px';
     $paddingTop = $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px';
+
+    $colorStyles = [];
+    if (isset($parsedBlock['attrs']['style']['color']['background'])) {
+      $colorStyles['background-color'] = $parsedBlock['attrs']['style']['color']['background'];
+      $colorStyles['background'] = $parsedBlock['attrs']['style']['color']['background'];
+    }
+    if (isset($parsedBlock['attrs']['style']['color']['text'])) {
+      $colorStyles['color'] = $parsedBlock['attrs']['style']['color']['text'];
+    }
+
+    $classes = $this->getClassesFromElement($blockContent, ['tag_name' => 'div']);
 
     $verticalAlign = 'top';
     // Because `stretch` is not a valid value for the `vertical-align` property, we don't override the default value
@@ -40,19 +50,22 @@ class Column implements BlockRenderer {
       'width' => $width,
       'vertical-align' => $verticalAlign,
     ];
+    $mainCellClasses = 'email_column_wrap';
+
     // The default column alignment is `stretch to fill` which means that we need to set the background color to the main cell
     // to create a feeling of a stretched column
     if (!isset($parsedBlock['attrs']['verticalAlignment']) || $parsedBlock['attrs']['verticalAlignment'] === 'stretch') {
-      $mainCellStyles['background-color'] = $backgroundColor;
+      $mainCellStyles = array_merge($mainCellStyles, $colorStyles);
+      $mainCellClasses .= ' ' . $classes;
     }
 
     return '
-      <td class="block" style="' . $settingsController->convertStylesToString($mainCellStyles) . '">
-        <div class="email_column" style="background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';width:100%;max-width:' . $width . ';font-size:0px;text-align:left;display:inline-block;">
-          <table class="email_column" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:' . $backgroundColor . ';background-color:' . $backgroundColor . ';min-width:100%;width:100%;max-width:' . $width . ';vertical-align:top;" width="' . $width . '">
+      <td class="block ' . esc_attr($mainCellClasses) . '" style="' . esc_attr($settingsController->convertStylesToString($mainCellStyles)) . '">
+        <div class="email_column" style="width:100%;max-width:' . esc_attr($width) . ';font-size:0px;text-align:left;display:inline-block;">
+          <table class="email_column ' . esc_attr($classes) . '" border="0" cellpadding="0" cellspacing="0" role="presentation" style="' . esc_attr($settingsController->convertStylesToString($colorStyles)) . ';min-width:100%;width:100%;max-width:' . esc_attr($width) . ';vertical-align:top;" width="' . esc_attr($width) . '">
             <tbody>
               <tr>
-                <td align="left" style="font-size:0px;padding-left:' . $paddingLeft . ';padding-right:' . $paddingRight . ';padding-bottom:' . $paddingBottom . ';padding-top:' . $paddingTop . ';">
+                <td align="left" style="font-size:0px;padding-left:' . esc_attr($paddingLeft) . ';padding-right:' . esc_attr($paddingRight) . ';padding-bottom:' . esc_attr($paddingBottom) . ';padding-top:' . esc_attr($paddingTop) . ';">
                   <div style="text-align:left;">{column_content}</div>
                 </td>
               </tr>
@@ -61,5 +74,17 @@ class Column implements BlockRenderer {
         </div>
       </td>
     ';
+  }
+
+  /**
+   * @param array{tag_name: string, class_name?: string} $tag
+   */
+  private function getClassesFromElement($blockContent, array $tag): string {
+    $html = new \WP_HTML_Tag_Processor($blockContent);
+    $elementClass = '';
+    if ($html->next_tag($tag)) {
+      $elementClass = $html->get_attribute('class') ?? '';
+    }
+    return $elementClass;
   }
 }

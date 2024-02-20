@@ -87,4 +87,24 @@ class ColumnTest extends \MailPoetTest {
     $this->checkValidHTML($rendered);
     $this->assertStringContainsString('vertical-align:bottom;', $rendered);
   }
+
+  public function testItSetsCustomColorAndBackground(): void {
+    $parsedColumn = $this->parsedColumn;
+    $parsedColumn['attrs']['style']['color']['text'] = '#123456';
+    $parsedColumn['attrs']['style']['color']['background'] = '#654321';
+    $rendered = $this->columnRenderer->render('', $parsedColumn, $this->settingsController);
+    $this->checkValidHTML($rendered);
+    $this->assertStringContainsString('color:#123456;', $rendered);
+    $this->assertStringContainsString('background-color:#654321;', $rendered);
+    $this->assertStringContainsString('background:#654321;', $rendered);
+  }
+
+  public function testItPreservesClassesSetByEditor(): void {
+    $parsedColumn = $this->parsedColumn;
+    $content = '<div class="wp-block-column editor-class-1 another-class"></div>';
+    $parsedColumn['attrs']['style']['color']['background'] = '#654321';
+    $rendered = $this->columnRenderer->render($content, $parsedColumn, $this->settingsController);
+    $this->checkValidHTML($rendered);
+    $this->assertStringContainsString('wp-block-column editor-class-1 another-class', $rendered);
+  }
 }
