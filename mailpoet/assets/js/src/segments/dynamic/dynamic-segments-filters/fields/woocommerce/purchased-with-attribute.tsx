@@ -19,6 +19,7 @@ export function validatePurchasedWithAttribute(
 ): boolean {
   const purchasedProductWithAttributeIsInvalid =
     !formItems.operator ||
+    !formItems.attribute_type ||
     (formItems.attribute_type === 'taxonomy' &&
       (formItems.attribute_taxonomy_slug === undefined ||
         !Array.isArray(formItems.attribute_term_ids) ||
