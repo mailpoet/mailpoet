@@ -15,8 +15,6 @@ use WP_Term;
 class WooCommerceCategory implements Filter {
   const ACTION_CATEGORY = 'purchasedCategory';
 
-  const ACTION_PRODUCT = 'purchasedProduct';
-
   /** @var EntityManager */
   private $entityManager;
 
