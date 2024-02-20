@@ -294,16 +294,26 @@ export const templates: SegmentTemplate[] = [
     ],
     isEssential: false,
   },
-  // {
-  //   name: __('Frequently uses discounts', 'mailpoet'),
-  //   slug: 'frequently-uses-discounts',
-  //   category: SegmentTemplateCategories.SHOPPING_BEHAVIOR,
-  //   description: __(
-  //     'Customers who have regularly used coupons in the last 90 days.',
-  //     'mailpoet',
-  //   ),
-  //   isEssential: false,
-  // },
+  {
+    name: __('Frequently uses discounts', 'mailpoet'),
+    slug: 'frequently-uses-discounts',
+    category: SegmentTemplateCategories.SHOPPING_BEHAVIOR,
+    description: __(
+      'Customers who have regularly used coupons in the last 90 days.',
+      'mailpoet',
+    ),
+    filters: [
+      {
+        segmentType: 'woocommerce',
+        action: WooCommerceActionTypes.NUMBER_OF_ORDERS_WITH_COUPON,
+        number_of_orders_type: '>',
+        number_of_orders_count: 2,
+        timeframe: Timeframe.IN_THE_LAST,
+        days: '90',
+      },
+    ],
+    isEssential: false,
+  },
 ];
 
 export const templateCategories = [
