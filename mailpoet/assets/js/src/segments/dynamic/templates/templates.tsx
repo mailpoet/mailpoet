@@ -81,16 +81,37 @@ export const templates: SegmentTemplate[] = [
     ],
     filtersConnect: SegmentConnectTypes.OR,
   },
-  // {
-  //   name: __('Unengaged Subscribers', 'mailpoet'),
-  //   slug: 'unengaged-subscribers',
-  //   category: SegmentTemplateCategories.ENGAGEMENT,
-  //   description: __(
-  //     'Contacts who haven’t interacted with your emails, haven’t made a purchase, or haven’t visited your page in the last 6 months.',
-  //     'mailpoet',
-  //   ),
-  //   isEssential: true,
-  // },
+  {
+    name: __('Unengaged Subscribers', 'mailpoet'),
+    slug: 'unengaged-subscribers',
+    category: SegmentTemplateCategories.ENGAGEMENT,
+    description: __(
+      'Contacts who haven’t interacted with your emails, haven’t made a purchase, or haven’t visited your page in the last 6 months.',
+      'mailpoet',
+    ),
+    filters: [
+      {
+        segmentType: 'userRole',
+        action: 'lastEngagementDate',
+        operator: 'notInTheLast',
+        value: '180',
+      },
+      {
+        segmentType: 'userRole',
+        action: 'subscribedDate',
+        operator: 'notInTheLast',
+        value: '210',
+      },
+      {
+        segmentType: 'email',
+        action: 'numberReceived',
+        operator: 'more',
+        emails: '9',
+        timeframe: Timeframe.ALL_TIME,
+      },
+    ],
+    isEssential: true,
+  },
   // {
   //   name: __('First-Time Buyers', 'mailpoet'),
   //   slug: 'first-time-buyers',
