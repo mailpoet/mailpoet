@@ -43,6 +43,11 @@ class Column implements BlockRenderer {
     $borderTopRightRadius = $parsedBlock['attrs']['style']['border']['radius']['topRight'] ?? $borderRadius;
 
     $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
+    // Because width is primarily used for the max-width property, we need to add the left and right border width to it
+    $width = $settingsController->parseNumberFromStringWithPixels($width);
+    $width += $settingsController->parseNumberFromStringWithPixels($borderLeftWidth ?? '0px');
+    $width += $settingsController->parseNumberFromStringWithPixels($borderRightWidth ?? '0px');
+    $width = "{$width}px";
     $paddingBottom = $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px';
     $paddingLeft = $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px';
     $paddingRight = $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px';
@@ -66,12 +71,6 @@ class Column implements BlockRenderer {
     }
 
     $mainCellStyles = [
-      'border-collapse' => 'separate',
-      'border-bottom' => $borderBottomWidth . ' solid ' . $borderBottomColor,
-      'border-left' => $borderLeftWidth . ' solid ' . $borderLeftColor,
-      'border-top' => $borderTopWidth . ' solid ' . $borderTopColor,
-      'border-right' => $borderRightWidth . ' solid ' . $borderRightColor,
-      'border-radius' => $borderTopLeftRadius . ' ' . $borderTopRightRadius . ' ' . $borderBottomRightRadius . ' ' . $borderBottomLeftRadius,
       'width' => $width,
       'vertical-align' => $verticalAlign,
     ];
@@ -82,8 +81,26 @@ class Column implements BlockRenderer {
       $mainCellStyles = array_merge($mainCellStyles, $colorStyles);
     }
 
+    $borderStyles = '';
+    if ($borderBottomWidth !== '0px') {
+      $borderStyles .= 'border-bottom:' . $borderBottomWidth . ' solid ' . $borderBottomColor . ';';
+    }
+    if ($borderLeftWidth !== '0px') {
+      $borderStyles .= 'border-left:' . $borderLeftWidth . ' solid ' . $borderLeftColor . ';';
+    }
+    if ($borderRightWidth !== '0px') {
+      $borderStyles .= 'border-right:' . $borderRightWidth . ' solid ' . $borderRightColor . ';';
+    }
+    if ($borderTopWidth !== '0px') {
+      $borderStyles .= 'border-top:' . $borderTopWidth . ' solid ' . $borderTopColor . ';';
+    }
+    if ($borderStyles !== '') {
+      $borderStyles .= 'border-radius:' . $borderTopLeftRadius . ' ' . $borderTopRightRadius . ' ' . $borderBottomRightRadius . ' ' . $borderBottomLeftRadius . ';';
+      $borderStyles .= 'box-sizing:border-box;';
+    }
+
     return '
-      <td class="block ' . esc_attr($classes) . '" style="' . esc_attr($settingsController->convertStylesToString($mainCellStyles)) . '">
+      <td class="block ' . esc_attr($classes) . '" style="' . esc_attr($borderStyles . $settingsController->convertStylesToString($mainCellStyles)) . '">
         <div class="email_column" style="width:100%;max-width:' . esc_attr($width) . ';font-size:0px;text-align:left;display:inline-block;">
           <table class="email_column ' . esc_attr($classes) . '" border="0" cellpadding="0" cellspacing="0" role="presentation" style="' . esc_attr($settingsController->convertStylesToString($colorStyles)) . ';min-width:100%;width:100%;max-width:' . esc_attr($width) . ';vertical-align:top;" width="' . esc_attr($width) . '">
             <tbody>

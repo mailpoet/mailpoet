@@ -74,6 +74,23 @@ class Columns implements BlockRenderer {
       $layoutPaddingRight = '0px';
     }
 
+    $borderStyles = '';
+    if ($borderBottomWidth !== '0px') {
+      $borderStyles .= 'border-bottom:' . $borderBottomWidth . ' solid ' . $borderBottomColor . ';';
+    }
+    if ($borderLeftWidth !== '0px') {
+      $borderStyles .= 'border-left:' . $borderLeftWidth . ' solid ' . $borderLeftColor . ';';
+    }
+    if ($borderRightWidth !== '0px') {
+      $borderStyles .= 'border-right:' . $borderRightWidth . ' solid ' . $borderRightColor . ';';
+    }
+    if ($borderTopWidth !== '0px') {
+      $borderStyles .= 'border-top:' . $borderTopWidth . ' solid ' . $borderTopColor . ';';
+    }
+    if ($borderStyles !== '') {
+      $borderStyles .= 'border-radius:' . $borderTopLeftRadius . ' ' . $borderTopRightRadius . ' ' . $borderBottomRightRadius . ' ' . $borderBottomLeftRadius . ';';
+    }
+
     return '
       <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="width:' . $width . ';" width="' . $width . '"><tr><td style="font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
       <div style="margin-top:' . $marginTop . ';max-width:' . $width . ';padding-left:' . $layoutPaddingLeft . ';padding-right:' . $layoutPaddingRight . ';">
@@ -92,11 +109,7 @@ class Columns implements BlockRenderer {
                 font-size:0px;
                 background:' . $backgroundColor . ';
                 background-color:' . $backgroundColor . ';
-                border-bottom:' . $borderBottomWidth . ' solid ' . $borderBottomColor . ';
-                border-left:' . $borderLeftWidth . ' solid ' . $borderLeftColor . ';
-                border-top:' . $borderTopWidth . ' solid ' . $borderTopColor . ';
-                border-right:' . $borderRightWidth . ' solid ' . $borderRightColor . ';
-                border-radius:' . $borderTopLeftRadius . ' ' . $borderTopRightRadius . ' ' . $borderBottomRightRadius . ' ' . $borderBottomLeftRadius . ';
+                ' . $borderStyles . '
                 padding-left:' . $paddingLeft . ';
                 padding-right:' . $paddingRight . ';
                 padding-bottom:' . $paddingBottom . ';
