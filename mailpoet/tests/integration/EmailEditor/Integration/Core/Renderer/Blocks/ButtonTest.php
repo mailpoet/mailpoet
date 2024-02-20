@@ -166,4 +166,26 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('bgcolor="#32373c"');
     verify($output)->stringContainsString('background:#32373c;');
   }
+
+  public function testItRendersBackgroundColorSetBySlug(): void {
+    unset($this->parsedButton['attrs']['style']['color']);
+    unset($this->parsedButton['attrs']['style']['spacing']['padding']);
+    $this->parsedButton['attrs']['backgroundColor'] = 'black';
+    $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
+    // For other blocks this is handled by CSS-inliner, but for button we need to handle it manually
+    // because of special email HTML markup
+    verify($output)->stringContainsString('bgcolor="#000000"');
+    verify($output)->stringContainsString('background:#000000;');
+    verify($output)->stringContainsString('background-color:#000000;');
+  }
+
+  public function testItRendersFontColorSetBySlug(): void {
+    unset($this->parsedButton['attrs']['style']['color']);
+    unset($this->parsedButton['attrs']['style']['spacing']['padding']);
+    $this->parsedButton['attrs']['textColor'] = 'white';
+    $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
+    // For other blocks this is handled by CSS-inliner, but for button we need to handle it manually
+    // because of special email HTML markup
+    verify($output)->stringContainsString('color:#ffffff');
+  }
 }

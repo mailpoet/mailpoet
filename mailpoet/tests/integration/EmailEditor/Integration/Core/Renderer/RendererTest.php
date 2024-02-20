@@ -28,6 +28,17 @@ class RendererTest extends \MailPoetTest {
     verify($buttonHtml)->stringContainsString('background:#32373c');
   }
 
+  public function testButtonDefaultStylesDontOverwriteUserSetStyles() {
+    $emailPost = new \WP_Post((object)[
+      'post_content' => '<!-- wp:button {"backgroundColor":"white","textColor":"vivid-cyan-blue"} --><div class="wp-block-button"><a class="wp-block-button__link has-background wp-element-button">Button</a></div><!-- /wp:button -->',
+    ]);
+    $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
+    $buttonHtml = $this->extractBlockHtml($rendered['html'], 'wp-block-button', 'td');
+    verify($buttonHtml)->stringContainsString('color:#0693e3');
+    verify($buttonHtml)->stringContainsString('background:#ffffff');
+    verify($buttonHtml)->stringContainsString('background-color:#ffffff');
+  }
+
   public function testItInlinesHeadingFontSize() {
     $emailPost = new \WP_Post((object)[
       'post_content' => '<!-- wp:heading {"level":1,"style":{"typography":{"fontSize":"large"}}} --><h1 class="wp-block-heading">Hello</h1><!-- /wp:heading -->',
