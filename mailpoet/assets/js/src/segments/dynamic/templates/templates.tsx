@@ -5,6 +5,7 @@ import {
   SegmentTemplateCategories,
   Timeframe,
 } from '../types';
+import { WooCommerceActionTypes } from '../dynamic-segments-filters/woocommerce-options';
 
 export const templates: SegmentTemplate[] = [
   {
@@ -273,16 +274,26 @@ export const templates: SegmentTemplate[] = [
       },
     ],
   },
-  // {
-  //   name: __('Used a discount code', 'mailpoet'),
-  //   slug: 'used-a-discount-code',
-  //   category: SegmentTemplateCategories.SHOPPING_BEHAVIOR,
-  //   description: __(
-  //     'Customers who made a purchase with a coupon code in the last 30 days.',
-  //     'mailpoet',
-  //   ),
-  //   isEssential: false,
-  // },
+  {
+    name: __('Used a discount code', 'mailpoet'),
+    slug: 'used-a-discount-code',
+    category: SegmentTemplateCategories.SHOPPING_BEHAVIOR,
+    description: __(
+      'Customers who made a purchase with a coupon code in the last 30 days.',
+      'mailpoet',
+    ),
+    filters: [
+      {
+        segmentType: 'woocommerce',
+        action: WooCommerceActionTypes.NUMBER_OF_ORDERS_WITH_COUPON,
+        number_of_orders_type: '>',
+        number_of_orders_count: 0,
+        timeframe: Timeframe.IN_THE_LAST,
+        days: '30',
+      },
+    ],
+    isEssential: false,
+  },
   // {
   //   name: __('Frequently uses discounts', 'mailpoet'),
   //   slug: 'frequently-uses-discounts',
