@@ -303,23 +303,34 @@ export const templates: SegmentTemplate[] = [
     ],
     isEssential: false,
   },
-  // {
-  //   name: __('Non-Openers', 'mailpoet'),
-  //   slug: 'non-openers',
-  //   category: SegmentTemplateCategories.ENGAGEMENT,
-  //   description: __('Contacts who have received but haven’t opened an email in the last 90 days.', 'mailpoet'),
-  //   isEssential: false,
-  //   filters: [
-  //     {
-  //       segmentType: 'email',
-  //       action: 'opensAbsoluteCount',
-  //       operator: 'equals',
-  //       timeframe: Timeframe.IN_THE_LAST,
-  //       opens: '0',
-  //       days: '90',
-  //     },
-  //   ],
-  // },
+  {
+    name: __('Non-Openers', 'mailpoet'),
+    slug: 'non-openers',
+    category: SegmentTemplateCategories.ENGAGEMENT,
+    description: __(
+      'Contacts who have received but haven’t opened an email in the last 90 days.',
+      'mailpoet',
+    ),
+    isEssential: false,
+    filters: [
+      {
+        segmentType: 'email',
+        action: 'numberReceived',
+        operator: 'more',
+        timeframe: Timeframe.IN_THE_LAST,
+        emails: '0',
+        days: '90',
+      },
+      {
+        segmentType: 'email',
+        action: 'opensAbsoluteCount',
+        operator: 'equals',
+        timeframe: Timeframe.IN_THE_LAST,
+        opens: '0',
+        days: '90',
+      },
+    ],
+  },
   // {
   //   name: __('Recent Clickers', 'mailpoet'),
   //   slug: 'recent-clickers',
