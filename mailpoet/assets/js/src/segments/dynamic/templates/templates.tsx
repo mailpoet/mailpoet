@@ -6,6 +6,7 @@ import {
   Timeframe,
 } from '../types';
 import { WooCommerceActionTypes } from '../dynamic-segments-filters/woocommerce-options';
+import { DateOperator } from '../dynamic-segments-filters/fields/date-fields';
 
 export const templates: SegmentTemplate[] = [
   {
@@ -168,16 +169,24 @@ export const templates: SegmentTemplate[] = [
     ],
     isEssential: true,
   },
-  // {
-  //   name: __('First-Time Buyers', 'mailpoet'),
-  //   slug: 'first-time-buyers',
-  //   category: SegmentTemplateCategories.PURCHASE_HISTORY,
-  //   description: __(
-  //     'Customers who have made their first purchase in the last 30 days.',
-  //     'mailpoet',
-  //   ),
-  //   isEssential: true,
-  // },
+  {
+    name: __('First-Time Buyers', 'mailpoet'),
+    slug: 'first-time-buyers',
+    category: SegmentTemplateCategories.PURCHASE_HISTORY,
+    description: __(
+      'Customers who have made their first purchase in the last 30 days.',
+      'mailpoet',
+    ),
+    filters: [
+      {
+        segmentType: 'woocommerce',
+        action: 'firstOrder',
+        operator: DateOperator.IN_THE_LAST,
+        value: '30',
+      },
+    ],
+    isEssential: true,
+  },
   {
     name: __('Recent Buyers', 'mailpoet'),
     slug: 'recent-buyers',
