@@ -19,9 +19,9 @@ class Image implements BlockRenderer {
     $caption = $parsedHtml['caption'];
 
     $parsedBlock = $this->addImageSizeWhenMissing($parsedBlock, $imageUrl, $settingsController);
-    $image = $this->applyRoundedStyle($image, $parsedBlock);
     $image = $this->addImageDimensions($image, $parsedBlock, $settingsController);
     $image = $this->applyImageBorderStyle($image, $parsedBlock, $settingsController);
+    $image = $this->applyRoundedStyle($image, $parsedBlock);
 
     return str_replace(
       ['{image_content}', '{caption_content}'],
@@ -35,6 +35,7 @@ class Image implements BlockRenderer {
     if (isset($parsedBlock['attrs']['className']) && strpos($parsedBlock['attrs']['className'], 'is-style-rounded') !== false) {
       // If the image should be in a circle, we need to set the border-radius to 9999px to make it the same as is in the editor
       // This style cannot be applied on the wrapper, and we need to set it directly on the image
+      $blockContent = $this->removeStyleAttributeFromElement($blockContent, ['tag_name' => 'img'], 'border-radius');
       $blockContent = $this->addStyleToElement($blockContent, ['tag_name' => 'img'], 'border-radius: 9999px;');
     }
 
@@ -49,7 +50,14 @@ class Image implements BlockRenderer {
       $maxWidth = $settingsController->parseNumberFromStringWithPixels($parsedBlock['email_attrs']['width'] ?? SettingsController::EMAIL_WIDTH);
       $imageSize = wp_getimagesize($imageUrl);
       $imageSize = $imageSize ? $imageSize[0] : $maxWidth;
-      $parsedBlock['attrs']['width'] = min($imageSize, $maxWidth) . 'px';
+      // Because width is primarily used for the max-width property, we need to add the left and right border width to it
+      $borderWidth = $parsedBlock['attrs']['style']['border']['width'] ?? '0px';
+      $borderLeftWidth = $parsedBlock['attrs']['style']['border']['left']['width'] ?? $borderWidth;
+      $borderRightWidth = $parsedBlock['attrs']['style']['border']['right']['width'] ?? $borderWidth;
+      $width = min($imageSize, $maxWidth);
+      $width += $settingsController->parseNumberFromStringWithPixels($borderLeftWidth ?? '0px');
+      $width += $settingsController->parseNumberFromStringWithPixels($borderRightWidth ?? '0px');
+      $parsedBlock['attrs']['width'] = "{$width}px";
     }
     return $parsedBlock;
   }
@@ -73,13 +81,23 @@ class Image implements BlockRenderer {
     $borderTopLeftRadius = $parsedBlock['attrs']['style']['border']['radius']['topLeft'] ?? $borderRadius;
     $borderTopRightRadius = $parsedBlock['attrs']['style']['border']['radius']['topRight'] ?? $borderRadius;
 
+
     $styles = [
-      'border-bottom' => $borderBottomWidth . ' solid ' . $borderBottomColor,
-      'border-left' => $borderLeftWidth . ' solid ' . $borderLeftColor,
-      'border-top' => $borderTopWidth . ' solid ' . $borderTopColor,
-      'border-right' => $borderRightWidth . ' solid ' . $borderRightColor,
+      'box-sizing' => 'border-box',
       'border-radius' => $borderTopLeftRadius . ' ' . $borderTopRightRadius . ' ' . $borderBottomRightRadius . ' ' . $borderBottomLeftRadius,
     ];
+    if ($borderBottomWidth !== '0px') {
+      $styles['border-bottom'] = $borderBottomWidth . ' solid ' . $borderBottomColor;
+    }
+    if ($borderLeftWidth !== '0px') {
+      $styles['border-left'] = $borderLeftWidth . ' solid ' . $borderLeftColor;
+    }
+    if ($borderRightWidth !== '0px') {
+      $styles['border-right'] = $borderRightWidth . ' solid ' . $borderRightColor;
+    }
+    if ($borderTopWidth !== '0px') {
+      $styles['border-top'] = $borderTopWidth . ' solid ' . $borderTopColor;
+    }
     return $this->addStyleToElement($blockContent, ['tag_name' => 'img'], $settingsController->convertStylesToString($styles));
   }
 
@@ -189,6 +207,21 @@ class Image implements BlockRenderer {
       $elementStyle = $html->get_attribute('style');
       $elementStyle = !empty($elementStyle) ? (rtrim($elementStyle, ';') . ';') : ''; // Adding semicolon if it's missing
       $elementStyle .= $style;
+      $html->set_attribute('style', $elementStyle);
+      $blockContent = $html->get_updated_html();
+    }
+
+    return $blockContent;
+  }
+
+  /**
+   * @param array{tag_name: string, class_name?: string} $tag
+   */
+  private function removeStyleAttributeFromElement($blockContent, array $tag, string $styleName): string {
+    $html = new \WP_HTML_Tag_Processor($blockContent);
+    if ($html->next_tag($tag)) {
+      $elementStyle = $html->get_attribute('style') ?? '';
+      $elementStyle = preg_replace('/' . $styleName . ':(.?[0-9]+px)+;?/', '', $elementStyle);
       $html->set_attribute('style', $elementStyle);
       $blockContent = $html->get_updated_html();
     }
