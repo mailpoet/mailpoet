@@ -99,6 +99,8 @@ export function mapFilterType(filter) {
         return 'city';
       case 'purchasedCategory':
         return 'purchased in category';
+      case 'purchasedTag':
+        return 'purchased with tag';
       case 'purchasedProduct':
         return 'purchased product';
       case 'subscribedDate':
