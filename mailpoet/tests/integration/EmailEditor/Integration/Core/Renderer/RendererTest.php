@@ -75,6 +75,30 @@ class RendererTest extends \MailPoetTest {
     verify($listStyle)->stringContainsString('background-color:#000000'); // black is #000000
   }
 
+  public function testItInlinesColumnsColors() {
+    $emailPost = new \WP_Post((object)[
+      'post_content' => '<!-- wp:columns {"backgroundColor":"vivid-green-cyan", "textColor":"black"} -->
+        <div class="wp-block-columns has-black-background-color has-luminous-vivid-orange-color"><!-- wp:column --><!-- /wp:column --><div>
+        <!-- /wp:columns -->',
+    ]);
+    $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
+    $style = $this->extractBlockStyle($rendered['html'], 'wp-block-columns', 'table');
+    verify($style)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
+    verify($style)->stringContainsString('background-color:#000000'); // black is #000000
+  }
+
+  public function testItInlinesColumnColors() {
+    $emailPost = new \WP_Post((object)[
+      'post_content' => '<!-- wp:column {"backgroundColor":"vivid-green-cyan", "textColor":"black"} -->
+        <div class="wp-block-column has-black-background-color has-luminous-vivid-orange-color"><div>
+        <!-- /wp:column -->',
+    ]);
+    $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
+    $style = $this->extractBlockStyle($rendered['html'], 'wp-block-column', 'td');
+    verify($style)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
+    verify($style)->stringContainsString('background-color:#000000'); // black is #000000
+  }
+
   private function extractBlockHtml(string $html, string $blockClass, string $tag): string {
     $doc = new \DOMDocument();
     $doc->loadHTML($html);

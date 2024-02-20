@@ -16,6 +16,7 @@ class ColumnsTest extends \MailPoetTest {
     'email_attrs' => [
       'width' => '784px',
     ],
+    'innerHTML' => '<div class="wp-block-columns"></div>',
     'innerBlocks' => [
       0 => [
         'blockName' => 'core/column',
@@ -81,5 +82,25 @@ class ColumnsTest extends \MailPoetTest {
     verify($rendered)->stringContainsString('padding-left:15px;');
     verify($rendered)->stringContainsString('padding-right:20px;');
     verify($rendered)->stringContainsString('padding-top:10px;');
+  }
+
+  public function testItSetsCustomColorAndBackground(): void {
+    $parsedColumns = $this->parsedColumns;
+    $parsedColumns['attrs']['style']['color']['text'] = '#123456';
+    $parsedColumns['attrs']['style']['color']['background'] = '#654321';
+    $rendered = $this->columnsRenderer->render('', $parsedColumns, $this->settingsController);
+    $this->checkValidHTML($rendered);
+    $this->assertStringContainsString('color:#123456;', $rendered);
+    $this->assertStringContainsString('background-color:#654321;', $rendered);
+    $this->assertStringContainsString('background:#654321;', $rendered);
+  }
+
+  public function testItPreservesClassesSetByEditor(): void {
+    $parsedColumns = $this->parsedColumns;
+    $content = '<div class="wp-block-columns editor-class-1 another-class"></div>';
+    $parsedColumns['attrs']['style']['color']['background'] = '#654321';
+    $rendered = $this->columnsRenderer->render($content, $parsedColumns, $this->settingsController);
+    $this->checkValidHTML($rendered);
+    $this->assertStringContainsString('wp-block-columns editor-class-1 another-class', $rendered);
   }
 }
