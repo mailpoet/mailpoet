@@ -37,30 +37,11 @@ export const templates: SegmentTemplate[] = [
     filters: [
       {
         segmentType: 'userRole',
-        action: 'lastClickDate',
-        operator: 'inTheLast',
-        value: '30',
-      },
-      {
-        segmentType: 'userRole',
-        action: 'lastOpenDate',
-        operator: 'inTheLast',
-        value: '30',
-      },
-      {
-        segmentType: 'userRole',
-        action: 'lastPurchaseDate',
-        operator: 'inTheLast',
-        value: '30',
-      },
-      {
-        segmentType: 'userRole',
-        action: 'lastSendingDate',
+        action: 'lastEngagementDate',
         operator: 'inTheLast',
         value: '30',
       },
     ],
-    filtersConnect: SegmentConnectTypes.OR,
   },
   {
     name: __('Engaged Subscribers (3 months)', 'mailpoet'),
@@ -74,30 +55,11 @@ export const templates: SegmentTemplate[] = [
     filters: [
       {
         segmentType: 'userRole',
-        action: 'lastClickDate',
-        operator: 'inTheLast',
-        value: '90',
-      },
-      {
-        segmentType: 'userRole',
-        action: 'lastOpenDate',
-        operator: 'inTheLast',
-        value: '90',
-      },
-      {
-        segmentType: 'userRole',
-        action: 'lastPurchaseDate',
-        operator: 'inTheLast',
-        value: '90',
-      },
-      {
-        segmentType: 'userRole',
-        action: 'lastSendingDate',
+        action: 'lastEngagementDate',
         operator: 'inTheLast',
         value: '90',
       },
     ],
-    filtersConnect: SegmentConnectTypes.OR,
   },
   {
     name: __('Engaged Subscribers (6 months)', 'mailpoet'),
