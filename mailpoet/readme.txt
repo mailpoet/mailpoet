@@ -185,13 +185,13 @@ You have the liberty to choose how you send your emails: your own host (default,
 
 = Why should I use the MailPoet Sending Service? =
 
-Our free and paid plans offer unlimited amount of emails.
-
 Our global deliverability rate is 98.5%, often exceeding industry standards. We monitor each and every one of the millions of emails that we send for our users.
 
 Whether you send 10 or 100,000 emails a day, the MailPoet Sending Service routinely handles small business newsletters through to huge mailing lists with tens of thousands of subscribers.
 
 We highly encourage not to send with your host, [here’s why](https://kb.mailpoet.com/article/154-why-you-shouldnt-send-with-your-host).
+
+If you're just starting with your newsletter, we offer a free plan to get you started.
 
 = Can I filter specific categories out of my post notification? =
 
