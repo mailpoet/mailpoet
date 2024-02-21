@@ -28,7 +28,7 @@ import {
 import { useEntityBlockEditor, store as coreStore } from '@wordpress/core-data';
 import { storeName } from '../../store';
 import { AutosaveMonitor } from '../autosave';
-import { Sidebar } from '../sidebar/sidebar';
+import { BlockCompatibilityWarnings, Sidebar } from '../sidebar';
 import { Header } from '../header';
 import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
@@ -191,6 +191,8 @@ export function BlockEditor() {
           (isListviewSidebarOpened && <ListviewSidebar />)
         }
       />
+      {/* Rendering Warning component here ensures that the warning is displayed under the border configuration. */}
+      <BlockCompatibilityWarnings />
     </BlockEditorProvider>
   );
 }
