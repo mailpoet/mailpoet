@@ -73,25 +73,7 @@ export const templates: SegmentTemplate[] = [
     filters: [
       {
         segmentType: 'userRole',
-        action: 'lastClickDate',
-        operator: 'inTheLast',
-        value: '180',
-      },
-      {
-        segmentType: 'userRole',
-        action: 'lastOpenDate',
-        operator: 'inTheLast',
-        value: '180',
-      },
-      {
-        segmentType: 'userRole',
-        action: 'lastPurchaseDate',
-        operator: 'inTheLast',
-        value: '180',
-      },
-      {
-        segmentType: 'userRole',
-        action: 'lastSendingDate',
+        action: 'lastEngagementDate',
         operator: 'inTheLast',
         value: '180',
       },
