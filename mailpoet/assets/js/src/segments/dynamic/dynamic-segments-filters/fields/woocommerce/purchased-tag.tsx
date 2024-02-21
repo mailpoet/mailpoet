@@ -15,12 +15,12 @@ import {
 } from '../../../types';
 
 export function validatePurchasedTag(formItems: WooCommerceFormItem): boolean {
-  const purchasedCategoryIsInvalid =
+  const purchasedTagIsInvalid =
     formItems.tag_ids === undefined ||
     formItems.tag_ids.length === 0 ||
     !formItems.operator;
 
-  return !purchasedCategoryIsInvalid;
+  return !purchasedTagIsInvalid;
 }
 
 export function PurchasedTagFields({ filterIndex }: FilterProps): JSX.Element {
