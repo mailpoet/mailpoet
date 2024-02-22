@@ -25,8 +25,18 @@ class ThemeController {
     return $this->themeJson;
   }
 
+  public function getSettings(): array {
+    $emailEditorThemeSettings = $this->getTheme()->get_settings();
+    $siteThemeSettings = WP_Theme_JSON_Resolver::get_theme_data()->get_settings();
+    $emailEditorThemeSettings['color']['palette']['theme'] = [];
+    if (isset($siteThemeSettings['color']['palette']['theme'])) {
+      $emailEditorThemeSettings['color']['palette']['theme'] = $siteThemeSettings['color']['palette']['theme'];
+    }
+    return $emailEditorThemeSettings;
+  }
+
   public function getStylesheetForRendering(): string {
-    $emailThemeSettings = $this->getTheme()->get_settings();
+    $emailThemeSettings = $this->getSettings();
 
     $cssPresets = '';
     // Font family classes
@@ -38,7 +48,8 @@ class ThemeController {
       $cssPresets .= ".has-{$fontSize['slug']}-font-size { font-size: {$fontSize['size']}; } \n";
     }
     // Color palette classes
-    foreach ($emailThemeSettings['color']['palette']['default'] as $color) {
+    $colorDefinitions = array_merge($emailThemeSettings['color']['palette']['theme'], $emailThemeSettings['color']['palette']['default']);
+    foreach ($colorDefinitions as $color) {
       $cssPresets .= ".has-{$color['slug']}-color { color: {$color['color']}; } \n";
       $cssPresets .= ".has-{$color['slug']}-background-color { background-color: {$color['color']}; } \n";
     }
@@ -54,7 +65,7 @@ class ThemeController {
   }
 
   public function translateSlugToFontSize(string $fontSize): string {
-    $settings = $this->getTheme()->get_settings();
+    $settings = $this->getSettings();
     foreach ($settings['typography']['fontSizes']['default'] as $fontSizeDefinition) {
       if ($fontSizeDefinition['slug'] === $fontSize) {
         return $fontSizeDefinition['size'];
@@ -64,10 +75,11 @@ class ThemeController {
   }
 
   public function translateSlugToColor(string $colorSlug): string {
-    $settings = $this->getTheme()->get_settings();
-    foreach ($settings['color']['palette']['default'] as $colorDefinition) {
+    $settings = $this->getSettings();
+    $colorDefinitions = array_merge($settings['color']['palette']['theme'], $settings['color']['palette']['default']);
+    foreach ($colorDefinitions as $colorDefinition) {
       if ($colorDefinition['slug'] === $colorSlug) {
-        return $colorDefinition['color'];
+        return strtolower($colorDefinition['color']);
       }
     }
     return $colorSlug;

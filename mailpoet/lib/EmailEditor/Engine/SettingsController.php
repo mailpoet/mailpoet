@@ -54,7 +54,7 @@ class SettingsController {
   public function getSettings(): array {
     $coreDefaultSettings = get_default_block_editor_settings();
     $editorTheme = $this->getTheme();
-    $themeSettings = $editorTheme->get_settings();
+    $themeSettings = $this->themeController->getSettings();
 
     // body selector is later transformed to .editor-styles-wrapper
     // setting padding for bottom and top is needed because \WP_Theme_JSON::get_stylesheet() set them only for .wp-site-blocks selector
