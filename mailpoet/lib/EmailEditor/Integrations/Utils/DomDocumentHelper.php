@@ -47,4 +47,14 @@ class DomDocumentHelper {
   public function getOuterHtml(\DOMElement $element): string {
     return (string)$this->dom->saveHTML($element);
   }
+
+  public function getElementInnerHTML(\DOMElement $element): string {
+    $innerHTML = '';
+    $children = $element->childNodes;
+    foreach ($children as $child) {
+      if (!$child instanceof \DOMNode) continue;
+      $innerHTML .= $this->dom->saveHTML($child);
+    }
+    return $innerHTML;
+  }
 }
