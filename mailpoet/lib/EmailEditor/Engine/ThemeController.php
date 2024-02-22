@@ -2,18 +2,27 @@
 
 namespace MailPoet\EmailEditor\Engine;
 
+use WP_Theme_JSON;
+use WP_Theme_JSON_Resolver;
+
 /**
  * E-mail editor works with own theme.json which defines settings for the editor and styles for the e-mail.
  * This class is responsible for accessing data defined by the theme.json.
  */
 class ThemeController {
-  public function getTheme(): \WP_Theme_JSON {
-    $coreThemeData = \WP_Theme_JSON_Resolver::get_core_data();
+  private WP_Theme_JSON $themeJson;
+
+  public function getTheme(): WP_Theme_JSON {
+    if (isset($this->themeJson)) {
+      return $this->themeJson;
+    }
+    $coreThemeData = WP_Theme_JSON_Resolver::get_core_data();
     $themeJson = (string)file_get_contents(dirname(__FILE__) . '/theme.json');
     $themeJson = json_decode($themeJson, true);
     /** @var array $themeJson */
-    $coreThemeData->merge(new \WP_Theme_JSON($themeJson, 'default'));
-    return apply_filters('mailpoet_email_editor_theme_json', $coreThemeData);
+    $coreThemeData->merge(new WP_Theme_JSON($themeJson, 'default'));
+    $this->themeJson = apply_filters('mailpoet_email_editor_theme_json', $coreThemeData);
+    return $this->themeJson;
   }
 
   public function getStylesheetForRendering(): string {
