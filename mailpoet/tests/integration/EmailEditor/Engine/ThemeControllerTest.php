@@ -12,6 +12,7 @@ class ThemeControllerTest extends \MailPoetTest {
 
   public function testItGeneratesCssStylesForRenderer() {
     $css = $this->themeController->getStylesheetForRendering();
+    // Font families
     verify($css)->stringContainsString('.has-arial-font-family');
     verify($css)->stringContainsString('.has-comic-sans-ms-font-family');
     verify($css)->stringContainsString('.has-courier-new-font-family');
@@ -39,6 +40,25 @@ class ThemeControllerTest extends \MailPoetTest {
     verify($css)->stringContainsString('.has-medium-font-size');
     verify($css)->stringContainsString('.has-large-font-size');
     verify($css)->stringContainsString('.has-x-large-font-size');
+
+    // Font sizes
+    verify($css)->stringContainsString('.has-small-font-size');
+    verify($css)->stringContainsString('.has-medium-font-size');
+    verify($css)->stringContainsString('.has-large-font-size');
+    verify($css)->stringContainsString('.has-x-large-font-size');
+
+    // Colors
+    verify($css)->stringContainsString('.has-black-color');
+    verify($css)->stringContainsString('.has-black-background-color');
+
+    verify($css)->stringContainsString('.has-black-color');
+    verify($css)->stringContainsString('.has-black-background-color');
+
+    $this->checkCorrectThemeConfiguration();
+    if (wp_get_theme()->get('Name') === 'Twenty Twenty-One') {
+      verify($css)->stringContainsString('.has-yellow-background-color');
+      verify($css)->stringContainsString('.has-yellow-color');
+    }
   }
 
   public function testItCanTranslateFontSizeSlug() {
@@ -54,5 +74,29 @@ class ThemeControllerTest extends \MailPoetTest {
     verify($this->themeController->translateSlugToColor('white'))->equals('#ffffff');
     verify($this->themeController->translateSlugToColor('cyan-bluish-gray'))->equals('#abb8c3');
     verify($this->themeController->translateSlugToColor('pale-pink'))->equals('#f78da7');
+    $this->checkCorrectThemeConfiguration();
+    if (wp_get_theme()->get('Name') === 'Twenty Twenty-One') {
+      verify($this->themeController->translateSlugToColor('yellow'))->equals('#eeeadd');
+    }
+  }
+
+  public function testItLoadsColorPaletteFromSiteTheme() {
+    $this->checkCorrectThemeConfiguration();
+    $settings = $this->themeController->getSettings();
+    if (wp_get_theme()->get('Name') === 'Twenty Twenty-One') {
+      verify($settings['color']['palette']['theme'])->notEmpty();
+    }
+  }
+
+  /**
+   * This test depends on using Twenty Twenty-One or Twenty Nineteen theme.
+   * This method checks if the theme is correctly configured and trigger a failure if not
+   * to prevent silent failures in case we change theme configuration in the test environment.
+   */
+  private function checkCorrectThemeConfiguration() {
+    $expectedThemes = ['Twenty Twenty-One', 'Twenty Nineteen'];
+    if (!in_array(wp_get_theme()->get('Name'), $expectedThemes)) {
+      $this->fail('Test depends on using Twenty Twenty-One or Twenty Nineteen theme. If you changed the theme, please update the test.');
+    }
   }
 }
