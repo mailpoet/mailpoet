@@ -37,4 +37,11 @@ class DomDocumentHelperTest extends \MailPoetUnitTest {
     $this->assertInstanceOf(\DOMElement::class, $element);
     $this->assertEquals('<img src="https://test.com/DALL%C2%B7E-A%C2%AE%E2%88%91oecas%C6%92-803x1024.jpg">', $domDocumentHelper->getOuterHtml($element));
   }
+
+  public function testItGetsAttributeValueByTagName(): void {
+    $html = '<div><p class="some-class">Some text</p><p class="second-paragraph"></p></div>';
+    $domDocumentHelper = new DomDocumentHelper($html);
+    $this->assertEquals('some-class', $domDocumentHelper->getAttributeValueByTagName('p', 'class'));
+    $this->assertNull($domDocumentHelper->getAttributeValueByTagName('span', 'class'));
+  }
 }
