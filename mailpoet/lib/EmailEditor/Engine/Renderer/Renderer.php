@@ -3,22 +3,20 @@
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Engine\ThemeController;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoetVendor\Html2Text\Html2Text;
 
 class Renderer {
+  private \MailPoetVendor\CSS $cssInliner;
 
-  /** @var \MailPoetVendor\CSS */
-  private $cssInliner;
+  private BlocksRegistry $blocksRegistry;
 
-  /** @var BlocksRegistry */
-  private $blocksRegistry;
+  private ProcessManager $processManager;
 
-  /** @var ProcessManager */
-  private $processManager;
+  private SettingsController $settingsController;
 
-  /** @var SettingsController */
-  private $settingsController;
+  private ThemeController $themeController;
 
   const TEMPLATE_FILE = 'template.html';
   const TEMPLATE_STYLES_FILE = 'styles.css';
@@ -30,12 +28,14 @@ class Renderer {
     \MailPoetVendor\CSS $cssInliner,
     ProcessManager $preprocessManager,
     BlocksRegistry $blocksRegistry,
-    SettingsController $settingsController
+    SettingsController $settingsController,
+    ThemeController $themeController
   ) {
     $this->cssInliner = $cssInliner;
     $this->processManager = $preprocessManager;
     $this->blocksRegistry = $blocksRegistry;
     $this->settingsController = $settingsController;
+    $this->themeController = $themeController;
   }
 
   public function render(\WP_Post $post, string $subject, string $preHeader, string $language, $metaRobots = ''): array {
@@ -50,7 +50,7 @@ class Renderer {
     $renderedBody = $this->renderBlocks($parsedBlocks);
 
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
-    $styles .= $this->settingsController->getStylesheetForRendering();
+    $styles .= $this->themeController->getStylesheetForRendering();
     $styles = apply_filters('mailpoet_email_renderer_styles', $styles, $post);
 
     $template = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_FILE);
