@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 
 class Column implements BlockRenderer {
   public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
@@ -38,7 +39,7 @@ class Column implements BlockRenderer {
       $colorStyles['color'] = $parsedBlock['attrs']['style']['color']['text'];
     }
 
-    $classes = $this->getClassesFromElement($blockContent, ['tag_name' => 'div']);
+    $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName('div', 'class') ?? '';
 
     $verticalAlign = 'top';
     // Because `stretch` is not a valid value for the `vertical-align` property, we don't override the default value
@@ -74,17 +75,5 @@ class Column implements BlockRenderer {
         </div>
       </td>
     ';
-  }
-
-  /**
-   * @param array{tag_name: string, class_name?: string} $tag
-   */
-  private function getClassesFromElement($blockContent, array $tag): string {
-    $html = new \WP_HTML_Tag_Processor($blockContent);
-    $elementClass = '';
-    if ($html->next_tag($tag)) {
-      $elementClass = $html->get_attribute('class') ?? '';
-    }
-    return $elementClass;
   }
 }

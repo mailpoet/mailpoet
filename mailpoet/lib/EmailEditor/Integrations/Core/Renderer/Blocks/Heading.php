@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 use MailPoet\Util\Helpers;
 
 class Heading implements BlockRenderer {
@@ -20,7 +21,7 @@ class Heading implements BlockRenderer {
   private function getBlockWrapper($blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
     $level = $parsedBlock['attrs']['level'] ?? 2; // default level is 2
-    $classes = $this->getClassesFromElement($blockContent, ['tag_name' => "h$level"]);
+    $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName("h$level", 'class') ?? '';
 
     // Styles for padding need to be set on the wrapping table cell due to support in Outlook
     $styles = [
@@ -95,17 +96,5 @@ class Heading implements BlockRenderer {
     }
 
     return $blockContent;
-  }
-
-  /**
-   * @param array{tag_name: string, class_name?: string} $tag
-   */
-  private function getClassesFromElement($blockContent, array $tag): string {
-    $html = new \WP_HTML_Tag_Processor($blockContent);
-    $elementClass = '';
-    if ($html->next_tag($tag)) {
-      $elementClass = $html->get_attribute('class') ?? '';
-    }
-    return $elementClass;
   }
 }
