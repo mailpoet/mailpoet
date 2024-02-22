@@ -25,7 +25,6 @@ class Columns implements BlockRenderer {
    */
   private function getBlockWrapper(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
-    $backgroundColor = $parsedBlock['attrs']['style']['color']['background'] ?? '';
     $paddingBottom = $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px';
     $paddingLeft = $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px';
     $paddingRight = $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px';
