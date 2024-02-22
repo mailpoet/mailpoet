@@ -38,8 +38,6 @@ class SettingsController {
    */
   const FLEX_GAP = '16px';
 
-  private string $availableStylesheets = '';
-
   private ThemeController $themeController;
 
   /**
@@ -93,13 +91,6 @@ class SettingsController {
       'contentSize' => self::EMAIL_WIDTH,
       'layout' => 'constrained',
     ];
-  }
-
-  public function getAvailableStylesheets(): string {
-    if ($this->availableStylesheets) return $this->availableStylesheets;
-    $coreThemeData = \WP_Theme_JSON_Resolver::get_core_data();
-    $this->availableStylesheets = $coreThemeData->get_stylesheet();
-    return $this->availableStylesheets;
   }
 
   /**
