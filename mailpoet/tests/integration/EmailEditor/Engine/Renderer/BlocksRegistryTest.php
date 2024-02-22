@@ -2,7 +2,6 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
-use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Paragraph;
 
 require_once __DIR__ . '/DummyBlockRenderer.php';
@@ -14,7 +13,7 @@ class BlocksRegistryTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->registry = new BlocksRegistry(new SettingsController());
+    $this->registry = $this->diContainer->get(BlocksRegistry::class);
   }
 
   public function testItReturnsNullForUnknownRenderer() {

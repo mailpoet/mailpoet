@@ -3,10 +3,11 @@
 namespace unit\EmailEditor\Engine\Renderer;
 
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Engine\ThemeController;
 
 class SettingsControllerTest extends \MailPoetUnitTest {
   public function testItGetsMainLayoutStyles(): void {
-    $settingsController = new SettingsController();
+    $settingsController = new SettingsController($this->makeEmpty(ThemeController::class));
     $layoutStyles = $settingsController->getEmailLayoutStyles();
     verify($layoutStyles)->arrayHasKey('width');
     verify($layoutStyles)->arrayHasKey('background');
@@ -14,7 +15,7 @@ class SettingsControllerTest extends \MailPoetUnitTest {
   }
 
   public function testItGetsCorrectLayoutWidthWithoutPadding(): void {
-    $settingsController = new SettingsController();
+    $settingsController = new SettingsController($this->makeEmpty(ThemeController::class));
     $layoutWidth = $settingsController->getLayoutWidthWithoutPadding();
     // default width is 660px and if we subtract padding from left and right we must get the correct value
     $expectedWidth = (int)SettingsController::EMAIL_WIDTH - (int)SettingsController::FLEX_GAP * 2;
@@ -22,7 +23,7 @@ class SettingsControllerTest extends \MailPoetUnitTest {
   }
 
   public function testItConvertsStylesToString(): void {
-    $settingsController = new SettingsController();
+    $settingsController = new SettingsController($this->makeEmpty(ThemeController::class));
     $styles = [
       'width' => '600px',
       'background' => '#ffffff',

@@ -2,17 +2,16 @@
 
 namespace MailPoet\EmailEditor\Engine;
 
-class SettingsControllerTest extends \MailPoetTest {
-  /** @var SettingsController */
-  private $settingsController;
+class ThemeControllerTest extends \MailPoetTest {
+  private ThemeController $themeController;
 
   public function _before() {
     parent::_before();
-    $this->settingsController = $this->diContainer->get(SettingsController::class);
+    $this->themeController = $this->diContainer->get(ThemeController::class);
   }
 
   public function testItGeneratesCssStylesForRenderer() {
-    $css = $this->settingsController->getStylesheetForRendering();
+    $css = $this->themeController->getStylesheetForRendering();
     verify($css)->stringContainsString('.has-arial-font-family');
     verify($css)->stringContainsString('.has-comic-sans-ms-font-family');
     verify($css)->stringContainsString('.has-courier-new-font-family');
@@ -43,17 +42,17 @@ class SettingsControllerTest extends \MailPoetTest {
   }
 
   public function testItCanTranslateFontSizeSlug() {
-    verify($this->settingsController->translateSlugToFontSize('small'))->equals('13px');
-    verify($this->settingsController->translateSlugToFontSize('medium'))->equals('20px');
-    verify($this->settingsController->translateSlugToFontSize('large'))->equals('36px');
-    verify($this->settingsController->translateSlugToFontSize('x-large'))->equals('42px');
-    verify($this->settingsController->translateSlugToFontSize('unknown'))->equals('unknown');
+    verify($this->themeController->translateSlugToFontSize('small'))->equals('13px');
+    verify($this->themeController->translateSlugToFontSize('medium'))->equals('20px');
+    verify($this->themeController->translateSlugToFontSize('large'))->equals('36px');
+    verify($this->themeController->translateSlugToFontSize('x-large'))->equals('42px');
+    verify($this->themeController->translateSlugToFontSize('unknown'))->equals('unknown');
   }
 
   public function testItCanTranslateColorSlug() {
-    verify($this->settingsController->translateSlugToColor('black'))->equals('#000000');
-    verify($this->settingsController->translateSlugToColor('white'))->equals('#ffffff');
-    verify($this->settingsController->translateSlugToColor('cyan-bluish-gray'))->equals('#abb8c3');
-    verify($this->settingsController->translateSlugToColor('pale-pink'))->equals('#f78da7');
+    verify($this->themeController->translateSlugToColor('black'))->equals('#000000');
+    verify($this->themeController->translateSlugToColor('white'))->equals('#ffffff');
+    verify($this->themeController->translateSlugToColor('cyan-bluish-gray'))->equals('#abb8c3');
+    verify($this->themeController->translateSlugToColor('pale-pink'))->equals('#f78da7');
   }
 }
