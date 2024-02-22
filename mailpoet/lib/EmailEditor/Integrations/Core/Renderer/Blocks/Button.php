@@ -21,9 +21,7 @@ class Button implements BlockRenderer {
     $buttonLink = $domHelper->findElement('a');
 
     if (!$buttonLink) return '';
-
-    $buttonOriginalWrapper = $domHelper->findElement('div');
-    $buttonClasses = $buttonOriginalWrapper ? $domHelper->getAttributeValue($buttonOriginalWrapper, 'class') : '';
+    $buttonClasses = $domHelper->getAttributeValueByTagName('div', 'class') ?? '';
 
     $markup = $this->getMarkup();
     $markup = str_replace('{classes}', $buttonClasses, $markup);

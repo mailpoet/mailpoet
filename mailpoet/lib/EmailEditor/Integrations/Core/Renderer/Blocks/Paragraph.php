@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 use MailPoet\Util\Helpers;
 
 class Paragraph implements BlockRenderer {
@@ -17,7 +18,7 @@ class Paragraph implements BlockRenderer {
    */
   private function getBlockWrapper(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $themeData = $settingsController->getTheme()->get_data();
-    $classes = $this->getClassesFromElement($blockContent, ['tag_name' => 'p']);
+    $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName('p', 'class') ?? '';
 
     $align = $parsedBlock['attrs']['align'] ?? 'left';
     $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
@@ -79,17 +80,5 @@ class Paragraph implements BlockRenderer {
     }
 
     return $blockContent;
-  }
-
-  /**
-   * @param array{tag_name: string, class_name?: string} $tag
-   */
-  private function getClassesFromElement($blockContent, array $tag): string {
-    $html = new \WP_HTML_Tag_Processor($blockContent);
-    $elementClass = '';
-    if ($html->next_tag($tag)) {
-      $elementClass = $html->get_attribute('class') ?? '';
-    }
-    return $elementClass;
   }
 }

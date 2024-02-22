@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 
 class Columns implements BlockRenderer {
   public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
@@ -31,7 +32,7 @@ class Columns implements BlockRenderer {
     $paddingTop = $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px';
     $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
 
-    $classes = $this->getClassesFromElement($blockContent, ['tag_name' => 'div']);
+    $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName('div', 'class') ?? '';
     $colorStyles = [];
     if (isset($parsedBlock['attrs']['style']['color']['background'])) {
       $colorStyles['background-color'] = $parsedBlock['attrs']['style']['color']['background'];
@@ -77,17 +78,5 @@ class Columns implements BlockRenderer {
       </div>
       <!--[if mso | IE]></td></tr></table><![endif]-->
     ';
-  }
-
-  /**
-   * @param array{tag_name: string, class_name?: string} $tag
-   */
-  private function getClassesFromElement($blockContent, array $tag): string {
-    $html = new \WP_HTML_Tag_Processor($blockContent);
-    $elementClass = '';
-    if ($html->next_tag($tag)) {
-      $elementClass = $html->get_attribute('class') ?? '';
-    }
-    return $elementClass;
   }
 }
