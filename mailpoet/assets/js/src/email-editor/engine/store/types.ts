@@ -48,6 +48,9 @@ export type State = {
   listviewSidebar: {
     isOpened: boolean;
   };
+  settingsSidebar: {
+    activeTab: string;
+  };
   postId: number;
   editorSettings: EmailEditorSettings;
   layoutStyles: EmailLayoutStyles;

@@ -2,16 +2,14 @@ import { Panel } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { BlockInspector } from '@wordpress/block-editor';
-import {
-  ComplementaryArea,
-  store as interfaceStore,
-} from '@wordpress/interface';
+import { ComplementaryArea } from '@wordpress/interface';
 import { ComponentProps } from 'react';
 import { drawerRight } from '@wordpress/icons';
 import {
   storeName,
-  mainSidebarEmailKey,
-  mainSidebarBlockKey,
+  mainSidebarEmailTab,
+  mainSidebarBlockTab,
+  mainSidebarId,
 } from '../../store';
 import { Header } from './header';
 import { EmailSettings } from './email-settings';
@@ -19,25 +17,24 @@ import { EmailSettings } from './email-settings';
 type Props = ComponentProps<typeof ComplementaryArea>;
 
 export function Sidebar(props: Props): JSX.Element {
-  const { sidebarKey } = useSelect((select) => ({
-    sidebarKey:
-      select(interfaceStore).getActiveComplementaryArea(storeName) ??
-      mainSidebarEmailKey,
-  }));
+  const activeTab = useSelect(
+    (select) => select(storeName).getSettingsSidebarActiveTab(),
+    [],
+  );
 
   return (
     <ComplementaryArea
-      identifier={sidebarKey}
+      identifier={mainSidebarId}
       className="edit-post-sidebar"
-      header={<Header sidebarKey={sidebarKey} />}
+      header={<Header />}
       icon={drawerRight}
       scope={storeName}
       smallScreenTitle={__('No title', 'mailpoet')}
       isActiveByDefault
       {...props}
     >
-      {sidebarKey === mainSidebarEmailKey && <EmailSettings />}
-      {sidebarKey === mainSidebarBlockKey && (
+      {activeTab === mainSidebarEmailTab && <EmailSettings />}
+      {activeTab === mainSidebarBlockTab && (
         <Panel>
           <BlockInspector />
         </Panel>

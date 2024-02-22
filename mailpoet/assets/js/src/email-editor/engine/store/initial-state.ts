@@ -1,3 +1,4 @@
+import { mainSidebarEmailTab } from './constants';
 import { State } from './types';
 import {
   getEditorLayout,
@@ -14,6 +15,9 @@ export function getInitialState(): State {
     },
     listviewSidebar: {
       isOpened: false,
+    },
+    settingsSidebar: {
+      activeTab: mainSidebarEmailTab,
     },
     postId,
     editorSettings: getEditorSettings(),
