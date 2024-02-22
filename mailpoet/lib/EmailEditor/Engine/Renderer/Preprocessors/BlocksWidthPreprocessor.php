@@ -16,10 +16,11 @@ class BlocksWidthPreprocessor implements Preprocessor {
       if ($alignment !== 'full') {
         $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['left'] ?? '0px');
         $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['right'] ?? '0px');
-        $borderWidth = $block['attrs']['style']['border']['width'] ?? '0px';
-        $layoutWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['border']['left']['width'] ?? $borderWidth);
-        $layoutWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['border']['right']['width'] ?? $borderWidth);
       }
+      // Subtract border width from the block width to accurate calculation of the child blocks
+      $borderWidth = $block['attrs']['style']['border']['width'] ?? '0px';
+      $layoutWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['border']['left']['width'] ?? $borderWidth);
+      $layoutWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['border']['right']['width'] ?? $borderWidth);
 
       $widthInput = $block['attrs']['width'] ?? '100%';
       // Currently we support only % and px units in case only the number is provided we assume it's %
