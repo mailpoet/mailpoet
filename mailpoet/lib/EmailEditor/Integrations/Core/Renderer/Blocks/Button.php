@@ -27,7 +27,8 @@ class Button implements BlockRenderer {
     $markup = str_replace('{classes}', $buttonClasses, $markup);
 
     // Add Link Text
-    $markup = str_replace('{linkText}', $this->getElementInnerHTML($buttonLink) ?: '', $markup);
+    // Because the button text can contain highlighted text, we need to get the inner HTML of the button
+    $markup = str_replace('{linkText}', $domHelper->getElementInnerHTML($buttonLink) ?: '', $markup);
     $markup = str_replace('{linkUrl}', $buttonLink->getAttribute('href') ?: '#', $markup);
 
     // Width
@@ -114,20 +115,5 @@ class Button implements BlockRenderer {
           </td>
         </tr>
       </table>';
-  }
-
-  /**
-   * Because the button text can contain highlighted text, we need to get the inner HTML of the button
-   */
-  private function getElementInnerHTML(\DOMElement $element): string {
-    $innerHTML = '';
-    $children = $element->childNodes;
-    foreach ($children as $child) {
-      if (!$child instanceof \DOMNode) continue;
-      $ownerDocument = $child->ownerDocument;
-      if (!$ownerDocument instanceof \DOMDocument) continue;
-      $innerHTML .= $ownerDocument->saveXML($child);
-    }
-    return $innerHTML;
   }
 }
