@@ -111,6 +111,10 @@ export function isListviewSidebarOpened(state: State): boolean {
   return state.listviewSidebar.isOpened;
 }
 
+export function getSettingsSidebarActiveTab(state: State): string {
+  return state.settingsSidebar.activeTab;
+}
+
 export function getInitialEditorSettings(
   state: State,
 ): State['editorSettings'] {

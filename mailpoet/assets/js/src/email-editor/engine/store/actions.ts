@@ -5,7 +5,7 @@ import { store as preferencesStore } from '@wordpress/preferences';
 import { store as noticesStore } from '@wordpress/notices';
 import { __ } from '@wordpress/i18n';
 import { apiFetch } from '@wordpress/data-controls';
-import { storeName, mainSidebarEmailKey } from './constants';
+import { storeName, mainSidebarEmailTab } from './constants';
 import { SendingPreviewStatus, State, Feature } from './types';
 
 export const toggleFeature =
@@ -47,7 +47,7 @@ export function updateSendPreviewEmail(toEmail: string) {
 }
 
 export const openSidebar =
-  (key = mainSidebarEmailKey) =>
+  (key = mainSidebarEmailTab) =>
   ({ registry }): unknown =>
     registry.dispatch(interfaceStore).enableComplementaryArea(storeName, key);
 
@@ -55,6 +55,13 @@ export const closeSidebar =
   () =>
   ({ registry }): unknown =>
     registry.dispatch(interfaceStore).disableComplementaryArea(storeName);
+
+export function toggleSettingsSidebarActiveTab(activeTab: string) {
+  return {
+    type: 'TOGGLE_SETTINGS_SIDEBAR_ACTIVE_TAB',
+    state: { activeTab } as Partial<State['settingsSidebar']>,
+  } as const;
+}
 
 export function* saveEditedEmail() {
   const postId = select(storeName).getEmailPostId();
