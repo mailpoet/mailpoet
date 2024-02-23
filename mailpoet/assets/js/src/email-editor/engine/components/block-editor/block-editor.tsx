@@ -33,6 +33,7 @@ import { Header } from '../header';
 import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 import { EditorNotices, EditorSnackbars, SentEmailNotice } from '../notices';
+import { StylesSidebar } from '../styles-sidebar/styles-sidebar';
 
 export function BlockEditor() {
   const {
@@ -130,6 +131,7 @@ export function BlockEditor() {
       <AutosaveMonitor />
       <SentEmailNotice />
       <Sidebar />
+      <StylesSidebar />
       <InterfaceSkeleton
         className={className}
         header={<Header />}
