@@ -242,17 +242,6 @@ jQuery(($) => {
   });
 
   /**
-   * @param form jQuery object of form form.mailpoet_form
-   */
-  function checkFormContainer(form) {
-    if (form.width() < 400) {
-      form.addClass('mailpoet_form_tight_container');
-    } else {
-      form.removeClass('mailpoet_form_tight_container');
-    }
-  }
-
-  /**
    * Sets the cookie for the form after dismissing the form
    * Uses cookie expiration time defined on the form
    *
@@ -312,7 +301,6 @@ jQuery(($) => {
 
   function doDisplayForm(formDiv, showOverlay) {
     formDiv.addClass('active');
-    checkFormContainer(formDiv);
 
     if (showOverlay) {
       formDiv.prev('.mailpoet_form_popup_overlay').addClass('active');
@@ -424,19 +412,10 @@ jQuery(($) => {
       showForm(formDiv, showOverlay);
     });
 
-    $(window).on('resize', () => {
-      $('.mailpoet_form').each((_, element) => {
-        // Detect form is placed in tight container
-        const formDiv = $(element);
-        checkFormContainer(formDiv);
-      });
-    });
-
     // setup form validation
     $('form.mailpoet_form').each((_, element) => {
       const form = $(element);
       // Detect form is placed in tight container
-      checkFormContainer(form.closest('div.mailpoet_form'));
       form.parsley().on('form:validated', () => {
         // clear messages
         form.find('.mailpoet_message > p').hide();

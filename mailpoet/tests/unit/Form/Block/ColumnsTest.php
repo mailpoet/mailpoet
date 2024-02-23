@@ -30,14 +30,14 @@ class ColumnsTest extends \MailPoetUnitTest {
 
   public function testItShouldRenderColumns() {
     $html = $this->columns->render($this->block, 'content');
-    verify($html)->equals('<div class="mailpoet_form_columns mailpoet_paragraph mailpoet_stack_on_mobile">content</div>');
+    verify($html)->stringContainsString('<div class="mailpoet_form_columns mailpoet_paragraph mailpoet_stack_on_mobile">content</div>');
   }
 
   public function testItShouldRenderVerticalAlignClass() {
     $block = $this->block;
     $block['params']['vertical_alignment'] = 'top';
     $html = $this->columns->render($block, 'content');
-    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[contains(@class, \'mailpoet_form_columns\')]/div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
     verify($class->textContent)->stringContainsString('mailpoet_vertically_align_top');
   }
@@ -46,7 +46,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $block = $this->block;
     $block['params']['class_name'] = 'my-class';
     $html = $this->columns->render($block, 'content');
-    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[contains(@class, \'mailpoet_form_columns\')]/div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
     verify($class->textContent)->stringContainsString('my-class');
   }
@@ -54,7 +54,7 @@ class ColumnsTest extends \MailPoetUnitTest {
   public function testItShouldRenderStackOnMobileClassWhenFlagIsNotSet() {
     $block = $this->block;
     $html = $this->columns->render($block, 'content');
-    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[contains(@class, \'mailpoet_form_columns\')]/div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
     verify($class->textContent)->stringContainsString('mailpoet_stack_on_mobile');
   }
@@ -63,7 +63,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $block = $this->block;
     $block['params']['is_stacked_on_mobile'] = '1';
     $html = $this->columns->render($block, 'content');
-    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[contains(@class, \'mailpoet_form_columns\')]/div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
     verify($class->textContent)->stringContainsString('mailpoet_stack_on_mobile');
   }
@@ -72,7 +72,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $block = $this->block;
     $block['params']['is_stacked_on_mobile'] = '0';
     $html = $this->columns->render($block, 'content');
-    $column = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $column = $this->htmlParser->getElementByXpath($html, '//div[contains(@class, \'mailpoet_form_columns\')]/div[1]');
     $class = $this->htmlParser->getAttribute($column, 'class');
     verify($class->textContent)->stringNotContainsString('mailpoet_stack_on_mobile');
   }
@@ -81,7 +81,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $block = $this->block;
     $block['params']['background_color'] = '#ffffff';
     $html = $this->columns->render($block, 'content');
-    $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $columns = $this->htmlParser->getElementByXpath($html, '//div[contains(@class, \'mailpoet_form_columns\')]/div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
     verify($style->textContent)->stringContainsString('background-color:#ffffff;');
     $class = $this->htmlParser->getAttribute($columns, 'class');
@@ -92,7 +92,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $block = $this->block;
     $block['params']['text_color'] = '#ffffee';
     $html = $this->columns->render($block, 'content');
-    $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $columns = $this->htmlParser->getElementByXpath($html, '//div[contains(@class, \'mailpoet_form_columns\')]/div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
     verify($style->textContent)->stringContainsString('color:#ffffee;');
   }
@@ -101,7 +101,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $block = $this->block;
     $block['params']['gradient'] = 'linear-gradient(red, yellow)';
     $html = $this->columns->render($block, 'content');
-    $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $columns = $this->htmlParser->getElementByXpath($html, '//div[contains(@class, \'mailpoet_form_columns\')]/div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
     verify($style->textContent)->stringContainsString('background:linear-gradient(red, yellow);');
     $class = $this->htmlParser->getAttribute($columns, 'class');
@@ -112,7 +112,7 @@ class ColumnsTest extends \MailPoetUnitTest {
     $block = $this->block;
     $block['params']['padding'] = ['top' => '1em', 'right' => '2em', 'bottom' => '3em', 'left' => '4em'];
     $html = $this->columns->render($block, 'content');
-    $columns = $this->htmlParser->getElementByXpath($html, '//div[1]');
+    $columns = $this->htmlParser->getElementByXpath($html, '//div[contains(@class, \'mailpoet_form_columns\')]/div[1]');
     $style = $this->htmlParser->getAttribute($columns, 'style');
     verify($style->textContent)->stringContainsString('padding:1em 2em 3em 4em;');
   }
