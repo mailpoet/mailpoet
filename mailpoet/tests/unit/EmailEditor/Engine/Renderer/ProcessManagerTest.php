@@ -3,6 +3,7 @@
 namespace unit\EmailEditor\Engine\Renderer;
 
 use MailPoet\EmailEditor\Engine\Renderer\Postprocessors\HighlightingPostprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\Postprocessors\VariablesPostprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\BlocksWidthPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\CleanupPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\SpacingPreprocessor;
@@ -43,7 +44,10 @@ class ProcessManagerTest extends \MailPoetUnitTest {
     $highlighting = $this->createMock(HighlightingPostprocessor::class);
     $highlighting->expects($this->once())->method('postprocess')->willReturn('');
 
-    $processManager = new ProcessManager($cleanup, $topLevel, $blocksWidth, $typography, $spacing, $highlighting);
+    $variables = $this->createMock(VariablesPostprocessor::class);
+    $variables->expects($this->once())->method('postprocess')->willReturn('');
+
+    $processManager = new ProcessManager($cleanup, $topLevel, $blocksWidth, $typography, $spacing, $highlighting, $variables);
     $processManager->registerPreprocessor($secondPreprocessor);
     verify($processManager->preprocess([], $layoutStyles))->equals([]);
     verify($processManager->postprocess(''))->equals('');
