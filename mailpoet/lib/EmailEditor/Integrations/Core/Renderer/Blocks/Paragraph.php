@@ -25,11 +25,10 @@ class Paragraph implements BlockRenderer {
 
     $styles = [
       'text-align' => $align,
-      'padding-bottom' => $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px',
-      'padding-left' => $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px',
-      'padding-right' => $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px',
-      'padding-top' => $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px',
     ];
+
+    $paddingStyles = wp_style_engine_get_styles(['spacing' => ['padding' => $parsedBlock['attrs']['style']['spacing']['padding'] ?? null ]]);
+    $styles = array_merge($styles, $paddingStyles['declarations'] ?? []);
 
     if (isset($parsedBlock['attrs']['style']['color']['text'])) {
       $styles['color'] = $parsedBlock['attrs']['style']['color']['text'];
@@ -74,7 +73,8 @@ class Paragraph implements BlockRenderer {
     $html = new \WP_HTML_Tag_Processor($blockContent);
     if ($html->next_tag($tag)) {
       $elementStyle = $html->get_attribute('style') ?? '';
-      $elementStyle = preg_replace('/padding.*:.?[0-9]+px;?/', '', $elementStyle);
+      // Padding may contain value like 10px or variable like var(--spacing-10)
+      $elementStyle = preg_replace('/padding.*:.?[0-9a-z-()]+;?/', '', $elementStyle);
       $html->set_attribute('style', $elementStyle);
       $blockContent = $html->get_updated_html();
     }

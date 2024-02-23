@@ -33,11 +33,10 @@ class Columns implements BlockRenderer {
     }
 
     $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
-    $paddingBottom = $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px';
-    $paddingLeft = $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px';
-    $paddingRight = $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px';
-    $paddingTop = $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px';
     $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
+
+    $paddingStyles = wp_style_engine_get_styles(['spacing' => ['padding' => $parsedBlock['attrs']['style']['spacing']['padding'] ?? null ]]);
+    $paddingStyles = $paddingStyles['css'] ?? '';
 
     $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName('div', 'class') ?? '';
     $colorStyles = [];
@@ -74,11 +73,8 @@ class Columns implements BlockRenderer {
             <tr>
               <td style="
               ' . esc_attr($settingsController->convertStylesToString($borderStyles)) . '
+              ' . esc_attr($paddingStyles) . '
                 font-size:0px;
-                padding-left:' . $paddingLeft . ';
-                padding-right:' . $paddingRight . ';
-                padding-bottom:' . $paddingBottom . ';
-                padding-top:' . $paddingTop . ';
                 text-align:left;
               ">
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:separate;">

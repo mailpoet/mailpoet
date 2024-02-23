@@ -77,13 +77,16 @@ class Button implements BlockRenderer {
     }
 
     // Spacing
-    if (isset($parsedBlock['attrs']['style']['spacing']['padding'])) {
-      $padding = $parsedBlock['attrs']['style']['spacing']['padding'];
-      $wrapperStyles['mso-padding-alt'] = "{$padding['top']} {$padding['right']} {$padding['bottom']} {$padding['left']}";
-      $linkStyles['padding-top'] = $padding['top'];
-      $linkStyles['padding-right'] = $padding['right'];
-      $linkStyles['padding-bottom'] = $padding['bottom'];
-      $linkStyles['padding-left'] = $padding['left'];
+    $paddingStyles = wp_style_engine_get_styles(['spacing' => ['padding' => $parsedBlock['attrs']['style']['spacing']['padding'] ?? null ]]);
+    $linkStyles = array_merge($linkStyles, $paddingStyles['declarations'] ?? []);
+    // In most clients we want to render padding on the link element so that the full button is clickable
+    // Outlook doesn't support padding on the link element, so we need to set padding on the wrapper table cell and to have it only for Outlook we use mso-padding-alt
+    if (isset($paddingStyles['declarations'])) {
+      $paddingTop = $paddingStyles['declarations']['padding-top'] ?? '0px';
+      $paddingRight = $paddingStyles['declarations']['padding-right'] ?? '0px';
+      $paddingBottom = $paddingStyles['declarations']['padding-bottom'] ?? '0px';
+      $paddingLeft = $paddingStyles['declarations']['padding-left'] ?? '0px';
+      $wrapperStyles['mso-padding-alt'] = "$paddingTop $paddingRight $paddingBottom $paddingLeft";
     }
 
     // Typography + colors
