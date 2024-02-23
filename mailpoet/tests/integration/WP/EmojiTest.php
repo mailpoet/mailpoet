@@ -5,7 +5,6 @@ namespace MailPoet\Test\WP;
 use Codeception\Stub\Expected;
 use MailPoet\Config\Env;
 use MailPoet\WP\Emoji;
-use MailPoetVendor\Idiorm\ORM;
 
 class EmojiTest extends \MailPoetTest {
   public $emoji;
@@ -70,7 +69,7 @@ class EmojiTest extends \MailPoetTest {
   }
 
   private function createTable($table, $charset) {
-    ORM::raw_execute(
+    $this->connection->executeStatement(
       'CREATE TABLE IF NOT EXISTS ' . $table
       . ' (' . $this->column . ' TEXT) '
       . 'DEFAULT CHARSET=' . $charset . ';'
@@ -78,6 +77,6 @@ class EmojiTest extends \MailPoetTest {
   }
 
   private function dropTable($table) {
-    ORM::raw_execute('DROP TABLE IF EXISTS ' . $table);
+    $this->connection->executeStatement('DROP TABLE IF EXISTS ' . $table);
   }
 }
