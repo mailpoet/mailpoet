@@ -84,4 +84,20 @@ class ThemeController {
     }
     return $colorSlug;
   }
+
+  public function getVariablesValuesMap(): array {
+    $variablesCss = $this->getTheme()->get_stylesheet(['variables']);
+    $map = [];
+    // Regular expression to match CSS variable definitions
+    $pattern = '/--(.*?):\s*(.*?);/';
+
+    if (preg_match_all($pattern, $variablesCss, $matches, PREG_SET_ORDER)) {
+      foreach ($matches as $match) {
+        // '--' . $match[1] is the variable name, $match[2] is the variable value
+        $map['--' . $match[1]] = $match[2];
+      }
+    }
+
+    return $map;
+  }
 }

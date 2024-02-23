@@ -88,6 +88,12 @@ class ThemeControllerTest extends \MailPoetTest {
     }
   }
 
+  public function testItReturnsCorrectPresetVariablesMap() {
+    $variableMap = $this->themeController->getVariablesValuesMap();
+    verify($variableMap['--wp--preset--color--black'])->equals('#000000');
+    verify($variableMap['--wp--preset--spacing--20'])->equals('20px');
+  }
+
   /**
    * This test depends on using Twenty Twenty-One or Twenty Nineteen theme.
    * This method checks if the theme is correctly configured and trigger a failure if not
