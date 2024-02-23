@@ -142,12 +142,6 @@ jQuery(($) => {
           );
         }
       }
-
-      // Detect tight container
-      $previewForm.removeClass('mailpoet_form_tight_container');
-      if ($previewForm.width() < 400) {
-        $previewForm.addClass('mailpoet_form_tight_container');
-      }
     };
     window.addEventListener('message', updateForm, false);
 

@@ -15,7 +15,7 @@ class Columns {
   }
 
   public function render(array $block, string $content): string {
-    return "<div {$this->getClass($block['params'] ?? [])}{$this->getStyles($block['params'] ?? [])}>$content</div>";
+    return "<div class='mailpoet_form_columns_container'><div {$this->getClass($block['params'] ?? [])}{$this->getStyles($block['params'] ?? [])}>$content</div></div>";
   }
 
   private function getStyles(array $params): string {

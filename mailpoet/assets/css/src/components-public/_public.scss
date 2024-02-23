@@ -1,6 +1,7 @@
 @use 'sass:math';
 
 $form-break-small-width: 500px;
+$form-container-break-small-width: 400px;
 $form-block-margin: 20px;
 $form-columns-with-background-padding: 10px;
 $form-columns-space-between: 20px;
@@ -242,6 +243,11 @@ div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
   }
 }
 
+.mailpoet_form_columns_container {
+  container-name: columns;
+  container-type: inline-size;
+}
+
 .mailpoet_form_columns {
   display: flex;
   flex-wrap: nowrap;
@@ -258,19 +264,17 @@ div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
   &.mailpoet_vertically_align_bottom {
     align-items: flex-start;
   }
+}
 
-  &.mailpoet_stack_on_mobile {
-    @include breakpoint-max-width(#{($form-break-small-width - 1)}) {
-      @include maxWidthColumns;
-    }
-  }
-
-  .mailpoet_form_tight_container &.mailpoet_stack_on_mobile {
+@container columns (width < #{($form-container-break-small-width)}) {
+  .mailpoet_form_columns.mailpoet_stack_on_mobile {
     @include maxWidthColumns;
   }
 }
 
 .mailpoet_form_column {
+  container-name: column;
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -288,23 +292,16 @@ div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
     align-self: flex-end;
   }
 
-  @include breakpoint-min-width($form-break-small-width) {
-    .mailpoet_form_form:not(.mailpoet_form_tight_container)
-      .mailpoet_column_with_background
-      &
-      .mailpoet_paragraph:last-child {
-      margin-bottom: 0 !important;
-    }
-  }
-
   .mailpoet_stack_on_mobile & {
     @include breakpoint-max-width(#{($form-break-small-width - 1)}) {
       @include maxWidthColumn;
     }
   }
+}
 
-  .mailpoet_form_tight_container .mailpoet_stack_on_mobile & {
-    @include maxWidthColumn;
+@container column (width > #{($form-container-break-small-width)}) {
+  .mailpoet_paragraph:last-child {
+    margin-bottom: 0;
   }
 }
 
