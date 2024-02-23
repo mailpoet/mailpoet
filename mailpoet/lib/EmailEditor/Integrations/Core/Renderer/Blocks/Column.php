@@ -33,10 +33,9 @@ class Column implements BlockRenderer {
     }
 
     $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
-    $paddingBottom = $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px';
-    $paddingLeft = $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px';
-    $paddingRight = $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px';
-    $paddingTop = $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px';
+
+    $paddingStyles = wp_style_engine_get_styles(['spacing' => ['padding' => $parsedBlock['attrs']['style']['spacing']['padding'] ?? null ]]);
+    $paddingStyles = $paddingStyles['css'] ?? '';
 
     $colorStyles = [];
     if (isset($parsedBlock['attrs']['style']['color']['background'])) {
@@ -72,7 +71,7 @@ class Column implements BlockRenderer {
           <table class="email_column ' . esc_attr($classes) . '" border="0" cellpadding="0" cellspacing="0" role="presentation" style="' . esc_attr($settingsController->convertStylesToString($colorStyles)) . ';min-width:100%;width:100%;max-width:' . esc_attr($width) . ';vertical-align:top;" width="' . esc_attr($width) . '">
             <tbody>
               <tr>
-                <td align="left" style="font-size:0px;padding-left:' . esc_attr($paddingLeft) . ';padding-right:' . esc_attr($paddingRight) . ';padding-bottom:' . esc_attr($paddingBottom) . ';padding-top:' . esc_attr($paddingTop) . ';">
+                <td align="left" style="font-size:0px;' . esc_attr($paddingStyles) . '">
                   <div style="text-align:left;">{column_content}</div>
                 </td>
               </tr>

@@ -26,11 +26,10 @@ class Heading implements BlockRenderer {
     // Styles for padding need to be set on the wrapping table cell due to support in Outlook
     $styles = [
       'min-width' => '100%', // prevent Gmail App from shrinking the table on mobile devices
-      'padding-bottom' => $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px',
-      'padding-left' => $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px',
-      'padding-right' => $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px',
-      'padding-top' => $parsedBlock['attrs']['style']['spacing']['padding']['top'] ?? '0px',
     ];
+
+    $paddingStyles = wp_style_engine_get_styles(['spacing' => ['padding' => $parsedBlock['attrs']['style']['spacing']['padding'] ?? null ]]);
+    $styles = array_merge($styles, $paddingStyles['declarations'] ?? []);
 
     if (isset($parsedBlock['attrs']['textAlign'])) {
       $styles['text-align'] = $parsedBlock['attrs']['textAlign'];
@@ -89,7 +88,8 @@ class Heading implements BlockRenderer {
 
     if ($html->next_tag($tag)) {
       $elementStyle = $html->get_attribute('style') ?? '';
-      $elementStyle = preg_replace('/padding.*:.?[0-9]+px;?/', '', $elementStyle);
+      // Padding may contain value like 10px or variable like var(--spacing-10)
+      $elementStyle = preg_replace('/padding.*:.?[0-9a-z-()]+;?/', '', $elementStyle);
       $elementStyle = preg_replace('/font-size:[^;]+;?/', $fontSize, $elementStyle);
       $html->set_attribute('style', $elementStyle);
       $blockContent = $html->get_updated_html();
