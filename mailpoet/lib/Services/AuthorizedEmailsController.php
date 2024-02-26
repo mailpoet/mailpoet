@@ -170,6 +170,11 @@ class AuthorizedEmailsController {
       ? $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache()
       : $this->senderDomainController->getVerifiedSenderDomains();
 
+    // The shop is not returning data, so we allow sending and let the Sending Service block the campaign if needed.
+    if ($context === 'sending' && empty($verifiedDomains) && !$this->senderDomainController->isCacheAvailable()) {
+      return true;
+    }
+
     return $this->validateEmailDomainIsVerified($verifiedDomains, $newsletter->getSenderAddress());
   }
 
