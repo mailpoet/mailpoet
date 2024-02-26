@@ -24,10 +24,10 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('//button[text()="Continue"]');
 
     $i->wantTo('Compose an email');
-    $i->waitForElement('.is-root-container');
-    $i->wait(1);
+    $i->waitForElementVisible('.is-root-container');
+    $i->waitForElementClickable('.is-root-container');
     $i->click('.is-root-container');
-    $i->type('Hello world!');
+    $i->fillField('.//p[@data-title="Paragraph"]', 'Sample text');
 
     $i->wantTo('Verify correct WP menu item is highlighted');
     $i->waitForText('Emails', 10, '#toplevel_page_mailpoet-homepage .current');
@@ -46,6 +46,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->wantTo('Send an email and verify it was delivered');
     $i->click('Save Draft');
     $i->waitForText('Saved');
+    $i->waitForText('Email saved!');
     $i->click('Send');
     $i->waitForElement('[name="subject"]');
     $subject = $i->grabValueFrom('[name="subject"]');
@@ -84,20 +85,23 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('//button[text()="Continue"]');
 
     $i->wantTo('Edit an email');
-    $i->waitForElement('.is-root-container');
-    $i->wait(1);
+    $i->waitForElementVisible('.is-root-container');
+    $i->waitForElementClickable('.is-root-container');
     $i->click('.is-root-container');
-    $i->type('Hello world!');
+    $i->fillField('.//p[@data-title="Paragraph"]', 'Sample text');
 
     $i->wantTo('Save draft and display preview');
     $i->click('Save Draft');
     $i->waitForText('Saved');
+    $i->waitForText('Email saved!');
+    $i->click('.interface-pinned-items'); // close sidebar
     $i->click('.mailpoet-preview-dropdown button[aria-label="Preview"]');
+    $i->waitForElementVisible('//button[text()="Preview in new tab"]');
     $i->waitForElementClickable('//button[text()="Preview in new tab"]');
     $i->click('//button[text()="Preview in new tab"]');
     $i->switchToNextTab();
     $i->canSeeInCurrentUrl('endpoint=view_in_browser');
-    $i->canSee('Hello world!');
+    $i->canSee('Sample text');
     $i->closeTab();
 
     $i->wantTo('Send preview email and verify it was delivered');
