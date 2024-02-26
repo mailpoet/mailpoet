@@ -51,10 +51,11 @@ export function Header() {
     <div className="edit-post-header">
       <div className="edit-post-header__toolbar">
         <NavigableToolbar
-          className="edit-post-header-toolbar"
+          className="edit-post-header-toolbar is-unstyled editor-document-tools"
           aria-label={__('Email document tools', 'mailpoet')}
         >
-          <div className="edit-post-header-toolbar__left">
+          {/* edit-post-header-toolbar__left can be removed after we drop support of WP 6.4 */}
+          <div className="edit-post-header-toolbar__left editor-document-tools__left">
             <ToolbarItem
               ref={inserterButton}
               as={Button}
