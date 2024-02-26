@@ -300,6 +300,27 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     verify($controller->isSenderAddressValid($newsletter, 'sending'))->true();
   }
 
+  public function testSenderAddressIsValidForSendingIfRestrictionsApplyAndShopDoesNotReturnData() {
+    $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
+    $senderDomainMock = $this->make(AuthorizedSenderDomainController::class, [
+      'isAuthorizedDomainRequiredForExistingCampaigns' => Expected::once(true),
+      'getVerifiedSenderDomains' => Expected::once([]),
+      'isCacheAvailable' => Expected::once(false),
+    ]);
+
+    $newsletter = new NewsletterEntity();
+    $newsletter->setSubject('Subject');
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_DRAFT);
+    $newsletter->setSenderAddress('contact@email.com');
+
+    $mocks = [
+      'AuthorizedSenderDomainController' => $senderDomainMock,
+    ];
+    $controller = $this->getControllerWithCustomMocks($mocks);
+    verify($controller->isSenderAddressValid($newsletter, 'sending'))->true();
+  }
+
   public function testSenderAddressIsValidForActivationIfNotACampaign() {
     $this->settings->set('mta.method', Mailer::METHOD_MAILPOET);
 

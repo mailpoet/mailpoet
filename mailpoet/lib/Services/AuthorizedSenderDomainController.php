@@ -243,6 +243,10 @@ class AuthorizedSenderDomainController {
     $this->wp->setTransient(self::SENDER_DOMAINS_KEY, $this->currentRawData, 60 * 60 * 24 * 7);
   }
 
+  public function isCacheAvailable(): bool {
+    return is_array($this->wp->getTransient(self::SENDER_DOMAINS_KEY));
+  }
+
   private function getAllRawData(): array {
     if ($this->currentRawData === null) {
       $currentData = $this->wp->getTransient(self::SENDER_DOMAINS_KEY);
