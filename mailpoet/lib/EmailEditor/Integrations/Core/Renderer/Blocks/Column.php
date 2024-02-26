@@ -51,17 +51,15 @@ class Column implements BlockRenderer {
       'width' => $width,
       'vertical-align' => $verticalAlign,
     ];
-    $mainCellClasses = 'email_column_wrap';
 
     // The default column alignment is `stretch to fill` which means that we need to set the background color to the main cell
     // to create a feeling of a stretched column
     if (!isset($parsedBlock['attrs']['verticalAlignment']) || $parsedBlock['attrs']['verticalAlignment'] === 'stretch') {
       $mainCellStyles = array_merge($mainCellStyles, $colorStyles);
-      $mainCellClasses .= ' ' . $classes;
     }
 
     return '
-      <td class="block ' . esc_attr($mainCellClasses) . '" style="' . esc_attr($settingsController->convertStylesToString($mainCellStyles)) . '">
+      <td class="block ' . esc_attr($classes) . '" style="' . esc_attr($settingsController->convertStylesToString($mainCellStyles)) . '">
         <div class="email_column" style="width:100%;max-width:' . esc_attr($width) . ';font-size:0px;text-align:left;display:inline-block;">
           <table class="email_column ' . esc_attr($classes) . '" border="0" cellpadding="0" cellspacing="0" role="presentation" style="' . esc_attr($settingsController->convertStylesToString($colorStyles)) . ';min-width:100%;width:100%;max-width:' . esc_attr($width) . ';vertical-align:top;" width="' . esc_attr($width) . '">
             <tbody>
