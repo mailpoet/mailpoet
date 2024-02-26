@@ -55,7 +55,8 @@ function QueueSending({ newsletter }: QueueSendingProps) {
   const confirmAndResumeSending = async () => {
     confirmAlert({
       message: __(
-        'The was an issue sending this email before, please confirm the issues are fixed to proceed.',
+        'There was an issue sending this email before. Please confirm the problems are fixed to proceed.',
+        'mailpoet',
       ),
       onConfirm: resumeSending,
     });
