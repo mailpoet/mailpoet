@@ -85,9 +85,10 @@ export function BlockEditor() {
   const layoutBackground = styles.layout.background;
 
   let inlineStyles = useResizeCanvas(previewDeviceType);
-  // UseResizeCanvas returns null if the previewDeviceType is Desktop.
-  if (!inlineStyles) {
+  // Adjust the inline styles for desktop preview. We want to set email width and center it.
+  if (previewDeviceType === 'Desktop') {
     inlineStyles = {
+      ...inlineStyles,
       height: 'auto',
       margin: '4rem auto', // 4em top/bottom to place the email document nicely vertically in canvas. Same value is used for title in WP Post editor.
       width: styles.layout.width,
