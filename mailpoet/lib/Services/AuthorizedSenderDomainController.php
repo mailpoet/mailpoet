@@ -240,7 +240,7 @@ class AuthorizedSenderDomainController {
     if (!$currentRawData) return; // Do not modify cache if there is no data from the API
 
     $this->currentRawData = $currentRawData;
-    $this->wp->setTransient(self::SENDER_DOMAINS_KEY, $this->currentRawData, 60 * 60 * 24);
+    $this->wp->setTransient(self::SENDER_DOMAINS_KEY, $this->currentRawData, 60 * 60 * 24 * 7);
   }
 
   private function getAllRawData(): array {
