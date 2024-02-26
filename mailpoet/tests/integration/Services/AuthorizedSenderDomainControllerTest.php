@@ -198,6 +198,46 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
     verify($verifiedDomains)->same([]);
   }
 
+  public function testItUsesTransientWhenBridgeReturnsNoData() {
+    $oldBridgeResponse = [
+      [
+        'domain' => 'mailpoet.com',
+        'domain_status' => 'verified',
+        'dns' => Bridge\BridgeTestMockAPI::VERIFIED_DOMAIN_RESPONSE['dns'],
+      ],
+      [
+        'domain' => 'testdomain.com',
+        'domain_status' => 'unverified',
+        'dns' => [],
+      ],
+    ];
+
+    $newBridgeResponse = null;
+
+
+    $bridgeMock = $this->createMock(Bridge::class);
+    $bridgeMock->expects($this->exactly(2))
+      ->method('getRawSenderDomainData')
+      ->willReturnOnConsecutiveCalls($oldBridgeResponse, $newBridgeResponse);
+
+    $this->wp = $this->make(WPFunctions::class, [
+      'getTransient' => $oldBridgeResponse,
+      'setTransient' => true,
+    ]);
+
+    $controller = $this->getController($bridgeMock);
+    $verifiedDomains = $controller->getVerifiedSenderDomainsIgnoringCache();
+    verify($verifiedDomains)->same(['mailpoet.com']);
+    // Second call
+    $verifiedDomains = $controller->getVerifiedSenderDomainsIgnoringCache();
+    verify($verifiedDomains)->same(['mailpoet.com']);
+    // Reset mock
+    $this->wp = $this->make(WPFunctions::class, [
+      'getTransient' => false,
+      'setTransient' => true,
+    ]);
+  }
+
   public function testCreateAuthorizedSenderDomainThrowsForExistingDomains() {
     $this->expectException(InvalidArgumentException::class);
     $this->expectExceptionMessage('Sender domain exist');
