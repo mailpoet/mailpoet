@@ -69,13 +69,9 @@ export function BlockEditor() {
     [],
   );
 
-  const className = classnames(
-    'interface-interface-skeleton',
-    'edit-post-layout',
-    {
-      'is-sidebar-opened': isSidebarOpened,
-    },
-  );
+  const className = classnames('edit-post-layout', {
+    'is-sidebar-opened': isSidebarOpened,
+  });
 
   const [blocks, onInput, onChange] = useEntityBlockEditor(
     'postType',
