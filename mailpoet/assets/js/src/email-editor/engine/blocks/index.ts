@@ -9,6 +9,7 @@ import { disableImageFilter, hideExpandOnClick } from './core/image';
 import { disableCertainRichTextFormats } from './core/rich-text';
 import { enhanceButtonBlock } from './core/button';
 import { enhanceButtonsBlock } from './core/buttons';
+import { alterSupportConfiguration } from './core/general-block-support';
 
 export function initBlocks() {
   disableNestedColumns();
@@ -21,5 +22,6 @@ export function initBlocks() {
   enhanceButtonsBlock();
   enhanceColumnBlock();
   enhanceColumnsBlock();
+  alterSupportConfiguration();
   registerCoreBlocks();
 }
