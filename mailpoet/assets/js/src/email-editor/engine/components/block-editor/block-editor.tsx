@@ -33,7 +33,7 @@ import { Header } from '../header';
 import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 import { EditorNotices, EditorSnackbars, SentEmailNotice } from '../notices';
-import { StylesSidebar } from '../styles-sidebar/styles-sidebar';
+import { StylesSidebar } from '../styles-sidebar';
 
 export function BlockEditor() {
   const {
