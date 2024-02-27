@@ -17,7 +17,7 @@ export function StylesSidebar(props: Props): JSX.Element {
   return (
     <ComplementaryArea
       identifier={stylesSidebarId}
-      className="edit-post-styles"
+      className="mailpoet-email-editor__styles-panel"
       header={__('Styles', 'mailpoet')}
       icon={styles}
       scope={storeName}
