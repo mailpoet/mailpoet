@@ -23,7 +23,7 @@ services:
       WORDPRESS_DB_NAME: wordpress
 
   wordpress:
-    image: mailpoet/wordpress:wp-6.3_php8.1_20230811.1
+    image: mailpoet/wordpress:wp-6.4_php8.2_20231120.1
     container_name: performance_wordpress
     depends_on:
       mysql: { condition: service_healthy }

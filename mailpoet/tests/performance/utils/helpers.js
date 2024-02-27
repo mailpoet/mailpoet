@@ -89,7 +89,7 @@ export async function designEmailInWorkflow(page) {
   await page.locator('input[type="email"]').fill(adminEmail);
 
   await page.screenshot({
-    path: screenshotPath + `Design_Email_In_Workflow_${Date.now()}`,
+    path: screenshotPath + `Design_Email_In_Workflow_${Date.now()}.png`,
     fullPage: fullPageSet,
   });
 
@@ -102,7 +102,7 @@ export async function designEmailInWorkflow(page) {
   await page.waitForLoadState('networkidle');
 
   await page.screenshot({
-    path: screenshotPath + `Design_Email_In_Workflow_${Date.now()}`,
+    path: screenshotPath + `Design_Email_In_Workflow_${Date.now()}.png`,
     fullPage: fullPageSet,
   });
 
@@ -119,7 +119,7 @@ export async function designEmailInWorkflow(page) {
   await page.waitForLoadState('networkidle');
 
   await page.screenshot({
-    path: screenshotPath + `Design_Email_In_Workflow_${Date.now()}`,
+    path: screenshotPath + `Design_Email_In_Workflow_${Date.now()}.png`,
     fullPage: fullPageSet,
   });
 
