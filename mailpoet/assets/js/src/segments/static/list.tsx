@@ -284,14 +284,12 @@ class SegmentListComponent extends Component<RouteComponentProps> {
       // the WP users and WooCommerce customers segments
       // are not editable so just display their names
       segmentName = (
-        <span className="mailpoet-listing-title">
-          {escapeHTML(segment.name)}
-        </span>
+        <span className="mailpoet-listing-title">{segment.name}</span>
       );
     } else {
       segmentName = (
         <Link className="mailpoet-listing-title" to={`/edit/${segment.id}`}>
-          {escapeHTML(segment.name)}
+          {segment.name}
         </Link>
       );
     }
@@ -306,7 +304,7 @@ class SegmentListComponent extends Component<RouteComponentProps> {
           {actions}
         </td>
         <td data-colname={MailPoet.I18n.t('description')}>
-          <abbr>{escapeHTML(segment.description)}</abbr>
+          <abbr>{segment.description}</abbr>
         </td>
         {mailpoetTrackingEnabled ? (
           <td
