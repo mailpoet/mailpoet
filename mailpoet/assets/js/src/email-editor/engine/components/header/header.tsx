@@ -1,4 +1,4 @@
-import { useRef } from '@wordpress/element';
+import { useRef, useState } from '@wordpress/element';
 import { PinnedItems } from '@wordpress/interface';
 import { Button, ToolbarItem as WpToolbarItem } from '@wordpress/components';
 import {
@@ -9,7 +9,8 @@ import {
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
-import { plus, listView, undo, redo } from '@wordpress/icons';
+import { plus, listView, undo, redo, next, previous } from '@wordpress/icons';
+import classnames from 'classnames';
 import { storeName } from '../../store';
 import { MoreMenu } from './more-menu';
 import { PreviewDropdown } from '../preview';
@@ -38,6 +39,8 @@ export function Header() {
   const listviewButton = useRef();
   const undoButton = useRef();
   const redoButton = useRef();
+
+  const [isBlockToolsCollapsed, setIsBlockToolsCollapsed] = useState(false);
 
   const { toggleInserterSidebar, toggleListviewSidebar } =
     useDispatch(storeName);
@@ -129,11 +132,32 @@ export function Header() {
             />
           </div>
         </NavigableToolbar>
-        {isFixedToolbarActive && isBlockSelected ? (
-          <div className="selected-block-tools-wrapper">
-            <BlockToolbar hideDragHandle />
-          </div>
-        ) : (
+        {isFixedToolbarActive && isBlockSelected && (
+          <>
+            <div
+              className={classnames('selected-block-tools-wrapper', {
+                'is-collapsed': isBlockToolsCollapsed,
+              })}
+            >
+              <BlockToolbar hideDragHandle />
+            </div>
+            <Button
+              className="edit-post-header__block-tools-toggle"
+              icon={isBlockToolsCollapsed ? next : previous}
+              onClick={() => {
+                setIsBlockToolsCollapsed((collapsed) => !collapsed);
+              }}
+              label={
+                isBlockToolsCollapsed
+                  ? __('Show block tools')
+                  : __('Hide block tools')
+              }
+            />
+          </>
+        )}
+        {(!isFixedToolbarActive ||
+          !isBlockSelected ||
+          isBlockToolsCollapsed) && (
           <div className="edit-post-header__center">
             <CampaignName />
           </div>
