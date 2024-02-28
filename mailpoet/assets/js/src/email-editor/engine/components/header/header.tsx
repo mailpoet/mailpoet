@@ -1,7 +1,11 @@
 import { useRef } from '@wordpress/element';
 import { PinnedItems } from '@wordpress/interface';
 import { Button, ToolbarItem as WpToolbarItem } from '@wordpress/components';
-import { NavigableToolbar } from '@wordpress/block-editor';
+import {
+  NavigableToolbar,
+  BlockToolbar as WPBlockToolbar,
+  store as blockEditorStore,
+} from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
@@ -21,6 +25,14 @@ const ToolbarItem = WpToolbarItem as React.ForwardRefExoticComponent<
     React.ComponentProps<typeof Button>
 >;
 
+// Definition of BlockToolbar in currently installed Gutenberg packages (wp-6.4) is missing hideDragHandle prop
+// After updating to newer version of Gutenberg we should be able to remove this fix
+const BlockToolbar = WPBlockToolbar as React.FC<
+  React.ComponentProps<typeof WPBlockToolbar> & {
+    hideDragHandle?: boolean;
+  }
+>;
+
 export function Header() {
   const inserterButton = useRef();
   const listviewButton = useRef();
@@ -30,16 +42,24 @@ export function Header() {
   const { toggleInserterSidebar, toggleListviewSidebar } =
     useDispatch(storeName);
   const { undo: undoAction, redo: redoAction } = useDispatch(coreDataStore);
-  const { isInserterSidebarOpened, isListviewSidebarOpened, hasUndo, hasRedo } =
-    useSelect(
-      (select) => ({
-        isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
-        isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
-        hasUndo: select(coreDataStore).hasUndo(),
-        hasRedo: select(coreDataStore).hasRedo(),
-      }),
-      [],
-    );
+  const {
+    isInserterSidebarOpened,
+    isListviewSidebarOpened,
+    isFixedToolbarActive,
+    isBlockSelected,
+    hasUndo,
+    hasRedo,
+  } = useSelect(
+    (select) => ({
+      isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
+      isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
+      isFixedToolbarActive: select(storeName).isFeatureActive('fixedToolbar'),
+      isBlockSelected: !!select(blockEditorStore).getBlockSelectionStart(),
+      hasUndo: select(coreDataStore).hasUndo(),
+      hasRedo: select(coreDataStore).hasRedo(),
+    }),
+    [],
+  );
 
   const preventDefault = (event) => {
     event.preventDefault();
@@ -109,9 +129,15 @@ export function Header() {
             />
           </div>
         </NavigableToolbar>
-        <div className="edit-post-header__center">
-          <CampaignName />
-        </div>
+        {isFixedToolbarActive && isBlockSelected ? (
+          <div className="selected-block-tools-wrapper">
+            <BlockToolbar hideDragHandle />
+          </div>
+        ) : (
+          <div className="edit-post-header__center">
+            <CampaignName />
+          </div>
+        )}
       </div>
       <div className="edit-post-header__settings">
         <SaveButton />
