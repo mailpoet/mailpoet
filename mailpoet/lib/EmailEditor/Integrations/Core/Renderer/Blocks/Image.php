@@ -106,9 +106,8 @@ class Image implements BlockRenderer {
   private function getCaptionStyles(SettingsController $settingsController, array $parsedBlock): string {
     $themeData = $settingsController->getTheme()->get_data();
 
-    // If the alignment is set, we need to center the caption
     $styles = [
-      'text-align' => isset($parsedBlock['attrs']['align']) ? 'center' : 'left',
+      'text-align' => 'center',
     ];
 
     $styles['font-size'] = $parsedBlock['email_attrs']['font-size'] ?? $themeData['styles']['typography']['fontSize'];
