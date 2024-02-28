@@ -165,10 +165,9 @@ wp config set COOKIE_DOMAIN \$_SERVER[\'HTTP_HOST\'] --raw
 wp config set DISABLE_WP_CRON true --raw
 
 # activate theme
+wp theme install twentytwentyone --activate
 if [[ $MULTISITE == "1" ]]; then
   wp theme install twentytwentyone --url=$HTTP_HOST/$WP_TEST_MULTISITE_SLUG --activate
-else
-  wp theme install twentytwentyone --activate
 fi
 
 # Remove Doctrine Annotations (they are not needed since generated metadata are packed)
