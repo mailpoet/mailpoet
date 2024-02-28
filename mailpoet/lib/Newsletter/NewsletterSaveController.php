@@ -446,7 +446,7 @@ class NewsletterSaveController {
     }
 
     $newPostId = $this->wp->wpInsertPost([
-      'post_content' => '',
+      'post_content' => EmailEditor::getEmailDefaultContent(),
       'post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE,
       'post_status' => 'draft',
       'post_author' => $this->wp->getCurrentUserId(),
