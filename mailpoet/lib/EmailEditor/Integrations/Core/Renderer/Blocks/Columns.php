@@ -25,30 +25,14 @@ class Columns implements BlockRenderer {
    */
   private function getBlockWrapper(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     // Getting individual border properties
-    $borderColor = $parsedBlock['attrs']['style']['border']['color'] ?? '#000000';
-    $borderWidth = $parsedBlock['attrs']['style']['border']['width'] ?? '0px';
-    $borderRadius = $parsedBlock['attrs']['style']['border']['radius'] ?? '0px';
-    // Because borders can by configured individually, we need to get each one of them and use the main border properties as fallback
-    $borderBottomColor = $parsedBlock['attrs']['style']['border']['bottom']['color'] ?? $borderColor;
-    $borderLeftColor = $parsedBlock['attrs']['style']['border']['left']['color'] ?? $borderColor;
-    $borderRightColor = $parsedBlock['attrs']['style']['border']['right']['color'] ?? $borderColor;
-    $borderTopColor = $parsedBlock['attrs']['style']['border']['top']['color'] ?? $borderColor;
-    $borderBottomWidth = $parsedBlock['attrs']['style']['border']['bottom']['width'] ?? $borderWidth;
-    $borderLeftWidth = $parsedBlock['attrs']['style']['border']['left']['width'] ?? $borderWidth;
-    $borderRightWidth = $parsedBlock['attrs']['style']['border']['right']['width'] ?? $borderWidth;
-    $borderTopWidth = $parsedBlock['attrs']['style']['border']['top']['width'] ?? $borderWidth;
-    $borderBottomLeftRadius = $parsedBlock['attrs']['style']['border']['radius']['bottomLeft'] ?? $borderRadius;
-    $borderBottomRightRadius = $parsedBlock['attrs']['style']['border']['radius']['bottomRight'] ?? $borderRadius;
-    $borderTopLeftRadius = $parsedBlock['attrs']['style']['border']['radius']['topLeft'] ?? $borderRadius;
-    $borderTopRightRadius = $parsedBlock['attrs']['style']['border']['radius']['topRight'] ?? $borderRadius;
+    $borderStyles = wp_style_engine_get_styles(['border' => $parsedBlock['attrs']['style']['border'] ?? []]);
+    $borderStyles = $borderStyles['declarations'] ?? [];
+    if (!empty($borderStyles)) {
+      $borderStyles['border-style'] = 'solid';
+      $borderStyles['box-sizing'] = 'border-box';
+    }
 
     $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
-    // Because width is primarily used for the max-width property, we need to add the left and right border width to it
-    $width = $settingsController->parseNumberFromStringWithPixels($width);
-    $width += $settingsController->parseNumberFromStringWithPixels($borderLeftWidth ?? '0px');
-    $width += $settingsController->parseNumberFromStringWithPixels($borderRightWidth ?? '0px');
-    $width = "{$width}px";
-    $backgroundColor = $parsedBlock['attrs']['style']['color']['background'] ?? 'none';
     $paddingBottom = $parsedBlock['attrs']['style']['spacing']['padding']['bottom'] ?? '0px';
     $paddingLeft = $parsedBlock['attrs']['style']['spacing']['padding']['left'] ?? '0px';
     $paddingRight = $parsedBlock['attrs']['style']['spacing']['padding']['right'] ?? '0px';
@@ -74,23 +58,6 @@ class Columns implements BlockRenderer {
       $layoutPaddingRight = '0px';
     }
 
-    $borderStyles = '';
-    if ($borderBottomWidth !== '0px') {
-      $borderStyles .= 'border-bottom:' . $borderBottomWidth . ' solid ' . $borderBottomColor . ';';
-    }
-    if ($borderLeftWidth !== '0px') {
-      $borderStyles .= 'border-left:' . $borderLeftWidth . ' solid ' . $borderLeftColor . ';';
-    }
-    if ($borderRightWidth !== '0px') {
-      $borderStyles .= 'border-right:' . $borderRightWidth . ' solid ' . $borderRightColor . ';';
-    }
-    if ($borderTopWidth !== '0px') {
-      $borderStyles .= 'border-top:' . $borderTopWidth . ' solid ' . $borderTopColor . ';';
-    }
-    if ($borderStyles !== '') {
-      $borderStyles .= 'border-radius:' . $borderTopLeftRadius . ' ' . $borderTopRightRadius . ' ' . $borderBottomRightRadius . ' ' . $borderBottomLeftRadius . ';';
-    }
-
     return '
       <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="width:' . $width . ';" width="' . $width . '"><tr><td style="font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
       <div style="margin-top:' . $marginTop . ';max-width:' . $width . ';padding-left:' . $layoutPaddingLeft . ';padding-right:' . $layoutPaddingRight . ';">
@@ -101,22 +68,20 @@ class Columns implements BlockRenderer {
           cellpadding="0"
           cellspacing="0"
           role="presentation"
-          style="' . esc_attr($settingsController->convertStylesToString($colorStyles)) . ';max-width:' . $width . ';width:100%;"
+          style="' . esc_attr($settingsController->convertStylesToString($colorStyles)) . ';max-width:' . $width . ';width:100%;border-collapse:separate;"
         >
           <tbody>
             <tr>
               <td style="
+              ' . esc_attr($settingsController->convertStylesToString($borderStyles)) . '
                 font-size:0px;
-                background:' . $backgroundColor . ';
-                background-color:' . $backgroundColor . ';
-                ' . $borderStyles . '
                 padding-left:' . $paddingLeft . ';
                 padding-right:' . $paddingRight . ';
                 padding-bottom:' . $paddingBottom . ';
                 padding-top:' . $paddingTop . ';
                 text-align:left;
               ">
-                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:separate;">
                   <tr>
                     {columns_content}
                   </tr>
