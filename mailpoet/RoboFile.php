@@ -1367,11 +1367,6 @@ class RoboFile extends \Robo\Tasks {
     }
   }
 
-  public function downloadWooCommerceBlocksZip($tag = null) {
-    $this->createWpOrgDownloader('woo-gutenberg-products-block')
-      ->downloadPluginZip('woo-gutenberg-products-block.zip', __DIR__ . '/tests/plugins/', $tag);
-  }
-
   public function downloadWooCommerceMembershipsZip($tag = null) {
     if (!getenv('WP_GITHUB_USERNAME') && !getenv('WP_GITHUB_TOKEN')) {
       $this->yell("Skipping download of WooCommerce Memberships", 40, 'red');
