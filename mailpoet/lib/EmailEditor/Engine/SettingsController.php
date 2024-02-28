@@ -94,26 +94,37 @@ class SettingsController {
   }
 
   /**
-   * @return array{width: string, background: string, padding: array{bottom: string, left: string, right: string, top: string}}
+   * @return array{
+   *   layout: array{width: string,background: string,padding: array{bottom: string, left: string, right: string, top: string}},
+   *   colors: array{background: string},
+   *   typography: array[]
+   * }
    */
-  public function getEmailLayoutStyles(): array {
+  public function getEmailStyles(): array {
     return [
-      'width' => self::EMAIL_WIDTH,
-      'background' => self::EMAIL_LAYOUT_BACKGROUND,
-      'padding' => [
-        'bottom' => self::FLEX_GAP,
-        'left' => self::FLEX_GAP,
-        'right' => self::FLEX_GAP,
-        'top' => self::FLEX_GAP,
+      'layout' => [
+        'background' => self::EMAIL_LAYOUT_BACKGROUND,
+        'width' => self::EMAIL_WIDTH,
+        'padding' => [
+          'bottom' => self::FLEX_GAP,
+          'left' => self::FLEX_GAP,
+          'right' => self::FLEX_GAP,
+          'top' => self::FLEX_GAP,
+        ],
+      ],
+      'colors' => [
+        'background' => '#000000',
+      ],
+      'typography' => [
       ],
     ];
   }
 
   public function getLayoutWidthWithoutPadding(): string {
-    $layoutStyles = $this->getEmailLayoutStyles();
-    $width = $this->parseNumberFromStringWithPixels($layoutStyles['width']);
-    $width -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['left']);
-    $width -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['right']);
+    $layoutStyles = $this->getEmailStyles();
+    $width = $this->parseNumberFromStringWithPixels($layoutStyles['layout']['width']);
+    $width -= $this->parseNumberFromStringWithPixels($layoutStyles['layout']['padding']['left']);
+    $width -= $this->parseNumberFromStringWithPixels($layoutStyles['layout']['padding']['right']);
     return "{$width}px";
   }
 

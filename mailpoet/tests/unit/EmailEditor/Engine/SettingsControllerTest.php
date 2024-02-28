@@ -8,10 +8,14 @@ use MailPoet\EmailEditor\Engine\ThemeController;
 class SettingsControllerTest extends \MailPoetUnitTest {
   public function testItGetsMainLayoutStyles(): void {
     $settingsController = new SettingsController($this->makeEmpty(ThemeController::class));
-    $layoutStyles = $settingsController->getEmailLayoutStyles();
-    verify($layoutStyles)->arrayHasKey('width');
+    $styles = $settingsController->getEmailStyles();
+    verify($styles)->arrayHasKey('layout');
+    verify($styles)->arrayHasKey('colors');
+    verify($styles)->arrayHasKey('typography');
+    $layoutStyles = $styles['layout'];
     verify($layoutStyles)->arrayHasKey('background');
     verify($layoutStyles)->arrayHasKey('padding');
+    verify($layoutStyles)->arrayHasKey('width');
   }
 
   public function testItGetsCorrectLayoutWidthWithoutPadding(): void {
