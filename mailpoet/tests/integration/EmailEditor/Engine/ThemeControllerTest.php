@@ -94,7 +94,7 @@ class ThemeControllerTest extends \MailPoetTest {
    * to prevent silent failures in case we change theme configuration in the test environment.
    */
   private function checkCorrectThemeConfiguration() {
-    $expectedThemes = ['Twenty Twenty-One', 'Twenty Nineteen'];
+    $expectedThemes = ['Twenty Twenty-One'];
     if (!in_array(wp_get_theme()->get('Name'), $expectedThemes)) {
       $this->fail('Test depends on using Twenty Twenty-One or Twenty Nineteen theme. If you changed the theme, please update the test.');
     }

@@ -171,14 +171,6 @@ else
   wp theme install twentytwentyone --activate
 fi
 
-
-if [[ $CIRCLE_JOB == *"_oldest"* ]]; then
-  wp theme activate twentynineteen
-  if [[ $MULTISITE == "1" ]]; then
-    wp theme activate twentynineteen --url=$HTTP_HOST/$WP_TEST_MULTISITE_SLUG
-  fi
-fi
-
 # Remove Doctrine Annotations (they are not needed since generated metadata are packed)
 # We want to remove them for tests to make sure they are really not needed
 if [[ $TEST_TYPE == "acceptance" ]] && [[ $CIRCLE_JOB ]]; then
