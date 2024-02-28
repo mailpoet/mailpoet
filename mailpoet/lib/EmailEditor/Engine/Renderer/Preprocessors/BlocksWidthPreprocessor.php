@@ -17,10 +17,6 @@ class BlocksWidthPreprocessor implements Preprocessor {
         $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['left'] ?? '0px');
         $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['right'] ?? '0px');
       }
-      // Subtract border width from the block width to accurate calculation of the child blocks
-      $borderWidth = $block['attrs']['style']['border']['width'] ?? '0px';
-      $layoutWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['border']['left']['width'] ?? $borderWidth);
-      $layoutWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['border']['right']['width'] ?? $borderWidth);
 
       $widthInput = $block['attrs']['width'] ?? '100%';
       // Currently we support only % and px units in case only the number is provided we assume it's %
@@ -33,6 +29,9 @@ class BlocksWidthPreprocessor implements Preprocessor {
         $columnsWidth = $layoutWidth;
         $columnsWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['spacing']['padding']['left'] ?? '0px');
         $columnsWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['spacing']['padding']['right'] ?? '0px');
+        $borderWidth = $block['attrs']['style']['border']['width'] ?? '0px';
+        $columnsWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['border']['left']['width'] ?? $borderWidth);
+        $columnsWidth -= $this->parseNumberFromStringWithPixels($block['attrs']['style']['border']['right']['width'] ?? $borderWidth);
         $block['innerBlocks'] = $this->addMissingColumnWidths($block['innerBlocks'], $columnsWidth);
       }
 
@@ -78,10 +77,10 @@ class BlocksWidthPreprocessor implements Preprocessor {
         // When width is not set we need to add padding to the defined column width for better ratio accuracy
         $definedColumnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['spacing']['padding']['left'] ?? '0px');
         $definedColumnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['spacing']['padding']['right'] ?? '0px');
+        $borderWidth = $column['attrs']['style']['border']['width'] ?? '0px';
+        $definedColumnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['border']['left']['width'] ?? $borderWidth);
+        $definedColumnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['border']['right']['width'] ?? $borderWidth);
       }
-      $borderWidth = $column['attrs']['style']['border']['width'] ?? '0px';
-      $definedColumnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['border']['left']['width'] ?? $borderWidth);
-      $definedColumnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['border']['right']['width'] ?? $borderWidth);
     }
 
     if ($columnsCount - $columnsCountWithDefinedWidth > 0) {
@@ -92,6 +91,9 @@ class BlocksWidthPreprocessor implements Preprocessor {
           $columnWidth = $defaultColumnsWidth;
           $columnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['spacing']['padding']['left'] ?? '0px');
           $columnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['spacing']['padding']['right'] ?? '0px');
+          $borderWidth = $column['attrs']['style']['border']['width'] ?? '0px';
+          $columnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['border']['left']['width'] ?? $borderWidth);
+          $columnWidth += $this->parseNumberFromStringWithPixels($column['attrs']['style']['border']['right']['width'] ?? $borderWidth);
           $columns[$key]['attrs']['width'] = "{$columnWidth}px";
         }
       }

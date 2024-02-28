@@ -440,14 +440,14 @@ class BlocksWidthPreprocessorTest extends \MailPoetUnitTest {
       ],
     ]];
 
-    $result = $this->preprocessor->preprocess($blocks, ['width' => '660px', 'padding' => ['left' => '10px', 'right' => '10px']]);
+    $result = $this->preprocessor->preprocess($blocks, ['width' => '660px', 'padding' => ['left' => '16px', 'right' => '16px']]);
     verify($result[0]['innerBlocks'])->arrayCount(3);
     verify($result[0]['innerBlocks'][0]['email_attrs']['width'])->equals('140px');
-    verify($result[0]['innerBlocks'][1]['email_attrs']['width'])->equals('180px');
-    verify($result[0]['innerBlocks'][2]['email_attrs']['width'])->equals('220px');
+    verify($result[0]['innerBlocks'][1]['email_attrs']['width'])->equals('179px');
+    verify($result[0]['innerBlocks'][2]['email_attrs']['width'])->equals('249px');
     $imageBlock = $result[0]['innerBlocks'][1]['innerBlocks'][0];
-    verify($imageBlock['email_attrs']['width'])->equals('180px');
+    verify($imageBlock['email_attrs']['width'])->equals('179px');
     $imageBlock = $result[0]['innerBlocks'][2]['innerBlocks'][0];
-    verify($imageBlock['email_attrs']['width'])->equals('180px');
+    verify($imageBlock['email_attrs']['width'])->equals('209px');
   }
 }
