@@ -32,7 +32,6 @@ class WooCheckoutBlocksCest {
 
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();
-    $i->activateWooCommerceBlocks();
     $this->product = (new WooCommerceProduct($i))->create();
     $this->settingsFactory = new Settings();
     $this->settingsFactory->withWooCommerceListImportPageDisplayed(true);
@@ -285,10 +284,6 @@ class WooCheckoutBlocksCest {
   private function checkMinimalPluginVersions(\AcceptanceTester $i): bool {
     $wooCommerceVersion = $i->getWooCommerceVersion();
     if (version_compare($wooCommerceVersion, '6.8.0', '<')) {
-      return false;
-    }
-    $wooCommerceBlocksVersion = $i->getWooCommerceBlocksVersion();
-    if (version_compare($wooCommerceBlocksVersion, '8.0.0', '<')) {
       return false;
     }
     $wordPressVersion = $i->getWordPressVersion();

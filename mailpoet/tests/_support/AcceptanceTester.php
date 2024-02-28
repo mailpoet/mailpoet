@@ -397,16 +397,6 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->cli(['plugin', 'deactivate', self::WOO_COMMERCE_PLUGIN]);
   }
 
-  public function activateWooCommerceBlocks() {
-    $i = $this;
-    $i->cli(['plugin', 'activate', self::WOO_COMMERCE_BLOCKS_PLUGIN]);
-  }
-
-  public function deactivateWooCommerceBlocks() {
-    $i = $this;
-    $i->cli(['plugin', 'deactivate', self::WOO_COMMERCE_BLOCKS_PLUGIN]);
-  }
-
   public function activateWooCommerceMemberships() {
     $i = $this;
     $i->cli(['plugin', 'activate', self::WOO_COMMERCE_MEMBERSHIPS_PLUGIN]);
