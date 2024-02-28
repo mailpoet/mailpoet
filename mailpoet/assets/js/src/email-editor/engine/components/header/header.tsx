@@ -34,6 +34,12 @@ const BlockToolbar = WPBlockToolbar as React.FC<
   }
 >;
 
+// In older versions of Gutenberg (e.g. wp-6.4 and < 17.3) the fixed block toolbar is rendered automatically
+// This is a workaround to hide the block toolbar in these versions
+// We will remove this after we drop support for WP 6.4
+const isInlinedBlockToolbarAvailable =
+  window.MailPoetEmailEditor.bc_state.isInlinedBlockToolbarAvailable;
+
 export function Header() {
   const inserterButton = useRef();
   const listviewButton = useRef();
@@ -132,30 +138,33 @@ export function Header() {
             />
           </div>
         </NavigableToolbar>
-        {isFixedToolbarActive && isBlockSelected && (
-          <>
-            <div
-              className={classnames('selected-block-tools-wrapper', {
-                'is-collapsed': isBlockToolsCollapsed,
-              })}
-            >
-              <BlockToolbar hideDragHandle />
-            </div>
-            <Button
-              className="edit-post-header__block-tools-toggle"
-              icon={isBlockToolsCollapsed ? next : previous}
-              onClick={() => {
-                setIsBlockToolsCollapsed((collapsed) => !collapsed);
-              }}
-              label={
-                isBlockToolsCollapsed
-                  ? __('Show block tools')
-                  : __('Hide block tools')
-              }
-            />
-          </>
-        )}
-        {(!isFixedToolbarActive ||
+        {isInlinedBlockToolbarAvailable &&
+          isFixedToolbarActive &&
+          isBlockSelected && (
+            <>
+              <div
+                className={classnames('selected-block-tools-wrapper', {
+                  'is-collapsed': isBlockToolsCollapsed,
+                })}
+              >
+                <BlockToolbar hideDragHandle />
+              </div>
+              <Button
+                className="edit-post-header__block-tools-toggle"
+                icon={isBlockToolsCollapsed ? next : previous}
+                onClick={() => {
+                  setIsBlockToolsCollapsed((collapsed) => !collapsed);
+                }}
+                label={
+                  isBlockToolsCollapsed
+                    ? __('Show block tools')
+                    : __('Hide block tools')
+                }
+              />
+            </>
+          )}
+        {(!isInlinedBlockToolbarAvailable ||
+          !isFixedToolbarActive ||
           !isBlockSelected ||
           isBlockToolsCollapsed) && (
           <div className="edit-post-header__center">
