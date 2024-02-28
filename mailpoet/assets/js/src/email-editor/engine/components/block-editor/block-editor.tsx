@@ -48,7 +48,7 @@ export function BlockEditor() {
     canUserEditMedia,
     hasFixedToolbar,
     focusMode,
-    layoutStyles,
+    styles,
     layout,
   } = useSelect(
     (select) => ({
@@ -63,7 +63,7 @@ export function BlockEditor() {
       canUserEditMedia: select(coreStore).canUser('create', 'media'),
       hasFixedToolbar: select(storeName).isFeatureActive('fixedToolbar'),
       focusMode: select(storeName).isFeatureActive('focusMode'),
-      layoutStyles: select(storeName).getLayoutStyles(),
+      styles: select(storeName).getStyles(),
       layout: select(storeName).getLayout(),
     }),
     [],
@@ -86,7 +86,7 @@ export function BlockEditor() {
   );
 
   // This will be set by the user in the future in email or global styles.
-  const layoutBackground = layoutStyles.background;
+  const layoutBackground = styles.layout.background;
 
   let inlineStyles = useResizeCanvas(previewDeviceType);
   // UseResizeCanvas returns null if the previewDeviceType is Desktop.
@@ -94,7 +94,7 @@ export function BlockEditor() {
     inlineStyles = {
       height: 'auto',
       margin: '4rem auto', // 4em top/bottom to place the email document nicely vertically in canvas. Same value is used for title in WP Post editor.
-      width: layoutStyles.width,
+      width: styles.layout.width,
       display: 'flex',
       flexFlow: 'column',
     };

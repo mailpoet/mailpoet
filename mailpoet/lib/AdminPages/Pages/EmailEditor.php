@@ -58,7 +58,7 @@ class EmailEditor {
         'api_version' => esc_js($apiVersion),
         'current_wp_user_email' => esc_js($currentUserEmail),
         'editor_settings' => $this->settingsController->getSettings(),
-        'email_layout_styles' => $this->settingsController->getEmailLayoutStyles(),
+        'email_styles' => $this->settingsController->getEmailStyles(),
         'editor_layout' => $this->settingsController->getLayout(),
       ]
     );

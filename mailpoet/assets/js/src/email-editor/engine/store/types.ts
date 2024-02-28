@@ -25,14 +25,19 @@ export type ExperimentalSettings = {
 
 export type EmailEditorSettings = EditorSettings & ExperimentalSettings;
 
-export type EmailLayoutStyles = {
-  width: string;
-  background: string;
-  padding: {
-    bottom: string;
-    left: string;
-    right: string;
-    top: string;
+export type EmailStyles = {
+  layout: {
+    background: string;
+    padding: {
+      bottom: string;
+      left: string;
+      right: string;
+      top: string;
+    };
+    width: string;
+  };
+  colors: {
+    background: string;
   };
 };
 
@@ -53,7 +58,7 @@ export type State = {
   };
   postId: number;
   editorSettings: EmailEditorSettings;
-  layoutStyles: EmailLayoutStyles;
+  styles: EmailStyles;
   layout: EmailEditorLayout;
   autosaveInterval: number;
   preview: {

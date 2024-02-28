@@ -42,7 +42,7 @@ class Renderer {
     $parser = new \WP_Block_Parser();
     $parsedBlocks = $parser->parse($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-    $layoutStyles = $this->settingsController->getEmailLayoutStyles();
+    $layoutStyles = $this->settingsController->getEmailStyles()['layout'];
     $themeData = $this->settingsController->getTheme()->get_data();
     $contentBackground = $themeData['styles']['color']['background'] ?? $layoutStyles['background'];
     $contentFontFamily = $themeData['styles']['typography']['fontFamily'];

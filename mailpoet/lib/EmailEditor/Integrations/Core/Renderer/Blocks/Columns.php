@@ -51,8 +51,8 @@ class Columns implements BlockRenderer {
 
     $align = $parsedBlock['attrs']['align'] ?? null;
     if ($align !== 'full') {
-      $layoutPaddingLeft = $settingsController->getEmailLayoutStyles()['padding']['left'];
-      $layoutPaddingRight = $settingsController->getEmailLayoutStyles()['padding']['right'];
+      $layoutPaddingLeft = $settingsController->getEmailStyles()['layout']['padding']['left'];
+      $layoutPaddingRight = $settingsController->getEmailStyles()['layout']['padding']['right'];
     } else {
       $layoutPaddingLeft = '0px';
       $layoutPaddingRight = '0px';

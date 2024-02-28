@@ -88,14 +88,16 @@ class RendererTest extends \MailPoetTest {
       ],
     ]);
     $settingsControllerMock = $this->createMock(SettingsController::class);
-    $settingsControllerMock->method('getEmailLayoutStyles')->willReturn([
-      'width' => '123px',
-      'background' => '#123456',
-      'padding' => [
-        'left' => '1px',
-        'right' => '2px',
-        'top' => '3px',
-        'bottom' => '4px',
+    $settingsControllerMock->method('getEmailStyles')->willReturn([
+      'layout' => [
+        'width' => '123px',
+        'background' => '#123456',
+        'padding' => [
+          'left' => '1px',
+          'right' => '2px',
+          'top' => '3px',
+          'bottom' => '4px',
+        ],
       ],
     ]);
     $settingsControllerMock->method('getTheme')->willReturn($themeJsonMock);
