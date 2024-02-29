@@ -10,6 +10,9 @@
     "layout": {
       "contentSize": "660px"
     },
+    "background": {
+      "backgroundImage": true
+    },
     "spacing": {
       "units": ["px"],
       "blockGap": true,

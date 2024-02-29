@@ -47,4 +47,25 @@ function disableNestedColumns() {
   );
 }
 
-export { disableNestedColumns };
+function enhanceColumnBlock() {
+  addFilter(
+    'blocks.registerBlockType',
+    'mailpoet-email-editor/change-column',
+    (settings: Block, name) => {
+      if (name === 'core/column') {
+        return {
+          ...settings,
+          supports: {
+            ...settings.supports,
+            background: {
+              backgroundImage: true,
+            },
+          },
+        };
+      }
+      return settings;
+    },
+  );
+}
+
+export { disableNestedColumns, enhanceColumnBlock };
