@@ -78,6 +78,9 @@ class NewsletterSaveController {
   /*** @var NewsletterCoupon */
   private $newsletterCoupon;
 
+  /** @var EmailEditor */
+  private $emailEditor;
+
   public function __construct(
     AuthorizedEmailsController $authorizedEmailsController,
     Emoji $emoji,
@@ -94,7 +97,8 @@ class NewsletterSaveController {
     WPFunctions $wp,
     ApiDataSanitizer $dataSanitizer,
     Scheduler $scheduler,
-    NewsletterCoupon $newsletterCoupon
+    NewsletterCoupon $newsletterCoupon,
+    EmailEditor $emailEditor
   ) {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->emoji = $emoji;
@@ -112,6 +116,7 @@ class NewsletterSaveController {
     $this->dataSanitizer = $dataSanitizer;
     $this->scheduler = $scheduler;
     $this->newsletterCoupon = $newsletterCoupon;
+    $this->emailEditor = $emailEditor;
   }
 
   public function save(array $data = []): NewsletterEntity {
@@ -446,7 +451,7 @@ class NewsletterSaveController {
     }
 
     $newPostId = $this->wp->wpInsertPost([
-      'post_content' => EmailEditor::getEmailDefaultContent(),
+      'post_content' => $this->emailEditor->getEmailDefaultContent(),
       'post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE,
       'post_status' => 'draft',
       'post_author' => $this->wp->getCurrentUserId(),

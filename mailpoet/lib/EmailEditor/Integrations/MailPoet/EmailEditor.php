@@ -2,8 +2,8 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
-use MailPoet\Config\Env;
 use MailPoet\Features\FeaturesController;
+use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
@@ -18,14 +18,19 @@ class EmailEditor {
   /** @var EmailApiController */
   private $emailApiController;
 
+  /** @var CdnAssetUrl */
+  private $cdnAssetUrl;
+
   public function __construct(
     WPFunctions $wp,
     FeaturesController $featuresController,
-    EmailApiController $emailApiController
+    EmailApiController $emailApiController,
+    CdnAssetUrl $cdnAssetUrl
   ) {
     $this->wp = $wp;
     $this->featuresController = $featuresController;
     $this->emailApiController = $emailApiController;
+    $this->cdnAssetUrl = $cdnAssetUrl;
   }
 
   public function initialize(): void {
@@ -58,10 +63,10 @@ class EmailEditor {
     ]);
   }
 
-  public static function getEmailDefaultContent(): string {
+  public function getEmailDefaultContent(): string {
     return '
       <!-- wp:image {"width":"130px","sizeSlug":"large"} -->
-      <figure class="wp-block-image size-large is-resized"><img src="' . esc_url(Env::$assetsUrl) . '/img/blank_templates/fake-logo-alt.png" alt="Your Logo" style="width:130px"/></figure>
+      <figure class="wp-block-image size-large is-resized"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl("email-editor/your-logo-placeholder.png")) . '" alt="Your Logo" style="width:130px"/></figure>
       <!-- /wp:image -->
       <!-- wp:heading {"fontSize":"medium","style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
       <h2 class="wp-block-heading has-medium-font-size" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)"></h2>
