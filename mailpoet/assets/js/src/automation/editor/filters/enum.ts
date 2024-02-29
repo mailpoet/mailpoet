@@ -32,7 +32,10 @@ export const filter: FilterType = {
       id: string;
       name: string;
     }[];
-    return options.some(({ id }) => id === value);
+    return (
+      Array.isArray(value) &&
+      value.every((item) => options.some(({ id }) => id === item))
+    );
   },
   edit: undefined,
 };
