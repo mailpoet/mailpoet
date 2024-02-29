@@ -1,8 +1,11 @@
 import {
-  __unstableMotion as motion,
   __experimentalHStack as HStack,
   __experimentalVStack as VStack,
+  __unstableMotion as motion,
 } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
+import { useState } from '@wordpress/element';
+import { storeName } from '../../store';
 
 const firstFrame = {
   start: {
@@ -38,181 +41,191 @@ const secondFrame = {
 const normalizedHeight = 152;
 const normalizedColorSwatchSize = 32;
 
+type Props = {
+  label?: string;
+  isFocused?: boolean;
+  withHoverView?: boolean;
+};
+
 /**
  * Component to render the styles preview based on the component from the site editor:
  * https://github.com/WordPress/gutenberg/blob/trunk/packages/edit-site/src/components/global-styles/preview.js
  */
-export function Preview(): JSX.Element {
-  const style = {
-    backgroundColor: '#f3f3f3',
-    headingFontFamily: 'Arial',
-    headingColor: '#000000',
-    headingFontWeight: 'normal',
-    paletteColors: [
-      {
-        name: 'Sample Background',
-        slug: 'Sample-background',
-        color: '#f9f8f3',
-      },
-    ],
-    highlightedColors: [
-      {
-        name: 'Sample primary',
-        slug: 'sample-primary',
-        color: '#e5e2d3',
-      },
-      {
-        name: 'Sample Secondary',
-        slug: 'sample-secondary',
-        color: '#111111',
-      },
-    ],
-  };
+export function Preview({
+  label,
+  isFocused,
+  withHoverView,
+}: Props): JSX.Element {
+  const styles = useSelect((select) => select(storeName).getStyles());
 
-  const isFocused = false;
-  const isHovered = false;
-  const disableMotion = false;
-  const label = 'Some Label';
+  const backgroundColor = styles.colors.background;
+  const headingFontFamily = styles.elements.h1.fontFamily;
+  const headingColor = styles.elements.h1.color;
+  const headingFontWeight = styles.elements.h1.fontWeight;
+  const paletteColors = [
+    {
+      name: 'Sample primary',
+      slug: 'sample-primary',
+      color: '#a5a2a3',
+    },
+    {
+      name: 'Sample Secondary',
+      slug: 'sample-secondary',
+      color: '#e5e2d3',
+    },
+    {
+      name: 'Sample Background',
+      slug: 'Sample-background',
+      color: '#a8c7a9',
+    },
+  ];
+  // https://github.com/WordPress/gutenberg/blob/7fa03fafeb421ab4c3604564211ce6007cc38e84/packages/edit-site/src/components/global-styles/hooks.js#L68-L73
+  const highlightedColors = paletteColors
+    .filter(({ color }) => color !== backgroundColor && color !== headingColor)
+    .slice(0, 2);
+
   const ratio = 1;
-
-  const gradientValue = undefined;
-  const withHoverView = true;
+  // When is set label, the preview animates the hover state and displays the label
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <motion.div
-      style={{
-        height: normalizedHeight * ratio,
-        width: '100%',
-        background: gradientValue ?? style.backgroundColor,
-        cursor: withHoverView ? 'pointer' : undefined,
-      }}
-      initial="start"
-      animate={
-        (isHovered || isFocused) && !disableMotion && label ? 'hover' : 'start'
-      }
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <motion.div
-        variants={firstFrame}
         style={{
-          height: '100%',
-          overflow: 'hidden',
+          height: normalizedHeight * ratio,
+          width: '100%',
+          background: backgroundColor,
+          cursor: withHoverView ? 'pointer' : undefined,
         }}
+        initial="start"
+        animate={(isHovered || isFocused) && label ? 'hover' : 'start'}
       >
-        <HStack
-          spacing={10 * ratio}
-          justify="center"
+        <motion.div
+          variants={firstFrame}
           style={{
             height: '100%',
             overflow: 'hidden',
           }}
         >
-          <motion.div
+          <HStack
+            spacing={10 * ratio}
+            justify="center"
             style={{
-              fontFamily: style.headingFontFamily,
-              fontSize: 65 * ratio,
-              color: style.headingColor,
-              fontWeight: style.headingFontWeight,
+              height: '100%',
+              overflow: 'hidden',
             }}
-            animate={{ scale: 1, opacity: 1 }}
-            initial={{ scale: 0.1, opacity: 0 }}
-            transition={{ delay: 0.3, type: 'tween' }}
           >
-            Aa
-          </motion.div>
-          <VStack spacing={4 * ratio}>
-            {style.highlightedColors.map(({ slug, color }, index) => (
-              <motion.div
-                key={slug}
+            <motion.div
+              style={{
+                fontFamily: headingFontFamily,
+                fontSize: 65 * ratio,
+                color: headingColor,
+                fontWeight: headingFontWeight,
+              }}
+              animate={{ scale: 1, opacity: 1 }}
+              initial={{ scale: 0.1, opacity: 0 }}
+              transition={{ delay: 0.3, type: 'tween' }}
+            >
+              Aa
+            </motion.div>
+            <VStack spacing={4 * ratio}>
+              {highlightedColors.map(({ slug, color }, index) => (
+                <motion.div
+                  key={slug}
+                  style={{
+                    height: normalizedColorSwatchSize * ratio,
+                    width: normalizedColorSwatchSize * ratio,
+                    background: color,
+                    borderRadius: (normalizedColorSwatchSize * ratio) / 2,
+                  }}
+                  animate={{
+                    scale: 1,
+                    opacity: 1,
+                  }}
+                  initial={{
+                    scale: 0.1,
+                    opacity: 0,
+                  }}
+                  transition={{
+                    delay: index === 1 ? 0.2 : 0.1,
+                  }}
+                />
+              ))}
+            </VStack>
+          </HStack>
+        </motion.div>
+        <motion.div
+          variants={withHoverView && midFrame}
+          style={{
+            height: '100%',
+            width: '100%',
+            position: 'absolute',
+            top: 0,
+            overflow: 'hidden',
+            filter: 'blur(60px)',
+            opacity: 0.1,
+          }}
+        >
+          <HStack
+            spacing={0}
+            justify="flex-start"
+            style={{
+              height: '100%',
+              overflow: 'hidden',
+            }}
+          >
+            {paletteColors.slice(0, 4).map(({ color }) => (
+              <div
+                key={color}
                 style={{
-                  height: normalizedColorSwatchSize * ratio,
-                  width: normalizedColorSwatchSize * ratio,
+                  height: '100%',
                   background: color,
-                  borderRadius: (normalizedColorSwatchSize * ratio) / 2,
-                }}
-                animate={{
-                  scale: 1,
-                  opacity: 1,
-                }}
-                initial={{
-                  scale: 0.1,
-                  opacity: 0,
-                }}
-                transition={{
-                  delay: index === 1 ? 0.2 : 0.1,
+                  flexGrow: 1,
                 }}
               />
             ))}
+          </HStack>
+        </motion.div>
+        <motion.div
+          variants={secondFrame}
+          style={{
+            height: '100%',
+            width: '100%',
+            overflow: 'hidden',
+            position: 'absolute',
+            top: 0,
+          }}
+        >
+          <VStack
+            spacing={3 * ratio}
+            justify="center"
+            style={{
+              height: '100%',
+              overflow: 'hidden',
+              padding: 10 * ratio,
+              boxSizing: 'border-box',
+            }}
+          >
+            {label && (
+              <div
+                style={{
+                  fontSize: 40 * ratio,
+                  fontFamily: headingFontFamily,
+                  color: headingColor,
+                  fontWeight: headingFontWeight,
+                  lineHeight: '1em',
+                  textAlign: 'center',
+                }}
+              >
+                {label}
+              </div>
+            )}
           </VStack>
-        </HStack>
+        </motion.div>
       </motion.div>
-      <motion.div
-        variants={withHoverView && midFrame}
-        style={{
-          height: '100%',
-          width: '100%',
-          position: 'absolute',
-          top: 0,
-          overflow: 'hidden',
-          filter: 'blur(60px)',
-          opacity: 0.1,
-        }}
-      >
-        <HStack
-          spacing={0}
-          justify="flex-start"
-          style={{
-            height: '100%',
-            overflow: 'hidden',
-          }}
-        >
-          {style.paletteColors.slice(0, 4).map(({ color }) => (
-            <div
-              key={color}
-              style={{
-                height: '100%',
-                background: color,
-                flexGrow: 1,
-              }}
-            />
-          ))}
-        </HStack>
-      </motion.div>
-      <motion.div
-        variants={secondFrame}
-        style={{
-          height: '100%',
-          width: '100%',
-          overflow: 'hidden',
-          position: 'absolute',
-          top: 0,
-        }}
-      >
-        <VStack
-          spacing={3 * ratio}
-          justify="center"
-          style={{
-            height: '100%',
-            overflow: 'hidden',
-            padding: 10 * ratio,
-            boxSizing: 'border-box',
-          }}
-        >
-          {label && (
-            <div
-              style={{
-                fontSize: 40 * ratio,
-                fontFamily: style.headingFontFamily,
-                color: style.headingColor,
-                fontWeight: style.headingFontWeight,
-                lineHeight: '1em',
-                textAlign: 'center',
-              }}
-            >
-              {label}
-            </div>
-          )}
-        </VStack>
-      </motion.div>
-    </motion.div>
+    </div>
   );
 }
