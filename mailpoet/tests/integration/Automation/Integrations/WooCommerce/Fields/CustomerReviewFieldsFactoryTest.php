@@ -23,18 +23,23 @@ class CustomerReviewFieldsFactoryTest extends \MailPoetTest {
       'params' => ['in_the_last'],
     ], $reviewCountField->getArgs());
 
+    // create products
+    $product1Id = $this->tester->createWooCommerceProduct(['name' => 'Product 1'])->get_id();
+    $product2Id = $this->tester->createWooCommerceProduct(['name' => 'Product 2'])->get_id();
+    $product3Id = $this->tester->createWooCommerceProduct(['name' => 'Product 3'])->get_id();
+
     // check values (guest)
-    $this->createProductReview(0, '', 1);
-    $this->createProductReview(0, 'guest@example.com', 1);
+    $this->createProductReview(0, '', $product1Id);
+    $this->createProductReview(0, 'guest@example.com', $product1Id);
     $this->assertSame(0, $reviewCountField->getValue(new CustomerPayload()));
 
     // check values (registered)
     $id = $this->tester->createCustomer('customer@example.com');
-    $this->createProductReview($id, 'customer@example.com', 1); // product 1 (by ID and email)
-    $this->createProductReview(0, 'customer@example.com', 1); // product 1 (by email; duplicate - shouldn't be counted)
-    $this->createProductReview($id, '', 1); // product 1 (by ID; duplicate - shouldn't be counted)
-    $this->createProductReview($id, '', 2); // product 2 (by ID)
-    $this->createProductReview(0, 'customer@example.com', 3); // product 3 (by email)
+    $this->createProductReview($id, 'customer@example.com', $product1Id); // product 1 (by ID and email)
+    $this->createProductReview(0, 'customer@example.com', $product1Id); // product 1 (by email; duplicate - shouldn't be counted)
+    $this->createProductReview($id, '', $product1Id); // product 1 (by ID; duplicate - shouldn't be counted)
+    $this->createProductReview($id, '', $product2Id); // product 2 (by ID)
+    $this->createProductReview(0, 'customer@example.com', $product3Id); // product 3 (by email)
 
     $customerPayload = new CustomerPayload(new WC_Customer($id));
     $this->assertSame(3, $reviewCountField->getValue($customerPayload));
@@ -43,18 +48,23 @@ class CustomerReviewFieldsFactoryTest extends \MailPoetTest {
   public function testReviewCountFieldWithInTheLastParameter(): void {
     $reviewCountField = $this->getFieldsMap()['woocommerce:customer:review-count'];
 
+    // create products
+    $product1Id = $this->tester->createWooCommerceProduct(['name' => 'Product 1'])->get_id();
+    $product2Id = $this->tester->createWooCommerceProduct(['name' => 'Product 2'])->get_id();
+    $product3Id = $this->tester->createWooCommerceProduct(['name' => 'Product 3'])->get_id();
+
     $getDate = function (string $date): string {
       return (new DateTimeImmutable($date))->format('Y-m-d H:i:s');
     };
 
     $id = $this->tester->createCustomer('customer@example.com');
-    $this->createProductReview($id, 'customer@example.com', 1, $getDate('-1 month')); // product 1 (by ID and email)
-    $this->createProductReview(0, 'customer@example.com', 1, $getDate('-1 week')); // product 1 (by email; duplicate, but different date)
-    $this->createProductReview($id, '', 1, $getDate('-1 month')); // product 1 (by ID; duplicate, same date)
-    $this->createProductReview($id, 'customer@example.com', 2, $getDate('-1 month')); // product 2 (by ID and email)
-    $this->createProductReview(0, 'customer@example.com', 2, $getDate('-1 month')); // product 2 (by email; duplicate, same date)
-    $this->createProductReview($id, '', 2, $getDate('-1 month')); // product 2 (by ID; duplicate, same date)
-    $this->createProductReview(0, 'customer@example.com', 3, $getDate('-1 year')); // product 3 (by email; long time ago)
+    $this->createProductReview($id, 'customer@example.com', $product1Id, $getDate('-1 month')); // product 1 (by ID and email)
+    $this->createProductReview(0, 'customer@example.com', $product1Id, $getDate('-1 week')); // product 1 (by email; duplicate, but different date)
+    $this->createProductReview($id, '', $product1Id, $getDate('-1 month')); // product 1 (by ID; duplicate, same date)
+    $this->createProductReview($id, 'customer@example.com', $product2Id, $getDate('-1 month')); // product 2 (by ID and email)
+    $this->createProductReview(0, 'customer@example.com', $product2Id, $getDate('-1 month')); // product 2 (by email; duplicate, same date)
+    $this->createProductReview($id, '', $product2Id, $getDate('-1 month')); // product 2 (by ID; duplicate, same date)
+    $this->createProductReview(0, 'customer@example.com', $product3Id, $getDate('-1 year')); // product 3 (by email; long time ago)
 
     $customerPayload = new CustomerPayload(new WC_Customer($id));
     $this->assertSame(3, $reviewCountField->getValue($customerPayload));
@@ -72,25 +82,27 @@ class CustomerReviewFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame('datetime', $lastReviewDateField->getType());
     $this->assertSame([], $lastReviewDateField->getArgs());
 
+    $productId = $this->tester->createWooCommerceProduct(['name' => 'Product 1'])->get_id();
+
     // check values (guest)
-    $this->createProductReview(0, '', 1, '2023-05-04 12:08:29');
-    $this->createProductReview(0, 'guest@example.com', 1, '2023-05-04 12:08:29');
+    $this->createProductReview(0, '', $productId, '2023-05-04 12:08:29');
+    $this->createProductReview(0, 'guest@example.com', $productId, '2023-05-04 12:08:29');
     $this->assertNull($lastReviewDateField->getValue(new CustomerPayload()));
 
     // check values (registered) - by ID
     $id = $this->tester->createCustomer('customer1@example.com');
-    $this->createProductReview($id, 'customer1@example.com', 1, '2023-05-04 12:08:29');
-    $this->createProductReview($id, 'customer1@example.com', 1, '2023-05-14 19:16:38');
-    $this->createProductReview($id, '', 1, '2023-05-19 23:14:27');
+    $this->createProductReview($id, 'customer1@example.com', $productId, '2023-05-04 12:08:29');
+    $this->createProductReview($id, 'customer1@example.com', $productId, '2023-05-14 19:16:38');
+    $this->createProductReview($id, '', $productId, '2023-05-19 23:14:27');
 
     $customerPayload = new CustomerPayload(new WC_Customer($id));
     $this->assertEquals(new DateTimeImmutable('2023-05-19 23:14:27'), $lastReviewDateField->getValue($customerPayload));
 
     // check values (registered) - by email
     $id = $this->tester->createCustomer('customer2@example.com');
-    $this->createProductReview($id, 'customer2@example.com', 1, '2023-05-04 12:08:29');
-    $this->createProductReview($id, 'customer2@example.com', 1, '2023-05-14 19:16:38');
-    $this->createProductReview(0, 'customer2@example.com', 1, '2023-05-19 23:14:27');
+    $this->createProductReview($id, 'customer2@example.com', $productId, '2023-05-04 12:08:29');
+    $this->createProductReview($id, 'customer2@example.com', $productId, '2023-05-14 19:16:38');
+    $this->createProductReview(0, 'customer2@example.com', $productId, '2023-05-19 23:14:27');
 
     $customerPayload = new CustomerPayload(new WC_Customer($id));
     $this->assertEquals(new DateTimeImmutable('2023-05-19 23:14:27'), $lastReviewDateField->getValue($customerPayload));
