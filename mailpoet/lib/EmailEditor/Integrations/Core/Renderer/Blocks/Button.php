@@ -52,6 +52,7 @@ class Button implements BlockRenderer {
       'cursor' => 'auto',
       'word-break' => 'break-word',
       'box-sizing' => 'border-box',
+      'overflow' => 'hidden',
     ];
     $linkStyles = [
       'background-color' => $bgColor,
@@ -62,18 +63,29 @@ class Button implements BlockRenderer {
     ];
 
     // Border
-    if (isset($parsedBlock['attrs']['style']['border']) && !empty($parsedBlock['attrs']['style']['border'])) {
+    $borderAttrs = $parsedBlock['attrs']['style']['border'] ?? [];
+    if (!empty($borderAttrs)) {
       // Use text color if border color is not set. Check for the value in the custom color text property
       // then look also to the text color set from palette
-      if (!($parsedBlock['attrs']['style']['border']['color'] ?? '')) {
+      if (!isset($borderAttrs['color'])) {
         if (isset($parsedBlock['attrs']['style']['color']['text'])) {
-          $parsedBlock['attrs']['style']['border']['color'] = $parsedBlock['attrs']['style']['color']['text'];
+          $borderAttrs['color'] = $parsedBlock['attrs']['style']['color']['text'];
         } elseif ($parsedBlock['attrs']['textColor']) {
           $buttonClasses .= ' has-' . $parsedBlock['attrs']['textColor'] . '-border-color';
         }
       }
-      $wrapperStyles = array_merge($wrapperStyles, wp_style_engine_get_styles(['border' => $parsedBlock['attrs']['style']['border']])['declarations']);
-      $wrapperStyles['border-style'] = 'solid';
+      $wrapperStyles = array_merge($wrapperStyles, wp_style_engine_get_styles(['border' => $borderAttrs])['declarations']);
+      // User might set only the border radius without border color and width so in that case we need to set border:none
+      // to avoid rendering 1px border. Let's render the border only when width is set or border top is set separately
+      // which is saved only when there is a side with non-zero width so it is enough to check only top
+      if (
+        (isset($borderAttrs['width']) && $borderAttrs['width'] !== '0px')
+        || isset($borderAttrs['top'])
+      ) {
+        $wrapperStyles['border-style'] = 'solid';
+      } else {
+        $wrapperStyles['border'] = 'none';
+      }
     } else {
       // Some clients render 1px border when not set as none
       $wrapperStyles['border'] = 'none';
