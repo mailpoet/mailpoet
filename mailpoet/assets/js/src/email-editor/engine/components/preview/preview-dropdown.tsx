@@ -80,7 +80,7 @@ export function PreviewDropdown() {
               <MenuGroup>
                 <div className="edit-post-header-preview__grouping-external">
                   <Button
-                    className="edit-post-header-preview__button-external"
+                    className="edit-post-header-preview__button-external components-menu-item__button"
                     onClick={() => {
                       openInNewTab(newsletterPreviewUrl);
                     }}
