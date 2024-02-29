@@ -39,6 +39,13 @@ export type EmailStyles = {
   colors: {
     background: string;
   };
+  elements: {
+    h1: {
+      color: string;
+      fontFamily: string;
+      fontWeight: string;
+    };
+  };
 };
 
 export type EmailEditorLayout = {

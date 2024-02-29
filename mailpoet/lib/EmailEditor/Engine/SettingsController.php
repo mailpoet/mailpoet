@@ -113,9 +113,17 @@ class SettingsController {
         ],
       ],
       'colors' => [
-        'background' => '#000000',
+        'background' => '#ffffff',
       ],
       'typography' => [
+      ],
+      // Value are only for purpose of displaying in the preview component in style sidebar
+      'elements' => [
+        'h1' => [
+          'color' => '#000000',
+          'fontWeight' => 'bold',
+          'fontFamily' => "Arial, 'Helvetica Neue', Helvetica, sans-serif",
+        ],
       ],
     ];
   }
