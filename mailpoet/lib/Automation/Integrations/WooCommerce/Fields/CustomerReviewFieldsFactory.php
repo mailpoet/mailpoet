@@ -55,7 +55,7 @@ class CustomerReviewFieldsFactory {
    */
   private function getUniqueProductReviewCount(WC_Customer $customer, int $inTheLastSeconds = null): int {
     $wpdb = $this->wordPress->getWpdb();
-    $inTheLastFilter = isset($inTheLastSeconds) ? "AND c.comment_date >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)" : '';
+    $inTheLastFilter = isset($inTheLastSeconds) ? "AND c.comment_date_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)" : '';
 
     /** @var literal-string $sql */
     $sql = "
