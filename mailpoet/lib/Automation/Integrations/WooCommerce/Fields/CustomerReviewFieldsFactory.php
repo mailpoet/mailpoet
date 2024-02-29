@@ -55,15 +55,17 @@ class CustomerReviewFieldsFactory {
    */
   private function getUniqueProductReviewCount(WC_Customer $customer, int $inTheLastSeconds = null): int {
     $wpdb = $this->wordPress->getWpdb();
-    $inTheLastFilter = isset($inTheLastSeconds) ? "AND comment_date >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)" : '';
+    $inTheLastFilter = isset($inTheLastSeconds) ? "AND c.comment_date >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)" : '';
 
     /** @var literal-string $sql */
     $sql = "
-      SELECT COUNT(DISTINCT comment_post_ID) FROM {$wpdb->comments}
-      WHERE comment_parent = 0
-      AND comment_approved = 1
-      AND comment_type = 'review'
-      AND (user_ID = %d OR comment_author_email = %s)
+      SELECT COUNT(DISTINCT c.comment_post_ID) FROM {$wpdb->comments} c
+      JOIN {$wpdb->posts} p ON c.comment_post_ID = p.ID
+      WHERE p.post_type = 'product'
+      AND c.comment_parent = 0
+      AND c.comment_approved = 1
+      AND c.comment_type = 'review'
+      AND (c.user_ID = %d OR c.comment_author_email = %s)
       $inTheLastFilter
     ";
     return (int)$wpdb->get_var(
@@ -81,12 +83,14 @@ class CustomerReviewFieldsFactory {
     $wpdb = $this->wordPress->getWpdb();
     /** @var literal-string $sql */
     $sql = "
-      SELECT comment_date FROM {$wpdb->comments}
-      WHERE comment_parent = 0
-      AND comment_approved = 1
-      AND comment_type = 'review'
-      AND (user_ID = %d OR comment_author_email = %s)
-      ORDER BY comment_date DESC
+      SELECT c.comment_date FROM {$wpdb->comments} c
+      JOIN {$wpdb->posts} p ON c.comment_post_ID = p.ID
+      WHERE p.post_type = 'product'
+      AND c.comment_parent = 0
+      AND c.comment_approved = 1
+      AND c.comment_type = 'review'
+      AND (c.user_ID = %d OR c.comment_author_email = %s)
+      ORDER BY c.comment_date DESC
       LIMIT 1
     ";
 
