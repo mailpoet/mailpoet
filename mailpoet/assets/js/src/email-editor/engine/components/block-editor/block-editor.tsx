@@ -90,13 +90,19 @@ export function BlockEditor() {
     inlineStyles = {
       ...inlineStyles,
       height: 'auto',
-      margin: '4rem auto', // 4em top/bottom to place the email document nicely vertically in canvas. Same value is used for title in WP Post editor.
       width: styles.layout.width,
       display: 'flex',
       flexFlow: 'column',
     };
   }
+
   inlineStyles.transition = 'all 0.3s ease 0s';
+  // 72px top/bottom to place the email document nicely vertically in canvas. Same value is used for title in WP Post editor.
+  inlineStyles.margin = '72px auto';
+  delete inlineStyles.marginLeft;
+  delete inlineStyles.marginTop;
+  delete inlineStyles.marginBottom;
+  delete inlineStyles.marginRight;
 
   const contentAreaStyles = {
     background:
