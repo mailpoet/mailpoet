@@ -1,5 +1,6 @@
 import { InspectorControls } from '@wordpress/block-editor';
 import { createHigherOrderComponent } from '@wordpress/compose';
+import { Block } from '@wordpress/blocks';
 import { addFilter } from '@wordpress/hooks';
 
 const columnsEditCallback = createHigherOrderComponent(
@@ -62,4 +63,25 @@ function disableColumnsLayout() {
   );
 }
 
-export { deactivateStackOnMobile, disableColumnsLayout };
+function enhanceColumnsBlock() {
+  addFilter(
+    'blocks.registerBlockType',
+    'mailpoet-email-editor/change-column',
+    (settings: Block, name) => {
+      if (name === 'core/columns') {
+        return {
+          ...settings,
+          supports: {
+            ...settings.supports,
+            background: {
+              backgroundImage: true,
+            },
+          },
+        };
+      }
+      return settings;
+    },
+  );
+}
+
+export { deactivateStackOnMobile, disableColumnsLayout, enhanceColumnsBlock };
