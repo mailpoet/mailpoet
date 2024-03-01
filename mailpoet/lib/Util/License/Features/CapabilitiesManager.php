@@ -2,6 +2,7 @@
 
 namespace MailPoet\Util\License\Features;
 
+use MailPoet\Config\ServicesChecker;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\License\Features\Data\Capabilities;
 
@@ -19,13 +20,16 @@ class CapabilitiesManager {
   const MIN_TIER_UNLIMITED_SEGMENT_FILTERS = 2;
 
   private SettingsController $settings;
+  private ServicesChecker $servicesChecker;
   private ?int $tier;
+  private bool $isKeyValid = false;
 
   public function __construct(
-    SettingsController $settings
+    SettingsController $settings,
+    ServicesChecker $servicesChecker
   ) {
     $this->settings = $settings;
-    $this->tier = $this->getTier();
+    $this->servicesChecker = $servicesChecker;
   }
 
   private function getTier(): ?int {
@@ -37,10 +41,14 @@ class CapabilitiesManager {
     $mailpoetLogoInEmails = $this->settings->get(self::MSS_MAILPOET_LOGO_IN_EMAILS_SETTING_KEY);
 
     if (!isset($this->tier) && !isset($mailpoetLogoInEmails)) {
+      return !$this->servicesChecker->isUserActivelyPaying(); // Backward compatibility
+    }
+
+    if (!$this->isKeyValid) {
       return true;
     }
 
-    // Allow for less restrictive individual capability to take precedence
+    // Allow for less restrictive individual capability to take precedence over tier
     if (isset($mailpoetLogoInEmails) && (bool)$mailpoetLogoInEmails === false) {
       return false;
     }
@@ -89,6 +97,9 @@ class CapabilitiesManager {
   }
 
   public function getCapabilities(): Capabilities {
+    $this->tier = $this->getTier();
+    $isPremiumKeyValid = $this->servicesChecker->isPremiumKeyValid(false);
+    $this->isKeyValid = $isPremiumKeyValid || $this->servicesChecker->isMailPoetAPIKeyValid(false);
     return new Capabilities(
       $this->isMailpoetLogoInEmailsRequired(),
       $this->isDetailedAnalyticsEnabled(),

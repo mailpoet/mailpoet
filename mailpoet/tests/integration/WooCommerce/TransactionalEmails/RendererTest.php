@@ -3,7 +3,6 @@
 namespace MailPoet\WooCommerce\TransactionalEmails;
 
 use Codeception\Stub;
-use MailPoet\Config\ServicesChecker;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
@@ -13,6 +12,7 @@ use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer as NewsletterRenderer;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Newsletter\Shortcodes\Shortcodes as NewsletterShortcodes;
+use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\csstidy;
 
@@ -150,12 +150,12 @@ class RendererTest extends \MailPoetTest {
         $this->diContainer->get(\MailPoet\WooCommerce\CouponPreProcessor::class)
       ),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
-      $this->diContainer->get(ServicesChecker::class),
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
-      $this->diContainer->get(FeaturesController::class)
+      $this->diContainer->get(FeaturesController::class),
+      $this->diContainer->get(CapabilitiesManager::class)
     );
   }
 
