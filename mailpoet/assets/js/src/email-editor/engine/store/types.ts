@@ -15,6 +15,7 @@ export type ExperimentalSettings = {
       defaultPalette: boolean;
       palette: {
         default: EditorColor[];
+        theme: EditorColor[];
       };
       gradients: {
         default: EditorColor[];
