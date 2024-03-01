@@ -73,13 +73,7 @@ class CapabilitiesManagerTest extends \MailPoetTest {
 
   public function testLogoDisplayFallsBackToUserActivelyPayingIfNoCapabilities() {
     $settings = $this->createMock(SettingsController::class);
-    $settings->method('get')->willReturnMap([
-      ['mta.mailpoet_api_key_state.data.tier', null, null],
-      ['mta.mailpoet_api_key_state.data.mailpoet_logo_in_emails', null, null],
-      ['mta.mailpoet_api_key_state.data.detailed_analytics', null, null],
-      ['mta.mailpoet_api_key_state.data.automation_steps', null, null],
-      ['mta.mailpoet_api_key_state.data.segment_filters', null, null],
-    ]);
+    $settings->method('get')->willReturnMap($this->getLegacySettings());
     $servicesChecker = $this->createMock(ServicesChecker::class);
     $servicesChecker->method('isPremiumKeyValid')->willReturn(true);
     $servicesChecker->method('isMailPoetAPIKeyValid')->willReturn(true);
@@ -89,7 +83,19 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     verify($capabilities->getMailpoetLogoInEmails())->false();
   }
 
-  private function getCapabilitiesManager($settingsMock = null, $servicesCheckerMock = null): CapabilitiesManager {
+  public function testDetailedAnalyticsFallsBackToPremiumKeyAndSubscribersChecksIfNoCapabilities() {
+    $settings = $this->createMock(SettingsController::class);
+    $settings->method('get')->willReturnMap($this->getLegacySettings());
+    $servicesChecker = $this->createMock(ServicesChecker::class);
+    $servicesChecker->method('isPremiumKeyValid')->willReturn(true);
+    $servicesChecker->method('isMailPoetAPIKeyValid')->willReturn(true);
+    $servicesChecker->method('isUserActivelyPaying')->willReturn(true);
+    $capabilitiesManager = $this->getCapabilitiesManager($settings);
+    $capabilities = $capabilitiesManager->getCapabilities();
+    verify($capabilities->getDetailedAnalytics())->true();
+  }
+
+  private function getCapabilitiesManager($settingsMock = null, $servicesCheckerMock = null, $subscribersFeatureMock = null): CapabilitiesManager {
     $settings = $this->createMock(SettingsController::class);
     $settings->method('get')->willReturnMap([
       ['mta.mailpoet_api_key_state.data.tier', null, 1],
@@ -102,6 +108,20 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     $servicesChecker->method('isPremiumKeyValid')->willReturn(true);
     $servicesChecker->method('isMailPoetAPIKeyValid')->willReturn(true);
     $servicesChecker->method('isUserActivelyPaying')->willReturn(true);
-    return new CapabilitiesManager($settingsMock ?? $settings, $servicesCheckerMock ?? $servicesChecker);
+    $servicesChecker->method('isPremiumPluginActive')->willReturn(true);
+    $subscribersFeature = $this->createMock(Subscribers::class);
+    $subscribersFeature->method('hasValidPremiumKey')->willReturn(true);
+    $subscribersFeature->method('check')->willReturn(true);
+    return new CapabilitiesManager($settingsMock ?? $settings, $servicesCheckerMock ?? $servicesChecker, $subscribersFeatureMock ?? $subscribersFeature);
+  }
+
+  private function getLegacySettings() {
+    return [
+      ['mta.mailpoet_api_key_state.data.tier', null, null],
+      ['mta.mailpoet_api_key_state.data.mailpoet_logo_in_emails', null, null],
+      ['mta.mailpoet_api_key_state.data.detailed_analytics', null, null],
+      ['mta.mailpoet_api_key_state.data.automation_steps', null, null],
+      ['mta.mailpoet_api_key_state.data.segment_filters', null, null],
+    ];
   }
 }

@@ -21,15 +21,18 @@ class CapabilitiesManager {
 
   private SettingsController $settings;
   private ServicesChecker $servicesChecker;
+  private Subscribers $subscribersFeature;
   private ?int $tier;
   private bool $isKeyValid = false;
 
   public function __construct(
     SettingsController $settings,
-    ServicesChecker $servicesChecker
+    ServicesChecker $servicesChecker,
+    Subscribers $subscribersFeature
   ) {
     $this->settings = $settings;
     $this->servicesChecker = $servicesChecker;
+    $this->subscribersFeature = $subscribersFeature;
   }
 
   private function getTier(): ?int {
@@ -57,10 +60,15 @@ class CapabilitiesManager {
   }
 
   private function isDetailedAnalyticsEnabled(): bool {
+    // Preconditions
+    if (!$this->subscribersFeature->hasValidPremiumKey() || !$this->subscribersFeature->check() || !$this->servicesChecker->isPremiumPluginActive()) {
+      return false;
+    }
+
     $detailedAnalytics = $this->settings->get(self::MSS_DETAILED_ANALYTICS_SETTING_KEY);
 
     if (!isset($this->tier) && !isset($detailedAnalytics)) {
-      return false;
+      return true; // Backward compatibility is true when preconditions have been met
     }
 
     // Allow for less restrictive individual capability to take precedence
