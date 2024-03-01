@@ -175,9 +175,6 @@ class Reporter {
       'Tracking level' => $this->settings->get('tracking.level', TrackingConfig::LEVEL_FULL),
       'Premium key valid' => $this->servicesChecker->isPremiumKeyValid(),
       'New subscriber notifications' => NewSubscriberNotificationMailer::isDisabled($this->settings->get(NewSubscriberNotificationMailer::SETTINGS_KEY)),
-      'Number of standard newsletters sent in last 7 days' => $newsletters['sent_newsletters_7_days'],
-      'Number of standard newsletters sent in last 3 months' => $newsletters['sent_newsletters_3_months'],
-      'Number of standard newsletters sent in last 30 days' => $newsletters['sent_newsletters_30_days'],
       'Number of active post notifications' => $newsletters['notifications_count'],
       'Number of active welcome emails' => $newsletters['welcome_newsletters_count'],
       'Total number of standard newsletters sent' => $newsletters['sent_newsletters_count'],
@@ -267,6 +264,7 @@ class Reporter {
       $result,
       $this->subscriberProperties(),
       $this->automationProperties(),
+      $this->getCampaignAnalyticsProperties(),
       $this->unsubscribeReporter->getProperties()
     );
     if ($hasWc) {
@@ -424,7 +422,7 @@ class Reporter {
     ];
   }
 
-  public function getCampaignAnalyticsData(): array {
+  public function getCampaignAnalyticsProperties(): array {
     $matchingCampaignIds = [
       'Number of standard newsletters sent in last 7 days' => [],
       'Number of standard newsletters sent in last 3 months' => [],
@@ -799,7 +797,6 @@ class Reporter {
           }
         }
       } else {
-        $existingData = $processedResults[$campaignId];
         if ($sendingInfo['segmentType'] === 'dynamic') {
           $processedResults[$campaignId]['sentToSegment'] = true;
         }
