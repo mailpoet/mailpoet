@@ -95,6 +95,15 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     verify($capabilities->getDetailedAnalytics())->true();
   }
 
+  public function testAutomationStepsAndSegmentFiltersAreUnlimitedIfNoCapabilities() {
+    $settings = $this->createMock(SettingsController::class);
+    $settings->method('get')->willReturnMap($this->getLegacySettings());
+    $capabilitiesManager = $this->getCapabilitiesManager($settings);
+    $capabilities = $capabilitiesManager->getCapabilities();
+    verify($capabilities->getAutomationSteps())->equals(0);
+    verify($capabilities->getSegmentFilters())->equals(0);
+  }
+
   private function getCapabilitiesManager($settingsMock = null, $servicesCheckerMock = null, $subscribersFeatureMock = null): CapabilitiesManager {
     $settings = $this->createMock(SettingsController::class);
     $settings->method('get')->willReturnMap([

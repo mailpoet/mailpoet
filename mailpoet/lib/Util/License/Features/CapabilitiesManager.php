@@ -83,7 +83,7 @@ class CapabilitiesManager {
     $automationSteps = $this->settings->get(self::MSS_AUTOMATION_STEPS_SETTING_KEY);
 
     if (!isset($this->tier) && !isset($automationSteps)) {
-      return 1;
+      return 0; // Backward compatibility
     }
 
     $stepsFromTier = isset($this->tier) && $this->tier >= self::MIN_TIER_UNLIMITED_AUTOMATION_STEPS ? 0 : 1; //  0  is unlimited
@@ -96,7 +96,7 @@ class CapabilitiesManager {
     $segmentFilters = $this->settings->get(self::MSS_SEGMENT_FILTERS_SETTING_KEY);
 
     if (!isset($this->tier) && !isset($segmentFilters)) {
-      return 1;
+      return 0; // Backward compatibility
     }
 
     $segmentFiltersFromTier = isset($this->tier) && $this->tier >= self::MIN_TIER_UNLIMITED_SEGMENT_FILTERS ? 0 : 1; //  0  is unlimited
