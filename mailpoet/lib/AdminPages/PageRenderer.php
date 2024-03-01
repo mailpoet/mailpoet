@@ -21,6 +21,7 @@ use MailPoet\Settings\UserFlagsController;
 use MailPoet\Tags\TagRepository;
 use MailPoet\Tracy\DIPanel\DIPanel;
 use MailPoet\Util\Installation;
+use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\Util\License\License;
 use MailPoet\WooCommerce;
@@ -80,6 +81,8 @@ class PageRenderer {
   /** @var WooCommerce\WooCommerceSubscriptions\Helper */
   private $wooCommerceSubscriptionsHelper;
 
+  private CapabilitiesManager $capabilitiesManager;
+
   public function __construct(
     Bridge $bridge,
     Renderer $renderer,
@@ -97,7 +100,8 @@ class PageRenderer {
     WPFunctions $wp,
     AssetsController $assetsController,
     WooCommerce\Helper $wooCommerceHelper,
-    WooCommerce\WooCommerceSubscriptions\Helper $wooCommerceSubscriptionsHelper
+    WooCommerce\WooCommerceSubscriptions\Helper $wooCommerceSubscriptionsHelper,
+    CapabilitiesManager $capabilitiesManager
   ) {
     $this->bridge = $bridge;
     $this->renderer = $renderer;
@@ -116,6 +120,7 @@ class PageRenderer {
     $this->assetsController = $assetsController;
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->wooCommerceSubscriptionsHelper = $wooCommerceSubscriptionsHelper;
+    $this->capabilitiesManager = $capabilitiesManager;
   }
 
   /**
@@ -188,6 +193,7 @@ class PageRenderer {
       'subscribers_limit_reached' => $this->subscribersFeature->check(),
       'email_volume_limit' => $this->subscribersFeature->getEmailVolumeLimit(),
       'email_volume_limit_reached' => $this->subscribersFeature->checkEmailVolumeLimitIsReached(),
+      'capabilities' => $this->capabilitiesManager->getCapabilities()->toArray(),
       'urls' => [
         'automationListing' => admin_url('admin.php?page=mailpoet-automation'),
         'automationEditor' => admin_url('admin.php?page=mailpoet-automation-editor'),
