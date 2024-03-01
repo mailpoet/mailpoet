@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Newsletter;
 
 use Codeception\Util\Fixtures;
-use MailPoet\Config\ServicesChecker;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
@@ -21,6 +20,8 @@ use MailPoet\Newsletter\Renderer\Columns\Renderer as ColumnRenderer;
 use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\Renderer;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
+use MailPoet\Util\License\Features\CapabilitiesManager;
+use MailPoet\Util\License\Features\Data\Capabilities;
 use MailPoet\Util\pQuery\pQuery;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -35,8 +36,8 @@ class RendererTest extends \MailPoetTest {
   /** @var NewsletterEntity */
   public $newsletter;
 
-  /** @var ServicesChecker & MockObject */
-  private $servicesChecker;
+  /** @var CapabilitiesManager & MockObject */
+  private $capabilitiesManager;
 
   const COLUMN_BASE_WIDTH = 660;
 
@@ -52,18 +53,18 @@ class RendererTest extends \MailPoetTest {
     $this->newsletter->setPreheader('Some preheader');
     $this->newsletter->setType('standard');
     $this->newsletter->setStatus('active');
-    $this->servicesChecker = $this->createMock(ServicesChecker::class);
+    $this->capabilitiesManager = $this->createMock(CapabilitiesManager::class);
     $this->renderer = new Renderer(
       $this->diContainer->get(BodyRenderer::class),
       $this->diContainer->get(\MailPoet\EmailEditor\Engine\Renderer\Renderer::class),
       $this->diContainer->get(Preprocessor::class),
       $this->diContainer->get(\MailPoetVendor\CSS::class),
-      $this->servicesChecker,
       $this->diContainer->get(WPFunctions::class),
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
-      $this->diContainer->get(FeaturesController::class)
+      $this->diContainer->get(FeaturesController::class),
+      $this->capabilitiesManager
     );
     $this->columnRenderer = new ColumnRenderer();
     $this->dOMParser = new pQuery();
@@ -595,8 +596,8 @@ class RendererTest extends \MailPoetTest {
     verify($preheader)->equals($this->newsletter->getPreheader());
   }
 
-  public function testItDoesNotAddMailpoetLogoWhenUserIsPaying() {
-    $this->servicesChecker->method('isUserActivelyPaying')->willReturn(true);
+  public function testItDoesNotAddMailpoetLogoIfItIsNotRequired() {
+    $this->capabilitiesManager->method('getCapabilities')->willReturn(new Capabilities(false, true, 0, 0));
 
     $body = json_decode(Fixtures::get('newsletter_body_template'), true);
     $this->assertIsArray($body);
@@ -606,7 +607,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItDoesNotAddMailpoetLogoWhenPreviewIsEnabled() {
-    $this->servicesChecker->method('isUserActivelyPaying')->willReturn(false);
+    $this->capabilitiesManager->method('getCapabilities')->willReturn(new Capabilities(true, false, 1, 1));
 
     $body = json_decode(Fixtures::get('newsletter_body_template'), true);
     $this->assertIsArray($body);
@@ -615,8 +616,8 @@ class RendererTest extends \MailPoetTest {
     verify($template['html'])->stringNotContainsString('mailpoet_logo_newsletter.png');
   }
 
-  public function testItAddsMailpoetLogo() {
-    $this->servicesChecker->method('isUserActivelyPaying')->willReturn(false);
+  public function testItAddsMailpoetLogoIfItIsRequired() {
+    $this->capabilitiesManager->method('getCapabilities')->willReturn(new Capabilities(true, false, 1, 1));
     $body = json_decode(Fixtures::get('newsletter_body_template'), true);
     $this->assertIsArray($body);
     $this->newsletter->setBody($body);
