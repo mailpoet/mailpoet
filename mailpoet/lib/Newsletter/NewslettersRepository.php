@@ -156,6 +156,25 @@ class NewslettersRepository extends Repository {
       ->getSingleScalarResult() ?: 0;
   }
 
+  public function getCampaignAnalyticsQuery() {
+    return $this->doctrineRepository->createQueryBuilder('n')
+      ->select('
+      n.type as newsletterType, 
+      q.meta as sendingQueueMeta, 
+      s.type as segmentType,
+      t.processedAt',
+      )
+      ->join('n.queues', 'q')
+      ->join('q.task', 't')
+      ->leftJoin('n.newsletterSegments', 'ns')
+      ->leftJoin('ns.segment', 's')
+      ->andWhere('t.status = :taskStatus')
+      ->andWhere('t.processedAt >= :since')
+      ->setParameter('taskStatus', ScheduledTaskEntity::STATUS_COMPLETED)
+      ->setParameter('since', Carbon::now()->subDays(90))
+      ->getQuery();
+  }
+
   public function getAnalytics(): array {
     // for automatic emails join 'event' newsletter option to further group the counts
     $eventOptionId = (int)$this->entityManager->createQueryBuilder()
