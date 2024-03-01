@@ -1,0 +1,73 @@
+/* Base CSS rules to be applied to all emails */
+/* Created based on original MailPoet template for rendering emails */
+/* StyleLint is disabled because some rules contain properties that linter marks as unknown (e.g. mso- prefix), but they are valid for email rendering */
+/* stylelint-disable property-no-unknown */
+body {
+  line-height: 1.4; /* Recommended line-height that is also used in the email editor */
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%; /* From MJMJ - Automatic test adjustment on mobile max to 100% */
+  -ms-text-size-adjust: 100%; /* From MJMJ - Automatic test adjustment on mobile max to 100% */
+}
+
+.email_layout_wrapper {
+  margin: 0 auto;
+  padding: 20px 0;
+  width: 100%;
+}
+
+table,
+td {
+  border-collapse: collapse;
+  mso-table-lspace: 0;
+  mso-table-rspace: 0;
+}
+
+/* https://www.emailonacid.com/blog/article/email-development/tips-for-coding-email-preheaders */
+.email_preheader,
+.email_preheader * {
+  color: #fff;
+  display: none;
+  font-size: 1px;
+  line-height: 1px;
+  max-height: 0;
+  max-width: 0;
+  mso-hide: all;
+  opacity: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+@media screen and (max-width: 660px) {
+  .email_column {
+    max-width: 100% !important;
+  }
+  .block {
+    display: block;
+    width: 100% !important;
+  }
+
+  /* Flex Layout */
+  .layout-flex-wrapper,
+  .layout-flex-wrapper tbody,
+  .layout-flex-wrapper tr {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .layout-flex-item {
+    display: block !important;
+    padding-bottom: 8px !important; /* Half of the flex gap between blocks */
+    padding-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .layout-flex-item table,
+  .layout-flex-item td {
+    box-sizing: border-box !important;
+    display: block !important;
+    width: 100% !important;
+  }
+  /* Flex Layout End */
+}
+/* stylelint-enable property-no-unknown */
