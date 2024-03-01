@@ -1,3 +1,13 @@
-.mailpoet-email-editor__styles-panel .components-navigator-button {
-  width: 100%;
+.mailpoet-email-editor__styles-panel {
+  .components-navigator-button {
+    width: 100%;
+  }
+
+  .mailpoet-email-editor__styles-header {
+    margin-bottom: 0;
+  }
+
+  .mailpoet-email-editor__styles-header-description {
+    padding: 0 16px;
+  }
 }
