@@ -52,6 +52,7 @@ class ThemeController {
     foreach ($colorDefinitions as $color) {
       $cssPresets .= ".has-{$color['slug']}-color { color: {$color['color']}; } \n";
       $cssPresets .= ".has-{$color['slug']}-background-color { background-color: {$color['color']}; } \n";
+      $cssPresets .= ".has-{$color['slug']}-border-color { border-color: {$color['color']}; } \n";
     }
 
     // Block specific styles

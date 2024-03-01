@@ -20,35 +20,36 @@ class Columns implements BlockRenderer {
     );
   }
 
+  private function getStylesFromBlock(array $block_styles) {
+    $styles = wp_style_engine_get_styles( $block_styles );
+    return $styles['declarations'] ?? [];
+  }
+
   /**
    * Based on MJML <mj-section>
    */
   private function getBlockWrapper(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    // Getting individual border properties
-    $borderStyles = wp_style_engine_get_styles(['border' => $parsedBlock['attrs']['style']['border'] ?? []]);
-    $borderStyles = $borderStyles['declarations'] ?? [];
-    if (!empty($borderStyles)) {
+    $block_attributes = isset( $parsedBlock['attrs'] ) && is_array( $parsedBlock['attrs'] ) ? $parsedBlock['attrs'] : [];
+    $block_styles = isset( $block_attributes['style'] ) && is_array( $block_attributes['style'] ) ? $block_attributes['style'] : [];
+    $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName('div', 'class') ?? '';
+
+    $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
+    $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
+    $paddingStyles = $this->getStylesFromBlock( ['spacing' => ['padding' => $parsedBlock['attrs']['style']['spacing']['padding'] ?? null ]] );
+    $colorStyles = $this->getStylesFromBlock( [ 'color' => $block_styles['color'] ?? [] ] );
+    $backgroundStyles = $this->getStylesFromBlock( [ 'background' => $block_styles['background'] ?? [] ] );
+    $borderStyles = $this->getStylesFromBlock( [ 'border' => $block_styles['border'] ?? [] ] );
+
+    if (!empty($backgroundStyles['background-image']) && empty($backgroundStyles['background-size'])) {
+      $backgroundStyles['background-size'] = 'cover';
+    }
+
+    if (!empty($borderStyles['border-width'])) {
       $borderStyles['border-style'] = 'solid';
       $borderStyles['box-sizing'] = 'border-box';
     }
 
-    $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
-    $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
-
-    $paddingStyles = wp_style_engine_get_styles(['spacing' => ['padding' => $parsedBlock['attrs']['style']['spacing']['padding'] ?? null ]]);
-    $paddingStyles = $paddingStyles['css'] ?? '';
-
-    $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName('div', 'class') ?? '';
-    $colorStyles = [];
-    if (isset($parsedBlock['attrs']['style']['color']['background'])) {
-      $colorStyles['background-color'] = $parsedBlock['attrs']['style']['color']['background'];
-      $colorStyles['background'] = $parsedBlock['attrs']['style']['color']['background'];
-    }
-    if (isset($parsedBlock['attrs']['style']['color']['text'])) {
-      $colorStyles['color'] = $parsedBlock['attrs']['style']['color']['text'];
-    }
-
-    $align = $parsedBlock['attrs']['align'] ?? null;
+    $align = $block_attributes['align'] ?? null;
     if ($align !== 'full') {
       $layoutPaddingLeft = $settingsController->getEmailStyles()['layout']['padding']['left'];
       $layoutPaddingRight = $settingsController->getEmailStyles()['layout']['padding']['right'];
@@ -58,25 +59,29 @@ class Columns implements BlockRenderer {
     }
 
     return '
-      <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="width:' . $width . ';" width="' . $width . '"><tr><td style="font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-      <div style="margin-top:' . $marginTop . ';max-width:' . $width . ';padding-left:' . $layoutPaddingLeft . ';padding-right:' . $layoutPaddingRight . ';">
+      <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="width:' . esc_attr( $width ) . ';" width="' . esc_attr( $width ) . '"><tr><td style="font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
+      <div style="' . esc_attr($settingsController->convertStylesToString([
+        'margin-top' => $marginTop,
+        'max-width' => $width,
+        'padding-left' => $layoutPaddingLeft,
+        'padding-right' => $layoutPaddingRight,
+      ])) . '">
         <table
-          class="' . $classes . '"
+          class="' . esc_attr( $classes ) . '"
           align="center"
           border="0"
           cellpadding="0"
           cellspacing="0"
           role="presentation"
-          style="' . esc_attr($settingsController->convertStylesToString($colorStyles)) . ';max-width:' . $width . ';width:100%;border-collapse:separate;"
+          style="' . esc_attr($settingsController->convertStylesToString(array_merge($colorStyles, $backgroundStyles, $borderStyles))) . ';max-width:' . esc_attr( $width ) . ';width:100%;border-collapse:separate;"
         >
           <tbody>
             <tr>
               <td style="
-              ' . esc_attr($settingsController->convertStylesToString($borderStyles)) . '
-              ' . esc_attr($paddingStyles) . '
-                font-size:0px;
-                text-align:left;
-              ">
+              ' . esc_attr($settingsController->convertStylesToString(array_merge($paddingStyles, [
+                'text-align' => 'left',
+                'font-size' => '0px',
+              ]))) . '">
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:separate;">
                   <tr>
                     {columns_content}

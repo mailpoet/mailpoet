@@ -20,55 +20,68 @@ class Column implements BlockRenderer {
     );
   }
 
+  private function getStylesFromBlock(array $block_styles) {
+    $styles = wp_style_engine_get_styles( $block_styles );
+    return $styles['declarations'] ?? [];
+  }
+
   /**
    * Based on MJML <mj-column>
    */
   private function getBlockWrapper(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    // Getting individual border properties
-    $borderStyles = wp_style_engine_get_styles(['border' => $parsedBlock['attrs']['style']['border'] ?? []]);
-    $borderStyles = $borderStyles['declarations'] ?? [];
-    if (!empty($borderStyles)) {
+    $block_attributes = isset( $parsedBlock['attrs'] ) && is_array( $parsedBlock['attrs'] ) ? $parsedBlock['attrs'] : [];
+    $block_styles = isset( $block_attributes['style'] ) && is_array( $block_attributes['style'] ) ? $block_attributes['style'] : [];
+    $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName('div', 'class') ?? '';
+
+    $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
+    $paddingBottom = $block_attributes['style']['spacing']['padding']['bottom'] ?? '0px';
+    $paddingLeft = $block_attributes['style']['spacing']['padding']['left'] ?? '0px';
+    $paddingRight = $block_attributes['style']['spacing']['padding']['right'] ?? '0px';
+    $paddingTop = $block_attributes['style']['spacing']['padding']['top'] ?? '0px';
+
+    $colorStyles = $this->getStylesFromBlock( [ 'color' => $block_styles['color'] ?? [] ] );
+    $backgroundStyles = $this->getStylesFromBlock( [ 'background' => $block_styles['background'] ?? [] ] );
+    $borderStyles = $this->getStylesFromBlock( [ 'border' => $block_styles['border'] ?? [] ] );
+
+    if (!empty($backgroundStyles['background-image']) && empty($backgroundStyles['background-size'])) {
+      $backgroundStyles['background-size'] = 'cover';
+    }
+
+    if (!empty($borderStyles['border-width'])) {
       $borderStyles['border-style'] = 'solid';
       $borderStyles['box-sizing'] = 'border-box';
     }
 
-    $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
-
-    $paddingStyles = wp_style_engine_get_styles(['spacing' => ['padding' => $parsedBlock['attrs']['style']['spacing']['padding'] ?? null ]]);
-    $paddingStyles = $paddingStyles['css'] ?? '';
-
-    $colorStyles = [];
-    if (isset($parsedBlock['attrs']['style']['color']['background'])) {
-      $colorStyles['background-color'] = $parsedBlock['attrs']['style']['color']['background'];
-      $colorStyles['background'] = $parsedBlock['attrs']['style']['color']['background'];
-    }
-    if (isset($parsedBlock['attrs']['style']['color']['text'])) {
-      $colorStyles['color'] = $parsedBlock['attrs']['style']['color']['text'];
-    }
-
-    $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName('div', 'class') ?? '';
-
-    $verticalAlign = 'top';
-    // Because `stretch` is not a valid value for the `vertical-align` property, we don't override the default value
-    if (isset($parsedBlock['attrs']['verticalAlignment']) && $parsedBlock['attrs']['verticalAlignment'] !== 'stretch') {
-      $verticalAlign = $parsedBlock['attrs']['verticalAlignment'];
-    }
-
-    $mainCellStyles = array_merge($borderStyles, [
+    $mainCellStyles = [
+      'vertical-align' => !empty( $block_attributes['verticalAlignment'] ) && $block_attributes['verticalAlignment'] !== 'stretch' ? $block_attributes['verticalAlignment'] : 'top',
       'width' => $width,
-      'vertical-align' => $verticalAlign,
-    ]);
+    ];
+    $columnCellStyles = array_merge(
+      $colorStyles,
+      [
+        'min-width' => '100%',
+        'width' => '100%',
+        'max-width' => $width,
+        'vertical-align' => 'top',
+      ]
+    );
+    $mainCellClasses = 'block wp-block-column';
+    $columnCellClasses = 'email_column';
 
     // The default column alignment is `stretch to fill` which means that we need to set the background color to the main cell
-    // to create a feeling of a stretched column
-    if (!isset($parsedBlock['attrs']['verticalAlignment']) || $parsedBlock['attrs']['verticalAlignment'] === 'stretch') {
-      $mainCellStyles = array_merge($mainCellStyles, $colorStyles);
+    // to create a feeling of a stretched column. This also needs to apply to CSS classnames which can also apply styles.
+    if (!isset($block_attributes['verticalAlignment']) || $block_attributes['verticalAlignment'] === 'stretch') {
+      $mainCellStyles = array_merge($mainCellStyles, $colorStyles, $backgroundStyles, $borderStyles);
+      $mainCellClasses = $mainCellClasses . ' ' . $classes;
+    } else {
+      $columnCellStyles = array_merge($columnCellStyles, $backgroundStyles, $borderStyles);
+      $columnCellClasses = $columnCellClasses . ' ' . $classes;
     }
 
     return '
-      <td class="block ' . esc_attr($classes) . '" style="' . esc_attr($settingsController->convertStylesToString($mainCellStyles)) . '">
+      <td class="' . esc_attr($mainCellClasses) . '" style="' . esc_attr($settingsController->convertStylesToString($mainCellStyles)) . '">
         <div class="email_column" style="width:100%;max-width:' . esc_attr($width) . ';font-size:0px;text-align:left;display:inline-block;">
-          <table class="email_column ' . esc_attr($classes) . '" border="0" cellpadding="0" cellspacing="0" role="presentation" style="' . esc_attr($settingsController->convertStylesToString($colorStyles)) . ';min-width:100%;width:100%;max-width:' . esc_attr($width) . ';vertical-align:top;" width="' . esc_attr($width) . '">
+          <table class="' . esc_attr($columnCellClasses) . '" border="0" cellpadding="0" cellspacing="0" role="presentation" style="' . esc_attr($settingsController->convertStylesToString($columnCellStyles)) . '" width="' . esc_attr($width) . '">
             <tbody>
               <tr>
                 <td align="left" style="font-size:0px;' . esc_attr($paddingStyles) . '">
