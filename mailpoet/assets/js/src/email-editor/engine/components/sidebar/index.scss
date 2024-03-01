@@ -8,57 +8,59 @@
   margin: 0;
 }
 
-/**
-  SIDEBAR TABS
-  This CSS cover styles for the sidebar tabs in the header.
-  Post Editor in WP 6.5 uses Tabs component, but it is not available for WP6.4
-  After we drop support for WP6.4, we can remove this CSS and switch sidebar header to the Tabs components.
- */
-.edit-post-sidebar__panel-tabs {
-  padding-left: 0;
-
-  ul {
-    display: flex;
-  }
-  li {
-    margin: 0;
-  }
-}
-.edit-post-sidebar__panel-tab {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  cursor: pointer;
-  font-weight: 500;
-  height: 48px;
-  margin-left: 0;
-  padding: 3px 16px;
-  position: relative;
-
-  &:focus:not(:disabled) {
+// Disable focus outline for buttons in the sidebar
+.edit-post-sidebar {
+  .components-button:focus:not(:disabled) {
     box-shadow: none;
     outline: none;
-    position: relative;
   }
 
-  &:after {
-    background: var(--wp-admin-theme-color);
+  /**
+      SIDEBAR TABS
+      This CSS cover styles for the sidebar tabs in the header.
+      Post Editor in WP 6.5 uses Tabs component, but it is not available for WP6.4
+      After we drop support for WP6.4, we can remove this CSS and switch sidebar header to the Tabs components.
+     */
+  .edit-post-sidebar__panel-tabs {
+    padding-left: 0;
+
+    ul {
+      display: flex;
+    }
+    li {
+      margin: 0;
+    }
+  }
+  .edit-post-sidebar__panel-tab {
+    background: transparent;
+    border: none;
     border-radius: 0;
-    bottom: 0;
-    content: '';
-    height: calc(var(--wp-admin-border-width-focus) * 0);
-    left: 0;
-    pointer-events: none;
-    position: absolute;
-    right: 0;
-    transition: all 0.1s linear;
-  }
+    box-shadow: none;
+    cursor: pointer;
+    font-weight: 500;
+    height: 48px;
+    margin-left: 0;
+    padding: 3px 16px;
+    position: relative;
 
-  &.is-active:after {
-    height: calc(var(--wp-admin-border-width-focus) * 1);
-    outline: 2px solid transparent;
-    outline-offset: -1px;
+    &:after {
+      background: var(--wp-admin-theme-color);
+      border-radius: 0;
+      bottom: 0;
+      content: '';
+      height: calc(var(--wp-admin-border-width-focus) * 0);
+      left: 0;
+      pointer-events: none;
+      position: absolute;
+      right: 0;
+      transition: all 0.1s linear;
+    }
+
+    &.is-active:after {
+      height: calc(var(--wp-admin-border-width-focus) * 1);
+      outline: 2px solid transparent;
+      outline-offset: -1px;
+    }
   }
 }
 /* END OF SIDEBAR TABS */
