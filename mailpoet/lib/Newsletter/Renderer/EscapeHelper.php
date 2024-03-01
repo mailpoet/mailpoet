@@ -26,7 +26,7 @@ class EscapeHelper {
    * @return string
    */
   public static function escapeHtmlStyleAttr($string) {
-    return htmlspecialchars((string)$string, ENT_COMPAT, 'UTF-8');
+    return esc_attr((string)$string);
   }
 
   /**
@@ -34,7 +34,8 @@ class EscapeHelper {
    * @return string
    */
   public static function unescapeHtmlStyleAttr($string) {
-    return htmlspecialchars_decode((string)$string, ENT_COMPAT);
+    // This decodes entities which may have been added by esc_attr.
+    return htmlspecialchars_decode((string)$string, ENT_QUOTES);
   }
 
   /**
