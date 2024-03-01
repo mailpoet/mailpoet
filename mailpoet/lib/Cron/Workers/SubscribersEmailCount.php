@@ -66,7 +66,7 @@ class SubscribersEmailCount extends SimpleWorker {
     $task->setMeta($meta);
 
     while ($lastSubscriberId <= $highestSubscriberId) {
-      [$count, $lastSubscriberId] = $this->subscribersEmailCountsController->updateSubscribersEmailCounts($dateFromLastRun, self::BATCH_SIZE, $lastSubscriberId);
+      [$count, $lastSubscriberId] = $this->subscribersEmailCountsController->updateSubscribersEmailCounts($dateFromLastRun, self::BATCH_SIZE, intval($lastSubscriberId));
       if ($count === 0) {
         break;
       }
