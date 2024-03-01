@@ -88,6 +88,13 @@ type WooCommerceStoreConfig =
     }
   | undefined;
 
+type Capabilities = {
+  mailpoetLogoInEmails: boolean;
+  detailedAnalytics: boolean;
+  automationSteps: number;
+  segmentFilters: number;
+};
+
 interface Window {
   ajaxurl: string;
   mailpoet_token: string;
@@ -136,6 +143,7 @@ interface Window {
   mailpoet_plugin_partial_key: string;
   mailpoet_email_volume_limit: string;
   mailpoet_email_volume_limit_reached: boolean;
+  mailpoet_capabilities: Capabilities;
   mailpoet_current_wp_user_email: string;
   mailpoet_current_time?: string;
   mailpoet_current_date?: string;
