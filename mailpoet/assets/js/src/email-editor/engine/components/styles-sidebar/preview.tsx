@@ -56,32 +56,28 @@ export function Preview({
   isFocused,
   withHoverView,
 }: Props): JSX.Element {
-  const styles = useSelect((select) => select(storeName).getStyles());
+  const { styles, colors } = useSelect(
+    (select) => ({
+      styles: select(storeName).getStyles(),
+      colors: select(storeName).getPaletteColors(),
+    }),
+    [],
+  );
 
   const backgroundColor = styles.colors.background;
   const headingFontFamily = styles.elements.h1.fontFamily;
   const headingColor = styles.elements.h1.color;
   const headingFontWeight = styles.elements.h1.fontWeight;
-  const paletteColors = [
-    {
-      name: 'Sample primary',
-      slug: 'sample-primary',
-      color: '#a5a2a3',
-    },
-    {
-      name: 'Sample Secondary',
-      slug: 'sample-secondary',
-      color: '#e5e2d3',
-    },
-    {
-      name: 'Sample Background',
-      slug: 'Sample-background',
-      color: '#a8c7a9',
-    },
-  ];
+
+  const paletteColors = colors.theme.concat(colors.theme);
+
   // https://github.com/WordPress/gutenberg/blob/7fa03fafeb421ab4c3604564211ce6007cc38e84/packages/edit-site/src/components/global-styles/hooks.js#L68-L73
   const highlightedColors = paletteColors
-    .filter(({ color }) => color !== backgroundColor && color !== headingColor)
+    .filter(
+      ({ color }) =>
+        color.toLowerCase() !== backgroundColor.toLowerCase() &&
+        color.toLowerCase() !== headingColor.toLowerCase(),
+    )
     .slice(0, 2);
 
   const ratio = 1;
