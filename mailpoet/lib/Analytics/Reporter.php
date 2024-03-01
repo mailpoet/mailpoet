@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Entities\DynamicSegmentFilterData;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentFilterRepository;
@@ -52,6 +53,7 @@ use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Tags\TagRepository;
+use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -420,6 +422,417 @@ class Reporter {
       'sendingMethod' => isset($mta['method']) ? $mta['method'] : null,
       'woocommerceIsInstalled' => $this->woocommerceHelper->isWooCommerceActive(),
     ];
+  }
+
+  public function getCampaignAnalyticsData(): array {
+    $matchingCampaignIds = [
+      'Number of standard newsletters sent in last 7 days' => [],
+      'Number of standard newsletters sent in last 3 months' => [],
+      'Number of standard newsletters sent in last 30 days' => [],
+
+      'Number of standard newsletters sent to segment in last 7 days' => [],
+      'Number of standard newsletters sent to segment in last 30 days' => [],
+      'Number of standard newsletters sent to segment in last 3 months' => [],
+
+      'Number of standard newsletters filtered by segment in last 7 days' => [],
+      'Number of standard newsletters filtered by segment in last 30 days' => [],
+      'Number of standard newsletters filtered by segment in last 3 months' => [],
+
+      'Number of automations campaigns sent in the last 7 days' => [],
+      'Number of automations campaigns sent in the last 30 days' => [],
+      'Number of automations campaigns sent in the last 3 months' => [],
+
+      'Number of automations campaigns sent to segment in the last 7 days' => [],
+      'Number of automations campaigns sent to segment in the last 30 days' => [],
+      'Number of automations campaigns sent to segment in the last 3 months' => [],
+
+      'Number of automations campaigns filtered by segment in the last 7 days' => [],
+      'Number of automations campaigns filtered by segment in the last 30 days' => [],
+      'Number of automations campaigns filtered by segment in the last 3 months' => [],
+
+      'Number of re-engagement campaigns sent in the last 7 days' => [],
+      'Number of re-engagement campaigns sent in the last 30 days' => [],
+      'Number of re-engagement campaigns sent in the last 3 months' => [],
+      'Number of re-engagement campaigns sent to segment in the last 7 days' => [],
+      'Number of re-engagement campaigns sent to segment in the last 30 days' => [],
+      'Number of re-engagement campaigns sent to segment in the last 3 months' => [],
+      'Number of re-engagement campaigns filtered by segment in the last 7 days' => [],
+      'Number of re-engagement campaigns filtered by segment in the last 30 days' => [],
+      'Number of re-engagement campaigns filtered by segment in the last 3 months' => [],
+
+      'Number of post notification campaigns sent in the last 7 days' => [],
+      'Number of post notification campaigns sent in the last 30 days' => [],
+      'Number of post notification campaigns sent in the last 3 months' => [],
+      'Number of post notification campaigns sent to segment in the last 7 days' => [],
+      'Number of post notification campaigns sent to segment in the last 30 days' => [],
+      'Number of post notification campaigns sent to segment in the last 3 months' => [],
+      'Number of post notification campaigns filtered by segment in the last 7 days' => [],
+      'Number of post notification campaigns filtered by segment in the last 30 days' => [],
+      'Number of post notification campaigns filtered by segment in the last 3 months' => [],
+
+      // Legacy
+      'Number of legacy welcome email campaigns sent in the last 7 days' => [],
+      'Number of legacy welcome email campaigns sent in the last 30 days' => [],
+      'Number of legacy welcome email campaigns sent in the last 3 months' => [],
+
+      'Number of legacy abandoned cart campaigns sent in the last 7 days' => [],
+      'Number of legacy abandoned cart campaigns sent in the last 30 days' => [],
+      'Number of legacy abandoned cart campaigns sent in the last 3 months' => [],
+
+      'Number of legacy first purchase campaigns sent in the last 7 days' => [],
+      'Number of legacy first purchase campaigns sent in the last 30 days' => [],
+      'Number of legacy first purchase campaigns sent in the last 3 months' => [],
+
+      'Number of legacy purchased in category campaigns sent in the last 7 days' => [],
+      'Number of legacy purchased in category campaigns sent in the last 30 days' => [],
+      'Number of legacy purchased in category campaigns sent in the last 3 months' => [],
+
+      'Number of legacy purchased product campaigns sent in the last 7 days' => [],
+      'Number of legacy purchased product campaigns sent in the last 30 days' => [],
+      'Number of legacy purchased product campaigns sent in the last 3 months' => [],
+
+      // Totals
+      'Number of campaigns sent in the last 7 days' => [],
+      'Number of campaigns sent in the last 30 days' => [],
+      'Number of campaigns sent in the last 3 months' => [],
+      'Number of campaigns sent to segment in the last 7 days' => [],
+      'Number of campaigns sent to segment in the last 30 days' => [],
+      'Number of campaigns sent to segment in the last 3 months' => [],
+      'Number of campaigns filtered by segment in the last 7 days' => [],
+      'Number of campaigns filtered by segment in the last 30 days' => [],
+      'Number of campaigns filtered by segment in the last 3 months' => [],
+    ];
+
+    $processedResults = $this->getProcessedCampaignAnalytics();
+
+    foreach ($processedResults as $campaignId => $processedResult) {
+      $isNewerThan7DaysAgo = $processedResult['sentLast7Days'] ?? false;
+      $isNewerThan30DaysAgo = $processedResult['sentLast30Days'] ?? false;
+      $isNewerThan3MonthsAgo = $processedResult['sentLast3Months'] ?? false;
+
+      $newsletterType = $processedResult['newsletterType'];
+
+      $wasSentToDynamicSegment = $processedResult['sentToSegment'] ?? false;
+      $wasFilteredBySegment = $processedResult['filteredBySegment'] ?? false;
+
+      // Totals
+      if ($isNewerThan7DaysAgo) {
+        $matchingCampaignIds['Number of campaigns sent in the last 7 days'][] = $campaignId;
+        $matchingCampaignIds['Number of campaigns sent in the last 30 days'][] = $campaignId;
+        $matchingCampaignIds['Number of campaigns sent in the last 3 months'][] = $campaignId;
+        if ($wasSentToDynamicSegment) {
+          $matchingCampaignIds['Number of campaigns sent to segment in the last 7 days'][] = $campaignId;
+          $matchingCampaignIds['Number of campaigns sent to segment in the last 30 days'][] = $campaignId;
+          $matchingCampaignIds['Number of campaigns sent to segment in the last 3 months'][] = $campaignId;
+        }
+        if ($wasFilteredBySegment) {
+          $matchingCampaignIds['Number of campaigns filtered by segment in the last 7 days'][] = $campaignId;
+          $matchingCampaignIds['Number of campaigns filtered by segment in the last 30 days'][] = $campaignId;
+          $matchingCampaignIds['Number of campaigns filtered by segment in the last 3 months'][] = $campaignId;
+        }
+      } elseif ($isNewerThan30DaysAgo) {
+        $matchingCampaignIds['Number of campaigns sent in the last 30 days'][] = $campaignId;
+        $matchingCampaignIds['Number of campaigns sent in the last 3 months'][] = $campaignId;
+        if ($wasSentToDynamicSegment) {
+          $matchingCampaignIds['Number of campaigns sent to segment in the last 30 days'][] = $campaignId;
+          $matchingCampaignIds['Number of campaigns sent to segment in the last 3 months'][] = $campaignId;
+        }
+        if ($wasFilteredBySegment) {
+          $matchingCampaignIds['Number of campaigns filtered by segment in the last 30 days'][] = $campaignId;
+          $matchingCampaignIds['Number of campaigns filtered by segment in the last 3 months'][] = $campaignId;
+        }
+      } elseif ($isNewerThan3MonthsAgo) {
+        $matchingCampaignIds['Number of campaigns sent in the last 3 months'][] = $campaignId;
+        if ($wasSentToDynamicSegment) {
+          $matchingCampaignIds['Number of campaigns sent to segment in the last 3 months'][] = $campaignId;
+        }
+        if ($wasFilteredBySegment) {
+          $matchingCampaignIds['Number of campaigns filtered by segment in the last 3 months'][] = $campaignId;
+        }
+      }
+
+      switch ($newsletterType) {
+        case NewsletterEntity::TYPE_STANDARD:
+          if ($isNewerThan7DaysAgo) {
+            $matchingCampaignIds['Number of standard newsletters sent in last 7 days'][] = $campaignId;
+            $matchingCampaignIds['Number of standard newsletters sent in last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of standard newsletters sent in last 3 months'][] = $campaignId;
+            if ($wasFilteredBySegment) {
+              $matchingCampaignIds['Number of standard newsletters filtered by segment in last 7 days'][] = $campaignId;
+              $matchingCampaignIds['Number of standard newsletters filtered by segment in last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of standard newsletters filtered by segment in last 3 months'][] = $campaignId;
+            }
+            if ($wasSentToDynamicSegment) {
+              $matchingCampaignIds['Number of standard newsletters sent to segment in last 7 days'][] = $campaignId;
+              $matchingCampaignIds['Number of standard newsletters sent to segment in last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of standard newsletters sent to segment in last 3 months'][] = $campaignId;
+            }
+          } elseif ($isNewerThan30DaysAgo) {
+            $matchingCampaignIds['Number of standard newsletters sent in last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of standard newsletters sent in last 3 months'][] = $campaignId;
+            if ($wasFilteredBySegment) {
+              $matchingCampaignIds['Number of standard newsletters filtered by segment in last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of standard newsletters filtered by segment in last 3 months'][] = $campaignId;
+            }
+            if ($wasSentToDynamicSegment) {
+              $matchingCampaignIds['Number of standard newsletters sent to segment in last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of standard newsletters sent to segment in last 3 months'][] = $campaignId;
+            }
+          } elseif ($isNewerThan3MonthsAgo) {
+            $matchingCampaignIds['Number of standard newsletters sent in last 3 months'][] = $campaignId;
+            if ($wasFilteredBySegment) {
+              $matchingCampaignIds['Number of standard newsletters filtered by segment in last 3 months'][] = $campaignId;
+            }
+            if ($wasSentToDynamicSegment) {
+              $matchingCampaignIds['Number of standard newsletters sent to segment in last 3 months'][] = $campaignId;
+            }
+          }
+          break;
+        case NewsletterEntity::TYPE_NOTIFICATION_HISTORY:
+          if ($isNewerThan7DaysAgo) {
+            $matchingCampaignIds['Number of post notification campaigns sent in the last 7 days'][] = $campaignId;
+            $matchingCampaignIds['Number of post notification campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of post notification campaigns sent in the last 3 months'][] = $campaignId;
+            if ($wasSentToDynamicSegment) {
+              $matchingCampaignIds['Number of post notification campaigns sent to segment in the last 7 days'][] = $campaignId;
+              $matchingCampaignIds['Number of post notification campaigns sent to segment in the last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of post notification campaigns sent to segment in the last 3 months'][] = $campaignId;
+            }
+            if ($wasFilteredBySegment) {
+              $matchingCampaignIds['Number of post notification campaigns filtered by segment in the last 7 days'][] = $campaignId;
+              $matchingCampaignIds['Number of post notification campaigns filtered by segment in the last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of post notification campaigns filtered by segment in the last 3 months'][] = $campaignId;
+            }
+          } elseif ($isNewerThan30DaysAgo) {
+            $matchingCampaignIds['Number of post notification campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of post notification campaigns sent in the last 3 months'][] = $campaignId;
+            if ($wasSentToDynamicSegment) {
+              $matchingCampaignIds['Number of post notification campaigns sent to segment in the last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of post notification campaigns sent to segment in the last 3 months'][] = $campaignId;
+            }
+            if ($wasFilteredBySegment) {
+              $matchingCampaignIds['Number of post notification campaigns filtered by segment in the last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of post notification campaigns filtered by segment in the last 3 months'][] = $campaignId;
+            }
+          } elseif ($isNewerThan3MonthsAgo) {
+            $matchingCampaignIds['Number of post notification campaigns sent in the last 3 months'][] = $campaignId;
+            if ($wasSentToDynamicSegment) {
+              $matchingCampaignIds['Number of post notification campaigns sent to segment in the last 3 months'][] = $campaignId;
+            }
+            if ($wasFilteredBySegment) {
+              $matchingCampaignIds['Number of post notification campaigns filtered by segment in the last 3 months'][] = $campaignId;
+            }
+          }
+          break;
+        case NewsletterEntity::TYPE_RE_ENGAGEMENT:
+          if ($isNewerThan7DaysAgo) {
+            $matchingCampaignIds['Number of re-engagement campaigns sent in the last 7 days'][] = $campaignId;
+            $matchingCampaignIds['Number of re-engagement campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of re-engagement campaigns sent in the last 3 months'][] = $campaignId;
+            if ($wasSentToDynamicSegment) {
+              $matchingCampaignIds['Number of re-engagement campaigns sent to segment in the last 7 days'][] = $campaignId;
+              $matchingCampaignIds['Number of re-engagement campaigns sent to segment in the last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of re-engagement campaigns sent to segment in the last 3 months'][] = $campaignId;
+            }
+            if ($wasFilteredBySegment) {
+              $matchingCampaignIds['Number of re-engagement campaigns filtered by segment in the last 7 days'][] = $campaignId;
+              $matchingCampaignIds['Number of re-engagement campaigns filtered by segment in the last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of re-engagement campaigns filtered by segment in the last 3 months'][] = $campaignId;
+            }
+          } elseif ($isNewerThan30DaysAgo) {
+            $matchingCampaignIds['Number of re-engagement campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of re-engagement campaigns sent in the last 3 months'][] = $campaignId;
+            if ($wasSentToDynamicSegment) {
+              $matchingCampaignIds['Number of re-engagement campaigns sent to segment in the last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of re-engagement campaigns sent to segment in the last 3 months'][] = $campaignId;
+            }
+            if ($wasFilteredBySegment) {
+              $matchingCampaignIds['Number of re-engagement campaigns filtered by segment in the last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of re-engagement campaigns filtered by segment in the last 3 months'][] = $campaignId;
+            }
+          } elseif ($isNewerThan3MonthsAgo) {
+            $matchingCampaignIds['Number of re-engagement campaigns sent in the last 3 months'][] = $campaignId;
+            if ($wasSentToDynamicSegment) {
+              $matchingCampaignIds['Number of re-engagement campaigns sent to segment in the last 3 months'][] = $campaignId;
+            }
+            if ($wasFilteredBySegment) {
+              $matchingCampaignIds['Number of re-engagement campaigns filtered by segment in the last 3 months'][] = $campaignId;
+            }
+          }
+          break;
+        case NewsletterEntity::TYPE_WELCOME:
+          if ($isNewerThan7DaysAgo) {
+            $matchingCampaignIds['Number of legacy welcome email campaigns sent in the last 7 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy welcome email campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy welcome email campaigns sent in the last 3 months'][] = $campaignId;
+          } elseif ($isNewerThan30DaysAgo) {
+            $matchingCampaignIds['Number of legacy welcome email campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy welcome email campaigns sent in the last 3 months'][] = $campaignId;
+          } elseif ($isNewerThan3MonthsAgo) {
+            $matchingCampaignIds['Number of legacy welcome email campaigns sent in the last 3 months'][] = $campaignId;
+          }
+          break;
+        case NewsletterEntity::TYPE_AUTOMATION:
+          if ($isNewerThan7DaysAgo) {
+            $matchingCampaignIds['Number of automations campaigns sent in the last 7 days'][] = $campaignId;
+            $matchingCampaignIds['Number of automations campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of automations campaigns sent in the last 3 months'][] = $campaignId;
+            if ($wasFilteredBySegment) {
+              $matchingCampaignIds['Number of automations campaigns filtered by segment in the last 7 days'][] = $campaignId;
+              $matchingCampaignIds['Number of automations campaigns filtered by segment in the last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of automations campaigns filtered by segment in the last 3 months'][] = $campaignId;
+            }
+          } elseif ($isNewerThan30DaysAgo) {
+            $matchingCampaignIds['Number of automations campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of automations campaigns sent in the last 3 months'][] = $campaignId;
+            if ($wasFilteredBySegment) {
+              $matchingCampaignIds['Number of automations campaigns filtered by segment in the last 30 days'][] = $campaignId;
+              $matchingCampaignIds['Number of automations campaigns filtered by segment in the last 3 months'][] = $campaignId;
+            }
+          } elseif ($isNewerThan3MonthsAgo) {
+            $matchingCampaignIds['Number of automations campaigns sent in the last 3 months'][] = $campaignId;
+            if ($wasFilteredBySegment) {
+              $matchingCampaignIds['Number of automations campaigns filtered by segment in the last 3 months'][] = $campaignId;
+            }
+          }
+          break;
+        // Legacy automatic emails.
+        case 'purchasedProduct':
+          if ($isNewerThan7DaysAgo) {
+            $matchingCampaignIds['Number of legacy purchased product campaigns sent in the last 7 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy purchased product campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy purchased product campaigns sent in the last 3 months'][] = $campaignId;
+          } elseif ($isNewerThan30DaysAgo) {
+            $matchingCampaignIds['Number of legacy purchased product campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy purchased product campaigns sent in the last 3 months'][] = $campaignId;
+          } elseif ($isNewerThan3MonthsAgo) {
+            $matchingCampaignIds['Number of legacy purchased product campaigns sent in the last 3 months'][] = $campaignId;
+          }
+          break;
+        case 'purchasedInCategory':
+          if ($isNewerThan7DaysAgo) {
+            $matchingCampaignIds['Number of legacy purchased in category campaigns sent in the last 7 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy purchased in category campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy purchased in category campaigns sent in the last 3 months'][] = $campaignId;
+          } elseif ($isNewerThan30DaysAgo) {
+            $matchingCampaignIds['Number of legacy purchased in category campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy purchased in category campaigns sent in the last 3 months'][] = $campaignId;
+          } elseif ($isNewerThan3MonthsAgo) {
+            $matchingCampaignIds['Number of legacy purchased in category campaigns sent in the last 3 months'][] = $campaignId;
+          }
+          break;
+        case 'abandonedCart':
+          if ($isNewerThan7DaysAgo) {
+            $matchingCampaignIds['Number of legacy abandoned cart campaigns sent in the last 7 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy abandoned cart campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy abandoned cart campaigns sent in the last 3 months'][] = $campaignId;
+          } elseif ($isNewerThan30DaysAgo) {
+            $matchingCampaignIds['Number of legacy abandoned cart campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy abandoned cart campaigns sent in the last 3 months'][] = $campaignId;
+          } elseif ($isNewerThan3MonthsAgo) {
+            $matchingCampaignIds['Number of legacy abandoned cart campaigns sent in the last 3 months'][] = $campaignId;
+          }
+          break;
+        case 'firstPurchase':
+          if ($isNewerThan7DaysAgo) {
+            $matchingCampaignIds['Number of legacy first purchase campaigns sent in the last 7 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy first purchase campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy first purchase campaigns sent in the last 3 months'][] = $campaignId;
+          } elseif ($isNewerThan30DaysAgo) {
+            $matchingCampaignIds['Number of legacy first purchase campaigns sent in the last 30 days'][] = $campaignId;
+            $matchingCampaignIds['Number of legacy first purchase campaigns sent in the last 3 months'][] = $campaignId;
+          } elseif ($isNewerThan3MonthsAgo) {
+            $matchingCampaignIds['Number of legacy first purchase campaigns sent in the last 3 months'][] = $campaignId;
+          }
+          break;
+      }
+    }
+
+    $returnData = [];
+
+    foreach ($matchingCampaignIds as $key => $campaignIds) {
+      $returnData[$key] = count(array_unique($campaignIds));
+    }
+
+    return $returnData;
+  }
+
+  public function getProcessedCampaignAnalytics(): array {
+    $rawData = $this->newslettersRepository->getCampaignAnalyticsQuery()->getArrayResult();
+    $processedResults = [];
+
+    $sevenDaysAgo = Carbon::now()->subDays(7);
+    $thirtyDaysAgo = Carbon::now()->subDays(30);
+    $threeMonthsAgo = Carbon::now()->subMonths(3);
+
+    foreach ($rawData as $sendingInfo) {
+      $meta = $sendingInfo['sendingQueueMeta'];
+      $campaignId = $meta['campaignId'] ?? null;
+
+      if (!is_string($campaignId)) {
+        continue;
+      }
+      /** @var \DateTime $processedAt */
+      $processedAt = $sendingInfo['processedAt'];
+
+      if (!isset($processedResults[$campaignId])) {
+        $newsletterType = $sendingInfo['newsletterType'];
+        $processedData = [
+          'campaignId' => $campaignId,
+          'newsletterType' => $newsletterType,
+          'automaticSubType' => null,
+          'sentToSegment' => $sendingInfo['segmentType'] === 'dynamic',
+          'sentLast7Days' => $processedAt > $sevenDaysAgo,
+          'sentLast30Days' => $processedAt > $thirtyDaysAgo,
+          'sentLast3Months' => $processedAt > $threeMonthsAgo,
+          'filteredBySegment' => !!($meta['filterSegment'] ?? null),
+        ];
+        $processedResults[$campaignId] = $processedData;
+        if ($newsletterType === NewsletterEntity::TYPE_AUTOMATIC) {
+          try {
+            // Although we could determine the subtype by joining the appropriate newsletter option field, using
+            // the meta should be just as reliable, and we need the meta anyway, so this keeps our query simpler.
+            $subType = $this->getLegacyAutomaticEmailSubtypeFromMeta($meta);
+            $processedResults[$campaignId]['newsletterType'] = $subType;
+          } catch (UnexpectedValueException $e) {
+            // Ignore this error, the `automatic` email type won't be counted
+          }
+        }
+      } else {
+        $existingData = $processedResults[$campaignId];
+        if ($sendingInfo['segmentType'] === 'dynamic') {
+          $processedResults[$campaignId]['sentToSegment'] = true;
+        }
+        if ($processedAt > $sevenDaysAgo) {
+          $processedResults[$campaignId]['sentLast7Days'] = true;
+        }
+        if ($processedAt > $thirtyDaysAgo) {
+          $processedResults[$campaignId]['sentLast30Days'] = true;
+        }
+        if ($processedAt > $threeMonthsAgo) {
+          $processedResults[$campaignId]['sentLast3Months'] = true;
+        }
+      }
+    }
+
+    return $processedResults;
+  }
+
+  private function getLegacyAutomaticEmailSubtypeFromMeta(array $meta): string {
+    if (array_key_exists('orderedProducts', $meta)) {
+      return 'purchasedProduct';
+    }
+    if (array_key_exists('orderedProductCategories', $meta)) {
+      return 'purchasedInCategory';
+    }
+    if (array_key_exists('cart_product_ids', $meta)) {
+      return 'abandonedCart';
+    }
+    if (array_key_exists('order_amount', $meta) && array_key_exists('order_date', $meta) && array_key_exists('order_id', $meta)) {
+      return 'firstPurchase';
+    }
+
+    throw new UnexpectedValueException('Unknown automatic email type based on meta data');
   }
 
   private function isFilterTypeActive(string $filterType, string $action): bool {
