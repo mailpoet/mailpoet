@@ -244,9 +244,9 @@ class ReporterTest extends \MailPoetTest {
 
   public function testItDoesNotDoubleCountDuplicateCampaignIds(): void {
     $defaultSegment = (new Segment())->withType(SegmentEntity::TYPE_DEFAULT)->create();
-    $this->createSentNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY, Carbon::now()->subDays(2), [$defaultSegment], ['sendingQueueOptions' => ['meta' => ['campaignId' => '1']]]);
-    $this->createSentNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY, Carbon::now()->subDays(8), [$defaultSegment], ['sendingQueueOptions' => ['meta' => ['campaignId' => '1']]]);
     $this->createSentNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY, Carbon::now()->subDays(89), [$defaultSegment], ['sendingQueueOptions' => ['meta' => ['campaignId' => '1']]]);
+    $this->createSentNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY, Carbon::now()->subDays(8), [$defaultSegment], ['sendingQueueOptions' => ['meta' => ['campaignId' => '1']]]);
+    $this->createSentNewsletter(NewsletterEntity::TYPE_NOTIFICATION_HISTORY, Carbon::now()->subDays(2), [$defaultSegment], ['sendingQueueOptions' => ['meta' => ['campaignId' => '1']]]);
     $processed = $this->reporter->getCampaignAnalyticsProperties();
 
     $this->assertEquals(1, $processed['Number of post notification campaigns sent in the last 7 days']);
