@@ -50,14 +50,17 @@ class ThemeControllerTest extends \MailPoetTest {
     // Colors
     verify($css)->stringContainsString('.has-black-color');
     verify($css)->stringContainsString('.has-black-background-color');
+    verify($css)->stringContainsString('.has-black-border-color');
 
     verify($css)->stringContainsString('.has-black-color');
     verify($css)->stringContainsString('.has-black-background-color');
+    verify($css)->stringContainsString('.has-black-border-color');
 
     $this->checkCorrectThemeConfiguration();
     if (wp_get_theme()->get('Name') === 'Twenty Twenty-One') {
       verify($css)->stringContainsString('.has-yellow-background-color');
       verify($css)->stringContainsString('.has-yellow-color');
+      verify($css)->stringContainsString('.has-yellow-border-color');
     }
   }
 
