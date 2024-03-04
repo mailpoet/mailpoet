@@ -30,7 +30,7 @@ class VariablesPostprocessor implements Postprocessor {
         $varPattern = '/var\(' . preg_quote($varName, '/') . '\)/i';
         $style = preg_replace($varPattern, $varValue, $style);
       }
-      return 'style="' . $style . '"';
+      return 'style="' . esc_attr($style) . '"';
     };
 
     $html = preg_replace_callback($stylePattern, $callback, $html);
