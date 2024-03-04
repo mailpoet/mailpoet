@@ -22,7 +22,11 @@ class Column implements BlockRenderer {
 
   private function getStylesFromBlock(array $block_styles) {
     $styles = wp_style_engine_get_styles( $block_styles );
-    return $styles['declarations'] ?? [];
+    return (object)wp_parse_args($styles['declarations'], [
+      'css' => '',
+      'declarations' => [],
+      'classnames' => '',
+    ]);
   }
 
   /**
@@ -34,14 +38,10 @@ class Column implements BlockRenderer {
     $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName('div', 'class') ?? '';
 
     $width = $parsedBlock['email_attrs']['width'] ?? $settingsController->getLayoutWidthWithoutPadding();
-    $paddingBottom = $block_attributes['style']['spacing']['padding']['bottom'] ?? '0px';
-    $paddingLeft = $block_attributes['style']['spacing']['padding']['left'] ?? '0px';
-    $paddingRight = $block_attributes['style']['spacing']['padding']['right'] ?? '0px';
-    $paddingTop = $block_attributes['style']['spacing']['padding']['top'] ?? '0px';
-
-    $colorStyles = $this->getStylesFromBlock( [ 'color' => $block_styles['color'] ?? [] ] );
-    $backgroundStyles = $this->getStylesFromBlock( [ 'background' => $block_styles['background'] ?? [] ] );
-    $borderStyles = $this->getStylesFromBlock( [ 'border' => $block_styles['border'] ?? [] ] );
+    $paddingStyles = $this->getStylesFromBlock( [ 'spacing' => ['padding' => $block_styles['spacing']['padding'] ?? [] ] ] )->css;
+    $colorStyles = $this->getStylesFromBlock( [ 'color' => $block_styles['color'] ?? [] ] )->declarations;
+    $backgroundStyles = $this->getStylesFromBlock( [ 'background' => $block_styles['background'] ?? [] ] )->declarations;
+    $borderStyles = $this->getStylesFromBlock( [ 'border' => $block_styles['border'] ?? [] ] )->declarations;
 
     if (!empty($backgroundStyles['background-image']) && empty($backgroundStyles['background-size'])) {
       $backgroundStyles['background-size'] = 'cover';
