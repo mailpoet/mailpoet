@@ -11,6 +11,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentFilterRepository;
 use MailPoet\Segments\DynamicSegments\Filters\AutomationsEvents;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
@@ -103,6 +104,8 @@ class Reporter {
   /*** @var DotcomHelperFunctions */
   private $dotcomHelperFunctions;
 
+  private SendingQueuesRepository $sendingQueuesRepository;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
@@ -117,7 +120,8 @@ class Reporter {
     SubscriberListingRepository $subscriberListingRepository,
     AutomationStorage $automationStorage,
     UnsubscribeReporter $unsubscribeReporter,
-    DotcomHelperFunctions $dotcomHelperFunctions
+    DotcomHelperFunctions $dotcomHelperFunctions,
+    SendingQueuesRepository $sendingQueuesRepository
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
@@ -133,6 +137,7 @@ class Reporter {
     $this->automationStorage = $automationStorage;
     $this->unsubscribeReporter = $unsubscribeReporter;
     $this->dotcomHelperFunctions = $dotcomHelperFunctions;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
   }
 
   public function getData() {
@@ -736,7 +741,7 @@ class Reporter {
   }
 
   public function getProcessedCampaignAnalytics(): array {
-    $rawData = $this->newslettersRepository->getCampaignAnalyticsQuery()->getArrayResult();
+    $rawData = $this->sendingQueuesRepository->getCampaignAnalyticsQuery()->getArrayResult();
     $processedResults = [];
 
     foreach ($rawData as $sendingInfo) {

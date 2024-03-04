@@ -12,7 +12,6 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Util\Helpers;
@@ -155,48 +154,6 @@ class NewslettersRepository extends Repository {
       ->setParameter('since', $since)
       ->getQuery()
       ->getSingleScalarResult() ?: 0;
-  }
-
-  public function getCampaignAnalyticsQuery() {
-    $sevenDaysAgo = Carbon::now()->subDays(7);
-    $thirtyDaysAgo = Carbon::now()->subDays(30);
-    $threeMonthsAgo = Carbon::now()->subMonths(3);
-
-    return $this->doctrineRepository->createQueryBuilder('n')
-      ->select('
-      n.type as newsletterType, 
-      q.meta as sendingQueueMeta, 
-      CASE 
-        WHEN COUNT(s.id) > 0 THEN true
-        ELSE false
-      END as sentToSegment,
-      CASE 
-        WHEN t.processedAt >= :sevenDaysAgo THEN true
-        ELSE false
-      END as sentLast7Days,
-      CASE 
-        WHEN t.processedAt >= :thirtyDaysAgo THEN true
-        ELSE false
-      END as sentLast30Days,
-      CASE 
-        WHEN t.processedAt >= :threeMonthsAgo THEN true
-        ELSE false
-      END as sentLast3Months',
-      )
-      ->join('n.queues', 'q')
-      ->join('q.task', 't')
-      ->leftJoin('n.newsletterSegments', 'ns')
-      ->leftJoin('ns.segment', 's', 'WITH', 's.type = :dynamicType')
-      ->andWhere('t.status = :taskStatus')
-      ->andWhere('t.processedAt >= :since')
-      ->setParameter('sevenDaysAgo', $sevenDaysAgo)
-      ->setParameter('thirtyDaysAgo', $thirtyDaysAgo)
-      ->setParameter('threeMonthsAgo', $threeMonthsAgo)
-      ->setParameter('taskStatus', ScheduledTaskEntity::STATUS_COMPLETED)
-      ->setParameter('dynamicType', SegmentEntity::TYPE_DYNAMIC)
-      ->setParameter('since', $threeMonthsAgo)
-      ->groupBy('n.id')
-      ->getQuery();
   }
 
   public function getAnalytics(): array {
