@@ -194,7 +194,7 @@ class NewslettersRepository extends Repository {
       ->setParameter('threeMonthsAgo', $threeMonthsAgo)
       ->setParameter('taskStatus', ScheduledTaskEntity::STATUS_COMPLETED)
       ->setParameter('dynamicType', SegmentEntity::TYPE_DYNAMIC)
-      ->setParameter('since', Carbon::now()->subMonths(3))
+      ->setParameter('since', $threeMonthsAgo)
       ->groupBy('n.id')
       ->getQuery();
   }
