@@ -785,6 +785,9 @@ class Reporter {
         if ($sendingInfo['sentLast3Months']) {
           $processedResults[$campaignId]['sentLast3Months'] = true;
         }
+        if ($sendingInfo['sentToSegment']) {
+          $processedResults[$campaignId]['sentToSegment'] = true;
+        }
       }
     }
 
