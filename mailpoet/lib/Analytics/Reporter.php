@@ -440,14 +440,6 @@ class Reporter {
       'Number of automations campaigns sent in the last 30 days' => [],
       'Number of automations campaigns sent in the last 3 months' => [],
 
-      'Number of automations campaigns sent to segment in the last 7 days' => [],
-      'Number of automations campaigns sent to segment in the last 30 days' => [],
-      'Number of automations campaigns sent to segment in the last 3 months' => [],
-
-      'Number of automations campaigns filtered by segment in the last 7 days' => [],
-      'Number of automations campaigns filtered by segment in the last 30 days' => [],
-      'Number of automations campaigns filtered by segment in the last 3 months' => [],
-
       'Number of re-engagement campaigns sent in the last 7 days' => [],
       'Number of re-engagement campaigns sent in the last 30 days' => [],
       'Number of re-engagement campaigns sent in the last 3 months' => [],
@@ -675,23 +667,11 @@ class Reporter {
             $matchingCampaignIds['Number of automations campaigns sent in the last 7 days'][] = $campaignId;
             $matchingCampaignIds['Number of automations campaigns sent in the last 30 days'][] = $campaignId;
             $matchingCampaignIds['Number of automations campaigns sent in the last 3 months'][] = $campaignId;
-            if ($wasFilteredBySegment) {
-              $matchingCampaignIds['Number of automations campaigns filtered by segment in the last 7 days'][] = $campaignId;
-              $matchingCampaignIds['Number of automations campaigns filtered by segment in the last 30 days'][] = $campaignId;
-              $matchingCampaignIds['Number of automations campaigns filtered by segment in the last 3 months'][] = $campaignId;
-            }
           } elseif ($isNewerThan30DaysAgo) {
             $matchingCampaignIds['Number of automations campaigns sent in the last 30 days'][] = $campaignId;
             $matchingCampaignIds['Number of automations campaigns sent in the last 3 months'][] = $campaignId;
-            if ($wasFilteredBySegment) {
-              $matchingCampaignIds['Number of automations campaigns filtered by segment in the last 30 days'][] = $campaignId;
-              $matchingCampaignIds['Number of automations campaigns filtered by segment in the last 3 months'][] = $campaignId;
-            }
           } elseif ($isNewerThan3MonthsAgo) {
             $matchingCampaignIds['Number of automations campaigns sent in the last 3 months'][] = $campaignId;
-            if ($wasFilteredBySegment) {
-              $matchingCampaignIds['Number of automations campaigns filtered by segment in the last 3 months'][] = $campaignId;
-            }
           }
           break;
         // Legacy automatic emails.
