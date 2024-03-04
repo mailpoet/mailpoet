@@ -134,6 +134,48 @@ class SendingQueuesRepository extends Repository {
     return $qb->getQuery()->getResult();
   }
 
+  public function getCampaignAnalyticsQuery() {
+    $sevenDaysAgo = Carbon::now()->subDays(7);
+    $thirtyDaysAgo = Carbon::now()->subDays(30);
+    $threeMonthsAgo = Carbon::now()->subMonths(3);
+
+    return $this->doctrineRepository->createQueryBuilder('q')
+      ->select('
+        n.type as newsletterType, 
+        q.meta as sendingQueueMeta, 
+        CASE 
+            WHEN COUNT(s.id) > 0 THEN true
+            ELSE false
+        END as sentToSegment,
+        CASE 
+            WHEN t.processedAt >= :sevenDaysAgo THEN true
+            ELSE false
+        END as sentLast7Days,
+        CASE 
+            WHEN t.processedAt >= :thirtyDaysAgo THEN true
+            ELSE false
+        END as sentLast30Days,
+        CASE 
+            WHEN t.processedAt >= :threeMonthsAgo THEN true
+            ELSE false
+        END as sentLast3Months'
+      )
+      ->join('q.task', 't')
+      ->leftJoin('q.newsletter', 'n')
+      ->leftJoin('n.newsletterSegments', 'ns')
+      ->leftJoin('ns.segment', 's', 'WITH', 's.type = :dynamicType')
+      ->andWhere('t.status = :taskStatus')
+      ->andWhere('t.processedAt >= :since')
+      ->setParameter('sevenDaysAgo', $sevenDaysAgo)
+      ->setParameter('thirtyDaysAgo', $thirtyDaysAgo)
+      ->setParameter('threeMonthsAgo', $threeMonthsAgo)
+      ->setParameter('dynamicType', SegmentEntity::TYPE_DYNAMIC)
+      ->setParameter('taskStatus', ScheduledTaskEntity::STATUS_COMPLETED)
+      ->setParameter('since', $threeMonthsAgo)
+      ->groupBy('q.id')
+      ->getQuery();
+  }
+
   public function pause(SendingQueueEntity $queue): void {
     if ($queue->getCountProcessed() !== $queue->getCountTotal()) {
       $task = $queue->getTask();
