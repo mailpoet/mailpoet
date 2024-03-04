@@ -157,12 +157,27 @@ class NewslettersRepository extends Repository {
   }
 
   public function getCampaignAnalyticsQuery() {
+    $sevenDaysAgo = Carbon::now()->subDays(7);
+    $thirtyDaysAgo = Carbon::now()->subDays(30);
+    $threeMonthsAgo = Carbon::now()->subMonths(3);
+
     return $this->doctrineRepository->createQueryBuilder('n')
       ->select('
       n.type as newsletterType, 
       q.meta as sendingQueueMeta, 
       s.type as segmentType,
-      t.processedAt',
+      CASE 
+        WHEN t.processedAt >= :sevenDaysAgo THEN true
+        ELSE false
+      END as sentLast7Days,
+      CASE 
+        WHEN t.processedAt >= :thirtyDaysAgo THEN true
+        ELSE false
+      END as sentLast30Days,
+      CASE 
+        WHEN t.processedAt >= :threeMonthsAgo THEN true
+        ELSE false
+      END as sentLast3Months',
       )
       ->join('n.queues', 'q')
       ->join('q.task', 't')
@@ -170,6 +185,9 @@ class NewslettersRepository extends Repository {
       ->leftJoin('ns.segment', 's')
       ->andWhere('t.status = :taskStatus')
       ->andWhere('t.processedAt >= :since')
+      ->setParameter('sevenDaysAgo', $sevenDaysAgo)
+      ->setParameter('thirtyDaysAgo', $thirtyDaysAgo)
+      ->setParameter('threeMonthsAgo', $threeMonthsAgo)
       ->setParameter('taskStatus', ScheduledTaskEntity::STATUS_COMPLETED)
       ->setParameter('since', Carbon::now()->subDays(90))
       ->getQuery();
