@@ -125,10 +125,18 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
             )}
           </Tab>
 
-          {Hooks.applyFilters(
-            'mailpoet_newsletters_purchased_products',
-            null,
-            newsletter,
+          {MailPoet.isWoocommerceActive && (
+            <Tab
+              key="products"
+              title={__('Products Sold', 'mailpoet')}
+              automationId="products-sold-tab"
+            >
+              {Hooks.applyFilters(
+                'mailpoet_newsletters_purchased_products',
+                <PremiumBanner />,
+                newsletter,
+              )}
+            </Tab>
           )}
 
           <Tab
