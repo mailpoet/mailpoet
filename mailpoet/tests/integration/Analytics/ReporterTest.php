@@ -254,9 +254,6 @@ class ReporterTest extends \MailPoetTest {
     $this->assertEquals(1, $processed['Number of post notification campaigns sent in the last 3 months']);
   }
 
-  public function testItCanDetermineIfAnAutomationWasFilteredBySegment(): void {
-  }
-
   private function createSentNewsletter(string $type, Carbon $sentAt, array $segments, array $otherOptions = []): void {
     $sendingQueueOptions = ['processed_at' => $sentAt];
 
