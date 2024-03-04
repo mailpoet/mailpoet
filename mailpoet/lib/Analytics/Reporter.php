@@ -775,6 +775,16 @@ class Reporter {
             // Ignore this error, the `automatic` email type won't be counted
           }
         }
+      } else {
+        if ($sendingInfo['sentLast7Days']) {
+          $processedResults[$campaignId]['sentLast7Days'] = true;
+        }
+        if ($sendingInfo['sentLast30Days']) {
+          $processedResults[$campaignId]['sentLast30Days'] = true;
+        }
+        if ($sendingInfo['sentLast3Months']) {
+          $processedResults[$campaignId]['sentLast3Months'] = true;
+        }
       }
     }
 
