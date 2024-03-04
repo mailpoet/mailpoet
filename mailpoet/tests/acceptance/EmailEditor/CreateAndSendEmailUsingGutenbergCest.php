@@ -94,7 +94,9 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('Save Draft');
     $i->waitForText('Saved');
     $i->waitForText('Email saved!');
-    $i->click('.interface-pinned-items'); // close sidebar
+    // there is weird issue in the acceptance env where preview popup goes beyond sidebar
+    // this issue is not confirmed to be real issue but only on the acceptance test site
+    $i->click('div.interface-pinned-items > button'); // close sidebar
     $i->click('.mailpoet-preview-dropdown button[aria-label="Preview"]');
     $i->waitForElementVisible('//button[text()="Preview in new tab"]');
     $i->waitForElementClickable('//button[text()="Preview in new tab"]');
