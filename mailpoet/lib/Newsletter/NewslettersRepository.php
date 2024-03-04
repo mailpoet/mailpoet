@@ -12,6 +12,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Util\Helpers;
@@ -165,7 +166,10 @@ class NewslettersRepository extends Repository {
       ->select('
       n.type as newsletterType, 
       q.meta as sendingQueueMeta, 
-      s.type as segmentType,
+      CASE 
+        WHEN COUNT(s.id) > 0 THEN true
+        ELSE false
+      END as sentToSegment,
       CASE 
         WHEN t.processedAt >= :sevenDaysAgo THEN true
         ELSE false
@@ -182,14 +186,16 @@ class NewslettersRepository extends Repository {
       ->join('n.queues', 'q')
       ->join('q.task', 't')
       ->leftJoin('n.newsletterSegments', 'ns')
-      ->leftJoin('ns.segment', 's')
+      ->leftJoin('ns.segment', 's', 'WITH', 's.type = :dynamicType')
       ->andWhere('t.status = :taskStatus')
       ->andWhere('t.processedAt >= :since')
       ->setParameter('sevenDaysAgo', $sevenDaysAgo)
       ->setParameter('thirtyDaysAgo', $thirtyDaysAgo)
       ->setParameter('threeMonthsAgo', $threeMonthsAgo)
       ->setParameter('taskStatus', ScheduledTaskEntity::STATUS_COMPLETED)
+      ->setParameter('dynamicType', SegmentEntity::TYPE_DYNAMIC)
       ->setParameter('since', Carbon::now()->subDays(90))
+      ->groupBy('n.id')
       ->getQuery();
   }
 

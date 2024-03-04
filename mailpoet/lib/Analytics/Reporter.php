@@ -773,7 +773,7 @@ class Reporter {
           'campaignId' => $campaignId,
           'newsletterType' => $newsletterType,
           'automaticSubType' => null,
-          'sentToSegment' => $sendingInfo['segmentType'] === 'dynamic',
+          'sentToSegment' => (bool)$sendingInfo['sentToSegment'],
           'sentLast7Days' => (bool)$sendingInfo['sentLast7Days'],
           'sentLast30Days' => (bool)$sendingInfo['sentLast30Days'],
           'sentLast3Months' => (bool)$sendingInfo['sentLast3Months'],
@@ -789,10 +789,6 @@ class Reporter {
           } catch (UnexpectedValueException $e) {
             // Ignore this error, the `automatic` email type won't be counted
           }
-        }
-      } else {
-        if ($sendingInfo['segmentType'] === 'dynamic') {
-          $processedResults[$campaignId]['sentToSegment'] = true;
         }
       }
     }
