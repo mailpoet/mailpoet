@@ -759,10 +759,6 @@ class Reporter {
     $rawData = $this->newslettersRepository->getCampaignAnalyticsQuery()->getArrayResult();
     $processedResults = [];
 
-    $sevenDaysAgo = Carbon::now()->subDays(7);
-    $thirtyDaysAgo = Carbon::now()->subDays(30);
-    $threeMonthsAgo = Carbon::now()->subMonths(3);
-
     foreach ($rawData as $sendingInfo) {
       $meta = $sendingInfo['sendingQueueMeta'];
       $campaignId = $meta['campaignId'] ?? null;
@@ -770,8 +766,6 @@ class Reporter {
       if (!is_string($campaignId)) {
         continue;
       }
-      /** @var \DateTime $processedAt */
-      $processedAt = $sendingInfo['processedAt'];
 
       if (!isset($processedResults[$campaignId])) {
         $newsletterType = $sendingInfo['newsletterType'];
@@ -780,9 +774,9 @@ class Reporter {
           'newsletterType' => $newsletterType,
           'automaticSubType' => null,
           'sentToSegment' => $sendingInfo['segmentType'] === 'dynamic',
-          'sentLast7Days' => $processedAt > $sevenDaysAgo,
-          'sentLast30Days' => $processedAt > $thirtyDaysAgo,
-          'sentLast3Months' => $processedAt > $threeMonthsAgo,
+          'sentLast7Days' => (bool)$sendingInfo['sentLast7Days'],
+          'sentLast30Days' => (bool)$sendingInfo['sentLast30Days'],
+          'sentLast3Months' => (bool)$sendingInfo['sentLast3Months'],
           'filteredBySegment' => !!($meta['filterSegment'] ?? null),
         ];
         $processedResults[$campaignId] = $processedData;
@@ -799,15 +793,6 @@ class Reporter {
       } else {
         if ($sendingInfo['segmentType'] === 'dynamic') {
           $processedResults[$campaignId]['sentToSegment'] = true;
-        }
-        if ($processedAt > $sevenDaysAgo) {
-          $processedResults[$campaignId]['sentLast7Days'] = true;
-        }
-        if ($processedAt > $thirtyDaysAgo) {
-          $processedResults[$campaignId]['sentLast30Days'] = true;
-        }
-        if ($processedAt > $threeMonthsAgo) {
-          $processedResults[$campaignId]['sentLast3Months'] = true;
         }
       }
     }
