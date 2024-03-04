@@ -44,10 +44,9 @@ export async function automationTrashRestore() {
     await page.$$('.mailpoet-automation-listing-more-button')[0].click(); // click More
     await page.locator('.components-popover__content').click(); // click Trash
     await page.waitForLoadState('networkidle');
-    sleep(1); // this is to avoid false-positive
-    await page.$$('.is-primary')[1].focus();
-    await page.$$('.is-primary')[1].click(); // click Move to trash
-    await waitForSelectorToBeVisible(page, '.notice-success');
+    await page.locator('div.components-flex > button.is-primary').focus();
+    await page.locator('div.components-flex > button.is-primary').click(); // click Move to trash
+    await page.waitForLoadState('networkidle');
 
     // Wait for the success notice message and confirm it
     const movedToTrashNotice =
@@ -71,10 +70,9 @@ export async function automationTrashRestore() {
     await waitForSelectorToBeVisible(page, '.mailpoet-tab-trash.is-active');
     await page.$$('.mailpoet-automation-listing-more-button')[0].click(); // click More
     await page.waitForLoadState('networkidle');
-    sleep(1); // this is to avoid false-positive
     await page.$$('.components-dropdown-menu__menu-item')[0].focus();
     await page.$$('.components-dropdown-menu__menu-item')[0].click(); // click Restore
-    await waitForSelectorToBeVisible(page, '.notice-success');
+    await page.waitForLoadState('networkidle');
 
     // Wait for the success notice message and confirm it
     const restoredFromTrashNotice =
