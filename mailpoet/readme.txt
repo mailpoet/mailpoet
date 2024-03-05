@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.3
 Tested up to: 6.4
-Stable tag: 4.44.1
+Stable tag: 4.45.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.45.0 - 2024-03-05 =
+* Improved: when the domain authentication service is unavailable, regard the old authentication status as the current one and continue to allow sending for authenticated domains.
+* Improved: when reentering the onboarding flow, continue where the user left the flow.
+* Fixed: a method in the "subscriber counter" background job could get a wrongly typed parameter.
 
 = 4.44.1 - 2024-02-26 =
 * Improvement: utm_source and utm_type parameters are added to links by default;
