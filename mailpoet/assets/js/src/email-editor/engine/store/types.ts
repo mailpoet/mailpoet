@@ -76,6 +76,7 @@ export type State = {
   styles: EmailStyles;
   layout: EmailEditorLayout;
   autosaveInterval: number;
+  cdnUrl: string;
   preview: {
     deviceType: string;
     toEmail: string;

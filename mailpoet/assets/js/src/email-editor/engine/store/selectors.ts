@@ -143,3 +143,7 @@ export function getLayout(state: State): State['layout'] {
 export function getAutosaveInterval(state: State): State['autosaveInterval'] {
   return state.autosaveInterval;
 }
+
+export function getCdnUrl(state: State): State['cdnUrl'] {
+  return state.cdnUrl;
+}

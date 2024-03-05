@@ -34,6 +34,7 @@ import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 import { EditorNotices, EditorSnackbars, SentEmailNotice } from '../notices';
 import { StylesSidebar } from '../styles-sidebar';
+import { FooterCredit } from './footer-credit';
 
 export function BlockEditor() {
   const {
@@ -50,6 +51,7 @@ export function BlockEditor() {
     focusMode,
     styles,
     layout,
+    cdnUrl,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
@@ -65,6 +67,7 @@ export function BlockEditor() {
       focusMode: select(storeName).isFeatureActive('focusMode'),
       styles: select(storeName).getStyles(),
       layout: select(storeName).getLayout(),
+      cdnUrl: select(storeName).getCdnUrl(),
     }),
     [],
   );
@@ -186,6 +189,7 @@ export function BlockEditor() {
                     </BlockTools>
                   </BlockSelectionClearer>
                 </div>
+                <FooterCredit logoSrc={`${cdnUrl}logo-grey-400x122.png`} />
               </BlockSelectionClearer>
             </div>
           </>

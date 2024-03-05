@@ -1,6 +1,11 @@
 import { mainSidebarEmailTab } from './constants';
 import { State } from './types';
-import { getEditorLayout, getEditorSettings, getEmailStyles } from './settings';
+import {
+  getEditorLayout,
+  getEditorSettings,
+  getEmailStyles,
+  getCdnUrl,
+} from './settings';
 
 export function getInitialState(): State {
   const searchParams = new URLSearchParams(window.location.search);
@@ -20,6 +25,7 @@ export function getInitialState(): State {
     styles: getEmailStyles(),
     layout: getEditorLayout(),
     autosaveInterval: 60,
+    cdnUrl: getCdnUrl(),
     preview: {
       deviceType: 'Desktop',
       toEmail: window.MailPoetEmailEditor.current_wp_user_email,
