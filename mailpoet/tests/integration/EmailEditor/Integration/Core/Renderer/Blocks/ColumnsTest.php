@@ -98,7 +98,6 @@ class ColumnsTest extends \MailPoetTest {
     $this->checkValidHTML($rendered);
     $this->assertStringContainsString('color:#123456;', $rendered);
     $this->assertStringContainsString('background-color:#654321;', $rendered);
-    $this->assertStringContainsString('background:#654321;', $rendered);
   }
 
   public function testItPreservesClassesSetByEditor(): void {

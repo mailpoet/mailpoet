@@ -56,10 +56,7 @@ class Column implements BlockRenderer {
       $cellStyles['background-size'] = 'cover';
     }
 
-    if (!empty($cellStyles['border-width'])) {
-      $cellStyles['border-style'] = 'solid';
-      $cellStyles['box-sizing'] = 'border-box';
-    }
+    $cellStyles['border-style'] = 'solid';
 
     $wrapperClassname = 'block wp-block-column ';
     $contentClassname = 'email_column ';
