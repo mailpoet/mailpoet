@@ -81,7 +81,6 @@ class ColumnsTest extends \MailPoetTest {
       ],
     ];
     $rendered = $this->columnsRenderer->render('', $parsedColumns, $this->settingsController);
-    verify($rendered)->stringContainsString('background:#abcdef;');
     verify($rendered)->stringContainsString('background-color:#abcdef;');
     verify($rendered)->stringContainsString('border-color:#123456;border-radius:10px;border-width:2px;border-style:solid;');
     verify($rendered)->stringContainsString('padding-bottom:5px;');
