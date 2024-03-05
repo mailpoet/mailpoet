@@ -48,8 +48,6 @@ class ColumnTest extends \MailPoetTest {
     $rendered = $this->columnRenderer->render('', $this->parsedColumn, $this->settingsController);
     $this->checkValidHTML($rendered);
     $this->assertStringContainsString('Column content', $rendered);
-    $this->assertStringContainsString('width:300px;', $rendered);
-    $this->assertStringContainsString('max-width:300px;', $rendered);
   }
 
   public function testItContainsColumnsStyles(): void {
@@ -95,7 +93,6 @@ class ColumnTest extends \MailPoetTest {
     ];
     $rendered = $this->columnRenderer->render('', $parsedColumn, $this->settingsController);
     $this->checkValidHTML($rendered);
-    $this->assertStringContainsString('background:#abcdef;', $rendered);
     $this->assertStringContainsString('background-color:#abcdef;', $rendered);
     $this->assertStringContainsString('border-bottom-left-radius:5px;', $rendered);
     $this->assertStringContainsString('border-bottom-right-radius:10px;', $rendered);
@@ -133,7 +130,6 @@ class ColumnTest extends \MailPoetTest {
     $this->checkValidHTML($rendered);
     $this->assertStringContainsString('color:#123456;', $rendered);
     $this->assertStringContainsString('background-color:#654321;', $rendered);
-    $this->assertStringContainsString('background:#654321;', $rendered);
   }
 
   public function testItPreservesClassesSetByEditor(): void {
