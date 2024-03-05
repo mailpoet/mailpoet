@@ -93,14 +93,14 @@ class RendererTest extends \MailPoetTest {
         <!-- /wp:columns -->',
     ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
-    $style = $this->extractBlockStyle($rendered['html'], 'wp-block-columns', 'table');
+    $style = $this->extractBlockStyle($rendered['html'], 'wp-block-columns', 'td');
     verify($style)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
     verify($style)->stringContainsString('background-color:#000000'); // black is #000000
   }
 
   public function testItInlinesColumnColors() {
     $emailPost = new \WP_Post((object)[
-      'post_content' => '<!-- wp:column {"backgroundColor":"vivid-green-cyan", "textColor":"black"} -->
+      'post_content' => '<!-- wp:column {"backgroundColor":"vivid-green-cyan", "textColor":"black", "verticalAlign":"stretch"} -->
         <div class="wp-block-column has-black-background-color has-luminous-vivid-orange-color"><div>
         <!-- /wp:column -->',
     ]);
