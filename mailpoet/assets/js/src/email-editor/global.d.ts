@@ -3,6 +3,7 @@ interface Window {
     json_api_root: string;
     api_token: string;
     api_version: string;
+    cdn_url: string;
     current_wp_user_email: string;
     bc_state: {
       isInlinedBlockToolbarAvailable: boolean;

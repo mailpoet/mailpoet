@@ -6,6 +6,7 @@ use MailPoet\API\JSON\API;
 use MailPoet\Config\Env;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
+use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
@@ -15,12 +16,17 @@ class EmailEditor {
   /** @var SettingsController */
   private $settingsController;
 
+  /** @var CdnAssetUrl */
+  private $cdnAssetUrl;
+
   public function __construct(
     WPFunctions $wp,
-    SettingsController $settingsController
+    SettingsController $settingsController,
+    CdnAssetUrl $cdnAssetUrl
   ) {
     $this->wp = $wp;
     $this->settingsController = $settingsController;
+    $this->cdnAssetUrl = $cdnAssetUrl;
   }
 
   public function render() {
@@ -56,6 +62,7 @@ class EmailEditor {
         'json_api_root' => esc_js($jsonAPIRoot),
         'api_token' => esc_js($token),
         'api_version' => esc_js($apiVersion),
+        'cdn_url' => esc_js($this->cdnAssetUrl->generateCdnUrl("")),
         'current_wp_user_email' => esc_js($currentUserEmail),
         'editor_settings' => $this->settingsController->getSettings(),
         'email_styles' => $this->settingsController->getEmailStyles(),

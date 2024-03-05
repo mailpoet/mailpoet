@@ -11,3 +11,7 @@ export function getEmailStyles(): EmailStyles {
 export function getEditorLayout(): EmailEditorLayout {
   return window.MailPoetEmailEditor.editor_layout as EmailEditorLayout;
 }
+
+export function getCdnUrl(): string {
+  return window.MailPoetEmailEditor.cdn_url;
+}
