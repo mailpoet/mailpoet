@@ -18,6 +18,90 @@ class CustomerPayload implements Payload {
     $this->order = $order;
   }
 
+  public function getBillingCompany(): ?string {
+    if ($this->isGuest()) {
+      return $this->order ? $this->order->get_billing_company() : null;
+    }
+    return $this->customer->get_billing_company();
+  }
+
+  public function getBillingPhone(): ?string {
+    if ($this->isGuest()) {
+      return $this->order ? $this->order->get_billing_phone() : null;
+    }
+    return $this->customer->get_billing_phone();
+  }
+
+  public function getBillingCity(): ?string {
+    if ($this->isGuest()) {
+      return $this->order ? $this->order->get_billing_city() : null;
+    }
+    return $this->customer->get_billing_city();
+  }
+
+  public function getBillingPostcode(): ?string {
+    if ($this->isGuest()) {
+      return $this->order ? $this->order->get_billing_postcode() : null;
+    }
+    return $this->customer->get_billing_postcode();
+  }
+
+  public function getBillingState(): ?string {
+    if ($this->isGuest()) {
+      return $this->order ? $this->order->get_billing_state() : null;
+    }
+    return $this->customer->get_billing_state();
+  }
+
+  public function getBillingCountry(): ?string {
+    if ($this->isGuest()) {
+      return $this->order ? $this->order->get_billing_country() : null;
+    }
+    return $this->customer->get_billing_country();
+  }
+
+  public function getShippingCompany(): ?string {
+    if ($this->isGuest()) {
+      return $this->order ? $this->order->get_shipping_company() : null;
+    }
+    return $this->customer->get_shipping_company();
+  }
+
+  public function getShippingPhone(): ?string {
+    if ($this->isGuest()) {
+      return $this->order ? $this->order->get_shipping_phone() : null;
+    }
+    return $this->customer->get_shipping_phone();
+  }
+
+  public function getShippingCity(): ?string {
+    if ($this->isGuest()) {
+      return $this->order ? $this->order->get_shipping_city() : null;
+    }
+    return $this->customer->get_shipping_city();
+  }
+
+  public function getShippingPostcode(): ?string {
+    if ($this->isGuest()) {
+      return $this->order ? $this->order->get_shipping_postcode() : null;
+    }
+    return $this->customer->get_shipping_postcode();
+  }
+
+  public function getShippingState(): ?string {
+    if ($this->isGuest()) {
+      return $this->order ? $this->order->get_shipping_state() : null;
+    }
+    return $this->customer->get_shipping_state();
+  }
+
+  public function getShippingCountry(): ?string {
+    if ($this->isGuest()) {
+      return $this->order ? $this->order->get_shipping_country() : null;
+    }
+    return $this->customer->get_shipping_country();
+  }
+
   public function getCustomer(): ?WC_Customer {
     return $this->customer;
   }
@@ -26,6 +110,7 @@ class CustomerPayload implements Payload {
     return $this->customer ? $this->customer->get_id() : 0;
   }
 
+  /** @phpstan-assert-if-true null $this->customer */
   public function isGuest(): bool {
     return $this->customer === null;
   }
