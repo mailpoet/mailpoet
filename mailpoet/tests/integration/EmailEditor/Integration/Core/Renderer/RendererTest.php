@@ -100,7 +100,7 @@ class RendererTest extends \MailPoetTest {
 
   public function testItInlinesColumnColors() {
     $emailPost = new \WP_Post((object)[
-      'post_content' => '<!-- wp:column {"backgroundColor":"vivid-green-cyan", "textColor":"black", "verticalAlign":"stretch"} -->
+      'post_content' => '<!-- wp:column {"backgroundColor":"vivid-green-cyan", "textColor":"black", "verticalAlignment":"stretch"} -->
         <div class="wp-block-column has-black-background-color has-luminous-vivid-orange-color"><div>
         <!-- /wp:column -->',
     ]);
