@@ -3,19 +3,22 @@
 namespace MailPoet\Automation\Integrations\WooCommerce\Payloads;
 
 use MailPoet\Automation\Engine\Integration\Payload;
+use WC_Customer;
+use WC_Order;
 
 class CustomerPayload implements Payload {
-
-  /** @var \WC_Customer | null */
-  private $customer;
+  private ?WC_Customer $customer;
+  private ?WC_Order $order;
 
   public function __construct(
-    \WC_Customer $customer = null
+    WC_Customer $customer = null,
+    WC_Order $order = null
   ) {
     $this->customer = $customer;
+    $this->order = $order;
   }
 
-  public function getCustomer(): ?\WC_Customer {
+  public function getCustomer(): ?WC_Customer {
     return $this->customer;
   }
 
