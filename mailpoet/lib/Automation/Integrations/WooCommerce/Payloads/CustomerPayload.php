@@ -102,6 +102,26 @@ class CustomerPayload implements Payload {
     return $this->customer->get_shipping_country();
   }
 
+  public function getTotalSpent(): float {
+    if ($this->isGuest()) {
+      return $this->order && $this->order->is_paid() ? (float)$this->order->get_total() : 0.0;
+    }
+    return (float)$this->customer->get_total_spent();
+  }
+
+  public function getAverageSpent(): float {
+    $totalSpent = $this->getTotalSpent();
+    $orderCount = $this->getOrderCount();
+    return $orderCount > 0 ? ($totalSpent / $orderCount) : 0.0;
+  }
+
+  public function getOrderCount(): int {
+    if ($this->isGuest()) {
+      return $this->order ? 1 : 0;
+    }
+    return $this->customer->get_order_count();
+  }
+
   public function getCustomer(): ?WC_Customer {
     return $this->customer;
   }
