@@ -106,6 +106,18 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('border-color:#111111;');
   }
 
+  public function testItRendersBorderWithTextColorFallbackForColorsFromPalette(): void {
+    $this->parsedButton['attrs']['style']['border'] = [
+      'width' => '10px',
+    ];
+    // Custom text color is not set so we use the text color from the palette
+    $this->parsedButton['attrs']['style']['color'] = null;
+    $this->parsedButton['attrs']['textColor'] = 'white';
+    $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
+    // We set proper class for border color based on the text color slug
+    verify($output)->stringContainsString('has-white-border-color');
+  }
+
   public function testItRendersEachSideSpecificBorder(): void {
     $this->parsedButton['attrs']['style']['border'] = [
       'top' => ['width' => '1px', 'color' => '#111111'],
