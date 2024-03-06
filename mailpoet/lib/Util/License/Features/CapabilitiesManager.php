@@ -56,7 +56,7 @@ class CapabilitiesManager {
       return false;
     }
 
-    return (isset($this->tier) && $this->tier < self::MIN_TIER_LOGO_NOT_REQUIRED) || (isset($mailpoetLogoInEmails) && (bool)$mailpoetLogoInEmails === true);
+    return (isset($this->tier) && $this->tier < self::MIN_TIER_LOGO_NOT_REQUIRED);
   }
 
   private function isDetailedAnalyticsEnabled(): bool {
@@ -76,32 +76,32 @@ class CapabilitiesManager {
       return true;
     }
 
-    return (isset($this->tier) && $this->tier >= self::MIN_TIER_ANALYTICS_ENABLED) || (isset($detailedAnalytics) && (bool)$detailedAnalytics === true);
+    return (isset($this->tier) && $this->tier >= self::MIN_TIER_ANALYTICS_ENABLED);
+  }
+
+  private function getLimit(string $settingKey, int $minTierForUnlimited): int {
+    $capabilityValue = $this->settings->get($settingKey);
+
+    if (!isset($this->tier) && !isset($capabilityValue)) {
+      return 0; // Backward compatibility
+    }
+
+    $limitFromTier = isset($this->tier) && $this->tier >= $minTierForUnlimited ? 0 : 1; // 0 is unlimited
+
+    if ($limitFromTier === 0) {
+      return 0;
+    }
+
+    // Allow for less restrictive individual capability to take precedence
+    return (isset($capabilityValue) && ((int)$capabilityValue === 0 || (int)$capabilityValue > $limitFromTier)) ? (int)$capabilityValue : $limitFromTier;
   }
 
   private function getAutomationStepsLimit(): int {
-    $automationSteps = $this->settings->get(self::MSS_AUTOMATION_STEPS_SETTING_KEY);
-
-    if (!isset($this->tier) && !isset($automationSteps)) {
-      return 0; // Backward compatibility
-    }
-
-    $stepsFromTier = isset($this->tier) && $this->tier >= self::MIN_TIER_UNLIMITED_AUTOMATION_STEPS ? 0 : 1; //  0  is unlimited
-
-    // Allow for less restrictive individual capability to take precedence
-     return (isset($automationSteps) && ((int)$automationSteps === 0 || (int)$automationSteps > $stepsFromTier)) ? (int)$automationSteps : $stepsFromTier;
+    return $this->getLimit(self::MSS_AUTOMATION_STEPS_SETTING_KEY, self::MIN_TIER_UNLIMITED_AUTOMATION_STEPS);
   }
 
   private function getSegmentFiltersLimit(): int {
-    $segmentFilters = $this->settings->get(self::MSS_SEGMENT_FILTERS_SETTING_KEY);
-
-    if (!isset($this->tier) && !isset($segmentFilters)) {
-      return 0; // Backward compatibility
-    }
-
-    $segmentFiltersFromTier = isset($this->tier) && $this->tier >= self::MIN_TIER_UNLIMITED_SEGMENT_FILTERS ? 0 : 1; //  0  is unlimited
-    // Allow for less restrictive individual capability to take precedence
-    return (isset($segmentFilters) && ((int)$segmentFilters === 0 || (int)$segmentFilters > $segmentFiltersFromTier)) ? (int)$segmentFilters : $segmentFiltersFromTier;
+    return $this->getLimit(self::MSS_SEGMENT_FILTERS_SETTING_KEY, self::MIN_TIER_UNLIMITED_SEGMENT_FILTERS);
   }
 
   public function getCapabilities(): Capabilities {
