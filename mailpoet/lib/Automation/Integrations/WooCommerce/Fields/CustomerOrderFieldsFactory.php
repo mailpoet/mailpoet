@@ -9,6 +9,8 @@ use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\CustomerPayload;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use WC_Customer;
+use WC_Order_Item_Product;
+use WC_Product;
 
 class CustomerOrderFieldsFactory {
   /** @var WooCommerce */
@@ -119,11 +121,19 @@ class CustomerOrderFieldsFactory {
         __('Purchased categories', 'mailpoet'),
         function (CustomerPayload $payload, array $params = []) {
           $customer = $payload->getCustomer();
-          if (!$customer) {
-            return [];
-          }
           $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
-          $ids = $this->getOrderProductTermIds($customer, 'product_cat', $inTheLastSeconds);
+          if (!$customer) {
+            $order = $payload->getOrder();
+            $items = $order && $order->is_paid() ? $order->get_items() : [];
+            $ids = [];
+            foreach ($items as $item) {
+              $product = $item instanceof WC_Order_Item_Product ? $item->get_product() : null;
+              $ids = array_merge($ids, $product instanceof WC_Product ? $product->get_category_ids() : []);
+            }
+            $ids = array_unique($ids);
+          } else {
+            $ids = $this->getOrderProductTermIds($customer, 'product_cat', $inTheLastSeconds);
+          }
           $ids = array_merge($ids, $this->termParentsLoader->getParentIds($ids));
           sort($ids);
           return $ids;
@@ -139,11 +149,19 @@ class CustomerOrderFieldsFactory {
         __('Purchased tags', 'mailpoet'),
         function (CustomerPayload $payload, array $params = []) {
           $customer = $payload->getCustomer();
-          if (!$customer) {
-            return [];
-          }
           $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
-          $ids = $this->getOrderProductTermIds($customer, 'product_tag', $inTheLastSeconds);
+          if (!$customer) {
+            $order = $payload->getOrder();
+            $items = $order && $order->is_paid() ? $order->get_items() : [];
+            $ids = [];
+            foreach ($items as $item) {
+              $product = $item instanceof WC_Order_Item_Product ? $item->get_product() : null;
+              $ids = array_merge($ids, $product instanceof WC_Product ? $product->get_tag_ids() : []);
+            }
+            $ids = array_unique($ids);
+          } else {
+            $ids = $this->getOrderProductTermIds($customer, 'product_tag', $inTheLastSeconds);
+          }
           sort($ids);
           return $ids;
         },
