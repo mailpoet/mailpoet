@@ -5,8 +5,6 @@ namespace MailPoet\EmailEditor\Engine\Renderer;
 use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
-require_once __DIR__ . '/DummyBlockRenderer.php';
-
 class RendererTest extends \MailPoetTest {
   /** @var Renderer */
   private $renderer;
@@ -60,7 +58,7 @@ class RendererTest extends \MailPoetTest {
     remove_filter('mailpoet_email_renderer_styles', $stylesCallback);
   }
 
-  public function testItInlinesEmailStyles() {
+  public function testItInlinesBodyStyles() {
     $rendered = $this->renderer->render($this->emailPost, 'Subject', '', 'en');
     $doc = new \DOMDocument();
     $doc->loadHTML($rendered['html']);
@@ -75,7 +73,7 @@ class RendererTest extends \MailPoetTest {
     verify($style)->stringContainsString('margin:0;padding:0;');
   }
 
-  public function testItInlinesMainStyles() {
+  public function testItInlinesWrappersStyles() {
     $themeJsonMock = $this->createMock(\WP_Theme_JSON::class);
     $themeJsonMock->method('get_data')->willReturn([
       'styles' => [

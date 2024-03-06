@@ -10,7 +10,7 @@ class Initializer {
     add_action('mailpoet_blocks_renderer_initialized', [$this, 'registerCoreBlocksRenderers'], 10, 1);
     add_filter('mailpoet_email_editor_theme_json', [$this, 'adjustThemeJson'], 10, 1);
     add_filter('mailpoet_email_editor_editor_styles', [$this, 'addEditorStyles'], 10, 1);
-    add_filter('mailpoet_email_renderer_styles', [$this, 'addRendererStyles'], 10, 1);
+    add_filter('mailpoet_email_content_renderer_styles', [$this, 'addRendererStyles'], 10, 1);
   }
 
   /**
