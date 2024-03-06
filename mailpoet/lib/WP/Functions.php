@@ -957,4 +957,8 @@ class Functions {
   public function wpStripAllTags($string, $removeBreaks = false): string {
     return wp_strip_all_tags($string, $removeBreaks);
   }
+
+  public function getTheContent($more_link_text = null, $strip_teaser = false, $post = null) {
+    return get_the_content($more_link_text, $strip_teaser, $post);
+  }
 }

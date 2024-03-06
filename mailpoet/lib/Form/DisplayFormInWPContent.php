@@ -152,7 +152,7 @@ class DisplayFormInWPContent {
       return false;
     }
 
-    return !$this->wp->didFilter('the_content');
+    return $this->wp->getTheContent() === '';
   }
 
   private function shouldDisplay(): bool {
