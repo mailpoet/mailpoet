@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { StepType } from '../../../../editor/store';
 import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';
-import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
+import { PremiumModalForStepEdit } from '../../../../components/premium-modal-steps-edit';
 import { Icon } from './icon';
 
 const keywords = [

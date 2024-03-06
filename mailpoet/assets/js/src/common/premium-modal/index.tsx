@@ -13,7 +13,6 @@ import {
   Button,
   Modal,
 } from '@wordpress/components';
-import { dispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import {
@@ -23,8 +22,6 @@ import {
   useUpgradeInfo,
   UtmParams,
 } from './upgrade-info';
-import { storeName } from '../../automation/editor/store';
-import { withBoundary } from '../error-boundary';
 
 export const premiumValidAndActive =
   premiumFeaturesEnabled && MailPoet.premiumActive;
@@ -137,42 +134,4 @@ function PremiumModal({
 }
 
 PremiumModal.displayName = 'PremiumModal';
-
-type EditProps = Omit<Props, 'onRequestClose'>;
-
-function PremiumModalForStepEdit({
-  children,
-  ...props
-}: EditProps): JSX.Element {
-  const [showModal, setShowModal] = useState(true);
-  useEffect(() => {
-    if (showModal) {
-      return;
-    }
-    const { selectStep } = dispatch(storeName);
-    void selectStep(undefined);
-    setShowModal(true);
-  }, [showModal]);
-  if (!showModal) {
-    return null;
-  }
-  return (
-    <PremiumModal
-      onRequestClose={() => {
-        setShowModal(false);
-      }}
-      {...props}
-    >
-      {children}
-    </PremiumModal>
-  );
-}
-
-PremiumModalForStepEdit.displayName = 'PremiumModalForStepEdit';
-const PremiumModalForStepEditWithBoundary = withBoundary(
-  PremiumModalForStepEdit,
-);
-export {
-  PremiumModal,
-  PremiumModalForStepEditWithBoundary as PremiumModalForStepEdit,
-};
+export { PremiumModal, Props as PremiumModalProps };

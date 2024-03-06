@@ -1,7 +1,7 @@
 import { __, _x } from '@wordpress/i18n';
 import { StepType } from '../../../../editor/store';
 import { Icon } from './icon';
-import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
+import { PremiumModalForStepEdit } from '../../../../components/premium-modal-steps-edit';
 
 const keywords = [
   // translators: noun, used as a search keyword for "Woo Subscription payment failed" trigger
