@@ -94,7 +94,8 @@ class CustomerOrderFieldsFactory {
         function (CustomerPayload $payload) {
           $customer = $payload->getCustomer();
           if (!$customer) {
-            return null;
+            $order = $payload->getOrder();
+            return $order && $order->is_paid() ? $order->get_date_created() : null;
           }
           return $this->getPaidOrderDate($customer, true);
         }
@@ -106,7 +107,8 @@ class CustomerOrderFieldsFactory {
         function (CustomerPayload $payload) {
           $customer = $payload->getCustomer();
           if (!$customer) {
-            return null;
+            $order = $payload->getOrder();
+            return $order && $order->is_paid() ? $order->get_date_created() : null;
           }
           return $this->getPaidOrderDate($customer, false);
         }

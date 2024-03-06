@@ -126,6 +126,10 @@ class CustomerPayload implements Payload {
     return $this->customer;
   }
 
+  public function getOrder(): ?WC_Order {
+    return $this->order;
+  }
+
   public function getId(): int {
     return $this->customer ? $this->customer->get_id() : 0;
   }
