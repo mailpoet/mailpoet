@@ -11,6 +11,8 @@ use MailPoet\Automation\Integrations\WooCommerce\Payloads\CustomerPayload;
 use MailPoet\NotFoundException;
 use MailPoet\Validator\Builder;
 use MailPoet\Validator\Schema\ObjectSchema;
+use WC_Customer;
+use WC_Order;
 
 /**
  * @implements Subject<CustomerPayload>
@@ -43,16 +45,20 @@ class CustomerSubject implements Subject {
   }
 
   public function getPayload(SubjectData $subjectData): Payload {
-    $id = $subjectData->getArgs()['customer_id'];
-    if (!$id) {
-      return new CustomerPayload(null);
+    $customerId = $subjectData->getArgs()['customer_id'];
+    $orderId = $subjectData->getArgs()['order_id'] ?? null;
+    if (!$customerId) {
+      return new CustomerPayload(null, $orderId);
     }
-    $customer = new \WC_Customer($id);
+
+    $customer = new WC_Customer($customerId);
     if (!$customer->get_id()) {
       // translators: %d is the ID of the customer.
-      throw NotFoundException::create()->withMessage(sprintf(__("Customer with ID '%d' not found.", 'mailpoet'), $id));
+      throw NotFoundException::create()->withMessage(sprintf(__("Customer with ID '%d' not found.", 'mailpoet'), $customerId));
     }
-    return new CustomerPayload($customer);
+
+    $order = wc_get_order($orderId);
+    return new CustomerPayload($customer, $order instanceof WC_Order ? $order : null);
   }
 
   /** @return Field[] */
