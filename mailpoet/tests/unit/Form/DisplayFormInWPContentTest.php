@@ -898,7 +898,7 @@ class DisplayFormInWPContentTest extends \MailPoetUnitTest {
     $formHtml = '<form id="test-form"></form>';
     $this->wp->expects($this->any())->method('isSingular')->willReturn(true);
     $this->wp->expects($this->once())->method('didAction')->with($this->equalTo('wp_footer'))->willReturn(true);
-    $this->wp->expects($this->once())->method('didFilter')->with($this->equalTo('the_content'))->willReturn(false);
+    $this->wp->expects($this->once())->method('getTheContent')->willReturn('');
     $this->assetsController->expects($this->once())->method('setupFrontEndDependencies');
     $this->templateRenderer->expects($this->once())->method('render')->willReturn($formHtml);
     $this->wp
