@@ -508,7 +508,8 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function addProductToCart(array $product) {
     $i = $this;
-    $i->amOnPage('/product/?add-to-cart=' . $product['id']);
+    $i->amOnPage('product/' . $product['slug']);
+    $i->click('Add to cart');
     $i->waitForText("“{$product['name']}” has been added to your cart.");
   }
 
