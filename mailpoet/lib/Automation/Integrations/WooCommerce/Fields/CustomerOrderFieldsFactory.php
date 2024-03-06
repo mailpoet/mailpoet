@@ -44,13 +44,9 @@ class CustomerOrderFieldsFactory {
         __('Total spent', 'mailpoet'),
         function (CustomerPayload $payload, array $params = []) {
           $customer = $payload->getCustomer();
-          if (!$customer) {
-            return 0.0;
-          }
-
           $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
-          return $inTheLastSeconds === null
-            ? (float)$customer->get_total_spent()
+          return $inTheLastSeconds === null || !$customer
+            ? $payload->getTotalSpent()
             : $this->getRecentSpentTotal($customer, $inTheLastSeconds);
         },
         [
@@ -63,19 +59,14 @@ class CustomerOrderFieldsFactory {
         __('Average spent', 'mailpoet'),
         function (CustomerPayload $payload, array $params = []) {
           $customer = $payload->getCustomer();
-          if (!$customer) {
-            return 0.0;
-          }
-
           $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
-          if ($inTheLastSeconds === null) {
-            $totalSpent = (float)$customer->get_total_spent();
-            $orderCount = (int)$customer->get_order_count();
+          if ($inTheLastSeconds === null || !$customer) {
+            return $payload->getAverageSpent();
           } else {
             $totalSpent = $this->getRecentSpentTotal($customer, $inTheLastSeconds);
             $orderCount = $this->getRecentOrderCount($customer, $inTheLastSeconds);
+            return $orderCount > 0 ? ($totalSpent / $orderCount) : 0.0;
           }
-          return $orderCount > 0 ? ($totalSpent / $orderCount) : 0.0;
         },
         [
           'params' => ['in_the_last'],
@@ -87,13 +78,9 @@ class CustomerOrderFieldsFactory {
         __('Order count', 'mailpoet'),
         function (CustomerPayload $payload, array $params = []) {
           $customer = $payload->getCustomer();
-          if (!$customer) {
-            return 0;
-          }
-
           $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
-          return $inTheLastSeconds === null
-            ? $customer->get_order_count()
+          return $inTheLastSeconds === null || !$customer
+            ? $payload->getOrderCount()
             : $this->getRecentOrderCount($customer, $inTheLastSeconds);
         },
         [
