@@ -103,7 +103,7 @@ class BuysAProductTrigger implements Trigger {
     }
     $this->wp->doAction(Hooks::TRIGGER, $this, [
       new Subject(OrderSubject::KEY, ['order_id' => $orderId]),
-      new Subject(CustomerSubject::KEY, ['customer_id' => $order->get_customer_id()]),
+      new Subject(CustomerSubject::KEY, ['customer_id' => $order->get_customer_id(), 'order_id' => $orderId]),
       new Subject(OrderStatusChangeSubject::KEY, ['from' => $from, 'to' => $to]),
     ]);
   }
