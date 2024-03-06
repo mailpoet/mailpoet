@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 
-import { PremiumModalForStepEdit } from '../../../../../common/premium-modal';
+import { PremiumModalForStepEdit } from '../../../../components/premium-modal-steps-edit';
 import { LockedBadge } from '../../../../../common/premium-modal/locked-badge';
 import { StepType } from '../../../../editor/store/types';
 import { Icon } from './icon';
