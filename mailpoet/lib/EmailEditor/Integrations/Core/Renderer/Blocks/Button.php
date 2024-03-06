@@ -21,10 +21,8 @@ class Button implements BlockRenderer {
     $buttonLink = $domHelper->findElement('a');
 
     if (!$buttonLink) return '';
-    $buttonClasses = $domHelper->getAttributeValueByTagName('div', 'class') ?? '';
-
     $markup = $this->getMarkup();
-    $markup = str_replace('{classes}', $buttonClasses, $markup);
+    $buttonClasses = $domHelper->getAttributeValueByTagName('div', 'class') ?? '';
 
     // Add Link Text
     // Because the button text can contain highlighted text, we need to get the inner HTML of the button
@@ -65,9 +63,14 @@ class Button implements BlockRenderer {
 
     // Border
     if (isset($parsedBlock['attrs']['style']['border']) && !empty($parsedBlock['attrs']['style']['border'])) {
-      // Use text color if border color is not set
+      // Use text color if border color is not set. Check for the value in the custom color text property
+      // then look also to the text color set from palette
       if (!($parsedBlock['attrs']['style']['border']['color'] ?? '')) {
-        $parsedBlock['attrs']['style']['border']['color'] = $parsedBlock['attrs']['style']['color']['text'] ?? null;
+        if (isset($parsedBlock['attrs']['style']['color']['text'])) {
+          $parsedBlock['attrs']['style']['border']['color'] = $parsedBlock['attrs']['style']['color']['text'];
+        } elseif ($parsedBlock['attrs']['textColor']) {
+          $buttonClasses .= ' has-' . $parsedBlock['attrs']['textColor'] . '-border-color';
+        }
       }
       $wrapperStyles = array_merge($wrapperStyles, wp_style_engine_get_styles(['border' => $parsedBlock['attrs']['style']['border']])['declarations']);
       $wrapperStyles['border-style'] = 'solid';
@@ -106,6 +109,7 @@ class Button implements BlockRenderer {
 
     $markup = str_replace('{linkStyles}', $settingsController->convertStylesToString($linkStyles), $markup);
     $markup = str_replace('{wrapperStyles}', $settingsController->convertStylesToString($wrapperStyles), $markup);
+    $markup = str_replace('{classes}', $buttonClasses, $markup);
 
     return $markup;
   }
