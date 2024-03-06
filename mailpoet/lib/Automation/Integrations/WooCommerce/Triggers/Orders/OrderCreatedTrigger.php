@@ -77,7 +77,7 @@ class OrderCreatedTrigger implements Trigger {
     $this->processedOrders[] = $orderId;
     $this->wp->doAction(Hooks::TRIGGER, $this, [
       new Subject(OrderSubject::KEY, ['order_id' => $order->get_id()]),
-      new Subject(CustomerSubject::KEY, ['customer_id' => $order->get_customer_id()]),
+      new Subject(CustomerSubject::KEY, ['customer_id' => $order->get_customer_id(), 'order_id' => $order->get_id()]),
     ]);
   }
 
