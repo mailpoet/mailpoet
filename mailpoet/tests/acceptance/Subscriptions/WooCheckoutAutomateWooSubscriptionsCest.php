@@ -39,20 +39,24 @@ class WooCheckoutAutomateWooSubscriptionsCest {
     $i->logout();
   }
 
+  public function checkoutOptInChecked(\AcceptanceTester $i, $scenario) {
+    $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
+    $this->settingsFactory->withConfirmationEmailEnabled();
+    $customerEmail = 'woo_guest_check@example.com';
+    $i->orderProductWithRegistration($this->product, $customerEmail, true);
+    $i->login();
+    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNCONFIRMED, ['WooCommerce Customers']);
+    $i->amOnPage('/wp-admin/admin.php?page=automatewoo-opt-ins');
+    $i->see($customerEmail, '.automatewoo-content');
+    $i->seeConfirmationEmailWasReceived();
+  }
+
   public function checkoutOptInDisabled(\AcceptanceTester $i) {
     $this->settingsFactory->withWooCommerceCheckoutOptinDisabled();
     $i->addProductToCart($this->product);
     $i->goToCheckout();
     $i->waitForText(self::AUTOMATE_WOO_OPTIN_TEXT, 10);
     $i->dontSee(self::MAILPOET_OPTIN_TEXT);
-  }
-
-  public function checkoutOptInEnabled(\AcceptanceTester $i, $scenario) {
-    $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
-    $i->addProductToCart($this->product);
-    $i->goToCheckout();
-    $i->waitForText(self::MAILPOET_OPTIN_TEXT, 10);
-    $i->dontSee(self::AUTOMATE_WOO_OPTIN_TEXT);
   }
 
   public function checkoutOptInUnchecked(\AcceptanceTester $i) {
@@ -67,16 +71,11 @@ class WooCheckoutAutomateWooSubscriptionsCest {
     $i->seeConfirmationEmailWasNotReceived();
   }
 
-  public function checkoutOptInChecked(\AcceptanceTester $i, $scenario) {
+  public function checkoutOptInEnabled(\AcceptanceTester $i, $scenario) {
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
-    $this->settingsFactory->withConfirmationEmailEnabled();
-    $customerEmail = 'woo_guest_check@example.com';
-    $i->addProductToCart($this->product); // to avoid flaky adding to cart from below
-    $i->orderProductWithRegistration($this->product, $customerEmail, true);
-    $i->login();
-    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNCONFIRMED, ['WooCommerce Customers']);
-    $i->amOnPage('/wp-admin/admin.php?page=automatewoo-opt-ins');
-    $i->see($customerEmail, '.automatewoo-content');
-    $i->seeConfirmationEmailWasReceived();
+    $i->addProductToCart($this->product);
+    $i->goToCheckout();
+    $i->waitForText(self::MAILPOET_OPTIN_TEXT, 10);
+    $i->dontSee(self::AUTOMATE_WOO_OPTIN_TEXT);
   }
 }
