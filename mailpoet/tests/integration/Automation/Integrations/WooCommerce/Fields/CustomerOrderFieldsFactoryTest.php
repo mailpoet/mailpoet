@@ -371,6 +371,62 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertNull($lastPaidOrderDateField->getValue($payload));
   }
 
+  public function testPurchasedTagsBackfillFromOrderForGuests(): void {
+    $fields = $this->getFieldsMap();
+    $purchasedTags = $fields['woocommerce:customer:purchased-tags'];
+
+    // tags
+    $tag1Id = $this->tester->createWordPressTerm('Tag 1', 'product_tag', ['slug' => 'tag-1']);
+    $tag2Id = $this->tester->createWordPressTerm('Tag 2', 'product_tag', ['slug' => 'tag-2']);
+
+    // check values (guest - fields are backfilled from order)
+    $product = $this->tester->createWooCommerceProduct(['name' => 'Product 1', 'tag_ids' => [$tag1Id, $tag2Id]]);
+    $order = new WC_Order();
+    $order->add_product($product);
+    $order->set_status('wc-completed');
+
+    $payload = new CustomerPayload(null, $order);
+    $value = $purchasedTags->getValue($payload);
+    $this->assertIsArray($value);
+    $this->assertCount(2, $value);
+    $this->assertContains($tag1Id, $value);
+    $this->assertContains($tag2Id, $value);
+
+    // check values (registered - fields are not backfilled)
+    $customer = new WC_Customer();
+    $payload = new CustomerPayload($customer, $order);
+    $this->assertSame([], $purchasedTags->getValue($payload));
+  }
+
+  public function testPurchasedCategoriesBackfillFromOrderForGuests(): void {
+    $fields = $this->getFieldsMap();
+    $purchasedCategories = $fields['woocommerce:customer:purchased-categories'];
+
+    // categories
+    $cat1Id = $this->tester->createWordPressTerm('Cat 1', 'product_cat', ['slug' => 'cat-1']);
+    $cat2Id = $this->tester->createWordPressTerm('Cat 2', 'product_cat', ['slug' => 'cat-2']);
+    $subCat1Id = $this->tester->createWordPressTerm('Subcat 1', 'product_cat', ['slug' => 'subcat-1', 'parent' => $cat1Id]);
+
+    // check values (guest - fields are backfilled from order)
+    $product = $this->tester->createWooCommerceProduct(['name' => 'Product 1', 'category_ids' => [$subCat1Id, $cat2Id]]);
+    $order = new WC_Order();
+    $order->add_product($product);
+    $order->set_status('wc-completed');
+
+    $payload = new CustomerPayload(null, $order);
+    $value = $purchasedCategories->getValue($payload);
+    $this->assertIsArray($value);
+    $this->assertCount(3, $value);
+    $this->assertContains($cat1Id, $value);
+    $this->assertContains($subCat1Id, $value);
+    $this->assertContains($cat2Id, $value);
+
+    // check values (registered - fields are not backfilled)
+    $customer = new WC_Customer();
+    $payload = new CustomerPayload($customer, $order);
+    $this->assertSame([], $purchasedCategories->getValue($payload));
+  }
+
   private function createOrder(int $customerId, float $total, string $date = '2023-06-01 14:03:27'): WC_Order {
     $order = $this->tester->createWooCommerceOrder([
       'customer_id' => $customerId,
