@@ -450,10 +450,12 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   public function orderProductWithoutRegistration(array $product, $userEmail, $doSubscribe = true) {
+    $this->amOnPage('cart/?add-to-cart=' . $product['id']);
     $this->orderProduct($product, $userEmail, false, $doSubscribe);
   }
 
   public function orderProductWithRegistration(array $product, $userEmail, $doSubscribe = true) {
+    $this->amOnPage('cart/?add-to-cart=' . $product['id']);
     $this->orderProduct($product, $userEmail, true, $doSubscribe);
   }
 
