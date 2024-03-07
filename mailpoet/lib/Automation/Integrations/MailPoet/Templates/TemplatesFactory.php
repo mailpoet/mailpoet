@@ -32,7 +32,7 @@ class TemplatesFactory {
 
     if ($this->woocommerce->isWooCommerceActive()) {
       $templates[] = $this->createFirstPurchaseTemplate();
-      $templates[] = $this->createLoyalCustomersTemplate();
+      $templates[] = $this->createThankLoyalCustomersTemplate();
       $templates[] = $this->createAbandonedCartTemplate();
       $templates[] = $this->createAbandonedCartCampaignTemplate();
     }
@@ -178,9 +178,9 @@ class TemplatesFactory {
     );
   }
 
-  private function createLoyalCustomersTemplate(): AutomationTemplate {
+  private function createThankLoyalCustomersTemplate(): AutomationTemplate {
     return new AutomationTemplate(
-      'loyal-customers',
+      'thank-loyal-customers',
       'woocommerce',
       __('Thank loyal customers', 'mailpoet'),
       __(
@@ -193,7 +193,7 @@ class TemplatesFactory {
           []
         );
       },
-      AutomationTemplate::TYPE_COMING_SOON
+      AutomationTemplate::TYPE_PREMIUM
     );
   }
 
