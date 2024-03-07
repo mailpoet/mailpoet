@@ -450,12 +450,10 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   public function orderProductWithoutRegistration(array $product, $userEmail, $doSubscribe = true) {
-    $this->amOnPage('cart/?add-to-cart=' . $product['id']);
     $this->orderProduct($product, $userEmail, false, $doSubscribe);
   }
 
   public function orderProductWithRegistration(array $product, $userEmail, $doSubscribe = true) {
-    $this->amOnPage('cart/?add-to-cart=' . $product['id']);
     $this->orderProduct($product, $userEmail, true, $doSubscribe);
   }
 
@@ -465,8 +463,7 @@ class AcceptanceTester extends \Codeception\Actor {
    */
   public function orderProduct(array $product, $userEmail, $doRegister = true, $doSubscribe = true) {
     $i = $this;
-    $i->addProductToCart($product);
-    $i->goToCheckout();
+    $i->amOnPage('checkout/?add-to-cart=' . $product['id']);
     $i->fillCustomerInfo($userEmail);
 
     $wooCommerceVersion = $i->getWooCommerceVersion();
