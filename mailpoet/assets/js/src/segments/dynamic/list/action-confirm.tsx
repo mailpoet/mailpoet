@@ -5,7 +5,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { DynamicSegment, DynamicSegmentAction } from '../types';
 import { MailPoet } from '../../../mailpoet';
 import { storeName } from '../store';
-import { DynamicSegmentResponse } from '../../../ajax';
+import { DynamicSegmentResponse, isErrorResponse } from '../../../ajax';
 
 async function bulkAction(
   action: DynamicSegmentAction,
@@ -14,75 +14,71 @@ async function bulkAction(
   if (!action) {
     return;
   }
-  void MailPoet.Ajax.post({
-    api_version: 'v1',
-    endpoint: 'dynamic_segments',
-    action: 'bulk_action',
-    data: {
-      action,
-      listing: {
-        selection: segments.map((segment) => segment.id),
+  try {
+    const response: DynamicSegmentResponse = await MailPoet.Ajax.post({
+      api_version: 'v1',
+      endpoint: 'dynamic_segments',
+      action: 'bulk_action',
+      data: {
+        action,
+        listing: {
+          selection: segments.map((segment) => segment.id),
+        },
       },
-    },
-  })
-    .then((response: DynamicSegmentResponse) => {
-      if (response.meta.errors && response.meta.errors.length > 0) {
-        response.meta.errors.forEach(
-          (error: string) =>
-            void dispatch(noticesStore).createErrorNotice(error),
-        );
+    });
+
+    if (response.meta.errors && response.meta.errors.length > 0) {
+      response.meta.errors.forEach(
+        (error: string) => void dispatch(noticesStore).createErrorNotice(error),
+      );
+    }
+
+    const count = response.meta.count;
+    if (count > 0) {
+      let successMessage = '';
+      switch (action) {
+        case 'trash':
+          successMessage = sprintf(
+            /* translators: %d - number of segments */
+            _n(
+              'Segment moved to trash.',
+              '%d segments moved to trash.',
+              count,
+              'mailpoet',
+            ),
+            count,
+          );
+          break;
+        case 'delete':
+          successMessage = sprintf(
+            /* translators: %d - number of segments */
+            _n(
+              'Segment permanently deleted.',
+              '%d segments permanently deleted.',
+              count,
+              'mailpoet',
+            ),
+            count,
+          );
+          break;
+        case 'restore':
+          successMessage = sprintf(
+            /* translators: %d - number of segments */
+            _n('Segment restored.', '%d segments restored.', count, 'mailpoet'),
+            count,
+          );
+          break;
+        default:
+          break;
       }
-      const count = response.meta.count;
-      if (count > 0) {
-        let successMessage = '';
-        switch (action) {
-          case 'trash':
-            successMessage = sprintf(
-              /* translators: %d - number of segments */
-              _n(
-                'Segment moved to trash.',
-                '%d segments moved to trash.',
-                count,
-                'mailpoet',
-              ),
-              count,
-            );
-            break;
-          case 'delete':
-            successMessage = sprintf(
-              /* translators: %d - number of segments */
-              _n(
-                'Segment permanently deleted.',
-                '%d segments permanently deleted.',
-                count,
-                'mailpoet',
-              ),
-              count,
-            );
-            break;
-          case 'restore':
-            successMessage = sprintf(
-              /* translators: %d - number of segments */
-              _n(
-                'Segment restored.',
-                '%d segments restored.',
-                count,
-                'mailpoet',
-              ),
-              count,
-            );
-            break;
-          default:
-            break;
-        }
-        void dispatch(noticesStore).createSuccessNotice(successMessage);
-        void dispatch(storeName).loadDynamicSegments();
-      }
-    })
-    .fail((response: ErrorResponse) => {
+      void dispatch(noticesStore).createSuccessNotice(successMessage);
+      void dispatch(storeName).loadDynamicSegments();
+    }
+  } catch (errorResponse: unknown) {
+    if (isErrorResponse(errorResponse)) {
       let errorMessage = '';
-      if (response.errors) {
-        response.errors.forEach(
+      if (errorResponse.errors) {
+        errorResponse.errors.forEach(
           (error) =>
             void dispatch(noticesStore).createErrorNotice(error.message),
           { explicitDismiss: true },
@@ -105,7 +101,8 @@ async function bulkAction(
           explicitDismiss: true,
         });
       }
-    });
+    }
+  }
 }
 
 type ActionConfirmProps = {
@@ -113,6 +110,7 @@ type ActionConfirmProps = {
   selected: DynamicSegment[];
   onClose: () => void;
 };
+
 export function ActionConfirm({
   action,
   selected,
