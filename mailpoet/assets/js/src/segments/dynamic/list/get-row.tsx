@@ -8,30 +8,32 @@ import { moreVertical } from '@wordpress/icons';
 import { store as noticesStore } from '@wordpress/notices';
 import { MailPoet } from '../../../mailpoet';
 import { storeName } from '../store';
+import { isErrorResponse } from '../../../ajax';
 
-function duplicateDynamicSegment(segment: DynamicSegment): void {
-  void MailPoet.Ajax.post({
-    api_version: 'v1',
-    endpoint: 'dynamic_segments',
-    action: 'duplicate',
-    data: {
-      id: segment.id,
-    },
-  })
-    .then((data) => {
-      const newSegment = data.data as DynamicSegment;
-      const successMessage = sprintf(
-        __('Segment "%s" has been duplicated.', 'mailpoet'),
-        newSegment.name,
-      );
-      void dispatch(noticesStore).createSuccessNotice(successMessage);
-      void dispatch(storeName).loadDynamicSegments();
-    })
-    .catch((error: { errors: { error: string; message: string }[] }) => {
-      error.errors.map(
-        (e) => void dispatch(noticesStore).createErrorNotice(e.message),
-      );
+async function duplicateDynamicSegment(segment: DynamicSegment) {
+  try {
+    const response = await MailPoet.Ajax.post({
+      api_version: 'v1',
+      endpoint: 'dynamic_segments',
+      action: 'duplicate',
+      data: {
+        id: segment.id,
+      },
     });
+    const newSegment = response.data as DynamicSegment;
+    const successMessage = sprintf(
+      __('Segment "%s" has been duplicated.', 'mailpoet'),
+      newSegment.name,
+    );
+    void dispatch(noticesStore).createSuccessNotice(successMessage);
+    void dispatch(storeName).loadDynamicSegments();
+  } catch (errorResponse: unknown) {
+    if (isErrorResponse(errorResponse)) {
+      errorResponse.errors.forEach((e: { error: string; message: string }) => {
+        void dispatch(noticesStore).createErrorNotice(e.message);
+      });
+    }
+  }
 }
 
 export function getRow(
@@ -41,10 +43,10 @@ export function getRow(
 ): object[] {
   const toggleSelect = (): void => {
     if (dynamicSegment?.selected) {
-      dispatch(storeName).unselectDynamicSection(dynamicSegment);
+      void dispatch(storeName).unselectDynamicSection(dynamicSegment);
       return;
     }
-    dispatch(storeName).selectDynamicSection(dynamicSegment);
+    void dispatch(storeName).selectDynamicSection(dynamicSegment);
   };
 
   const menuItems =
@@ -56,7 +58,7 @@ export function getRow(
               title: __('Duplicate', 'mailpoet'),
               icon: null,
               onClick: () => {
-                duplicateDynamicSegment(dynamicSegment);
+                void duplicateDynamicSegment(dynamicSegment);
               },
             },
           },
