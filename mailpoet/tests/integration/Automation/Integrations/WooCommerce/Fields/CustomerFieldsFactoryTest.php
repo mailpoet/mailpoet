@@ -7,6 +7,7 @@ use MailPoet\Automation\Integrations\WooCommerce\Payloads\CustomerPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\CustomerSubject;
 use MailPoet\WP\Functions as WPFunctions;
 use WC_Customer;
+use WC_Order;
 
 /**
  * @group woo
@@ -152,6 +153,92 @@ class CustomerFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame('12345', $postcodeField->getValue($payload));
     $this->assertSame('Test shipping state', $stateField->getValue($payload));
     $this->assertSame('SK', $countryField->getValue($payload));
+  }
+
+  public function testBillingInfoBackfillsFromOrderForGuests(): void {
+    // set specific countries
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $wp->updateOption('woocommerce_ship_to_countries', 'specific');
+    $wp->updateOption('woocommerce_specific_ship_to_countries', ['GR', 'SK']);
+
+    // fields
+    $fields = $this->getFieldsMap();
+    $companyField = $fields['woocommerce:customer:shipping-company'];
+    $phoneField = $fields['woocommerce:customer:shipping-phone'];
+    $cityField = $fields['woocommerce:customer:shipping-city'];
+    $postcodeField = $fields['woocommerce:customer:shipping-postcode'];
+    $stateField = $fields['woocommerce:customer:shipping-state'];
+    $countryField = $fields['woocommerce:customer:shipping-country'];
+
+    // check values (guest - fields are backfilled from order)
+    $order = new WC_Order();
+    $order->set_shipping_company('Test shipping company');
+    $order->set_shipping_phone('123456789');
+    $order->set_shipping_city('Test shipping city');
+    $order->set_shipping_postcode('12345');
+    $order->set_shipping_state('Test shipping state');
+    $order->set_shipping_country('SK');
+
+    $payload = new CustomerPayload(null, $order);
+    $this->assertSame('Test shipping company', $companyField->getValue($payload));
+    $this->assertSame('123456789', $phoneField->getValue($payload));
+    $this->assertSame('Test shipping city', $cityField->getValue($payload));
+    $this->assertSame('12345', $postcodeField->getValue($payload));
+    $this->assertSame('Test shipping state', $stateField->getValue($payload));
+    $this->assertSame('SK', $countryField->getValue($payload));
+
+    // check values (registered - fields are not backfilled)
+    $customer = new WC_Customer();
+    $payload = new CustomerPayload($customer, $order);
+    $this->assertSame('', $companyField->getValue($payload));
+    $this->assertSame('', $phoneField->getValue($payload));
+    $this->assertSame('', $cityField->getValue($payload));
+    $this->assertSame('', $postcodeField->getValue($payload));
+    $this->assertSame('', $stateField->getValue($payload));
+    $this->assertSame('', $countryField->getValue($payload));
+  }
+
+  public function testShippingInfoBackfillsFromOrderForGuests(): void {
+    // set specific countries
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $wp->updateOption('woocommerce_ship_to_countries', 'specific');
+    $wp->updateOption('woocommerce_specific_ship_to_countries', ['GR', 'SK']);
+
+    // fields
+    $fields = $this->getFieldsMap();
+    $companyField = $fields['woocommerce:customer:shipping-company'];
+    $phoneField = $fields['woocommerce:customer:shipping-phone'];
+    $cityField = $fields['woocommerce:customer:shipping-city'];
+    $postcodeField = $fields['woocommerce:customer:shipping-postcode'];
+    $stateField = $fields['woocommerce:customer:shipping-state'];
+    $countryField = $fields['woocommerce:customer:shipping-country'];
+
+    // check values (guest - fields are backfilled from order)
+    $order = new WC_Order();
+    $order->set_shipping_company('Test shipping company');
+    $order->set_shipping_phone('123456789');
+    $order->set_shipping_city('Test shipping city');
+    $order->set_shipping_postcode('12345');
+    $order->set_shipping_state('Test shipping state');
+    $order->set_shipping_country('SK');
+
+    $payload = new CustomerPayload(null, $order);
+    $this->assertSame('Test shipping company', $companyField->getValue($payload));
+    $this->assertSame('123456789', $phoneField->getValue($payload));
+    $this->assertSame('Test shipping city', $cityField->getValue($payload));
+    $this->assertSame('12345', $postcodeField->getValue($payload));
+    $this->assertSame('Test shipping state', $stateField->getValue($payload));
+    $this->assertSame('SK', $countryField->getValue($payload));
+
+    // check values (registered - fields are not backfilled)
+    $customer = new WC_Customer();
+    $payload = new CustomerPayload($customer, $order);
+    $this->assertSame('', $companyField->getValue($payload));
+    $this->assertSame('', $phoneField->getValue($payload));
+    $this->assertSame('', $cityField->getValue($payload));
+    $this->assertSame('', $postcodeField->getValue($payload));
+    $this->assertSame('', $stateField->getValue($payload));
+    $this->assertSame('', $countryField->getValue($payload));
   }
 
   /** @return array<string, Field> */
