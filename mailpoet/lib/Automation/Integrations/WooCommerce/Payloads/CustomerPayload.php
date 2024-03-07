@@ -20,86 +20,86 @@ class CustomerPayload implements Payload {
 
   public function getBillingCompany(): ?string {
     if ($this->isGuest()) {
-      return $this->order ? $this->order->get_billing_company() : null;
+      return $this->order ? (string)$this->order->get_billing_company() : null;
     }
-    return $this->customer->get_billing_company();
+    return (string)$this->customer->get_billing_company();
   }
 
   public function getBillingPhone(): ?string {
     if ($this->isGuest()) {
-      return $this->order ? $this->order->get_billing_phone() : null;
+      return $this->order ? (string)$this->order->get_billing_phone() : null;
     }
-    return $this->customer->get_billing_phone();
+    return (string)$this->customer->get_billing_phone();
   }
 
   public function getBillingCity(): ?string {
     if ($this->isGuest()) {
-      return $this->order ? $this->order->get_billing_city() : null;
+      return $this->order ? (string)$this->order->get_billing_city() : null;
     }
-    return $this->customer->get_billing_city();
+    return (string)$this->customer->get_billing_city();
   }
 
   public function getBillingPostcode(): ?string {
     if ($this->isGuest()) {
-      return $this->order ? $this->order->get_billing_postcode() : null;
+      return $this->order ? (string)$this->order->get_billing_postcode() : null;
     }
-    return $this->customer->get_billing_postcode();
+    return (string)$this->customer->get_billing_postcode();
   }
 
   public function getBillingState(): ?string {
     if ($this->isGuest()) {
-      return $this->order ? $this->order->get_billing_state() : null;
+      return $this->order ? (string)$this->order->get_billing_state() : null;
     }
-    return $this->customer->get_billing_state();
+    return (string)$this->customer->get_billing_state();
   }
 
   public function getBillingCountry(): ?string {
     if ($this->isGuest()) {
-      return $this->order ? $this->order->get_billing_country() : null;
+      return $this->order ? (string)$this->order->get_billing_country() : null;
     }
-    return $this->customer->get_billing_country();
+    return (string)$this->customer->get_billing_country();
   }
 
   public function getShippingCompany(): ?string {
     if ($this->isGuest()) {
-      return $this->order ? $this->order->get_shipping_company() : null;
+      return $this->order ? (string)$this->order->get_shipping_company() : null;
     }
-    return $this->customer->get_shipping_company();
+    return (string)$this->customer->get_shipping_company();
   }
 
   public function getShippingPhone(): ?string {
     if ($this->isGuest()) {
-      return $this->order ? $this->order->get_shipping_phone() : null;
+      return $this->order ? (string)$this->order->get_shipping_phone() : null;
     }
-    return $this->customer->get_shipping_phone();
+    return (string)$this->customer->get_shipping_phone();
   }
 
   public function getShippingCity(): ?string {
     if ($this->isGuest()) {
-      return $this->order ? $this->order->get_shipping_city() : null;
+      return $this->order ? (string)$this->order->get_shipping_city() : null;
     }
-    return $this->customer->get_shipping_city();
+    return (string)$this->customer->get_shipping_city();
   }
 
   public function getShippingPostcode(): ?string {
     if ($this->isGuest()) {
-      return $this->order ? $this->order->get_shipping_postcode() : null;
+      return $this->order ? (string)$this->order->get_shipping_postcode() : null;
     }
-    return $this->customer->get_shipping_postcode();
+    return (string)$this->customer->get_shipping_postcode();
   }
 
   public function getShippingState(): ?string {
     if ($this->isGuest()) {
-      return $this->order ? $this->order->get_shipping_state() : null;
+      return $this->order ? (string)$this->order->get_shipping_state() : null;
     }
-    return $this->customer->get_shipping_state();
+    return (string)$this->customer->get_shipping_state();
   }
 
   public function getShippingCountry(): ?string {
     if ($this->isGuest()) {
-      return $this->order ? $this->order->get_shipping_country() : null;
+      return $this->order ? (string)$this->order->get_shipping_country() : null;
     }
-    return $this->customer->get_shipping_country();
+    return (string)$this->customer->get_shipping_country();
   }
 
   public function getTotalSpent(): float {
@@ -119,7 +119,7 @@ class CustomerPayload implements Payload {
     if ($this->isGuest()) {
       return $this->order ? 1 : 0;
     }
-    return $this->customer->get_order_count();
+    return (int)$this->customer->get_order_count();
   }
 
   public function getCustomer(): ?WC_Customer {
