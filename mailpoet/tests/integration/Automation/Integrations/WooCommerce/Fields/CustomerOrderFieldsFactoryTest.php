@@ -326,6 +326,30 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertContains($subCategoryId, $value);
   }
 
+  public function testOrderStatsFieldsBackfillFromOrderForGuests(): void {
+    $fields = $this->getFieldsMap();
+    $spentTotalField = $fields['woocommerce:customer:spent-total'];
+    $spentAverageField = $fields['woocommerce:customer:spent-average'];
+    $orderCountField = $fields['woocommerce:customer:order-count'];
+
+    // check values (guest - fields are backfilled from order)
+    $order = new WC_Order();
+    $order->set_total('12.3');
+    $order->set_status('wc-completed');
+
+    $payload = new CustomerPayload(null, $order);
+    $this->assertSame(12.3, $spentTotalField->getValue($payload));
+    $this->assertSame(12.3, $spentAverageField->getValue($payload));
+    $this->assertSame(1, $orderCountField->getValue($payload));
+
+    // check values (registered - fields are not backfilled)
+    $customer = new WC_Customer();
+    $payload = new CustomerPayload($customer, $order);
+    $this->assertSame(0.0, $spentTotalField->getValue($payload));
+    $this->assertSame(0.0, $spentAverageField->getValue($payload));
+    $this->assertSame(0, $orderCountField->getValue($payload));
+  }
+
   private function createOrder(int $customerId, float $total, string $date = '2023-06-01 14:03:27'): WC_Order {
     $order = $this->tester->createWooCommerceOrder([
       'customer_id' => $customerId,
