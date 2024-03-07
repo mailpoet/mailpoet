@@ -350,6 +350,27 @@ class CustomerOrderFieldsFactoryTest extends \MailPoetTest {
     $this->assertSame(0, $orderCountField->getValue($payload));
   }
 
+  public function testOrderDateFieldsBackfillFromOrderForGuests(): void {
+    $fields = $this->getFieldsMap();
+    $firstPaidOrderDateField = $fields['woocommerce:customer:first-paid-order-date'];
+    $lastPaidOrderDateField = $fields['woocommerce:customer:last-paid-order-date'];
+
+    // check values (guest - fields are backfilled from order)
+    $order = new WC_Order();
+    $order->set_status('wc-completed');
+    $order->set_date_created('2023-05-03 08:22:38');
+
+    $payload = new CustomerPayload(null, $order);
+    $this->assertEquals(new DateTimeImmutable('2023-05-03 08:22:38'), $firstPaidOrderDateField->getValue($payload));
+    $this->assertEquals(new DateTimeImmutable('2023-05-03 08:22:38'), $lastPaidOrderDateField->getValue($payload));
+
+    // check values (registered - fields are not backfilled)
+    $customer = new WC_Customer();
+    $payload = new CustomerPayload($customer, $order);
+    $this->assertNull($firstPaidOrderDateField->getValue($payload));
+    $this->assertNull($lastPaidOrderDateField->getValue($payload));
+  }
+
   private function createOrder(int $customerId, float $total, string $date = '2023-06-01 14:03:27'): WC_Order {
     $order = $this->tester->createWooCommerceOrder([
       'customer_id' => $customerId,
