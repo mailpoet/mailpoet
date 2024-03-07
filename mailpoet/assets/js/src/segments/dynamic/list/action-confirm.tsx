@@ -146,7 +146,7 @@ export function ActionConfirm({
       message = sprintf(
         _n(
           'Are you sure you want to trash the selected segment %s?',
-          'Are you sure you want to trash the selected segments %s and %s?',
+          'Are you sure you want to trash the selected segments %s, and %s?',
           selected.length,
           'mailpoet',
         ),
@@ -165,7 +165,7 @@ export function ActionConfirm({
       message = sprintf(
         _n(
           'Are you sure you want to restore the selected segment %s?',
-          'Are you sure you want to restore segments %s and %s?',
+          'Are you sure you want to restore segments %s, and %s?',
           selected.length,
           'mailpoet',
         ),
@@ -186,7 +186,7 @@ export function ActionConfirm({
           {sprintf(
             _n(
               'Are you sure you want to delete the selected segment %s permanently?',
-              'Are you sure you want to delete the selected segments %s and %s permanently?',
+              'Are you sure you want to delete the selected segments %s, and %s permanently?',
               selected.length,
               'mailpoet',
             ),
