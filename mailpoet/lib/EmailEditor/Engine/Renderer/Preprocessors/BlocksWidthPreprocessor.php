@@ -7,15 +7,15 @@ namespace MailPoet\EmailEditor\Engine\Renderer\Preprocessors;
  * The final width in pixels is stored in the email_attrs array because we would like to avoid changing the original attributes.
  */
 class BlocksWidthPreprocessor implements Preprocessor {
-  public function preprocess(array $parsedBlocks, array $layoutStyles): array {
+  public function preprocess(array $parsedBlocks, array $layout, array $styles): array {
     foreach ($parsedBlocks as $key => $block) {
       // Layout width is recalculated for each block because full-width blocks don't exclude padding
-      $layoutWidth = $this->parseNumberFromStringWithPixels($layoutStyles['width']);
+      $layoutWidth = $this->parseNumberFromStringWithPixels($layout['contentSize']);
       $alignment = $block['attrs']['align'] ?? null;
       // Subtract padding from the block width if it's not full-width
       if ($alignment !== 'full') {
-        $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['left'] ?? '0px');
-        $layoutWidth -= $this->parseNumberFromStringWithPixels($layoutStyles['padding']['right'] ?? '0px');
+        $layoutWidth -= $this->parseNumberFromStringWithPixels($styles['spacing']['padding']['left'] ?? '0px');
+        $layoutWidth -= $this->parseNumberFromStringWithPixels($styles['spacing']['padding']['right'] ?? '0px');
       }
 
       $widthInput = $block['attrs']['width'] ?? '100%';
@@ -36,13 +36,14 @@ class BlocksWidthPreprocessor implements Preprocessor {
       }
 
       // Copy layout styles and update width and padding
-      $modifiedLayoutStyles = $layoutStyles;
-      $modifiedLayoutStyles['width'] = "{$width}px";
-      $modifiedLayoutStyles['padding']['left'] = $block['attrs']['style']['spacing']['padding']['left'] ?? '0px';
-      $modifiedLayoutStyles['padding']['right'] = $block['attrs']['style']['spacing']['padding']['right'] ?? '0px';
+      $modifiedLayout = $layout;
+      $modifiedLayout['contentSize'] = "{$width}px";
+      $modifiedStyles = $styles;
+      $modifiedStyles['spacing']['padding']['left'] = $block['attrs']['style']['spacing']['padding']['left'] ?? '0px';
+      $modifiedStyles['spacing']['padding']['right'] = $block['attrs']['style']['spacing']['padding']['right'] ?? '0px';
 
       $block['email_attrs']['width'] = "{$width}px";
-      $block['innerBlocks'] = $this->preprocess($block['innerBlocks'], $modifiedLayoutStyles);
+      $block['innerBlocks'] = $this->preprocess($block['innerBlocks'], $modifiedLayout, $modifiedStyles);
       $parsedBlocks[$key] = $block;
     }
     return $parsedBlocks;

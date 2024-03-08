@@ -39,12 +39,13 @@ class ProcessManager {
 
   /**
    * @param array $parsedBlocks
-   * @param array{width: string, background: string, padding: array{bottom: string, left: string, right: string, top: string}} $layoutStyles
+   * @param array{contentSize: string} $layout
+   * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles
    * @return array
    */
-  public function preprocess(array $parsedBlocks, array $layoutStyles): array {
+  public function preprocess(array $parsedBlocks, array $layout, array $styles): array {
     foreach ($this->preprocessors as $preprocessor) {
-      $parsedBlocks = $preprocessor->preprocess($parsedBlocks, $layoutStyles);
+      $parsedBlocks = $preprocessor->preprocess($parsedBlocks, $layout, $styles);
     }
     return $parsedBlocks;
   }

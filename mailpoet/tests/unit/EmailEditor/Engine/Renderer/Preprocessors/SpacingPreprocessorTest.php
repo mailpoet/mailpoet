@@ -3,16 +3,23 @@
 namespace unit\EmailEditor\Engine\Renderer\Preprocessors;
 
 use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\SpacingPreprocessor;
-use MailPoet\EmailEditor\Engine\SettingsController;
 
 class SpacingPreprocessorTest extends \MailPoetUnitTest {
 
   /** @var SpacingPreprocessor */
   private $preprocessor;
 
+  /** @var array{contentSize: string} */
+  private array $layout;
+
+  /** @var array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles */
+  private array $styles;
+
   public function _before() {
     parent::_before();
     $this->preprocessor = new SpacingPreprocessor();
+    $this->layout = ['contentSize' => '660px'];
+    $this->styles = ['spacing' => ['padding' => ['left' => '10px', 'right' => '10px', 'top' => '10px', 'bottom' => '10px'], 'blockGap' => '10px']];
   }
 
   public function testItAddsDefaultVerticalSpacing(): void {
@@ -68,8 +75,8 @@ class SpacingPreprocessorTest extends \MailPoetUnitTest {
       ],
     ];
 
-    $expectedEmailAttrs = ['margin-top' => SettingsController::FLEX_GAP];
-    $result = $this->preprocessor->preprocess($blocks, []);
+    $expectedEmailAttrs = ['margin-top' => '10px'];
+    $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
     verify($result)->arrayCount(2);
     $firstColumns = $result[0];
     $secondColumns = $result[1];

@@ -18,7 +18,7 @@ class TopLevelPreprocessor implements Preprocessor {
    * But for rendering purposes it is more convenient to have them wrapped in a single column.
    * This method walks through the first level of blocks and wraps non column blocks into a single column.
    */
-  public function preprocess(array $parsedBlocks, array $layoutStyles): array {
+  public function preprocess(array $parsedBlocks, array $layout, array $styles): array {
     $wrappedParsedBlocks = [];
     $nonColumnsBlocksBuffer = [];
     foreach ($parsedBlocks as $block) {

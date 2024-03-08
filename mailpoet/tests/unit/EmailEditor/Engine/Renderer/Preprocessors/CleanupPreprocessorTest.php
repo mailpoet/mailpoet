@@ -25,9 +25,17 @@ class CleanupPreprocessorTest extends \MailPoetUnitTest {
   /** @var CleanupPreprocessor */
   private $preprocessor;
 
+  /** @var array{contentSize: string} */
+  private array $layout;
+
+  /** @var array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles */
+  private array $styles;
+
   public function _before() {
     parent::_before();
     $this->preprocessor = new CleanupPreprocessor();
+    $this->layout = ['contentSize' => '660px'];
+    $this->styles = ['spacing' => ['padding' => ['left' => '10px', 'right' => '10px', 'top' => '10px', 'bottom' => '10px'], 'blockGap' => '10px']];
   }
 
   public function testItRemovesUnwantedBlocks(): void {
@@ -36,7 +44,7 @@ class CleanupPreprocessorTest extends \MailPoetUnitTest {
       ['blockName' => null, 'attrs' => [], 'innerHTML' => "\r\n"],
       self::PARAGRAPH_BLOCK,
     ];
-    $result = $this->preprocessor->preprocess($blocks, []);
+    $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
     verify($result)->arrayCount(2);
     verify($result[0])->equals(self::COLUMNS_BLOCK);
     verify($result[1])->equals(self::PARAGRAPH_BLOCK);
@@ -48,7 +56,7 @@ class CleanupPreprocessorTest extends \MailPoetUnitTest {
       self::PARAGRAPH_BLOCK,
       self::COLUMNS_BLOCK,
     ];
-    $result = $this->preprocessor->preprocess($blocks, []);
+    $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
     verify($result)->arrayCount(3);
     verify($result[0])->equals(self::COLUMNS_BLOCK);
     verify($result[1])->equals(self::PARAGRAPH_BLOCK);

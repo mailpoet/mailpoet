@@ -24,7 +24,7 @@ class TypographyPreprocessor implements Preprocessor {
     $this->settingsController = $settingsController;
   }
 
-  public function preprocess(array $parsedBlocks, array $layoutStyles): array {
+  public function preprocess(array $parsedBlocks, array $layout, array $styles): array {
     foreach ($parsedBlocks as $key => $block) {
       $block = $this->preprocessParent($block);
       // Set defaults from theme - this needs to be done on top level blocks only
