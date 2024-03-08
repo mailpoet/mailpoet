@@ -94,6 +94,11 @@
     padding-bottom: 32px;
   }
 
+  .mailpoet-automation-editor-separator-curve-leaf-left:before,
+  .mailpoet-automation-editor-separator-curve-leaf-right:before {
+    background: #f6f7f7;
+  }
+
   .mailpoet-automation-editor-step-filters {
     max-height: 200px;
   }
