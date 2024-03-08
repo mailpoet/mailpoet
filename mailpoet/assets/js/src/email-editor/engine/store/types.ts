@@ -40,18 +40,14 @@ export type EmailStyles = {
     background: string;
     text: string;
   };
-  blocks: {
-    "core/heading": {
-      elements: {
-        h1: {
-          color: {
-            text: string;
-          };
-          typography: {
-            fontFamily: string;
-            fontWeight: string;
-          };
-        };
+  elements: {
+    h1: {
+      color: {
+        text: string;
+      };
+      typography: {
+        fontFamily: string;
+        fontWeight: string;
       };
     };
   };
