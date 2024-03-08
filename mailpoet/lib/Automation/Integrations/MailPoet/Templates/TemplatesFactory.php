@@ -260,7 +260,7 @@ class TemplatesFactory {
           []
         );
       },
-      AutomationTemplate::TYPE_COMING_SOON
+      AutomationTemplate::TYPE_PREMIUM
     );
   }
 }
