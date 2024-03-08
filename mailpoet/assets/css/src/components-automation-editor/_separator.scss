@@ -63,13 +63,15 @@ $separator-width: 1px;
 
   // add curve leaf ending rounded to the bottom
   &:after {
+    $offset: 0.5px; // vertical offset to prevent artifacts with scale/zoom
     border-left: $separator-width solid #c3c4c7;
     border-top: $separator-width solid #c3c4c7;
     border-top-left-radius: 35px 20px;
     content: '';
     display: block;
-    height: 16px;
-    margin: -$separator-width auto 0 calc(50% - $separator-width / 2);
+    height: 16px + $offset;
+    margin: calc(-1 * ($separator-width + $offset)) auto 0
+      calc(50% - $separator-width / 2);
     transform-origin: left;
     width: calc($width + $separator-width / 2);
   }
