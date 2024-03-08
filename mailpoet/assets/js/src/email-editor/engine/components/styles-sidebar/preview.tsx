@@ -64,10 +64,10 @@ export function Preview({
     [],
   );
 
-  const backgroundColor = styles.colors.background;
-  const headingFontFamily = styles.elements.h1.fontFamily;
-  const headingColor = styles.elements.h1.color;
-  const headingFontWeight = styles.elements.h1.fontWeight;
+  const backgroundColor = styles.color.background;
+  const headingFontFamily = styles.elements.h1.typography.fontFamily;
+  const headingColor = styles.elements.h1.color.text;
+  const headingFontWeight = styles.elements.h1.typography.fontWeight;
 
   const paletteColors = colors.theme.concat(colors.theme);
 
