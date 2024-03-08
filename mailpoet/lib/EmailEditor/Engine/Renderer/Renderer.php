@@ -17,6 +17,9 @@ class Renderer {
   const TEMPLATE_FILE = 'template.html';
   const TEMPLATE_STYLES_FILE = 'template.css';
 
+  /** @var string This color is used as a wrapper of the rendered email */
+  const LAYOUT_COLOR = '#cccccc';
+
   /**
    * @param \MailPoetVendor\CSS $cssInliner
    */
@@ -31,20 +34,23 @@ class Renderer {
   }
 
   public function render(\WP_Post $post, string $subject, string $preHeader, string $language, $metaRobots = ''): array {
-    $layoutStyles = $this->settingsController->getEmailStyles()['layout'];
-    $themeData = $this->settingsController->getTheme()->get_data();
-    $contentBackground = $themeData['styles']['color']['background'] ?? $layoutStyles['background'];
-    $contentFontFamily = $themeData['styles']['typography']['fontFamily'];
+    $layout = $this->settingsController->getLayout();
+    $themeStyles = $this->settingsController->getEmailStyles();
+    $padding = $themeStyles['spacing']['padding'];
+
+    $contentBackground = $themeStyles['color']['background'];
+    $contentFontFamily = $themeStyles['typography']['fontFamily'];
     $renderedBody = $this->contentRenderer->render($post);
 
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
+    $styles = apply_filters('mailpoet_email_renderer_styles', $styles, $post);
 
     $template = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_FILE);
 
     // Replace style settings placeholders with values
     $template = str_replace(
       ['{{width}}', '{{layout_background}}', '{{content_background}}', '{{content_font_family}}', '{{padding_top}}', '{{padding_right}}', '{{padding_bottom}}', '{{padding_left}}'],
-      [$layoutStyles['width'], $layoutStyles['background'], $contentBackground, $contentFontFamily, $layoutStyles['padding']['top'], $layoutStyles['padding']['right'], $layoutStyles['padding']['bottom'], $layoutStyles['padding']['left']],
+      [$layout['contentSize'], self::LAYOUT_COLOR, $contentBackground, $contentFontFamily, $padding['top'], $padding['right'], $padding['bottom'], $padding['left']],
       $template
     );
 

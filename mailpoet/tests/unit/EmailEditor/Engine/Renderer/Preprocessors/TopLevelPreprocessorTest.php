@@ -31,14 +31,22 @@ class TopLevelPreprocessorTest extends \MailPoetUnitTest {
   /** @var TopLevelPreprocessor */
   private $preprocessor;
 
+  /** @var array{contentSize: string} */
+  private array $layout;
+
+  /** @var array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles */
+  private array $styles;
+
   public function _before() {
     parent::_before();
     $this->preprocessor = new TopLevelPreprocessor();
+    $this->layout = ['contentSize' => '660px'];
+    $this->styles = ['spacing' => ['padding' => ['left' => '10px', 'right' => '10px', 'top' => '10px', 'bottom' => '10px'], 'blockGap' => '10px']];
   }
 
   public function testItWrapsSingleTopLevelBlockIntoColumns() {
     $parsedDocument = [$this->paragraphBlock];
-    $result = $this->preprocessor->preprocess($parsedDocument, []);
+    $result = $this->preprocessor->preprocess($parsedDocument, $this->layout, $this->styles);
     verify($result[0]['blockName'])->equals('core/columns');
     verify($result[0]['innerBlocks'][0]['blockName'])->equals('core/column');
     verify($result[0]['innerBlocks'][0]['innerBlocks'][0]['blockName'])->equals('core/paragraph');
@@ -47,14 +55,14 @@ class TopLevelPreprocessorTest extends \MailPoetUnitTest {
 
   public function testItDoesntWrapColumns() {
     $parsedDocumentWithMultipleColumns = [$this->columnsBlock, $this->columnsBlock];
-    $result = $this->preprocessor->preprocess($parsedDocumentWithMultipleColumns, []);
+    $result = $this->preprocessor->preprocess($parsedDocumentWithMultipleColumns, $this->layout, $this->styles);
     verify($result)->equals($parsedDocumentWithMultipleColumns);
   }
 
   public function testItWrapsTopLevelBlocksSpreadBetweenColumns() {
     $parsedDocument = [$this->paragraphBlock, $this->columnsBlock, $this->paragraphBlock, $this->paragraphBlock];
     // We expect to wrap top level paragraph blocks into columns so the result should three columns blocks
-    $result = $this->preprocessor->preprocess($parsedDocument, []);
+    $result = $this->preprocessor->preprocess($parsedDocument, $this->layout, $this->styles);
     verify($result)->arrayCount(3);
     // First columns contain columns with one paragraph block
     verify($result[0]['innerBlocks'][0]['blockName'])->equals('core/column');
@@ -76,7 +84,7 @@ class TopLevelPreprocessorTest extends \MailPoetUnitTest {
     $parsedDocument[5]['attrs']['align'] = 'full';
     $parsedDocument[5]['innerBlocks'][0]['innerBlocks'][] = $this->paragraphBlock;
     // We expect to wrap top level paragraph blocks into columns so the result should three columns blocks
-    $result = $this->preprocessor->preprocess($parsedDocument, []);
+    $result = $this->preprocessor->preprocess($parsedDocument, $this->layout, $this->styles);
     verify($result)->arrayCount(5);
     // First block is a full width paragraph and must be wrapped in a single column
     verify($result[0]['blockName'])->equals('core/columns');

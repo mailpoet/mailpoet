@@ -10,6 +10,12 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
   /** @var TypographyPreprocessor */
   private $preprocessor;
 
+  /** @var array{contentSize: string} */
+  private array $layout;
+
+  /** @var array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles */
+  private array $styles;
+
   public function _before() {
     parent::_before();
     $settingsMock = $this->createMock(SettingsController::class);
@@ -47,6 +53,8 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
       return str_replace('slug-', '', $slug);
     });
     $this->preprocessor = new TypographyPreprocessor($settingsMock);
+    $this->layout = ['contentSize' => '660px'];
+    $this->styles = ['spacing' => ['padding' => ['left' => '10px', 'right' => '10px', 'top' => '10px', 'bottom' => '10px'], 'blockGap' => '10px']];
   }
 
   public function testItCopiesColumnsTypography(): void {
@@ -86,7 +94,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
       'font-size' => '12px',
       'text-decoration' => 'underline',
     ];
-    $result = $this->preprocessor->preprocess($blocks, []);
+    $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
     $result = $result[0];
     verify($result['innerBlocks'])->arrayCount(2);
     verify($result['email_attrs'])->equals($expectedEmailAttrs);
@@ -123,7 +131,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
       'color' => '#000000',
       'font-size' => '20px',
     ];
-    $result = $this->preprocessor->preprocess($blocks, []);
+    $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
     $result = $result[0];
     verify($result['innerBlocks'])->arrayCount(2);
     verify($result['email_attrs'])->equals($expectedEmailAttrs);
@@ -156,7 +164,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
         ],
       ],
     ]];
-    $result = $this->preprocessor->preprocess($blocks, []);
+    $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
     $result = $result[0];
     verify($result['innerBlocks'])->arrayCount(2);
     verify($result['email_attrs'])->equals(['width' => '640px', 'color' => '#000000', 'font-size' => '13px']);
@@ -251,7 +259,7 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
       'color' => '#cc22aa',
       'font-size' => '18px',
     ];
-    $result = $this->preprocessor->preprocess($blocks, []);
+    $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
     $child1 = $result[0];
     $child2 = $result[1];
     verify($child1['innerBlocks'])->arrayCount(2);

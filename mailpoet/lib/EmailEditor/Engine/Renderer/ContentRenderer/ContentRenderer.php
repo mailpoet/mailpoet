@@ -40,8 +40,9 @@ class ContentRenderer {
     $parser = new \WP_Block_Parser();
     $parsedBlocks = $parser->parse($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
-    $layoutStyles = $this->settingsController->getEmailStyles()['layout'];
-    $parsedBlocks = $this->processManager->preprocess($parsedBlocks, $layoutStyles);
+    $layout = $this->settingsController->getLayout();
+    $themeStyles = $this->settingsController->getEmailStyles();
+    $parsedBlocks = $this->processManager->preprocess($parsedBlocks, $layout, $themeStyles);
     $renderedBody = $this->renderBlocks($parsedBlocks);
 
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::CONTENT_STYLES_FILE);

@@ -27,24 +27,32 @@ export type ExperimentalSettings = {
 export type EmailEditorSettings = EditorSettings & ExperimentalSettings;
 
 export type EmailStyles = {
-  layout: {
-    background: string;
+  spacing: {
+    blockGap: string;
     padding: {
       bottom: string;
       left: string;
       right: string;
       top: string;
     };
-    width: string;
   };
-  colors: {
+  color: {
     background: string;
+    text: string;
   };
-  elements: {
-    h1: {
-      color: string;
-      fontFamily: string;
-      fontWeight: string;
+  blocks: {
+    "core/heading": {
+      elements: {
+        h1: {
+          color: {
+            text: string;
+          };
+          typography: {
+            fontFamily: string;
+            fontWeight: string;
+          };
+        };
+      };
     };
   };
 };
