@@ -33,6 +33,7 @@ class TemplatesFactory {
     if ($this->woocommerce->isWooCommerceActive()) {
       $templates[] = $this->createFirstPurchaseTemplate();
       $templates[] = $this->createThankLoyalCustomersTemplate();
+      $templates[] = $this->createWinBackCustomersTemplate();
       $templates[] = $this->createAbandonedCartTemplate();
       $templates[] = $this->createAbandonedCartCampaignTemplate();
     }
@@ -190,6 +191,25 @@ class TemplatesFactory {
       function (): Automation {
         return $this->builder->createFromSequence(
           __('Thank loyal customers', 'mailpoet'),
+          []
+        );
+      },
+      AutomationTemplate::TYPE_PREMIUM
+    );
+  }
+
+  private function createWinBackCustomersTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'win-back-customers',
+      'woocommerce',
+      __('Win-back customers', 'mailpoet'),
+      __(
+        "Rekindle the relationship with past customers by reminding them of their favorite products and showcasing what's new, encouraging a return to your brand.",
+        'mailpoet'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Win-back customers', 'mailpoet'),
           []
         );
       },
