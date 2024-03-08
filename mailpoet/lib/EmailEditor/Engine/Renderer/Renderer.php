@@ -51,7 +51,6 @@ class Renderer {
 
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
     $styles .= $this->themeController->getStylesheetForRendering();
-    $styles = apply_filters('mailpoet_email_renderer_styles', $styles, $post);
 
     $template = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_FILE);
 

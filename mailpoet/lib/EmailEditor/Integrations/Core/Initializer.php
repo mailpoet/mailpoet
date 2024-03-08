@@ -9,8 +9,6 @@ class Initializer {
   public function initialize(): void {
     add_action('mailpoet_blocks_renderer_initialized', [$this, 'registerCoreBlocksRenderers'], 10, 1);
     add_filter('mailpoet_email_editor_theme_json', [$this, 'adjustThemeJson'], 10, 1);
-    add_filter('mailpoet_email_editor_editor_styles', [$this, 'addEditorStyles'], 10, 1);
-    add_filter('mailpoet_email_renderer_styles', [$this, 'addRendererStyles'], 10, 1);
   }
 
   /**
@@ -36,17 +34,5 @@ class Initializer {
     /** @var array $themeJson */
     $editorThemeJson->merge(new \WP_Theme_JSON($themeJson, 'default'));
     return $editorThemeJson;
-  }
-
-  public function addEditorStyles(array $styles) {
-    $declaration = (string)file_get_contents(dirname(__FILE__) . '/styles.css');
-    $styles[] = ['css' => $declaration];
-    return $styles;
-  }
-
-  public function addRendererStyles(string $styles) {
-    $declaration = (string)file_get_contents(dirname(__FILE__) . '/styles.css');
-    $styles .= $declaration;
-    return $styles;
   }
 }
