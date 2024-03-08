@@ -182,12 +182,12 @@
   },
   "styles": {
     "spacing": {
-      "blockGap": "var(--wp--style--block-gap)",
+      "blockGap": "16px",
       "padding": {
-        "bottom": "var(--wp--style--block-gap)",
-        "left": "var(--wp--style--block-gap)",
-        "right": "var(--wp--style--block-gap)",
-        "top": "var(--wp--style--block-gap)"
+        "bottom": "20px",
+        "left": "20px",
+        "right": "20px",
+        "top": "20px"
       }
     },
     "color": {
