@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { Spinner } from '@wordpress/components';
-import { dispatch } from '@wordpress/data';
+import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { Icon, warning } from '@wordpress/icons';
 import { Hooks } from 'wp-js-hooks';
@@ -9,6 +9,7 @@ import { createStore, storeName } from '../../editor/store';
 import { AutomationTemplate } from '../config';
 import { Automation } from '../../editor/components/automation';
 import { initializeIntegrations } from '../../editor/integrations';
+import { Step as StepData } from '../../editor/components/automation/types';
 
 const initializeHooks = () => {
   Hooks.addFilter(
@@ -22,8 +23,34 @@ const initializeHooks = () => {
     'mailpoet.automation.render_step_separator',
     'mailpoet',
     () =>
-      function Separator() {
-        return <div className="mailpoet-automation-editor-separator" />;
+      function SeperatorWrapper(previousStepData: StepData, index: number) {
+        const stepType = useSelect(
+          (select) => select(storeName).getStepType(previousStepData.key),
+          [],
+        );
+
+        const BranchBadge =
+          previousStepData.next_steps.length > 1 && stepType?.branchBadge;
+
+        return (
+          <>
+            {previousStepData.next_steps.length > 1 && (
+              <div
+                className={
+                  index < previousStepData.next_steps.length / 2
+                    ? 'mailpoet-automation-editor-separator-curve-leaf-left'
+                    : 'mailpoet-automation-editor-separator-curve-leaf-right'
+                }
+              />
+            )}
+            {BranchBadge && (
+              <div className="mailpoet-automation-editor-branch-badge">
+                <BranchBadge step={previousStepData} index={index} />
+              </div>
+            )}
+            <div className="mailpoet-automation-editor-separator" />
+          </>
+        );
       },
   );
 };
