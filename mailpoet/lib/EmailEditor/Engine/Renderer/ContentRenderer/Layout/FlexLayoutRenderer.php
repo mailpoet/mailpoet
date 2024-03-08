@@ -9,7 +9,11 @@ use MailPoet\EmailEditor\Engine\SettingsController;
  */
 class FlexLayoutRenderer {
   public function renderInnerBlocksInLayout(array $parsedBlock, SettingsController $settingsController): string {
-    $innerBlocks = $this->computeWidthsForFlexLayout($parsedBlock, $settingsController);
+    $themeStyles = $settingsController->getEmailStyles();
+    $flexGap = $themeStyles['spacing']['blockGap'] ?? '0px';
+    $flexGapNumber = $settingsController->parseNumberFromStringWithPixels($flexGap);
+
+    $innerBlocks = $this->computeWidthsForFlexLayout($parsedBlock, $settingsController, $flexGapNumber);
 
     // MS Outlook doesn't support style attribute in divs so we conditionally wrap the buttons in a table and repeat styles
     $outputHtml = '<!--[if mso | IE]><table align="{align}" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="" style="{style}" ><![endif]-->
@@ -21,7 +25,7 @@ class FlexLayoutRenderer {
         $styles['width'] = $block['email_attrs']['layout_width'];
       }
       if ($key > 0) {
-        $styles['padding-left'] = SettingsController::FLEX_GAP;
+        $styles['padding-left'] = $flexGap;
       }
       $outputHtml .= '<td class="layout-flex-item" style="' . esc_html($settingsController->convertStylesToString($styles)) . '">' . render_block($block) . '</td>';
     }
@@ -40,11 +44,10 @@ class FlexLayoutRenderer {
     return $outputHtml;
   }
 
-  private function computeWidthsForFlexLayout(array $parsedBlock, SettingsController $settingsController): array {
+  private function computeWidthsForFlexLayout(array $parsedBlock, SettingsController $settingsController, float $flexGap): array {
     $blocksCount = count($parsedBlock['innerBlocks']);
     $totalUsedWidth = 0; // Total width assuming items without set width would consume proportional width
     $parentWidth = $settingsController->parseNumberFromStringWithPixels($parsedBlock['email_attrs']['width'] ?? SettingsController::EMAIL_WIDTH);
-    $flexGap = $settingsController->parseNumberFromStringWithPixels(SettingsController::FLEX_GAP);
     $innerBlocks = $parsedBlock['innerBlocks'] ?? [];
 
     foreach ($innerBlocks as $key => $block) {

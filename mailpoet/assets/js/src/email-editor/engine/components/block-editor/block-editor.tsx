@@ -48,7 +48,6 @@ export function BlockEditor() {
     canUserEditMedia,
     hasFixedToolbar,
     focusMode,
-    styles,
     layout,
   } = useSelect(
     (select) => ({
@@ -63,7 +62,6 @@ export function BlockEditor() {
       canUserEditMedia: select(coreStore).canUser('create', 'media'),
       hasFixedToolbar: select(storeName).isFeatureActive('fixedToolbar'),
       focusMode: select(storeName).isFeatureActive('focusMode'),
-      styles: select(storeName).getStyles(),
       layout: select(storeName).getLayout(),
     }),
     [],
@@ -81,8 +79,8 @@ export function BlockEditor() {
     { id: postId },
   );
 
-  // This will be set by the user in the future in email or global styles.
-  const layoutBackground = styles.layout.background;
+  // This is color of the wrapper and we need to decide if it is configurable or not.
+  const layoutBackground = '#cccccc';
 
   let inlineStyles = useResizeCanvas(previewDeviceType);
   // Adjust the inline styles for desktop preview. We want to set email width and center it.
@@ -90,7 +88,7 @@ export function BlockEditor() {
     inlineStyles = {
       ...inlineStyles,
       height: 'auto',
-      width: styles.layout.width,
+      width: layout.contentSize,
       display: 'flex',
       flexFlow: 'column',
     };

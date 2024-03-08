@@ -13,14 +13,18 @@ use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ProcessManager;
 
 class ProcessManagerTest extends \MailPoetUnitTest {
   public function testItCallsPreprocessorsProperly(): void {
-    $layoutStyles = [
-      'width' => '600px',
-      'background' => '#ffffff',
-      'padding' => [
-        'bottom' => '0px',
-        'left' => '0px',
-        'right' => '0px',
-        'top' => '0px',
+    $layout = [
+      'contentSize' => '600px',
+    ];
+    $styles = [
+      'spacing' => [
+        'blockGap' => '0px',
+        'padding' => [
+          'bottom' => '0px',
+          'left' => '0px',
+          'right' => '0px',
+          'top' => '0px',
+        ],
       ],
     ];
     $topLevel = $this->createMock(TopLevelPreprocessor::class);
@@ -49,7 +53,7 @@ class ProcessManagerTest extends \MailPoetUnitTest {
 
     $processManager = new ProcessManager($cleanup, $topLevel, $blocksWidth, $typography, $spacing, $highlighting, $variables);
     $processManager->registerPreprocessor($secondPreprocessor);
-    verify($processManager->preprocess([], $layoutStyles))->equals([]);
+    verify($processManager->preprocess([], $layout, $styles))->equals([]);
     verify($processManager->postprocess(''))->equals('');
   }
 }
