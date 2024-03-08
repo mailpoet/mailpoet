@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import classNames from 'classnames';
 import { TabPanel } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
@@ -38,7 +39,10 @@ export function Tabs(): JSX.Element {
     if (MailPoet.isWoocommerceActive) {
       tabs.push({
         name: 'automation-orders',
-        className: 'mailpoet-analytics-tab-orders',
+        className: classNames(
+          'mailpoet-analytics-tab-orders',
+          MailPoet.capabilities.detailedAnalytics ? 'is-unlocked' : '',
+        ),
         // title is defined as string but allows for JSX.Element
         title: (
           <>
@@ -50,7 +54,10 @@ export function Tabs(): JSX.Element {
     }
     tabs.push({
       name: 'automation-subscribers',
-      className: 'mailpoet-analytics-tab-subscribers',
+      className: classNames(
+        'mailpoet-analytics-tab-subscribers',
+        MailPoet.capabilities.detailedAnalytics ? 'is-unlocked' : '',
+      ),
       title: (
         <>
           {__('Subscribers', 'mailpoet')} <Icon icon={lockSmall} />
