@@ -49,8 +49,8 @@ export const MailPoet = {
   urls: window.mailpoet_urls,
   subscribersCountsCacheCreatedAt:
     window.mailpoet_subscribers_counts_cache_created_at,
-  getShortcodeLinks: (): string[] =>
-    window.mailpoet_shortcode_links ? window.mailpoet_shortcode_links : [],
+  getShortcodeLinks: (): Record<string, string> =>
+    window.mailpoet_shortcode_links ? window.mailpoet_shortcode_links : {},
   trackingConfig: window.mailpoet_tracking_config,
   I18n: MailPoetI18n,
   Date: MailPoetDate,

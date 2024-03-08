@@ -123,7 +123,7 @@ interface Window {
   mailpoet_wp_segment_state: string;
   mailpoet_wp_week_starts_on: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   mailpoet_subscribers_counts_cache_created_at: string;
-  mailpoet_shortcode_links: string[];
+  mailpoet_shortcode_links: Record<string, string>;
   mailpoet_tracking_config: Partial<{
     level: 'full' | 'partial' | 'basic';
     cookieTrackingEnabled: boolean;
