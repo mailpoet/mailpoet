@@ -234,8 +234,8 @@ class TemplatesFactory {
             [
               'key' => 'mailpoet:send-email',
               'args' => [
-                'name' => 'Abandoned cart',
-                'subject' => 'Looks like you forgot something',
+                'name' => __('Abandoned cart', 'mailpoet'),
+                'subject' => __('Looks like you forgot something', 'mailpoet'),
               ],
             ],
           ]
