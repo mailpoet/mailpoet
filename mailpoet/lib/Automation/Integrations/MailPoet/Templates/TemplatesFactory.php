@@ -145,11 +145,7 @@ class TemplatesFactory {
           __('Celebrate first-time buyers', 'mailpoet'),
           [
             [
-              'key' => 'woocommerce:order-status-changed',
-              'args' => [
-                'from' => 'any',
-                'to' => 'wc-completed',
-              ],
+              'key' => 'woocommerce:order-completed',
               'filters' => [
                 'operator' => 'and',
                 'groups' => [
