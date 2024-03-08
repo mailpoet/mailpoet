@@ -45,4 +45,15 @@ class AbandonedCartPayload implements Payload {
   public function getProductIds(): array {
     return $this->productIds;
   }
+
+  public function getTotal(): float {
+    $total = 0.0;
+    foreach ($this->productIds as $productId) {
+      $product = wc_get_product($productId);
+      if ($product) {
+        $total += (float)$product->get_price();
+      }
+    }
+    return $total;
+  }
 }
