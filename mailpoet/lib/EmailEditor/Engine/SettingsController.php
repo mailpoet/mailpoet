@@ -73,8 +73,6 @@ class SettingsController {
       ['css' => $flexEmailLayoutStyles],
     ];
 
-    $settings['styles'] = apply_filters('mailpoet_email_editor_editor_styles', $settings['styles']);
-
     $settings['__experimentalFeatures'] = $themeSettings;
 
     // Enabling alignWide allows full width for specific blocks such as columns, heading, image, etc.

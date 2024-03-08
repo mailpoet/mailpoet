@@ -62,7 +62,22 @@ class ThemeController {
       $cssBlocks .= $this->getTheme()->get_styles_for_block($blockMetadata);
     }
 
-    return $cssPresets . $cssBlocks;
+    // Element specific styles
+    // Because the section styles is not a part of the output the `get_styles_block_nodes` method, we need to get it separately
+    $elementsStyles = $this->getTheme()->get_raw_data()['styles']['elements'] ?? [];
+    $cssElements = '';
+    foreach ($elementsStyles as $key => $elementsStyle) {
+      $styles = wp_style_engine_get_styles($elementsStyle);
+      $cssElements .= "{$key} {{$styles['css']}} \n";
+    }
+
+    $result = $cssPresets . $cssBlocks . $cssElements;
+    // Because font-size can by defined by the clamp() function that is not supported in the e-mail clients, we need to replace it to the value.
+    // Regular expression to match clamp() function and capture its max value
+    $pattern = '/clamp\([^,]+,\s*[^,]+,\s*([^)]+)\)/';
+    // Replace clamp() with its maximum value
+    $result = (string)preg_replace($pattern, '$1', $result);
+    return $result;
   }
 
   public function translateSlugToFontSize(string $fontSize): string {
