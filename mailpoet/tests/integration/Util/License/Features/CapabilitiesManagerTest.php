@@ -88,6 +88,22 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     verify($capabilities->getSegmentFilters())->equals(0);
   }
 
+  public function testIndividualCapsAreAppliedIfThereIsNoTier() {
+    $settings = $this->createMock(SettingsController::class);
+    $settings->method('get')->willReturnMap([
+      ['mta.mailpoet_api_key_state.data.mailpoet_logo_in_emails', null, true],
+      ['mta.mailpoet_api_key_state.data.detailed_analytics', null, false],
+      ['mta.mailpoet_api_key_state.data.automation_steps', null, 1],
+      ['mta.mailpoet_api_key_state.data.segment_filters', null, 1],
+    ]);
+    $capabilitiesManager = $this->getCapabilitiesManager($settings);
+    $capabilities = $capabilitiesManager->getCapabilities();
+    verify($capabilities->getMailpoetLogoInEmails())->true();
+    verify($capabilities->getDetailedAnalytics())->false();
+    verify($capabilities->getAutomationSteps())->equals(1);
+    verify($capabilities->getSegmentFilters())->equals(1);
+  }
+
   public function testLogoDisplayFallsBackToUserActivelyPayingIfNoCapabilities() {
     $settings = $this->createMock(SettingsController::class);
     $settings->method('get')->willReturnMap($this->getLegacySettings());

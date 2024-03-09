@@ -56,7 +56,7 @@ class CapabilitiesManager {
       return false;
     }
 
-    return (isset($this->tier) && $this->tier < self::MIN_TIER_LOGO_NOT_REQUIRED);
+    return !isset($this->tier) || $this->tier < self::MIN_TIER_LOGO_NOT_REQUIRED;
   }
 
   private function isDetailedAnalyticsEnabled(): bool {
