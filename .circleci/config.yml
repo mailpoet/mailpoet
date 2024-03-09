@@ -971,7 +971,7 @@ workflows:
       - performance_tests:
           <<: *slack-fail-post-step
           name: performance_latest
-          url: https://mpperftesting.mystagingwebsite.com
+          url: https://mpperftesting.com
           us: $WP_TEST_PERFORMANCE_US
           pw: $WP_TEST_PERFORMANCE_PW
           scenario: nightlytests
