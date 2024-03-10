@@ -35,7 +35,8 @@ class ValidationTest extends \MailPoetTest {
     $this->connection->executeStatement("
       CREATE TABLE $this->tableName (
         id int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        name varchar(255) NOT NULL
+        name varchar(255) NOT NULL,
+        email varchar(255)
       )
     ");
   }
@@ -66,6 +67,36 @@ class ValidationTest extends \MailPoetTest {
     } catch (ValidationException $e) {
       $entityClass = get_class($entity);
       verify($e->getMessage())->same("Validation failed for '$entityClass'.\nDetails:\n  [name] This value is too short. It should have 3 characters or more.");
+    }
+  }
+
+  public function testItSupportsValidationGroups() {
+    $id = 1;
+    $name = 'Test name';
+    $email = 'test@example.com';
+    $this->connection->executeStatement("INSERT INTO $this->tableName (id, name, email) VALUES (?, ?, ?)", [$id, $name, $email]);
+
+    /** @var ValidatedEntity $entity */
+    $entity = $this->entityManager->find(ValidatedEntity::class, $id);
+    $entity->setEmail('example');
+
+    // Validation group is Default, no email validation
+    try {
+      $this->entityManager->flush();
+    } catch (ValidationException $e) {
+      $this->fail('Validation exception was thrown.');
+    }
+
+    // Validation group is Default + Saving, with email validation
+    $entity->setValidationGroups(['Saving', 'Default']);
+    $entity->setEmail('example2');
+
+    try {
+      $this->entityManager->flush();
+      $this->fail('Validation exception was not thrown.');
+    } catch (ValidationException $e) {
+      $entityClass = get_class($entity);
+      verify($e->getMessage())->same("Validation failed for '$entityClass'.\nDetails:\n  [email] This value is not a valid email address.");
     }
   }
 

@@ -229,6 +229,9 @@ class SubscriberSaveController {
     // wipe any unconfirmed data at this point
     $subscriber->setUnconfirmedData(null);
 
+    // Validate the email (Saving group) + everything else (Default group)
+    $subscriber->setValidationGroups(['Saving', 'Default']);
+
     try {
       $this->subscribersRepository->persist($subscriber);
       $this->subscribersRepository->flush();

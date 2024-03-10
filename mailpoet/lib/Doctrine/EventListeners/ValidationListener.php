@@ -29,9 +29,17 @@ class ValidationListener {
   }
 
   private function validate($entity) {
-    $violations = $this->validator->validate($entity);
+    $groups = $this->getValidationGroups($entity);
+    $violations = $this->validator->validate($entity, null, $groups);
     if ($violations->count() > 0) {
       throw new ValidationException(get_class($entity), $violations);
     }
+  }
+
+  private function getValidationGroups($entity) {
+    if (is_object($entity) && method_exists($entity, 'getValidationGroups')) {
+      return $entity->getValidationGroups();
+    }
+    return null;
   }
 }

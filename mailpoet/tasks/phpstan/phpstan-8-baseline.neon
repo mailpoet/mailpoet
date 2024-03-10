@@ -767,7 +767,7 @@ parameters:
 
 		-
 			message: "#^Dead catch \\- MailPoet\\\\Doctrine\\\\Validator\\\\ValidationException is never thrown in the try block\\.$#"
-			count: 2
+			count: 4
 			path: ../../tests/integration/Doctrine/EventListeners/ValidationTest.php
 
 		-
