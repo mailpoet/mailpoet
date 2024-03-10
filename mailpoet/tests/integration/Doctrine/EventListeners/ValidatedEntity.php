@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Doctrine\EventListeners;
 
+use MailPoet\Doctrine\EntityTraits\ValidationGroupsTrait;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
 use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
 
@@ -10,6 +11,8 @@ use MailPoetVendor\Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="test_validated_entity")
  */
 class ValidatedEntity {
+  use ValidationGroupsTrait;
+
   /**
    * @ORM\Column(type="integer")
    * @ORM\Id
@@ -26,6 +29,13 @@ class ValidatedEntity {
    */
   private $name;
 
+  /**
+   * @ORM\Column(type="string")
+   * @Assert\Email(groups={"Saving"})
+   * @var string
+   */
+  private $email;
+
   /** @return int|null */
   public function getId() {
     return $this->id;
@@ -39,5 +49,15 @@ class ValidatedEntity {
   /** @param string $name */
   public function setName($name) {
     $this->name = $name;
+  }
+
+  /** @return string */
+  public function getEmail() {
+    return $this->email;
+  }
+
+  /** @param string $email */
+  public function setEmail($email) {
+    $this->email = $email;
   }
 }
