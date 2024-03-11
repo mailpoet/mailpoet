@@ -536,7 +536,7 @@ class RendererTest extends \MailPoetTest {
       preg_match(
         '/font-family: \'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif/',
         $DOM('a.mailpoet_button', 0)->attr('style'))
-    )->equals(1);
+    )->equals(1, print_r( $DOM('a.mailpoet_button', 0), true)); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
   }
 
   public function testItRendersSocialIcons() {

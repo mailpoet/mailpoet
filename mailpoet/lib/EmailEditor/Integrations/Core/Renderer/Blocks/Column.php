@@ -58,18 +58,18 @@ class Column implements BlockRenderer {
 
     $cellStyles['border-style'] = 'solid';
 
-    $wrapperClassname = 'block wp-block-column ';
-    $contentClassname = 'email_column ';
+    $wrapperClassname = 'block wp-block-column';
+    $contentClassname = 'email_column';
     $wrapperCSS = WP_Style_Engine::compile_css( [
       'vertical-align' => $isStretched ? 'top' : $block_attributes['verticalAlignment'],
     ], '' );
     $contentCSS = 'vertical-align: top;';
 
     if ($isStretched) {
-      $wrapperClassname .= $originalWrapperClassname;
+      $wrapperClassname .= ' ' . $originalWrapperClassname;
       $wrapperCSS .= ' ' . WP_Style_Engine::compile_css( $cellStyles, '' );
     } else {
-      $contentClassname .= $originalWrapperClassname;
+      $contentClassname .= ' ' . $originalWrapperClassname;
       $contentCSS .= ' ' . WP_Style_Engine::compile_css( $cellStyles, '' );
     }
 
