@@ -107,8 +107,7 @@ class RendererTest extends \MailPoetTest {
     ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $style = $this->extractBlockStyle($rendered['html'], 'wp-block-column-test', 'td');
-    // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
-    verify($style)->stringContainsString('color:#ff6900', print_r($rendered['html'], true)); // luminous-vivid-orange is #ff6900
+    verify($style)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
     verify($style)->stringContainsString('background-color:#000000'); // black is #000000
   }
 
