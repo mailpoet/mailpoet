@@ -9,6 +9,7 @@ use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\CustomerPayload;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use WC_Customer;
+use WC_Order;
 use WC_Order_Item_Product;
 use WC_Product;
 
@@ -47,7 +48,11 @@ class CustomerOrderFieldsFactory {
         function (CustomerPayload $payload, array $params = []) {
           $customer = $payload->getCustomer();
           $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
-          return $inTheLastSeconds === null || !$customer
+          if (!$customer) {
+            $order = $payload->getOrder();
+            return $order && $this->isInTheLastSeconds($order, $inTheLastSeconds) ? $payload->getTotalSpent() : 0.0;
+          }
+          return $inTheLastSeconds === null
             ? $payload->getTotalSpent()
             : $this->getRecentSpentTotal($customer, $inTheLastSeconds);
         },
@@ -62,7 +67,13 @@ class CustomerOrderFieldsFactory {
         function (CustomerPayload $payload, array $params = []) {
           $customer = $payload->getCustomer();
           $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
-          if ($inTheLastSeconds === null || !$customer) {
+
+          if (!$customer) {
+            $order = $payload->getOrder();
+            return $order && $this->isInTheLastSeconds($order, $inTheLastSeconds) ? $payload->getAverageSpent() : 0.0;
+          }
+
+          if ($inTheLastSeconds === null) {
             return $payload->getAverageSpent();
           } else {
             $totalSpent = $this->getRecentSpentTotal($customer, $inTheLastSeconds);
@@ -81,7 +92,11 @@ class CustomerOrderFieldsFactory {
         function (CustomerPayload $payload, array $params = []) {
           $customer = $payload->getCustomer();
           $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
-          return $inTheLastSeconds === null || !$customer
+          if (!$customer) {
+            $order = $payload->getOrder();
+            return $order && $this->isInTheLastSeconds($order, $inTheLastSeconds) ? $payload->getOrderCount() : 0;
+          }
+          return $inTheLastSeconds === null
             ? $payload->getOrderCount()
             : $this->getRecentOrderCount($customer, $inTheLastSeconds);
         },
@@ -124,7 +139,7 @@ class CustomerOrderFieldsFactory {
           $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
           if (!$customer) {
             $order = $payload->getOrder();
-            $items = $order && $order->is_paid() ? $order->get_items() : [];
+            $items = $order && $order->is_paid() && $this->isInTheLastSeconds($order, $inTheLastSeconds) ? $order->get_items() : [];
             $ids = [];
             foreach ($items as $item) {
               $product = $item instanceof WC_Order_Item_Product ? $item->get_product() : null;
@@ -152,7 +167,7 @@ class CustomerOrderFieldsFactory {
           $inTheLastSeconds = isset($params['in_the_last']) ? (int)$params['in_the_last'] : null;
           if (!$customer) {
             $order = $payload->getOrder();
-            $items = $order && $order->is_paid() ? $order->get_items() : [];
+            $items = $order && $order->is_paid() && $this->isInTheLastSeconds($order, $inTheLastSeconds) ? $order->get_items() : [];
             $ids = [];
             foreach ($items as $item) {
               $product = $item instanceof WC_Order_Item_Product ? $item->get_product() : null;
@@ -332,5 +347,12 @@ class CustomerOrderFieldsFactory {
     );
 
     return array_map('intval', $wpdb->get_col($statement));
+  }
+
+  private function isInTheLastSeconds(WC_Order $order, ?int $inTheLastSeconds): bool {
+    if ($inTheLastSeconds === null) {
+      return true;
+    }
+    return $order->get_date_created() >= new DateTimeImmutable("-$inTheLastSeconds seconds");
   }
 }
