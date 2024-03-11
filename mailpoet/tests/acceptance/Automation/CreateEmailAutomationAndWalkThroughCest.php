@@ -37,7 +37,7 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->click('Trigger');
     $i->fillField('When someone subscribes to the following lists:', 'Newsletter mailing list');
     $i->click('Delay');
-    $i->fillField('Wait for', '5');
+    $i->fillField(['name' => 'delay-number'], '5');
 
     $i->click('Send email');
     $i->fillField('"From" name', 'From');
