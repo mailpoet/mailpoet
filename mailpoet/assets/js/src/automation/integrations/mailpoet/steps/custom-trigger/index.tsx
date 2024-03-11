@@ -27,9 +27,7 @@ export const step: StepType = {
   foreground: '#2271b1',
   background: '#f0f6fc',
   icon: () => (
-    <div style={{ width: '100%', height: '100%', scale: '1.12' }}>
-      {plugins}
-    </div>
+    <div style={{ width: '100%', height: '100%', scale: '1.4' }}>{plugins}</div>
   ),
   edit: () => (
     <PremiumModalForStepEdit
