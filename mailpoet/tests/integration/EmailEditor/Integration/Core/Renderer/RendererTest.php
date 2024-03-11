@@ -101,16 +101,15 @@ class RendererTest extends \MailPoetTest {
   public function testItInlinesColumnColors() {
     $emailPost = new \WP_Post((object)[
       'post_content' => '
-      <!-- wp:column {"backgroundColor":"black","textColor":"luminous-vivid-orange"} -->
-      <div class="wp-block-column has-luminous-vivid-orange-color has-black-background-color has-text-color has-background"></div>
+      <!-- wp:column {"verticalAlignment":"stretch","backgroundColor":"black","textColor":"luminous-vivid-orange"} -->
+      <div class="wp-block-column is-vertically-aligned-stretch has-luminous-vivid-orange-color has-black-background-color has-text-color has-background"></div>
       <!-- /wp:column -->',
     ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $style = $this->extractBlockStyle($rendered['html'], 'wp-block-column', 'td');
     // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
     verify($style)->stringContainsString('color:#ff6900', print_r($rendered['html'], true)); // luminous-vivid-orange is #ff6900
-    // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
-    verify($style)->stringContainsString('background-color:#000000', print_r($rendered['html'], true)); // black is #000000
+    verify($style)->stringContainsString('background-color:#000000'); // black is #000000
   }
 
   private function extractBlockHtml(string $html, string $blockClass, string $tag): string {
