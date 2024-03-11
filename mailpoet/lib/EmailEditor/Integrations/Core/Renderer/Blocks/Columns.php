@@ -52,9 +52,11 @@ class Columns implements BlockRenderer {
       $cellStyles['background-size'] = 'cover';
     }
 
-    if (isset( $cellStyles['border-width'] ) && !isset( $cellStyles['border-style'] )) {
-      $cellStyles['border-style'] = 'solid';
-    }
+    // Prepend default border styles to ensure borders are solid and 0px by default.
+    $cellStyles = array_merge( [
+      'border-width' => '0',
+      'border-style' => 'solid',
+    ], $cellStyles );
 
     $contentClassname = 'email_columns ' . $originalWrapperClassname;
     $contentCSS = WP_Style_Engine::compile_css( $cellStyles, '' );
