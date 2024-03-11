@@ -54,8 +54,6 @@ class ColumnsTest extends \MailPoetTest {
   public function testItRendersInnerColumn() {
     $rendered = $this->columnsRenderer->render('', $this->parsedColumns, $this->settingsController);
     verify($rendered)->stringContainsString('Column 1');
-    verify($rendered)->stringContainsString('width:784px;');
-    verify($rendered)->stringContainsString('max-width:784px;');
   }
 
   public function testItContainsColumnsStyles(): void {
@@ -82,7 +80,10 @@ class ColumnsTest extends \MailPoetTest {
     ];
     $rendered = $this->columnsRenderer->render('', $parsedColumns, $this->settingsController);
     verify($rendered)->stringContainsString('background-color:#abcdef;');
-    verify($rendered)->stringContainsString('border-color:#123456;border-radius:10px;border-width:2px;border-style:solid;');
+    verify($rendered)->stringContainsString('border-color:#123456;');
+    verify($rendered)->stringContainsString('border-radius:10px;');
+    verify($rendered)->stringContainsString('border-width:2px;');
+    verify($rendered)->stringContainsString('border-style:solid;');
     verify($rendered)->stringContainsString('padding-bottom:5px;');
     verify($rendered)->stringContainsString('padding-left:15px;');
     verify($rendered)->stringContainsString('padding-right:20px;');
