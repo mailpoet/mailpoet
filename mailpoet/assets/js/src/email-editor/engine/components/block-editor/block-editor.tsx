@@ -110,6 +110,7 @@ export function BlockEditor() {
   const contentAreaStyles = {
     background:
       previewDeviceType === 'Desktop' ? layoutBackground : 'transparent',
+    padding: '4rem 0', // 4em top/bottom to place the email document nicely vertically in canvas. Same value is used for title in WP Post editor.
   };
 
   const settings = {
