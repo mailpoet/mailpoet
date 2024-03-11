@@ -13,6 +13,8 @@ export function Edit(): JSX.Element {
     <PanelBody opened>
       <PlainBodyTitle title={__('Settings', 'mailpoet')} />
       <SelectControl
+        // translators: A label for a wait delay time selection form field - time unit follows
+        label={__('Cart abandoned for', 'mailpoet')}
         onChange={(id: string) => {
           void dispatch(storeName).updateStepArgs(
             selectedStep.id,
