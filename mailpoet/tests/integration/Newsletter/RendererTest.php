@@ -532,11 +532,8 @@ class RendererTest extends \MailPoetTest {
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $template['styles']['block']['fontFamily'] = 'Lucida';
     $DOM = $this->dOMParser->parseStr((new Button)->render($template, self::COLUMN_BASE_WIDTH));
-    verify(
-      preg_match(
-        '/font-family: \'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif/',
-        $DOM('a.mailpoet_button', 0)->attr('style'))
-    )->equals(1, print_r( $DOM('a.mailpoet_button', 0), true)); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+    $style = $DOM('a.mailpoet_button', 0)->attr('style');
+    verify($style)->stringContainsString('font-family: \'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif');
   }
 
   public function testItRendersSocialIcons() {
