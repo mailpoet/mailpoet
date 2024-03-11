@@ -23,7 +23,7 @@ export const step: StepType = {
   foreground: '#00A32A',
   background: '#EDFAEF',
   icon: () => (
-    <div style={{ width: '100%', height: '100%', scale: '1.12' }}>{code}</div>
+    <div style={{ width: '100%', height: '100%', scale: '1.2' }}>{code}</div>
   ),
   edit: () => (
     <PremiumModalForStepEdit
