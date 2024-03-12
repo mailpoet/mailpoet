@@ -52,6 +52,7 @@ export function BlockEditor() {
     styles,
     layout,
     cdnUrl,
+    isPremiumPluginActive,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
@@ -68,6 +69,7 @@ export function BlockEditor() {
       styles: select(storeName).getStyles(),
       layout: select(storeName).getLayout(),
       cdnUrl: select(storeName).getCdnUrl(),
+      isPremiumPluginActive: select(storeName).isPremiumPluginActive(),
     }),
     [],
   );
@@ -190,9 +192,11 @@ export function BlockEditor() {
                     </BlockTools>
                   </BlockSelectionClearer>
                 </div>
-                <FooterCredit
-                  logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
-                />
+                {!isPremiumPluginActive && (
+                  <FooterCredit
+                    logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
+                  />
+                )}
               </BlockSelectionClearer>
             </div>
           </>

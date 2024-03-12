@@ -4,6 +4,7 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\API\JSON\API;
 use MailPoet\Config\Env;
+use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
 use MailPoet\Util\CdnAssetUrl;
@@ -19,14 +20,19 @@ class EmailEditor {
   /** @var CdnAssetUrl */
   private $cdnAssetUrl;
 
+  /** @var ServicesChecker */
+  private $servicesChecker;
+
   public function __construct(
     WPFunctions $wp,
     SettingsController $settingsController,
-    CdnAssetUrl $cdnAssetUrl
+    CdnAssetUrl $cdnAssetUrl,
+    ServicesChecker $servicesChecker
   ) {
     $this->wp = $wp;
     $this->settingsController = $settingsController;
     $this->cdnAssetUrl = $cdnAssetUrl;
+    $this->servicesChecker = $servicesChecker;
   }
 
   public function render() {
@@ -63,6 +69,7 @@ class EmailEditor {
         'api_token' => esc_js($token),
         'api_version' => esc_js($apiVersion),
         'cdn_url' => esc_js($this->cdnAssetUrl->generateCdnUrl("")),
+        'is_premium_plugin_active' => (bool)$this->servicesChecker->isPremiumPluginActive(),
         'current_wp_user_email' => esc_js($currentUserEmail),
         'editor_settings' => $this->settingsController->getSettings(),
         'email_styles' => $this->settingsController->getEmailStyles(),

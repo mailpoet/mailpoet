@@ -2,21 +2,19 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
+use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ContentRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
-use MailPoet\EmailEditor\Engine\ThemeController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoetVendor\Html2Text\Html2Text;
 
 class Renderer {
   private \MailPoetVendor\CSS $cssInliner;
-
   private SettingsController $settingsController;
-
   private ContentRenderer $contentRenderer;
-
   private CdnAssetUrl $cdnAssetUrl;
+  private ServicesChecker $servicesChecker;
 
   const TEMPLATE_FILE = 'template.html';
   const TEMPLATE_STYLES_FILE = 'template.css';
@@ -28,14 +26,14 @@ class Renderer {
     \MailPoetVendor\CSS $cssInliner,
     SettingsController $settingsController,
     ContentRenderer $contentRenderer,
-    ThemeController $themeController,
-    CdnAssetUrl $cdnAssetUrl
+    CdnAssetUrl $cdnAssetUrl,
+    ServicesChecker $servicesChecker,
   ) {
     $this->cssInliner = $cssInliner;
     $this->settingsController = $settingsController;
     $this->contentRenderer = $contentRenderer;
-    $this->themeController = $themeController;
     $this->cdnAssetUrl = $cdnAssetUrl;
+    $this->servicesChecker = $servicesChecker;
   }
 
   public function render(\WP_Post $post, string $subject, string $preHeader, string $language, $metaRobots = ''): array {
@@ -61,7 +59,7 @@ class Renderer {
     );
 
     $logo = $this->cdnAssetUrl->generateCdnUrl('email-editor/logo-footer.png');
-    $footerLogo = '<img src="' . esc_attr( $logo ) . '" alt="MailPoet" style="margin: 24px auto; display: block;" />';
+    $footerLogo = $this->servicesChecker->isPremiumPluginActive() ? '' : '<img src="' . esc_attr( $logo ) . '" alt="MailPoet" style="margin: 24px auto; display: block;" />';
 
     /**
      * Replace template variables

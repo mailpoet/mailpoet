@@ -147,3 +147,7 @@ export function getAutosaveInterval(state: State): State['autosaveInterval'] {
 export function getCdnUrl(state: State): State['cdnUrl'] {
   return state.cdnUrl;
 }
+
+export function isPremiumPluginActive(state: State): boolean {
+  return state.isPremiumPluginActive;
+}

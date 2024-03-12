@@ -4,6 +4,7 @@ interface Window {
     api_token: string;
     api_version: string;
     cdn_url: string;
+    is_premium_plugin_active: boolean;
     current_wp_user_email: string;
     bc_state: {
       isInlinedBlockToolbarAvailable: boolean;
