@@ -34,6 +34,7 @@ export type Data = {
   pluginPartialKey?: string;
   subscribersCount?: number;
   subscribersLimitReached?: boolean;
+  capabilityName?: string;
 };
 
 export type UtmParams = {
@@ -58,12 +59,15 @@ export const getUpgradeInfo = (
     pluginPartialKey = MailPoet.pluginPartialKey,
     subscribersCount = MailPoet.subscribersCount,
     subscribersLimitReached = MailPoet.subscribersLimitReached,
+    capabilityName = undefined,
   }: Data = {},
   utmParams: UtmParams = undefined,
   onPremiumInstalled?: () => void,
 ): UpgradeInfo => {
   const utm = utmParams ? { utm_source: 'plugin', ...utmParams } : undefined;
-
+  const upgradeParams = capabilityName
+    ? { capability: capabilityName, s: subscribersCount }
+    : {};
   // a. User doesn't have a valid license.
   if (!hasValidPremiumKey && !hasValidApiKey) {
     return {
@@ -85,7 +89,7 @@ export const getUpgradeInfo = (
       title: __('Upgrade your MailPoet plan', 'mailpoet'),
       info: __('Please upgrade your MailPoet plan.', 'mailpoet'),
       cta: __('Upgrade', 'mailpoet'),
-      action: getUpgradeUrl(pluginPartialKey),
+      action: getUpgradeUrl(pluginPartialKey, upgradeParams),
     };
   }
 
@@ -98,7 +102,7 @@ export const getUpgradeInfo = (
         'mailpoet',
       ),
       cta: __('Upgrade', 'mailpoet'),
-      action: getUpgradeUrl(pluginPartialKey),
+      action: getUpgradeUrl(pluginPartialKey, upgradeParams),
     };
   }
 
@@ -138,7 +142,24 @@ export const getUpgradeInfo = (
     };
   }
 
-  // f. All of the above conditions were met, the premium plugin is already active.
+  // f. User has a license but the feature is not available for the plan.
+  if (
+    capabilityName &&
+    typeof MailPoet.capabilities[capabilityName] === 'boolean' &&
+    !MailPoet.capabilities[capabilityName]
+  ) {
+    return {
+      title: __('Upgrade your MailPoet plan', 'mailpoet'),
+      info: __(
+        'Please upgrade your MailPoet plan to gain access to this feature.',
+        'mailpoet',
+      ),
+      cta: __('Upgrade', 'mailpoet'),
+      action: getUpgradeUrl(pluginPartialKey, upgradeParams),
+    };
+  }
+
+  // g. All of the above conditions were met, the premium plugin is already active.
   return {
     title: __('MailPoet Premium is active', 'mailpoet'),
     info: __(
