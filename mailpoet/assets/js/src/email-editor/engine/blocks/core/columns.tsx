@@ -66,7 +66,7 @@ function disableColumnsLayout() {
 function enhanceColumnsBlock() {
   addFilter(
     'blocks.registerBlockType',
-    'mailpoet-email-editor/change-column',
+    'mailpoet-email-editor/change-columns',
     (settings: Block, name) => {
       if (name === 'core/columns') {
         return {
