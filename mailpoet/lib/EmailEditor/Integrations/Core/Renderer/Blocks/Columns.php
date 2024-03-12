@@ -61,7 +61,6 @@ class Columns implements BlockRenderer {
     $contentClassname = 'email_columns ' . $originalWrapperClassname;
     $contentCSS = WP_Style_Engine::compile_css( $cellStyles, '' );
     $layoutCSS = WP_Style_Engine::compile_css( [
-      'max-width' => $block_attributes['width'],
       'margin-top' => $parsedBlock['email_attrs']['margin-top'] ?? '0px',
       'padding-left' => $block_attributes['align'] !== 'full' ? $settingsController->getEmailStyles()['layout']['padding']['left'] : '0px',
       'padding-right' => $block_attributes['align'] !== 'full' ? $settingsController->getEmailStyles()['layout']['padding']['right'] : '0px',
