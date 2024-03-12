@@ -5,6 +5,7 @@ import {
   getEditorSettings,
   getEmailStyles,
   getCdnUrl,
+  isPremiumPluginActive,
 } from './settings';
 
 export function getInitialState(): State {
@@ -26,6 +27,7 @@ export function getInitialState(): State {
     layout: getEditorLayout(),
     autosaveInterval: 60,
     cdnUrl: getCdnUrl(),
+    isPremiumPluginActive: isPremiumPluginActive(),
     preview: {
       deviceType: 'Desktop',
       toEmail: window.MailPoetEmailEditor.current_wp_user_email,

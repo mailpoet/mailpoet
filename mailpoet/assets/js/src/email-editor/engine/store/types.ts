@@ -77,6 +77,7 @@ export type State = {
   layout: EmailEditorLayout;
   autosaveInterval: number;
   cdnUrl: string;
+  isPremiumPluginActive: boolean;
   preview: {
     deviceType: string;
     toEmail: string;

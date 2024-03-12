@@ -15,3 +15,7 @@ export function getEditorLayout(): EmailEditorLayout {
 export function getCdnUrl(): string {
   return window.MailPoetEmailEditor.cdn_url;
 }
+
+export function isPremiumPluginActive(): boolean {
+  return window.MailPoetEmailEditor.is_premium_plugin_active;
+}
