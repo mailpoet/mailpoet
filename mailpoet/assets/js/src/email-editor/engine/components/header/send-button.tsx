@@ -10,14 +10,9 @@ export function SendButton() {
     'mailpoet_email',
     'mailpoet_data',
   );
-  const { hasEmptyContent } = useSelect(
+  const { hasEmptyContent, isEmailSent } = useSelect(
     (select) => ({
       hasEmptyContent: select(storeName).hasEmptyContent(),
-    }),
-    [],
-  );
-  const { isEmailSent } = useSelect(
-    (select) => ({
       isEmailSent: select(storeName).isEmailSent(),
     }),
     [],

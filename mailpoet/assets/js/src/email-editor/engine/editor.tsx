@@ -10,6 +10,7 @@ import { BlockEditor } from './components/block-editor';
 import { createStore, storeName } from './store';
 import { initHooks } from './hooks';
 import { KeyboardShortcuts } from './components/keybord-shortcuts';
+import './components/validation';
 
 function Editor() {
   const { postId } = useSelect(
