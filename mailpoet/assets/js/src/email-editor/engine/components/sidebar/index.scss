@@ -1,5 +1,6 @@
 @import '~@wordpress/base-styles/colors';
 
+.background-block-support-panel .mailpoet__grid-full-width,
 .border-block-support-panel .mailpoet__grid-full-width {
   // setting the grid to 100% width because border block contains two grid columns
   grid-column: 1/3;
