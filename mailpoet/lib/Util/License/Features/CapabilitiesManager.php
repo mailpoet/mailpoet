@@ -61,7 +61,7 @@ class CapabilitiesManager {
 
   private function isDetailedAnalyticsEnabled(): bool {
     // Preconditions
-    if (!$this->subscribersFeature->hasValidPremiumKey() || !$this->subscribersFeature->check() || !$this->servicesChecker->isPremiumPluginActive()) {
+    if (!$this->subscribersFeature->hasValidPremiumKey() || $this->subscribersFeature->check() || !$this->servicesChecker->isPremiumPluginActive()) {
       return false;
     }
 

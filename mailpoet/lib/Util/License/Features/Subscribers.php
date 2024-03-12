@@ -42,6 +42,10 @@ class Subscribers {
     $this->wp = $wp;
   }
 
+  /**
+   * Checks if the subscribers limit is reached
+   * @return bool True if subscribers limit reached or restriction set, false otherwise
+   */
   public function check(): bool {
     $limit = $this->getSubscribersLimit();
     $subscribersCount = $this->getSubscribersCount();
