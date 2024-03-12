@@ -18,7 +18,7 @@ class TermOptionsBuilder {
 
   /** @return array<array{id: int, name: string}> */
   public function getTermOptions(string $taxonomy): array {
-    $terms = $this->wordPress->getTerms(['taxonomy' => $taxonomy, 'hide_empty' => false]);
+    $terms = $this->wordPress->getTerms(['taxonomy' => $taxonomy, 'hide_empty' => false, 'orderby' => 'name']);
     if ($terms instanceof WP_Error) {
       return [];
     }
