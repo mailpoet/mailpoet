@@ -21,6 +21,7 @@ import { automationCreateCustom } from './tests/automation-create-custom.js';
 import { automationCreateWelcome } from './tests/automation-create-welcome.js';
 import { automationAnalytics } from './tests/automation-analytics.js';
 import { automationTrashRestore } from './tests/automation-trash-restore.js';
+import { automationTriggerWorkflow } from './tests/automation-trigger-workflow.js';
 
 // Scenarios, Thresholds, Tags and Project ID used for K6 Cloud
 export let options = {
@@ -106,6 +107,7 @@ export async function nightly() {
   await automationCreateCustom();
   await automationCreateWelcome();
   await automationAnalytics();
+  await automationTriggerWorkflow();
   await subscribersListing();
   await subscribersFiltering();
   await subscribersAdding();
