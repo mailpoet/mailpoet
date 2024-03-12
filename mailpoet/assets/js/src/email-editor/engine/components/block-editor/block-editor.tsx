@@ -190,7 +190,9 @@ export function BlockEditor() {
                     </BlockTools>
                   </BlockSelectionClearer>
                 </div>
-                <FooterCredit logoSrc={`${cdnUrl}logo-grey-400x122.png`} />
+                <FooterCredit
+                  logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
+                />
               </BlockSelectionClearer>
             </div>
           </>

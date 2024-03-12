@@ -4,6 +4,8 @@ namespace MailPoet\EmailEditor\Engine\Renderer;
 
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ContentRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Engine\ThemeController;
+use MailPoet\Util\CdnAssetUrl;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoetVendor\Html2Text\Html2Text;
 
@@ -14,6 +16,8 @@ class Renderer {
 
   private ContentRenderer $contentRenderer;
 
+  private CdnAssetUrl $cdnAssetUrl;
+
   const TEMPLATE_FILE = 'template.html';
   const TEMPLATE_STYLES_FILE = 'template.css';
 
@@ -23,11 +27,15 @@ class Renderer {
   public function __construct(
     \MailPoetVendor\CSS $cssInliner,
     SettingsController $settingsController,
-    ContentRenderer $contentRenderer
+    ContentRenderer $contentRenderer,
+    ThemeController $themeController,
+    CdnAssetUrl $cdnAssetUrl
   ) {
     $this->cssInliner = $cssInliner;
     $this->settingsController = $settingsController;
     $this->contentRenderer = $contentRenderer;
+    $this->themeController = $themeController;
+    $this->cdnAssetUrl = $cdnAssetUrl;
   }
 
   public function render(\WP_Post $post, string $subject, string $preHeader, string $language, $metaRobots = ''): array {
@@ -45,12 +53,15 @@ class Renderer {
 
     $template = (string)file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_FILE);
 
-    // Replace style settings placeholders with values
+    // Replace settings placeholders with values
     $template = str_replace(
       ['{{width}}', '{{layout_background}}', '{{content_background}}', '{{content_font_family}}', '{{padding_top}}', '{{padding_right}}', '{{padding_bottom}}', '{{padding_left}}'],
       [$layout['contentSize'], $layoutBackground, $contentBackground, $contentFontFamily, $padding['top'], $padding['right'], $padding['bottom'], $padding['left']],
       $template
     );
+
+    $logo = $this->cdnAssetUrl->generateCdnUrl('email-editor/logo-footer.png');
+    $footerLogo = '<img src="' . esc_attr( $logo ) . '" alt="MailPoet" style="margin: 24px auto; display: block;" />';
 
     /**
      * Replace template variables
@@ -60,6 +71,7 @@ class Renderer {
      * {{email_template_styles}}
      * {{email_preheader}}
      * {{email_body}}
+     * {{email_footer_logo}}
      */
     $templateWithContents = $this->injectContentIntoTemplate(
       $template,
@@ -70,6 +82,7 @@ class Renderer {
         $styles,
         esc_html($preHeader),
         $renderedBody,
+        $footerLogo,
       ]
     );
 
