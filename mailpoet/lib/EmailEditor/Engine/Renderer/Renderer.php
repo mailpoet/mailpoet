@@ -27,7 +27,7 @@ class Renderer {
     SettingsController $settingsController,
     ContentRenderer $contentRenderer,
     CdnAssetUrl $cdnAssetUrl,
-    ServicesChecker $servicesChecker,
+    ServicesChecker $servicesChecker
   ) {
     $this->cssInliner = $cssInliner;
     $this->settingsController = $settingsController;
