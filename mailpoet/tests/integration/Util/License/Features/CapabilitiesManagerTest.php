@@ -153,7 +153,7 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     $servicesChecker->method('isPremiumPluginActive')->willReturn(true);
     $subscribersFeature = $this->createMock(Subscribers::class);
     $subscribersFeature->method('hasValidPremiumKey')->willReturn(true);
-    $subscribersFeature->method('check')->willReturn(true);
+    $subscribersFeature->method('check')->willReturn(false);
     return new CapabilitiesManager($settingsMock ?? $settings, $servicesCheckerMock ?? $servicesChecker, $subscribersFeatureMock ?? $subscribersFeature);
   }
 
