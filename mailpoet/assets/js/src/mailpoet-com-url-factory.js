@@ -24,7 +24,10 @@ export const MailPoetComUrlFactory = (referralId) => {
     getPricingPageUrl: (subscribers) =>
       getUrl(baseUrl, 'pricing', { subscribers }),
 
-    getUpgradeUrl: (key) => getUrl(baseShopUrl, '/orders/upgrade/' + key, {}),
+    getUpgradeUrl: (key, params) => {
+      const paramsObject = typeof params === 'object' ? params : {};
+      return getUrl(baseShopUrl, '/orders/upgrade/' + key, paramsObject);
+    },
 
     getPurchasePlanUrl: (
       subscribersCount,
