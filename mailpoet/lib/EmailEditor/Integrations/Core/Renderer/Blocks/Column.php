@@ -36,7 +36,7 @@ class Column implements BlockRenderer {
   private function getBlockWrapper(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $originalWrapperClassname = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName('div', 'class') ?? '';
     $block_attributes = wp_parse_args($parsedBlock['attrs'] ?? [], [
-      'verticalAlignment' => 'top',
+      'verticalAlignment' => 'stretch',
       'width' => $settingsController->getLayoutWidthWithoutPadding(),
       'style' => [],
     ]);
