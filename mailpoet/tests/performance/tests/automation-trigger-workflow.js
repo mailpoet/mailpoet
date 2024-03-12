@@ -117,7 +117,7 @@ export async function automationTriggerWorkflow() {
       describe('automation-trigger-workflow: should be able to see subscriber in the results', () => {
         expect(
           page.locator('.mailpoet-analytics-orders__customer').innerText(),
-        ).to.have.string(subscriberEmail);
+        ).to.contain(subscriberEmail);
       });
     });
 
