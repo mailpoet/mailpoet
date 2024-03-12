@@ -138,7 +138,10 @@
 }
 
 .mailpoet-email-footer-credit {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
   display: block;
-  height: 24px;
   margin: 24px auto 0;
+  padding: 0;
 }
