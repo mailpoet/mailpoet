@@ -64,10 +64,10 @@ class Columns implements BlockRenderer {
       'padding-left' => $block_attributes['align'] !== 'full' ? $settingsController->getEmailStyles()['layout']['padding']['left'] : '0px',
       'padding-right' => $block_attributes['align'] !== 'full' ? $settingsController->getEmailStyles()['layout']['padding']['right'] : '0px',
     ], '' );
-    $ieWidth = $block_attributes['align'] !== 'full' ? $block_attributes['width'] : '100%';
+    $tableWidth = $block_attributes['align'] !== 'full' ? $block_attributes['width'] : '100%';
 
     return '
-      <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="width:' . esc_attr( $ieWidth ) . ';" width="' . esc_attr( $ieWidth ) . '"><tr><td style="font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
+      <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="width:' . esc_attr( $tableWidth ) . ';" width="' . esc_attr( $tableWidth ) . '"><tr><td style="font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
       <div style="' . esc_attr($layoutCSS) . '">
       <table style="width:100%;border-collapse:separate;" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
         <tbody>
