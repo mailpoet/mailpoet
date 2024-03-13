@@ -5,22 +5,25 @@ namespace MailPoet\AdminPages\Pages;
 use MailPoet\API\JSON\API;
 use MailPoet\Config\Env;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Engine\ThemeController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
-  /** @var WPFunctions */
-  private $wp;
+  private WPFunctions $wp;
 
-  /** @var SettingsController */
-  private $settingsController;
+  private SettingsController $settingsController;
+
+  private ThemeController $themeController;
 
   public function __construct(
     WPFunctions $wp,
-    SettingsController $settingsController
+    SettingsController $settingsController,
+    ThemeController $themeController
   ) {
     $this->wp = $wp;
     $this->settingsController = $settingsController;
+    $this->themeController = $themeController;
   }
 
   public function render() {
@@ -60,6 +63,7 @@ class EmailEditor {
         'editor_settings' => $this->settingsController->getSettings(),
         'email_styles' => $this->settingsController->getEmailStyles(),
         'editor_layout' => $this->settingsController->getLayout(),
+        'editor_theme' => $this->themeController->getTheme()->get_raw_data(),
       ]
     );
 

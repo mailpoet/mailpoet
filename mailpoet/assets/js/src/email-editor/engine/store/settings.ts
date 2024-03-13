@@ -11,3 +11,7 @@ export function getEmailStyles(): EmailStyles {
 export function getEditorLayout(): EmailEditorLayout {
   return window.MailPoetEmailEditor.editor_layout as EmailEditorLayout;
 }
+
+export function getEditorTheme(): EmailStyles {
+  return window.MailPoetEmailEditor.editor_theme as EmailStyles;
+}

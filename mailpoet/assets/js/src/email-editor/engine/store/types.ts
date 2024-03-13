@@ -72,6 +72,7 @@ export type State = {
   editorSettings: EmailEditorSettings;
   styles: EmailStyles;
   layout: EmailEditorLayout;
+  theme: EmailStyles;
   autosaveInterval: number;
   preview: {
     deviceType: string;
