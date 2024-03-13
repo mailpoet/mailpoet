@@ -1,11 +1,6 @@
 import { mainSidebarEmailTab } from './constants';
 import { State } from './types';
-import {
-  getEditorLayout,
-  getEditorSettings,
-  getEmailStyles,
-  getEditorTheme,
-} from './settings';
+import { getEditorLayout, getEditorSettings, getEditorTheme } from './settings';
 
 export function getInitialState(): State {
   const searchParams = new URLSearchParams(window.location.search);
@@ -22,7 +17,6 @@ export function getInitialState(): State {
     },
     postId,
     editorSettings: getEditorSettings(),
-    styles: getEmailStyles(),
     layout: getEditorLayout(),
     theme: getEditorTheme(),
     autosaveInterval: 60,
