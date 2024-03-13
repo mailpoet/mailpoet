@@ -1,11 +1,7 @@
-import { EmailEditorSettings, EmailStyles, EmailEditorLayout } from './types';
+import { EmailEditorSettings, EmailEditorLayout, EmailTheme } from './types';
 
 export function getEditorSettings(): EmailEditorSettings {
   return window.MailPoetEmailEditor.editor_settings as EmailEditorSettings;
-}
-
-export function getEmailStyles(): EmailStyles {
-  return window.MailPoetEmailEditor.email_styles as EmailStyles;
 }
 
 export function getEditorLayout(): EmailEditorLayout {
@@ -20,6 +16,6 @@ export function isPremiumPluginActive(): boolean {
   return window.MailPoetEmailEditor.is_premium_plugin_active;
 }
 
-export function getEditorTheme(): EmailStyles {
-  return window.MailPoetEmailEditor.editor_theme as EmailStyles;
+export function getEditorTheme(): EmailTheme {
+  return window.MailPoetEmailEditor.editor_theme as EmailTheme;
 }

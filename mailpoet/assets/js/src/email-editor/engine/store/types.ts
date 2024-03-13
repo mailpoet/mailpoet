@@ -26,6 +26,11 @@ export type ExperimentalSettings = {
 
 export type EmailEditorSettings = EditorSettings & ExperimentalSettings;
 
+export type EmailTheme = {
+  version: number;
+  styles: EmailStyles;
+};
+
 export type EmailStyles = {
   spacing: {
     blockGap: string;
@@ -73,9 +78,8 @@ export type State = {
   };
   postId: number;
   editorSettings: EmailEditorSettings;
-  styles: EmailStyles;
   layout: EmailEditorLayout;
-  theme: EmailStyles;
+  theme: EmailTheme;
   autosaveInterval: number;
   cdnUrl: string;
   isPremiumPluginActive: boolean;
