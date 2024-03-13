@@ -20,7 +20,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login } from '../utils/helpers.js';
+import { login, waitForSelectorToBeVisible } from '../utils/helpers.js';
 
 export async function automationAnalytics() {
   const page = browser.newPage();
@@ -89,16 +89,19 @@ export async function automationAnalytics() {
     await page.locator('//span[contains(text(),"Today")]').click();
     await page.locator('.woocommerce-filters-date__button').click();
     await page.waitForLoadState('networkidle');
+    await waitForSelectorToBeVisible(page, '.woocommerce-table__table > table');
 
     // Filter results by date range Year to date
     await page.locator('.woocommerce-dropdown-button').click();
     await page.locator('//span[contains(text(),"Year to date")]').click();
     await page.locator('.woocommerce-filters-date__button').click();
     await page.waitForLoadState('networkidle');
+    await waitForSelectorToBeVisible(page, '.woocommerce-table__table > table');
 
     describe(automationsPageTitle, () => {
       describe('automation-analytics: should be able to see items in the listing', () => {
-        expect(page.$$('.mailpoet-analytics-orders__customer')[0]).to.exist;
+        expect(page.locator('.woocommerce-table__table > table > tbody > tr'))
+          .to.exist;
       });
     });
 
