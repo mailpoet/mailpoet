@@ -37,7 +37,10 @@ export type EmailStyles = {
     };
   };
   color: {
-    background: string;
+    background: {
+      content: string;
+      layout: string;
+    };
     text: string;
   };
   elements: {
