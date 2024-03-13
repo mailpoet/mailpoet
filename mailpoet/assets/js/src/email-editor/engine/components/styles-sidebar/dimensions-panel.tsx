@@ -4,127 +4,145 @@ import {
   __experimentalSpacingSizesControl as SpacingSizesControl,
   useSetting,
 } from '@wordpress/block-editor';
-import { __experimentalToolsPanel as ToolsPanel, __experimentalToolsPanelItem as ToolsPanelItem, __experimentalUseCustomUnits as useCustomUnits, } from '@wordpress/components';
+import {
+  __experimentalToolsPanel as ToolsPanel,
+  __experimentalToolsPanelItem as ToolsPanelItem,
+  __experimentalUseCustomUnits as useCustomUnits,
+} from '@wordpress/components';
+import { useEntityProp } from '@wordpress/core-data';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { isEqual } from 'lodash';
-import { storeName } from '../../store';
-
-
-const DEFAULT_PADDING = {
-  bottom: '20px',
-  left: '20px',
-  right: '20px',
-  top: '20px',
-};
-
-const DEFAULT_BLOCK_GAP = '16px';
+import { EmailStyles, storeName } from '../../store';
 
 export function DimensionsPanel() {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const availableUnits: string[] = useSetting('spacing.units');
   const units = useCustomUnits({
-    availableUnits
+    availableUnits,
   });
 
-  const {styles} = useSelect((select) => ({
+  const [mailpoetEmailData] = useEntityProp(
+    'postType',
+    'mailpoet_email',
+    'mailpoet_data',
+  );
+
+  const { styles } = useSelect((select) => ({
     styles: select(storeName).getStyles(),
   }));
+  const defaultPadding = styles.spacing.padding ?? undefined;
+  const defaultBlockGap = styles.spacing.blockGap ?? undefined;
 
-  const {
-    updateStyles,
-  } = useDispatch(storeName);
+  const { updateEmailMailPoetTheme } = useDispatch(storeName);
 
   // Padding
-  const paddingValues = styles.spacing.padding;
+  const paddingValues =
+    mailpoetEmailData.theme?.styles?.spacing?.padding ?? defaultPadding;
   const resetPadding = () => {
-    void updateStyles({
-      ...styles,
-      spacing: {
-        ...styles.spacing,
-        padding: DEFAULT_PADDING,
+    void updateEmailMailPoetTheme({
+      ...mailpoetEmailData.theme,
+      styles: {
+        ...mailpoetEmailData.theme?.styles,
+        spacing: {
+          ...mailpoetEmailData.theme?.styles?.spacing,
+          padding: defaultPadding ?? undefined,
+        },
       },
-    });
-  }
+    } as EmailStyles);
+  };
   const setPaddingValues = (value) => {
-    void updateStyles({
-      ...styles,
-      spacing: {
-        ...styles.spacing,
-        padding: value,
+    void updateEmailMailPoetTheme({
+      ...mailpoetEmailData.theme,
+      styles: {
+        ...mailpoetEmailData.theme?.styles,
+        spacing: {
+          ...mailpoetEmailData.theme?.styles?.spacing,
+          padding: value,
+        },
       },
-    })
+    } as EmailStyles);
   };
 
   // Block spacing
-  const blockGapValue = styles.spacing.blockGap;
+  const blockGapValue =
+    mailpoetEmailData.theme?.styles?.spacing?.blockGap ?? defaultBlockGap;
   const resetBlockGap = () => {
-    void updateStyles({
-      ...styles,
-      spacing: {
-        ...styles.spacing,
-        blockGap: DEFAULT_BLOCK_GAP,
+    void updateEmailMailPoetTheme({
+      ...mailpoetEmailData.theme,
+      styles: {
+        ...mailpoetEmailData.theme?.styles,
+        spacing: {
+          ...styles.spacing,
+          blockGap: undefined,
+        },
       },
-    });
-  }
+    } as EmailStyles);
+  };
+
   const setBlockGapValue = (value) => {
-    void updateStyles({
-      ...styles,
-      spacing: {
-        ...styles.spacing,
-        blockGap: value.top || DEFAULT_BLOCK_GAP,
+    void updateEmailMailPoetTheme({
+      ...mailpoetEmailData.theme,
+      styles: {
+        ...mailpoetEmailData.theme?.styles,
+        spacing: {
+          ...mailpoetEmailData.theme?.styles?.spacing,
+          blockGap: value.top || styles.spacing.blockGap,
+        },
       },
-    });
+    } as EmailStyles);
   };
 
   const resetAll = () => {
-    void updateStyles({
-      ...styles,
-      spacing: {
-        ...styles.spacing,
-        blockGap: DEFAULT_BLOCK_GAP,
-        padding: DEFAULT_PADDING,
+    void updateEmailMailPoetTheme({
+      ...mailpoetEmailData.theme,
+      styles: {
+        ...mailpoetEmailData.theme?.styles,
+        spacing: {
+          ...styles.spacing,
+          padding: defaultPadding ?? undefined,
+          blockGap: defaultBlockGap ?? undefined,
+        },
       },
-    });
-  }
+    } as EmailStyles);
+  };
 
-  return <ToolsPanel
-    label={__('Dimensions', 'mailpoet')}
-    resetAll={resetAll}
-  >
-    <ToolsPanelItem
-      isShownByDefault
-      hasValue={() => !isEqual(paddingValues, DEFAULT_PADDING)}
-      label={__('Padding')}
-      onDeselect={() => resetPadding()}
-      className="tools-panel-item-spacing"
-    >
-      <SpacingSizesControl
-        allowReset
-        values={paddingValues}
-        onChange={setPaddingValues}
-        label={__('Padding', 'mailpoet')}
-        sides={['horizontal', 'vertical', 'top', 'left', 'right', 'bottom']}
-        units={units}
-      />
-    </ToolsPanelItem>
-    <ToolsPanelItem
-      isShownByDefault
-      label={__('Block spacing', 'mailpoet')}
-      hasValue={() => blockGapValue !== DEFAULT_BLOCK_GAP}
-      onDeselect={() => resetBlockGap()}
-      className="tools-panel-item-spacing"
-    >
-      <SpacingSizesControl
+  return (
+    <ToolsPanel label={__('Dimensions', 'mailpoet')} resetAll={resetAll}>
+      <ToolsPanelItem
+        isShownByDefault
+        hasValue={() => !isEqual(paddingValues, defaultPadding)}
+        label={__('Padding')}
+        onDeselect={() => resetPadding()}
+        className="tools-panel-item-spacing"
+      >
+        <SpacingSizesControl
+          allowReset
+          values={paddingValues}
+          onChange={setPaddingValues}
+          label={__('Padding', 'mailpoet')}
+          sides={['horizontal', 'vertical', 'top', 'left', 'right', 'bottom']}
+          units={units}
+        />
+      </ToolsPanelItem>
+      <ToolsPanelItem
+        isShownByDefault
         label={__('Block spacing', 'mailpoet')}
-        min={0}
-        onChange={setBlockGapValue}
-        showSideInLabel={false}
-        sides={['top']} // Use 'top' as the shorthand property in non-axial configurations.
-        values={{top: blockGapValue}}
-        allowReset
-      />
-    </ToolsPanelItem>
-  </ToolsPanel>;
+        hasValue={() => blockGapValue !== defaultBlockGap}
+        onDeselect={() => resetBlockGap()}
+        className="tools-panel-item-spacing"
+      >
+        <SpacingSizesControl
+          label={__('Block spacing', 'mailpoet')}
+          min={0}
+          onChange={setBlockGapValue}
+          showSideInLabel={false}
+          sides={['top']} // Use 'top' as the shorthand property in non-axial configurations.
+          values={{ top: blockGapValue }}
+          allowReset
+        />
+      </ToolsPanelItem>
+    </ToolsPanel>
+  );
 }
