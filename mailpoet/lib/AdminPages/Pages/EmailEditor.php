@@ -82,7 +82,6 @@ class EmailEditor {
         'is_premium_plugin_active' => (bool)$this->servicesChecker->isPremiumPluginActive(),
         'current_wp_user_email' => esc_js($currentUserEmail),
         'editor_settings' => $this->settingsController->getSettings(),
-        'email_styles' => $this->settingsController->getEmailStyles(),
         'editor_layout' => $this->settingsController->getLayout(),
         'editor_theme' => $this->themeController->getTheme()->get_raw_data(),
         'bc_state' => $this->getBackwardCompatibilityState(),

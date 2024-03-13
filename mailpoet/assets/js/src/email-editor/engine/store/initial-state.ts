@@ -3,7 +3,6 @@ import { State } from './types';
 import {
   getEditorLayout,
   getEditorSettings,
-  getEmailStyles,
   getCdnUrl,
   isPremiumPluginActive,
   getEditorTheme,
@@ -24,7 +23,6 @@ export function getInitialState(): State {
     },
     postId,
     editorSettings: getEditorSettings(),
-    styles: getEmailStyles(),
     layout: getEditorLayout(),
     theme: getEditorTheme(),
     autosaveInterval: 60,

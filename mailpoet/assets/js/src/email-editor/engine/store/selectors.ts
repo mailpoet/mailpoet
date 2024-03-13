@@ -164,8 +164,8 @@ export function getPreviewState(state: State): State['preview'] {
   return state.preview;
 }
 
-export function getStyles(state: State): State['styles'] {
-  return state.styles;
+export function getStyles(state: State): State['theme']['styles'] {
+  return state.theme.styles;
 }
 
 export function getLayout(state: State): State['layout'] {
