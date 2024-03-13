@@ -17,9 +17,6 @@ class Renderer {
   const TEMPLATE_FILE = 'template.html';
   const TEMPLATE_STYLES_FILE = 'template.css';
 
-  /** @var string This color is used as a wrapper of the rendered email */
-  const LAYOUT_COLOR = '#cccccc';
-
   /**
    * @param \MailPoetVendor\CSS $cssInliner
    */
@@ -38,7 +35,8 @@ class Renderer {
     $themeStyles = $this->settingsController->getEmailStyles();
     $padding = $themeStyles['spacing']['padding'];
 
-    $contentBackground = $themeStyles['color']['background'];
+    $contentBackground = $themeStyles['color']['background']['content'];
+    $layoutBackground = $themeStyles['color']['background']['layout'];
     $contentFontFamily = $themeStyles['typography']['fontFamily'];
     $renderedBody = $this->contentRenderer->render($post);
 
@@ -50,7 +48,7 @@ class Renderer {
     // Replace style settings placeholders with values
     $template = str_replace(
       ['{{width}}', '{{layout_background}}', '{{content_background}}', '{{content_font_family}}', '{{padding_top}}', '{{padding_right}}', '{{padding_bottom}}', '{{padding_left}}'],
-      [$layout['contentSize'], self::LAYOUT_COLOR, $contentBackground, $contentFontFamily, $padding['top'], $padding['right'], $padding['bottom'], $padding['left']],
+      [$layout['contentSize'], $layoutBackground, $contentBackground, $contentFontFamily, $padding['top'], $padding['right'], $padding['bottom'], $padding['left']],
       $template
     );
 

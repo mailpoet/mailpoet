@@ -191,7 +191,10 @@
       }
     },
     "color": {
-      "background": "#ffffff",
+      "background": {
+        "layout": "#f0f0f0",
+        "content": "#ffffff"
+      },
       "text": "#000000"
     },
     "typography": {
