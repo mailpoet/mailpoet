@@ -19,3 +19,7 @@ export function getCdnUrl(): string {
 export function isPremiumPluginActive(): boolean {
   return window.MailPoetEmailEditor.is_premium_plugin_active;
 }
+
+export function getEditorTheme(): EmailStyles {
+  return window.MailPoetEmailEditor.editor_theme as EmailStyles;
+}

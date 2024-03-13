@@ -183,3 +183,7 @@ export function getCdnUrl(state: State): State['cdnUrl'] {
 export function isPremiumPluginActive(state: State): boolean {
   return state.isPremiumPluginActive;
 }
+
+export function getTheme(state: State): State['theme'] {
+  return state.theme;
+}

@@ -7,17 +7,18 @@ use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Engine\ThemeController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
-  /** @var WPFunctions */
-  private $wp;
+  private WPFunctions $wp;
 
-  /** @var SettingsController */
-  private $settingsController;
+  private SettingsController $settingsController;
+
+  private ThemeController $themeController;
 
   /** @var CdnAssetUrl */
   private $cdnAssetUrl;
@@ -33,13 +34,15 @@ class EmailEditor {
     SettingsController $settingsController,
     CdnAssetUrl $cdnAssetUrl,
     ServicesChecker $servicesChecker,
-    SubscribersFeature $subscribersFeature
+    SubscribersFeature $subscribersFeature,
+    ThemeController $themeController
   ) {
     $this->wp = $wp;
     $this->settingsController = $settingsController;
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->servicesChecker = $servicesChecker;
     $this->subscribersFeature = $subscribersFeature;
+    $this->themeController = $themeController;
   }
 
   public function render() {
@@ -81,6 +84,7 @@ class EmailEditor {
         'editor_settings' => $this->settingsController->getSettings(),
         'email_styles' => $this->settingsController->getEmailStyles(),
         'editor_layout' => $this->settingsController->getLayout(),
+        'editor_theme' => $this->themeController->getTheme()->get_raw_data(),
         'bc_state' => $this->getBackwardCompatibilityState(),
       ]
     );
