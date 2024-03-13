@@ -86,7 +86,10 @@ export function* saveEditedEmail() {
 
   result.catch(() => {
     void dispatch(noticesStore).createErrorNotice(
-      __('There was an error saving email!', 'mailpoet'),
+      __(
+        'The email could not be saved. Please, clear browser cache and reload the page. If the problem persists, duplicate the email and try again.',
+        'mailpoet',
+      ),
       {
         type: 'default',
         isDismissible: true,
