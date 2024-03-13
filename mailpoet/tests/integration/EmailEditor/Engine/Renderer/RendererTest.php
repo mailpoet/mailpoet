@@ -6,13 +6,11 @@ use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 class RendererTest extends \MailPoetTest {
-  /** @var Renderer */
-  private $renderer;
+  private Renderer $renderer;
 
-  /** @var \WP_Post */
-  private $emailPost;
+  private \WP_Post $emailPost;
 
-  public function _before() {
+  public function _before(): void {
     parent::_before();
     $this->diContainer->get(EmailEditor::class)->initialize();
     $this->renderer = $this->diContainer->get(Renderer::class);
@@ -21,7 +19,7 @@ class RendererTest extends \MailPoetTest {
     ]);
   }
 
-  public function testItRendersTemplateWithContent() {
+  public function testItRendersTemplateWithContent(): void {
     $rendered = $this->renderer->render(
       $this->emailPost,
       'Subject',
@@ -38,42 +36,24 @@ class RendererTest extends \MailPoetTest {
     verify($rendered['text'])->stringContainsString('Hello!');
   }
 
-  public function testItInlinesStyles() {
+  public function testItInlinesStyles(): void {
     $stylesCallback = function ($styles) {
       return $styles . 'body { color: pink; }';
     };
     add_filter('mailpoet_email_renderer_styles', $stylesCallback);
     $rendered = $this->renderer->render($this->emailPost, 'Subject', '', 'en');
-    $doc = new \DOMDocument();
-    $doc->loadHTML($rendered['html']);
-    $xpath = new \DOMXPath($doc);
-    $nodes = $xpath->query('//body');
-    $body = null;
-    if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
-      $body = $nodes->item(0);
-    }
-    $this->assertInstanceOf(\DOMElement::class, $body);
-    $style = $body->getAttribute('style');
+    $style = $this->getStylesValueForTag($rendered['html'], ['tag_name' => 'body']);
     verify($style)->stringContainsString('color:pink');
     remove_filter('mailpoet_email_renderer_styles', $stylesCallback);
   }
 
-  public function testItInlinesBodyStyles() {
+  public function testItInlinesBodyStyles(): void {
     $rendered = $this->renderer->render($this->emailPost, 'Subject', '', 'en');
-    $doc = new \DOMDocument();
-    $doc->loadHTML($rendered['html']);
-    $xpath = new \DOMXPath($doc);
-    $nodes = $xpath->query('//body');
-    $body = null;
-    if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
-      $body = $nodes->item(0);
-    }
-    $this->assertInstanceOf(\DOMElement::class, $body);
-    $style = $body->getAttribute('style');
+    $style = $this->getStylesValueForTag($rendered['html'], ['tag_name' => 'body']);
     verify($style)->stringContainsString('margin:0;padding:0;');
   }
 
-  public function testItInlinesWrappersStyles() {
+  public function testItInlinesWrappersStyles(): void {
     $themeJsonMock = $this->createMock(\WP_Theme_JSON::class);
     $themeJsonMock->method('get_data')->willReturn([
       'styles' => [
@@ -104,20 +84,22 @@ class RendererTest extends \MailPoetTest {
       'settingsController' => $settingsControllerMock,
     ]);
     $rendered = $renderer->render($this->emailPost, 'Subject', '', 'en');
+
+    // Verify body element styles
+    $style = $this->getStylesValueForTag($rendered['html'], ['tag_name' => 'body']);
+    verify($style)->stringContainsString('background:#123456');
+
+    // Verify content wrapper element styles
+    $style = $this->getStylesValueForTag($rendered['html'], ['tag_name' => 'td', 'class_name' => 'email_content_wrapper']);
+    verify($style)->stringContainsString('font-family:Test Font Family;');
+    verify($style)->stringContainsString('background:#654321');
+    verify($style)->stringContainsString('padding-top:3px;');
+    verify($style)->stringContainsString('padding-bottom:4px;');
+
+    // Verify layout element styles
     $doc = new \DOMDocument();
     $doc->loadHTML($rendered['html']);
     $xpath = new \DOMXPath($doc);
-    $nodes = $xpath->query('//body');
-    $body = null;
-    if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
-      $body = $nodes->item(0);
-    }
-    $this->assertInstanceOf(\DOMElement::class, $body);
-    $style = $body->getAttribute('style');
-    verify($style)->stringContainsString('background:#123456');
-
-    $xpath = new \DOMXPath($doc);
-    // Verify layout element
     $wrapper = null;
     $nodes = $xpath->query('//div[contains(@class, "email_layout_wrapper")]//div');
     if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
@@ -126,18 +108,13 @@ class RendererTest extends \MailPoetTest {
     $this->assertInstanceOf(\DOMElement::class, $wrapper);
     $style = $wrapper->getAttribute('style');
     verify($style)->stringContainsString('max-width:123px');
+  }
 
-    // Verify content wrapper element
-    $contentWrapper = null;
-    $nodes = $xpath->query('//td[contains(@class, "email_content_wrapper")]');
-    if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
-      $contentWrapper = $nodes->item(0);
+  private function getStylesValueForTag(string $html, array $query): ?string {
+    $html = new \WP_HTML_Tag_Processor($html);
+    if ($html->next_tag($query)) {
+      return $html->get_attribute('style');
     }
-    $this->assertInstanceOf(\DOMElement::class, $contentWrapper);
-    $style = $contentWrapper->getAttribute('style');
-    verify($style)->stringContainsString('font-family:Test Font Family;');
-    verify($style)->stringContainsString('background:#654321');
-    verify($style)->stringContainsString('padding-top:3px;');
-    verify($style)->stringContainsString('padding-bottom:4px;');
+    return null;
   }
 }
