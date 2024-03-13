@@ -6,6 +6,7 @@ import {
   getEmailStyles,
   getCdnUrl,
   isPremiumPluginActive,
+  getEditorTheme,
 } from './settings';
 
 export function getInitialState(): State {
@@ -25,6 +26,7 @@ export function getInitialState(): State {
     editorSettings: getEditorSettings(),
     styles: getEmailStyles(),
     layout: getEditorLayout(),
+    theme: getEditorTheme(),
     autosaveInterval: 60,
     cdnUrl: getCdnUrl(),
     isPremiumPluginActive: isPremiumPluginActive(),

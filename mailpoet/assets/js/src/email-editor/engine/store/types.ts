@@ -75,6 +75,7 @@ export type State = {
   editorSettings: EmailEditorSettings;
   styles: EmailStyles;
   layout: EmailEditorLayout;
+  theme: EmailStyles;
   autosaveInterval: number;
   cdnUrl: string;
   isPremiumPluginActive: boolean;
