@@ -80,6 +80,7 @@ export function* saveEditedEmail() {
       {
         type: 'snackbar',
         isDismissible: true,
+        context: 'email-editor',
       },
     );
   });
@@ -93,6 +94,7 @@ export function* saveEditedEmail() {
       {
         type: 'default',
         isDismissible: true,
+        context: 'email-editor',
       },
     );
   });

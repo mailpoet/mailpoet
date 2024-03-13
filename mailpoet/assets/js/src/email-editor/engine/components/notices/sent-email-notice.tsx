@@ -23,6 +23,7 @@ export function SentEmailNotice() {
         ),
         {
           isDismissible: false,
+          context: 'email-editor',
         },
       );
     }

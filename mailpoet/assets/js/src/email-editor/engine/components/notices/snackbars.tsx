@@ -7,7 +7,7 @@ import { store as noticesStore } from '@wordpress/notices';
 export function EditorSnackbars() {
   const { notices } = useSelect(
     (select) => ({
-      notices: select(noticesStore).getNotices(),
+      notices: select(noticesStore).getNotices('email-editor'),
     }),
     [],
   );
