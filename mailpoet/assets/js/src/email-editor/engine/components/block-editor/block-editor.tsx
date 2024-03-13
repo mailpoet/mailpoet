@@ -14,6 +14,9 @@ import {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore No types for this exist yet.
   __unstableEditorStyles as EditorStyles,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore No types for this exist yet.
+  BlockContextProvider,
 } from '@wordpress/block-editor';
 import { UnsavedChangesWarning } from '@wordpress/editor';
 import { uploadMedia } from '@wordpress/media-utils';
@@ -33,7 +36,7 @@ import { Header } from '../header';
 import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 import { EditorNotices, EditorSnackbars, SentEmailNotice } from '../notices';
-import { StylesSidebar } from '../styles-sidebar';
+import { StylesSidebar, ThemeStyles } from '../styles-sidebar';
 import { FooterCredit } from './footer-credit';
 
 export function BlockEditor() {
@@ -128,87 +131,97 @@ export function BlockEditor() {
   }
 
   return (
-    <BlockEditorProvider
-      value={blocks}
-      onInput={onInput}
-      onChange={onChange}
-      settings={settings}
-      useSubRegistry={false}
+    // BlockContextProvider has set templateSlug because the hook `useGlobalStylesOutputWithConfig` doesn't render layout padding without it.
+    <BlockContextProvider
+      value={{
+        postId,
+        postType: 'mailpoet_email',
+        templateSlug: 'mailpoet-email',
+      }}
     >
-      <FullscreenMode isActive={isFullscreenActive} />
-      <UnsavedChangesWarning />
-      <AutosaveMonitor />
-      <SentEmailNotice />
-      <Sidebar />
-      <StylesSidebar />
-      <InterfaceSkeleton
-        className={className}
-        header={<Header />}
-        editorNotices={<EditorNotices />}
-        notices={<EditorSnackbars />}
-        content={
-          <>
-            <EditorNotices />
-            <div className="edit-post-visual-editor">
-              <BlockSelectionClearer
-                className="edit-post-visual-editor__content-area"
-                style={contentAreaStyles}
-              >
-                <div
-                  style={inlineStyles}
-                  className={classnames({
-                    'is-mobile-preview': previewDeviceType === 'Mobile',
-                    'is-desktop-preview': previewDeviceType === 'Desktop',
-                  })}
+      <BlockEditorProvider
+        value={blocks}
+        onInput={onInput}
+        onChange={onChange}
+        settings={settings}
+        useSubRegistry={false}
+      >
+        <FullscreenMode isActive={isFullscreenActive} />
+        <UnsavedChangesWarning />
+        <AutosaveMonitor />
+        <SentEmailNotice />
+        <Sidebar />
+        <StylesSidebar />
+        <InterfaceSkeleton
+          className={className}
+          header={<Header />}
+          editorNotices={<EditorNotices />}
+          notices={<EditorSnackbars />}
+          content={
+            <>
+              <EditorNotices />
+              <div className="edit-post-visual-editor">
+                <BlockSelectionClearer
+                  className="edit-post-visual-editor__content-area"
+                  style={contentAreaStyles}
                 >
-                  <EditorStyles
-                    styles={settings.styles}
-                    scope=".editor-styles-wrapper"
-                  />
-                  <BlockSelectionClearer
-                    className="editor-styles-wrapper block-editor-writing-flow"
-                    style={{ width: '100%' }}
+                  <div
+                    style={inlineStyles}
+                    className={classnames({
+                      'is-mobile-preview': previewDeviceType === 'Mobile',
+                      'is-desktop-preview': previewDeviceType === 'Desktop',
+                    })}
                   >
-                    {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                    {/* @ts-ignore BlockEditorKeyboardShortcuts.Register has no types */}
-                    <BlockEditorKeyboardShortcuts.Register />
-                    <BlockTools>
-                      <WritingFlow>
-                        <ObserveTyping>
-                          <BlockList
-                            className={classnames(
-                              {
-                                'is-mobile-preview':
-                                  previewDeviceType === 'Mobile',
-                              },
-                              'is-layout-constrained has-global-padding',
-                            )}
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-ignore We have an older package of @wordpress/block-editor that doesn't contain the correct type
-                            layout={layout}
-                          />
-                        </ObserveTyping>
-                      </WritingFlow>
-                    </BlockTools>
-                  </BlockSelectionClearer>
-                </div>
-                {!isPremiumPluginActive && (
-                  <FooterCredit
-                    logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
-                  />
-                )}
-              </BlockSelectionClearer>
-            </div>
-          </>
-        }
-        sidebar={<ComplementaryArea.Slot scope={storeName} />}
-        secondarySidebar={
-          (isInserterSidebarOpened && <InserterSidebar />) ||
-          (isListviewSidebarOpened && <ListviewSidebar />)
-        }
-      />
-      {/* Rendering Warning component here ensures that the warning is displayed under the border configuration. */}
-      <BlockCompatibilityWarnings />
-    </BlockEditorProvider>
+                    <ThemeStyles />
+                    <EditorStyles
+                      styles={settings.styles}
+                      scope=".editor-styles-wrapper"
+                    />
+                    <BlockSelectionClearer
+                      className="editor-styles-wrapper block-editor-writing-flow"
+                      style={{ width: '100%' }}
+                    >
+                      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                      {/* @ts-ignore BlockEditorKeyboardShortcuts.Register has no types */}
+                      <BlockEditorKeyboardShortcuts.Register />
+                      <BlockTools>
+                        <WritingFlow>
+                          <ObserveTyping>
+                            <BlockList
+                              className={classnames(
+                                {
+                                  'is-mobile-preview':
+                                    previewDeviceType === 'Mobile',
+                                },
+                                'is-layout-constrained has-global-padding',
+                              )}
+                              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                              // @ts-ignore We have an older package of @wordpress/block-editor that doesn't contain the correct type
+                              layout={layout}
+                            />
+                          </ObserveTyping>
+                        </WritingFlow>
+                      </BlockTools>
+                    </BlockSelectionClearer>
+                  </div>
+                  {!isPremiumPluginActive && (
+                    <FooterCredit
+                      logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
+                    />
+                  )}
+                </BlockSelectionClearer>
+              </div>
+            </>
+          }
+          sidebar={<ComplementaryArea.Slot scope={storeName} />}
+          secondarySidebar={
+            (isInserterSidebarOpened && <InserterSidebar />) ||
+            (isListviewSidebarOpened && <ListviewSidebar />)
+          }
+        />
+        {/* Rendering Warning component here ensures that the warning is displayed under the border configuration. */}
+        <BlockCompatibilityWarnings />
+      </BlockEditorProvider>
+    </BlockContextProvider>
   );
 }
