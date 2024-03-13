@@ -35,6 +35,7 @@ function Analytics(): JSX.Element {
           tracking={{
             utm_campaign: premiumModal.utmCampaign ?? 'automation_analytics',
           }}
+          data={premiumModal.data}
         >
           {premiumModal.content}
         </PremiumModal>

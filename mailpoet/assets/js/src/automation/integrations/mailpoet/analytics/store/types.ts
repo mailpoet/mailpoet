@@ -1,3 +1,4 @@
+import { Data } from 'common/premium-modal/upgrade-info';
 import {
   Automation,
   Step,
@@ -181,5 +182,6 @@ export type State = {
   premiumModal?: {
     content: string | JSX.Element;
     utmCampaign?: string;
+    data?: Data;
   };
 };

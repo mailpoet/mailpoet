@@ -4,6 +4,7 @@ import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 import { apiFetch } from '@wordpress/data-controls';
 import { Hooks } from 'wp-js-hooks';
+import { Data } from 'common/premium-modal/upgrade-info';
 import { CurrentView, Query, Section, SectionData } from '../types';
 import { storeName } from '../constants';
 import { getSampleData } from '../samples';
@@ -120,11 +121,16 @@ export function* updateSection(
   };
 }
 
-export function openPremiumModal(content: JSX.Element, utmCampaign?: string) {
+export function openPremiumModal(
+  content: JSX.Element,
+  utmCampaign?: string,
+  data?: Data,
+) {
   return {
     type: 'OPEN_PREMIUM_MODAL',
     content,
     utmCampaign,
+    data,
   };
 }
 
@@ -133,6 +139,7 @@ export function openPremiumModalForSampleData() {
     type: 'OPEN_PREMIUM_MODAL',
     content: __("You're viewing sample data.", 'mailpoet'),
     utmCampaign: 'automation_analytics_sample_data',
+    data: { capabilityName: 'detailedAnalytics' },
   };
 }
 
