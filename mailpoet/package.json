@@ -60,6 +60,7 @@
     "@wordpress/notices": "^4.10.13",
     "@wordpress/plugins": "^6.10.14",
     "@wordpress/preferences": "^3.19.14",
+    "@wordpress/private-apis": "^0.35.0",
     "@wordpress/rich-text": "^6.19.13",
     "@wordpress/url": "^3.43.13",
     "@wordpress/viewport": "^5.19.13",
