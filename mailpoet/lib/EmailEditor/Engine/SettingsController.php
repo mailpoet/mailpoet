@@ -39,7 +39,6 @@ class SettingsController {
 
   public function getSettings(): array {
     $coreDefaultSettings = get_default_block_editor_settings();
-    $editorTheme = $this->getTheme();
     $themeSettings = $this->themeController->getSettings();
 
     // body selector is later transformed to .editor-styles-wrapper
@@ -54,8 +53,6 @@ class SettingsController {
     $flexEmailLayoutStyles = file_get_contents(__DIR__ . '/flex-email-layout.css');
 
     $settings['styles'] = [
-      ['css' => wp_get_global_stylesheet(['base-layout-styles'])],
-      ['css' => $editorTheme->get_stylesheet()],
       ['css' => $contentVariables],
       ['css' => $flexEmailLayoutStyles],
     ];

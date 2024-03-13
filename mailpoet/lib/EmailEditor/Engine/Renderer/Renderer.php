@@ -6,12 +6,14 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ContentRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\Util\CdnAssetUrl;
+use MailPoet\EmailEditor\Engine\ThemeController;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoetVendor\Html2Text\Html2Text;
 
 class Renderer {
   private \MailPoetVendor\CSS $cssInliner;
   private SettingsController $settingsController;
+  private ThemeController $themeController;
   private ContentRenderer $contentRenderer;
   private CdnAssetUrl $cdnAssetUrl;
   private ServicesChecker $servicesChecker;
@@ -27,18 +29,22 @@ class Renderer {
     SettingsController $settingsController,
     ContentRenderer $contentRenderer,
     CdnAssetUrl $cdnAssetUrl,
-    ServicesChecker $servicesChecker
+    ServicesChecker $servicesChecker,
+    ThemeController $themeController
   ) {
     $this->cssInliner = $cssInliner;
     $this->settingsController = $settingsController;
     $this->contentRenderer = $contentRenderer;
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->servicesChecker = $servicesChecker;
+    $this->themeController = $themeController;
   }
 
   public function render(\WP_Post $post, string $subject, string $preHeader, string $language, $metaRobots = ''): array {
     $layout = $this->settingsController->getLayout();
-    $themeStyles = $this->settingsController->getEmailStyles();
+    $theme = $this->themeController->getTheme();
+    $theme = apply_filters('mailpoet_email_editor_rendering_theme_styles', $theme, $post);
+    $themeStyles = $theme->get_data()['styles'];
     $padding = $themeStyles['spacing']['padding'];
 
     $contentBackground = $themeStyles['color']['background']['content'];
