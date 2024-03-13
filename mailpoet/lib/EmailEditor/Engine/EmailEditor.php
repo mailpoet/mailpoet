@@ -5,7 +5,7 @@ namespace MailPoet\EmailEditor\Engine;
 use MailPoet\Entities\NewsletterEntity;
 
 /**
- * @phpstan-type EmailPostType array{name: string, args: array}
+ * @phpstan-type EmailPostType array{name: string, args: array, meta: array{key: string, args: array}[]}
  * See register_post_type for details about EmailPostType args.
  */
 class EmailEditor {
@@ -35,6 +35,13 @@ class EmailEditor {
         $postType['name'],
         array_merge($this->getDefaultEmailPostArgs(), $postType['args'])
       );
+      foreach ($postType['meta'] as $postMeta) {
+        register_post_meta(
+          $postType['name'],
+          $postMeta['key'],
+          $postMeta['args']
+        );
+      }
     }
   }
 
