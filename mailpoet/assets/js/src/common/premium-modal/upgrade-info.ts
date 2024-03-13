@@ -145,19 +145,33 @@ export const getUpgradeInfo = (
   // f. User has a license but the feature is not available for the plan.
   if (
     capabilityName &&
-    typeof MailPoet.capabilities[capabilityName] === 'boolean' &&
-    !MailPoet.capabilities[capabilityName]
+    ((typeof MailPoet.capabilities[capabilityName] === 'boolean' &&
+      !MailPoet.capabilities[capabilityName]) ||
+      (typeof MailPoet.capabilities[capabilityName] === 'number' &&
+        MailPoet.capabilities[capabilityName] > 0))
   ) {
-    let info = __(
-      'Please upgrade your MailPoet plan to gain access to this feature.',
-      'mailpoet',
-    );
-    if (capabilityName === 'detailedAnalytics') {
-      info = __(
-        'Upgrade your MailPoet plan to gain detailed insights into how your subscribers engage with your automations and their purchasing behaviors.',
-        'mailpoet',
-      );
+    let info: string;
+
+    switch (capabilityName) {
+      case 'detailedAnalytics':
+        info = __(
+          'Upgrade your MailPoet plan to gain detailed insights into how your subscribers engage with your automations and their purchasing behaviors.',
+          'mailpoet',
+        );
+        break;
+      case 'automationSteps':
+        info = __(
+          'Automation journeys are not available in your current plan. Upgrade your MailPoet plan to design personalized journeys with multiple steps and conditional branching logic.',
+          'mailpoet',
+        );
+        break;
+      default:
+        info = __(
+          'Please upgrade your MailPoet plan to gain access to this feature.',
+          'mailpoet',
+        );
     }
+
     return {
       title: __('Upgrade your MailPoet plan', 'mailpoet'),
       info,
