@@ -34,6 +34,7 @@ class EmailApiController {
       'subject' => $newsletter ? $newsletter->getSubject() : '',
       'preheader' => $newsletter ? $newsletter->getPreheader() : '',
       'preview_url' => $this->newsletterUrl->getViewInBrowserUrl($newsletter),
+      'theme' => get_post_meta($postEmailData['id'], EmailEditor::MAILPOET_EMAIL_META_THEME_TYPE, true),
     ];
   }
 
@@ -49,6 +50,8 @@ class EmailApiController {
       throw new UnexpectedValueException('Newsletter ID does not match the post ID');
     }
 
+    update_post_meta($emailPost->ID, EmailEditor::MAILPOET_EMAIL_META_THEME_TYPE, $data['theme']);
+
     $newsletter->setSubject($data['subject']);
     $newsletter->setPreheader($data['preheader']);
     $this->newsletterRepository->flush();
@@ -60,6 +63,7 @@ class EmailApiController {
       'subject' => Builder::string(),
       'preheader' => Builder::string(),
       'preview_url' => Builder::string(),
+      'theme' => Builder::object(),
     ])->toArray();
   }
 }
