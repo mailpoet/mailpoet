@@ -21,6 +21,7 @@ export function reducer(state: State, action): State {
         premiumModal: {
           content: action.content,
           utmCampaign: action.utmCampaign,
+          data: action.data,
         },
       };
     case 'CLOSE_PREMIUM_MODAL':
