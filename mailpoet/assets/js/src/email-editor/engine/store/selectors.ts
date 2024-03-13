@@ -2,6 +2,7 @@ import { createRegistrySelector } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as preferencesStore } from '@wordpress/preferences';
+import { serialize, BlockInstance } from '@wordpress/blocks';
 import { storeName } from './constants';
 import { State, Feature } from './types';
 
@@ -98,20 +99,35 @@ export const isEmailSent = createRegistrySelector((select) => (): boolean => {
   return status === 'sent';
 });
 
-export const hasUnsubscribeLink = createRegistrySelector(
-  (select) => (): boolean => {
+/**
+ * Returns the content of the email being edited.
+ *
+ * @param {Object} state Global application state.
+ * @return {string} Post content.
+ */
+export const getEditedEmailContent = createRegistrySelector(
+  (select) => (): string => {
     const postId = select(storeName).getEmailPostId();
-    const post = select(coreDataStore).getEntityRecord(
+    const record = select(coreDataStore).getEditedEntityRecord(
       'postType',
       'mailpoet_email',
       postId,
-    );
-    if (!post) return false;
+    ) as unknown as
+      | { content: string | unknown; blocks: BlockInstance[] }
+      | undefined;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const { content } = post;
-    return !!content.raw.includes('[link:subscription_unsubscribe_url]');
+    if (record) {
+      if (record?.content && typeof record.content === 'function') {
+        return record.content(record) as string;
+      }
+      if (record?.blocks) {
+        return serialize(record.blocks);
+      }
+      if (record?.content) {
+        return record.content as string;
+      }
+    }
+    return '';
   },
 );
 
