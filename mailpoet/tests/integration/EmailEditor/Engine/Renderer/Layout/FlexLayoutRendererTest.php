@@ -5,6 +5,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\Layout;
 use MailPoet\EmailEditor\Engine\Renderer\BlocksRegistry;
 use MailPoet\EmailEditor\Engine\Renderer\DummyBlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Engine\ThemeController;
 
 require_once __DIR__ . '/../DummyBlockRenderer.php';
 
@@ -21,7 +22,18 @@ class FlexLayoutRendererTest extends \MailPoetTest {
 
   public function _before(): void {
     parent::_before();
-    $this->settingsController = $this->diContainer->get(SettingsController::class);
+    $themeControllerMock = $this->createMock(ThemeController::class);
+    $themeControllerMock->method('getTheme')->willReturn(
+      new \WP_Theme_JSON([
+        'version' => 2,
+        'styles' => [
+          'spacing' => [
+            'blockGap' => '16px',
+          ],
+        ],
+      ])
+    );
+    $this->settingsController = new SettingsController($themeControllerMock);
     $this->registry = new BlocksRegistry($this->settingsController);
     $this->renderer = new FlexLayoutRenderer();
     $this->registry->addBlockRenderer('dummy/block', new DummyBlockRenderer());

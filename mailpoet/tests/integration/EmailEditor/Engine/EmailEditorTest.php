@@ -11,11 +11,14 @@ class EmailEditorTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
-    $this->emailEditor = $this->diContainer->get(EmailEditor::class);
+    $this->emailEditor = $this->getServiceWithOverrides(EmailEditor::class, [
+      'emailApiController' => $this->createMock(EmailApiController::class),
+    ]);
     $this->postRegisterCallback = function ($postTypes) {
       $postTypes[] = [
         'name' => 'custom_email_type',
         'args' => [],
+        'meta' => [],
       ];
       return $postTypes;
     };

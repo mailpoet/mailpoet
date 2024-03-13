@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer;
 
 use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Engine\ThemeController;
 
 require_once __DIR__ . '/DummyBlockRenderer.php';
 
@@ -17,8 +18,41 @@ class RendererTest extends \MailPoetTest {
   public function _before() {
     parent::_before();
     $this->diContainer->get(EmailEditor::class)->initialize();
-    $this->renderer = $this->diContainer->get(Renderer::class);
+    $themeJsonMock = $this->createMock(\WP_Theme_JSON::class);
+    $themeJsonMock->method('get_data')->willReturn([
+      'styles' => [
+        'spacing' => [
+          'padding' => [
+            'bottom' => '4px',
+            'top' => '3px',
+            'left' => '2px',
+            'right' => '1px',
+          ],
+        ],
+        'typography' => [
+          'fontFamily' => 'Test Font Family',
+        ],
+        'color' => [
+          'background' => [
+            'layout' => '#123456',
+            'content' => '#654321',
+          ],
+        ],
+      ],
+    ]);
+    $settingsControllerMock = $this->createMock(SettingsController::class);
+    $settingsControllerMock->method('getLayout')->willReturn([
+      'contentSize' => '123px',
+    ]);
+    $themeControllerMock = $this->createMock(ThemeController::class);
+    $themeControllerMock->method('getTheme')->willReturn($themeJsonMock);
+
+    $this->renderer = $this->getServiceWithOverrides(Renderer::class, [
+      'settingsController' => $settingsControllerMock,
+      'themeController' => $themeControllerMock,
+    ]);
     $this->emailPost = new \WP_Post((object)[
+      'ID' => 1,
       'post_content' => '<!-- wp:paragraph --><p>Hello!</p><!-- /wp:paragraph -->',
     ]);
   }
@@ -40,26 +74,6 @@ class RendererTest extends \MailPoetTest {
     verify($rendered['text'])->stringContainsString('Hello!');
   }
 
-  public function testItInlinesStyles() {
-    $stylesCallback = function ($styles) {
-      return $styles . 'body { color: pink; }';
-    };
-    add_filter('mailpoet_email_renderer_styles', $stylesCallback);
-    $rendered = $this->renderer->render($this->emailPost, 'Subject', '', 'en');
-    $doc = new \DOMDocument();
-    $doc->loadHTML($rendered['html']);
-    $xpath = new \DOMXPath($doc);
-    $nodes = $xpath->query('//body');
-    $body = null;
-    if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
-      $body = $nodes->item(0);
-    }
-    $this->assertInstanceOf(\DOMElement::class, $body);
-    $style = $body->getAttribute('style');
-    verify($style)->stringContainsString('color:pink');
-    remove_filter('mailpoet_email_renderer_styles', $stylesCallback);
-  }
-
   public function testItInlinesEmailStyles() {
     $rendered = $this->renderer->render($this->emailPost, 'Subject', '', 'en');
     $doc = new \DOMDocument();
@@ -76,36 +90,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItInlinesMainStyles() {
-    $themeJsonMock = $this->createMock(\WP_Theme_JSON::class);
-    $themeJsonMock->method('get_data')->willReturn([
-      'styles' => [
-        'typography' => [
-          'fontFamily' => 'Test Font Family',
-        ],
-        'color' => [
-          'background' => '#654321',
-        ],
-      ],
-    ]);
-    $settingsControllerMock = $this->createMock(SettingsController::class);
-    $settingsControllerMock->method('getEmailStyles')->willReturn([
-      'layout' => [
-        'width' => '123px',
-        'background' => '#123456',
-        'padding' => [
-          'left' => '1px',
-          'right' => '2px',
-          'top' => '3px',
-          'bottom' => '4px',
-        ],
-      ],
-    ]);
-    $settingsControllerMock->method('getTheme')->willReturn($themeJsonMock);
-
-    $renderer = $this->getServiceWithOverrides(Renderer::class, [
-      'settingsController' => $settingsControllerMock,
-    ]);
-    $rendered = $renderer->render($this->emailPost, 'Subject', '', 'en');
+    $rendered = $this->renderer->render($this->emailPost, 'Subject', '', 'en');
     $doc = new \DOMDocument();
     $doc->loadHTML($rendered['html']);
     $xpath = new \DOMXPath($doc);

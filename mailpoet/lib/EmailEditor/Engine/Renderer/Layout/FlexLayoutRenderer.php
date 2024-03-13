@@ -9,7 +9,7 @@ use MailPoet\EmailEditor\Engine\SettingsController;
  */
 class FlexLayoutRenderer {
   public function renderInnerBlocksInLayout(array $parsedBlock, SettingsController $settingsController): string {
-    $themeStyles = $settingsController->getThemeStyles();
+    $themeStyles = $settingsController->getEmailStyles();
     $flexGap = $themeStyles['spacing']['blockGap'] ?? '0px';
     $flexGapNumber = $settingsController->parseNumberFromStringWithPixels($flexGap);
 
