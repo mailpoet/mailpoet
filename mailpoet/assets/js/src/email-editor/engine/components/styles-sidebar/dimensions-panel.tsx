@@ -10,6 +10,10 @@ import {
   __experimentalUseCustomUnits as useCustomUnits,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+import { useEntityProp } from '@wordpress/core-data';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { isEqual } from 'lodash';
+import { EmailStyles, storeName } from '../../store';
 
 export function DimensionsPanel() {
   const availableUnits = useSetting('spacing.units') as string[];
@@ -17,27 +21,96 @@ export function DimensionsPanel() {
     availableUnits,
   });
 
+  const [mailpoetEmailData] = useEntityProp(
+    'postType',
+    'mailpoet_email',
+    'mailpoet_data',
+  );
+
+  const { styles } = useSelect((select) => ({
+    styles: select(storeName).getStyles(),
+  }));
+  const defaultPadding = styles.spacing.padding ?? undefined;
+  const defaultBlockGap = styles.spacing.blockGap ?? undefined;
+
+  const { updateEmailMailPoetTheme } = useDispatch(storeName);
+
   // Padding
-  const paddingValues = {
-    top: '20px',
-    right: '20px',
-    bottom: '20px',
-    left: '20px',
+  const paddingValues =
+    mailpoetEmailData.theme?.styles?.spacing?.padding ?? defaultPadding;
+  const resetPadding = () => {
+    void updateEmailMailPoetTheme({
+      ...mailpoetEmailData.theme,
+      styles: {
+        ...mailpoetEmailData.theme?.styles,
+        spacing: {
+          ...mailpoetEmailData.theme?.styles?.spacing,
+          padding: defaultPadding ?? undefined,
+        },
+      },
+    } as EmailStyles);
   };
-  const resetPadding = () => {};
-  const setPaddingValues = () => {};
+  const setPaddingValues = (value) => {
+    void updateEmailMailPoetTheme({
+      ...mailpoetEmailData.theme,
+      styles: {
+        ...mailpoetEmailData.theme?.styles,
+        spacing: {
+          ...mailpoetEmailData.theme?.styles?.spacing,
+          padding: value,
+        },
+      },
+    } as EmailStyles);
+  };
 
   // Block spacing
-  const blockGapValue = '16px';
-  const resetBlockGap = () => {};
-  const setBlockGapValue = () => {};
-  const resetAll = () => {};
+  const blockGapValue =
+    mailpoetEmailData.theme?.styles?.spacing?.blockGap ?? defaultBlockGap;
+  const resetBlockGap = () => {
+    void updateEmailMailPoetTheme({
+      ...mailpoetEmailData.theme,
+      styles: {
+        ...mailpoetEmailData.theme?.styles,
+        spacing: {
+          ...styles.spacing,
+          blockGap: undefined,
+        },
+      },
+    } as EmailStyles);
+  };
+
+  const setBlockGapValue = (value) => {
+    void updateEmailMailPoetTheme({
+      ...mailpoetEmailData.theme,
+      styles: {
+        ...mailpoetEmailData.theme?.styles,
+        spacing: {
+          ...mailpoetEmailData.theme?.styles?.spacing,
+          blockGap: value.top || styles.spacing.blockGap,
+        },
+      },
+    } as EmailStyles);
+  };
+
+  const resetAll = () => {
+    void updateEmailMailPoetTheme({
+      ...mailpoetEmailData.theme,
+      styles: {
+        ...mailpoetEmailData.theme?.styles,
+        spacing: {
+          ...styles.spacing,
+          padding: defaultPadding ?? undefined,
+          blockGap: defaultBlockGap ?? undefined,
+        },
+      },
+    } as EmailStyles);
+  };
 
   return (
     <ToolsPanel label={__('Dimensions', 'mailpoet')} resetAll={resetAll}>
       <ToolsPanelItem
         isShownByDefault
-        hasValue={() => true}
+        hasValue={() => !isEqual(paddingValues, defaultPadding)}
         label={__('Padding')}
         onDeselect={() => resetPadding()}
         className="tools-panel-item-spacing"
@@ -54,7 +127,7 @@ export function DimensionsPanel() {
       <ToolsPanelItem
         isShownByDefault
         label={__('Block spacing')}
-        hasValue={() => true}
+        hasValue={() => blockGapValue !== defaultBlockGap}
         onDeselect={() => resetBlockGap()}
         className="tools-panel-item-spacing"
       >
