@@ -14,7 +14,7 @@ class Renderer {
   private ContentRenderer $contentRenderer;
 
   const TEMPLATE_FILE = 'template.html';
-  const TEMPLATE_STYLES_FILE = 'styles.css';
+  const TEMPLATE_STYLES_FILE = 'template.css';
 
   /**
    * @param \MailPoetVendor\CSS $cssInliner
