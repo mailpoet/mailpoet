@@ -45,7 +45,9 @@ class Renderer {
     $parsedBlocks = $parser->parse($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     $layout = $this->settingsController->getLayout();
-    $themeStyles = $this->settingsController->getThemeStyles();
+    $theme = $this->themeController->getTheme();
+    $theme = apply_filters('mailpoet_email_editor_rendering_theme_styles', $theme, $post);
+    $themeStyles = $theme->get_data()['styles'] ?? [];
     $padding = $themeStyles['spacing']['padding'];
     $themeData = $this->settingsController->getTheme()->get_data();
     $contentBackground = $themeData['styles']['color']['background'];
