@@ -67,7 +67,9 @@ export function Upgrade(): JSX.Element {
     >
       <span className="mailpoet-analytics-upgrade-banner__inner">
         <span>
-          <strong>{__("You're viewing sample data.", 'mailpoet')}</strong>{' '}
+          <strong>
+            {__("You're previewing a report with sample data.", 'mailpoet')}
+          </strong>{' '}
           {upgradeInfo.info}
         </span>
 

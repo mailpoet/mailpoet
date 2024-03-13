@@ -202,7 +202,7 @@ class AnalyticsCest {
     $i->wantTo("See that in the free version I see the sample data text");
     $i->scrollToTop();
     $i->click('button.mailpoet-analytics-tab-subscribers');
-    $i->see("You're viewing sample data.");
+    $i->see("You're previewing a report with sample data.");
   }
 
   private function createSubscriber(): SubscriberEntity {

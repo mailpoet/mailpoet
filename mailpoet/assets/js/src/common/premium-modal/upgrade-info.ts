@@ -148,12 +148,19 @@ export const getUpgradeInfo = (
     typeof MailPoet.capabilities[capabilityName] === 'boolean' &&
     !MailPoet.capabilities[capabilityName]
   ) {
+    let info = __(
+      'Please upgrade your MailPoet plan to gain access to this feature.',
+      'mailpoet',
+    );
+    if (capabilityName === 'detailedAnalytics') {
+      info = __(
+        'Upgrade your MailPoet plan to gain detailed insights into how your subscribers engage with your automations and their purchasing behaviors.',
+        'mailpoet',
+      );
+    }
     return {
       title: __('Upgrade your MailPoet plan', 'mailpoet'),
-      info: __(
-        'Please upgrade your MailPoet plan to gain access to this feature.',
-        'mailpoet',
-      ),
+      info,
       cta: __('Upgrade', 'mailpoet'),
       action: getUpgradeUrl(pluginPartialKey, upgradeParams),
     };
