@@ -52,6 +52,7 @@ export function BlockEditor() {
     hasFixedToolbar,
     focusMode,
     layout,
+    styles,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
@@ -66,6 +67,7 @@ export function BlockEditor() {
       hasFixedToolbar: select(storeName).isFeatureActive('fixedToolbar'),
       focusMode: select(storeName).isFeatureActive('focusMode'),
       layout: select(storeName).getLayout(),
+      styles: select(storeName).getStyles(),
     }),
     [],
   );
@@ -86,8 +88,7 @@ export function BlockEditor() {
     { id: postId },
   );
 
-  // This is color of the wrapper and we need to decide if it is configurable or not.
-  const layoutBackground = '#cccccc';
+  const layoutBackground = styles.color.background.layout;
 
   let inlineStyles = useResizeCanvas(previewDeviceType);
   // UseResizeCanvas returns null if the previewDeviceType is Desktop.
