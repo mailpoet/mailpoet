@@ -17,6 +17,8 @@ class ContentRenderer {
 
   private ThemeController $themeController;
 
+  const CONTENT_STYLES_FILE = 'content.css';
+
   /**
    * @param \MailPoetVendor\CSS $cssInliner
    */
@@ -41,7 +43,9 @@ class ContentRenderer {
     $layoutStyles = $this->settingsController->getEmailStyles()['layout'];
     $parsedBlocks = $this->processManager->preprocess($parsedBlocks, $layoutStyles);
     $renderedBody = $this->renderBlocks($parsedBlocks);
-    $styles = $this->themeController->getStylesheetForRendering();
+
+    $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::CONTENT_STYLES_FILE);
+    $styles .= $this->themeController->getStylesheetForRendering();
     $styles = apply_filters('mailpoet_email_content_renderer_styles', $styles, $post);
 
     $renderedBodyDom = $this->inlineCSSStyles("<style>$styles</style>" . $renderedBody);
