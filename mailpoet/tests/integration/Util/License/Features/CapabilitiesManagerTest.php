@@ -9,10 +9,10 @@ class CapabilitiesManagerTest extends \MailPoetTest {
   public function testItGetsCapabilities() {
     $capabilitiesManager = $this->getCapabilitiesManager();
     $capabilities = $capabilitiesManager->getCapabilities();
-    verify($capabilities->getMailpoetLogoInEmails())->false();
-    verify($capabilities->getDetailedAnalytics())->true();
-    verify($capabilities->getAutomationSteps())->equals(1);
-    verify($capabilities->getSegmentFilters())->equals(1);
+    verify($capabilities['mailpoetLogoInEmails']->isRestricted)->false();
+    verify($capabilities['detailedAnalytics']->isRestricted)->false();
+    verify($capabilities['automationSteps']->value)->equals(1);
+    verify($capabilities['segmentFilters']->value)->equals(1);
   }
 
   public function testItGetsCapabilitiesFromFreeTier() {
@@ -22,10 +22,10 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     ]);
     $capabilitiesManager = $this->getCapabilitiesManager($settings);
     $capabilities = $capabilitiesManager->getCapabilities();
-    verify($capabilities->getMailpoetLogoInEmails())->true();
-    verify($capabilities->getDetailedAnalytics())->false();
-    verify($capabilities->getAutomationSteps())->equals(1);
-    verify($capabilities->getSegmentFilters())->equals(1);
+    verify($capabilities['mailpoetLogoInEmails']->isRestricted)->true();
+    verify($capabilities['detailedAnalytics']->isRestricted)->true();
+    verify($capabilities['automationSteps']->value)->equals(1);
+    verify($capabilities['segmentFilters']->value)->equals(1);
   }
 
   public function testItGetsCapabilitiesFromTier1Tier() {
@@ -35,10 +35,10 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     ]);
     $capabilitiesManager = $this->getCapabilitiesManager($settings);
     $capabilities = $capabilitiesManager->getCapabilities();
-    verify($capabilities->getMailpoetLogoInEmails())->false();
-    verify($capabilities->getDetailedAnalytics())->true();
-    verify($capabilities->getAutomationSteps())->equals(1);
-    verify($capabilities->getSegmentFilters())->equals(1);
+    verify($capabilities['mailpoetLogoInEmails']->isRestricted)->false();
+    verify($capabilities['detailedAnalytics']->isRestricted)->false();
+    verify($capabilities['automationSteps']->value)->equals(1);
+    verify($capabilities['segmentFilters']->value)->equals(1);
   }
 
   public function testItGetsCapabilitiesFromTier2Tier() {
@@ -48,10 +48,10 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     ]);
     $capabilitiesManager = $this->getCapabilitiesManager($settings);
     $capabilities = $capabilitiesManager->getCapabilities();
-    verify($capabilities->getMailpoetLogoInEmails())->false();
-    verify($capabilities->getDetailedAnalytics())->true();
-    verify($capabilities->getAutomationSteps())->equals(0);
-    verify($capabilities->getSegmentFilters())->equals(0);
+    verify($capabilities['mailpoetLogoInEmails']->isRestricted)->false();
+    verify($capabilities['detailedAnalytics']->isRestricted)->false();
+    verify($capabilities['automationSteps']->value)->equals(0);
+    verify($capabilities['segmentFilters']->value)->equals(0);
   }
 
   public function testIndividualCapsCanBeUsedToGiveGreaterAccessThanTier() {
@@ -65,10 +65,10 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     ]);
     $capabilitiesManager = $this->getCapabilitiesManager($settings);
     $capabilities = $capabilitiesManager->getCapabilities();
-    verify($capabilities->getMailpoetLogoInEmails())->false();
-    verify($capabilities->getDetailedAnalytics())->true();
-    verify($capabilities->getAutomationSteps())->equals(2);
-    verify($capabilities->getSegmentFilters())->equals(0);
+    verify($capabilities['mailpoetLogoInEmails']->isRestricted)->false();
+    verify($capabilities['detailedAnalytics']->isRestricted)->false();
+    verify($capabilities['automationSteps']->value)->equals(2);
+    verify($capabilities['segmentFilters']->value)->equals(0);
   }
 
   public function testIndividualCapsAreOnlyAppliedIfLessRestrictiveThanTier() {
@@ -82,10 +82,10 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     ]);
     $capabilitiesManager = $this->getCapabilitiesManager($settings);
     $capabilities = $capabilitiesManager->getCapabilities();
-    verify($capabilities->getMailpoetLogoInEmails())->false();
-    verify($capabilities->getDetailedAnalytics())->true();
-    verify($capabilities->getAutomationSteps())->equals(0);
-    verify($capabilities->getSegmentFilters())->equals(0);
+    verify($capabilities['mailpoetLogoInEmails']->isRestricted)->false();
+    verify($capabilities['detailedAnalytics']->isRestricted)->false();
+    verify($capabilities['automationSteps']->value)->equals(0);
+    verify($capabilities['segmentFilters']->value)->equals(0);
   }
 
   public function testIndividualCapsAreAppliedIfThereIsNoTier() {
@@ -98,10 +98,10 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     ]);
     $capabilitiesManager = $this->getCapabilitiesManager($settings);
     $capabilities = $capabilitiesManager->getCapabilities();
-    verify($capabilities->getMailpoetLogoInEmails())->true();
-    verify($capabilities->getDetailedAnalytics())->false();
-    verify($capabilities->getAutomationSteps())->equals(1);
-    verify($capabilities->getSegmentFilters())->equals(1);
+    verify($capabilities['mailpoetLogoInEmails']->isRestricted)->true();
+    verify($capabilities['detailedAnalytics']->isRestricted)->true();
+    verify($capabilities['automationSteps']->value)->equals(1);
+    verify($capabilities['segmentFilters']->value)->equals(1);
   }
 
   public function testLogoDisplayFallsBackToUserActivelyPayingIfNoCapabilities() {
@@ -113,7 +113,7 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     $servicesChecker->method('isUserActivelyPaying')->willReturn(true);
     $capabilitiesManager = $this->getCapabilitiesManager($settings, $servicesChecker);
     $capabilities = $capabilitiesManager->getCapabilities();
-    verify($capabilities->getMailpoetLogoInEmails())->false();
+    verify($capabilities['mailpoetLogoInEmails']->isRestricted)->false();
   }
 
   public function testDetailedAnalyticsFallsBackToPremiumKeyAndSubscribersChecksIfNoCapabilities() {
@@ -125,7 +125,7 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     $servicesChecker->method('isUserActivelyPaying')->willReturn(true);
     $capabilitiesManager = $this->getCapabilitiesManager($settings);
     $capabilities = $capabilitiesManager->getCapabilities();
-    verify($capabilities->getDetailedAnalytics())->true();
+    verify($capabilities['detailedAnalytics']->isRestricted)->false();
   }
 
   public function testAutomationStepsAndSegmentFiltersAreUnlimitedIfNoCapabilities() {
@@ -133,8 +133,8 @@ class CapabilitiesManagerTest extends \MailPoetTest {
     $settings->method('get')->willReturnMap($this->getLegacySettings());
     $capabilitiesManager = $this->getCapabilitiesManager($settings);
     $capabilities = $capabilitiesManager->getCapabilities();
-    verify($capabilities->getAutomationSteps())->equals(0);
-    verify($capabilities->getSegmentFilters())->equals(0);
+    verify($capabilities['automationSteps']->value)->equals(0);
+    verify($capabilities['segmentFilters']->value)->equals(0);
   }
 
   private function getCapabilitiesManager($settingsMock = null, $servicesCheckerMock = null, $subscribersFeatureMock = null): CapabilitiesManager {

@@ -4,7 +4,7 @@ namespace MailPoet\Util\License\Features;
 
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Util\License\Features\Data\Capabilities;
+use MailPoet\Util\License\Features\Data\Capability;
 
 class CapabilitiesManager {
   // Settings mapping
@@ -24,6 +24,9 @@ class CapabilitiesManager {
   private Subscribers $subscribersFeature;
   private ?int $tier;
   private bool $isKeyValid = false;
+
+  /** @var array<string,Capability>|null */
+  private ?array $capabilities = null;
 
   public function __construct(
     SettingsController $settings,
@@ -104,15 +107,29 @@ class CapabilitiesManager {
     return $this->getLimit(self::MSS_SEGMENT_FILTERS_SETTING_KEY, self::MIN_TIER_UNLIMITED_SEGMENT_FILTERS);
   }
 
-  public function getCapabilities(): Capabilities {
+  public function initCapabilities(): void {
     $this->tier = $this->getTier();
     $isPremiumKeyValid = $this->servicesChecker->isPremiumKeyValid(false);
     $this->isKeyValid = $isPremiumKeyValid || $this->servicesChecker->isMailPoetAPIKeyValid(false);
-    return new Capabilities(
-      $this->isMailpoetLogoInEmailsRequired(),
-      $this->isDetailedAnalyticsEnabled(),
-      $this->getAutomationStepsLimit(),
-      $this->getSegmentFiltersLimit(),
-    );
+    $automationSteps = $this->getAutomationStepsLimit();
+    $segmentFilters = $this->getSegmentFiltersLimit();
+    $this->capabilities = [
+      'mailpoetLogoInEmails' => new Capability('mailpoetLogoInEmails', Capability::TYPE_BOOLEAN, $this->isMailpoetLogoInEmailsRequired()),
+      'detailedAnalytics' => new Capability('detailedAnalytics', Capability::TYPE_BOOLEAN, !$this->isDetailedAnalyticsEnabled()),
+      'automationSteps' => new Capability('automationSteps', Capability::TYPE_NUMBER, $automationSteps > 0, $automationSteps),
+      'segmentFilters' => new Capability('segmentFilters', Capability::TYPE_NUMBER, $segmentFilters > 0, $segmentFilters),
+    ];
+  }
+
+  /** @return array<string,Capability> */
+  public function getCapabilities(): array {
+    if ($this->capabilities === null) {
+      $this->initCapabilities();
+    }
+    return $this->capabilities ?? [];
+  }
+
+  public function getCapability(string $name): ?Capability {
+    return $this->getCapabilities()[$name] ?? null;
   }
 }
