@@ -34,20 +34,30 @@ class TermOptionsBuilder {
   }
 
   /** @return array<array{id: int, name: string}> */
-  private function buildTermsList(array $terms, int $parentId = 0): array {
-    $parents = array_filter($terms, function ($term) use ($parentId) {
-      return $term instanceof WP_Term && $term->parent === $parentId;
-    });
-
-    usort($parents, function (WP_Term $a, WP_Term $b) {
-      return $a->name <=> $b->name;
-    });
+  private function buildTermsList(array $terms, int $parentId = 0, array $lookup = []): array {
+    if ($lookup === []) {
+      foreach ($terms as $term) {
+        if (!$term instanceof WP_Term) {
+          continue;
+        }
+        $lookup[$term->parent][] = $term;
+      }
+    }
+    if (empty($lookup[$parentId])) {
+      return [];
+    }
 
     $list = [];
-    foreach ($parents as $term) {
+    foreach ($lookup[$parentId] as $term) {
+      if (!$term instanceof WP_Term || $term->parent !== $parentId) {
+        continue;
+      }
       $id = $term->term_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $list[] = ['id' => (int)$id, 'name' => $term->name];
-      foreach ($this->buildTermsList($terms, $id) as $child) {
+      if (empty($lookup[$id])) {
+        continue;
+      }
+      foreach ($this->buildTermsList($lookup[$id], $id, $lookup) as $child) {
         $list[] = ['id' => (int)$child['id'], 'name' => "$term->name | {$child['name']}"];
       }
     }
