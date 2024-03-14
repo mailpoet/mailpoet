@@ -338,15 +338,18 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENT);
     $wp = $this->diContainer->get(WPFunctions::class);
     $postId = $wp->wpInsertPost(['post_content' => 'newsletter content', 'post_title' => 'Newsletter Title']);
+    $wp->updatePostMeta($postId, 'some_meta', ['some_meta' => 'value']);
     $newsletter->setWpPost($this->entityManager->getReference(WpPostEntity::class, $postId));
     $this->entityManager->flush();
     $duplicate = $this->saveController->duplicate($newsletter);
     verify($duplicate->getWpPostId())->notEquals($postId);
     $post = $wp->getPost($duplicate->getWpPostId());
+    $postMeta = $wp->getPostMeta((int)$duplicate->getWpPostId(), 'some_meta', true);
     verify($duplicate->getCampaignName())->equals('Copy of Newsletter Title');
     verify($post->post_content)->equals('newsletter content'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($post->post_author)->equals($wp->getCurrentUserId()); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($post->post_status)->equals('draft'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($postMeta)->equals(['some_meta' => 'value']);
   }
 
   public function testItCreatesNewNewsletter() {

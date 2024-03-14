@@ -917,8 +917,15 @@ class Functions {
     return wp_is_site_url_using_https();
   }
 
-  public function getPostMeta(int $postId, string $key, bool $single = false) {
+  public function getPostMeta(int $postId, string $key = '', bool $single = false) {
     return get_post_meta($postId, $key, $single);
+  }
+
+  /**
+   * @return bool|int
+   */
+  public function updatePostMeta(int $postId, string $metaKey, $metaValue, $prevValue = '') {
+    return update_post_meta($postId, $metaKey, $metaValue, $prevValue);
   }
 
   public function getFileData(string $file, array $default_headers, string $context = 'plugin'): array {
