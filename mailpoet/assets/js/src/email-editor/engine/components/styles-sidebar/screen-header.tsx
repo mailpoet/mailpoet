@@ -33,8 +33,7 @@ export function ScreenHeader({ title, description, onBack }: Props) {
               onClick={onBack}
             />
             <Spacer>
-              {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-              {/* @ts-ignore */}
+              {/* @ts-expect-error Heading component it's not typed properly in the current components version. */}
               <Heading
                 className="mailpoet-email-editor__styles-header"
                 level={2}
