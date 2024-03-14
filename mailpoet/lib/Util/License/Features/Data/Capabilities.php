@@ -48,12 +48,29 @@ class Capabilities {
     return $this->segmentFilters;
   }
 
+  /**
+   * @return array<string, mixed>
+   */
   public function toArray(): array {
     return [
-      'mailpoetLogoInEmails' => $this->mailpoetLogoInEmails,
-      'detailedAnalytics' => $this->detailedAnalytics,
-      'automationSteps' => $this->automationSteps,
-      'segmentFilters' => $this->segmentFilters,
+      'mailpoetLogoInEmails' => [
+        'isRestricted' => $this->mailpoetLogoInEmails,
+        'type' => 'boolean',
+        ],
+      'detailedAnalytics' => [
+        'isRestricted' => !$this->detailedAnalytics,
+        'type' => 'boolean',
+      ],
+      'automationSteps' => [
+        'isRestricted' => $this->automationSteps > 0,
+        'type' => 'number',
+        'value' => $this->automationSteps,
+      ],
+      'segmentFilters' => [
+        'type' => 'number',
+        'isRestricted' => $this->segmentFilters > 0,
+        'value' => $this->segmentFilters,
+      ],
     ];
   }
 }

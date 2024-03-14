@@ -88,12 +88,21 @@ type WooCommerceStoreConfig =
     }
   | undefined;
 
-type Capabilities = {
-  mailpoetLogoInEmails: boolean;
-  detailedAnalytics: boolean;
-  automationSteps: number;
-  segmentFilters: number;
+type BaseCapability = {
+  isRestricted: boolean;
+  type: 'boolean' | 'number';
 };
+
+type BooleanCapability = BaseCapability & {
+  type: 'boolean';
+  value: never;
+};
+type NumberCapability = BaseCapability & {
+  type: 'number';
+  value: number;
+};
+type Capability = BooleanCapability | NumberCapability;
+type Capabilities = Record<string, Capability>;
 
 interface Window {
   ajaxurl: string;
