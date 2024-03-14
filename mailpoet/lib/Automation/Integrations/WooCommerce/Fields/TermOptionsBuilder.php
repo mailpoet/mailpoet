@@ -10,6 +10,9 @@ class TermOptionsBuilder {
   /** @var WordPress */
   private $wordPress;
 
+  /** @var array<string, array<array{id: int, name: string}>> */
+  private $cache = [];
+
   public function __construct(
     WordPress $wordPress
   ) {
@@ -18,29 +21,44 @@ class TermOptionsBuilder {
 
   /** @return array<array{id: int, name: string}> */
   public function getTermOptions(string $taxonomy): array {
+    if (!isset($this->cache[$taxonomy])) {
+      $this->cache[$taxonomy] = $this->fetchTermOptions($taxonomy);
+    }
+    return $this->cache[$taxonomy];
+  }
+
+  public function resetCache(): void {
+    $this->cache = [];
+  }
+
+  /** @return array<array{id: int, name: string}> */
+  private function fetchTermOptions(string $taxonomy): array {
+    /** @var WP_Term[]|WP_Error $terms */
     $terms = $this->wordPress->getTerms(['taxonomy' => $taxonomy, 'hide_empty' => false, 'orderby' => 'name']);
     if ($terms instanceof WP_Error) {
       return [];
     }
-    return $this->buildTermsList((array)$terms);
+
+    $termsMap = [];
+    foreach ($terms as $term) {
+      $termsMap[$term->parent][] = $term;
+    }
+    return $this->buildTermsList($termsMap);
   }
 
-  /** @return array<array{id: int, name: string}> */
-  private function buildTermsList(array $terms, int $parentId = 0): array {
-    $parents = array_filter($terms, function ($term) use ($parentId) {
-      return $term instanceof WP_Term && $term->parent === $parentId;
-    });
-
-    usort($parents, function (WP_Term $a, WP_Term $b) {
-      return $a->name <=> $b->name;
-    });
-
+  /**
+   * @param array<int, array<WP_Term>> $termsMap
+   * @return array<array{id: int, name: string}>
+   */
+  private function buildTermsList(array $termsMap, int $parentId = 0): array {
     $list = [];
-    foreach ($parents as $term) {
+    foreach ($termsMap[$parentId] ?? [] as $term) {
       $id = $term->term_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-      $list[] = ['id' => (int)$id, 'name' => $term->name];
-      foreach ($this->buildTermsList($terms, $id) as $child) {
-        $list[] = ['id' => (int)$child['id'], 'name' => "$term->name | {$child['name']}"];
+      $list[] = ['id' => $id, 'name' => $term->name];
+      if (isset($termsMap[$id])) {
+        foreach ($this->buildTermsList($termsMap, $id) as $child) {
+          $list[] = ['id' => $child['id'], 'name' => "$term->name | {$child['name']}"];
+        }
       }
     }
     return $list;

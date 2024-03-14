@@ -1,6 +1,7 @@
 <?php declare(strict_types = 1);
 
 use Codeception\Stub;
+use MailPoet\Automation\Integrations\WooCommerce\Fields\TermOptionsBuilder;
 use MailPoet\Cache\TransientCache;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\DI\ContainerWrapper;
@@ -113,6 +114,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     // Reset caches
     $this->diContainer->get(FeaturesController::class)->resetCache();
     $this->diContainer->get(SettingsController::class)->resetCache();
+    $this->diContainer->get(TermOptionsBuilder::class)->resetCache();
 
     $this->entityManager->clear();
     $this->clearSubscribersCountCache();
