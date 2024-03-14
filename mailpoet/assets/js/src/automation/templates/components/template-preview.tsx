@@ -23,7 +23,7 @@ const initializeHooks = () => {
     'mailpoet.automation.render_step_separator',
     'mailpoet',
     () =>
-      function SeperatorWrapper(previousStepData: StepData, index: number) {
+      function SeparatorWrapper(previousStepData: StepData, index: number) {
         const stepType = useSelect(
           (select) => select(storeName).getStepType(previousStepData.key),
           [],
