@@ -159,6 +159,12 @@ export const getUpgradeInfo = (
           'mailpoet',
         );
         break;
+      case 'segmentFilters':
+        info = __(
+          'Advanced contact segmentation is not available in your current plan. Upgrade your MailPoet plan to create highly targeted subscriber segments using multiple subscriber properties and AND/OR logic, ensuring you send the right message to the right people.',
+          'mailpoet',
+        );
+        break;
       default:
         info = __(
           'Please upgrade your MailPoet plan to gain access to this feature.',
