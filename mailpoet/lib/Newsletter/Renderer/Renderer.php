@@ -101,8 +101,9 @@ class Renderer {
         ? $body['globalStyles']
         : [];
 
+      $mailPoetLogoInEmails = $this->capabilitiesManager->getCapability('mailpoetLogoInEmails');
       if (
-        $this->capabilitiesManager->getCapabilities()->getMailpoetLogoInEmails() && !$preview
+        (isset($mailPoetLogoInEmails) && $mailPoetLogoInEmails->isRestricted) && !$preview
       ) {
         $content = $this->addMailpoetLogoContentBlock($content, $styles);
       }

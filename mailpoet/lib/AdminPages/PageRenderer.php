@@ -193,7 +193,7 @@ class PageRenderer {
       'subscribers_limit_reached' => $this->subscribersFeature->check(),
       'email_volume_limit' => $this->subscribersFeature->getEmailVolumeLimit(),
       'email_volume_limit_reached' => $this->subscribersFeature->checkEmailVolumeLimitIsReached(),
-      'capabilities' => $this->capabilitiesManager->getCapabilities()->toArray(),
+      'capabilities' => $this->capabilitiesManager->getCapabilities(),
       'urls' => [
         'automationListing' => admin_url('admin.php?page=mailpoet-automation'),
         'automationEditor' => admin_url('admin.php?page=mailpoet-automation-editor'),
