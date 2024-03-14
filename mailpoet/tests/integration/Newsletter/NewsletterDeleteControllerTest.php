@@ -164,9 +164,11 @@ class NewsletterDeleteControllerTest extends \MailPoetTest {
   public function testItDeletesWpPostsBulkDelete() {
     $newsletter1 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENDING);
     $post1Id = $this->wp->wpInsertPost(['post_title' => 'Post 1']);
+    $this->wp->updatePostMeta($post1Id, 'some_meta', ['some_value' => 'value1']);
     $newsletter1->setWpPost($this->entityManager->getReference(WpPostEntity::class, $post1Id));
     $newsletter2 = $this->createNewsletter(NewsletterEntity::TYPE_WELCOME, NewsletterEntity::STATUS_SENDING);
     $post2Id = $this->wp->wpInsertPost(['post_title' => 'Post 2']);
+    $this->wp->updatePostMeta($post2Id, 'some_meta', ['some_value' => 'value2']);
     $newsletter2->setWpPost($this->entityManager->getReference(WpPostEntity::class, $post2Id));
     $newsletter3 = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_SENDING);
 
@@ -181,6 +183,8 @@ class NewsletterDeleteControllerTest extends \MailPoetTest {
     $this->controller->bulkDelete([(int)$newsletter1->getId(), (int)$newsletter2->getId(), (int)$newsletter3->getId()]);
     verify($this->wp->getPost($post1Id))->null();
     verify($this->wp->getPost($post2Id))->null();
+    verify($this->wp->getPostMeta($post1Id, 'some_meta'))->empty();
+    verify($this->wp->getPostMeta($post2Id, 'some_meta'))->empty();
     verify($this->wp->getPost($blogPost))->instanceOf(\WP_Post::class);
   }
 
