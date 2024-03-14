@@ -8,9 +8,8 @@ import { initBlocks } from './blocks';
 import { initializeLayout } from './layouts/flex-email';
 import { BlockEditor } from './components/block-editor';
 import { createStore, storeName } from './store';
-import { initHooks } from './hooks';
+import { initHooks } from './editor-hooks';
 import { KeyboardShortcuts } from './components/keybord-shortcuts';
-import './components/validation';
 
 function Editor() {
   const { postId } = useSelect(
