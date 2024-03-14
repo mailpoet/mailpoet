@@ -50,6 +50,8 @@ export function Form({ isNewSegment, newsletterId }: Props): JSX.Element {
     [],
   );
 
+  const segmentFiltersCount = segment.filters.length;
+
   const segmentFilters: GroupFilterValue[] = useSelect(
     (select) => select(storeName).getAvailableFilters(),
     [],
@@ -190,12 +192,18 @@ export function Form({ isNewSegment, newsletterId }: Props): JSX.Element {
 
                 {(!MailPoet.premiumActive ||
                   !MailPoet.hasValidPremiumKey ||
-                  MailPoet.subscribersLimitReached) && (
+                  MailPoet.subscribersLimitReached ||
+                  (MailPoet.capabilities.segmentFilters.value &&
+                    segmentFiltersCount >=
+                      MailPoet.capabilities.segmentFilters.value)) && (
                   <LockedBadge text={__('UPGRADE', 'mailpoet')} />
                 )}
 
                 {showPremiumModal && (
-                  <PremiumModal onRequestClose={closePremiumModal}>
+                  <PremiumModal
+                    onRequestClose={closePremiumModal}
+                    data={{ capabilityName: 'segmentFilters' }}
+                  >
                     {__(
                       'Multiple conditions per segment are not available in the free version of the MailPoet plugin.',
                       'mailpoet',
