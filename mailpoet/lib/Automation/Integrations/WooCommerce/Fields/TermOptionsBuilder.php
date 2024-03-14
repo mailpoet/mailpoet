@@ -10,6 +10,9 @@ class TermOptionsBuilder {
   /** @var WordPress */
   private $wordPress;
 
+  /** @var array<string, array<array{id: int, name: string}>> */
+  private $terms = [];
+
   public function __construct(
     WordPress $wordPress
   ) {
@@ -18,11 +21,16 @@ class TermOptionsBuilder {
 
   /** @return array<array{id: int, name: string}> */
   public function getTermOptions(string $taxonomy): array {
+    if (isset($this->terms[$taxonomy])) {
+      return $this->terms[$taxonomy];
+    }
     $terms = $this->wordPress->getTerms(['taxonomy' => $taxonomy, 'hide_empty' => false, 'orderby' => 'name']);
     if ($terms instanceof WP_Error) {
-      return [];
+      $this->terms[$taxonomy] = [];
+      return $this->terms[$taxonomy];
     }
-    return $this->buildTermsList((array)$terms);
+    $this->terms[$taxonomy] = $this->buildTermsList((array)$terms);
+    return $this->terms[$taxonomy];
   }
 
   /** @return array<array{id: int, name: string}> */
