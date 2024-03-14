@@ -24,17 +24,32 @@ class TermOptionsBuilder {
     if (isset($this->terms[$taxonomy])) {
       return $this->terms[$taxonomy];
     }
+
+    $taxonomyObject = $this->wordPress->getTaxonomy($taxonomy);
+    if (!$taxonomyObject) {
+      $this->terms[$taxonomy] = [];
+      return $this->terms[$taxonomy];
+    }
+
     $terms = $this->wordPress->getTerms(['taxonomy' => $taxonomy, 'hide_empty' => false, 'orderby' => 'name']);
     if ($terms instanceof WP_Error) {
       $this->terms[$taxonomy] = [];
       return $this->terms[$taxonomy];
     }
-    $this->terms[$taxonomy] = $this->buildTermsList((array)$terms);
+    $this->terms[$taxonomy] = $this->buildTermsList((array)$terms, $taxonomyObject);
     return $this->terms[$taxonomy];
   }
 
   /** @return array<array{id: int, name: string}> */
-  private function buildTermsList(array $terms, int $parentId = 0, array $lookup = []): array {
+  private function buildTermsList(array $terms, \WP_Taxonomy $taxonomy, int $parentId = 0, array $lookup = []): array {
+    if (!$taxonomy->hierarchical) {
+      return array_map(
+        function ($term) {
+          return ['id' => (int)$term->term_id, 'name' => $term->name]; //phpcs:ignore: Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        },
+        $terms
+      );
+    }
     if ($lookup === []) {
       foreach ($terms as $term) {
         if (!$term instanceof WP_Term) {
@@ -57,7 +72,7 @@ class TermOptionsBuilder {
       if (empty($lookup[$id])) {
         continue;
       }
-      foreach ($this->buildTermsList($lookup[$id], $id, $lookup) as $child) {
+      foreach ($this->buildTermsList($lookup[$id], $taxonomy, $id, $lookup) as $child) {
         $list[] = ['id' => (int)$child['id'], 'name' => "$term->name | {$child['name']}"];
       }
     }
