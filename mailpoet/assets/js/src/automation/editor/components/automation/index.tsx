@@ -3,6 +3,7 @@ import {
   __unstableComposite as Composite,
   __unstableUseCompositeState as useCompositeState,
   SlotFillProvider,
+  Popover,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
@@ -70,6 +71,9 @@ export function Automation({
                 <Flow stepData={automationData.steps.root} row={0} />
               </div>
               <div />
+              {/* Render popovers within the automation, so they work in modals and other contexts. */}
+              {/* @ts-expect-error Slot is not currently typed on Popover */}
+              <Popover.Slot />
             </div>
             <InserterPopover />
           </Composite>
