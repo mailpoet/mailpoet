@@ -22,6 +22,7 @@ export function SentEmailNotice() {
           'mailpoet',
         ),
         {
+          id: 'email-sent',
           isDismissible: false,
           context: 'email-editor',
         },

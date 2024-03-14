@@ -1,13 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import { Notice, Button } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
-import { store as noticesStore } from '@wordpress/notices';
+import { useValidationNotices } from 'email-editor/engine/hooks';
 
 export function ValidationNotices() {
-  const notices = useSelect(
-    (select) => select(noticesStore).getNotices('validation'),
-    [],
-  );
+  const { notices } = useValidationNotices();
 
   if (notices.length === 0) {
     return null;
