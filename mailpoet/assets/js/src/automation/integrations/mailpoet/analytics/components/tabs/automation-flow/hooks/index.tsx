@@ -47,7 +47,7 @@ export function initHooks() {
       if (context !== 'view') {
         return filterValue;
       }
-      return function statisticSeperatorWrapper(
+      return function StatisticSeparatorWrapper(
         previousStepData: StepData,
         index: number,
       ) {
