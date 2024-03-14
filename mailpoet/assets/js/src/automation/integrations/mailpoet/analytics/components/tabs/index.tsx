@@ -41,7 +41,9 @@ export function Tabs(): JSX.Element {
         name: 'automation-orders',
         className: classNames(
           'mailpoet-analytics-tab-orders',
-          MailPoet.capabilities.detailedAnalytics ? 'is-unlocked' : '',
+          !MailPoet.capabilities.detailedAnalytics.isRestricted
+            ? 'is-unlocked'
+            : '',
         ),
         // title is defined as string but allows for JSX.Element
         title: (
@@ -56,7 +58,9 @@ export function Tabs(): JSX.Element {
       name: 'automation-subscribers',
       className: classNames(
         'mailpoet-analytics-tab-subscribers',
-        MailPoet.capabilities.detailedAnalytics ? 'is-unlocked' : '',
+        !MailPoet.capabilities.detailedAnalytics.isRestricted
+          ? 'is-unlocked'
+          : '',
       ),
       title: (
         <>

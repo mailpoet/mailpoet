@@ -143,13 +143,7 @@ export const getUpgradeInfo = (
   }
 
   // f. User has a license but the feature is not available for the plan.
-  if (
-    capabilityName &&
-    ((typeof MailPoet.capabilities[capabilityName] === 'boolean' &&
-      !MailPoet.capabilities[capabilityName]) ||
-      (typeof MailPoet.capabilities[capabilityName] === 'number' &&
-        MailPoet.capabilities[capabilityName] > 0))
-  ) {
+  if (capabilityName && MailPoet.capabilities[capabilityName]?.isRestricted) {
     let info: string;
 
     switch (capabilityName) {
