@@ -1,6 +1,6 @@
 import {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // We can remove the ts-expect-error comments once the types are available.
+  // @ts-expect-error TS7016: Could not find a declaration file for module '@wordpress/block-editor'.
   __experimentalSpacingSizesControl as SpacingSizesControl,
   useSetting,
 } from '@wordpress/block-editor';
@@ -12,9 +12,7 @@ import {
 import { __ } from '@wordpress/i18n';
 
 export function DimensionsPanel() {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const availableUnits: string[] = useSetting('spacing.units');
+  const availableUnits = useSetting('spacing.units') as string[];
   const units = useCustomUnits({
     availableUnits,
   });
@@ -48,20 +46,20 @@ export function DimensionsPanel() {
           allowReset
           values={paddingValues}
           onChange={setPaddingValues}
-          label={__('Padding', 'mailpoet')}
+          label={__('Padding')}
           sides={['horizontal', 'vertical', 'top', 'left', 'right', 'bottom']}
           units={units}
         />
       </ToolsPanelItem>
       <ToolsPanelItem
         isShownByDefault
-        label={__('Block spacing', 'mailpoet')}
+        label={__('Block spacing')}
         hasValue={() => true}
         onDeselect={() => resetBlockGap()}
         className="tools-panel-item-spacing"
       >
         <SpacingSizesControl
-          label={__('Block spacing', 'mailpoet')}
+          label={__('Block spacing')}
           min={0}
           onChange={setBlockGapValue}
           showSideInLabel={false}
