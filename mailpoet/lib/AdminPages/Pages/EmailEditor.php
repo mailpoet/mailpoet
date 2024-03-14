@@ -2,6 +2,7 @@
 
 namespace MailPoet\AdminPages\Pages;
 
+use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\API;
 use MailPoet\Config\Env;
 use MailPoet\Config\ServicesChecker;
@@ -23,16 +24,21 @@ class EmailEditor {
   /** @var ServicesChecker */
   private $servicesChecker;
 
+  /** @var PageRenderer */
+  private $pageRenderer;
+
   public function __construct(
     WPFunctions $wp,
     SettingsController $settingsController,
     CdnAssetUrl $cdnAssetUrl,
-    ServicesChecker $servicesChecker
+    ServicesChecker $servicesChecker,
+    PageRenderer $pageRenderer
   ) {
     $this->wp = $wp;
     $this->settingsController = $settingsController;
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->servicesChecker = $servicesChecker;
+    $this->pageRenderer = $pageRenderer;
   }
 
   public function render() {
@@ -86,7 +92,8 @@ class EmailEditor {
     // Enqueue media library scripts
     $this->wp->wpEnqueueMedia();
 
-    echo '<div id="mailpoet-email-editor" class="block-editor"></div>';
+    // Uses pageRenderer so MailPoet window globals are set
+    $this->pageRenderer->displayPage('email-editor.html', [] );
   }
 
   /**
