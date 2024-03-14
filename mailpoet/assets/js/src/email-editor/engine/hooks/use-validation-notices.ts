@@ -31,7 +31,7 @@ export type ValidationNoticesData = {
 };
 
 export const useValidationNotices = (): ValidationNoticesData => {
-  const context = 'mailpoet-validation';
+  const context = 'email-validation';
   const notices = useSelect((mapSelect) =>
     mapSelect(noticesStore).getNotices(context),
   );
