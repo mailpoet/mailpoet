@@ -24,7 +24,7 @@ function SkipDisplayingDetailedStats() {
   const description = (
     <p>
       {__(
-        'Learn more about your subscribers and optimize your campaigns. See who opened your emails, which links they clicked, and then use the data to make your emails even better. And if you run a WooCommerce store, you’ll also see the revenue earned per email. All starting $10 per month.',
+        'Learn more about your subscribers and optimize your campaigns. See who opened your emails, which links they clicked, and then use the data to make your emails even better. And if you run a WooCommerce store, you’ll also see the revenue earned per email.',
         'mailpoet',
       )}{' '}
       <a href="admin.php?page=mailpoet-upgrade">
@@ -39,6 +39,7 @@ function SkipDisplayingDetailedStats() {
       <PremiumBannerWithUpgrade
         message={description}
         actionButton={ctaButton}
+        capabilityName="detailedAnalytics"
       />
     </div>
   );
