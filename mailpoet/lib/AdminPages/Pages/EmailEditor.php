@@ -2,13 +2,14 @@
 
 namespace MailPoet\AdminPages\Pages;
 
-use MailPoet\AdminPages\PageRenderer;
 use MailPoet\API\JSON\API;
 use MailPoet\Config\Env;
+use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
 use MailPoet\Util\CdnAssetUrl;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
@@ -24,21 +25,21 @@ class EmailEditor {
   /** @var ServicesChecker */
   private $servicesChecker;
 
-  /** @var PageRenderer */
-  private $pageRenderer;
+   /** @var SubscribersFeature */
+   private $subscribersFeature;
 
   public function __construct(
     WPFunctions $wp,
     SettingsController $settingsController,
     CdnAssetUrl $cdnAssetUrl,
     ServicesChecker $servicesChecker,
-    PageRenderer $pageRenderer
+    SubscribersFeature $subscribersFeature,
   ) {
     $this->wp = $wp;
     $this->settingsController = $settingsController;
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->servicesChecker = $servicesChecker;
-    $this->pageRenderer = $pageRenderer;
+    $this->subscribersFeature = $subscribersFeature;
   }
 
   public function render() {
@@ -84,6 +85,26 @@ class EmailEditor {
       ]
     );
 
+    // Renders additional script data that some components require e.g. PremiumModal. This is done here instead of using
+    // PageRenderer since that introduces other dependencies we want to avoid. Used by getUpgradeInfo.
+    $installer = new Installer(Installer::PREMIUM_PLUGIN_SLUG);
+    $inline_script_data = [
+      'mailpoet_premium_plugin_installed' => Installer::isPluginInstalled(Installer::PREMIUM_PLUGIN_SLUG),
+      'mailpoet_premium_plugin_active' => $this->servicesChecker->isPremiumPluginActive(),
+      'mailpoet_premium_plugin_download_url' => $this->subscribersFeature->hasValidPremiumKey() ? $installer->generatePluginDownloadUrl() : null,
+      'mailpoet_premium_plugin_activation_url' => $installer->generatePluginActivationUrl(Installer::PREMIUM_PLUGIN_PATH),
+      'mailpoet_has_valid_api_key' => $this->subscribersFeature->hasValidApiKey(),
+      'mailpoet_has_valid_premium_key' => $this->subscribersFeature->hasValidPremiumKey(),
+      'mailpoet_has_premium_support' => $this->subscribersFeature->hasPremiumSupport(),
+      'mailpoet_plugin_partial_key' => $this->servicesChecker->generatePartialApiKey(),
+      'mailpoet_subscribers_count' => $this->subscribersFeature->getSubscribersCount(),
+      'mailpoet_subscribers_limit' => $this->subscribersFeature->getSubscribersLimit(),
+      'mailpoet_subscribers_limit_reached' => $this->subscribersFeature->check(),
+    ];
+    $this->wp->wpAddInlineScript( 'mailpoet_email_editor', '<script>' . implode( '', array_map( function($key) use ($inline_script_data) {
+      return sprintf( "var %s=%s;", $key, json_encode( $inline_script_data[$key] ) );
+    }, array_keys( $inline_script_data ) ) ) . '</script>', 'before');
+
     // Load CSS from Post Editor
     $this->wp->wpEnqueueStyle('wp-edit-post');
     // Load CSS for the format library - used for example in popover
@@ -92,8 +113,7 @@ class EmailEditor {
     // Enqueue media library scripts
     $this->wp->wpEnqueueMedia();
 
-    // Uses pageRenderer so MailPoet window globals are set
-    $this->pageRenderer->displayPage('email-editor.html', [] );
+    echo '<div id="mailpoet-email-editor" class="block-editor"></div>';
   }
 
   /**
