@@ -7,11 +7,9 @@ use MailPoet\EmailEditor\Engine\EmailEditor;
 require_once __DIR__ . '/DummyBlockRenderer.php';
 
 class ContentRendererTest extends \MailPoetTest {
-  /** @var ContentRenderer */
-  private $renderer;
+  private ContentRenderer $renderer;
 
-  /** @var \WP_Post */
-  private $emailPost;
+  private \WP_Post $emailPost;
 
   public function _before(): void {
     parent::_before();
