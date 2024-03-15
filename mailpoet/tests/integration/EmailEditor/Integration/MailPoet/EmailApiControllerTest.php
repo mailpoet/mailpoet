@@ -45,6 +45,7 @@ class EmailApiControllerTest extends \MailPoetTest {
       'id' => $newsletter->getId(),
       'subject' => 'New subject',
       'preheader' => 'New preheader',
+      'theme' => ['styles' => ['spacing' => ['padding' => ['bottom' => '10px', 'left' => '10px', 'right' => '10px', 'top' => '10px']]]],
     ], new \WP_Post((object)['ID' => $wpPostId]));
 
     $this->entityManager->clear();

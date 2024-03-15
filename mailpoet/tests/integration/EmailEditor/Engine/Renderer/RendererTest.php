@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer;
 
 use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Engine\ThemeController;
 
 class RendererTest extends \MailPoetTest {
   private Renderer $renderer;
@@ -14,32 +15,38 @@ class RendererTest extends \MailPoetTest {
     parent::_before();
     $this->diContainer->get(EmailEditor::class)->initialize();
     $this->renderer = $this->diContainer->get(Renderer::class);
+    $themeJsonMock = $this->createMock(\WP_Theme_JSON::class);
+    $themeJsonMock->method('get_data')->willReturn([
+      'styles' => [
+        'spacing' => [
+          'padding' => [
+            'bottom' => '4px',
+            'top' => '3px',
+            'left' => '2px',
+            'right' => '1px',
+          ],
+        ],
+        'typography' => [
+          'fontFamily' => 'Test Font Family',
+        ],
+        'color' => [
+          'background' => [
+            'layout' => '#123456',
+            'content' => '#654321',
+          ],
+        ],
+      ],
+    ]);
     $settingsControllerMock = $this->createMock(SettingsController::class);
     $settingsControllerMock->method('getLayout')->willReturn([
       'contentSize' => '123px',
     ]);
-    $settingsControllerMock->method('getEmailStyles')->willReturn([
-      'spacing' => [
-        'padding' => [
-          'bottom' => '4px',
-          'top' => '3px',
-          'left' => '2px',
-          'right' => '1px',
-        ],
-      ],
-      'typography' => [
-        'fontFamily' => 'Test Font Family',
-      ],
-      'color' => [
-        'background' => [
-          'layout' => '#123456',
-          'content' => '#654321',
-        ],
-      ],
-    ]);
+    $themeControllerMock = $this->createMock(ThemeController::class);
+    $themeControllerMock->method('getTheme')->willReturn($themeJsonMock);
 
     $this->renderer = $this->getServiceWithOverrides(Renderer::class, [
       'settingsController' => $settingsControllerMock,
+      'themeController' => $themeControllerMock,
     ]);
     $this->emailPost = new \WP_Post((object)[
       'ID' => 1,
@@ -82,34 +89,7 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItInlinesWrappersStyles(): void {
-    $settingsControllerMock = $this->createMock(SettingsController::class);
-    $settingsControllerMock->method('getEmailStyles')->willReturn([
-      'typography' => [
-        'fontFamily' => 'Test Font Family',
-      ],
-      'color' => [
-        'background' => [
-          'layout' => '#123456',
-          'content' => '#654321',
-        ],
-      ],
-      'spacing' => [
-        'padding' => [
-          'left' => '1px',
-          'right' => '2px',
-          'top' => '3px',
-          'bottom' => '4px',
-        ],
-      ],
-    ]);
-    $settingsControllerMock->method('getLayout')->willReturn([
-      'contentSize' => '123px',
-    ]);
-
-    $renderer = $this->getServiceWithOverrides(Renderer::class, [
-      'settingsController' => $settingsControllerMock,
-    ]);
-    $rendered = $renderer->render($this->emailPost, 'Subject', '', 'en');
+    $rendered = $this->renderer->render($this->emailPost, 'Subject', '', 'en');
 
     // Verify body element styles
     $style = $this->getStylesValueForTag($rendered['html'], ['tag_name' => 'body']);

@@ -16,6 +16,7 @@ class EmailEditorTest extends \MailPoetTest {
       $postTypes[] = [
         'name' => 'custom_email_type',
         'args' => [],
+        'meta' => [],
       ];
       return $postTypes;
     };
