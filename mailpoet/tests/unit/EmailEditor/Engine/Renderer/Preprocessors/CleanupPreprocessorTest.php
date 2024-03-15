@@ -2,7 +2,7 @@
 
 namespace unit\EmailEditor\Engine\Renderer\Preprocessors;
 
-use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\CleanupPreprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\CleanupPreprocessor;
 
 class CleanupPreprocessorTest extends \MailPoetUnitTest {
 

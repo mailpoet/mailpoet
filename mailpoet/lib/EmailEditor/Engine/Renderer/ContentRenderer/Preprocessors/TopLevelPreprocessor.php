@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Engine\Renderer\Preprocessors;
+namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors;
 
 class TopLevelPreprocessor implements Preprocessor {
   const SINGLE_COLUMN_TEMPLATE = [

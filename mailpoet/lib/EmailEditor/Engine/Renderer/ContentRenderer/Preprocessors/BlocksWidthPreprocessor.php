@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Engine\Renderer\Preprocessors;
+namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors;
 
 /**
  * This class sets the width of the blocks based on the layout width or column count.

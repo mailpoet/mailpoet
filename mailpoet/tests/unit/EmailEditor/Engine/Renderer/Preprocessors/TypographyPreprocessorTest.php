@@ -2,7 +2,7 @@
 
 namespace unit\EmailEditor\Engine\Renderer\Preprocessors;
 
-use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TypographyPreprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\TypographyPreprocessor;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 class TypographyPreprocessorTest extends \MailPoetUnitTest {

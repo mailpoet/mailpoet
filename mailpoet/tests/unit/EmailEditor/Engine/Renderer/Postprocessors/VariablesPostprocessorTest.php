@@ -2,7 +2,7 @@
 
 namespace unit\EmailEditor\Engine\Renderer\Postprocessors;
 
-use MailPoet\EmailEditor\Engine\Renderer\Postprocessors\VariablesPostprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\VariablesPostprocessor;
 use MailPoet\EmailEditor\Engine\ThemeController;
 use PHPUnit\Framework\MockObject\MockObject;
 

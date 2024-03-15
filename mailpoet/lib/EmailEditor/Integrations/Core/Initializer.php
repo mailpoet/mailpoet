@@ -2,8 +2,8 @@
 
 namespace MailPoet\EmailEditor\Integrations\Core;
 
-use MailPoet\EmailEditor\Engine\Renderer\BlocksRegistry;
-use MailPoet\EmailEditor\Engine\Renderer\Layout\FlexLayoutRenderer;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlocksRegistry;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout\FlexLayoutRenderer;
 
 class Initializer {
   public function initialize(): void {

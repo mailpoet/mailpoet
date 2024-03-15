@@ -2,7 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
-use MailPoet\EmailEditor\Engine\Renderer\BlockRenderer;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 use MailPoet\Util\Helpers;

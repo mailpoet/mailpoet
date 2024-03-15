@@ -2,7 +2,7 @@
 
 namespace unit\EmailEditor\Engine\Renderer\Preprocessors;
 
-use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TopLevelPreprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\TopLevelPreprocessor;
 
 class TopLevelPreprocessorTest extends \MailPoetUnitTest {
 
