@@ -33,7 +33,7 @@ class EmailEditor {
     SettingsController $settingsController,
     CdnAssetUrl $cdnAssetUrl,
     ServicesChecker $servicesChecker,
-    SubscribersFeature $subscribersFeature,
+    SubscribersFeature $subscribersFeature
   ) {
     $this->wp = $wp;
     $this->settingsController = $settingsController;
