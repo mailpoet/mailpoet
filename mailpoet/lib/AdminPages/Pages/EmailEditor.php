@@ -25,8 +25,8 @@ class EmailEditor {
   /** @var ServicesChecker */
   private $servicesChecker;
 
-   /** @var SubscribersFeature */
-   private $subscribersFeature;
+  /** @var SubscribersFeature */
+  private $subscribersFeature;
 
   public function __construct(
     WPFunctions $wp,
