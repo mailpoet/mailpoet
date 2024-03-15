@@ -2,7 +2,7 @@
 
 namespace unit\EmailEditor\Engine\Renderer\Postprocessors;
 
-use MailPoet\EmailEditor\Engine\Renderer\Postprocessors\HighlightingPostprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\HighlightingPostprocessor;
 
 class HighlightingPostprocessorTest extends \MailPoetUnitTest {
   /** @var HighlightingPostprocessor */

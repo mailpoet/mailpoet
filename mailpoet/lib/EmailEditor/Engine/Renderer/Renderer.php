@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ContentRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoetVendor\Html2Text\Html2Text;

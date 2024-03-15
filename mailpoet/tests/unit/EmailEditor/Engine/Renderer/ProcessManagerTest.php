@@ -2,14 +2,14 @@
 
 namespace unit\EmailEditor\Engine\Renderer;
 
-use MailPoet\EmailEditor\Engine\Renderer\Postprocessors\HighlightingPostprocessor;
-use MailPoet\EmailEditor\Engine\Renderer\Postprocessors\VariablesPostprocessor;
-use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\BlocksWidthPreprocessor;
-use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\CleanupPreprocessor;
-use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\SpacingPreprocessor;
-use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TopLevelPreprocessor;
-use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\TypographyPreprocessor;
-use MailPoet\EmailEditor\Engine\Renderer\ProcessManager;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\HighlightingPostprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\VariablesPostprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\BlocksWidthPreprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\CleanupPreprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\SpacingPreprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\TopLevelPreprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\TypographyPreprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ProcessManager;
 
 class ProcessManagerTest extends \MailPoetUnitTest {
   public function testItCallsPreprocessorsProperly(): void {

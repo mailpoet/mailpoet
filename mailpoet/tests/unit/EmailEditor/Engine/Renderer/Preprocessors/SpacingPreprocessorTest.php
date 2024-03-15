@@ -2,7 +2,7 @@
 
 namespace unit\EmailEditor\Engine\Renderer\Preprocessors;
 
-use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\SpacingPreprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\SpacingPreprocessor;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 class SpacingPreprocessorTest extends \MailPoetUnitTest {

@@ -2,7 +2,7 @@
 
 namespace unit\EmailEditor\Engine\Renderer\Preprocessors;
 
-use MailPoet\EmailEditor\Engine\Renderer\Preprocessors\BlocksWidthPreprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\BlocksWidthPreprocessor;
 
 class BlocksWidthPreprocessorTest extends \MailPoetUnitTest {
 
