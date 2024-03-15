@@ -1,7 +1,7 @@
 import { FunctionComponent, useMemo } from 'react';
+import { __ } from '@wordpress/i18n';
 import { Hooks } from 'hooks';
 import { Location } from 'history';
-import { MailPoet } from 'mailpoet';
 import { Heading } from 'common/typography/heading/heading';
 import { NoAccessInfo } from './no-access-info';
 
@@ -26,7 +26,7 @@ export function OpenedEmailsStats({ params, location }: Props): JSX.Element {
 
   return (
     <>
-      <Heading level={4}>{MailPoet.I18n.t('openedEmailsHeading')}</Heading>
+      <Heading level={4}>{__('Opened emails', 'mailpoet')}</Heading>
       <Content />
     </>
   );
