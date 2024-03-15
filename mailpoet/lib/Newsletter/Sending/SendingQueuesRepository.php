@@ -158,8 +158,7 @@ class SendingQueuesRepository extends Repository {
         CASE 
             WHEN t.processedAt >= :threeMonthsAgo THEN true
             ELSE false
-        END as sentLast3Months'
-      )
+        END as sentLast3Months')
       ->join('q.task', 't')
       ->leftJoin('q.newsletter', 'n')
       ->leftJoin('n.newsletterSegments', 'ns')
