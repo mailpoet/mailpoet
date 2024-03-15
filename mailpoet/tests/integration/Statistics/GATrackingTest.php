@@ -3,6 +3,8 @@
 namespace MailPoet\Statistics;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 
 class GATrackingTest extends \MailPoetTest {
@@ -35,6 +37,37 @@ class GATrackingTest extends \MailPoetTest {
       'text' => '[Click here](' . $this->link . '). [Do not process this](http://somehost.com/fff/?abc=123&email=[subscriber:email]) [link:some_link_shortcode]',
     ];
     $this->newsletter = (new NewsletterFactory())->withGaCampaign($this->gaCampaign)->create();
+  }
+
+  public function testItDoesNotSetGACampaignWhenTrackingIsDisabled() {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
+    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
+    verify($result)->equals($this->renderedNewsletter);
+    verify($result['text'])->stringNotContainsString(add_query_arg([
+      'utm_source' => 'mailpoet',
+      'utm_medium' => 'email',
+      'utm_source_platform' => 'mailpoet',
+      'utm_campaign' => $this->gaCampaign,
+    ], $this->link));
+
+    $settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
+    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
+    verify($result['text'])->stringContainsString(add_query_arg([
+      'utm_source' => 'mailpoet',
+      'utm_medium' => 'email',
+      'utm_source_platform' => 'mailpoet',
+      'utm_campaign' => $this->gaCampaign,
+    ], $this->link));
+
+    $settings->set('tracking.level', TrackingConfig::LEVEL_FULL);
+    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
+    verify($result['text'])->stringContainsString(add_query_arg([
+      'utm_source' => 'mailpoet',
+      'utm_medium' => 'email',
+      'utm_source_platform' => 'mailpoet',
+      'utm_campaign' => $this->gaCampaign,
+    ], $this->link));
   }
 
   public function testItGetsGACampaignFromParentNewsletterForPostNotifications() {
