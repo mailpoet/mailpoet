@@ -1,4 +1,5 @@
 import { FunctionComponent } from 'react';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { PremiumBannerWithUpgrade } from 'common/premium-banner-with-upgrade/premium-banner-with-upgrade';
 import { Button } from 'common/button/button';
@@ -6,7 +7,10 @@ import ReactStringReplace from 'react-string-replace';
 
 export function NoAccessInfo(): JSX.Element {
   const getBannerMessage: FunctionComponent = () => {
-    const message = MailPoet.I18n.t('premiumRequired');
+    const message = __(
+      'Learn more about how each of your subscribers is engaging with your emails. See which emails they’ve opened, the links they clicked. If you’re a WooCommerce store owner, you’ll also see any purchases made as a result of your emails. [link]Learn more[/link].',
+      'mailpoet',
+    );
     return (
       <p>
         {ReactStringReplace(message, /\[link](.*?)\[\/link]/g, (match) => (
@@ -31,7 +35,7 @@ export function NoAccessInfo(): JSX.Element {
         { utm_medium: 'stats', utm_campaign: 'signup' },
       )}
     >
-      {MailPoet.I18n.t('premiumBannerCtaFree')}
+      {__('Upgrade', 'mailpoet')}
     </Button>
   );
 
@@ -42,10 +46,25 @@ export function NoAccessInfo(): JSX.Element {
     >
       <thead>
         <tr>
-          <th>{MailPoet.I18n.t('email')}</th>
-          <th>{MailPoet.I18n.t('columnAction')}</th>
-          <th>{MailPoet.I18n.t('columnCount')}</th>
-          <th>{MailPoet.I18n.t('columnActionOn')}</th>
+          <th>{__('E-mail', 'mailpoet')}</th>
+          <th>
+            {
+              // translators: Table column label for subscriber actions e.g. email open, link clicked
+              __('Action', 'mailpoet')
+            }
+          </th>
+          <th>
+            {
+              // translators: Table column label for count of subscriber actions
+              __('Count', 'mailpoet')
+            }
+          </th>
+          <th>
+            {
+              // translators: Table column label for date when subscriber action happened
+              __('Action on', 'mailpoet')
+            }
+          </th>
         </tr>
       </thead>
       <tbody>
