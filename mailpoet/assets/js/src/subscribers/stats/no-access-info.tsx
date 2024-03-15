@@ -34,6 +34,8 @@ export function NoAccessInfo(): JSX.Element {
         null,
         { utm_medium: 'stats', utm_campaign: 'signup' },
       )}
+      target="_blank"
+      rel="noopener noreferrer"
     >
       {__('Upgrade', 'mailpoet')}
     </Button>
