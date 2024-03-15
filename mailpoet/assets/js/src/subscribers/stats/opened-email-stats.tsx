@@ -17,16 +17,7 @@ export function OpenedEmailsStats({ params, location }: Props): JSX.Element {
     () =>
       Hooks.applyFilters(
         'mailpoet_subscribers_opened_emails_stats',
-        () => (
-          <NoAccessInfo
-            limitReached={MailPoet.subscribersLimitReached}
-            limitValue={MailPoet.subscribersLimit}
-            subscribersCountTowardsLimit={MailPoet.subscribersCount}
-            premiumActive={MailPoet.premiumActive}
-            hasValidApiKey={MailPoet.hasValidApiKey}
-            hasPremiumSupport={MailPoet.hasPremiumSupport}
-          />
-        ),
+        () => <NoAccessInfo />,
         params,
         location,
       ) as FunctionComponent,
