@@ -97,8 +97,9 @@ export function BlockEditor() {
   }
 
   inlineStyles.transition = 'all 0.3s ease 0s';
-  // 72px top/bottom to place the email document nicely vertically in canvas. Same value is used for title in WP Post editor.
-  inlineStyles.margin = '72px auto';
+  // 72px top to place the email document nicely vertically in canvas. Same value is used for title in WP Post editor.
+  // We use only 16px bottom to mitigate the issue with inserter popup displaying below the fold.
+  inlineStyles.margin = '72px auto 16px auto';
   delete inlineStyles.marginLeft;
   delete inlineStyles.marginTop;
   delete inlineStyles.marginBottom;
