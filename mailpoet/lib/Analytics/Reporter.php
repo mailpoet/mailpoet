@@ -10,6 +10,7 @@ use MailPoet\Cron\CronTrigger;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Listing\ListingDefinition;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Sending\SendingQueuesRepository;
 use MailPoet\Segments\DynamicSegments\DynamicSegmentFilterRepository;
 use MailPoet\Segments\DynamicSegments\Filters\AutomationsEvents;
 use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
@@ -52,6 +53,7 @@ use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Tags\TagRepository;
+use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -101,6 +103,12 @@ class Reporter {
   /*** @var DotcomHelperFunctions */
   private $dotcomHelperFunctions;
 
+  /*** @var ReporterCampaignData */
+  private $reporterCampaignData;
+
+  /*** @var SendingQueuesRepository */
+  private $sendingQueuesRepository;
+
   public function __construct(
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
@@ -115,7 +123,8 @@ class Reporter {
     SubscriberListingRepository $subscriberListingRepository,
     AutomationStorage $automationStorage,
     UnsubscribeReporter $unsubscribeReporter,
-    DotcomHelperFunctions $dotcomHelperFunctions
+    DotcomHelperFunctions $dotcomHelperFunctions,
+    ReporterCampaignData $reporterCampaignData
   ) {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
@@ -131,6 +140,7 @@ class Reporter {
     $this->automationStorage = $automationStorage;
     $this->unsubscribeReporter = $unsubscribeReporter;
     $this->dotcomHelperFunctions = $dotcomHelperFunctions;
+    $this->reporterCampaignData = $reporterCampaignData;
   }
 
   public function getData() {
@@ -173,8 +183,6 @@ class Reporter {
       'Tracking level' => $this->settings->get('tracking.level', TrackingConfig::LEVEL_FULL),
       'Premium key valid' => $this->servicesChecker->isPremiumKeyValid(),
       'New subscriber notifications' => NewSubscriberNotificationMailer::isDisabled($this->settings->get(NewSubscriberNotificationMailer::SETTINGS_KEY)),
-      'Number of standard newsletters sent in last 3 months' => $newsletters['sent_newsletters_3_months'],
-      'Number of standard newsletters sent in last 30 days' => $newsletters['sent_newsletters_30_days'],
       'Number of active post notifications' => $newsletters['notifications_count'],
       'Number of active welcome emails' => $newsletters['welcome_newsletters_count'],
       'Total number of standard newsletters sent' => $newsletters['sent_newsletters_count'],
@@ -264,6 +272,7 @@ class Reporter {
       $result,
       $this->subscriberProperties(),
       $this->automationProperties(),
+      $this->reporterCampaignData->getCampaignAnalyticsProperties(),
       $this->unsubscribeReporter->getProperties()
     );
     if ($hasWc) {
