@@ -63,7 +63,7 @@ class ChangelogController {
   }
 
   private function sanitizePunctuation($message, $fallback) {
-    $validPunctuation = ['?','.','!'];
+    $validPunctuation = ['?', '.', '!'];
     $message = rtrim($message, ';, ');
     if (!in_array(substr($message, -1), $validPunctuation)) {
       $message .= $fallback;

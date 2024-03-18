@@ -43,7 +43,7 @@ function mailpoetRenderFormList() {
       '%s (ID: %d)',
       esc_html($name),
       (int)$form->getId()
-      ) .
+    ) .
     '</a></li>';
   }
   echo "</ul>";

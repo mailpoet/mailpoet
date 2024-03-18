@@ -366,7 +366,8 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      $this->getServiceWithOverrides(SubscribersRepository::class,
+      $this->getServiceWithOverrides(
+        SubscribersRepository::class,
         [
           'changesNotifier' => new SubscriberChangesNotifier($wpMock),
           'wp' => $wpMock,
@@ -395,7 +396,8 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      $this->getServiceWithOverrides(SubscribersRepository::class,
+      $this->getServiceWithOverrides(
+        SubscribersRepository::class,
         [
           'changesNotifier' => new SubscriberChangesNotifier($wpMock),
           'wp' => $wpMock,
@@ -424,7 +426,8 @@ class OpensTest extends \MailPoetTest {
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      $this->getServiceWithOverrides(SubscribersRepository::class,
+      $this->getServiceWithOverrides(
+        SubscribersRepository::class,
         [
           'changesNotifier' => new SubscriberChangesNotifier($wpMock),
           'wp' => $wpMock,

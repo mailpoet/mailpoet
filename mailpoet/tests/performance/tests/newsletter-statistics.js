@@ -32,7 +32,7 @@ export async function newsletterStatistics() {
 
     // Go to the Newsletter Statistics page
     await page.goto(
-      `${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters#/stats/2`,
+      `${baseURL} / wp - admin / admin.php ? page = mailpoet - newsletters# / stats / 2`,
       {
         waitUntil: 'networkidle',
       },

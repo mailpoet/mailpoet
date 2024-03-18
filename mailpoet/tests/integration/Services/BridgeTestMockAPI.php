@@ -83,7 +83,7 @@ class BridgeTestMockAPI extends API {
     $result = self::VERIFIED_DOMAIN_RESPONSE;
     $result['domain'] = 'mailpoet.com';
     if ($domain === 'all') {
-      return [ $result ];
+      return [$result];
     }
     return $result;
   }

@@ -177,14 +177,18 @@ class ExportTest extends \MailPoetTest {
         '|' .
         preg_quote(Env::$tempPath, '|') . '/MailPoet_export_[a-z0-9]{15}.' .
         $this->export->exportFormatOption .
-        '|', $this->export->exportFile)
+        '|',
+        $this->export->exportFile
+      )
     )->equals(1);
     verify(
       preg_match(
         '|' .
         preg_quote(Env::$tempUrl, '|') . '/' .
         basename($this->export->exportFile) .
-        '|', $this->export->exportFileURL)
+        '|',
+        $this->export->exportFileURL
+      )
     )->equals(1);
   }
 

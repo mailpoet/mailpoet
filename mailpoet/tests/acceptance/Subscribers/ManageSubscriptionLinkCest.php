@@ -43,9 +43,11 @@ class ManageSubscriptionLinkCest {
     $i->click(Locator::contains('span.subject', $this->newsletterTitle));
     $i->switchToIframe('#preview-html');
     $i->waitForElementChange(
-        \Codeception\Util\Locator::contains('a', 'Manage your subscription'), function ($el) {
+      \Codeception\Util\Locator::contains('a', 'Manage your subscription'),
+      function ($el) {
             return $el->getAttribute('target') === "_blank";
-        }, 100
+      },
+      100
     );
     $i->click('Manage your subscription');
     $i->switchToNextTab();
@@ -141,9 +143,11 @@ class ManageSubscriptionLinkCest {
     $i->click(Locator::contains('span.subject', $this->newsletterTitle));
     $i->switchToIframe('#preview-html');
     $i->waitForElementChange(
-        \Codeception\Util\Locator::contains('a', 'Unsubscribe'), function ($el) {
+      \Codeception\Util\Locator::contains('a', 'Unsubscribe'),
+      function ($el) {
             return $el->getAttribute('target') === "_blank";
-        }, 100
+      },
+      100
     );
     $i->click('Unsubscribe');
     $i->switchToNextTab();

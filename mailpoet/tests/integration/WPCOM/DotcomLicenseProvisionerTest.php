@@ -21,7 +21,8 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
         $this->make(Settings::class),
         $this->make(Services::class),
         $this->make(DotcomHelperFunctions::class, ['isAtomicPlatform' => true]),
-      ]);
+      ]
+    );
   }
 
   public function testItReturnsResultIfNotAtomic() {
@@ -34,7 +35,8 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
         $this->make(Settings::class),
         $this->make(Services::class),
         $this->make(DotcomHelperFunctions::class, ['isAtomicPlatform' => false]),
-      ]);
+      ]
+    );
     verify($provisioner->provisionLicense($result, $payload, DotcomLicenseProvisioner::EVENT_TYPE_PROVISION_LICENSE))->equals($result);
   }
 
@@ -65,7 +67,8 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
         $this->make(Settings::class, ['setKeyAndSetupMss' => new ErrorResponse(['error' => 'some-error'])]),
         $this->make(Services::class, ['refreshMSSKeyStatus' => new SuccessResponse()]),
         $this->make(DotcomHelperFunctions::class, ['isAtomicPlatform' => true]),
-      ]);
+      ]
+    );
     $error = $provisioner->provisionLicense($result, $payload, $eventType);
     $this->assertInstanceOf(\WP_Error::class, $error);
     verify($error->get_error_message())->equals('some-error ');
@@ -82,7 +85,8 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
         $this->make(Settings::class, ['setKeyAndSetupMss' => new SuccessResponse()]),
         $this->make(Services::class, ['refreshMSSKeyStatus' => new ErrorResponse(['error' => 'some-error'])]),
         $this->make(DotcomHelperFunctions::class, ['isAtomicPlatform' => true]),
-      ]);
+      ]
+    );
     $error = $provisioner->provisionLicense($result, $payload, $eventType);
     $this->assertInstanceOf(\WP_Error::class, $error);
     verify($error->get_error_message())->equals('some-error ');
@@ -97,13 +101,16 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
       [
         $this->diContainer->get(LoggerFactory::class),
         $this->make(Settings::class, ['setKeyAndSetupMss' => new SuccessResponse()]),
-        $this->make(Services::class,
+        $this->make(
+          Services::class,
           [
             'refreshMSSKeyStatus' => new SuccessResponse(),
             'refreshPremiumKeyStatus' => new ErrorResponse(['error' => 'some-error']),
-          ]),
+          ]
+        ),
         $this->make(DotcomHelperFunctions::class, ['isAtomicPlatform' => true]),
-      ]);
+      ]
+    );
     $error = $provisioner->provisionLicense($result, $payload, $eventType);
     $this->assertInstanceOf(\WP_Error::class, $error);
     verify($error->get_error_message())->equals('some-error ');
@@ -118,13 +125,16 @@ class DotcomLicenseProvisionerTest extends \MailPoetTest {
       [
         $this->diContainer->get(LoggerFactory::class),
         $this->make(Settings::class, ['setKeyAndSetupMss' => new SuccessResponse()]),
-        $this->make(Services::class,
+        $this->make(
+          Services::class,
           [
             'refreshMSSKeyStatus' => new SuccessResponse(),
             'refreshPremiumKeyStatus' => new SuccessResponse(),
-          ]),
+          ]
+        ),
         $this->make(DotcomHelperFunctions::class, ['isAtomicPlatform' => true]),
-      ]);
+      ]
+    );
     $result = $provisioner->provisionLicense($result, $payload, $eventType);
     verify($result)->equals(true);
   }

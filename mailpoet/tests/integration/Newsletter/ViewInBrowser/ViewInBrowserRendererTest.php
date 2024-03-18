@@ -98,7 +98,9 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
             }
           ]
         }
-      }', true);
+      }',
+        true
+      );
     $this->queueRenderedNewsletterWithoutTracking = [
       'html' => '<p>Newsletter from queue. Hello, [subscriber:firstname | default:reader]. <a href="[link:newsletter_view_in_browser_url]">Unsubscribe</a> or visit <a href="http://google.com">Google</a></p>',
       'text' => 'test',

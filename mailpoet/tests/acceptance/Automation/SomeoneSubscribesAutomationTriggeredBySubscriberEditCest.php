@@ -85,7 +85,7 @@ class SomeoneSubscribesAutomationTriggeredBySubscriberEditCest {
   }
 
   private function amOnTheSubscriberEditPageFor(\AcceptanceTester $i, string $email) {
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
     $i->waitForText($email);
     $i->click($email);
     $i->waitForElement('input[value="' . $email . '"]');

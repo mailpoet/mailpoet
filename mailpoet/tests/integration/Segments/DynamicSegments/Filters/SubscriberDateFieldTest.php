@@ -126,7 +126,7 @@ class SubscriberDateFieldTest extends \MailPoetTest {
       ->withEmail('5@example.com')
       ->withLastPageViewAt(new CarbonImmutable('2023-07-15'))
       ->create();
-    $this->assertFilterReturnsEmails('lastPageViewDate', 'onOrAfter', '2023-07-13', ['3@example.com','4@example.com', '5@example.com']);
+    $this->assertFilterReturnsEmails('lastPageViewDate', 'onOrAfter', '2023-07-13', ['3@example.com', '4@example.com', '5@example.com']);
   }
 
   public function testItWorksForNotOn(): void {

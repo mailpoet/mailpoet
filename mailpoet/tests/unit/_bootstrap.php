@@ -19,7 +19,7 @@ if (!function_exists('esc_attr')) {
 // Fix for mocking WPFunctions
 // [PHPUnit\Framework\Exception] Use of undefined constant OBJECT - assumed 'OBJECT' (this will throw an Error in a future version of PHP)
 if (!defined('OBJECT')) {
-  define( 'OBJECT', 'OBJECT' );
+  define('OBJECT', 'OBJECT');
 }
 
 if (!defined('ABSPATH')) {

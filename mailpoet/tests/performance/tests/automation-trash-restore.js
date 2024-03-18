@@ -30,9 +30,12 @@ export async function automationTrashRestore() {
     await login(page);
 
     // Go to the Automations page
-    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-automation`, {
-      waitUntil: 'networkidle',
-    });
+    await page.goto(
+      `${baseURL} / wp - admin / admin.php ? page = mailpoet - automation`,
+      {
+        waitUntil: 'networkidle',
+      },
+    );
 
     await page.waitForLoadState('networkidle');
     await page.screenshot({

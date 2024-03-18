@@ -25,7 +25,7 @@ class ImportExportTest extends \MailPoetTest {
     $this->entityManager->createQueryBuilder()
       ->delete(ScheduledTaskEntity::class, 's')
       ->where('s.type = :type')
-      ->setParameter(':type', WooCommerceSync::TASK_TYPE )
+      ->setParameter(':type', WooCommerceSync::TASK_TYPE)
       ->getQuery()
       ->execute();
   }

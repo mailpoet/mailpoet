@@ -23,11 +23,12 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItUsesCorrectAssetsManifestFilenames() {
-    $renderer = Stub::make(new Renderer(
-      false,
-      Env::$cachePath,
-      new TwigFileSystem(Env::$viewsPath)
-    ),
+    $renderer = Stub::make(
+      new Renderer(
+        false,
+        Env::$cachePath,
+        new TwigFileSystem(Env::$viewsPath)
+      ),
       ['getAssetManifest' => function($manifest) {
         return $manifest;
       }]
@@ -117,7 +118,8 @@ class RendererTest extends \MailPoetTest {
         new TwigFileSystem(Env::$viewsPath),
       ],
       [
-        'renderer' => Stub::makeEmpty(TwigEnvironment::class,
+        'renderer' => Stub::makeEmpty(
+          TwigEnvironment::class,
           [
             'load' => Expected::atLeastOnce(
               new TemplateWrapper($env, $template)

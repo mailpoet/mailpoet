@@ -101,7 +101,7 @@ class EditorAddListSelectionCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('Make sure the subscriber is subscribed to those lists');
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
     $i->waitForListingItemsToLoad();
     $i->see($firstSegmentName);
     $i->see($secondSegmentName);

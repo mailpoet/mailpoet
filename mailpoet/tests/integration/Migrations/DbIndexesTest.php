@@ -14,7 +14,8 @@ class DbIndexesTest extends \MailPoetTest {
    */
   public function testDbHasCorrectUniqueVarcharIndexes() {
     $connection = $this->diContainer->get(Connection::class);
-    $incorrectIndexes = $connection->executeQuery("SELECT DISTINCT
+    $incorrectIndexes = $connection->executeQuery(
+      "SELECT DISTINCT
       ISS.TABLE_NAME,
       ISS.INDEX_NAME,
       ISS.COLUMN_NAME,

@@ -154,7 +154,7 @@ class WooCommerceAverageSpentTest extends \MailPoetTest {
   private function createCustomerWithOrderValues(string $customerEmail, array $values): void {
     $customerId = $this->tester->createCustomer($customerEmail);
     foreach ($values as $value) {
-      $this->createOrder($customerId, $value );
+      $this->createOrder($customerId, $value);
     }
   }
 

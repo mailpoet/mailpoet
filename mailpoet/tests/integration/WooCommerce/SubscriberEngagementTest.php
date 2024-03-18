@@ -28,7 +28,8 @@ class SubscriberEngagementTest extends \MailPoetTest {
   public function _before() {
     $this->wooCommerceHelperMock = $this->createMock(Helper::class);
     $this->wpMock = $this->createMock(WPFunctions::class);
-    $subscribersRepository = $this->getServiceWithOverrides(SubscribersRepository::class,
+    $subscribersRepository = $this->getServiceWithOverrides(
+      SubscribersRepository::class,
       [
         'changesNotifier' => new SubscriberChangesNotifier($this->wpMock),
         'wp' => $this->wpMock,

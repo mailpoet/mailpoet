@@ -117,17 +117,20 @@ class PHPMailTest extends \MailPoetTest {
       [
         'email' => 'test@test.com',
         'name' => '',
-      ]);
+      ]
+    );
     verify($this->mailer->processSubscriber('First <test@test.com>'))->equals(
       [
         'email' => 'test@test.com',
         'name' => 'First',
-      ]);
+      ]
+    );
     verify($this->mailer->processSubscriber('First Last <test@test.com>'))->equals(
       [
         'email' => 'test@test.com',
         'name' => 'First Last',
-      ]);
+      ]
+    );
   }
 
   public function testItChecksBlacklistBeforeSending() {

@@ -29,7 +29,8 @@ class SendingErrorHandlerTest extends \MailPoetTest {
       MailerError::OPERATION_SEND,
       MailerError::LEVEL_SOFT,
       'Error Message',
-      null, $subscriberErrors
+      null,
+      $subscriberErrors
     );
 
     $scheduledTaskSubscribersRepository = Stub::make(
@@ -50,7 +51,8 @@ class SendingErrorHandlerTest extends \MailPoetTest {
     );
 
     $errorHandler = $this->getServiceWithOverrides(
-      SendingErrorHandler::class, [
+      SendingErrorHandler::class,
+      [
         'scheduledTaskSubscribersRepository' => $scheduledTaskSubscribersRepository,
       ]
     );
@@ -71,7 +73,8 @@ class SendingErrorHandlerTest extends \MailPoetTest {
     );
 
     $errorHandler = $this->getServiceWithOverrides(
-      SendingErrorHandler::class, [
+      SendingErrorHandler::class,
+      [
         'sendingQueuesRepository' => $sendingQueuesRepository,
         'loggerFactory' => Stub::makeEmpty(
           LoggerFactory::class,

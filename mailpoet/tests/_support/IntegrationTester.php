@@ -92,7 +92,8 @@ class IntegrationTester extends \Codeception\Actor {
 
     $this->entityManager->getConnection()->executeStatement(
       "DELETE FROM {$wpdb->users} WHERE id = :id",
-      ['id' => $id], ['id' => \PDO::PARAM_INT]
+      ['id' => $id],
+      ['id' => \PDO::PARAM_INT]
     );
   }
 

@@ -169,8 +169,9 @@ class AmazonSESTest extends \MailPoetTest {
           'x-amz-date:' . $this->mailer->date,
           '',
           'host;x-amz-date',
-          hash($this->mailer->hashAlgorithm,
-               urldecode(http_build_query($body))
+          hash(
+            $this->mailer->hashAlgorithm,
+            urldecode(http_build_query($body))
           ),
         ]
       );

@@ -45,7 +45,7 @@ class ManageImportExportCest {
   public function importUsersToSubscribersViaCSV(\AcceptanceTester $i) {
     $i->wantTo('Import a subscriber list from CSV');
     $i->login();
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
     $i->click('[data-automation-id="import-subscribers-button"]');
     $this->proceedThroughListCleaning($i);
     $this->uploadCsvFile($i);
@@ -64,7 +64,7 @@ class ManageImportExportCest {
     $i->see('9 existing subscribers were updated and added to');
 
     //confirm subscribers from import list were added
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
     $i->searchFor('aaa@example.com');
     $i->waitForText('aaa@example.com');
     $i->waitForText('My tag');
@@ -98,7 +98,7 @@ class ManageImportExportCest {
   public function importListViaPasteBox(\AcceptanceTester $i) {
     $i->wantTo('Import a subscriber list via paste box');
     $i->login();
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
     $i->click('[data-automation-id="import-subscribers-button"]');
     $this->proceedThroughListCleaning($i);
     $this->pasteSimpleList($i);
@@ -114,7 +114,7 @@ class ManageImportExportCest {
     $i->cli(['user', 'create', 'janedoe', 'janedoe@example.com', '--role=subscriber', '--first_name=John', '--last_name=Doe']);
     $i->cli(['user', 'create', 'jamesdoe', 'jamesdoe@example.com', '--role=subscriber', '--first_name=John', '--last_name=Doe']);
     $i->login();
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
     $i->click('[data-automation-id="import-subscribers-button"]');
     $this->proceedThroughListCleaning($i);
     $this->pasteSimpleList($i);
@@ -135,10 +135,12 @@ class ManageImportExportCest {
   private function pasteSimpleList(\AcceptanceTester $i) {
     $i->waitForText('Paste the data into a text box');
     $i->click('[data-automation-id="import-paste-method"]');
-    $i->fillField('textarea#paste_input',
-    'johndoe@example.com, John, Doe
+    $i->fillField(
+      'textarea#paste_input',
+      'johndoe@example.com, John, Doe
     janedoe@example.com, Jane, Doe
-    jamesdoe@example.com, James, Doe');
+    jamesdoe@example.com, James, Doe'
+    );
   }
 
   private function uploadCsvFile(\AcceptanceTester $i, $fileName = 'MailPoetImportList.csv') {

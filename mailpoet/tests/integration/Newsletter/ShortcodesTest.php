@@ -111,7 +111,9 @@ class ShortcodesTest extends \MailPoetTest {
         verify($arguments['arg1'])->equals('val1');
         verify($arguments['arg2'])->equals('val2');
         if (strpos($shortcode, '[some:shortcode') === 0) return 'success';
-      }, 10, 6
+      },
+      10,
+      6
     );
     $result = $shortcodesObject->process($shortcode);
     verify($result[0])->equals('success');

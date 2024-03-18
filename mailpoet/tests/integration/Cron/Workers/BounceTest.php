@@ -183,7 +183,7 @@ class BounceTest extends \MailPoetTest {
     $this->entityManager->flush();
     // create data that should be used for the current bounce task run
     $newsletter = $this->createNewsletter();
-    $sendingTask = $this->createSendingTask() ;
+    $sendingTask = $this->createSendingTask();
     $sendingTask->setCreatedAt(Carbon::now()->subDays(3));
     $sendingTask->setUpdatedAt(Carbon::now()->subDays(3));
     $this->createSendingQueue($newsletter, $sendingTask);

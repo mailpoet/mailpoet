@@ -28,7 +28,7 @@ class Migration_20221028_105818_App_Test extends \MailPoetTest {
 
   public function testItDoesNotUpdateInactiveSubscribersFrequencyValuesOtherThanThePreviousDefault() {
     $this->settings->delete('deactivate_subscriber_after_inactive_days');
-    $nonDefaultOptions = [ '', '90', '365' ];
+    $nonDefaultOptions = ['', '90', '365'];
     foreach ($nonDefaultOptions as $option) {
       $this->settings->set('db_version', '3.78.0');
       $this->settings->set('deactivate_subscriber_after_inactive_days', $option);

@@ -244,12 +244,10 @@ class NewslettersTest extends \MailPoetTest {
 
   public function testItCanSetANewsletterStatus() {
     // set status to sending
-    $response = $this->endpoint->setStatus
-    ([
+    $response = $this->endpoint->setStatus([
        'id' => $this->newsletter->getId(),
        'status' => NewsletterEntity::STATUS_SENDING,
-     ]
-    );
+      ]);
     verify($response->status)->equals(APIResponse::STATUS_OK);
     verify($response->data['status'])->equals(NewsletterEntity::STATUS_SENDING);
 

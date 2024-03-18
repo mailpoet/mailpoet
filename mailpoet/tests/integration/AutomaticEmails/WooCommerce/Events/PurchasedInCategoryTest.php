@@ -258,7 +258,8 @@ class PurchasedInCategoryTest extends \MailPoetTest {
           'option' => [
             ['id' => '15'],
           ],
-        ]),
+        ]
+      ),
     ]);
     return $newsletter;
   }

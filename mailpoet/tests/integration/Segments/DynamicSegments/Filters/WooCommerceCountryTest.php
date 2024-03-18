@@ -38,13 +38,13 @@ class WooCommerceCountryTest extends \MailPoetTest {
   }
 
   public function testItAppliesFilterAny(): void {
-    $segmentFilterData = $this->getSegmentFilterData(['CZ','US']);
+    $segmentFilterData = $this->getSegmentFilterData(['CZ', 'US']);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCountryFilter);
     $this->assertEqualsCanonicalizing(['customer1@example.com', 'customer2@example.com', 'customer3@example.com'], $emails);
   }
 
   public function testItAppliesFilterNone(): void {
-    $segmentFilterData = $this->getSegmentFilterData(['CZ','US'], DynamicSegmentFilterData::OPERATOR_NONE);
+    $segmentFilterData = $this->getSegmentFilterData(['CZ', 'US'], DynamicSegmentFilterData::OPERATOR_NONE);
     $emails = $this->tester->getSubscriberEmailsMatchingDynamicFilter($segmentFilterData, $this->wooCommerceCountryFilter);
     $this->assertEqualsCanonicalizing(['customer4@example.com', 'customer5@example.com'], $emails);
   }

@@ -438,7 +438,7 @@ class AuthorizedSenderDomainControllerTest extends \MailPoetTest {
       $bridgeMock ?? $this->bridge,
       $newsletterStatisticsRepository,
       $this->settings,
-        $subscribersMock ?? $subscribers,
+      $subscribersMock ?? $subscribers,
       $this->wp
     );
   }

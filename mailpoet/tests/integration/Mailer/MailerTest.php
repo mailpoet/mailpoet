@@ -52,33 +52,33 @@ class MailerTest extends \MailPoetTest {
     verify($mailer->formatSubscriberNameAndEmailAddress(
       [
         'email' => 'test@email.com',
-      ])
-    )->equals('test@email.com');
+      ]
+    ))->equals('test@email.com');
     verify($mailer->formatSubscriberNameAndEmailAddress(
       [
         'first_name' => 'First',
         'email' => 'test@email.com',
-      ])
-    )->equals('First <test@email.com>');
+      ]
+    ))->equals('First <test@email.com>');
     verify($mailer->formatSubscriberNameAndEmailAddress(
       [
         'last_name' => 'Last',
         'email' => 'test@email.com',
-      ])
-    )->equals('Last <test@email.com>');
+      ]
+    ))->equals('Last <test@email.com>');
     verify($mailer->formatSubscriberNameAndEmailAddress(
       [
         'first_name' => 'First',
         'last_name' => 'Last',
         'email' => 'test@email.com',
-      ])
-    )->equals('First Last <test@email.com>');
+      ]
+    ))->equals('First Last <test@email.com>');
     verify($mailer->formatSubscriberNameAndEmailAddress(
       [
         'full_name' => 'First Last',
         'email' => 'test@email.com',
-      ])
-    )->equals('First Last <test@email.com>');
+      ]
+    ))->equals('First Last <test@email.com>');
 
     $subscriber = (new SubscriberFactory())
       ->withFirstName('First')

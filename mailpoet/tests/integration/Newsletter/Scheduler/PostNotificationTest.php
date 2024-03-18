@@ -403,7 +403,8 @@ class PostNotificationTest extends \MailPoetTest {
 
     $task = (new ScheduledTask())->create(
       SendingQueue::TASK_TYPE,
-      SendingQueueEntity::STATUS_SCHEDULED, Carbon::now()
+      SendingQueueEntity::STATUS_SCHEDULED,
+      Carbon::now()
       ->addDay()
     );
 

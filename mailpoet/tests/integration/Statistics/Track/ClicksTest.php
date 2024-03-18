@@ -509,7 +509,8 @@ class ClicksTest extends \MailPoetTest {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = 'User Agent';
-    $subscribersRepository = $this->getServiceWithOverrides(SubscribersRepository::class,
+    $subscribersRepository = $this->getServiceWithOverrides(
+      SubscribersRepository::class,
       [
         'changesNotifier' => new SubscriberChangesNotifier($wpMock),
         'wp' => $wpMock,
@@ -552,7 +553,8 @@ class ClicksTest extends \MailPoetTest {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = null;
-    $subscribersRepository = $this->getServiceWithOverrides(SubscribersRepository::class,
+    $subscribersRepository = $this->getServiceWithOverrides(
+      SubscribersRepository::class,
       [
         'changesNotifier' => new SubscriberChangesNotifier($wpMock),
         'wp' => $wpMock,
@@ -595,7 +597,8 @@ class ClicksTest extends \MailPoetTest {
     $clicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
     $data = $this->trackData;
     $data->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
-    $subscribersRepository = $this->getServiceWithOverrides(SubscribersRepository::class,
+    $subscribersRepository = $this->getServiceWithOverrides(
+      SubscribersRepository::class,
       [
         'changesNotifier' => new SubscriberChangesNotifier($wpMock),
         'wp' => $wpMock,

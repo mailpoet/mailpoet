@@ -322,7 +322,6 @@ class SendEmailActionTest extends \MailPoetTest {
           return $step->toArray();
         },
         $automation->getSteps()
-
       ),
     ];
 

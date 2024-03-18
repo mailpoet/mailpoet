@@ -204,7 +204,8 @@ class SendingQueueTest extends \MailPoetTest {
         'enforceSendingAndExecutionLimits' => Expected::exactly(1, function() {
           throw new \Exception();
         }),
-      ]);
+      ]
+    );
     $sendingQueueWorker->__construct(
       $this->sendingErrorHandler,
       $this->sendingThrottlingHandler,
@@ -237,7 +238,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->getSendingQueueWorker(),
       [
         'enforceSendingAndExecutionLimits' => Expected::exactly(1),
-      ]);
+      ]
+    );
     $sendingQueueWorker->__construct(
       $this->sendingErrorHandler,
       $this->sendingThrottlingHandler,
@@ -287,7 +289,8 @@ class SendingQueueTest extends \MailPoetTest {
       $this->getSendingQueueWorker(),
       [
         'enforceSendingAndExecutionLimits' => Expected::never(),
-      ]);
+      ]
+    );
     $sendingQueueWorker->__construct(
       $this->sendingErrorHandler,
       $this->sendingThrottlingHandler,
@@ -335,7 +338,8 @@ class SendingQueueTest extends \MailPoetTest {
           return (object)['status' => null, 'taskId' => 0];
         },
         'enforceSendingAndExecutionLimits' => Expected::exactly(2),
-      ]);
+      ]
+    );
     $sendingQueueWorker->__construct(
       $this->sendingErrorHandler,
       $this->sendingThrottlingHandler,
@@ -1260,7 +1264,8 @@ class SendingQueueTest extends \MailPoetTest {
   public function testItPausesSendingTaskWhenSenderAddressDoesNotMeetRequirements() {
     $authorizedEmailControllerMock = $this->make(
       AuthorizedEmailsController::class,
-      ['isSenderAddressValid' => false]);
+      ['isSenderAddressValid' => false]
+    );
     $this->newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
     $this->entityManager->flush();
 

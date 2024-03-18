@@ -440,7 +440,8 @@ class ImportTest extends \MailPoetTest {
       [
         'one',
         'two',
-      ]);
+      ]
+    );
   }
 
   public function testItGetsCustomSubscribersFields(): void {
