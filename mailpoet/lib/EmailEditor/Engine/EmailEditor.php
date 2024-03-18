@@ -60,14 +60,13 @@ class EmailEditor {
   }
 
   private function registerEmailPostSendStatus(): void {
-    register_post_status( NewsletterEntity::STATUS_SENT, [
+    register_post_status(NewsletterEntity::STATUS_SENT, [
         'public' => false,
         'exclude_from_search' => true,
         'internal' => true, // for now, we hide it, if we use the status in the listings we may flip this and following values
         'show_in_admin_all_list' => false,
         'show_in_admin_status_list' => false,
-      ]
-    );
+      ]);
   }
 
   public function extendEmailPostApi() {

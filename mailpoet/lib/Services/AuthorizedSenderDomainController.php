@@ -197,7 +197,7 @@ class AuthorizedSenderDomainController {
   }
 
   public function getFullyOrPartiallyVerifiedSenderDomains($domainsOnly = false): array {
-    $domainData = $this->getSenderDomainsByStatus([self::DOMAIN_STATUS_PARTIALLY_VERIFIED,self::DOMAIN_STATUS_VERIFIED]);
+    $domainData = $this->getSenderDomainsByStatus([self::DOMAIN_STATUS_PARTIALLY_VERIFIED, self::DOMAIN_STATUS_VERIFIED]);
     return $domainsOnly ? $this->extractDomains($domainData) : $domainData;
   }
 

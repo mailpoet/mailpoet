@@ -43,18 +43,17 @@ class SubscriptionFormBlock {
 
     $this->wp->addAction('admin_head', function() {
       $forms = $this->formsRepository->findAllNotDeleted();
+      $form_json = wp_json_encode(
+        array_map(
+          function(FormEntity $form) {
+            return $form->toArray();
+          },
+          $forms
+        )
+      );
       ?>
       <script type="text/javascript">
-        window.mailpoet_forms = <?php
-        echo wp_json_encode(
-          array_map(
-            function(FormEntity $form) {
-              return $form->toArray();
-            },
-            $forms
-          )
-                                );
-                                ?>;
+        window.mailpoet_forms = <?php echo $form_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
         window.locale = {
           selectForm: '<?php echo esc_js(__('Select a MailPoet form', 'mailpoet')) ?>',
           createForm: '<?php echo esc_js(__('Create a new form', 'mailpoet')) ?>',

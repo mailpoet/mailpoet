@@ -54,7 +54,8 @@ class DotcomLicenseProvisioner {
     $apiKey = $this->getKeyFromPayload($licensePayload);
     if (is_wp_error($apiKey)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_PROVISIONING)->error(
-        'key was not found in license payload');
+        'key was not found in license payload'
+      );
       return $apiKey;
     }
 

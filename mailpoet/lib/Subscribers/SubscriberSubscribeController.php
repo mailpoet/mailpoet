@@ -192,7 +192,7 @@ class SubscriberSubscribeController {
    * @return bool True if the subscriber is subscribed to any of the segments in the form
    */
   public function isSubscribedToAnyFormSegments(FormEntity $form, SubscriberEntity $subscriber): bool {
-    $formSegments = array_merge( $form->getSegmentBlocksSegmentIds(), $form->getSettingsSegmentIds());
+    $formSegments = array_merge($form->getSegmentBlocksSegmentIds(), $form->getSettingsSegmentIds());
 
     $subscribersFound = $this->subscribersFinder->findSubscribersInSegments([$subscriber->getId()], $formSegments);
     if (!empty($subscribersFound)) return true;

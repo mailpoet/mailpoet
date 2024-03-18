@@ -1,14 +1,15 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
 namespace MailPoet\Config\PopulatorData\Templates;
-use MailPoet\WP\Functions as WPFunctions;
 
 class RssSimpleNews {
 
   private $template_image_url;
   private $social_icon_url;
 
-  public function __construct($assets_url) {
+  public function __construct(
+    $assets_url
+  ) {
     $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/rss-simple-news';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
@@ -28,7 +29,7 @@ class RssSimpleNews {
   }
 
   private function getBody() {
-    return  [
+    return [
       'content' =>
          [
           'type' => 'container',
@@ -448,8 +449,8 @@ class RssSimpleNews {
                                  [
                                   'type' => 'text',
                                   'text' => '<p><span style="color: #808080;"><strong>RSS Simple</strong></span></p>
-<p><span style="color: #808080; font-size: 11px;"><strong><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a><span>&nbsp;|&nbsp;</span><a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a></strong></span></p>
-<p><span style="color: #808080; font-size: 11px;"><strong><span>'.__("Add your postal address here!", 'mailpoet').'</span></strong></span></p>',
+<p><span style="color: #808080; font-size: 11px;"><strong><a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a><span>&nbsp;|&nbsp;</span><a href="[link:subscription_manage_url]">' . __("Manage your subscription", 'mailpoet') . '</a></strong></span></p>
+<p><span style="color: #808080; font-size: 11px;"><strong><span>' . __("Add your postal address here!", 'mailpoet') . '</span></strong></span></p>',
                                  ],
                              ],
                          ],
@@ -686,7 +687,7 @@ class RssSimpleNews {
              ],
           'footer' =>
              [
-              'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
+              'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . __("Manage your subscription", 'mailpoet') . '</a><br />' . __("Add your postal address here!", 'mailpoet') . '</p>',
               'styles' =>
                  [
                   'block' =>
@@ -809,7 +810,7 @@ class RssSimpleNews {
              ],
           'header' =>
              [
-              'text' => '<a href="[link:newsletter_view_in_browser_url]">'.__("View this in your browser.", 'mailpoet').'</a>',
+              'text' => '<a href="[link:newsletter_view_in_browser_url]">' . __("View this in your browser.", 'mailpoet') . '</a>',
               'styles' =>
                  [
                   'block' =>
@@ -833,5 +834,4 @@ class RssSimpleNews {
          ],
     ];
   }
-
 }

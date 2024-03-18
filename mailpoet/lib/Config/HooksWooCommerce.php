@@ -171,7 +171,7 @@ class HooksWooCommerce {
     }
     try {
       \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', Env::$pluginPath);
-      \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', Env::$pluginPath );
+      \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('cart_checkout_blocks', Env::$pluginPath);
     } catch (\Throwable $e) {
       $this->logError($e, 'WooCommerce Compatibility');
     }

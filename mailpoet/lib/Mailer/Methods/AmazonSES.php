@@ -178,7 +178,8 @@ class AmazonSES extends PHPMailerMethod {
       $this->awsSigningAlgorithm,
       $this->awsAccessKey,
       $this->getCredentialScope(),
-      $signature);
+      $signature
+    );
   }
 
   public function getCredentialScope() {
@@ -187,7 +188,8 @@ class AmazonSES extends PHPMailerMethod {
       $this->dateWithoutTime,
       $this->awsRegion,
       $this->awsService,
-      $this->awsTerminationString);
+      $this->awsTerminationString
+    );
   }
 
   public function getCanonicalRequest($body) {

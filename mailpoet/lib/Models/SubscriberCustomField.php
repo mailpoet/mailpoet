@@ -66,7 +66,8 @@ class SubscriberCustomField extends Model {
         str_repeat(
           '(?, ?, ?)' . ', ',
           count($values)
-        ), ', '
+        ),
+        ', '
       ),
       Helpers::flattenArray($values)
     );

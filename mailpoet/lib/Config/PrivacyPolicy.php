@@ -30,7 +30,7 @@ class PrivacyPolicy {
       '<p>' .
         Helpers::replaceLinkTags(
           __('This website can send emails through the [link]MailPoet Sending Service[/link]. This service allows us to track opens and clicks on our emails. We use this information to improve the content of our newsletters.', 'mailpoet'),
-        'https://www.mailpoet.com/privacy-notice/',
+          'https://www.mailpoet.com/privacy-notice/',
           ['target' => '_blank']
         ) .
       '</p>' .
@@ -46,28 +46,28 @@ class PrivacyPolicy {
         '</p>' .
         '<p>' .
           // translators: %s is the name of the cookie.
-          sprintf(__('Cookie name: %s', 'mailpoet'), 'mailpoet_page_view' ) .
+          sprintf(__('Cookie name: %s', 'mailpoet'), 'mailpoet_page_view') .
           '<br>' .
           // translators: %s is the number of days.
-          sprintf(__('Cookie expiry: %s days.', 'mailpoet'), WPFunctions::get()->numberFormatI18n(3650) ) .
+          sprintf(__('Cookie expiry: %s days.', 'mailpoet'), WPFunctions::get()->numberFormatI18n(3650)) .
           '<br>' .
           __('Cookie description: The purpose of this cookie is to track the last time a subscriber viewed any page on the site.', 'mailpoet') .
         '</p> ' .
         '<p>' .
           // translators: %s is the name of the cookie.
-          sprintf(__('Cookie name: %s', 'mailpoet'), 'mailpoet_revenue_tracking' ) .
+          sprintf(__('Cookie name: %s', 'mailpoet'), 'mailpoet_revenue_tracking') .
           '<br>' .
           // translators: %s is the number of days.
-          sprintf(__('Cookie expiry: %s days.', 'mailpoet'), WPFunctions::get()->numberFormatI18n(14) ) .
+          sprintf(__('Cookie expiry: %s days.', 'mailpoet'), WPFunctions::get()->numberFormatI18n(14)) .
           '<br>' .
           __('Cookie description: The purpose of this cookie is to track which newsletter sent from your website has acquired a click-through and a subsequent purchase in your WooCommerce store.', 'mailpoet') .
         '</p> ' .
         '<p>' .
           // translators: %s is the name of the cookie.
-          sprintf(__('Cookie name: %s', 'mailpoet'), 'mailpoet_subscriber' ) .
+          sprintf(__('Cookie name: %s', 'mailpoet'), 'mailpoet_subscriber') .
           '<br>' .
           // translators: %s is the number of days.
-          sprintf(__('Cookie expiry: %s days.', 'mailpoet'), WPFunctions::get()->numberFormatI18n(3650) ) .
+          sprintf(__('Cookie expiry: %s days.', 'mailpoet'), WPFunctions::get()->numberFormatI18n(3650)) .
           '<br>' .
           __('Cookie description: The purpose of this cookie is to track subscriber engagement. It is used when the user logs in, signs up in a form, confirms subscription to a newsletter, or places an order through WooCommerce.', 'mailpoet') .
           '<br>' .
@@ -75,7 +75,7 @@ class PrivacyPolicy {
         '</p>' .
         '<p>' .
           // translators: %s is the name of the cookie.
-          sprintf(__('Cookie name: %s', 'mailpoet'), 'popup_form_dismissed_{$formId}' ) .
+          sprintf(__('Cookie name: %s', 'mailpoet'), 'popup_form_dismissed_{$formId}') .
           '<br>' .
           __('Cookie expiry: the expiration date varies and can be set per form.', 'mailpoet') .
           '<br>' .

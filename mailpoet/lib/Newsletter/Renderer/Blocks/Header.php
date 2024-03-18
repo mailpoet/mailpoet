@@ -12,7 +12,8 @@ class Header {
     $element['text'] = preg_replace('/\n/', '<br />', $element['text']);
     $element['text'] = preg_replace('/(<\/?p.*?>)/i', '', $element['text']);
     $lineHeight = sprintf(
-      '%spx', StylesHelper::$defaultLineHeight * (int)$element['styles']['text']['fontSize']
+      '%spx',
+      StylesHelper::$defaultLineHeight * (int)$element['styles']['text']['fontSize']
     );
     if (!is_string($element['text'])) {
       throw new \RuntimeException('$element[\'text\'] should be a string.');

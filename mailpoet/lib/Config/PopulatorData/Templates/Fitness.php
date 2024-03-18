@@ -1,15 +1,15 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+
 namespace MailPoet\Config\PopulatorData\Templates;
-
-use MailPoet\WP\Functions as WPFunctions;
-
 
 class Fitness {
 
   private $template_image_url;
   private $social_icon_url;
 
-  public function __construct($assets_url) {
+  public function __construct(
+    $assets_url
+  ) {
     $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/fitness';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
@@ -715,7 +715,7 @@ class Fitness {
                                  [
                                   'type' => 'text',
                                   'text' => '<p style="text-align: center;"><span style="color: #999999;">Address Line 1, Address Line 2, City, Country</span></p>
-<p style="text-align: center;"><span style="color: #999999;"><strong><a href="[link:subscription_unsubscribe_url]" style="color: #999999;">'.__("Unsubscribe", 'mailpoet').'</a><span>&nbsp;</span>|<span>&nbsp;</span><a href="[link:subscription_manage_url]" style="color: #999999;">'.__("Manage your subscription", 'mailpoet').'</a></strong></span></p>',
+<p style="text-align: center;"><span style="color: #999999;"><strong><a href="[link:subscription_unsubscribe_url]" style="color: #999999;">' . __("Unsubscribe", 'mailpoet') . '</a><span>&nbsp;</span>|<span>&nbsp;</span><a href="[link:subscription_manage_url]" style="color: #999999;">' . __("Manage your subscription", 'mailpoet') . '</a></strong></span></p>',
                                  ],
                               4 =>
                                  [
@@ -989,7 +989,7 @@ class Fitness {
              ],
           'footer' =>
              [
-              'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
+              'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . __("Manage your subscription", 'mailpoet') . '</a><br />' . __("Add your postal address here!", 'mailpoet') . '</p>',
               'styles' =>
                  [
                   'block' =>
@@ -1172,7 +1172,7 @@ class Fitness {
              ],
           'header' =>
              [
-              'text' => '<a href="[link:newsletter_view_in_browser_url]">'.__("View this in your browser.", 'mailpoet').'</a>',
+              'text' => '<a href="[link:newsletter_view_in_browser_url]">' . __("View this in your browser.", 'mailpoet') . '</a>',
               'styles' =>
                  [
                   'block' =>

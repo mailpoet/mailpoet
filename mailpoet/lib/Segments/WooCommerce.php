@@ -368,7 +368,8 @@ class WooCommerce {
     if ($this->woocommerceHelper->isWooCommerceCustomOrdersTableEnabled()) {
       $addressesTableName = $this->woocommerceHelper->getAddressesTableName();
       $metaData = [];
-      $results = $this->connection->executeQuery("
+      $results = $this->connection->executeQuery(
+        "
         SELECT order_id, first_name, last_name
         FROM {$addressesTableName}
         WHERE order_id IN (:orderIds) and address_type = 'billing'",
@@ -393,7 +394,8 @@ class WooCommerce {
         '_billing_first_name',
         '_billing_last_name',
       ];
-      $metaData = $this->connection->executeQuery("
+      $metaData = $this->connection->executeQuery(
+        "
         SELECT post_id, meta_key, meta_value
         FROM {$wpdb->postmeta}
         WHERE meta_key IN ('_billing_first_name', '_billing_last_name') AND post_id IN (:postIds)
@@ -430,7 +432,8 @@ class WooCommerce {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     // Subscribe WC users to segment
-    $this->connection->executeQuery("
+    $this->connection->executeQuery(
+      "
       INSERT IGNORE INTO {$subscriberSegmentsTable} (subscriber_id, segment_id, created_at)
       SELECT id, :segmentId, CURRENT_TIMESTAMP()
       FROM {$subscribersTable}
@@ -446,7 +449,8 @@ class WooCommerce {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     // Unsubscribe non-WC or invalid users from segment
-    $this->connection->executeQuery("
+    $this->connection->executeQuery(
+      "
       DELETE mpss FROM {$subscriberSegmentsTable} mpss
       LEFT JOIN {$subscribersTable} mps ON mpss.subscriber_id = mps.id
       WHERE mpss.segment_id = :segmentId AND (mps.is_woocommerce_user = 0 OR mps.email = '' OR mps.email IS NULL)
@@ -461,7 +465,8 @@ class WooCommerce {
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
     // Set global status unsubscribed to all woocommerce users without any segment
-    $this->connection->executeQuery("
+    $this->connection->executeQuery(
+      "
       UPDATE {$subscribersTable} mps
       LEFT JOIN {$subscriberSegmentsTable} mpss ON mpss.subscriber_id = mps.id
       SET mps.status = :statusUnsubscribed
@@ -473,7 +478,8 @@ class WooCommerce {
     );
     // SET global status unsubscribed to all woocommerce users who have only 1 segment and it is woocommerce segment and they are not subscribed
     // You can't specify target table 'mps' for update in FROM clause
-    $this->connection->executeQuery("
+    $this->connection->executeQuery(
+      "
       UPDATE {$subscribersTable} mps
       JOIN {$subscriberSegmentsTable} mpss ON mps.id = mpss.subscriber_id AND mpss.segment_id = :segmentId AND mpss.status = :statusUnsubscribed
       SET mps.status = :statusUnsubscribed
@@ -601,7 +607,8 @@ class WooCommerce {
     $subscriberSegmentsTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
     $wcSegment = $this->segmentsRepository->getWooCommerceSegment();
 
-    $this->connection->executeQuery("
+    $this->connection->executeQuery(
+      "
       UPDATE LOW_PRIORITY {$subscriberSegmentsTable} AS mpss
       JOIN {$subscribersTable} AS mps ON mpss.subscriber_id = mps.id
       SET mpss.status = :status

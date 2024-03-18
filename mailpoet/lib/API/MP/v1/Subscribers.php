@@ -217,7 +217,8 @@ class Subscribers {
     $foundSegmentsIds = array_map(
       function(SegmentEntity $segment) {
         return $segment->getId();
-      }, $foundSegments
+      },
+      $foundSegments
     );
     if ($scheduleWelcomeEmail && $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
       $this->_scheduleWelcomeNotification($subscriber, $foundSegmentsIds);

@@ -92,7 +92,7 @@ class Button implements BlockRenderer {
     }
 
     // Spacing
-    $paddingStyles = wp_style_engine_get_styles(['spacing' => ['padding' => $parsedBlock['attrs']['style']['spacing']['padding'] ?? null ]]);
+    $paddingStyles = wp_style_engine_get_styles(['spacing' => ['padding' => $parsedBlock['attrs']['style']['spacing']['padding'] ?? null]]);
     $linkStyles = array_merge($linkStyles, $paddingStyles['declarations'] ?? []);
     // In most clients we want to render padding on the link element so that the full button is clickable
     // Outlook doesn't support padding on the link element, so we need to set padding on the wrapper table cell and to have it only for Outlook we use mso-padding-alt

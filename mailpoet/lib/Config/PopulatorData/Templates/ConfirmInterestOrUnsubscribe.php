@@ -2,14 +2,14 @@
 
 namespace MailPoet\Config\PopulatorData\Templates;
 
-use MailPoet\WP\Functions as WPFunctions;
-
 class ConfirmInterestOrUnsubscribe {
   private $assets_url;
   private $external_template_image_url;
   private $template_image_url;
 
-  public function __construct($assets_url) {
+  public function __construct(
+    $assets_url
+  ) {
     $this->assets_url = $assets_url;
     $this->external_template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/confirm-interest-or-unsubscribe';
     $this->template_image_url = $this->assets_url . '/img/blank_templates';

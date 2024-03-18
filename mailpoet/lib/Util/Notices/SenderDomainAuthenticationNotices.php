@@ -99,7 +99,8 @@ class SenderDomainAuthenticationNotices {
   public function getNoticeContentForFreeMailUsers(int $contactCount): string {
     if ($contactCount <= AuthorizedSenderDomainController::UPPER_LIMIT) {
       // translators: %1$s is the domain of the user's default from address, %2$s is a rewritten version of their default from address, %3$s is HTML for an 'update sender' button, and %4$s is HTML for a Learn More button
-      return sprintf(__("<strong>Update your sender email address to a branded domain to continue sending your campaigns.</strong>
+      return sprintf(
+        __("<strong>Update your sender email address to a branded domain to continue sending your campaigns.</strong>
 <span>MailPoet can no longer send from email addresses on shared 3rd party domains like <strong>%1\$s</strong>. Please change your campaigns to send from an email address on your site's branded domain. Your existing scheduled and active emails will temporarily be sent from <strong>%2\$s</strong>.</span> <p>%3\$s &nbsp; %4\$s</p>", 'mailpoet'),
         "@" . $this->getDefaultFromDomain(),
         $this->authorizedSenderDomainController->getRewrittenEmailAddress($this->getDefaultFromAddress()),
@@ -109,7 +110,8 @@ class SenderDomainAuthenticationNotices {
     }
 
     // translators: %1$s is the domain of the user's default from address, %2$s is a rewritten version of their default from address, %3$s is HTML for an 'update sender' button, and %4$s is HTML for a Learn More button
-    return sprintf(__("<strong>Your newsletters and post notifications have been paused. Update your sender email address to a branded domain to continue sending your campaigns.</strong>
+    return sprintf(
+      __("<strong>Your newsletters and post notifications have been paused. Update your sender email address to a branded domain to continue sending your campaigns.</strong>
 <span>MailPoet can no longer send from email addresses on shared 3rd party domains like <strong>%1\$s</strong>. Please change your campaigns to send from an email address on your site's branded domain. Your marketing automations and transactional emails will temporarily be sent from <strong>%2\$s</strong>.</span> <p>%3\$s &nbsp; %4\$s</p>", 'mailpoet'),
       "@" . $this->getDefaultFromDomain(),
       $this->authorizedSenderDomainController->getRewrittenEmailAddress($this->getDefaultFromAddress()),
@@ -121,7 +123,8 @@ class SenderDomainAuthenticationNotices {
   public function getNoticeContentForBrandedDomainUsers(bool $isPartiallyVerified, int $contactCount): string {
     if ($isPartiallyVerified || $contactCount <= AuthorizedSenderDomainController::LOWER_LIMIT) {
       // translators: %1$s is HTML for an 'authenticate domain' button, %2$s is HTML for a Learn More button
-      return sprintf(__("<strong>Authenticate your sender domain to improve email delivery rates.</strong>
+      return sprintf(
+        __("<strong>Authenticate your sender domain to improve email delivery rates.</strong>
 <span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the “Spam” folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts.</span><p>%1\$s &nbsp; %2\$s</p>", 'mailpoet'),
         $this->getAuthenticateDomainButton(),
         $this->getLearnMoreAboutSpfDkimDmarcButton()
@@ -130,7 +133,8 @@ class SenderDomainAuthenticationNotices {
 
     if ($contactCount <= AuthorizedSenderDomainController::UPPER_LIMIT) {
       // translators: %1$s is a rewritten version of the user's default from address, %2$s is HTML for an 'authenticate domain' button, %3$s is HTML for a Learn More button
-      return sprintf(__("<strong>Authenticate your sender domain to send new emails.</strong>
+      return sprintf(
+        __("<strong>Authenticate your sender domain to send new emails.</strong>
       <span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the “Spam” folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts. Your existing scheduled and active emails will temporarily be sent from <strong>%1\$s</strong>.</span> <p>%2\$s &nbsp; %3\$s</p>", 'mailpoet'),
         $this->authorizedSenderDomainController->getRewrittenEmailAddress($this->getDefaultFromAddress()),
         $this->getAuthenticateDomainButton(),
@@ -139,7 +143,8 @@ class SenderDomainAuthenticationNotices {
     }
 
     // translators: %1$s is a rewritten version of the user's default from address, %2$s is HTML for an 'authenticate domain' button, %3$s is HTML for a Learn More button
-    return sprintf(__("<strong>Your newsletters and post notifications have been paused. Authenticate your sender domain to continue sending.</strong>
+    return sprintf(
+      __("<strong>Your newsletters and post notifications have been paused. Authenticate your sender domain to continue sending.</strong>
 <span>Major mailbox providers require you to authenticate your sender domain to confirm you sent the emails, and may place unauthenticated emails in the “Spam” folder. Please authenticate your sender domain to ensure your marketing campaigns are compliant and will reach your contacts. Your marketing automations and transactional emails will temporarily be sent from <strong>%1\$s</strong>.</span> <p>%2\$s &nbsp; %3\$s</p>", 'mailpoet'),
       $this->authorizedSenderDomainController->getRewrittenEmailAddress($this->getDefaultFromAddress()),
       $this->getAuthenticateDomainButton(),
@@ -169,7 +174,8 @@ class SenderDomainAuthenticationNotices {
     $buttonClass = $this->isErrorStyle()
       ? 'button-primary'
       : 'button-secondary';
-    $button = sprintf('<a href="#" class="button %s mailpoet-js-button-authorize-email-and-sender-domain" data-email="%s" data-type="domain">%s</a>',
+    $button = sprintf(
+      '<a href="#" class="button %s mailpoet-js-button-authorize-email-and-sender-domain" data-email="%s" data-type="domain">%s</a>',
       $buttonClass,
       esc_attr($this->getDefaultFromAddress()),
       __('Authenticate domain', 'mailpoet')

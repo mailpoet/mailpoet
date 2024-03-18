@@ -28,7 +28,8 @@ class UserFlags extends APIEndpoint {
         [
           APIError::BAD_REQUEST =>
             __('You have not specified any user flags to be saved.', 'mailpoet'),
-        ]);
+        ]
+      );
     } else {
       foreach ($flags as $name => $value) {
         $this->userFlags->set($name, $value);

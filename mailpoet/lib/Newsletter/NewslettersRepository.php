@@ -271,7 +271,8 @@ class NewslettersRepository extends Repository {
       return 0;
     }
     $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS, $attachProcessors = true)->info(
-      'trashing newsletters', ['id' => $ids]
+      'trashing newsletters',
+      ['id' => $ids]
     );
     // Fetch children id for trashing
     $childrenIds = $this->fetchChildrenIds($ids);

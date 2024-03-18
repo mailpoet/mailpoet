@@ -1,15 +1,15 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+
 namespace MailPoet\Config\PopulatorData\Templates;
-
-use MailPoet\WP\Functions as WPFunctions;
-
 
 class AppWelcome {
 
   private $template_image_url;
   private $social_icon_url;
 
-  public function __construct($assets_url) {
+  public function __construct(
+    $assets_url
+  ) {
     $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/app_welcome';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
@@ -316,7 +316,7 @@ class AppWelcome {
                                 <p style="text-align: center; font-size: 12px;"><span>Address Line 1</span></p>
                                 <p style="text-align: center; font-size: 12px;"><span>Address Line 2</span></p>
                                 <p style="text-align: center; font-size: 12px;"><span>City</span></p>
-                                <p style="text-align: center; font-size: 12px;"><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a><span> | </span><a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a></p>',
+                                <p style="text-align: center; font-size: 12px;"><a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a><span> | </span><a href="[link:subscription_manage_url]">' . __("Manage your subscription", 'mailpoet') . '</a></p>',
                   ],
                   [
                     'type' => 'social',
@@ -413,5 +413,4 @@ class AppWelcome {
   private function getThumbnail() {
     return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
-
 }

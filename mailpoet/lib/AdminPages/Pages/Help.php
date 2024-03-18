@@ -122,7 +122,7 @@ class Help {
     $store = \ActionScheduler_Store::instance();
     $action = $store->query_actions($query);
     if (!empty($action)) {
-      $dateObject = $store->get_date( $action[0] );
+      $dateObject = $store->get_date($action[0]);
       return $dateObject->format('Y-m-d H:i:s');
     }
     return null;

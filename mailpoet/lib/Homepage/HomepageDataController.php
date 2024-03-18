@@ -124,7 +124,7 @@ class HomepageDataController {
       [NewsletterEntity::TYPE_NOTIFICATION, NewsletterEntity::TYPE_AUTOMATIC]
     );
     $abandonedCartEmailsCount = $this->newslettersRepository->getCountOfActiveAutomaticEmailsForEvent(AbandonedCart::SLUG);
-    $welcomeEmailsCount = $this->newslettersRepository->getCountForStatusAndTypes( NewsletterEntity::STATUS_ACTIVE, [NewsletterEntity::TYPE_WELCOME]);
+    $welcomeEmailsCount = $this->newslettersRepository->getCountForStatusAndTypes(NewsletterEntity::STATUS_ACTIVE, [NewsletterEntity::TYPE_WELCOME]);
     $welcomeEmailLikeAutomationsCount = $this->automationStorage->getCountOfActiveByTriggerKeysAndAction(
       [UserRegistrationTrigger::KEY, SomeoneSubscribesTrigger::KEY],
       SendEmailAction::KEY

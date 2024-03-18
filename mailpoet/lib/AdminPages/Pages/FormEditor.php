@@ -341,7 +341,7 @@ class FormEditor {
 
     $translations = [];
     foreach ($translationsToLoad as $translation) {
-      $file = WP_LANG_DIR . '/' . $locale . '-' . md5( $translation ) . '.json';
+      $file = WP_LANG_DIR . '/' . $locale . '-' . md5($translation) . '.json';
       if (!file_exists($file)) {
         continue;
       }

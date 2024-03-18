@@ -22,7 +22,9 @@ class PageLimit {
     }
 
     $listingPerPage = $this->wp->getUserMeta(
-      $this->wp->getCurrentUserId(), 'mailpoet_' . $model . '_per_page', true
+      $this->wp->getCurrentUserId(),
+      'mailpoet_' . $model . '_per_page',
+      true
     );
     return (!empty($listingPerPage))
       ? (int)$listingPerPage

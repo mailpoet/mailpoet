@@ -58,7 +58,8 @@ class SubscriberSegment extends Model {
 
       if ($wpSegment !== false) {
         $subscriptions = $subscriptions->whereNotEqual(
-          'segment_id', $wpSegment->id
+          'segment_id',
+          $wpSegment->id
         );
       }
 
@@ -154,19 +155,22 @@ class SubscriberSegment extends Model {
 
     // delete subscribers' relations to segments (except WP and WooCommerce segments)
     $subscriptions = self::whereIn(
-      'subscriber_id', $subscriberIds
+      'subscriber_id',
+      $subscriberIds
     );
 
     $wpSegment = Segment::getWPSegment();
     $wcSegment = Segment::getWooCommerceSegment();
     if ($wpSegment !== false) {
       $subscriptions = $subscriptions->whereNotEqual(
-        'segment_id', $wpSegment->id
+        'segment_id',
+        $wpSegment->id
       );
     }
     if ($wcSegment !== false) {
       $subscriptions = $subscriptions->whereNotEqual(
-        'segment_id', $wcSegment->id
+        'segment_id',
+        $wcSegment->id
       );
     }
 

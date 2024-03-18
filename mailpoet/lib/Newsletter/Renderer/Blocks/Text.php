@@ -65,8 +65,7 @@ class Text {
               </table>
             </td>
           </tr>
-        </tbody>'
-      );
+        </tbody>');
       $blockquote = $this->insertLineBreak($blockquote);
     }
     return $DOM->__toString();
@@ -131,8 +130,7 @@ class Text {
           <td class="mailpoet_paragraph" style="word-break:break-word;word-wrap:break-word;' . EHelper::escapeHtmlStyleAttr($style) . '">
             ' . $contents . $lineBreaks . '
           </td>
-        </tr>'
-      );
+        </tr>');
     }
     return $DOM->__toString();
   }

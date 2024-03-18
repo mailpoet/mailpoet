@@ -31,7 +31,8 @@ class Posts {
     preg_match_all(
       '/data-post-id="(\d+)"/ism',
       $renderedNewsletter['html'],
-      $matchedPostsIds);
+      $matchedPostsIds
+    );
     $matchedPostsIds = $matchedPostsIds[1];
     if (!count($matchedPostsIds)) {
       return false;

@@ -14,21 +14,24 @@ class NewsletterLinkFieldsFactory {
         __('Link URL', 'mailpoet'),
         function(NewsletterLinkPayload $payload) {
           return $payload->getLink()->getUrl();
-        }),
+        }
+      ),
       new Field(
         'mailpoet:email-link:created',
         Field::TYPE_DATETIME,
         __('Created', 'mailpoet'),
         function(NewsletterLinkPayload $payload) {
           return $payload->getLink()->getCreatedAt();
-        }),
+        }
+      ),
       new Field(
         'mailpoet:email-link:id',
         Field::TYPE_INTEGER,
         __('Link ID', 'mailpoet'),
         function(NewsletterLinkPayload $payload) {
           return $payload->getLink()->getId();
-        }),
+        }
+      ),
     ];
   }
 }

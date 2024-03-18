@@ -2,14 +2,14 @@
 
 namespace MailPoet\Config\PopulatorData\Templates;
 
-use MailPoet\WP\Functions as WPFunctions;
-
 class Painter {
 
   private $template_image_url;
   private $social_icon_url;
 
-  public function __construct($assets_url) {
+  public function __construct(
+    $assets_url
+  ) {
     $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/painter';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
@@ -29,7 +29,7 @@ class Painter {
   }
 
   private function getBody() {
-    return  [
+    return [
       'content' =>
        [
         'type' => 'container',

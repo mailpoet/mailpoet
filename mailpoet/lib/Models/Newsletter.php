@@ -148,7 +148,8 @@ class Newsletter extends Model {
       );
     }
 
-    $this->set('hash',
+    $this->set(
+      'hash',
       ($this->hash)
       ? $this->hash
       : Security::generateHash()
@@ -323,7 +324,8 @@ class Newsletter extends Model {
       $orm = $orm->select_expr(
         'IFNULL(GROUP_CONCAT(CASE WHEN ' .
         MP_NEWSLETTER_OPTION_FIELDS_TABLE . '.id=' . $optionField->getId() . ' THEN ' .
-        MP_NEWSLETTER_OPTION_TABLE . '.value END), NULL) as "' . $optionField->getName() . '"');
+        MP_NEWSLETTER_OPTION_TABLE . '.value END), NULL) as "' . $optionField->getName() . '"'
+      );
     }
     $orm = $orm
       ->left_outer_join(

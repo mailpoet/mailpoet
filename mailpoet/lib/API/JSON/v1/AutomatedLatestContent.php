@@ -94,8 +94,7 @@ class AutomatedLatestContent extends APIEndpoint {
       'args' => $data,
       // If the request is for Posts or Products block then we are fetching data for a static block
       'dynamic' => !(isset($data['type']) && in_array($data['type'], ["posts", "products"])),
-    ]
-    )));
+    ])));
     return $this->successResponse(
       $this->ALC->transformPosts($data, $posts)
     );

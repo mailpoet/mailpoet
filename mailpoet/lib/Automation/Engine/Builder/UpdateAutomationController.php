@@ -92,12 +92,12 @@ class UpdateAutomationController {
 
     if (
       !in_array(
-      $automation->getStatus(),
-      [
+        $automation->getStatus(),
+        [
         Automation::STATUS_ACTIVE,
         Automation::STATUS_DEACTIVATING,
-      ],
-      true
+        ],
+        true
       )
     ) {
       return;

@@ -74,10 +74,9 @@ class SegmentSubscribersRepository {
         $segmentQb->getParameters(),
         $queryBuilder->getParameters()
       ), array_merge(
-          $segmentQb->getParameterTypes(),
-          $queryBuilder->getParameterTypes()
-        )
-      );
+        $segmentQb->getParameterTypes(),
+        $queryBuilder->getParameterTypes()
+      ));
       $subQueries[] = $segmentQb->getSQL();
     }
 
@@ -95,9 +94,12 @@ class SegmentSubscribersRepository {
         $filterSegmentQb->select("{$subscribersTable}.id AS filter_segment_subscriber_id");
         $filterSegmentQb = $this->filterSubscribersInDynamicSegment($filterSegmentQb, $filterSegment, $status);
         $queryBuilder->setParameters(array_merge($filterSegmentQb->getParameters(), $queryBuilder->getParameters()), array_merge($filterSegmentQb->getParameterTypes(), $queryBuilder->getParameterTypes()));
-        $queryBuilder->innerJoin($subscribersTable, sprintf('(%s)', $filterSegmentQb->getSQL()),
+        $queryBuilder->innerJoin(
+          $subscribersTable,
+          sprintf('(%s)', $filterSegmentQb->getSQL()),
           'filter_segment',
-          "filter_segment.filter_segment_subscriber_id = {$subscribersTable}.id");
+          "filter_segment.filter_segment_subscriber_id = {$subscribersTable}.id"
+        );
       }
     } catch (InvalidStateException $exception) {
       return 0;
@@ -331,12 +333,16 @@ class SegmentSubscribersRepository {
       ->where($deletedSegmentsQueryBuilder->expr()->isNotNull('sg.deletedAt'));
 
     $queryBuilder
-      ->leftJoin('s.subscriberSegments', 'ssg', Join::WITH,
+      ->leftJoin(
+        's.subscriberSegments',
+        'ssg',
+        Join::WITH,
         (string)$queryBuilder->expr()->andX(
           $queryBuilder->expr()->eq('ssg.subscriber', 's.id'),
           $queryBuilder->expr()->eq('ssg.status', ':statusSubscribed'),
           $queryBuilder->expr()->notIn('ssg.segment', $deletedSegmentsQueryBuilder->getDQL())
-        ))
+        )
+      )
       ->andWhere('ssg.id IS NULL')
       ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
   }
@@ -349,12 +355,16 @@ class SegmentSubscribersRepository {
       ->where($deletedSegmentsQueryBuilder->expr()->isNotNull('sg.deletedAt'));
 
     $queryBuilder
-      ->leftJoin('s', $subscribersSegmentTable, 'ssg',
+      ->leftJoin(
+        's',
+        $subscribersSegmentTable,
+        'ssg',
         (string)$queryBuilder->expr()->and(
           $queryBuilder->expr()->eq('ssg.subscriber_id', 's.id'),
           $queryBuilder->expr()->eq('ssg.status', ':statusSubscribed'),
           $queryBuilder->expr()->notIn('ssg.segment_id', $deletedSegmentsQueryBuilder->getQuery()->getSQL())
-        ))
+        )
+      )
       ->andWhere('ssg.id IS NULL')
       ->setParameter('statusSubscribed', SubscriberEntity::STATUS_SUBSCRIBED);
   }

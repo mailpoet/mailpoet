@@ -62,7 +62,8 @@ class WooFilterHelper {
       $customerAlias,
       $this->orderStatsTable(),
       $orderStatsAlias,
-      "$customerAlias.customer_id = $orderStatsAlias.customer_id");
+      "$customerAlias.customer_id = $orderStatsAlias.customer_id"
+    );
 
     return $orderStatsAlias;
   }

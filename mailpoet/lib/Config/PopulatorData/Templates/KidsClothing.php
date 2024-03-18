@@ -1,15 +1,15 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+
 namespace MailPoet\Config\PopulatorData\Templates;
-
-use MailPoet\WP\Functions as WPFunctions;
-
 
 class KidsClothing {
 
   private $template_image_url;
   private $social_icon_url;
 
-  public function __construct($assets_url) {
+  public function __construct(
+    $assets_url
+  ) {
     $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/kids-clothing';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
@@ -389,7 +389,7 @@ class KidsClothing {
                               0 =>
                                  [
                                   'type' => 'text',
-                                  'text' => '<p style="text-align: center;"><span style="color: #4e4e4e;"><strong>'.__("Boys Clothes", 'mailpoet').'</strong></span></p>',
+                                  'text' => '<p style="text-align: center;"><span style="color: #4e4e4e;"><strong>' . __("Boys Clothes", 'mailpoet') . '</strong></span></p>',
                                 ],
                             ],
                         ],
@@ -415,7 +415,7 @@ class KidsClothing {
                               0 =>
                                  [
                                   'type' => 'text',
-                                  'text' => '<p style="text-align: center;"><span style="color: #4e4e4e;"><strong>'.__("Girls Clothes", 'mailpoet').'</strong></span></p>',
+                                  'text' => '<p style="text-align: center;"><span style="color: #4e4e4e;"><strong>' . __("Girls Clothes", 'mailpoet') . '</strong></span></p>',
                                 ],
                             ],
                         ],
@@ -441,7 +441,7 @@ class KidsClothing {
                               0 =>
                                  [
                                   'type' => 'text',
-                                  'text' => '<p style="text-align: center;"><span style="color: #4e4e4e;"><strong>'.__("Toys & Games", 'mailpoet').'</strong></span></p>',
+                                  'text' => '<p style="text-align: center;"><span style="color: #4e4e4e;"><strong>' . __("Toys & Games", 'mailpoet') . '</strong></span></p>',
                                 ],
                             ],
                         ],
@@ -500,7 +500,7 @@ class KidsClothing {
                               1 =>
                                  [
                                   'type' => 'text',
-                                  'text' => '<h1><strong>'.__("Wait!", 'mailpoet').'</strong></h1><h3>'.__("You’ve left something in your cart!", 'mailpoet').'</h3>',
+                                  'text' => '<h1><strong>' . __("Wait!", 'mailpoet') . '</strong></h1><h3>' . __("You’ve left something in your cart!", 'mailpoet') . '</h3>',
                                 ],
                               2 =>
                                  [
@@ -592,7 +592,7 @@ class KidsClothing {
                               0 =>
                                  [
                                   'type' => 'text',
-                                  'text' => '<h2 style="text-align: center;"><span style="color: #4e4e4e;"><strong>'.__("Don’t worry, we saved it for you…", 'mailpoet').'</strong></span></h2>',
+                                  'text' => '<h2 style="text-align: center;"><span style="color: #4e4e4e;"><strong>' . __("Don’t worry, we saved it for you…", 'mailpoet') . '</strong></span></h2>',
                                 ],
                             ],
                         ],
@@ -771,7 +771,7 @@ class KidsClothing {
                               1 =>
                                  [
                                   'type' => 'text',
-                                  'text' => '<h2 style="text-align: center;"><strong>'.__("YOU MIGHT ALSO LIKE…", 'mailpoet').'</strong></h2>',
+                                  'text' => '<h2 style="text-align: center;"><strong>' . __("YOU MIGHT ALSO LIKE…", 'mailpoet') . '</strong></h2>',
                                 ],
                             ],
                         ],
@@ -889,7 +889,7 @@ class KidsClothing {
                               1 =>
                                  [
                                   'type' => 'text',
-                                  'text' => '<p><strong>'.__("Cherry Dress", 'mailpoet').'</strong></p><p><span>$10.99</span></p>',
+                                  'text' => '<p><strong>' . __("Cherry Dress", 'mailpoet') . '</strong></p><p><span>$10.99</span></p>',
                                 ],
                               2 =>
                                  [
@@ -956,7 +956,7 @@ class KidsClothing {
                               1 =>
                                  [
                                   'type' => 'text',
-                                  'text' => '<p><strong>'.__("Red T-Shirt", 'mailpoet').'</strong></p><p><span>$9.49</span></p>',
+                                  'text' => '<p><strong>' . __("Red T-Shirt", 'mailpoet') . '</strong></p><p><span>$9.49</span></p>',
                                 ],
                               2 =>
                                  [
@@ -1023,7 +1023,7 @@ class KidsClothing {
                               1 =>
                                  [
                                   'type' => 'text',
-                                  'text' => '<p><strong>'.__("Pink Dance Dress", 'mailpoet').'</strong></p><p><span>$11.99</span></p>',
+                                  'text' => '<p><strong>' . __("Pink Dance Dress", 'mailpoet') . '</strong></p><p><span>$11.99</span></p>',
                                 ],
                               2 =>
                                  [
@@ -1182,7 +1182,7 @@ class KidsClothing {
                               2 =>
                                  [
                                   'type' => 'footer',
-                                  'text' => '<p><strong><span style="color: #333333;"><a href="[link:subscription_unsubscribe_url]" style="color: #333333;">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]" style="color: #333333;">'.__("Manage your subscription", 'mailpoet').'</a></span></strong><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
+                                  'text' => '<p><strong><span style="color: #333333;"><a href="[link:subscription_unsubscribe_url]" style="color: #333333;">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]" style="color: #333333;">' . __("Manage your subscription", 'mailpoet') . '</a></span></strong><br />' . __("Add your postal address here!", 'mailpoet') . '</p>',
                                   'styles' =>
                                      [
                                       'block' =>
@@ -1466,7 +1466,7 @@ class KidsClothing {
                       'textAlign' => 'center',
                     ],
                 ],
-              'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
+              'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . __("Manage your subscription", 'mailpoet') . '</a><br />' . __("Add your postal address here!", 'mailpoet') . '</p>',
             ],
           'posts' => [
               'amount' => '10',
@@ -1645,7 +1645,7 @@ class KidsClothing {
                       'textAlign' => 'center',
                     ],
                 ],
-              'text' => '<a href="[link:newsletter_view_in_browser_url]">'.__("View this in your browser.", 'mailpoet').'</a>',
+              'text' => '<a href="[link:newsletter_view_in_browser_url]">' . __("View this in your browser.", 'mailpoet') . '</a>',
             ],
           'woocommerceHeading' => [
               'contents' =>

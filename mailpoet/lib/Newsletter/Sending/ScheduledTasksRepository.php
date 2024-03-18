@@ -337,7 +337,7 @@ class ScheduledTasksRepository extends Repository {
   }
 
   public function invalidateTask(ScheduledTaskEntity $task): void {
-    $task->setStatus( ScheduledTaskEntity::STATUS_INVALID);
+    $task->setStatus(ScheduledTaskEntity::STATUS_INVALID);
     $this->persist($task);
     $this->flush();
   }

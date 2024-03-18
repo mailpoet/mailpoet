@@ -127,7 +127,8 @@ class FirstPurchase {
       }
     }
     $this->loggerFactory->getLogger(self::SLUG)->info(
-      'handleOrderDateShortcode called', [
+      'handleOrderDateShortcode called',
+      [
         'newsletter_id' => ($newsletter instanceof NewsletterEntity) ? $newsletter->getId() : null,
         'subscriber_id' => ($subscriber instanceof SubscriberEntity) ? $subscriber->getId() : null,
         'task_id' => ($queue instanceof SendingQueueEntity) ? (($task = $queue->getTask()) ? $task->getId() : null) : null,
@@ -150,7 +151,8 @@ class FirstPurchase {
       }
     }
     $this->loggerFactory->getLogger(self::SLUG)->info(
-      'handleOrderTotalShortcode called', [
+      'handleOrderTotalShortcode called',
+      [
         'newsletter_id' => ($newsletter instanceof NewsletterEntity) ? $newsletter->getId() : null,
         'subscriber_id' => ($subscriber instanceof SubscriberEntity) ? $subscriber->getId() : null,
         'task_id' => ($queue instanceof SendingQueueEntity) ? (($task = $queue->getTask()) ? $task->getId() : null) : null,
@@ -175,7 +177,8 @@ class FirstPurchase {
     $customerOrderCount = $this->getCustomerOrderCount($customerEmail);
     if ($customerOrderCount > 1) {
       $this->loggerFactory->getLogger(self::SLUG)->info(
-        'Email not scheduled because this is not the first order of the customer', [
+        'Email not scheduled because this is not the first order of the customer',
+        [
           'order_id' => $orderId,
           'customer_email' => $customerEmail,
           'order_count' => $customerOrderCount,
@@ -205,7 +208,8 @@ class FirstPurchase {
     };
 
     $this->loggerFactory->getLogger(self::SLUG)->info(
-      'Email scheduled', [
+      'Email scheduled',
+      [
         'order_id' => $orderId,
         'customer_email' => $customerEmail,
         'subscriber_id' => $subscriber->getId(),

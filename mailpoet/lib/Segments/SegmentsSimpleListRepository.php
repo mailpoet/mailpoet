@@ -74,8 +74,8 @@ class SegmentsSimpleListRepository {
       ->createQueryBuilder();
 
     $segmentsDataQuery->select(
-        "segments.id, segments.name, segments.type"
-      )->from($segmentsTable, 'segments')
+      "segments.id, segments.name, segments.type"
+    )->from($segmentsTable, 'segments')
       ->where('segments.deleted_at IS NULL')
       ->orderBy('segments.name');
 
