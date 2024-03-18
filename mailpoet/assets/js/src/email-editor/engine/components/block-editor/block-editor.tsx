@@ -1,21 +1,17 @@
 import {
   BlockEditorKeyboardShortcuts,
   BlockEditorProvider,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore No types for this exist yet.
+  // @ts-expect-error No types for this exist yet.
   BlockTools,
   BlockList,
   ObserveTyping,
   WritingFlow,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore No types for this exist yet.
+  // @ts-expect-error No types for this exist yet.
   __experimentalUseResizeCanvas as useResizeCanvas,
   BlockSelectionClearer,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore No types for this exist yet.
+  // @ts-expect-error No types for this exist yet.
   __unstableEditorStyles as EditorStyles,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore No types for this exist yet.
+  // @ts-expect-error No types for this exist yet.
   BlockContextProvider,
 } from '@wordpress/block-editor';
 import { UnsavedChangesWarning } from '@wordpress/editor';
@@ -84,8 +80,7 @@ export function BlockEditor() {
   const [blocks, onInput, onChange] = useEntityBlockEditor(
     'postType',
     'mailpoet_email',
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore We have to use integer as we do in other places. Using string causes that id is referenced to a different post.
+    // @ts-expect-error We have to use integer as we do in other places. Using string causes that id is referenced to a different post.
     { id: postId },
   );
 
@@ -181,8 +176,7 @@ export function BlockEditor() {
                       className="editor-styles-wrapper block-editor-writing-flow"
                       style={{ width: '100%' }}
                     >
-                      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                      {/* @ts-ignore BlockEditorKeyboardShortcuts.Register has no types */}
+                      {/* @ts-expect-error BlockEditorKeyboardShortcuts.Register has no types */}
                       <BlockEditorKeyboardShortcuts.Register />
                       <BlockTools>
                         <WritingFlow>
@@ -195,8 +189,7 @@ export function BlockEditor() {
                                 },
                                 'is-layout-constrained has-global-padding',
                               )}
-                              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                              // @ts-ignore We have an older package of @wordpress/block-editor that doesn't contain the correct type
+                              // @ts-expect-error We have an older package of @wordpress/block-editor that doesn't contain the correct type
                               layout={layout}
                             />
                           </ObserveTyping>
