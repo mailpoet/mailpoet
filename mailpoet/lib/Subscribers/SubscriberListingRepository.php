@@ -105,7 +105,7 @@ class SubscriberListingRepository extends ListingRepository {
   }
 
   protected function applySelectClause(QueryBuilder $queryBuilder) {
-    $queryBuilder->select("PARTIAL s.{id,email,firstName,lastName,status,createdAt,updatedAt,countConfirmations,wpUserId,isWoocommerceUser,engagementScore}");
+    $queryBuilder->select("PARTIAL s.{id,email,firstName,lastName,status,createdAt,updatedAt,countConfirmations,wpUserId,isWoocommerceUser,engagementScore,lastSubscribedAt}");
   }
 
   protected function applyFromClause(QueryBuilder $queryBuilder) {
