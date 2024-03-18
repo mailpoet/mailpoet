@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer;
 
 use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ContentRenderer;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\VariablesPostprocessor;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\EmailEditor\Engine\ThemeController;
@@ -92,6 +93,10 @@ class Renderer {
 
     $templateWithContentsDom = $this->inlineCSSStyles($templateWithContents);
     $templateWithContents = $this->postProcessTemplate($templateWithContentsDom);
+    // Because the padding can be defined by variables, we need to postprocess the HTML by VariablesPostprocessor
+    $variablesPostprocessor = new VariablesPostprocessor($this->themeController);
+    $templateWithContents = $variablesPostprocessor->postprocess($templateWithContents);
+
     return [
       'html' => $templateWithContents,
       'text' => $this->renderTextVersion($templateWithContents),
