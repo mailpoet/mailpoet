@@ -31,6 +31,7 @@ type Subscriber = {
   last_name: string;
   engagement_score: number;
   created_at: string;
+  last_subscribed_at: string;
   subscriptions: Array<{
     id: number;
     status: string;
@@ -79,7 +80,7 @@ const columns = [
     display: mailpoetTrackingEnabled,
   },
   {
-    name: 'created_at',
+    name: 'last_subscribed_at',
     label: MailPoet.I18n.t('subscribedOn'),
     sortable: true,
   },
@@ -566,9 +567,9 @@ function SubscriberList({ match }) {
           className="column-date mailpoet-hide-on-mobile"
           data-colname={MailPoet.I18n.t('subscribedOn')}
         >
-          {MailPoet.Date.short(subscriber.created_at)}
+          {MailPoet.Date.short(subscriber.last_subscribed_at)}
           <br />
-          {MailPoet.Date.time(subscriber.created_at)}
+          {MailPoet.Date.time(subscriber.last_subscribed_at)}
         </td>
       </div>
     );
