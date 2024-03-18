@@ -54,3 +54,10 @@
 MailPoet used to use [IdiORM](https://github.com/j4mie/idiorm) as its object-relational mapper (ORM), but the project was abandoned a while ago, so we started a migration to [Doctrine](https://www.doctrine-project.org/). This is a significant effort that has been going on for quite some time. Although you will still see parts of the code that use IdioORM, we ask that all new code be added using Doctrine instead.
 
 All IdioORM models live in [mailpoet/lib/Models](https://github.com/mailpoet/mailpoet/tree/trunk/mailpoet/lib/Models), should be considered deprecated and shouldn't be used by new code. We are moving everything to Doctrine entities and some auxiliary code when needed. You can find Doctrine entities in [mailpoet/lib/Entities](https://github.com/mailpoet/mailpoet/tree/trunk/mailpoet/lib/Entities).
+
+## Feature flags
+
+We use feature flags to control the visibility of new features. This allows us to work on new features in smaller chunks before they are released to all customers.
+
+- Feature flags can be enabled on the experimental page: wp-admin/admin.php?page=mailpoet-experimental
+- New feature flags can be added in the class `FeaturesController`
