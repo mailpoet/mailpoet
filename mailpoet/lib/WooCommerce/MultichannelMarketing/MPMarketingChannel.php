@@ -184,26 +184,26 @@ class MPMarketingChannel implements MarketingChannelInterface {
 
   protected function generateCampaigns(): array {
       return array_map(
-          function (array $data) {
-              $cost = null;
+        function (array $data) {
+            $cost = null;
 
-            if (isset( $data['price'] )) {
-                $cost = new Price( (string)$data['price']['amount'], $data['price']['currency'] );
-            }
+          if (isset($data['price'])) {
+              $cost = new Price((string)$data['price']['amount'], $data['price']['currency']);
+          }
 
-              return new MarketingCampaign(
-                  $data['id'],
-                  $data['campaignType'],
-                  $data['name'],
-                  $data['url'],
-                  $cost,
-              );
-          },
-          array_merge(
-              $this->channelDataController->getAutomations($this->campaignTypes[self::CAMPAIGN_TYPE_AUTOMATIONS]),
-              $this->channelDataController->getPostNotificationNewsletters($this->campaignTypes[self::CAMPAIGN_TYPE_POST_NOTIFICATIONS]),
-              $this->channelDataController->getStandardNewsletterList($this->campaignTypes[self::CAMPAIGN_TYPE_NEWSLETTERS])
-          )
+            return new MarketingCampaign(
+              $data['id'],
+              $data['campaignType'],
+              $data['name'],
+              $data['url'],
+              $cost,
+            );
+        },
+        array_merge(
+          $this->channelDataController->getAutomations($this->campaignTypes[self::CAMPAIGN_TYPE_AUTOMATIONS]),
+          $this->channelDataController->getPostNotificationNewsletters($this->campaignTypes[self::CAMPAIGN_TYPE_POST_NOTIFICATIONS]),
+          $this->channelDataController->getStandardNewsletterList($this->campaignTypes[self::CAMPAIGN_TYPE_NEWSLETTERS])
+        )
       );
   }
 }

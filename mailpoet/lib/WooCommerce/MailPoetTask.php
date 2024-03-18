@@ -17,10 +17,10 @@ class MailPoetTask extends Task {
 
   public function get_title(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     if ($this->is_complete()) {
-      return esc_html__( 'MailPoet is ready to send marketing emails from your store', 'mailpoet' );
+      return esc_html__('MailPoet is ready to send marketing emails from your store', 'mailpoet');
     }
 
-    return esc_html__( 'Set up email marketing with MailPoet', 'mailpoet' );
+    return esc_html__('Set up email marketing with MailPoet', 'mailpoet');
   }
 
   public function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps

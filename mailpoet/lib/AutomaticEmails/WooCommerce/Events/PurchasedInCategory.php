@@ -173,7 +173,8 @@ class PurchasedInCategory {
     };
 
     $this->loggerFactory->getLogger(self::SLUG)->info(
-      'Email scheduled', [
+      'Email scheduled',
+      [
         'order_id' => $orderId,
         'customer_email' => $customerEmail,
         'subscriber_id' => $subscriber->getId(),

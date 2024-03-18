@@ -136,7 +136,7 @@ class NewsletterStatisticsRepository extends Repository {
       ->addSelect('queue.newsletterRenderedSubject AS newsletter_rendered_subject')
       ->addSelect('statistics.sentAt AS sent_at')
       ->from(StatisticsNewsletterEntity::class, 'statistics')
-      ->join(SendingQueueEntity::class, 'queue', Join::WITH, 'statistics.queue = queue' )
+      ->join(SendingQueueEntity::class, 'queue', Join::WITH, 'statistics.queue = queue')
       ->leftJoin(
         StatisticsOpenEntity::class,
         'opens',

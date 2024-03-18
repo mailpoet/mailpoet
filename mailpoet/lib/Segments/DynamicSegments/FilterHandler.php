@@ -86,7 +86,8 @@ class FilterHandler {
         $subscribersTable,
         "($subQuery)",
         $subqueryName,
-        "$subqueryName.inner_subscriber_id = $subscribersTable.id");
+        "$subqueryName.inner_subscriber_id = $subscribersTable.id"
+      );
     }
     return $queryBuilder;
   }

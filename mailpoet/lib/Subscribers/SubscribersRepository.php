@@ -573,7 +573,8 @@ class SubscribersRepository extends Repository {
        INNER JOIN {$subscriberSegmentsTable} ss ON s.id = ss.subscriber_id
        LEFT JOIN {$wpdb->users} u ON s.wp_user_id = u.id
        WHERE ss.segment_id = :segmentId AND (u.id IS NULL OR s.email = '')",
-      ['segmentId' => $segmentId], ['segmentId' => \PDO::PARAM_INT]
+      ['segmentId' => $segmentId],
+      ['segmentId' => \PDO::PARAM_INT]
     );
   }
 

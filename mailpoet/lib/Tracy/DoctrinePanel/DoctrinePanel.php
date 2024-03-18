@@ -92,7 +92,8 @@ class DoctrinePanel implements IBarPanel {
 
   protected function formatArrayData($data) {
     return preg_replace(
-      '#^\s{4}#m', '', // remove 1rst "tab" of the JSON result
+      '#^\s{4}#m',
+      '', // remove 1rst "tab" of the JSON result
       substr(
         (string)json_encode($data, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK),
         2, // remove "[\n"

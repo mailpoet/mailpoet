@@ -26,13 +26,13 @@ class AbandonedCartContent {
   ): array {
     if (
       !in_array(
-      $newsletter->getType(),
-      [
+        $newsletter->getType(),
+        [
         NewsletterEntity::TYPE_AUTOMATIC,
         NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
         NewsletterEntity::TYPE_AUTOMATION,
-      ],
-      true
+        ],
+        true
       )
     ) {
       // Do not display the block if not an automatic email

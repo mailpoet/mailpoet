@@ -22,7 +22,7 @@ class Column implements BlockRenderer {
   }
 
   private function getStylesFromBlock(array $block_styles) {
-    $styles = wp_style_engine_get_styles( $block_styles );
+    $styles = wp_style_engine_get_styles($block_styles);
     return (object)wp_parse_args($styles, [
       'css' => '',
       'declarations' => [],
@@ -43,18 +43,18 @@ class Column implements BlockRenderer {
 
     // The default column alignment is `stretch to fill` which means that we need to set the background color to the main cell
     // to create a feeling of a stretched column. This also needs to apply to CSS classnames which can also apply styles.
-    $isStretched = empty( $block_attributes['verticalAlignment'] ) || $block_attributes['verticalAlignment'] === 'stretch';
+    $isStretched = empty($block_attributes['verticalAlignment']) || $block_attributes['verticalAlignment'] === 'stretch';
 
-    $paddingCSS = $this->getStylesFromBlock( [ 'spacing' => [ 'padding' => $block_attributes['style']['spacing']['padding'] ?? [] ] ] )->css;
-    $cellStyles = $this->getStylesFromBlock( [
+    $paddingCSS = $this->getStylesFromBlock(['spacing' => ['padding' => $block_attributes['style']['spacing']['padding'] ?? []]])->css;
+    $cellStyles = $this->getStylesFromBlock([
         'color' => $block_attributes['style']['color'] ?? [],
         'background' => $block_attributes['style']['background'] ?? [],
-      ] )->declarations;
+      ])->declarations;
 
-    $borderStyles = $this->getStylesFromBlock( [ 'border' => $block_attributes['style']['border'] ?? [] ] )->declarations;
+    $borderStyles = $this->getStylesFromBlock(['border' => $block_attributes['style']['border'] ?? []])->declarations;
 
     if (!empty($borderStyles)) {
-      $cellStyles = array_merge( $cellStyles, ['border-style' => 'solid'], $borderStyles );
+      $cellStyles = array_merge($cellStyles, ['border-style' => 'solid'], $borderStyles);
     }
 
     if (!empty($cellStyles['background-image']) && empty($cellStyles['background-size'])) {
@@ -63,21 +63,21 @@ class Column implements BlockRenderer {
 
     $wrapperClassname = 'block wp-block-column';
     $contentClassname = 'email_column';
-    $wrapperCSS = WP_Style_Engine::compile_css( [
+    $wrapperCSS = WP_Style_Engine::compile_css([
       'vertical-align' => $isStretched ? 'top' : $block_attributes['verticalAlignment'],
-    ], '' );
+    ], '');
     $contentCSS = 'vertical-align: top;';
 
     if ($isStretched) {
       $wrapperClassname .= ' ' . $originalWrapperClassname;
-      $wrapperCSS .= ' ' . WP_Style_Engine::compile_css( $cellStyles, '' );
+      $wrapperCSS .= ' ' . WP_Style_Engine::compile_css($cellStyles, '');
     } else {
       $contentClassname .= ' ' . $originalWrapperClassname;
-      $contentCSS .= ' ' . WP_Style_Engine::compile_css( $cellStyles, '' );
+      $contentCSS .= ' ' . WP_Style_Engine::compile_css($cellStyles, '');
     }
 
     return '
-      <td class="' . esc_attr($wrapperClassname) . '" style="' . esc_attr($wrapperCSS) . '" width="' . esc_attr( $block_attributes['width'] ) . '">
+      <td class="' . esc_attr($wrapperClassname) . '" style="' . esc_attr($wrapperCSS) . '" width="' . esc_attr($block_attributes['width']) . '">
         <table class="' . esc_attr($contentClassname) . '" style="' . esc_attr($contentCSS) . '" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
           <tbody>
             <tr>

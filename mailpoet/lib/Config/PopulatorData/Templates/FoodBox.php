@@ -1,15 +1,15 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+
 namespace MailPoet\Config\PopulatorData\Templates;
-
-use MailPoet\WP\Functions as WPFunctions;
-
 
 class FoodBox {
 
   private $template_image_url;
   private $social_icon_url;
 
-  public function __construct($assets_url) {
+  public function __construct(
+    $assets_url
+  ) {
      $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/food_box';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
@@ -684,7 +684,7 @@ class FoodBox {
                   ],
                   1 => [
                     'type' => 'footer',
-                    'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
+                    'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . __("Manage your subscription", 'mailpoet') . '</a><br />' . __("Add your postal address here!", 'mailpoet') . '</p>',
                     'styles' => [
                       'block' => [
                         'backgroundColor' => 'transparent',
@@ -754,5 +754,4 @@ class FoodBox {
   private function getThumbnail() {
     return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
-
 }

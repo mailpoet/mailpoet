@@ -70,17 +70,20 @@ class AutomationsEvents implements Filter {
         $subscribersTable,
         $automationRunSubjectsTable,
         'subjects',
-        "subjects.key = 'mailpoet:subscriber' AND subjects.args = CONCAT('{\"subscriber_id\":', $subscribersTable.id, '}')")
+        "subjects.key = 'mailpoet:subscriber' AND subjects.args = CONCAT('{\"subscriber_id\":', $subscribersTable.id, '}')"
+      )
       ->innerJoin(
         'subjects',
         $automationRunsTable,
         'runs',
-        'subjects.automation_run_id = runs.id')
+        'subjects.automation_run_id = runs.id'
+      )
       ->innerJoin(
         'runs',
         $automationsTable,
         'automations',
-        'automations.id = runs.automation_id')
+        'automations.id = runs.automation_id'
+      )
       ->andWhere("automations.id IN (:$automationIdsParam)")
       ->setParameter($automationIdsParam, $automationIds, Connection::PARAM_STR_ARRAY);
 

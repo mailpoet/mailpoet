@@ -298,17 +298,20 @@ class Hooks {
     $this->wp->addAction(
       'profile_update',
       [$this->wpSegment, 'synchronizeUser'],
-      6, 2
+      6,
+      2
     );
     $this->wp->addAction(
       'add_user_role',
       [$this->wpSegment, 'synchronizeUser'],
-      6, 1
+      6,
+      1
     );
     $this->wp->addAction(
       'set_user_role',
       [$this->wpSegment, 'synchronizeUser'],
-      6, 1
+      6,
+      1
     );
     $this->wp->addAction(
       'delete_user',
@@ -355,7 +358,8 @@ class Hooks {
     $this->wp->addFilter(
       'woocommerce_marketing_channels',
       [$this->hooksWooCommerce, 'addMailPoetMarketingMultiChannel'],
-      10, 1
+      10,
+      1
     );
   }
 
@@ -459,7 +463,8 @@ class Hooks {
     $this->wp->addFilter(
       'set-screen-option',
       [$this, 'setScreenOption'],
-      10, 3
+      10,
+      3
     );
   }
 
@@ -475,7 +480,8 @@ class Hooks {
     $this->wp->addAction(
       'transition_post_status',
       [$this->postNotificationScheduler, 'transitionHook'],
-      10, 3
+      10,
+      3
     );
   }
 
@@ -486,7 +492,8 @@ class Hooks {
     $this->wp->addFilter(
       'admin_footer_text',
       [$this, 'setFooter'],
-      1, 1
+      1,
+      1
     );
   }
 

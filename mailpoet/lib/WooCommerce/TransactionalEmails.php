@@ -100,7 +100,7 @@ class TransactionalEmails {
     $address = $this->wp->wpParseUrl($this->wp->homeUrl(), PHP_URL_HOST);
     $orderDate = date('Y-m-d');
     return str_replace(
-      ['{site_title}','{site_address}', '{order_date}', '{order_number}'],
+      ['{site_title}', '{site_address}', '{order_date}', '{order_number}'],
       [$title, $address, $orderDate, '0001'],
       $text
     );

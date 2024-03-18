@@ -25,8 +25,7 @@ class Migration_20230111_120000 extends DbMigration {
     $subscriptionSetting = $this->connection->fetchOne("
       SELECT value
       FROM {$settingsTable}
-      WHERE name = ?", ['subscription']
-    );
+      WHERE name = ?", ['subscription']);
     $subscriptionSetting = is_string($subscriptionSetting) ? unserialize($subscriptionSetting) : [];
     $subscriptionSetting = is_array($subscriptionSetting) ? $subscriptionSetting : [];
     $segmentIds = $subscriptionSetting['segments'] ?? [];
@@ -39,7 +38,8 @@ class Migration_20230111_120000 extends DbMigration {
       ", [$segmentIds], [Connection::PARAM_INT_ARRAY]);
 
       $subscriptionSetting['segments'] = [];
-      $this->connection->executeStatement("
+      $this->connection->executeStatement(
+        "
         UPDATE {$settingsTable}
         SET value = ?
         WHERE name = ?",

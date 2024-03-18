@@ -137,7 +137,8 @@ class Settings extends APIEndpoint {
         [
           APIError::BAD_REQUEST =>
             __('You have not specified any settings to be saved.', 'mailpoet'),
-        ]);
+        ]
+      );
     } else {
       $oldSettings = $this->settings->getAll();
       $meta = [];

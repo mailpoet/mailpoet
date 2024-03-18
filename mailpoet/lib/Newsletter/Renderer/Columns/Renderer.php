@@ -116,7 +116,14 @@ class Renderer {
       $size = $image['display'] === 'scale' ? 'cover' : 'contain';
       $style = sprintf(
         'background: %s url(%s) %s center/%s;background-color: %s;background-image: url(%s);background-repeat: %s;background-position: center;background-size: %s;',
-        $backgroundColor, $image['src'], $repeat, $size, $backgroundColor, $image['src'], $repeat, $size
+        $backgroundColor,
+        $image['src'],
+        $repeat,
+        $size,
+        $backgroundColor,
+        $image['src'],
+        $repeat,
+        $size
       );
       return EHelper::escapeHtmlStyleAttr($style);
     } else {

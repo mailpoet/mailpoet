@@ -187,7 +187,8 @@ class Links {
     if (
       in_array(
         NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
-        array_column($processedLinks, 'link'))
+        array_column($processedLinks, 'link')
+      )
     ) {
       return $processedLinks;
     }

@@ -343,8 +343,8 @@ class Bridge {
     $key = $this->settings->get(self::API_KEY_SETTING_NAME);
     $this->storeMSSKeyAndState($key, $this->buildKeyState(
       self::KEY_INVALID,
-      [ 'code' => API::RESPONSE_CODE_KEY_INVALID ],
-      null)
-    );
+      ['code' => API::RESPONSE_CODE_KEY_INVALID],
+      null
+    ));
   }
 }

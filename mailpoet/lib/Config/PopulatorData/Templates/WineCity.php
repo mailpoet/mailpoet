@@ -1,14 +1,15 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
 namespace MailPoet\Config\PopulatorData\Templates;
-use MailPoet\WP\Functions as WPFunctions;
 
 class WineCity {
 
   private $template_image_url;
   private $social_icon_url;
 
-  public function __construct($assets_url) {
+  public function __construct(
+    $assets_url
+  ) {
     $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/wine-city';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
@@ -28,7 +29,7 @@ class WineCity {
   }
 
   private function getBody() {
-    return  [
+    return [
       'content' =>
          [
           'type' => 'container',
@@ -512,7 +513,7 @@ class WineCity {
                               4 =>
                                  [
                                   'type' => 'footer',
-                                  'text' => '<p><strong><span style="color: #6d6d6d;"><a href="[link:subscription_unsubscribe_url]" style="color: #6d6d6d;">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]" style="color: #6d6d6d;">'.__("Manage your subscription", 'mailpoet').'</a></span></strong><br /><span style="color: #6d6d6d;">'.__("Add your postal address here!", 'mailpoet').'</span></p>',
+                                  'text' => '<p><strong><span style="color: #6d6d6d;"><a href="[link:subscription_unsubscribe_url]" style="color: #6d6d6d;">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]" style="color: #6d6d6d;">' . __("Manage your subscription", 'mailpoet') . '</a></span></strong><br /><span style="color: #6d6d6d;">' . __("Add your postal address here!", 'mailpoet') . '</span></p>',
                                   'styles' =>
                                      [
                                       'block' =>
@@ -785,7 +786,7 @@ class WineCity {
              ],
           'footer' =>
              [
-              'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
+              'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . __("Manage your subscription", 'mailpoet') . '</a><br />' . __("Add your postal address here!", 'mailpoet') . '</p>',
               'styles' =>
                  [
                   'block' =>
@@ -921,7 +922,7 @@ class WineCity {
              ],
           'header' =>
              [
-              'text' => '<a href="[link:newsletter_view_in_browser_url]">'.__("View this in your browser.", 'mailpoet').'</a>',
+              'text' => '<a href="[link:newsletter_view_in_browser_url]">' . __("View this in your browser.", 'mailpoet') . '</a>',
               'styles' =>
                  [
                   'block' =>
@@ -945,5 +946,4 @@ class WineCity {
          ],
     ];
   }
-
 }

@@ -359,7 +359,7 @@ class OrderFieldsFactory {
       if (!$product instanceof WC_Product) {
         continue;
       }
-      if (!$product->is_type( 'variation' )) {
+      if (!$product->is_type('variation')) {
         $products[] = $product;
         continue;
       }

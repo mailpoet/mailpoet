@@ -97,11 +97,11 @@ class Registry {
   public function getTemplates(string $category = null): array {
     return $category
       ? array_filter(
-          $this->templates,
-          function(AutomationTemplate $template) use ($category): bool {
-            return $template->getCategory() === $category;
-          }
-        )
+        $this->templates,
+        function(AutomationTemplate $template) use ($category): bool {
+          return $template->getCategory() === $category;
+        }
+      )
       : $this->templates;
   }
 

@@ -196,7 +196,8 @@ class FormEntity {
     foreach ($listSelectionBlocks as $listSelectionBlock) {
       $listSelection = array_unique(
         array_merge(
-          $listSelection, array_column($listSelectionBlock['params']['values'] ?? [], 'id')
+          $listSelection,
+          array_column($listSelectionBlock['params']['values'] ?? [], 'id')
         )
       );
     }

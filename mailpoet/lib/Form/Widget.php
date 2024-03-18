@@ -79,7 +79,8 @@ class Widget extends \WP_Widget {
     }
 
     $languageAttributes = WPFunctions::get()->applyFilters(
-      'language_attributes', implode(' ', $languageAttributes)
+      'language_attributes',
+      implode(' ', $languageAttributes)
     );
 
     $data = [
@@ -137,7 +138,7 @@ class Widget extends \WP_Widget {
     // get forms list
     $forms = $this->formsRepository->findBy(['deletedAt' => null], ['name' => 'asc']);
     ?><p>
-      <label for="<?php esc_attr($this->get_field_id( 'title' )) ?>"><?php echo esc_html(__('Title:', 'mailpoet')); ?></label>
+      <label for="<?php esc_attr($this->get_field_id('title')) ?>"><?php echo esc_html(__('Title:', 'mailpoet')); ?></label>
       <input
         type="text"
         class="widefat"

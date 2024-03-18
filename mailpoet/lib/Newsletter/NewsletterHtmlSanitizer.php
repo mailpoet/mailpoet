@@ -116,7 +116,7 @@ class NewsletterHtmlSanitizer {
       '',
       $cssString
     );
-    return !preg_match( '%[\\\(&=}]|/\*%', $cssString );
+    return !preg_match('%[\\\(&=}]|/\*%', $cssString);
   }
 
   public function sanitizeURL(string $url): string {

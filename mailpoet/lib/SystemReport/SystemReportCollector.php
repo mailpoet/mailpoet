@@ -90,7 +90,8 @@ class SystemReportCollector {
         ' (version ' . $currentTheme->get('Version') . ')',
       'Active Plugin names' => join(", ", $this->wp->getOption('active_plugins')),
       'Sending Method' => $mta['method'],
-      'Sending Frequency' => sprintf('%d emails every %d minutes',
+      'Sending Frequency' => sprintf(
+        '%d emails every %d minutes',
         $mta['frequency']['emails'],
         $mta['frequency']['interval']
       ),

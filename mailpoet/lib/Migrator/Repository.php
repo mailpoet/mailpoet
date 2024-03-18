@@ -94,7 +94,7 @@ class Repository {
         'level' => $level,
         'name' => $migration,
       ];
-    }, $migrations) ;
+    }, $migrations);
   }
 
   private function generateName(string $level): string {

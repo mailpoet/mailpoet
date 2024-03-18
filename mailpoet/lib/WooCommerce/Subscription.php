@@ -218,7 +218,7 @@ class Subscription {
     // Hide AutomateWoo checkout opt-in so we won't end up with two opt-ins
     $this->wp->removeAction(
       'woocommerce_checkout_after_terms_and_conditions',
-      [ 'AutomateWoo\Frontend', 'output_checkout_optin_checkbox' ]
+      ['AutomateWoo\Frontend', 'output_checkout_optin_checkbox']
     );
   }
 

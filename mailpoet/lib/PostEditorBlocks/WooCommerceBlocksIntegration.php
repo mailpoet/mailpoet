@@ -174,10 +174,10 @@ class WooCommerceBlocksIntegration {
 
     // Fetch existing woo subscriber and in case there is not any sync as guest
     $email = $order->get_billing_email();
-    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email , 'isWoocommerceUser' => true]);
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => $email, 'isWoocommerceUser' => true]);
     if (!$subscriber instanceof SubscriberEntity) {
       $this->wooSegment->synchronizeGuestCustomer($order->get_id());
-      $subscriber = $this->subscribersRepository->findOneBy(['email' => $email , 'isWoocommerceUser' => true]);
+      $subscriber = $this->subscribersRepository->findOneBy(['email' => $email, 'isWoocommerceUser' => true]);
     }
 
     // Subscriber not found and guest sync failed

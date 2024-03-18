@@ -1,15 +1,15 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+
 namespace MailPoet\Config\PopulatorData\Templates;
-
-use MailPoet\WP\Functions as WPFunctions;
-
 
 class FestivalEvent {
 
   private $template_image_url;
   private $social_icon_url;
 
-  public function __construct($assets_url) {
+  public function __construct(
+    $assets_url
+  ) {
      $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/festival_event';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
@@ -461,7 +461,7 @@ class FestivalEvent {
                   ],
                   2 => [
                     'type' => 'footer',
-                    'text' => '<p>Mauris tristique ultricies ullamcorper. <br />Don\'t want to hear from us?&nbsp;<a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a></p><p></p><p>Add your postal address here.&nbsp;</p>',
+                    'text' => '<p>Mauris tristique ultricies ullamcorper. <br />Don\'t want to hear from us?&nbsp;<a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a></p><p></p><p>Add your postal address here.&nbsp;</p>',
                     'styles' => [
                       'block' => [
                         'backgroundColor' => 'transparent',
@@ -522,5 +522,4 @@ class FestivalEvent {
   private function getThumbnail() {
     return $this->template_image_url . '/thumbnail.20190411-1500.jpg';
   }
-
 }

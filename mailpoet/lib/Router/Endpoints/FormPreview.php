@@ -34,8 +34,8 @@ class FormPreview {
 
   public function view(array $data) {
     $this->data = $data;
-    $this->wp->addFilter('the_content', [$this,'renderContent'], 10);
-    $this->wp->addFilter('the_title', [$this->formPreviewPage,'renderTitle'], 10, 2);
+    $this->wp->addFilter('the_content', [$this, 'renderContent'], 10);
+    $this->wp->addFilter('the_title', [$this->formPreviewPage, 'renderTitle'], 10, 2);
     $this->wp->addFilter('show_admin_bar', function () {
       return false;
     });

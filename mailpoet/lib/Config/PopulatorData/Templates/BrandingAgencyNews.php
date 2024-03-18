@@ -1,14 +1,15 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
 namespace MailPoet\Config\PopulatorData\Templates;
-use MailPoet\WP\Functions as WPFunctions;
 
 class BrandingAgencyNews {
 
   private $template_image_url;
   private $social_icon_url;
 
-  public function __construct($assets_url) {
+  public function __construct(
+    $assets_url
+  ) {
     $this->template_image_url = 'https://ps.w.org/mailpoet/assets/newsletter-templates/branding-agency-news';
     $this->social_icon_url = $assets_url . '/img/newsletter_editor/social-icons';
   }
@@ -28,7 +29,7 @@ class BrandingAgencyNews {
   }
 
   private function getBody() {
-    return  [
+    return [
       'content' =>
        [
         'type' => 'container',
@@ -101,7 +102,7 @@ class BrandingAgencyNews {
                   1 =>
                    [
                     'type' => 'header',
-                    'text' => '<p><span style="color: #808080;"><a href="[link:newsletter_view_in_browser_url]" style="color: #808080;">'.__("View this in your browser.", 'mailpoet').'</a></span></p>',
+                    'text' => '<p><span style="color: #808080;"><a href="[link:newsletter_view_in_browser_url]" style="color: #808080;">' . __("View this in your browser.", 'mailpoet') . '</a></span></p>',
                     'styles' =>
                      [
                       'block' =>
@@ -1684,7 +1685,7 @@ class BrandingAgencyNews {
                   2 =>
                    [
                     'type' => 'footer',
-                    'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br /><span style="color: #808080;">'.__("Add your postal address here!", 'mailpoet').'</span></p>',
+                    'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . __("Manage your subscription", 'mailpoet') . '</a><br /><span style="color: #808080;">' . __("Add your postal address here!", 'mailpoet') . '</span></p>',
                     'styles' =>
                      [
                       'block' =>
@@ -1930,7 +1931,7 @@ class BrandingAgencyNews {
          ],
         'footer' =>
          [
-          'text' => '<p><a href="[link:subscription_unsubscribe_url]">'.__("Unsubscribe", 'mailpoet').'</a> | <a href="[link:subscription_manage_url]">'.__("Manage your subscription", 'mailpoet').'</a><br />'.__("Add your postal address here!", 'mailpoet').'</p>',
+          'text' => '<p><a href="[link:subscription_unsubscribe_url]">' . __("Unsubscribe", 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . __("Manage your subscription", 'mailpoet') . '</a><br />' . __("Add your postal address here!", 'mailpoet') . '</p>',
           'styles' =>
            [
             'block' =>
@@ -2067,7 +2068,7 @@ class BrandingAgencyNews {
          ],
         'header' =>
          [
-          'text' => '<a href="[link:newsletter_view_in_browser_url]">'.__("View this in your browser.", 'mailpoet').'</a>',
+          'text' => '<a href="[link:newsletter_view_in_browser_url]">' . __("View this in your browser.", 'mailpoet') . '</a>',
           'styles' =>
            [
             'block' =>
@@ -2092,5 +2093,4 @@ class BrandingAgencyNews {
        ],
     ];
   }
-
 }
