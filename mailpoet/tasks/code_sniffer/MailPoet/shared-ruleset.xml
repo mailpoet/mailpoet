@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <ruleset name="MailPoet">
-  <config name="installed_paths" value="../../squizlabs/php_codesniffer,../../phpcompatibility/php-compatibility,../../slevomat/coding-standard,../../wporg/plugin-directory/MinimalPluginStandard,../../wp-coding-standards/wpcs"/>
   <description>MailPoet specific rule set</description>
   <exclude-pattern>*/phpstan/woocommerce.php</exclude-pattern>
 
@@ -26,7 +25,7 @@
   <rule ref="SlevomatCodingStandard.Namespaces.NamespaceSpacing">
     <properties>
       <property name="linesCountBeforeNamespace" value="1" />
-      <property name="linesAfterNamespace" value="1" />
+      <property name="linesCountAfterNamespace" value="1" />
     </properties>
   </rule>
   <rule ref="SlevomatCodingStandard.Namespaces.RequireOneNamespaceInFile"/>
@@ -83,6 +82,7 @@
   <rule ref="Generic.WhiteSpace.ScopeIndent"> <!-- Control structures, classes, functions indent 2 spaces per level -->
     <properties>
       <property name="indent" value="2"/>
+      <property name="tabIndent" value="false"/>
     </properties>
   </rule>
   <rule ref="PEAR.WhiteSpace.ScopeClosingBrace"> <!-- Closing brace should be at the same level as opening brace -->
@@ -122,14 +122,22 @@
       <property name="spacing" value="0" />
     </properties>
   </rule>
+  <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace"> <!-- No space after opening brackets and before closing brackets -->
+    <properties>
+      <property name="spacesAroundBrackets" value="0" />
+    </properties>
+  </rule>
 
   <!-- Typehints -->
   <rule ref="Generic.PHP.LowerCaseType"/> <!-- Force PHP 7 param and return types to be lowercased -->
   <rule ref="SlevomatCodingStandard.TypeHints.LongTypeHints"/> <!-- Enforces short scalar typehint variants ("int", not "integer", etc.) -->
   <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing"/> <!-- Space between type and name, no space between "?" and type -->
-  <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHintSpacing"/> <!-- Space between type and name, no space between "?" and type -->
+  <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint">
+    <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint"/>
+    <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint"/>
+    <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification"/>
+  </rule> <!-- Space between type and name, no space between "?" and type -->
   <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing"/> <!-- No space before colon, one space before "?", no space after -->
-
   <!-- Reports empty comments -->
   <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
   <!-- This sniff enforces trailing commas in multi-line arrays -->
@@ -175,6 +183,12 @@
   <!-- Function calls should have one space after comma -->
   <!-- And single spaces should surround equals sign for default values -->
   <rule ref="Generic.Functions.FunctionCallArgumentSpacing"/>
+  <rule ref="PSR2.Methods.FunctionCallSignature">
+    <properties>
+      <property name="indent" value="2"/>
+    </properties>
+  </rule>
+
   <!-- Opening brace should be on the same line as the function declaration -->
   <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
 
