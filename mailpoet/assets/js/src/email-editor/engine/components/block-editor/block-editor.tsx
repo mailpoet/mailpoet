@@ -131,7 +131,7 @@ export function BlockEditor() {
       value={{
         postId,
         postType: 'mailpoet_email',
-        templateSlug: 'mailpoet-email',
+        templateSlug: 'mailpoet_email_template',
       }}
     >
       <BlockEditorProvider
