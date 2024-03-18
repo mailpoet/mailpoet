@@ -110,6 +110,7 @@ class SubscribersResponseBuilderTest extends \MailPoetTest {
       $this->assertEquals($subscriber->getIsWoocommerceUser(), $item['is_woocommerce_user']);
       $this->assertEquals($subscriber->getStatus(), $item['status']);
       $this->assertArrayHasKey('created_at', $item);
+      $this->assertArrayHasKey('last_subscribed_at', $item);
       $this->assertArrayHasKey('count_confirmations', $item);
       $this->assertArrayHasKey('engagement_score', $item);
       // check subscriptions
