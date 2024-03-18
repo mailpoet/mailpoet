@@ -13,8 +13,7 @@ import { Block, getBlockSupport, hasBlockSupport } from '@wordpress/blocks';
 import {
   BlockControls,
   InspectorControls,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error No types for this exist yet.
   JustifyContentControl,
 } from '@wordpress/block-editor';
 import { justifyLeft, justifyCenter, justifyRight } from '@wordpress/icons';
@@ -23,11 +22,7 @@ import {
   Flex,
   FlexItem,
   PanelBody,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   __experimentalToggleGroupControl as ToggleGroupControl,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   __experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -35,8 +30,7 @@ import { __ } from '@wordpress/i18n';
 const layoutBlockSupportKey = '__experimentalEmailFlexLayout';
 
 function hasLayoutBlockSupport(blockName: string) {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error No types for this exist yet.
   return hasBlockSupport(blockName, layoutBlockSupportKey);
 }
 
@@ -101,8 +95,7 @@ function LayoutControls({ setAttributes, attributes, name: blockName }) {
   const layoutBlockSupport = getBlockSupport(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     blockName,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error No types for this exist yet.
     layoutBlockSupportKey,
     {},
   );
@@ -136,8 +129,7 @@ function LayoutControls({ setAttributes, attributes, name: blockName }) {
           </Flex>
         </PanelBody>
       </InspectorControls>
-      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-      {/* @ts-ignore */}
+      {/* @ts-expect-error No types for this exist yet. */}
       <BlockControls group="block" __experimentalShareWithChildBlocks>
         <JustificationControls
           justificationValue={justifyContent}
@@ -179,8 +171,7 @@ export function addAttribute(settings: Block) {
  * @return {Function} Wrapped component.
  */
 export const withLayoutControls = createHigherOrderComponent(
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error No types for this exist yet.
   (BlockEdit) => (props) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const supportLayout = hasLayoutBlockSupport(props.name);

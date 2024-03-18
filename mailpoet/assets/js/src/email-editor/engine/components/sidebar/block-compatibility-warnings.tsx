@@ -4,8 +4,7 @@ import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 
 export const hasBackgroundImageSupport = (nameOrType: string) => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore not yet supported in the types
+  // @ts-expect-error not yet supported in the types
   const backgroundSupport = getBlockSupport(nameOrType, 'background') as Record<
     string,
     boolean
@@ -24,8 +23,7 @@ export function BlockCompatibilityWarnings(): JSX.Element {
   // Check if the selected block has enabled border configuration
   const hasBorderSupport = hasBlockSupport(
     selectedBlock?.name,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - border is not yet supported in the types
+    // @ts-expect-error Border is not yet supported in the types
     '__experimentalBorder',
     false,
   );

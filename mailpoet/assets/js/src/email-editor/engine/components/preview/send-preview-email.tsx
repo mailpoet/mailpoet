@@ -47,8 +47,6 @@ export function SendPreviewEmail() {
       className="mailpoet-send-preview-email"
       title={__('Send a test email', 'mailpoet')}
       onRequestClose={closeCallback}
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore - the value can be by docs: boolean, "firstElement", "firstContentElement"
       focusOnMount="firstContentElement"
     >
       {sendingPreviewStatus === SendingPreviewStatus.ERROR ? (

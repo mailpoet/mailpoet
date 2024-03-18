@@ -3,11 +3,9 @@ import { useSelect } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import { merge } from 'lodash';
 import {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore No types for this exist yet.
+  // @ts-expect-error No types for this exist yet.
   __unstableEditorStyles as EditorStyles,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore No types for this exist yet.
+  // @ts-expect-error No types for this exist yet.
   privateApis as blockEditorPrivateApi,
 } from '@wordpress/block-editor';
 import { unlock } from '../../../lock-unlock';
