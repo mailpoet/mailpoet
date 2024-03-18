@@ -65,6 +65,13 @@ cp .env.sample .env
 
 ## Workflow Commands
 
+There are two different `./do` commands. One is in the free MailPoet directory and runs the commands on the local computer. The second is in the repository root and runs the commands in a Docker container.
+Running `./do` commands in the repository root will run the command in the Docker container.
+
+It is recommended to run the assets commands directly in the free MailPoet directory. That means installing the dependencies locally. Running the js and css compilation commands within the container is possible, but it is slower.
+
+On the other hand, the tests should be run in the container. The container has all the necessary dependencies installed and configured. And there is a database running. See more details in the README.md in the repository root.
+
 ```bash
 $ ./do install             # install PHP and JS dependencies
 $ ./do update              # update PHP and JS dependencies
@@ -225,7 +232,7 @@ If you want to run only a single test use the parameter `--file`:
 The argument `--skip-deps` is useful locally to speed up the run.
 
 If there are some unexpected errors you can delete all the runtime and start again.
-To delete all the docker runtime for acceptance tests use the command `./do d:d`.
+To delete all the docker runtime for acceptance tests use the command `./do delete:docker`.
 
 When debugging you can add `$i->pause();` in to your test which pauses the execution.
 
