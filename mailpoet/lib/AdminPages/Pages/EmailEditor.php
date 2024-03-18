@@ -101,9 +101,9 @@ class EmailEditor {
       'mailpoet_subscribers_limit' => $this->subscribersFeature->getSubscribersLimit(),
       'mailpoet_subscribers_limit_reached' => $this->subscribersFeature->check(),
     ];
-    $this->wp->wpAddInlineScript( 'mailpoet_email_editor', implode( '', array_map( function($key) use ($inline_script_data) {
-      return sprintf( "var %s=%s;", $key, json_encode( $inline_script_data[$key] ) );
-    }, array_keys( $inline_script_data ) ) ), 'before');
+    $this->wp->wpAddInlineScript('mailpoet_email_editor', implode('', array_map(function ($key) use ($inline_script_data) {
+      return sprintf("var %s=%s;", $key, json_encode($inline_script_data[$key]));
+    }, array_keys($inline_script_data))), 'before');
 
     // Load CSS from Post Editor
     $this->wp->wpEnqueueStyle('wp-edit-post');
