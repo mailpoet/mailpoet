@@ -98,7 +98,9 @@ class ServicesTest extends \MailPoetTest {
     $response = $servicesEndpoint->checkMSSKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     $errorMessage = $this->invokeMethod(
-      $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
+      $servicesEndpoint,
+      'getErrorDescriptionByCode',
+      [Bridge::CHECK_ERROR_UNAVAILABLE]
     );
     $this->assertIsString($errorMessage);
     verify($response->errors[0]['message'])->stringContainsString($errorMessage);
@@ -117,7 +119,9 @@ class ServicesTest extends \MailPoetTest {
     $response = $servicesEndpoint->checkMSSKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     $errorMessage = $this->invokeMethod(
-      $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
+      $servicesEndpoint,
+      'getErrorDescriptionByCode',
+      [Bridge::CHECK_ERROR_UNKNOWN]
     );
     $this->assertIsString($errorMessage);
     verify($response->errors[0]['message'])->stringContainsString($errorMessage);
@@ -308,7 +312,9 @@ class ServicesTest extends \MailPoetTest {
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     $errorMessage = $this->invokeMethod(
-      $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNAVAILABLE]
+      $servicesEndpoint,
+      'getErrorDescriptionByCode',
+      [Bridge::CHECK_ERROR_UNAVAILABLE]
     );
     $this->assertIsString($errorMessage);
     verify($response->errors[0]['message'])->stringContainsString($errorMessage);
@@ -327,7 +333,9 @@ class ServicesTest extends \MailPoetTest {
     $response = $servicesEndpoint->checkPremiumKey($this->data);
     verify($response->status)->equals(APIResponse::STATUS_NOT_FOUND);
     $errorMessage = $this->invokeMethod(
-      $servicesEndpoint, 'getErrorDescriptionByCode', [Bridge::CHECK_ERROR_UNKNOWN]
+      $servicesEndpoint,
+      'getErrorDescriptionByCode',
+      [Bridge::CHECK_ERROR_UNKNOWN]
     );
     $this->assertIsString($errorMessage);
     verify($response->errors[0]['message'])->stringContainsString($errorMessage);

@@ -53,7 +53,6 @@ class APITest extends \MailPoetTest {
         [
           2,
         ],
-      ]
-    );
+      ]);
   }
 }

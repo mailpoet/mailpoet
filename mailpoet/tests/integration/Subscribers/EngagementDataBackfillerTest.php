@@ -54,7 +54,7 @@ class EngagementDataBackfillerTest extends \MailPoetTest {
     $data = $this->backfiller->getPurchaseDataForBatch($subscriberIds);
     $this->assertInstanceOf(SubscriberEntity::class, $sub1);
     $this->assertInstanceOf(SubscriberEntity::class, $sub2);
-    verify($data[$sub1->getId()]['last_purchase_at'])->equals( (string)$newer);
+    verify($data[$sub1->getId()]['last_purchase_at'])->equals((string)$newer);
     verify($data[$sub2->getId()]['last_purchase_at'])->equals((string)$newer2);
     verify(!isset($data[$customerId3]))->true();
   }

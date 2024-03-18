@@ -81,7 +81,7 @@ class SubscribersTest extends \MailPoetTest {
 
   public function testItDoesNotSubscribeMissingSubscriberToLists() {
     try {
-      $this->getApi()->subscribeToLists(false, [1,2,3]);
+      $this->getApi()->subscribeToLists(false, [1, 2, 3]);
       $this->fail('Subscriber does not exist exception should have been thrown.');
     } catch (\Exception $e) {
       verify($e->getMessage())->equals('A subscriber is required.');
@@ -92,7 +92,7 @@ class SubscribersTest extends \MailPoetTest {
     $subscriber = $this->subscriberFactory->create();
     // multiple lists error message
     try {
-      $this->getApi()->subscribeToLists($subscriber->getId(), [1,2,3]);
+      $this->getApi()->subscribeToLists($subscriber->getId(), [1, 2, 3]);
       $this->fail('Missing segments exception should have been thrown.');
     } catch (\Exception $e) {
       verify($e->getMessage())->equals('These lists do not exist.');
@@ -249,7 +249,8 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
       ],
-      $this);
+      $this
+    );
     $API = $this->getApi($subscribers);
 
     $API->subscribeToLists($subscriber->getId(), [$segment->getId()], ['skip_subscriber_notification' => true]);
@@ -273,7 +274,8 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
       ],
-      $this);
+      $this
+    );
     $API = $this->getApi($subscribers);
 
 
@@ -351,7 +353,7 @@ class SubscribersTest extends \MailPoetTest {
 
   public function testItDoesNotUnsubscribeWhenSubscriberIdNotPassedFromLists() {
     try {
-      $this->getApi()->unsubscribeFromLists(false, [1,2,3]);
+      $this->getApi()->unsubscribeFromLists(false, [1, 2, 3]);
       $this->fail('Subscriber does not exist exception should have been thrown.');
     } catch (\Exception $e) {
       verify($e->getMessage())->equals('A subscriber is required.');
@@ -360,7 +362,7 @@ class SubscribersTest extends \MailPoetTest {
 
   public function testItDoesNotUnsubscribeMissingSubscriberFromLists() {
     try {
-      $this->getApi()->unsubscribeFromLists('asdf', [1,2,3]);
+      $this->getApi()->unsubscribeFromLists('asdf', [1, 2, 3]);
       $this->fail('Subscriber does not exist exception should have been thrown.');
     } catch (\Exception $e) {
       verify($e->getMessage())->equals('This subscriber does not exist.');
@@ -371,7 +373,7 @@ class SubscribersTest extends \MailPoetTest {
     $subscriber = $this->subscriberFactory->create();
     // multiple lists error message
     try {
-      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [1,2,3]);
+      $this->getApi()->unsubscribeFromLists($subscriber->getId(), [1, 2, 3]);
       $this->fail('Missing segments exception should have been thrown.');
     } catch (\Exception $e) {
       verify($e->getMessage())->equals('These lists do not exist.');
@@ -587,7 +589,8 @@ class SubscribersTest extends \MailPoetTest {
         'settings' => $settings,
         'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
       ],
-      $this);
+      $this
+    );
 
     $API = Stub::make(
       API::class,
@@ -638,14 +641,17 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
       ],
-      $this);
+      $this
+    );
     $API = Stub::makeEmptyExcept(
       API::class,
       'addSubscriber',
       [
         'subscribers' => $subscribers,
         'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
-      ], $this);
+      ],
+      $this
+    );
     $subscriber = [
       'email' => 'test@example.com',
     ];
@@ -665,14 +671,17 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
       ],
-      $this);
+      $this
+    );
     $API = Stub::makeEmptyExcept(
       API::class,
       'addSubscriber',
       [
         'subscribers' => $subscribers,
         'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
-      ], $this);
+      ],
+      $this
+    );
     $subscriber = [
       'email' => 'test@example.com',
       'status' => SubscriberEntity::STATUS_SUBSCRIBED,
@@ -698,7 +707,8 @@ class SubscribersTest extends \MailPoetTest {
           return [];
         }),
       ],
-      $this);
+      $this
+    );
     $API = $this->makeEmptyExcept(
       API::class,
       'addSubscriber',
@@ -746,14 +756,17 @@ class SubscribersTest extends \MailPoetTest {
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => SettingsController::getInstance(),
       ],
-      $this);
+      $this
+    );
     $API = Stub::makeEmptyExcept(
       API::class,
       'addSubscriber',
       [
         'subscribers' => $subscribers,
         'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
-      ], $this);
+      ],
+      $this
+    );
 
     $subscriber = [
       'email' => 'test@example.com',

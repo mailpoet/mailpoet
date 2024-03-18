@@ -57,7 +57,7 @@ class SettingsTest extends \MailPoetTest {
     $this->endpoint = new Settings(
       $this->settings,
       new Bridge,
-      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => null ]),
+      $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => null]),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
       WPFunctions::get(),

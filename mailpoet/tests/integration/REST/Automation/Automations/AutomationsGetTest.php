@@ -145,13 +145,13 @@ class AutomationsGetTest extends AutomationTest {
   }
 
   private function createNewAutomation(array $data = []): int {
-    $rootStep = ['id' => 'root','type' => Step::TYPE_ROOT,'key' => 'core:root'];
+    $rootStep = ['id' => 'root', 'type' => Step::TYPE_ROOT, 'key' => 'core:root'];
     $data['name'] = $data['name'] ?? 'Test';
     $data['steps'] = $data['steps'] ?? [$rootStep];
     $data['author'] = $data['author'] ?? wp_get_current_user()->ID;
     $automation = new Automation(
       $data['name'],
-      array_map([$this,'createStep'], $data['steps']),
+      array_map([$this, 'createStep'], $data['steps']),
       new \WP_User((int)$data['author'])
     );
     $automation->setStatus($data['status'] ?? Automation::STATUS_ACTIVE);

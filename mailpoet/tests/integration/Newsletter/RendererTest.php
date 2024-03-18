@@ -45,7 +45,8 @@ class RendererTest extends \MailPoetTest {
     parent::_before();
     $this->newsletter = new NewsletterEntity();
     $body = json_decode(
-      (string)file_get_contents(dirname(__FILE__) . '/RendererTestData.json'), true
+      (string)file_get_contents(dirname(__FILE__) . '/RendererTestData.json'),
+      true
     );
     $this->assertIsArray($body);
     $this->newsletter->setBody($body);
@@ -463,7 +464,8 @@ class RendererTest extends \MailPoetTest {
       preg_match(
         '/border-top-width: 3px/',
         $DOM('tr > td.mailpoet_divider > table > tr > td.mailpoet_divider-cell', 0)->attr('style')
-      ))->equals(1);
+      )
+    )->equals(1);
   }
 
   public function testItRendersSpacer() {
@@ -504,27 +506,32 @@ class RendererTest extends \MailPoetTest {
     verify(
       preg_match(
         '/line-height: 30px/',
-        $DOM('a.mailpoet_button', 0)->attr('style'))
+        $DOM('a.mailpoet_button', 0)->attr('style')
+      )
     )->equals(1);
     verify(
       preg_match(
         '/arcsize="' . round(20 / 30 * 100) . '%"/',
-        $DOM('tr > td > div > table > tr > td', 0)->text())
+        $DOM('tr > td > div > table > tr > td', 0)->text()
+      )
     )->equals(1);
     verify(
       preg_match(
         '/style="height:30px.*?width:98px/',
-        $DOM('tr > td > div > table > tr > td', 0)->text())
+        $DOM('tr > td > div > table > tr > td', 0)->text()
+      )
     )->equals(1);
     verify(
       preg_match(
         '/style="color:#ffffff.*?font-family:Arial.*?font-size:14px/',
-        $DOM('tr > td > div > table > tr > td', 0)->text())
+        $DOM('tr > td > div > table > tr > td', 0)->text()
+      )
     )->equals(1);
     verify(
       preg_match(
         '/fillcolor="#666666/',
-        $DOM('tr > td > div > table > tr > td', 0)->text())
+        $DOM('tr > td > div > table > tr > td', 0)->text()
+      )
     )->equals(1);
   }
 
@@ -666,7 +673,8 @@ class RendererTest extends \MailPoetTest {
     set_post_thumbnail($postId, $attachmentId);
 
     $body = json_decode(
-      (string)file_get_contents(dirname(__FILE__) . '/RendererTestALCdata.json'), true
+      (string)file_get_contents(dirname(__FILE__) . '/RendererTestALCdata.json'),
+      true
     );
     $this->assertIsArray($body);
     $this->newsletter->setBody($body);
@@ -701,8 +709,8 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function makeAttachment($upload, $parentPostId = 0) {
-    if (!function_exists( 'wp_crop_image' )) {
-      include( ABSPATH . 'wp-admin/includes/image.php' );
+    if (!function_exists('wp_crop_image')) {
+      include(ABSPATH . 'wp-admin/includes/image.php');
     }
 
     if (!empty($upload['type'])) {

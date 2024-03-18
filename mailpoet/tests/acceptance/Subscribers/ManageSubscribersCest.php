@@ -31,7 +31,7 @@ class ManageSubscribersCest {
     $i->cli(['user', 'import-csv', '/wp-core/wp-content/plugins/mailpoet/tests/_data/users.csv']);
 
     $i->login();
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
     $i->seeNoJSErrors();
   }
 
@@ -76,14 +76,14 @@ class ManageSubscribersCest {
     $i->wantTo('Add a user to global subscribers list');
 
     $i->login();
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
     $i->click('[data-automation-id="add-new-subscribers-button"]');
     $i->fillField(['name' => 'email'], 'newglobaluser99@fakemail.fake');
     $i->fillField(['name' => 'first_name'], 'New');
     $i->fillField(['name' => 'last_name'], 'GlobalUser');
     $i->selectOptionInSelect2($this->segment->getName());
     $i->click('Save');
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
     $i->searchFor('newglobaluser99@fakemail.fake');
     $i->waitForText('newglobaluser99@fakemail.fake');
     $i->seeNoJSErrors();
@@ -172,7 +172,7 @@ class ManageSubscribersCest {
     $this->generateSingleSubscriber('addtolistuser99@fakemail.fake', 'Add', 'ToAList', $this->segment);
 
     $i->login();
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
     $i->waitForText('Subscriber');
@@ -211,7 +211,7 @@ class ManageSubscribersCest {
     $this->generateSingleSubscriber('deletefromlistuser99@fakemail.fake', 'Delete', 'FromAList', $this->segment);
 
     $i->login();
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
     $i->waitForText('Subscriber');
@@ -254,7 +254,7 @@ class ManageSubscribersCest {
     $this->generateSingleSubscriber('editglobaluser99@fakemail.fake', 'Edit', 'ThisGlobalUser', $this->segment);
 
     $i->login();
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
     $i->waitForListingItemsToLoad();
     $i->clickItemRowActionByItemName($newSubscriberEmail, 'Edit');
     $i->waitForText('Subscriber');
@@ -312,7 +312,7 @@ class ManageSubscribersCest {
     $this->prepareInactiveSubscribersData();
 
     $i->login();
-    $i->amOnMailPoetPage ('Subscribers');
+    $i->amOnMailPoetPage('Subscribers');
 
     // Filter inactive subscribers
     $i->changeGroupInListingFilter('inactive');

@@ -219,7 +219,8 @@ class ImportExportFactoryTest extends \MailPoetTest {
             $importExportFactory->getSubscriberCustomFields()
           ),
         ],
-      ]);
+      ]
+    );
     $formattedFieldsForSelect2 = $importExportFactory->formatFieldsForSelect2(
       $importExportFactory->getSubscriberFields(),
       $importExportFactory->getSubscriberCustomFields()
@@ -269,7 +270,8 @@ class ImportExportFactoryTest extends \MailPoetTest {
             $importExportFactory->getSubscriberCustomFields()
           ),
         ],
-      ]);
+      ]
+    );
     $formattedFieldsForSelect2 = $importExportFactory->formatFieldsForSelect2(
       $importExportFactory->getSubscriberFields(),
       $importExportFactory->getSubscriberCustomFields()

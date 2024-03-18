@@ -26,7 +26,7 @@ function mailpoet_enable_cot(): void {
   }
 }
 
-add_action( 'init', 'mailpoet_enable_cot', 99 );
+add_action('init', 'mailpoet_enable_cot', 99);
 
 /**
  * Add wp create_cot WP CLI command for creating Custom Order Tables from command line

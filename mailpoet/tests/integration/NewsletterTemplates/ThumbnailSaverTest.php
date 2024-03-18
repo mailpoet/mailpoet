@@ -21,7 +21,7 @@ class ThumbnailSaverTest extends \MailPoetTest {
     verify($thumbnailUrl)->isString();
     verify($thumbnailUrl)->stringStartsWith(Env::$tempUrl);
     verify($thumbnailUrl)->stringContainsString(ThumbnailSaver::THUMBNAIL_DIRECTORY);
-    [,$fileName] = explode(ThumbnailSaver::THUMBNAIL_DIRECTORY, (string)$thumbnailUrl);
+    [, $fileName] = explode(ThumbnailSaver::THUMBNAIL_DIRECTORY, (string)$thumbnailUrl);
     $file = Env::$tempPath . '/' . ThumbnailSaver::THUMBNAIL_DIRECTORY . $fileName;
     verify(file_exists($file))->true();
     unlink($file); // remove the file after the test
@@ -37,7 +37,7 @@ class ThumbnailSaverTest extends \MailPoetTest {
     $thumbnailUrl = $template->getThumbnail();
     verify($thumbnailUrl)->isString();
     verify($thumbnailUrl)->stringStartsWith(Env::$tempUrl);
-    [,$fileName] = explode(ThumbnailSaver::THUMBNAIL_DIRECTORY, (string)$thumbnailUrl);
+    [, $fileName] = explode(ThumbnailSaver::THUMBNAIL_DIRECTORY, (string)$thumbnailUrl);
     // File is still the same
     verify($thumbnailUrl)->stringEndsWith($fileName);
     $file = Env::$tempPath . '/' . ThumbnailSaver::THUMBNAIL_DIRECTORY . $fileName;

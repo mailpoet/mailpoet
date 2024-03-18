@@ -109,11 +109,13 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
         'secondsToTimeString' => '1',
       ]
     );
-    $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class,
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
       [
         'deobfuscateFormPayload' => function($data) { return $data;
         },
-      ]);
+      ]
+    );
     $requiredCustomFieldValidator = Stub::makeEmpty(RequiredCustomFieldValidator::class);
     $settings = Stub::makeEmpty(SettingsController::class);
     $submitData = [];
@@ -188,11 +190,13 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
     $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
     $throttling = Stub::makeEmpty(SubscriptionThrottling::class);
-    $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class,
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
       [
         'deobfuscateFormPayload' => function($data) { return $data;
         },
-      ]);
+      ]
+    );
     $requiredCustomFieldValidator = Stub::makeEmpty(RequiredCustomFieldValidator::class);
     $settings = Stub::makeEmpty(SettingsController::class);
     $submitData = [];
@@ -260,12 +264,14 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
   public function testBuiltInValidatorFails() {
 
     $captchaSessionId = 'captcha_session_id';
-    $captchaSession = Stub::makeEmpty(CaptchaSession::class,
+    $captchaSession = Stub::makeEmpty(
+      CaptchaSession::class,
       [
         'init' => function($receivedSessionId) use ($captchaSessionId) {
           verify($receivedSessionId)->equals($captchaSessionId);
         },
-      ]);
+      ]
+    );
     $subscriberActions = Stub::makeEmpty(
       SubscriberActions::class,
       [
@@ -282,23 +288,27 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
         'secondsToTimeString' => '1',
       ]
     );
-    $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class,
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
       [
         'deobfuscateFormPayload' => function($data) { return $data;
         },
-      ]);
+      ]
+    );
     $requiredCustomFieldValidator = Stub::makeEmpty(RequiredCustomFieldValidator::class);
     $captchaSettings = [
       'type' => CaptchaConstants::TYPE_BUILTIN,
     ];
-    $settings = Stub::makeEmpty(SettingsController::class,
+    $settings = Stub::makeEmpty(
+      SettingsController::class,
       [
         'get' => function($value) use ($captchaSettings) {
           if ($value === 'captcha') {
             return $captchaSettings;
           }
         },
-      ]);
+      ]
+    );
     $submitData = [
       'captcha_session_id' => $captchaSessionId,
     ];
@@ -380,13 +390,15 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
 
     $captchaSessionId = 'captcha_session_id';
 
-    $captchaSession = Stub::makeEmpty(CaptchaSession::class,
+    $captchaSession = Stub::makeEmpty(
+      CaptchaSession::class,
       [
         'getCaptchaHash' => ['phrase' => 'a_string_that_does_not_match'],
         'init' => function($receivedSessionId) use ($captchaSessionId) {
           verify($receivedSessionId)->equals($captchaSessionId);
         },
-      ]);
+      ]
+    );
     $subscriberActions = Stub::makeEmpty(
       SubscriberActions::class,
       [
@@ -402,24 +414,28 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
         'secondsToTimeString' => '1',
       ]
     );
-    $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class,
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
       [
         'deobfuscateFormPayload' => function($data) { return $data;
         },
-      ]);
+      ]
+    );
     $requiredCustomFieldValidator = Stub::makeEmpty(RequiredCustomFieldValidator::class);
 
     $captchaSettings = [
       'type' => CaptchaConstants::TYPE_RECAPTCHA,
     ];
-    $settings = Stub::makeEmpty(SettingsController::class,
+    $settings = Stub::makeEmpty(
+      SettingsController::class,
       [
         'get' => function($value) use ($captchaSettings) {
           if ($value === 'captcha') {
             return $captchaSettings;
           }
         },
-      ]);
+      ]
+    );
 
     $submitData = [
       'captcha_session_id' => $captchaSessionId,
@@ -506,9 +522,9 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
   }
 
   public function testItShouldReturnTrueIfSubscribedToAnySegmentsInForm() {
-    $blockSegmentIds = [15,16];
+    $blockSegmentIds = [15, 16];
     $segmentIds = [17];
-    $formSegments = [15,16,17];
+    $formSegments = [15, 16, 17];
     $subscriberId = 1;
 
     $form = Stub::makeEmpty(
@@ -616,13 +632,15 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $captchaSessionId = 'captcha_session_id';
     $captcha = 'captcha';
 
-    $captchaSession = Stub::makeEmpty(CaptchaSession::class,
+    $captchaSession = Stub::makeEmpty(
+      CaptchaSession::class,
       [
         'getCaptchaHash' => $captcha,
         'init' => function($receivedSessionId) use ($captchaSessionId) {
           verify($receivedSessionId)->equals($captchaSessionId);
         },
-      ]);
+      ]
+    );
     $formFields = [
       'field_a' => 'value_a',
       'field_b' => 'value_b',
@@ -644,7 +662,8 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
               return [
                 'id' => $id,
               ];
-            }, array_keys($formFields)
+            },
+            array_keys($formFields)
           ));
 
           return $fields;
@@ -666,11 +685,13 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
     $subscribersFinder = Stub::makeEmpty(SubscribersFinder::class);
     $throttling = Stub::makeEmpty(SubscriptionThrottling::class);
-    $fieldNameObfuscator = Stub::makeEmpty(FieldNameObfuscator::class,
-    [
+    $fieldNameObfuscator = Stub::makeEmpty(
+      FieldNameObfuscator::class,
+      [
       'deobfuscateFormPayload' => function($data) { return $data;
       },
-    ]);
+      ]
+    );
     $requiredCustomFieldValidator = Stub::makeEmpty(RequiredCustomFieldValidator::class);
     $settings = Stub::makeEmpty(
       SettingsController::class,
@@ -695,7 +716,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $statisticsFormsRepository = Stub::makeEmpty(StatisticsFormsRepository::class);
     $wp = Stub::make(
       WPFunctions::class,
-    [
+      [
       'doAction' => function($receivedHook, $receivedData, $receivedSegmentIds, $receivedForm) use ($formFields, $segmentIds, $form) {
         verify($receivedHook)->equals('mailpoet_subscription_before_subscribe');
         verify($receivedData)->equals($formFields);

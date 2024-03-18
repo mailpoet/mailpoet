@@ -134,7 +134,7 @@ class NewsletterTest extends \MailPoetTest {
     // draft or any other status return false
     $parentNewsletterEntity = $this->newslettersRepository->findOneById($this->parentNewsletter->getId());
     $this->assertInstanceOf(NewsletterEntity::class, $parentNewsletterEntity);
-    $parentNewsletterEntity->setStatus( NewsletterEntity::STATUS_DRAFT);
+    $parentNewsletterEntity->setStatus(NewsletterEntity::STATUS_DRAFT);
     $this->newslettersRepository->persist($parentNewsletterEntity);
     $this->newslettersRepository->flush();
     $newsletterEntity = $this->newslettersRepository->findOneById($this->newsletter->getId());

@@ -542,7 +542,7 @@ class WooCommercePastRevenues implements Generator {
       $order->set_date_completed($completedAt->toDateTimeString());
       $order->set_date_paid($completedAt->toDateTimeString());
       $orderCreatedTime = $completedAt->subMinute()->toDateTimeString();
-      $order->set_date_created(get_gmt_from_date( $orderCreatedTime ));
+      $order->set_date_created(get_gmt_from_date($orderCreatedTime));
       $order->save();
     }
     return $order;

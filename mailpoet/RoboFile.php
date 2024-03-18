@@ -507,7 +507,7 @@ class RoboFile extends \Robo\Tasks {
   public function resetTestDocker() {
     return $this
       ->taskExec(
-      'docker-compose down -v --remove-orphans'
+        'docker-compose down -v --remove-orphans'
       )->dir(__DIR__ . '/tests/docker')
       ->addCode([$this, 'cleanupCachedFiles'])
       ->run();
@@ -1488,7 +1488,7 @@ class RoboFile extends \Robo\Tasks {
       new TwigFileSystem($templatePath)
     );
     $twig = $renderer->getTwig();
-    foreach ($this->rsearch($templatePath, ['html','hbs','txt']) as $template) {
+    foreach ($this->rsearch($templatePath, ['html', 'hbs', 'txt']) as $template) {
       $path = substr($template, strlen($templatePath));
       $twig->load($path);
     }

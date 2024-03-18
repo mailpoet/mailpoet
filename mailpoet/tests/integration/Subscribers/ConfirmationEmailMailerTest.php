@@ -299,7 +299,8 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $newsletterRepository->flush();
 
     $settings = SettingsController::getInstance();
-    $settings->set(ConfirmationEmailCustomizer::SETTING_ENABLE_EMAIL_CUSTOMIZER,
+    $settings->set(
+      ConfirmationEmailCustomizer::SETTING_ENABLE_EMAIL_CUSTOMIZER,
       true
     );
     $settings->set(ConfirmationEmailCustomizer::SETTING_EMAIL_ID, $newsletter->getId());

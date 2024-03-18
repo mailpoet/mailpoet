@@ -567,7 +567,8 @@ class SubscribersTest extends \MailPoetTest {
     $foundSubscriberIds = array_map(
       function (array $data): int {
         return (int)$data['id'];
-      }, $data['data']
+      },
+      $data['data']
     );
     self::assertTrue(in_array((int)$this->subscriber1->getId(), $foundSubscriberIds, true), 'Subscriber 1 was not found.');
     self::assertTrue(in_array((int)$subscriber->getId(), $foundSubscriberIds, true), 'New subscriber without list was not found.');

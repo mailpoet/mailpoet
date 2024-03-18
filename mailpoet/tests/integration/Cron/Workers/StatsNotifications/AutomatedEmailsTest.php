@@ -163,7 +163,8 @@ class AutomatedEmailsTest extends \MailPoetTest {
         $this->anything(),
         $this->callback(function($context): bool {
           return (bool)strpos($context['linkSettings'], 'mailpoet-settings');
-        }));
+        })
+      );
 
     $this->cronWorkerRunner->run($this->statsNotifications);
   }
@@ -180,7 +181,8 @@ class AutomatedEmailsTest extends \MailPoetTest {
             && $context['newsletters'][0]['clicked'] === 50
             && $context['newsletters'][0]['opened'] === 20
             && $context['newsletters'][0]['subject'] === 'Subject';
-        }));
+        })
+      );
 
     $this->cronWorkerRunner->run($this->statsNotifications);
   }

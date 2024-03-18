@@ -8,7 +8,7 @@ use WP_User;
 class User {
   public function createUser($name, $role, $email): WP_User {
     if (is_multisite()) {
-      $userId = wpmu_create_user($name, "$name-password", $email) ;
+      $userId = wpmu_create_user($name, "$name-password", $email);
     } else {
       $userId = wp_create_user($name, "$name-password", $email);
     }

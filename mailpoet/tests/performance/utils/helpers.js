@@ -16,7 +16,7 @@ import {
 export async function login(page) {
   // Go to WP Admin login page
   await Promise.all([
-    page.goto(`${baseURL}/wp-login.php`, { waitUntil: 'networkidle' }),
+    page.goto(`${baseURL} / wp - login.php`, { waitUntil: 'networkidle' }),
     page.waitForSelector('#user_login'),
   ]);
   // Enter login credentials and login

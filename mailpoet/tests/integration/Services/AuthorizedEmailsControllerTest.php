@@ -472,7 +472,7 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
   public function testItThrowsAnExceptionForReturnedArrayForCreateNewAuthorizedEmailAddress() {
     $errorMessage = 'some errors';
     $this->expectException(InvalidArgumentException::class);
-    $this->expectExceptionMessage($errorMessage );
+    $this->expectExceptionMessage($errorMessage);
 
     $bridgeMock = $this->make(Bridge::class, [
       'getAuthorizedEmailAddresses' => Expected::once([]),

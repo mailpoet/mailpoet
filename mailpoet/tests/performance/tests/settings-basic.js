@@ -31,7 +31,7 @@ export async function settingsBasic() {
 
     // Go to the Settings page
     await page.goto(
-      `${baseURL}/wp-admin/admin.php?page=mailpoet-settings#/basics`,
+      `${baseURL} / wp - admin / admin.php ? page = mailpoet - settings# / basics`,
       {
         waitUntil: 'networkidle',
       },

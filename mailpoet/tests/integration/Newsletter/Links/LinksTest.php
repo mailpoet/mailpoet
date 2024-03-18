@@ -221,7 +221,8 @@ class LinksTest extends \MailPoetTest {
     $tableName = $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
     $this->entityManager->getConnection()
       ->executeStatement(
-        "UPDATE $tableName SET queue_id = 2 WHERE id = ?", [$newsletterLink1->getId()]
+        "UPDATE $tableName SET queue_id = 2 WHERE id = ?",
+        [$newsletterLink1->getId()]
       );
 
     $this->newsletterLinkFactory

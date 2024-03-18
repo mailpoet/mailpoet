@@ -158,19 +158,19 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
     $phrase = 'abc';
     $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
     $captchaPhrase = Stub::make(
-    CaptchaPhrase::class,
-    [
+      CaptchaPhrase::class,
+      [
       'getPhrase' => 'something.else.' . $phrase,
-    ],
-    $this
+      ],
+      $this
     );
     $currentUser = (object)[
     'roles' => ['editor'],
     ];
     $captchaSession = Stub::makeEmpty(CaptchaSession::class);
     $wp = Stub::make(
-    WPFunctions::class,
-    [
+      WPFunctions::class,
+      [
       'isUserLoggedIn' => true,
       'applyFilters' => function($filter, $value) {
         return $value;
@@ -178,18 +178,18 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       '__' => function($string) { return $string;
       },
       'wpGetCurrentUser' => $currentUser,
-    ],
-    $this
+      ],
+      $this
     );
     $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
     $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
     $testee = new BuiltInCaptchaValidator(
-    $subscriptionUrlFactory,
-    $captchaPhrase,
-    $captchaSession,
-    $wp,
-    $subscriberIpRepository,
-    $subscriberRepository
+      $subscriptionUrlFactory,
+      $captchaPhrase,
+      $captchaSession,
+      $wp,
+      $subscriberIpRepository,
+      $subscriberRepository
     );
 
     $data = [

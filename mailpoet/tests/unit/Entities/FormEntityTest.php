@@ -52,7 +52,7 @@ class FormEntityTest extends \MailPoetUnitTest {
   ];
 
   public function testGetBlocksByTypes(): void {
-    $formEntity = new FormEntity('Test' );
+    $formEntity = new FormEntity('Test');
     $formEntity->setBody($this->body);
     $paragraphs = $formEntity->getBlocksByTypes([FormEntity::PARAGRAPH_BLOCK_TYPE]);
     verify($paragraphs)->arrayCount(3);
@@ -70,7 +70,7 @@ class FormEntityTest extends \MailPoetUnitTest {
   }
 
   public function testGetSegmentSelectionSegmentIds() {
-    $formEntity = new FormEntity('Test' );
+    $formEntity = new FormEntity('Test');
     $formEntity->setBody($this->body);
     $segmentIds = $formEntity->getSegmentBlocksSegmentIds();
     verify($segmentIds)->empty();

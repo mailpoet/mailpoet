@@ -92,7 +92,9 @@ class AutomationWalkerTest extends MailPoetUnitTest {
       [],
       array_map(function (string $id) {
         return new NextStep($id);
-      }, $nextStepIds));
+      },
+      $nextStepIds)
+    );
   }
 
   private function createAutomation(array $steps): Automation {

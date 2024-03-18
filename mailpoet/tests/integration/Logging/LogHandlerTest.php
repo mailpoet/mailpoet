@@ -42,7 +42,7 @@ class LogHandlerTest extends \MailPoetTest {
 
   public function testItPurgesOldLogs() {
     $entity = new LogEntity();
-    $entity->setName( 'old name');
+    $entity->setName('old name');
     $entity->setLevel(5);
     $entity->setMessage('xyz');
     $entity->setCreatedAt(Carbon::now()->subDays(100));
@@ -73,7 +73,7 @@ class LogHandlerTest extends \MailPoetTest {
 
   public function testItNotPurgesOldLogs() {
     $entity = new LogEntity();
-    $entity->setName( 'old name keep');
+    $entity->setName('old name keep');
     $entity->setLevel(5);
     $entity->setMessage('xyz');
     $entity->setCreatedAt(Carbon::now()->subDays(100));

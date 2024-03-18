@@ -9,7 +9,7 @@ use MailPoetVendor\Doctrine\ORM\Events;
 
 class EmojiEncodingListenerTest extends \MailPoetTest {
   public function testItSanitizeFormEntityOnPersistAndUpdate() {
-    $form = new FormEntity('Form' );
+    $form = new FormEntity('Form');
     $form->setBody(['body']);
     $emojiMock = $this->createMock(Emoji::class);
     $emojiMock->expects($this->exactly(2))

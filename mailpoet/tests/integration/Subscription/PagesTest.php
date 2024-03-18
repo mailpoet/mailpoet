@@ -256,7 +256,7 @@ class PagesTest extends \MailPoetTest {
 
     verify($updatedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $unsubscriptionStat = $this->statisticsUnsubscribesRepository->findOneBy(['subscriber' => $updatedSubscriber->getId()]);
-    verify($unsubscriptionStat->getMethod())->equals( StatisticsUnsubscribeEntity::METHOD_LINK);
+    verify($unsubscriptionStat->getMethod())->equals(StatisticsUnsubscribeEntity::METHOD_LINK);
     verify($unsubscriptionStat->getSource())->equals(StatisticsUnsubscribeEntity::SOURCE_NEWSLETTER);
 
     $this->statisticsUnsubscribesRepository->remove($unsubscriptionStat);
