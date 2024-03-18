@@ -16,6 +16,7 @@ class CapabilitiesManager {
   // Product capabilities mapping
   const MIN_TIER_LOGO_NOT_REQUIRED = 1;
   const MIN_TIER_ANALYTICS_ENABLED = 1;
+  const MIN_TIER_NO_UPGRADE_PAGE = 2;
   const MIN_TIER_UNLIMITED_AUTOMATION_STEPS = 2;
   const MIN_TIER_UNLIMITED_SEGMENT_FILTERS = 2;
 
@@ -114,5 +115,13 @@ class CapabilitiesManager {
       $this->getAutomationStepsLimit(),
       $this->getSegmentFiltersLimit(),
     );
+  }
+
+  public function showUpgradePage(): bool {
+    $tier = $this->getTier();
+    if ($this->subscribersFeature->hasValidPremiumKey() && isset($tier) && $tier < self::MIN_TIER_NO_UPGRADE_PAGE) {
+      return true;
+    }
+    return false;
   }
 }
