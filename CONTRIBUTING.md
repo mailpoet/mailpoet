@@ -1,5 +1,7 @@
 # Contributing
 
+There is a `./do` command that helps with the development process. See README.md for more details.
+
 ## PHP Code
 
 - Two spaces indentation.
