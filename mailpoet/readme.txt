@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.3
 Tested up to: 6.4
-Stable tag: 4.46.0
+Stable tag: 4.47.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.47.0 - 2024-03-18 =
+* Improved: Consider tracking settings when adding utm_parameters into links;
+* Fixed: Use less confusing language Segments vs Lists;
+* Fixed: rendering of some special characters on Lists page.
 
 = 4.46.0 - 2024-03-11 =
 * Improved: new segment "purchased product by attribute" introduced;
