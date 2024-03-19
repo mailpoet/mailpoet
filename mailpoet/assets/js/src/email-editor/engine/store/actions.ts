@@ -6,7 +6,7 @@ import { store as noticesStore } from '@wordpress/notices';
 import { __ } from '@wordpress/i18n';
 import { apiFetch } from '@wordpress/data-controls';
 import { storeName, mainSidebarEmailTab } from './constants';
-import { SendingPreviewStatus, State, Feature, EmailStyles } from './types';
+import { SendingPreviewStatus, State, Feature } from './types';
 
 export const toggleFeature =
   (feature: Feature) =>
@@ -119,30 +119,6 @@ export function* updateEmailMailPoetProperty(name: string, value: string) {
       mailpoet_data: {
         ...mailpoetData,
         [name]: value,
-      },
-    },
-  );
-}
-
-export function* updateEmailMailPoetTheme(theme: EmailStyles) {
-  const postId = select(storeName).getEmailPostId();
-  // There can be a better way how to get the edited post data
-  const editedPost = select(coreDataStore).getEditedEntityRecord(
-    'postType',
-    'mailpoet_email',
-    postId,
-  );
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const mailpoetData = editedPost?.mailpoet_data || {};
-  yield dispatch(coreDataStore).editEntityRecord(
-    'postType',
-    'mailpoet_email',
-    postId,
-    {
-      mailpoet_data: {
-        ...mailpoetData,
-        theme,
       },
     },
   );

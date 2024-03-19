@@ -21,15 +21,11 @@ export function ThemeStyles(): JSX.Element {
     [],
   );
 
-  const [mailpoetEmailData] = useEntityProp(
-    'postType',
-    'mailpoet_email',
-    'mailpoet_data',
-  );
+  const [meta] = useEntityProp('postType', 'mailpoet_email', 'meta');
 
   const mergedConfig = useMemo(
-    () => merge({}, theme, mailpoetEmailData?.theme) as EmailStyles,
-    [theme, mailpoetEmailData],
+    () => merge({}, theme, meta?.mailpoet_email_theme) as EmailStyles,
+    [theme, meta],
   );
 
   const [styles] = useGlobalStylesOutputWithConfig(mergedConfig);
