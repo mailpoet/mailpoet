@@ -185,11 +185,13 @@ If you don't see `headers.js` inside `performance` folder, that means we don't h
 
 Groups are used to organize common logic in the test scripts and can help with the test result analysis. For example the `group` `"Proceed through the newsletter creation flow until Send step"` groups together multiple requests triggered by this action.
 
-### Checks (deprecated in our tests)
+### Checks
 
-Checks are like asserts but they don’t stop the tests if they record a failure (for example in a load test with 1000s of iterations of a request this allows for an isolated flakey iteration to not stop test execution).
+There are checks inside the tests but they aren't failing tests, instead, they are more of a check that the process we use in tests are finished.
 
-All requests have had checks for at least a `200` http status repsonse added and most also have an additional check for a string contained in the response body.
+Currently, there are 36 checks in total for the nightly build, and 17 checks for the pull requests.
+
+If you find less than this in our CI runs over to Grafana streaming, that means some of the tests are failing in execution and they require investigation, whether due to maintance or bug found.
 
 ## Other Resources
 
