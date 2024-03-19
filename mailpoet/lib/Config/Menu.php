@@ -28,7 +28,6 @@ use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Util\License\Features\CapabilitiesManager;
-use MailPoet\Util\License\License;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Menu {
@@ -467,8 +466,7 @@ class Menu {
     );
 
     // Upgrade page
-    // Only show this page in menu if the Premium plugin is not activated
-    if (!License::getLicense() || $this->capabilitiesManager->showUpgradePage()) {
+    if ($this->capabilitiesManager->showUpgradePage()) {
       $this->wp->addSubmenuPage(
         self::MAIN_PAGE_SLUG,
         $this->setPageTitle(__('Upgrade', 'mailpoet')),
