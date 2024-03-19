@@ -22,6 +22,7 @@ import { automationCreateWelcome } from './tests/automation-create-welcome.js';
 import { automationAnalytics } from './tests/automation-analytics.js';
 import { automationTrashRestore } from './tests/automation-trash-restore.js';
 import { automationTriggerWorkflow } from './tests/automation-trigger-workflow.js';
+import { automationCreateWooCommerce } from './tests/automation-create-woocommerce.js';
 
 // Scenarios, Thresholds, Tags and Project ID used for K6 Cloud
 export let options = {
@@ -84,6 +85,7 @@ if (scenario) {
 }
 
 // Run those tests against a pull request build
+// Note: there are 17 checks in total
 export async function pullRequests() {
   await onboardingWizard();
   await newsletterListing();
@@ -98,6 +100,7 @@ export async function pullRequests() {
 }
 
 // Run those tests against trunk in a nightly build
+// Note: there are 36 checks in total
 export async function nightly() {
   await newsletterListing();
   await newsletterStatistics();
@@ -106,6 +109,7 @@ export async function nightly() {
   await automationTrashRestore();
   await automationCreateCustom();
   await automationCreateWelcome();
+  await automationCreateWooCommerce();
   await automationAnalytics();
   await automationTriggerWorkflow();
   await subscribersListing();
