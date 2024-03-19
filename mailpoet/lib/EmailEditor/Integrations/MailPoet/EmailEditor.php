@@ -10,7 +10,6 @@ use WP_Theme_JSON;
 
 class EmailEditor {
   const MAILPOET_EMAIL_POST_TYPE = 'mailpoet_email';
-  const MAILPOET_EMAIL_META_THEME_TYPE = 'mailpoet_email_theme';
 
   /** @var WPFunctions */
   private $wp;
@@ -55,17 +54,6 @@ class EmailEditor {
         ],
         'rewrite' => ['slug' => self::MAILPOET_EMAIL_POST_TYPE],
       ],
-      'meta' => [
-        [
-          'key' => self::MAILPOET_EMAIL_META_THEME_TYPE,
-          'args' => [
-            'show_in_rest' => true,
-            'single' => true,
-            'type' => 'object',
-            'default' => ['version' => 2],
-          ],
-        ],
-      ],
     ];
     return $postTypes;
   }
@@ -102,7 +90,7 @@ class EmailEditor {
   }
 
   public function extendEmailThemeStyles(WP_Theme_JSON $theme, WP_Post $post): WP_Theme_JSON {
-    $emailTheme = get_post_meta($post->ID, self::MAILPOET_EMAIL_META_THEME_TYPE, true);
+    $emailTheme = get_post_meta($post->ID, \MailPoet\EmailEditor\Engine\EmailEditor::MAILPOET_EMAIL_META_THEME_TYPE, true);
     if ($emailTheme && is_array($emailTheme)) {
       $theme->merge(new WP_Theme_JSON($emailTheme));
     }
