@@ -5,6 +5,7 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
+use WP_Style_Engine;
 
 /**
  * Renders a button block.
@@ -12,127 +13,172 @@ use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
  * @see https://documentation.mjml.io/#mj-button
  */
 class Button implements BlockRenderer {
+  private function getStylesFromBlock(array $block_styles, $skip_convert_vars = false) {
+    $styles = wp_style_engine_get_styles($block_styles, ['convert_vars_to_classnames' => $skip_convert_vars]);
+    return (object)wp_parse_args($styles, [
+      'css' => '',
+      'declarations' => [],
+      'classnames' => '',
+    ]);
+  }
+
+  private function replaceSpacingPresets($styles, $presets) {
+    $replaced = [];
+    foreach ($styles as $key => $value) {
+      if (strstr($value, 'var:preset|spacing|')) {
+        $slug = str_replace('var:preset|spacing|', '', $value);
+        $replaced[$key] = $presets[$slug] ?? $value;
+      } else {
+        $replaced[$key] = $value;
+      }
+    }
+    return $replaced;
+  }
+
+  private function convertToPixels($size, $baseFontSize) {
+    $unit = '';
+    $value = '';
+
+    // Extract unit and value from the size
+    preg_match('/^([\d\.]+)(px|em|%)$/', $size, $matches);
+    if (count($matches) == 3) {
+        $value = absint($matches[1]);
+        $unit = $matches[2];
+    } else {
+        return 0;
+    }
+
+    // Convert size to pixels
+    switch ($unit) {
+      case 'px':
+        return $value;
+      case 'em':
+        return $value * $baseFontSize;
+      case '%':
+        return ($value / 100) * $baseFontSize;
+      default:
+        return 0;
+    }
+  }
+
+  /**
+   * We need to space using em units, so calculate the percentage of 1em for padding values.
+   *
+   * @param string|float|int $value Size in pixels.
+   * @return string
+   */
+  private function msoPaddingPercentage($value, $baseFontSize = 16) {
+    return round((floatval($value) / $baseFontSize), 2) * 100 . '%';
+  }
+
+  private function msoPadding($wrapContent, $padding, $baseFontSize = 16) {
+    // Convert padding to pixels.
+    $paddingTop = $this->convertToPixels($padding['padding-top'], $baseFontSize);
+    $paddingBottom = $this->convertToPixels($padding['padding-bottom'], $baseFontSize);
+    $paddingLeft = $this->convertToPixels($padding['padding-left'], $baseFontSize);
+    $paddingRight = $this->convertToPixels($padding['padding-right'], $baseFontSize);
+
+    return sprintf(
+      '<!--[if mso]><i style="%s" hidden>&emsp;</i><span style="%s"><![endif]-->%s<!--[if mso]></span><i style="%s" hidden>&emsp;&#8203;</i><![endif]-->',
+      // Top and left padding.
+      esc_attr(WP_Style_Engine::compile_css(['mso-font-width' => $this->msoPaddingPercentage($paddingLeft, $baseFontSize), 'mso-text-raise' => $this->msoPaddingPercentage($paddingTop + $paddingBottom, $baseFontSize)], '')),
+      // Bottom padding.
+      esc_attr(WP_Style_Engine::compile_css(['mso-text-raise' => $this->msoPaddingPercentage($paddingBottom, $baseFontSize)], '')),
+      $wrapContent,
+      // Right padding.
+      esc_attr(WP_Style_Engine::compile_css(['mso-font-width' => $this->msoPaddingPercentage($paddingRight, $baseFontSize)], '')),
+    );
+  }
+
   public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    // Don't render empty buttons
     if (empty($parsedBlock['innerHTML'])) {
       return '';
     }
+
+    $themeSettings = $settingsController->getTheme()->get_settings();
+    $themeData = $settingsController->getTheme()->get_data();
     $domHelper = new DomDocumentHelper($parsedBlock['innerHTML']);
     $buttonLink = $domHelper->findElement('a');
 
-    if (!$buttonLink) return '';
-    $markup = $this->getMarkup();
+    if (!$buttonLink) {
+      return '';
+    }
+
+    $buttonText = $domHelper->getElementInnerHTML($buttonLink) ?: '';
+    $buttonUrl = $buttonLink->getAttribute('href') ?: '#';
     $buttonClasses = $domHelper->getAttributeValueByTagName('div', 'class') ?? '';
 
-    // Add Link Text
-    // Because the button text can contain highlighted text, we need to get the inner HTML of the button
-    $markup = str_replace('{linkText}', $domHelper->getElementInnerHTML($buttonLink) ?: '', $markup);
-    $markup = str_replace('{linkUrl}', $buttonLink->getAttribute('href') ?: '#', $markup);
+    $blockAttributes = wp_parse_args($parsedBlock['attrs'] ?? [], [
+      'width' => '100%',
+      'style' => [],
+      'textAlign' => 'center',
+      'backgroundColor' => '',
+      'textColor' => '',
+    ]);
 
-    // Width
-    // Parent block prepares container with proper width. If the width is set let's use full width of the container
-    // otherwise let's use auto width.
-    $width = 'auto';
-    if (isset($parsedBlock['attrs']['width'])) {
-      $width = '100%';
-    }
-    $markup = str_replace('{width}', $width, $markup);
+    $blockStyles = array_replace_recursive(
+      array_replace_recursive(
+        $themeData['styles']['blocks']['core/button'] ?? [],
+        [
+          'color' => array_filter([
+            'background' => $blockAttributes['backgroundColor'] ? $settingsController->translateSlugToColor($blockAttributes['backgroundColor']) : null,
+            'text' => $blockAttributes['textColor'] ? $settingsController->translateSlugToColor($blockAttributes['textColor']) : null,
+          ]),
+          'typography' => [
+            'fontSize' => $parsedBlock['email_attrs']['font-size'] ?? 'inherit',
+            'textDecoration' => $parsedBlock['email_attrs']['text-decoration'] ?? 'none',
+          ],
+        ]
+      ),
+      $blockAttributes['style'] ?? []
+    );
 
-    // Background
-    $themeData = $settingsController->getTheme()->get_data();
-    $defaultColor = $themeData['styles']['blocks']['core/button']['color']['background'] ?? 'transparent';
-    $colorSetBySlug = isset($parsedBlock['attrs']['backgroundColor']) ? $settingsController->translateSlugToColor($parsedBlock['attrs']['backgroundColor']) : null;
-    $colorSetByUser = $colorSetBySlug ?: ($parsedBlock['attrs']['style']['color']['background'] ?? null);
-    $bgColor = $colorSetByUser ?? $defaultColor;
-    $markup = str_replace('{backgroundColor}', $bgColor, $markup);
-
-    // Styles attributes
-    $wrapperStyles = [
-      'background' => $bgColor,
-      'cursor' => 'auto',
-      'word-break' => 'break-word',
-      'box-sizing' => 'border-box',
-      'overflow' => 'hidden',
-    ];
-    $linkStyles = [
-      'background-color' => $bgColor,
-      'display' => 'block',
-      'line-height' => '120%',
-      'margin' => '0',
-      'mso-padding-alt' => '0px',
-    ];
-
-    // Border
-    $borderAttrs = $parsedBlock['attrs']['style']['border'] ?? [];
-    if (!empty($borderAttrs)) {
-      // Use text color if border color is not set. Check for the value in the custom color text property
-      // then look also to the text color set from palette
-      if (!isset($borderAttrs['color'])) {
-        if (isset($parsedBlock['attrs']['style']['color']['text'])) {
-          $borderAttrs['color'] = $parsedBlock['attrs']['style']['color']['text'];
-        } elseif ($parsedBlock['attrs']['textColor']) {
-          $buttonClasses .= ' has-' . $parsedBlock['attrs']['textColor'] . '-border-color';
-        }
-      }
-      $wrapperStyles = array_merge($wrapperStyles, wp_style_engine_get_styles(['border' => $borderAttrs])['declarations']);
-      // User might set only the border radius without border color and width so in that case we need to set border:none
-      // to avoid rendering 1px border. Let's render the border only when width is set or border top is set separately
-      // which is saved only when there is a side with non-zero width so it is enough to check only top
-      if (
-        (isset($borderAttrs['width']) && $borderAttrs['width'] !== '0px')
-        || isset($borderAttrs['top'])
-      ) {
-        $wrapperStyles['border-style'] = 'solid';
-      } else {
-        $wrapperStyles['border'] = 'none';
-      }
-    } else {
-      // Some clients render 1px border when not set as none
-      $wrapperStyles['border'] = 'none';
+    if (isset($blockStyles['border']['width']) && empty($blockStyles['border']['style'])) {
+      $blockStyles['border']['style'] = 'solid';
     }
 
-    // Spacing
-    $paddingStyles = wp_style_engine_get_styles(['spacing' => ['padding' => $parsedBlock['attrs']['style']['spacing']['padding'] ?? null]]);
-    $linkStyles = array_merge($linkStyles, $paddingStyles['declarations'] ?? []);
-    // In most clients we want to render padding on the link element so that the full button is clickable
-    // Outlook doesn't support padding on the link element, so we need to set padding on the wrapper table cell and to have it only for Outlook we use mso-padding-alt
-    if (isset($paddingStyles['declarations'])) {
-      $paddingTop = $paddingStyles['declarations']['padding-top'] ?? '0px';
-      $paddingRight = $paddingStyles['declarations']['padding-right'] ?? '0px';
-      $paddingBottom = $paddingStyles['declarations']['padding-bottom'] ?? '0px';
-      $paddingLeft = $paddingStyles['declarations']['padding-left'] ?? '0px';
-      $wrapperStyles['mso-padding-alt'] = "$paddingTop $paddingRight $paddingBottom $paddingLeft";
-    }
+    $wrapperStyles = $this->getStylesFromBlock([
+      'border' => $blockStyles['border'] ?? [],
+      'typography' => $blockStyles['typography'] ?? [],
+      'color' => [
+        'text' => $blockStyles['color']['text'] ?? '',
+        'background' => $blockStyles['color']['background'] ?? '',
+      ],
+    ]);
 
-    // Typography + colors
-    $typography = $parsedBlock['attrs']['style']['typography'] ?? [];
-    $color = $parsedBlock['attrs']['style']['color'] ?? [];
-    $colorSetBySlug = isset($parsedBlock['attrs']['textColor']) ? $settingsController->translateSlugToColor($parsedBlock['attrs']['textColor']) : null;
-    if ($colorSetBySlug) {
-      $color['text'] = $colorSetBySlug;
-    }
-    $typography['fontSize'] = $parsedBlock['email_attrs']['font-size'] ?? 'inherit';
-    $typography['textDecoration'] = $typography['textDecoration'] ?? ($parsedBlock['email_attrs']['text-decoration'] ?? 'inherit');
-    $linkStyles = array_merge($linkStyles, wp_style_engine_get_styles(['typography' => $typography, 'color' => $color])['declarations']);
+    $linkStyles = $this->getStylesFromBlock([
+      'color' => [
+        'text' => $blockStyles['color']['text'] ?? '',
+      ],
+      'typography' => $blockStyles['typography'],
+      'spacing' => [
+        'padding' => $blockStyles['spacing']['padding'] ?? [],
+      ],
+    ]);
 
-    // Escaping
-    $wrapperStyles = array_map('esc_attr', $wrapperStyles);
-    $linkStyles = array_map('esc_attr', $linkStyles);
+    $paddingStyles = wp_parse_args(
+      $this->replaceSpacingPresets(
+        $this->getStylesFromBlock(['spacing' => ['padding' => $blockStyles['spacing']['padding'] ?? []]], true)->declarations,
+        wp_list_pluck($themeSettings['spacing']['spacingSizes']['default'] ?? [], 'size', 'slug')
+      ),
+      [
+        'padding-top' => '0px',
+        'padding-right' => '0px',
+        'padding-bottom' => '0px',
+        'padding-left' => '0px',
+      ]
+    );
 
-    $markup = str_replace('{linkStyles}', $settingsController->convertStylesToString($linkStyles), $markup);
-    $markup = str_replace('{wrapperStyles}', $settingsController->convertStylesToString($wrapperStyles), $markup);
-    $markup = str_replace('{classes}', $buttonClasses, $markup);
-
-    return $markup;
-  }
-
-  private function getMarkup(): string {
-    return '<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:middle;border-collapse:separate;line-height:100%;width:{width};">
-        <tr>
-          <td align="center" class="{classes}" bgcolor="{backgroundColor}" role="presentation" style="{wrapperStyles}" valign="middle">
-            <a class="wp-block-button__link" href="{linkUrl}" style="{linkStyles}" target="_blank">{linkText}</a>
-          </td>
-        </tr>
-      </table>';
+    return sprintf(
+      '<div class="%s" style="%stext-align:%s;width:%s;"><a rel="noopener" class="%s" style="display:block;word-break:break-word;%s" href="%s" target="_blank">%s</a></div>',
+      esc_attr($buttonClasses . ' ' . $wrapperStyles->classnames),
+      esc_attr($wrapperStyles->css),
+      esc_attr($blockAttributes['textAlign'] ?? 'center'),
+      esc_attr(isset($blockAttributes['width']) ? '100%' : 'auto'),
+      esc_attr($linkStyles->classnames),
+      esc_attr($linkStyles->css),
+      esc_url($buttonUrl),
+      $this->msoPadding($buttonText, $paddingStyles, absint($linkStyles->declarations['font-size']) ?? 16)
+    );
   }
 }
