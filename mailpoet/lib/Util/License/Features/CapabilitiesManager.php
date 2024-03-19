@@ -117,9 +117,12 @@ class CapabilitiesManager {
     );
   }
 
+  /**
+   * Returns true if there is no valid premium key or the product tier can be upgraded
+   */
   public function showUpgradePage(): bool {
     $tier = $this->getTier();
-    if ($this->subscribersFeature->hasValidPremiumKey() && isset($tier) && $tier < self::MIN_TIER_NO_UPGRADE_PAGE) {
+    if (!$this->subscribersFeature->hasValidPremiumKey() || (isset($tier) && $tier < self::MIN_TIER_NO_UPGRADE_PAGE)) {
       return true;
     }
     return false;
