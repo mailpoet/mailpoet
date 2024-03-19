@@ -11,9 +11,9 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useEntityProp } from '@wordpress/core-data';
-import { useDispatch, useSelect } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { isEqual } from 'lodash';
-import { EmailStyles, storeName } from '../../store';
+import { EmailTheme, storeName } from '../../store';
 
 export function DimensionsPanel() {
   const availableUnits = useSetting('spacing.units') as string[];
@@ -21,11 +21,11 @@ export function DimensionsPanel() {
     availableUnits,
   });
 
-  const [mailpoetEmailData] = useEntityProp(
-    'postType',
-    'mailpoet_email',
-    'mailpoet_data',
-  );
+  const [meta, setMeta] = useEntityProp('postType', 'mailpoet_email', 'meta');
+  const emailTheme = meta?.mailpoet_email_theme as EmailTheme;
+  const updateEmailTheme = (newValue) => {
+    setMeta({ ...meta, mailpoet_email_theme: newValue });
+  };
 
   const { styles } = useSelect((select) => ({
     styles: select(storeName).getStyles(),
@@ -33,77 +33,74 @@ export function DimensionsPanel() {
   const defaultPadding = styles.spacing.padding ?? undefined;
   const defaultBlockGap = styles.spacing.blockGap ?? undefined;
 
-  const { updateEmailMailPoetTheme } = useDispatch(storeName);
-
   // Padding
-  const paddingValues =
-    mailpoetEmailData.theme?.styles?.spacing?.padding ?? defaultPadding;
+  const paddingValues = emailTheme?.styles?.spacing?.padding ?? defaultPadding;
   const resetPadding = () => {
-    void updateEmailMailPoetTheme({
-      ...mailpoetEmailData.theme,
+    updateEmailTheme({
+      ...emailTheme,
       styles: {
-        ...mailpoetEmailData.theme?.styles,
+        ...emailTheme?.styles,
         spacing: {
-          ...mailpoetEmailData.theme?.styles?.spacing,
+          ...emailTheme?.styles?.spacing,
           padding: defaultPadding ?? undefined,
         },
       },
-    } as EmailStyles);
+    });
   };
   const setPaddingValues = (value) => {
-    void updateEmailMailPoetTheme({
-      ...mailpoetEmailData.theme,
+    updateEmailTheme({
+      ...emailTheme,
       styles: {
-        ...mailpoetEmailData.theme?.styles,
+        ...emailTheme?.styles,
         spacing: {
-          ...mailpoetEmailData.theme?.styles?.spacing,
+          ...emailTheme?.styles?.spacing,
           padding: value,
         },
       },
-    } as EmailStyles);
+    });
   };
 
   // Block spacing
   const blockGapValue =
-    mailpoetEmailData.theme?.styles?.spacing?.blockGap ?? defaultBlockGap;
+    emailTheme?.styles?.spacing?.blockGap ?? defaultBlockGap;
   const resetBlockGap = () => {
-    void updateEmailMailPoetTheme({
-      ...mailpoetEmailData.theme,
+    updateEmailTheme({
+      ...emailTheme,
       styles: {
-        ...mailpoetEmailData.theme?.styles,
+        ...emailTheme?.styles,
         spacing: {
           ...styles.spacing,
           blockGap: undefined,
         },
       },
-    } as EmailStyles);
+    });
   };
 
   const setBlockGapValue = (value) => {
-    void updateEmailMailPoetTheme({
-      ...mailpoetEmailData.theme,
+    updateEmailTheme({
+      ...emailTheme,
       styles: {
-        ...mailpoetEmailData.theme?.styles,
+        ...emailTheme?.styles,
         spacing: {
-          ...mailpoetEmailData.theme?.styles?.spacing,
+          ...emailTheme?.styles?.spacing,
           blockGap: value.top || styles.spacing.blockGap,
         },
       },
-    } as EmailStyles);
+    });
   };
 
   const resetAll = () => {
-    void updateEmailMailPoetTheme({
-      ...mailpoetEmailData.theme,
+    updateEmailTheme({
+      ...emailTheme,
       styles: {
-        ...mailpoetEmailData.theme?.styles,
+        ...emailTheme?.styles,
         spacing: {
           ...styles.spacing,
           padding: defaultPadding ?? undefined,
           blockGap: defaultBlockGap ?? undefined,
         },
       },
-    } as EmailStyles);
+    });
   };
 
   return (
