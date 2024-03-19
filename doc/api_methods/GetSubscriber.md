@@ -31,6 +31,7 @@ This method throws an `\Exception` in the event a subscriber with a given email 
 | created_at               | string\|null | -         | UTC time of creation in 'Y-m-d H:i:s' format                                                                                   |
 | updated_at               | string       | -         | UTC time of last update in 'Y-m-d H:i:s' format                                                                                |
 | deleted_at               | string\|null | -         | This property in not null in case that list is in trash and contains UTC time in 'Y-m-d H:i:s' format.                         |
+| last_subscribed_at       | string\|null | -         | UTC time of last confirmed subscription in 'Y-m-d H:i:s' format.                                                               |
 | unconfirmed_data         | string\|null | 65K chars | May contain serialized subscriber data in case when there are pending changes waiting for a confirmation from a subscriber     |
 | source                   | string\|null | -         | Possible values: `form`,`imported`,`administrator`,`api`,`wordpress_user`,`woocommerce_user`,`woocommerce_checkout`,`unknown`) |
 | count_confirmations      | string       | 11 chars  | Counter for confirmation emails                                                                                                |
