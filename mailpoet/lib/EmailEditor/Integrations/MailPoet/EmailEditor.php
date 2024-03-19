@@ -5,8 +5,6 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
-use WP_Post;
-use WP_Theme_JSON;
 
 class EmailEditor {
   const MAILPOET_EMAIL_POST_TYPE = 'mailpoet_email';
@@ -40,7 +38,6 @@ class EmailEditor {
       return;
     }
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
-    $this->wp->addFilter('mailpoet_email_editor_rendering_theme_styles', [$this, 'extendEmailThemeStyles'], 10, 2);
     $this->extendEmailPostApi();
   }
 
@@ -87,13 +84,5 @@ class EmailEditor {
       <p class="has-small-font-size"><a href="[link:subscription_unsubscribe_url]">' . esc_html__('Unsubscribe', 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . esc_html__('Manage subscription', 'mailpoet') . '</a></p>
       <!-- /wp:paragraph -->
     ';
-  }
-
-  public function extendEmailThemeStyles(WP_Theme_JSON $theme, WP_Post $post): WP_Theme_JSON {
-    $emailTheme = get_post_meta($post->ID, \MailPoet\EmailEditor\Engine\EmailEditor::MAILPOET_EMAIL_META_THEME_TYPE, true);
-    if ($emailTheme && is_array($emailTheme)) {
-      $theme->merge(new WP_Theme_JSON($emailTheme));
-    }
-    return $theme;
   }
 }

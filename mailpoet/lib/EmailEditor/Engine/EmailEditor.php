@@ -4,6 +4,8 @@ namespace MailPoet\EmailEditor\Engine;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Validator\Builder;
+use WP_Post;
+use WP_Theme_JSON;
 
 /**
  * @phpstan-type EmailPostType array{name: string, args: array, meta: array{key: string, args: array}[]}
@@ -23,6 +25,7 @@ class EmailEditor {
 
   public function initialize(): void {
     do_action('mailpoet_email_editor_initialized');
+    add_filter('mailpoet_email_editor_rendering_theme_styles', [$this, 'extendEmailThemeStyles'], 10, 2);
     $this->registerEmailPostTypes();
     $this->registerEmailMetaFields();
     $this->registerEmailPostSendStatus();
@@ -114,5 +117,13 @@ class EmailEditor {
         ])->nullable(),
       ])->nullable(),
     ])->toArray();
+  }
+
+  public function extendEmailThemeStyles(WP_Theme_JSON $theme, WP_Post $post): WP_Theme_JSON {
+    $emailTheme = get_post_meta($post->ID, EmailEditor::MAILPOET_EMAIL_META_THEME_TYPE, true);
+    if ($emailTheme && is_array($emailTheme)) {
+      $theme->merge(new WP_Theme_JSON($emailTheme));
+    }
+    return $theme;
   }
 }
