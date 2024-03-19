@@ -9,6 +9,7 @@ class Initializer {
   public function initialize(): void {
     add_action('mailpoet_blocks_renderer_initialized', [$this, 'registerCoreBlocksRenderers'], 10, 1);
     add_filter('mailpoet_email_editor_theme_json', [$this, 'adjustThemeJson'], 10, 1);
+    add_filter('safe_style_css', [$this, 'allowStyles']);
   }
 
   /**
@@ -34,5 +35,16 @@ class Initializer {
     /** @var array $themeJson */
     $editorThemeJson->merge(new \WP_Theme_JSON($themeJson, 'default'));
     return $editorThemeJson;
+  }
+
+  /**
+   * Allow styles for the email editor.
+   */
+  public function allowStyles(array $allowedStyles): array {
+    $allowedStyles[] = 'display';
+    $allowedStyles[] = 'mso-padding-alt';
+    $allowedStyles[] = 'mso-font-width';
+    $allowedStyles[] = 'mso-text-raise';
+    return $allowedStyles;
   }
 }
