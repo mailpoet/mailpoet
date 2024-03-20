@@ -49,7 +49,7 @@ export async function onboardingWizard() {
     });
 
     await page.waitForSelector('#mailpoet_sender_form');
-    await page.click('#mailpoet_sender_form > a');
+    await page.locator('button[type="submit"]').click();
     await page.waitForLoadState('networkidle');
 
     await page
@@ -62,14 +62,18 @@ export async function onboardingWizard() {
         '#mailpoet-wizard-tracking > div.mailpoet-wizard-woocommerce-toggle > div > label:nth-child(1) > span',
       )
       .click();
-    await page
-      .locator(
-        '#mailpoet-wizard-container > div.mailpoet-steps-content > div > div.mailpoet-wizard-step-content > form > button > span',
-      )
-      .click();
-    await page.waitForLoadState('networkidle');
+    await page.locator('button[type="submit"]').click();
+
+    sleep(1);
+
+    await page.waitForSelector('span.mailpoet-form-yesno-yes');
+    await page.locator('span.mailpoet-form-yesno-yes').click();
+    await page.locator('button[type="submit"]').click();
+
     await page.locator('.mailpoet-wizard-step-content > p > a').click();
+
     sleep(2);
+
     await page.screenshot({
       path: screenshotPath + 'Onboarding_Wizard_02.png',
       fullPage: fullPageSet,
