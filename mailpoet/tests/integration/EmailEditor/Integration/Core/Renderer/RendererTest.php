@@ -28,7 +28,7 @@ class RendererTest extends \MailPoetTest {
     verify($buttonHtml)->stringContainsString('padding-left:1.4em;');
     verify($buttonHtml)->stringContainsString('padding-right:1.4em;');
     verify($buttonHtml)->stringContainsString('padding-top:0.7em;');
-    verify($buttonHtml)->stringContainsString('background:#32373c');
+    verify($buttonHtml)->stringContainsString('background-color:#32373c');
   }
 
   public function testButtonDefaultStylesDontOverwriteUserSetStyles() {
@@ -38,7 +38,6 @@ class RendererTest extends \MailPoetTest {
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $buttonHtml = $this->extractBlockHtml($rendered['html'], 'wp-block-button', 'td');
     verify($buttonHtml)->stringContainsString('color:#0693e3');
-    verify($buttonHtml)->stringContainsString('background:#ffffff');
     verify($buttonHtml)->stringContainsString('background-color:#ffffff');
   }
 
