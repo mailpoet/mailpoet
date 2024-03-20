@@ -2,12 +2,12 @@
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\AbstractBlockRenderer;
 use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 use WP_Style_Engine;
 
-class Columns implements BlockRenderer {
+class Columns extends AbstractBlockRenderer {
   public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $content = '';
     foreach ($parsedBlock['innerBlocks'] ?? [] as $block) {
@@ -19,15 +19,6 @@ class Columns implements BlockRenderer {
       $content,
       $this->getBlockWrapper($blockContent, $parsedBlock, $settingsController)
     );
-  }
-
-  private function getStylesFromBlock(array $block_styles) {
-    $styles = wp_style_engine_get_styles($block_styles);
-    return (object)wp_parse_args($styles, [
-      'css' => '',
-      'declarations' => [],
-      'classnames' => '',
-    ]);
   }
 
   /**
@@ -45,9 +36,9 @@ class Columns implements BlockRenderer {
       'spacing' => [ 'padding' => $block_attributes['style']['spacing']['padding'] ?? [] ],
       'color' => $block_attributes['style']['color'] ?? [],
       'background' => $block_attributes['style']['background'] ?? [],
-    ])->declarations;
+    ])['declarations'];
 
-    $borderStyles = $this->getStylesFromBlock(['border' => $block_attributes['style']['border'] ?? []])->declarations;
+    $borderStyles = $this->getStylesFromBlock(['border' => $block_attributes['style']['border'] ?? []])['declarations'];
 
     if (!empty($borderStyles)) {
       $cellStyles = array_merge($cellStyles, ['border-style' => 'solid'], $borderStyles);

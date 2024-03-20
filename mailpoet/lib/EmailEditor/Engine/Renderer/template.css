@@ -64,6 +64,7 @@ td {
 
   .layout-flex-item table,
   .layout-flex-item td {
+    box-sizing: border-box !important;
     display: block !important;
     width: 100% !important;
   }
