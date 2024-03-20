@@ -2,12 +2,12 @@
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\AbstractBlockRenderer;
 use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 use WP_Style_Engine;
 
-class Column implements BlockRenderer {
+class Column extends AbstractBlockRenderer {
   public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $content = '';
     foreach ($parsedBlock['innerBlocks'] ?? [] as $block) {
@@ -19,15 +19,6 @@ class Column implements BlockRenderer {
       $content,
       $this->getBlockWrapper($blockContent, $parsedBlock, $settingsController)
     );
-  }
-
-  private function getStylesFromBlock(array $block_styles) {
-    $styles = wp_style_engine_get_styles($block_styles);
-    return (object)wp_parse_args($styles, [
-      'css' => '',
-      'declarations' => [],
-      'classnames' => '',
-    ]);
   }
 
   /**
@@ -45,13 +36,13 @@ class Column implements BlockRenderer {
     // to create a feeling of a stretched column. This also needs to apply to CSS classnames which can also apply styles.
     $isStretched = empty($block_attributes['verticalAlignment']) || $block_attributes['verticalAlignment'] === 'stretch';
 
-    $paddingCSS = $this->getStylesFromBlock(['spacing' => ['padding' => $block_attributes['style']['spacing']['padding'] ?? []]])->css;
+    $paddingCSS = $this->getStylesFromBlock(['spacing' => ['padding' => $block_attributes['style']['spacing']['padding'] ?? []]])['css'];
     $cellStyles = $this->getStylesFromBlock([
         'color' => $block_attributes['style']['color'] ?? [],
         'background' => $block_attributes['style']['background'] ?? [],
-      ])->declarations;
+      ])['declarations'];
 
-    $borderStyles = $this->getStylesFromBlock(['border' => $block_attributes['style']['border'] ?? []])->declarations;
+    $borderStyles = $this->getStylesFromBlock(['border' => $block_attributes['style']['border'] ?? []])['declarations'];
 
     if (!empty($borderStyles)) {
       $cellStyles = array_merge($cellStyles, ['border-style' => 'solid'], $borderStyles);
