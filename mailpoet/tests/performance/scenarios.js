@@ -85,13 +85,14 @@ if (scenario) {
 }
 
 // Run those tests against a pull request build
-// Note: there are 17 checks in total
+// Note: there are 19 checks in total
 export async function pullRequests() {
   await onboardingWizard();
   await newsletterListing();
   await newsletterSearching();
   await automationTrashRestore();
   await automationCreateWelcome();
+  await automationCreateWooCommerce();
   await listsViewSubscribers();
   await subscribersListing();
   await subscribersFiltering();

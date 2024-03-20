@@ -13,6 +13,8 @@ services:
       - |
         wp core install --path=/var/www/html --url=localhost:9500 --title=Performance --admin_user=admin --admin_email=test@test.com --admin_password=password --skip-email
         wp plugin activate mailpoet
+        wp plugin install woocommerce latest
+        wp plugin activate woocommerce
     volumes:
       - performance-wordpress-data:/var/www/html
       - ../..:/var/www/html/wp-content/plugins/mailpoet
