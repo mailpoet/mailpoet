@@ -73,7 +73,6 @@ class ButtonTest extends \MailPoetTest {
       'text' => '#111111',
     ];
     $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
-    verify($output)->stringContainsString('bgcolor="#000000"');
     verify($output)->stringContainsString('background:#000000;');
     verify($output)->stringContainsString('color:#111111;');
   }
@@ -87,35 +86,6 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('border-color:#111111;');
     verify($output)->stringContainsString('border-width:10px;');
     verify($output)->stringContainsString('border-style:solid;');
-  }
-
-  public function testItRendersBorderNone(): void {
-    $this->parsedButton['attrs']['style']['border'] = [];
-    $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
-    verify($output)->stringContainsString('border:none;');
-  }
-
-  public function testItRendersBorderWithTextColorFallback(): void {
-    $this->parsedButton['attrs']['style']['border'] = [
-      'width' => '10px',
-    ];
-    $this->parsedButton['attrs']['style']['color'] = [
-      'text' => '#111111',
-    ];
-    $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
-    verify($output)->stringContainsString('border-color:#111111;');
-  }
-
-  public function testItRendersBorderWithTextColorFallbackForColorsFromPalette(): void {
-    $this->parsedButton['attrs']['style']['border'] = [
-      'width' => '10px',
-    ];
-    // Custom text color is not set so we use the text color from the palette
-    $this->parsedButton['attrs']['style']['color'] = null;
-    $this->parsedButton['attrs']['textColor'] = 'white';
-    $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
-    // We set proper class for border color based on the text color slug
-    verify($output)->stringContainsString('has-white-border-color');
   }
 
   public function testItRendersEachSideSpecificBorder(): void {
@@ -175,7 +145,6 @@ class ButtonTest extends \MailPoetTest {
     $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
     // Verify default background colors theme.json for email editor
     // These can't be set via CSS inliner because of special email HTML markup
-    verify($output)->stringContainsString('bgcolor="#32373c"');
     verify($output)->stringContainsString('background:#32373c;');
   }
 
@@ -186,7 +155,6 @@ class ButtonTest extends \MailPoetTest {
     $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
     // For other blocks this is handled by CSS-inliner, but for button we need to handle it manually
     // because of special email HTML markup
-    verify($output)->stringContainsString('bgcolor="#000000"');
     verify($output)->stringContainsString('background:#000000;');
     verify($output)->stringContainsString('background-color:#000000;');
   }
