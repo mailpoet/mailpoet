@@ -86,15 +86,19 @@ export function PremiumBannerWithUpgrade({
 
     ctaButton = getCtaButton(__('Upgrade your plan', 'mailpoet'), link);
   } else if (
-    hasValidPremiumKey &&
-    capabilityName &&
-    MailPoet.capabilities[capabilityName].isRestricted
+    (hasValidApiKey && !hasValidPremiumKey) || // ex. Starter plan
+    (hasValidPremiumKey &&
+      capabilityName &&
+      MailPoet.capabilities[capabilityName].isRestricted)
   ) {
     title = __('Upgrade your plan', 'mailpoet');
     bannerMessage = message;
+    const upgradeParams = capabilityName
+      ? { capability: capabilityName, s: subscribersCount }
+      : {};
     const link = MailPoet.MailPoetComUrlFactory.getUpgradeUrl(
       pluginPartialKey,
-      { capability: capabilityName, s: subscribersCount },
+      upgradeParams,
     );
     ctaButton = getCtaButton(__('Upgrade', 'mailpoet'), link);
   } else {
