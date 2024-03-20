@@ -24,7 +24,10 @@ class RendererTest extends \MailPoetTest {
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $buttonHtml = $this->extractBlockHtml($rendered['html'], 'wp-block-button', 'td');
     verify($buttonHtml)->stringContainsString('color:#ffffff');
-    verify($buttonHtml)->stringContainsString('padding:.7em 1.4em');
+    verify($buttonHtml)->stringContainsString('padding-bottom:0.7em;');
+    verify($buttonHtml)->stringContainsString('padding-left:1.4em;');
+    verify($buttonHtml)->stringContainsString('padding-right:1.4em;');
+    verify($buttonHtml)->stringContainsString('padding-top:0.7em;');
     verify($buttonHtml)->stringContainsString('background:#32373c');
   }
 
