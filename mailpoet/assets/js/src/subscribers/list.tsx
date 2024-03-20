@@ -567,9 +567,13 @@ function SubscriberList({ match }) {
           className="column-date mailpoet-hide-on-mobile"
           data-colname={MailPoet.I18n.t('subscribedOn')}
         >
-          {MailPoet.Date.short(subscriber.last_subscribed_at)}
-          <br />
-          {MailPoet.Date.time(subscriber.last_subscribed_at)}
+          {subscriber.last_subscribed_at ? (
+            <>
+              {MailPoet.Date.short(subscriber.last_subscribed_at)}
+              <br />
+              {MailPoet.Date.time(subscriber.last_subscribed_at)}
+            </>
+          ) : null}
         </td>
       </div>
     );
