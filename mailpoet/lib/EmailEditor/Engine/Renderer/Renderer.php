@@ -59,7 +59,7 @@ class Renderer {
     );
 
     $logo = $this->cdnAssetUrl->generateCdnUrl('email-editor/logo-footer.png');
-    $footerLogo = $this->servicesChecker->isPremiumPluginActive() ? '' : '<img src="' . esc_attr( $logo ) . '" alt="MailPoet" style="margin: 24px auto; display: block;" />';
+    $footerLogo = $this->servicesChecker->isPremiumPluginActive() ? '' : '<img src="' . esc_attr($logo) . '" alt="MailPoet" style="margin: 24px auto; display: block;" />';
 
     /**
      * Replace template variables
