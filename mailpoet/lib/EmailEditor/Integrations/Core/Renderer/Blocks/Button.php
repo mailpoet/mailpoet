@@ -16,7 +16,7 @@ class Button extends AbstractBlockRenderer {
     $properties = ['border', 'color', 'typography', 'spacing'];
     $styles = $this->getStylesFromBlock(array_intersect_key($blockStyles, array_flip($properties)));
     return (object)[
-      'css' => $this->compileCss($styles['declarations'], [ 'word-break' => 'break-word', 'display' => 'block' ]),
+      'css' => $this->compileCss($styles['declarations'], ['word-break' => 'break-word', 'display' => 'block']),
       'classname' => $styles['classnames'],
     ];
   }
@@ -29,7 +29,7 @@ class Button extends AbstractBlockRenderer {
       'typography' => $blockStyles['typography'],
     ]);
     return (object)[
-      'css' => $this->compileCss($styles['declarations'], [ 'display' => 'block' ]),
+      'css' => $this->compileCss($styles['declarations'], ['display' => 'block']),
       'classname' => $styles['classnames'],
     ];
   }
