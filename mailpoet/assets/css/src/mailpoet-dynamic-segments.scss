@@ -1,14 +1,12 @@
 @import 'settings/colors';
 @import 'mailpoet-listing';
 
-.mailpoet-segment-listing-heading {
-  .mailpoet-segment-subscriber-count {
-    align-items: center;
-    display: flex;
-    font-size: 13px;
-    gap: 16px;
-    padding-top: 8px;
-  }
+.mailpoet-segment-subscriber-count {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  gap: 16px;
+  padding-top: 8px;
 
   .mailpoet-segment-help-icon {
     display: flex;
