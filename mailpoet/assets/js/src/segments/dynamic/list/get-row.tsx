@@ -109,7 +109,9 @@ export function getRow(
           <Link to={`${ROUTES.EDIT_DYNAMIC_SEGMENT}/${dynamicSegment.id}`}>
             {dynamicSegment.name}
           </Link>
-          {dynamicSegment.description && <p>{dynamicSegment.description}</p>}
+          {dynamicSegment.description && (
+            <div>{dynamicSegment.description}</div>
+          )}
         </div>
       ),
     },
