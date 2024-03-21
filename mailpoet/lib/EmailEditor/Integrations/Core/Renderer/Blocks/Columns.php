@@ -73,7 +73,7 @@ class Columns implements BlockRenderer {
         <tbody>
           <tr>
             <td class="' . esc_attr($contentClassname) . '" style="text-align:left;width:100%;' . esc_attr($contentCSS) . '">
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:separate;">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;">
                 <tr>
                   {columns_content}
                 </tr>
