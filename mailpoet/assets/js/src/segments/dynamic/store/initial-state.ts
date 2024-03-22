@@ -53,7 +53,6 @@ export const getInitialState = (): StateType => ({
     window.mailpoet_can_use_woocommerce_memberships,
   ),
   previousPage: '',
-  dynamicSegmentsQuery: null,
   dynamicSegments: {
     data: null,
     meta: {

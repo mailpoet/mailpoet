@@ -1,15 +1,10 @@
 import { useSelect } from '@wordpress/data';
 import { useCallback, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
 import { TabPanel } from '@wordpress/components';
 import { __, _x } from '@wordpress/i18n';
 import { storeName } from '../store';
 import { ListingTabContent } from './listing-tab-content';
-import {
-  getTabFromLocation,
-  updateDynamicQuery,
-  updateDynamicQueryFromLocation,
-} from './listing-helpers';
+import { updateSegmentsQuery, useSegmentsQuery } from './query';
 
 const tabConfig = [
   {
@@ -25,10 +20,9 @@ const tabConfig = [
 ] as const;
 
 export function ListingTabs(): JSX.Element {
-  const location = useLocation();
-  const { dynamicSegmentQuery, dynamicSegmentsGroups } = useSelect((s) => ({
+  const query = useSegmentsQuery();
+  const { dynamicSegmentsGroups } = useSelect((s) => ({
     dynamicSegments: s(storeName).getDynamicSegments(),
-    dynamicSegmentQuery: s(storeName).getDynamicSegmentsQuery(),
     dynamicSegmentsGroups: s(storeName).getDynamicSegmentsGroups(),
   }));
 
@@ -59,17 +53,9 @@ export function ListingTabs(): JSX.Element {
     <TabPanel
       className="mailpoet-filter-tab-panel"
       tabs={tabs}
-      initialTabName={getTabFromLocation(location.pathname)}
-      onSelect={(tab) => {
-        if (dynamicSegmentQuery === null) {
-          updateDynamicQueryFromLocation(location.pathname);
-          return;
-        }
-        if (dynamicSegmentQuery.group === tab) {
-          return;
-        }
-        updateDynamicQuery({ group: tab, offset: 0 });
-      }}
+      initialTabName={query.group}
+      onSelect={(tab) => void updateSegmentsQuery({ group: tab, offset: 0 })}
+      key={query.group} // force re-mount on history change to switch tab (via "initialTabName")
     >
       {renderTabs}
     </TabPanel>

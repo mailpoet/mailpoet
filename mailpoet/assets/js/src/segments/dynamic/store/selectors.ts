@@ -3,7 +3,6 @@ import {
   Automation,
   DynamicSegment,
   DynamicSegmentGroup,
-  DynamicSegmentQuery,
   FilterRow,
   FilterValue,
   GroupFilterValue,
@@ -120,10 +119,6 @@ export const getDynamicSegmentsGroups = (
 
 export const getDynamicSegmentsCount = (state: StateType): number =>
   state.dynamicSegments.meta.count;
-
-export const getDynamicSegmentsQuery = (
-  state: StateType,
-): DynamicSegmentQuery => state.dynamicSegmentsQuery;
 
 export const getDynamicSelection = (
   state: StateType,
