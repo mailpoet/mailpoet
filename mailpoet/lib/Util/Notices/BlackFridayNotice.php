@@ -11,10 +11,10 @@ class BlackFridayNotice {
 
   const OPTION_NAME = 'dismissed-black-friday-notice';
   const DISMISS_NOTICE_TIMEOUT_SECONDS = 2592000; // 30 days
-  const DATE_FROM = '2023-11-22 14:00:00 UTC';
-  const DATE_TO = '2023-11-28 14:00:00 UTC';
-  const PARAM_REF = 'sale-bfcm-2023-plugin';
-  const PARAM_UTM_CAMPAIGN = 'sale_bfcm_2023';
+  const DATE_FROM = '2024-03-25 15:00:00 UTC';
+  const DATE_TO = '2024-03-29 15:00:00 UTC';
+  const PARAM_REF = 'sale-2024-h1-plugin';
+  const PARAM_UTM_CAMPAIGN = '2024-h1-sale';
 
   /** @var ServicesChecker */
   private $servicesChecker;
@@ -42,8 +42,8 @@ class BlackFridayNotice {
   }
 
   private function display() {
-    $header = '<h3 class="mailpoet-h3">' . __('Get up to 40% off all MailPoet annual plans and upgrades', 'mailpoet') . '</h3>';
-    $body = '<h5 class="mailpoet-h5">' . __('Our Black Friday sale is live. Save up to 40% when you switch to or upgrade an annual plan — no coupon needed. Offer ends at 2 PM UTC, 28 November.', 'mailpoet') . '</h5>';
+    $header = '<h3 class="mailpoet-h3">' . __('Save up to 30% on MailPoet annual plans and upgrades', 'mailpoet') . '</h3>';
+    $body = '<h5 class="mailpoet-h5">' . __('For a limited time, get up to 30% off when you switch to or upgrade an annual plan — no coupon required. Offer ends at 3 pm UTC, March 29, 2024.', 'mailpoet') . '</h5>';
     $link = "<p><a href='" . $this->getSaleUrl() . "' class='mailpoet-button button-primary' target='_blank'>"
       // translators: a button on a sale banner
       . __('Shop annual plans', 'mailpoet')
