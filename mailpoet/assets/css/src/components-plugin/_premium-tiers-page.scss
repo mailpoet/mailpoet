@@ -138,3 +138,21 @@
     padding: 0;
   }
 }
+
+.mailpoet-tiers-page-tier-header__icon {
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 40px;
+  &.free {
+    background-image: url('../../img/upgrade/1-starter-plan.svg');
+    width: 30.44px;
+  }
+  &.basic {
+    background-image: url('../../img/upgrade/2-tier-1-plan.svg');
+    width: 40.37px;
+  }
+  &.pro {
+    background-image: url('../../img/upgrade/3-business-plan.svg');
+    width: 30.44px;
+  }
+}
