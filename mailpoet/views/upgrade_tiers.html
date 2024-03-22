@@ -24,6 +24,18 @@
       <%= __('Whether you’re just starting out, or already have an established list of loyal subscribers, our plans are flexible enough for every flock.') %>
     </p>
   </div>
+  <figure class="mailpoet-tiers-page-content">
+    <figcaption>
+      <p>
+        <% set allowedHtml = {'a': {'href': [], 'target': []}} %>
+        <%=
+        __('Compare full plan features and view more pricing options on [link]MailPoet.com[/link]')
+        |replaceLinkTags('https://www.mailpoet.com/', {'target': '_blank'})
+        |wpKses(allowedHtml)
+        %>
+      </p>
+    </figcaption>
+  </figure>
 </div>
 <% endblock %>
 
