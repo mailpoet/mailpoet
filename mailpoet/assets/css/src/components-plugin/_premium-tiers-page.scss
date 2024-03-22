@@ -234,4 +234,23 @@
       }
     }
   }
+  #mailpoet-pro-monthly-price,
+  #mailpoet-basic-monthly-price {
+    display: block;
+  }
+  #mailpoet-pro-yearly-price,
+  #mailpoet-basic-yearly-price {
+    display: none;
+  }
+}
+
+.mailpoet-tiers-page:has(#pricing_duration:checked) {
+  .mailpoet-tiers-page-tier-price #mailpoet-pro-monthly-price,
+  .mailpoet-tiers-page-tier-price #mailpoet-basic-monthly-price {
+    display: none;
+  }
+  .mailpoet-tiers-page-tier-price #mailpoet-pro-yearly-price,
+  .mailpoet-tiers-page-tier-price #mailpoet-basic-yearly-price {
+    display: block;
+  }
 }
