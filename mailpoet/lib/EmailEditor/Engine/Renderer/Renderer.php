@@ -6,8 +6,8 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ContentRenderer;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\VariablesPostprocessor;
 use MailPoet\EmailEditor\Engine\SettingsController;
-use MailPoet\Util\CdnAssetUrl;
 use MailPoet\EmailEditor\Engine\ThemeController;
+use MailPoet\Util\CdnAssetUrl;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoetVendor\Html2Text\Html2Text;
 
