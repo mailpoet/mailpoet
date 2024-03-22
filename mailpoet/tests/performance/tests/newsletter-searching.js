@@ -31,12 +31,9 @@ export async function newsletterSearching() {
     await login(page);
 
     // Go to the Newsletters page
-    await page.goto(
-      `${baseURL} / wp - admin / admin.php ? page = mailpoet - newsletters`,
-      {
-        waitUntil: 'networkidle',
-      },
-    );
+    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-newsletters`, {
+      waitUntil: 'networkidle',
+    });
 
     await page.waitForLoadState('networkidle');
     await page.screenshot({

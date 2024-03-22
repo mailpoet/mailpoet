@@ -31,7 +31,7 @@ export async function automationAnalytics() {
 
     // Go to the Automation Analytics page
     await page.goto(
-      `${baseURL} / wp - admin / admin.php ? page = mailpoet - automation - analytics & id = 142`,
+      `${baseURL}/wp-admin/admin.php?page=mailpoet-automation-analytics&id=142`,
       {
         waitUntil: 'networkidle',
       },

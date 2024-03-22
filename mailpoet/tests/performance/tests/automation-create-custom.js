@@ -39,7 +39,7 @@ export async function automationCreateCustom() {
 
     // Go to the Automations page
     await page.goto(
-      `${baseURL} / wp - admin / admin.php ? page = mailpoet - automation - templates`,
+      `${baseURL}/wp-admin/admin.php?page=mailpoet-automation-templates`,
       {
         waitUntil: 'networkidle',
       },

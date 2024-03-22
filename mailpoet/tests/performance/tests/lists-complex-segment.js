@@ -34,12 +34,9 @@ export async function listsComplexSegment() {
     await login(page);
 
     // Go to the segments page
-    await page.goto(
-      `${baseURL} / wp - admin / admin.php ? page = mailpoet - segments`,
-      {
-        waitUntil: 'networkidle',
-      },
-    );
+    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-segments`, {
+      waitUntil: 'networkidle',
+    });
 
     await page.waitForLoadState('networkidle');
     await page.screenshot({

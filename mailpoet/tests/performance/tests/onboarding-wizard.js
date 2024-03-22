@@ -33,7 +33,7 @@ export async function onboardingWizard() {
 
     // Go to the MailPoet Welcome Wizard page
     await page.goto(
-      `${baseURL} / wp - admin / admin.php ? page = mailpoet - welcome - wizard# / steps / 1`,
+      `${baseURL}/wp-admin/admin.php?page=mailpoet-welcome-wizard#/steps/1`,
       {
         waitUntil: 'networkidle',
       },
