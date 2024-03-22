@@ -55,3 +55,39 @@
     }
   }
 }
+
+.mailpoet-tiers-page-content__pricing {
+  align-items: flex-end;
+  align-self: stretch;
+  display: flex;
+
+  @include respond-to(small-screen) {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+.mailpoet-tiers-page-content__tier {
+  align-items: flex-start;
+  background: #fff;
+  border-bottom: 1px solid $color-gutenberg-grey-200;
+  border-left: 1px solid $color-gutenberg-grey-200;
+  border-radius: 4px 0 0 4px;
+  border-top: 1px solid $color-gutenberg-grey-200;
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 24px;
+  height: 42.75rem;
+  padding: 24px;
+
+  @include respond-to(small-screen) {
+    border: 1px solid $color-gutenberg-grey-200;
+  }
+
+  &.popular {
+    background: #fffaf2;
+    border: 1px solid #ffe9cc;
+    height: 45.75rem;
+  }
+}
