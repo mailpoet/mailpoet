@@ -5,7 +5,7 @@ import { store as noticesStore } from '@wordpress/notices';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { DynamicSegment, DynamicSegmentAction } from '../types';
 import { MailPoet } from '../../../mailpoet';
-import { storeName } from '../store';
+import { locale, storeName } from '../store';
 import { DynamicSegmentResponse, isErrorResponse } from '../../../ajax';
 
 // With __experimentalConfirmDialog's type from build-types Typescript complains:
@@ -131,15 +131,11 @@ export function ActionConfirm({
   let title = '';
   let message: string | JSX.Element = '';
   let confirmText = '';
-  const lastSelected =
-    selected.length > 0 ? `"${selected[selected.length - 1].name}"` : '';
-  const firstSelected =
-    selected.length > 1
-      ? selected
-          .slice(0, -1)
-          .map((segment) => `"${segment.name}"`)
-          .join(', ')
-      : lastSelected;
+
+  const list = new Intl.ListFormat(locale.toString(), {
+    style: 'long',
+    type: 'conjunction',
+  }).format(selected.map(({ name }) => `"${name}"`));
 
   switch (action) {
     case 'trash':
@@ -152,12 +148,11 @@ export function ActionConfirm({
       message = sprintf(
         _n(
           'Are you sure you want to trash the selected segment %s?',
-          'Are you sure you want to trash the selected segments %s, and %s?',
+          'Are you sure you want to trash the selected segments %s?',
           selected.length,
           'mailpoet',
         ),
-        firstSelected,
-        lastSelected,
+        list,
       );
       confirmText = __('Trash', 'mailpoet');
       break;
@@ -171,12 +166,11 @@ export function ActionConfirm({
       message = sprintf(
         _n(
           'Are you sure you want to restore the selected segment %s?',
-          'Are you sure you want to restore segments %s, and %s?',
+          'Are you sure you want to restore segments %s?',
           selected.length,
           'mailpoet',
         ),
-        firstSelected,
-        lastSelected,
+        list,
       );
       confirmText = __('Restore', 'mailpoet');
       break;
@@ -192,12 +186,11 @@ export function ActionConfirm({
           {sprintf(
             _n(
               'Are you sure you want to delete the selected segment %s permanently?',
-              'Are you sure you want to delete the selected segments %s, and %s permanently?',
+              'Are you sure you want to delete the selected segments %s permanently?',
               selected.length,
               'mailpoet',
             ),
-            firstSelected,
-            lastSelected,
+            list,
           )}{' '}
           <strong>{__('This action can not be reversed.', 'mailpoet')}</strong>
         </>

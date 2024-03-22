@@ -106,6 +106,7 @@ type Capabilities = Record<string, Capability>;
 
 interface Window {
   ajaxurl: string;
+  mailpoet_wp_locale: string;
   mailpoet_token: string;
   mailpoet_feature_flags: string;
   mailpoet_referral_id: string;
