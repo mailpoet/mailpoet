@@ -35,8 +35,30 @@
 }
 
 .mailpoet-tiers-page-billing-toggle {
-  margin: 0 auto;
+  margin: 0 auto 24px;
   width: 15.25rem;
+
+  #pricing_duration {
+    ~ .mailpoet-tiers-page-pricing-period-description {
+      display: block;
+      text-align: center;
+    }
+
+    ~ .mailpoet-tiers-page-pricing-period-description-selected {
+      display: none;
+      text-align: center;
+    }
+
+    &:checked {
+      ~ .mailpoet-tiers-page-pricing-period-description {
+        display: none;
+      }
+
+      ~ .mailpoet-tiers-page-pricing-period-description-selected {
+        display: block;
+      }
+    }
+  }
 }
 
 .mailpoet-tiers-page-content {
