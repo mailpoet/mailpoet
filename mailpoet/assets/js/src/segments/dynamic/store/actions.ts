@@ -17,14 +17,13 @@ import {
   Segment,
   SegmentTemplate,
   SetPreviousPageActionType,
-  UpdateDynamicSegmentsQueryActionType,
-  DynamicSegmentQuery,
   DynamicSegmentsList,
   SelectDynamicSegmentActionType,
   DynamicSegment,
 } from '../types';
 import { storeName } from './constants';
 import { isErrorResponse } from '../../../ajax';
+import { Query, getSegmentsQuery } from '../list/query';
 
 export function setSegment(segment: AnyFormItem): SetSegmentActionType {
   return {
@@ -231,28 +230,12 @@ export function setPreviousPage(data: string): SetPreviousPageActionType {
   };
 }
 
-export function resetDynamicSegments() {
-  return {
-    type: 'SET_DYNAMIC_SEGMENTS',
-    dynamicSegments: {
-      data: null,
-      meta: {
-        count: 0,
-        groups: [],
-      },
-    },
-  } as const;
-}
-
-export async function loadDynamicSegments(query?: DynamicSegmentQuery) {
-  void dispatch(storeName).resetDynamicSegments();
+export async function loadDynamicSegments(query?: Query) {
+  const segmentsQuery = query ?? getSegmentsQuery();
 
   let data: DynamicSegmentsList = {
     data: [],
-    meta: {
-      count: 0,
-      groups: [],
-    },
+    meta: { count: 0, groups: [] },
   };
 
   try {
@@ -260,7 +243,7 @@ export async function loadDynamicSegments(query?: DynamicSegmentQuery) {
       api_version: 'v1',
       endpoint: 'dynamic_segments',
       action: 'listing',
-      data: query ?? select(storeName).getDynamicSegmentsQuery(),
+      data: segmentsQuery,
     });
     const keys = Object.keys(response);
     if (keys.includes('data') && keys.includes('meta')) {
@@ -277,31 +260,6 @@ export async function loadDynamicSegments(query?: DynamicSegmentQuery) {
     type: 'SET_DYNAMIC_SEGMENTS',
     dynamicSegments: data,
   } as const;
-}
-
-function updateUrlWithQueryParams(query: DynamicSegmentQuery) {
-  const currentUrl = window.location.href;
-  let hash = '/segments';
-  const keys = Object.keys(query);
-  for (let i = 0; i < keys.length; i += 1) {
-    const key = keys[i];
-    const value = query[key] as string;
-    if (value) {
-      hash += `/${key}[${value}]`;
-    }
-  }
-  window.history.pushState(null, '', `${currentUrl.split('#')[0]}#${hash}`);
-}
-
-export function updateDynamicSegmentsQuery(
-  query: DynamicSegmentQuery,
-): UpdateDynamicSegmentsQueryActionType {
-  void dispatch(storeName).loadDynamicSegments(query);
-  updateUrlWithQueryParams(query);
-  return {
-    type: Actions.UPDATE_DYNAMIC_SEGMENTS_QUERY,
-    query,
-  };
 }
 
 export function selectDynamicSection(

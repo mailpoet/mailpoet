@@ -1,4 +1,4 @@
-import { withRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { ListingTabs } from './list/listing-tabs';
@@ -11,9 +11,9 @@ import { TopBarWithBeamer } from '../../common/top-bar/top-bar';
 import { MailPoet } from '../../mailpoet';
 import { MssAccessNotices } from '../../notices/mss-access-notices';
 
-function DynamicSegmentListComponent(): JSX.Element {
+export function DynamicSegmentList(): JSX.Element {
   return (
-    <>
+    <HashRouter>
       <TopBarWithBeamer hideScreenOptions />
       <PageHeader heading={__('Segments', 'mailpoet')}>
         <Button
@@ -40,8 +40,6 @@ function DynamicSegmentListComponent(): JSX.Element {
       </div>
       <MssAccessNotices />
       <ListingTabs />
-    </>
+    </HashRouter>
   );
 }
-
-export const DynamicSegmentList = withRouter(DynamicSegmentListComponent);

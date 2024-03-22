@@ -4,20 +4,12 @@ import { TextControl } from '@wordpress/components';
 import { dispatch, useSelect } from '@wordpress/data';
 import { storeName } from 'segments/dynamic/store';
 import { __ } from '@wordpress/i18n';
-import { useLocation } from 'react-router-dom';
-import {
-  DynamicSegment,
-  DynamicSegmentAction,
-  DynamicSegmentQuery,
-} from 'segments/types';
+import { DynamicSegment, DynamicSegmentAction } from 'segments/types';
 import { getRow } from 'segments/dynamic/list/get-row';
-import {
-  updateDynamicQuery,
-  updateDynamicQueryFromLocation,
-} from './listing-helpers';
 import { BulkActions } from './bulk-actions';
 import { DynamicSegmentsListNotices } from './notices';
 import { ActionConfirm } from './action-confirm';
+import { useSegmentsQuery, updateSegmentsQuery } from './query';
 
 function SelectAll(): JSX.Element {
   const { dynamicSegments } = useSelect((s) => ({
@@ -35,10 +27,10 @@ function SelectAll(): JSX.Element {
       data-automation-id="select_all"
       onChange={() => {
         if (allSelected) {
-          dispatch(storeName).unselectAllDynamicSections();
-          return;
+          void dispatch(storeName).unselectAllDynamicSections();
+        } else {
+          void dispatch(storeName).selectAllDynamicSections();
         }
-        dispatch(storeName).selectAllDynamicSections();
       }}
     />
   );
@@ -88,24 +80,22 @@ type ListingTableProps = {
     name: string;
   };
 };
+
 export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
   const [currentAction, setCurrentAction] =
     useState<DynamicSegmentAction>(null);
   const [currentSelected, setCurrentSelected] = useState<DynamicSegment[]>([]);
-  const location = useLocation();
 
-  const { dynamicSegments, dynamicSegmentQuery, dynamicSegmentsCount } =
-    useSelect((s) => ({
-      dynamicSegments: s(storeName).getDynamicSegments(),
-      dynamicSegmentQuery: s(storeName).getDynamicSegmentsQuery(),
-      dynamicSegmentsCount: s(storeName).getDynamicSegmentsCount(),
-    }));
+  const { dynamicSegments, dynamicSegmentsCount } = useSelect((select) => ({
+    dynamicSegments: select(storeName).getDynamicSegments(),
+    dynamicSegmentsCount: select(storeName).getDynamicSegmentsCount(),
+  }));
+
+  const segmentsQuery = useSegmentsQuery();
 
   useEffect(() => {
-    if (dynamicSegmentQuery === null) {
-      updateDynamicQueryFromLocation(location.pathname);
-    }
-  }, [dynamicSegmentQuery, location]);
+    void dispatch(storeName).loadDynamicSegments(segmentsQuery);
+  }, [segmentsQuery]);
 
   const groupedDynamicSegments = useMemo<
     Record<string, DynamicSegment[]>
@@ -124,28 +114,19 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
   const filteredDynamicSegments: DynamicSegment[] =
     groupedDynamicSegments[tab.name] ?? [];
 
-  const rowsPerPage =
-    dynamicSegmentQuery !== null ? dynamicSegmentQuery.limit : 10;
   const rows = filteredDynamicSegments.map((dynamicSegment) =>
     getRow(dynamicSegment, tab.name, (action, segment) => {
       setCurrentSelected([segment]);
       setCurrentAction(action);
     }),
   );
+
   const tableQueryParams = {
-    orderby:
-      dynamicSegmentQuery !== null ? dynamicSegmentQuery.sort_by : 'updated_at',
-    order:
-      dynamicSegmentQuery !== null ? dynamicSegmentQuery.sort_order : 'desc',
-    page:
-      dynamicSegmentQuery !== null
-        ? dynamicSegmentQuery.offset / dynamicSegmentQuery.limit + 1
-        : 1,
-    per_page: dynamicSegmentQuery !== null ? dynamicSegmentQuery.limit : 25,
-    paged:
-      dynamicSegmentQuery !== null
-        ? dynamicSegmentQuery.offset / dynamicSegmentQuery.limit + 1
-        : 1,
+    orderby: segmentsQuery.sort_by,
+    order: segmentsQuery.sort_order,
+    page: segmentsQuery.offset / segmentsQuery.limit + 1,
+    per_page: segmentsQuery.limit,
+    paged: segmentsQuery.offset / segmentsQuery.limit + 1,
   };
 
   return (
@@ -163,14 +144,15 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
           className="mailpoet-segments-listing-search"
           placeholder={__('Search', 'mailpoet')}
           onChange={(value) => {
-            updateDynamicQuery({
+            updateSegmentsQuery({
               search: value,
               offset: 0,
             });
           }}
-          value={dynamicSegmentQuery?.search ?? ''}
+          value={segmentsQuery.search ?? ''}
         />
       </div>
+
       <TableCard
         className="mailpoet-segments-listing"
         title=""
@@ -181,38 +163,36 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
         }
         rows={rows}
         onQueryChange={(query) => (param) => {
-          if (dynamicSegmentQuery === null) {
-            return;
-          }
           if (query === 'paged') {
-            updateDynamicQuery({
-              offset: dynamicSegmentQuery.limit * (param - 1),
+            updateSegmentsQuery({
+              offset: segmentsQuery.limit * (param - 1),
             });
           }
           if (query === 'per_page') {
-            updateDynamicQuery({
+            updateSegmentsQuery({
               limit: parseInt(param as string, 10),
               offset: 0,
             });
           }
           if (query === 'sort') {
-            const newParams = {
+            updateSegmentsQuery({
               offset: 0,
               sort_by: param,
-            } as Partial<DynamicSegmentQuery>;
-            if (dynamicSegmentQuery.sort_by === param) {
-              newParams.sort_order =
-                dynamicSegmentQuery.sort_order === 'asc' ? 'desc' : 'asc';
-            }
-            updateDynamicQuery(newParams);
+              sort_order:
+                segmentsQuery.sort_by === param &&
+                segmentsQuery.sort_order === 'desc'
+                  ? 'asc'
+                  : 'desc',
+            });
           }
         }}
         query={tableQueryParams}
         rowKey={(_, i) => dynamicSegments[i].id}
-        rowsPerPage={rowsPerPage}
+        rowsPerPage={segmentsQuery.limit}
         totalRows={dynamicSegmentsCount}
         showMenu={false}
       />
+
       <ActionConfirm
         action={currentAction}
         selected={currentSelected}
