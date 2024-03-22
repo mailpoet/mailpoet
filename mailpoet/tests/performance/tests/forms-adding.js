@@ -31,12 +31,9 @@ export async function formsAdding() {
     await login(page);
 
     // Go to the Forms page
-    await page.goto(
-      `${baseURL} / wp - admin / admin.php ? page = mailpoet - forms`,
-      {
-        waitUntil: 'networkidle',
-      },
-    );
+    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-forms`, {
+      waitUntil: 'networkidle',
+    });
 
     await page.waitForLoadState('networkidle');
     await page.screenshot({

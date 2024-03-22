@@ -32,12 +32,9 @@ export async function listsViewSubscribers() {
     await login(page);
 
     // Go to the Lists page
-    await page.goto(
-      `${baseURL} / wp - admin / admin.php ? page = mailpoet - lists`,
-      {
-        waitUntil: 'networkidle',
-      },
-    );
+    await page.goto(`${baseURL}/wp-admin/admin.php?page=mailpoet-lists`, {
+      waitUntil: 'networkidle',
+    });
 
     await page.waitForLoadState('networkidle');
     await page.screenshot({

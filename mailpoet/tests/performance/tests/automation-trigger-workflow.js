@@ -36,7 +36,7 @@ export async function automationTriggerWorkflow() {
 
     // Go to the Add New Subscriber
     await page.goto(
-      `${baseURL} / wp - admin / admin.php ? page = mailpoet - subscribers# / new`,
+      `${baseURL}/wp-admin/admin.php?page=mailpoet-subscribers#/new`,
       {
         waitUntil: 'networkidle',
       },
@@ -69,7 +69,7 @@ export async function automationTriggerWorkflow() {
 
     // Go to Scheduled Action to trigger the workflow
     await page.goto(
-      `${baseURL} / wp - admin / tools.php ? page = action - scheduler & status = pending`,
+      `${baseURL}/wp-admin/tools.php?page=action-scheduler&status=pending`,
       {
         waitUntil: 'networkidle',
       },
@@ -93,7 +93,7 @@ export async function automationTriggerWorkflow() {
 
     // Go to the Automation Analytics page
     await page.goto(
-      `${baseURL} / wp - admin / admin.php ? page = mailpoet - automation - analytics & id = 151 & tab = automation - subscribers`,
+      `${baseURL}/wp-admin/admin.php?page=mailpoet-automation-analytics&id=151&tab=automation-subscribers`,
       {
         waitUntil: 'networkidle',
       },
