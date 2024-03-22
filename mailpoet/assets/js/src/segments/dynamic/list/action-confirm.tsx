@@ -1,4 +1,5 @@
-import { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/components';
+import React from 'react';
+import { __experimentalConfirmDialog } from '@wordpress/components';
 import { dispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
 import { __, _n, sprintf } from '@wordpress/i18n';
@@ -6,6 +7,13 @@ import { DynamicSegment, DynamicSegmentAction } from '../types';
 import { MailPoet } from '../../../mailpoet';
 import { storeName } from '../store';
 import { DynamicSegmentResponse, isErrorResponse } from '../../../ajax';
+
+// With __experimentalConfirmDialog's type from build-types Typescript complains:
+// JSX element type __experimentalConfirmDialog does not have any construct or call signatures
+// Wrapping the type to React.FC fixes the issue
+const ConfirmDialog = __experimentalConfirmDialog as React.FC<
+  React.ComponentProps<typeof __experimentalConfirmDialog>
+>;
 
 async function bulkAction(
   action: DynamicSegmentAction,
