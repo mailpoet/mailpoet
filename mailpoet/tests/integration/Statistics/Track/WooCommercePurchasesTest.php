@@ -95,13 +95,28 @@ class WooCommercePurchasesTest extends \MailPoetTest {
     $order->set_status('processing');
     $order->save();
 
+    $order2 = wc_create_order();
+    $this->assertInstanceOf(WC_Order::class, $order2);
+    $order2->set_billing_email($this->subscriber->getEmail());
+    $order2->set_total('12');
+    $order2->set_status('processing');
+    $order2->save();
+
     $statistic = $this->statisticsWooCommercePurchasesRepository->findOneBy(['orderId' => $order->get_id()]);
     $this->assertInstanceOf(StatisticsWooCommercePurchaseEntity::class, $statistic);
+    $this->assertEquals("processing", $statistic->getStatus());
+
+    $statistic2 = $this->statisticsWooCommercePurchasesRepository->findOneBy(['orderId' => $order2->get_id()]);
+    $this->assertInstanceOf(StatisticsWooCommercePurchaseEntity::class, $statistic2);
     $this->assertEquals("processing", $statistic->getStatus());
 
     $order->set_status('completed');
     $order->save();
     $this->assertEquals("completed", $statistic->getStatus());
+
+    $order2->set_status('completed');
+    $order2->save();
+    $this->assertEquals("completed", $statistic2->getStatus());
   }
 
   public function testItDoesNotTrackPaymentForWrongSubscriber() {
