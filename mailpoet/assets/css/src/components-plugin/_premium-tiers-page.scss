@@ -156,3 +156,39 @@
     width: 30.44px;
   }
 }
+
+.mailpoet-tiers-page-tier-price {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 4px;
+  justify-content: flex-end;
+
+  p {
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    margin: 0;
+  }
+
+  h3 {
+    color: $color-gutenberg-grey-900;
+    font-size: 0.8125rem;
+    font-weight: normal;
+    line-height: 2rem;
+    margin: 0;
+    max-height: 2rem;
+    padding: 0;
+
+    .pricing-currency {
+      font-size: 1rem;
+    }
+    .pricing-value {
+      font-size: 2rem;
+      font-weight: 600;
+      line-height: 2rem;
+      max-height: 2rem;
+    }
+  }
+}
