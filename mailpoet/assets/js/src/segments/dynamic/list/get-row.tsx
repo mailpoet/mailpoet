@@ -178,14 +178,23 @@ export function getRow(
           <Button variant="tertiary" href={dynamicSegment.subscribers_url}>
             {__('View subscribers', 'mailpoet')}
           </Button>
-          <Button
-            data-automation-id={`mailpoet_dynamic_segment_edit_button_${dynamicSegment.id}`}
-            disabled={dynamicSegment.is_plugin_missing}
-            variant="tertiary"
-            href={`#${ROUTES.EDIT_DYNAMIC_SEGMENT}/${dynamicSegment.id}`}
-          >
-            {__('Edit', 'mailpoet')}
-          </Button>
+          {dynamicSegment.is_plugin_missing ? (
+            <Button
+              data-automation-id={`mailpoet_dynamic_segment_edit_button_${dynamicSegment.id}`}
+              variant="tertiary"
+              disabled
+            >
+              {__('Edit', 'mailpoet')}
+            </Button>
+          ) : (
+            <Button
+              data-automation-id={`mailpoet_dynamic_segment_edit_button_${dynamicSegment.id}`}
+              variant="tertiary"
+              href={`#${ROUTES.EDIT_DYNAMIC_SEGMENT}/${dynamicSegment.id}`}
+            >
+              {__('Edit', 'mailpoet')}
+            </Button>
+          )}
           <DropdownMenu
             className="mailpoet-automation-listing-more-button"
             label={__('More', 'mailpoet')}
