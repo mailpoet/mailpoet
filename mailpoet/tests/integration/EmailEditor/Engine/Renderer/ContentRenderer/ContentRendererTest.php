@@ -21,25 +21,21 @@ class ContentRendererTest extends \MailPoetTest {
   }
 
   public function testItRendersContent(): void {
+    $template = new \WP_Block_Template();
+    $template->id = 'template-id';
+    $template->content = '<!-- wp:post-content /-->';
     $content = $this->renderer->render(
-      $this->emailPost
+      $this->emailPost,
+      $template
     );
     verify($content)->stringContainsString('Hello!');
   }
 
-  public function testItInlinesStylesAddedViaHook(): void {
-    $stylesCallback = function ($styles) {
-      return $styles . 'p { color: pink; }';
-    };
-    add_filter('mailpoet_email_content_renderer_styles', $stylesCallback);
-    $rendered = $this->renderer->render($this->emailPost);
-    $paragraphStyles = $this->getStylesValueForTag($rendered, 'p');
-    verify($paragraphStyles)->stringContainsString('color:pink');
-    remove_filter('mailpoet_email_content_renderer_styles', $stylesCallback);
-  }
-
   public function testItInlinesContentStyles(): void {
-    $rendered = $this->renderer->render($this->emailPost);
+    $template = new \WP_Block_Template();
+    $template->id = 'template-id';
+    $template->content = '<!-- wp:post-content /-->';
+    $rendered = $this->renderer->render($this->emailPost, $template);
     $paragraphStyles = $this->getStylesValueForTag($rendered, 'p');
     verify($paragraphStyles)->stringContainsString('margin:0');
     verify($paragraphStyles)->stringContainsString('display:block');

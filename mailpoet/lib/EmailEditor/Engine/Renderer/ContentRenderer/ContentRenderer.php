@@ -3,83 +3,67 @@
 namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer;
 
 use MailPoet\EmailEditor\Engine\SettingsController;
-use MailPoet\EmailEditor\Engine\ThemeController;
-use MailPoet\Util\pQuery\DomNode;
+use WP_Block_Template;
+use WP_Post;
 
 class ContentRenderer {
-  private \MailPoetVendor\CSS $cssInliner;
-
   private BlocksRegistry $blocksRegistry;
-
   private ProcessManager $processManager;
-
   private SettingsController $settingsController;
+  private $layoutSettings;
+  private $themeStyles;
 
-  private ThemeController $themeController;
-
-  const CONTENT_STYLES_FILE = 'content.css';
-
-  /**
-   * @param \MailPoetVendor\CSS $cssInliner
-   */
   public function __construct(
-    \MailPoetVendor\CSS $cssInliner,
     ProcessManager $preprocessManager,
     BlocksRegistry $blocksRegistry,
     SettingsController $settingsController,
-    ThemeController $themeController
   ) {
-    $this->cssInliner = $cssInliner;
     $this->processManager = $preprocessManager;
     $this->blocksRegistry = $blocksRegistry;
     $this->settingsController = $settingsController;
-    $this->themeController = $themeController;
   }
 
-  public function render(\WP_Post $post): string {
-    $parser = new \WP_Block_Parser();
-    $parsedBlocks = $parser->parse($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-
-    $layout = $this->settingsController->getLayout();
-    $themeStyles = $this->settingsController->getEmailStyles();
-    $parsedBlocks = $this->processManager->preprocess($parsedBlocks, $layout, $themeStyles);
-    $renderedBody = $this->renderBlocks($parsedBlocks);
-
-    $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::CONTENT_STYLES_FILE);
-    $styles .= $this->themeController->getStylesheetForRendering();
-    $styles = apply_filters('mailpoet_email_content_renderer_styles', $styles, $post);
-
-    $renderedBodyDom = $this->inlineCSSStyles("<style>$styles</style>" . $renderedBody);
-    $renderedBody = $this->postProcessTemplate($renderedBodyDom);
-    $renderedBody = $this->processManager->postprocess($renderedBody);
-    return $renderedBody;
-  }
-
-  public function renderBlocks(array $parsedBlocks): string {
+  private function initialize() {
+    $this->layoutSettings = $this->settingsController->getLayout();
+    $this->themeStyles = $this->settingsController->getEmailStyles();
+    add_filter('block_parser_class', [$this, 'blockParser']);
+    add_filter('mailpoet_blocks_renderer_parsed_blocks', [$this, 'preprocessParsedBlocks']);
     do_action('mailpoet_blocks_renderer_initialized', $this->blocksRegistry);
+  }
 
-    $content = '';
-    foreach ($parsedBlocks as $parsedBlock) {
-      $content .= render_block($parsedBlock);
-    }
+  private function setTemplateGlobals(WP_Post $post, WP_Block_Template $template) {
+    global $_wp_current_template_content, $_wp_current_template_id;
+    $_wp_current_template_id = $template->id;
+    $_wp_current_template_content = $template->content;
+    $GLOBALS['post'] = $post;
+  }
 
-    /**
-     *  As we use default WordPress filters, we need to remove them after email rendering
-     *  so that we don't interfere with possible post rendering that might happen later.
-     */
+  /**
+  * As we use default WordPress filters, we need to remove them after email rendering
+  * so that we don't interfere with possible post rendering that might happen later.
+  */
+  private function reset() {
     $this->blocksRegistry->removeAllBlockRendererFilters();
-
-    return $content;
+    remove_filter('block_parser_class', [$this, 'blockParser']);
+    remove_filter('mailpoet_blocks_renderer_parsed_blocks', [$this, 'preprocessParsedBlocks']);
   }
 
-  private function inlineCSSStyles(string $template): DomNode {
-    return $this->cssInliner->inlineCSS($template);
+  public function blockParser() {
+    return 'MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlocksParser';
   }
 
-  private function postProcessTemplate(DomNode $templateDom): string {
-    // because tburry/pquery contains a bug and replaces the opening non mso condition incorrectly we have to replace the opening tag with correct value
-    $template = $templateDom->__toString();
-    $template = str_replace('<!--[if !mso]><![endif]-->', '<!--[if !mso]><!-- -->', $template);
-    return $template;
+  public function preprocessParsedBlocks(array $parsedBlocks): array {
+    return $this->processManager->preprocess($parsedBlocks, $this->layoutSettings, $this->themeStyles);
+  }
+
+  public function render(WP_Post $post, WP_Block_Template $template): string {
+    $this->initialize();
+    $this->setTemplateGlobals($post, $template);
+
+    $renderedHtml = $this->processManager->postprocess(get_the_block_template_html());
+
+    $this->reset();
+
+    return $renderedHtml;
   }
 }
