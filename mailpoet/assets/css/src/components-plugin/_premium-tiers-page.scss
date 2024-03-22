@@ -108,3 +108,33 @@
   gap: 8px;
   line-height: 1;
 }
+
+.mailpoet-tiers-page-tier-header {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  p {
+    color: $color-gutenberg-grey-900;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+.mailpoet-tiers-page-tier-header__title {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+
+  h2.mailpoet-tiers-page-tier-header-label {
+    color: $color-gutenberg-grey-900;
+    font-size: 1.5rem;
+    font-weight: normal;
+    line-height: 1.333;
+    margin: 0;
+    padding: 0;
+  }
+}
