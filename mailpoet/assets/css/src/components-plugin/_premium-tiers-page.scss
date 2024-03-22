@@ -91,3 +91,20 @@
     height: 45.75rem;
   }
 }
+
+.mailpoet-tiers-page-label {
+  align-items: flex-start;
+  background: #f16618;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 8px;
+}
+
+.mailpoet-tiers-page-label__content {
+  color: #fff;
+  font-size: 0.75rem;
+  gap: 8px;
+  line-height: 1;
+}
