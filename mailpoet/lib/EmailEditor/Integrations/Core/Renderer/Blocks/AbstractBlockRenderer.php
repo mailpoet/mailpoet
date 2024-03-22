@@ -17,7 +17,7 @@ abstract class AbstractBlockRenderer implements BlockRenderer {
    * @return array
    */
   protected function getStylesFromBlock(array $block_styles, $skip_convert_vars = false) {
-    $styles = wp_style_engine_get_styles( $block_styles, [ 'convert_vars_to_classnames' => $skip_convert_vars ] );
+    $styles = wp_style_engine_get_styles($block_styles, ['convert_vars_to_classnames' => $skip_convert_vars]);
     return wp_parse_args($styles, [
       'css' => '',
       'declarations' => [],
@@ -32,6 +32,6 @@ abstract class AbstractBlockRenderer implements BlockRenderer {
    * @return string
    */
   protected function compileCss(...$styles): string {
-    return WP_Style_Engine::compile_css( array_merge(...$styles), '' );
+    return WP_Style_Engine::compile_css(array_merge(...$styles), '');
   }
 }
