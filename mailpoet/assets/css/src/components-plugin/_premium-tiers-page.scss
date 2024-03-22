@@ -33,3 +33,25 @@
     text-align: center;
   }
 }
+
+.mailpoet-tiers-page-content {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+  margin: 0;
+  padding: 24px 0 40px;
+
+  figcaption {
+    padding-top: 1rem;
+    p {
+      color: $color-gutenberg-grey-900;
+      font-size: 0.8125rem;
+      line-height: 1.25rem;
+      margin: 0;
+      text-align: center;
+    }
+  }
+}
