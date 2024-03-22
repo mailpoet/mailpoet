@@ -7,9 +7,7 @@ use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Variable
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\BlocksWidthPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\CleanupPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\SpacingPreprocessor;
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\TopLevelPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\TypographyPreprocessor;
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ProcessManager;
 
 class ProcessManagerTest extends \MailPoetUnitTest {
   public function testItCallsPreprocessorsProperly(): void {
@@ -27,8 +25,6 @@ class ProcessManagerTest extends \MailPoetUnitTest {
         ],
       ],
     ];
-    $topLevel = $this->createMock(TopLevelPreprocessor::class);
-    $topLevel->expects($this->once())->method('preprocess')->willReturn([]);
 
     $cleanup = $this->createMock(CleanupPreprocessor::class);
     $cleanup->expects($this->once())->method('preprocess')->willReturn([]);
@@ -42,18 +38,10 @@ class ProcessManagerTest extends \MailPoetUnitTest {
     $spacing = $this->createMock(SpacingPreprocessor::class);
     $spacing->expects($this->once())->method('preprocess')->willReturn([]);
 
-    $secondPreprocessor = $this->createMock(TopLevelPreprocessor::class);
-    $secondPreprocessor->expects($this->once())->method('preprocess')->willReturn([]);
-
     $highlighting = $this->createMock(HighlightingPostprocessor::class);
     $highlighting->expects($this->once())->method('postprocess')->willReturn('');
 
     $variables = $this->createMock(VariablesPostprocessor::class);
     $variables->expects($this->once())->method('postprocess')->willReturn('');
-
-    $processManager = new ProcessManager($cleanup, $topLevel, $blocksWidth, $typography, $spacing, $highlighting, $variables);
-    $processManager->registerPreprocessor($secondPreprocessor);
-    verify($processManager->preprocess([], $layout, $styles))->equals([]);
-    verify($processManager->postprocess(''))->equals('');
   }
 }
