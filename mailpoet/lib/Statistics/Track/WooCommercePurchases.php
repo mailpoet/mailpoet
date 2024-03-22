@@ -52,7 +52,7 @@ class WooCommercePurchases {
   public function trackPurchase($id, $useCookies = true) {
 
     $order = $this->woocommerceHelper->wcGetOrder($id);
-    if (!$order instanceof WC_Order || $this->trackExistingStatistic($order)) {
+    if (!$order instanceof WC_Order || $this->trackExistingStatistics($order)) {
       return;
     }
 
@@ -97,22 +97,27 @@ class WooCommercePurchases {
     if (!$order instanceof WC_Order) {
       return;
     }
-    $this->trackExistingStatistic($order);
+    $this->trackExistingStatistics($order);
   }
 
   /**
-   * Returns true when a valid purchase statistic for an order was found.
+   * Returns true when valid purchase statistics for an order were found.
    *
    * @param WC_Order $order
    * @return bool
    */
-  private function trackExistingStatistic(\WC_Order $order): bool {
-    $statistics = $this->statisticsWooCommercePurchasesRepository->findOneBy(['orderId' => $order->get_id()]);
-    if ($statistics && $statistics->getClick()) {
-      $this->statisticsWooCommercePurchasesRepository->createOrUpdateByClickDataAndOrder(
-        $statistics->getClick(),
-        $order
-      );
+  private function trackExistingStatistics(\WC_Order $order): bool {
+    $statistics = $this->statisticsWooCommercePurchasesRepository->findBy(['orderId' => $order->get_id()]);
+    if ($statistics) {
+      foreach ($statistics as $statistic) {
+        if (!$statistic->getClick()) {
+          continue;
+        }
+        $this->statisticsWooCommercePurchasesRepository->createOrUpdateByClickDataAndOrder(
+          $statistic->getClick(),
+          $order
+        );
+      }
       return true;
     }
     return false;
