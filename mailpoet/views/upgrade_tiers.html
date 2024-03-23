@@ -193,5 +193,11 @@
 <% block after_javascript %>
 <script type="text/javascript">
   MailPoet.trackEvent('New upgrade page viewed');
+
+  jQuery(function($) {
+    $('.mailpoet-tiers-page a.mailpoet-premium-shop-link').on('click', function() {
+      MailPoet.trackEvent('New upgrade page CTA clicked');
+    });
+  });
 </script>
 <% endblock %>
