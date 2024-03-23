@@ -51,6 +51,7 @@
           </h3>
           <p><%= __('Up to 500 subscribers') %></p>
         </div>
+        <%= include('upgrade/upgrade_button.html', {label:__('Get Free'), button_class: 'is-secondary'}) %>
       </div>
       <div class="mailpoet-tiers-page-content__tier">
         <div class="mailpoet-tiers-page-tier-header">
@@ -81,6 +82,7 @@
           </h3>
           <p><%= __('for 500 subscribers') %></p>
         </div>
+        <%= include('upgrade/upgrade_button.html', {label:__('Get Basic'), button_class:'is-secondary'}) %>
       </div>
       <div class="mailpoet-tiers-page-content__tier popular">
         <div class="mailpoet-tiers-page-label">
@@ -116,6 +118,7 @@
           </h3>
           <p><%= __('for 500 subscribers') %></p>
         </div>
+        <%= include('upgrade/upgrade_button.html', {label:__('Get Pro'), button_class:'is-primary'}) %>
       </div>
     </div>
     <figcaption>
