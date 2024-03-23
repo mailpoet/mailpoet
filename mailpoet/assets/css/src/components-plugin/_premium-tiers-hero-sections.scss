@@ -74,3 +74,20 @@
     text-align: left;
   }
 }
+
+.mailpoet-tiers-page-hero-section-questions__actions {
+  align-items: flex-start;
+  display: flex;
+  gap: 8px;
+
+  .components-button {
+    align-self: flex-start;
+    font-size: 0.8125rem;
+    justify-content: center;
+    padding: 8px 12px;
+
+    &.is-link {
+      text-decoration: none;
+    }
+  }
+}
