@@ -137,6 +137,24 @@
   }
 }
 
+.mailpoet-tiers-page-price-divider {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 8px;
+  height: 36px;
+  justify-content: center;
+  hr {
+    background: $color-gutenberg-grey-200;
+    border: none;
+    height: 1px;
+    margin: 0;
+    width: 100%;
+  }
+}
+
 .mailpoet-tiers-page-label {
   align-items: flex-start;
   background: #f16618;
