@@ -1,0 +1,17 @@
+<% if (has_valid_api_key) %>
+  <a
+    target="_blank"
+    href="<%= 'https://account.mailpoet.com/orders/upgrade/' ~ plugin_partial_key ~ '?utm_source=plugin&utm_medium=premium&utm_campaign=upgrade&ref=plugin-upgrade-page' %>"
+    class="components-button <%= button_class %>"
+  >
+    <%= label %>
+  </a>
+<% else %>
+  <a
+    target="_blank"
+    href="<%= "https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user.user_email ~ '&utm_source=plugin&utm_medium=premium&utm_campaign=purchase&ref=plugin-upgrade-page' %>"
+    class="components-button <%= button_class %>"
+  >
+  <%= label %>
+  </a>
+<% endif %>
