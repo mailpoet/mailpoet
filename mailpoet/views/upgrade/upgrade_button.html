@@ -7,13 +7,19 @@
       <%= __('Your current plan') %>
     </button>
   <% else %>
-    <a
-      target="_blank"
-      href="<%= 'https://account.mailpoet.com/orders/upgrade/' ~ plugin_partial_key ~ '?utm_source=plugin&utm_medium=premium&utm_campaign=upgrade&ref=plugin-upgrade-page' %>"
-      class="components-button <%= button_class %>"
-    >
-      <%= label %>
-    </a>
+    <% if (tier < current_mailpoet_plan_tier) %>
+      <div class="mailpoet-tiers-page-price-divider">
+        <hr>
+      </div>
+    <% else %>
+      <a
+        target="_blank"
+        href="<%= 'https://account.mailpoet.com/orders/upgrade/' ~ plugin_partial_key ~ '?utm_source=plugin&utm_medium=premium&utm_campaign=upgrade&ref=plugin-upgrade-page' %>"
+        class="components-button <%= button_class %>"
+      >
+        <%= label %>
+      </a>
+    <% endif %>
   <% endif %>
 <% else %>
   <a
