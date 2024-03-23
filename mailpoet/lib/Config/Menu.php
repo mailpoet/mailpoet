@@ -27,7 +27,7 @@ use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\Util\CustomFonts;
-use MailPoet\Util\License\License;
+use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Menu {
@@ -83,13 +83,16 @@ class Menu {
   /** @var CustomFonts  */
   private $customFonts;
 
+  private CapabilitiesManager $capabilitiesManager;
+
   public function __construct(
     AccessControl $accessControl,
     WPFunctions $wp,
     ServicesChecker $servicesChecker,
     ContainerWrapper $container,
     Router $router,
-    CustomFonts $customFonts
+    CustomFonts $customFonts,
+    CapabilitiesManager $capabilitiesManager
   ) {
     $this->accessControl = $accessControl;
     $this->wp = $wp;
@@ -97,6 +100,7 @@ class Menu {
     $this->container = $container;
     $this->router = $router;
     $this->customFonts = $customFonts;
+    $this->capabilitiesManager = $capabilitiesManager;
   }
 
   public function init() {
@@ -462,8 +466,7 @@ class Menu {
     );
 
     // Upgrade page
-    // Only show this page in menu if the Premium plugin is not activated
-    if (!License::getLicense()) {
+    if ($this->capabilitiesManager->showUpgradePage()) {
       $this->wp->addSubmenuPage(
         self::MAIN_PAGE_SLUG,
         $this->setPageTitle(__('Upgrade', 'mailpoet')),

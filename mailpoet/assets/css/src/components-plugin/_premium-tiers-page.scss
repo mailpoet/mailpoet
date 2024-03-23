@@ -1,0 +1,295 @@
+@import '../components-automation-analytics/colors';
+
+.mailpoet-tiers-page {
+  margin: 0 auto;
+  max-width: 1000px;
+}
+
+.mailpoet-tiers-page-billing-toggle {
+  margin: 0 auto 24px;
+  width: 15.25rem;
+
+  #pricing_duration {
+    ~ .mailpoet-tiers-page-pricing-period-description {
+      display: block;
+      text-align: center;
+    }
+
+    ~ .mailpoet-tiers-page-pricing-period-description-selected {
+      display: none;
+      text-align: center;
+    }
+
+    &:checked {
+      ~ .mailpoet-tiers-page-pricing-period-description {
+        display: none;
+      }
+
+      ~ .mailpoet-tiers-page-pricing-period-description-selected {
+        display: block;
+      }
+    }
+  }
+}
+
+.mailpoet-tiers-page-content {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+  margin: 0;
+  padding: 24px 0 40px;
+
+  figcaption {
+    padding-top: 1rem;
+    p {
+      color: $color-gutenberg-grey-900;
+      font-size: 0.8125rem;
+      line-height: 1.25rem;
+      margin: 0;
+      text-align: center;
+    }
+  }
+}
+
+.mailpoet-tiers-page-content__pricing {
+  align-items: flex-end;
+  align-self: stretch;
+  display: flex;
+
+  @include respond-to(small-screen) {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+.mailpoet-tiers-page-content__tier {
+  align-items: flex-start;
+  background: #fff;
+  border-bottom: 1px solid $color-gutenberg-grey-200;
+  border-left: 1px solid $color-gutenberg-grey-200;
+  border-radius: 4px 0 0 4px;
+  border-top: 1px solid $color-gutenberg-grey-200;
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: 24px;
+  height: 42.75rem;
+  padding: 24px;
+
+  @include respond-to(small-screen) {
+    border: 1px solid $color-gutenberg-grey-200;
+  }
+
+  &.popular {
+    background: #fffaf2;
+    border: 1px solid #ffe9cc;
+    height: 45.75rem;
+  }
+
+  .components-button {
+    align-self: stretch;
+    font-size: 0.8125rem;
+    justify-content: center;
+
+    &:disabled {
+      background: $color-gutenberg-grey-100;
+      color: $color-gutenberg-grey-600;
+      gap: 4px;
+      opacity: 1;
+      padding-left: 8px;
+
+      svg {
+        fill: none;
+      }
+    }
+  }
+
+  p {
+    color: $color-gutenberg-grey-900;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0 0 8px;
+  }
+
+  ul {
+    color: $color-gutenberg-grey-900;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0 0 8px;
+    padding-inline-start: 24px;
+
+    li {
+      list-style-image: url('../../img/upgrade/plus.svg');
+      margin-bottom: 8px;
+    }
+
+    &.free {
+      li {
+        list-style-image: url('../../img/upgrade/check.svg');
+      }
+    }
+
+    &.business {
+      li {
+        list-style-image: url('../../img/upgrade/plus-orange.svg');
+      }
+    }
+  }
+}
+
+.mailpoet-tiers-page-price-divider {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 8px;
+  height: 36px;
+  justify-content: center;
+  hr {
+    background: $color-gutenberg-grey-200;
+    border: none;
+    height: 1px;
+    margin: 0;
+    width: 100%;
+  }
+}
+
+.mailpoet-tiers-page-label {
+  align-items: flex-start;
+  background: #f16618;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 8px;
+}
+
+.mailpoet-tiers-page-label__content {
+  color: #fff;
+  font-size: 0.75rem;
+  gap: 8px;
+  line-height: 1.333;
+}
+
+.mailpoet-tiers-page-tier-header {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 7.5rem;
+
+  p {
+    color: $color-gutenberg-grey-900;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+.mailpoet-tiers-page-tier-header__title {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+
+  h2.mailpoet-tiers-page-tier-header-label {
+    color: $color-gutenberg-grey-900;
+    font-size: 1.5rem;
+    font-weight: normal;
+    line-height: 1.333;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.mailpoet-tiers-page-tier-header__icon {
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 40px;
+  &.free {
+    background-image: url('../../img/upgrade/1-starter-plan.svg');
+    width: 30.44px;
+  }
+  &.basic {
+    background-image: url('../../img/upgrade/2-tier-1-plan.svg');
+    width: 40.37px;
+  }
+  &.pro {
+    background-image: url('../../img/upgrade/3-business-plan.svg');
+    width: 30.44px;
+  }
+}
+
+.mailpoet-tiers-page-tier-price {
+  align-items: flex-start;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 4px;
+  justify-content: flex-end;
+
+  p {
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    margin: 0;
+  }
+
+  h3 {
+    color: $color-gutenberg-grey-900;
+    font-size: 0.8125rem;
+    font-weight: normal;
+    line-height: 2rem;
+    margin: 0;
+    max-height: 2rem;
+    padding: 0;
+
+    .pricing-currency {
+      font-size: 1rem;
+    }
+    .pricing-value {
+      font-size: 2rem;
+      font-weight: 600;
+      line-height: 2rem;
+      max-height: 2rem;
+    }
+
+    .pricing-discount {
+      color: $color-gutenberg-grey-600;
+      .pricing-discount-currency {
+        font-size: 0.6rem;
+        position: relative;
+        top: 13%;
+        vertical-align: top;
+      }
+      .pricing-discount-value {
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration-line: line-through;
+      }
+    }
+  }
+  #mailpoet-pro-monthly-price,
+  #mailpoet-basic-monthly-price {
+    display: block;
+  }
+  #mailpoet-pro-yearly-price,
+  #mailpoet-basic-yearly-price {
+    display: none;
+  }
+}
+
+.mailpoet-tiers-page:has(#pricing_duration:checked) {
+  .mailpoet-tiers-page-tier-price #mailpoet-pro-monthly-price,
+  .mailpoet-tiers-page-tier-price #mailpoet-basic-monthly-price {
+    display: none;
+  }
+  .mailpoet-tiers-page-tier-price #mailpoet-pro-yearly-price,
+  .mailpoet-tiers-page-tier-price #mailpoet-basic-yearly-price {
+    display: block;
+  }
+}
