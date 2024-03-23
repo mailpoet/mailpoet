@@ -122,6 +122,18 @@
     align-self: stretch;
     font-size: 0.8125rem;
     justify-content: center;
+
+    &:disabled {
+      background: $color-gutenberg-grey-100;
+      color: $color-gutenberg-grey-600;
+      gap: 4px;
+      opacity: 1;
+      padding-left: 8px;
+
+      svg {
+        fill: none;
+      }
+    }
   }
 }
 
