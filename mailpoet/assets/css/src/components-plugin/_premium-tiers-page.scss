@@ -5,35 +5,6 @@
   max-width: 1000px;
 }
 
-.mailpoet-tiers-page-hero-section {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0 auto;
-  max-width: 700px;
-  padding: 64px 0;
-
-  h1.mailpoet-tiers-page-hero-section__title {
-    color: $color-gutenberg-grey-900;
-    font-size: 2rem;
-    font-weight: normal;
-    line-height: 1.25;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-  }
-
-  p {
-    color: $color-gutenberg-grey-900;
-    font-size: 1rem;
-    line-height: 1.5;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-  }
-}
-
 .mailpoet-tiers-page-billing-toggle {
   margin: 0 auto 24px;
   width: 15.25rem;
