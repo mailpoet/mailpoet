@@ -16,7 +16,7 @@
   </a>
 </div>
 <div class="mailpoet-tiers-page">
-  <div class="mailpoet-tiers-page-hero-section">
+  <div class="mailpoet-tiers-page-hero-section narrow">
     <h1 class="mailpoet-tiers-page-hero-section__title">
       <%= __('Find the plan that fits your flock') %>
     </h1>
@@ -160,6 +160,25 @@
       </p>
     </figcaption>
   </figure>
+  <div class="mailpoet-tiers-page-hero-section footer">
+    <div class="mailpoet-tiers-page-hero-section-questions">
+      <div class="mailpoet-tiers-page-hero-section-questions-content">
+        <h1 class="mailpoet-tiers-page-hero-section__title">
+          <%= __('Have questions?') %>
+        </h1>
+        <p>
+          <%= __('Visit our website to learn more about our plans.') %>
+          <% set allowedHtml = {'a': {'href': [], 'target': []}} %>
+          <%=
+          __('And if you’re not sure which plan is the right one for you, our [link]Customer Support team[/link] are on hand to help you decide.')
+          |replaceLinkTags('https://www.mailpoet.com/support/sales-pre-sales-questions/?ref=plugin-upgrade-page', {'target': '_blank'})
+          |wpKses(allowedHtml)
+          %>
+        </p>
+      </div>
+    </div>
+    <img src="<%= cdn_url('premium/6-hero.png') %>" />
+  </div>
 </div>
 <% endblock %>
 
