@@ -135,6 +135,38 @@
       }
     }
   }
+
+  p {
+    color: $color-gutenberg-grey-900;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0 0 8px;
+  }
+
+  ul {
+    color: $color-gutenberg-grey-900;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0 0 8px;
+    padding-inline-start: 24px;
+
+    li {
+      list-style-image: url('../../img/upgrade/plus.svg');
+      margin-bottom: 8px;
+    }
+
+    &.free {
+      li {
+        list-style-image: url('../../img/upgrade/check.svg');
+      }
+    }
+
+    &.business {
+      li {
+        list-style-image: url('../../img/upgrade/plus-orange.svg');
+      }
+    }
+  }
 }
 
 .mailpoet-tiers-page-price-divider {

@@ -52,6 +52,14 @@
           <p><%= __('Up to 500 subscribers') %></p>
         </div>
         <%= include('upgrade/upgrade_button.html', {label:__('Get Free'), button_class: 'is-secondary', tier: 0}) %>
+        <ul class="free">
+          <li><%= __('<b>1,500</b> emails per month, <b>500</b> emails per day') %></li>
+          <li><%= __('Basic email automations') %></li>
+          <li><%= __('Email and ecommerce marketing') %></li>
+          <li><%= __('Widget and popup subscription forms') %></li>
+          <li><%= __('Basic subscriber segmentation') %></li>
+          <li><%= __('Customizable  email templates') %></li>
+        </ul>
       </div>
       <div class="mailpoet-tiers-page-content__tier">
         <div class="mailpoet-tiers-page-tier-header">
@@ -83,6 +91,17 @@
           <p><%= __('for 500 subscribers') %></p>
         </div>
         <%= include('upgrade/upgrade_button.html', {label:__('Get Basic'), button_class:'is-secondary', tier: 1}) %>
+        <div>
+          <p><%= __('<b>All Free plan features</b>, plus:') %></p>
+          <ul>
+            <li><%= __('<b>5,000</b> emails per month, <b>no daily limit</b>') %></li>
+            <li><%= __('Custom email automations') %></li>
+            <li><%= __('Detailed email and automation statistics') %></li>
+            <li><%= __('Google Analytics tracking') %></li>
+            <li><%= __('No MailPoet logo in emails') %></li>
+            <li><%= __('24/7 email support') %></li>
+          </ul>
+        </div>
       </div>
       <div class="mailpoet-tiers-page-content__tier popular">
         <div class="mailpoet-tiers-page-label">
@@ -119,6 +138,15 @@
           <p><%= __('for 500 subscribers') %></p>
         </div>
         <%= include('upgrade/upgrade_button.html', {label:__('Get Pro'), button_class:'is-primary', tier: 2}) %>
+        <div>
+          <p><%= __('<b>All Basic features</b>, plus:') %></p>
+          <ul class="business">
+            <li><%= __('<b>7,500</b> emails per month, <b>no daily limit</b>') %></li>
+            <li><%= __('Email automation journeys with branching') %></li>
+            <li><%= __('Advanced subscriber segmentation') %></li>
+            <li><%= __('24/7 email support') %></li>
+          </ul>
+        </div>
       </div>
     </div>
     <figcaption>
