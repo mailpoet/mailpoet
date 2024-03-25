@@ -115,6 +115,12 @@ class EmailEditor {
           ])->nullable(),
           'blockGap' => Builder::string()->nullable(),
         ])->nullable(),
+        'typography' => Builder::object([
+          'fontFamily' => Builder::string()->nullable(),
+          'fontSize' => Builder::string()->nullable(),
+          'fontWeight' => Builder::string()->nullable(),
+          'letterSpacing' => Builder::string()->nullable(),
+        ])->nullable(),
       ])->nullable(),
     ])->toArray();
   }

@@ -30,9 +30,7 @@ export function StylesSidebar(props: Props): JSX.Element {
             <ScreenRoot />
           </NavigatorScreen>
 
-          <NavigatorScreen path="/typography">
-            <ScreenTypography />
-          </NavigatorScreen>
+          <ScreenTypography />
 
           <NavigatorScreen path="/colors">
             <NavigatorToParentButton>Back</NavigatorToParentButton>
