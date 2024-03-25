@@ -9,8 +9,7 @@ import { ComplementaryArea } from '@wordpress/interface';
 import { ComponentProps } from 'react';
 import { styles } from '@wordpress/icons';
 import { storeName, stylesSidebarId } from '../../store';
-import { ScreenLayout } from './screen-layout';
-import { ScreenRoot } from './screen-root';
+import { ScreenTypography, ScreenLayout, ScreenRoot } from './screens';
 
 type Props = ComponentProps<typeof ComplementaryArea>;
 
@@ -32,13 +31,12 @@ export function StylesSidebar(props: Props): JSX.Element {
           </NavigatorScreen>
 
           <NavigatorScreen path="/typography">
-            <NavigatorToParentButton>Back</NavigatorToParentButton>
-            <div>TODO: Typography screen</div>
+            <ScreenTypography />
           </NavigatorScreen>
 
           <NavigatorScreen path="/colors">
             <NavigatorToParentButton>Back</NavigatorToParentButton>
-            <div>TODO: Typography screen</div>
+            <div>TODO: Colors screen</div>
           </NavigatorScreen>
 
           <NavigatorScreen path="/layout">

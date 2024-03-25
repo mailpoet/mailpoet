@@ -5,7 +5,7 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
-import { storeName } from '../../store';
+import { storeName } from '../../../store';
 
 const firstFrame = {
   start: {
