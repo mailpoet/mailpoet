@@ -3,7 +3,6 @@
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\SettingsController;
-use MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\AbstractBlockRenderer;
 use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 
 /**
