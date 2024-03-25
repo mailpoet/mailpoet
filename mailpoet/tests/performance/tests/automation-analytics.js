@@ -86,14 +86,14 @@ export async function automationAnalytics() {
 
     // Filter results by date range Today
     await page.locator('.woocommerce-dropdown-button').click();
-    await page.locator('//span[contains(text(),"Today")]').click();
+    await page.$$('.woocommerce-segmented-selection__item')[1].click();
     await page.locator('.woocommerce-filters-date__button').click();
     await page.waitForLoadState('networkidle');
     await waitForSelectorToBeVisible(page, '.woocommerce-table__table > table');
 
     // Filter results by date range Year to date
     await page.locator('.woocommerce-dropdown-button').click();
-    await page.locator('//span[contains(text(),"Year to date")]').click();
+    await page.$$('.woocommerce-segmented-selection__item')[7].click();
     await page.locator('.woocommerce-filters-date__button').click();
     await page.waitForLoadState('networkidle');
     await waitForSelectorToBeVisible(page, '.woocommerce-table__table > table');
