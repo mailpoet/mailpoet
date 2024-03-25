@@ -13,6 +13,12 @@ interface StyleProperties {
     };
     blockGap: string;
   };
+  typography: {
+    fontFamily: string;
+    fontStyle: string;
+    fontWeight: string;
+    letterSpacing: string;
+  };
 }
 interface EmailStylesData {
   styles: StyleProperties;
@@ -92,11 +98,28 @@ export const useEmailStyles = (): EmailStylesData => {
         padding: styles?.spacing?.padding ?? defaultStyles.spacing.padding,
         blockGap: styles?.spacing?.blockGap ?? defaultStyles.spacing.blockGap,
       },
+      typography: {
+        fontFamily:
+          styles?.typography?.fontFamily ?? defaultStyles.typography.fontFamily,
+        fontStyle:
+          styles?.typography?.fontStyle ?? defaultStyles.typography.fontStyle,
+        fontWeight:
+          styles?.typography?.fontWeight ?? defaultStyles.typography.fontWeight,
+        letterSpacing:
+          styles?.typography?.letterSpacing ??
+          defaultStyles.typography.letterSpacing,
+      },
     },
     defaultStyles: {
       spacing: {
         padding: defaultStyles.spacing.padding,
         blockGap: defaultStyles.spacing.blockGap,
+      },
+      typography: {
+        fontFamily: defaultStyles.typography.fontFamily,
+        fontStyle: defaultStyles.typography.fontStyle,
+        fontWeight: defaultStyles.typography.fontWeight,
+        letterSpacing: defaultStyles.typography.letterSpacing,
       },
     },
     updateSpacingProp,

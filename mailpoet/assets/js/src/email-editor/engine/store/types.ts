@@ -48,6 +48,12 @@ export type EmailStyles = {
     };
     text: string;
   };
+  typography: {
+    fontFamily: string;
+    fontStyle: string;
+    fontWeight: string;
+    letterSpacing: string;
+  };
   elements: {
     h1: {
       color: {
