@@ -13,7 +13,7 @@ import { __ } from '@wordpress/i18n';
 import { useEntityProp } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import { isEqual } from 'lodash';
-import { EmailTheme, storeName } from '../../store';
+import { EmailTheme, storeName } from '../../../store';
 
 export function DimensionsPanel() {
   const availableUnits = useSetting('spacing.units') as string[];

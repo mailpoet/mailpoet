@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { DimensionsPanel } from './dimensions-panel';
+import { DimensionsPanel } from '../panels/dimensions-panel';
 import { ScreenHeader } from './screen-header';
 
 export function ScreenLayout(): JSX.Element {
