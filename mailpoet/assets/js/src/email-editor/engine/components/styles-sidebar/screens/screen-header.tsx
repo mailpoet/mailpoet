@@ -53,3 +53,5 @@ export function ScreenHeader({ title, description, onBack }: Props) {
     </VStack>
   );
 }
+
+export default ScreenHeader;

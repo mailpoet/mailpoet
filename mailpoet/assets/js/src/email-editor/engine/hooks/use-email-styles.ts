@@ -3,7 +3,18 @@ import { useSelect } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
 import { EmailTheme, storeName } from '../store';
 
-interface StyleProperties {
+interface TypographyProperties {
+  fontSize: string;
+  fontFamily: string;
+  fontStyle: string;
+  fontWeight: string;
+  letterSpacing: string;
+  lineHeight: string;
+}
+interface ElementProperties {
+  typography: TypographyProperties;
+}
+export interface StyleProperties {
   spacing: {
     padding: {
       top: string;
@@ -13,21 +24,47 @@ interface StyleProperties {
     };
     blockGap: string;
   };
-  typography: {
-    fontFamily: string;
-    fontStyle: string;
-    fontWeight: string;
-    letterSpacing: string;
-  };
+  typography: TypographyProperties;
+  elements: Record<string, ElementProperties>;
 }
+
 interface EmailStylesData {
   styles: StyleProperties;
   defaultStyles: StyleProperties;
-  updateSpacingProp: (
-    property: keyof StyleProperties['spacing'],
-    value,
-  ) => void;
-  resetSpacingProp: (property?: keyof StyleProperties['spacing']) => void;
+  updateStyleProp: (path, newValue) => void;
+}
+
+/**
+ * Immutably sets a value inside an object. Like `lodash#set`, but returning a
+ * new object. Treats nullish initial values as empty objects. Clones any
+ * nested objects. Supports arrays, too.
+ *
+ * @param {Object}              object Object to set a value in.
+ * @param {number|string|Array} setPath   Path in the object to modify.
+ * @param {*}                   value  New value to set.
+ * @return {Object} Cloned object with the new value set.
+ */
+export function setImmutably(setObject, setPath, value): typeof setObject {
+  // Normalize path
+  const path = Array.isArray(setPath) ? [...setPath] : [setPath];
+
+  // Shallowly clone the base of the object
+  const object = Array.isArray(setObject) ? [...setObject] : { ...setObject };
+
+  const leaf = path.pop();
+
+  // Traverse object from root to leaf, shallowly cloning at each level
+  let prev = object;
+
+  path.forEach((key) => {
+    const lvl = prev[key];
+    prev[key] = Array.isArray(lvl) ? [...lvl] : { ...lvl };
+    prev = prev[key];
+  });
+
+  prev[leaf] = value;
+
+  return object;
 }
 
 export const useEmailStyles = (): EmailStylesData => {
@@ -43,86 +80,40 @@ export const useEmailStyles = (): EmailStylesData => {
   }));
 
   // Update email styles.
-  const updateEmailTheme = useCallback(
-    (newValue) => {
-      setMeta({ ...meta, mailpoet_email_theme: newValue });
+  const updateStyleProp = useCallback(
+    (path, newValue) => {
+      const newStyles = setImmutably(
+        meta.mailpoet_email_theme.styles,
+        path,
+        newValue,
+      );
+      setMeta({
+        ...meta,
+        mailpoet_email_theme: {
+          ...meta.mailpoet_email_theme,
+          styles: newStyles,
+        },
+      });
     },
     [setMeta, meta],
-  );
-
-  const updateSpacingProp = useCallback(
-    (property: keyof StyleProperties['spacing'], value) => {
-      updateEmailTheme({
-        ...emailTheme,
-        styles: {
-          ...emailTheme?.styles,
-          spacing: {
-            ...emailTheme?.styles?.spacing,
-            [property]: value,
-          },
-        },
-      });
-    },
-    [updateEmailTheme, emailTheme],
-  );
-
-  const resetSpacingProp = useCallback(
-    (property?: keyof StyleProperties['spacing']) => {
-      if (!property) {
-        updateEmailTheme({
-          ...emailTheme,
-          styles: {
-            ...emailTheme?.styles,
-            spacing: defaultStyles.spacing,
-          },
-        });
-        return;
-      }
-      updateEmailTheme({
-        ...emailTheme,
-        styles: {
-          ...emailTheme?.styles,
-          spacing: {
-            ...emailTheme?.styles?.spacing,
-            [property]: defaultStyles.spacing[property],
-          },
-        },
-      });
-    },
-    [updateEmailTheme, emailTheme, defaultStyles],
   );
 
   return {
     styles: {
       spacing: {
-        padding: styles?.spacing?.padding ?? defaultStyles.spacing.padding,
-        blockGap: styles?.spacing?.blockGap ?? defaultStyles.spacing.blockGap,
+        ...defaultStyles.spacing,
+        ...styles?.spacing,
       },
       typography: {
-        fontFamily:
-          styles?.typography?.fontFamily ?? defaultStyles.typography.fontFamily,
-        fontStyle:
-          styles?.typography?.fontStyle ?? defaultStyles.typography.fontStyle,
-        fontWeight:
-          styles?.typography?.fontWeight ?? defaultStyles.typography.fontWeight,
-        letterSpacing:
-          styles?.typography?.letterSpacing ??
-          defaultStyles.typography.letterSpacing,
+        ...defaultStyles.typography,
+        ...styles?.typography,
+      },
+      elements: {
+        ...defaultStyles.elements,
+        ...styles?.elements,
       },
     },
-    defaultStyles: {
-      spacing: {
-        padding: defaultStyles.spacing.padding,
-        blockGap: defaultStyles.spacing.blockGap,
-      },
-      typography: {
-        fontFamily: defaultStyles.typography.fontFamily,
-        fontStyle: defaultStyles.typography.fontStyle,
-        fontWeight: defaultStyles.typography.fontWeight,
-        letterSpacing: defaultStyles.typography.letterSpacing,
-      },
-    },
-    updateSpacingProp,
-    resetSpacingProp,
+    defaultStyles,
+    updateStyleProp,
   };
 };

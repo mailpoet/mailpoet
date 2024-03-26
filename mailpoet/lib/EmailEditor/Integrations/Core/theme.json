@@ -18,42 +18,6 @@
           }
         }
       }
-    },
-    "elements": {
-      "h1": {
-        "color": {
-          "text": "#000000"
-        },
-        "typography": {
-          "fontSize": "48px",
-          "fontWeight": "bold"
-        }
-      },
-      "h2": {
-        "typography": {
-          "fontSize": "42px"
-        }
-      },
-      "h3": {
-        "typography": {
-          "fontSize": "36px"
-        }
-      },
-      "h4": {
-        "typography": {
-          "fontSize": "26px"
-        }
-      },
-      "h5": {
-        "typography": {
-          "fontSize": "20px"
-        }
-      },
-      "h6": {
-        "typography": {
-          "fontSize": "14px"
-        }
-      }
     }
   }
 }

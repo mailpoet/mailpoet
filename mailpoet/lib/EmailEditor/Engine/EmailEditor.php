@@ -103,6 +103,14 @@ class EmailEditor {
   }
 
   public function getEmailThemeDataSchema(): array {
+    $typographyProps = Builder::object([
+      'fontFamily' => Builder::string()->nullable(),
+      'fontSize' => Builder::string()->nullable(),
+      'fontStyle' => Builder::string()->nullable(),
+      'fontWeight' => Builder::string()->nullable(),
+      'letterSpacing' => Builder::string()->nullable(),
+      'lineHeight' => Builder::string()->nullable(),
+    ])->nullable();
     return Builder::object([
       'version' => Builder::integer(),
       'styles' => Builder::object([
@@ -115,11 +123,35 @@ class EmailEditor {
           ])->nullable(),
           'blockGap' => Builder::string()->nullable(),
         ])->nullable(),
-        'typography' => Builder::object([
-          'fontFamily' => Builder::string()->nullable(),
-          'fontSize' => Builder::string()->nullable(),
-          'fontWeight' => Builder::string()->nullable(),
-          'letterSpacing' => Builder::string()->nullable(),
+        'typography' => $typographyProps,
+        'elements' => Builder::object([
+          'heading' => Builder::object([
+            'typography' => $typographyProps,
+          ])->nullable(),
+          'button' => Builder::object([
+            'typography' => $typographyProps,
+          ])->nullable(),
+          'link' => Builder::object([
+            'typography' => $typographyProps,
+          ])->nullable(),
+          'h1' => Builder::object([
+            'typography' => $typographyProps,
+          ])->nullable(),
+          'h2' => Builder::object([
+            'typography' => $typographyProps,
+          ])->nullable(),
+          'h3' => Builder::object([
+            'typography' => $typographyProps,
+          ])->nullable(),
+          'h4' => Builder::object([
+            'typography' => $typographyProps,
+          ])->nullable(),
+          'h5' => Builder::object([
+            'typography' => $typographyProps,
+          ])->nullable(),
+          'h6' => Builder::object([
+            'typography' => $typographyProps,
+          ])->nullable(),
         ])->nullable(),
       ])->nullable(),
     ])->toArray();
