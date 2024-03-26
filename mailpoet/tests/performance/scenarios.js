@@ -23,6 +23,7 @@ import { automationAnalytics } from './tests/automation-analytics.js';
 import { automationTrashRestore } from './tests/automation-trash-restore.js';
 import { automationTriggerWorkflow } from './tests/automation-trigger-workflow.js';
 import { automationCreateWooCommerce } from './tests/automation-create-woocommerce.js';
+import { newsletterPostNotification } from './tests/newsletters-post-notification.js';
 
 // Scenarios, Thresholds, Tags and Project ID used for K6 Cloud
 export let options = {
@@ -90,6 +91,7 @@ export async function pullRequests() {
   await onboardingWizard();
   await newsletterListing();
   await newsletterSearching();
+  await newsletterPostNotification();
   await automationTrashRestore();
   await automationCreateWelcome();
   await automationCreateWooCommerce();
@@ -107,6 +109,7 @@ export async function nightly() {
   await newsletterStatistics();
   await newsletterSearching();
   await newsletterSending();
+  await newsletterPostNotification();
   await automationTrashRestore();
   await automationCreateCustom();
   await automationCreateWelcome();
