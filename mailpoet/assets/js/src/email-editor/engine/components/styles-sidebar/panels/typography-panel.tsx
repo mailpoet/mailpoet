@@ -1,34 +1,83 @@
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
 import {
-  // @ts-expect-error TS7016: Could not find a declaration file for module '@wordpress/block-editor'.
-  __experimentalFontFamilyControl as FontFamilyControl,
-} from '@wordpress/block-editor';
-import { __ } from '@wordpress/i18n';
-import {
-  __experimentalToolsPanel as ToolsPanel,
-  __experimentalToolsPanelItem as ToolsPanelItem,
+  __experimentalItemGroup as ItemGroup,
+  __experimentalItem as Item,
+  __experimentalVStack as VStack,
+  __experimentalHStack as HStack,
+  __experimentalHeading as Heading,
+  __experimentalNavigatorButton as NavigatorButton,
+  FlexItem,
+  Card,
+  CardBody,
 } from '@wordpress/components';
 import { useEmailStyles } from '../../../hooks';
 
-export function TypographyPanel({ element }) {
-  const { styles, defaultStyles } = useEmailStyles();
+function ElementItem({ element, label }: { element: string; label: string }) {
+  const { styles } = useEmailStyles();
 
-  const { fontFamily } = styles.typography;
+  const { fontFamily, fontStyle, fontWeight, letterSpacing } =
+    styles.typography;
+
+  const extraStyles =
+    element === 'link'
+      ? {
+          textDecoration: 'underline',
+        }
+      : {};
+
+  const navigationButtonLabel = sprintf(
+    // translators: %s: is a subset of Typography, e.g., 'text' or 'links'.
+    __('Typography %s styles'),
+    label,
+  );
 
   return (
-    <ToolsPanel label={element} resetAll={() => {}}>
-      <ToolsPanelItem
-        label={__('Font family')}
-        hasValue={() => fontFamily !== defaultStyles.typography.fontFamily}
-        onDeselect={() => {}}
-        isShownByDefault
+    <Item>
+      <NavigatorButton
+        path={`/typography/${element}`}
+        aria-label={navigationButtonLabel}
       >
-        <FontFamilyControl
-          value={fontFamily}
-          onChange={() => {}}
-          size="__unstable-large"
-          __nextHasNoMarginBottom
-        />
-      </ToolsPanelItem>
-    </ToolsPanel>
+        <HStack justify="flex-start">
+          <FlexItem
+            className="edit-site-global-styles-screen-typography__indicator"
+            style={{
+              fontFamily: fontFamily ?? 'serif',
+              fontStyle,
+              fontWeight,
+              letterSpacing,
+              ...extraStyles,
+            }}
+          >
+            {__('Aa')}
+          </FlexItem>
+          <FlexItem>{label}</FlexItem>
+        </HStack>
+      </NavigatorButton>
+    </Item>
   );
 }
+
+export function TypographyPanel() {
+  return (
+    <Card size="small" variant="primary" isBorderless>
+      <CardBody>
+        <VStack spacing={3}>
+          <Heading level={3} className="edit-site-global-styles-subtitle">
+            {__('Elements')}
+          </Heading>
+          <ItemGroup isBordered isSeparated size="small">
+            <ElementItem element="text" label={__('Text', 'mailpoet')} />
+            <ElementItem element="link" label={__('Link', 'mailpoet')} />
+            <ElementItem element="heading" label={__('Heading', 'mailpoet')} />
+            <ElementItem element="button" label={__('Button', 'mailpoet')} />
+          </ItemGroup>
+        </VStack>
+      </CardBody>
+    </Card>
+  );
+}
+
+export default TypographyPanel;

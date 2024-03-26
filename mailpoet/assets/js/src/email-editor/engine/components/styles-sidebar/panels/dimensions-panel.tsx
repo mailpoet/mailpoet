@@ -18,14 +18,13 @@ export function DimensionsPanel() {
   const units = useCustomUnits({
     availableUnits,
   });
-  const { styles, defaultStyles, updateSpacingProp, resetSpacingProp } =
-    useEmailStyles();
+  const { styles, defaultStyles, updateStyleProp } = useEmailStyles();
 
   return (
     <ToolsPanel
       label={__('Dimensions', 'mailpoet')}
       resetAll={() => {
-        resetSpacingProp();
+        updateStyleProp(['spacing'], defaultStyles.spacing);
       }}
     >
       <ToolsPanelItem
@@ -34,14 +33,16 @@ export function DimensionsPanel() {
           !isEqual(styles.spacing.padding, defaultStyles.spacing.padding)
         }
         label={__('Padding')}
-        onDeselect={() => resetSpacingProp('padding')}
+        onDeselect={() =>
+          updateStyleProp(['spacing', 'padding'], defaultStyles.spacing.padding)
+        }
         className="tools-panel-item-spacing"
       >
         <SpacingSizesControl
           allowReset
           values={styles.spacing.padding}
           onChange={(value) => {
-            updateSpacingProp('padding', value);
+            updateStyleProp(['spacing', 'padding'], value);
           }}
           label={__('Padding')}
           sides={['horizontal', 'vertical', 'top', 'left', 'right', 'bottom']}
@@ -54,14 +55,19 @@ export function DimensionsPanel() {
         hasValue={() =>
           styles.spacing.blockGap !== defaultStyles.spacing.blockGap
         }
-        onDeselect={() => resetSpacingProp('blockGap')}
+        onDeselect={() =>
+          updateStyleProp(
+            ['spacing', 'blockGap'],
+            defaultStyles.spacing.blockGap,
+          )
+        }
         className="tools-panel-item-spacing"
       >
         <SpacingSizesControl
           label={__('Block spacing')}
           min={0}
           onChange={(value) => {
-            updateSpacingProp('blockGap', value.top);
+            updateStyleProp(['spacing', 'blockGap'], value.top);
           }}
           showSideInLabel={false}
           sides={['top']} // Use 'top' as the shorthand property in non-axial configurations.

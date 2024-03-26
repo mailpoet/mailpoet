@@ -49,19 +49,25 @@ export type EmailStyles = {
     text: string;
   };
   typography: {
+    fontSize: string;
     fontFamily: string;
     fontStyle: string;
     fontWeight: string;
     letterSpacing: string;
+    lineHeight: string;
   };
   elements: {
-    h1: {
+    heading: {
       color: {
         text: string;
       };
       typography: {
+        fontSize: string;
         fontFamily: string;
+        fontStyle: string;
         fontWeight: string;
+        letterSpacing: string;
+        lineHeight: string;
       };
     };
   };
