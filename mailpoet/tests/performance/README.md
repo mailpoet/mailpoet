@@ -189,8 +189,6 @@ Groups are used to organize common logic in the test scripts and can help with t
 
 There are checks inside the tests but they aren't failing tests, instead, they are more of a check that the process we use in tests are finished.
 
-Currently, there are 36 checks in total for the nightly build, and 19 checks for the pull requests.
-
 If you find less than this in our CI runs over to Grafana streaming, that means some of the tests are failing in execution and they require investigation, whether due to maintance or bug found.
 
 ## Other Resources
