@@ -64,10 +64,12 @@ export function Preview({
     [],
   );
 
-  const backgroundColor = styles.color.background.content;
-  const headingFontFamily = styles.elements.h1.typography.fontFamily;
-  const headingColor = styles.elements.h1.color.text;
-  const headingFontWeight = styles.elements.h1.typography.fontWeight;
+  const backgroundColor = styles?.color?.background?.content || '#ffffff';
+  const headingFontFamily =
+    styles?.elements?.h1?.typography?.fontFamily || 'inherit';
+  const headingColor = styles?.elements?.h1?.color?.text || 'inherit';
+  const headingFontWeight =
+    styles?.elements?.h1?.typography?.fontWeight || 'inherit';
 
   const paletteColors = colors.theme.concat(colors.theme);
 

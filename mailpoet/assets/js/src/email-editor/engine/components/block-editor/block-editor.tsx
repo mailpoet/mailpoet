@@ -84,7 +84,7 @@ export function BlockEditor() {
     { id: postId },
   );
 
-  const layoutBackground = styles.color.background.layout;
+  const layoutBackground = styles?.color?.background?.layout || '#f0f0f0';
 
   let inlineStyles = useResizeCanvas(previewDeviceType);
   // Adjust the inline styles for desktop preview. We want to set email width and center it.

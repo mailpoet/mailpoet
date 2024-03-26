@@ -14,4 +14,8 @@
   h3.edit-site-global-styles-subtitle {
     margin-bottom: 0;
   }
+
+  .single-column {
+    grid-column: span 1;
+  }
 }
