@@ -90,14 +90,10 @@ class PHPMailTest extends \MailPoetTest {
       ->equals($this->newsletter['body']['html']);
     verify($mailer->AltBody) // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       ->equals($this->newsletter['body']['text']);
-    verify($mailer->getCustomHeaders())->equals(
-      [
-        [
-          'List-Unsubscribe',
-          '<https://www.mailpoet.com>',
-        ],
-      ]
-    );
+    verify($mailer->getCustomHeaders())->equals([
+      ['List-Unsubscribe-Post', 'List-Unsubscribe=One-Click'],
+      ['List-Unsubscribe', '<https://www.mailpoet.com>'],
+    ]);
   }
 
   public function testItCanConfigureMailerWithTextEmail() {

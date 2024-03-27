@@ -75,6 +75,7 @@ abstract class PHPMailerMethod implements MailerMethod {
     }
     $mailer->Sender = $this->returnPath; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     if (!empty($extraParams['unsubscribe_url'])) {
+      $this->mailer->addCustomHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
       $this->mailer->addCustomHeader('List-Unsubscribe', '<' . $extraParams['unsubscribe_url'] . '>');
     }
 
