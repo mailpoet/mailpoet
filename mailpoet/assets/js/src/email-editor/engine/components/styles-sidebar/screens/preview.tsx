@@ -66,10 +66,10 @@ export function Preview({
 
   const backgroundColor = styles?.color?.background?.content || '#ffffff';
   const headingFontFamily =
-    styles?.elements?.h1?.typography?.fontFamily || 'inherit';
-  const headingColor = styles?.elements?.h1?.color?.text || 'inherit';
+    styles?.elements?.heading?.typography?.fontFamily || 'inherit';
+  const headingColor = styles?.elements?.heading?.color?.text || 'inherit';
   const headingFontWeight =
-    styles?.elements?.h1?.typography?.fontWeight || 'inherit';
+    styles?.elements?.heading?.typography?.fontWeight || 'inherit';
 
   const paletteColors = colors.theme.concat(colors.theme);
 
