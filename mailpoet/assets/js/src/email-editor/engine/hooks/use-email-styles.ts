@@ -1,3 +1,4 @@
+import deepmerge from 'deepmerge';
 import { useEntityProp } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
@@ -10,6 +11,8 @@ interface TypographyProperties {
   fontWeight: string;
   letterSpacing: string;
   lineHeight: string;
+  textDecoration: string;
+  textTransform: string;
 }
 interface ElementProperties {
   typography: TypographyProperties;
@@ -25,6 +28,13 @@ export interface StyleProperties {
     blockGap: string;
   };
   typography: TypographyProperties;
+  color?: {
+    background: {
+      content: string;
+      layout: string;
+    };
+    text: string;
+  };
   elements: Record<string, ElementProperties>;
 }
 
@@ -108,10 +118,10 @@ export const useEmailStyles = (): EmailStylesData => {
         ...defaultStyles.typography,
         ...styles?.typography,
       },
-      elements: {
-        ...defaultStyles.elements,
-        ...styles?.elements,
-      },
+      elements: deepmerge.all([
+        defaultStyles.elements,
+        styles?.elements,
+      ]) as Record<string, ElementProperties>,
     },
     defaultStyles,
     updateStyleProp,

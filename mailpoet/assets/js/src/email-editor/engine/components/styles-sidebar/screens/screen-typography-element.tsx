@@ -5,7 +5,10 @@ import {
   __experimentalToggleGroupControlOption as ToggleGroupControlOption,
   __experimentalSpacer as Spacer,
 } from '@wordpress/components';
-import TypographyElementPanel from '../panels/typography-element-panel';
+import TypographyElementPanel, {
+  DEFAULT_CONTROLS,
+} from '../panels/typography-element-panel';
+import TypographyPreview from '../previews/typography-preview';
 import ScreenHeader from './screen-header';
 
 export function ScreenTypographyElement({
@@ -14,22 +17,62 @@ export function ScreenTypographyElement({
   element: string;
 }): JSX.Element {
   const [headingLevel, setHeadingLevel] = useState('heading');
-  const titles = {
-    text: __('Text', 'mailpoet'),
-    link: __('Links', 'mailpoet'),
-    heading: __('Headings', 'mailpoet'),
-    button: __('Buttons', 'mailpoet'),
+  const panels = {
+    text: {
+      title: __('Text', 'mailpoet'),
+      description: __(
+        'Manage the fonts and typography used on text.',
+        'mailpoet',
+      ),
+      defaultControls: DEFAULT_CONTROLS,
+    },
+    link: {
+      title: __('Links', 'mailpoet'),
+      description: __(
+        'Manage the fonts and typography used on links.',
+        'mailpoet',
+      ),
+      defaultControls: {
+        ...DEFAULT_CONTROLS,
+        textDecoration: true,
+      },
+    },
+    heading: {
+      title: __('Headings', 'mailpoet'),
+      description: __(
+        'Manage the fonts and typography used on headings.',
+        'mailpoet',
+      ),
+      defaultControls: {
+        ...DEFAULT_CONTROLS,
+        textTransform: true,
+      },
+    },
+    button: {
+      title: __('Buttons', 'mailpoet'),
+      description: __(
+        'Manage the fonts and typography used on buttons.',
+        'mailpoet',
+      ),
+      defaultControls: DEFAULT_CONTROLS,
+    },
   };
   return (
     <>
-      <ScreenHeader title={titles[element]} />
+      <ScreenHeader
+        title={panels[element].title}
+        description={panels[element].description}
+      />
+      <Spacer marginX={4}>
+        <TypographyPreview element={element} headingLevel={headingLevel} />
+      </Spacer>
       {element === 'heading' && (
         <Spacer marginX={4} marginBottom="1em">
           <ToggleGroupControl
             label={__('Select heading level')}
             hideLabelFromVision
             value={headingLevel}
-            onChange={setHeadingLevel}
+            onChange={(value) => setHeadingLevel(value.toString())}
             isBlock
             size="__unstable-large"
             __nextHasNoMarginBottom
@@ -45,7 +88,11 @@ export function ScreenTypographyElement({
           </ToggleGroupControl>
         </Spacer>
       )}
-      <TypographyElementPanel element={element} headingLevel={headingLevel} />
+      <TypographyElementPanel
+        element={element}
+        headingLevel={headingLevel}
+        defaultControls={panels[element].defaultControls}
+      />
     </>
   );
 }

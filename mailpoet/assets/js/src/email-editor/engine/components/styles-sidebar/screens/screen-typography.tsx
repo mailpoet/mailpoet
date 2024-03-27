@@ -8,7 +8,7 @@ export function ScreenTypography(): JSX.Element {
       <ScreenHeader
         title={__('Typography', 'mailpoet')}
         description={__(
-          'Manage the typography settings for different elements',
+          'Manage the typography settings for different elements.',
           'mailpoet',
         )}
       />
