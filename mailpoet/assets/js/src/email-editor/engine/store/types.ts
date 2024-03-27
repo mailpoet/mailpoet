@@ -55,6 +55,8 @@ export type EmailStyles = {
     fontWeight: string;
     letterSpacing: string;
     lineHeight: string;
+    textDecoration: string;
+    textTransform: string;
   };
   elements: {
     heading: {
@@ -68,6 +70,8 @@ export type EmailStyles = {
         fontWeight: string;
         letterSpacing: string;
         lineHeight: string;
+        textDecoration: string;
+        textTransform: string;
       };
     };
   };

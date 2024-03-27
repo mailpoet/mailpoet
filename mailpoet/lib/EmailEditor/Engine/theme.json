@@ -180,8 +180,8 @@
       "fontSizes": [
         {
           "name": "small",
-          "size": "14px",
-          "slug": "14"
+          "size": "13px",
+          "slug": "13"
         },
         {
           "name": "medium",
@@ -225,7 +225,9 @@
       "fontWeight": "400",
       "fontStyle": "normal",
       "letterSpacing": "0",
-      "lineHeight": "1.5"
+      "lineHeight": "1.5",
+      "textDecoration": "none",
+      "textTransform": "none"
     },
     "elements": {
       "heading": {
@@ -233,14 +235,17 @@
           "fontFamily": "Arial, 'Helvetica Neue', Helvetica, sans-serif",
           "fontWeight": "400",
           "fontStyle": "normal",
-          "letterSpacing": "0",
           "lineHeight": "1.5"
+        },
+        "color": {
+          "text": "#000000"
         }
       },
       "h1": {
         "typography": {
           "fontSize": "42px",
-          "fontWeight": "bold"
+          "fontWeight": "700",
+          "fontStyle": "normal"
         }
       },
       "h2": {
@@ -255,17 +260,17 @@
       },
       "h4": {
         "typography": {
-          "fontSize": "20px"
+          "fontSize": "16px"
         }
       },
       "h5": {
         "typography": {
-          "fontSize": "16px"
+          "fontSize": "13px"
         }
       },
       "h6": {
         "typography": {
-          "fontSize": "14px"
+          "fontSize": "13px"
         }
       }
     }

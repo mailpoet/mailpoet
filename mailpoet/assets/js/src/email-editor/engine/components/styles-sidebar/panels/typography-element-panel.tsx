@@ -3,6 +3,7 @@ import { useCallback } from '@wordpress/element';
 import {
   useSetting,
   // We can remove the ts-expect-error comments once the types are available.
+  // @see packages/block-editor/src/components/index.js
   // @ts-expect-error TS7016: Could not find a declaration file for module '@wordpress/block-editor'.
   __experimentalFontAppearanceControl as FontAppearanceControl,
   // @ts-expect-error TS7016: Could not find a declaration file for module '@wordpress/block-editor'.
@@ -11,22 +12,27 @@ import {
   __experimentalFontFamilyControl as FontFamilyControl,
   // @ts-expect-error TS7016: Could not find a declaration file for module '@wordpress/block-editor'.
   LineHeightControl,
+  // @ts-expect-error TS7016: Could not find a declaration file for module '@wordpress/block-editor'.
+  __experimentalTextDecorationControl as TextDecorationControl,
+  // @ts-expect-error TS7016: Could not find a declaration file for module '@wordpress/block-editor'.
+  __experimentalTextTransformControl as TextTransformControl,
 } from '@wordpress/block-editor';
 import {
   FontSizePicker,
   __experimentalToolsPanel as ToolsPanel,
   __experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
-import { useEmailStyles, StyleProperties } from '../../../hooks';
+import { useEmailStyles } from '../../../hooks';
+import { getElementStyles } from '../utils';
 
-const DEFAULT_CONTROLS = {
+export const DEFAULT_CONTROLS = {
   fontFamily: true,
   fontSize: true,
   fontAppearance: true,
   lineHeight: true,
-  letterSpacing: true,
-  textTransform: true,
-  textDecoration: true,
+  letterSpacing: false,
+  textTransform: false,
+  textDecoration: false,
   writingMode: true,
   textColumns: true,
 };
@@ -42,26 +48,12 @@ export function TypographyElementPanel({
 }) {
   const fontSizes = useSetting('typography.fontSizes');
   const { styles, defaultStyles, updateStyleProp } = useEmailStyles();
-
-  let elementStyles = styles;
-  let defaultElementStyles = defaultStyles;
-
-  if (element !== 'text') {
-    elementStyles = (styles.elements[element] || {}) as StyleProperties;
-    defaultElementStyles = (defaultStyles.elements[element] ||
-      {}) as StyleProperties;
-  }
-
-  if (element === 'heading' && styles.elements[headingLevel]) {
-    elementStyles = {
-      ...elementStyles,
-      ...styles.elements[headingLevel],
-    };
-    defaultElementStyles = {
-      ...defaultElementStyles,
-      ...defaultStyles.elements[headingLevel],
-    };
-  }
+  const elementStyles = getElementStyles(styles, element, headingLevel);
+  const defaultElementStyles = getElementStyles(
+    defaultStyles,
+    element,
+    headingLevel,
+  );
 
   const {
     fontFamily,
@@ -70,7 +62,10 @@ export function TypographyElementPanel({
     fontWeight,
     lineHeight,
     letterSpacing,
-  } = elementStyles.typography || {};
+    textDecoration,
+    textTransform,
+  } = elementStyles.typography;
+
   const {
     fontFamily: defaultFontFamily,
     fontSize: defaultFontSize,
@@ -78,7 +73,19 @@ export function TypographyElementPanel({
     fontWeight: defaultFontWeight,
     lineHeight: defaultLineHeight,
     letterSpacing: defaultLetterSpacing,
-  } = defaultElementStyles.typography || {};
+    textDecoration: defaultTextDecoration,
+    textTransform: defaultTextTransform,
+  } = defaultElementStyles.typography;
+
+  const hasFontFamily = () => fontFamily !== defaultFontFamily;
+  const hasFontSize = () => fontSize !== defaultFontSize;
+  const hasFontAppearance = () =>
+    fontWeight !== defaultFontWeight || fontStyle !== defaultFontStyle;
+  const hasLineHeight = () => lineHeight !== defaultLineHeight;
+  const hasLetterSpacing = () => letterSpacing !== defaultLetterSpacing;
+  const hasTextDecoration = () => textDecoration !== defaultTextDecoration;
+  const hasTextTransform = () => textTransform !== defaultTextTransform;
+  const showToolFontSize = element !== 'heading' || headingLevel !== 'heading';
 
   const updateElementStyleProp = useCallback(
     (path, newValue) => {
@@ -93,6 +100,30 @@ export function TypographyElementPanel({
     [element, updateStyleProp, headingLevel],
   );
 
+  const setLetterSpacing = (newValue) => {
+    updateElementStyleProp(['typography', 'letterSpacing'], newValue);
+  };
+
+  const setLineHeight = (newValue) => {
+    updateElementStyleProp(['typography', 'lineHeight'], newValue);
+  };
+
+  const setFontSize = (newValue) => {
+    updateElementStyleProp(['typography', 'fontSize'], newValue);
+  };
+
+  const setFontFamily = (newValue) => {
+    updateElementStyleProp(['typography', 'fontFamily'], newValue);
+  };
+
+  const setTextDecoration = (newValue) => {
+    updateElementStyleProp(['typography', 'textDecoration'], newValue);
+  };
+
+  const setTextTransform = (newValue) => {
+    updateElementStyleProp(['typography', 'textTransform'], newValue);
+  };
+
   const setFontAppearance = ({
     fontStyle: newFontStyle,
     fontWeight: newFontWeight,
@@ -105,45 +136,35 @@ export function TypographyElementPanel({
     updateElementStyleProp(['typography'], newTypography);
   };
 
+  const resetAll = () => {
+    updateElementStyleProp(['typography'], defaultElementStyles.typography);
+  };
+
   return (
-    <ToolsPanel
-      label={__('Typography', 'mailpoet')}
-      resetAll={() => {
-        updateElementStyleProp(['typography'], defaultElementStyles.typography);
-      }}
-    >
+    <ToolsPanel label={__('Typography', 'mailpoet')} resetAll={resetAll}>
       <ToolsPanelItem
         label={__('Font family')}
-        hasValue={() => fontFamily !== defaultFontFamily}
-        onDeselect={() => {
-          updateElementStyleProp(
-            ['typography', 'fontFamily'],
-            defaultFontFamily,
-          );
-        }}
+        hasValue={hasFontFamily}
+        onDeselect={() => setFontFamily(defaultFontFamily)}
         isShownByDefault={defaultControls.fontFamily}
       >
         <FontFamilyControl
           value={fontFamily}
-          onChange={() => {}}
+          onChange={setFontFamily}
           size="__unstable-large"
           __nextHasNoMarginBottom
         />
       </ToolsPanelItem>
-      {(element !== 'heading' || headingLevel !== 'heading') && (
+      {showToolFontSize && (
         <ToolsPanelItem
           label={__('Font size')}
-          hasValue={() => fontSize !== defaultFontSize}
-          onDeselect={() => {
-            updateElementStyleProp(['typography', 'fontSize'], defaultFontSize);
-          }}
+          hasValue={hasFontSize}
+          onDeselect={() => setFontSize(defaultFontSize)}
           isShownByDefault={defaultControls.fontSize}
         >
           <FontSizePicker
             value={fontSize}
-            onChange={(newValue) => {
-              updateElementStyleProp(['typography', 'fontSize'], newValue);
-            }}
+            onChange={setFontSize}
             fontSizes={fontSizes}
             disableCustomFontSizes={false}
             withReset={false}
@@ -156,9 +177,7 @@ export function TypographyElementPanel({
       <ToolsPanelItem
         className="single-column"
         label={__('Appearance')}
-        hasValue={() =>
-          fontWeight !== defaultFontWeight || fontStyle !== defaultFontStyle
-        }
+        hasValue={hasFontAppearance}
         onDeselect={() => {
           setFontAppearance({
             fontStyle: defaultFontStyle,
@@ -182,44 +201,59 @@ export function TypographyElementPanel({
       <ToolsPanelItem
         className="single-column"
         label={__('Line height')}
-        hasValue={() => lineHeight !== defaultLineHeight}
-        onDeselect={() => {
-          updateElementStyleProp(
-            ['typography', 'lineHeight'],
-            defaultLineHeight,
-          );
-        }}
+        hasValue={hasLineHeight}
+        onDeselect={() => setLineHeight(defaultLineHeight)}
         isShownByDefault={defaultControls.lineHeight}
       >
         <LineHeightControl
           __nextHasNoMarginBottom
           __unstableInputWidth="auto"
           value={lineHeight}
-          onChange={(newValue) => {
-            updateElementStyleProp(['typography', 'lineHeight'], newValue);
-          }}
+          onChange={setLineHeight}
           size="__unstable-large"
         />
       </ToolsPanelItem>
       <ToolsPanelItem
         className="single-column"
         label={__('Letter spacing')}
-        hasValue={() => letterSpacing !== defaultLetterSpacing}
-        onDeselect={() => {
-          updateElementStyleProp(
-            ['typography', 'letterSpacing'],
-            defaultLetterSpacing,
-          );
-        }}
+        hasValue={hasLetterSpacing}
+        onDeselect={() => setLetterSpacing(defaultLetterSpacing)}
         isShownByDefault={defaultControls.letterSpacing}
       >
         <LetterSpacingControl
           value={letterSpacing}
-          onChange={(newValue) => {
-            updateElementStyleProp(['typography', 'letterSpacing'], newValue);
-          }}
+          onChange={setLetterSpacing}
           size="__unstable-large"
           __unstableInputWidth="auto"
+        />
+      </ToolsPanelItem>
+      <ToolsPanelItem
+        className="single-column"
+        label={__('Text decoration')}
+        hasValue={hasTextDecoration}
+        onDeselect={() => setTextDecoration(defaultTextDecoration)}
+        isShownByDefault={defaultControls.textDecoration}
+      >
+        <TextDecorationControl
+          value={textDecoration}
+          onChange={setTextDecoration}
+          size="__unstable-large"
+          __unstableInputWidth="auto"
+        />
+      </ToolsPanelItem>
+      <ToolsPanelItem
+        label={__('Letter case')}
+        hasValue={hasTextTransform}
+        onDeselect={() => setTextTransform(defaultTextTransform)}
+        isShownByDefault={defaultControls.textTransform}
+      >
+        <TextTransformControl
+          value={textTransform}
+          onChange={setTextTransform}
+          showNone
+          isBlock
+          size="__unstable-large"
+          __nextHasNoMarginBottom
         />
       </ToolsPanelItem>
     </ToolsPanel>

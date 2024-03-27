@@ -110,6 +110,8 @@ class EmailEditor {
       'fontWeight' => Builder::string()->nullable(),
       'letterSpacing' => Builder::string()->nullable(),
       'lineHeight' => Builder::string()->nullable(),
+      'textTransform' => Builder::string()->nullable(),
+      'textDecoration' => Builder::string()->nullable(),
     ])->nullable();
     return Builder::object([
       'version' => Builder::integer(),

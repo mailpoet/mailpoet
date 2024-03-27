@@ -14,17 +14,28 @@ import {
   CardBody,
 } from '@wordpress/components';
 import { useEmailStyles } from '../../../hooks';
+import { getElementStyles } from '../utils';
 
 function ElementItem({ element, label }: { element: string; label: string }) {
   const { styles } = useEmailStyles();
+  const elementStyles = getElementStyles(styles, element, null, true);
 
-  const { fontFamily, fontStyle, fontWeight, letterSpacing } =
-    styles.typography;
+  const {
+    fontFamily,
+    fontStyle,
+    fontWeight,
+    letterSpacing,
+    textDecoration,
+    textTransform,
+  } = elementStyles.typography;
+
+  const textColor = elementStyles.color?.text || 'inherit';
+  const backgroundColor = elementStyles.color?.background || '#f0f0f0';
 
   const extraStyles =
     element === 'link'
       ? {
-          textDecoration: 'underline',
+          textDecoration: textDecoration ?? 'underline',
         }
       : {};
 
@@ -45,9 +56,13 @@ function ElementItem({ element, label }: { element: string; label: string }) {
             className="edit-site-global-styles-screen-typography__indicator"
             style={{
               fontFamily: fontFamily ?? 'serif',
+              background: backgroundColor,
+              color: textColor,
               fontStyle,
               fontWeight,
               letterSpacing,
+              textDecoration,
+              textTransform,
               ...extraStyles,
             }}
           >
@@ -70,9 +85,9 @@ export function TypographyPanel() {
           </Heading>
           <ItemGroup isBordered isSeparated size="small">
             <ElementItem element="text" label={__('Text', 'mailpoet')} />
-            <ElementItem element="link" label={__('Link', 'mailpoet')} />
-            <ElementItem element="heading" label={__('Heading', 'mailpoet')} />
-            <ElementItem element="button" label={__('Button', 'mailpoet')} />
+            <ElementItem element="link" label={__('Links', 'mailpoet')} />
+            <ElementItem element="heading" label={__('Headings', 'mailpoet')} />
+            <ElementItem element="button" label={__('Buttons', 'mailpoet')} />
           </ItemGroup>
         </VStack>
       </CardBody>
