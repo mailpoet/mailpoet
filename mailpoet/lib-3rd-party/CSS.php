@@ -130,8 +130,9 @@ class CSS {
   }
 
   function parseCSS($text) {
-    $css  = new csstidy();
+    $css = new csstidy();
     $css->settings['compress_colors'] = false;
+    // Disable shorthand optimisation--this breaks `padding: calc() calc()` style rules.
     $css->settings['optimise_shorthands'] = 0;
     $css->parse($text);
 
