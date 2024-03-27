@@ -54,7 +54,7 @@ class Heading implements BlockRenderer {
 
     return '
       <!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><![endif]-->
-        <div style="margin-top: ' . $marginTop . ';">
+        <div style="margin-top: ' . esc_attr($marginTop) . ';">
           <table
             role="presentation"
             border="0"
