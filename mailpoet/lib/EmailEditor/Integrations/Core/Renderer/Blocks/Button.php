@@ -67,7 +67,6 @@ class Button extends AbstractBlockRenderer {
         ]),
         'typography' => [
           'fontSize' => $parsedBlock['email_attrs']['font-size'] ?? 'inherit',
-          'textDecoration' => $parsedBlock['email_attrs']['text-decoration'] ?? 'none',
         ],
       ],
       $blockAttributes['style'] ?? []

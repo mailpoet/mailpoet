@@ -1,9 +1,10 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+
 namespace MailPoetVendor;
 
+use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoet\Util\pQuery\pQuery;
-use MailPoet\Newsletter\Renderer\EscapeHelper as EHelper;
 
 /*
   Copyright 2013-2014, François-Marie de Jouvencel
@@ -131,19 +132,20 @@ class CSS {
   function parseCSS($text) {
     $css  = new csstidy();
     $css->settings['compress_colors'] = false;
+    $css->settings['optimise_shorthands'] = 0;
     $css->parse($text);
 
-    $rules    = [];
-    $position   = 0;
+    $rules = [];
+    $position = 0;
 
     foreach ($css->css as $declarations) {
       foreach ($declarations as $selectors => $properties) {
         foreach (explode(",", $selectors) as $selector) {
           $rules[] = [
-            'position'    => $position,
-            'specificity'   => $this->calculateCSSSpecifity($selector),
-            'selector'    => $selector,
-            'properties'  => $properties,
+            'position' => $position,
+            'specificity' => $this->calculateCSSSpecifity($selector),
+            'selector' => $selector,
+            'properties' => $properties,
           ];
         }
 
