@@ -108,9 +108,9 @@ export async function newsletterPostNotification() {
       await page.waitForSelector('.mailpoet-wizard-step');
       describe(emailsPageTitle, () => {
         describe('newsletter-post-notification: should be able to see confirmation page for the first time', () => {
-          expect(page.locator('h1')).to.contain(
-            'You are all set up and ready to go!',
-          );
+          expect(
+            page.locator('.mailpoet-congratulate > h1').innerText(),
+          ).to.contain('You are all set up and ready to go!');
         });
       });
 
