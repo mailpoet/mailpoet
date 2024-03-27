@@ -70,6 +70,13 @@ export async function newsletterPostNotification() {
       fullPage: fullPageSet,
     });
 
+    // Try to close the tutorial video popup
+    try {
+      await page.locator('#mailpoet_modal_close').click({ timeout: 5000 });
+    } catch (error) {
+      console.log("Tutorial video wasn't present, skipping action.");
+    }
+
     // Click to proceed to the next step (the last one)
     await Promise.all([
       page.waitForNavigation(),
