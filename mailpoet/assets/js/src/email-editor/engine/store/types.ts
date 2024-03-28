@@ -56,7 +56,13 @@ export type EmailStyles = {
     letterSpacing: string;
     lineHeight: string;
     textDecoration: string;
-    textTransform: string;
+    textTransform:
+      | 'none'
+      | 'capitalize'
+      | 'uppercase'
+      | 'lowercase'
+      | 'full-width'
+      | 'full-size-kana';
   };
   elements: {
     heading: {
@@ -71,7 +77,13 @@ export type EmailStyles = {
         letterSpacing: string;
         lineHeight: string;
         textDecoration: string;
-        textTransform: string;
+        textTransform:
+          | 'none'
+          | 'capitalize'
+          | 'uppercase'
+          | 'lowercase'
+          | 'full-width'
+          | 'full-size-kana';
       };
     };
   };
