@@ -57,6 +57,7 @@ export function TokenField({
       {...args}
       value={selectedValues}
       suggestions={suggestedValues}
+      tokenizeOnBlur
       onChange={(tokens) => handleSave(tokens, onChange)}
       __experimentalShowHowTo={false}
     />
