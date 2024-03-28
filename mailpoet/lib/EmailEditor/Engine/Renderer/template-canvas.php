@@ -15,28 +15,28 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="format-detection" content="telephone=no" />
   <style type="text/css">
-    <?php echo $templateStyles; // @phpstan-ignore-line ?>
+    <?php echo $templateStyles; ?>
   </style>
 </head>
-<body style="word-spacing:normal;background:<?php echo esc_attr($layoutBackground); // @phpstan-ignore-line ?>;">
-    <div class="email_layout_wrapper" style="background:<?php echo esc_attr($layoutBackground); // @phpstan-ignore-line ?>">
-      <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" width="<?php echo esc_attr($width); // @phpstan-ignore-line ?>" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-      <div style="margin:0px auto;max-width:<?php echo esc_attr($width); // @phpstan-ignore-line ?>">
+<body style="word-spacing:normal;background:<?php echo esc_attr($layoutBackground); ?>;">
+    <div class="email_layout_wrapper" style="background:<?php echo esc_attr($layoutBackground); ?>">
+      <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" width="<?php echo esc_attr($width); ?>" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
+      <div style="margin:0px auto;max-width:<?php echo esc_attr($width); ?>">
         <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
           <tbody>
             <tr>
               <td class="email_preheader" height="1">
-                <?php echo $preHeader; // @phpstan-ignore-line ?>
+                <?php echo $preHeader; ?>
               </td>
             </tr>
             <tr>
-              <td class="email_content_wrapper" style="font-family: <?php echo esc_attr($contentFontFamily); // @phpstan-ignore-line ?>;padding: <?php echo esc_attr(implode(' ', [$padding['top'], $padding['right'], $padding['bottom'], $padding['left']])); // @phpstan-ignore-line ?>;background: <?php echo esc_attr($contentBackground); // @phpstan-ignore-line ?>;">
-                <?php echo $templateHtml; // @phpstan-ignore-line ?>
+              <td class="email_content_wrapper" style="font-family: <?php echo esc_attr($contentFontFamily); ?>;padding: <?php echo esc_attr(implode(' ', [$padding['top'], $padding['right'], $padding['bottom'], $padding['left']])); ?>;background: <?php echo esc_attr($contentBackground); ?>;">
+                <?php echo $templateHtml; ?>
               </td>
             </tr>
             <tr>
               <td class="email_footer">
-                <?php echo $logoHtml; // @phpstan-ignore-line ?>
+                <?php echo $logoHtml; ?>
               </td>
             </tr>
           </tbody>

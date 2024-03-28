@@ -15,7 +15,6 @@ use MailPoetVendor\Html2Text\Html2Text;
 class Renderer {
   private CssInliner $cssInliner;
   private SettingsController $settingsController;
-  private ThemeController $themeController;
   private ContentRenderer $contentRenderer;
   private CdnAssetUrl $cdnAssetUrl;
   private ServicesChecker $servicesChecker;
