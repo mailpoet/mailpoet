@@ -47,7 +47,7 @@ class RendererTest extends \MailPoetTest {
     ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $headingHtml = $this->extractBlockHtml($rendered['html'], 'wp-block-heading', 'h1');
-    verify($headingHtml)->stringContainsString('font-size:48px'); // large is 48px
+    verify($headingHtml)->stringContainsString('font-size:42px'); // large is 42px in theme.json
   }
 
   public function testItInlinesHeadingColors() {
