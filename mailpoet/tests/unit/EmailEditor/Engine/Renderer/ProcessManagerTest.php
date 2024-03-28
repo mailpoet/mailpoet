@@ -8,6 +8,7 @@ use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\BlocksWid
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\CleanupPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\SpacingPreprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\TypographyPreprocessor;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ProcessManager;
 
 class ProcessManagerTest extends \MailPoetUnitTest {
   public function testItCallsPreprocessorsProperly(): void {
@@ -43,5 +44,9 @@ class ProcessManagerTest extends \MailPoetUnitTest {
 
     $variables = $this->createMock(VariablesPostprocessor::class);
     $variables->expects($this->once())->method('postprocess')->willReturn('');
+
+    $processManager = new ProcessManager($cleanup, $blocksWidth, $typography, $spacing, $highlighting, $variables);
+    verify($processManager->preprocess([], $layout, $styles))->equals([]);
+    verify($processManager->postprocess(''))->equals('');
   }
 }
