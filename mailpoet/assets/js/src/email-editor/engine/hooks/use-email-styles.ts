@@ -12,7 +12,13 @@ interface TypographyProperties {
   letterSpacing: string;
   lineHeight: string;
   textDecoration: string;
-  textTransform: string;
+  textTransform:
+    | 'none'
+    | 'capitalize'
+    | 'uppercase'
+    | 'lowercase'
+    | 'full-width'
+    | 'full-size-kana';
 }
 interface ElementProperties {
   typography: TypographyProperties;
