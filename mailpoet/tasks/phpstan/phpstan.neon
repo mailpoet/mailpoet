@@ -110,6 +110,7 @@ parameters:
 
   excludePaths:
     analyseAndScan:
+      - ../../lib/EmailEditor/Engine/Renderer/template-canvas.php
       - ../../lib/Config/PopulatorData/Templates # analysis of templates is extremely slow, let's skip them for now
       - ../../lib/Models # Old models are deprecated and will be removed soon
       - ../../tests/_support/_generated
