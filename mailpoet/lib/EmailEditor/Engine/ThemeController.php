@@ -67,8 +67,22 @@ class ThemeController {
     $elementsStyles = $this->getTheme()->get_raw_data()['styles']['elements'] ?? [];
     $cssElements = '';
     foreach ($elementsStyles as $key => $elementsStyle) {
-      $styles = wp_style_engine_get_styles($elementsStyle);
-      $cssElements .= "{$key} {{$styles['css']}} \n";
+      $selector = $key;
+
+      if ($key === 'heading') {
+        $selector = 'h1, h2, h3, h4, h5, h6';
+      }
+
+      if ($key === 'link') {
+        // Target direct decendants of blocks to avoid styling buttons. :not() is not supported by the inliner.
+        $selector = 'p > a, div > a, li > a';
+      }
+
+      if ($key === 'button') {
+        $selector = '.wp-block-button';
+      }
+
+      $cssElements .= wp_style_engine_get_styles($elementsStyle, ['selector' => $selector])['css'];
     }
 
     $result = $cssPresets . $cssBlocks . $cssElements;

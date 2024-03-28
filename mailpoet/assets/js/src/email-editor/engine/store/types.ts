@@ -48,14 +48,42 @@ export type EmailStyles = {
     };
     text: string;
   };
+  typography: {
+    fontSize: string;
+    fontFamily: string;
+    fontStyle: string;
+    fontWeight: string;
+    letterSpacing: string;
+    lineHeight: string;
+    textDecoration: string;
+    textTransform:
+      | 'none'
+      | 'capitalize'
+      | 'uppercase'
+      | 'lowercase'
+      | 'full-width'
+      | 'full-size-kana';
+  };
   elements: {
-    h1: {
+    heading: {
       color: {
         text: string;
       };
       typography: {
+        fontSize: string;
         fontFamily: string;
+        fontStyle: string;
         fontWeight: string;
+        letterSpacing: string;
+        lineHeight: string;
+        textDecoration: string;
+        textTransform:
+          | 'none'
+          | 'capitalize'
+          | 'uppercase'
+          | 'lowercase'
+          | 'full-width'
+          | 'full-size-kana';
       };
     };
   };

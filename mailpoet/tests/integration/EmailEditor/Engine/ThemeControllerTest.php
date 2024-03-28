@@ -66,8 +66,8 @@ class ThemeControllerTest extends \MailPoetTest {
 
   public function testItCanTranslateFontSizeSlug() {
     verify($this->themeController->translateSlugToFontSize('small'))->equals('13px');
-    verify($this->themeController->translateSlugToFontSize('medium'))->equals('20px');
-    verify($this->themeController->translateSlugToFontSize('large'))->equals('36px');
+    verify($this->themeController->translateSlugToFontSize('medium'))->equals('16px');
+    verify($this->themeController->translateSlugToFontSize('large'))->equals('28px');
     verify($this->themeController->translateSlugToFontSize('x-large'))->equals('42px');
     verify($this->themeController->translateSlugToFontSize('unknown'))->equals('unknown');
   }

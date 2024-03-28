@@ -5,7 +5,7 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
-import { storeName } from '../../store';
+import { storeName } from '../../../store';
 
 const firstFrame = {
   start: {
@@ -64,10 +64,12 @@ export function Preview({
     [],
   );
 
-  const backgroundColor = styles.color.background.content;
-  const headingFontFamily = styles.elements.h1.typography.fontFamily;
-  const headingColor = styles.elements.h1.color.text;
-  const headingFontWeight = styles.elements.h1.typography.fontWeight;
+  const backgroundColor = styles?.color?.background?.content || '#ffffff';
+  const headingFontFamily =
+    styles?.elements?.heading?.typography?.fontFamily || 'inherit';
+  const headingColor = styles?.elements?.heading?.color?.text || 'inherit';
+  const headingFontWeight =
+    styles?.elements?.heading?.typography?.fontWeight || 'inherit';
 
   const paletteColors = colors.theme.concat(colors.theme);
 
