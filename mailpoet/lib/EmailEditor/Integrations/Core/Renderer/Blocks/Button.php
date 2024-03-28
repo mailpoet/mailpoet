@@ -95,7 +95,7 @@ class Button extends AbstractBlockRenderer {
       esc_attr($linkStyles->classname),
       esc_attr($linkStyles->css),
       esc_url($buttonUrl),
-      wp_kses_post($buttonText),
+      $buttonText,
     );
   }
 }
