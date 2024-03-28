@@ -52,8 +52,6 @@ class Columns extends AbstractBlockRenderer {
     $contentCSS = WP_Style_Engine::compile_css($cellStyles, '');
     $layoutCSS = WP_Style_Engine::compile_css([
       'margin-top' => $parsedBlock['email_attrs']['margin-top'] ?? '0px',
-      'padding-left' => $block_attributes['align'] !== 'full' ? $settingsController->getEmailStyles()['spacing']['padding']['left'] : '0px',
-      'padding-right' => $block_attributes['align'] !== 'full' ? $settingsController->getEmailStyles()['spacing']['padding']['right'] : '0px',
     ], '');
     $tableWidth = $block_attributes['align'] !== 'full' ? $block_attributes['width'] : '100%';
 
