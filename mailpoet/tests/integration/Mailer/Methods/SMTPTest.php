@@ -107,7 +107,10 @@ class SMTPTest extends \MailPoetTest {
     verify($mailer->Subject)->equals($this->newsletter['subject']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($mailer->Body)->equals($this->newsletter['body']['html']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($mailer->AltBody)->equals($this->newsletter['body']['text']); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    verify($mailer->getCustomHeaders())->equals([['List-Unsubscribe', '<https://www.mailpoet.com>']]);
+    verify($mailer->getCustomHeaders())->equals([
+      ['List-Unsubscribe-Post', 'List-Unsubscribe=One-Click'],
+      ['List-Unsubscribe', '<https://www.mailpoet.com>'],
+    ]);
   }
 
   public function testItCanProcessSubscriber() {
