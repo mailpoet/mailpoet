@@ -181,22 +181,22 @@
         {
           "name": "small",
           "size": "13px",
-          "slug": "13"
+          "slug": "small"
         },
         {
           "name": "medium",
           "size": "16px",
-          "slug": "16"
+          "slug": "medium"
         },
         {
           "name": "large",
           "size": "28px",
-          "slug": "28"
+          "slug": "large"
         },
         {
           "name": "extra-large",
           "size": "42px",
-          "slug": "42"
+          "slug": "x-large"
         }
       ]
     },
