@@ -16,7 +16,7 @@ class ContentRenderer {
   public function __construct(
     ProcessManager $preprocessManager,
     BlocksRegistry $blocksRegistry,
-    SettingsController $settingsController,
+    SettingsController $settingsController
   ) {
     $this->processManager = $preprocessManager;
     $this->blocksRegistry = $blocksRegistry;
