@@ -185,6 +185,24 @@ export interface EmailFormItem extends FormItem {
   clicks?: string;
 }
 
+export type DynamicSegment = {
+  id: number;
+  name: string;
+  description?: string;
+  status?: string;
+  stats: string;
+  count_all: string;
+  count_subscribed: string;
+  created_at: string;
+  deleted_at: string;
+  subscribers_url: string;
+  selected?: boolean;
+  is_plugin_missing: boolean;
+  missing_plugin_message?: {
+    message: string;
+  };
+};
+
 export type Segment = {
   id?: number;
   name?: string;
@@ -316,6 +334,12 @@ export interface SegmentFormDataWindow extends Window {
   mailpoet_automations: Automation[];
 }
 
+export type DynamicSegmentGroup = {
+  name: string;
+  label: string;
+  count: number;
+};
+
 export interface StateType {
   products: WindowProducts;
   membershipPlans: WindowMembershipPlans;
@@ -342,9 +366,20 @@ export interface StateType {
   signupForms: SignupForm[];
   automations: Automation[];
   previousPage: string;
+  dynamicSegments: DynamicSegmentsList;
+  dynamicSegmentSelection: Record<number, boolean>;
 }
 
+export type DynamicSegmentsList = {
+  data: DynamicSegment[] | null;
+  meta: {
+    count: number;
+    groups: DynamicSegmentGroup[];
+  };
+};
+
 export enum Actions {
+  SET_DYNAMIC_SEGMENTS = 'SET_DYNAMIC_SEGMENTS',
   SET_SEGMENT = 'SET_SEGMENT',
   SET_ERRORS = 'SET_ERRORS',
   SET_PREVIOUS_PAGE = 'SET_PREVIOUS_PAGE',
@@ -352,7 +387,13 @@ export enum Actions {
   UPDATE_SEGMENT = 'UPDATE_SEGMENT',
   UPDATE_SEGMENT_FILTER = 'UPDATE_SEGMENT_FILTER',
   UPDATE_SUBSCRIBER_COUNT = 'UPDATE_SUBSCRIBER_COUNT',
+  SELECT_DYNAMIC_SEGMENT = 'SELECT_DYNAMIC_SEGMENT',
+  UNSELECT_DYNAMIC_SEGMENT = 'UNSELECT_DYNAMIC_SEGMENT',
+  SELECT_ALL_DYNAMIC_SEGMENTS = 'SELECT_ALL_DYNAMIC_SEGMENTS',
+  UNSELECT_ALL_DYNAMIC_SEGMENTS = 'UNSELECT_ALL_DYNAMIC_SEGMENTS',
 }
+
+export type DynamicSegmentAction = 'trash' | 'restore' | 'delete' | null;
 
 export interface ActionType {
   type: Actions;
@@ -364,6 +405,14 @@ export type UpdateSegmentActionData =
   | { description: string }
   | { filters: AnyFormItem[] }
   | { filters_connect: SegmentConnectTypes };
+
+export interface SelectDynamicSegmentActionType extends ActionType {
+  segment: DynamicSegment;
+}
+
+export interface SetDynamicSegmentsActionType extends ActionType {
+  dynamicSegments: DynamicSegmentsList;
+}
 
 export interface SetSegmentActionType extends ActionType {
   segment: UpdateSegmentActionData;

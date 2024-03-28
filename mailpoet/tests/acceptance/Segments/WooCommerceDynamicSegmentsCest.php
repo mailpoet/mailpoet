@@ -103,17 +103,17 @@ class WooCommerceDynamicSegmentsCest {
     $i->wantTo('Check subscriber is in category segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::CATEGORY_SEGMENT);
-    $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->getId()}']";
-    $i->see('2', $categorySegmentRow . " [data-colname='Number of subscribers']");
-    $i->clickItemRowActionByItemName(self::CATEGORY_SEGMENT, 'View Subscribers');
+    $categorySegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->categorySegment->getId()}']";
+    $i->see('2', $categorySegmentSubscribedElement);
+    $this->clickAction($i, $this->categorySegment, 'View subscribers');
     $i->waitForText($customerEmail);
 
     $i->wantTo('Check subscriber is in product segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::PRODUCT_SEGMENT);
-    $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
-    $i->see('2', $productSegmentRow . " [data-colname='Number of subscribers']");
-    $i->clickItemRowActionByItemName(self::PRODUCT_SEGMENT, 'View Subscribers');
+    $productSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->productSegment->getId()}']";
+    $i->see('2', $productSegmentSubscribedElement);
+    $this->clickAction($i, $this->productSegment, 'View subscribers');
     $i->waitForText($customerEmail);
     $i->waitForText($guestEmail);
   }
@@ -136,17 +136,19 @@ class WooCommerceDynamicSegmentsCest {
     $i->wantTo('Check subscriber is in category segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::CATEGORY_SEGMENT);
-    $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->getId()}']";
-    $i->see('2', $categorySegmentRow . " [data-colname='Number of subscribers']");
-    $i->clickItemRowActionByItemName(self::CATEGORY_SEGMENT, 'View Subscribers');
+    $categorySegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->categorySegment->getId()}']";
+
+    $i->see('2', $categorySegmentSubscribedElement);
+    $this->clickAction($i, $this->categorySegment, 'View subscribers');
     $i->waitForText($customerEmail);
     $i->waitForText($guestEmail);
 
     $i->wantTo('Check subscriber is in product segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::PRODUCT_SEGMENT);
-    $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
-    $i->see('0', $productSegmentRow . " [data-colname='Number of subscribers']");
+    $productSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->productSegment->getId()}']";
+
+    $i->see('0', $productSegmentSubscribedElement);
   }
 
   public function checkThatCustomersAreAddedToNumberOfOrdersSegment(\AcceptanceTester $i) {
@@ -164,9 +166,10 @@ class WooCommerceDynamicSegmentsCest {
     $i->wantTo('Check there is one subscriber in the number of orders segments (the segment was configured to match customers that placed one order in the last day)');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::NUMBER_OF_ORDERS_SEGMENT);
-    $numberOfOrdersSegmentRow = "[data-automation-id='listing_item_{$this->numberOfOrdersSegment->getId()}']";
-    $i->see('1', $numberOfOrdersSegmentRow . " [data-colname='Number of subscribers']");
-    $i->clickItemRowActionByItemName(self::NUMBER_OF_ORDERS_SEGMENT, 'View Subscribers');
+    $numberOfOrdersSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->numberOfOrdersSegment->getId()}']";
+
+    $i->see('1', $numberOfOrdersSegmentSubscribedElement);
+    $this->clickAction($i, $this->numberOfOrdersSegment, 'View subscribers');
     $i->waitForText($customer1Email);
   }
 
@@ -189,9 +192,10 @@ class WooCommerceDynamicSegmentsCest {
     $i->wantTo('Check that there is one subscriber in the single order value segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::SINGLE_ORDER_VALUE_SEGMENT);
-    $singleOrderValueSegmentRow = "[data-automation-id='listing_item_{$this->singleOrderValueSegment->getId()}']";
-    $i->see('1', $singleOrderValueSegmentRow . " [data-colname='Number of subscribers']");
-    $i->clickItemRowActionByItemName(self::SINGLE_ORDER_VALUE_SEGMENT, 'View Subscribers');
+    $singleOrderValueSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->singleOrderValueSegment->getId()}']";
+
+    $i->see('1', $singleOrderValueSegmentSubscribedElement);
+    $this->clickAction($i, $this->singleOrderValueSegment, 'View subscribers');
     $i->waitForText($customerEmail2);
     $i->dontSee($customerEmail1);
   }
@@ -211,9 +215,10 @@ class WooCommerceDynamicSegmentsCest {
     $i->wantTo('Check that there is one subscriber in the total spent segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::TOTAL_SPENT_SEGMENT);
-    $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->totalSpentSegment->getId()}']";
-    $i->see('1', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
-    $i->clickItemRowActionByItemName(self::TOTAL_SPENT_SEGMENT, 'View Subscribers');
+    $totalSpentSegmentSubscribedElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->totalSpentSegment->getId()}']";
+
+    $i->see('1', $totalSpentSegmentSubscribedElement);
+    $this->clickAction($i, $this->totalSpentSegment, 'View subscribers');
     $i->waitForText($customerEmail);
   }
 
@@ -234,9 +239,9 @@ class WooCommerceDynamicSegmentsCest {
     $i->wantTo('Check that there is one subscriber in customer country segment');
     $i->amOnMailpoetPage('Segments');
     $i->waitForText(self::CUSTOMER_IN_COUNTRY);
-    $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->customerCountrySegment->getId()}']";
-    $i->see('2', $totalSpentSegmentRow . " [data-colname='Number of subscribers']");
-    $i->clickItemRowActionByItemName(self::CUSTOMER_IN_COUNTRY, 'View Subscribers');
+    $customerInCountryCountElement = "[data-automation-id='mailpoet_dynamic_segment_count_all_{$this->customerCountrySegment->getId()}']";
+    $i->see('2', $customerInCountryCountElement);
+    $this->clickAction($i, $this->customerCountrySegment, 'View subscribers');
     $i->waitForText($customerEmail);
     $i->waitForText($guestEmail);
   }
@@ -251,23 +256,37 @@ class WooCommerceDynamicSegmentsCest {
     $i->wantTo('Check that message is visible instead of count of subscribers');
     $i->waitForText(self::CATEGORY_SEGMENT);
     $message = 'Activate the WooCommerce plugin to see the number of subscribers and enable the editing of this segment.';
-    $categorySegmentRow = "[data-automation-id='listing_item_{$this->categorySegment->getId()}']";
-    $i->see($message, $categorySegmentRow . " [data-colname='Missing plugin message']");
-    $productSegmentRow = "[data-automation-id='listing_item_{$this->productSegment->getId()}']";
-    $i->see($message, $productSegmentRow . " [data-colname='Missing plugin message']");
-    $numberOfOrdersSegmentRow = "[data-automation-id='listing_item_{$this->numberOfOrdersSegment->getId()}']";
-    $i->see($message, $numberOfOrdersSegmentRow . " [data-colname='Missing plugin message']");
-    $totalSpentSegmentRow = "[data-automation-id='listing_item_{$this->totalSpentSegment->getId()}']";
-    $i->see($message, $totalSpentSegmentRow . " [data-colname='Missing plugin message']");
-    $customerCountrySegmentRow = "[data-automation-id='listing_item_{$this->customerCountrySegment->getId()}']";
-    $i->see($message, $customerCountrySegmentRow . " [data-colname='Missing plugin message']");
+    $categorySegmentRow = "[data-automation-id='mailpoet_dynamic_segment_plugin_missing_message_{$this->categorySegment->getId()}']";
+    $i->see($message, $categorySegmentRow);
+    $productSegmentRow = "[data-automation-id='mailpoet_dynamic_segment_plugin_missing_message_{$this->productSegment->getId()}']";
+    $i->see($message, $productSegmentRow);
+    $numberOfOrdersSegmentRow = "[data-automation-id='mailpoet_dynamic_segment_plugin_missing_message_{$this->numberOfOrdersSegment->getId()}']";
+    $i->see($message, $numberOfOrdersSegmentRow);
+    $totalSpentSegmentRow = "[data-automation-id='mailpoet_dynamic_segment_plugin_missing_message_{$this->totalSpentSegment->getId()}']";
+    $i->see($message, $totalSpentSegmentRow);
+    $customerCountrySegmentRow = "[data-automation-id='mailpoet_dynamic_segment_plugin_missing_message_{$this->customerCountrySegment->getId()}']";
+    $i->see($message, $customerCountrySegmentRow);
 
     $i->wantTo('Check that Edit links are not clickable');
-    $i->assertAttributeContains($categorySegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
-    $i->assertAttributeContains($productSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
-    $i->assertAttributeContains($numberOfOrdersSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
-    $i->assertAttributeContains($totalSpentSegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
-    $i->assertAttributeContains($customerCountrySegmentRow . ' .mailpoet-listing-actions span.edit_disabled', 'class', 'mailpoet-disabled');
+    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->categorySegment->getId()}]", 'disabled', '');
+    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->productSegment->getId()}]", 'disabled', '');
+    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->numberOfOrdersSegment->getId()}]", 'disabled', '');
+    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->totalSpentSegment->getId()}]", 'disabled', '');
+    $i->assertAttributeContains("[data-automation-id=mailpoet_dynamic_segment_edit_button_{$this->customerCountrySegment->getId()}]", 'disabled', '');
     $i->seeNoJSErrors();
+  }
+
+  private function clickAction(\AcceptanceTester $i, SegmentEntity $segmentEntity, $actionName) {
+    $column = sprintf('[data-automation-id="mailpoet_dynamic_segment_actions_%d"]', $segmentEntity->getId());
+
+    switch ($actionName) {
+      case 'View subscribers':
+        $actionName = 'a';
+        break;
+      case 'Edit':
+        $actionName = 'a:nth-child(2)';
+        break;
+    }
+    $i->click($actionName, $column);
   }
 }

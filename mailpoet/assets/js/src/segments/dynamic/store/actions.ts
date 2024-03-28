@@ -1,5 +1,6 @@
 import { ChangeEvent } from 'react';
-import { select } from '@wordpress/data';
+import { select, dispatch } from '@wordpress/data';
+import { store as noticesStore } from '@wordpress/notices';
 import { MailPoet } from 'mailpoet';
 
 import * as ROUTES from '../../routes';
@@ -16,8 +17,13 @@ import {
   Segment,
   SegmentTemplate,
   SetPreviousPageActionType,
+  DynamicSegmentsList,
+  SelectDynamicSegmentActionType,
+  DynamicSegment,
 } from '../types';
 import { storeName } from './constants';
+import { isErrorResponse } from '../../../ajax';
+import { Query, getSegmentsQuery } from '../list/query';
 
 export function setSegment(segment: AnyFormItem): SetSegmentActionType {
   return {
@@ -152,6 +158,7 @@ export function* handleSave(
     if (newsletterId && savedSegmentId) {
       window.location.href = `admin.php?page=mailpoet-newsletters#/send/${newsletterId}?filterSegmentId=${savedSegmentId}`;
     } else {
+      void dispatch(storeName).loadDynamicSegments();
       window.location.href = 'admin.php?page=mailpoet-segments#/segments';
 
       if (isNewSegment) {
@@ -220,5 +227,67 @@ export function setPreviousPage(data: string): SetPreviousPageActionType {
   return {
     type: Actions.SET_PREVIOUS_PAGE,
     previousPage: data,
+  };
+}
+
+export async function loadDynamicSegments(query?: Query) {
+  const segmentsQuery = query ?? getSegmentsQuery();
+
+  let data: DynamicSegmentsList = {
+    data: [],
+    meta: { count: 0, groups: [] },
+  };
+
+  try {
+    const response = await MailPoet.Ajax.post({
+      api_version: 'v1',
+      endpoint: 'dynamic_segments',
+      action: 'listing',
+      data: segmentsQuery,
+    });
+    const keys = Object.keys(response);
+    if (keys.includes('data') && keys.includes('meta')) {
+      data = response as DynamicSegmentsList;
+    }
+  } catch (res: unknown) {
+    if (isErrorResponse(res)) {
+      const errors = res.errors.map((error) => error.message).join(', ');
+      void dispatch(noticesStore).createErrorNotice(errors);
+    }
+  }
+
+  return {
+    type: 'SET_DYNAMIC_SEGMENTS',
+    dynamicSegments: data,
+  } as const;
+}
+
+export function selectDynamicSection(
+  segment: DynamicSegment,
+): SelectDynamicSegmentActionType {
+  return {
+    type: Actions.SELECT_DYNAMIC_SEGMENT,
+    segment,
+  };
+}
+
+export function unselectDynamicSection(
+  segment: DynamicSegment,
+): SelectDynamicSegmentActionType {
+  return {
+    type: Actions.UNSELECT_DYNAMIC_SEGMENT,
+    segment,
+  };
+}
+
+export function selectAllDynamicSections(): ActionType {
+  return {
+    type: Actions.SELECT_ALL_DYNAMIC_SEGMENTS,
+  };
+}
+
+export function unselectAllDynamicSections(): ActionType {
+  return {
+    type: Actions.UNSELECT_ALL_DYNAMIC_SEGMENTS,
   };
 }

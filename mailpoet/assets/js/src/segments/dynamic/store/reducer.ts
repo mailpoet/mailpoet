@@ -8,8 +8,85 @@ import {
   SetSubscriberCountActionType,
   StateType,
   SetPreviousPageActionType,
+  SelectDynamicSegmentActionType,
+  SetDynamicSegmentsActionType,
 } from '../types';
 import { getSegmentInitialState } from './initial-state';
+
+function setDynamicSegments(
+  state: StateType,
+  action: SetDynamicSegmentsActionType,
+): StateType {
+  return {
+    ...state,
+    dynamicSegments: action.dynamicSegments,
+  };
+}
+
+function setAllDynamicSegmentsSelected(state: StateType): StateType {
+  const data = state.dynamicSegments.data.map((segment) => ({
+    ...segment,
+    selected: true,
+  }));
+  return {
+    ...state,
+    dynamicSegments: {
+      ...state.dynamicSegments,
+      data: [...data],
+    },
+  };
+}
+
+function setAllDynamicSegmentsUnselected(state: StateType): StateType {
+  const data = state.dynamicSegments.data.map((segment) => ({
+    ...segment,
+    selected: false,
+  }));
+  return {
+    ...state,
+    dynamicSegments: {
+      ...state.dynamicSegments,
+      data: [...data],
+    },
+  };
+}
+
+function setSelectDynamicSegment(
+  state: StateType,
+  action: SelectDynamicSegmentActionType,
+): StateType {
+  const data = state.dynamicSegments.data;
+  const index = data.findIndex((segment) => segment.id === action.segment.id);
+  data.splice(index, 1, {
+    ...action.segment,
+    selected: true,
+  });
+  return {
+    ...state,
+    dynamicSegments: {
+      ...state.dynamicSegments,
+      data: [...data],
+    },
+  };
+}
+function setUnselectDynamicSegment(
+  state: StateType,
+  action: SelectDynamicSegmentActionType,
+): StateType {
+  const data = state.dynamicSegments.data;
+  const index = data.findIndex((segment) => segment.id === action.segment.id);
+  data.splice(index, 1, {
+    ...action.segment,
+    selected: false,
+  });
+  return {
+    ...state,
+    dynamicSegments: {
+      ...state.dynamicSegments,
+      data: [...data],
+    },
+  };
+}
 
 function setSegment(state: StateType, action: SetSegmentActionType): StateType {
   return {
@@ -87,6 +164,25 @@ export const createReducer =
     action: ActionType,
   ): StateType => {
     switch (action.type) {
+      case Actions.UNSELECT_ALL_DYNAMIC_SEGMENTS:
+        return setAllDynamicSegmentsUnselected(state);
+      case Actions.SELECT_ALL_DYNAMIC_SEGMENTS:
+        return setAllDynamicSegmentsSelected(state);
+      case Actions.SET_DYNAMIC_SEGMENTS:
+        return setDynamicSegments(
+          state,
+          action as SetDynamicSegmentsActionType,
+        );
+      case Actions.SELECT_DYNAMIC_SEGMENT:
+        return setSelectDynamicSegment(
+          state,
+          action as SelectDynamicSegmentActionType,
+        );
+      case Actions.UNSELECT_DYNAMIC_SEGMENT:
+        return setUnselectDynamicSegment(
+          state,
+          action as SelectDynamicSegmentActionType,
+        );
       case Actions.SET_SEGMENT:
         return setSegment(state, action as SetSegmentActionType);
       case Actions.RESET_SEGMENT_AND_ERRORS:
