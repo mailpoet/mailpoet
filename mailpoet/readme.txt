@@ -99,7 +99,7 @@ MailPoet is available to download for free. Our free download includes all of th
 
 Or if you opt for a MailPoet plan, you’ll get access to the MailPoet Sending Service.
 
-A free Starter plan is available for those who want to get started with a few subscribers and would like to use the MailPoet Sending Service. And our paid plans offer features and functionality for those with larger lists who are looking to grow their business using email marketing.
+A free plan is available for those who want to get started with a few subscribers and would like to use the MailPoet Sending Service. And our paid plans offer features and functionality for those with larger lists who are looking to grow their business using email marketing.
 
 Take a look at [our pricing page](https://www.mailpoet.com/pricing) for full details on what’s included in each plan.
 
@@ -610,7 +610,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 * Added: filter allowing to configure PHPMailer when sending via SMTP;
 * Added: a coupon block in email editor;
 * Added: notice when a MailPoet subscription is pending approval;
-* Improved: Starter plan users are directed to upgrade their plan from the Upgrade page;
+* Improved: Free plan users are directed to upgrade their plan from the Upgrade page;
 * Improved: email templates now include coupon block;
 * Fixed: inactive subscribers weren't recalculated since August 2022. They'll be again recalculated within one week after updating. Sorry about this bug.
 
