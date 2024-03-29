@@ -28,7 +28,7 @@ Schedule your newsletters, send them right away, or set up new blog post notific
 
 Trusted by 700,000 WordPress websites since 2011.
 
-**With a free plan for up to 1,000 subscribers, and scaling paid plans with enhanced functionality available, MailPoet is an email marketing solution suitable for both beginners and proficient email marketers.**
+**With a free plan to get started, and scaling paid plans with enhanced functionality available, MailPoet is an email marketing solution suitable for both beginners and proficient email marketers.**
 
 [Visit our website for more information on plans and pricing](https://www.mailpoet.com/)
 
@@ -76,7 +76,7 @@ In addition, you’ll also be able to increase brand recognition by customizing 
 
 = MailPoet Sending Service =
 
-**The MailPoet Sending Service is free for your first 1,000 subscribers, with scaling plans available thereafter. [Read more.](https://www.mailpoet.com/pricing/)**
+**The MailPoet Sending Service is free if you only have a few subscribers, with scaling plans available thereafter. [Read more.](https://www.mailpoet.com/pricing/)**
 
 Sending emails and newsletters with your host is not a good idea. You might face sending speed limitations and see your emails ending up in the spam box.
 
@@ -99,7 +99,7 @@ MailPoet is available to download for free. Our free download includes all of th
 
 Or if you opt for a MailPoet plan, you’ll get access to the MailPoet Sending Service.
 
-A free Starter plan is available for those who have 1,000 subscribers or less and would like to use the MailPoet Sending Service. And our paid plans offer features and functionality for those with larger lists who are looking to grow their business using email marketing.
+A free Starter plan is available for those who want to get started with a few subscribers and would like to use the MailPoet Sending Service. And our paid plans offer features and functionality for those with larger lists who are looking to grow their business using email marketing.
 
 Take a look at [our pricing page](https://www.mailpoet.com/pricing) for full details on what’s included in each plan.
 
