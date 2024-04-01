@@ -20,7 +20,11 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login, selectInSelect2 } from '../utils/helpers.js';
+import {
+  login,
+  selectInSelect2,
+  waitForSelectorToBeVisible,
+} from '../utils/helpers.js';
 
 export async function automationTriggerWorkflow() {
   const page = browser.newPage();
@@ -100,13 +104,16 @@ export async function automationTriggerWorkflow() {
     );
 
     // Filter subscribers by subscribed email and completed status
+    await waitForSelectorToBeVisible(page, '.components-text-control__input');
+    await page.selectOption('#inspector-select-control-1', 'complete');
     await page.waitForLoadState('networkidle');
     await page
       .locator('.components-text-control__input')
       .type(subscriberEmail, { delay: 25 });
-    await page.selectOption('#inspector-select-control-1', 'complete');
-    await page.locator('.components-text-control__input').click();
-    await page.keyboard.press('Enter');
+    await page.waitForLoadState('networkidle');
+    await page
+      .locator('.mailpoet-analytics-filter > div > button.is-primary')
+      .click();
 
     await page.screenshot({
       path: screenshotPath + 'Automation_Trigger_Workflow_03.png',
