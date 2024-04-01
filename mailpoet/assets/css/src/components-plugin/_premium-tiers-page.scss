@@ -147,6 +147,12 @@
         position: absolute;
         right: 16px;
         visibility: hidden;
+
+        p {
+          color: $color-white;
+          font-size: 0.6875rem;
+          line-height: 1rem;
+        }
       }
 
       [role='tooltip']:has(+ .tp-trigger:hover),
