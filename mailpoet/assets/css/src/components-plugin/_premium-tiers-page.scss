@@ -124,6 +124,35 @@
     li {
       list-style-image: url('../../img/upgrade/plus.svg');
       margin-bottom: 8px;
+
+      .tp-wrapper {
+        position: relative;
+      }
+
+      em {
+        font-style: normal;
+        text-decoration: underline dotted $color-gutenberg-grey-600;
+        text-underline-offset: 3px;
+      }
+
+      [role='tooltip'] {
+        background-color: $color-gutenberg-grey-900;
+        border-radius: 2px;
+        bottom: 100%;
+        color: $color-white;
+        font-size: 0.6875rem;
+        left: -4px;
+        line-height: 1rem;
+        padding: 3px 6px;
+        position: absolute;
+        right: 16px;
+        visibility: hidden;
+      }
+
+      [role='tooltip']:has(+ .tp-trigger:hover),
+      [role='tooltip']:has(+ .tp-trigger:focus) {
+        visibility: visible;
+      }
     }
 
     &.free {

@@ -54,11 +54,50 @@
         <%= include('upgrade/upgrade_button.html', {label:__('Get Free'), button_class: 'is-secondary', tier: 0}) %>
         <ul class="free">
           <li><%= __('<b>1,500</b> emails per month, <b>500</b> emails per day') %></li>
-          <li><%= __('Basic email automations') %></li>
-          <li><%= __('Email and ecommerce marketing') %></li>
-          <li><%= __('Widget and popup subscription forms') %></li>
-          <li><%= __('Basic subscriber segmentation') %></li>
-          <li><%= __('Customizable  email templates') %></li>
+          <li>
+            <div class="tp-wrapper">
+              <div id="free-automations" role="tooltip">
+                <%= __('Automate communications with subscribers based on how and when they engage with your brand.') %>
+                <br />
+                <%= __('Welcome new subscribers or nudge customers to revisit their abandoned carts.') %>
+              </div>
+              <em aria-describedby="free-automations" class="tp-trigger" tabindex="0"><%= __('Basic email automations') %></em>
+            </div>
+          </li>
+          <li>
+            <div class="tp-wrapper">
+              <div id="free-email" role="tooltip">
+                <%= __('Send bulk promotional and informational newsletters and new post notifications to your subscribers.') %>
+              </div>
+              <em aria-describedby="free-email" class="tp-trigger" tabindex="0"><%= __('Email and ecommerce marketing') %></em>
+            </div>
+          </li>
+          <li>
+            <div class="tp-wrapper">
+              <div id="free-widgets" role="tooltip">
+                <%= __('Leverage built-in or create custom subscription forms to grow your email list. Includes popups, slide-ins, top/bottom bars and widgets.') %>
+              </div>
+              <em aria-describedby="free-widgets" class="tp-trigger" tabindex="0"><%= __('Widget and popup subscription forms') %></em>
+            </div>
+          </li>
+          <li>
+            <div class="tp-wrapper">
+              <div id="free-segmentation" role="tooltip">
+                <%= __('Segment and email subscribers by custom field values, email, site, or shopping behavior.') %>
+                <br />
+                <%= __('Leverage pre-built segment templates or create your own simple segments.') %>
+              </div>
+              <em aria-describedby="free-segmentation" class="tp-trigger" tabindex="0"><%= __('Basic subscriber segmentation') %></em>
+            </div>
+          </li>
+          <li>
+            <div class="tp-wrapper">
+              <div id="free-templates" role="tooltip">
+                <%= __('Leverage 70+ built-in email templates or create your own with an easy-to-use drag&drop editor.') %>
+              </div>
+              <em aria-describedby="free-widgets" class="tp-trigger" tabindex="0"><%= __('Customizable  email templates') %></em>
+            </div>
+          </li>
         </ul>
       </div>
       <div class="mailpoet-tiers-page-content__tier">
