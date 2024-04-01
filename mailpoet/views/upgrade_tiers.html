@@ -134,8 +134,26 @@
           <p><%= __('<b>All Free plan features</b>, plus:') %></p>
           <ul>
             <li><%= __('<b>5,000</b> emails per month, <b>no daily limit</b>') %></li>
-            <li><%= __('Custom email automations') %></li>
-            <li><%= __('Detailed email and automation statistics') %></li>
+            <li>
+              <div class="tp-wrapper">
+                <div id="basic-automations" role="tooltip">
+                  <%= __('Automate communications with subscribers based on how and when they engage with your brand.') %>
+                  <br />
+                  <%= __('Customize automations based on email engagement, site or shopping patterns.') %>
+                </div>
+                <em aria-describedby="basic-automations" class="tp-trigger" tabindex="0"><%= __('Custom email automations') %></em>
+              </div>
+            </li>
+            <li>
+              <div class="tp-wrapper">
+                <div id="basic-stats" role="tooltip">
+                  <%= __('Understand how subscribers are engaging with your emails and automations, and how that translates to conversions.') %>
+                  <br />
+                  <%= __('See who engaged with emails and how it influenced their purchasing behaviors.') %>
+                </div>
+                <em aria-describedby="basic-stats" class="tp-trigger" tabindex="0"><%= __('Detailed email and automation statistics') %></em>
+              </div>
+            </li>
             <li><%= __('Google Analytics tracking') %></li>
             <li><%= __('No MailPoet logo in emails') %></li>
             <li><%= __('24/7 email support') %></li>
