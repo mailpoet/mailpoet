@@ -199,8 +199,26 @@
           <p><%= __('<b>All Basic features</b>, plus:') %></p>
           <ul class="business">
             <li><%= __('<b>7,500</b> emails per month, <b>no daily limit</b>') %></li>
-            <li><%= __('Email automation journeys with branching') %></li>
-            <li><%= __('Advanced subscriber segmentation') %></li>
+            <li>
+              <div class="tp-wrapper">
+                <div id="pro-automations" role="tooltip">
+                  <%= __('Automate communications with subscribers based on how and when they engage with your brand.') %>
+                  <br />
+                  <%= __('Automate multi-day journeys and refine further actions with conditional if/else logic based on email and shopping behavior.') %>
+                </div>
+                <em aria-describedby="pro-automations" class="tp-trigger" tabindex="0"><%= __('Email automation journeys with branching') %></em>
+              </div>
+            </li>
+            <li>
+              <div class="tp-wrapper">
+                <div id="pro-segmentation" role="tooltip">
+                  <%= __('Segment and email subscribers by custom field values, email, site or shopping behavior.') %>
+                  <br />
+                  <%= __('Segment subscribers by multiple properties using AND/OR operators.') %>
+                </div>
+                <em aria-describedby="pro-segmentation" class="tp-trigger" tabindex="0"><%= __('Advanced subscriber segmentation') %></em>
+              </div>
+            </li>
             <li><%= __('24/7 email support') %></li>
           </ul>
         </div>
