@@ -32,8 +32,11 @@ const useNpsPoll = () => {
       const newUsersPollId = '6L479eVPXk7pBn6S';
       const oldUsersPollId = 'k0aJAsQAWI2ERyGv';
       const formPollId = 'EqOgKsgZd832Sz9w';
+      const emailEditorPollId = '9qCj2SJBE1s5OhnX5NYfRXu82pEDUB9x';
       let writeKey;
-      if (window.mailpoet_display_nps_form) {
+      if (window.mailpoet_display_nps_email_editor) {
+        writeKey = emailEditorPollId;
+      } else if (window.mailpoet_display_nps_form) {
         writeKey = formPollId;
       } else if (window.mailpoet_is_new_user) {
         writeKey = newUsersPollId;
