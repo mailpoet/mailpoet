@@ -51,7 +51,7 @@
           </h3>
           <p><%= __('Up to 500 subscribers') %></p>
         </div>
-        <%= include('upgrade/upgrade_button.html', {label:__('Get Free'), button_class: 'is-secondary', tier: 0}) %>
+        <%= include('upgrade/upgrade_button.html', {label:__('Get Free'), button_class: 'is-secondary', tier: 0, group:'free'}) %>
         <ul class="free">
           <li><%= __('<b>1,500</b> emails per month, <b>500</b> emails per day') %></li>
           <li>
@@ -128,7 +128,7 @@
           </h3>
           <p><%= __('for 500 subscribers') %></p>
         </div>
-        <%= include('upgrade/upgrade_button.html', {label:__('Get Basic'), button_class:'is-secondary', tier: 1}) %>
+        <%= include('upgrade/upgrade_button.html', {label:__('Get Basic'), button_class:'is-secondary', tier: 1, group:'basic'}) %>
         <div>
           <p><%= __('<b>All Free plan features</b>, plus:') %></p>
           <ul>
@@ -191,7 +191,7 @@
           </h3>
           <p><%= __('for 500 subscribers') %></p>
         </div>
-        <%= include('upgrade/upgrade_button.html', {label:__('Get Pro'), button_class:'is-primary', tier: 2}) %>
+        <%= include('upgrade/upgrade_button.html', {label:__('Get Pro'), button_class:'is-primary', tier: 2, group:'pro'}) %>
         <div>
           <p><%= __('<b>All Basic features</b>, plus:') %></p>
           <ul class="business">
