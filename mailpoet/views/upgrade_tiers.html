@@ -265,6 +265,18 @@
   MailPoet.trackEvent('2024-04 upgrade page viewed');
 
   jQuery(function($) {
+    $('#pricing_duration').on('change', function() {
+      const billingValue = $(this).prop('checked') ? 'annual' : 'monthly';
+
+      $('.mailpoet-tiers-page a.mailpoet-premium-shop-link').each(function() {
+        let href = $(this).attr('href');
+        if (href) {
+          let newHref = href.replace(/([?&]billing=)[^&]*/, '$1' + billingValue);
+          $(this).attr('href', newHref);
+        }
+      });
+    });
+
     $('.mailpoet-tiers-page a.mailpoet-premium-shop-link').on('click', function() {
       MailPoet.trackEvent('2024-04 upgrade page CTA clicked');
     });
