@@ -6,6 +6,7 @@ import {
   getCdnUrl,
   isPremiumPluginActive,
   getEditorTheme,
+  getUrls,
 } from './settings';
 
 export function getInitialState(): State {
@@ -28,6 +29,7 @@ export function getInitialState(): State {
     autosaveInterval: 60,
     cdnUrl: getCdnUrl(),
     isPremiumPluginActive: isPremiumPluginActive(),
+    urls: getUrls(),
     preview: {
       deviceType: 'Desktop',
       toEmail: window.MailPoetEmailEditor.current_wp_user_email,

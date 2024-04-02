@@ -81,6 +81,10 @@ export type EmailEditorLayout = {
   contentSize: string;
 };
 
+export type EmailEditorUrls = {
+  listings: string;
+};
+
 export type State = {
   inserterSidebar: {
     isOpened: boolean;
@@ -97,6 +101,7 @@ export type State = {
   theme: EmailTheme;
   autosaveInterval: number;
   cdnUrl: string;
+  urls: EmailEditorUrls;
   isPremiumPluginActive: boolean;
   preview: {
     deviceType: string;
