@@ -187,3 +187,7 @@ export function isPremiumPluginActive(state: State): boolean {
 export function getTheme(state: State): State['theme'] {
   return state.theme;
 }
+
+export function getUrls(state: State): State['urls'] {
+  return state.urls;
+}

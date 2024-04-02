@@ -92,6 +92,9 @@ class EmailEditor {
         'editor_layout' => $this->settingsController->getLayout(),
         'editor_theme' => $this->themeController->getTheme()->get_raw_data(),
         'bc_state' => $this->getBackwardCompatibilityState(),
+        'urls' => [
+          'listings' => admin_url('admin.php?page=mailpoet-newsletters'),
+        ],
       ]
     );
 

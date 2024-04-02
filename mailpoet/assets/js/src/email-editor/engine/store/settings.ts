@@ -1,4 +1,9 @@
-import { EmailEditorSettings, EmailEditorLayout, EmailTheme } from './types';
+import {
+  EmailEditorSettings,
+  EmailEditorLayout,
+  EmailTheme,
+  EmailEditorUrls,
+} from './types';
 
 export function getEditorSettings(): EmailEditorSettings {
   return window.MailPoetEmailEditor.editor_settings as EmailEditorSettings;
@@ -18,4 +23,8 @@ export function isPremiumPluginActive(): boolean {
 
 export function getEditorTheme(): EmailTheme {
   return window.MailPoetEmailEditor.editor_theme as EmailTheme;
+}
+
+export function getUrls(): EmailEditorUrls {
+  return window.MailPoetEmailEditor.urls as EmailEditorUrls;
 }
