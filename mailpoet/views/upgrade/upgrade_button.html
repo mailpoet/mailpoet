@@ -4,7 +4,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
         <path d="M11.885 5.02048L7.38449 11.0731L4.77484 9.13272" stroke="#949494" stroke-width="1.5"/>
       </svg>
-      <%= __('Your current plan') %>
+      <%= esc_html__('Your current plan') %>
     </button>
   <% else %>
     <% if (tier < current_mailpoet_plan_tier) %>
