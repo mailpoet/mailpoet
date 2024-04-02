@@ -14,7 +14,7 @@
     <% else %>
       <a
         target="_blank"
-        href="<%= 'https://account.mailpoet.com/orders/upgrade/' ~ plugin_partial_key ~ '?utm_source=plugin&utm_medium=premium&utm_campaign=upgrade&ref=plugin-upgrade-page' %>"
+        href="<%= 'https://account.mailpoet.com/orders/upgrade/' ~ plugin_partial_key ~ '?2024=1&utm_source=plugin&utm_medium=premium&utm_campaign=upgrade&ref=plugin-upgrade-page' %>"
         class="components-button <%= button_class %> mailpoet-premium-shop-link"
       >
         <%= label %>
@@ -24,7 +24,7 @@
 <% else %>
   <a
     target="_blank"
-    href="<%= "https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user_email ~ '&utm_source=plugin&utm_medium=premium&utm_campaign=purchase&ref=plugin-upgrade-page' %>"
+    href="<%= "https://account.mailpoet.com/?s=" ~ subscriber_count ~ "&email=" ~ current_wp_user_email ~ '&2024=1&utm_source=plugin&utm_medium=premium&utm_campaign=purchase&ref=plugin-upgrade-page' %>"
     class="components-button <%= button_class %> mailpoet-premium-shop-link"
   >
   <%= label %>
