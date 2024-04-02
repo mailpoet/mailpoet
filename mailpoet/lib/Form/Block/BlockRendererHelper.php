@@ -141,7 +141,7 @@ class BlockRendererHelper {
         . $forId
         . $labelClass
         . $this->renderFontStyle($formSettings, $block['styles'] ?? [])
-        . ($automationId ?? '')
+        . ($automationId ? " $automationId" : '')
         . '>';
       $html .= htmlspecialchars($block['params']['label']);
 
