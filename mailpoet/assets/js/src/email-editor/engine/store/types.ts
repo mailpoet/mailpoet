@@ -31,6 +31,23 @@ export type EmailTheme = {
   styles: EmailStyles;
 };
 
+export interface TypographyProperties {
+  fontSize: string;
+  fontFamily: string;
+  fontStyle: string;
+  fontWeight: string;
+  letterSpacing: string;
+  lineHeight: string;
+  textDecoration: string;
+  textTransform:
+    | 'none'
+    | 'capitalize'
+    | 'uppercase'
+    | 'lowercase'
+    | 'full-width'
+    | 'full-size-kana';
+}
+
 export type EmailStyles = {
   spacing: {
     blockGap: string;
@@ -48,43 +65,13 @@ export type EmailStyles = {
     };
     text: string;
   };
-  typography: {
-    fontSize: string;
-    fontFamily: string;
-    fontStyle: string;
-    fontWeight: string;
-    letterSpacing: string;
-    lineHeight: string;
-    textDecoration: string;
-    textTransform:
-      | 'none'
-      | 'capitalize'
-      | 'uppercase'
-      | 'lowercase'
-      | 'full-width'
-      | 'full-size-kana';
-  };
+  typography: TypographyProperties;
   elements: {
     heading: {
       color: {
         text: string;
       };
-      typography: {
-        fontSize: string;
-        fontFamily: string;
-        fontStyle: string;
-        fontWeight: string;
-        letterSpacing: string;
-        lineHeight: string;
-        textDecoration: string;
-        textTransform:
-          | 'none'
-          | 'capitalize'
-          | 'uppercase'
-          | 'lowercase'
-          | 'full-width'
-          | 'full-size-kana';
-      };
+      typography: TypographyProperties;
     };
   };
 };

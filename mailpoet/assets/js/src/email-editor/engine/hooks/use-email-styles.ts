@@ -2,24 +2,8 @@ import deepmerge from 'deepmerge';
 import { useEntityProp } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
-import { EmailTheme, storeName } from '../store';
+import { EmailTheme, storeName, TypographyProperties } from '../store';
 
-interface TypographyProperties {
-  fontSize: string;
-  fontFamily: string;
-  fontStyle: string;
-  fontWeight: string;
-  letterSpacing: string;
-  lineHeight: string;
-  textDecoration: string;
-  textTransform:
-    | 'none'
-    | 'capitalize'
-    | 'uppercase'
-    | 'lowercase'
-    | 'full-width'
-    | 'full-size-kana';
-}
 interface ElementProperties {
   typography: TypographyProperties;
 }
