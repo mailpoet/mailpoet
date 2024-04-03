@@ -34,6 +34,7 @@ class EmailEditor {
     }
     $this->cli->initialize();
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
+    $this->wp->addAction('rest_delete_mailpoet_email', [$this->emailApiController, 'trashEmail'], 10, 1);
     $this->extendEmailPostApi();
   }
 

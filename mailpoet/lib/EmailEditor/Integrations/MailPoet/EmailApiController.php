@@ -54,6 +54,17 @@ class EmailApiController {
     $this->newsletterRepository->flush();
   }
 
+  public function trashEmail(\WP_Post $wpPost) {
+    $newsletter = $this->newsletterRepository->findOneBy(['wpPost' => $wpPost->ID]);
+    if (!$newsletter) {
+      throw new NotFoundException('Newsletter was not found');
+    }
+    if ($newsletter->getWpPostId() !== $wpPost->ID) {
+      throw new UnexpectedValueException('Newsletter ID does not match the post ID');
+    }
+    $this->newsletterRepository->bulkTrash([$newsletter->getId()]);
+  }
+
   public function getEmailDataSchema(): array {
     return Builder::object([
       'id' => Builder::integer()->nullable(),
