@@ -19,7 +19,7 @@ export function ScreenTypographyElement({
   const [headingLevel, setHeadingLevel] = useState('heading');
   const panels = {
     text: {
-      title: __('Text', 'mailpoet'),
+      title: __('Text'),
       description: __(
         'Manage the fonts and typography used on text.',
         'mailpoet',
@@ -27,7 +27,7 @@ export function ScreenTypographyElement({
       defaultControls: DEFAULT_CONTROLS,
     },
     link: {
-      title: __('Links', 'mailpoet'),
+      title: __('Links'),
       description: __(
         'Manage the fonts and typography used on links.',
         'mailpoet',
@@ -38,7 +38,7 @@ export function ScreenTypographyElement({
       },
     },
     heading: {
-      title: __('Headings', 'mailpoet'),
+      title: __('Headings'),
       description: __(
         'Manage the fonts and typography used on headings.',
         'mailpoet',
@@ -49,7 +49,7 @@ export function ScreenTypographyElement({
       },
     },
     button: {
-      title: __('Buttons', 'mailpoet'),
+      title: __('Buttons'),
       description: __(
         'Manage the fonts and typography used on buttons.',
         'mailpoet',
