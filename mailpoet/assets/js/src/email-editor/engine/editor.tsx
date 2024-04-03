@@ -4,6 +4,7 @@ import { StrictMode, createRoot } from '@wordpress/element';
 import { SlotFillProvider } from '@wordpress/components';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import { EntityProvider } from '@wordpress/core-data';
+import { withNpsPoll } from '../../nps-poll';
 import { initBlocks } from './blocks';
 import { initializeLayout } from './layouts/flex-email';
 import { BlockEditor } from './components/block-editor';
@@ -33,6 +34,8 @@ function Editor() {
   );
 }
 
+const EditorWithPool = withNpsPoll(Editor);
+
 export function initialize(elementId: string) {
   const container = document.getElementById(elementId);
   if (!container) {
@@ -43,5 +46,5 @@ export function initialize(elementId: string) {
   initBlocks();
   initHooks();
   const root = createRoot(container);
-  root.render(<Editor />);
+  root.render(<EditorWithPool />);
 }

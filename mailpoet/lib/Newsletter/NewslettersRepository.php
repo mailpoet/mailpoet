@@ -87,6 +87,15 @@ class NewslettersRepository extends Repository {
       ->getSingleScalarResult());
   }
 
+  public function getCountOfEmailsWithWPPost(): int {
+    return intval($this->entityManager->createQueryBuilder()
+      ->select('COUNT(n.id)')
+      ->from(NewsletterEntity::class, 'n')
+      ->andWhere('n.wpPost IS NOT NULL')
+      ->getQuery()
+      ->getSingleScalarResult());
+  }
+
   /**
    * @return NewsletterEntity[]
    */

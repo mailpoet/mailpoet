@@ -9,6 +9,8 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Engine\ThemeController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
+use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Settings\SettingsController as MailPoetSettings;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
@@ -20,14 +22,15 @@ class EmailEditor {
 
   private ThemeController $themeController;
 
-  /** @var CdnAssetUrl */
-  private $cdnAssetUrl;
+  private CdnAssetUrl $cdnAssetUrl;
 
-  /** @var ServicesChecker */
-  private $servicesChecker;
+  private ServicesChecker $servicesChecker;
 
-  /** @var SubscribersFeature */
-  private $subscribersFeature;
+  private SubscribersFeature $subscribersFeature;
+
+  private MailPoetSettings $mailpoetSettings;
+
+  private NewslettersRepository $newslettersRepository;
 
   public function __construct(
     WPFunctions $wp,
@@ -35,7 +38,9 @@ class EmailEditor {
     CdnAssetUrl $cdnAssetUrl,
     ServicesChecker $servicesChecker,
     SubscribersFeature $subscribersFeature,
-    ThemeController $themeController
+    ThemeController $themeController,
+    MailPoetSettings $mailpoetSettings,
+    NewslettersRepository $newslettersRepository
   ) {
     $this->wp = $wp;
     $this->settingsController = $settingsController;
@@ -43,6 +48,8 @@ class EmailEditor {
     $this->servicesChecker = $servicesChecker;
     $this->subscribersFeature = $subscribersFeature;
     $this->themeController = $themeController;
+    $this->mailpoetSettings = $mailpoetSettings;
+    $this->newslettersRepository = $newslettersRepository;
   }
 
   public function render() {
@@ -103,6 +110,13 @@ class EmailEditor {
       'mailpoet_subscribers_count' => $this->subscribersFeature->getSubscribersCount(),
       'mailpoet_subscribers_limit' => $this->subscribersFeature->getSubscribersLimit(),
       'mailpoet_subscribers_limit_reached' => $this->subscribersFeature->check(),
+      // settings needed for Satismeter tracking
+      'mailpoet_3rd_party_libs_enabled' => $this->mailpoetSettings->get('3rd_party_libs.enabled') === '1',
+      'mailpoet_display_nps_email_editor' => $this->newslettersRepository->getCountOfEmailsWithWPPost() > 1, // Poll should be displayed only if there are 2 and more emails
+      'mailpoet_display_nps_poll' => true,
+      'mailpoet_current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
+      'mailpoet_current_wp_user_firstname' => $this->wp->wpGetCurrentUser()->user_firstname,
+      'mailpoet_site_url' => $this->wp->siteUrl(),
     ];
     $this->wp->wpAddInlineScript('mailpoet_email_editor', implode('', array_map(function ($key) use ($inline_script_data) {
       return sprintf("var %s=%s;", $key, json_encode($inline_script_data[$key]));
