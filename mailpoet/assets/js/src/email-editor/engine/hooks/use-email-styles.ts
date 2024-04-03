@@ -125,8 +125,8 @@ export const useEmailStyles = (): EmailStylesData => {
         ...styles?.typography,
       },
       elements: deepmerge.all([
-        defaultStyles.elements,
-        styles?.elements,
+        defaultStyles.elements || {},
+        styles?.elements || {},
       ]) as Record<string, ElementProperties>,
     },
     defaultStyles,

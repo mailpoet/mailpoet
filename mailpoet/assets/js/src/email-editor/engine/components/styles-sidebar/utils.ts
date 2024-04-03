@@ -21,13 +21,13 @@ export const getHeadingElementStyles = (
   merge
     ? (deepmerge.all([
         defaultStyleObject,
-        styles.elements.heading,
-        styles.elements[headingLevel],
+        styles.elements.heading || {},
+        styles.elements[headingLevel] || {},
       ]) as StyleProperties)
     : ({
         ...defaultStyleObject,
-        ...styles.elements.heading,
-        ...styles.elements[headingLevel],
+        ...(styles.elements.heading || {}),
+        ...(styles.elements[headingLevel] || {}),
       } as StyleProperties);
 
 export const getElementStyles = (
