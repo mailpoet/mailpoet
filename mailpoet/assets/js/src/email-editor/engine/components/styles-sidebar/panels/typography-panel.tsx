@@ -76,10 +76,10 @@ export function TypographyPanel() {
             {__('Elements')}
           </Heading>
           <ItemGroup isBordered isSeparated size="small">
-            <ElementItem element="text" label={__('Text', 'mailpoet')} />
-            <ElementItem element="link" label={__('Links', 'mailpoet')} />
-            <ElementItem element="heading" label={__('Headings', 'mailpoet')} />
-            <ElementItem element="button" label={__('Buttons', 'mailpoet')} />
+            <ElementItem element="text" label={__('Text')} />
+            <ElementItem element="link" label={__('Links')} />
+            <ElementItem element="heading" label={__('Headings')} />
+            <ElementItem element="button" label={__('Buttons')} />
           </ItemGroup>
         </VStack>
       </CardBody>
