@@ -19,7 +19,7 @@ import { storeName } from '../../store';
  */
 import { Layout } from './layout';
 import { unlock } from '../../../lock-unlock';
-import useNavigateToEntityRecord from '../../hooks/use-navigate-to-entity-record';
+import { useNavigateToEntityRecord } from '../../hooks/use-navigate-to-entity-record';
 
 const { ExperimentalEditorProvider } = unlock(editorPrivateApis);
 
