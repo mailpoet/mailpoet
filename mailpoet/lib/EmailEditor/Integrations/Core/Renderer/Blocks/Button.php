@@ -25,7 +25,7 @@ class Button extends AbstractBlockRenderer {
       'color' => [
         'text' => $blockStyles['color']['text'] ?? '',
       ],
-      'typography' => $blockStyles['typography'],
+      'typography' => $blockStyles['typography'] ?? [],
     ]);
     return (object)[
       'css' => $this->compileCss($styles['declarations'], ['display' => 'block']),
