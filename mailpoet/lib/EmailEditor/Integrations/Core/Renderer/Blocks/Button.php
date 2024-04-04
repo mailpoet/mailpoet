@@ -65,9 +65,6 @@ class Button extends AbstractBlockRenderer {
           'background' => $blockAttributes['backgroundColor'] ? $settingsController->translateSlugToColor($blockAttributes['backgroundColor']) : null,
           'text' => $blockAttributes['textColor'] ? $settingsController->translateSlugToColor($blockAttributes['textColor']) : null,
         ]),
-        'typography' => [
-          'fontSize' => $parsedBlock['email_attrs']['font-size'] ?? 'inherit',
-        ],
       ],
       $blockAttributes['style'] ?? []
     );
