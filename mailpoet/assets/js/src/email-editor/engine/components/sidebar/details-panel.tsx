@@ -3,14 +3,18 @@ import {
   ExternalLink,
   PanelBody,
   TextareaControl,
+  Button,
 } from '@wordpress/components';
-import { useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
 import { createInterpolateElement } from '@wordpress/element';
+import { store as editorStore } from '@wordpress/editor';
 import classnames from 'classnames';
 import { storeName } from '../../store';
+
+import { unlock } from '../../../lock-unlock';
 
 const previewTextMaxLength = 150;
 const previewTextRecommendedLength = 80;
@@ -23,6 +27,18 @@ export function DetailsPanel() {
   );
 
   const { updateEmailMailPoetProperty } = useDispatch(storeName);
+
+  const { onNavigateToEntityRecord, template } = useSelect((select) => {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { getEditorSettings: _getEditorSettings } = unlock(
+      select(editorStore),
+    );
+    const editorSettings = _getEditorSettings();
+    return {
+      onNavigateToEntityRecord: editorSettings.onNavigateToEntityRecord,
+      template: select(storeName).getEditedPostTemplate(),
+    };
+  }, []);
 
   let subjectHelp = ReactStringReplace(
     __(
@@ -88,6 +104,21 @@ export function DetailsPanel() {
       title={__('Details', 'mailpoet')}
       className="mailpoet-email-editor__settings-panel"
     >
+      {template && (
+        <Button
+          variant="primary"
+          onClick={() => {
+            onNavigateToEntityRecord({
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              postId: template.id,
+              postType: 'wp_template',
+            });
+          }}
+        >
+          {__('Edit template', 'mailpoet')}
+        </Button>
+      )}
       <TextareaControl
         className="mailpoet-settings-panel__subject"
         label={subjectLabel}
