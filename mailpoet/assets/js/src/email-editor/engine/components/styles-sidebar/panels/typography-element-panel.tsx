@@ -128,12 +128,8 @@ export function TypographyElementPanel({
     fontStyle: newFontStyle,
     fontWeight: newFontWeight,
   }) => {
-    const newTypography = {
-      ...styles.typography,
-      fontStyle: newFontStyle,
-      fontWeight: newFontWeight,
-    };
-    updateElementStyleProp(['typography'], newTypography);
+    updateElementStyleProp(['typography', 'fontStyle'], newFontStyle);
+    updateElementStyleProp(['typography', 'fontWeight'], newFontWeight);
   };
 
   const resetAll = () => {
