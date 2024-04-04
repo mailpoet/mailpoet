@@ -49,8 +49,10 @@ class AbandonedCartContent {
       return $optionField && $optionField->getName() === 'event';
     })->first();
     if (
-      ($groupOption instanceof NewsletterOptionEntity && $groupOption->getValue() !== WooCommerceEmail::SLUG)
-      || ($eventOption instanceof NewsletterOptionEntity && $eventOption->getValue() !== AbandonedCart::SLUG)
+      !$groupOption
+      || $groupOption->getValue() !== WooCommerceEmail::SLUG
+      || !$eventOption
+      || $eventOption->getValue() !== AbandonedCart::SLUG
     ) {
       // Do not display the block if not an AbandonedCart email
       return [];
