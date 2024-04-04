@@ -120,7 +120,7 @@ class ButtonTest extends \MailPoetTest {
   }
 
   public function testItRendersFontSize(): void {
-    $this->parsedButton['attrs']['style']['typography']['font-size'] = '10px';
+    $this->parsedButton['attrs']['style']['typography']['fontSize'] = '10px';
     $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
     verify($output)->stringContainsString('font-size:10px;');
   }
