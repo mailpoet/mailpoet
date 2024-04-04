@@ -1,6 +1,7 @@
 import { createRegistrySelector } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { store as interfaceStore } from '@wordpress/interface';
+import { store as editorStore } from '@wordpress/editor';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { serialize, BlockInstance } from '@wordpress/blocks';
 import { storeName } from './constants';
@@ -130,6 +131,71 @@ export const getEditedEmailContent = createRegistrySelector(
     return '';
   },
 );
+
+/**
+ * COPIED FROM https://github.com/WordPress/gutenberg/blob/9c6d4fe59763b188d27ad937c2f0daa39e4d9341/packages/edit-post/src/store/selectors.js
+ * Retrieves the template of the currently edited post.
+ *
+ * @return {Object?} Post Template.
+ */
+export const getEditedPostTemplate = createRegistrySelector((select) => () => {
+  const currentTemplate =
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    select(editorStore).getEditedPostAttribute('template');
+  if (currentTemplate) {
+    const templateWithSameSlug = select(coreDataStore)
+      .getEntityRecords('postType', 'wp_template', { per_page: -1 })
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      ?.find((template) => template.slug === currentTemplate);
+    if (!templateWithSameSlug) {
+      return templateWithSameSlug;
+    }
+
+    return select(coreDataStore).getEditedEntityRecord(
+      'postType',
+      'wp_template',
+
+      // @ts-expect-error getEditedPostAttribute
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      templateWithSameSlug.id,
+    );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const post = select(editorStore).getCurrentPost();
+  let slugToCheck;
+  // In `draft` status we might not have a slug available, so we use the `single`
+  // post type templates slug(ex page, single-post, single-product etc..).
+  // Pages do not need the `single` prefix in the slug to be prioritized
+  // through template hierarchy.
+
+  if (post.slug) {
+    slugToCheck =
+      post.type === 'page'
+        ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          `${post.type}-${post.slug}`
+        : // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          `single-${post.type}-${post.slug}`;
+  } else {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    slugToCheck = post.type === 'page' ? 'page' : `single-${post.type}`;
+  }
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const defaultTemplateId = select(coreDataStore).getDefaultTemplateId({
+    slug: slugToCheck,
+  });
+
+  return select(coreDataStore).getEditedEntityRecord(
+    'postType',
+    'wp_template',
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    defaultTemplateId,
+  );
+});
 
 export function getEmailPostId(state: State): number {
   return state.postId;
