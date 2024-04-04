@@ -3,19 +3,19 @@ import { useSelect } from '@wordpress/data';
 import { StrictMode, createRoot } from '@wordpress/element';
 import { SlotFillProvider } from '@wordpress/components';
 import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
-import { EntityProvider } from '@wordpress/core-data';
 import { withNpsPoll } from '../../nps-poll';
 import { initBlocks } from './blocks';
 import { initializeLayout } from './layouts/flex-email';
-import { BlockEditor } from './components/block-editor';
+import InnerEditor from './components/block-editor/editor';
 import { createStore, storeName } from './store';
 import { initHooks } from './editor-hooks';
 import { KeyboardShortcuts } from './components/keybord-shortcuts';
 
 function Editor() {
-  const { postId } = useSelect(
+  const { postId, settings } = useSelect(
     (select) => ({
       postId: select(storeName).getEmailPostId(),
+      settings: select(storeName).getInitialEditorSettings(),
     }),
     [],
   );
@@ -25,9 +25,12 @@ function Editor() {
       <ShortcutProvider>
         <SlotFillProvider>
           <KeyboardShortcuts />
-          <EntityProvider kind="postType" type="mailpoet_email" id={postId}>
-            <BlockEditor />
-          </EntityProvider>
+          <InnerEditor
+            initialEdits={[]}
+            postId={postId}
+            postType="mailpoet_email"
+            settings={settings}
+          />
         </SlotFillProvider>
       </ShortcutProvider>
     </StrictMode>
