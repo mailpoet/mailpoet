@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 import {
-  useSetting,
+  useSettings,
   // We can remove the ts-expect-error comments once the types are available.
   // @see packages/block-editor/src/components/index.js
   // @ts-expect-error TS7016: Could not find a declaration file for module '@wordpress/block-editor'.
@@ -46,7 +46,13 @@ export function TypographyElementPanel({
   headingLevel: string;
   defaultControls?: typeof DEFAULT_CONTROLS;
 }) {
-  const fontSizes = useSetting('typography.fontSizes');
+  const [fontSizes, blockLevelFontFamilies] = useSettings(
+    'typography.fontSizes',
+    'typography.fontFamilies',
+  );
+
+  // Ref: https://github.com/WordPress/gutenberg/issues/59778
+  const fontFamilies = blockLevelFontFamilies?.default || [];
   const { styles, defaultStyles, updateStyleProp } = useEmailStyles();
   const elementStyles = getElementStyles(styles, element, headingLevel);
   const defaultElementStyles = getElementStyles(
@@ -54,7 +60,6 @@ export function TypographyElementPanel({
     element,
     headingLevel,
   );
-
   const {
     fontFamily,
     fontSize,
@@ -148,6 +153,7 @@ export function TypographyElementPanel({
           value={fontFamily}
           onChange={setFontFamily}
           size="__unstable-large"
+          fontFamilies={fontFamilies}
           __nextHasNoMarginBottom
         />
       </ToolsPanelItem>
