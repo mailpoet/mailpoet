@@ -47,7 +47,9 @@ export function TypographyElementPanel({
   defaultControls?: typeof DEFAULT_CONTROLS;
 }) {
   const fontSizes = useSetting('typography.fontSizes');
-  const blockLevelFontFamilies = useSetting('typography.fontFamilies');
+  const blockLevelFontFamilies = useSetting('typography.fontFamilies') as {
+    default?: unknown[];
+  };
 
   // Ref: https://github.com/WordPress/gutenberg/issues/59778
   const fontFamilies = blockLevelFontFamilies?.default || [];
