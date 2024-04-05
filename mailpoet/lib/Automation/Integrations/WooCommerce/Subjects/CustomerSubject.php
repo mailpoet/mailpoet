@@ -45,8 +45,9 @@ class CustomerSubject implements Subject {
   }
 
   public function getPayload(SubjectData $subjectData): Payload {
-    $customerId = $subjectData->getArgs()['customer_id'];
-    $orderId = $subjectData->getArgs()['order_id'] ?? null;
+    $args = $subjectData->getArgs();
+    $customerId = isset($args['customer_id']) ? (int)$args['customer_id'] : null;
+    $orderId = isset($args['order_id']) ? (int)$args['order_id'] : null;
 
     $order = $orderId === null ? null : wc_get_order($orderId);
     $order = $order instanceof WC_Order ? $order : null;
