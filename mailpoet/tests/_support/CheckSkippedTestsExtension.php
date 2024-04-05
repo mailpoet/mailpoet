@@ -22,9 +22,6 @@ class CheckSkippedTestsExtension extends Extension {
       'testAllSubscribersFoundWithOperatorAllOf',
       'automationTriggeredByRegistrationWitConfirmationNeeded',
       'automationTriggeredByRegistrationWithoutConfirmationNeeded',
-      // The next two tests can be removed after dropping support for WP 6.3
-      'createAndSendStandardNewsletter',
-      'displayNewsletterPreview',
     ];
 
     if (in_array($branch, ['trunk', 'release']) && !in_array($testName, $allowedToSkipList)) {
