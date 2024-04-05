@@ -1,10 +1,11 @@
 import { MenuGroup, MenuItem } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { displayShortcut } from '@wordpress/keycodes';
+import { useEntityProp } from '@wordpress/core-data';
 import { __, _x } from '@wordpress/i18n';
 import { MoreMenuDropdown } from '@wordpress/interface';
 import { PreferenceToggleMenuItem } from '@wordpress/preferences';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { storeName } from '../../store';
 import { TrashModal } from './trash-modal';
 
@@ -21,6 +22,12 @@ export function MoreMenu(): JSX.Element {
     }),
     [],
   );
+  const [status, setStatus] = useEntityProp(
+    'postType',
+    'mailpoet_email',
+    'status',
+  );
+  const { saveEditedEmail } = useDispatch(storeName);
   const goToListings = () => {
     window.location.href = urls.listings;
   };
@@ -72,9 +79,20 @@ export function MoreMenu(): JSX.Element {
               />
             </MenuGroup>
             <MenuGroup>
-              <MenuItem onClick={() => setShowTrashModal(true)} isDestructive>
-                {__('Move to trash', 'mailpoet')}
-              </MenuItem>
+              {status === 'trash' ? (
+                <MenuItem
+                  onClick={async () => {
+                    await setStatus('draft');
+                    await saveEditedEmail();
+                  }}
+                >
+                  {__('Restore from trash', 'mailpoet')}
+                </MenuItem>
+              ) : (
+                <MenuItem onClick={() => setShowTrashModal(true)} isDestructive>
+                  {__('Move to trash', 'mailpoet')}
+                </MenuItem>
+              )}
             </MenuGroup>
           </>
         )}

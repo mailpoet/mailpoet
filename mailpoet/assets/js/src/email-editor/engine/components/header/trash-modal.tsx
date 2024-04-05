@@ -35,17 +35,22 @@ export function TrashModal({
         'mailpoet_email',
         postId,
       );
-      const errorMessage = lastError?.message
-        ? (lastError.message as string)
-        : __(
-            'An error occurred while moving the email to the trash.',
-            'mailpoet',
-          );
-      await createErrorNotice(errorMessage, {
-        type: 'snackbar',
-        isDismissible: true,
-        context: 'email-editor',
-      });
+      // Already deleted.
+      if (lastError?.code === 410) {
+        onRemove();
+      } else {
+        const errorMessage = lastError?.message
+          ? (lastError.message as string)
+          : __(
+              'An error occurred while moving the email to the trash.',
+              'mailpoet',
+            );
+        await createErrorNotice(errorMessage, {
+          type: 'snackbar',
+          isDismissible: true,
+          context: 'email-editor',
+        });
+      }
     }
   };
   return (
