@@ -37,9 +37,21 @@ abstract class AbstractBlockRenderer implements BlockRenderer {
   }
 
   protected function addSpacer($content, $emailAttrs): string {
-    $blockSpacingStyles = WP_Style_Engine::compile_css(array_intersect_key($emailAttrs, array_flip(['padding-left', 'padding-right', 'margin-top'])), '');
+    $gapStyle = WP_Style_Engine::compile_css(array_intersect_key($emailAttrs, array_flip(['margin-top'])), '');
+    $paddingStyle = WP_Style_Engine::compile_css(array_intersect_key($emailAttrs, array_flip(['padding-left', 'padding-right'])), '');
 
-    return $blockSpacingStyles ? '<div class="block_layout" style="' . esc_attr($blockSpacingStyles) . '">' . $content . '</div>' : $content;
+    if (!$gapStyle && !$paddingStyle) {
+      return $content;
+    }
+
+    return sprintf(
+      '<!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%%" style="%2$s"><tr><td style="%3$s"><![endif]-->
+      <div class="block_layout" style="%2$s %3$s">%1$s</div>
+      <!--[if mso | IE]></td></tr></table><![endif]-->',
+      $content,
+      esc_attr($gapStyle),
+      esc_attr($paddingStyle)
+    );
   }
 
   public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
