@@ -80,16 +80,15 @@ class SpacingPreprocessorTest extends \MailPoetUnitTest {
     verify($result)->arrayCount(2);
     $firstColumns = $result[0];
     $secondColumns = $result[1];
-    verify($firstColumns)->arrayHasNotKey('email_attrs');
-    verify($secondColumns['email_attrs'])->equals($expectedEmailAttrs);
-    verify($firstColumns['innerBlocks'][0])->arrayHasNotKey('email_attrs');
-    verify($secondColumns['innerBlocks'][0])->arrayHasNotKey('email_attrs');
-    // Verify margins for the first columns blocks
-    $firstColumn = $firstColumns['innerBlocks'][0];
-    verify($firstColumn['innerBlocks'][0])->arrayHasNotKey('email_attrs');
-    verify($firstColumn['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs);
-    $secondColumn = $firstColumns['innerBlocks'][1];
-    verify($secondColumn['innerBlocks'][0])->arrayHasNotKey('email_attrs');
-    verify($secondColumn['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs);
+
+    // First elements should not have margin-top, but others should.
+    verify($firstColumns['email_attrs'])->arrayHasNotKey('margin-top');
+    verify($secondColumns['email_attrs'])->arrayHasKey('margin-top');
+    verify($secondColumns['email_attrs']['margin-top'])->equals('10px');
+
+    // First element children should have margin-top unless first child.
+    verify($firstColumns['innerBlocks'][0]['email_attrs'])->arrayHasNotKey('margin-top');
+    verify($firstColumns['innerBlocks'][1]['email_attrs'])->arrayHasKey('margin-top');
+    verify($firstColumns['innerBlocks'][1]['email_attrs']['margin-top'])->equals('10px');
   }
 }
