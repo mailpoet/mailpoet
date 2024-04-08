@@ -37,6 +37,15 @@
   }
 }
 
+.mailpoet-listing-card.woocommerce-table {
+  box-shadow: none;
+  margin-bottom: 0;
+
+  .woocommerce-pagination {
+    margin-bottom: 0;
+  }
+}
+
 .woocommerce-table__table {
   .mailpoet-listing-name a {
     font-size: 13px;

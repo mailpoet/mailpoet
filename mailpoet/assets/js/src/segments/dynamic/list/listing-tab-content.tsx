@@ -160,7 +160,7 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
       </div>
 
       <TableCard
-        className="mailpoet-segments-listing"
+        className="mailpoet-listing-card mailpoet-segments-listing"
         title=""
         isLoading={dynamicSegments === null}
         headers={
