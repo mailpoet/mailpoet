@@ -38,7 +38,6 @@ class Renderer {
     $this->contentRenderer = $contentRenderer;
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->templates = $templates;
-    $this->themeController = $themeController;
     $this->servicesChecker = $servicesChecker;
     $this->themeController = $themeController;
   }
