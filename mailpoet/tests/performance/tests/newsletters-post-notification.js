@@ -46,6 +46,12 @@ export async function newsletterPostNotification() {
     });
 
     // Click to add a new post notification email and set frequency
+    await page
+      .locator('[data-automation-id="newsletter_interval_type"]')
+      .waitFor({ state: 'visible' });
+    await page
+      .locator('[data-automation-id="newsletter_interval_type"]')
+      .click();
     await page.selectOption(
       '[data-automation-id="newsletter_interval_type"]',
       'immediately',
