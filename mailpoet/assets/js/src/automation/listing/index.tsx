@@ -157,7 +157,7 @@ export function AutomationListing(): JSX.Element {
 
       return (
         <TableCard
-          className="mailpoet-automation-listing"
+          className="mailpoet-listing-card mailpoet-automation-listing"
           title=""
           isLoading={!automations}
           headers={
