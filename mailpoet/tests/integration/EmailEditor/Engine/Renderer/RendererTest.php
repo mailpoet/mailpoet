@@ -15,32 +15,34 @@ class RendererTest extends \MailPoetTest {
     parent::_before();
     $this->diContainer->get(EmailEditor::class)->initialize();
     $this->renderer = $this->diContainer->get(Renderer::class);
-    $themeJsonMock = $this->createMock(\WP_Theme_JSON::class);
-    $themeJsonMock->method('get_data')->willReturn([
-      'styles' => [
-        'spacing' => [
-          'padding' => [
-            'bottom' => '4px',
-            'top' => '3px',
-            'left' => '2px',
-            'right' => '1px',
-          ],
-        ],
-        'typography' => [
-          'fontFamily' => 'Test Font Family',
-        ],
-        'color' => [
-          'background' => [
-            'layout' => '#123456',
-            'content' => '#654321',
-          ],
+    $styles = [
+      'spacing' => [
+        'padding' => [
+          'bottom' => '4px',
+          'top' => '3px',
+          'left' => '2px',
+          'right' => '1px',
         ],
       ],
+      'typography' => [
+        'fontFamily' => 'Test Font Family',
+      ],
+      'color' => [
+        'background' => [
+          'layout' => '#123456',
+          'content' => '#654321',
+        ],
+      ],
+    ];
+    $themeJsonMock = $this->createMock(\WP_Theme_JSON::class);
+    $themeJsonMock->method('get_data')->willReturn([
+      'styles' => $styles,
     ]);
     $settingsControllerMock = $this->createMock(SettingsController::class);
     $settingsControllerMock->method('getLayout')->willReturn([
       'contentSize' => '123px',
     ]);
+    $settingsControllerMock->method('getEmailStyles')->willReturn($styles);
     $themeControllerMock = $this->createMock(ThemeController::class);
     $themeControllerMock->method('getTheme')->willReturn($themeJsonMock);
 
