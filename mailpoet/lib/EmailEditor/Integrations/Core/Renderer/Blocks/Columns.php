@@ -8,7 +8,7 @@ use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 use WP_Style_Engine;
 
 class Columns extends AbstractBlockRenderer {
-  public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
+  protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $content = '';
     foreach ($parsedBlock['innerBlocks'] ?? [] as $block) {
       $content .= render_block($block);
@@ -32,7 +32,7 @@ class Columns extends AbstractBlockRenderer {
       'style' => [],
     ]);
 
-    $cellStyles = $this->getStylesFromBlock([
+    $columnsStyles = $this->getStylesFromBlock([
       'spacing' => [ 'padding' => $block_attributes['style']['spacing']['padding'] ?? [] ],
       'color' => $block_attributes['style']['color'] ?? [],
       'background' => $block_attributes['style']['background'] ?? [],
@@ -41,38 +41,15 @@ class Columns extends AbstractBlockRenderer {
     $borderStyles = $this->getStylesFromBlock(['border' => $block_attributes['style']['border'] ?? []])['declarations'];
 
     if (!empty($borderStyles)) {
-      $cellStyles = array_merge($cellStyles, ['border-style' => 'solid'], $borderStyles);
+      $columnsStyles = array_merge($columnsStyles, ['border-style' => 'solid'], $borderStyles);
     }
 
-    if (empty($cellStyles['background-size'])) {
-      $cellStyles['background-size'] = 'cover';
+    if (empty($columnsStyles['background-size'])) {
+      $columnsStyles['background-size'] = 'cover';
     }
 
-    $contentClassname = 'email_columns ' . $originalWrapperClassname;
-    $contentCSS = WP_Style_Engine::compile_css($cellStyles, '');
-    $layoutCSS = WP_Style_Engine::compile_css([
-      'margin-top' => $parsedBlock['email_attrs']['margin-top'] ?? '0px',
-    ], '');
-    $tableWidth = $block_attributes['align'] !== 'full' ? $block_attributes['width'] : '100%';
-
-    return '
-      <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="width:' . esc_attr($tableWidth) . ';" width="' . esc_attr($tableWidth) . '"><tr><td style="font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-      <div style="' . esc_attr($layoutCSS) . '">
-      <table style="width:100%;border-collapse:separate;" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-        <tbody>
-          <tr>
-            <td class="' . esc_attr($contentClassname) . '" style="text-align:left;width:100%;' . esc_attr($contentCSS) . '">
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;">
-                <tr>
-                  {columns_content}
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      </div>
-      <!--[if mso | IE]></td></tr></table><![endif]-->
-    ';
+    return '<table class="' . esc_attr('email_columns ' . $originalWrapperClassname) . '" style="width:100%;border-collapse:separate;text-align:left;' . esc_attr(WP_Style_Engine::compile_css($columnsStyles, '')) . '" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
+      <tr>{columns_content}</tr>
+    </table>';
   }
 }

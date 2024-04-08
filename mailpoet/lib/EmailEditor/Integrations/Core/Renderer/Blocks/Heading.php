@@ -2,13 +2,12 @@
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 use MailPoet\Util\Helpers;
 
-class Heading implements BlockRenderer {
-  public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
+class Heading extends AbstractBlockRenderer {
+  protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $level = $parsedBlock['attrs']['level'] ?? 2; // default level is 2
     $blockContent = $this->adjustStyleAttribute($blockContent, $parsedBlock, $settingsController, ['tag_name' => "h$level"]);
 
@@ -19,7 +18,6 @@ class Heading implements BlockRenderer {
    * Based on MJML <mj-text>
    */
   private function getBlockWrapper($blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
     $level = $parsedBlock['attrs']['level'] ?? 2; // default level is 2
     $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName("h$level", 'class') ?? '';
 
@@ -54,7 +52,7 @@ class Heading implements BlockRenderer {
 
     return '
       <!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><![endif]-->
-        <div style="margin-top: ' . $marginTop . ';">
+
           <table
             role="presentation"
             border="0"
@@ -69,7 +67,7 @@ class Heading implements BlockRenderer {
               </td>
             </tr>
           </table>
-        </div>
+
       <!--[if mso | IE]></td></tr></table><![endif]-->
     ';
   }

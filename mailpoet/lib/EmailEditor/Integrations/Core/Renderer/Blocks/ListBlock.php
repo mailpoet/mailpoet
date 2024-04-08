@@ -2,12 +2,11 @@
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 // We have to avoid using keyword `List`
-class ListBlock implements BlockRenderer {
-  public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
+class ListBlock extends AbstractBlockRenderer {
+  protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $html = new \WP_HTML_Tag_Processor($blockContent);
     $tagName = ($parsedBlock['attrs']['ordered'] ?? false) ? 'ol' : 'ul';
     if ($html->next_tag(['tag_name' => $tagName])) {

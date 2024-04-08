@@ -8,7 +8,7 @@ use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 use WP_Style_Engine;
 
 class Column extends AbstractBlockRenderer {
-  public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
+  protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $content = '';
     foreach ($parsedBlock['innerBlocks'] ?? [] as $block) {
       $content .= render_block($block);

@@ -2,13 +2,12 @@
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 use MailPoet\Util\Helpers;
 
-class Paragraph implements BlockRenderer {
-  public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
+class Paragraph extends AbstractBlockRenderer {
+  protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $blockContent = $this->removePaddingFromElement($blockContent, ['tag_name' => 'p']);
     return str_replace('{paragraph_content}', $blockContent, $this->getBlockWrapper($blockContent, $parsedBlock, $settingsController));
   }
@@ -21,8 +20,6 @@ class Paragraph implements BlockRenderer {
     $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName('p', 'class') ?? '';
 
     $align = $parsedBlock['attrs']['align'] ?? 'left';
-    $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
-
     $styles = [
       'text-align' => $align,
     ];
@@ -53,15 +50,13 @@ class Paragraph implements BlockRenderer {
 
     return '
       <!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><![endif]-->
-        <div style="margin-top: ' . $marginTop . ';">
-          <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;"width="100%">
-            <tr>
-              <td class="' . esc_attr($classes) . '" style="' . $settingsController->convertStylesToString($styles) . '" align="' . $align . '">
-                {paragraph_content}
-              </td>
-            </tr>
-          </table>
-        </div>
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;"width="100%">
+        <tr>
+          <td class="' . esc_attr($classes) . '" style="' . $settingsController->convertStylesToString($styles) . '" align="' . $align . '">
+            {paragraph_content}
+          </td>
+        </tr>
+      </table>
       <!--[if mso | IE]></td></tr></table><![endif]-->
     ';
   }

@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;
+use MailPoet\EmailEditor\Engine\SettingsController;
 use WP_Style_Engine;
 
 /**
@@ -34,4 +35,19 @@ abstract class AbstractBlockRenderer implements BlockRenderer {
   protected function compileCss(...$styles): string {
     return WP_Style_Engine::compile_css(array_merge(...$styles), '');
   }
+
+  protected function addSpacer($content, $emailAttrs): string {
+    $blockSpacingStyles = WP_Style_Engine::compile_css(array_intersect_key($emailAttrs, array_flip(['padding-left', 'padding-right', 'margin-top'])), '');
+
+    return $blockSpacingStyles ? '<div class="block_layout" style="' . esc_attr($blockSpacingStyles) . '">' . $content . '</div>' : $content;
+  }
+
+  public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
+    return $this->addSpacer(
+      $this->renderContent($blockContent, $parsedBlock, $settingsController),
+      $parsedBlock['email_attrs'] ?? []
+    );
+  }
+
+  abstract protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string;
 }
