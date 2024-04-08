@@ -68,9 +68,9 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
     cd /wp-core/wp-content/plugins
     WOOCOMMERCE_CORE_ZIP="/wp-core/wp-content/plugins/mailpoet/tests/plugins/woocommerce.zip"
     if [ ! -f "$WOOCOMMERCE_CORE_ZIP" ]; then
-      echo "WooCommerce plugin zip not found. Downloading WooCommerce plugin 8.8.0-rc.1 zip"
+      echo "WooCommerce plugin zip not found. Downloading WooCommerce plugin 8.6.0 zip"
       cd /project
-      ./do download:woo-commerce-zip 8.8.0-rc.1
+      ./do download:woo-commerce-zip 8.6.0
       cd /wp-core/wp-content/plugins
     fi
 
