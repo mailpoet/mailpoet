@@ -286,4 +286,5 @@ interface Window {
   }>;
   mailpoet_admin_plugins_url: string;
   mailpoet_is_dotcom: boolean;
+  mailpoet_dynamic_segment_count: number;
 }

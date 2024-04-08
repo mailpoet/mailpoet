@@ -96,6 +96,10 @@ class DynamicSegments {
    */
   public function render() {
     $data = [];
+    $data['dynamic_segment_count'] = $this->segmentsRepository->countBy([
+      'deletedAt' => null,
+      'type' => SegmentEntity::TYPE_DYNAMIC,
+    ]);
     $data['items_per_page'] = $this->listingPageLimit->getLimitPerPage('segments');
 
     $customFields = $this->customFieldsRepository->findBy([], ['name' => 'asc']);
