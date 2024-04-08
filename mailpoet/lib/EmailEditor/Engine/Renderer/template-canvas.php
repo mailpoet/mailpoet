@@ -30,7 +30,7 @@
               </td>
             </tr>
             <tr>
-              <td class="email_content_wrapper" style="font-family: <?php echo esc_attr($contentFontFamily); ?>;padding: <?php echo esc_attr(implode(' ', [$padding['top'], '0px', $padding['bottom'], '0px'])); ?>;background: <?php echo esc_attr($contentBackground); ?>;">
+              <td class="email_content_wrapper" style="font-family: <?php echo esc_attr($contentFontFamily); ?>;padding-top: <?php echo esc_attr($paddingTop); ?>;padding-bottom: <?php echo esc_attr($paddingBottom); ?>;background: <?php echo esc_attr($contentBackground); ?>;">
                 <?php echo $templateHtml; ?>
               </td>
             </tr>
