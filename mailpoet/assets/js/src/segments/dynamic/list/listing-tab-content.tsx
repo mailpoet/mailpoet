@@ -11,6 +11,8 @@ import { DynamicSegmentsListNotices } from './notices';
 import { ActionConfirm } from './action-confirm';
 import { useSegmentsQuery, updateSegmentsQuery } from './query';
 
+const totalDynamicSegmentCount = window.mailpoet_dynamic_segment_count;
+
 function SelectAll(): JSX.Element {
   const { dynamicSegments } = useSelect((s) => ({
     dynamicSegments: s(storeName).getDynamicSegments(),
@@ -188,8 +190,8 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
         }}
         query={tableQueryParams}
         rowKey={(_, i) => dynamicSegments[i].id}
-        rowsPerPage={segmentsQuery.limit}
-        totalRows={dynamicSegmentsCount}
+        rowsPerPage={Math.min(segmentsQuery.limit, totalDynamicSegmentCount)}
+        totalRows={dynamicSegmentsCount ?? totalDynamicSegmentCount}
         showMenu={false}
       />
 
