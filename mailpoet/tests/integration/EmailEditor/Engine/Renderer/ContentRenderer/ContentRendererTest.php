@@ -16,6 +16,7 @@ class ContentRendererTest extends \MailPoetTest {
     $this->diContainer->get(EmailEditor::class)->initialize();
     $this->renderer = $this->diContainer->get(ContentRenderer::class);
     $this->emailPost = new \WP_Post((object)[
+      'ID' => 1,
       'post_content' => '<!-- wp:paragraph --><p>Hello!</p><!-- /wp:paragraph -->',
     ]);
   }
