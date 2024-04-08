@@ -49,9 +49,9 @@ class Renderer {
     $width = $layout['contentSize'];
     $paddingTop = $themeStyles['spacing']['padding']['top'] ?? '0px';
     $paddingBottom = $themeStyles['spacing']['padding']['bottom'] ?? '0px';
-    $contentBackground = $themeStyles['color']['background']['content'];
-    $layoutBackground = $themeStyles['color']['background']['layout'];
-    $contentFontFamily = $themeStyles['typography']['fontFamily'];
+    $contentBackground = $themeStyles['color']['background']['content'] ?? 'inherit';
+    $layoutBackground = $themeStyles['color']['background']['layout'] ?? 'inherit';
+    $contentFontFamily = $themeStyles['typography']['fontFamily'] ?? 'inherit';
     $logoHtml = $this->servicesChecker->isPremiumPluginActive() ? '' : '<img src="' . esc_attr($this->cdnAssetUrl->generateCdnUrl('email-editor/logo-footer.png')) . '" alt="MailPoet" style="margin: 24px auto; display: block;" />';
 
     $templateStyles = file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
