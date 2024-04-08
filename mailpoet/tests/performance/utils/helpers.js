@@ -44,10 +44,16 @@ export async function selectInReact(page, reactSelector, reactValue) {
   await page.keyboard.press('Enter');
 }
 
-// Wait and click the element with waiting for navigation
-export async function waitAndClick(page, elementName) {
-  await page.waitForSelector(elementName);
-  await page.locator(elementName).click();
+// Wait and click the element
+export async function waitAndClick(page, element) {
+  await page.waitForSelector(element);
+  await page.locator(element).click();
+}
+
+// Wait and type on the element
+export async function waitAndType(page, element, text) {
+  await page.locator(element).waitFor({ state: 'visible' });
+  await page.locator(element).type(text, { delay: 25 });
 }
 
 // Wait for selector to be visible
