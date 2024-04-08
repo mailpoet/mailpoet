@@ -107,8 +107,8 @@ class SystemReportCollector {
   protected function maskApiKey($key) {
     // the length of this particular key is an even number.
     // for odd lengths this method will change the total number of characters (which shouldn't be a problem in this context).
-    $halfKeyLength = (int)(strlen($key) / 2);
+    $halfKeyLength = (int)(strlen($key ?? '') / 2);
 
-    return substr($key, 0, $halfKeyLength) . str_repeat('*', $halfKeyLength);
+    return substr($key ?? '', 0, $halfKeyLength) . str_repeat('*', $halfKeyLength);
   }
 }
