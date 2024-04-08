@@ -47,7 +47,8 @@ class Renderer {
     $layout = $this->settingsController->getLayout();
     $themeStyles = $this->settingsController->getEmailStyles();
     $width = $layout['contentSize'];
-    $padding = $themeStyles['spacing']['padding'];
+    $paddingTop = $themeStyles['spacing']['padding']['top'] ?? '0px';
+    $paddingBottom = $themeStyles['spacing']['padding']['bottom'] ?? '0px';
     $contentBackground = $themeStyles['color']['background']['content'];
     $layoutBackground = $themeStyles['color']['background']['layout'];
     $contentFontFamily = $themeStyles['typography']['fontFamily'];
