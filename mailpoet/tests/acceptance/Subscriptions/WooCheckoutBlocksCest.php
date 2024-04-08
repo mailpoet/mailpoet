@@ -210,10 +210,12 @@ class WooCheckoutBlocksCest {
 
     // Close welcome in block editor dialog
     $this->closeDialog($i);
-    $i->click('button[aria-label="Toggle block inserter"]');
+    $i->click('[aria-label="Add title"]'); // For block inserter to show up
+    $i->click('[aria-label="Add block"]');
     $i->fillField('[placeholder="Search"]', 'Checkout');
     $i->waitForElement(Locator::contains('button', 'Checkout'));
     $i->click(Locator::contains('button', 'Checkout')); // Select Checkout block
+    $i->waitForElement('[aria-label="Block: Checkout"]');
     // Close dialog with Compatibility notice
     $this->closeDialog($i);
 
@@ -225,9 +227,6 @@ class WooCheckoutBlocksCest {
       // Starting from WC 7.2 this option is removed and only controlled from the settings page -> Accounts & Privacy tab
       $i->click(Locator::contains('label', 'Allow shoppers to sign up for a user account during checkout'));
     }
-
-    // Close dialog if any
-    $this->closeDialog($i);
 
     $i->click('Update');
     $i->waitForText('Page updated.');
