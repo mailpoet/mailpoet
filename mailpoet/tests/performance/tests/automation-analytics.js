@@ -20,7 +20,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login, waitForSelectorToBeVisible } from '../utils/helpers.js';
+import { login, waitAndType } from '../utils/helpers.js';
 
 export async function automationAnalytics() {
   const page = browser.newPage();
@@ -43,10 +43,34 @@ export async function automationAnalytics() {
       fullPage: fullPageSet,
     });
 
+    // Filter results by a custom date
+    await page.locator('.woocommerce-dropdown-button').click();
+    await page.locator('#tab-panel-1-custom').click();
+    await waitAndType(page, '[aria-label="Start Date"]', '01/01/2024');
+    await waitAndType(page, '[aria-label="End Date"]', '04/01/2024');
+    await page.locator('.woocommerce-filters-date__button.is-primary').click();
+    await page.waitForLoadState('networkidle');
+    await page.waitForSelector('.components-notice__content');
+
+    // Check if there's notice about inaccurate data
+    const message =
+      'In this time period, the automation structure did change and therefore some numbers in the flow chart might not be accurate.';
+    const locator = `//div[@class='components-notice__content'].//p[starts-with(text(),${message})]`;
+    describe(automationsPageTitle, () => {
+      describe('settings-basic: should be able to see inaccurate data message', () => {
+        expect(page.locator(locator)).to.exist;
+      });
+    });
+
     // Check Emails tab
     await page.locator('.mailpoet-analytics-tab-emails').click();
     await page.waitForSelector('.mailpoet-automation-analytics-email-name');
     await page.waitForLoadState('networkidle');
+
+    await page.screenshot({
+      path: screenshotPath + 'Automation_Analytics_02.png',
+      fullPage: fullPageSet,
+    });
 
     describe(automationsPageTitle, () => {
       describe('automation-analytics: should be able to see Emails tab loaded', () => {
@@ -80,29 +104,8 @@ export async function automationAnalytics() {
     });
 
     await page.screenshot({
-      path: screenshotPath + 'Automation_Analytics_02.png',
+      path: screenshotPath + 'Automation_Analytics_03.png',
       fullPage: fullPageSet,
-    });
-
-    // Filter results by date range Today
-    await page.locator('.woocommerce-dropdown-button').click();
-    await page.$$('.woocommerce-segmented-selection__item')[1].click();
-    await page.locator('.woocommerce-filters-date__button').click();
-    await page.waitForLoadState('networkidle');
-    await waitForSelectorToBeVisible(page, '.woocommerce-table__table > table');
-
-    // Filter results by date range Year to date
-    await page.locator('.woocommerce-dropdown-button').click();
-    await page.$$('.woocommerce-segmented-selection__item')[7].click();
-    await page.locator('.woocommerce-filters-date__button').click();
-    await page.waitForLoadState('networkidle');
-    await waitForSelectorToBeVisible(page, '.woocommerce-table__table > table');
-
-    describe(automationsPageTitle, () => {
-      describe('automation-analytics: should be able to see items in the listing', () => {
-        expect(page.locator('.woocommerce-table__table > table > tbody > tr'))
-          .to.exist;
-      });
     });
 
     // Thinking time and closing

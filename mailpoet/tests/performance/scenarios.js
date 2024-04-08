@@ -27,11 +27,9 @@ import { newsletterPostNotification } from './tests/newsletters-post-notificatio
 
 // Scenarios, Thresholds, Tags and Project ID used for K6 Cloud
 export let options = {
-  ext: {
-    loadimpact: {
-      projectID: k6CloudID,
-      name: projectName,
-    },
+  cloud: {
+    projectID: k6CloudID,
+    name: projectName,
   },
   scenarios: {},
   thresholds: {
