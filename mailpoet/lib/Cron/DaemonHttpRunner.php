@@ -95,7 +95,7 @@ class DaemonHttpRunner {
       // pause daemon execution to ensure that daemon runs only once every X seconds
       $elapsedTime = microtime(true) - $this->timer;
       if ($elapsedTime < $this->cronHelper->getDaemonExecutionLimit()) {
-        $this->pauseExecution($this->cronHelper->getDaemonExecutionLimit() - $elapsedTime);
+        $this->pauseExecution((int)ceil($this->cronHelper->getDaemonExecutionLimit() - $elapsedTime));
       }
     }
     // after each execution, re-read daemon data in case it changed
@@ -106,7 +106,7 @@ class DaemonHttpRunner {
     return $this->callSelf();
   }
 
-  public function pauseExecution($pauseTime) {
+  public function pauseExecution(int $pauseTime) {
     return sleep($pauseTime);
   }
 
