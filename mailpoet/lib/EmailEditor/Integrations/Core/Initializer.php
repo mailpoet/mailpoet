@@ -24,6 +24,7 @@ class Initializer {
     $blocksRegistry->addBlockRenderer('core/image', new Renderer\Blocks\Image());
     $blocksRegistry->addBlockRenderer('core/buttons', new Renderer\Blocks\Buttons(new FlexLayoutRenderer()));
     $blocksRegistry->addBlockRenderer('core/button', new Renderer\Blocks\Button());
+    $blocksRegistry->addBlockRenderer('core/post-content', new Renderer\Blocks\PostContent());
   }
 
   /**
