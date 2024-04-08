@@ -9,11 +9,13 @@
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
+  <title><?php echo esc_html($subject); ?></title>
   <meta charset="<?php bloginfo('charset'); ?>" />
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="format-detection" content="telephone=no" />
+  <?php echo $metaRobots; ?>
   <style type="text/css">
     <?php echo $templateStyles; ?>
   </style>
