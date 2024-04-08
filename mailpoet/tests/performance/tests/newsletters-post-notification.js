@@ -56,8 +56,10 @@ export async function newsletterPostNotification() {
       '[data-automation-id="newsletter_interval_type"]',
       'immediately',
     );
-    await page.locator('.mailpoet-button.mailpoet-full-width').click();
-    await page.waitForSelector('.mailpoet_loading');
+    await Promise.all([
+      page.waitForNavigation(),
+      page.locator('.mailpoet-button.mailpoet-full-width').click(),
+    ]);
     await page.waitForSelector('[data-automation-id="templates-standard"]');
     await page.waitForLoadState('networkidle');
 
