@@ -196,7 +196,7 @@ export function getRow(
             </Button>
           )}
           <DropdownMenu
-            className="mailpoet-automation-listing-more-button"
+            className="mailpoet-listing-more-button"
             label={__('More', 'mailpoet')}
             icon={moreVertical}
             controls={menuItems.map(({ control }) => control)}

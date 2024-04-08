@@ -160,7 +160,7 @@ class AcceptanceTester extends \Codeception\Actor {
 
   public function clickWooTableMoreButtonByItemName($itemName) {
     $i = $this;
-    $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//div[contains(@class, "mailpoet-automation-listing-more-button")]'];
+    $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//div[contains(@class, "mailpoet-listing-more-button")]'];
     $i->click($xpath);
   }
 
