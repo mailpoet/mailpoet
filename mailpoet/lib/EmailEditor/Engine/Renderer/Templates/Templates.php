@@ -25,7 +25,9 @@ class Templates {
         'type' => 'wp_template',
         'theme' => 'mailpoet',
         'source' => 'plugin',
-        'post_types' => [],
+        'post_types' => [
+          'mailpoet_email',
+        ],
     ];
   }
 

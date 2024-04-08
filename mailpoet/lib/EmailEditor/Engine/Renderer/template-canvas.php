@@ -22,7 +22,7 @@
     <div class="email_layout_wrapper" style="background:<?php echo esc_attr($layoutBackground); ?>">
       <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" width="<?php echo esc_attr($width); ?>" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
       <div style="margin:0px auto;max-width:<?php echo esc_attr($width); ?>">
-        <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
           <tbody>
             <tr>
               <td class="email_preheader" height="1">
@@ -30,7 +30,7 @@
               </td>
             </tr>
             <tr>
-              <td class="email_content_wrapper" style="font-family: <?php echo esc_attr($contentFontFamily); ?>;padding: <?php echo esc_attr(implode(' ', [$padding['top'], $padding['right'], $padding['bottom'], $padding['left']])); ?>;background: <?php echo esc_attr($contentBackground); ?>;">
+              <td class="email_content_wrapper" style="font-family: <?php echo esc_attr($contentFontFamily); ?>;padding: <?php echo esc_attr(implode(' ', [$padding['top'], '0px', $padding['bottom'], '0px'])); ?>;background: <?php echo esc_attr($contentBackground); ?>;">
                 <?php echo $templateHtml; ?>
               </td>
             </tr>

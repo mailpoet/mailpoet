@@ -33,7 +33,7 @@ class Button extends AbstractBlockRenderer {
     ];
   }
 
-  public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
+  protected function renderContent($blockContent, array $parsedBlock, SettingsController $settingsController): string {
     if (empty($parsedBlock['innerHTML'])) {
       return '';
     }

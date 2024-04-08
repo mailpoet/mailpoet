@@ -2,11 +2,10 @@
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout\FlexLayoutRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
-class Buttons implements BlockRenderer {
+class Buttons extends AbstractBlockRenderer {
   /** @var FlexLayoutRenderer */
   private $flexLayoutRenderer;
 
@@ -16,7 +15,7 @@ class Buttons implements BlockRenderer {
     $this->flexLayoutRenderer = $flexLayoutRenderer;
   }
 
-  public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
+  protected function renderContent($blockContent, array $parsedBlock, SettingsController $settingsController): string {
     // Ignore font size set on the buttons block
     // We rely on TypographyPreprocessor to set the font size on the buttons
     // Rendering font size on the wrapper causes unwanted whitespace below the buttons

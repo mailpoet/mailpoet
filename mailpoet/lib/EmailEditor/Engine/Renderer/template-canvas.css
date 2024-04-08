@@ -19,7 +19,7 @@ body {
 .email_content_wrapper {
   direction: ltr;
   font-size: inherit;
-  text-align: center;
+  text-align: left;
 }
 
 .email_footer {

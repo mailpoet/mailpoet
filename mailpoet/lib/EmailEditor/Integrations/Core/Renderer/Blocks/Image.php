@@ -2,12 +2,11 @@
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 
-class Image implements BlockRenderer {
-  public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
+class Image extends AbstractBlockRenderer {
+  protected function renderContent($blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $parsedHtml = $this->parseBlockContent($blockContent);
 
     if (!$parsedHtml) {
