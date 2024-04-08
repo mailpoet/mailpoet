@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use Facebook\WebDriver\WebDriverKeys;
+use Codeception\Util\Locator;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
@@ -26,7 +26,7 @@ class GutenbergFormBlockCest {
     $this->lastName = 'Last Name';
   }
 
-  public function _before(\AcceptanceTester $i) {
+  public function _before() {
     $settings = new Settings();
     $settings
       ->withConfirmationEmailSubject()
@@ -117,11 +117,14 @@ class GutenbergFormBlockCest {
     $i->wantTo('Add Gutenberg form block to the post manually');
     $i->login();
     $i->amEditingPostWithId($postId);
+    $this->closeDialog($i);
     $i->waitForText('My Gutenberg form');
-    $i->pressKey('body', WebDriverKeys::ESCAPE);
-    $i->click('.block-editor-inserter');
-    $i->fillField('.components-search-control__input', 'MailPoet Subscription Form');
-    $i->click('.editor-block-list-item-mailpoet-subscription-form-block');
+    $i->click('[aria-label="Add title"]');
+    $i->click('[aria-label="Add block"]');
+    $i->fillField('[placeholder="Search"]', 'MailPoet Subscription Form');
+    $i->waitForElement(Locator::contains('button', 'MailPoet Subscription Form'));
+    $i->click(Locator::contains('button', 'MailPoet Subscription Form'));
+    $i->waitForElement('[aria-label="Block: MailPoet Subscription Form"]');
     $i->selectOption('.mailpoet-block-create-forms-list', 'Acceptance Test Block Form');
     $i->waitForElementVisible('[data-automation-id="form_email"]');
     $i->waitForElementVisible('[data-automation-id="form_first_name"]');
@@ -158,5 +161,17 @@ class GutenbergFormBlockCest {
       'post_content' => '',
       'post_status' => 'publish',
     ]);
+  }
+
+  /**
+   * Close dialog when is visible.
+   */
+  private function closeDialog(\AcceptanceTester $i): void {
+    $closeButton = $i->executeJS('return document.querySelectorAll("button[aria-label=\'Close\']");');
+
+    if ($closeButton) {
+      $i->click('button[aria-label="Close"]');
+      $i->waitForElementNotVisible('button[aria-label="Close"]');
+    }
   }
 }
