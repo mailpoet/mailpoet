@@ -10,6 +10,7 @@ import { BulkActions } from './bulk-actions';
 import { DynamicSegmentsListNotices } from './notices';
 import { ActionConfirm } from './action-confirm';
 import { useSegmentsQuery, updateSegmentsQuery } from './query';
+import useDebouncedInput from '../../../common/use-debounced-input';
 
 const totalDynamicSegmentCount = window.mailpoet_dynamic_segment_count;
 
@@ -95,6 +96,14 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
 
   const segmentsQuery = useSegmentsQuery();
 
+  const [search, setSearch, debouncedSearch] = useDebouncedInput(
+    segmentsQuery.search ?? '',
+  );
+
+  useEffect(() => {
+    updateSegmentsQuery({ search: debouncedSearch, offset: 0 });
+  }, [debouncedSearch]);
+
   useEffect(() => {
     void dispatch(storeName).loadDynamicSegments(segmentsQuery);
   }, [segmentsQuery]);
@@ -145,13 +154,8 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
         <TextControl
           className="mailpoet-segments-listing-search"
           placeholder={__('Search', 'mailpoet')}
-          onChange={(value) => {
-            updateSegmentsQuery({
-              search: value,
-              offset: 0,
-            });
-          }}
-          value={segmentsQuery.search ?? ''}
+          onChange={setSearch}
+          value={search}
         />
       </div>
 
