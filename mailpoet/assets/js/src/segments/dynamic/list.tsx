@@ -2,6 +2,7 @@ import { HashRouter } from 'react-router-dom';
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { ListingTabs } from './list/listing-tabs';
+import { Notices } from './list/notices';
 import * as ROUTES from '../routes';
 import { plusIcon } from '../../common/button/icon/plus';
 import { PageHeader } from '../../common/page-header';
@@ -15,6 +16,8 @@ export function DynamicSegmentList(): JSX.Element {
   return (
     <HashRouter>
       <TopBarWithBeamer hideScreenOptions />
+      <Notices />
+
       <PageHeader heading={__('Segments', 'mailpoet')}>
         <Button
           href={`#${ROUTES.DYNAMIC_SEGMENT_TEMPLATES}`}

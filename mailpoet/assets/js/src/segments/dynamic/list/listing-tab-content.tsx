@@ -7,7 +7,6 @@ import { __ } from '@wordpress/i18n';
 import { DynamicSegment, DynamicSegmentAction } from 'segments/types';
 import { getRow } from 'segments/dynamic/list/get-row';
 import { BulkActions } from './bulk-actions';
-import { DynamicSegmentsListNotices } from './notices';
 import { ActionConfirm } from './action-confirm';
 import { useSegmentsQuery, updateSegmentsQuery } from './query';
 import useDebouncedInput from '../../../common/use-debounced-input';
@@ -143,7 +142,6 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
   return (
     <>
       <div className="mailpoet-segments-listing-header">
-        <DynamicSegmentsListNotices />
         <BulkActions
           tab={tab}
           onClick={(selected, action) => {
