@@ -76,19 +76,21 @@ class Heading extends AbstractBlockRenderer {
    * 1) We need to remove padding because we render padding on wrapping table cell
    * 2) We also need to replace font-size to avoid clamp() because clamp() is not supported in many email clients.
    * The font size values is automatically converted to clamp() when WP site theme is configured to use fluid layouts.
-   * Currently (WP 6.4), there is no way to disable this behavior.
+   * Currently (WP 6.5), there is no way to disable this behavior.
    * @param array{tag_name: string, class_name?: string} $tag
    */
   private function adjustStyleAttribute($blockContent, array $parsedBlock, SettingsController $settingsController, array $tag): string {
     $html = new \WP_HTML_Tag_Processor($blockContent);
-    $themeData = $settingsController->getTheme()->get_data();
-    $fontSize = 'font-size:' . ($parsedBlock['email_attrs']['font-size'] ?? $themeData['styles']['typography']['fontSize']) . ';';
 
     if ($html->next_tag($tag)) {
       $elementStyle = $html->get_attribute('style') ?? '';
       // Padding may contain value like 10px or variable like var(--spacing-10)
       $elementStyle = preg_replace('/padding[^:]*:.?[0-9a-z-()]+;?/', '', $elementStyle);
-      $elementStyle = preg_replace('/font-size:[^;]+;?/', $fontSize, $elementStyle);
+
+      // We define the font-size on the wrapper element, but we need to keep font-size definition here
+      // to prevent CSS Inliner from adding a default value and overriding the value set by user, which is on the wrapper element.
+      // The value provided by WP uses clamp() function which is not supported in many email clients
+      $elementStyle = preg_replace('/font-size:[^;]+;?/', 'font-size: inherit;', $elementStyle);
       $html->set_attribute('style', $elementStyle);
       $blockContent = $html->get_updated_html();
     }
