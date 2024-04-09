@@ -13,6 +13,7 @@ use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
 use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Integrations\Core\Initializer as CoreEmailEditorIntegration;
+use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEditorIntegration;
 use MailPoet\Features\FeaturesController;
 use MailPoet\InvalidStateException;
@@ -131,6 +132,9 @@ class Initializer {
   /** @var CoreEmailEditorIntegration */
   private $coreEmailEditorIntegration;
 
+  /** @var BlockTypesController */
+  private $blockTypesController;
+
   /** @var FeaturesController */
   private $featureController;
 
@@ -172,6 +176,7 @@ class Initializer {
     PersonalDataExporters $personalDataExporters,
     DaemonActionSchedulerRunner $actionSchedulerRunner,
     EmailEditor $emailEditor,
+    BlockTypesController $blockTypesController,
     MailpoetEmailEditorIntegration $mailpoetEmailEditorIntegration,
     CoreEmailEditorIntegration $coreEmailEditorIntegration,
     FeaturesController $featureController,
@@ -209,6 +214,7 @@ class Initializer {
     $this->emailEditor = $emailEditor;
     $this->mailpoetEmailEditorIntegration = $mailpoetEmailEditorIntegration;
     $this->coreEmailEditorIntegration = $coreEmailEditorIntegration;
+    $this->blockTypesController = $blockTypesController;
     $this->featureController = $featureController;
     $this->urlHelper = $urlHelper;
   }
@@ -368,6 +374,7 @@ class Initializer {
       $this->automationEngine->initialize();
       if ($this->featureController->isSupported(FeaturesController::GUTENBERG_EMAIL_EDITOR)) {
         $this->emailEditor->initialize();
+        $this->blockTypesController->initialize();
       }
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
