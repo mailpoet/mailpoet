@@ -4,23 +4,9 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypes;
 
 class EmailContent extends AbstractBlock {
 
-    /**
-     * Block name.
-     *
-     * @var string
-     */
-    protected $blockName = 'email-content';
+  protected $blockName = 'email-content';
 
-    /**
-     * Render the block.
-     *
-     * @param array    $attributes Block attributes.
-     * @param string   $content Block content.
-     * @param \WP_Block $block Block instance.
-     *
-     * @return string | void Rendered block output.
-     */
-  protected function render($attributes, $content, $block) {
+  public function render($attributes, $content, $block) {
     global $post;
 
     /** This filter is documented in wp-includes/post-template.php */
