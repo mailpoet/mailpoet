@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer;
 
 use MailPoet\EmailEditor\Engine\EmailEditor;
+use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
 
 require_once __DIR__ . '/DummyBlockRenderer.php';
 
@@ -14,6 +15,7 @@ class ContentRendererTest extends \MailPoetTest {
   public function _before(): void {
     parent::_before();
     $this->diContainer->get(EmailEditor::class)->initialize();
+    $this->diContainer->get(BlockTypesController::class)->initialize();
     $this->renderer = $this->diContainer->get(ContentRenderer::class);
     $this->emailPost = new \WP_Post((object)[
       'ID' => 1,
@@ -24,7 +26,7 @@ class ContentRendererTest extends \MailPoetTest {
   public function testItRendersContent(): void {
     $template = new \WP_Block_Template();
     $template->id = 'template-id';
-    $template->content = '<!-- wp:post-content /-->';
+    $template->content = '<!-- wp:mailpoet/email-content /-->';
     $content = $this->renderer->render(
       $this->emailPost,
       $template
@@ -35,7 +37,7 @@ class ContentRendererTest extends \MailPoetTest {
   public function testItInlinesContentStyles(): void {
     $template = new \WP_Block_Template();
     $template->id = 'template-id';
-    $template->content = '<!-- wp:post-content /-->';
+    $template->content = '<!-- wp:mailpoet/email-content /-->';
     $rendered = $this->renderer->render($this->emailPost, $template);
     $paragraphStyles = $this->getStylesValueForTag($rendered, 'p');
     verify($paragraphStyles)->stringContainsString('margin:0');
