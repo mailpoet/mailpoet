@@ -8,9 +8,7 @@ use MailPoet\Util\Helpers;
 
 class Heading extends AbstractBlockRenderer {
   protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    $level = $parsedBlock['attrs']['level'] ?? 2; // default level is 2
-    $blockContent = $this->adjustStyleAttribute($blockContent, $parsedBlock, $settingsController, ['tag_name' => "h$level"]);
-
+    $blockContent = $this->adjustStyleAttribute($blockContent);
     return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($blockContent, $parsedBlock, $settingsController));
   }
 
@@ -79,10 +77,10 @@ class Heading extends AbstractBlockRenderer {
    * Currently (WP 6.5), there is no way to disable this behavior.
    * @param array{tag_name: string, class_name?: string} $tag
    */
-  private function adjustStyleAttribute($blockContent, array $parsedBlock, SettingsController $settingsController, array $tag): string {
+  private function adjustStyleAttribute($blockContent): string {
     $html = new \WP_HTML_Tag_Processor($blockContent);
 
-    if ($html->next_tag($tag)) {
+    if ($html->next_tag()) {
       $elementStyle = $html->get_attribute('style') ?? '';
       // Padding may contain value like 10px or variable like var(--spacing-10)
       $elementStyle = preg_replace('/padding[^:]*:.?[0-9a-z-()]+;?/', '', $elementStyle);
