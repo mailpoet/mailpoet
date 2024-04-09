@@ -2,7 +2,6 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
-use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
@@ -22,21 +21,16 @@ class EmailEditor {
   /** @var CdnAssetUrl */
   private $cdnAssetUrl;
 
-  /** @var BlockTypesController */
-  private $blockTypesController;
-
   public function __construct(
     WPFunctions $wp,
     FeaturesController $featuresController,
     EmailApiController $emailApiController,
-    CdnAssetUrl $cdnAssetUrl,
-    BlockTypesController $blockTypesController
+    CdnAssetUrl $cdnAssetUrl
   ) {
     $this->wp = $wp;
     $this->featuresController = $featuresController;
     $this->emailApiController = $emailApiController;
     $this->cdnAssetUrl = $cdnAssetUrl;
-    $this->blockTypesController = $blockTypesController;
   }
 
   public function initialize(): void {
@@ -44,7 +38,6 @@ class EmailEditor {
       return;
     }
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
-    $this->blockTypesController->initialize();
     $this->extendEmailPostApi();
   }
 
