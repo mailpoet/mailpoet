@@ -26,15 +26,4 @@ class SettingsControllerTest extends \MailPoetUnitTest {
     $expectedWidth = (int)SettingsController::EMAIL_WIDTH - 10 * 2;
     verify($layoutWidth)->equals($expectedWidth . 'px');
   }
-
-  public function testItConvertsStylesToString(): void {
-    $settingsController = new SettingsController($this->makeEmpty(ThemeController::class));
-    $styles = [
-      'width' => '600px',
-      'background' => '#ffffff',
-      'padding-left' => '15px',
-    ];
-    $string = $settingsController->convertStylesToString($styles);
-    verify($string)->equals('width:600px;background:#ffffff;padding-left:15px;');
-  }
 }
