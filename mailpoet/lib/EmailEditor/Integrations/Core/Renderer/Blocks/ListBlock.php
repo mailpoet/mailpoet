@@ -22,13 +22,13 @@ class ListBlock extends AbstractBlockRenderer {
         $styles['font-size'] = $themeData['styles']['typography']['fontSize'];
       }
 
-      $html->set_attribute('style', $settingsController->convertStylesToString($styles));
+      $html->set_attribute('style', \WP_Style_Engine::compile_css($styles, ''));
       $blockContent = $html->get_updated_html();
     }
 
-    $wrapperStyle = $settingsController->convertStylesToString([
+    $wrapperStyle = \WP_Style_Engine::compile_css([
       'margin-top' => $parsedBlock['email_attrs']['margin-top'] ?? '0px',
-    ]);
+    ], '');
 
     // \WP_HTML_Tag_Processor escapes the content, so we have to replace it back
     $blockContent = str_replace('&#039;', "'", $blockContent);

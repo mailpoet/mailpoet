@@ -62,7 +62,7 @@ class Heading extends AbstractBlockRenderer {
             width="100%"
           >
             <tr>
-              <td class="' . esc_attr($classes) . '" style="' . $settingsController->convertStylesToString($styles) . '">
+              <td class="' . esc_attr($classes) . '" style="' . \WP_Style_Engine::compile_css($styles, '') . '">
                 {heading_content}
               </td>
             </tr>

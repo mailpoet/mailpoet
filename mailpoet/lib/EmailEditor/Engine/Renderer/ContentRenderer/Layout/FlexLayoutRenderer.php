@@ -27,7 +27,7 @@ class FlexLayoutRenderer {
       if ($key > 0) {
         $styles['padding-left'] = $flexGap;
       }
-      $outputHtml .= '<td class="layout-flex-item" style="' . esc_html($settingsController->convertStylesToString($styles)) . '">' . render_block($block) . '</td>';
+      $outputHtml .= '<td class="layout-flex-item" style="' . esc_html(\WP_Style_Engine::compile_css($styles, '')) . '">' . render_block($block) . '</td>';
     }
     $outputHtml .= '</tr></table></div>
     <!--[if mso | IE]></td></tr></table><![endif]-->';

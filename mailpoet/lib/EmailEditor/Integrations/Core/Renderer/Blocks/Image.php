@@ -70,7 +70,7 @@ class Image extends AbstractBlockRenderer {
       $borderStyles['box-sizing'] = 'border-box';
     }
 
-    return $this->addStyleToElement($blockContent, ['tag_name' => 'img'], $settingsController->convertStylesToString($borderStyles));
+    return $this->addStyleToElement($blockContent, ['tag_name' => 'img'], \WP_Style_Engine::compile_css($borderStyles, ''));
   }
 
   /**
@@ -110,7 +110,7 @@ class Image extends AbstractBlockRenderer {
     ];
 
     $styles['font-size'] = $parsedBlock['email_attrs']['font-size'] ?? $themeData['styles']['typography']['fontSize'];
-    return $settingsController->convertStylesToString($styles);
+    return \WP_Style_Engine::compile_css($styles, '');
   }
 
   /**
@@ -142,7 +142,7 @@ class Image extends AbstractBlockRenderer {
         border="0"
         cellpadding="0"
         cellspacing="0"
-        style="' . $settingsController->convertStylesToString($styles) . '"
+        style="' . \WP_Style_Engine::compile_css($styles, '') . '"
         width="100%"
       >
         <tr>
@@ -152,7 +152,7 @@ class Image extends AbstractBlockRenderer {
               border="0"
               cellpadding="0"
               cellspacing="0"
-              style="' . $settingsController->convertStylesToString($wrapperStyles) . '"
+              style="' . \WP_Style_Engine::compile_css($wrapperStyles, '') . '"
               width="' . $wrapperWidth . '"
             >
               <tr>

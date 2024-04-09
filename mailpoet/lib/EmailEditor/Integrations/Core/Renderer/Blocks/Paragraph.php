@@ -52,7 +52,7 @@ class Paragraph extends AbstractBlockRenderer {
       <!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><![endif]-->
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="width:100%;"width="100%">
         <tr>
-          <td class="' . esc_attr($classes) . '" style="' . $settingsController->convertStylesToString($styles) . '" align="' . $align . '">
+          <td class="' . esc_attr($classes) . '" style="' . \WP_Style_Engine::compile_css($styles, '') . '" align="' . $align . '">
             {paragraph_content}
           </td>
         </tr>
