@@ -6,7 +6,6 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ContentRenderer;
 use MailPoet\EmailEditor\Engine\Renderer\Templates\Templates;
 use MailPoet\EmailEditor\Engine\SettingsController;
-use MailPoet\EmailEditor\Engine\ThemeController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoetVendor\CSS as CssInliner;
@@ -19,7 +18,6 @@ class Renderer {
   private CdnAssetUrl $cdnAssetUrl;
   private ServicesChecker $servicesChecker;
   private Templates $templates;
-  private ThemeController $themeController;
 
   const TEMPLATE_FILE = 'template-canvas.php';
   const TEMPLATE_STYLES_FILE = 'template-canvas.css';
@@ -30,7 +28,6 @@ class Renderer {
     ContentRenderer $contentRenderer,
     CdnAssetUrl $cdnAssetUrl,
     Templates $templates,
-    ThemeController $themeController,
     ServicesChecker $servicesChecker
   ) {
     $this->cssInliner = $cssInliner;
@@ -39,7 +36,6 @@ class Renderer {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->templates = $templates;
     $this->servicesChecker = $servicesChecker;
-    $this->themeController = $themeController;
   }
 
   public function render(\WP_Post $post, string $subject, string $preHeader, string $language, $metaRobots = ''): array {
@@ -54,7 +50,7 @@ class Renderer {
     $logoHtml = $this->servicesChecker->isPremiumPluginActive() ? '' : '<img src="' . esc_attr($this->cdnAssetUrl->generateCdnUrl('email-editor/logo-footer.png')) . '" alt="MailPoet" style="margin: 24px auto; display: block;" />';
 
     $templateStyles = file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
-    $templateStyles = apply_filters('mailpoet_email_renderer_styles', $templateStyles . $this->themeController->getStylesheetForRendering(), $post);
+    $templateStyles = apply_filters('mailpoet_email_renderer_styles', $templateStyles, $post);
     $templateHtml = $this->contentRenderer->render($post, $this->templates->getBlockTemplateFromFile('email-general.html'));
 
     ob_start();

@@ -95,7 +95,7 @@ class RendererTest extends \MailPoetTest {
         <!-- /wp:columns -->',
     ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
-    $style = $this->extractBlockStyle($rendered['html'], 'wp-block-columns', 'td');
+    $style = $this->extractBlockStyle($rendered['html'], 'wp-block-columns', 'table');
     verify($style)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
     verify($style)->stringContainsString('background-color:#000000'); // black is #000000
   }

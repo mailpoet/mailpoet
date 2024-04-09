@@ -5,6 +5,10 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 class PostContent extends AbstractBlockRenderer {
+  public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
+    return $this->renderContent($blockContent, $parsedBlock, $settingsController);
+  }
+
   protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     global $post;
 
