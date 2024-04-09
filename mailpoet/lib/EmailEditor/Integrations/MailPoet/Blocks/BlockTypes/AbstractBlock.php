@@ -19,6 +19,10 @@ abstract class AbstractBlock {
   }
 
   protected function registerBlockType() {
+    if (\WP_Block_Type_Registry::get_instance()->is_registered($this->getBlockType())) {
+      return;
+    }
+
     $metadata_path = __DIR__ . '/' . $this->blockName . '/block.json';
     $block_settings = [
         'render_callback' => [$this, 'render'],
