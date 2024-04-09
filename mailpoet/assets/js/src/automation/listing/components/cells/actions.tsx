@@ -21,9 +21,9 @@ export function Actions({ automation }: Props): JSX.Element {
   const menuItems = [trash, restore, del].filter((item) => item);
 
   return (
-    <div className="mailpoet-automation-listing-cell-actions">
-      <Analytics automation={automation} />
-      <EditAutomation automation={automation} />
+    <div className="mailpoet-listing-actions-cell">
+      <Analytics automation={automation} variant="tertiary" />
+      <EditAutomation automation={automation} variant="tertiary" />
       {menuItems.map(({ control, slot }) => (
         <Fragment key={control.title}>{slot}</Fragment>
       ))}
