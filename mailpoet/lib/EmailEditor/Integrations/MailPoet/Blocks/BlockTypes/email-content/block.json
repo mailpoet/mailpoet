@@ -1,0 +1,19 @@
+{
+  "name": "mailpoet/email-content",
+  "version": "1.0.0",
+  "title": "Email Content",
+  "description": "Shows email content within the email editor.",
+  "category": "mailpoet",
+  "keywords": ["MailPoet"],
+  "textdomain": "mailpoet",
+  "attributes": {},
+  "supports": {
+    "align": false,
+    "html": false,
+    "multiple": false,
+    "reusable": false,
+    "inserter": false
+  },
+  "apiVersion": 2,
+  "$schema": "https://schemas.wp.org/trunk/block.json"
+}
