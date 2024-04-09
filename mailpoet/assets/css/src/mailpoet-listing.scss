@@ -1,3 +1,16 @@
+// Settings
+// Global variables, config switches. Not producing any CSS.
+
+@import 'settings/breakpoints';
+@import 'settings/colors';
+@import 'settings/grid';
+@import 'settings/typography';
+
+// Tools
+// Default mixins and functions. Still not producing any CSS.
+
+@import 'mixins/breakpoints';
+
 .mailpoet-filter-tab-panel {
   background-color: #fff;
   border: 1px solid #dcdcde;
@@ -44,6 +57,20 @@
   .woocommerce-pagination {
     margin-bottom: 0;
   }
+
+  .woocommerce-table__header {
+    height: 40px;
+    text-align: left;
+
+    @include respond-to(large-screen) {
+      white-space: normal;
+    }
+
+    button.components-button {
+      font-weight: bold;
+      padding: 6px 8px;
+    }
+  }
 }
 
 .woocommerce-table__table {
@@ -78,8 +105,8 @@
   .mailpoet-listing-actions-cell {
     align-items: center;
     display: flex;
-    gap: 8px;
     justify-content: flex-end;
+    margin: -6px -12px; // action buttons duplicate cell paddings, subtract it
   }
 
   .mailpoet-listing-more-button button.components-button {

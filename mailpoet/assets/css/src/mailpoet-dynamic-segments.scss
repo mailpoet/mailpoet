@@ -1,6 +1,10 @@
 @import 'settings/colors';
 @import 'mailpoet-listing';
 
+#dynamic_segments_container * {
+  box-sizing: border-box;
+}
+
 .mailpoet-segment-subscriber-count {
   align-items: center;
   display: flex;
@@ -67,5 +71,13 @@
 .woocommerce-table {
   .components-card__header {
     display: none;
+  }
+
+  .mailpoet-listing-name {
+    width: 100%;
+  }
+
+  .mailpoet-listing-modified-date {
+    white-space: nowrap;
   }
 }
