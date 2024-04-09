@@ -87,7 +87,7 @@ class Heading extends AbstractBlockRenderer {
     if ($html->next_tag($tag)) {
       $elementStyle = $html->get_attribute('style') ?? '';
       // Padding may contain value like 10px or variable like var(--spacing-10)
-      $elementStyle = preg_replace('/padding.*:.?[0-9a-z-()]+;?/', '', $elementStyle);
+      $elementStyle = preg_replace('/padding[^:]*:.?[0-9a-z-()]+;?/', '', $elementStyle);
       $elementStyle = preg_replace('/font-size:[^;]+;?/', $fontSize, $elementStyle);
       $html->set_attribute('style', $elementStyle);
       $blockContent = $html->get_updated_html();
