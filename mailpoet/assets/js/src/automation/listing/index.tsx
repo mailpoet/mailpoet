@@ -22,7 +22,8 @@ const tableHeaders = [
   {
     key: 'name',
     label: __('Name', 'mailpoet'),
-    cellClassName: 'mailpoet-automation-listing-cell-name',
+    cellClassName:
+      'mailpoet-listing-name mailpoet-automation-listing-cell-name',
   },
   { key: 'subscribers', label: __('Subscribers', 'mailpoet') },
   { key: 'status', label: __('Status', 'mailpoet') },
