@@ -119,21 +119,21 @@ export function getRow(
       ? {
           value: dynamicSegment.missing_plugin_message,
           display: (
-            <p
+            <div
               data-automation-id={`mailpoet_dynamic_segment_plugin_missing_message_${dynamicSegment.id}`}
             >
               {dynamicSegment.missing_plugin_message.message}
-            </p>
+            </div>
           ),
         }
       : {
           value: dynamicSegment.count_all,
           display: (
-            <p
+            <div
               data-automation-id={`mailpoet_dynamic_segment_count_all_${dynamicSegment.id}`}
             >
               {dynamicSegment.count_all}
-            </p>
+            </div>
           ),
         },
     dynamicSegment.is_plugin_missing
@@ -160,12 +160,12 @@ export function getRow(
     {
       value: dynamicSegment.created_at,
       display: (
-        <p
+        <div
           data-automation-id={`mailpoet_dynamic_segment_created_at_${dynamicSegment.id}`}
         >
           {MailPoet.Date.short(dynamicSegment.created_at)} /{' '}
           {MailPoet.Date.time(dynamicSegment.created_at)}
-        </p>
+        </div>
       ),
     },
     {
