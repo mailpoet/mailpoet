@@ -131,7 +131,7 @@ class ManageSegmentsCest {
 
     $i->wantTo('Trash existing segment');
     $i->clickWooTableActionInsideMoreButton($segment->getName(), 'Move to trash', 'Trash');
-    $i->waitForWooTableNoticeAndClose('Segment moved to trash.');
+    $i->waitForNoticeAndClose('Segment moved to trash.');
     $i->waitForText('No data to display');
     $i->changeWooTableTab('trash');
 
@@ -140,7 +140,7 @@ class ManageSegmentsCest {
 
     $i->wantTo('Restore trashed segment');
     $i->clickWooTableActionInsideMoreButton($segment->getName(), 'Restore', 'Restore');
-    $i->waitForWooTableNoticeAndClose('Segment restored.');
+    $i->waitForNoticeAndClose('Segment restored.');
     $i->seeInCurrentURL(urlencode('group[trash]'));
     $i->changeWooTableTab('all');
     $i->waitForText($segment->getName());
@@ -164,12 +164,12 @@ class ManageSegmentsCest {
 
     $i->wantTo('Trash and delete existing segment');
     $i->clickWooTableActionInsideMoreButton($segment1->getName(), 'Move to trash', 'Trash');
-    $i->waitForWooTableNoticeAndClose('Segment moved to trash.');
+    $i->waitForNoticeAndClose('Segment moved to trash.');
     $i->waitForText('No data to display');
     $i->changeWooTableTab('trash');
     $i->waitForText($segment1->getName());
     $i->clickWooTableActionInsideMoreButton($segment1->getName(), 'Delete permanently', 'Delete permanently');
-    $i->waitForWooTableNoticeAndClose('Segment permanently deleted.');
+    $i->waitForNoticeAndClose('Segment permanently deleted.');
     $i->seeNoJSErrors();
   }
 

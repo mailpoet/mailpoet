@@ -400,12 +400,6 @@ class AcceptanceTester extends \Codeception\Actor {
     $this->click('.notice-dismiss');
   }
 
-  public function waitForWooTableNoticeAndClose(string $text): void {
-    $i = $this;
-    $i->waitForText($text);
-    $i->click('button[aria-label="Dismiss this notice"]');
-  }
-
   public function scrollToTop() {
     return $this->scrollTo('#wpcontent');
   }

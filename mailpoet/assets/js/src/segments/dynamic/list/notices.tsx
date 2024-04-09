@@ -1,10 +1,8 @@
-import { NoticeList, SnackbarList } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
+import { Notice } from '../../../notices/notice';
 
-// See: https://github.com/WordPress/gutenberg/blob/5be0ec4153c3adf9f0f2513239f4f7a358ba7948/packages/editor/src/components/editor-notices/index.js
-
-export function DynamicSegmentsListNotices(): JSX.Element {
+export function Notices(): JSX.Element {
   const { notices } = useSelect(
     (select) => ({
       notices: select(noticesStore).getNotices(),
@@ -22,24 +20,30 @@ export function DynamicSegmentsListNotices(): JSX.Element {
     ({ isDismissible, type }) => !isDismissible && type === 'default',
   );
 
-  const snackbarNotices = notices.filter(({ type }) => type === 'snackbar');
-
   return (
     <>
-      <NoticeList
-        notices={nonDismissibleNotices}
-        className="mailpoet-segments-listing-notices__notice-list"
-      />
-      <NoticeList
-        notices={dismissibleNotices}
-        className="mailpoet-segments-listing-notices__notice-list"
-        onRemove={removeNotice}
-      />
-      <SnackbarList
-        notices={snackbarNotices}
-        className="mailpoet-segments-listing-notices__notice-list"
-        onRemove={removeNotice}
-      />
+      {nonDismissibleNotices
+        .reverse()
+        .map(({ id, status, content, __unstableHTML }) => (
+          <Notice key={id} renderInPlace type={status} timeout={false}>
+            {__unstableHTML ?? <p>{content}</p>}
+          </Notice>
+        ))}
+
+      {dismissibleNotices
+        .reverse()
+        .map(({ id, status, content, __unstableHTML }) => (
+          <Notice
+            key={id}
+            type={status}
+            renderInPlace
+            timeout={false}
+            closable
+            onClose={() => removeNotice(id)}
+          >
+            {__unstableHTML ?? <p>{content}</p>}
+          </Notice>
+        ))}
     </>
   );
 }
