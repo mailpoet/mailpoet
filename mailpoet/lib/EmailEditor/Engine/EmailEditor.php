@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Engine;
 
+use MailPoet\EmailEditor\Engine\Templates\Templates;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Validator\Builder;
 use WP_Post;
@@ -14,22 +15,29 @@ use WP_Theme_JSON;
 class EmailEditor {
   public const MAILPOET_EMAIL_META_THEME_TYPE = 'mailpoet_email_theme';
 
-  /** @var EmailApiController */
-  private $emailApiController;
+  private EmailApiController $emailApiController;
+  private Templates $templates;
 
   public function __construct(
-    EmailApiController $emailApiController
+    EmailApiController $emailApiController,
+    Templates $templates
   ) {
     $this->emailApiController = $emailApiController;
+    $this->templates = $templates;
   }
 
   public function initialize(): void {
     do_action('mailpoet_email_editor_initialized');
     add_filter('mailpoet_email_editor_rendering_theme_styles', [$this, 'extendEmailThemeStyles'], 10, 2);
+    $this->registerBlockTemplates();
     $this->registerEmailPostTypes();
     $this->registerEmailMetaFields();
     $this->registerEmailPostSendStatus();
     $this->extendEmailPostApi();
+  }
+
+  private function registerBlockTemplates(): void {
+    $this->templates->initialize();
   }
 
   /**

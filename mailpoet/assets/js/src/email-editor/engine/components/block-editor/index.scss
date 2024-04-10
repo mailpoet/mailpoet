@@ -66,16 +66,45 @@
   }
 }
 
-.edit-post-visual-editor__content-area {
+.visual-editor {
+  height: 100%;
+  line-height: 1.4; /* Recommended line-height that is also used in the email editor */
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%; /* From MJMJ - Automatic test adjustment on mobile max to 100% */
+  -ms-text-size-adjust: 100%; /* From MJMJ - Automatic test adjustment on mobile max to 100% */
+  word-spacing: normal;
+}
+
+.visual-editor__email_layout_wrapper {
+  margin: 0 auto;
+  padding: 20px 0;
+  width: 100%;
+}
+
+.has-global-padding .wp-block-post-content > .alignfull {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.visual-editor__email_footer {
+  direction: ltr;
+  text-align: center;
+
+  .mailpoet-email-footer-credit {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    display: block;
+    margin: 24px auto 0;
+    padding: 0;
+  }
+}
+
+.visual-editor__email_content_wrapper {
   display: block !important; // Override flex to achieve height follow the length of the document
   flex-grow: 0 !important;
   height: auto !important;
-
-  // Because block editor uses .has-background class after setting a background color
-  // we want to reset padding for this class to avoid unexpected spacing
-  .has-background {
-    padding: 0;
-  }
 
   // Set default padding-left to have consistent default look in editor and in email
   // This also overrides the default values in browsers for padding-inline-start
@@ -90,6 +119,19 @@
   .wp-block-button__link {
     border-radius: 0;
   }
+
+  .is-mobile-preview {
+    .wp-block-columns {
+      display: flex;
+      flex-direction: column;
+
+      .wp-block-column {
+        box-sizing: border-box;
+        // override flex-basis set in style attribute to fix the height of the column in mobile preview. Blocks overriding is as a part of style.css in blocks-library
+        flex-basis: auto !important;
+      }
+    }
+  }
 }
 
 // For the WYSIWYG experience we don't want to display any margins between blocks in the editor
@@ -97,18 +139,6 @@
   clear: both; // for ensuring that floated elements (images) are cleared
 }
 
-.edit-post-visual-editor__content-area .is-mobile-preview {
-  .wp-block-columns {
-    display: flex;
-    flex-direction: column;
-
-    .wp-block-column {
-      box-sizing: border-box;
-      // override flex-basis set in style attribute to fix the height of the column in mobile preview. Blocks overriding is as a part of style.css in blocks-library
-      flex-basis: auto !important;
-    }
-  }
-}
 // Resetting the margin for images in the editor to avoid unexpected spacing
 .editor-styles-wrapper .is-layout-constrained .wp-block-image {
   figcaption {
@@ -137,13 +167,4 @@
 // Hide the advanced settings in the sidebar. This panel is not used in the email editor at this moment.
 .block-editor-block-inspector__advanced {
   display: none;
-}
-
-.mailpoet-email-footer-credit {
-  appearance: none;
-  border: 0;
-  cursor: pointer;
-  display: block;
-  margin: 24px auto 0;
-  padding: 0;
 }

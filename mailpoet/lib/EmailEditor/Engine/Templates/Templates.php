@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Engine\Renderer\Templates;
+namespace MailPoet\EmailEditor\Engine\Templates;
 
 use WP_Block_Template;
 
@@ -9,6 +9,18 @@ class Templates {
 
   public function __construct() {
       $this->templateDirectory = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+  }
+
+  public function initialize(): void {
+    add_filter('pre_get_block_templates', [$this, 'getBlockTemplates'], 10, 3);
+  }
+
+  public function getBlockTemplates($query_result, $query, $template_type) {
+    if ('wp_template' !== $template_type) {
+      return $query_result;
+    }
+    $query_result[] = $this->getBlockTemplateFromFile('email-general.html');
+    return $query_result;
   }
 
   public function getBlockTemplateFromFile(string $template) {

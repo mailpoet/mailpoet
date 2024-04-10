@@ -20,7 +20,7 @@
     <?php echo $templateStyles; ?>
   </style>
 </head>
-<body style="word-spacing:normal;background:<?php echo esc_attr($layoutBackground); ?>;">
+<body style="background:<?php echo esc_attr($layoutBackground); ?>;">
     <div class="email_layout_wrapper" style="background:<?php echo esc_attr($layoutBackground); ?>">
       <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" width="<?php echo esc_attr($width); ?>" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
       <div style="margin:0px auto;max-width:<?php echo esc_attr($width); ?>">

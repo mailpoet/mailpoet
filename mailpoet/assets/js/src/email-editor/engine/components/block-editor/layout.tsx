@@ -78,11 +78,12 @@ export function Layout() {
 
   const layoutBackground = styles.color.background.layout;
 
-  let inlineStyles = useResizeCanvas(previewDeviceType);
+  let contentWrapperStyles = useResizeCanvas(previewDeviceType);
+
   // Adjust the inline styles for desktop preview. We want to set email width and center it.
   if (previewDeviceType === 'Desktop') {
-    inlineStyles = {
-      ...inlineStyles,
+    contentWrapperStyles = {
+      ...contentWrapperStyles,
       height: 'auto',
       width: layout.contentSize,
       display: 'flex',
@@ -90,20 +91,25 @@ export function Layout() {
     };
   }
 
-  inlineStyles.transition = 'all 0.3s ease 0s';
   // 72px top to place the email document nicely vertically in canvas. Same value is used for title in WP Post editor.
-  // We use only 16px bottom to mitigate the issue with inserter popup displaying below the fold.
-  inlineStyles.margin = '72px auto 16px auto';
-  delete inlineStyles.marginLeft;
-  delete inlineStyles.marginTop;
-  delete inlineStyles.marginBottom;
-  delete inlineStyles.marginRight;
+  // We use only 20px bottom to mitigate the issue with inserter popup displaying below the fold.
+  contentWrapperStyles.margin = '72px auto 20px auto';
+  delete contentWrapperStyles.marginLeft;
+  delete contentWrapperStyles.marginTop;
+  delete contentWrapperStyles.marginBottom;
+  delete contentWrapperStyles.marginRight;
 
-  const contentAreaStyles = {};
-
+  // Styles for the canvas. Based on template-canvas.php, this equates to the body element.
   const canvasStyles = {
     background:
       previewDeviceType === 'Desktop' ? layoutBackground : 'transparent',
+  };
+
+  // Styles for the content wrapper. Based on template-canvas.php, this equates to the .email_layout_wrapper element. We don't add padding because that is taken care of by the editor-styles-wrapper div.
+  const contentAreaStyles = {
+    fontFamily: styles.typography.fontFamily,
+    background: styles.color.background.content,
+    transition: 'all 0.3s ease 0s',
   };
 
   const settings = {
@@ -134,31 +140,40 @@ export function Layout() {
         content={
           <>
             <EditorNotices />
-            <div className="edit-post-visual-editor" style={canvasStyles}>
-              <BlockSelectionClearer
-                className="edit-post-visual-editor__content-area"
-                style={contentAreaStyles}
-              >
+            <div className="visual-editor" style={canvasStyles}>
+              <div className="visual-editor__email_layout_wrapper">
                 <div
-                  style={inlineStyles}
+                  style={contentWrapperStyles}
                   className={classnames({
                     'is-mobile-preview': previewDeviceType === 'Mobile',
                     'is-desktop-preview': previewDeviceType === 'Desktop',
                   })}
                 >
-                  <ThemeStyles />
-                  <EditorStyles
-                    styles={settings.styles}
-                    scope=".editor-styles-wrapper"
-                  />
-                  <EditorCanvas disableIframe styles={[]} autoFocus />
+                  <BlockSelectionClearer
+                    className="visual-editor__email_content_wrapper"
+                    style={contentAreaStyles}
+                  >
+                    <ThemeStyles />
+                    <EditorStyles
+                      styles={settings.styles}
+                      scope=".editor-styles-wrapper"
+                    />
+                    <EditorCanvas
+                      disableIframe
+                      styles={[]}
+                      autoFocus
+                      className="has-global-padding"
+                    />
+                  </BlockSelectionClearer>
                 </div>
-              </BlockSelectionClearer>
-              {!isPremiumPluginActive && (
-                <FooterCredit
-                  logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
-                />
-              )}
+                <div className="visual-editor__email_footer">
+                  {!isPremiumPluginActive && (
+                    <FooterCredit
+                      logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
           </>
         }
