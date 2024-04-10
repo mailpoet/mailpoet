@@ -20,7 +20,7 @@ export function BulkActions({ tab, onClick }: BulkActionsProps): JSX.Element {
       ? [
           {
             value: '0',
-            label: __('Bulk Actions', 'mailpoet'),
+            label: __('Bulk actions', 'mailpoet'),
           },
           {
             label: __('Trash', 'mailpoet'),
@@ -30,7 +30,7 @@ export function BulkActions({ tab, onClick }: BulkActionsProps): JSX.Element {
       : [
           {
             value: '0',
-            label: __('Bulk Actions', 'mailpoet'),
+            label: __('Bulk actions', 'mailpoet'),
           },
           {
             label: __('Restore', 'mailpoet'),
@@ -47,7 +47,7 @@ export function BulkActions({ tab, onClick }: BulkActionsProps): JSX.Element {
       multiple={false}
       hideLabelFromVision
       className="mailpoet-segments-listing-bulk-actions"
-      label={__('Bulk Actions', 'mailpoet')}
+      label={__('Bulk actions', 'mailpoet')}
       options={bulkActions}
       value="0"
       onChange={(action) => {
