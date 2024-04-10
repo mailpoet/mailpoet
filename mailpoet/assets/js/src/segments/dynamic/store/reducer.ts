@@ -10,6 +10,7 @@ import {
   SetPreviousPageActionType,
   SelectDynamicSegmentActionType,
   SetDynamicSegmentsActionType,
+  SetDynamicSegmentsLoadingActionType,
 } from '../types';
 import { getSegmentInitialState } from './initial-state';
 
@@ -20,6 +21,17 @@ function setDynamicSegments(
   return {
     ...state,
     dynamicSegments: action.dynamicSegments,
+    dynamicSegmentsLoading: { value: false, request: undefined },
+  };
+}
+
+function setDynamicSegmentsLoading(
+  state: StateType,
+  action: SetDynamicSegmentsLoadingActionType,
+): StateType {
+  return {
+    ...state,
+    dynamicSegmentsLoading: action,
   };
 }
 
@@ -172,6 +184,11 @@ export const createReducer =
         return setDynamicSegments(
           state,
           action as SetDynamicSegmentsActionType,
+        );
+      case Actions.SET_DYNAMIC_SEGMENTS_LOADING:
+        return setDynamicSegmentsLoading(
+          state,
+          action as SetDynamicSegmentsLoadingActionType,
         );
       case Actions.SELECT_DYNAMIC_SEGMENT:
         return setSelectDynamicSegment(

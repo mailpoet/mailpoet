@@ -367,6 +367,10 @@ export interface StateType {
   automations: Automation[];
   previousPage: string;
   dynamicSegments: DynamicSegmentsList;
+  dynamicSegmentsLoading: {
+    value: boolean;
+    request: XMLHttpRequest | undefined;
+  };
   dynamicSegmentSelection: Record<number, boolean>;
 }
 
@@ -380,6 +384,7 @@ export type DynamicSegmentsList = {
 
 export enum Actions {
   SET_DYNAMIC_SEGMENTS = 'SET_DYNAMIC_SEGMENTS',
+  SET_DYNAMIC_SEGMENTS_LOADING = 'SET_DYNAMIC_SEGMENTS_LOADING',
   SET_SEGMENT = 'SET_SEGMENT',
   SET_ERRORS = 'SET_ERRORS',
   SET_PREVIOUS_PAGE = 'SET_PREVIOUS_PAGE',
@@ -412,6 +417,11 @@ export interface SelectDynamicSegmentActionType extends ActionType {
 
 export interface SetDynamicSegmentsActionType extends ActionType {
   dynamicSegments: DynamicSegmentsList;
+}
+
+export interface SetDynamicSegmentsLoadingActionType extends ActionType {
+  value: boolean;
+  request: XMLHttpRequest | undefined;
 }
 
 export interface SetSegmentActionType extends ActionType {

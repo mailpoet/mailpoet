@@ -88,10 +88,12 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
     useState<DynamicSegmentAction>(null);
   const [currentSelected, setCurrentSelected] = useState<DynamicSegment[]>([]);
 
-  const { dynamicSegments, dynamicSegmentsCount } = useSelect((select) => ({
-    dynamicSegments: select(storeName).getDynamicSegments(),
-    dynamicSegmentsCount: select(storeName).getDynamicSegmentsCount(),
-  }));
+  const { dynamicSegments, dynamicSegmentsLoading, dynamicSegmentsCount } =
+    useSelect((select) => ({
+      dynamicSegments: select(storeName).getDynamicSegments(),
+      dynamicSegmentsLoading: select(storeName).getDynamicSegmentsLoading(),
+      dynamicSegmentsCount: select(storeName).getDynamicSegmentsCount(),
+    }));
 
   const segmentsQuery = useSegmentsQuery();
 
@@ -160,7 +162,7 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
       <TableCard
         className="mailpoet-listing-card mailpoet-segments-listing"
         title=""
-        isLoading={dynamicSegments === null}
+        isLoading={dynamicSegmentsLoading.value}
         headers={
           // typed as mutable so doesn't accept our const (readonly) type
           tableHeaders as unknown as ComponentProps<typeof TableCard>['headers']
