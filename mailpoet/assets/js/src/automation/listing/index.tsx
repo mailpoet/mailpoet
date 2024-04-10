@@ -2,13 +2,7 @@ import { TableCard } from '@woocommerce/components';
 import { Button, TabPanel } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
-import {
-  ComponentProps,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-} from 'react';
+import { ComponentProps, useCallback, useEffect, useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { plusIcon } from 'common/button/icon/plus';
 import { getRow } from './get-row';
@@ -64,13 +58,6 @@ export function AutomationListing(): JSX.Element {
     void loadAutomations();
     void loadLegacyAutomations();
   }, [loadAutomations, loadLegacyAutomations]);
-
-  // focus tab button on status change (needed due to the force re-mount below)
-  useLayoutEffect(() => {
-    if (status) {
-      document.querySelector<HTMLElement>(`.mailpoet-tab-${status}`)?.focus();
-    }
-  }, [status]);
 
   const updateUrlSearchString = useCallback(
     (search: Record<string, string>) => {
