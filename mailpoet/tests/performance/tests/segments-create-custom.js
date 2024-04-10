@@ -17,13 +17,13 @@ import {
   thinkTimeMin,
   thinkTimeMax,
   defaultListName,
-  listsPageTitle,
+  segmentsPageTitle,
   fullPageSet,
   screenshotPath,
 } from '../config.js';
 import { login, selectInReact } from '../utils/helpers.js';
 
-export async function listsComplexSegment() {
+export async function segmentsCreateCustom() {
   const page = browser.newPage();
 
   try {
@@ -40,7 +40,7 @@ export async function listsComplexSegment() {
 
     await page.waitForLoadState('networkidle');
     await page.screenshot({
-      path: screenshotPath + 'Lists_Complex_Segment_01.png',
+      path: screenshotPath + 'Segments_Create_Custom_01.png',
       fullPage: fullPageSet,
     });
 
@@ -57,8 +57,8 @@ export async function listsComplexSegment() {
     await selectInReact(page, '#react-select-2-input', 'subscribed to list');
     await selectInReact(page, '#react-select-4-input', defaultListName);
     await page.waitForSelector('.mailpoet-form-notice-message');
-    describe(listsPageTitle, () => {
-      describe('lists-complex-segment: should be able to see calculating message 1st time', () => {
+    describe(segmentsPageTitle, () => {
+      describe('segments-create-custom: should be able to see calculating message 1st time', () => {
         expect(
           page.locator('.mailpoet-form-notice-message').innerText(),
         ).to.contain('Calculating segment size…');
@@ -67,7 +67,7 @@ export async function listsComplexSegment() {
     await page.waitForLoadState('networkidle');
 
     await page.screenshot({
-      path: screenshotPath + 'Lists_Complex_Segment_02.png',
+      path: screenshotPath + 'Segments_Create_Custom_02.png',
       fullPage: fullPageSet,
     });
 
@@ -79,8 +79,8 @@ export async function listsComplexSegment() {
     // Select "Subscribed date" action
     await selectInReact(page, '#react-select-5-input', 'subscribed date');
     await page.waitForSelector('.mailpoet-form-notice-message');
-    describe(listsPageTitle, () => {
-      describe('lists-complex-segment: should be able to see calculating message 2nd time', () => {
+    describe(segmentsPageTitle, () => {
+      describe('segments-create-custom: should be able to see calculating message 2nd time', () => {
         expect(
           page.locator('.mailpoet-form-notice-message').innerText(),
         ).to.contain('Calculating segment size…');
@@ -88,7 +88,7 @@ export async function listsComplexSegment() {
     });
 
     await page.screenshot({
-      path: screenshotPath + 'Lists_Complex_Segment_03.png',
+      path: screenshotPath + 'Segments_Create_Custom_03.png',
       fullPage: fullPageSet,
     });
 
@@ -102,8 +102,8 @@ export async function listsComplexSegment() {
     await selectInReact(page, '#react-select-8-input', 'Administrator');
     await page.waitForSelector('.mailpoet-form-notice-message');
     await page.waitForLoadState('networkidle');
-    describe(listsPageTitle, () => {
-      describe('lists-complex-segment: should be able to see Calculating message 3rd time', () => {
+    describe(segmentsPageTitle, () => {
+      describe('segments-create-custom: should be able to see Calculating message 3rd time', () => {
         expect(
           page.locator('.mailpoet-form-notice-message').innerText(),
         ).to.contain('Calculating segment size…');
@@ -116,7 +116,7 @@ export async function listsComplexSegment() {
     await page.waitForLoadState('networkidle');
 
     await page.screenshot({
-      path: screenshotPath + 'Lists_Complex_Segment_04.png',
+      path: screenshotPath + 'Segments_Create_Custom_04.png',
       fullPage: fullPageSet,
     });
 
@@ -127,15 +127,15 @@ export async function listsComplexSegment() {
     });
     const locator =
       "//div[@class='notice-success'].//p[starts-with(text(),'Segment successfully updated!')]";
-    describe(listsPageTitle, () => {
-      describe('lists-complex-segment: should be able to see Segment Updated message', () => {
+    describe(segmentsPageTitle, () => {
+      describe('segments-create-custom: should be able to see Segment Updated message', () => {
         expect(page.locator(locator)).to.exist;
       });
     });
 
     await page.waitForLoadState('networkidle');
     await page.screenshot({
-      path: screenshotPath + 'Lists_Complex_Segment_05.png',
+      path: screenshotPath + 'Segments_Create_Custom_05.png',
       fullPage: fullPageSet,
     });
 
@@ -147,6 +147,6 @@ export async function listsComplexSegment() {
   }
 }
 
-export default async function listsComplexSegmentTest() {
-  await listsComplexSegment();
+export default async function segmentsCreateCustomTest() {
+  await segmentsCreateCustom();
 }
