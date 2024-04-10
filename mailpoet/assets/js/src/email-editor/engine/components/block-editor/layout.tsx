@@ -21,6 +21,7 @@ import {
   InterfaceSkeleton,
 } from '@wordpress/interface';
 
+import './index.scss';
 import { store as coreStore } from '@wordpress/core-data';
 import { storeName } from '../../store';
 import { AutosaveMonitor } from '../autosave';
@@ -98,10 +99,11 @@ export function Layout() {
   delete inlineStyles.marginBottom;
   delete inlineStyles.marginRight;
 
-  const contentAreaStyles = {
+  const contentAreaStyles = {};
+
+  const canvasStyles = {
     background:
       previewDeviceType === 'Desktop' ? layoutBackground : 'transparent',
-    padding: '4rem 0', // 4em top/bottom to place the email document nicely vertically in canvas. Same value is used for title in WP Post editor.
   };
 
   const settings = {
@@ -132,7 +134,7 @@ export function Layout() {
         content={
           <>
             <EditorNotices />
-            <div className="edit-post-visual-editor">
+            <div className="edit-post-visual-editor" style={canvasStyles}>
               <BlockSelectionClearer
                 className="edit-post-visual-editor__content-area"
                 style={contentAreaStyles}
@@ -151,12 +153,12 @@ export function Layout() {
                   />
                   <EditorCanvas disableIframe styles={[]} autoFocus />
                 </div>
-                {!isPremiumPluginActive && (
-                  <FooterCredit
-                    logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
-                  />
-                )}
               </BlockSelectionClearer>
+              {!isPremiumPluginActive && (
+                <FooterCredit
+                  logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
+                />
+              )}
             </div>
           </>
         }

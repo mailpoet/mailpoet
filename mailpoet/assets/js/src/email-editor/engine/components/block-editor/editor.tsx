@@ -63,7 +63,8 @@ function InnerEditor({
       ...settings,
       onNavigateToEntityRecord,
       onNavigateToPreviousEntityRecord,
-      defaultRenderingMode: 'post-only',
+      defaultRenderingMode: 'template-locked',
+      supportsTemplateMode: true,
     }),
     [settings, onNavigateToEntityRecord, onNavigateToPreviousEntityRecord],
   );
