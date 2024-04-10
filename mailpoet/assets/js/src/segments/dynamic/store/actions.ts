@@ -250,17 +250,24 @@ export async function loadDynamicSegments(query?: Query) {
   };
 
   try {
+    select(storeName).getDynamicSegmentsLoading().request?.abort();
+
     const response = await MailPoet.Ajax.post({
       api_version: 'v1',
       endpoint: 'dynamic_segments',
       action: 'listing',
       data: segmentsQuery,
+      onRequestStart: (request: XMLHttpRequest) =>
+        void dispatch(storeName).setDynamicSegmentsLoading(true, request),
     });
     const keys = Object.keys(response);
     if (keys.includes('data') && keys.includes('meta')) {
       data = response as DynamicSegmentsList;
     }
   } catch (res: unknown) {
+    if (res === 'abort') {
+      return { type: 'NOOP' };
+    }
     if (isErrorResponse(res)) {
       const errors = res.errors.map((error) => error.message).join(', ');
       void dispatch(noticesStore).createErrorNotice(errors);
