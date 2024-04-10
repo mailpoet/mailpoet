@@ -13,7 +13,7 @@ import { formsAdding } from './tests/forms-adding.js';
 import { newsletterSearching } from './tests/newsletter-searching.js';
 import { newsletterSending } from './tests/newsletter-sending.js';
 import { listsViewSubscribers } from './tests/lists-view-subscribers.js';
-import { listsComplexSegment } from './tests/lists-complex-segment.js';
+import { segmentsCreateCustom } from './tests/segments-create-custom.js';
 import { newsletterStatistics } from './tests/newsletter-statistics.js';
 import { onboardingWizard } from './tests/onboarding-wizard.js';
 import { subscribersTrashingRestoring } from './tests/subscribers-trashing-restoring.js';
@@ -25,6 +25,7 @@ import { automationTriggerWorkflow } from './tests/automation-trigger-workflow.j
 import { automationCreateWooCommerce } from './tests/automation-create-woocommerce.js';
 import { newsletterPostNotification } from './tests/newsletters-post-notification.js';
 import { newsletterReEngagement } from './tests/newsletter-reengagement.js';
+import { segmentsSelectTemplate } from './tests/segments-select-template.js';
 
 // Scenarios, Thresholds, Tags and Project ID used for K6 Cloud
 export let options = {
@@ -85,7 +86,7 @@ if (scenario) {
 }
 
 // Run those tests against a pull request build
-// Note: there are 21 checks in total
+// Note: there are 22 checks in total
 export async function pullRequests() {
   await onboardingWizard();
   await newsletterListing();
@@ -100,10 +101,11 @@ export async function pullRequests() {
   await subscribersFiltering();
   await subscribersAdding();
   await formsAdding();
+  await segmentsSelectTemplate();
 }
 
 // Run those tests against trunk in a nightly build
-// Note: there are 38 checks in total
+// Note: there are 39 checks in total
 export async function nightly() {
   await newsletterListing();
   await newsletterStatistics();
@@ -122,7 +124,8 @@ export async function nightly() {
   await subscribersAdding();
   await subscribersTrashingRestoring();
   await listsViewSubscribers();
-  await listsComplexSegment();
+  await segmentsCreateCustom();
+  await segmentsSelectTemplate();
   await settingsBasic();
   await formsAdding();
 }
