@@ -124,17 +124,23 @@ export const MailPoetAjax = {
     // ajax request
     const deferred = jQuery.Deferred<Response, ErrorResponse>();
     const timeout = Math.ceil(this.options.timeout / 1000); // convert milliseconds to seconds
-    jQuery[method]({
+    const xhrRequest = jQuery[method]({
       url: this.options.url,
       data: params,
       success: null,
       dataType: 'json',
       timeout: this.options.timeout,
-    }).then(
+    });
+
+    this.options.onRequestStart?.(xhrRequest);
+
+    xhrRequest.then(
       (data: Response) => deferred.resolve(data),
       (failedXhr, textStatus) => {
         let errorData: ErrorResponse;
-        if (textStatus === 'timeout') {
+        if (textStatus === 'abort') {
+          errorData = textStatus;
+        } else if (textStatus === 'timeout') {
           errorData = buildErrorResponse(
             MailPoetI18n.t('ajaxTimeoutErrorMessage').replace(
               '%d',
