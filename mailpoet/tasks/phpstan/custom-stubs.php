@@ -69,7 +69,7 @@ namespace {
       public function __construct($content) {
       }
 
-      public function next_tag($tag) {
+      public function next_tag($tag = null) {
       }
 
       public function get_attribute($attribute) {

@@ -4,7 +4,6 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
-use MailPoet\Util\Helpers;
 
 class Heading extends AbstractBlockRenderer {
   protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
@@ -19,38 +18,24 @@ class Heading extends AbstractBlockRenderer {
     $level = $parsedBlock['attrs']['level'] ?? 2; // default level is 2
     $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName("h$level", 'class') ?? '';
 
-    // Styles for padding need to be set on the wrapping table cell due to support in Outlook
+    $blockStyles = $this->getStylesFromBlock([
+      'color' => $parsedBlock['attrs']['style']['color'] ?? [],
+      'spacing' => $parsedBlock['attrs']['style']['spacing'] ?? [],
+      'typography' => $parsedBlock['attrs']['style']['typography'] ?? [],
+    ]);
+
     $styles = [
       'min-width' => '100%', // prevent Gmail App from shrinking the table on mobile devices
     ];
-
-    $paddingStyles = wp_style_engine_get_styles(['spacing' => ['padding' => $parsedBlock['attrs']['style']['spacing']['padding'] ?? null]]);
-    $styles = array_merge($styles, $paddingStyles['declarations'] ?? []);
 
     if (isset($parsedBlock['attrs']['textAlign'])) {
       $styles['text-align'] = $parsedBlock['attrs']['textAlign'];
     }
 
-    if (isset($parsedBlock['attrs']['style']['color']['background'])) {
-      $styles['background-color'] = $parsedBlock['attrs']['style']['color']['background'];
-    }
-
-    if (isset($parsedBlock['attrs']['style']['color']['text'])) {
-      $styles['color'] = $parsedBlock['attrs']['style']['color']['text'];
-    }
-
-    // fetch Block Style Typography e.g., fontStyle, fontWeight, etc
-    $attrs = $parsedBlock['attrs'] ?? [];
-    if (isset($attrs['style']['typography'])) {
-      $blockStyleTypographyKeys = array_keys($attrs['style']['typography']);
-      foreach ($blockStyleTypographyKeys as $blockStyleTypographyKey) {
-        $styles[Helpers::camelCaseToKebabCase($blockStyleTypographyKey)] = $attrs['style']['typography'][$blockStyleTypographyKey];
-      }
-    }
+    $styles = $this->compileCss($blockStyles['declarations'], $styles);
 
     return '
       <!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><![endif]-->
-
           <table
             role="presentation"
             border="0"
@@ -60,7 +45,7 @@ class Heading extends AbstractBlockRenderer {
             width="100%"
           >
             <tr>
-              <td class="' . esc_attr($classes) . '" style="' . \WP_Style_Engine::compile_css($styles, '') . '">
+              <td class="' . esc_attr($classes) . '" style="' . esc_attr($styles) . '">
                 {heading_content}
               </td>
             </tr>
@@ -75,9 +60,8 @@ class Heading extends AbstractBlockRenderer {
    * 2) We also need to replace font-size to avoid clamp() because clamp() is not supported in many email clients.
    * The font size values is automatically converted to clamp() when WP site theme is configured to use fluid layouts.
    * Currently (WP 6.5), there is no way to disable this behavior.
-   * @param array{tag_name: string, class_name?: string} $tag
    */
-  private function adjustStyleAttribute($blockContent): string {
+  private function adjustStyleAttribute(string $blockContent): string {
     $html = new \WP_HTML_Tag_Processor($blockContent);
 
     if ($html->next_tag()) {
