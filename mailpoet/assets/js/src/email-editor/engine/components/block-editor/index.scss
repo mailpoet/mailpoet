@@ -68,6 +68,8 @@
 
 .edit-post-visual-editor__content-area {
   display: block !important; // Override flex to achieve height follow the length of the document
+  flex-grow: 0 !important;
+  height: auto !important;
 
   // Because block editor uses .has-background class after setting a background color
   // we want to reset padding for this class to avoid unexpected spacing
