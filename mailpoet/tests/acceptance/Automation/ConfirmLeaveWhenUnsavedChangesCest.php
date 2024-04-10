@@ -47,8 +47,8 @@ class ConfirmLeaveWhenUnsavedChangesCest {
     $i->waitForText('saved');
     $i->amOnMailpoetPage('Automation');
     $i->waitForText('Automations');
-    $i->waitForText($automationTitle);
-    $i->click($automationTitle);
+    $i->waitForText($automationTitle, 10, '.mailpoet-listing-card');
+    $i->click($automationTitle, '.mailpoet-listing-card');
     $i->waitForText('Draft');
     $i->waitForText('Move to Trash');
     $i->waitForText('Someone subscribes');
