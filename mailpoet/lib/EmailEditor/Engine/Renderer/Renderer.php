@@ -4,8 +4,8 @@ namespace MailPoet\EmailEditor\Engine\Renderer;
 
 use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ContentRenderer;
-use MailPoet\EmailEditor\Engine\Renderer\Templates\Templates;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Engine\Templates\Templates;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\Util\pQuery\DomNode;
 use MailPoetVendor\CSS as CssInliner;

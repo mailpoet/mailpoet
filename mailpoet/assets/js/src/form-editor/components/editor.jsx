@@ -87,6 +87,7 @@ export function Editor() {
     __experimentalBlockPatternCategories: [],
     __experimentalSetIsInserterOpened: toggleInserter,
     __experimentalFeatures: {
+      useRootPaddingAwareAlignments: true,
       color: {
         custom: true,
         text: true,
