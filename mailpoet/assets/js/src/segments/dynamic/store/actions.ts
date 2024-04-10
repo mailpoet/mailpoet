@@ -230,6 +230,17 @@ export function setPreviousPage(data: string): SetPreviousPageActionType {
   };
 }
 
+export async function setDynamicSegmentsLoading(
+  value: boolean,
+  request?: XMLHttpRequest,
+) {
+  return {
+    type: 'SET_DYNAMIC_SEGMENTS_LOADING',
+    value,
+    request: value ? request : undefined,
+  } as const;
+}
+
 export async function loadDynamicSegments(query?: Query) {
   const segmentsQuery = query ?? getSegmentsQuery();
 

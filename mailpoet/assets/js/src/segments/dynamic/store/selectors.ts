@@ -113,6 +113,10 @@ export const getPreviousPage = (state: StateType): string => state.previousPage;
 export const getDynamicSegments = (state: StateType): DynamicSegment[] =>
   state.dynamicSegments.data;
 
+export const getDynamicSegmentsLoading = (
+  state: StateType,
+): StateType['dynamicSegmentsLoading'] => state.dynamicSegmentsLoading;
+
 export const getDynamicSegmentsGroups = (
   state: StateType,
 ): DynamicSegmentGroup[] => state.dynamicSegments.meta.groups;
