@@ -59,7 +59,7 @@ export function TemplatesPanel() {
       {hasHistory && <DocumentBar />}
       <hr />
       <h3>Save panel</h3>
-      <EntitiesSavedStates />
+      <EntitiesSavedStates close={() => {}} />
     </PanelBody>
   );
 }
