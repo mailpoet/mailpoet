@@ -20,7 +20,7 @@ export function MoreMenu(): JSX.Element {
       {() => (
         <MenuGroup label={_x('View', 'noun', 'mailpoet')}>
           <PreferenceToggleMenuItem
-            scope={storeName}
+            scope="core"
             name="fixedToolbar"
             label={__('Top toolbar', 'mailpoet')}
             info={__(
@@ -31,7 +31,7 @@ export function MoreMenu(): JSX.Element {
             messageDeactivated={__('Top toolbar deactivated', 'mailpoet')}
           />
           <PreferenceToggleMenuItem
-            scope={storeName}
+            scope="core"
             name="focusMode"
             label={__('Spotlight mode', 'mailpoet')}
             info={__('Focus at one block at a time', 'mailpoet')}
