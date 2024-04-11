@@ -143,12 +143,14 @@ export const getEditedPostTemplate = createRegistrySelector((select) => () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     select(editorStore).getEditedPostAttribute('template');
+
   if (currentTemplate) {
     const templateWithSameSlug = select(coreDataStore)
       .getEntityRecords('postType', 'wp_template', { per_page: -1 })
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       ?.find((template) => template.slug === currentTemplate);
+
     if (!templateWithSameSlug) {
       return templateWithSameSlug;
     }
@@ -165,28 +167,8 @@ export const getEditedPostTemplate = createRegistrySelector((select) => () => {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const post = select(editorStore).getCurrentPost();
-  let slugToCheck;
-  // In `draft` status we might not have a slug available, so we use the `single`
-  // post type templates slug(ex page, single-post, single-product etc..).
-  // Pages do not need the `single` prefix in the slug to be prioritized
-  // through template hierarchy.
-
-  if (post.slug) {
-    slugToCheck =
-      post.type === 'page'
-        ? // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-          `${post.type}-${post.slug}`
-        : // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-          `single-${post.type}-${post.slug}`;
-  } else {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    slugToCheck = post.type === 'page' ? 'page' : `single-${post.type}`;
-  }
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   const defaultTemplateId = select(coreDataStore).getDefaultTemplateId({
-    slug: slugToCheck,
+    slug: 'email-general',
   });
 
   return select(coreDataStore).getEditedEntityRecord(
