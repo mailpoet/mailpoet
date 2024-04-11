@@ -8,6 +8,7 @@ import {
 } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
+import { store as preferencesStore } from '@wordpress/preferences';
 import { __ } from '@wordpress/i18n';
 import { plus, listView, undo, redo, next, previous } from '@wordpress/icons';
 import classnames from 'classnames';
@@ -62,7 +63,10 @@ export function Header() {
     (select) => ({
       isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
       isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
-      isFixedToolbarActive: select(storeName).isFeatureActive('fixedToolbar'),
+      isFixedToolbarActive: select(preferencesStore).get(
+        'core',
+        'fixedToolbar',
+      ),
       isBlockSelected: !!select(blockEditorStore).getBlockSelectionStart(),
       hasUndo: select(coreDataStore).hasUndo(),
       hasRedo: select(coreDataStore).hasRedo(),
