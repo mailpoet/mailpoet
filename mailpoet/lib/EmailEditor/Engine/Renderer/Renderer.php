@@ -51,6 +51,7 @@ class Renderer {
 
     $templateStyles = file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
     $templateStyles = apply_filters('mailpoet_email_renderer_styles', $templateStyles, $post);
+    // @todo use custom template to render.
     $templateHtml = $this->contentRenderer->render($post, $this->templates->getBlockTemplateFromFile('email-general.html'));
 
     ob_start();
