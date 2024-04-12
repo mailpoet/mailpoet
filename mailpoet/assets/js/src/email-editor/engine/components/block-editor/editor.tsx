@@ -50,7 +50,10 @@ function InnerEditor({
         currentPost.postId,
       );
       return {
-        template: getEditedPostTemplate(),
+        template:
+          currentPost.postType !== 'wp_template'
+            ? getEditedPostTemplate()
+            : null,
         post: postObject,
       };
     },
