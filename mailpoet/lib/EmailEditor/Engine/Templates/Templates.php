@@ -18,9 +18,13 @@ class Templates {
   }
 
   public function initialize(): void {
-    add_filter('pre_get_block_file_template', [$this, 'getBlockFileTemplate'], 10, 3);
-    add_filter('get_block_templates', [$this, 'addBlockTemplates'], 10, 3);
-    add_filter('get_block_template', [$this, 'addBlockTemplateDetails'], 10, 1);
+    // Since we cannot currently disable blocks in the editor for specific templates, disable templates when viewing site editor.
+    // @see https://github.com/WordPress/gutenberg/issues/41062
+    if (strstr(wp_unslash($_SERVER['REQUEST_URI'] ?? ''), 'site-editor.php') === false) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+      add_filter('pre_get_block_file_template', [$this, 'getBlockFileTemplate'], 10, 3);
+      add_filter('get_block_templates', [$this, 'addBlockTemplates'], 10, 3);
+      add_filter('get_block_template', [$this, 'addBlockTemplateDetails'], 10, 1);
+    }
   }
 
   public function getBlockFileTemplate($return, $templateId, $template_type) {
