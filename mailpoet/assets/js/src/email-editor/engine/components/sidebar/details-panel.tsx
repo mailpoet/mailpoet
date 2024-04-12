@@ -7,7 +7,6 @@ import {
 import { useDispatch } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
-import ReactStringReplace from 'react-string-replace';
 import { createInterpolateElement } from '@wordpress/element';
 import classnames from 'classnames';
 import { storeName } from '../../store';
@@ -23,37 +22,29 @@ export function DetailsPanel() {
   );
 
   const { updateEmailMailPoetProperty } = useDispatch(storeName);
-
-  let subjectHelp = ReactStringReplace(
+  const subjectHelp = createInterpolateElement(
     __(
-      'Use shortcodes to personalize your email, or learn more about [link1]best practices[/link1] and using [link2]emoji in subject lines[/link2].',
+      'Use shortcodes to personalize your email, or learn more about <bestPracticeLink>best practices</bestPracticeLink> and using <emojiLink>emoji in subject lines</emojiLink>.',
       'mailpoet',
     ),
-    /\[link1\](.*?)\[\/link1\]/g,
-    (match) => (
-      <a
-        key="best-practices-link"
-        href="https://www.mailpoet.com/blog/17-email-subject-line-best-practices-to-boost-engagement/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {match}
-      </a>
-    ),
-  );
-  subjectHelp = ReactStringReplace(
-    subjectHelp,
-    /\[link2\](.*?)\[\/link2\]/g,
-    (match) => (
-      <a
-        key="emoji-link"
-        href="https://www.mailpoet.com/blog/tips-using-emojis-in-subject-lines/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {match}
-      </a>
-    ),
+    {
+      bestPracticeLink: (
+        // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+        <a
+          href="https://www.mailpoet.com/blog/17-email-subject-line-best-practices-to-boost-engagement/"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+      ),
+      emojiLink: (
+        // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+        <a
+          href="https://www.mailpoet.com/blog/tips-using-emojis-in-subject-lines/"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+      ),
+    },
   );
 
   const subjectLabel = (
