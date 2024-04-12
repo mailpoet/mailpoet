@@ -2,7 +2,7 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer;
 
-use MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Paragraph;
+use MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Text;
 
 require_once __DIR__ . '/DummyBlockRenderer.php';
 
@@ -22,14 +22,14 @@ class BlocksRegistryTest extends \MailPoetTest {
   }
 
   public function testItStoresAddedRenderer() {
-    $renderer = new Paragraph();
+    $renderer = new Text();
     $this->registry->addBlockRenderer('test', $renderer);
     $storedRenderer = $this->registry->getBlockRenderer('test');
     verify($storedRenderer)->equals($renderer);
   }
 
   public function testItAllowsToReplaceRendererViaFilter() {
-    $renderer = new Paragraph();
+    $renderer = new Text();
     $dummyRenderer = new DummyBlockRenderer();
     $this->registry->addBlockRenderer('test', $renderer);
     $callback = function () use ($dummyRenderer) {
@@ -42,7 +42,7 @@ class BlocksRegistryTest extends \MailPoetTest {
   }
 
   public function testItRemovesAllBlockRendererFilters() {
-    $renderer = new Paragraph();
+    $renderer = new Text();
     verify(has_filter('render_block_test'))->false();
     verify(has_filter('render_block_test2'))->false();
 
