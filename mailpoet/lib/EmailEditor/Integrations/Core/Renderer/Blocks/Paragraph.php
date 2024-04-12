@@ -18,7 +18,6 @@ class Paragraph extends AbstractBlockRenderer {
   private function getBlockWrapper(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $themeData = $settingsController->getTheme()->get_data();
     $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName('p', 'class') ?? '';
-
     $align = $parsedBlock['attrs']['align'] ?? 'left';
     $styles = [
       'text-align' => $align,

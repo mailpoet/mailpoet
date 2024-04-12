@@ -3,7 +3,6 @@
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\SettingsController;
-use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 
 /**
  * This renderer covers both core/paragraph and core/heading blocks
@@ -11,15 +10,18 @@ use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 class Text extends AbstractBlockRenderer {
   protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $blockContent = $this->adjustStyleAttribute($blockContent);
-    return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($blockContent, $parsedBlock, $settingsController));
+    return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($blockContent, $parsedBlock));
   }
 
   /**
    * Based on MJML <mj-text>
    */
-  private function getBlockWrapper($blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    $level = $parsedBlock['attrs']['level'] ?? 2; // default level is 2
-    $classes = (new DomDocumentHelper($blockContent))->getAttributeValueByTagName("h$level", 'class') ?? '';
+  private function getBlockWrapper($blockContent, array $parsedBlock): string {
+    $html = new \WP_HTML_Tag_Processor($blockContent);
+    $classes = '';
+    if ($html->next_tag()) {
+      $classes = $html->get_attribute('class') ?? '';
+    }
 
     $blockStyles = $this->getStylesFromBlock([
       'color' => $parsedBlock['attrs']['style']['color'] ?? [],
@@ -31,11 +33,14 @@ class Text extends AbstractBlockRenderer {
       'min-width' => '100%', // prevent Gmail App from shrinking the table on mobile devices
     ];
 
+    $styles['text-align'] = 'left';
     if (isset($parsedBlock['attrs']['textAlign'])) {
       $styles['text-align'] = $parsedBlock['attrs']['textAlign'];
+    } elseif (in_array($parsedBlock['attrs']['align'] ?? null, ['left', 'center', 'right'])) {
+      $styles['text-align'] = $parsedBlock['attrs']['align'];
     }
 
-    $styles = $this->compileCss($blockStyles['declarations'], $styles);
+    $compiledStyles = $this->compileCss($blockStyles['declarations'], $styles);
 
     return '
       <!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><![endif]-->
@@ -48,7 +53,7 @@ class Text extends AbstractBlockRenderer {
             width="100%"
           >
             <tr>
-              <td class="' . esc_attr($classes) . '" style="' . esc_attr($styles) . '">
+              <td class="' . esc_attr($classes) . '" style="' . esc_attr($compiledStyles) . '" align="' . esc_attr($styles['text-align'] ?? 'left') . '">
                 {heading_content}
               </td>
             </tr>
