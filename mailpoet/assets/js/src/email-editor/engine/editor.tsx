@@ -1,8 +1,6 @@
 import '@wordpress/format-library'; // Enables text formatting capabilities
 import { useSelect } from '@wordpress/data';
 import { StrictMode, createRoot } from '@wordpress/element';
-import { SlotFillProvider } from '@wordpress/components';
-import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
 import { withNpsPoll } from '../../nps-poll';
 import { initBlocks } from './blocks';
 import { initializeLayout } from './layouts/flex-email';
@@ -22,17 +20,13 @@ function Editor() {
 
   return (
     <StrictMode>
-      <ShortcutProvider>
-        <SlotFillProvider>
-          <KeyboardShortcuts />
-          <InnerEditor
-            initialEdits={[]}
-            postId={postId}
-            postType="mailpoet_email"
-            settings={settings}
-          />
-        </SlotFillProvider>
-      </ShortcutProvider>
+      <KeyboardShortcuts />
+      <InnerEditor
+        initialEdits={[]}
+        postId={postId}
+        postType="mailpoet_email"
+        settings={settings}
+      />
     </StrictMode>
   );
 }
