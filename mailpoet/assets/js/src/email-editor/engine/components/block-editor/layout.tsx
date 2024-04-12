@@ -11,6 +11,7 @@ import {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   privateApis as editorPrivateApis,
+  store as editorStore,
 } from '@wordpress/editor';
 import { uploadMedia } from '@wordpress/media-utils';
 import classnames from 'classnames';
@@ -52,6 +53,7 @@ export function Layout() {
     layout,
     cdnUrl,
     isPremiumPluginActive,
+    isEditingTemplate,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
@@ -68,6 +70,9 @@ export function Layout() {
       layout: select(storeName).getLayout(),
       cdnUrl: select(storeName).getCdnUrl(),
       isPremiumPluginActive: select(storeName).isPremiumPluginActive(),
+      isEditingTemplate:
+        // @ts-expect-error No types for this exist yet.
+        select(editorStore).getCurrentPostType() === 'wp_template',
     }),
     [],
   );
@@ -124,6 +129,8 @@ export function Layout() {
     return null;
   }
 
+  const disableIframe = !isEditingTemplate;
+
   return (
     <>
       <FullscreenMode isActive={isFullscreenActive} />
@@ -159,7 +166,7 @@ export function Layout() {
                       scope=".editor-styles-wrapper"
                     />
                     <EditorCanvas
-                      disableIframe
+                      disableIframe={disableIframe}
                       styles={[]}
                       autoFocus
                       className="has-global-padding"
