@@ -26,6 +26,7 @@ import { automationCreateWooCommerce } from './tests/automation-create-woocommer
 import { newsletterPostNotification } from './tests/newsletters-post-notification.js';
 import { newsletterReEngagement } from './tests/newsletter-reengagement.js';
 import { segmentsSelectTemplate } from './tests/segments-select-template.js';
+import { formsSubscribing } from './tests/forms-subscribing.js';
 
 // Scenarios, Thresholds, Tags and Project ID used for K6 Cloud
 export let options = {
@@ -105,7 +106,7 @@ export async function pullRequests() {
 }
 
 // Run those tests against trunk in a nightly build
-// Note: there are 39 checks in total
+// Note: there are 41 checks in total
 export async function nightly() {
   await newsletterListing();
   await newsletterStatistics();
@@ -128,6 +129,7 @@ export async function nightly() {
   await segmentsSelectTemplate();
   await settingsBasic();
   await formsAdding();
+  await formsSubscribing();
 }
 
 // HTML report data saved in performance folder
