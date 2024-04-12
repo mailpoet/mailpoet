@@ -6,7 +6,7 @@ use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 class HeadingTest extends \MailPoetTest {
-  /** @var Heading */
+  /** @var Text */
   private $headingRenderer;
 
   /** @var array */
@@ -40,7 +40,7 @@ class HeadingTest extends \MailPoetTest {
 
   public function _before() {
     $this->diContainer->get(EmailEditor::class)->initialize();
-    $this->headingRenderer = new Heading();
+    $this->headingRenderer = new Text();
     $this->settingsController = $this->diContainer->get(SettingsController::class);
   }
 
