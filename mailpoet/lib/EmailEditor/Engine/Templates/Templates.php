@@ -23,23 +23,23 @@ class Templates {
     add_filter('get_block_template', [$this, 'addBlockTemplateDetails'], 10, 1);
   }
 
-  public function getBlockFileTemplate($template, $id, $template_type) {
-    $template_name_parts = explode('//', $id);
+  public function getBlockFileTemplate($return, $templateId, $template_type) {
+    $template_name_parts = explode('//', $templateId);
 
     if (count($template_name_parts) < 2) {
-        return $template;
+        return $return;
     }
 
-    list( $template_id, $template_slug ) = $template_name_parts;
+    list( $templatePrefix, $templateSlug ) = $template_name_parts;
 
-    if ($this->pluginSlug !== $template_id) {
-        return $template;
+    if ($this->pluginSlug !== $templatePrefix) {
+        return $return;
     }
 
-    $templatePath = $template_slug . '.html';
+    $templatePath = $templateSlug . '.html';
 
     if (!is_readable($this->templateDirectory . $templatePath)) {
-        return $template;
+        return $return;
     }
 
     return $this->getBlockTemplateFromFile($templatePath);
@@ -88,21 +88,33 @@ class Templates {
     return $block_template;
   }
 
-  private function getBlockTemplates() {
+  public function getBlockTemplate($templateId) {
+    $templates = $this->getBlockTemplates();
+    return $templates[$templateId] ?? null;
+  }
+
+  /**
+   * Gets block templates indexed by ID.
+   */
+  public function getBlockTemplates() {
     $file_templates = [
       $this->getBlockTemplateFromFile('email-general.html'),
     ];
     $custom_templates = $this->getCustomBlockTemplates();
     $custom_template_ids = wp_list_pluck($custom_templates, 'id');
 
-    return array_merge(
-      $custom_templates,
-      array_filter(
-        $file_templates,
-        function($blockTemplate) use ($custom_template_ids) {
-            return !in_array($blockTemplate->id, $custom_template_ids, true);
-        }
+    return array_column(
+      array_merge(
+        $custom_templates,
+        array_filter(
+          $file_templates,
+          function($blockTemplate) use ($custom_template_ids) {
+              return !in_array($blockTemplate->id, $custom_template_ids, true);
+          }
+        ),
       ),
+      null,
+      'id'
     );
   }
 
