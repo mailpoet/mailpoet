@@ -30,9 +30,9 @@ export function DetailsPanel() {
       'mailpoet',
     ),
     /\[link1\](.*?)\[\/link1\]/g,
-    (match, i) => (
+    (match) => (
       <a
-        key={i}
+        key="best-practices-link"
         href="https://www.mailpoet.com/blog/17-email-subject-line-best-practices-to-boost-engagement/"
         target="_blank"
         rel="noopener noreferrer"
@@ -44,9 +44,9 @@ export function DetailsPanel() {
   subjectHelp = ReactStringReplace(
     subjectHelp,
     /\[link2\](.*?)\[\/link2\]/g,
-    (match, i) => (
+    (match) => (
       <a
-        key={i}
+        key="emoji-link"
         href="https://www.mailpoet.com/blog/tips-using-emojis-in-subject-lines/"
         target="_blank"
         rel="noopener noreferrer"
