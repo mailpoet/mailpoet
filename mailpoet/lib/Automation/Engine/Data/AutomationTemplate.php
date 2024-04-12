@@ -4,7 +4,6 @@ namespace MailPoet\Automation\Engine\Data;
 
 class AutomationTemplate {
   public const TYPE_DEFAULT = 'default';
-  public const TYPE_FREE_ONLY = 'free-only';
   public const TYPE_PREMIUM = 'premium';
   public const TYPE_COMING_SOON = 'coming-soon';
 

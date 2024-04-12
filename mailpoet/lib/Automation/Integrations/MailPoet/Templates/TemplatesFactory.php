@@ -63,7 +63,7 @@ class TemplatesFactory {
           ]
         );
       },
-      AutomationTemplate::TYPE_FREE_ONLY
+      AutomationTemplate::TYPE_DEFAULT
     );
   }
 
@@ -89,7 +89,7 @@ class TemplatesFactory {
           ]
         );
       },
-      AutomationTemplate::TYPE_FREE_ONLY
+      AutomationTemplate::TYPE_DEFAULT
     );
   }
 
