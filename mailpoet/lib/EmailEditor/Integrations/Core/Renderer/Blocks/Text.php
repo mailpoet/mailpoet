@@ -5,7 +5,10 @@ namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 
-class Heading extends AbstractBlockRenderer {
+/**
+ * This renderer covers both core/paragraph and core/heading blocks
+ */
+class Text extends AbstractBlockRenderer {
   protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $blockContent = $this->adjustStyleAttribute($blockContent);
     return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($blockContent, $parsedBlock, $settingsController));
