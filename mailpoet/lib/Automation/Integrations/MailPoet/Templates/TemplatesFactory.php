@@ -36,6 +36,9 @@ class TemplatesFactory {
       $templates[] = $this->createWinBackCustomersTemplate();
       $templates[] = $this->createAbandonedCartTemplate();
       $templates[] = $this->createAbandonedCartCampaignTemplate();
+      $templates[] = $this->createPurchasedProductTemplate();
+      $templates[] = $this->createPurchasedProductWithTagTemplate();
+      $templates[] = $this->createPurchasedInCategoryTemplate();
     }
 
     return $templates;
@@ -258,5 +261,88 @@ class TemplatesFactory {
       },
       AutomationTemplate::TYPE_PREMIUM
     );
+  }
+
+  private function createPurchasedProductTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'purchased-product',
+      'woocommerce',
+      __('Purchased a product', 'mailpoet'),
+      __(
+        'Share care instructions or simply thank the customer for making an order.',
+        'mailpoet'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Purchased a product', 'mailpoet'),
+          $this->createPurchasedTemplateBody('woocommerce:order:products')
+        );
+      },
+      AutomationTemplate::TYPE_DEFAULT
+    );
+  }
+
+  private function createPurchasedProductWithTagTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'purchased-product-with-tag',
+      'woocommerce',
+      __('Purchased a product with a tag', 'mailpoet'),
+      __(
+        'Share care instructions or simply thank the customer for making an order.',
+        'mailpoet'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Purchased a product with a tag', 'mailpoet'),
+          $this->createPurchasedTemplateBody('woocommerce:order:tags')
+        );
+      },
+      AutomationTemplate::TYPE_DEFAULT
+    );
+  }
+
+  private function createPurchasedInCategoryTemplate(): AutomationTemplate {
+    return new AutomationTemplate(
+      'purchased-in-category',
+      'woocommerce',
+      __('Purchased in a category', 'mailpoet'),
+      __(
+        'Share care instructions or simply thank the customer for making an order.',
+        'mailpoet'
+      ),
+      function (): Automation {
+        return $this->builder->createFromSequence(
+          __('Purchased in a category', 'mailpoet'),
+          $this->createPurchasedTemplateBody('woocommerce:order:categories')
+        );
+      },
+      AutomationTemplate::TYPE_DEFAULT
+    );
+  }
+
+  private function createPurchasedTemplateBody(string $filterField): array {
+    return [
+      [
+        'key' => 'woocommerce:order-completed',
+        'filters' => [
+          'operator' => 'and',
+          'groups' => [
+            [
+              'operator' => 'and',
+              'filters' => [
+                ['field' => $filterField, 'condition' => 'matches-any-of', 'value' => null],
+              ],
+            ],
+          ],
+        ],
+      ],
+      [
+        'key' => 'mailpoet:send-email',
+        'args' => [
+          'name' => __('Important information about your order', 'mailpoet'),
+          'subject' => __('Important information about your order', 'mailpoet'),
+        ],
+      ],
+    ];
   }
 }
