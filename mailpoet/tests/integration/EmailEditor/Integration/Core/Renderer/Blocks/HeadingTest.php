@@ -26,7 +26,6 @@ class HeadingTest extends \MailPoetTest {
     ],
     'email_attrs' => [
       'width' => '640px',
-      'font-size' => '24px',
     ],
     'innerBlocks' => [],
     'innerHTML' => '<h1 class="has-pale-cyan-blue-color has-vivid-red-background-color has-text-color has-background">This is Heading 1</h1>',

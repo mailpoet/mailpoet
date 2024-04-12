@@ -16,7 +16,7 @@ class Initializer {
    * Register core blocks email renderers when the blocks renderer is initialized.
    */
   public function registerCoreBlocksRenderers(BlocksRegistry $blocksRegistry): void {
-    $blocksRegistry->addBlockRenderer('core/paragraph', new Renderer\Blocks\Paragraph());
+    $blocksRegistry->addBlockRenderer('core/paragraph', new Renderer\Blocks\Text());
     $blocksRegistry->addBlockRenderer('core/heading', new Renderer\Blocks\Text());
     $blocksRegistry->addBlockRenderer('core/column', new Renderer\Blocks\Column());
     $blocksRegistry->addBlockRenderer('core/columns', new Renderer\Blocks\Columns());

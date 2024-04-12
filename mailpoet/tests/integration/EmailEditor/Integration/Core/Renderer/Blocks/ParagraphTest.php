@@ -6,14 +6,18 @@ use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 class ParagraphTest extends \MailPoetTest {
-  /** @var Paragraph */
+  /** @var Text */
   private $paragraphRenderer;
 
   /** @var array */
   private $parsedParagraph = [
     'blockName' => 'core/paragraph',
-    'email_attrs' => [
-      'font-size' => '16px',
+    'attrs' => [
+      'style' => [
+        'typography' => [
+          'fontSize' => '16px',
+        ],
+      ],
     ],
     'innerBlocks' => [],
     'innerHTML' => '<p>Lorem Ipsum</p>',
@@ -27,7 +31,7 @@ class ParagraphTest extends \MailPoetTest {
 
   public function _before() {
     $this->diContainer->get(EmailEditor::class)->initialize();
-    $this->paragraphRenderer = new Paragraph();
+    $this->paragraphRenderer = new Text();
     $this->settingsController = $this->diContainer->get(SettingsController::class);
   }
 
