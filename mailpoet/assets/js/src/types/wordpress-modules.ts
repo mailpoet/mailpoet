@@ -100,6 +100,7 @@ declare module '@wordpress/notices' {
     };
     selectors: {
       getNotices(state: unknown, context?: string): Notice[];
+      removeNotice(id: string, context?: string): void;
     };
   }>;
 }
