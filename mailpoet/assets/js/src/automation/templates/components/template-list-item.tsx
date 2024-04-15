@@ -6,6 +6,7 @@ import {
   premiumValidAndActive,
 } from '../../../common/premium-modal';
 import { Item } from '../../../common/templates';
+import { MailPoet } from '../../../mailpoet';
 
 type Badge = ComponentProps<typeof Item>['badge'];
 
@@ -13,11 +14,32 @@ const getCategory = (template: AutomationTemplate): string =>
   automationTemplateCategories.find(({ slug }) => slug === template.category)
     ?.name ?? __('Uncategorized', 'mailpoet');
 
+const isLocked = (template: AutomationTemplate): boolean => {
+  const maxSteps = Number(MailPoet.capabilities?.automationSteps?.value ?? 0);
+  const steps = Number(template.required_capabilities?.automationSteps ?? 0);
+
+  const isPremium = template.type === 'premium';
+  if (isPremium && !premiumValidAndActive) {
+    return true;
+  }
+
+  if (maxSteps === 0 || steps === 0) {
+    return false;
+  }
+
+  // the Thank loyal customers template is available from the Basic plan
+  if (MailPoet.tier === 0 && isPremium) {
+    return true;
+  }
+
+  return steps > maxSteps;
+};
+
 const getBadge = (template: AutomationTemplate): Badge => {
   if (template.type === 'coming-soon') {
     return 'coming-soon';
   }
-  if (template.type === 'premium') {
+  if (isLocked(template)) {
     return 'premium';
   }
   return undefined;
@@ -40,7 +62,7 @@ export function TemplateListItem({ template, onSelect }: Props): JSX.Element {
         badge={getBadge(template)}
         disabled={template.type === 'coming-soon'}
         onClick={() => {
-          if (template.type === 'premium' && !premiumValidAndActive) {
+          if (isLocked(template)) {
             setShowPremium(true);
           } else {
             onSelect();
@@ -51,6 +73,9 @@ export function TemplateListItem({ template, onSelect }: Props): JSX.Element {
         <PremiumModal
           onRequestClose={() => {
             setShowPremium(false);
+          }}
+          data={{
+            capabilityName: 'automationSteps',
           }}
           tracking={{
             utm_medium: 'upsell_modal',
