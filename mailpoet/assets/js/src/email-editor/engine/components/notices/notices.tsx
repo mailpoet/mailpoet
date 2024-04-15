@@ -32,7 +32,7 @@ export function EditorNotices() {
       <NoticeList
         notices={dismissibleNotices}
         className="components-editor-notices__dismissible"
-        onRemove={removeNotice}
+        onRemove={(id) => removeNotice(id, 'email-editor')}
       />
       <ValidationNotices />
     </>

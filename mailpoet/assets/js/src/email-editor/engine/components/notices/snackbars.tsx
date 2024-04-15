@@ -20,7 +20,7 @@ export function EditorSnackbars() {
     <SnackbarList
       notices={snackbarNotices}
       className="components-editor-notices__snackbar"
-      onRemove={removeNotice}
+      onRemove={(id) => removeNotice(id, 'email-editor')}
     />
   );
 }
