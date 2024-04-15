@@ -1,4 +1,14 @@
 .mailpoet-email-editor__styles-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .components-panel,
+  .components-navigator-provider,
+  .components-navigator-screen {
+    height: 100%;
+  }
+
   .components-navigator-button {
     width: 100%;
   }
