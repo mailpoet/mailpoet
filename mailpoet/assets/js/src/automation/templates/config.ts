@@ -4,6 +4,7 @@ export type AutomationTemplate = {
   description: string;
   category: string;
   type: 'default' | 'free-only' | 'premium' | 'coming-soon';
+  required_capabilities: Record<string, boolean | number>;
 };
 
 export type AutomationTemplateCategory = {

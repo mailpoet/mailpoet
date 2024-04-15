@@ -22,16 +22,23 @@ class AutomationTemplate {
   /** @var callable(): Automation */
   private $automationFactory;
 
+  /** @var array<string, int|bool> */
+  private $requiredCapabilities;
+
   /** @var string */
   private $type;
 
-  /** @param callable(): Automation $automationFactory */
+  /**
+   * @param callable(): Automation $automationFactory
+   * @param array<string, int|bool> $requiredCapabilities
+   */
   public function __construct(
     string $slug,
     string $category,
     string $name,
     string $description,
     callable $automationFactory,
+    array $requiredCapabilities = [],
     string $type = self::TYPE_DEFAULT
   ) {
     $this->slug = $slug;
@@ -39,6 +46,7 @@ class AutomationTemplate {
     $this->name = $name;
     $this->description = $description;
     $this->automationFactory = $automationFactory;
+    $this->requiredCapabilities = $requiredCapabilities;
     $this->type = $type;
   }
 
@@ -62,6 +70,11 @@ class AutomationTemplate {
     return $this->description;
   }
 
+  /** @return array<string, int|bool> */
+  public function getRequiredCapabilities(): array {
+    return $this->requiredCapabilities;
+  }
+
   public function createAutomation(): Automation {
     return ($this->automationFactory)();
   }
@@ -72,6 +85,7 @@ class AutomationTemplate {
       'name' => $this->getName(),
       'category' => $this->getCategory(),
       'type' => $this->getType(),
+      'required_capabilities' => $this->getRequiredCapabilities(),
       'description' => $this->getDescription(),
     ];
   }
