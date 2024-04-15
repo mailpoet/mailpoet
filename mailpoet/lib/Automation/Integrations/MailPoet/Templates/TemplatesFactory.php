@@ -66,6 +66,9 @@ class TemplatesFactory {
           ]
         );
       },
+      [
+        'automationSteps' => 1,
+      ],
       AutomationTemplate::TYPE_DEFAULT
     );
   }
@@ -92,6 +95,9 @@ class TemplatesFactory {
           ]
         );
       },
+      [
+        'automationSteps' => 1,
+      ],
       AutomationTemplate::TYPE_DEFAULT
     );
   }
@@ -111,6 +117,9 @@ class TemplatesFactory {
           []
         );
       },
+      [
+        'automationSteps' => 2,
+      ],
       AutomationTemplate::TYPE_PREMIUM
     );
   }
@@ -130,6 +139,9 @@ class TemplatesFactory {
           []
         );
       },
+      [
+        'automationSteps' => 2,
+      ],
       AutomationTemplate::TYPE_PREMIUM
     );
   }
@@ -174,6 +186,9 @@ class TemplatesFactory {
           ]
         );
       },
+      [
+        'automationSteps' => 1,
+      ],
       AutomationTemplate::TYPE_DEFAULT
     );
   }
@@ -193,6 +208,9 @@ class TemplatesFactory {
           []
         );
       },
+      [
+        'automationSteps' => 1,
+      ],
       AutomationTemplate::TYPE_PREMIUM
     );
   }
@@ -212,6 +230,9 @@ class TemplatesFactory {
           []
         );
       },
+      [
+        'automationSteps' => 4,
+      ],
       AutomationTemplate::TYPE_PREMIUM
     );
   }
@@ -240,6 +261,9 @@ class TemplatesFactory {
           ]
         );
       },
+      [
+        'automationSteps' => 1,
+      ],
       AutomationTemplate::TYPE_DEFAULT
     );
   }
@@ -259,6 +283,9 @@ class TemplatesFactory {
           []
         );
       },
+      [
+        'automationSteps' => 5,
+      ],
       AutomationTemplate::TYPE_PREMIUM
     );
   }
@@ -278,6 +305,9 @@ class TemplatesFactory {
           $this->createPurchasedTemplateBody('woocommerce:order:products')
         );
       },
+      [
+        'automationSteps' => 1,
+      ],
       AutomationTemplate::TYPE_DEFAULT
     );
   }
@@ -297,6 +327,9 @@ class TemplatesFactory {
           $this->createPurchasedTemplateBody('woocommerce:order:tags')
         );
       },
+      [
+        'automationSteps' => 1,
+      ],
       AutomationTemplate::TYPE_DEFAULT
     );
   }
@@ -316,6 +349,9 @@ class TemplatesFactory {
           $this->createPurchasedTemplateBody('woocommerce:order:categories')
         );
       },
+      [
+        'automationSteps' => 1,
+      ],
       AutomationTemplate::TYPE_DEFAULT
     );
   }
