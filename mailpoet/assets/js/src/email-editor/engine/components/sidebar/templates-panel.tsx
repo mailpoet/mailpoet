@@ -1,14 +1,15 @@
 import { PanelBody, Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 import {
   store as editorStore,
   // @ts-expect-error Our current version of packages doesn't have EntitiesSavedStates export
   EntitiesSavedStates,
 } from '@wordpress/editor';
 
+import { SelectTemplateModal } from 'email-editor/engine/components/sidebar/template-select/select-modal';
 import { storeName } from '../../store';
-
 import { unlock } from '../../../lock-unlock';
 
 export function TemplatesPanel() {
@@ -27,6 +28,9 @@ export function TemplatesPanel() {
     },
     [],
   );
+
+  const [isTemplateSelectModalOpen, setIsTemplateSelectModalOpen] =
+    useState(false);
 
   return (
     <PanelBody
@@ -57,6 +61,20 @@ export function TemplatesPanel() {
       <hr />
       <h3>Save panel</h3>
       <EntitiesSavedStates close={() => {}} />
+
+      <h3>Select Template</h3>
+      <Button
+        variant="primary"
+        onClick={() => {
+          setIsTemplateSelectModalOpen(true);
+        }}
+      >
+        {__('Select initial template', 'mailpoet')}
+      </Button>
+      <SelectTemplateModal
+        isOpen={isTemplateSelectModalOpen}
+        setIsOpen={setIsTemplateSelectModalOpen}
+      />
     </PanelBody>
   );
 }
