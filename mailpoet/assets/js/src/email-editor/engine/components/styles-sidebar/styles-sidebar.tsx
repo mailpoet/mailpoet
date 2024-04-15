@@ -1,5 +1,4 @@
 import {
-  Panel,
   __experimentalNavigatorProvider as NavigatorProvider,
   __experimentalNavigatorScreen as NavigatorScreen,
   __experimentalNavigatorToParentButton as NavigatorToParentButton,
@@ -29,42 +28,40 @@ export function StylesSidebar(props: Props): JSX.Element {
       smallScreenTitle={__('No title', 'mailpoet')}
       {...props}
     >
-      <Panel>
-        <NavigatorProvider initialPath="/">
-          <NavigatorScreen path="/">
-            <ScreenRoot />
-          </NavigatorScreen>
+      <NavigatorProvider initialPath="/">
+        <NavigatorScreen path="/">
+          <ScreenRoot />
+        </NavigatorScreen>
 
-          <NavigatorScreen path="/typography">
-            <ScreenTypography />
-          </NavigatorScreen>
+        <NavigatorScreen path="/typography">
+          <ScreenTypography />
+        </NavigatorScreen>
 
-          <NavigatorScreen path="/typography/text">
-            <ScreenTypographyElement element="text" />
-          </NavigatorScreen>
+        <NavigatorScreen path="/typography/text">
+          <ScreenTypographyElement element="text" />
+        </NavigatorScreen>
 
-          <NavigatorScreen path="/typography/link">
-            <ScreenTypographyElement element="link" />
-          </NavigatorScreen>
+        <NavigatorScreen path="/typography/link">
+          <ScreenTypographyElement element="link" />
+        </NavigatorScreen>
 
-          <NavigatorScreen path="/typography/heading">
-            <ScreenTypographyElement element="heading" />
-          </NavigatorScreen>
+        <NavigatorScreen path="/typography/heading">
+          <ScreenTypographyElement element="heading" />
+        </NavigatorScreen>
 
-          <NavigatorScreen path="/typography/button">
-            <ScreenTypographyElement element="button" />
-          </NavigatorScreen>
+        <NavigatorScreen path="/typography/button">
+          <ScreenTypographyElement element="button" />
+        </NavigatorScreen>
 
-          <NavigatorScreen path="/colors">
-            <NavigatorToParentButton>Back</NavigatorToParentButton>
-            <div>TODO: Colors screen</div>
-          </NavigatorScreen>
+        <NavigatorScreen path="/colors">
+          <NavigatorToParentButton>Back</NavigatorToParentButton>
+          <div>TODO: Colors screen</div>
+        </NavigatorScreen>
 
-          <NavigatorScreen path="/layout">
-            <ScreenLayout />
-          </NavigatorScreen>
-        </NavigatorProvider>
-      </Panel>
+        <NavigatorScreen path="/layout">
+          <ScreenLayout />
+        </NavigatorScreen>
+      </NavigatorProvider>
     </ComplementaryArea>
   );
 }
