@@ -1,3 +1,4 @@
 import './index.scss';
 
-export * from './block-editor';
+export * from './editor';
+export * from './layout';
