@@ -43,7 +43,6 @@ class Text extends AbstractBlockRenderer {
     $compiledStyles = $this->compileCss($blockStyles['declarations'], $styles);
 
     return '
-      <!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><![endif]-->
           <table
             role="presentation"
             border="0"
@@ -58,8 +57,6 @@ class Text extends AbstractBlockRenderer {
               </td>
             </tr>
           </table>
-
-      <!--[if mso | IE]></td></tr></table><![endif]-->
     ';
   }
 
