@@ -2,8 +2,6 @@ import {
   // @ts-expect-error No types for this exist yet.
   __experimentalUseResizeCanvas as useResizeCanvas,
   BlockSelectionClearer,
-  // @ts-expect-error No types for this exist yet.
-  __unstableEditorStyles as EditorStyles,
 } from '@wordpress/block-editor';
 
 import {
@@ -25,13 +23,14 @@ import {
 import './index.scss';
 import { store as coreStore } from '@wordpress/core-data';
 import { storeName } from '../../store';
+import { useEmailCss } from '../../hooks';
 import { AutosaveMonitor } from '../autosave';
 import { BlockCompatibilityWarnings, Sidebar } from '../sidebar';
 import { Header } from '../header';
 import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 import { EditorNotices, EditorSnackbars, SentEmailNotice } from '../notices';
-import { StylesSidebar, ThemeStyles } from '../styles-sidebar';
+import { StylesSidebar } from '../styles-sidebar';
 import { FooterCredit } from './footer-credit';
 import { unlock } from '../../../lock-unlock';
 
@@ -76,6 +75,8 @@ export function Layout() {
     }),
     [],
   );
+
+  const [emailCss] = useEmailCss();
 
   const className = classnames('edit-post-layout', {
     'is-sidebar-opened': isSidebarOpened,
@@ -160,14 +161,9 @@ export function Layout() {
                     className="visual-editor__email_content_wrapper"
                     style={contentAreaStyles}
                   >
-                    <ThemeStyles />
-                    <EditorStyles
-                      styles={settings.styles}
-                      scope=".editor-styles-wrapper"
-                    />
                     <EditorCanvas
                       disableIframe={disableIframe}
-                      styles={[]}
+                      styles={[...settings.styles, ...emailCss]}
                       autoFocus
                       className="has-global-padding"
                     />
