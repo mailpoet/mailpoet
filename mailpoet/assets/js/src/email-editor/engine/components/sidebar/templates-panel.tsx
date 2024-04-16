@@ -5,8 +5,6 @@ import {
   store as editorStore,
   // @ts-expect-error Our current version of packages doesn't have EntitiesSavedStates export
   EntitiesSavedStates,
-  // @ts-expect-error Our current version of packages doesn't have DocumentBar export
-  DocumentBar,
 } from '@wordpress/editor';
 
 import { storeName } from '../../store';
@@ -45,18 +43,17 @@ export function TemplatesPanel() {
           variant="primary"
           onClick={() => {
             onNavigateToEntityRecord({
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
+              // @ts-expect-error template type is not defined
               postId: template.id,
               postType: 'wp_template',
             });
           }}
+          // @ts-expect-error template type is not defined
+          disabled={!template.id}
         >
           {__('Edit template', 'mailpoet')}
         </Button>
       )}
-
-      {hasHistory && <DocumentBar />}
       <hr />
       <h3>Save panel</h3>
       <EntitiesSavedStates close={() => {}} />
