@@ -4,16 +4,14 @@ import { useEntityProp } from '@wordpress/core-data';
 import { merge } from 'lodash';
 import {
   // @ts-expect-error No types for this exist yet.
-  __unstableEditorStyles as EditorStyles,
-  // @ts-expect-error No types for this exist yet.
   privateApis as blockEditorPrivateApi,
 } from '@wordpress/block-editor';
-import { unlock } from '../../../lock-unlock';
-import { EmailStyles, storeName } from '../../store';
+import { unlock } from '../../lock-unlock';
+import { EmailStyles, storeName } from '../store';
 
 const { useGlobalStylesOutputWithConfig } = unlock(blockEditorPrivateApi);
 
-export function ThemeStyles(): JSX.Element {
+export function useEmailCss() {
   const { theme } = useSelect(
     (select) => ({
       theme: select(storeName).getTheme(),
@@ -30,5 +28,6 @@ export function ThemeStyles(): JSX.Element {
 
   const [styles] = useGlobalStylesOutputWithConfig(mergedConfig);
 
-  return <EditorStyles styles={styles} scope=".editor-styles-wrapper" />;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return [styles];
 }
