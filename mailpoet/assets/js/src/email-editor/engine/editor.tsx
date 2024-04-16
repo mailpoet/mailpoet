@@ -4,7 +4,7 @@ import { StrictMode, createRoot } from '@wordpress/element';
 import { withNpsPoll } from '../../nps-poll';
 import { initBlocks } from './blocks';
 import { initializeLayout } from './layouts/flex-email';
-import InnerEditor from './components/block-editor/editor';
+import { InnerEditor } from './components/block-editor/editor';
 import { createStore, storeName } from './store';
 import { initHooks } from './editor-hooks';
 import { KeyboardShortcuts } from './components/keybord-shortcuts';
