@@ -23,7 +23,7 @@ import { useNavigateToEntityRecord } from '../../hooks/use-navigate-to-entity-re
 
 const { ExperimentalEditorProvider } = unlock(editorPrivateApis);
 
-function InnerEditor({
+export function InnerEditor({
   postId: initialPostId,
   postType: initialPostType,
   settings,
@@ -95,5 +95,3 @@ function InnerEditor({
     </SlotFillProvider>
   );
 }
-
-export default InnerEditor;
