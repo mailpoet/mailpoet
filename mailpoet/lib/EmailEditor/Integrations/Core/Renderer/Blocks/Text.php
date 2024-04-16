@@ -10,13 +10,7 @@ use MailPoet\EmailEditor\Engine\SettingsController;
 class Text extends AbstractBlockRenderer {
   protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $blockContent = $this->adjustStyleAttribute($blockContent);
-    return str_replace('{heading_content}', $blockContent, $this->getBlockWrapper($blockContent, $parsedBlock));
-  }
 
-  /**
-   * Based on MJML <mj-text>
-   */
-  private function getBlockWrapper($blockContent, array $parsedBlock): string {
     $html = new \WP_HTML_Tag_Processor($blockContent);
     $classes = '';
     if ($html->next_tag()) {
@@ -42,22 +36,24 @@ class Text extends AbstractBlockRenderer {
 
     $compiledStyles = $this->compileCss($blockStyles['declarations'], $styles);
 
-    return '
-          <table
+    return sprintf(
+      '<table
             role="presentation"
             border="0"
             cellpadding="0"
             cellspacing="0"
-            style="min-width: 100%;"
-            width="100%"
+            style="min-width: 100%%;"
+            width="100%%"
           >
             <tr>
-              <td class="' . esc_attr($classes) . '" style="' . esc_attr($compiledStyles) . '" align="' . esc_attr($styles['text-align'] ?? 'left') . '">
-                {heading_content}
-              </td>
+              <td class="%1$s" style="%2$s" align="%3$s">%4$s</td>
             </tr>
-          </table>
-    ';
+          </table>',
+      esc_attr($classes),
+      esc_attr($compiledStyles),
+      esc_attr($styles['text-align'] ?? 'left'),
+      $blockContent
+    );
   }
 
   /**
