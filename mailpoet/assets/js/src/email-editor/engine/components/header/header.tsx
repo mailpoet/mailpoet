@@ -8,6 +8,8 @@ import {
 } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
+// @ts-expect-error DocumentBar types are not available
+import { DocumentBar, store as editorStore } from '@wordpress/editor';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { __ } from '@wordpress/i18n';
 import { plus, listView, undo, redo, next, previous } from '@wordpress/icons';
@@ -18,6 +20,8 @@ import { PreviewDropdown } from '../preview';
 import { SaveButton } from './save-button';
 import { CampaignName } from './campaign-name';
 import { SendButton } from './send-button';
+
+import { unlock } from '../../../lock-unlock';
 
 // Build type for ToolbarItem contains only "as" and "children" properties but it takes all props from
 // component passed to "as" property (in this case Button). So as fix for TS errors we need to pass all props from Button to ToolbarItem.
@@ -59,8 +63,15 @@ export function Header() {
     isBlockSelected,
     hasUndo,
     hasRedo,
-  } = useSelect(
-    (select) => ({
+    hasDocumentNavigationHistory,
+  } = useSelect((select) => {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { getEditorSettings: _getEditorSettings } = unlock(
+      select(editorStore),
+    );
+    const editorSettings = _getEditorSettings();
+
+    return {
       isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
       isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
       isFixedToolbarActive: select(preferencesStore).get(
@@ -70,9 +81,10 @@ export function Header() {
       isBlockSelected: !!select(blockEditorStore).getBlockSelectionStart(),
       hasUndo: select(coreDataStore).hasUndo(),
       hasRedo: select(coreDataStore).hasRedo(),
-    }),
-    [],
-  );
+      hasDocumentNavigationHistory:
+        !!editorSettings.onNavigateToPreviousEntityRecord,
+    };
+  }, []);
 
   const preventDefault = (event) => {
     event.preventDefault();
@@ -172,7 +184,7 @@ export function Header() {
           !isBlockSelected ||
           isBlockToolsCollapsed) && (
           <div className="edit-post-header__center">
-            <CampaignName />
+            {hasDocumentNavigationHistory ? <DocumentBar /> : <CampaignName />}
           </div>
         )}
       </div>
