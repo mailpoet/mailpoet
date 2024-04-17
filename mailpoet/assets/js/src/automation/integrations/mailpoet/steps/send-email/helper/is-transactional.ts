@@ -7,6 +7,14 @@ const transactionalTriggers = [
   'woocommerce:order-created',
   'woocommerce:order-completed',
   'woocommerce:order-cancelled',
+  'woocommerce:abandoned-cart',
+  'woocommerce-subscriptions:subscription-created',
+  'woocommerce-subscriptions:subscription-expired',
+  'woocommerce-subscriptions:subscription-payment-failed',
+  'woocommerce-subscriptions:subscription-renewed',
+  'woocommerce-subscriptions:subscription-status-changed',
+  'woocommerce-subscriptions:trial-ended',
+  'woocommerce-subscriptions:trial-started',
 ];
 
 export function isTransactional(step: Step): boolean {
