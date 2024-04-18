@@ -4,13 +4,11 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer;
 
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Engine\ThemeController;
-use MailPoet\Util\pQuery\DomNode;
-use MailPoetVendor\CSS;
+use MailPoetVendor\Pelago\Emogrifier\CssInliner;
 use WP_Block_Template;
 use WP_Post;
 
 class ContentRenderer {
-  private CSS $cssInliner;
   private BlocksRegistry $blocksRegistry;
   private ProcessManager $processManager;
   private SettingsController $settingsController;
@@ -21,7 +19,6 @@ class ContentRenderer {
   const CONTENT_STYLES_FILE = 'content.css';
 
   public function __construct(
-    CSS $cssInliner,
     ProcessManager $preprocessManager,
     BlocksRegistry $blocksRegistry,
     SettingsController $settingsController,
@@ -30,7 +27,7 @@ class ContentRenderer {
     $this->processManager = $preprocessManager;
     $this->blocksRegistry = $blocksRegistry;
     $this->settingsController = $settingsController;
-    $this->cssInliner = $cssInliner;
+
     $this->themeController = $themeController;
   }
 
@@ -85,21 +82,16 @@ class ContentRenderer {
   private function inlineStyles($html, WP_Post $post) {
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::CONTENT_STYLES_FILE);
     $styles .= $this->themeController->getStylesheetForRendering($post);
+    // Get styles from block-supports stylesheet. This includes rules such as layout (contentWidth) that some blocks use.
+    // @see https://github.com/WordPress/WordPress/blob/3c5da9c74344aaf5bf8097f2e2c6a1a781600e03/wp-includes/script-loader.php#L3134
+    // @internal :where is not supported by emogrifier, so we need to replace it with *.
+    $styles .= str_replace(
+      ':where(:not(.alignleft):not(.alignright):not(.alignfull))',
+      '*:not(.alignleft):not(.alignright):not(.alignfull)',
+      \wp_style_engine_get_stylesheet_from_context('block-supports', [])
+    );
     $styles = '<style>' . (string)apply_filters('mailpoet_email_content_renderer_styles', $styles, $post) . '</style>';
 
-    return $this->postProcessTemplate(
-      $this->cssInliner->inlineCSS($styles . $html)
-    );
-  }
-
-  /**
-   * @param DomNode $templateDom
-   * @return string
-   */
-  private function postProcessTemplate(DomNode $templateDom) {
-    // because tburry/pquery contains a bug and replaces the opening non mso condition incorrectly we have to replace the opening tag with correct value
-    $template = $templateDom->__toString();
-    $template = str_replace('<!--[if !mso]><![endif]-->', '<!--[if !mso]><!-- -->', $template);
-    return $template;
+    return CssInliner::fromHtml($styles . $html)->inlineCss()->render();
   }
 }
