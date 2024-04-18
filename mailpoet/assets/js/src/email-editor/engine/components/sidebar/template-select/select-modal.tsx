@@ -4,14 +4,11 @@ import { store as editorStore } from '@wordpress/editor';
 import { dispatch } from '@wordpress/data';
 import { Modal } from '@wordpress/components';
 import { Async } from 'email-editor/engine/components/sidebar/template-select/async';
-import { getTemplatesForPreview } from './templates-data';
+import { usePreviewTemplates } from './use-preview-templates';
 import { storeName } from '../../../store/constants';
 
-export function SelectTemplateModal({ isOpen, setIsOpen }) {
-  if (!isOpen) {
-    return null;
-  }
-  const templates = getTemplatesForPreview();
+export function SelectTemplateModal({ setIsOpen }) {
+  const [templates] = usePreviewTemplates();
 
   const handleTemplateSelection = (template) => {
     setIsOpen(false);

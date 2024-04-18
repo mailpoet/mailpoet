@@ -1,5 +1,5 @@
 import { parse } from '@wordpress/blocks';
-import { select } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { storeName } from '../../../store/constants';
 
 const contentPattern =
@@ -19,27 +19,32 @@ const contentPattern =
   '<!-- /wp:column --></div>\n' +
   '<!-- /wp:columns -->';
 
-export function getTemplatesForPreview() {
-  const templates = select(storeName).getEmailTemplates();
+export function usePreviewTemplates() {
+  const templates = useSelect(
+    (select) => select(storeName).getEmailTemplates(),
+    [],
+  );
   if (!templates) {
-    return [];
+    return [[]];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return templates.map((template) => {
-    // @ts-expect-error Missing property type
-    const fullContent = template.content?.raw?.replace(
-      /<!-- wp:(core)*\/*post-content( {.*})* \/-->/,
-      contentPattern,
-    );
-
-    return {
+  return [
+    templates.map((template) => {
       // @ts-expect-error Missing property type
-      slug: template.slug,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      contentParsed: parse(fullContent),
-      patternParsed: parse(contentPattern),
-      template,
-    };
-  });
+      const fullContent = template.content?.raw?.replace(
+        /<!-- wp:(core)*\/*post-content( {.*})* \/-->/,
+        contentPattern,
+      );
+
+      return {
+        // @ts-expect-error Missing property type
+        slug: template.slug,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        contentParsed: parse(fullContent),
+        patternParsed: parse(contentPattern),
+        template,
+      };
+    }),
+  ];
 }
