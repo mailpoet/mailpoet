@@ -475,6 +475,10 @@ class NewsletterSaveController {
 
   private function getEmailDefaultContent(): string {
     return '
+      <!-- wp:columns {"style":{"spacing":{"padding":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}},"backgroundColor":"white"} -->
+      <div class="wp-block-columns has-white-background-color has-background" style="padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)">
+      <!-- wp:column -->
+      <div class="wp-block-column">
       <!-- wp:image {"width":"130px"} -->
       <figure class="wp-block-image is-resized"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl("email-editor/your-logo-placeholder.png")) . '" alt="Your Logo" style="width:130px"/></figure>
       <!-- /wp:image -->
@@ -493,6 +497,10 @@ class NewsletterSaveController {
       <!-- wp:paragraph {"fontSize":"small"} -->
       <p class="has-small-font-size"><a href="[link:subscription_unsubscribe_url]">' . esc_html__('Unsubscribe', 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . esc_html__('Manage subscription', 'mailpoet') . '</a></p>
       <!-- /wp:paragraph -->
+      </div>
+      <!-- /wp:column -->
+      </div>
+      <!-- /wp:columns -->
     ';
   }
 }
