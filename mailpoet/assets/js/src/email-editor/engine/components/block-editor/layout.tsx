@@ -82,7 +82,7 @@ export function Layout() {
     'is-sidebar-opened': isSidebarOpened,
   });
 
-  const layoutBackground = styles.color.background.layout;
+  const layoutBackground = styles?.color?.background?.layout || '#f0f0f0';
 
   let contentWrapperStyles = useResizeCanvas(previewDeviceType);
 
