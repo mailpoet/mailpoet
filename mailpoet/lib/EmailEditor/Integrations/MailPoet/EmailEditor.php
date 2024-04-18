@@ -62,27 +62,4 @@ class EmailEditor {
       'schema' => $this->emailApiController->getEmailDataSchema(),
     ]);
   }
-
-  public function getEmailDefaultContent(): string {
-    return '
-      <!-- wp:image {"width":"130px","sizeSlug":"large"} -->
-      <figure class="wp-block-image size-large is-resized"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl("email-editor/your-logo-placeholder.png")) . '" alt="Your Logo" style="width:130px"/></figure>
-      <!-- /wp:image -->
-      <!-- wp:heading {"fontSize":"medium","style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-      <h2 class="wp-block-heading has-medium-font-size" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)"></h2>
-      <!-- /wp:heading -->
-      <!-- wp:image -->
-      <figure class="wp-block-image"><img alt=""/></figure>
-      <!-- /wp:image -->
-      <!-- wp:paragraph {"style":{"spacing":{"padding":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}}}} -->
-      <p style="padding-top:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20)"></p>
-      <!-- /wp:paragraph -->
-      <!-- wp:paragraph {"fontSize":"small"} -->
-      <p class="has-small-font-size">' . esc_html__('You received this email because you are subscribed to the [site:title]', 'mailpoet') . '</p>
-      <!-- /wp:paragraph -->
-      <!-- wp:paragraph {"fontSize":"small"} -->
-      <p class="has-small-font-size"><a href="[link:subscription_unsubscribe_url]">' . esc_html__('Unsubscribe', 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . esc_html__('Manage subscription', 'mailpoet') . '</a></p>
-      <!-- /wp:paragraph -->
-    ';
-  }
 }
