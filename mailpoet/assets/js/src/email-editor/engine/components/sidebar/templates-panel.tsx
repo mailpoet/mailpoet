@@ -71,10 +71,9 @@ export function TemplatesPanel() {
       >
         {__('Select initial template', 'mailpoet')}
       </Button>
-      <SelectTemplateModal
-        isOpen={isTemplateSelectModalOpen}
-        setIsOpen={setIsTemplateSelectModalOpen}
-      />
+      {isTemplateSelectModalOpen && (
+        <SelectTemplateModal setIsOpen={setIsTemplateSelectModalOpen} />
+      )}
     </PanelBody>
   );
 }
