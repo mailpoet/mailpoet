@@ -23,6 +23,7 @@ class Templates {
     if (strstr(wp_unslash($_SERVER['REQUEST_URI'] ?? ''), 'site-editor.php') === false) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
       add_filter('pre_get_block_file_template', [$this, 'getBlockFileTemplate'], 10, 3);
       add_filter('get_block_templates', [$this, 'addBlockTemplates'], 10, 3);
+      add_filter('theme_templates', [$this, 'addThemeTemplates'], 10, 4); // Needed when saving post – template association
       add_filter('get_block_template', [$this, 'addBlockTemplateDetails'], 10, 1);
     }
   }
@@ -47,6 +48,16 @@ class Templates {
     }
 
     return $this->getBlockTemplateFromFile($templatePath);
+  }
+
+  public function addThemeTemplates($templates, $theme, $post, $post_type) {
+    if ($post_type && $post_type !== $this->postType) {
+      return $templates;
+    }
+    foreach ($this->getBlockTemplates() as $blockTemplate) {
+      $templates[$blockTemplate->slug] = $blockTemplate;
+    }
+    return $templates;
   }
 
   public function addBlockTemplates($query_result, $query, $template_type) {

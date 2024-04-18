@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 // @ts-expect-error No types available for this component
 import { BlockPreview } from '@wordpress/block-editor';
 import { store as editorStore } from '@wordpress/editor';
@@ -6,6 +5,7 @@ import { dispatch } from '@wordpress/data';
 import { Modal } from '@wordpress/components';
 import { Async } from 'email-editor/engine/components/sidebar/template-select/async';
 import { getTemplatesForPreview } from './templates-data';
+import { storeName } from '../../../store/constants';
 
 export function SelectTemplateModal({ isOpen, setIsOpen }) {
   if (!isOpen) {
@@ -16,6 +16,7 @@ export function SelectTemplateModal({ isOpen, setIsOpen }) {
   const handleTemplateSelection = (template) => {
     setIsOpen(false);
     void dispatch(editorStore).resetEditorBlocks(template.patternParsed);
+    void dispatch(storeName).setTemplateToPost(template.slug);
   };
 
   return (

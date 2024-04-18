@@ -124,6 +124,17 @@ export function* updateEmailMailPoetProperty(name: string, value: string) {
   );
 }
 
+export const setTemplateToPost =
+  (templateSlug) =>
+  async ({ registry }) => {
+    const postId = registry.select(storeName).getEmailPostId();
+    registry
+      .dispatch(coreDataStore)
+      .editEntityRecord('postType', 'mailpoet_email', postId, {
+        template: templateSlug,
+      });
+  };
+
 export function* requestSendingNewsletterPreview(
   newsletterId: number,
   email: string,
