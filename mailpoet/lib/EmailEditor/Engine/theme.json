@@ -213,10 +213,7 @@
       }
     },
     "color": {
-      "background": {
-        "layout": "#f0f0f0",
-        "content": "#ffffff"
-      },
+      "background": "#f0f0f0",
       "text": "#000000"
     },
     "typography": {

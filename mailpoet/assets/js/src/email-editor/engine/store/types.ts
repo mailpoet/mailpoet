@@ -63,10 +63,7 @@ export type EmailStyles = {
     };
   };
   color: {
-    background: {
-      content: string;
-      layout: string;
-    };
+    background: string;
     text: string;
   };
   typography: TypographyProperties;
