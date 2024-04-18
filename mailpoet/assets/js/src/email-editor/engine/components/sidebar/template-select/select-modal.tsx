@@ -22,8 +22,9 @@ export function SelectTemplateModal({ isOpen, setIsOpen }) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     <Modal title="Select a template" onRequestClose={() => setIsOpen(false)}>
       {templates.map((template) => (
-        <div key={template.id}>
-          <h2>{`Template ${template.id}`}</h2>
+        <div key={template.slug}>
+          {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
+          <h2>{`Template ${template.slug}`}</h2>
           <div
             role="button"
             tabIndex={0}
