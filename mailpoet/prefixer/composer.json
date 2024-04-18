@@ -14,6 +14,7 @@
     "gregwar/captcha": "^1.1",
     "monolog/monolog": "2.4.0",
     "nesbot/carbon": "2.63.0",
+    "pelago/emogrifier": "^6.0",
     "psr/cache": "^1.0",
     "sabberworm/php-css-parser": "^8.1",
     "soundasleep/html2text": "dev-master",
