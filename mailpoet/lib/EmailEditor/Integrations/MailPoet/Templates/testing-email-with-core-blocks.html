@@ -69,6 +69,50 @@
 </h2>
 <!-- /wp:heading -->
 
+<!-- wp:paragraph {"fontFamily":"comic-sans-ms"} -->
+<p class="has-comic-sans-ms-font-family">
+  A two-column layout organizes information into sections, making it easier for
+  users to navigate content. Try other layouts by adding or removing columns,
+  drag blocks into them to add content and customize your email styles from the
+  styles panel.
+</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:columns -->
+<div class="wp-block-columns">
+  <!-- wp:column -->
+  <div class="wp-block-column">
+    <!-- wp:image {"width":"280px","sizeSlug":"large","align":"left"} -->
+    <figure class="wp-block-image alignleft size-large is-resized">
+      <img
+        src="https://picsum.photos/id/133/300/200"
+        alt=""
+        style="width: 280px"
+      />
+    </figure>
+    <!-- /wp:image -->
+  </div>
+  <!-- /wp:column -->
+
+  <!-- wp:column {"width":"300px","style":{"spacing":{"padding":{"right":"0","left":"0"}}}} -->
+  <div
+    class="wp-block-column"
+    style="padding-right: 0; padding-left: 0; flex-basis: 300px"
+  >
+    <!-- wp:image {"width":"280px","sizeSlug":"large","align":"right"} -->
+    <figure class="wp-block-image alignright size-large is-resized">
+      <img
+        src="https://picsum.photos/id/133/300/200"
+        alt=""
+        style="width: 280px"
+      />
+    </figure>
+    <!-- /wp:image -->
+  </div>
+  <!-- /wp:column -->
+</div>
+<!-- /wp:columns -->
+
 <!-- wp:columns -->
 <div class="wp-block-columns">
   <!-- wp:column -->
@@ -81,10 +125,15 @@
     </h3>
     <!-- /wp:heading -->
 
-    <!-- wp:paragraph -->
-    <p>
-      You can also add text blocks into a column next to an image block to
-      create unique layouts.
+    <!-- wp:paragraph {"style":{"typography":{"fontStyle":"italic","fontWeight":"700"}}} -->
+    <p style="font-style: italic; font-weight: 700">
+      You can also add text blocks into a column next to
+      <mark
+        style="background-color: #dc2d2d"
+        class="has-inline-color has-white-color"
+        >an image block</mark
+      >
+      to create unique layouts.
     </p>
     <!-- /wp:paragraph -->
 
@@ -103,17 +152,17 @@
   </div>
   <!-- /wp:column -->
 
-  <!-- wp:column {"width":"300px","style":{"spacing":{"padding":{"right":"10px","left":"10px"}}}} -->
+  <!-- wp:column {"width":"300px","style":{"spacing":{"padding":{"right":"0","left":"0"}}}} -->
   <div
     class="wp-block-column"
-    style="padding-right: 10px; padding-left: 10px; flex-basis: 300px"
+    style="padding-right: 0; padding-left: 0; flex-basis: 300px"
   >
-    <!-- wp:image {"width":"265px","sizeSlug":"large","align":"right"} -->
+    <!-- wp:image {"width":"280px","height":"auto","sizeSlug":"large","align":"right"} -->
     <figure class="wp-block-image alignright size-large is-resized">
       <img
         src="https://picsum.photos/id/133/300/200"
         alt=""
-        style="width: 265px"
+        style="width: 280px; height: auto"
       />
     </figure>
     <!-- /wp:image -->
@@ -154,7 +203,8 @@
 
       <!-- wp:list-item -->
       <li>
-        Item 2<!-- wp:list {"textColor":"vivid-red","style":{"elements":{"link":{"color":{"text":"var:preset|color|vivid-red"}}},"typography":{"fontStyle":"italic","fontWeight":"400"}}} -->
+        Item 2
+        <!-- wp:list {"textColor":"vivid-red","style":{"elements":{"link":{"color":{"text":"var:preset|color|vivid-red"}}},"typography":{"fontStyle":"italic","fontWeight":"400"}}} -->
         <ul
           style="font-style: italic; font-weight: 400"
           class="has-vivid-red-color has-text-color has-link-color"
@@ -199,7 +249,8 @@
 
       <!-- wp:list-item -->
       <li>
-        Item 2<!-- wp:list {"textColor":"vivid-cyan-blue","style":{"elements":{"link":{"color":{"text":"var:preset|color|vivid-cyan-blue"}}},"typography":{"textDecoration":"underline"}}} -->
+        Item 2
+        <!-- wp:list {"textColor":"vivid-cyan-blue","style":{"elements":{"link":{"color":{"text":"var:preset|color|vivid-cyan-blue"}}},"typography":{"textDecoration":"underline"}}} -->
         <ul
           style="text-decoration: underline"
           class="has-vivid-cyan-blue-color has-text-color has-link-color"
@@ -244,7 +295,8 @@
 
       <!-- wp:list-item -->
       <li>
-        Item 2<!-- wp:list {"textColor":"vivid-green-cyan","style":{"elements":{"link":{"color":{"text":"var:preset|color|vivid-green-cyan"}}},"typography":{"fontStyle":"normal","fontWeight":"700"}}} -->
+        Item 2
+        <!-- wp:list {"textColor":"vivid-green-cyan","style":{"elements":{"link":{"color":{"text":"var:preset|color|vivid-green-cyan"}}},"typography":{"fontStyle":"normal","fontWeight":"700"}}} -->
         <ul
           style="font-style: normal; font-weight: 700"
           class="has-vivid-green-cyan-color has-text-color has-link-color"
