@@ -17,9 +17,18 @@ export const filter: FilterType = {
       id: string;
       name: string;
     }[];
+    const values = Array.isArray(args.value) ? args.value : [args.value];
+    const labels = values
+      .map((v) => options.find(({ id }) => id === v)?.name)
+      .filter((v) => v !== undefined);
 
-    const label = options.find(({ id }) => id === args.value)?.name;
-    return label ?? __('Unknown value', 'mailpoet');
+    if (labels.length === 0) {
+      return __('Unknown value', 'mailpoet');
+    }
+
+    const suffix =
+      labels.length < values.length ? __('and unknown values', 'mailpoet') : '';
+    return `${labels.join(', ')}${suffix}`;
   },
   formatParams: ({ args }) => formatInTheLastParam(args),
   validateArgs: (args, _, field) => {
