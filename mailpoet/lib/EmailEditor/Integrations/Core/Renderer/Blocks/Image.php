@@ -134,7 +134,6 @@ class Image extends AbstractBlockRenderer {
 
     $styles['width'] = '100%';
     $align = $parsedBlock['attrs']['align'] ?? 'left';
-    $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
 
     return '
       <table
@@ -156,7 +155,7 @@ class Image extends AbstractBlockRenderer {
               width="' . $wrapperWidth . '"
             >
               <tr>
-                <td style="padding-top:' . $marginTop . '">{image_content}</td>
+                <td>{image_content}</td>
               </tr>
               <tr>
                 <td style="' . $captionStyles . '">{caption_content}</td>

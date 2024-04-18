@@ -9,6 +9,11 @@ use MailPoet\EmailEditor\Engine\SettingsController;
  */
 class Text extends AbstractBlockRenderer {
   protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
+    // Do not render empty blocks.
+    if (empty(trim(strip_tags($blockContent)))) {
+      return '';
+    }
+
     $blockContent = $this->adjustStyleAttribute($blockContent);
     $blockAttributes = wp_parse_args($parsedBlock['attrs'] ?? [], [
       'textAlign' => 'left',
