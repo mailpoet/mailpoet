@@ -8,6 +8,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Entities\SubscriberTagEntity;
 use MailPoet\Segments\SegmentsRepository;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscriberSaveControllerTest extends \MailPoetTest {
@@ -160,6 +161,36 @@ class SubscriberSaveControllerTest extends \MailPoetTest {
     // Check the $orphanSegment is gone
     $subscriberSegments = $this->subscriberSegmentRepository->findBy(['subscriber' => $subscriber]);
     verify($subscriberSegments)->arrayCount(2);
+  }
+
+  public function testItTriggersSegmentSubscribedHook(): void {
+    $segmentOne = $this->segmentsRepository->createOrUpdate('Segment One');
+    $segmentTwo = $this->segmentsRepository->createOrUpdate('Segment Two');
+    $data = [
+      'email' => 'test@test.com',
+      'status' => SubscriberEntity::STATUS_SUBSCRIBED,
+      'segments' => [$segmentOne->getId(), $segmentTwo->getId()],
+    ];
+
+    $count = 0;
+    $this->diContainer->get(WPFunctions::class)->addAction('mailpoet_segment_subscribed', function () use (&$count) {
+      $count++;
+    });
+
+    // create subscriber with subscribed status
+    $count = 0;
+    $this->saveController->save($data);
+    $this->assertSame(2, $count); // @phpstan-ignore-line -- PHPStan doesn't get the $count side effect
+
+    // update subscriber to non-subscribed status
+    $count = 0;
+    $this->saveController->save(array_merge($data, ['status' => SubscriberEntity::STATUS_UNCONFIRMED]));
+    $this->assertSame(0, $count);
+
+    // update subscriber to subscribed status
+    $count = 0;
+    $this->saveController->save($data);
+    $this->assertSame(2, $count); // @phpstan-ignore-line -- PHPStan doesn't get the $count side effect
   }
 
   private function createSubscriber(string $email, string $status): SubscriberEntity {
