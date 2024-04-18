@@ -29,7 +29,7 @@ export function getTemplatesForPreview() {
   return templates.map((template) => {
     // @ts-expect-error Missing property type
     const fullContent = template.content?.raw?.replace(
-      '<!-- wp:post-content /-->',
+      /<!-- wp:(core)*\/*post-content( {.*})* \/-->/,
       contentPattern,
     );
 
