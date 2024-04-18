@@ -82,7 +82,7 @@ class SettingsController {
    *     padding: array{bottom: string, left: string, right: string, top: string}
    *   },
    *   color: array{
-   *     background: array{layout: string, content: string}
+   *     background: string
    *   },
    *   typography: array{
    *     fontFamily: string
