@@ -103,6 +103,8 @@ class Templates {
   public function getBlockTemplates() {
     $file_templates = [
       $this->getBlockTemplateFromFile('email-general.html'),
+      $this->getBlockTemplateFromFile('awesome-one.html'),
+      $this->getBlockTemplateFromFile('awesome-two.html'),
     ];
     $custom_templates = $this->getCustomBlockTemplates();
     $custom_template_ids = wp_list_pluck($custom_templates, 'id');
