@@ -29,7 +29,10 @@ class WPOrgPluginDownloader {
       mkdir($downloadDir, 0777, true);
     }
 
-    $this->httpClient->get($downloadLink, ['sink' => $downloadDir . $zip, 'headers' => ['Accept' => 'application/octet-stream']]);
+    $this->httpClient->get($downloadLink, ['sink' => $downloadDir . $zip, 'headers' => [
+      'Accept' => 'application/octet-stream',
+      'User-Agent' => 'MailPoet', // using user-agent to avoid 403 error
+    ]]);
     file_put_contents($downloadDir . '/' . $zip . '-info', $downloadLink);
   }
 
