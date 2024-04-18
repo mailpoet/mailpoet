@@ -54,8 +54,8 @@ export function getTemplatesForPreview() {
     return {
       id: template.id,
       contentParsed: parse(fullContent),
+      patternParsed: parse(contentPattern),
       template,
-      pattern: contentPattern,
     };
   });
 }

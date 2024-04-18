@@ -1,6 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // @ts-expect-error No types available for this component
 import { BlockPreview } from '@wordpress/block-editor';
+import { store as editorStore } from '@wordpress/editor';
+import { dispatch } from '@wordpress/data';
 import { Modal } from '@wordpress/components';
 import { Async } from 'email-editor/engine/components/sidebar/template-select/async';
 import { getTemplatesForPreview } from './templates-data';
@@ -10,6 +12,12 @@ export function SelectTemplateModal({ isOpen, setIsOpen }) {
     return null;
   }
   const templates = getTemplatesForPreview();
+
+  const handleTemplateSelection = (template) => {
+    setIsOpen(false);
+    void dispatch(editorStore).resetEditorBlocks(template.patternParsed);
+  };
+
   return (
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     <Modal title="Select a template" onRequestClose={() => setIsOpen(false)}>
@@ -17,11 +25,22 @@ export function SelectTemplateModal({ isOpen, setIsOpen }) {
         <div key={template.id}>
           <h2>{`Template ${template.id}`}</h2>
           <div
+            role="button"
+            tabIndex={0}
             style={{
               width: '450px',
               border: '1px solid #000',
               padding: '20px',
               display: 'block',
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              handleTemplateSelection(template);
+            }}
+            onKeyPress={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                handleTemplateSelection(template);
+              }
             }}
           >
             <Async placeholder={<p>rendering template</p>}>
