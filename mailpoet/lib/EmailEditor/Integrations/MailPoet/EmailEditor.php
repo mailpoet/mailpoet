@@ -3,40 +3,36 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\Features\FeaturesController;
-use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
   const MAILPOET_EMAIL_POST_TYPE = 'mailpoet_email';
 
-  /** @var WPFunctions */
-  private $wp;
+  private WPFunctions $wp;
 
-  /** @var FeaturesController */
-  private $featuresController;
+  private FeaturesController $featuresController;
 
-  /** @var EmailApiController */
-  private $emailApiController;
+  private EmailApiController $emailApiController;
 
-  /** @var CdnAssetUrl */
-  private $cdnAssetUrl;
+  private Cli $cli;
 
   public function __construct(
     WPFunctions $wp,
     FeaturesController $featuresController,
     EmailApiController $emailApiController,
-    CdnAssetUrl $cdnAssetUrl
+    Cli $cli
   ) {
     $this->wp = $wp;
     $this->featuresController = $featuresController;
     $this->emailApiController = $emailApiController;
-    $this->cdnAssetUrl = $cdnAssetUrl;
+    $this->cli = $cli;
   }
 
   public function initialize(): void {
     if (!$this->featuresController->isSupported(FeaturesController::GUTENBERG_EMAIL_EDITOR)) {
       return;
     }
+    $this->cli->initialize();
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
     $this->extendEmailPostApi();
   }

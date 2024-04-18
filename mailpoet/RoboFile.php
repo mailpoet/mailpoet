@@ -1494,6 +1494,10 @@ class RoboFile extends \Robo\Tasks {
     }
   }
 
+  public function emailCreateTemplates() {
+    return $this->taskExec('vendor/bin/wp mailpoet:email-editor:create-templates');
+  }
+
   protected function rsearch($folder, $extensions = []) {
     $dir = new RecursiveDirectoryIterator($folder);
     $iterator = new RecursiveIteratorIterator($dir);
