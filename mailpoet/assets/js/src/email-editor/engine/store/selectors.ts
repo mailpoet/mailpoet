@@ -179,6 +179,22 @@ export const getEditedPostTemplate = createRegistrySelector((select) => () => {
   );
 });
 
+/**
+ * Retrieves the email templates.
+ */
+export const getEmailTemplates = createRegistrySelector(
+  (select) => () =>
+    select(coreDataStore)
+      .getEntityRecords('postType', 'wp_template', {
+        per_page: -1,
+      })
+      ?.filter(
+        (template) =>
+          // @ts-expect-error Missing property in type
+          template.theme === 'mailpoet/mailpoet',
+      ),
+);
+
 export function getEmailPostId(state: State): number {
   return state.postId;
 }
