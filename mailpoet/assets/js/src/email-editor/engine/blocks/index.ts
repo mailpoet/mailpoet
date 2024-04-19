@@ -1,5 +1,5 @@
 import { registerCoreBlocks } from '@wordpress/block-library';
-import { disableNestedColumns, enhanceColumnBlock } from './core/column';
+import { enhanceColumnBlock } from './core/column';
 import {
   disableColumnsLayout,
   deactivateStackOnMobile,
@@ -12,7 +12,6 @@ import { enhanceButtonsBlock } from './core/buttons';
 import { alterSupportConfiguration } from './core/general-block-support';
 
 export function initBlocks() {
-  disableNestedColumns();
   deactivateStackOnMobile();
   hideExpandOnClick();
   disableImageFilter();
