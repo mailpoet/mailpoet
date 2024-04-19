@@ -182,6 +182,11 @@ class Subscribers {
     $subscriber = $this->findSubscriber($subscriberId);
     $foundSegments = $this->getAndValidateSegments($listIds, self::CONTEXT_SUBSCRIBE);
 
+    // restore trashed subscriber
+    if ($subscriber->getDeletedAt()) {
+      $subscriber->setDeletedAt(null);
+    }
+
     $this->subscribersSegmentRepository->subscribeToSegments($subscriber, $foundSegments);
 
     // set status depending on signup confirmation setting
