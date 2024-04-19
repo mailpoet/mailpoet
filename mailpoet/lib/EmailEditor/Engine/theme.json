@@ -60,6 +60,7 @@
     "typography": {
       "dropCap": false,
       "fontWeight": true,
+      "lineHeight": true,
       "fontFamilies": [
         {
           "name": "Arial",

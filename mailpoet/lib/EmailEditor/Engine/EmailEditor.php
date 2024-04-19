@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Engine;
 
+use MailPoet\EmailEditor\Engine\Patterns\Patterns;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Validator\Builder;
@@ -17,19 +18,23 @@ class EmailEditor {
 
   private EmailApiController $emailApiController;
   private Templates $templates;
+  private Patterns $patterns;
 
   public function __construct(
     EmailApiController $emailApiController,
-    Templates $templates
+    Templates $templates,
+    Patterns $patterns
   ) {
     $this->emailApiController = $emailApiController;
     $this->templates = $templates;
+    $this->patterns = $patterns;
   }
 
   public function initialize(): void {
     do_action('mailpoet_email_editor_initialized');
     add_filter('mailpoet_email_editor_rendering_theme_styles', [$this, 'extendEmailThemeStyles'], 10, 2);
     $this->registerBlockTemplates();
+    $this->registerBlockPatterns();
     $this->registerEmailPostTypes();
     $this->registerEmailMetaFields();
     $this->registerEmailPostSendStatus();
@@ -38,6 +43,10 @@ class EmailEditor {
 
   private function registerBlockTemplates(): void {
     $this->templates->initialize();
+  }
+
+  private function registerBlockPatterns(): void {
+    $this->patterns->initialize();
   }
 
   /**
