@@ -232,6 +232,17 @@ class SubscribersTest extends \MailPoetTest {
     verify($result['subscriptions'][0]['segment_id'])->equals($segment->getId());
   }
 
+  public function testItSubscribesSubscriberAndRestoreTrashedSubscribers() {
+    $subscriber = $this->subscriberFactory
+      ->withDeletedAt(new Carbon())
+      ->create();
+    $segment = $this->getSegment();
+
+    $result = $this->getApi()->subscribeToList($subscriber->getEmail(), $segment->getId());
+    verify($result['id'])->equals($subscriber->getId());
+    verify($result['deleted_at'])->null();
+  }
+
   public function testItSchedulesWelcomeNotificationByDefaultAfterSubscriberSubscriberToLists() {
     $subscriber = $this->subscriberFactory
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
