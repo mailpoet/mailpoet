@@ -360,6 +360,7 @@ class Newsletter {
       'count_total' => 1,
       'created_at' => null,
       'updated_at' => null,
+      'meta' => null,
     ];
     $this->queues[] = array_merge($queue, $options);
     return $this;
