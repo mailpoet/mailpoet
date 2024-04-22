@@ -45,7 +45,12 @@ export function SelectTemplateModal({ setIsOpen }) {
             <Async placeholder={<p>rendering template</p>}>
               <BlockPreview
                 blocks={template.contentParsed}
-                viewportWidth={1200}
+                viewportWidth={900}
+                minHeight={300}
+                additionalStyles={[
+                  // @ts-expect-error No types available for template
+                  { css: template.template.email_styles?.css },
+                ]}
               />
             </Async>
           </div>
