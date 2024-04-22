@@ -58,7 +58,7 @@ export function InserterPopover(): JSX.Element | null {
             utm_medium: 'upsell_modal',
             utm_campaign: 'add_automation_step',
           }}
-          data={{ capabilityName: 'automationSteps' }}
+          data={{ capabilities: { automationSteps: 0 } }}
         >
           {__('You cannot add a new step to the automation.', 'mailpoet')}
         </PremiumModal>

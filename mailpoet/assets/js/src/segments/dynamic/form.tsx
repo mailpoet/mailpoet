@@ -202,7 +202,7 @@ export function Form({ isNewSegment, newsletterId }: Props): JSX.Element {
                 {showPremiumModal && (
                   <PremiumModal
                     onRequestClose={closePremiumModal}
-                    data={{ capabilityName: 'segmentFilters' }}
+                    data={{ capabilities: { segmentFilters: 0 } }}
                   >
                     {__(
                       'Multiple conditions per segment are not available in the free version of the MailPoet plugin.',

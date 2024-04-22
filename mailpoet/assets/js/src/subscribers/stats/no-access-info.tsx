@@ -76,7 +76,7 @@ export function NoAccessInfo(): JSX.Element {
               <PremiumBannerWithUpgrade
                 message={getBannerMessage({})}
                 actionButton={getCtaButton({})}
-                capabilityName="detailedAnalytics"
+                capabilities={{ detailedAnalytics: true }}
               />
             </div>
           </td>
