@@ -27,7 +27,8 @@ export function MoreMenu(): JSX.Element {
     'mailpoet_email',
     'status',
   );
-  const { saveEditedEmail } = useDispatch(storeName);
+  const { saveEditedEmail, updateEmailMailPoetProperty } =
+    useDispatch(storeName);
   const goToListings = () => {
     window.location.href = urls.listings;
   };
@@ -83,6 +84,7 @@ export function MoreMenu(): JSX.Element {
                 <MenuItem
                   onClick={async () => {
                     await setStatus('draft');
+                    await updateEmailMailPoetProperty('deleted_at', '');
                     await saveEditedEmail();
                   }}
                 >
