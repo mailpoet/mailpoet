@@ -64,7 +64,7 @@ export function Preview({
     [],
   );
 
-  const backgroundColor = styles?.color?.background?.content || '#ffffff';
+  const backgroundColor = styles?.color?.background || '#ffffff';
   const headingFontFamily =
     styles?.elements?.heading?.typography?.fontFamily || 'inherit';
   const headingColor = styles?.elements?.heading?.color?.text || 'inherit';

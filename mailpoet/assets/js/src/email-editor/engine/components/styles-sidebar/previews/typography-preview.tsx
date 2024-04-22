@@ -23,7 +23,7 @@ export default function TypographyPreview({
   } = elementStyles.typography;
 
   const textColor = elementStyles.color?.text || 'inherit';
-  const background = elementStyles.color?.background?.content || '#f0f0f0';
+  const background = elementStyles.color?.background || '#f0f0f0';
 
   const extraStyles =
     element === 'link'
