@@ -8,9 +8,15 @@ export const MailPoetComUrlFactory = (referralId) => {
       finalParams.ref = referralId;
     }
     const url = new URL(path, base);
-    Object.keys(finalParams).map((key) =>
-      url.searchParams.set(key, finalParams[key]),
-    );
+    Object.keys(finalParams).forEach((key) => {
+      if (typeof finalParams[key] === 'object') {
+        Object.entries(finalParams[key]).forEach(([subKey, subValue]) => {
+          url.searchParams.set(`${key}[${subKey}]`, subValue);
+        });
+      } else {
+        url.searchParams.set(key, finalParams[key]);
+      }
+    });
     return url.toString();
   };
 
