@@ -49,10 +49,6 @@ export interface TypographyProperties {
 }
 
 export type EmailStyles = {
-  typography: {
-    fontFamily: string;
-    fontSize: string;
-  };
   spacing: {
     blockGap: string;
     padding: {

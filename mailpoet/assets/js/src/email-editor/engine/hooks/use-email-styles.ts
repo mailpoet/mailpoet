@@ -19,10 +19,7 @@ export interface StyleProperties {
   };
   typography: TypographyProperties;
   color?: {
-    background: {
-      content: string;
-      layout: string;
-    };
+    background: string;
     text: string;
   };
   elements: Record<string, ElementProperties>;
