@@ -30,7 +30,7 @@ function ElementItem({ element, label }: { element: string; label: string }) {
   } = elementStyles.typography;
 
   const textColor = elementStyles.color?.text || 'inherit';
-  const background = elementStyles.color?.background?.content || '#f0f0f0';
+  const background = elementStyles.color?.background || '#f0f0f0';
   const navigationButtonLabel = sprintf(
     // translators: %s: is a subset of Typography, e.g., 'text' or 'links'.
     __('Typography %s styles'),
