@@ -13,7 +13,7 @@ import {
 } from '@wordpress/editor';
 import { uploadMedia } from '@wordpress/media-utils';
 import classnames from 'classnames';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import {
   ComplementaryArea,
   FullscreenMode,
@@ -73,6 +73,7 @@ export function Layout() {
     }),
     [],
   );
+  const { toggleInserterSidebar } = useDispatch(storeName);
 
   const [emailCss] = useEmailCss();
   const className = classnames('edit-post-layout', {
@@ -119,9 +120,18 @@ export function Layout() {
         content={
           <>
             <EditorNotices />
-            <div className="visual-editor" style={canvasStyles}>
+            <BlockSelectionClearer
+              className="visual-editor"
+              style={canvasStyles}
+              onClick={() => {
+                // Clear inserter sidebar when canvas is clicked.
+                if (isInserterSidebarOpened) {
+                  void toggleInserterSidebar();
+                }
+              }}
+            >
               <div className="visual-editor__email_layout_wrapper">
-                <BlockSelectionClearer className="visual-editor__email_content_wrapper">
+                <div className="visual-editor__email_content_wrapper">
                   <div
                     style={contentWrapperStyles}
                     className={classnames({
@@ -143,9 +153,9 @@ export function Layout() {
                       />
                     )}
                   </div>
-                </BlockSelectionClearer>
+                </div>
               </div>
-            </div>
+            </BlockSelectionClearer>
           </>
         }
         sidebar={<ComplementaryArea.Slot scope={storeName} />}
