@@ -38,7 +38,7 @@ function SkipDisplayingDetailedStats() {
       <PremiumBannerWithUpgrade
         message={description}
         actionButton={ctaButton}
-        capabilityName="detailedAnalytics"
+        capabilities={{ detailedAnalytics: true }}
       />
     </div>
   );

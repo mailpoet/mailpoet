@@ -74,9 +74,7 @@ export function TemplateListItem({ template, onSelect }: Props): JSX.Element {
           onRequestClose={() => {
             setShowPremium(false);
           }}
-          data={{
-            capabilityName: 'automationSteps',
-          }}
+          data={{ capabilities: template.required_capabilities }}
           tracking={{
             utm_medium: 'upsell_modal',
             utm_campaign: 'automation_premium_template',

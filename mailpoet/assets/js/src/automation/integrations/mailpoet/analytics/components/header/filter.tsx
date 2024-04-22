@@ -72,7 +72,7 @@ export function Filter(): JSX.Element {
             utm_medium: 'upsell_modal',
             utm_campaign: 'automation_analytics_date_range_filter',
           }}
-          data={{ capabilityName: 'detailedAnalytics' }}
+          data={{ capabilities: { detailedAnalytics: true } }}
           onRequestClose={() => setShowUpsell(false)}
         >
           {__('Changing the date range is a premium feature.', 'mailpoet')}

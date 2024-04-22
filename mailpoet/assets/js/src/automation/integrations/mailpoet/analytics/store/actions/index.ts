@@ -139,7 +139,7 @@ export function openPremiumModalForSampleData() {
     type: 'OPEN_PREMIUM_MODAL',
     content: __("You're viewing sample data.", 'mailpoet'),
     utmCampaign: 'automation_analytics_sample_data',
-    data: { capabilityName: 'detailedAnalytics' },
+    data: { capabilities: { detailedAnalytics: true } },
   };
 }
 
