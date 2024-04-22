@@ -34,7 +34,7 @@ export type Data = {
   pluginPartialKey?: string;
   subscribersCount?: number;
   subscribersLimitReached?: boolean;
-  capabilityName?: string;
+  capabilities?: Record<string, boolean | number>;
 };
 
 export type UtmParams = {
@@ -59,15 +59,14 @@ export const getUpgradeInfo = (
     pluginPartialKey = MailPoet.pluginPartialKey,
     subscribersCount = MailPoet.subscribersCount,
     subscribersLimitReached = MailPoet.subscribersLimitReached,
-    capabilityName = undefined,
+    capabilities = {},
   }: Data = {},
   utmParams: UtmParams = undefined,
   onPremiumInstalled?: () => void,
 ): UpgradeInfo => {
   const utm = utmParams ? { utm_source: 'plugin', ...utmParams } : undefined;
-  const upgradeParams = capabilityName
-    ? { capability: capabilityName, s: subscribersCount }
-    : {};
+  const upgradeParams = { s: subscribersCount, capabilities };
+
   // a. User doesn't have a valid license.
   if (!hasValidPremiumKey && !hasValidApiKey) {
     return {
@@ -143,10 +142,13 @@ export const getUpgradeInfo = (
   }
 
   // f. User has a license but the feature is not available for the plan.
-  if (capabilityName && MailPoet.capabilities[capabilityName]?.isRestricted) {
+  const restrictedCapabilityName = Object.keys(capabilities).find(
+    (name) => MailPoet.capabilities[name]?.isRestricted,
+  );
+  if (restrictedCapabilityName) {
     let info: string;
 
-    switch (capabilityName) {
+    switch (restrictedCapabilityName) {
       case 'detailedAnalytics':
         info = __(
           'Upgrade your MailPoet plan to gain detailed insights into how your subscribers engage with your automations and their purchasing behaviors.',
