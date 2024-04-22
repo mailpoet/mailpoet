@@ -84,7 +84,7 @@ class ContentRenderer {
    */
   private function inlineStyles($html, WP_Post $post) {
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::CONTENT_STYLES_FILE);
-    $styles .= $this->themeController->getStylesheetForRendering();
+    $styles .= $this->themeController->getStylesheetForRendering($post);
     $styles = '<style>' . (string)apply_filters('mailpoet_email_content_renderer_styles', $styles, $post) . '</style>';
 
     return $this->postProcessTemplate(

@@ -475,11 +475,11 @@ class NewsletterSaveController {
 
   private function getEmailDefaultContent(): string {
     return '
-      <!-- wp:image {"width":"130px","sizeSlug":"large"} -->
-      <figure class="wp-block-image size-large is-resized"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl("email-editor/your-logo-placeholder.png")) . '" alt="Your Logo" style="width:130px"/></figure>
+      <!-- wp:image {"width":"130px"} -->
+      <figure class="wp-block-image is-resized"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl("email-editor/your-logo-placeholder.png")) . '" alt="Your Logo" style="width:130px"/></figure>
       <!-- /wp:image -->
-      <!-- wp:heading {"fontSize":"medium","style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
-      <h2 class="wp-block-heading has-medium-font-size" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)"></h2>
+      <!-- wp:heading {"style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10"}}}} -->
+      <h2 class="wp-block-heading" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)"></h2>
       <!-- /wp:heading -->
       <!-- wp:image -->
       <figure class="wp-block-image"><img alt=""/></figure>

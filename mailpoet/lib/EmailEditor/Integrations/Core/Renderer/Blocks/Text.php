@@ -10,7 +10,10 @@ use MailPoet\EmailEditor\Engine\SettingsController;
 class Text extends AbstractBlockRenderer {
   protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $blockContent = $this->adjustStyleAttribute($blockContent);
-
+    $blockAttributes = wp_parse_args($parsedBlock['attrs'] ?? [], [
+      'textAlign' => 'left',
+      'style' => [],
+    ]);
     $html = new \WP_HTML_Tag_Processor($blockContent);
     $classes = '';
     if ($html->next_tag()) {
@@ -18,9 +21,9 @@ class Text extends AbstractBlockRenderer {
     }
 
     $blockStyles = $this->getStylesFromBlock([
-      'color' => $parsedBlock['attrs']['style']['color'] ?? [],
-      'spacing' => $parsedBlock['attrs']['style']['spacing'] ?? [],
-      'typography' => $parsedBlock['attrs']['style']['typography'] ?? [],
+      'color' => $blockAttributes['style']['color'] ?? [],
+      'spacing' => $blockAttributes['style']['spacing'] ?? [],
+      'typography' => $blockAttributes['style']['typography'] ?? [],
     ]);
 
     $styles = [
