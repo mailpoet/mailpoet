@@ -2,6 +2,8 @@
 
 namespace MailPoet\EmailEditor\Engine\Templates;
 
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\EmailEditor\Engine\ThemeController;
 use WP_Block_Template;
 use WP_Error;
 
@@ -25,6 +27,15 @@ class Templates {
       add_filter('get_block_templates', [$this, 'addBlockTemplates'], 10, 3);
       add_filter('theme_templates', [$this, 'addThemeTemplates'], 10, 4); // Needed when saving post – template association
       add_filter('get_block_template', [$this, 'addBlockTemplateDetails'], 10, 1);
+      register_rest_field(
+        'wp_template',
+        'email_styles',
+        [
+          'get_callback' => [$this, 'addTemplateStylesToRestResponse'],
+          'update_callback' => null,
+          'schema' => null, // TODO: Add schema
+        ]
+      );
     }
   }
 
@@ -168,6 +179,24 @@ class Templates {
     $templateObject = $this->createNewBlockTemplateObject($template);
 
     return $this->buildBlockTemplateFromFile($templateObject);
+  }
+
+  public function addTemplateStylesToRestResponse($template): ?array {
+    $jsonFile = $this->templateDirectory . $template['slug'] . '.json';
+    if (!file_exists($jsonFile)) {
+      return null;
+    }
+    $themeController = ContainerWrapper::getInstance()->get(ThemeController::class);
+    $theme = $themeController->getTheme();
+    $themeJson = json_decode((string)file_get_contents($jsonFile), true);
+    if (!is_array($themeJson)) {
+      return null;
+    }
+    $theme->merge(new \WP_Theme_JSON($themeJson, 'custom'));
+    return [
+      'css' => $theme->get_stylesheet(),
+      'styles_config' => $themeJson,
+    ];
   }
 
   private function createNewBlockTemplateObject(string $template) {
