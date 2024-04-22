@@ -35,7 +35,7 @@ class ThemeController {
     return $emailEditorThemeSettings;
   }
 
-  public function getStylesheetForRendering(): string {
+  public function getStylesheetForRendering($post = null): string {
     $emailThemeSettings = $this->getSettings();
 
     $cssPresets = '';
@@ -64,7 +64,16 @@ class ThemeController {
 
     // Element specific styles
     // Because the section styles is not a part of the output the `get_styles_block_nodes` method, we need to get it separately
-    $elementsStyles = $this->getTheme()->get_raw_data()['styles']['elements'] ?? [];
+    if ($post) {
+      $postTheme = (array)get_post_meta($post->ID, 'mailpoet_email_theme', true);
+      $postStyles = (array)($postTheme['styles'] ?? []);
+      $postElements = $postStyles['elements'] ?? [];
+    } else {
+      $postElements = [];
+    }
+    $jsonElements = $this->getTheme()->get_raw_data()['styles']['elements'] ?? [];
+    $elementsStyles = array_merge_recursive((array)$jsonElements, (array)$postElements);
+
     $cssElements = '';
     foreach ($elementsStyles as $key => $elementsStyle) {
       $selector = $key;
