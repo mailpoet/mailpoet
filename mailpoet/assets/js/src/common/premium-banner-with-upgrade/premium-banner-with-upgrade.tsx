@@ -9,7 +9,7 @@ import { PremiumMessageWithModal } from 'common/premium-key/key-messages';
 type Props = {
   message: ReactNode;
   actionButton: ReactNode;
-  capabilityName?: string;
+  capabilities?: Record<string, boolean | number>;
 };
 
 const {
@@ -49,7 +49,7 @@ const getPremiumCtaButton = (buttonText: string) => (
 export function PremiumBannerWithUpgrade({
   message,
   actionButton,
-  capabilityName = undefined,
+  capabilities = {},
 }: Props): JSX.Element {
   let bannerMessage: ReactNode;
   let ctaButton: ReactNode;
@@ -88,17 +88,15 @@ export function PremiumBannerWithUpgrade({
   } else if (
     (hasValidApiKey && !hasValidPremiumKey) || // ex. Starter plan
     (hasValidPremiumKey &&
-      capabilityName &&
-      MailPoet.capabilities[capabilityName].isRestricted)
+      Object.keys(capabilities).some(
+        (name) => MailPoet.capabilities[name].isRestricted,
+      ))
   ) {
     title = __('Upgrade your plan', 'mailpoet');
     bannerMessage = message;
-    const upgradeParams = capabilityName
-      ? { capability: capabilityName, s: subscribersCount }
-      : {};
     const link = MailPoet.MailPoetComUrlFactory.getUpgradeUrl(
       pluginPartialKey,
-      upgradeParams,
+      { s: subscribersCount, capabilities },
     );
     ctaButton = getCtaButton(__('Upgrade', 'mailpoet'), link);
   } else {
