@@ -194,7 +194,7 @@ export function ListingTabContent({ tab }: ListingTableProps): JSX.Element {
         }}
         query={tableQueryParams}
         rowKey={(_, i) => dynamicSegments[i].id}
-        rowsPerPage={Math.min(segmentsQuery.limit, totalDynamicSegmentCount)}
+        rowsPerPage={segmentsQuery.limit}
         totalRows={dynamicSegmentsCount ?? totalDynamicSegmentCount}
         showMenu={false}
       />
