@@ -95,7 +95,7 @@ export function getRow(
       display: (
         <input
           type="checkbox"
-          checked={dynamicSegment?.selected}
+          checked={dynamicSegment?.selected ?? false}
           onChange={toggleSelect}
         />
       ),
