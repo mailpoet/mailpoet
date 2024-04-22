@@ -159,7 +159,7 @@ export function AutomationListing(): JSX.Element {
             filteredAutomations[i].id *
             (filteredAutomations[i].isLegacy ? -1 : 1)
           }
-          rowsPerPage={Math.min(rowsPerPage, totalCount)}
+          rowsPerPage={rowsPerPage}
           onQueryChange={(key) => (value) => {
             updateUrlSearchString({ [key]: value });
           }}
