@@ -189,10 +189,9 @@ class Templates {
     $themeController = ContainerWrapper::getInstance()->get(ThemeController::class);
     $theme = clone $themeController->getTheme();
     $themeJson = json_decode((string)file_get_contents($jsonFile), true);
-    if (!is_array($themeJson)) {
-      return null;
+    if (is_array($themeJson)) {
+      $theme->merge(new \WP_Theme_JSON($themeJson, 'custom'));
     }
-    $theme->merge(new \WP_Theme_JSON($themeJson, 'custom'));
     return [
       'css' => $theme->get_stylesheet(),
       'theme' => $themeJson,
