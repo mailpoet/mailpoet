@@ -13,8 +13,6 @@ class ContentRenderer {
   private ProcessManager $processManager;
   private SettingsController $settingsController;
   private ThemeController $themeController;
-  private $layoutSettings;
-  private $themeStyles;
 
   const CONTENT_STYLES_FILE = 'content.css';
 
@@ -27,16 +25,42 @@ class ContentRenderer {
     $this->processManager = $preprocessManager;
     $this->blocksRegistry = $blocksRegistry;
     $this->settingsController = $settingsController;
-
     $this->themeController = $themeController;
   }
 
   private function initialize() {
-    $this->layoutSettings = $this->settingsController->getLayout();
-    $this->themeStyles = $this->settingsController->getEmailStyles();
+    add_filter('render_block', [$this, 'renderBlock'], 10, 2);
     add_filter('block_parser_class', [$this, 'blockParser']);
     add_filter('mailpoet_blocks_renderer_parsed_blocks', [$this, 'preprocessParsedBlocks']);
+
     do_action('mailpoet_blocks_renderer_initialized', $this->blocksRegistry);
+  }
+
+  public function render(WP_Post $post, WP_Block_Template $template): string {
+    $this->setTemplateGlobals($post, $template);
+    $this->initialize();
+
+    $renderedHtml = $this->processManager->postprocess(get_the_block_template_html());
+
+    $this->reset();
+
+    return $this->inlineStyles($renderedHtml, $post);
+  }
+
+  public function blockParser() {
+    return 'MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlocksParser';
+  }
+
+  public function preprocessParsedBlocks(array $parsedBlocks): array {
+    return $this->processManager->preprocess($parsedBlocks, $this->settingsController->getLayout(), $this->themeController->getStyles());
+  }
+
+  public function renderBlock($blockContent, $parsedBlock) {
+    if (!$this->blocksRegistry->hasBlockRenderer($parsedBlock['blockName'])) {
+      return $blockContent;
+    }
+    $renderer = $this->blocksRegistry->getBlockRenderer($parsedBlock['blockName']);
+    return $renderer ? $renderer->render($blockContent, $parsedBlock, $this->settingsController) : $blockContent;
   }
 
   private function setTemplateGlobals(WP_Post $post, WP_Block_Template $template) {
@@ -51,28 +75,10 @@ class ContentRenderer {
   * so that we don't interfere with possible post rendering that might happen later.
   */
   private function reset() {
-    $this->blocksRegistry->removeAllBlockRendererFilters();
+    $this->blocksRegistry->removeAllBlockRenderers();
+    remove_filter('render_block', [$this, 'renderBlock']);
     remove_filter('block_parser_class', [$this, 'blockParser']);
     remove_filter('mailpoet_blocks_renderer_parsed_blocks', [$this, 'preprocessParsedBlocks']);
-  }
-
-  public function blockParser() {
-    return 'MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlocksParser';
-  }
-
-  public function preprocessParsedBlocks(array $parsedBlocks): array {
-    return $this->processManager->preprocess($parsedBlocks, $this->layoutSettings, $this->themeStyles);
-  }
-
-  public function render(WP_Post $post, WP_Block_Template $template): string {
-    $this->initialize();
-    $this->setTemplateGlobals($post, $template);
-
-    $renderedHtml = $this->processManager->postprocess(get_the_block_template_html());
-
-    $this->reset();
-
-    return $this->inlineStyles($renderedHtml, $post);
   }
 
   /**

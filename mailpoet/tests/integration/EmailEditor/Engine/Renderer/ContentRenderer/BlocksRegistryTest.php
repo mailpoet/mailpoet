@@ -41,7 +41,7 @@ class BlocksRegistryTest extends \MailPoetTest {
     remove_filter('mailpoet_block_renderer_test', $callback);
   }
 
-  public function testItRemovesAllBlockRendererFilters() {
+  public function testItRemovesAllBlockRenderers() {
     $renderer = new Text();
     verify(has_filter('render_block_test'))->false();
     verify(has_filter('render_block_test2'))->false();
@@ -53,7 +53,7 @@ class BlocksRegistryTest extends \MailPoetTest {
     verify($this->registry->getBlockRenderer('test'))->notNull();
     verify($this->registry->getBlockRenderer('test2'))->notNull();
 
-    $this->registry->removeAllBlockRendererFilters();
+    $this->registry->removeAllBlockRenderers();
     verify(has_filter('render_block_test'))->false();
     verify(has_filter('render_block_test2'))->false();
     verify($this->registry->getBlockRenderer('test'))->null();

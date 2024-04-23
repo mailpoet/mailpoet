@@ -22,7 +22,7 @@ class FlexLayoutRendererTest extends \MailPoetTest {
   public function _before(): void {
     parent::_before();
     $this->settingsController = $this->diContainer->get(SettingsController::class);
-    $this->registry = new BlocksRegistry($this->settingsController);
+    $this->registry = new BlocksRegistry();
     $this->renderer = new FlexLayoutRenderer();
     $this->registry->addBlockRenderer('dummy/block', new DummyBlockRenderer());
     register_block_type('dummy/block', []);
