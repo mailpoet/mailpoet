@@ -6,7 +6,7 @@ import { store as noticesStore } from '@wordpress/notices';
 import { __ } from '@wordpress/i18n';
 import { apiFetch } from '@wordpress/data-controls';
 import { storeName, mainSidebarEmailTab } from './constants';
-import { SendingPreviewStatus, State, Feature } from './types';
+import { SendingPreviewStatus, State, Feature, EmailTheme } from './types';
 
 export const toggleFeature =
   (feature: Feature) =>
@@ -125,13 +125,16 @@ export function* updateEmailMailPoetProperty(name: string, value: string) {
 }
 
 export const setTemplateToPost =
-  (templateSlug) =>
+  (templateSlug, emailTheme: EmailTheme) =>
   async ({ registry }) => {
     const postId = registry.select(storeName).getEmailPostId();
     registry
       .dispatch(coreDataStore)
       .editEntityRecord('postType', 'mailpoet_email', postId, {
         template: templateSlug,
+        meta: {
+          mailpoet_email_theme: emailTheme,
+        },
       });
   };
 
