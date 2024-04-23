@@ -17,6 +17,7 @@ use MailPoet\Automation\Integrations\WooCommerce\Payloads\AbandonedCartPayload;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -149,8 +150,13 @@ class SendEmailAction implements Action {
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
     $newsletter = $this->getEmailForStep($args->getStep());
-
     $subscriber = $this->getSubscriber($args);
+
+    // sync sending status with the automation step
+    if (!$args->isFirstRun()) {
+      $this->checkSendingStatus($newsletter, $subscriber);
+      return;
+    }
 
     $subscriberStatus = $subscriber->getStatus();
     if ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL && $subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
@@ -167,6 +173,33 @@ class SendEmailAction implements Action {
     } catch (Throwable $e) {
       throw InvalidStateException::create()->withMessage('Could not create sending task.');
     }
+
+    // schedule a progress run to sync email sending status to the automation step
+    // (1 month is a timout, the progress will normally be executed after sending)
+    $controller->scheduleProgress(time() + MONTH_IN_SECONDS);
+  }
+
+  private function checkSendingStatus(NewsletterEntity $newsletter, SubscriberEntity $subscriber): void {
+    $scheduledTaskSubscriber = $this->automationEmailScheduler->getScheduledTaskSubscriber($newsletter, $subscriber);
+    if (!$scheduledTaskSubscriber) {
+      throw InvalidStateException::create()->withMessage('Email failed to schedule.');
+    }
+
+    // email sending failed
+    if ($scheduledTaskSubscriber->getFailed() === ScheduledTaskSubscriberEntity::FAIL_STATUS_FAILED) {
+      throw InvalidStateException::create()->withMessage(
+        sprintf('Email failed to send. Error: %s', $scheduledTaskSubscriber->getError() ?: 'Unknown error')
+      );
+    }
+
+    // email was never sent
+    if ($scheduledTaskSubscriber->getProcessed() !== ScheduledTaskSubscriberEntity::STATUS_PROCESSED) {
+      $error = 'Email sending process timed out.';
+      $this->automationEmailScheduler->saveError($scheduledTaskSubscriber, $error);
+      throw InvalidStateException::create()->withMessage($error);
+    }
+
+    // email was sent, complete the run
   }
 
   private function getNewsletterMeta(StepRunArgs $args): array {
