@@ -18,6 +18,8 @@ use MailPoet\Automation\Integrations\MailPoet\Subjects\SegmentSubject;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Exception;
@@ -27,7 +29,10 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Automation as AutomationFactory;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\ScheduledTask;
+use MailPoet\Test\DataFactories\ScheduledTaskSubscriber;
 use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\SendingQueue;
 use MailPoet\Test\DataFactories\Subscriber;
 
 class SendEmailActionTest extends \MailPoetTest {
@@ -112,12 +117,78 @@ class SendEmailActionTest extends \MailPoetTest {
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     verify($scheduled)->arrayCount(0);
 
+    // first run
     $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
     $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
     $this->action->run($args, $controller);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     verify($scheduled)->arrayCount(1);
+
+    $this->scheduledTasksRepository->refresh($scheduled[0]);
+    $scheduledTaskSubscribers = $scheduled[0]->getSubscribers();
+    $this->assertCount(1, $scheduledTaskSubscribers);
+    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $scheduledTaskSubscribers[0]);
+
+    // mark email as sent
+    $scheduledTaskSubscribers[0]->setProcessed(ScheduledTaskSubscriberEntity::STATUS_PROCESSED);
+
+    // progress — won't throw an exception when the email was sent (= step will be completed)
+    $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 2);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $this->action->run($args, $controller);
+  }
+
+  public function testItChecksThatEmailWasSent(): void {
+    $segment = (new Segment())->create();
+    $subscriber = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withSegments([$segment])
+      ->create();
+    $subjects = $this->getSubjectData($subscriber, $segment);
+    $email = (new Newsletter())->withAutomationType()->create();
+
+    $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User(), 1);
+    $run = new AutomationRun(1, 1, 'trigger-key', [], 1);
+
+    // progress run step args
+    $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 2);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+
+    // email was never scheduled
+    $this->assertThrowsExceptionWithMessage(
+      'Email failed to schedule.',
+      function() use ($args, $controller) {
+        $this->action->run($args, $controller);
+      }
+    );
+
+    // create scheduled task & subscriber
+    $scheduledTask = (new ScheduledTask())->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED);
+    (new SendingQueue())->create($scheduledTask, $email);
+    $scheduledTaskSubscriber = (new ScheduledTaskSubscriber())->createFailed($scheduledTask, $subscriber, 'Test error');
+
+    // email failed to send
+    $this->assertThrowsExceptionWithMessage(
+      'Email failed to send. Error: Test error',
+      function() use ($args, $controller) {
+        $this->action->run($args, $controller);
+      }
+    );
+
+    // mark subscriber unprocessed
+    $scheduledTaskSubscriber->setProcessed(ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED);
+    $scheduledTaskSubscriber->setFailed(ScheduledTaskSubscriberEntity::FAIL_STATUS_OK);
+    $scheduledTaskSubscriber->setError(null);
+
+    // email was never sent
+    $this->assertThrowsExceptionWithMessage(
+      'Email sending process timed out.',
+      function() use ($args, $controller) {
+        $this->action->run($args, $controller);
+      }
+    );
   }
 
   public function testNothingScheduledIfSegmentDeleted(): void {
@@ -385,5 +456,15 @@ class SendEmailActionTest extends \MailPoetTest {
       new SubjectEntry($this->segmentSubject, reset($segmentData)),
       new SubjectEntry($this->subscriberSubject, reset($subscriberData)),
     ];
+  }
+
+  private function assertThrowsExceptionWithMessage(string $expectedMessage, callable $callback): void {
+    $error = null;
+    try {
+      $callback();
+    } catch (Throwable $e) {
+      $error = $e->getMessage();
+    }
+    $this->assertSame($expectedMessage, $error);
   }
 }
