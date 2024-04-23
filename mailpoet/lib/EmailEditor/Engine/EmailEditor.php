@@ -142,6 +142,9 @@ class EmailEditor {
           ])->nullable(),
           'blockGap' => Builder::string()->nullable(),
         ])->nullable(),
+        'color' => Builder::object([
+          'background' => Builder::string()->nullable(),
+        ])->nullable(),
         'typography' => $typographyProps,
         'elements' => Builder::object([
           'heading' => Builder::object([
