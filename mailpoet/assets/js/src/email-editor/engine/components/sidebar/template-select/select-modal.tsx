@@ -13,7 +13,11 @@ export function SelectTemplateModal({ setIsOpen }) {
   const handleTemplateSelection = (template) => {
     setIsOpen(false);
     void dispatch(editorStore).resetEditorBlocks(template.patternParsed);
-    void dispatch(storeName).setTemplateToPost(template.slug);
+    void dispatch(storeName).setTemplateToPost(
+      template.slug,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      template.template.email_theme?.theme ?? {},
+    );
   };
 
   return (
