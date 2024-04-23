@@ -1,48 +1,73 @@
-import { parse } from '@wordpress/blocks';
+import { BlockInstance, parse } from '@wordpress/blocks';
 import { useSelect } from '@wordpress/data';
+import { store as blockEditorStore } from '@wordpress/block-editor';
 import { storeName } from '../../../store/constants';
 
-const contentPattern =
-  '<!-- wp:columns -->\n' +
-  '<div class="wp-block-columns"><!-- wp:column {"width":"660px","backgroundColor":"base-2","style":{"spacing":{"padding":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|30","right":"var:preset|spacing|30"}}}} -->\n' +
-  '<div class="wp-block-column has-base-2-background-color has-background" style="padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--30);flex-basis:660px"><!-- wp:heading {"fontSize":"large"} -->\n' +
-  '<h2 class="wp-block-heading has-large-font-size">Content pattern</h2>\n' +
-  '<!-- /wp:heading -->\n' +
-  '<!-- wp:paragraph -->\n' +
-  "<p>Hello I'm content.</p>\n" +
-  '<!-- /wp:paragraph -->\n' +
-  '<!-- wp:buttons -->\n' +
-  '<div class="wp-block-buttons"><!-- wp:button -->\n' +
-  '<div class="wp-block-button"><a class="wp-block-button__link wp-element-button">Click me!</a></div>\n' +
-  '<!-- /wp:button --></div>\n' +
-  '<!-- /wp:buttons --></div>\n' +
-  '<!-- /wp:column --></div>\n' +
-  '<!-- /wp:columns -->';
+/**
+ * We need to merge pattern blocks and template blocks for BlockPreview component.
+ * @param templateBlocks - Parsed template blocks
+ * @param innerBlocks - Blocks to be set as content blocks for the template preview
+ */
+function setPostContentInnerBlocks(
+  templateBlocks: BlockInstance[],
+  innerBlocks: BlockInstance[],
+): BlockInstance[] {
+  return templateBlocks.map((block: BlockInstance) => {
+    if (block.name === 'core/post-content') {
+      return {
+        ...block,
+        name: 'core/group', // Change the name to group to render the innerBlocks
+        innerBlocks,
+      };
+    }
+    if (block.innerBlocks?.length) {
+      return {
+        ...block,
+        innerBlocks: setPostContentInnerBlocks(block.innerBlocks, innerBlocks),
+      };
+    }
+    return block;
+  });
+}
 
 export function usePreviewTemplates() {
-  const templates = useSelect(
-    (select) => select(storeName).getEmailTemplates(),
-    [],
-  );
-  if (!templates) {
+  const { templates, patterns } = useSelect((select) => {
+    const contentBlockId =
+      // @ts-expect-error getBlocksByName is not defined in types
+      select(blockEditorStore).getBlocksByName('core/post-content')?.[0];
+    return {
+      templates: select(storeName).getEmailTemplates(),
+      patterns:
+        // @ts-expect-error getPatternsByBlockTypes is not defined in types
+        select(blockEditorStore).getPatternsByBlockTypes(
+          ['core/post-content'],
+          contentBlockId,
+        ),
+    };
+  }, []);
+  if (!templates || !patterns.length) {
     return [[]];
   }
+
+  const contentPatternBlocks = patterns[0].blocks as BlockInstance[];
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return [
     templates.map((template) => {
       // @ts-expect-error Missing property type
-      const fullContent = template.content?.raw?.replace(
-        /<!-- wp:(core)*\/*post-content( {.*})* \/-->/,
-        contentPattern,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      let parsedTemplate = parse(template.content?.raw);
+      parsedTemplate = setPostContentInnerBlocks(
+        parsedTemplate,
+        contentPatternBlocks,
       );
 
       return {
         // @ts-expect-error Missing property type
         slug: template.slug,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        contentParsed: parse(fullContent),
-        patternParsed: parse(contentPattern),
+        contentParsed: parsedTemplate,
+        patternParsed: contentPatternBlocks,
         template,
       };
     }),
