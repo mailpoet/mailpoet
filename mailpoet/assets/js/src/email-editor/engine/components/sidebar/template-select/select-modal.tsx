@@ -49,7 +49,7 @@ export function SelectTemplateModal({ setIsOpen }) {
                 minHeight={300}
                 additionalStyles={[
                   // @ts-expect-error No types available for template
-                  { css: template.template.email_styles?.css },
+                  { css: template.template.email_theme?.css },
                 ]}
               />
             </Async>
