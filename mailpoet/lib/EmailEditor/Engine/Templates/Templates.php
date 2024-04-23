@@ -29,9 +29,9 @@ class Templates {
       add_filter('get_block_template', [$this, 'addBlockTemplateDetails'], 10, 1);
       register_rest_field(
         'wp_template',
-        'email_styles',
+        'email_theme',
         [
-          'get_callback' => [$this, 'addTemplateStylesToRestResponse'],
+          'get_callback' => [$this, 'addTemplateEmailThemeToRestResponse'],
           'update_callback' => null,
           'schema' => null, // TODO: Add schema
         ]
@@ -181,13 +181,13 @@ class Templates {
     return $this->buildBlockTemplateFromFile($templateObject);
   }
 
-  public function addTemplateStylesToRestResponse($template): ?array {
+  public function addTemplateEmailThemeToRestResponse($template): ?array {
     $jsonFile = $this->templateDirectory . $template['slug'] . '.json';
     if (!file_exists($jsonFile)) {
       return null;
     }
     $themeController = ContainerWrapper::getInstance()->get(ThemeController::class);
-    $theme = $themeController->getTheme();
+    $theme = clone $themeController->getTheme();
     $themeJson = json_decode((string)file_get_contents($jsonFile), true);
     if (!is_array($themeJson)) {
       return null;
@@ -195,7 +195,7 @@ class Templates {
     $theme->merge(new \WP_Theme_JSON($themeJson, 'custom'));
     return [
       'css' => $theme->get_stylesheet(),
-      'styles_config' => $themeJson,
+      'theme' => $themeJson,
     ];
   }
 
