@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Engine;
 
+use MailPoet\EmailEditor\Engine\Renderer\Renderer;
 use WP_Theme_JSON;
 use WP_Theme_JSON_Resolver;
 
@@ -10,19 +11,42 @@ use WP_Theme_JSON_Resolver;
  * This class is responsible for accessing data defined by the theme.json.
  */
 class ThemeController {
-  private WP_Theme_JSON $themeJson;
+  private WP_Theme_JSON $coreTheme;
+  private WP_Theme_JSON $baseTheme;
+
+  public function __construct() {
+    $this->coreTheme = WP_Theme_JSON_Resolver::get_core_data();
+    $this->baseTheme = new WP_Theme_JSON((array)json_decode((string)file_get_contents(dirname(__FILE__) . '/theme.json'), true), 'default');
+  }
 
   public function getTheme(): WP_Theme_JSON {
-    if (isset($this->themeJson)) {
-      return $this->themeJson;
+    $theme = new WP_Theme_JSON();
+    $theme->merge($this->coreTheme);
+    $theme->merge($this->baseTheme);
+
+    if (Renderer::getTheme() !== null) {
+      $theme->merge(Renderer::getTheme());
     }
-    $coreThemeData = WP_Theme_JSON_Resolver::get_core_data();
-    $themeJson = (string)file_get_contents(dirname(__FILE__) . '/theme.json');
-    $themeJson = json_decode($themeJson, true);
-    /** @var array $themeJson */
-    $coreThemeData->merge(new WP_Theme_JSON($themeJson, 'default'));
-    $this->themeJson = apply_filters('mailpoet_email_editor_theme_json', $coreThemeData);
-    return $this->themeJson;
+
+    return apply_filters('mailpoet_email_editor_theme_json', $theme);
+  }
+
+  /**
+   * @return array{
+   *   spacing: array{
+   *     blockGap: string,
+   *     padding: array{bottom: string, left: string, right: string, top: string}
+   *   },
+   *   color: array{
+   *     background: string
+   *   },
+   *   typography: array{
+   *     fontFamily: string
+   *   }
+   * }
+   */
+  public function getStyles(): array {
+    return $this->getTheme()->get_data()['styles'];
   }
 
   public function getSettings(): array {

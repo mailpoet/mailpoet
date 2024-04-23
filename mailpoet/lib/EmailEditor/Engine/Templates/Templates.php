@@ -12,11 +12,12 @@ class Templates {
   private $templateDirectory;
   private $pluginSlug;
   private $postType;
+  private $themeJson = [];
 
   public function __construct() {
-      $this->templateDirectory = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-      $this->pluginSlug = 'mailpoet/mailpoet';
-      $this->postType = 'mailpoet_email';
+    $this->templateDirectory = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+    $this->pluginSlug = 'mailpoet/mailpoet';
+    $this->postType = 'mailpoet_email';
   }
 
   public function initialize(): void {
@@ -37,6 +38,36 @@ class Templates {
         ]
       );
     }
+  }
+
+  public function getBlockTemplate($templateId) {
+    $templates = $this->getBlockTemplates();
+    return $templates[$templateId] ?? null;
+  }
+
+  public function getBlockTheme($templateId) {
+    $template_name_parts = explode('//', $templateId);
+
+    if (count($template_name_parts) < 2) {
+        return false;
+    }
+
+    list( $templatePrefix, $templateSlug ) = $template_name_parts;
+
+    if ($this->pluginSlug !== $templatePrefix) {
+      return false;
+    }
+
+    if (!isset($this->themeJson[$templateSlug])) {
+      $templatePath = $templateSlug . '.json';
+      $jsonFile = $this->templateDirectory . $templatePath;
+
+      if (file_exists($jsonFile)) {
+        $this->themeJson[$templateSlug] = json_decode((string)file_get_contents($jsonFile), true);
+      }
+    }
+
+    return $this->themeJson[$templateSlug];
   }
 
   public function getBlockFileTemplate($return, $templateId, $template_type) {
@@ -114,11 +145,6 @@ class Templates {
     return $block_template;
   }
 
-  public function getBlockTemplate($templateId) {
-    $templates = $this->getBlockTemplates();
-    return $templates[$templateId] ?? null;
-  }
-
   /**
    * Gets block templates indexed by ID.
    */
@@ -127,6 +153,7 @@ class Templates {
       $this->getBlockTemplateFromFile('email-general.html'),
       $this->getBlockTemplateFromFile('awesome-one.html'),
       $this->getBlockTemplateFromFile('awesome-two.html'),
+      $this->getBlockTemplateFromFile('email-computing-mag.html'),
     ];
     $custom_templates = $this->getCustomBlockTemplates();
     $custom_template_ids = wp_list_pluck($custom_templates, 'id');
