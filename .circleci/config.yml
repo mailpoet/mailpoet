@@ -190,7 +190,7 @@ jobs:
       - run:
           name: Download additional WP Plugins for tests
           command: |
-            ./do download:woo-commerce-zip 8.8.0-rc.1
+            ./do download:woo-commerce-zip latest
             ./do download:woo-commerce-subscriptions-zip 5.7.0
             ./do download:woo-commerce-memberships-zip 1.25.2
             ./do download:automate-woo-zip 6.0.10
@@ -947,7 +947,7 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_latest
-          woo_core_version: 8.8.0-rc.1
+          woo_core_version: latest
           woo_subscriptions_version: latest
           woo_memberships_version: latest
           automate_woo_version: latest
