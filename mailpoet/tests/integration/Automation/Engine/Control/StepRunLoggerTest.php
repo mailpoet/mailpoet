@@ -203,7 +203,7 @@ class StepRunLoggerTest extends MailPoetTest {
       'status' => $data['status'] ?? 'running',
       'started_at' => $data['started_at'] ?? $log->getStartedAt()->format(DateTimeImmutable::W3C),
       'updated_at' => $data['updated_at'] ?? $log->getUpdatedAt()->format(DateTimeImmutable::W3C),
-      'run_number' => $data['row_number'] ?? 1,
+      'run_number' => $data['run_number'] ?? 1,
       'data' => $data['data'] ?? '{}',
       'error' => $error ? Json::encode($error) : null,
     ];
