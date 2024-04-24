@@ -26,9 +26,10 @@ class CreateAndSendEmailUsingGutenbergCest {
 
     $i->wantTo('Compose an email');
     $i->waitForElementVisible('.is-root-container');
-    $i->waitForElementClickable('.is-root-container');
-    $i->click('.is-root-container');
-    $i->fillField('.//p[@data-title="Paragraph"]', 'Sample text');
+    $i->waitForElementVisible('[aria-label="Block: Image');
+    $i->waitForElementVisible('[aria-label="Block: Heading');
+    $i->click('[aria-label="Empty block; start writing or type forward slash to choose a block"]');
+    $i->type('[aria-label="Empty block; start writing or type forward slash to choose a block"]', 'Sample text');
 
     $i->wantTo('Verify correct WP menu item is highlighted');
     $i->waitForText('Emails', 10, '#toplevel_page_mailpoet-homepage .current');
@@ -88,9 +89,10 @@ class CreateAndSendEmailUsingGutenbergCest {
 
     $i->wantTo('Edit an email');
     $i->waitForElementVisible('.is-root-container');
-    $i->waitForElementClickable('.is-root-container');
-    $i->click('.is-root-container');
-    $i->fillField('.//p[@data-title="Paragraph"]', 'Sample text');
+    $i->waitForElementVisible('[aria-label="Block: Image');
+    $i->waitForElementVisible('[aria-label="Block: Heading');
+    $i->click('[aria-label="Empty block; start writing or type forward slash to choose a block"]');
+    $i->type('[aria-label="Empty block; start writing or type forward slash to choose a block"]', 'Sample text');
 
     $i->wantTo('Save draft and display preview');
     $i->click('Save Draft');
