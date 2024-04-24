@@ -5,7 +5,6 @@ import { useSelect } from '@wordpress/data';
 
 import {
   ErrorBoundary,
-  PostLockedModal,
   // @ts-expect-error No types for this exist yet.
   privateApis as editorPrivateApis,
 } from '@wordpress/editor';
@@ -34,8 +33,13 @@ export function InnerEditor({
     currentPost,
     onNavigateToEntityRecord,
     onNavigateToPreviousEntityRecord,
+  } = useNavigateToEntityRecord(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  } = useNavigateToEntityRecord(initialPostId, initialPostType, 'post-only');
+    initialPostId,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    initialPostType,
+    'template-locked',
+  );
 
   const { post, template } = useSelect(
     (select) => {
@@ -75,6 +79,8 @@ export function InnerEditor({
     return null;
   }
 
+  // Todo: <PostLockedModal /> removed due to errors when heartbeat API triggered.
+
   return (
     <SlotFillProvider>
       <ExperimentalEditorProvider
@@ -89,7 +95,6 @@ export function InnerEditor({
         <ErrorBoundary>
           <Layout />
         </ErrorBoundary>
-        <PostLockedModal />
       </ExperimentalEditorProvider>
     </SlotFillProvider>
   );
