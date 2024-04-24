@@ -61,7 +61,7 @@ class WooCheckoutAutomateWooSubscriptionsCest {
     $customerEmail = 'woo_guest_uncheck@example.com';
     $i->orderProductWithoutRegistration($this->product, $customerEmail, false);
     $i->login();
-    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNCONFIRMED, null, ['WooCommerce Customers']);
+    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNSUBSCRIBED, null, ['WooCommerce Customers']);
     $i->amOnPage('/wp-admin/admin.php?page=automatewoo-opt-ins');
     $i->dontSee($customerEmail, '.automatewoo-content');
     $i->seeConfirmationEmailWasNotReceived();

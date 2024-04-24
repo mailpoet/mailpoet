@@ -35,7 +35,7 @@ class WooCheckoutGuestSubscriptionsCest {
     $customerEmail = 'woo_guest_noptin@example.com';
     $i->orderProductWithoutRegistration($this->product, $customerEmail, false);
     $i->login();
-    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNCONFIRMED, null, ['WooCommerce Customers']);
+    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNSUBSCRIBED, null, ['WooCommerce Customers']);
     $i->seeConfirmationEmailWasNotReceived();
   }
 
@@ -55,7 +55,7 @@ class WooCheckoutGuestSubscriptionsCest {
     $customerEmail = 'woo_guest_uncheck@example.com';
     $i->orderProductWithoutRegistration($this->product, $customerEmail, false);
     $i->login();
-    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNCONFIRMED, null, ['WooCommerce Customers']);
+    $i->checkSubscriberStatusAndLists($customerEmail, SubscriberEntity::STATUS_UNSUBSCRIBED, null, ['WooCommerce Customers']);
     $i->seeConfirmationEmailWasNotReceived();
   }
 
