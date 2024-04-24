@@ -144,6 +144,7 @@ class EmailEditor {
         ])->nullable(),
         'color' => Builder::object([
           'background' => Builder::string()->nullable(),
+          'text' => Builder::string()->nullable(),
         ])->nullable(),
         'typography' => $typographyProps,
         'elements' => Builder::object([
