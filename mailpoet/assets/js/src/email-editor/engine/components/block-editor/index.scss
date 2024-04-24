@@ -83,28 +83,11 @@
   width: 100%;
 }
 
-.has-global-padding .wp-block-post-content > .alignfull {
-  margin-left: -20px;
-  margin-right: -20px;
-}
-
-.visual-editor__email_footer {
-  direction: ltr;
-  text-align: center;
-
-  .mailpoet-email-footer-credit {
-    appearance: none;
-    border: 0;
-    cursor: pointer;
-    display: block;
-    margin: 24px auto 0;
-    padding: 0;
-  }
-}
-
 .visual-editor__email_content_wrapper {
   display: block !important; // Override flex to achieve height follow the length of the document
   flex-grow: 0 !important;
+  height: 100% !important;
+  margin: 0 auto;
 
   // Set default padding-left to have consistent default look in editor and in email
   // This also overrides the default values in browsers for padding-inline-start
@@ -131,6 +114,25 @@
         flex-basis: auto !important;
       }
     }
+  }
+}
+
+.has-global-padding .wp-block-post-content > .alignfull {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.visual-editor__email_footer {
+  direction: ltr;
+  text-align: center;
+
+  .mailpoet-email-footer-credit {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    display: block;
+    margin: 24px auto 0;
+    padding: 0;
   }
 }
 

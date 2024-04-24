@@ -31,7 +31,6 @@ import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 import { EditorNotices, EditorSnackbars, SentEmailNotice } from '../notices';
 import { StylesSidebar } from '../styles-sidebar';
-import { FooterCredit } from './footer-credit';
 import { unlock } from '../../../lock-unlock';
 
 const { EditorCanvas } = unlock(editorPrivateApis);
@@ -49,8 +48,6 @@ export function Layout() {
     hasFixedToolbar,
     focusMode,
     styles,
-    cdnUrl,
-    isPremiumPluginActive,
     isEditingTemplate,
     currentTemplate,
   } = useSelect(
@@ -66,8 +63,8 @@ export function Layout() {
       hasFixedToolbar: select(storeName).isFeatureActive('fixedToolbar'),
       focusMode: select(storeName).isFeatureActive('focusMode'),
       styles: select(storeName).getStyles(),
-      cdnUrl: select(storeName).getCdnUrl(),
-      isPremiumPluginActive: select(storeName).isPremiumPluginActive(),
+      // cdnUrl: select(storeName).getCdnUrl(),
+      // isPremiumPluginActive: select(storeName).isPremiumPluginActive(),
       isEditingTemplate:
         // @ts-expect-error No types for this exist yet.
         select(editorStore).getCurrentPostType() === 'wp_template',
@@ -111,6 +108,18 @@ export function Layout() {
 
   const disableIframe = !isEditingTemplate;
 
+  /**
+   * Todo: Restore footer credit as block type.
+   *
+   * {!isPremiumPluginActive && !isEditingTemplate && (
+                    <div className="visual-editor__email_footer">
+                      <FooterCredit
+                        logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
+                      />
+                    </div>
+                  )}
+   */
+
   return (
     <>
       <FullscreenMode isActive={isFullscreenActive} />
@@ -137,31 +146,19 @@ export function Layout() {
                 }
               }}
             >
-              <div className="visual-editor__email_layout_wrapper">
-                <div
-                  className={classnames(
-                    'visual-editor__email_content_wrapper',
-                    {
-                      'is-mobile-preview': previewDeviceType === 'Mobile',
-                      'is-desktop-preview': previewDeviceType === 'Desktop',
-                    },
-                  )}
-                  style={contentWrapperStyles}
-                >
-                  <EditorCanvas
-                    disableIframe={disableIframe}
-                    styles={[...settings.styles, ...emailCss]}
-                    autoFocus
-                    className="has-global-padding"
-                  />
-                  {!isPremiumPluginActive && !isEditingTemplate && (
-                    <div className="visual-editor__email_footer">
-                      <FooterCredit
-                        logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
-                      />
-                    </div>
-                  )}
-                </div>
+              <div
+                className={classnames('visual-editor__email_content_wrapper', {
+                  'is-mobile-preview': previewDeviceType === 'Mobile',
+                  'is-desktop-preview': previewDeviceType === 'Desktop',
+                })}
+                style={contentWrapperStyles}
+              >
+                <EditorCanvas
+                  disableIframe={disableIframe}
+                  styles={[...settings.styles, ...emailCss]}
+                  autoFocus
+                  className="has-global-padding"
+                />
               </div>
             </BlockSelectionClearer>
           </>
