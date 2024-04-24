@@ -167,7 +167,7 @@ class WooCommerce {
 
     if (!$wcOrder instanceof \WC_Order) return;
     $signupConfirmation = $this->settings->get('signup_confirmation');
-    $status = SubscriberEntity::STATUS_UNCONFIRMED;
+    $status = SubscriberEntity::STATUS_UNSUBSCRIBED;
     if ((bool)$signupConfirmation['enabled'] === false) {
       $status = SubscriberEntity::STATUS_SUBSCRIBED;
     }
