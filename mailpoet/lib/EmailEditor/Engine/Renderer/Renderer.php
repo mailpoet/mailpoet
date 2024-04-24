@@ -51,7 +51,7 @@ class Renderer {
   public function render(\WP_Post $post, string $subject, string $preHeader, string $language, $metaRobots = ''): array {
     $templateId = 'mailpoet/mailpoet//' . (get_page_template_slug($post) ?: 'email-general');
     $template = $this->templates->getBlockTemplate($templateId);
-    $theme = $this->templates->getBlockTheme($templateId);
+    $theme = $this->templates->getBlockTheme($templateId, $template->wp_id); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 
     // Set the theme for the template. This is merged with base theme.json and core json before rendering.
     self::$theme = new WP_Theme_JSON($theme, 'default');

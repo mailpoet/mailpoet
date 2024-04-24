@@ -27,8 +27,8 @@ export type ExperimentalSettings = {
 export type EmailEditorSettings = EditorSettings & ExperimentalSettings;
 
 export type EmailTheme = {
-  version: number;
-  styles: EmailStyles;
+  version?: number;
+  styles?: EmailStyles;
 };
 
 export interface TypographyProperties {
@@ -49,7 +49,7 @@ export interface TypographyProperties {
 }
 
 export type EmailStyles = {
-  spacing: {
+  spacing?: {
     blockGap: string;
     padding: {
       bottom: string;
@@ -58,12 +58,12 @@ export type EmailStyles = {
       top: string;
     };
   };
-  color: {
+  color?: {
     background: string;
     text: string;
   };
-  typography: TypographyProperties;
-  elements: {
+  typography?: TypographyProperties;
+  elements?: {
     heading: {
       color: {
         text: string;
