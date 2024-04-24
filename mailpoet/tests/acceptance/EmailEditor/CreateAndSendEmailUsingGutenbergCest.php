@@ -29,7 +29,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label="Block: Heading"]');
     $i->click('[aria-label="Empty block; start writing or type forward slash to choose a block"]');
-    $i->type('[aria-label="Empty block; start writing or type forward slash to choose a block"]', 'Sample text');
+    $i->type('Sample text');
 
     $i->wantTo('Verify correct WP menu item is highlighted');
     $i->waitForText('Emails', 10, '#toplevel_page_mailpoet-homepage .current');
@@ -92,7 +92,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label="Block: Heading"]');
     $i->click('[aria-label="Empty block; start writing or type forward slash to choose a block"]');
-    $i->type('[aria-label="Empty block; start writing or type forward slash to choose a block"]', 'Sample text');
+    $i->type('Sample text');
 
     $i->wantTo('Save draft and display preview');
     $i->click('Save Draft');
