@@ -82,6 +82,10 @@ export function Layout() {
 
   const contentWrapperStyles = useResizeCanvas(previewDeviceType);
 
+  if (isEditingTemplate) {
+    contentWrapperStyles.height = '100%';
+  }
+
   // Styles for the canvas. Based on template-canvas.php, this equates to the body element.
   const canvasStyles = {
     background:
@@ -131,28 +135,29 @@ export function Layout() {
               }}
             >
               <div className="visual-editor__email_layout_wrapper">
-                <div className="visual-editor__email_content_wrapper">
-                  <div
-                    style={contentWrapperStyles}
-                    className={classnames({
+                <div
+                  className={classnames(
+                    'visual-editor__email_content_wrapper',
+                    {
                       'is-mobile-preview': previewDeviceType === 'Mobile',
                       'is-desktop-preview': previewDeviceType === 'Desktop',
-                    })}
-                  >
-                    <EditorCanvas
-                      disableIframe={disableIframe}
-                      styles={[...settings.styles, ...emailCss]}
-                      autoFocus
-                      className="has-global-padding"
-                    />
-                  </div>
-                  <div className="visual-editor__email_footer">
-                    {!isPremiumPluginActive && (
+                    },
+                  )}
+                  style={contentWrapperStyles}
+                >
+                  <EditorCanvas
+                    disableIframe={disableIframe}
+                    styles={[...settings.styles, ...emailCss]}
+                    autoFocus
+                    className="has-global-padding"
+                  />
+                  {!isPremiumPluginActive && !isEditingTemplate && (
+                    <div className="visual-editor__email_footer">
                       <FooterCredit
                         logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
                       />
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </BlockSelectionClearer>
