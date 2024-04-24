@@ -132,7 +132,12 @@ export function Layout() {
         className={className}
         header={<Header />}
         editorNotices={<EditorNotices />}
-        notices={<EditorSnackbars />}
+        notices={
+          <>
+            <EditorSnackbars context="global" />
+            <EditorSnackbars context="email-editor" />
+          </>
+        }
         content={
           <>
             <EditorNotices />
