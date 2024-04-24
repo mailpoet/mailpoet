@@ -26,8 +26,8 @@ class CreateAndSendEmailUsingGutenbergCest {
 
     $i->wantTo('Compose an email');
     $i->waitForElementVisible('.is-root-container');
-    $i->waitForElement('[aria-label="Block: Image');
-    $i->waitForElement('[aria-label="Block: Heading');
+    $i->waitForElementVisible('[aria-label="Block: Image"]');
+    $i->waitForElementVisible('[aria-label="Block: Heading"]');
     $i->click('[aria-label="Empty block; start writing or type forward slash to choose a block"]');
     $i->type('[aria-label="Empty block; start writing or type forward slash to choose a block"]', 'Sample text');
 
@@ -89,8 +89,8 @@ class CreateAndSendEmailUsingGutenbergCest {
 
     $i->wantTo('Edit an email');
     $i->waitForElementVisible('.is-root-container');
-    $i->waitForElement('[aria-label="Block: Image');
-    $i->waitForElement('[aria-label="Block: Heading');
+    $i->waitForElementVisible('[aria-label="Block: Image"]');
+    $i->waitForElementVisible('[aria-label="Block: Heading"]');
     $i->click('[aria-label="Empty block; start writing or type forward slash to choose a block"]');
     $i->type('[aria-label="Empty block; start writing or type forward slash to choose a block"]', 'Sample text');
 
