@@ -52,6 +52,7 @@ export function Layout() {
     cdnUrl,
     isPremiumPluginActive,
     isEditingTemplate,
+    currentTemplate,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
@@ -70,9 +71,11 @@ export function Layout() {
       isEditingTemplate:
         // @ts-expect-error No types for this exist yet.
         select(editorStore).getCurrentPostType() === 'wp_template',
+      currentTemplate: select(editorStore).getCurrentTemplateId(),
     }),
     [],
   );
+
   const { toggleInserterSidebar } = useDispatch(storeName);
 
   const [emailCss] = useEmailCss();
@@ -102,7 +105,7 @@ export function Layout() {
   };
 
   // Do not render editor if email is not loaded yet.
-  if (!isEmailLoaded) {
+  if (!isEmailLoaded || currentTemplate === null) {
     return null;
   }
 

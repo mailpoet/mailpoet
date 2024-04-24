@@ -41,7 +41,6 @@ export function InnerEditor({
     (select) => {
       const { getEntityRecord } = select(coreStore);
       const { getEditedPostTemplate } = select(storeName);
-
       const postObject = getEntityRecord(
         'postType',
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -72,7 +71,7 @@ export function InnerEditor({
     [settings, onNavigateToEntityRecord, onNavigateToPreviousEntityRecord],
   );
 
-  if (!post || !template) {
+  if (!post) {
     return null;
   }
 
