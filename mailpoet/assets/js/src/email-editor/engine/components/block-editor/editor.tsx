@@ -72,7 +72,7 @@ export function InnerEditor({
     [settings, onNavigateToEntityRecord, onNavigateToPreviousEntityRecord],
   );
 
-  if (!post) {
+  if (!post || !template) {
     return null;
   }
 
