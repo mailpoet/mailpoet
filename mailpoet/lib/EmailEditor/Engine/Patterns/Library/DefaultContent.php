@@ -9,9 +9,8 @@ class DefaultContent extends AbstractPattern {
 
   protected function getContent(): string {
     return '
-    <!-- wp:columns {"style":{"spacing":{"padding":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}},"backgroundColor":"white"} -->
-    <div class="wp-block-columns has-white-background-color has-background" style="padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)">
-    <!-- wp:column -->
+    <!-- wp:columns {"backgroundColor":"white","style":{"spacing":{"padding":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20","right":"var:preset|spacing|20"},"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}}}} -->
+    <div class="wp-block-columns has-white-background-color has-background" style="margin-top:var(--wp--preset--spacing--20);margin-bottom:var(--wp--preset--spacing--20);padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><!-- wp:column -->
     <div class="wp-block-column">
     <!-- wp:image {"width":"130px","sizeSlug":"large"} -->
     <figure class="wp-block-image size-large is-resized"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl("email-editor/your-logo-placeholder.png")) . '" alt="Your Logo" style="width:130px"/></figure>

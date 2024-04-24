@@ -164,6 +164,11 @@
   }
 }
 
+// Content does not need margin. The rendered template does not add margins to match.
+.editor-styles-wrapper .wp-block-post-content {
+  margin: 0;
+}
+
 // Hide the advanced settings in the sidebar. This panel is not used in the email editor at this moment.
 .block-editor-block-inspector__advanced {
   display: none;
