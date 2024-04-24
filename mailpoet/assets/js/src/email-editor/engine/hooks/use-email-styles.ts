@@ -1,14 +1,14 @@
 import deepmerge from 'deepmerge';
-import { useEntityProp } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
-import { EmailTheme, storeName, TypographyProperties } from '../store';
+import { storeName, TypographyProperties } from '../store';
+import { useEmailTheme } from './use-email-theme';
 
 interface ElementProperties {
   typography: TypographyProperties;
 }
 export interface StyleProperties {
-  spacing: {
+  spacing?: {
     padding: {
       top: string;
       right: string;
@@ -17,12 +17,12 @@ export interface StyleProperties {
     };
     blockGap: string;
   };
-  typography: TypographyProperties;
+  typography?: TypographyProperties;
   color?: {
     background: string;
     text: string;
   };
-  elements: Record<string, ElementProperties>;
+  elements?: Record<string, ElementProperties>;
 }
 
 interface EmailStylesData {
@@ -65,11 +65,10 @@ export function setImmutably(setObject, setPath, value): typeof setObject {
 }
 
 export const useEmailStyles = (): EmailStylesData => {
-  const [meta, setMeta] = useEntityProp('postType', 'mailpoet_email', 'meta');
+  const { templateTheme, updateTemplateTheme } = useEmailTheme();
 
   // This is email level styling stored in post meta.
-  const emailTheme = meta?.mailpoet_email_theme as EmailTheme;
-  const styles = emailTheme?.styles;
+  const styles = templateTheme?.styles;
 
   // Default styles from theme.json.
   const { styles: defaultStyles } = useSelect((select) => ({
@@ -79,20 +78,14 @@ export const useEmailStyles = (): EmailStylesData => {
   // Update email styles.
   const updateStyleProp = useCallback(
     (path, newValue) => {
-      const newStyles = setImmutably(
-        meta.mailpoet_email_theme.styles,
-        path,
+      const newTheme = setImmutably(
+        templateTheme,
+        ['styles', ...path],
         newValue,
       );
-      setMeta({
-        ...meta,
-        mailpoet_email_theme: {
-          ...meta.mailpoet_email_theme,
-          styles: newStyles,
-        },
-      });
+      updateTemplateTheme(newTheme);
     },
-    [setMeta, meta],
+    [updateTemplateTheme, templateTheme],
   );
 
   return {

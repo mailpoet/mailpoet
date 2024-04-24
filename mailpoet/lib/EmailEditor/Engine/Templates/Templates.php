@@ -3,16 +3,20 @@
 namespace MailPoet\EmailEditor\Engine\Templates;
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\EmailEditor\Engine\EmailStylesSchema;
 use MailPoet\EmailEditor\Engine\ThemeController;
+use MailPoet\Validator\Builder;
 use WP_Block_Template;
 use WP_Error;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 class Templates {
-  private $templateDirectory;
-  private $pluginSlug;
-  private $postType;
-  private $themeJson = [];
+  const MAILPOET_EMAIL_META_THEME_TYPE = 'mailpoet_email_theme';
+
+  private string $templateDirectory;
+  private string $pluginSlug;
+  private string $postType;
+  private array $themeJson = [];
 
   public function __construct() {
     $this->templateDirectory = dirname(__FILE__) . DIRECTORY_SEPARATOR;
@@ -28,16 +32,31 @@ class Templates {
       add_filter('get_block_templates', [$this, 'addBlockTemplates'], 10, 3);
       add_filter('theme_templates', [$this, 'addThemeTemplates'], 10, 4); // Needed when saving post – template association
       add_filter('get_block_template', [$this, 'addBlockTemplateDetails'], 10, 1);
+      add_filter('rest_pre_insert_wp_template', [$this, 'trimPostContent'], 10, 2);
+      // Register custom post meta for mailpoet_email_theme
+      $this->registerTemplateThemeFields();
+      // Rest field for compiled CSS used in template preview
       register_rest_field(
         'wp_template',
-        'email_theme',
+        'email_theme_css',
         [
-          'get_callback' => [$this, 'addTemplateEmailThemeToRestResponse'],
+          'get_callback' => [$this, 'getEmailThemeCss'],
           'update_callback' => null,
-          'schema' => null, // TODO: Add schema
+          'schema' => Builder::string()->toArray(),
         ]
       );
     }
+  }
+
+  /**
+   * Trims post content when saving a template.
+   * We add empty space on client to force saving the content.
+   */
+  public function trimPostContent($changes, \WP_REST_Request $request) {
+    if (strpos($request->get_route(), '/wp/v2/templates/mailpoet/mailpoet') === 0 && !empty($changes->post_content)) {
+      $changes->post_content = trim($changes->post_content);
+    }
+    return $changes;
   }
 
   public function getBlockTemplate($templateId) {
@@ -45,7 +64,16 @@ class Templates {
     return $templates[$templateId] ?? null;
   }
 
-  public function getBlockTheme($templateId) {
+  public function getBlockTheme($templateId, $templateWpId = null) {
+    // First check if there is a user updated theme saved
+    if ($templateWpId) {
+      $theme = get_post_meta($templateWpId, self::MAILPOET_EMAIL_META_THEME_TYPE, true);
+      if (is_array($theme) && isset($theme['styles'])) {
+        return $theme;
+      }
+    }
+
+    // If there is no user edited theme, look for default template themes in files
     $template_name_parts = explode('//', $templateId);
 
     if (count($template_name_parts) < 2) {
@@ -67,7 +95,7 @@ class Templates {
       }
     }
 
-    return $this->themeJson[$templateSlug];
+    return $this->themeJson[$templateSlug] ?? [];
   }
 
   public function getBlockFileTemplate($return, $templateId, $template_type) {
@@ -208,21 +236,43 @@ class Templates {
     return $this->buildBlockTemplateFromFile($templateObject);
   }
 
-  public function addTemplateEmailThemeToRestResponse($template): ?array {
-    $jsonFile = $this->templateDirectory . $template['slug'] . '.json';
-    if (!file_exists($jsonFile)) {
-      return null;
-    }
+  /**
+   * Generates CSS for
+   */
+  public function getEmailThemeCss($template): string {
     $themeController = ContainerWrapper::getInstance()->get(ThemeController::class);
-    $theme = clone $themeController->getTheme();
-    $themeJson = json_decode((string)file_get_contents($jsonFile), true);
-    if (is_array($themeJson)) {
-      $theme->merge(new \WP_Theme_JSON($themeJson, 'custom'));
+    $editorTheme = clone $themeController->getTheme();
+    $templateTheme = $this->getBlockTheme($template['id'], $template['wp_id']);
+    if (is_array($templateTheme)) {
+      $editorTheme->merge(new \WP_Theme_JSON($templateTheme, 'custom'));
     }
-    return [
-      'css' => $theme->get_stylesheet(),
-      'theme' => $themeJson,
-    ];
+    return $editorTheme->get_stylesheet();
+  }
+
+  private function registerTemplateThemeFields(): void {
+    register_post_meta(
+      'wp_template',
+      self::MAILPOET_EMAIL_META_THEME_TYPE,
+      [
+        'show_in_rest' => [
+          'schema' => (new EmailStylesSchema())->getSchema(),
+        ],
+        'single' => true,
+        'type' => 'object',
+        'default' => ['version' => 2], // The version 2 is important to merge themes correctly
+      ]
+    );
+
+    register_rest_field('wp_template', self::MAILPOET_EMAIL_META_THEME_TYPE, [
+      'get_callback' => function($object) {
+         return $this->getBlockTheme($object['id'], $object['wp_id']);
+      },
+
+      'update_callback' => function($value, $template) {
+        return update_post_meta($template->wp_id, self::MAILPOET_EMAIL_META_THEME_TYPE, $value);
+      },
+      'schema' => (new EmailStylesSchema())->getSchema(),
+    ]);
   }
 
   private function createNewBlockTemplateObject(string $template) {

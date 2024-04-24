@@ -16,7 +16,7 @@ export function SelectTemplateModal({ setIsOpen }) {
     void dispatch(storeName).setTemplateToPost(
       template.slug,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      template.template.email_theme?.theme ?? {},
+      template.template.mailpoet_email_theme ?? {},
     );
   };
 
@@ -53,7 +53,7 @@ export function SelectTemplateModal({ setIsOpen }) {
                 minHeight={300}
                 additionalStyles={[
                   // @ts-expect-error No types available for template
-                  { css: template.template.email_theme?.css },
+                  { css: template.template.email_theme_css },
                 ]}
               />
             </Async>
