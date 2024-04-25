@@ -86,7 +86,6 @@
 .visual-editor__email_content_wrapper {
   display: block !important; // Override flex to achieve height follow the length of the document
   flex-grow: 0 !important;
-  height: 100% !important;
   margin: 0 auto;
 
   // Set default padding-left to have consistent default look in editor and in email
