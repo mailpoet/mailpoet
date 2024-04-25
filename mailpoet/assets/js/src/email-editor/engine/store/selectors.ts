@@ -179,6 +179,27 @@ export const getEditedPostTemplate = createRegistrySelector((select) => () => {
   );
 });
 
+export const getCurrentTemplate = createRegistrySelector((select) => () => {
+  const isEditingTemplate =
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    select(editorStore).getCurrentPostType() === 'wp_template';
+
+  if (isEditingTemplate) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const templateId = select(editorStore).getCurrentPostId();
+
+    return select(coreDataStore).getEditedEntityRecord(
+      'postType',
+      'wp_template',
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      templateId,
+    );
+  }
+  return getEditedPostTemplate();
+});
+
 /**
  * Retrieves the email templates.
  */
