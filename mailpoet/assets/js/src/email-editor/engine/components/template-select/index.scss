@@ -1,0 +1,9 @@
+.block-editor-block-patterns-explorer
+  .block-editor-block-patterns-list
+  .block-editor-block-preview__container {
+  max-height: 300px !important;
+}
+
+.block-editor-block-patterns-list__item .block-editor-block-preview__container {
+  align-items: flex-start !important;
+}

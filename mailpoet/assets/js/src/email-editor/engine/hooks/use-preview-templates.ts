@@ -1,7 +1,7 @@
 import { BlockInstance, parse } from '@wordpress/blocks';
 import { useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
-import { storeName } from '../../../store/constants';
+import { storeName } from '../store/constants';
 
 /**
  * We need to merge pattern blocks and template blocks for BlockPreview component.
