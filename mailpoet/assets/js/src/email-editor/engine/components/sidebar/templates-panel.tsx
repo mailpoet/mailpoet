@@ -8,7 +8,7 @@ import {
   EntitiesSavedStates,
 } from '@wordpress/editor';
 
-import { SelectTemplateModal } from 'email-editor/engine/components/sidebar/template-select/select-modal';
+import { SelectTemplateModal } from 'email-editor/engine/components/template-select';
 import { storeName } from '../../store';
 import { unlock } from '../../../lock-unlock';
 
