@@ -3,6 +3,7 @@
 namespace MailPoet\Automation\Integrations\MailPoet\Actions;
 
 use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
+use MailPoet\Automation\Engine\Control\AutomationController;
 use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\Step;
@@ -49,6 +50,9 @@ class SendEmailAction implements Action {
     'woocommerce-subscriptions:trial-started',
   ];
 
+  /** @var AutomationController */
+  private $automationController;
+
   /** @var SettingsController */
   private $settings;
 
@@ -71,6 +75,7 @@ class SendEmailAction implements Action {
   private $newsletterOptionFieldsRepository;
 
   public function __construct(
+    AutomationController $automationController,
     SettingsController $settings,
     NewslettersRepository $newslettersRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
@@ -79,6 +84,7 @@ class SendEmailAction implements Action {
     NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository
   ) {
+    $this->automationController = $automationController;
     $this->settings = $settings;
     $this->newslettersRepository = $newslettersRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
@@ -177,6 +183,31 @@ class SendEmailAction implements Action {
     // schedule a progress run to sync email sending status to the automation step
     // (1 month is a timout, the progress will normally be executed after sending)
     $controller->scheduleProgress(time() + MONTH_IN_SECONDS);
+  }
+
+  /** @param mixed $data */
+  public function handleEmailSent($data): void {
+    if (!is_array($data)) {
+      throw InvalidStateException::create()->withMessage(
+        sprintf('Invalid automation step data. Array expected, got: %s', gettype($data))
+      );
+    }
+
+    $runId = $data['run_id'] ?? null;
+    if (!is_int($runId)) {
+      throw InvalidStateException::create()->withMessage(
+        sprintf("Invalid automation step data. Expected 'run_id' to be an integer, got: %s", gettype($runId))
+      );
+    }
+
+    $stepId = $data['step_id'] ?? null;
+    if (!is_string($stepId)) {
+      throw InvalidStateException::create()->withMessage(
+        sprintf("Invalid automation step data. Expected 'step_id' to be a string, got: %s", gettype($runId))
+      );
+    }
+
+    $this->automationController->enqueueProgress($runId, $stepId);
   }
 
   private function checkSendingStatus(NewsletterEntity $newsletter, SubscriberEntity $subscriber): void {
