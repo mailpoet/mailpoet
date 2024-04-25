@@ -1,29 +1,70 @@
 import { PanelBody, Button } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
-import { __ } from '@wordpress/i18n';
+import { useSelect, useDispatch, dispatch, select } from '@wordpress/data';
+import { __, sprintf } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import {
   store as editorStore,
   // @ts-expect-error Our current version of packages doesn't have EntitiesSavedStates export
   EntitiesSavedStates,
 } from '@wordpress/editor';
-
 import { SelectTemplateModal } from 'email-editor/engine/components/template-select';
+import { decodeEntities } from '@wordpress/html-entities';
+import { store as coreStore } from '@wordpress/core-data';
+import { store as noticesStore } from '@wordpress/notices';
+import apiFetch from '@wordpress/api-fetch';
+import {
+  parse,
+  __unstableSerializeAndClean,
+  BlockInstance,
+} from '@wordpress/blocks';
+import { addQueryArgs } from '@wordpress/url';
 import { storeName } from '../../store';
 import { unlock } from '../../../lock-unlock';
 
+// Todo: This is not available yet. Replace when possible.
+async function revertTemplate(template) {
+  const templateEntityConfig = select(coreStore).getEntityConfig(
+    'postType',
+    template.type as string,
+  );
+
+  const fileTemplatePath = addQueryArgs(
+    `${templateEntityConfig.baseURL as string}/${template.id as string}`,
+    { context: 'edit', source: 'theme' },
+  );
+
+  const fileTemplate = await apiFetch({ path: fileTemplatePath });
+
+  const serializeBlocks = ({ blocks: blocksForSerialization = [] }) =>
+    __unstableSerializeAndClean(blocksForSerialization) as BlockInstance[];
+
+  // @ts-expect-error template type is not defined
+  const blocks = parse(fileTemplate?.content?.raw as string);
+  void dispatch(coreStore).editEntityRecord(
+    'postType',
+    template.type as string,
+    // @ts-expect-error template type is not defined
+    fileTemplate.id as string,
+    {
+      content: serializeBlocks,
+      blocks,
+      source: 'theme',
+    },
+  );
+}
+
 export function TemplatesPanel() {
   const { onNavigateToEntityRecord, template, hasHistory } = useSelect(
-    (select) => {
+    (sel) => {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const { getEditorSettings: _getEditorSettings } = unlock(
-        select(editorStore),
+        sel(editorStore),
       );
       const editorSettings = _getEditorSettings();
       return {
         onNavigateToEntityRecord: editorSettings.onNavigateToEntityRecord,
         hasHistory: !!editorSettings.onNavigateToPreviousEntityRecord,
-        template: select(storeName).getEditedPostTemplate(),
+        template: sel(storeName).getEditedPostTemplate(),
       };
     },
     [],
@@ -31,6 +72,38 @@ export function TemplatesPanel() {
 
   const [isTemplateSelectModalOpen, setIsTemplateSelectModalOpen] =
     useState(false);
+  const { saveEditedEntityRecord } = useDispatch(coreStore);
+  const { createSuccessNotice, createErrorNotice } = useDispatch(noticesStore);
+  async function revertAndSaveTemplate() {
+    try {
+      await revertTemplate(template);
+      await saveEditedEntityRecord(
+        'postType',
+        template.type as string,
+        template.id as string,
+        {},
+      );
+      void createSuccessNotice(
+        sprintf(
+          /* translators: The template/part's name. */
+          __('"%s" reset.'),
+          // @ts-expect-error template type is not defined
+          decodeEntities(template.title as string),
+        ),
+        {
+          type: 'snackbar',
+          id: 'edit-site-template-reverted',
+        },
+      );
+    } catch (error) {
+      void createErrorNotice(
+        __('An error occurred while reverting the template.'),
+        {
+          type: 'snackbar',
+        },
+      );
+    }
+  }
 
   return (
     <PanelBody
@@ -74,6 +147,16 @@ export function TemplatesPanel() {
       {isTemplateSelectModalOpen && (
         <SelectTemplateModal setIsOpen={setIsTemplateSelectModalOpen} />
       )}
+
+      <h3>Revert Template</h3>
+      <Button
+        variant="primary"
+        onClick={() => {
+          void revertAndSaveTemplate();
+        }}
+      >
+        {__('Revert customizations', 'mailpoet')}
+      </Button>
     </PanelBody>
   );
 }
