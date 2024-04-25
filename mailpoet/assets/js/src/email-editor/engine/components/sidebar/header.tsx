@@ -1,4 +1,5 @@
 import { store as blockEditorStore } from '@wordpress/block-editor';
+import { store as editorStore } from '@wordpress/editor';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -12,13 +13,15 @@ import {
 export function Header() {
   const { toggleSettingsSidebarActiveTab } = useDispatch(storeName);
 
-  const selectedBlockId = useSelect(
-    (select) => select(blockEditorStore).getSelectedBlockClientId(),
-    [],
-  );
-
-  const activeTab = useSelect(
-    (select) => select(storeName).getSettingsSidebarActiveTab(),
+  const { selectedBlockId, activeTab, isEditingTemplate } = useSelect(
+    (select) => ({
+      selectedBlockId: select(blockEditorStore).getSelectedBlockClientId(),
+      activeTab: select(storeName).getSettingsSidebarActiveTab(),
+      isEditingTemplate:
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        select(editorStore).getCurrentPostType() === 'wp_template',
+    }),
     [],
   );
 
@@ -45,7 +48,9 @@ export function Header() {
           data-automation-id="email_settings_tab"
           type="button"
         >
-          {__('Email', 'mailpoet')}
+          {isEditingTemplate
+            ? __('Template', 'mailpoet')
+            : __('Email', 'mailpoet')}
         </button>
       </li>
       <li>
