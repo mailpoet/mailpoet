@@ -68,6 +68,7 @@ export function Layout() {
       isEditingTemplate:
         // @ts-expect-error No types for this exist yet.
         select(editorStore).getCurrentPostType() === 'wp_template',
+      // @ts-expect-error No types for this exist yet.
       currentTemplate: select(editorStore).getCurrentTemplateId(),
     }),
     [],
