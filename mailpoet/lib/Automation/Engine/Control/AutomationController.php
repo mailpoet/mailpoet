@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Engine\Control;
 
+use ActionScheduler_CanceledAction;
 use MailPoet\Automation\Engine\Data\AutomationRunLog;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Hooks;
@@ -35,6 +36,19 @@ class AutomationController {
       'step_id' => $stepId,
       'run_number' => $runNumber,
     ];
+
+    // if a pending action exists, unschedule it
+    $this->actionScheduler->unscheduleAction(Hooks::AUTOMATION_STEP, [$args]);
+
+    // if an action still exists (pending, in-progress, complete, failed), it's an error
+    $actions = $this->actionScheduler->getScheduledActions(['hook' => Hooks::AUTOMATION_STEP, 'args' => [$args]]);
+    $processedActions = array_filter($actions, function ($action) {
+      return !$action instanceof ActionScheduler_CanceledAction;
+    });
+    if (count($processedActions) > 0) {
+      throw Exceptions::stepActionProcessed($stepId, $runId, $runNumber);
+    }
+
     $this->actionScheduler->enqueue(Hooks::AUTOMATION_STEP, [$args]);
   }
 }

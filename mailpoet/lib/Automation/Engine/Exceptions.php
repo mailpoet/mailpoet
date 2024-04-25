@@ -39,6 +39,7 @@ class Exceptions {
   private const AUTOMATION_HAS_ACTIVE_RUNS = 'mailpoet_automation_has_active_runs';
   private const AUTOMATION_STEP_NOT_STARTED = 'mailpoet_automation_step_not_started';
   private const AUTOMATION_STEP_NOT_RUNNING = 'mailpoet_automation_step_not_running';
+  private const AUTOMATION_STEP_ACTION_PROCESSED = 'mailpoet_automation_step_action_processed';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -289,5 +290,12 @@ class Exceptions {
       ->withErrorCode(self::AUTOMATION_STEP_NOT_RUNNING)
       // translators: %1$s is the ID of the automation step, %2$s its current status, %3$d is the automation run ID.
       ->withMessage(sprintf(__("Automation step with ID '%1\$s' is not running in automation run with ID '%2\$d'. Status: '%3\$s'", 'mailpoet'), $id, $runId, $status));
+  }
+
+  public static function stepActionProcessed(string $id, int $runId, int $runNumber): InvalidStateException {
+    return InvalidStateException::create()
+      ->withErrorCode(self::AUTOMATION_STEP_ACTION_PROCESSED)
+      // translators: %1$d is the automation run ID, %2$s is the ID of the automation step, %3$d is the run number.
+      ->withMessage(sprintf(__("Automation run with ID '%1\$d' already has a processed action for step with ID '%2\$s' and run number '%3\$d'.", 'mailpoet'), $runId, $id, $runNumber));
   }
 }
