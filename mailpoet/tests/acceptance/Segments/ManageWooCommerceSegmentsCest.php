@@ -127,9 +127,7 @@ class ManageWooCommerceSegmentsCest {
     $i->clearFormField($segmentDescriptionField);
     $i->waitForElementVisible('input[value=""]' . $segmentNameField);
     $i->waitForElementVisible($segmentDescriptionField . ':empty');
-    $i->clearField($segmentNameField);
     $i->fillField($segmentNameField, $editedTitle);
-    $i->clearField($segmentDescriptionField);
     $i->fillField($segmentDescriptionField, $editedDesc);
     $i->selectOption($operatorSelectElement, 'none of');
     $i->selectOptionInReactSelect('Product 1', $productSelectElement);
@@ -197,9 +195,7 @@ class ManageWooCommerceSegmentsCest {
     $i->clearFormField($segmentDescriptionField);
     $i->waitForElementVisible('input[value=""]' . $segmentNameField);
     $i->waitForElementVisible($segmentDescriptionField . ':empty');
-    $i->clearField($segmentNameField);
     $i->fillField($segmentNameField, $editedTitle);
-    $i->clearField($segmentDescriptionField);
     $i->fillField($segmentDescriptionField, $editedDesc);
     $i->waitForElementVisible('input[value=""]' . $numberOfOrdersCountElement);
     $i->waitForElementVisible('input[value=""]' . $numberOfOrdersDaysElement);
@@ -269,9 +265,7 @@ class ManageWooCommerceSegmentsCest {
     $i->clearFormField($segmentDescriptionField);
     $i->waitForElementVisible('input[value=""]' . $segmentNameField);
     $i->waitForElementVisible($segmentDescriptionField . ':empty');
-    $i->clearField($segmentNameField);
     $i->fillField($segmentNameField, $editedTitle);
-    $i->clearField($segmentDescriptionField);
     $i->fillField($segmentDescriptionField, $editedDesc);
     $i->waitForElementVisible('input[value=""]' . $totalSpentAmountElement);
     $i->waitForElementVisible('input[value=""]' . $totalSpentDaysElement);
@@ -342,9 +336,7 @@ class ManageWooCommerceSegmentsCest {
     $i->clearFormField($segmentDescriptionField);
     $i->waitForElementVisible('input[value=""]' . $segmentNameField);
     $i->waitForElementVisible($segmentDescriptionField . ':empty');
-    $i->clearField($segmentNameField);
     $i->fillField($segmentNameField, $editedTitle);
-    $i->clearField($$segmentDescriptionField);
     $i->fillField($segmentDescriptionField, $editedDesc);
     $i->waitForElementVisible('input[value=""]' . $singleOrderValueAmountElement);
     $i->waitForElementVisible('input[value=""]' . $singleOrderValueDaysElement);
