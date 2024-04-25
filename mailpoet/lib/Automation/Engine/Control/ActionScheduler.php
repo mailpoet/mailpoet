@@ -2,6 +2,8 @@
 
 namespace MailPoet\Automation\Engine\Control;
 
+use ActionScheduler_Action;
+
 class ActionScheduler {
   private const GROUP_ID = 'mailpoet-automation';
 
@@ -15,5 +17,14 @@ class ActionScheduler {
 
   public function hasScheduledAction(string $hook, array $args = []): bool {
     return as_has_scheduled_action($hook, $args, self::GROUP_ID);
+  }
+
+  /** @return ActionScheduler_Action[] */
+  public function getScheduledActions(array $args = []): array {
+    return as_get_scheduled_actions(array_merge($args, ['group' => self::GROUP_ID]));
+  }
+
+  public function unscheduleAction(string $hook, array $args = []): ?int {
+    return as_unschedule_action($hook, $args, self::GROUP_ID);
   }
 }

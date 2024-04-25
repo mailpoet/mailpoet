@@ -2,8 +2,10 @@
 
 namespace MailPoet\Test\Automation\Engine\Control;
 
+use ActionScheduler;
 use ActionScheduler_NullSchedule;
 use ActionScheduler_Store;
+use MailPoet\Automation\Engine\Control\ActionScheduler as AutomationActionScheduler;
 use MailPoet\Automation\Engine\Control\AutomationController;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
@@ -60,6 +62,40 @@ class AutomationControllerTest extends MailPoetTest {
     $controller->enqueueProgress(1, 'abc');
   }
 
+  public function testItUnschedulesPendingAction(): void {
+    $this->createAutomationWithStepRunAndLog(AutomationRun::STATUS_RUNNING, AutomationRunLog::STATUS_RUNNING);
+
+    $data = ['automation_run_id' => 1, 'step_id' => 'abc', 'run_number' => 2];
+    $this->scheduleAction(time() + MONTH_IN_SECONDS, $data);
+    $this->assertCount(1, $this->getActions());
+    $this->assertCount(1, $this->getActions(['status' => [ActionScheduler_Store::STATUS_PENDING]]));
+
+    $controller = $this->getServiceWithOverrides(AutomationController::class, [
+      // skip creating new action so we can check if the existing one is unscheduled
+      'actionScheduler' => $this->make(AutomationActionScheduler::class, ['enqueue' => 123]),
+    ]);
+    $controller->enqueueProgress(1, 'abc');
+
+    $this->assertCount(1, $this->getActions());
+    $this->assertCount(1, $this->getActions(['status' => [ActionScheduler_Store::STATUS_CANCELED]]));
+  }
+
+  public function testItFailsWithExistingAction(): void {
+    $this->createAutomationWithStepRunAndLog(AutomationRun::STATUS_RUNNING, AutomationRunLog::STATUS_RUNNING);
+
+    $data = ['automation_run_id' => 1, 'step_id' => 'abc', 'run_number' => 2];
+    $actionId = $this->scheduleAction(time() + MONTH_IN_SECONDS, $data);
+    ActionScheduler::store()->mark_complete($actionId);
+    $this->assertCount(1, $this->getActions());
+    $this->assertCount(1, $this->getActions(['status' => [ActionScheduler_Store::STATUS_COMPLETE]]));
+
+    $this->expectException(InvalidStateException::class);
+    $this->expectExceptionMessage("Automation run with ID '1' already has a processed action for step with ID 'abc' and run number '2'.");
+
+    $controller = $this->diContainer->get(AutomationController::class);
+    $controller->enqueueProgress(1, 'abc');
+  }
+
   private function createAutomationWithStepRunAndLog(string $runStatus, string $logStatus): void {
     $step = new Step('abc', Step::TYPE_ACTION, 'key', [], []);
     $automation = (new DataFactories\Automation())
@@ -76,6 +112,10 @@ class AutomationControllerTest extends MailPoetTest {
     (new DataFactories\AutomationRunLog($run->getId(), $step))
       ->setStatus($logStatus)
       ->create();
+  }
+
+  private function scheduleAction(int $timestamp, array $args): int {
+    return as_schedule_single_action($timestamp, Hooks::AUTOMATION_STEP, [$args], 'mailpoet-automation');
   }
 
   private function getActions(array $args = []): array {
