@@ -114,8 +114,8 @@ class SendEmailActionTest extends \MailPoetTest {
     $email = (new Newsletter())->withAutomationType()->create();
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
-    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
-    $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
+    $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User(), 1);
+    $run = new AutomationRun(1, 1, 'trigger-key', $subjects, 1);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     verify($scheduled)->arrayCount(0);
@@ -385,9 +385,10 @@ class SendEmailActionTest extends \MailPoetTest {
         $trigger->getId() => $trigger,
         $step->getId() => $step,
       ],
-      new \WP_User()
+      new \WP_User(),
+      1
     );
-    $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
+    $run = new AutomationRun(1, 1, 'trigger-key', $subjects, 1);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     verify($scheduled)->arrayCount(0);
