@@ -69,7 +69,6 @@ export async function newsletterPostNotification() {
       page.waitForNavigation(),
       page.locator('[data-automation-id="select_template_1"]').click(),
     ]);
-    await page.waitForSelector('.mailpoet_loading');
     await page.waitForSelector('[data-automation-id="newsletter_title"]');
     await page.waitForLoadState('networkidle');
 
