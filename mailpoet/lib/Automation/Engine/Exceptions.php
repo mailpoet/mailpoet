@@ -37,6 +37,8 @@ class Exceptions {
   private const AUTOMATION_NOT_TRASHED = 'mailpoet_automation_not_trashed';
   private const AUTOMATION_TEMPLATE_NOT_FOUND = 'mailpoet_automation_template_not_found';
   private const AUTOMATION_HAS_ACTIVE_RUNS = 'mailpoet_automation_has_active_runs';
+  private const AUTOMATION_STEP_NOT_STARTED = 'mailpoet_automation_step_not_started';
+  private const AUTOMATION_STEP_NOT_RUNNING = 'mailpoet_automation_step_not_running';
 
   public function __construct() {
     throw new InvalidStateException(
@@ -273,5 +275,19 @@ class Exceptions {
       ->withErrorCode(self::AUTOMATION_HAS_ACTIVE_RUNS)
       // translators: %d is the ID of the automation.
       ->withMessage(sprintf(__("Can not update automation with ID '%d' because users are currently active.", 'mailpoet'), $id));
+  }
+
+  public static function stepNotStarted(string $id, int $runId): InvalidStateException {
+    return InvalidStateException::create()
+      ->withErrorCode(self::AUTOMATION_STEP_NOT_STARTED)
+      // translators: %1$s is the ID of the automation step, %2$d is the automation run ID.
+      ->withMessage(sprintf(__("Automation step with ID '%1\$s' was not started in automation run with ID '%2\$d'.", 'mailpoet'), $id, $runId));
+  }
+
+  public static function stepNotRunning(string $id, string $status, int $runId): InvalidStateException {
+    return InvalidStateException::create()
+      ->withErrorCode(self::AUTOMATION_STEP_NOT_RUNNING)
+      // translators: %1$s is the ID of the automation step, %2$s its current status, %3$d is the automation run ID.
+      ->withMessage(sprintf(__("Automation step with ID '%1\$s' is not running in automation run with ID '%2\$d'. Status: '%3\$s'", 'mailpoet'), $id, $runId, $status));
   }
 }
