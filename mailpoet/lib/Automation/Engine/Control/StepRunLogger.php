@@ -64,7 +64,10 @@ class StepRunLogger {
   }
 
   public function logStart(): void {
-    $this->getLog();
+    $log = $this->getLog();
+    $log->setStatus(AutomationRunLog::STATUS_RUNNING);
+    $log->setUpdatedAt(new DateTimeImmutable());
+    $this->automationRunLogStorage->updateAutomationRunLog($log);
   }
 
   public function logStepData(Step $step): void {
