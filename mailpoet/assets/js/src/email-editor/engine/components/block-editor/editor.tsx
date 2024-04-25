@@ -38,7 +38,7 @@ export function InnerEditor({
     initialPostId,
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     initialPostType,
-    'template-locked',
+    'post-only',
   );
 
   const { post, template } = useSelect(
