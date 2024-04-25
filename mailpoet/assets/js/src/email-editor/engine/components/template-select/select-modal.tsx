@@ -78,8 +78,8 @@ export function SelectTemplateModal({ setIsOpen }) {
 
                     <HStack className="block-editor-patterns__pattern-details">
                       <div className="block-editor-block-patterns-list__item-title">
-                        {/* eslint-disable-next-line @typescript-eslint/restrict-template-expressions */}
-                        {`Template ${template.slug}`}
+                        {/* @ts-expect-error No type for template */}
+                        {template.template.title.rendered}
                       </div>
                     </HStack>
                   </Async>
