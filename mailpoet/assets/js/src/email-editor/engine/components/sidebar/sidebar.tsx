@@ -5,6 +5,7 @@ import { BlockInspector } from '@wordpress/block-editor';
 import { ComplementaryArea } from '@wordpress/interface';
 import { ComponentProps } from 'react';
 import { drawerRight } from '@wordpress/icons';
+import { store as editorStore } from '@wordpress/editor';
 import {
   storeName,
   mainSidebarEmailTab,
@@ -13,14 +14,20 @@ import {
 } from '../../store';
 import { Header } from './header';
 import { EmailSettings } from './email-settings';
+import { TemplateSettings } from './template-settings';
 
 import './index.scss';
 
 type Props = ComponentProps<typeof ComplementaryArea>;
 
 export function Sidebar(props: Props): JSX.Element {
-  const activeTab = useSelect(
-    (select) => select(storeName).getSettingsSidebarActiveTab(),
+  const { activeTab, isEditingTemplate } = useSelect(
+    (select) => ({
+      activeTab: select(storeName).getSettingsSidebarActiveTab(),
+      isEditingTemplate:
+        // @ts-expect-error No types for this exist yet.
+        select(editorStore).getCurrentPostType() === 'wp_template',
+    }),
     [],
   );
 
@@ -36,7 +43,12 @@ export function Sidebar(props: Props): JSX.Element {
       isActiveByDefault
       {...props}
     >
-      {activeTab === mainSidebarEmailTab && <EmailSettings />}
+      {activeTab === mainSidebarEmailTab && isEditingTemplate && (
+        <TemplateSettings />
+      )}
+      {activeTab === mainSidebarEmailTab && !isEditingTemplate && (
+        <EmailSettings />
+      )}
       {activeTab === mainSidebarBlockTab && (
         <Panel>
           <BlockInspector />
