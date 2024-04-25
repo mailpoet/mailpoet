@@ -122,9 +122,14 @@ class SendEmailActionTest extends \MailPoetTest {
     $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
     $this->action->run($args, $controller);
 
+    // scheduled task
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     verify($scheduled)->arrayCount(1);
+    $this->assertSame([
+      'automation' => ['id' => 1, 'run_id' => 1, 'step_id' => 'step-id', 'run_number' => 1],
+    ], $scheduled[0]->getMeta());
 
+    // scheduled task subscriber
     $this->scheduledTasksRepository->refresh($scheduled[0]);
     $scheduledTaskSubscribers = $scheduled[0]->getSubscribers();
     $this->assertCount(1, $scheduledTaskSubscribers);

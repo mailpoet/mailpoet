@@ -203,12 +203,21 @@ class SendEmailAction implements Action {
   }
 
   private function getNewsletterMeta(StepRunArgs $args): array {
-    if (!$this->automationHasAbandonedCartTrigger($args->getAutomation())) {
-      return [];
+    $meta = [
+      'automation' => [
+        'id' => $args->getAutomation()->getId(),
+        'run_id' => $args->getAutomationRun()->getId(),
+        'step_id' => $args->getStep()->getId(),
+        'run_number' => $args->getRunNumber(),
+      ],
+    ];
+
+    if ($this->automationHasAbandonedCartTrigger($args->getAutomation())) {
+      $payload = $args->getSinglePayloadByClass(AbandonedCartPayload::class);
+      $meta[AbandonedCart::TASK_META_NAME] = $payload->getProductIds();
     }
 
-    $payload = $args->getSinglePayloadByClass(AbandonedCartPayload::class);
-    return [AbandonedCart::TASK_META_NAME => $payload->getProductIds()];
+    return $meta;
   }
 
   private function getSubscriber(StepRunArgs $args): SubscriberEntity {
