@@ -143,7 +143,7 @@ export function Layout() {
           <>
             <EditorNotices />
             <BlockSelectionClearer
-              className="visual-editor"
+              className="edit-post-visual-editor"
               style={canvasStyles}
               onClick={() => {
                 // Clear inserter sidebar when canvas is clicked.
