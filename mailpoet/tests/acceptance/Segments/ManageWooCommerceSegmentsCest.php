@@ -58,7 +58,9 @@ class ManageWooCommerceSegmentsCest {
     $i->wantTo('Edit segment and save');
     $editedTitle = 'Segment Woo Category Test Edited';
     $editedDesc = 'Segment description Edited';
+    $i->clearField(['name' => 'name']);
     $i->fillField(['name' => 'name'], $editedTitle);
+    $i->clearField(['name' => 'description']);
     $i->fillField(['name' => 'description'], $editedDesc);
     $i->selectOptionInReactSelect('Category 1', $categorySelectElement);
     $i->selectOptionInReactSelect('Category 3', $categorySelectElement);
@@ -125,7 +127,9 @@ class ManageWooCommerceSegmentsCest {
     $i->clearFormField($segmentDescriptionField);
     $i->waitForElementVisible('input[value=""]' . $segmentNameField);
     $i->waitForElementVisible($segmentDescriptionField . ':empty');
+    $i->clearField($segmentNameField);
     $i->fillField($segmentNameField, $editedTitle);
+    $i->clearField($segmentDescriptionField);
     $i->fillField($segmentDescriptionField, $editedDesc);
     $i->selectOption($operatorSelectElement, 'none of');
     $i->selectOptionInReactSelect('Product 1', $productSelectElement);
@@ -193,7 +197,9 @@ class ManageWooCommerceSegmentsCest {
     $i->clearFormField($segmentDescriptionField);
     $i->waitForElementVisible('input[value=""]' . $segmentNameField);
     $i->waitForElementVisible($segmentDescriptionField . ':empty');
+    $i->clearField($segmentNameField);
     $i->fillField($segmentNameField, $editedTitle);
+    $i->clearField($segmentDescriptionField);
     $i->fillField($segmentDescriptionField, $editedDesc);
     $i->waitForElementVisible('input[value=""]' . $numberOfOrdersCountElement);
     $i->waitForElementVisible('input[value=""]' . $numberOfOrdersDaysElement);
@@ -263,7 +269,9 @@ class ManageWooCommerceSegmentsCest {
     $i->clearFormField($segmentDescriptionField);
     $i->waitForElementVisible('input[value=""]' . $segmentNameField);
     $i->waitForElementVisible($segmentDescriptionField . ':empty');
+    $i->clearField($segmentNameField);
     $i->fillField($segmentNameField, $editedTitle);
+    $i->clearField($segmentDescriptionField);
     $i->fillField($segmentDescriptionField, $editedDesc);
     $i->waitForElementVisible('input[value=""]' . $totalSpentAmountElement);
     $i->waitForElementVisible('input[value=""]' . $totalSpentDaysElement);
@@ -334,7 +342,9 @@ class ManageWooCommerceSegmentsCest {
     $i->clearFormField($segmentDescriptionField);
     $i->waitForElementVisible('input[value=""]' . $segmentNameField);
     $i->waitForElementVisible($segmentDescriptionField . ':empty');
+    $i->clearField($segmentNameField);
     $i->fillField($segmentNameField, $editedTitle);
+    $i->clearField($$segmentDescriptionField);
     $i->fillField($segmentDescriptionField, $editedDesc);
     $i->waitForElementVisible('input[value=""]' . $singleOrderValueAmountElement);
     $i->waitForElementVisible('input[value=""]' . $singleOrderValueDaysElement);
