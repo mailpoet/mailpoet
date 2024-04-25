@@ -541,12 +541,30 @@ class SendingQueue {
 
     // log statistics
     $this->statisticsNewslettersRepository->createMultiple($statistics);
+
     // update the sent count
     $this->mailerTask->updateSentCount();
+
     // enforce execution limits if queue is still being processed
     if ($task->getStatus() !== ScheduledTaskEntity::STATUS_COMPLETED) {
       $this->enforceSendingAndExecutionLimits($timer);
     }
+
+    // trigger automation email sent hook for automation emails
+    if (
+      $task->getStatus() === ScheduledTaskEntity::STATUS_COMPLETED
+      && isset($task->getMeta()['automation'])
+    ) {
+      try {
+        $this->wp->doAction('mailpoet_automation_email_sent', $task->getMeta()['automation']);
+      } catch (Throwable $e) {
+        $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
+          'Error while executing "mailpoet_automation_email_sent action" hook',
+          ['task_id' => $task->getId(), 'error' => $e->getMessage()]
+        );
+      }
+    }
+
     $this->throttlingHandler->processSuccess();
   }
 

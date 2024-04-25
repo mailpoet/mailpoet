@@ -1424,6 +1424,22 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->entityManager->find(NewsletterEntity::class, $newsletter->getId()))->null();
   }
 
+  public function testItTriggersAutomationEmailSentHook(): void {
+    $hookTriggered = false;
+    $hook = function() use (&$hookTriggered) {
+      $hookTriggered = true;
+    };
+    $this->wp->addAction('mailpoet_automation_email_sent', $hook, 1);
+
+    $this->scheduledTask->setMeta(['automation' => ['id' => 1, 'run_id' => 1, 'step_id' => 'abc', 'run_number' => 1]]);
+    $this->entityManager->flush();
+
+    $sendingQueueWorker = $this->getSendingQueueWorker();
+    $sendingQueueWorker->process();
+
+    $this->assertSame(true, $hookTriggered);
+  }
+
   private function createNewsletter(string $type, $subject, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType($type);
