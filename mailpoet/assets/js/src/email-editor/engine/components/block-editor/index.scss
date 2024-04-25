@@ -66,10 +66,10 @@
   }
 }
 
-.visual-editor {
-  height: 100%;
+.edit-post-visual-editor {
   line-height: 1.4; /* Recommended line-height that is also used in the email editor */
   margin: 0;
+  min-height: 100%;
   padding: 0;
   -webkit-text-size-adjust: 100%; /* From MJMJ - Automatic test adjustment on mobile max to 100% */
   -ms-text-size-adjust: 100%; /* From MJMJ - Automatic test adjustment on mobile max to 100% */
@@ -84,9 +84,13 @@
 }
 
 .visual-editor__email_content_wrapper {
-  display: block !important; // Override flex to achieve height follow the length of the document
-  flex-grow: 0 !important;
-  margin: 0 auto;
+  display: flex;
+  height: 100%;
+  width: 100%;
+
+  > div {
+    width: 100%;
+  }
 
   // Set default padding-left to have consistent default look in editor and in email
   // This also overrides the default values in browsers for padding-inline-start
@@ -112,6 +116,16 @@
         // override flex-basis set in style attribute to fix the height of the column in mobile preview. Blocks overriding is as a part of style.css in blocks-library
         flex-basis: auto !important;
       }
+    }
+  }
+
+  // Fix for mobile preview height
+  &.is-mobile-preview {
+    > div {
+      display: block !important;
+    }
+    .editor-styles-wrapper {
+      height: auto !important;
     }
   }
 }
