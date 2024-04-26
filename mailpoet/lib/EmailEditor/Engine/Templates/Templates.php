@@ -40,7 +40,7 @@ class Templates {
         'wp_template',
         'email_theme_css',
         [
-          'get_callback' => [$this, 'getEmailThemeCss'],
+          'get_callback' => [$this, 'getEmailThemePreviewCss'],
           'update_callback' => null,
           'schema' => Builder::string()->toArray(),
         ]
@@ -237,16 +237,18 @@ class Templates {
   }
 
   /**
-   * Generates CSS for
+   * Generates CSS for preview of email theme
+   * They are applied in the preview BLockPreview in template selection
    */
-  public function getEmailThemeCss($template): string {
+  public function getEmailThemePreviewCss($template): string {
     $themeController = ContainerWrapper::getInstance()->get(ThemeController::class);
     $editorTheme = clone $themeController->getTheme();
     $templateTheme = $this->getBlockTheme($template['id'], $template['wp_id']);
     if (is_array($templateTheme)) {
       $editorTheme->merge(new \WP_Theme_JSON($templateTheme, 'custom'));
     }
-    return $editorTheme->get_stylesheet();
+    $additionalCSS = file_get_contents($this->templateDirectory . 'preview.css');
+    return $editorTheme->get_stylesheet() . $additionalCSS;
   }
 
   private function registerTemplateThemeFields(): void {
