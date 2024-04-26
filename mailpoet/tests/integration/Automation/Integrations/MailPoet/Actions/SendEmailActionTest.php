@@ -2,7 +2,9 @@
 
 namespace MailPoet\Test\Automation\Integrations\MailPoet\Actions;
 
+use Codeception\Stub\Expected;
 use MailPoet\Automation\Engine\Builder\UpdateAutomationController;
+use MailPoet\Automation\Engine\Control\AutomationController;
 use MailPoet\Automation\Engine\Control\StepRunControllerFactory;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
@@ -34,6 +36,7 @@ use MailPoet\Test\DataFactories\ScheduledTaskSubscriber;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\SendingQueue;
 use MailPoet\Test\DataFactories\Subscriber;
+use Throwable;
 
 class SendEmailActionTest extends \MailPoetTest {
 
@@ -192,6 +195,42 @@ class SendEmailActionTest extends \MailPoetTest {
       'Email sending process timed out.',
       function() use ($args, $controller) {
         $this->action->run($args, $controller);
+      }
+    );
+  }
+
+  public function testEmailSentHandlerEnqueuesProgress(): void {
+    $action = $this->getServiceWithOverrides(SendEmailAction::class, [
+      'automationController' => $this->make(AutomationController::class, [
+        'enqueueProgress' => Expected::once(),
+      ]),
+    ]);
+
+    $action->handleEmailSent([
+      'run_id' => 1,
+      'step_id' => 'abc',
+    ]);
+  }
+
+  public function testEmailSentHandlerValidatesData() {
+    $this->assertThrowsExceptionWithMessage(
+      'Invalid automation step data. Array expected, got: NULL',
+      function() {
+        $this->action->handleEmailSent(null);
+      }
+    );
+
+    $this->assertThrowsExceptionWithMessage(
+      "Invalid automation step data. Expected 'run_id' to be an integer, got: string",
+      function() {
+        $this->action->handleEmailSent(['run_id' => 'abc']);
+      }
+    );
+
+    $this->assertThrowsExceptionWithMessage(
+      "Invalid automation step data. Expected 'step_id' to be a string, got: integer",
+      function() {
+        $this->action->handleEmailSent(['run_id' => 123]);
       }
     );
   }
