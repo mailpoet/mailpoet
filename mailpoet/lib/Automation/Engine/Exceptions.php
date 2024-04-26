@@ -79,7 +79,7 @@ class Exceptions {
     return InvalidStateException::create()
       ->withErrorCode(self::AUTOMATION_NOT_ACTIVE)
       // translators: %1$s is the ID of the automation.
-      ->withMessage(sprintf(__('Automation with ID "%1$s" in no longer active.', 'mailpoet'), $automation));
+      ->withMessage(sprintf(__('Automation with ID "%1$s" is no longer active.', 'mailpoet'), $automation));
   }
 
   public static function automationRunNotFound(int $id): NotFoundException {
