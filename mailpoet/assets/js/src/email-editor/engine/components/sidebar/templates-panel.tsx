@@ -113,6 +113,7 @@ export function TemplatesPanel() {
         Components from this Panel will be placed in different areas of the UI.
         They are place here in one place just to simplify the experiment.
       </p>
+      <hr />
       <h3>Edit template toggle</h3>
       {template && !hasHistory && (
         <Button
@@ -143,7 +144,7 @@ export function TemplatesPanel() {
       {isTemplateSelectModalOpen && (
         <SelectTemplateModal setIsOpen={setIsTemplateSelectModalOpen} />
       )}
-
+      <hr />
       <h3>Revert Template</h3>
       <Button
         variant="primary"
