@@ -20,7 +20,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login } from '../utils/helpers.js';
+import { login, focusAndClick } from '../utils/helpers.js';
 
 export async function segmentsSelectTemplate() {
   const page = browser.newPage();
@@ -54,7 +54,7 @@ export async function segmentsSelectTemplate() {
     });
 
     // Save the segment
-    await page.locator('button[type="submit"]').click();
+    await focusAndClick(page, 'button[type="submit"]');
     await page.waitForSelector('[data-automation-id="filters_all"]', {
       state: 'visible',
     });

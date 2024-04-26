@@ -41,7 +41,7 @@ export async function automationTrashRestore() {
     });
 
     // Move to trash one of the existing automation listing
-    await page.$$('.mailpoet-listing-more-button')[0].click(); // click More
+    await page.$$('[aria-label="More"]')[0].click(); // click More
     await page.locator('.components-popover__content').click(); // click Trash
     await page.waitForLoadState('networkidle');
     await page.locator('div.components-flex > button.is-primary').focus();
@@ -68,7 +68,7 @@ export async function automationTrashRestore() {
     await page.locator('.mailpoet-tab-trash').click(); // click Trash tab
     await page.waitForLoadState('networkidle');
     await waitForSelectorToBeVisible(page, '.mailpoet-tab-trash.is-active');
-    await page.$$('.mailpoet-listing-more-button')[0].click(); // click More
+    await page.$$('[aria-label="More"]')[0].click(); // click More
     await page.waitForLoadState('networkidle');
     await page.$$('.components-dropdown-menu__menu-item')[0].focus();
     await page.$$('.components-dropdown-menu__menu-item')[0].click(); // click Restore

@@ -44,6 +44,12 @@ export async function selectInReact(page, reactSelector, reactValue) {
   await page.keyboard.press('Enter');
 }
 
+// Focus and click the element
+export async function focusAndClick(page, element) {
+  await page.locator(element).focus();
+  await page.locator(element).click();
+}
+
 // Wait and click the element
 export async function waitAndClick(page, element) {
   await page.waitForSelector(element);
