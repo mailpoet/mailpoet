@@ -46,6 +46,7 @@ export async function selectInReact(page, reactSelector, reactValue) {
 
 // Focus and click the element
 export async function focusAndClick(page, element) {
+  await page.locator(element).waitFor({ trial: true });
   await page.locator(element).focus();
   await page.locator(element).click();
 }
