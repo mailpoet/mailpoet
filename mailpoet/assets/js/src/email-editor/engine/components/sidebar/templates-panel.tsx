@@ -2,11 +2,7 @@ import { PanelBody, Button } from '@wordpress/components';
 import { useSelect, useDispatch, dispatch, select } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import {
-  store as editorStore,
-  // @ts-expect-error Our current version of packages doesn't have EntitiesSavedStates export
-  EntitiesSavedStates,
-} from '@wordpress/editor';
+import { store as editorStore } from '@wordpress/editor';
 import { SelectTemplateModal } from 'email-editor/engine/components/template-select';
 import { decodeEntities } from '@wordpress/html-entities';
 import { store as coreStore } from '@wordpress/core-data';
@@ -14,6 +10,7 @@ import { store as noticesStore } from '@wordpress/notices';
 import apiFetch from '@wordpress/api-fetch';
 import {
   parse,
+  // @ts-expect-error No types available for this yet.
   __unstableSerializeAndClean,
   BlockInstance,
 } from '@wordpress/blocks';
@@ -79,7 +76,9 @@ export function TemplatesPanel() {
       await revertTemplate(template);
       await saveEditedEntityRecord(
         'postType',
+        // @ts-expect-error Todo template type is not defined
         template.type as string,
+        // @ts-expect-error Todo template type is not defined
         template.id as string,
         {},
       );
@@ -132,9 +131,6 @@ export function TemplatesPanel() {
         </Button>
       )}
       <hr />
-      <h3>Save panel</h3>
-      <EntitiesSavedStates close={() => {}} />
-
       <h3>Select Template</h3>
       <Button
         variant="primary"

@@ -34,3 +34,8 @@
     padding: 16px;
   }
 }
+.mailpoet-email-editor-save-button__dropdown {
+  .components-popover__content {
+    min-width: 280px;
+  }
+}
