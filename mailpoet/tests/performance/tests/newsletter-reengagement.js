@@ -78,12 +78,8 @@ export async function newsletterReEngagement() {
     }
 
     // Click to proceed to the next step (the last one)
-    await Promise.all([
-      page.waitForNavigation(),
-      page
-        .locator('#mailpoet_editor_top > div > div > .mailpoet_save_next')
-        .click(),
-    ]);
+    await page.$$('input[value="Next"]')[0].click();
+    await page.waitForNavigation();
     await page.waitForSelector(
       '[data-automation-id="newsletter_send_heading"]',
     );
