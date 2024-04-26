@@ -79,7 +79,7 @@ export async function newsletterPostNotification() {
 
     // Try to close the tutorial video popup
     try {
-      await page.locator('#mailpoet_modal_close').click({ timeout: 1000 });
+      await page.locator('#mailpoet_modal_close').click({ timeout: 5000 });
     } catch (error) {
       console.log("Tutorial video wasn't present, skipping action.");
     }
