@@ -1,4 +1,4 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php declare(strict_types = 1);
 
 namespace MailPoet\AdminPages\Pages;
 
@@ -16,6 +16,7 @@ use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
 use MailPoet\SystemReport\SystemReportCollector;
 use MailPoet\WP\DateTime;
+use MailPoet\WP\Functions as WPFunctions;
 
 class Help {
   /** @var PageRenderer */
@@ -58,7 +59,12 @@ class Help {
   }
 
   public function render() {
-    $systemInfoData = $this->systemReportCollector->getData(true);
+    /**
+     * Filter the system info.
+     *
+     * @param array<string, string> $systemInfoData The system info data array.
+     */
+    $systemInfoData = WPFunctions::get()->applyFilters('mailpoet_system_info_data', $this->systemReportCollector->getData(true));
     try {
       $cronPingUrl = $this->cronHelper->getCronUrl(CronDaemon::ACTION_PING);
       $cronPingResponse = $this->cronHelper->pingDaemon();
