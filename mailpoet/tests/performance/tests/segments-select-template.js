@@ -60,9 +60,7 @@ export async function segmentsSelectTemplate() {
       fullPage: fullPageSet,
     });
 
-    await page.waitForSelector('[data-automation-id="filters_all"]', {
-      state: 'visible',
-    });
+    await page.waitForSelector('[data-automation-id="select_all"]');
     const locator =
       "//div[@class='notice-success'].//p[starts-with(text(),'Segment successfully updated!')]";
     describe(segmentsPageTitle, () => {
