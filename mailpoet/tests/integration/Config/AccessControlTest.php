@@ -67,6 +67,13 @@ class AccessControlTest extends \MailPoetTest {
       }
     );
 
+    $wp->addFilter(
+      'mailpoet_permission_manage_help',
+      function() {
+        return ['custom_manage_help_role'];
+      }
+    );
+
     verify($this->accessControl->getDefaultPermissions())->equals(
       [
         AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN => [
@@ -92,6 +99,9 @@ class AccessControlTest extends \MailPoetTest {
         ],
         AccessControl::PERMISSION_MANAGE_AUTOMATIONS => [
           'custom_manage_automations_role',
+        ],
+        AccessControl::PERMISSION_MANAGE_HELP => [
+          'custom_manage_help_role',
         ],
       ]
     );

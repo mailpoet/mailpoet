@@ -14,6 +14,7 @@ class AccessControl {
   const PERMISSION_MANAGE_FORMS = 'mailpoet_manage_forms';
   const PERMISSION_MANAGE_SEGMENTS = 'mailpoet_manage_segments';
   const PERMISSION_MANAGE_AUTOMATIONS = Engine::CAPABILITY_MANAGE_AUTOMATIONS;
+  const PERMISSION_MANAGE_HELP = 'mailpoet_manage_help';
   const NO_ACCESS_RESTRICTION = 'mailpoet_no_access_restriction';
   const ALL_ROLES_ACCESS = 'mailpoet_all_roles_access';
 
@@ -70,6 +71,13 @@ class AccessControl {
           'editor',
         ]
       ),
+      self::PERMISSION_MANAGE_HELP => WPFunctions::get()->applyFilters(
+        'mailpoet_permission_manage_help',
+        [
+          'administrator',
+          'editor',
+        ]
+      ),
     ];
   }
 
@@ -83,6 +91,7 @@ class AccessControl {
       self::PERMISSION_MANAGE_FORMS => __('Manage forms', 'mailpoet'),
       self::PERMISSION_MANAGE_SEGMENTS => __('Manage segments', 'mailpoet'),
       self::PERMISSION_MANAGE_AUTOMATIONS => __('Manage automations', 'mailpoet'),
+      self::PERMISSION_MANAGE_HELP => __('Manage help', 'mailpoet'),
     ];
   }
 
