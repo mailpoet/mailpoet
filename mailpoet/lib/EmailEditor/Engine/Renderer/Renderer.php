@@ -20,7 +20,8 @@ class Renderer {
   private CdnAssetUrl $cdnAssetUrl;
   private ServicesChecker $servicesChecker;
   private Templates $templates;
-  private static WP_Theme_JSON|null $theme = null;
+  /** @var WP_Theme_JSON|null */
+  private static $theme = null;
 
   const TEMPLATE_FILE = 'template-canvas.php';
   const TEMPLATE_STYLES_FILE = 'template-canvas.css';
