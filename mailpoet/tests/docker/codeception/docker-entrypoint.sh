@@ -117,10 +117,6 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
     unzip -q -o "$AUTOMATEWOO_ZIP" -d /wp-core/wp-content/plugins/
   fi
 
-  # Install WooCommerce COT helper plugin
-  mkdir -p /wp-core/wp-content/plugins/woo_cot_helper_plugin
-  cp /wp-core/wp-content/plugins/mailpoet/tests/_support/woo_cot_helper_plugin.php /wp-core/wp-content/plugins/woo_cot_helper_plugin.php
-
   ACTIVATION_CONTEXT=$HTTP_HOST
   # For integration tests in multisite environment we need to activate the plugin for correct site that is loaded in tests
   # The acceptance tests activate/deactivate plugins using a helper.
@@ -141,20 +137,23 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
   wp plugin get woocommerce-memberships --url=$ACTIVATION_CONTEXT
   wp plugin get automatewoo --url=$ACTIVATION_CONTEXT
 
-   # Activate helper plugin for WooCommerce COT and create tables in DB
-   if [[ $ENABLE_COT == "1" ]]; then
-     wp plugin activate woo_cot_helper_plugin --url=$ACTIVATION_CONTEXT
-     wp create_cot
-     wp option update woocommerce_custom_orders_table_enabled yes
-     wp option update woocommerce_custom_orders_table_data_sync_enabled no
-     echo "WooCommerce COT ENABLED!";
-     # Enable Sync of COT and posts tables
-     if [[ $ENABLE_COT_SYNC == "1" ]]; then
-       wp option update woocommerce_custom_orders_table_data_sync_enabled yes
-       echo "WooCommerce COT Synchronization enabled!";
-     fi
-   fi
+  # Enable HPOS to use (recommended) order storage
+  if [[ $ENABLE_HPOS == "1" ]]; then
+    wp wc cot enable
+    echo "WooCommerce HPOS is enabled!";
+  fi
 
+  # Enable Sync of HPOS and posts tables
+  if [[ $ENABLE_HPOS_SYNC == "1" ]]; then
+    wp wc cot enable --with-sync
+    echo "WooCommerce HPOS Synchronization is enabled!";
+  fi
+
+  # Disable HPOS and use (legacy) WP posts storage
+  if [[ $DISABLE_HPOS == "1" ]]; then
+    wp wc cot disable
+    echo "WooCommerce HPOS is disabled!";
+  fi
 fi
 
 # Set constants in wp-config.php

@@ -376,10 +376,13 @@ jobs:
       automate_woo_version:
         type: string
         default: ''
-      enable_cot:
+      enable_hpos:
         type: integer
         default: 0
-      enable_cot_sync:
+      enable_hpos_sync:
+        type: integer
+        default: 0
+      disable_hpos:
         type: integer
         default: 0
     environment:
@@ -473,8 +476,9 @@ jobs:
             -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
             -e CIRCLE_JOB=${CIRCLE_JOB} \
             -e MULTISITE=<< parameters.multisite >> \
-            -e ENABLE_COT=<< parameters.enable_cot >> \
-            -e ENABLE_COT_SYNC=<< parameters.enable_cot_sync >> \
+            -e ENABLE_HPOS=<< parameters.enable_hpos >> \
+            -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
+            -e DISABLE_HPOS=<< parameters.disable_hpos >> \
             codeception_acceptance "${args[@]}"
       - run:
           name: Check exceptions
@@ -608,10 +612,13 @@ jobs:
       skip_plugins:
         type: integer
         default: 0
-      enable_cot:
+      enable_hpos:
         type: integer
         default: 0
-      enable_cot_sync:
+      enable_hpos_sync:
+        type: integer
+        default: 0
+      disable_hpos:
         type: integer
         default: 0
       multisite:
@@ -721,8 +728,9 @@ jobs:
               -e WP_TEST_MAILER_SMTP_LOGIN=${WP_TEST_MAILER_SMTP_LOGIN} \
               -e WP_TEST_MAILER_SMTP_PASSWORD=${WP_TEST_MAILER_SMTP_PASSWORD} \
               -e MULTISITE=<< parameters.multisite >> \
-              -e ENABLE_COT=<< parameters.enable_cot >> \
-              -e ENABLE_COT_SYNC=<< parameters.enable_cot_sync >> \
+              -e ENABLE_HPOS=<< parameters.enable_hpos >> \
+              -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
+              -e DISABLE_HPOS=<< parameters.disable_hpos >> \
               codeception_integration "${args[@]}"
       - store_test_results:
           path: tests/_output
@@ -805,7 +813,8 @@ workflows:
             - build
       - acceptance_tests:
           <<: *slack-fail-post-step
-          name: acceptance_tests_base_and_woo_cot_off
+          name: acceptance_tests_base_and_woo
+          enable_hpos: 1
           requires:
             - unit_tests
             - static_analysis_php8
@@ -813,10 +822,9 @@ workflows:
             - qa_php
       - acceptance_tests:
           <<: *slack-fail-post-step
-          name: acceptance_tests_woo_cot_sync
+          name: acceptance_tests_woo_hpos_sync_on
           group: woo
-          enable_cot: 1
-          enable_cot_sync: 1
+          enable_hpos_sync: 1
           requires:
             - unit_tests
             - static_analysis_php8
@@ -824,10 +832,9 @@ workflows:
             - qa_php
       - acceptance_tests:
           <<: *slack-fail-post-step
-          name: acceptance_tests_woo_cot_no_sync
+          name: acceptance_tests_woo_hpos_off
           group: woo
-          enable_cot: 1
-          enable_cot_sync: 0
+          disable_hpos: 1
           requires:
             - unit_tests
             - static_analysis_php8
@@ -848,9 +855,8 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           group: woo
-          enable_cot: 1
-          enable_cot_sync: 1
-          name: integration_test_woo_cot_sync
+          enable_hpos_sync: 1
+          name: integration_test_woo_hpos_sync_on
           requires:
             - unit_tests
             - static_analysis_php8
@@ -859,9 +865,8 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           group: woo
-          enable_cot: 1
-          enable_cot_sync: 0
-          name: integration_test_woo_cot_no_sync
+          name: integration_test_woo_hpos_on
+          enable_hpos: 1
           requires:
             - unit_tests
             - static_analysis_php8
@@ -870,7 +875,8 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           group: woo
-          name: integration_test_woo_cot_off
+          disable_hpos: 1
+          name: integration_test_woo_hpos_off
           requires:
             - unit_tests
             - static_analysis_php8
@@ -923,14 +929,14 @@ workflows:
           <<: *slack-fail-post-step
           requires:
             - build
-            - acceptance_tests_base_and_woo_cot_off
+            - acceptance_tests_base_and_woo
             - js_tests
             - integration_test_base
-            - integration_test_woo_cot_no_sync
-            - integration_test_woo_cot_off
-            - integration_test_woo_cot_sync
-            - acceptance_tests_woo_cot_sync
-            - acceptance_tests_woo_cot_no_sync
+            - integration_test_woo_hpos_on
+            - integration_test_woo_hpos_off
+            - integration_test_woo_hpos_sync_on
+            - acceptance_tests_woo_hpos_sync_on
+            - acceptance_tests_woo_hpos_off
             - performance_tests
 
   nightly:
