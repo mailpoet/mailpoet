@@ -55,7 +55,7 @@ class Columns extends AbstractBlockRenderer {
     // Margins are not supported well in outlook for tables, so wrap in another table.
     $margins = $block_attributes['style']['spacing']['margin'] ?? [];
 
-    if ($margins) {
+    if (!empty($margins)) {
       $marginToPaddingStyles = $this->getStylesFromBlock([
         'spacing' => [ 'padding' => $margins ],
       ])['css'];
