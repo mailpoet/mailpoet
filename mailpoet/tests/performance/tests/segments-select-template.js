@@ -44,10 +44,13 @@ export async function segmentsSelectTemplate() {
     });
 
     // Select any segment's template on page
-    await page.$$('.mailpoet-templates-card')[0].click(); // this will randomly pick
-    await page.waitForSelector('[data-automation-id="select-segment-action"]');
+    await Promise.all([
+      page.$$('.mailpoet-templates-card')[0].click(), // this will randomly pick
+      page.waitForNavigation(),
+      page.waitForSelector('[data-automation-id="select-segment-action"]'),
+      page.waitForLoadState('networkidle'),
+    ]);
 
-    await page.waitForLoadState('networkidle');
     await page.screenshot({
       path: screenshotPath + 'Segments_Select_Template_02.png',
       fullPage: fullPageSet,
