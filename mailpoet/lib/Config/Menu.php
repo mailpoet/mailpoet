@@ -457,7 +457,7 @@ class Menu {
       self::MAIN_PAGE_SLUG,
       $this->setPageTitle(__('Help', 'mailpoet')),
       esc_html__('Help', 'mailpoet'),
-      AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN,
+      AccessControl::PERMISSION_MANAGE_HELP,
       self::HELP_PAGE_SLUG,
       [
         $this,
