@@ -28,7 +28,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->waitForElementVisible('.is-root-container');
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label="Block: Heading"]');
-    $i->click('[aria-label="Empty block; start writing or type forward slash to choose a block"]');
+    $i->click('[aria-label="Block: Paragraph"]');
     $i->type('Sample text');
 
     $i->wantTo('Verify correct WP menu item is highlighted');
@@ -91,7 +91,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->waitForElementVisible('.is-root-container');
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label="Block: Heading"]');
-    $i->click('[aria-label="Empty block; start writing or type forward slash to choose a block"]');
+    $i->click('[aria-label="Block: Paragraph"]');
     $i->type('Sample text');
 
     $i->wantTo('Save draft and display preview');
