@@ -40,8 +40,8 @@ class ContentRendererTest extends \MailPoetTest {
     $template->content = '<!-- wp:mailpoet/email-content /-->';
     $rendered = $this->renderer->render($this->emailPost, $template);
     $paragraphStyles = $this->getStylesValueForTag($rendered, 'p');
-    verify($paragraphStyles)->stringContainsString('margin:0');
-    verify($paragraphStyles)->stringContainsString('display:block');
+    verify($paragraphStyles)->stringContainsString('margin: 0');
+    verify($paragraphStyles)->stringContainsString('display: block');
   }
 
   private function getStylesValueForTag($html, $tag): ?string {
