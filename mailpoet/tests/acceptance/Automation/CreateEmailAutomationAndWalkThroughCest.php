@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Settings;
 
 /**
@@ -95,8 +96,22 @@ class CreateEmailAutomationAndWalkThroughCest {
     // Jump the waiting time by scheduling the delay action to now.
     $i->triggerAutomationActionScheduler(); // Initialize the run, creates the delay step
     $i->triggerAutomationActionScheduler(); // Set delay scheduled at to now, runs delay and send email
-    $i->triggerMailPoetActionScheduler(); // Runs the email queue
 
+    // Check that the send email step waits for email to be sent.
+    $i->moveBack();
+    $i->waitForText('Analytics', 10, '.mailpoet-automation-listing');
+    $i->click('Analytics', '.mailpoet-automation-listing');
+    $emailStatsContainer = Locator::contains('.mailpoet-automation-editor-step-wrapper', 'Send email');
+    $i->see('Sent 0', $emailStatsContainer);
+    $i->see('(1) waiting', $emailStatsContainer);
+
+    // Send the email and check that the step status reflects that.
+    $i->triggerMailPoetActionScheduler(); // Runs the email queue & updates the step status
+    $i->reloadPage();
+    $i->see('Sent 1', $emailStatsContainer);
+    $i->see('(0) waiting', $emailStatsContainer);
+
+    // Check the email.
     $i->amOnUrl('http://test.local/wp-admin/');
     $i->amOnMailpoetPage('Automation');
     $i->waitForText('Welcome new subscribers');
