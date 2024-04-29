@@ -59,6 +59,8 @@ class IntegrationTester extends \Codeception\Actor {
 
   private $createdCommentIds = [];
 
+  private $posts = [];
+
   public function __construct(
     Scenario $scenario
   ) {
@@ -466,6 +468,25 @@ class IntegrationTester extends \Codeception\Actor {
       ->from($subscribersTable);
   }
 
+  public function createPost(array $params): \WP_Post {
+    $postId = wp_insert_post($params);
+    if ($postId instanceof WP_Error) {
+      throw new \Exception('Failed to create post');
+    }
+    $post = get_post($postId);
+    if (!$post instanceof WP_Post) {
+      throw new \Exception('Failed to fetch the post');
+    }
+    $this->posts[] = $post;
+    return $post;
+  }
+
+  public function deletePosts() {
+    foreach ($this->posts as $post) {
+      wp_delete_post($post->ID, true);
+    }
+  }
+
   public function cleanup() {
     $this->deleteWordPressTerms();
     $this->deleteCreatedUsers();
@@ -473,6 +494,7 @@ class IntegrationTester extends \Codeception\Actor {
     $this->deleteTestWooProducts();
     $this->deleteTestWooOrders();
     $this->deleteTestWooCoupons();
+    $this->deletePosts();
   }
 
   private function deleteCreatedComments() {
