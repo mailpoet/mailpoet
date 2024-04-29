@@ -82,7 +82,7 @@ class EmailApiController {
       'subject' => Builder::string(),
       'preheader' => Builder::string(),
       'preview_url' => Builder::string(),
-      'deleted_at' => Builder::string(),
+      'deleted_at' => Builder::string()->nullable(),
     ])->toArray();
   }
 }
