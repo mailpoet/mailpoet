@@ -18,60 +18,60 @@ class RendererTest extends \MailPoetTest {
   }
 
   public function testItInlinesButtonDefaultStyles() {
-    $emailPost = new \WP_Post((object)[
+    $emailPost = $this->tester->createPost([
       'post_content' => '<!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link has-background wp-element-button">Button</a></div><!-- /wp:button -->',
     ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $buttonHtml = $this->extractBlockHtml($rendered['html'], 'wp-block-button', 'td');
-    verify($buttonHtml)->stringContainsString('color:#ffffff');
-    verify($buttonHtml)->stringContainsString('padding-bottom:0.7em;');
-    verify($buttonHtml)->stringContainsString('padding-left:1.4em;');
-    verify($buttonHtml)->stringContainsString('padding-right:1.4em;');
-    verify($buttonHtml)->stringContainsString('padding-top:0.7em;');
-    verify($buttonHtml)->stringContainsString('background-color:#32373c');
+    verify($buttonHtml)->stringContainsString('color: #ffffff');
+    verify($buttonHtml)->stringContainsString('padding-bottom: 0.7em;');
+    verify($buttonHtml)->stringContainsString('padding-left: 1.4em;');
+    verify($buttonHtml)->stringContainsString('padding-right: 1.4em;');
+    verify($buttonHtml)->stringContainsString('padding-top: 0.7em;');
+    verify($buttonHtml)->stringContainsString('background-color: #32373c');
   }
 
   public function testButtonDefaultStylesDontOverwriteUserSetStyles() {
-    $emailPost = new \WP_Post((object)[
-      'post_content' => '<!-- wp:button {"backgroundColor":"white","textColor":"vivid-cyan-blue"} --><div class="wp-block-button"><a class="wp-block-button__link has-background wp-element-button">Button</a></div><!-- /wp:button -->',
-    ]);
+    $emailPost = $this->tester->createPost([
+        'post_content' => '<!-- wp:button {"backgroundColor":"white","textColor":"vivid-cyan-blue"} --><div class="wp-block-button"><a class="wp-block-button__link has-background wp-element-button">Button</a></div><!-- /wp:button -->',
+      ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $buttonHtml = $this->extractBlockHtml($rendered['html'], 'wp-block-button', 'td');
-    verify($buttonHtml)->stringContainsString('color:#0693e3');
-    verify($buttonHtml)->stringContainsString('background-color:#ffffff');
+    verify($buttonHtml)->stringContainsString('color: #0693e3');
+    verify($buttonHtml)->stringContainsString('background-color: #ffffff');
   }
 
   public function testItInlinesHeadingFontSize() {
-    $emailPost = new \WP_Post((object)[
+    $emailPost = $this->tester->createPost([
       'post_content' => '<!-- wp:heading {"level":1,"style":{"typography":{"fontSize":"large"}}} --><h1 class="wp-block-heading">Hello</h1><!-- /wp:heading -->',
     ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $headingHtml = $this->extractBlockHtml($rendered['html'], 'wp-block-heading', 'h1');
-    verify($headingHtml)->stringContainsString('font-size:42px'); // large is 42px in theme.json
+    verify($headingHtml)->stringContainsString('font-size: 42px'); // large is 42px in theme.json
   }
 
   public function testItInlinesHeadingColors() {
-    $emailPost = new \WP_Post((object)[
+    $emailPost = $this->tester->createPost([
       'post_content' => '<!-- wp:heading {"level":1, "backgroundColor":"black", "textColor":"luminous-vivid-orange"} --><h1 class="wp-block-heading has-luminous-vivid-orange-color has-black-background-color">Hello</h1><!-- /wp:heading -->',
     ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $headingWrapperStyle = $this->extractBlockStyle($rendered['html'], 'has-luminous-vivid-orange-color', 'td');
-    verify($headingWrapperStyle)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
-    verify($headingWrapperStyle)->stringContainsString('background-color:#000000'); // black is #000000
+    verify($headingWrapperStyle)->stringContainsString('color: #ff6900'); // luminous-vivid-orange is #ff6900
+    verify($headingWrapperStyle)->stringContainsString('background-color: #000'); // black is #000
   }
 
   public function testItInlinesParagraphColors() {
-    $emailPost = new \WP_Post((object)[
+    $emailPost = $this->tester->createPost([
       'post_content' => '<!-- wp:paragraph {style":{"color":{"background":"black", "text":"luminous-vivid-orange"}}} --><p class="has-luminous-vivid-orange-color has-black-background-color">Hello</p><!-- /wp:paragraph -->',
     ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $paragraphWrapperStyle = $this->extractBlockStyle($rendered['html'], 'has-luminous-vivid-orange-color', 'td');
-    verify($paragraphWrapperStyle)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
-    verify($paragraphWrapperStyle)->stringContainsString('background-color:#000000'); // black is #000000
+    verify($paragraphWrapperStyle)->stringContainsString('color: #ff6900'); // luminous-vivid-orange is #ff6900
+    verify($paragraphWrapperStyle)->stringContainsString('background-color: #000'); // black is #000
   }
 
   public function testItInlinesListColors() {
-    $emailPost = new \WP_Post((object)[
+    $emailPost = $this->tester->createPost([
       'post_content' => '<!-- wp:list {"backgroundColor":"black","textColor":"luminous-vivid-orange","style":{"elements":{"link":{"color":{"text":"var:preset|color|vivid-red"}}}}} -->
         <ul class="has-black-background-color has-luminous-vivid-orange-color has-text-color has-background has-link-color"><!-- wp:list-item -->
         <li>Item 1</li>
@@ -84,24 +84,24 @@ class RendererTest extends \MailPoetTest {
     ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $listStyle = $this->extractBlockStyle($rendered['html'], 'has-luminous-vivid-orange-color', 'ul');
-    verify($listStyle)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
-    verify($listStyle)->stringContainsString('background-color:#000000'); // black is #000000
+    verify($listStyle)->stringContainsString('color: #ff6900'); // luminous-vivid-orange is #ff6900
+    verify($listStyle)->stringContainsString('background-color: #000'); // black is #000
   }
 
   public function testItInlinesColumnsColors() {
-    $emailPost = new \WP_Post((object)[
+    $emailPost = $this->tester->createPost([
       'post_content' => '<!-- wp:columns {"backgroundColor":"vivid-green-cyan", "textColor":"black"} -->
         <div class="wp-block-columns has-black-background-color has-luminous-vivid-orange-color"><!-- wp:column --><!-- /wp:column --></div>
         <!-- /wp:columns -->',
     ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $style = $this->extractBlockStyle($rendered['html'], 'wp-block-columns', 'table');
-    verify($style)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
-    verify($style)->stringContainsString('background-color:#000000'); // black is #000000
+    verify($style)->stringContainsString('color: #ff6900'); // luminous-vivid-orange is #ff6900
+    verify($style)->stringContainsString('background-color: #000'); // black is #000
   }
 
   public function testItInlinesColumnColors() {
-    $emailPost = new \WP_Post((object)[
+    $emailPost = $this->tester->createPost([
       'post_content' => '
       <!-- wp:column {"verticalAlignment":"stretch","backgroundColor":"black","textColor":"luminous-vivid-orange"} -->
       <div class="wp-block-column-test wp-block-column is-vertically-aligned-stretch has-luminous-vivid-orange-color has-black-background-color has-text-color has-background"></div>
@@ -109,8 +109,8 @@ class RendererTest extends \MailPoetTest {
     ]);
     $rendered = $this->renderer->render($emailPost, 'Subject', '', 'en');
     $style = $this->extractBlockStyle($rendered['html'], 'wp-block-column-test', 'td');
-    verify($style)->stringContainsString('color:#ff6900'); // luminous-vivid-orange is #ff6900
-    verify($style)->stringContainsString('background-color:#000000'); // black is #000000
+    verify($style)->stringContainsString('color: #ff6900'); // luminous-vivid-orange is #ff6900
+    verify($style)->stringContainsString('background-color: #000'); // black is #000
   }
 
   private function extractBlockHtml(string $html, string $blockClass, string $tag): string {
