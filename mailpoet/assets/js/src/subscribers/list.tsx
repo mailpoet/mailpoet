@@ -82,6 +82,11 @@ const columns = [
   },
   {
     name: 'last_subscribed_at',
+    label: MailPoet.I18n.t('confirmedOn'),
+    sortable: true,
+  },
+  {
+    name: 'created_at',
     label: MailPoet.I18n.t('subscribedOn'),
     sortable: true,
   },
@@ -566,13 +571,25 @@ function SubscriberList({ match }) {
         ) : null}
         <td
           className="column-date mailpoet-hide-on-mobile"
-          data-colname={MailPoet.I18n.t('subscribedOn')}
+          data-colname={MailPoet.I18n.t('confirmedOn')}
         >
           {subscriber.last_subscribed_at ? (
             <>
               {MailPoet.Date.short(subscriber.last_subscribed_at)}
               <br />
               {MailPoet.Date.time(subscriber.last_subscribed_at)}
+            </>
+          ) : null}
+        </td>
+        <td
+          className="column-date mailpoet-hide-on-mobile"
+          data-colname={MailPoet.I18n.t('subscribedOn')}
+        >
+          {subscriber.created_at ? (
+            <>
+              {MailPoet.Date.short(subscriber.created_at)}
+              <br />
+              {MailPoet.Date.time(subscriber.created_at)}
             </>
           ) : null}
         </td>
