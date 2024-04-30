@@ -2,16 +2,12 @@
 
 namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout;
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlocksRegistry;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\DummyBlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 require_once __DIR__ . '/../DummyBlockRenderer.php';
 
 class FlexLayoutRendererTest extends \MailPoetTest {
-
-  /** @var BlocksRegistry */
-  private $registry;
 
   /** @var FlexLayoutRenderer */
   private $renderer;
@@ -22,10 +18,9 @@ class FlexLayoutRendererTest extends \MailPoetTest {
   public function _before(): void {
     parent::_before();
     $this->settingsController = $this->diContainer->get(SettingsController::class);
-    $this->registry = new BlocksRegistry();
     $this->renderer = new FlexLayoutRenderer();
-    $this->registry->addBlockRenderer('dummy/block', new DummyBlockRenderer());
     register_block_type('dummy/block', []);
+    add_filter('render_block', [$this, 'renderDummyBlock'], 10, 2);
   }
 
   public function testItRendersInnerBlocks(): void {
@@ -227,8 +222,14 @@ class FlexLayoutRendererTest extends \MailPoetTest {
     return explode('><', $matches[0][0] ?? []);
   }
 
+  public function renderDummyBlock($blockContent, $parsedBlock): string {
+    $dummyRenderer = new DummyBlockRenderer();
+    return $dummyRenderer->render($blockContent, $parsedBlock, $this->settingsController);
+  }
+
   public function _after(): void {
     parent::_after();
     unregister_block_type('dummy/block');
+    remove_filter('render_block', [$this, 'renderDummyBlock'], 10);
   }
 }
