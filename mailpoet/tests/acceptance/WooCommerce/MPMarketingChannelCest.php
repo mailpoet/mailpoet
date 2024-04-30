@@ -91,7 +91,8 @@ class MPMarketingChannelCest {
       $i->see('MailPoet Post notifications');
       $i->see('MailPoet Automations');
       $i->click('Create', '.woocommerce-marketing-new-campaign-type');
-      $i->seeInCurrentUrl('page=mailpoet-newsletters&loadedvia=woo_multichannel_dashboard#/new/standard'); // will be redirected to page=mailpoet-newsletters#/template
+      $i->waitForElement('[data-automation-id="templates-standard"]');
+      $i->seeInCurrentUrl('page=mailpoet-newsletters&loadedvia=woo_multichannel_dashboard#'); // will be redirected to page=mailpoet-newsletters#/template
       $i->waitForText('Simple text'); // on template selection page
       $i->see('Template'); // on template selection page
       $i->see('Newsletters');
