@@ -2,7 +2,11 @@ import { Button, Modal, TextControl } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { check, Icon } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
+import {
+  useEffect,
+  useRef,
+  createInterpolateElement,
+} from '@wordpress/element';
 import { ENTER } from '@wordpress/keycodes';
 import { isEmail } from '@wordpress/url';
 import { useEntityProp } from '@wordpress/core-data';
@@ -13,6 +17,8 @@ import {
 } from '../../store';
 
 export function SendPreviewEmail() {
+  const sendToRef = useRef(null);
+
   const {
     requestSendingNewsletterPreview,
     togglePreviewModal,
@@ -38,6 +44,13 @@ export function SendPreviewEmail() {
 
   const closeCallback = () => togglePreviewModal(false);
 
+  // We use this effect to focus on the input field when the modal is opened
+  useEffect(() => {
+    if (isModalOpened) {
+      sendToRef.current?.focus();
+    }
+  }, [isModalOpened]);
+
   if (!isModalOpened) {
     return null;
   }
@@ -47,7 +60,7 @@ export function SendPreviewEmail() {
       className="mailpoet-send-preview-email"
       title={__('Send a test email', 'mailpoet')}
       onRequestClose={closeCallback}
-      focusOnMount="firstContentElement"
+      focusOnMount={false}
     >
       {sendingPreviewStatus === SendingPreviewStatus.ERROR ? (
         <div className="mailpoet-send-preview-modal-notice-error">
@@ -109,7 +122,6 @@ export function SendPreviewEmail() {
                 href="https://www.mail-tester.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                tabIndex={-1}
               />
             ),
             link2: (
@@ -118,7 +130,6 @@ export function SendPreviewEmail() {
                 href="https://kb.mailpoet.com/article/147-test-your-spam-score-with-mail-tester"
                 target="_blank"
                 rel="noopener noreferrer"
-                tabIndex={-1}
               />
             ),
           },
@@ -138,6 +149,7 @@ export function SendPreviewEmail() {
         }}
         value={previewToEmail}
         type="email"
+        ref={sendToRef}
         required
       />
       {sendingPreviewStatus === SendingPreviewStatus.SUCCESS ? (
