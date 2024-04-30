@@ -28,10 +28,7 @@ class RendererTest extends \MailPoetTest {
         'fontFamily' => 'Test Font Family',
       ],
       'color' => [
-        'background' => [
-          'layout' => '#123456',
-          'content' => '#654321',
-        ],
+        'background' => '#123456',
       ],
     ];
     $themeJsonMock = $this->createMock(\WP_Theme_JSON::class);
@@ -39,12 +36,10 @@ class RendererTest extends \MailPoetTest {
       'styles' => $styles,
     ]);
     $settingsControllerMock = $this->createMock(SettingsController::class);
-    $settingsControllerMock->method('getLayout')->willReturn([
-      'contentSize' => '123px',
-    ]);
     $settingsControllerMock->method('getEmailStyles')->willReturn($styles);
     $themeControllerMock = $this->createMock(ThemeController::class);
     $themeControllerMock->method('getTheme')->willReturn($themeJsonMock);
+    $themeControllerMock->method('getStyles')->willReturn($styles);
 
     $this->renderer = $this->getServiceWithOverrides(Renderer::class, [
       'settingsController' => $settingsControllerMock,
@@ -96,25 +91,21 @@ class RendererTest extends \MailPoetTest {
     $style = $this->getStylesValueForTag($rendered['html'], ['tag_name' => 'body']);
     verify($style)->stringContainsString('background-color: #123456');
 
-    // Verify content wrapper element styles
-    $style = $this->getStylesValueForTag($rendered['html'], ['tag_name' => 'td', 'class_name' => 'email_content_wrapper']);
-    verify($style)->stringContainsString('font-family:Test Font Family;');
-    verify($style)->stringContainsString('background:#654321');
-    verify($style)->stringContainsString('padding-top:3px;');
-    verify($style)->stringContainsString('padding-bottom:4px;');
-
     // Verify layout element styles
     $doc = new \DOMDocument();
     $doc->loadHTML($rendered['html']);
     $xpath = new \DOMXPath($doc);
     $wrapper = null;
-    $nodes = $xpath->query('//div[contains(@class, "email_layout_wrapper")]//div');
+    $nodes = $xpath->query('//div[contains(@class, "email_layout_wrapper")]');
     if (($nodes instanceof \DOMNodeList) && $nodes->length > 0) {
       $wrapper = $nodes->item(0);
     }
     $this->assertInstanceOf(\DOMElement::class, $wrapper);
     $style = $wrapper->getAttribute('style');
-    verify($style)->stringContainsString('max-width:123px');
+    verify($style)->stringContainsString('background-color: #123456');
+    verify($style)->stringContainsString('font-family: Test Font Family;');
+    verify($style)->stringContainsString('padding-top: 3px;');
+    verify($style)->stringContainsString('padding-bottom: 4px;');
   }
 
   private function getStylesValueForTag(string $html, array $query): ?string {

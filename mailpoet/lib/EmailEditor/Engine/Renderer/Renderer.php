@@ -4,7 +4,6 @@ namespace MailPoet\EmailEditor\Engine\Renderer;
 
 use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ContentRenderer;
-use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
 use MailPoet\EmailEditor\Engine\ThemeController;
 use MailPoet\Util\CdnAssetUrl;
@@ -14,7 +13,6 @@ use WP_Style_Engine;
 use WP_Theme_JSON;
 
 class Renderer {
-  private SettingsController $settingsController;
   private ThemeController $themeController;
   private ContentRenderer $contentRenderer;
   private CdnAssetUrl $cdnAssetUrl;
@@ -27,14 +25,12 @@ class Renderer {
   const TEMPLATE_STYLES_FILE = 'template-canvas.css';
 
   public function __construct(
-    SettingsController $settingsController,
     ContentRenderer $contentRenderer,
     CdnAssetUrl $cdnAssetUrl,
     Templates $templates,
     ServicesChecker $servicesChecker,
     ThemeController $themeController
   ) {
-    $this->settingsController = $settingsController;
     $this->contentRenderer = $contentRenderer;
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->templates = $templates;
@@ -58,7 +54,6 @@ class Renderer {
     self::$theme = new WP_Theme_JSON($theme, 'default');
 
     $emailStyles = $this->themeController->getStyles();
-    $layoutSettings = $this->settingsController->getLayout();
     $templateHtml = $this->contentRenderer->render($post, $template);
 
     ob_start();
