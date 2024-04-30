@@ -50,8 +50,7 @@ class RendererTest extends \MailPoetTest {
       'settingsController' => $settingsControllerMock,
       'themeController' => $themeControllerMock,
     ]);
-    $this->emailPost = new \WP_Post((object)[
-      'ID' => 1,
+    $this->emailPost = $this->tester->createPost([
       'post_content' => '<!-- wp:paragraph --><p>Hello!</p><!-- /wp:paragraph -->',
     ]);
   }
@@ -80,14 +79,14 @@ class RendererTest extends \MailPoetTest {
     add_filter('mailpoet_email_renderer_styles', $stylesCallback);
     $rendered = $this->renderer->render($this->emailPost, 'Subject', '', 'en');
     $style = $this->getStylesValueForTag($rendered['html'], ['tag_name' => 'body']);
-    verify($style)->stringContainsString('color:pink');
+    verify($style)->stringContainsString('color: pink');
     remove_filter('mailpoet_email_renderer_styles', $stylesCallback);
   }
 
   public function testItInlinesBodyStyles(): void {
     $rendered = $this->renderer->render($this->emailPost, 'Subject', '', 'en');
     $style = $this->getStylesValueForTag($rendered['html'], ['tag_name' => 'body']);
-    verify($style)->stringContainsString('margin:0;padding:0;');
+    verify($style)->stringContainsString('margin: 0; padding: 0;');
   }
 
   public function testItInlinesWrappersStyles(): void {
@@ -95,7 +94,7 @@ class RendererTest extends \MailPoetTest {
 
     // Verify body element styles
     $style = $this->getStylesValueForTag($rendered['html'], ['tag_name' => 'body']);
-    verify($style)->stringContainsString('background:#123456');
+    verify($style)->stringContainsString('background-color: #123456');
 
     // Verify content wrapper element styles
     $style = $this->getStylesValueForTag($rendered['html'], ['tag_name' => 'td', 'class_name' => 'email_content_wrapper']);
