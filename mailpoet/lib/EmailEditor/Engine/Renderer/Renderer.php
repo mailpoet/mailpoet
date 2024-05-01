@@ -38,7 +38,7 @@ class Renderer {
   }
 
   public static function maybeConvertPreset($value, $variables) {
-    if (is_string($value) && str_contains($value, 'var:preset|color|')) {
+    if (is_string($value) && strstr($value, 'var:preset|color|')) {
         $value = str_replace('var:preset|color|', '', $value);
         $value = sprintf('var(--wp--preset--color--%s)', $value);
     }
