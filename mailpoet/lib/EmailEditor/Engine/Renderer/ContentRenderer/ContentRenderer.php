@@ -13,6 +13,8 @@ class ContentRenderer {
   private ProcessManager $processManager;
   private SettingsController $settingsController;
   private ThemeController $themeController;
+  private $post = null;
+  private $template = null;
 
   const CONTENT_STYLES_FILE = 'content.css';
 
@@ -37,14 +39,14 @@ class ContentRenderer {
   }
 
   public function render(WP_Post $post, WP_Block_Template $template): string {
+    $this->post = $post;
+    $this->template = $template;
     $this->setTemplateGlobals($post, $template);
     $this->initialize();
-
-    $renderedHtml = $this->processManager->postprocess(get_the_block_template_html());
-
+    $renderedHtml = get_the_block_template_html();
     $this->reset();
 
-    return $this->inlineStyles($renderedHtml, $post);
+    return $this->processManager->postprocess($this->inlineStyles($renderedHtml, $post, $template));
   }
 
   public function blockParser() {
@@ -52,7 +54,7 @@ class ContentRenderer {
   }
 
   public function preprocessParsedBlocks(array $parsedBlocks): array {
-    return $this->processManager->preprocess($parsedBlocks, $this->settingsController->getLayout(), $this->themeController->getStyles());
+    return $this->processManager->preprocess($parsedBlocks, $this->settingsController->getLayout(), $this->themeController->getStyles($this->post, $this->template));
   }
 
   public function renderBlock($blockContent, $parsedBlock) {
@@ -85,7 +87,7 @@ class ContentRenderer {
    * @param string $html
    * @return string
    */
-  private function inlineStyles($html, WP_Post $post) {
+  private function inlineStyles($html, WP_Post $post, $template = null) {
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::CONTENT_STYLES_FILE);
 
     // Apply default contentWidth to constrained blocks.
@@ -108,7 +110,7 @@ class ContentRenderer {
     );
 
     // Get styles from theme.
-    $styles .= $this->themeController->getStylesheetForRendering($post);
+    $styles .= $this->themeController->getStylesheetForRendering($post, $template);
     $blockSupportStyles = $this->themeController->getStylesheetFromContext('block-supports', []);
     // Get styles from block-supports stylesheet. This includes rules such as layout (contentWidth) that some blocks use.
     // @see https://github.com/WordPress/WordPress/blob/3c5da9c74344aaf5bf8097f2e2c6a1a781600e03/wp-includes/script-loader.php#L3134

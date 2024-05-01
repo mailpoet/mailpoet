@@ -1,7 +1,6 @@
 import {
   __experimentalNavigatorProvider as NavigatorProvider,
   __experimentalNavigatorScreen as NavigatorScreen,
-  __experimentalNavigatorToParentButton as NavigatorToParentButton,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { ComplementaryArea } from '@wordpress/interface';
@@ -13,6 +12,7 @@ import {
   ScreenTypographyElement,
   ScreenLayout,
   ScreenRoot,
+  ScreenColors,
 } from './screens';
 
 type Props = ComponentProps<typeof ComplementaryArea>;
@@ -54,8 +54,7 @@ export function StylesSidebar(props: Props): JSX.Element {
         </NavigatorScreen>
 
         <NavigatorScreen path="/colors">
-          <NavigatorToParentButton>Back</NavigatorToParentButton>
-          <div>TODO: Colors screen</div>
+          <ScreenColors />
         </NavigatorScreen>
 
         <NavigatorScreen path="/layout">
