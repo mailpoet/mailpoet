@@ -45,8 +45,17 @@ class ThemeController {
    *   }
    * }
    */
-  public function getStyles(): array {
-    return $this->getTheme()->get_data()['styles'];
+  public function getStyles($post = null, $template = null): array {
+    $themeStyles = $this->getTheme()->get_data()['styles'];
+
+    // Replace template styles.
+    if ($template && $template->wp_id) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $templateTheme = (array)get_post_meta($template->wp_id, 'mailpoet_email_theme', true); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $templateStyles = (array)($templateTheme['styles'] ?? []);
+      $themeStyles = array_replace_recursive($themeStyles, $templateStyles);
+    }
+
+    return $themeStyles;
   }
 
   public function getSettings(): array {
@@ -63,7 +72,7 @@ class ThemeController {
     return function_exists('gutenberg_style_engine_get_stylesheet_from_context') ? gutenberg_style_engine_get_stylesheet_from_context($context, $options) : wp_style_engine_get_stylesheet_from_context($context, $options);
   }
 
-  public function getStylesheetForRendering($post = null): string {
+  public function getStylesheetForRendering($post = null, $template = null): string {
     $emailThemeSettings = $this->getSettings();
 
     $cssPresets = '';
@@ -91,16 +100,22 @@ class ThemeController {
     }
 
     // Element specific styles
+    $elementsStyles = $this->getTheme()->get_raw_data()['styles']['elements'] ?? [];
+
     // Because the section styles is not a part of the output the `get_styles_block_nodes` method, we need to get it separately
+    if ($template && $template->wp_id) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $templateTheme = (array)get_post_meta($template->wp_id, 'mailpoet_email_theme', true); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      $templateStyles = (array)($templateTheme['styles'] ?? []);
+      $templateElements = $templateStyles['elements'] ?? [];
+      $elementsStyles = array_replace_recursive((array)$elementsStyles, (array)$templateElements);
+    }
+
     if ($post) {
       $postTheme = (array)get_post_meta($post->ID, 'mailpoet_email_theme', true);
       $postStyles = (array)($postTheme['styles'] ?? []);
       $postElements = $postStyles['elements'] ?? [];
-    } else {
-      $postElements = [];
+      $elementsStyles = array_replace_recursive((array)$elementsStyles, (array)$postElements);
     }
-    $jsonElements = $this->getTheme()->get_raw_data()['styles']['elements'] ?? [];
-    $elementsStyles = array_merge_recursive((array)$jsonElements, (array)$postElements);
 
     $cssElements = '';
     foreach ($elementsStyles as $key => $elementsStyle) {

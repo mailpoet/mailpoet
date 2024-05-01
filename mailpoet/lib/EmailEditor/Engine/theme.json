@@ -5,7 +5,9 @@
     "color": {
       "customGradient": false,
       "defaultGradients": false,
-      "gradients": []
+      "gradients": [],
+      "background": true,
+      "text": true
     },
     "layout": {
       "contentSize": "660px",

@@ -29,6 +29,7 @@ interface EmailStylesData {
   styles: StyleProperties;
   defaultStyles: StyleProperties;
   updateStyleProp: (path, newValue) => void;
+  updateStyles: (newStyles: StyleProperties) => void;
 }
 
 /**
@@ -76,6 +77,18 @@ export const useEmailStyles = (): EmailStylesData => {
   }));
 
   // Update email styles.
+  const updateStyles = useCallback(
+    (newStyles) => {
+      const newTheme = {
+        ...templateTheme,
+        styles: newStyles,
+      };
+      updateTemplateTheme(newTheme);
+    },
+    [updateTemplateTheme, templateTheme],
+  );
+
+  // Update an email style prop.
   const updateStyleProp = useCallback(
     (path, newValue) => {
       const newTheme = setImmutably(
@@ -89,21 +102,9 @@ export const useEmailStyles = (): EmailStylesData => {
   );
 
   return {
-    styles: {
-      spacing: {
-        ...defaultStyles.spacing,
-        ...styles?.spacing,
-      },
-      typography: {
-        ...defaultStyles.typography,
-        ...styles?.typography,
-      },
-      elements: deepmerge.all([
-        defaultStyles.elements || {},
-        styles?.elements || {},
-      ]) as Record<string, ElementProperties>,
-    },
+    styles: deepmerge.all([defaultStyles, styles]),
     defaultStyles,
     updateStyleProp,
+    updateStyles,
   };
 };

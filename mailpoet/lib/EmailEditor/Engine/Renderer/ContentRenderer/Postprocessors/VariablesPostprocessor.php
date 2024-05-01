@@ -20,21 +20,27 @@ class VariablesPostprocessor implements Postprocessor {
 
   public function postprocess(string $html): string {
     $variables = $this->themeController->getVariablesValuesMap();
+    $replacements = [];
+
+    foreach ($variables as $varName => $varValue) {
+      $varPattern = '/' . preg_quote('var(' . $varName . ')', '/') . '/i';
+      $replacements[$varPattern] = $varValue;
+    }
+
     // Pattern to match style attributes and their values.
-    //We want to replace the CSS variables only in the style attributes to avoid replacing the actual content.
-    $stylePattern = '/style="(.*?)"/i';
-    $callback = function ($matches) use ($variables) {
+    $callback = function ($matches) use ($replacements) {
       // For each match, replace CSS variables with their values
       $style = $matches[1];
-      foreach ($variables as $varName => $varValue) {
-        $varPattern = '/var\(' . preg_quote($varName, '/') . '\)/i';
-        $style = preg_replace($varPattern, $varValue, $style);
-      }
+      $style = preg_replace(array_keys($replacements), array_values($replacements), $style);
       return 'style="' . esc_attr($style) . '"';
     };
 
-    $html = preg_replace_callback($stylePattern, $callback, $html);
+    // We want to replace the CSS variables only in the style attributes to avoid replacing the actual content.
+    $stylePattern = '/style="(.*?)"/i';
+    $stylePatternAlt = "/style='(.*?)'/i";
+    $html = (string)preg_replace_callback($stylePattern, $callback, $html);
+    $html = (string)preg_replace_callback($stylePatternAlt, $callback, $html);
 
-    return (string)$html;
+    return $html;
   }
 }
