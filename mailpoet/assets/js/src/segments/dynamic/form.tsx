@@ -51,6 +51,9 @@ export function Form({ isNewSegment, newsletterId }: Props): JSX.Element {
   );
 
   const segmentFiltersCount = segment.filters.length;
+  const segmentFiltersLimitReached =
+    MailPoet.capabilities.segmentFilters.value > 0 && // 0 is unlimited
+    segmentFiltersCount >= MailPoet.capabilities.segmentFilters.value;
 
   const segmentFilters: GroupFilterValue[] = useSelect(
     (select) => select(storeName).getAvailableFilters(),
@@ -193,9 +196,7 @@ export function Form({ isNewSegment, newsletterId }: Props): JSX.Element {
                 {(!MailPoet.premiumActive ||
                   !MailPoet.hasValidPremiumKey ||
                   MailPoet.subscribersLimitReached ||
-                  (MailPoet.capabilities.segmentFilters.value &&
-                    segmentFiltersCount >=
-                      MailPoet.capabilities.segmentFilters.value)) && (
+                  segmentFiltersLimitReached) && (
                   <LockedBadge text={__('UPGRADE', 'mailpoet')} />
                 )}
 
