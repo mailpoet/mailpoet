@@ -63,8 +63,6 @@ export function Layout() {
       hasFixedToolbar: select(storeName).isFeatureActive('fixedToolbar'),
       focusMode: select(storeName).isFeatureActive('focusMode'),
       styles: select(storeName).getStyles(),
-      // cdnUrl: select(storeName).getCdnUrl(),
-      // isPremiumPluginActive: select(storeName).isPremiumPluginActive(),
       isEditingTemplate:
         // @ts-expect-error No types for this exist yet.
         select(editorStore).getCurrentPostType() === 'wp_template',
@@ -108,18 +106,6 @@ export function Layout() {
   }
 
   const disableIframe = !isEditingTemplate;
-
-  /**
-   * Todo: Restore footer credit as block type.
-   *
-   * {!isPremiumPluginActive && !isEditingTemplate && (
-                    <div className="visual-editor__email_footer">
-                      <FooterCredit
-                        logoSrc={`${cdnUrl}email-editor/logo-footer.png`}
-                      />
-                    </div>
-                  )}
-   */
 
   return (
     <>

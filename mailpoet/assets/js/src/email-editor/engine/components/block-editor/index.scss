@@ -135,20 +135,6 @@
   margin-right: -20px;
 }
 
-.visual-editor__email_footer {
-  direction: ltr;
-  text-align: center;
-
-  .mailpoet-email-footer-credit {
-    appearance: none;
-    border: 0;
-    cursor: pointer;
-    display: block;
-    margin: 24px auto 0;
-    padding: 0;
-  }
-}
-
 // For the WYSIWYG experience we don't want to display any margins between blocks in the editor
 .wp-block {
   clear: both; // for ensuring that floated elements (images) are cleared
