@@ -2,21 +2,18 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Blocks;
 
+use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypes\PoweredByMailpoet;
+
 class BlockTypesController {
+  private $poweredByMailPoet;
+
+  public function __construct(
+    PoweredByMailpoet $poweredByMailPoet
+  ) {
+    $this->poweredByMailPoet = $poweredByMailPoet;
+  }
+
   public function initialize(): void {
-    $this->registerBlockTypes();
-  }
-
-  public function registerBlockTypes() {
-    foreach ($this->getBlockTypes() as $type) {
-        $block_type_class = __NAMESPACE__ . '\\BlockTypes\\' . $type;
-        new $block_type_class();
-    }
-  }
-
-  private function getBlockTypes() {
-    return [
-      'EmailContent',
-    ];
+    $this->poweredByMailPoet->initialize();
   }
 }

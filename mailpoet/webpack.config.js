@@ -439,6 +439,55 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
   ],
 });
 
+const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
+  name: 'email-editor-blocks',
+  entry: {
+    'powered-by-mailpoet-block':
+      '/assets/js/src/email-editor/blocks/powered-by-mailpoet/block.jsx',
+  },
+  output: {
+    filename: '[name].js',
+    path: path.join(__dirname, 'assets/dist/js/email-editor-blocks'),
+  },
+  module: Object.assign({}, wpScriptConfig.module, {
+    rules: [
+      ...wpScriptConfig.module.rules,
+      {
+        test: /\.(t|j)sx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader?cacheDirectory',
+          options: {
+            presets: ['@wordpress/babel-preset-default'],
+            plugins: [
+              require.resolve('@babel/plugin-proposal-class-properties'),
+              require.resolve(
+                '@babel/plugin-proposal-nullish-coalescing-operator',
+              ),
+            ].filter(Boolean),
+          },
+        },
+      },
+    ],
+  }),
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+  },
+  // use only needed plugins from wpScriptConfig and add the custom ones
+  plugins: [
+    ...wpScriptConfig.plugins.filter(
+      (plugin) =>
+        plugin.constructor.pluginName === 'mini-css-extract-plugin' ||
+        plugin.constructor.name === 'CleanWebpackPlugin',
+    ),
+    new DependencyExtractionWebpackPlugin({
+      injectPolyfill: true,
+      requestToExternal,
+      requestToHandle,
+    }),
+  ],
+});
+
 const emailEditorCustom = Object.assign({}, wpScriptConfig, {
   name: 'email_editor',
   entry: {
@@ -464,6 +513,7 @@ const configs = [
   formPreviewConfig,
   postEditorBlock,
   marketingOptinBlock,
+  emailEditorBlocks,
 ];
 
 module.exports = (env) => {
