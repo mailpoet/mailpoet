@@ -1,0 +1,25 @@
+{
+  "name": "mailpoet/powered-by-mailpoet",
+  "version": "1.0.0",
+  "title": "Powered By MailPoet",
+  "description": "A MailPoet logo will appear in the footer of all emails sent with the free version of MailPoet.",
+  "category": "mailpoet",
+  "keywords": ["MailPoet"],
+  "textdomain": "mailpoet",
+  "supports": {
+    "align": false,
+    "html": false,
+    "multiple": false,
+    "reusable": false,
+    "inserter": false,
+    "lock": false
+  },
+  "apiVersion": 2,
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "attributes": {
+    "logo": {
+      "type": "string",
+      "default": "default"
+    }
+  }
+}
