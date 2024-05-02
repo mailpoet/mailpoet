@@ -82,12 +82,12 @@ const columns = [
   },
   {
     name: 'last_subscribed_at',
-    label: MailPoet.I18n.t('confirmedOn'),
+    label: MailPoet.I18n.t('subscribedOn'),
     sortable: true,
   },
   {
     name: 'created_at',
-    label: MailPoet.I18n.t('subscribedOn'),
+    label: MailPoet.I18n.t('createdOn'),
     sortable: true,
   },
 ];
