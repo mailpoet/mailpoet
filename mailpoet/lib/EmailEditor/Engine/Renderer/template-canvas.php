@@ -31,11 +31,6 @@
                 <?php echo $templateHtml; ?>
               </td>
             </tr>
-            <tr>
-              <td class="email_footer">
-                <?php echo $logoHtml; ?>
-              </td>
-            </tr>
           </tbody>
         </table>
   </div>
