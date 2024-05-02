@@ -28,6 +28,8 @@ class ManageWooCommerceSegmentsCest {
     $categorySelectElement = '[data-automation-id="select-segment-category"]';
     $actionSelectElement = '[data-automation-id="select-segment-action"]';
     $operatorSelectElement = '[data-automation-id="select-operator"]';
+    $segmentNameField = '[data-automation-id="input-name"]';
+    $segmentDescriptionField = '[data-automation-id="input-description"]';
 
     $i->wantTo('Create a new WooCommerce purchased in category segment');
     $segmentTitle = 'Segment Woo Category Test';
@@ -37,8 +39,8 @@ class ManageWooCommerceSegmentsCest {
     $i->click('[data-automation-id="new-segment"]');
     $i->waitForElement('[data-automation-id="new-custom-segment"]');
     $i->click('[data-automation-id="new-custom-segment"]');
-    $i->fillField(['name' => 'name'], $segmentTitle);
-    $i->fillField(['name' => 'description'], $segmentDesc);
+    $i->fillField($segmentNameField, $segmentTitle);
+    $i->fillField($segmentDescriptionField, $segmentDesc);
     $i->selectOptionInReactSelect('purchased in category', $actionSelectElement);
     $i->waitForElement($categorySelectElement);
     $i->selectOptionInReactSelect('Category 2', $categorySelectElement);
@@ -49,8 +51,8 @@ class ManageWooCommerceSegmentsCest {
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForElement($categorySelectElement);
-    $i->seeInField(['name' => 'name'], $segmentTitle);
-    $i->seeInField(['name' => 'description'], $segmentDesc);
+    $i->seeInField($segmentNameField, $segmentTitle);
+    $i->seeInField($segmentDescriptionField, $segmentDesc);
     $i->see('purchased in category', $actionSelectElement);
     $i->see('Category 2', $categorySelectElement);
     $i->seeOptionIsSelected($operatorSelectElement, 'any of'); // default value should be selected
@@ -58,10 +60,12 @@ class ManageWooCommerceSegmentsCest {
     $i->wantTo('Edit segment and save');
     $editedTitle = 'Segment Woo Category Test Edited';
     $editedDesc = 'Segment description Edited';
-    $i->clearField(['name' => 'name']);
-    $i->fillField(['name' => 'name'], $editedTitle);
-    $i->clearField(['name' => 'description']);
-    $i->fillField(['name' => 'description'], $editedDesc);
+    $i->clearFormField($segmentNameField);
+    $i->clearFormField($segmentDescriptionField);
+    $i->waitForElementVisible('input[value=""]' . $segmentNameField);
+    $i->waitForElementVisible($segmentDescriptionField . ':empty');
+    $i->fillField($segmentNameField, $editedTitle);
+    $i->fillField($segmentDescriptionField, $editedDesc);
     $i->selectOptionInReactSelect('Category 1', $categorySelectElement);
     $i->selectOptionInReactSelect('Category 3', $categorySelectElement);
     $i->selectOption($operatorSelectElement, 'none of');
@@ -72,8 +76,8 @@ class ManageWooCommerceSegmentsCest {
     $i->wantTo('Open edit form and check that all values were saved correctly');
     $i->clickWooTableActionByItemName($editedTitle, 'Edit');
     $i->waitForElement($categorySelectElement);
-    $i->seeInField(['name' => 'name'], $editedTitle);
-    $i->seeInField(['name' => 'description'], $editedDesc);
+    $i->seeInField($segmentNameField, $editedTitle);
+    $i->seeInField($segmentDescriptionField, $editedDesc);
     $i->see('purchased in category', $actionSelectElement);
     $i->see('Category 1', $categorySelectElement);
     $i->see('Category 3', $categorySelectElement);
