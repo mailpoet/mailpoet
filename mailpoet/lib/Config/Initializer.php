@@ -373,8 +373,8 @@ class Initializer {
       $this->postEditorBlock->init();
       $this->automationEngine->initialize();
       if ($this->featureController->isSupported(FeaturesController::GUTENBERG_EMAIL_EDITOR)) {
-        $this->emailEditor->initialize();
         $this->blockTypesController->initialize();
+        $this->emailEditor->initialize();
       }
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
