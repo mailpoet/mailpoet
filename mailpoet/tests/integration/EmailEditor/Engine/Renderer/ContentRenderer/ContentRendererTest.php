@@ -17,10 +17,17 @@ class ContentRendererTest extends \MailPoetTest {
     $this->diContainer->get(EmailEditor::class)->initialize();
     $this->diContainer->get(BlockTypesController::class)->initialize();
     $this->renderer = $this->diContainer->get(ContentRenderer::class);
-    $this->emailPost = new \WP_Post((object)[
-      'ID' => 1,
+
+    $postId = (int)wp_insert_post([
+      'post_title' => 'Test email',
       'post_content' => '<!-- wp:paragraph --><p>Hello!</p><!-- /wp:paragraph -->',
+      'post_status' => 'draft',
+      'post_type' => 'mailpoet_email',
     ]);
+    $post = get_post((int)$postId);
+    if ($post) {
+      $this->emailPost = $post;
+    }
   }
 
   public function testItRendersContent(): void {
