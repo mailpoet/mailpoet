@@ -1,9 +1,7 @@
 import { PanelBody, Button } from '@wordpress/components';
 import { useSelect, useDispatch, dispatch, select } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
 import { store as editorStore } from '@wordpress/editor';
-import { SelectTemplateModal } from 'email-editor/engine/components/template-select';
 import { decodeEntities } from '@wordpress/html-entities';
 import { store as coreStore } from '@wordpress/core-data';
 import { store as noticesStore } from '@wordpress/notices';
@@ -67,8 +65,6 @@ export function TemplatesPanel() {
     [],
   );
 
-  const [isTemplateSelectModalOpen, setIsTemplateSelectModalOpen] =
-    useState(false);
   const { saveEditedEntityRecord } = useDispatch(coreStore);
   const { createSuccessNotice, createErrorNotice } = useDispatch(noticesStore);
   async function revertAndSaveTemplate() {
@@ -130,19 +126,6 @@ export function TemplatesPanel() {
         >
           {__('Edit template', 'mailpoet')}
         </Button>
-      )}
-      <hr />
-      <h3>Select Template</h3>
-      <Button
-        variant="primary"
-        onClick={() => {
-          setIsTemplateSelectModalOpen(true);
-        }}
-      >
-        {__('Select initial template', 'mailpoet')}
-      </Button>
-      {isTemplateSelectModalOpen && (
-        <SelectTemplateModal setIsOpen={setIsTemplateSelectModalOpen} />
       )}
       <hr />
       <h3>Revert Template</h3>
