@@ -164,6 +164,62 @@ class SegmentsTest extends \MailPoetTest {
     verify($result['description'])->equals($data['description']);
   }
 
+  public function testItUpdatesListName(): void {
+    $segment = $this->createOrUpdateSegment(
+      'Current Segment name',
+      SegmentEntity::TYPE_DEFAULT,
+      'Description'
+    );
+
+    $data = [
+      'id' => (string)$segment->getId(),
+      'name' => 'new Segment name',
+    ];
+    $result = $this->getApi()->updateList($data);
+    verify($result['id'])->equals($data['id']);
+    verify($result['name'])->equals($data['name']);
+    verify($result['description'])->equals(''); // documenting this. We probably should not reset the segment description if it wasn't provided
+  }
+
+  public function testItUpdatesListDescription(): void {
+    $segment = $this->createOrUpdateSegment(
+      'Segment name',
+      SegmentEntity::TYPE_DEFAULT,
+      'Current Segment Description'
+    );
+
+    $data = [
+      'id' => (string)$segment->getId(),
+      'name' => $segment->getName(),
+      'description' => 'updated segment description',
+    ];
+    $result = $this->getApi()->updateList($data);
+    verify($result['id'])->equals($data['id']);
+    verify($result['name'])->equals($data['name']);
+    verify($result['description'])->equals($data['description']);
+  }
+
+  public function testItDoesNotAllowOnlyListDescriptionUpdate(): void {
+    // we currently cannot update only segment description
+    $segment = $this->createOrUpdateSegment(
+      'Segment name only',
+      SegmentEntity::TYPE_DEFAULT,
+      'Current Segment Description only'
+    );
+
+    $data = [
+      'id' => (string)$segment->getId(),
+      'description' => 'newly updated segment description',
+    ];
+
+    try {
+      $this->getApi()->updateList($data);
+      $this->fail('Segment description requires name for updating');
+    } catch (\Exception $e) {
+      verify($e->getMessage())->equals('List name is required.');
+    }
+  }
+
   public function testItDoesNotAllowUpdateWPSegment(): void {
     $wpSegment = $this->segmentsRepository->getWPUsersSegment();
     $this->assertInstanceOf(SegmentEntity::class, $wpSegment);
