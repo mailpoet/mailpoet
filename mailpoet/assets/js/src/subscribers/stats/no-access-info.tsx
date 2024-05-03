@@ -42,46 +42,48 @@ export function NoAccessInfo(): JSX.Element {
   );
 
   return (
-    <table
-      className="mailpoet-listing-table"
-      data-automation-id="subscriber-stats-no-access"
-    >
-      <thead>
-        <tr>
-          <th>{__('E-mail', 'mailpoet')}</th>
-          <th>
-            {
-              // translators: Table column label for subscriber actions e.g. email open, link clicked
-              __('Action', 'mailpoet')
-            }
-          </th>
-          <th>
-            {
-              // translators: Table column label for count of subscriber actions
-              __('Count', 'mailpoet')
-            }
-          </th>
-          <th>
-            {
-              // translators: Table column label for date when subscriber action happened
-              __('Action on', 'mailpoet')
-            }
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td colSpan={4}>
-            <div className="mailpoet-subscriber-stats-no-access-content">
-              <PremiumBannerWithUpgrade
-                message={getBannerMessage({})}
-                actionButton={getCtaButton({})}
-                capabilities={{ detailedAnalytics: true }}
-              />
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div className="mailpoet-listing">
+      <table
+        className="mailpoet-listing-table"
+        data-automation-id="subscriber-stats-no-access"
+      >
+        <thead>
+          <tr>
+            <th>{__('E-mail', 'mailpoet')}</th>
+            <th>
+              {
+                // translators: Table column label for subscriber actions e.g. email open, link clicked
+                __('Action', 'mailpoet')
+              }
+            </th>
+            <th>
+              {
+                // translators: Table column label for count of subscriber actions
+                __('Count', 'mailpoet')
+              }
+            </th>
+            <th>
+              {
+                // translators: Table column label for date when subscriber action happened
+                __('Action on', 'mailpoet')
+              }
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colSpan={4}>
+              <div className="mailpoet-subscriber-stats-no-access-content">
+                <PremiumBannerWithUpgrade
+                  message={getBannerMessage({})}
+                  actionButton={getCtaButton({})}
+                  capabilities={{ detailedAnalytics: true }}
+                />
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 }
