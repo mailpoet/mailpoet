@@ -67,6 +67,12 @@ class Renderer {
     $templateStyles = '<style>' . wp_strip_all_tags((string)apply_filters('mailpoet_email_renderer_styles', $templateStyles, $post)) . '</style>';
     $renderedTemplate = $this->inlineCSSStyles($templateStyles . $renderedTemplate);
 
+    // This is a workaround to support link :hover in some clients. Ideally we would remove the ability to set :hover
+    // however this is not possible using the color panel from Gutenberg.
+    if (isset($emailStyles['elements']['link'][':hover']['color']['text'])) {
+      $renderedTemplate = str_replace('<!-- Forced Styles -->', '<style>a:hover { color: ' . esc_attr($emailStyles['elements']['link'][':hover']['color']['text']) . ' !important; }</style>', $renderedTemplate);
+    }
+
     return [
       'html' => $renderedTemplate,
       'text' => $this->renderTextVersion($renderedTemplate),

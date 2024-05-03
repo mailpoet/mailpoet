@@ -16,6 +16,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="format-detection" content="telephone=no" />
   <?php echo $metaRobots; // HTML defined by MailPoet--do not escape ?>
+  <!-- Forced Styles -->
 </head>
 <body>
     <div class="email_layout_wrapper">
