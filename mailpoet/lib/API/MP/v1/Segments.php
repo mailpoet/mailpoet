@@ -163,7 +163,8 @@ class Segments {
       );
     }
 
-    if (!$this->segmentsRepository->isNameUnique($data['name'], null)) {
+    $segmentId = isset($data['id']) ? (int)$data['id'] : null;
+    if (!$this->segmentsRepository->isNameUnique($data['name'], $segmentId)) {
       throw new APIException(
         __('This list already exists.', 'mailpoet'),
         APIException::LIST_EXISTS
