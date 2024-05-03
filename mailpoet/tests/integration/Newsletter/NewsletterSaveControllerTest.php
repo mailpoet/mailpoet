@@ -384,7 +384,7 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($postEntity->getPostTitle())->equals('New Email');
     $wpPost = $postEntity->getWpPostInstance();
     $this->assertInstanceOf(\WP_Post::class, $wpPost);
-    $this->assertStringContainsString('You received this email because you are subscribed to the [site:title]', $wpPost->post_content); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $this->assertEmpty($wpPost->post_content); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($wpPost->post_author)->equals($wp->getCurrentUserId()); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     verify($wpPost->post_status)->equals('draft'); // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
