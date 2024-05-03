@@ -1,6 +1,6 @@
 [back to list](../Readme.md)
 
-# Add Subscriber
+# Add List
 
 ## `array addList(array $list)`
 

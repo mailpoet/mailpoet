@@ -1,6 +1,6 @@
 [back to list](../Readme.md)
 
-# Add Subscriber
+# Update List
 
 ## `array updateList(array $list)`
 
@@ -14,11 +14,11 @@ It returns the updated list. See [Get Lists](GetLists.md) for a list data struct
 
 An associative array which contains list data.
 
-| Property               | Type         | Limits    | Description                |
-| ---------------------- | ------------ | --------- | -------------------------- |
-| id (required)          | string       | 11 chars  | A id of the list.          |
-| name (required)        | string       | 90 chars  | A name of the list.        |
-| description (optional) | string\|null | 250 chars | A description of the list. |
+| Property               | Type         | Limits    | Description                                                                |
+| ---------------------- | ------------ | --------- | -------------------------------------------------------------------------- |
+| id (required)          | string       | 11 chars  | A id of the list.                                                          |
+| name (required)        | string       | 90 chars  | A name of the list.                                                        |
+| description (optional) | string\|null | 250 chars | A description of the list. This will reset the list description when empty |
 
 ## Error handling
 
