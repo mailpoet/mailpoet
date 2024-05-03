@@ -5,7 +5,7 @@ import { PanelBody, RadioControl, Icon } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import metadata from './block.json';
 import { storeName } from '../../engine/store/constants';
-import MailPoetIcon from './mailpoet-icon.jsx';
+import MailPoetIcon from './mailpoet-icon';
 
 function LogoImage({
   logoSrc,
