@@ -33,12 +33,15 @@ class Button extends AbstractBlockRenderer {
     ];
   }
 
+  public function render(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
+    return $this->renderContent($blockContent, $parsedBlock, $settingsController);
+  }
+
   protected function renderContent($blockContent, array $parsedBlock, SettingsController $settingsController): string {
     if (empty($parsedBlock['innerHTML'])) {
       return '';
     }
 
-    $themeData = $settingsController->getTheme()->get_data();
     $domHelper = new DomDocumentHelper($parsedBlock['innerHTML']);
     $blockClassname = $domHelper->getAttributeValueByTagName('div', 'class') ?? '';
     $buttonLink = $domHelper->findElement('a');
@@ -59,7 +62,6 @@ class Button extends AbstractBlockRenderer {
     ]);
 
     $blockStyles = array_replace_recursive(
-      $themeData['styles']['blocks']['core/button'] ?? [],
       [
         'color' => array_filter([
           'background' => $blockAttributes['backgroundColor'] ? $settingsController->translateSlugToColor($blockAttributes['backgroundColor']) : null,
@@ -80,7 +82,7 @@ class Button extends AbstractBlockRenderer {
       '<table border="0" cellspacing="0" cellpadding="0" role="presentation" style="width:%1$s;">
         <tr>
           <td align="%2$s" valign="middle" role="presentation" class="%3$s" style="%4$s">
-            <a class="%5$s" style="%6$s" href="%7$s" target="_blank">%8$s</a>
+            <a class="button-link %5$s" style="%6$s" href="%7$s" target="_blank">%8$s</a>
           </td>
         </tr>
       </table>',

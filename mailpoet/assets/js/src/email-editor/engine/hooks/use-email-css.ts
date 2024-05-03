@@ -1,6 +1,6 @@
 import { useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { merge } from 'lodash';
+import deepmerge from 'deepmerge';
 import {
   // @ts-expect-error No types for this exist yet.
   privateApis as blockEditorPrivateApi,
@@ -21,7 +21,12 @@ export function useEmailCss() {
   );
 
   const mergedConfig = useMemo(
-    () => merge({}, editorTheme, templateTheme) as EmailStyles,
+    () =>
+      deepmerge.all([
+        {},
+        editorTheme || {},
+        templateTheme || {},
+      ]) as EmailStyles,
     [editorTheme, templateTheme],
   );
 
