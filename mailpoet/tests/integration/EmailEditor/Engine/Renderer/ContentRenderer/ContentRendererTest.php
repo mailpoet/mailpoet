@@ -26,7 +26,7 @@ class ContentRendererTest extends \MailPoetTest {
   public function testItRendersContent(): void {
     $template = new \WP_Block_Template();
     $template->id = 'template-id';
-    $template->content = '<!-- wp:mailpoet/email-content /-->';
+    $template->content = '<!-- wp:core/post-content /-->';
     $content = $this->renderer->render(
       $this->emailPost,
       $template
@@ -37,7 +37,7 @@ class ContentRendererTest extends \MailPoetTest {
   public function testItInlinesContentStyles(): void {
     $template = new \WP_Block_Template();
     $template->id = 'template-id';
-    $template->content = '<!-- wp:mailpoet/email-content /-->';
+    $template->content = '<!-- wp:core/post-content /-->';
     $rendered = $this->renderer->render($this->emailPost, $template);
     $paragraphStyles = $this->getStylesValueForTag($rendered, 'p');
     verify($paragraphStyles)->stringContainsString('margin: 0');
