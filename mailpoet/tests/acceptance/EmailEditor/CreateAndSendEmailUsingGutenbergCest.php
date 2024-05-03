@@ -26,6 +26,8 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->waitForText('Create modern, beautiful emails that embody your brand with advanced customization and editing capabilities.');
     $i->click('//button[text()="Continue"]');
 
+    $this->closeTemplateSelectionModal($i);
+
     $i->wantTo('Compose an email');
     $i->waitForElement('.editor-canvas__iframe');
     $i->switchToIFrame('.editor-canvas__iframe');
@@ -94,6 +96,8 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->waitForText('Create modern, beautiful emails that embody your brand with advanced customization and editing capabilities.');
     $i->click('//button[text()="Continue"]');
 
+    $this->closeTemplateSelectionModal($i);
+
     $i->wantTo('Edit an email');
     $i->waitForElement('.editor-canvas__iframe');
     $i->switchToIFrame('.editor-canvas__iframe');
@@ -136,5 +140,11 @@ class CreateAndSendEmailUsingGutenbergCest {
       return false;
     }
     return true;
+  }
+
+  private function closeTemplateSelectionModal(\AcceptanceTester $i): void {
+    $i->wantTo('Close template selector');
+    $i->waitForElementVisible('.block-editor-block-preview__container');
+    $i->click('[aria-label="Close"]');
   }
 }
