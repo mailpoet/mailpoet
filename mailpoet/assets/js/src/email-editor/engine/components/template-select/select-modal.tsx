@@ -11,24 +11,32 @@ import { Async } from './async';
 import { usePreviewTemplates } from '../../hooks';
 import { storeName } from '../../store/constants';
 
-export function SelectTemplateModal({ setIsOpen }) {
+const BLANK_TEMPLATE = 'email-general';
+
+export function SelectTemplateModal({ onSelectCallback }) {
   const [templates] = usePreviewTemplates();
 
   const handleTemplateSelection = (template) => {
-    setIsOpen(false);
     void dispatch(editorStore).resetEditorBlocks(template.patternParsed);
     void dispatch(storeName).setTemplateToPost(
       template.slug,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       template.template.mailpoet_email_theme ?? {},
     );
+    onSelectCallback();
+  };
+
+  const handleCloseWithoutSelection = () => {
+    const blankTemplate = templates.find(
+      (template) => template.slug === BLANK_TEMPLATE,
+    );
+    handleTemplateSelection(blankTemplate);
   };
 
   return (
     <Modal
       title="Select a template"
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      onRequestClose={() => setIsOpen(false)}
+      onRequestClose={() => handleCloseWithoutSelection()}
       isFullScreen
     >
       <div className="block-editor-block-patterns-explorer">
