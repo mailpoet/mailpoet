@@ -102,7 +102,7 @@ export const useEmailStyles = (): EmailStylesData => {
   );
 
   return {
-    styles: deepmerge.all([defaultStyles, styles]),
+    styles: deepmerge.all([defaultStyles || {}, styles || {}]),
     defaultStyles,
     updateStyleProp,
     updateStyles,

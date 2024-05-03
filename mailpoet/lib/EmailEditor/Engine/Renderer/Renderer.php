@@ -37,20 +37,6 @@ class Renderer {
     return self::$theme;
   }
 
-  public static function maybeConvertPreset($value, $variables) {
-    if (is_string($value) && strstr($value, 'var:preset|color|')) {
-        $value = str_replace('var:preset|color|', '', $value);
-        $value = sprintf('var(--wp--preset--color--%s)', $value);
-    }
-
-    foreach ($variables as $varName => $varValue) {
-      $varPattern = '/var\(' . preg_quote($varName, '/') . '\)/i';
-      $value = preg_replace($varPattern, $varValue, $value);
-    }
-
-    return $value;
-  }
-
   public function render(\WP_Post $post, string $subject, string $preHeader, string $language, $metaRobots = ''): array {
     $templateId = 'mailpoet/mailpoet//' . (get_page_template_slug($post) ?: 'email-general');
     $template = $this->templates->getBlockTemplate($templateId);
@@ -59,8 +45,7 @@ class Renderer {
     // Set the theme for the template. This is merged with base theme.json and core json before rendering.
     self::$theme = new WP_Theme_JSON($theme, 'default');
 
-    $emailStyles = $this->themeController->getStyles($post, $template);
-    $variables = $this->themeController->getVariablesValuesMap();
+    $emailStyles = $this->themeController->getStyles($post, $template, true);
     $templateHtml = $this->contentRenderer->render($post, $template);
 
     ob_start();
@@ -70,8 +55,8 @@ class Renderer {
     $templateStyles =
     WP_Style_Engine::compile_css(
       [
-            'background-color' => $this->maybeConvertPreset($emailStyles['color']['background'] ?? 'inherit', $variables),
-            'color' => $this->maybeConvertPreset($emailStyles['color']['text'] ?? 'inherit', $variables),
+            'background-color' => $emailStyles['color']['background'] ?? 'inherit',
+            'color' => $emailStyles['color']['text'] ?? 'inherit',
             'padding-top' => $emailStyles['spacing']['padding']['top'] ?? '0px',
             'padding-bottom' => $emailStyles['spacing']['padding']['bottom'] ?? '0px',
             'font-family' => $emailStyles['typography']['fontFamily'] ?? 'inherit',
