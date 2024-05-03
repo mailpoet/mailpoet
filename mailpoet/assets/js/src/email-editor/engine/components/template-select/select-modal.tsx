@@ -30,6 +30,7 @@ export function SelectTemplateModal({ onSelectCallback }) {
     const blankTemplate = templates.find(
       (template) => template.slug === BLANK_TEMPLATE,
     );
+    if (!blankTemplate) return; // Prevent close if blank template is still not loaded
     handleTemplateSelection(blankTemplate);
   };
 
