@@ -32,6 +32,42 @@ class ThemeController {
   }
 
   /**
+   * Convert compressed format presets to valid CSS values.
+   *
+   * @param string $value Value to convert.
+   * @param array $presets List of variable presets from theme.json
+   * @return mixed Converted or original value.
+   */
+  private function maybeConvertPreset($value, $presets) {
+    if (!is_string($value)) {
+      return $value;
+    }
+
+    if (strstr($value, 'var:preset|color|')) {
+        $value = str_replace('var:preset|color|', '', $value);
+        $value = sprintf('var(--wp--preset--color--%s)', $value);
+    }
+
+    return preg_replace(array_keys($presets), array_values($presets), $value);
+  }
+
+  private function recursiveReplacePresets($values, $presets) {
+    foreach ($values as $key => $value) {
+      if (is_array($value)) {
+        $values[$key] = $this->recursiveReplacePresets($value, $presets);
+      } else {
+        $values[$key] = self::maybeConvertPreset($value, $presets);
+      }
+    }
+    return $values;
+  }
+
+  /**
+   * Get styles for the e-mail.
+   *
+   * @param \WP_Post|null $post Post object.
+   * @param \WP_Block_Template|null $template Template object.
+   * @param bool $convertPresets Convert presets to valid CSS values.
    * @return array{
    *   spacing: array{
    *     blockGap: string,
@@ -45,7 +81,7 @@ class ThemeController {
    *   }
    * }
    */
-  public function getStyles($post = null, $template = null): array {
+  public function getStyles($post = null, $template = null, $convertPresets = false): array {
     $themeStyles = $this->getTheme()->get_data()['styles'];
 
     // Replace template styles.
@@ -53,6 +89,19 @@ class ThemeController {
       $templateTheme = (array)get_post_meta($template->wp_id, 'mailpoet_email_theme', true); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $templateStyles = (array)($templateTheme['styles'] ?? []);
       $themeStyles = array_replace_recursive($themeStyles, $templateStyles);
+    }
+
+    // Replace preset values.
+    if ($convertPresets) {
+      $variables = $this->getVariablesValuesMap();
+      $presets = [];
+
+      foreach ($variables as $varName => $varValue) {
+        $varPattern = '/var\(' . preg_quote($varName, '/') . '\)/i';
+        $presets[$varPattern] = $varValue;
+      }
+
+      $themeStyles = $this->recursiveReplacePresets($themeStyles, $presets);
     }
 
     return $themeStyles;
