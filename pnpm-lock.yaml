@@ -817,13 +817,13 @@ packages:
       '@automattic/viewport': 1.1.0
       '@automattic/viewport-react': 1.0.0(react@18.2.0)
       '@popperjs/core': 2.11.8
-      '@wordpress/base-styles': 4.42.0
+      '@wordpress/base-styles': 4.33.13
       '@wordpress/components': 25.8.14(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
       '@wordpress/data': 9.12.13(react@18.2.0)
-      '@wordpress/dom': 3.51.0
+      '@wordpress/dom': 3.39.0
       '@wordpress/element': 4.20.0
-      '@wordpress/i18n': 4.51.0
-      '@wordpress/icons': 9.42.0
+      '@wordpress/i18n': 4.42.13
+      '@wordpress/icons': 9.33.13
       '@wordpress/primitives': 3.49.0
       '@wordpress/react-i18n': 3.36.0
       classnames: 2.3.2
@@ -7459,7 +7459,7 @@ packages:
       '@types/tinycolor2': 1.4.6
       '@types/wordpress__notices': 3.27.6(react@18.2.0)
       '@types/wordpress__rich-text': 6.4.5(react@18.2.0)
-      '@wordpress/element': 5.28.0
+      '@wordpress/element': 5.19.13
       downshift: 6.1.12(react@18.2.0)
       re-resizable: 6.9.11(react-dom@18.2.0)(react@18.2.0)
     transitivePeerDependencies:
@@ -8334,16 +8334,16 @@ packages:
     dependencies:
       '@woocommerce/date': 4.2.0(lodash@4.17.21)
       '@woocommerce/navigation': 8.1.0(@types/react@18.0.28)(lodash@4.17.21)(react-dom@18.2.0)(react@18.2.0)
-      '@wordpress/api-fetch': 6.48.0
-      '@wordpress/compose': 6.28.0(react@18.2.0)
+      '@wordpress/api-fetch': 6.39.13
+      '@wordpress/compose': 6.19.13(react@18.2.0)
       '@wordpress/core-data': 6.19.14(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
-      '@wordpress/data': 9.21.0(react@18.2.0)
+      '@wordpress/data': 9.12.13(react@18.2.0)
       '@wordpress/data-controls': 3.11.13(react@18.2.0)
-      '@wordpress/deprecated': 3.51.0
-      '@wordpress/element': 5.28.0
+      '@wordpress/deprecated': 3.39.0
+      '@wordpress/element': 5.19.13
       '@wordpress/hooks': 3.42.13
-      '@wordpress/i18n': 4.51.0
-      '@wordpress/url': 3.52.0
+      '@wordpress/i18n': 4.42.13
+      '@wordpress/url': 3.43.13
       dompurify: 2.4.5
       md5: 2.3.0
       moment: 2.29.4
@@ -8380,13 +8380,13 @@ packages:
     peerDependencies:
       lodash: ^4.17.0
     dependencies:
-      '@wordpress/api-fetch': 6.48.0
+      '@wordpress/api-fetch': 6.39.13
       '@wordpress/components': 25.8.14(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
-      '@wordpress/compose': 6.28.0(react@18.2.0)
-      '@wordpress/element': 5.28.0
+      '@wordpress/compose': 6.19.13(react@18.2.0)
+      '@wordpress/element': 5.19.13
       '@wordpress/hooks': 3.42.13
       '@wordpress/notices': 4.10.13(react@18.2.0)
-      '@wordpress/url': 3.52.0
+      '@wordpress/url': 3.43.13
       history: 5.3.0
       lodash: 4.17.21
       qs: 6.11.2
@@ -8839,10 +8839,10 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.9
       '@wordpress/components': 25.8.14(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
-      '@wordpress/data': 9.21.0(react@18.2.0)
-      '@wordpress/element': 5.28.0
-      '@wordpress/i18n': 4.51.0
-      '@wordpress/icons': 9.42.0
+      '@wordpress/data': 9.12.13(react@18.2.0)
+      '@wordpress/element': 5.19.13
+      '@wordpress/i18n': 4.42.13
+      '@wordpress/icons': 9.33.13
       '@wordpress/keyboard-shortcuts': 4.19.13(react@18.2.0)
       '@wordpress/private-apis': 0.24.13
       classnames: 2.3.2
@@ -9046,13 +9046,13 @@ packages:
       '@wordpress/block-editor': 12.10.14(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
       '@wordpress/commands': 0.13.14(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
       '@wordpress/core-data': 6.19.14(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
-      '@wordpress/data': 9.21.0(react@18.2.0)
-      '@wordpress/element': 5.28.0
-      '@wordpress/i18n': 4.51.0
-      '@wordpress/icons': 9.42.0
+      '@wordpress/data': 9.12.13(react@18.2.0)
+      '@wordpress/element': 5.19.13
+      '@wordpress/i18n': 4.42.13
+      '@wordpress/icons': 9.33.13
       '@wordpress/private-apis': 0.24.13
       '@wordpress/router': 0.11.13(react@18.2.0)
-      '@wordpress/url': 3.52.0
+      '@wordpress/url': 3.43.13
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     transitivePeerDependencies:
@@ -9074,16 +9074,16 @@ packages:
       react: ^17.0.0
     dependencies:
       '@babel/runtime': 7.23.9
-      '@wordpress/api-fetch': 6.48.0
+      '@wordpress/api-fetch': 6.39.13
       '@wordpress/blocks': 11.21.0(react@18.2.0)
       '@wordpress/compose': 5.20.0(react@18.2.0)
       '@wordpress/data': 7.6.0(react@18.2.0)
       '@wordpress/deprecated': 3.51.0
       '@wordpress/element': 4.20.0
-      '@wordpress/html-entities': 3.51.0
-      '@wordpress/i18n': 4.51.0
+      '@wordpress/html-entities': 3.42.13
+      '@wordpress/i18n': 4.42.13
       '@wordpress/is-shallow-equal': 4.53.0
-      '@wordpress/url': 3.52.0
+      '@wordpress/url': 3.43.13
       change-case: 4.1.2
       equivalent-key-map: 0.2.2
       lodash: 4.17.21
@@ -10287,9 +10287,9 @@ packages:
       react: ^18.0.0
     dependencies:
       '@babel/runtime': 7.23.9
-      '@wordpress/element': 5.28.0
+      '@wordpress/element': 5.19.13
       '@wordpress/private-apis': 0.24.13
-      '@wordpress/url': 3.52.0
+      '@wordpress/url': 3.43.13
       history: 5.3.0
       react: 18.2.0
     dev: false
