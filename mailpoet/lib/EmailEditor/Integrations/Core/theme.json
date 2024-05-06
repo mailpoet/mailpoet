@@ -4,7 +4,11 @@
   "styles": {
     "blocks": {
       "core/button": {
-        "variations": {},
+        "variations": {}
+      }
+    },
+    "elements": {
+      "button": {
         "color": {
           "background": "#32373c",
           "text": "#ffffff"
