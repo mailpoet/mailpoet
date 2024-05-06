@@ -12,6 +12,7 @@ use WP_Error;
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 class Templates {
   const MAILPOET_EMAIL_META_THEME_TYPE = 'mailpoet_email_theme';
+  const MAILPOET_TEMPLATE_EMPTY_THEME = ['version' => 2]; // The version 2 is important to merge themes correctly
 
   private string $templateDirectory;
   private string $pluginSlug;
@@ -95,7 +96,7 @@ class Templates {
       }
     }
 
-    return $this->themeJson[$templateSlug] ?? [];
+    return $this->themeJson[$templateSlug] ?? self::MAILPOET_TEMPLATE_EMPTY_THEME;
   }
 
   public function getBlockFileTemplate($return, $templateId, $template_type) {
@@ -261,7 +262,7 @@ class Templates {
         ],
         'single' => true,
         'type' => 'object',
-        'default' => ['version' => 2], // The version 2 is important to merge themes correctly
+        'default' => self::MAILPOET_TEMPLATE_EMPTY_THEME,
       ]
     );
 
