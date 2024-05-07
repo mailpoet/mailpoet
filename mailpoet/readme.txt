@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.4
 Tested up to: 6.5
-Stable tag: 4.49.1
+Stable tag: 4.50.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -235,6 +235,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.50.0 - 2024-05-07 =
+* Improved: "Send email" automation step waits for the email to be queued before marking the step as completed;
+* Fixed: Previously, the association of orders to emails in the statistics was incorrect in some cases.
 
 = 4.49.1 - 2024-04-29 =
 * Improved: Add additional transactional email triggers;
