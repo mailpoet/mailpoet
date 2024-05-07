@@ -5,7 +5,7 @@ import { store as editorStore } from '@wordpress/editor';
 import { EmailTheme, storeName } from '../store';
 
 export function useEmailTheme() {
-  const { templateTheme, templateId, templateContent } = useSelect((select) => {
+  const { templateTheme, templateId } = useSelect((select) => {
     // @ts-expect-error Property 'getCurrentPostType' has no types
     const currentPostType = select(editorStore).getCurrentPostType();
     let templateThemeData: EmailTheme = {};
@@ -49,12 +49,10 @@ export function useEmailTheme() {
         templateId as string,
         {
           mailpoet_email_theme: newTheme,
-          // Add space to trigger content update. /template endpoint requires content otherwise it removes form the post.
-          content: `${templateContent} `,
         },
       );
     },
-    [templateId, templateContent],
+    [templateId],
   );
 
   return {
