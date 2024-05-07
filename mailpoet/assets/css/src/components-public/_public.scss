@@ -269,6 +269,10 @@ div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
 @container columns (width < #{($form-container-break-small-width)}) {
   .mailpoet_form_columns.mailpoet_stack_on_mobile {
     @include maxWidthColumns;
+
+    .mailpoet_form_column {
+      @include maxWidthColumn;
+    }
   }
 }
 
@@ -290,12 +294,6 @@ div.mailpoet_form:not(.mailpoet_form_fixed_bar) {
 
   &.mailpoet_vertically_align_bottom {
     align-self: flex-end;
-  }
-
-  .mailpoet_stack_on_mobile & {
-    @include breakpoint-max-width(#{($form-break-small-width - 1)}) {
-      @include maxWidthColumn;
-    }
   }
 }
 
