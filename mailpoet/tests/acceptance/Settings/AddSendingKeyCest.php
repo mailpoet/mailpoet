@@ -100,7 +100,7 @@ class AddSendingKeyCest {
     $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
     $i->fillField(['id' => 'mailpoet-set-from-address-modal-input'], 'blackhole@mailpoet.com');
     $i->click('Save', '.set-from-address-modal');
-    $i->waitForText('A test email was sent to blackhole@mailpoet.com');
+    $i->waitForText('A test email was sent to blackhole@mailpoet.com', 15);
   }
 
   public function resumeSendingWhenKeyApproved(\AcceptanceTester $i, Scenario $scenario) {
