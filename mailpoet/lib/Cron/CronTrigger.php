@@ -19,6 +19,7 @@ class CronTrigger {
 
   const DEFAULT_METHOD = self::METHOD_ACTION_SCHEDULER;
   const SETTING_NAME = 'cron_trigger';
+  const SETTING_CURRENT_METHOD = self::SETTING_NAME . '.method';
 
   /** @var WordPress */
   private $wordpressTrigger;
@@ -40,7 +41,7 @@ class CronTrigger {
   }
 
   public function init(string $environment = '') {
-    $currentMethod = $this->settings->get(self::SETTING_NAME . '.method');
+    $currentMethod = $this->settings->get(self::SETTING_CURRENT_METHOD);
     try {
       $this->cronActionScheduler->init($currentMethod === self::METHOD_ACTION_SCHEDULER);
       // setup WordPress cron method trigger only outside of cli environment
@@ -48,6 +49,23 @@ class CronTrigger {
         return $this->wordpressTrigger->run();
       }
       return false;
+    } catch (\Exception $e) {
+      // cron exceptions should not prevent the rest of the site from loading
+    }
+  }
+
+  public function disable() {
+    $currentMethod = $this->settings->get(self::SETTING_CURRENT_METHOD);
+    try {
+      if ($currentMethod === self::METHOD_ACTION_SCHEDULER) {
+        // deactivate the action Scheduler
+        $this->cronActionScheduler->deactivate();
+      }
+
+      if ($currentMethod === self::METHOD_WORDPRESS) {
+        // deactivate WordPress cron method trigger
+        $this->wordpressTrigger->stop();
+      }
     } catch (\Exception $e) {
       // cron exceptions should not prevent the rest of the site from loading
     }
