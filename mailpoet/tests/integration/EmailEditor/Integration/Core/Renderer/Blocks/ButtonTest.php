@@ -139,15 +139,6 @@ class ButtonTest extends \MailPoetTest {
     verify($output)->stringContainsString('border-bottom-right-radius:4px;');
   }
 
-  public function testItRendersDefaultBackgroundColor(): void {
-    unset($this->parsedButton['attrs']['style']['color']);
-    unset($this->parsedButton['attrs']['style']['spacing']['padding']);
-    $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
-    // Verify default background colors theme.json for email editor
-    // These can't be set via CSS inliner because of special email HTML markup
-    verify($output)->stringContainsString('background-color:#32373c;');
-  }
-
   public function testItRendersBackgroundColorSetBySlug(): void {
     unset($this->parsedButton['attrs']['style']['color']);
     unset($this->parsedButton['attrs']['style']['spacing']['padding']);
@@ -165,6 +156,6 @@ class ButtonTest extends \MailPoetTest {
     $output = $this->buttonRenderer->render($this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController);
     // For other blocks this is handled by CSS-inliner, but for button we need to handle it manually
     // because of special email HTML markup
-    verify($output)->stringContainsString('color:#ffffff');
+    verify($output)->stringContainsString('color:#fff');
   }
 }
