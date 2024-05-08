@@ -2,94 +2,70 @@
 
 namespace MailPoet\EmailEditor\Engine\Templates;
 
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\EmailEditor\Engine\EmailStylesSchema;
-use MailPoet\EmailEditor\Engine\ThemeController;
-use MailPoet\Validator\Builder;
 use WP_Block_Template;
-use WP_Error;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 class Templates {
   const MAILPOET_EMAIL_META_THEME_TYPE = 'mailpoet_email_theme';
   const MAILPOET_TEMPLATE_EMPTY_THEME = ['version' => 2]; // The version 2 is important to merge themes correctly
 
+  private Utils $utils;
+  private string $pluginSlug = 'mailpoet/mailpoet';
+  private string $postType = 'mailpoet_email';
   private string $templateDirectory;
-  private string $pluginSlug;
-  private string $postType;
+  private array $templates = [];
   private array $themeJson = [];
 
-  public function __construct() {
+  public function __construct(
+    Utils $utils
+  ) {
+    $this->utils = $utils;
     $this->templateDirectory = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-    $this->pluginSlug = 'mailpoet/mailpoet';
-    $this->postType = 'mailpoet_email';
   }
 
   public function initialize(): void {
-    // Since we cannot currently disable blocks in the editor for specific templates, disable templates when viewing site editor.
-    // @see https://github.com/WordPress/gutenberg/issues/41062
-    if (strstr(wp_unslash($_SERVER['REQUEST_URI'] ?? ''), 'site-editor.php') === false) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-      add_filter('pre_get_block_file_template', [$this, 'getBlockFileTemplate'], 10, 3);
-      add_filter('get_block_templates', [$this, 'addBlockTemplates'], 10, 3);
-      add_filter('theme_templates', [$this, 'addThemeTemplates'], 10, 4); // Needed when saving post – template association
-      add_filter('get_block_template', [$this, 'addBlockTemplateDetails'], 10, 1);
-      add_filter('rest_pre_insert_wp_template', [$this, 'trimPostContent'], 10, 2);
-      // Register custom post meta for mailpoet_email_theme
-      $this->registerTemplateThemeFields();
-      // Rest field for compiled CSS used in template preview
-      register_rest_field(
-        'wp_template',
-        'email_theme_css',
-        [
-          'get_callback' => [$this, 'getEmailThemePreviewCss'],
-          'update_callback' => null,
-          'schema' => Builder::string()->toArray(),
-        ]
-      );
-    }
+    add_filter('pre_get_block_file_template', [$this, 'getBlockFileTemplate'], 10, 3);
+    add_filter('get_block_templates', [$this, 'addBlockTemplates'], 10, 3);
+    add_filter('theme_templates', [$this, 'addThemeTemplates'], 10, 4); // Needed when saving post – template association
+    add_filter('get_block_template', [$this, 'addBlockTemplateDetails'], 10, 1);
+    add_filter('rest_pre_insert_wp_template', [$this, 'forcePostContent'], 9, 1);
+    $this->initializeTemplates();
+    $this->initializeApi();
   }
 
   /**
-   * Trims post content when saving a template.
-   * We add empty space on client to force saving the content.
+   * Get a block template by ID.
    */
-  public function trimPostContent($changes, \WP_REST_Request $request) {
-    if (strpos($request->get_route(), '/wp/v2/templates/mailpoet/mailpoet') === 0 && !empty($changes->post_content)) {
-      $changes->post_content = trim($changes->post_content);
-    }
-    return $changes;
-  }
-
   public function getBlockTemplate($templateId) {
     $templates = $this->getBlockTemplates();
     return $templates[$templateId] ?? null;
   }
 
-  public function getBlockTheme($templateId, $templateWpId = null) {
+  /**
+   * Get a predefined or user defined theme for a block template.
+   *
+   * @param string $templateId
+   * @param int|null $templateWpId
+   * @return array
+   */
+  public function getBlockTemplateTheme($templateId, $templateWpId = null) {
     // First check if there is a user updated theme saved
-    if ($templateWpId) {
-      $theme = get_post_meta($templateWpId, self::MAILPOET_EMAIL_META_THEME_TYPE, true);
-      if (is_array($theme) && isset($theme['styles'])) {
-        return $theme;
-      }
+    $theme = $this->getCustomTemplateTheme($templateWpId);
+
+    if ($theme) {
+      return $theme;
     }
 
-    // If there is no user edited theme, look for default template themes in files
-    $template_name_parts = explode('//', $templateId);
-
-    if (count($template_name_parts) < 2) {
-        return false;
-    }
-
-    list( $templatePrefix, $templateSlug ) = $template_name_parts;
+    // If there is no user edited theme, look for default template themes in files.
+    ['prefix' => $templatePrefix, 'slug' => $templateSlug] = $this->utils->getTemplateIdParts($templateId);
 
     if ($this->pluginSlug !== $templatePrefix) {
-      return false;
+      return self::MAILPOET_TEMPLATE_EMPTY_THEME;
     }
 
     if (!isset($this->themeJson[$templateSlug])) {
-      $templatePath = $templateSlug . '.json';
-      $jsonFile = $this->templateDirectory . $templatePath;
+      $jsonFile = $this->templateDirectory . $templateSlug . '.json';
 
       if (file_exists($jsonFile)) {
         $this->themeJson[$templateSlug] = json_decode((string)file_get_contents($jsonFile), true);
@@ -100,13 +76,7 @@ class Templates {
   }
 
   public function getBlockFileTemplate($return, $templateId, $template_type) {
-    $template_name_parts = explode('//', $templateId);
-
-    if (count($template_name_parts) < 2) {
-        return $return;
-    }
-
-    list( $templatePrefix, $templateSlug ) = $template_name_parts;
+    ['prefix' => $templatePrefix, 'slug' => $templateSlug] = $this->utils->getTemplateIdParts($templateId);
 
     if ($this->pluginSlug !== $templatePrefix) {
         return $return;
@@ -119,16 +89,6 @@ class Templates {
     }
 
     return $this->getBlockTemplateFromFile($templatePath);
-  }
-
-  public function addThemeTemplates($templates, $theme, $post, $post_type) {
-    if ($post_type && $post_type !== $this->postType) {
-      return $templates;
-    }
-    foreach ($this->getBlockTemplates() as $blockTemplate) {
-      $templates[$blockTemplate->slug] = $blockTemplate;
-    }
-    return $templates;
   }
 
   public function addBlockTemplates($query_result, $query, $template_type) {
@@ -155,6 +115,39 @@ class Templates {
     return $query_result;
   }
 
+  public function addThemeTemplates($templates, $theme, $post, $post_type) {
+    if ($post_type && $post_type !== $this->postType) {
+      return $templates;
+    }
+    foreach ($this->getBlockTemplates() as $blockTemplate) {
+      $templates[$blockTemplate->slug] = $blockTemplate;
+    }
+    return $templates;
+  }
+
+  /**
+   * This is a workaround to ensure the post object passed to `inject_ignored_hooked_blocks_metadata_attributes` contains
+   * content to prevent the template being empty when saved. The issue currently occurs when WooCommerce enables block hooks,
+   * and when older versions of `inject_ignored_hooked_blocks_metadata_attributes` are
+   * used (before https://github.com/WordPress/WordPress/commit/725f302121c84c648c38789b2e88dbd1eb41fa48).
+   * This can be removed in the future.
+   *
+   * To test the issue create a new email, revert template changes, save a color change, then save a color change again.
+   * When you refresh if the post is blank, the issue is present.
+   *
+   * @param \stdClass $changes
+   */
+  public function forcePostContent($changes) {
+    if (empty($changes->post_content) && !empty($changes->ID)) {
+      // Find the existing post object.
+      $post = get_post($changes->ID);
+      if ($post && !empty($post->post_content)) {
+        $changes->post_content = $post->post_content;
+      }
+    }
+    return $changes;
+  }
+
   /**
    * Add details to templates in editor.
    *
@@ -162,97 +155,41 @@ class Templates {
    * @return WP_Block_Template
    */
   public function addBlockTemplateDetails($block_template) {
-    if (!$block_template) {
+    if (!$block_template || !isset($this->templates[$block_template->slug])) {
       return $block_template;
     }
-    if (empty($block_template->title) || $block_template->title === $block_template->slug) {
-      $block_template->title = $this->getBlockTemplateTitle($block_template->slug);
+    if (empty($block_template->title)) {
+      $block_template->title = $this->templates[$block_template->slug]['title'];
     }
-    if (empty($block_template->description) || $block_template->description === $block_template->slug) {
-      $block_template->title = $this->getBlockTemplateDescription($block_template->slug);
+    if (empty($block_template->description)) {
+      $block_template->description = $this->templates[$block_template->slug]['description'];
     }
     return $block_template;
   }
 
   /**
-   * Gets block templates indexed by ID.
+   * Initialize template details. This is done at runtime because of localisation.
    */
-  public function getBlockTemplates() {
-    $file_templates = [
-      $this->getBlockTemplateFromFile('email-general.html'),
-      $this->getBlockTemplateFromFile('awesome-one.html'),
-      $this->getBlockTemplateFromFile('awesome-two.html'),
-      $this->getBlockTemplateFromFile('email-computing-mag.html'),
+  private function initializeTemplates(): void {
+    $this->templates['email-general'] = [
+      'title' => __('General Email', 'mailpoet'),
+      'description' => __('A general template for emails.', 'mailpoet'),
     ];
-    $custom_templates = $this->getCustomBlockTemplates();
-    $custom_template_ids = wp_list_pluck($custom_templates, 'id');
-
-    return array_column(
-      array_merge(
-        $custom_templates,
-        array_filter(
-          $file_templates,
-          function($blockTemplate) use ($custom_template_ids) {
-              return !in_array($blockTemplate->id, $custom_template_ids, true);
-          }
-        ),
-      ),
-      null,
-      'id'
-    );
+    $this->templates['awesome-one'] = [
+      'title' => __('Awesome Template One', 'mailpoet'),
+      'description' => __('A template used in testing.', 'mailpoet'),
+    ];
+    $this->templates['awesome-two'] = [
+      'title' => __('Awesome Template Two', 'mailpoet'),
+      'description' => __('A template used in testing.', 'mailpoet'),
+    ];
+    $this->templates['email-computing-mag'] = [
+      'title' => __('Retro Computing Mag', 'mailpoet'),
+      'description' => __('A retro themed template.', 'mailpoet'),
+    ];
   }
 
-  private function getCustomBlockTemplates($slugs = [], $template_type = 'wp_template') {
-      $check_query_args = [
-          'post_type' => $template_type,
-          'posts_per_page' => -1,
-          'no_found_rows' => true,
-          'tax_query' => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-              [
-                  'taxonomy' => 'wp_theme',
-                  'field' => 'name',
-                  'terms' => [ $this->pluginSlug, get_stylesheet() ],
-              ],
-          ],
-      ];
-
-      if (is_array($slugs) && count($slugs) > 0) {
-          $check_query_args['post_name__in'] = $slugs;
-      }
-
-      $check_query = new \WP_Query($check_query_args);
-      $custom_templates = $check_query->posts;
-
-      return array_map(
-        function($custom_template) {
-            return $this->buildBlockTemplateFromPost($custom_template);
-        },
-        $custom_templates
-      );
-  }
-
-  public function getBlockTemplateFromFile(string $template) {
-    $templateObject = $this->createNewBlockTemplateObject($template);
-
-    return $this->buildBlockTemplateFromFile($templateObject);
-  }
-
-  /**
-   * Generates CSS for preview of email theme
-   * They are applied in the preview BLockPreview in template selection
-   */
-  public function getEmailThemePreviewCss($template): string {
-    $themeController = ContainerWrapper::getInstance()->get(ThemeController::class);
-    $editorTheme = clone $themeController->getTheme();
-    $templateTheme = $this->getBlockTheme($template['id'], $template['wp_id']);
-    if (is_array($templateTheme)) {
-      $editorTheme->merge(new \WP_Theme_JSON($templateTheme, 'custom'));
-    }
-    $additionalCSS = file_get_contents($this->templateDirectory . 'preview.css');
-    return $editorTheme->get_stylesheet() . $additionalCSS;
-  }
-
-  private function registerTemplateThemeFields(): void {
+  private function initializeApi(): void {
     register_post_meta(
       'wp_template',
       self::MAILPOET_EMAIL_META_THEME_TYPE,
@@ -265,25 +202,54 @@ class Templates {
         'default' => self::MAILPOET_TEMPLATE_EMPTY_THEME,
       ]
     );
-
-    register_rest_field('wp_template', self::MAILPOET_EMAIL_META_THEME_TYPE, [
+    register_rest_field(
+      'wp_template',
+      self::MAILPOET_EMAIL_META_THEME_TYPE,
+      [
       'get_callback' => function($object) {
-         return $this->getBlockTheme($object['id'], $object['wp_id']);
+         return $this->getBlockTemplateTheme($object['id'], $object['wp_id']);
       },
-
       'update_callback' => function($value, $template) {
         return update_post_meta($template->wp_id, self::MAILPOET_EMAIL_META_THEME_TYPE, $value);
       },
       'schema' => (new EmailStylesSchema())->getSchema(),
-    ]);
+      ]
+    );
   }
 
-  private function createNewBlockTemplateObject(string $template) {
-    $template_slug = $this->getBlockTemplateSlugFromPath($template);
+  /**
+   * Gets block templates indexed by ID.
+   */
+  private function getBlockTemplates() {
+    $blockTemplates = array_map(function($templateSlug) {
+      return $this->getBlockTemplateFromFile($templateSlug . '.html');
+    }, array_keys($this->templates));
+    $customTemplates = $this->getCustomTemplates(); // From the DB.
+    $customTemplateIds = wp_list_pluck($customTemplates, 'id');
 
-    return (object)[
-      'slug' => $this->getBlockTemplateSlugFromPath($template),
+    // Combine to remove duplicates if a custom template has the same ID as a file template.
+    return array_column(
+      array_merge(
+        $customTemplates,
+        array_filter(
+          $blockTemplates,
+          function($blockTemplate) use ($customTemplateIds) {
+              return !in_array($blockTemplate->id, $customTemplateIds, true);
+          }
+        ),
+      ),
+      null,
+      'id'
+    );
+  }
+
+  private function getBlockTemplateFromFile(string $template) {
+    $template_slug = $this->utils->getBlockTemplateSlugFromPath($template);
+    $templateObject = (object)[
+      'slug' => $template_slug,
       'id' => $this->pluginSlug . '//' . $template_slug,
+      'title' => $this->templates[$template_slug]['title'] ?? '',
+      'description' => $this->templates[$template_slug]['description'] ?? '',
       'path' => $this->templateDirectory . $template,
       'type' => 'wp_template',
       'theme' => $this->pluginSlug,
@@ -292,90 +258,46 @@ class Templates {
         $this->postType,
       ],
     ];
+    return $this->utils->buildBlockTemplateFromFile($templateObject);
   }
 
-  private function buildBlockTemplateFromPost($post) {
-    $terms = get_the_terms($post, 'wp_theme');
+  private function getCustomTemplates($slugs = [], $template_type = 'wp_template') {
+    $check_query_args = [
+        'post_type' => $template_type,
+        'posts_per_page' => -1,
+        'no_found_rows' => true,
+        'tax_query' => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+            [
+                'taxonomy' => 'wp_theme',
+                'field' => 'name',
+                'terms' => [ $this->pluginSlug, get_stylesheet() ],
+            ],
+        ],
+    ];
 
-    if (is_wp_error($terms)) {
-        return $terms;
+    if (is_array($slugs) && count($slugs) > 0) {
+        $check_query_args['post_name__in'] = $slugs;
     }
 
-    if (!$terms) {
-      return new WP_Error('template_missing_theme', 'No theme is defined for this template.');
-    }
+    $check_query = new \WP_Query($check_query_args);
+    $custom_templates = $check_query->posts;
 
-    $theme = $terms[0]->name;
-
-    $template = new WP_Block_Template();
-    $template->wp_id = $post->ID;
-    $template->id = $theme . '//' . $post->post_name;
-    $template->theme = $theme;
-    $template->content = $post->post_content ? $post->post_content : '<p>empty</p>' ;
-    $template->slug = $post->post_name;
-    $template->source = 'custom';
-    $template->type = $post->post_type;
-    $template->description = $post->post_excerpt;
-    $template->title = $post->post_title;
-    $template->status = $post->post_status;
-    $template->has_theme_file = true;
-    $template->is_custom = true;
-    $template->post_types = [];
-
-    if ('wp_template_part' === $post->post_type) {
-      $type_terms = get_the_terms($post, 'wp_template_part_area');
-
-      if (!is_wp_error($type_terms) && false !== $type_terms) {
-        $template->area = $type_terms[0]->name;
-      }
-    }
-
-    if ($this->pluginSlug === $theme) {
-      $template->origin = 'plugin';
-    }
-
-    return $template;
+    return array_map(
+      function($custom_template) {
+          return $this->utils->buildBlockTemplateFromPost($custom_template);
+      },
+      $custom_templates
+    );
   }
 
-  private function buildBlockTemplateFromFile($templateObject): WP_Block_Template {
-    $template = new WP_Block_Template();
-    $template->id = $templateObject->id;
-    $template->theme = $templateObject->theme;
-    $template->content = (string)file_get_contents($templateObject->path);
-    $template->source = $templateObject->source;
-    $template->slug = $templateObject->slug;
-    $template->type = $templateObject->type;
-    $template->title = $this->getBlockTemplateTitle($templateObject->slug);
-    $template->description = $this->getBlockTemplateDescription($templateObject->slug);
-    $template->status = 'publish';
-    $template->has_theme_file = true;
-    $template->origin = $templateObject->source;
-    $template->post_types = $templateObject->post_types;
-    $template->is_custom = false; // Templates are only custom if they are loaded from the DB.
-    $template->area = 'uncategorized';
-    return $template;
-  }
-
-  private static function getBlockTemplateSlugFromPath($path) {
-    return basename($path, '.html');
-  }
-
-  private function getBlockTemplateTitle($template_slug) {
-    switch ($template_slug) {
-      case 'email-general':
-        return 'General Email';
-      default:
-        // Human friendly title converted from the slug.
-        return ucwords(preg_replace('/[\-_]/', ' ', $template_slug));
+  private function getCustomTemplateTheme($templateWpId) {
+    if (!$templateWpId) {
+      return null;
     }
-  }
-
-  private function getBlockTemplateDescription($template_slug) {
-    switch ($template_slug) {
-      case 'email-general':
-        return 'A general template for emails.';
-      default:
-        return 'A template for emails.';
+    $theme = get_post_meta($templateWpId, self::MAILPOET_EMAIL_META_THEME_TYPE, true);
+    if (is_array($theme) && isset($theme['styles'])) {
+      return $theme;
     }
+    return null;
   }
 }

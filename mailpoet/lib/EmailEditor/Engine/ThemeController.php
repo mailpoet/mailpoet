@@ -19,6 +19,11 @@ class ThemeController {
     $this->baseTheme = new WP_Theme_JSON((array)json_decode((string)file_get_contents(dirname(__FILE__) . '/theme.json'), true), 'default');
   }
 
+  /**
+   * Gets combined theme data from the core and base theme, merged with the currently rendered template.
+   *
+   * @return WP_Theme_JSON
+   */
   public function getTheme(): WP_Theme_JSON {
     $theme = new WP_Theme_JSON();
     $theme->merge($this->coreTheme);

@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Engine;
 
 use MailPoet\EmailEditor\Engine\Patterns\Patterns;
+use MailPoet\EmailEditor\Engine\Templates\TemplatePreview;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
 use MailPoet\Entities\NewsletterEntity;
 use WP_Post;
@@ -17,15 +18,18 @@ class EmailEditor {
 
   private EmailApiController $emailApiController;
   private Templates $templates;
+  private TemplatePreview $templatePreview;
   private Patterns $patterns;
 
   public function __construct(
     EmailApiController $emailApiController,
     Templates $templates,
+    TemplatePreview $templatePreview,
     Patterns $patterns
   ) {
     $this->emailApiController = $emailApiController;
     $this->templates = $templates;
+    $this->templatePreview = $templatePreview;
     $this->patterns = $patterns;
   }
 
@@ -40,7 +44,11 @@ class EmailEditor {
   }
 
   private function registerBlockTemplates(): void {
-    $this->templates->initialize();
+    // Since we cannot currently disable blocks in the editor for specific templates, disable templates when viewing site editor. @see https://github.com/WordPress/gutenberg/issues/41062
+    if (strstr(wp_unslash($_SERVER['REQUEST_URI'] ?? ''), 'site-editor.php') === false) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+      $this->templates->initialize();
+      $this->templatePreview->initialize();
+    }
   }
 
   private function registerBlockPatterns(): void {
