@@ -3,7 +3,6 @@ import { __, _x } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
 import { withRouter } from 'react-router-dom';
-import { MssAccessNotices } from 'notices/mss-access-notices';
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { RemoveWrapMargin } from 'common/remove-wrap-margin/remove-wrap-margin';
@@ -103,8 +102,6 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
       <TopBarWithBeamer />
 
       <div className="mailpoet-stats-page">
-        <MssAccessNotices />
-
         <ErrorBoundary>
           <NewsletterStatsInfo newsletter={newsletter} />
         </ErrorBoundary>
