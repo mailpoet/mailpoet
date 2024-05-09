@@ -554,6 +554,11 @@ class Hooks {
       10,
       2
     );
+
+    $this->wp->addAction(
+      'action_scheduler_before_process_queue',
+      [$this, 'deactivateCronWhenInMaintenanceMode']
+    );
   }
 
   /**
@@ -582,5 +587,19 @@ class Hooks {
     $this->cronTrigger->disable();
 
     return $response;
+  }
+
+  public function deactivateCronWhenInMaintenanceMode(): void {
+    if (!$this->wp->wpIsMaintenanceMode()) {
+      return;
+    }
+
+    $this->wp->addFilter('action_scheduler_queue_runner_batch_size', function () {
+      // return 0 batch sizes to prevent the queue runner from running;
+      // this is the fastest way to stop the current running cron
+      return 0;
+    });
+
+    $this->cronTrigger->disable();
   }
 }

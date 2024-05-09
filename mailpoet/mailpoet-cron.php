@@ -33,6 +33,11 @@ if (!is_plugin_active('mailpoet/mailpoet.php')) {
   exit(1);
 }
 
+if (wp_is_maintenance_mode()) {
+  echo 'WordPress site in maintenance mode.';
+  exit(1);
+}
+
 // Check for minimum supported PHP version
 if (version_compare(phpversion(), '7.4.0', '<')) {
   echo 'MailPoet requires PHP version 7.4 or newer (version 8.1 recommended).';
