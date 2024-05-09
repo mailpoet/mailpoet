@@ -102,6 +102,12 @@ class WordPress {
   }
 
   public function checkExecutionRequirements(): bool {
+    if ($this->wp->wpIsMaintenanceMode()) {
+      // Skip if WP is currently in maintenance mode
+      // The maintenance mode is activated when WP core or a plugin update is in progress
+      return false;
+    }
+
     $this->loadTasksCounts();
 
     // Because a lot of workers has the same pattern for check if it's active we can use a loop here
