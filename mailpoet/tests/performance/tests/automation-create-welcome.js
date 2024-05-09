@@ -78,25 +78,11 @@ export async function automationCreateWelcome() {
       fullPage: fullPageSet,
     });
 
-    if (page.url().includes('localhost')) {
-      // Click Send Email actionable item and design it
-      await activateWorkflow(page);
-      await page.waitForSelector('.mailpoet-automation-errors-header');
-      await page.locator('.mailpoet-automation-step-error').click();
-      await designEmailInWorkflow(page);
-    } else {
-      // Click Send Email actionable item and design it
-      await activateWorkflow(page);
-      await page.waitForSelector('.mailpoet-automation-errors-header');
-      await page.$$('.mailpoet-automation-step-error')[0].click();
-      await designEmailInWorkflow(page);
-
-      // Click Follow up email actionable item and design it
-      await activateWorkflow(page);
-      await page.waitForSelector('.mailpoet-automation-errors-header');
-      await page.locator('.mailpoet-automation-step-error').click();
-      await designEmailInWorkflow(page);
-    }
+    // Click Send Email actionable item and design it
+    await activateWorkflow(page);
+    await page.waitForSelector('.mailpoet-automation-errors-header');
+    await page.locator('.mailpoet-automation-step-error').click();
+    await designEmailInWorkflow(page);
 
     await page.screenshot({
       path: screenshotPath + 'Automation_Create_Welcome_03.png',
