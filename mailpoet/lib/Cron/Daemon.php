@@ -45,6 +45,11 @@ class Daemon {
 
     $errors = [];
     foreach ($this->getWorkers() as $worker) {
+      if (wp_is_maintenance_mode()) {
+        // stop execution when in maintenance mode
+        break;
+      }
+
       try {
         // Clear the entity manager memory for every cron run.
         // This avoids using stale data and prevents memory leaks.
