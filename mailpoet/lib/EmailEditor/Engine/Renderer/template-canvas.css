@@ -45,7 +45,7 @@ body {
 }
 
 @media screen and (max-width: 660px) {
-  .email_column {
+  .email-block-column-content {
     max-width: 100% !important;
   }
   .block {

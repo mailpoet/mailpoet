@@ -50,7 +50,6 @@ class Text extends AbstractBlockRenderer {
             border="0"
             cellpadding="0"
             cellspacing="0"
-            style="min-width: 100%%;"
             width="100%%"
           >
             <tr>

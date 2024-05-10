@@ -52,8 +52,8 @@ class Column extends AbstractBlockRenderer {
       $cellStyles['background-size'] = 'cover';
     }
 
-    $wrapperClassname = 'block wp-block-column';
-    $contentClassname = 'email_column';
+    $wrapperClassname = 'block wp-block-column email-block-column';
+    $contentClassname = 'email-block-column-content';
     $wrapperCSS = WP_Style_Engine::compile_css([
       'vertical-align' => $isStretched ? 'top' : $block_attributes['verticalAlignment'],
     ], '');

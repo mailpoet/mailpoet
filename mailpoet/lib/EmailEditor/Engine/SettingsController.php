@@ -14,6 +14,7 @@ class SettingsController {
     'core/image',
     'core/list',
     'core/list-item',
+    'core/group',
   ];
 
   const DEFAULT_SETTINGS = [
@@ -66,11 +67,13 @@ class SettingsController {
   }
 
   /**
-   * @return array{contentSize: string, layout: string}
+   * @return array{contentSize: string, wideSize: string, layout: string}
    */
   public function getLayout(): array {
+    $settings = $this->getSettings();
     return [
-      'contentSize' => self::EMAIL_WIDTH,
+      'contentSize' => $settings['__experimentalFeatures']['layout']['contentSize'],
+      'wideSize' => $settings['__experimentalFeatures']['layout']['wideSize'],
       'layout' => 'constrained',
     ];
   }

@@ -26,10 +26,10 @@ class PoweredByMailpoet extends AbstractBlock {
     $logo = $attributes['logo'] ?? 'default';
     $logoUrl = $this->cdnAssetUrl->generateCdnUrl('email-editor/logo-' . $logo . '.png');
 
-    return sprintf(
+    return $this->addSpacer(sprintf(
       '<div class="%1$s" style="text-align:center">%2$s</div>',
       esc_attr('wp-block-' . $this->blockName),
       '<img src="' . esc_attr($logoUrl) . '" alt="Powered by MailPoet" width="100px" />'
-    );
+    ), $block->parsed_block['email_attrs'] ?? []); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 }
