@@ -9,12 +9,6 @@ class SettingsControllerTest extends \MailPoetUnitTest {
   public function testItGetsCorrectLayoutWidthWithoutPadding(): void {
     $themeJsonMock = $this->createMock(\WP_Theme_JSON::class);
     $themeJsonMock->method('get_data')->willReturn([
-      'settings' => [
-        "layout" => [
-          "contentSize" => "660px",
-          "wideSize" => "660px",
-        ],
-      ],
       'styles' => [
         'spacing' => [
           'padding' => [
@@ -22,6 +16,12 @@ class SettingsControllerTest extends \MailPoetUnitTest {
             'right' => '10px',
           ],
         ],
+      ],
+    ]);
+    $themeJsonMock->method('get_settings')->willReturn([
+      "layout" => [
+        "contentSize" => "660px",
+        "wideSize" => "660px",
       ],
     ]);
     $themeController = $this->createMock(ThemeController::class);
