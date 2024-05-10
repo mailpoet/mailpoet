@@ -35,7 +35,12 @@ h6 {
   margin-top: 0;
 }
 
-/* Wa want ensure the same design for all email clients */
+/* Ensure border style is set when a block has a border */
+.has-border-color {
+  border-style: solid;
+}
+
+/* We want ensure the same design for all email clients */
 ul,
 ol {
   /* When margin attribute is set to zero, Outlook doesn't render the list properly. As a possible workaround, we can reset only margin for top and bottom */
