@@ -39,7 +39,7 @@ class SettingsController {
   }
 
   public function getSettings(): array {
-    $coreDefaultSettings = get_default_block_editor_settings();
+    $coreDefaultSettings = \get_default_block_editor_settings();
     $themeSettings = $this->themeController->getSettings();
 
     // body selector is later transformed to .editor-styles-wrapper
@@ -70,10 +70,10 @@ class SettingsController {
    * @return array{contentSize: string, wideSize: string, layout: string}
    */
   public function getLayout(): array {
-    $settings = $this->getSettings();
+    $themeSettings = $this->themeController->getSettings();
     return [
-      'contentSize' => $settings['__experimentalFeatures']['layout']['contentSize'],
-      'wideSize' => $settings['__experimentalFeatures']['layout']['wideSize'],
+      'contentSize' => $themeSettings['layout']['contentSize'],
+      'wideSize' => $themeSettings['layout']['wideSize'],
       'layout' => 'constrained',
     ];
   }
