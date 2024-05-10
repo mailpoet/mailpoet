@@ -6,6 +6,7 @@ import {
   enhanceColumnsBlock,
 } from './core/columns';
 import { enhancePostContentBlock } from './core/post-content';
+import { disableGroupVariations } from './core/group';
 import { disableImageFilter, hideExpandOnClick } from './core/image';
 import { disableCertainRichTextFormats } from './core/rich-text';
 import { enhanceButtonBlock } from './core/button';
@@ -18,6 +19,7 @@ export function initBlocks() {
   disableImageFilter();
   disableCertainRichTextFormats();
   disableColumnsLayout();
+  disableGroupVariations();
   enhanceButtonBlock();
   enhanceButtonsBlock();
   enhanceColumnBlock();
