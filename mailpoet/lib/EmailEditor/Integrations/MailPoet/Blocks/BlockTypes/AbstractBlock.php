@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypes;
 
 use MailPoet\Config\Env;
+use WP_Style_Engine;
 
 abstract class AbstractBlock {
   protected $namespace = 'mailpoet';
@@ -90,6 +91,24 @@ abstract class AbstractBlock {
         'path' => Env::$assetsUrl . '/dist/js/email-editor-blocks/style-' . $this->blockName . '-block.css',
     ];
     return $key ? $style[$key] : $style;
+  }
+
+  protected function addSpacer($content, $emailAttrs): string {
+    $gapStyle = WP_Style_Engine::compile_css(array_intersect_key($emailAttrs, array_flip(['margin-top'])), '');
+    $paddingStyle = WP_Style_Engine::compile_css(array_intersect_key($emailAttrs, array_flip(['padding-left', 'padding-right'])), '');
+
+    if (!$gapStyle && !$paddingStyle) {
+      return $content;
+    }
+
+    return sprintf(
+      '<!--[if mso | IE]><table align="left" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%%" style="%2$s"><tr><td style="%3$s"><![endif]-->
+      <div class="email-block-layout" style="%2$s %3$s">%1$s</div>
+      <!--[if mso | IE]></td></tr></table><![endif]-->',
+      $content,
+      esc_attr($gapStyle),
+      esc_attr($paddingStyle)
+    );
   }
 
   abstract public function render($attributes, $content, $block);

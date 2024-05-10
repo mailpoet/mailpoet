@@ -87,15 +87,55 @@ class ContentRenderer {
    */
   private function inlineStyles($html, WP_Post $post) {
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::CONTENT_STYLES_FILE);
+
+    // Apply default contentWidth to constrained blocks.
+    $layout = $this->settingsController->getLayout();
+    $styles .= sprintf(
+      '
+      .is-layout-constrained > *:not(.alignleft):not(.alignright):not(.alignfull):not(.alignwide) {
+        max-width: %1$s;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+      .is-layout-constrained > .alignwide {
+        max-width: %2$s;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+      ',
+      $layout['contentSize'],
+      $layout['wideSize']
+    );
+
+    // Get styles from theme.
     $styles .= $this->themeController->getStylesheetForRendering($post);
+
+    $blockSupportStyles = \wp_style_engine_get_stylesheet_from_context('block-supports', []);
     // Get styles from block-supports stylesheet. This includes rules such as layout (contentWidth) that some blocks use.
     // @see https://github.com/WordPress/WordPress/blob/3c5da9c74344aaf5bf8097f2e2c6a1a781600e03/wp-includes/script-loader.php#L3134
     // @internal :where is not supported by emogrifier, so we need to replace it with *.
-    $styles .= str_replace(
+    $blockSupportStyles = str_replace(
       ':where(:not(.alignleft):not(.alignright):not(.alignfull))',
       '*:not(.alignleft):not(.alignright):not(.alignfull)',
-      \wp_style_engine_get_stylesheet_from_context('block-supports', [])
+      $blockSupportStyles
     );
+    // Layout CSS assumes the top level block will have a single DIV wrapper with children. Since our blocks use tables,
+    // we need to adjust this to look for children in the TD element. This may requires more advanced replacement but
+    // this works in the current version of Gutenberg.
+    // Example rule we're targetting: .wp-container-core-group-is-layout-1.wp-container-core-group-is-layout-1 > *
+    $blockSupportStyles = preg_replace(
+      '/group-is-layout-(\d+) >/',
+      'group-is-layout-$1 > tbody tr td >',
+      $blockSupportStyles
+    );
+
+    $styles .= $blockSupportStyles;
+
+    // Debugging for content styles. Remember these get inlined.
+    //echo '<pre>';
+    //var_dump($styles);
+    //echo '</pre>';
+
     $styles = '<style>' . wp_strip_all_tags((string)apply_filters('mailpoet_email_content_renderer_styles', $styles, $post)) . '</style>';
 
     return CssInliner::fromHtml($styles . $html)->inlineCss()->render();
