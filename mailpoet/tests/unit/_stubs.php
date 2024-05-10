@@ -7,5 +7,8 @@ if (!class_exists(\WP_Theme_JSON::class)) {
     public function get_data() {
       return [];
     }
+    public function get_settings() {
+      return [];
+    }
   }
 }
