@@ -46,7 +46,7 @@ class HeadingTest extends \MailPoetTest {
   public function testItRendersContent(): void {
     $rendered = $this->headingRenderer->render('<h1>This is Heading 1</h1>', $this->parsedHeading, $this->settingsController);
     verify($rendered)->stringContainsString('This is Heading 1');
-    verify($rendered)->stringContainsString('width: 100%;');
+    verify($rendered)->stringContainsString('width:100%;');
     verify($rendered)->stringContainsString('font-size:24px;');
     verify($rendered)->stringNotContainsString('width:640px;');
   }
