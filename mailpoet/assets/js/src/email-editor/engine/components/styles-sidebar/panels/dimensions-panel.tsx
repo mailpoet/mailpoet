@@ -32,7 +32,7 @@ export function DimensionsPanel() {
         hasValue={() =>
           !isEqual(styles.spacing.padding, defaultStyles.spacing.padding)
         }
-        label={__('Padding')}
+        label={__('Padding', 'mailpoet')}
         onDeselect={() =>
           updateStyleProp(['spacing', 'padding'], defaultStyles.spacing.padding)
         }
@@ -44,14 +44,14 @@ export function DimensionsPanel() {
           onChange={(value) => {
             updateStyleProp(['spacing', 'padding'], value);
           }}
-          label={__('Padding')}
+          label={__('Padding', 'mailpoet')}
           sides={['horizontal', 'vertical', 'top', 'left', 'right', 'bottom']}
           units={units}
         />
       </ToolsPanelItem>
       <ToolsPanelItem
         isShownByDefault
-        label={__('Block spacing')}
+        label={__('Block spacing', 'mailpoet')}
         hasValue={() =>
           styles.spacing.blockGap !== defaultStyles.spacing.blockGap
         }
@@ -64,7 +64,7 @@ export function DimensionsPanel() {
         className="tools-panel-item-spacing"
       >
         <SpacingSizesControl
-          label={__('Block spacing')}
+          label={__('Block spacing', 'mailpoet')}
           min={0}
           onChange={(value) => {
             updateStyleProp(['spacing', 'blockGap'], value.top);

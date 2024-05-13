@@ -55,14 +55,14 @@ export function PreviewDropdown() {
                 onClick={() => changeDeviceType('Desktop')}
                 icon={previewDeviceType === 'Desktop' && check}
               >
-                {__('Desktop')}
+                {__('Desktop', 'mailpoet')}
               </MenuItem>
               <MenuItem
                 className="block-editor-post-preview__button-resize"
                 onClick={() => changeDeviceType('Mobile')}
                 icon={previewDeviceType === 'Mobile' && check}
               >
-                {__('Mobile')}
+                {__('Mobile', 'mailpoet')}
               </MenuItem>
             </MenuGroup>
             <MenuGroup>
@@ -85,7 +85,7 @@ export function PreviewDropdown() {
                       openInNewTab(newsletterPreviewUrl);
                     }}
                   >
-                    {__('Preview in new tab')}
+                    {__('Preview in new tab', 'mailpoet')}
                     <Icon icon={external} />
                   </Button>
                 </div>

@@ -90,7 +90,9 @@ export function Header() {
     event.preventDefault();
   };
 
-  const shortLabelInserter = !isInserterSidebarOpened ? __('Add') : __('Close');
+  const shortLabelInserter = !isInserterSidebarOpened
+    ? __('Add', 'mailpoet')
+    : __('Close', 'mailpoet');
 
   return (
     <div className="edit-post-header">
@@ -124,7 +126,7 @@ export function Header() {
               onClick={undoAction}
               disabled={!hasUndo}
               icon={undo}
-              label={__('Undo')}
+              label={__('Undo', 'mailpoet')}
               showTooltip
             />
             <ToolbarItem
@@ -136,7 +138,7 @@ export function Header() {
               onClick={redoAction}
               disabled={!hasRedo}
               icon={redo}
-              label={__('Redo')}
+              label={__('Redo', 'mailpoet')}
               showTooltip
             />
             <ToolbarItem
@@ -173,8 +175,8 @@ export function Header() {
                 }}
                 label={
                   isBlockToolsCollapsed
-                    ? __('Show block tools')
-                    : __('Hide block tools')
+                    ? __('Show block tools', 'mailpoet')
+                    : __('Hide block tools', 'mailpoet')
                 }
               />
             </>
