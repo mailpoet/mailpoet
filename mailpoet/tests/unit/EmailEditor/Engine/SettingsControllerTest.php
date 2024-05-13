@@ -18,14 +18,14 @@ class SettingsControllerTest extends \MailPoetUnitTest {
         ],
       ],
     ]);
-    $themeJsonMock->method('get_settings')->willReturn([
+    $themeController = $this->createMock(ThemeController::class);
+    $themeController->method('getTheme')->willReturn($themeJsonMock);
+    $themeController->method('getSettings')->willReturn([
       "layout" => [
         "contentSize" => "660px",
         "wideSize" => "660px",
       ],
     ]);
-    $themeController = $this->createMock(ThemeController::class);
-    $themeController->method('getTheme')->willReturn($themeJsonMock);
     $settingsController = new SettingsController($themeController);
     $layoutWidth = $settingsController->getLayoutWidthWithoutPadding();
     // default width is 660px and if we subtract padding from left and right we must get the correct value
