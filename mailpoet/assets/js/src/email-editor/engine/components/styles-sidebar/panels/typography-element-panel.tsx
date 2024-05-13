@@ -144,7 +144,7 @@ export function TypographyElementPanel({
   return (
     <ToolsPanel label={__('Typography', 'mailpoet')} resetAll={resetAll}>
       <ToolsPanelItem
-        label={__('Font family')}
+        label={__('Font family', 'mailpoet')}
         hasValue={hasFontFamily}
         onDeselect={() => setFontFamily(defaultFontFamily)}
         isShownByDefault={defaultControls.fontFamily}
@@ -159,7 +159,7 @@ export function TypographyElementPanel({
       </ToolsPanelItem>
       {showToolFontSize && (
         <ToolsPanelItem
-          label={__('Font size')}
+          label={__('Font size', 'mailpoet')}
           hasValue={hasFontSize}
           onDeselect={() => setFontSize(defaultFontSize)}
           isShownByDefault={defaultControls.fontSize}
@@ -178,7 +178,7 @@ export function TypographyElementPanel({
       )}
       <ToolsPanelItem
         className="single-column"
-        label={__('Appearance')}
+        label={__('Appearance', 'mailpoet')}
         hasValue={hasFontAppearance}
         onDeselect={() => {
           setFontAppearance({
@@ -202,7 +202,7 @@ export function TypographyElementPanel({
       </ToolsPanelItem>
       <ToolsPanelItem
         className="single-column"
-        label={__('Line height')}
+        label={__('Line height', 'mailpoet')}
         hasValue={hasLineHeight}
         onDeselect={() => setLineHeight(defaultLineHeight)}
         isShownByDefault={defaultControls.lineHeight}
@@ -217,7 +217,7 @@ export function TypographyElementPanel({
       </ToolsPanelItem>
       <ToolsPanelItem
         className="single-column"
-        label={__('Letter spacing')}
+        label={__('Letter spacing', 'mailpoet')}
         hasValue={hasLetterSpacing}
         onDeselect={() => setLetterSpacing(defaultLetterSpacing)}
         isShownByDefault={defaultControls.letterSpacing}
@@ -231,7 +231,7 @@ export function TypographyElementPanel({
       </ToolsPanelItem>
       <ToolsPanelItem
         className="single-column"
-        label={__('Text decoration')}
+        label={__('Text decoration', 'mailpoet')}
         hasValue={hasTextDecoration}
         onDeselect={() => setTextDecoration(defaultTextDecoration)}
         isShownByDefault={defaultControls.textDecoration}
@@ -244,7 +244,7 @@ export function TypographyElementPanel({
         />
       </ToolsPanelItem>
       <ToolsPanelItem
-        label={__('Letter case')}
+        label={__('Letter case', 'mailpoet')}
         hasValue={hasTextTransform}
         onDeselect={() => setTextTransform(defaultTextTransform)}
         isShownByDefault={defaultControls.textTransform}

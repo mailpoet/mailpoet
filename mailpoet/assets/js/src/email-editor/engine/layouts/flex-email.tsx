@@ -43,17 +43,17 @@ function JustificationControls({
     {
       value: 'left',
       icon: justifyLeft,
-      label: __('Justify items left'),
+      label: __('Justify items left', 'mailpoet'),
     },
     {
       value: 'center',
       icon: justifyCenter,
-      label: __('Justify items center'),
+      label: __('Justify items center', 'mailpoet'),
     },
     {
       value: 'right',
       icon: justifyRight,
-      label: __('Justify items right'),
+      label: __('Justify items right', 'mailpoet'),
     },
   ];
 
@@ -74,7 +74,7 @@ function JustificationControls({
   return (
     <ToggleGroupControl
       __nextHasNoMarginBottom
-      label={__('Justification')}
+      label={__('Justification', 'mailpoet')}
       value={justificationValue}
       onChange={onChange}
       className="block-editor-hooks__flex-layout-justification-controls"
@@ -118,7 +118,7 @@ function LayoutControls({ setAttributes, attributes, name: blockName }) {
   return (
     <>
       <InspectorControls>
-        <PanelBody title={__('Layout')}>
+        <PanelBody title={__('Layout', 'mailpoet')}>
           <Flex>
             <FlexItem>
               <JustificationControls

@@ -85,7 +85,7 @@ export function TemplatesPanel() {
       void createSuccessNotice(
         sprintf(
           /* translators: The template/part's name. */
-          __('"%s" reset.'),
+          __('"%s" reset.', 'mailpoet'),
           // @ts-expect-error template type is not defined
           decodeEntities(template.title as string),
         ),
@@ -96,7 +96,7 @@ export function TemplatesPanel() {
       );
     } catch (error) {
       void createErrorNotice(
-        __('An error occurred while reverting the template.'),
+        __('An error occurred while reverting the template.', 'mailpoet'),
         {
           type: 'snackbar',
         },

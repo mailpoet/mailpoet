@@ -65,7 +65,7 @@ export function Header() {
           data-automation-id="mailpoet_block_settings_tab"
           type="button"
         >
-          {__('Block')}
+          {__('Block', 'mailpoet')}
         </button>
       </li>
     </ul>

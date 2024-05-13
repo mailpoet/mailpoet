@@ -33,7 +33,7 @@ function ElementItem({ element, label }: { element: string; label: string }) {
   const background = elementStyles.color?.background || '#f0f0f0';
   const navigationButtonLabel = sprintf(
     // translators: %s: is a subset of Typography, e.g., 'text' or 'links'.
-    __('Typography %s styles'),
+    __('Typography %s styles', 'mailpoet'),
     label,
   );
 
@@ -58,7 +58,7 @@ function ElementItem({ element, label }: { element: string; label: string }) {
               textTransform: textTransform ?? 'none',
             }}
           >
-            {__('Aa')}
+            Aa
           </FlexItem>
           <FlexItem>{label}</FlexItem>
         </HStack>
@@ -73,13 +73,13 @@ export function TypographyPanel() {
       <CardBody>
         <VStack spacing={3}>
           <Heading level={3} className="edit-site-global-styles-subtitle">
-            {__('Elements')}
+            {__('Elements', 'mailpoet')}
           </Heading>
           <ItemGroup isBordered isSeparated size="small">
-            <ElementItem element="text" label={__('Text')} />
-            <ElementItem element="link" label={__('Links')} />
-            <ElementItem element="heading" label={__('Headings')} />
-            <ElementItem element="button" label={__('Buttons')} />
+            <ElementItem element="text" label={__('Text', 'mailpoet')} />
+            <ElementItem element="link" label={__('Links', 'mailpoet')} />
+            <ElementItem element="heading" label={__('Headings', 'mailpoet')} />
+            <ElementItem element="button" label={__('Buttons', 'mailpoet')} />
           </ItemGroup>
         </VStack>
       </CardBody>

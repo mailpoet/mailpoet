@@ -29,7 +29,7 @@ export function ScreenHeader({ title, description, onBack }: Props) {
               style={{ minWidth: 24, padding: 0 }}
               icon={chevronLeft}
               size="small"
-              aria-label={__('Navigate to the previous view')}
+              aria-label={__('Navigate to the previous view', 'mailpoet')}
               onClick={onBack}
             />
             <Spacer>

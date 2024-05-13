@@ -19,7 +19,7 @@ export function ScreenTypographyElement({
   const [headingLevel, setHeadingLevel] = useState('heading');
   const panels = {
     text: {
-      title: __('Text'),
+      title: __('Text', 'mailpoet'),
       description: __(
         'Manage the fonts and typography used on text.',
         'mailpoet',
@@ -27,7 +27,7 @@ export function ScreenTypographyElement({
       defaultControls: DEFAULT_CONTROLS,
     },
     link: {
-      title: __('Links'),
+      title: __('Links', 'mailpoet'),
       description: __(
         'Manage the fonts and typography used on links.',
         'mailpoet',
@@ -38,7 +38,7 @@ export function ScreenTypographyElement({
       },
     },
     heading: {
-      title: __('Headings'),
+      title: __('Headings', 'mailpoet'),
       description: __(
         'Manage the fonts and typography used on headings.',
         'mailpoet',
@@ -49,7 +49,7 @@ export function ScreenTypographyElement({
       },
     },
     button: {
-      title: __('Buttons'),
+      title: __('Buttons', 'mailpoet'),
       description: __(
         'Manage the fonts and typography used on buttons.',
         'mailpoet',
@@ -69,7 +69,7 @@ export function ScreenTypographyElement({
       {element === 'heading' && (
         <Spacer marginX={4} marginBottom="1em">
           <ToggleGroupControl
-            label={__('Select heading level')}
+            label={__('Select heading level', 'mailpoet')}
             hideLabelFromVision
             value={headingLevel}
             onChange={(value) => setHeadingLevel(value.toString())}
@@ -79,12 +79,24 @@ export function ScreenTypographyElement({
           >
             <ToggleGroupControlOption
               value="heading"
-              label={_x('All', 'heading levels')}
+              label={_x('All', 'heading levels', 'mailpoet')}
             />
-            <ToggleGroupControlOption value="h1" label={__('H1')} />
-            <ToggleGroupControlOption value="h2" label={__('H2')} />
-            <ToggleGroupControlOption value="h3" label={__('H3')} />
-            <ToggleGroupControlOption value="h4" label={__('H4')} />
+            <ToggleGroupControlOption
+              value="h1"
+              label={_x('H1', 'Heading Level', 'mailpoet')}
+            />
+            <ToggleGroupControlOption
+              value="h2"
+              label={_x('H2', 'Heading Level', 'mailpoet')}
+            />
+            <ToggleGroupControlOption
+              value="h3"
+              label={_x('H3', 'Heading Level', 'mailpoet')}
+            />
+            <ToggleGroupControlOption
+              value="h4"
+              label={_x('H4', 'Heading Level', 'mailpoet')}
+            />
           </ToggleGroupControl>
         </Spacer>
       )}
