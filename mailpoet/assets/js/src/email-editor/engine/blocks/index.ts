@@ -5,6 +5,7 @@ import {
   deactivateStackOnMobile,
   enhanceColumnsBlock,
 } from './core/columns';
+import { enhancePostContentBlock } from './core/post-content';
 import { disableImageFilter, hideExpandOnClick } from './core/image';
 import { disableCertainRichTextFormats } from './core/rich-text';
 import { enhanceButtonBlock } from './core/button';
@@ -21,6 +22,7 @@ export function initBlocks() {
   enhanceButtonsBlock();
   enhanceColumnBlock();
   enhanceColumnsBlock();
+  enhancePostContentBlock();
   alterSupportConfiguration();
   registerCoreBlocks();
 }
