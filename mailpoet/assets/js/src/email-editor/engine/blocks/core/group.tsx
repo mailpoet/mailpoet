@@ -12,10 +12,11 @@ function disableGroupVariations() {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return {
           ...settings,
-          variations: [],
+          variations: settings.variations.filter(
+            (variation) => variation.name === 'group',
+          ),
         };
       }
-
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return settings;
     },
