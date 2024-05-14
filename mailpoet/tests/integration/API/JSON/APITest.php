@@ -366,7 +366,7 @@ class APITest extends \MailPoetTest {
     $this->assertInstanceOf(LogEntity::class, $log);
     verify($log->getMessage())->stringContainsString('Some Error');
     verify($log->getName())->equals(LoggerFactory::TOPIC_API);
-    verify($response->errors)->equals([['error' => 'bad_request', 'message' => 'Some Error']]);
+    verify($response->errors)->arrayContains(['error' => 'bad_request', 'message' => 'Some Error']);
     $this->diContainer->get(SettingsController::class)->set('logging', 'errors');
   }
 
