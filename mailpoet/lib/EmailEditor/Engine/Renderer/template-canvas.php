@@ -15,7 +15,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="format-detection" content="telephone=no" />
-  <?php echo $metaRobots; ?>
+  <?php echo $metaRobots; // HTML defined by MailPoet--do not escape ?>
 </head>
 <body>
     <div class="email_layout_wrapper">
@@ -23,7 +23,7 @@
           <tbody>
             <tr>
               <td class="email_preheader" height="1">
-                <?php echo $preHeader; ?>
+                <?php echo esc_html(wp_strip_all_tags($preHeader)); ?>
               </td>
             </tr>
             <tr>

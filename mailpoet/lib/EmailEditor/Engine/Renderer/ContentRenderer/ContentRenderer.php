@@ -96,7 +96,7 @@ class ContentRenderer {
       '*:not(.alignleft):not(.alignright):not(.alignfull)',
       \wp_style_engine_get_stylesheet_from_context('block-supports', [])
     );
-    $styles = '<style>' . (string)apply_filters('mailpoet_email_content_renderer_styles', $styles, $post) . '</style>';
+    $styles = '<style>' . wp_strip_all_tags((string)apply_filters('mailpoet_email_content_renderer_styles', $styles, $post)) . '</style>';
 
     return CssInliner::fromHtml($styles . $html)->inlineCss()->render();
   }

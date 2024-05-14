@@ -22,7 +22,7 @@ class DefaultContent extends AbstractPattern {
     <figure class="wp-block-image"><img src="' . esc_url($this->cdnAssetUrl->generateCdnUrl("newsletter/congratulation-page-illustration-transparent-LQ.20181121-1440.png")) . '" alt="Banner Image"/></figure>
     <!-- /wp:image -->
     <!-- wp:paragraph -->
-    <p>' . __('A one-column layout is great for simplified and concise content, like announcements or newsletters with brief updates. Drag blocks to add content and customize your styles from the styles panel on the top right.', 'mailpoet') . '</p>
+    <p>' . esc_html__('A one-column layout is great for simplified and concise content, like announcements or newsletters with brief updates. Drag blocks to add content and customize your styles from the styles panel on the top right.', 'mailpoet') . '</p>
     <!-- /wp:paragraph -->
     <!-- wp:paragraph {"fontSize":"small"} -->
     <p class="has-small-font-size">' . esc_html__('You received this email because you are subscribed to the [site:title]', 'mailpoet') . '</p>

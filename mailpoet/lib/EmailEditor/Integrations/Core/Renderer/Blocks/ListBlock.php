@@ -22,7 +22,7 @@ class ListBlock extends AbstractBlockRenderer {
         $styles['font-size'] = $themeData['styles']['typography']['fontSize'];
       }
 
-      $html->set_attribute('style', \WP_Style_Engine::compile_css($styles, ''));
+      $html->set_attribute('style', esc_attr(\WP_Style_Engine::compile_css($styles, '')));
       $blockContent = $html->get_updated_html();
     }
 
@@ -32,15 +32,11 @@ class ListBlock extends AbstractBlockRenderer {
 
     // \WP_HTML_Tag_Processor escapes the content, so we have to replace it back
     $blockContent = str_replace('&#039;', "'", $blockContent);
-    $blockContent = str_replace('{listContent}', $blockContent, $this->getMarkup());
-    $blockContent = str_replace('{wrapperStyle}', $wrapperStyle, $blockContent);
-    return $blockContent;
-  }
 
-  private function getMarkup(): string {
-    return '
-      <div style="{wrapperStyle}">
-            {listContent}
-      </div>';
+    return sprintf(
+      '<div style="%1$s">%2$s</div>',
+      esc_attr($wrapperStyle),
+      $blockContent
+    );
   }
 }

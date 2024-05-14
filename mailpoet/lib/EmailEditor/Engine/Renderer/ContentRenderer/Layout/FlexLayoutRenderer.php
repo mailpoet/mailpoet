@@ -13,11 +13,21 @@ class FlexLayoutRenderer {
     $flexGap = $themeStyles['spacing']['blockGap'] ?? '0px';
     $flexGapNumber = $settingsController->parseNumberFromStringWithPixels($flexGap);
 
-    $innerBlocks = $this->computeWidthsForFlexLayout($parsedBlock, $settingsController, $flexGapNumber);
+    $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
+    $justify = $parsedBlock['attrs']['layout']['justifyContent'] ?? 'left';
+    $styles = wp_style_engine_get_styles($parsedBlock['attrs']['style'] ?? [])['css'] ?? '';
+    $styles .= 'margin-top: ' . $marginTop . ';';
+    $styles .= 'text-align: ' . $justify;
 
     // MS Outlook doesn't support style attribute in divs so we conditionally wrap the buttons in a table and repeat styles
-    $outputHtml = '<!--[if mso | IE]><table align="{align}" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="" style="{style}" ><![endif]-->
-        <div style="{style}"><table class="layout-flex-wrapper" style="display:inline-block"><tbody><tr>';
+    $outputHtml = sprintf(
+      '<!--[if mso | IE]><table align="%2$s" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%%"><tr><td style="%1$s" ><![endif]-->
+      <div style="%1$s"><table class="layout-flex-wrapper" style="display:inline-block"><tbody><tr>',
+      esc_attr($styles),
+      esc_attr($justify)
+    );
+
+    $innerBlocks = $this->computeWidthsForFlexLayout($parsedBlock, $settingsController, $flexGapNumber);
 
     foreach ($innerBlocks as $key => $block) {
       $styles = [];
@@ -27,19 +37,10 @@ class FlexLayoutRenderer {
       if ($key > 0) {
         $styles['padding-left'] = $flexGap;
       }
-      $outputHtml .= '<td class="layout-flex-item" style="' . esc_html(\WP_Style_Engine::compile_css($styles, '')) . '">' . render_block($block) . '</td>';
+      $outputHtml .= '<td class="layout-flex-item" style="' . esc_attr(\WP_Style_Engine::compile_css($styles, '')) . '">' . render_block($block) . '</td>';
     }
     $outputHtml .= '</tr></table></div>
     <!--[if mso | IE]></td></tr></table><![endif]-->';
-
-    $wpGeneratedStyles = wp_style_engine_get_styles($parsedBlock['attrs']['style'] ?? []);
-    $styles = $wpGeneratedStyles['css'] ?? '';
-    $marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
-    $styles .= 'margin-top: ' . $marginTop . ';';
-    $justify = esc_attr($parsedBlock['attrs']['layout']['justifyContent'] ?? 'left');
-    $styles .= 'text-align: ' . $justify;
-    $outputHtml = str_replace('{style}', $styles, $outputHtml);
-    $outputHtml = str_replace('{align}', $justify, $outputHtml);
 
     return $outputHtml;
   }
