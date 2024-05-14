@@ -82,7 +82,7 @@ class Text extends AbstractBlockRenderer {
       // to prevent CSS Inliner from adding a default value and overriding the value set by user, which is on the wrapper element.
       // The value provided by WP uses clamp() function which is not supported in many email clients
       $elementStyle = preg_replace('/font-size:[^;]+;?/', 'font-size: inherit;', $elementStyle);
-      $html->set_attribute('style', $elementStyle);
+      $html->set_attribute('style', esc_attr($elementStyle));
       $blockContent = $html->get_updated_html();
     }
 

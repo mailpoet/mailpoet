@@ -62,7 +62,8 @@ class Renderer {
       'body, .email_layout_wrapper'
     );
     $templateStyles .= file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
-    $renderedTemplate = $this->inlineCSSStyles('<style>' . (string)apply_filters('mailpoet_email_renderer_styles', $templateStyles, $post) . '</style>' . $renderedTemplate);
+    $templateStyles = '<style>' . wp_strip_all_tags((string)apply_filters('mailpoet_email_renderer_styles', $templateStyles, $post)) . '</style>';
+    $renderedTemplate = $this->inlineCSSStyles($templateStyles . $renderedTemplate);
 
     return [
       'html' => $renderedTemplate,
