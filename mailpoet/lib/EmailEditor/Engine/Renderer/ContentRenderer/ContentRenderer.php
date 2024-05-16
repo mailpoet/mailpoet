@@ -92,7 +92,7 @@ class ContentRenderer {
     $layout = $this->settingsController->getLayout();
     $styles .= sprintf(
       '
-      .is-layout-constrained > *:not(.alignleft):not(.alignright):not(.alignfull):not(.alignwide) {
+      .is-layout-constrained > *:not(.alignleft):not(.alignright):not(.alignfull) {
         max-width: %1$s;
         margin-left: auto !important;
         margin-right: auto !important;
@@ -109,8 +109,7 @@ class ContentRenderer {
 
     // Get styles from theme.
     $styles .= $this->themeController->getStylesheetForRendering($post);
-
-    $blockSupportStyles = \wp_style_engine_get_stylesheet_from_context('block-supports', []);
+    $blockSupportStyles = $this->themeController->getStylesheetFromContext('block-supports', []);
     // Get styles from block-supports stylesheet. This includes rules such as layout (contentWidth) that some blocks use.
     // @see https://github.com/WordPress/WordPress/blob/3c5da9c74344aaf5bf8097f2e2c6a1a781600e03/wp-includes/script-loader.php#L3134
     // @internal :where is not supported by emogrifier, so we need to replace it with *.

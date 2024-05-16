@@ -59,6 +59,10 @@ class ThemeController {
     return $emailEditorThemeSettings;
   }
 
+  public function getStylesheetFromContext($context, $options = []): string {
+    return function_exists('gutenberg_style_engine_get_stylesheet_from_context') ? gutenberg_style_engine_get_stylesheet_from_context($context, $options) : wp_style_engine_get_stylesheet_from_context($context, $options);
+  }
+
   public function getStylesheetForRendering($post = null): string {
     $emailThemeSettings = $this->getSettings();
 
