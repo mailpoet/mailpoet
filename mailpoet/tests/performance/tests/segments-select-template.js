@@ -20,7 +20,11 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login, focusAndClick } from '../utils/helpers.js';
+import {
+  login,
+  focusAndClick,
+  waitForSelectorToBeClickable
+} from '../utils/helpers.js';
 
 export async function segmentsSelectTemplate() {
   const page = browser.newPage();
@@ -52,6 +56,7 @@ export async function segmentsSelectTemplate() {
     ]);
 
     // Save the segment
+    await waitForSelectorToBeClickable(page, 'button[type="submit"]');
     await focusAndClick(page, 'button[type="submit"]');
 
     await page.waitForLoadState('networkidle');
@@ -61,11 +66,11 @@ export async function segmentsSelectTemplate() {
     });
 
     await page.waitForSelector('[data-automation-id="select_all"]');
-    const locator =
+    const segmentUpdatedMessage =
       "//div[@class='notice-success'].//p[starts-with(text(),'Segment successfully updated!')]";
     describe(segmentsPageTitle, () => {
-      describe('segments-select-template: should be able to see Segment saved message', () => {
-        expect(page.locator(locator)).to.exist;
+      describe('segments-select-template: should be able to see Segment Updated message', () => {
+        expect(page.locator(segmentUpdatedMessage)).to.exist;
       });
     });
 

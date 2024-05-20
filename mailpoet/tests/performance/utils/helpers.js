@@ -68,6 +68,11 @@ export async function waitForSelectorToBeVisible(page, element) {
   await page.locator(element).waitFor({ state: 'visible' });
 }
 
+// Wait for selector to be available
+export async function waitForSelectorToBeClickable(page, element) {
+  await page.locator(element).waitFor({ trial: true });
+}
+
 // Add an item to the automation workflow
 export async function addActionTriggerItemToWorkflow(page, actionName) {
   await page.locator('.components-search-control__input').type(actionName);
