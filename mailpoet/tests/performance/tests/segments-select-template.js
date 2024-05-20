@@ -23,7 +23,7 @@ import {
 import {
   login,
   focusAndClick,
-  waitForSelectorToBeClickable
+  waitForSelectorToBeClickable,
 } from '../utils/helpers.js';
 
 export async function segmentsSelectTemplate() {
