@@ -21,7 +21,12 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login, selectInReact, focusAndClick } from '../utils/helpers.js';
+import {
+  login,
+  selectInReact,
+  focusAndClick,
+  waitForSelectorToBeClickable
+} from '../utils/helpers.js';
 
 export async function segmentsCreateCustom() {
   const page = browser.newPage();
@@ -121,18 +126,17 @@ export async function segmentsCreateCustom() {
     });
 
     // Save the segment
-    const calculatedMessage =
-      "//div[@class='mailpoet-form-field'].//span[starts-with(text(),'This segment has')]";
-    await calculatedMessage.waitFor();
-    await focusAndClick(page, 'div.mailpoet-form-actions > button');
-    await page.waitForSelector('[data-automation-id="filters_all"]', {
+    await waitForSelectorToBeClickable(page, 'button[type="submit"]');
+    await focusAndClick(page, 'button[type="submit"]');
+    await page.waitForSelector('[data-automation-id="new-segment"]', {
       state: 'visible',
     });
-    const segmentUpdatedMessage =
-      "//div[@class='notice-success'].//p[starts-with(text(),'Segment successfully updated!')]";
+    await page.waitForLoadState('networkidle');
+    const segmentAddedMessage =
+      "//div[@class='notice-success'].//p[starts-with(text(),'Segment successfully added!')]";
     describe(segmentsPageTitle, () => {
-      describe('segments-create-custom: should be able to see Segment Updated message', () => {
-        expect(page.locator(segmentUpdatedMessage)).to.exist;
+      describe('segments-create-custom: should be able to see Segment Added message', () => {
+        expect(page.locator(segmentAddedMessage)).to.exist;
       });
     });
 
