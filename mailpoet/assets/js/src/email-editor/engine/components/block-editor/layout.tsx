@@ -105,8 +105,6 @@ export function Layout() {
     return null;
   }
 
-  const disableIframe = !isEditingTemplate;
-
   return (
     <>
       <FullscreenMode isActive={isFullscreenActive} />
@@ -146,7 +144,7 @@ export function Layout() {
                 style={contentWrapperStyles}
               >
                 <EditorCanvas
-                  disableIframe={disableIframe}
+                  disableIframe={false}
                   styles={[...settings.styles, ...emailCss]}
                   autoFocus
                   className="has-global-padding"
