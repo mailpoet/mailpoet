@@ -27,11 +27,13 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('//button[text()="Continue"]');
 
     $i->wantTo('Compose an email');
-    $i->waitForElementVisible('.editor-canvas__iframe', 20);
+    $i->switchToIFrame('.editor-canvas__iframe');
+    $i->waitForElementVisible('.is-root-container', 20);
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label="Block: Heading"]');
     $i->click('[aria-label="Block: Paragraph"]');
     $i->type('Sample text');
+    $i->switchToIFrame();
 
     $i->wantTo('Verify correct WP menu item is highlighted');
     $i->waitForText('Emails', 10, '#toplevel_page_mailpoet-homepage .current');
@@ -92,11 +94,13 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('//button[text()="Continue"]');
 
     $i->wantTo('Edit an email');
-    $i->waitForElementVisible('.editor-canvas__iframe', 20);
+    $i->switchToIFrame('.editor-canvas__iframe');
+    $i->waitForElementVisible('.is-root-container', 20);
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label="Block: Heading"]');
     $i->click('[aria-label="Block: Paragraph"]');
     $i->type('Sample text');
+    $i->switchToIFrame();
 
     $i->wantTo('Save draft and display preview');
     $i->click('Save Draft');
