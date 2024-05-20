@@ -146,6 +146,7 @@ export function ActionConfirm({
         'mailpoet',
       );
       message = sprintf(
+        // translators: %s is the list of selected segments
         _n(
           'Are you sure you want to trash the selected segment %s?',
           'Are you sure you want to trash the selected segments %s?',
@@ -164,6 +165,7 @@ export function ActionConfirm({
         'mailpoet',
       );
       message = sprintf(
+        // translators: %s is the list of selected segments
         _n(
           'Are you sure you want to restore the selected segment %s?',
           'Are you sure you want to restore segments %s?',
@@ -184,6 +186,7 @@ export function ActionConfirm({
       message = (
         <>
           {sprintf(
+            // translators: %s is the list of selected segments
             _n(
               'Are you sure you want to delete the selected segment %s permanently?',
               'Are you sure you want to delete the selected segments %s permanently?',
