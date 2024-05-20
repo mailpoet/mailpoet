@@ -30,10 +30,7 @@ export async function subscribersAdding() {
   const page = browser.newPage();
 
   try {
-    let subscriberEmail =
-      'blackhole+automation' +
-      Math.floor(Math.random() * 9999 + 1) +
-      '@mailpoet.com';
+    let subscriberEmail = 'blackhole+automation' + Date.now() + '@mailpoet.com';
 
     // Log in to WP Admin
     await login(page);
