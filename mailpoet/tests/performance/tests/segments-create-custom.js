@@ -25,15 +25,14 @@ import {
   login,
   selectInReact,
   focusAndClick,
-  waitForSelectorToBeClickable
+  waitForSelectorToBeClickable,
 } from '../utils/helpers.js';
 
 export async function segmentsCreateCustom() {
   const page = browser.newPage();
 
   try {
-    const complexSegmentName =
-      'Complex Segment ' + Math.floor(Math.random() * 9999 + 1);
+    const complexSegmentName = 'Complex Segment ' + Date.now();
 
     // Log in to WP Admin
     await login(page);

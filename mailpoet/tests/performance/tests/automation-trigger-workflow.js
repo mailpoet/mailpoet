@@ -31,9 +31,7 @@ export async function automationTriggerWorkflow() {
 
   try {
     const subscriberEmail =
-      'blackhole+automation' +
-      Math.floor(Math.random() * 9999 + 1) +
-      '@mailpoet.com';
+      'blackhole+automation' + Date.now() + '@mailpoet.com';
 
     // Log in to WP Admin
     await login(page);
