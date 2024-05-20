@@ -27,7 +27,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('//button[text()="Continue"]');
 
     $i->wantTo('Compose an email');
-    $i->waitForElementVisible('.is-root-container', 20);
+    $i->waitForElementVisible('.editor-canvas__iframe', 20);
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label="Block: Heading"]');
     $i->click('[aria-label="Block: Paragraph"]');
@@ -92,7 +92,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('//button[text()="Continue"]');
 
     $i->wantTo('Edit an email');
-    $i->waitForElementVisible('.is-root-container', 20);
+    $i->waitForElementVisible('.editor-canvas__iframe', 20);
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label="Block: Heading"]');
     $i->click('[aria-label="Block: Paragraph"]');
