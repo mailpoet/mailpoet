@@ -75,7 +75,7 @@ export function InnerEditor({
     [settings, onNavigateToEntityRecord, onNavigateToPreviousEntityRecord],
   );
 
-  if (!post) {
+  if (!post || (currentPost.postType !== 'wp_template' && !template)) {
     return null;
   }
 
