@@ -5,6 +5,7 @@ import { useSelect } from '@wordpress/data';
 
 import {
   ErrorBoundary,
+  PostLockedModal,
   // @ts-expect-error No types for this exist yet.
   privateApis as editorPrivateApis,
 } from '@wordpress/editor';
@@ -79,8 +80,6 @@ export function InnerEditor({
     return null;
   }
 
-  // Todo: <PostLockedModal /> removed due to errors when heartbeat API triggered.
-
   return (
     <SlotFillProvider>
       <ExperimentalEditorProvider
@@ -91,9 +90,10 @@ export function InnerEditor({
         __unstableTemplate={template}
         {...props}
       >
-        {/* @ts-expect-error Tada */}
+        {/* @ts-expect-error ErrorBoundary type is incorrect there is no onError */}
         <ErrorBoundary>
           <Layout />
+          <PostLockedModal />
         </ErrorBoundary>
       </ExperimentalEditorProvider>
     </SlotFillProvider>
