@@ -44,7 +44,6 @@ export function Layout() {
     previewDeviceType,
     isInserterSidebarOpened,
     isListviewSidebarOpened,
-    isEmailLoaded,
     canUserEditMedia,
     hasFixedToolbar,
     focusMode,
@@ -58,7 +57,6 @@ export function Layout() {
       isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
       initialSettings: select(storeName).getInitialEditorSettings(),
       previewDeviceType: select(storeName).getPreviewState().deviceType,
-      isEmailLoaded: select(storeName).isEmailLoaded(),
       canUserEditMedia: select(coreStore).canUser('create', 'media'),
       hasFixedToolbar: select(storeName).isFeatureActive('fixedToolbar'),
       focusMode: select(storeName).isFeatureActive('focusMode'),
@@ -97,11 +95,6 @@ export function Layout() {
     hasFixedToolbar,
     focusMode,
   };
-
-  // Do not render editor if email is not loaded yet.
-  if (!isEmailLoaded) {
-    return null;
-  }
 
   return (
     <>
