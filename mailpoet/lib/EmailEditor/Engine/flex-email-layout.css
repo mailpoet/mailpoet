@@ -32,7 +32,8 @@
 .wp-block-columns:not(.is-not-stacked-on-mobile)
   > .wp-block-column
   > .wp-block {
-  margin: var(--wp--style--block-gap, 16px) 0;
+  margin-bottom: var(--wp--style--block-gap, 16px);
+  margin-top: var(--wp--style--block-gap, 16px);
 }
 
 .wp-block-columns:not(.is-not-stacked-on-mobile)
