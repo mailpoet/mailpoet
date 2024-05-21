@@ -49,7 +49,11 @@ export function usePreviewTemplates() {
     return [[]];
   }
 
-  const contentPatternBlocks = patterns[0].blocks as BlockInstance[];
+  // Pick first pattern that comes from mailpoet
+  const contentPatternBlocks = patterns.find((pattern) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    pattern?.name?.startsWith('mailpoet'),
+  )?.blocks as BlockInstance[];
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return [
