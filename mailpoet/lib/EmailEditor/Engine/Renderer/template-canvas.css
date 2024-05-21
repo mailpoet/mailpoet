@@ -3,7 +3,6 @@
 /* StyleLint is disabled because some rules contain properties that linter marks as unknown (e.g. mso- prefix), but they are valid for email rendering */
 /* stylelint-disable property-no-unknown */
 body {
-  line-height: 1.4; /* Recommended line-height that is also used in the email editor */
   margin: 0;
   padding: 0;
   -webkit-text-size-adjust: 100%; /* From MJMJ - Automatic test adjustment on mobile max to 100% */
