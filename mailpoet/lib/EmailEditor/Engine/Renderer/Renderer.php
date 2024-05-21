@@ -60,6 +60,7 @@ class Renderer {
             'padding-top' => $emailStyles['spacing']['padding']['top'] ?? '0px',
             'padding-bottom' => $emailStyles['spacing']['padding']['bottom'] ?? '0px',
             'font-family' => $emailStyles['typography']['fontFamily'] ?? 'inherit',
+            'line-height' => $emailStyles['typography']['lineHeight'] ?? '1.5',
           ],
       'body, .email_layout_wrapper'
     );
