@@ -50,7 +50,6 @@ export function Layout() {
     focusMode,
     styles,
     isEditingTemplate,
-    currentTemplate,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
@@ -67,8 +66,6 @@ export function Layout() {
       isEditingTemplate:
         // @ts-expect-error No types for this exist yet.
         select(editorStore).getCurrentPostType() === 'wp_template',
-      // @ts-expect-error No types for this exist yet.
-      currentTemplate: select(editorStore).getCurrentTemplateId(),
     }),
     [],
   );
@@ -102,7 +99,7 @@ export function Layout() {
   };
 
   // Do not render editor if email is not loaded yet.
-  if (!isEmailLoaded || currentTemplate === null) {
+  if (!isEmailLoaded) {
     return null;
   }
 
