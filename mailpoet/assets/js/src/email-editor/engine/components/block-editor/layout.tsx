@@ -140,6 +140,7 @@ export function Layout() {
                   styles={[...settings.styles, ...emailCss]}
                   autoFocus
                   className="has-global-padding"
+                  renderAppender={false} // With false the appender is rendered in the template mode
                 />
               </div>
             </BlockSelectionClearer>
