@@ -15,7 +15,7 @@ export type Query = typeof defaultQuery;
 function parseQuery(path: string): Partial<Query> {
   return path
     .split('/')
-    .map((part) => part.replace(/]$/, '').split('['))
+    .map((part) => part.replace(/\]$/, '').split('['))
     .map(([key, value]) => [
       key,
       typeof defaultQuery[key] === 'number' ? parseInt(value, 10) : value,
