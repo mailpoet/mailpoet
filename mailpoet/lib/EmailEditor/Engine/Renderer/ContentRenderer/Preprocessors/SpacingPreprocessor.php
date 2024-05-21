@@ -8,7 +8,7 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors;
  */
 class SpacingPreprocessor implements Preprocessor {
   public function preprocess(array $parsedBlocks, array $layout, array $styles): array {
-    $parsedBlocks = $this->addBlockGaps($parsedBlocks, $styles['spacing']['blockGap'] ?? '');
+    $parsedBlocks = $this->addBlockGaps($parsedBlocks, $styles['spacing']['blockGap'] ?? '', null);
     $parsedBlocks = $this->addBlockPadding(
       $parsedBlocks,
       $styles['spacing']['padding']['left'] ?? '',
@@ -18,12 +18,16 @@ class SpacingPreprocessor implements Preprocessor {
     return $parsedBlocks;
   }
 
-  private function addBlockGaps(array $parsedBlocks, string $gap = ''): array {
+  private function addBlockGaps(array $parsedBlocks, string $gap = '', $parentBlock = null): array {
     foreach ($parsedBlocks as $key => $block) {
-      if ($key !== 0 && $gap) {
+      $parentBlockName = $parentBlock['blockName'] ?? '';
+
+      // Do not add a gap to the first child, or if the parent block is a buttons block (where buttons are side by side).
+      if ($key !== 0 && $gap && $parentBlockName !== 'core/buttons') {
         $block['email_attrs']['margin-top'] = $gap;
       }
-      $block['innerBlocks'] = $this->addBlockGaps($block['innerBlocks'] ?? [], $gap);
+
+      $block['innerBlocks'] = $this->addBlockGaps($block['innerBlocks'] ?? [], $gap, $block);
       $parsedBlocks[$key] = $block;
     }
 
