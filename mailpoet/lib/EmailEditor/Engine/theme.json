@@ -19,7 +19,7 @@
     },
     "spacing": {
       "units": ["px"],
-      "blockGap": true,
+      "blockGap": false,
       "padding": true,
       "margin": true,
       "spacingSizes": [
