@@ -70,7 +70,7 @@ class AutomateWooHooksTest extends \MailPoetTest {
     $automateWooHooksPartialMock->syncSubscriber((int)$unsubscribedSubscriber->getId());
   }
 
-  public function testDoesNotOptOutSubscribedSubscriber() {
+  public function testOptsInSubscribedSubscriber() {
     $subscribedSubscriber = $this->subscriberFactory
       ->withEmail('subscribedUser@mailpoet.com')
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
