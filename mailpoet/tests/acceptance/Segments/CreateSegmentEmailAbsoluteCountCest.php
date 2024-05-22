@@ -102,6 +102,7 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->waitForText('stats_test5@example.com');
 
     $i->wantTo('Edit the segment again');
+    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementVisible('[data-automation-id="segment-email"]');
