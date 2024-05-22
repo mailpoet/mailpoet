@@ -30,25 +30,27 @@ class ConfirmLeaveWhenUnsavedChangesCest {
     $i->click('Start with a template');
     $i->see('Start with a template', 'h1');
     $i->click($automationTitle);
+    $i->waitForElementVisible('.mailpoet-automation-editor-automation-flow');
     $i->click('Start building');
 
     $i->waitForText('Draft');
     $i->click('Trigger');
     $i->fillField('When someone subscribes to the following lists:', 'Newsletter mailing list');
     $i->click('Delay');
-    $i->fillField(['name' => 'delay-number'], '5');
+    $i->waitForText('Minutes');
+    $i->fillField('[placeholder="Number"]', '5');
 
     $i->wantTo('Leave the page without saving.');
     $i->reloadPage();
     $i->cancelPopup();
 
     $i->wantTo('Leave the page after saving.');
+    $automationId = $i->grabFromCurrentUrl('~(\d+)$~');
     $i->click('Save');
     $i->waitForText('saved');
     $i->amOnMailpoetPage('Automation');
     $i->waitForText('Automations');
-    $i->waitForText($automationTitle, 10, '.mailpoet-listing-card');
-    $i->click($automationTitle, '.mailpoet-listing-card');
+    $i->amOnPage('wp-admin/admin.php?page=mailpoet-automation-editor&id=' . $automationId);
     $i->waitForText('Draft');
     $i->waitForText('Move to Trash');
     $i->waitForText('Someone subscribes');
