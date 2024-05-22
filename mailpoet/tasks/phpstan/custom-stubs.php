@@ -180,6 +180,8 @@ namespace AutomateWoo {
     class Customer {
       public function opt_out() {
       }
+      public function opt_in() {
+      }
     }
   }
   if (!class_exists(\AutomateWoo\Customer_Factory::class)) {

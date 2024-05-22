@@ -61,12 +61,13 @@ class AutomateWooHooksTest extends \MailPoetTest {
 
     $automateWooHooksPartialMock = $this->getMockBuilder(AutomateWooHooks::class)
     ->setConstructorArgs([$this->subscribersRepository, $this->wp])
-    ->onlyMethods(['optOutSubscriber'])
+    ->onlyMethods(['optOutSubscriber', 'optInSubscriber'])
     ->getMock();
 
     $automateWooHooksPartialMock->expects($this->once())->method('optOutSubscriber');
+    $automateWooHooksPartialMock->expects($this->never())->method('optInSubscriber');
 
-    $automateWooHooksPartialMock->maybeOptOutSubscriber((int)$unsubscribedSubscriber->getId());
+    $automateWooHooksPartialMock->syncSubscriber((int)$unsubscribedSubscriber->getId());
   }
 
   public function testDoesNotOptOutSubscribedSubscriber() {
@@ -77,10 +78,12 @@ class AutomateWooHooksTest extends \MailPoetTest {
 
     $automateWooHooksPartialMock = $this->getMockBuilder(AutomateWooHooks::class)
       ->setConstructorArgs([$this->subscribersRepository, $this->wp])
-      ->onlyMethods(['optOutSubscriber'])
+      ->onlyMethods(['optOutSubscriber', 'optInSubscriber'])
       ->getMock();
-    $automateWooHooksPartialMock->expects($this->never())->method('optOutSubscriber');
 
-    $automateWooHooksPartialMock->maybeOptOutSubscriber((int)$subscribedSubscriber->getId());
+    $automateWooHooksPartialMock->expects($this->never())->method('optOutSubscriber');
+    $automateWooHooksPartialMock->expects($this->once())->method('optInSubscriber');
+
+    $automateWooHooksPartialMock->syncSubscriber((int)$subscribedSubscriber->getId());
   }
 }
