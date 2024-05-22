@@ -67,7 +67,6 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->waitForNoticeAndClose('Segment successfully added!');
 
     $i->wantTo('Edit the segment');
-    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementVisible('[data-automation-id="segment-number-of-opens"]');
@@ -103,7 +102,6 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->waitForText('stats_test5@example.com');
 
     $i->wantTo('Edit the segment again');
-    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'Edit');
     $i->waitForElementVisible('[data-automation-id="segment-email"]');
@@ -119,7 +117,6 @@ class CreateSegmentEmailAbsoluteCountCest {
     $i->waitForNoticeAndClose('Segment successfully updated!');
 
     $i->wantTo('Check subscribers of the segment');
-    $i->amOnMailpoetPage('Segments');
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
     $i->seeInCurrentUrl('mailpoet-subscribers#');
