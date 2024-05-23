@@ -119,3 +119,9 @@ export const confirmEdit = (newsletter) => {
     window.location.href = editorHref;
   }
 };
+
+export function sanitizeHTML(str) {
+  const tempDiv = document.createElement('div');
+  tempDiv.textContent = str;
+  return tempDiv.innerHTML;
+}
