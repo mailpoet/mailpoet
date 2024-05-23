@@ -261,6 +261,11 @@ class Initializer {
       'action',
     ], 10, 2);
 
+    $this->wpFunctions->addAction('plugins_loaded', [
+      $this,
+      'pluginsLoaded',
+    ], 0);
+
     $this->wpFunctions->addAction('init', [
       $this,
       'preInitialize',
@@ -330,11 +335,14 @@ class Initializer {
     }
   }
 
+  public function pluginsLoaded() {
+    $this->hooks->init();
+  }
+
   public function preInitialize() {
     try {
       $this->renderer = $this->rendererFactory->getRenderer();
       $this->setupWidget();
-      $this->hooks->init();
       $this->setupWoocommerceTransactionalEmails();
       $this->assetsLoader->loadStyles();
     } catch (\Exception $e) {
