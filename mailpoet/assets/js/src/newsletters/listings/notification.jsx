@@ -1,6 +1,7 @@
 import classnames from 'classnames';
 import { Component, Fragment } from 'react';
 import { __ } from '@wordpress/i18n';
+import { escapeHTML } from '@wordpress/escape-html';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
@@ -23,7 +24,6 @@ import {
   checkCronStatus,
   checkMailerStatus,
   confirmEdit,
-  sanitizeHTML,
 } from 'newsletters/listings/utils.jsx';
 import { withBoundary } from '../../common';
 
@@ -152,7 +152,7 @@ const newsletterActions = [
           MailPoet.Notice.success(
             __('Email "%1$s" has been duplicated.', 'mailpoet').replace(
               '%1$s',
-              sanitizeHTML(response.data.subject),
+              escapeHTML(response.data.subject),
             ),
           );
           refresh();

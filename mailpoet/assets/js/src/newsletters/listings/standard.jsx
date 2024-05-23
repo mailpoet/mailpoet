@@ -1,5 +1,6 @@
 import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
+import { escapeHTML } from '@wordpress/escape-html';
 import { Component } from 'react';
 import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
@@ -14,7 +15,6 @@ import {
   addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
-  sanitizeHTML,
 } from 'newsletters/listings/utils.jsx';
 import { NewsletterTypes } from 'newsletters/types';
 import { GlobalContext } from 'context';
@@ -178,7 +178,7 @@ let newsletterActions = [
           MailPoet.Notice.success(
             __('Email "%1$s" has been duplicated.', 'mailpoet').replace(
               '%1$s',
-              sanitizeHTML(response.data.subject),
+              escapeHTML(response.data.subject),
             ),
           );
           refresh();
