@@ -14,6 +14,7 @@ import {
   addStatsCTAAction,
   checkCronStatus,
   checkMailerStatus,
+  sanitizeHTML,
 } from 'newsletters/listings/utils.jsx';
 import { NewsletterTypes } from 'newsletters/types';
 import { GlobalContext } from 'context';
@@ -177,7 +178,7 @@ let newsletterActions = [
           MailPoet.Notice.success(
             __('Email "%1$s" has been duplicated.', 'mailpoet').replace(
               '%1$s',
-              response.data.subject,
+              sanitizeHTML(response.data.subject),
             ),
           );
           refresh();

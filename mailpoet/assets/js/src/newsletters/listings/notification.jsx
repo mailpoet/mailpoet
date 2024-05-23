@@ -23,6 +23,7 @@ import {
   checkCronStatus,
   checkMailerStatus,
   confirmEdit,
+  sanitizeHTML,
 } from 'newsletters/listings/utils.jsx';
 import { withBoundary } from '../../common';
 
@@ -151,7 +152,7 @@ const newsletterActions = [
           MailPoet.Notice.success(
             __('Email "%1$s" has been duplicated.', 'mailpoet').replace(
               '%1$s',
-              response.data.subject,
+              sanitizeHTML(response.data.subject),
             ),
           );
           refresh();
