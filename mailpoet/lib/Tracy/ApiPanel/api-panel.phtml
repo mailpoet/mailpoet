@@ -29,12 +29,19 @@ use Tracy\Dumper;
       <th>Name</th>
       <th>Value</th>
     </tr>
-    <?php foreach ($this->requestData as $name => $value): ?>
-    <tr>
-      <td><?php echo $name ?></td>
-      <td><?php echo Dumper::toHtml($value) ?></td>
-    </tr>
-    <?php endforeach ?>
+    <?php if(in_array(gettype($this->requestData), ['array', 'object'])): ?>
+      <?php foreach ($this->requestData as $name => $value): ?>
+      <tr>
+        <td><?php echo $name ?></td>
+        <td><?php echo Dumper::toHtml($value) ?></td>
+      </tr>
+      <?php endforeach ?>
+    <?php else: ?>
+      <tr>
+        <td><?php echo 'no name' ?></td>
+        <td><?php echo Dumper::toHtml($this->requestData) ?></td>
+      </tr>
+    <?php endif; ?>
   </table>
 </div>
 <?php endif; ?>
