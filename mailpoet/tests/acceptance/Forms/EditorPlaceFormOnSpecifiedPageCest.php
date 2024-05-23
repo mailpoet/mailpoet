@@ -6,6 +6,9 @@ use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use PHPUnit\Framework\Assert;
 
+/**
+ * @group frontend
+ */
 class EditorPlaceFormOnSpecifiedPageCest {
   public function testFormPlacement(\AcceptanceTester $i) {
     $i->wantTo('Place form on a specific page');

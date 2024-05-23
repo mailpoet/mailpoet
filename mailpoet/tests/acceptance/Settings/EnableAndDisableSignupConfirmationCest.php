@@ -5,6 +5,9 @@ namespace MailPoet\Test\Acceptance;
 use AcceptanceTester;
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * @group frontend
+ */
 class EnableAndDisableSignupConfirmationCest {
   public function disableSignupConfirmation(AcceptanceTester $i) {
     $settings = new Settings();

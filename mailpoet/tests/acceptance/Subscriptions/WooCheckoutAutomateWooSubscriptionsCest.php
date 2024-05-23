@@ -12,6 +12,7 @@ use MailPoet\Test\DataFactories\WooCommerceProduct;
  * AutomateWoo plugin active which has its own
  * checkout opt-in functionality
  * @group woo
+ * @group frontend
  */
 class WooCheckoutAutomateWooSubscriptionsCest {
 

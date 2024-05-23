@@ -10,6 +10,7 @@ use MailPoet\Util\Security;
 
 /**
  * @group woo
+ * @group frontend
  */
 class SendCategoryPurchaseEmailCest {
   public function _before(\AcceptanceTester $i) {

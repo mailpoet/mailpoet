@@ -6,6 +6,9 @@ use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * @group frontend
+ */
 class EditorAddListSelectionCest {
 
   const CONFIRMATION_MESSAGE_TIMEOUT = 20;

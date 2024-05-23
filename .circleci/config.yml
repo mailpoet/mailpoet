@@ -376,6 +376,9 @@ jobs:
       automate_woo_version:
         type: string
         default: ''
+      blockbased_theme:
+        type: integer
+        default: 0
       enable_hpos:
         type: integer
         default: 0
@@ -476,6 +479,7 @@ jobs:
             -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
             -e CIRCLE_JOB=${CIRCLE_JOB} \
             -e MULTISITE=<< parameters.multisite >> \
+            -e BLOCKBASED_THEME=<< parameters.blockbased_theme >> \
             -e ENABLE_HPOS=<< parameters.enable_hpos >> \
             -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
             -e DISABLE_HPOS=<< parameters.disable_hpos >> \
@@ -840,6 +844,16 @@ workflows:
             - static_analysis_php8
             - qa_js
             - qa_php
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_blockbased_theme
+          group: frontend
+          blockbased_theme: 1
+          requires:
+            - unit_tests
+            - static_analysis_php8
+            - qa_js
+            - qa_php
       - performance_tests:
           <<: *slack-fail-post-step
           name: performance_tests
@@ -937,6 +951,7 @@ workflows:
             - integration_test_woo_hpos_sync_on
             - acceptance_tests_woo_hpos_sync_on
             - acceptance_tests_woo_hpos_off
+            - acceptance_tests_blockbased_theme
             - performance_tests
 
   nightly:
@@ -953,6 +968,19 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_latest
+          woo_core_version: latest
+          woo_subscriptions_version: latest
+          woo_memberships_version: latest
+          automate_woo_version: latest
+          mysql_image: mysql:8.3
+          mysql_command: --default-authentication-plugin=mysql_native_password
+          requires:
+            - build
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_latest_blockbased_theme
+          group: frontend
+          blockbased_theme: 1
           woo_core_version: latest
           woo_subscriptions_version: latest
           woo_memberships_version: latest

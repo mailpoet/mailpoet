@@ -5,6 +5,9 @@ namespace MailPoet\Test\Acceptance;
 use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Segment;
 
+/**
+ * @group frontend
+ */
 class SubscribeOnRegistrationPageCest {
   public function allowSubscribeOnRegistrationPage(\AcceptanceTester $i) {
     $i->wantTo('Allow users to subscribe to lists on site registration page');

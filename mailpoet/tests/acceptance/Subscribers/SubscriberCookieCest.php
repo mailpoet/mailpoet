@@ -12,6 +12,9 @@ use MailPoet\Test\DataFactories\User;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
 use PHPUnit\Framework\Assert;
 
+/**
+ * @group frontend
+ */
 class SubscriberCookieCest {
   private const SUBSCRIBER_COOKIE_NAME = 'mailpoet_subscriber';
 

@@ -5,6 +5,9 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * @group frontend
+ */
 class BasicsPageCest {
   public function checkSettingsPagesLoad(\AcceptanceTester $i) {
     $i->wantTo('Confirm all settings pages load correctly');

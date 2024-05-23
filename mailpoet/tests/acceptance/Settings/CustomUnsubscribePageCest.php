@@ -2,6 +2,9 @@
 
 namespace MailPoet\Test\Acceptance;
 
+/**
+ * @group frontend
+ */
 class CustomUnsubscribePageCest {
   public function createCustomUnsubscribePage(\AcceptanceTester $i) {
     $i->wantTo('Create page with MP subscriber shortcode');

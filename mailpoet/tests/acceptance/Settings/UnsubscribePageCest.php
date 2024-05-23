@@ -5,6 +5,9 @@ namespace MailPoet\Test\Acceptance;
 use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Subscriber;
 
+/**
+ * @group frontend
+ */
 class UnsubscribePageCest {
 
   /** @var string */

@@ -7,6 +7,9 @@ use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
 
+/**
+ * @group frontend
+ */
 class BuiltInCaptchaSubscriptionCest {
 
   /** @var Settings */

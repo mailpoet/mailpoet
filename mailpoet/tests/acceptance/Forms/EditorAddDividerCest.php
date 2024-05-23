@@ -5,6 +5,9 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 
+/**
+ * @group frontend
+ */
 class EditorAddDividerCest {
   public function addDividerBlock(\AcceptanceTester $i) {
     $i->wantTo('Add divider block to the editor');

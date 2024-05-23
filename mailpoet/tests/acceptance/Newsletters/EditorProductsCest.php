@@ -10,6 +10,7 @@ use PHPUnit\Framework\Assert;
 
 /**
  * @group woo
+ * @group frontend
  */
 class EditorProductsCest {
   const EDITOR_PRODUCTS_SELECTOR = '.mailpoet_products_container > .mailpoet_block > .mailpoet_container';
