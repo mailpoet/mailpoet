@@ -650,11 +650,11 @@ class AcceptanceTester extends \Codeception\Actor {
       $i->waitForText('Place Order');
       $i->waitForElementClickable(Locator::contains('button', 'Place Order'));
       $i->click(Locator::contains('button', 'Place Order'));
-      $i->waitForText('Order received');
+      $i->waitForText('Thank you. Your order has been received.');
     } else {
       $i->waitForText('Place order');
       $i->click('Place order');
-      $i->waitForText('Order received');
+      $i->waitForText('Thank you. Your order has been received.');
     }
   }
 
