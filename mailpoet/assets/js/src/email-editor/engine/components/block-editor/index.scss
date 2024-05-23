@@ -1,5 +1,14 @@
 @import '~@wordpress/base-styles/colors';
 
+#mailpoet-email-editor {
+  .editor-header__toolbar {
+    flex-grow: 1;
+  }
+  .editor-header__center {
+    flex-grow: 3;
+  }
+}
+
 // Specific styles for the component EmailTypeInfo
 // Styles are based on the Block Card component from Gutenberg block editor
 .mailpoet-email-sidebar__email-type-info {
