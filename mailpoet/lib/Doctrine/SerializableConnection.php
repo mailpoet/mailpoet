@@ -2,10 +2,12 @@
 
 namespace MailPoet\Doctrine;
 
+use MailPoet\Util\Helpers;
 use MailPoetVendor\Doctrine\Common\EventManager;
 use MailPoetVendor\Doctrine\DBAL\Configuration;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\Driver;
+use Throwable;
 
 class SerializableConnection extends Connection {
   private $params;
@@ -32,5 +34,17 @@ class SerializableConnection extends Connection {
 
   public function __wakeup() {
     parent::__construct($this->params, $this->driver, $this->config, $this->eventManager);
+  }
+
+  public function handleExceptionDuringQuery(Throwable $e, string $sql, array $params = [], array $types = []): void {
+    try {
+      parent::handleExceptionDuringQuery($e, $sql, $params, $types);
+    } catch (Throwable $err) {
+      $mySqlGoneAwayMessage = Helpers::mySqlGoneAwayExceptionHandler($err);
+      if ($mySqlGoneAwayMessage) {
+        throw new \Exception($mySqlGoneAwayMessage, (int)$err->getCode(), $err);
+      }
+      throw $err;
+    }
   }
 }
