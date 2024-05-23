@@ -119,4 +119,26 @@ class Helpers {
     $arrayOfItems = explode('@', trim($email));
     return strtolower(array_pop($arrayOfItems));
   }
+
+  public static function mySqlGoneAwayExceptionHandler(\Throwable $err): string {
+    $errorMessage = $err->getMessage() ? $err->getMessage() : '';
+    $mySqlGoneAwayCheck = strpos(strtolower($errorMessage), 'mysql server has gone away') !== false;
+
+    if ($mySqlGoneAwayCheck) {
+      $customErrorMessage = sprintf(
+        // translators: the %1$s is the link, the %2$s is the error message.
+        __('Please see %1$s for more information. %2$s.', 'mailpoet'),
+        'https://kb.mailpoet.com/article/307-how-to-fix-general-error-2006-mysql-server-has-gone-away',
+        $errorMessage
+      );
+      // logging to the php log
+      if (function_exists('error_log')) {
+        error_log($customErrorMessage); // phpcs:ignore Squiz.PHP.DiscouragedFunctions
+      }
+
+      return $customErrorMessage;
+    }
+
+    return '';
+  }
 }
