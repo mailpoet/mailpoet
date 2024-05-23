@@ -4,6 +4,7 @@ namespace MailPoet\Cron;
 
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\Helpers;
 
 class CronTrigger {
   const METHOD_LINUX_CRON = 'Linux Cron';
@@ -51,6 +52,7 @@ class CronTrigger {
       return false;
     } catch (\Exception $e) {
       // cron exceptions should not prevent the rest of the site from loading
+      Helpers::mySqlGoneAwayExceptionHandler($e);
     }
   }
 

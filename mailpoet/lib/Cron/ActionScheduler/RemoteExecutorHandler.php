@@ -2,6 +2,7 @@
 
 namespace MailPoet\Cron\ActionScheduler;
 
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class RemoteExecutorHandler {
@@ -41,9 +42,17 @@ class RemoteExecutorHandler {
   }
 
   public function runActionScheduler(): void {
-    $this->wp->addFilter('action_scheduler_queue_runner_concurrent_batches', [$this, 'ensureConcurrency']);
-    \ActionScheduler_QueueRunner::instance()->run();
-    wp_die();
+    try {
+      $this->wp->addFilter('action_scheduler_queue_runner_concurrent_batches', [$this, 'ensureConcurrency']);
+      \ActionScheduler_QueueRunner::instance()->run();
+      wp_die();
+    } catch (\Exception $e) {
+      $mySqlGoneAwayMessage = Helpers::mySqlGoneAwayExceptionHandler($e);
+      if ($mySqlGoneAwayMessage) {
+        throw new \Exception($mySqlGoneAwayMessage, 0, $e);
+      }
+      throw $e;
+    }
   }
 
   /**

@@ -18,6 +18,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -70,16 +71,24 @@ class WordPress {
   }
 
   public function run() {
-    if (!$this->checkRunInterval()) {
-      return false;
-    }
-    if (!$this->checkExecutionRequirements()) {
-      $this->stop();
-      return;
-    }
+    try {
+      if (!$this->checkRunInterval()) {
+        return false;
+      }
+      if (!$this->checkExecutionRequirements()) {
+        $this->stop();
+        return;
+      }
 
-    $this->supervisor->init();
-    return $this->supervisor->checkDaemon();
+      $this->supervisor->init();
+      return $this->supervisor->checkDaemon();
+    } catch (\Exception $e) {
+      $mySqlGoneAwayMessage = Helpers::mySqlGoneAwayExceptionHandler($e);
+      if ($mySqlGoneAwayMessage) {
+        throw new \Exception($mySqlGoneAwayMessage, 0, $e);
+      }
+      throw $e;
+    }
   }
 
   private function checkRunInterval(): bool {
