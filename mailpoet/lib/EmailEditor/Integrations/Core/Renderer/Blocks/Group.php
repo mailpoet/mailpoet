@@ -30,9 +30,7 @@ class Group extends AbstractBlockRenderer {
       'backgroundColor' => '',
       'textColor' => '',
       'borderColor' => '',
-      'layout' => [
-        'justifyContent' => '',
-      ],
+      'layout' => [],
     ]);
 
     // Layout, background, borders need to be on the outer table element.
@@ -52,9 +50,9 @@ class Group extends AbstractBlockRenderer {
       'spacing' => [ 'padding' => $blockAttributes['style']['spacing']['padding'] ?? [] ],
     ])['declarations'];
 
-    if (empty($tableStyles['background-size'])) {
-      $tableStyles['background-size'] = 'cover';
-    }
+    $tableStyles['background-size'] = empty($tableStyles['background-size']) ? 'cover' : $tableStyles['background-size'];
+    $justifyContent = $blockAttributes['layout']['justifyContent'] ?? 'center';
+    $width = $parsedBlock['email_attrs']['width'] ?? '100%';
 
     return sprintf(
       '<table class="email-block-group %3$s" style="%1$s" width="100%%" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
@@ -69,8 +67,8 @@ class Group extends AbstractBlockRenderer {
       esc_attr(WP_Style_Engine::compile_css($tableStyles, '')),
       esc_attr(WP_Style_Engine::compile_css($cellStyles, '')),
       esc_attr($originalClassname),
-      esc_attr($blockAttributes['layout']['justifyContent'] ?: 'center'),
-      esc_attr($parsedBlock['email_attrs']['width'] ?: '100%'),
+      esc_attr($justifyContent),
+      esc_attr($width),
     );
   }
 }
