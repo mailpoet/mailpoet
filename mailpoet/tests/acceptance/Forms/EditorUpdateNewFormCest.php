@@ -5,6 +5,9 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * @group frontend
+ */
 class EditorUpdateNewFormCest {
 
   const CONFIRMATION_MESSAGE_TIMEOUT = 20;

@@ -6,6 +6,9 @@ use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * @group frontend
+ */
 class EditSignUpConfirmationEmailCest {
   public function editSignUpConfContentAndVerify(\AcceptanceTester $i) {
     $i->wantTo('Edit sign up confirmation email');

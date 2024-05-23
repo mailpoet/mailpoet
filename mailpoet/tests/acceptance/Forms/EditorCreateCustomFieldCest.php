@@ -7,6 +7,9 @@ use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * @group frontend
+ */
 class EditorCreateCustomFieldCest {
   private function prepareTheForm(\AcceptanceTester $i) {
     $segmentFactory = new Segment();

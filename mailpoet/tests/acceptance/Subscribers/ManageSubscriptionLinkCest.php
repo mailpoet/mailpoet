@@ -8,6 +8,9 @@ use MailPoet\Test\DataFactories\Settings;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Exception;
 
+/**
+ * @group frontend
+ */
 class ManageSubscriptionLinkCest {
 
   const ADDITIONAL_FIRST_FANCY_LIST = 'First fancy list';

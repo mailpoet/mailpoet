@@ -6,6 +6,9 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
 
+/**
+ * @group frontend
+ */
 class SubscriberCountShortcodeCest {
 
   const ACTIVE_SUBSCRIBERS_COUNT = 5;

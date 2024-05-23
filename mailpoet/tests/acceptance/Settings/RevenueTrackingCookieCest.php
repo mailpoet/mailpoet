@@ -8,6 +8,7 @@ use MailPoet\Test\DataFactories\Settings;
 
 /**
  * @group woo
+ * @group frontend
  */
 class RevenueTrackingCookieCest {
 

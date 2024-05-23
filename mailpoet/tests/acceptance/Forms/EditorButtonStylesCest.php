@@ -5,6 +5,9 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 
+/**
+ * @group frontend
+ */
 class EditorButtonStylesCest {
   public function changeSubmitButtonStyles(\AcceptanceTester $i) {
     $segmentFactory = new Segment();

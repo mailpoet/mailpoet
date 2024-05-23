@@ -5,6 +5,9 @@ namespace MailPoet\Test\Acceptance;
 use Codeception\Util\Locator;
 use MailPoet\Test\DataFactories\Settings;
 
+/**
+ * @group frontend
+ */
 class CreateNewWordPressUserCest {
 
   /** @var Settings */

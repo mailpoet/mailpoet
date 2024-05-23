@@ -9,6 +9,7 @@ use MailPoet\Test\DataFactories\WooCommerceProduct;
 
 /**
  * @group woo
+ * @group frontend
  */
 class SendFirstPurchaseEmailCest {
   /** @var Settings */

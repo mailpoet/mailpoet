@@ -5,6 +5,9 @@ namespace MailPoet\Test\Acceptance;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 
+/**
+ * @group frontend
+ */
 class SettingsArchivePageCest {
   public function createArchivePageNoSentNewsletters(\AcceptanceTester $i) {
     $i->wantTo('Create page with MP archive shortcode, showing no sent newsletters');
