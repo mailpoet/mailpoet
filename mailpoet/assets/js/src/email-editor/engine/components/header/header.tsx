@@ -95,10 +95,10 @@ export function Header() {
     : __('Close', 'mailpoet');
 
   return (
-    <div className="edit-post-header">
-      <div className="edit-post-header__toolbar">
+    <div className="editor-header edit-post-header">
+      <div className="editor-header__toolbar edit-post-header__toolbar">
         <NavigableToolbar
-          className="edit-post-header-toolbar is-unstyled editor-document-tools"
+          className="editor-header__toolbar edit-post-header-toolbar is-unstyled editor-document-tools"
           aria-label={__('Email document tools', 'mailpoet')}
         >
           {/* edit-post-header-toolbar__left can be removed after we drop support of WP 6.4 */}
@@ -106,7 +106,7 @@ export function Header() {
             <ToolbarItem
               ref={inserterButton}
               as={Button}
-              className="edit-post-header-toolbar__inserter-toggle"
+              className="editor-header-toolbar__inserter-toggle edit-post-header-toolbar__inserter-toggle"
               variant="primary"
               isPressed={isInserterSidebarOpened}
               onMouseDown={preventDefault}
@@ -144,7 +144,7 @@ export function Header() {
             <ToolbarItem
               ref={listviewButton}
               as={Button}
-              className="edit-post-header-toolbar__document-overview-toggle"
+              className="editor-header-toolbar__document-overview-toggle edit-post-header-toolbar__document-overview-toggle"
               isPressed={isListviewSidebarOpened}
               onMouseDown={preventDefault}
               onClick={toggleListviewSidebar}
@@ -168,7 +168,7 @@ export function Header() {
                 <BlockToolbar hideDragHandle />
               </div>
               <Button
-                className="edit-post-header__block-tools-toggle"
+                className="editor-header__block-tools-toggle edit-post-header__block-tools-toggle"
                 icon={isBlockToolsCollapsed ? next : previous}
                 onClick={() => {
                   setIsBlockToolsCollapsed((collapsed) => !collapsed);
@@ -185,12 +185,12 @@ export function Header() {
           !isFixedToolbarActive ||
           !isBlockSelected ||
           isBlockToolsCollapsed) && (
-          <div className="edit-post-header__center">
+          <div className="editor-header__center edit-post-header__center">
             {hasDocumentNavigationHistory ? <DocumentBar /> : <CampaignName />}
           </div>
         )}
       </div>
-      <div className="edit-post-header__settings">
+      <div className="editor-header__settings edit-post-header__settings">
         <SaveButton />
         <PreviewDropdown />
         <SendButton />
