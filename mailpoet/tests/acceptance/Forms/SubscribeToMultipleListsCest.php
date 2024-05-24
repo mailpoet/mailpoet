@@ -35,7 +35,7 @@ class SubscribeToMultipleListsCest {
     $formFactory->withDefaultSuccessMessage();
 
     //Add this form to a widget
-    $i->createFormAndSubscribe($form);
+    $i->createFormAndSubscribe();
     //Subscribe via that form
     $i->amOnMailboxAppPage();
     $i->click(Locator::contains('span.subject', 'Subscribe to multiple test subject'));

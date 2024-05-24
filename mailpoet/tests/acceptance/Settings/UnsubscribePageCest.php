@@ -42,7 +42,7 @@ class UnsubscribePageCest {
     $i->amOnMailPoetPage('Settings');
     $i->click('[data-automation-id="unsubscribe_page_preview_link"]');
     $i->switchToNextTab();
-    $i->waitForElement(['css' => '.entry-title']);
+    $i->waitForText('You are now unsubscribed.');
   }
 
   public function createNewUnsubscribeConfirmationPage(\AcceptanceTester $i) {
