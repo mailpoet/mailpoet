@@ -75,6 +75,7 @@ class AutomateWooHooksTest extends \MailPoetTest {
       ->withEmail('subscribedUser@mailpoet.com')
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
     $this->subscribersRepository->method('findOneById')->willReturn($subscribedSubscriber);
+    $this->subscribersRepository->method('getWooCommerceSegmentSubscriber')->willReturn($subscribedSubscriber);
 
     $automateWooHooksPartialMock = $this->getMockBuilder(AutomateWooHooks::class)
       ->setConstructorArgs([$this->subscribersRepository, $this->wp])
@@ -83,6 +84,24 @@ class AutomateWooHooksTest extends \MailPoetTest {
 
     $automateWooHooksPartialMock->expects($this->never())->method('optOutSubscriber');
     $automateWooHooksPartialMock->expects($this->once())->method('optInSubscriber');
+
+    $automateWooHooksPartialMock->syncSubscriber((int)$subscribedSubscriber->getId());
+  }
+
+  public function testNotOptsInSubscribedSubscriber() {
+    $subscribedSubscriber = $this->subscriberFactory
+      ->withEmail('subscribedUser@mailpoet.com')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
+    $this->subscribersRepository->method('findOneById')->willReturn($subscribedSubscriber);
+    $this->subscribersRepository->method('getWooCommerceSegmentSubscriber')->willReturn(null);
+
+    $automateWooHooksPartialMock = $this->getMockBuilder(AutomateWooHooks::class)
+      ->setConstructorArgs([$this->subscribersRepository, $this->wp])
+      ->onlyMethods(['optOutSubscriber', 'optInSubscriber'])
+      ->getMock();
+
+    $automateWooHooksPartialMock->expects($this->never())->method('optOutSubscriber');
+    $automateWooHooksPartialMock->expects($this->never())->method('optInSubscriber');
 
     $automateWooHooksPartialMock->syncSubscriber((int)$subscribedSubscriber->getId());
   }

@@ -2,7 +2,9 @@
 
 namespace MailPoet\WooCommerce\Integrations;
 
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -50,10 +52,11 @@ class AutomateWooHooks {
       return;
     }
     $this->wp->addAction(SubscriberEntity::HOOK_SUBSCRIBER_STATUS_CHANGED, [$this, 'syncSubscriber'], 10, 1);
+    $this->wp->addAction('mailpoet_segment_subscribed', [$this, 'maybeOptInSubscriber'], 10, 1);
   }
 
   public function optOutSubscriber($subscriber): void {
-    if (!$this->isAutomateWooReady()) {
+    if (!$this->isAutomateWooReady() || !$subscriber) {
       return;
     }
 
@@ -66,7 +69,7 @@ class AutomateWooHooks {
   }
 
   public function optInSubscriber($subscriber): void {
-    if (!$this->isAutomateWooReady()) {
+    if (!$this->isAutomateWooReady() || !$subscriber) {
       return;
     }
 
@@ -86,9 +89,22 @@ class AutomateWooHooks {
 
     if ($subscriber->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED) {
       $this->optOutSubscriber($subscriber);
-    } else if ($subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED) {
+    } else if ($this->isWooCommerceSubscribed($subscriber)) {
       $this->optInSubscriber($subscriber);
     }
+  }
 
+  /**
+   * Opt-In the subscriber in AW only if the subscriber belongs to WooCommerce list.
+   */
+  public function maybeOptInSubscriber(SubscriberSegmentEntity $subscriberSegment) {
+    if ($subscriberSegment->getSegment() && $subscriberSegment->getSegment()->getType() === SegmentEntity::TYPE_WC_USERS) {
+      $this->optInSubscriber($subscriberSegment->getSubscriber());
+    }
+  }
+
+  public function isWooCommerceSubscribed(SubscriberEntity $subscriber) {
+    return $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
+      && $this->subscribersRepository->getWooCommerceSegmentSubscriber($subscriber->getEmail());
   }
 }
