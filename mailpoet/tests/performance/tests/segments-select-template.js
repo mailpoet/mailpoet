@@ -56,8 +56,11 @@ export async function segmentsSelectTemplate() {
     ]);
 
     // Save the segment
-    await waitForSelectorToBeClickable(page, 'button[type="submit"]');
-    await focusAndClick(page, 'button[type="submit"]');
+    await waitForSelectorToBeClickable(
+      page,
+      'div.mailpoet-form-actions > button',
+    );
+    await focusAndClick(page, 'div.mailpoet-form-actions > button');
 
     await page.waitForLoadState('networkidle');
     await page.screenshot({
