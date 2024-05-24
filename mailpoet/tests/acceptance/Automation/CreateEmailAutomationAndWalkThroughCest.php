@@ -32,13 +32,15 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->click('Start with a template');
     $i->see('Start with a template', 'h1');
     $i->click('Welcome new subscribers');
+    $i->waitForElementVisible('.mailpoet-automation-editor-automation-flow');
     $i->click('Start building');
 
     $i->waitForText('Draft');
     $i->click('Trigger');
     $i->fillField('When someone subscribes to the following lists:', 'Newsletter mailing list');
     $i->click('Delay');
-    $i->fillField(['name' => 'delay-number'], '5');
+    $i->waitForText('Minutes');
+    $i->fillField('[placeholder="Number"]', '5');
 
     $i->click('Send email');
     $i->fillField('"From" name', 'From');
