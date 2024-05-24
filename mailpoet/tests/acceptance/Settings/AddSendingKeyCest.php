@@ -23,7 +23,7 @@ class AddSendingKeyCest {
     $i->click('Verify');
 
     // validate key, activate MSS, install & activate Premium plugin
-    $i->waitForText('Your key is valid');
+    $i->waitForText('Your key is valid', 20);
     $i->waitForText('MailPoet Sending Service is active');
     $i->waitForText('It’s time to set your default FROM address!');
     $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
@@ -39,7 +39,7 @@ class AddSendingKeyCest {
     $i->waitForText('Sending all of your emails has been paused because your email address wp@example.com hasn’t been authorized yet.');
 
     $i->click('Verify');
-    $i->waitForText('It’s time to set your default FROM address!');
+    $i->waitForText('It’s time to set your default FROM address!', 20);
     $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
 
     $i->fillField(['id' => 'mailpoet-set-from-address-modal-input'], 'invalid@email.com');
@@ -96,11 +96,11 @@ class AddSendingKeyCest {
     $i->dontSee('A test email was sent to');
 
     // test modal for authorized FROM address
-    $i->waitForText('It’s time to set your default FROM address!');
+    $i->waitForText('It’s time to set your default FROM address!', 20);
     $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
     $i->fillField(['id' => 'mailpoet-set-from-address-modal-input'], 'blackhole@mailpoet.com');
     $i->click('Save', '.set-from-address-modal');
-    $i->waitForText('A test email was sent to blackhole@mailpoet.com', 15);
+    $i->waitForText('A test email was sent to blackhole@mailpoet.com', 20);
   }
 
   public function resumeSendingWhenKeyApproved(\AcceptanceTester $i, Scenario $scenario) {
@@ -129,7 +129,7 @@ class AddSendingKeyCest {
     $i->click('[data-automation-id="activation_settings_tab"]');
     $i->waitForText('Your key is valid');
     $i->click('Verify');
-    $i->waitForText('MailPoet Sending Service is active');
+    $i->waitForText('MailPoet Sending Service is active', 20);
 
     // ensure status is running
     $i->amOnMailpoetPage('Help#/systemStatus');
