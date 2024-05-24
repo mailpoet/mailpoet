@@ -6,7 +6,11 @@ use Codeception\Util\Locator;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
+use MailPoet\WP\Functions as WPFunctions;
 
+/**
+ * @group frontend
+ */
 class SubscriptionFormCest {
 
   const CONFIRMATION_MESSAGE_TIMEOUT = 20;
@@ -49,21 +53,23 @@ class SubscriptionFormCest {
   }
 
   public function subscriptionFormWidget(\AcceptanceTester $i) {
-    $i->wantTo('Subscribe using form widget');
+    $currentTheme = WPFunctions::get()->wpGetTheme();
+    if ($currentTheme->get('Name') == 'Twenty Twenty-One') {
+      $i->wantTo('Subscribe using form widget');
 
-    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$this->formId", '--title="Subscribe to Our Newsletter"']);
-    //login to avoid time limit for subscribing
-    $i->login();
-    $i->amOnPage('/');
-    $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
-    $i->click('.mailpoet_submit');
-    $i->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
-    $i->seeNoJSErrors();
+      $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form=$this->formId", '--title="Subscribe to Our Newsletter"']);
+      //login to avoid time limit for subscribing
+      $i->login();
+      $i->amOnPage('/');
+      $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
+      $i->click('.mailpoet_submit');
+      $i->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
+      $i->seeNoJSErrors();
+    } else {
+      $i->comment('Skipping test as it depends on a non-block theme.');
+    }
   }
 
-  /**
-   * @group frontend
-   */
   public function subscriptionFormShortcode(\AcceptanceTester $i) {
     $i->wantTo('Subscribe using form shortcode');
 
@@ -76,9 +82,6 @@ class SubscriptionFormCest {
     $i->seeCurrentUrlEquals('/form-test/');
   }
 
-  /**
-   * @group frontend
-   */
   public function subscriptionFormIframe(\AcceptanceTester $i) {
     $i->wantTo('Subscribe using iframe form');
 
@@ -117,9 +120,6 @@ class SubscriptionFormCest {
     $i->see('Subscribed', Locator::contains('tr', $this->subscriberEmail));
   }
 
-  /**
-   * @group frontend
-   */
   public function subscriptionAfterDisablingConfirmation(\AcceptanceTester $i) {
     $i->wantTo('Disable sign-up confirmation then subscribe and see a different message');
     $i->login();
@@ -139,9 +139,6 @@ class SubscriptionFormCest {
     $i->seeNoJSErrors();
   }
 
-  /**
-   * @group frontend
-   */
   public function subscriptionNewPageConfirmation(\AcceptanceTester $i) {
     $i->wantTo('Subscribe to a form and to see new page confirmation');
     $i->login();
