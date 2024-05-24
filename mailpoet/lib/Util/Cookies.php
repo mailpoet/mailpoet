@@ -14,6 +14,9 @@ class Cookies {
   ];
 
   public function set($name, $value, array $options = []) {
+    if (headers_sent()) {
+      return;
+    }
     $options = $options + self::DEFAULT_OPTIONS;
     $value = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     $error = json_last_error();
@@ -21,15 +24,10 @@ class Cookies {
       throw new InvalidArgumentException();
     }
 
-    // on PHP_VERSION_ID >= 70300 we'll be able to simply setcookie($name, $value, $options);
     setcookie(
       $name,
       $value,
-      $options['expires'],
-      $options['path'],
-      $options['domain'],
-      $options['secure'],
-      $options['httponly']
+      $options
     );
   }
 
