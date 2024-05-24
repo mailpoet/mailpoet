@@ -18,6 +18,9 @@ class BuiltInCaptchaSubscriptionCest {
   /** @var string */
   private $subscriberEmail;
 
+  /** @var int|null */
+  private $formId;
+
   public function _before(\AcceptanceTester $i) {
     $this->subscriberEmail = 'test-form@example.com';
     $this->settingsFactory = new Settings();
@@ -29,17 +32,29 @@ class BuiltInCaptchaSubscriptionCest {
 
     $formName = 'Subscription Acceptance Test Form';
     $formFactory = new Form();
-    $form = $formFactory->withName($formName)->create();
+    $this->formId = $formFactory->withName($formName)->create()->getId();
 
     $subscriberFactory = new Subscriber();
     $subscriberFactory->withEmail($this->subscriberEmail)->withCountConfirmations(1)->create();
 
-    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form={$form->getId()}", '--title="Subscribe to Our Newsletter"']);
+    $i->havePostInDatabase([
+      'post_author' => 1,
+      'post_type' => 'page',
+      'post_name' => 'form-test',
+      'post_title' => 'Form Test',
+      'post_content' => '
+        Regular form:
+          [mailpoet_form id="' . $this->formId . '"]
+        Iframe form:
+          <iframe class="mailpoet_form_iframe" id="mailpoet_form_iframe" tabindex="0" src="http://test.local?mailpoet_form_iframe=1" width="100%" height="100%" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+      ',
+      'post_status' => 'publish',
+    ]);
   }
 
   public function checkCaptchaPageExistsAfterSubscription(\AcceptanceTester $i) {
     $i->wantTo('See the built-in captcha after subscribing using form widget');
-    $i->amOnPage('/');
+    $i->amOnPage('/form-test');
     $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
     $i->click('.mailpoet_submit');
     $i->waitForText('Confirm you’re not a robot');
@@ -49,7 +64,7 @@ class BuiltInCaptchaSubscriptionCest {
   public function checkCaptchaPageIsNotShownToLoggedInUsers(\AcceptanceTester $i) {
     $i->wantTo('check that captcha page is not shown to logged in users');
     $i->login();
-    $i->amOnPage('/');
+    $i->amOnPage('/form-test');
     $i->fillField('[data-automation-id="form_email"]', $this->subscriberEmail);
     $i->click('.mailpoet_submit');
     $i->waitForText('Check your inbox or spam folder to confirm your subscription.');

@@ -111,7 +111,7 @@ class ManageSubscriptionLinkCest {
     $i->click('Save');
     $i->waitForText('Subscriber was updated successfully!');
     $i->amOnUrl(\AcceptanceTester::WP_URL . '/?mailpoet_page=subscriptions&mailpoet_router&endpoint=subscription&action=unsubscribe&data=');
-    $i->waitForText("Hmmm... we don't have a record of you.");
+    $i->see("we don’t have a record of you.");
     $i->amOnMailpoetPage('Subscribers');
     $i->waitForText(\AcceptanceTester::ADMIN_EMAIL);
     $i->see('Subscribed');

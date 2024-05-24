@@ -165,9 +165,9 @@ wp config set DISABLE_WP_CRON true --raw
 wp config set MAILPOET_USE_CDN false --raw
 
 # activate theme
-wp theme install twentytwentythree --activate
+wp theme install twentytwentyone --activate
 if [[ $MULTISITE == "1" ]]; then
-  wp theme install twentytwentyfour --url=$HTTP_HOST/$WP_TEST_MULTISITE_SLUG --activate
+  wp theme install twentytwentyone --url=$HTTP_HOST/$WP_TEST_MULTISITE_SLUG --activate
 fi
 if [[ $BLOCKBASED_THEME == "1" ]]; then
   wp theme install twentytwentyfour --activate

@@ -7,9 +7,6 @@ use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 
-/**
- * @group frontend
- */
 class SubscriptionFormCest {
 
   const CONFIRMATION_MESSAGE_TIMEOUT = 20;
@@ -64,6 +61,9 @@ class SubscriptionFormCest {
     $i->seeNoJSErrors();
   }
 
+  /**
+   * @group frontend
+   */
   public function subscriptionFormShortcode(\AcceptanceTester $i) {
     $i->wantTo('Subscribe using form shortcode');
 
@@ -76,6 +76,9 @@ class SubscriptionFormCest {
     $i->seeCurrentUrlEquals('/form-test/');
   }
 
+  /**
+   * @group frontend
+   */
   public function subscriptionFormIframe(\AcceptanceTester $i) {
     $i->wantTo('Subscribe using iframe form');
 
@@ -114,6 +117,9 @@ class SubscriptionFormCest {
     $i->see('Subscribed', Locator::contains('tr', $this->subscriberEmail));
   }
 
+  /**
+   * @group frontend
+   */
   public function subscriptionAfterDisablingConfirmation(\AcceptanceTester $i) {
     $i->wantTo('Disable sign-up confirmation then subscribe and see a different message');
     $i->login();
@@ -133,6 +139,9 @@ class SubscriptionFormCest {
     $i->seeNoJSErrors();
   }
 
+  /**
+   * @group frontend
+   */
   public function subscriptionNewPageConfirmation(\AcceptanceTester $i) {
     $i->wantTo('Subscribe to a form and to see new page confirmation');
     $i->login();

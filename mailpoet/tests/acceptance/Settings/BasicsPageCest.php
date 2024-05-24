@@ -74,13 +74,13 @@ class BasicsPageCest {
     try {
       $i->seeInField('#comment', $comment);
       $i->click('Post Comment');
-      $i->waitForText($comment, 10, '.comment-content');
+      $i->waitForText($comment, 10);
     }
     catch (\Exception $e) {
       $i->clearField('#comment');
       $i->fillField('#comment', $comment);
       $i->click('Post Comment');
-      $i->waitForText($comment, 10, '.comment-content');
+      $i->waitForText($comment, 10);
     }
     //check if user is really subscribed to a list
     $i->amOnMailpoetPage('Lists');

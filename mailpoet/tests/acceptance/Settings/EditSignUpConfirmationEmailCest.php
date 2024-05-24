@@ -29,6 +29,7 @@ class EditSignUpConfirmationEmailCest {
     $i->fillField('[data-automation-id="signup_confirmation_email_subject"]', $confirmationEmailSubject);
     $i->fillField('[data-automation-id="signup_confirmation_email_body"]', 'Confirmation email body [activation_link]link[/activation_link]');
     $i->click('[data-automation-id="settings-submit-button"]');
+    $i->waitForText('Settings saved');
     // create form and subscribe
     $i->createFormAndSubscribe();
     // performing some clicks and getting back to verify the content

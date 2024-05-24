@@ -6,7 +6,6 @@ use Facebook\WebDriver\Exception\WebDriverException;
 use Facebook\WebDriver\WebDriverKeys;
 use MailPoet\Cache\TransientCache;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormMessageController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Form;
@@ -238,23 +237,32 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->waitForElementNotVisible('.velocity-animating');
   }
 
-  public function createFormAndSubscribe(FormEntity $form = null) {
+  public function createFormAndSubscribe() {
     $i = $this;
-    // create form widget
-    if (!$form instanceof FormEntity) {
-      $formFactory = new Form();
-      $form = $formFactory->withName('Confirmation Form')->create();
-    }
-    $i->cli(['widget', 'reset', 'sidebar-1']);
-    $i->cli(['widget', 'add', 'mailpoet_form', 'sidebar-1', '2', "--form={$form->getId()}", '--title="Subscribe to Our Newsletter"']);
+    // create form
+    $formName = 'Subscription Acceptance Test Form';
+    $formFactory = new Form();
+    $formId = $formFactory->withName($formName)->create()->getId();
 
-    // subscribe
-    /** @var FormMessageController $messageController */
-    $messageController = ContainerWrapper::getInstance()->get(FormMessageController::class);
+    $i->havePostInDatabase([
+      'post_author' => 1,
+      'post_type' => 'page',
+      'post_name' => 'form-test',
+      'post_title' => 'Form Test',
+      'post_content' => '
+        Regular form:
+          [mailpoet_form id="' . $formId . '"]
+        Iframe form:
+          <iframe class="mailpoet_form_iframe" id="mailpoet_form_iframe" tabindex="0" src="http://test.local?mailpoet_form_iframe=1" width="100%" height="100%" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+      ',
+      'post_status' => 'publish',
+    ]);
 
-    $i->amOnUrl(self::WP_URL);
+    $i->amOnPage('/form-test');
+    $i->waitForElement('[data-automation-id="form_email"]');
     $i->fillField('[data-automation-id="form_email"]', 'subscriber@example.com');
     $i->click('[data-automation-id="subscribe-submit-button"]');
+    $messageController = ContainerWrapper::getInstance()->get(FormMessageController::class);
     $i->waitForText($messageController->getDefaultSuccessMessage(), 30, '.mailpoet_validate_success');
     $i->seeNoJSErrors();
   }
