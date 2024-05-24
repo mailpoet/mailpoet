@@ -36,6 +36,18 @@ class SerializableConnection extends Connection {
     parent::__construct($this->params, $this->driver, $this->config, $this->eventManager);
   }
 
+  public function rollBack() {
+    try {
+      return parent::rollBack();
+    } catch (Throwable $e) {
+      $mySqlGoneAwayMessage = Helpers::mySqlGoneAwayExceptionHandler($e);
+      if ($mySqlGoneAwayMessage) {
+        throw new \Exception($mySqlGoneAwayMessage, (int)$e->getCode(), $e);
+      }
+      throw $e;
+    }
+  }
+
   public function handleExceptionDuringQuery(Throwable $e, string $sql, array $params = [], array $types = []): void {
     try {
       parent::handleExceptionDuringQuery($e, $sql, $params, $types);
