@@ -125,8 +125,11 @@ export async function segmentsCreateCustom() {
     });
 
     // Save the segment
-    await waitForSelectorToBeClickable(page, 'button[type="submit"]');
-    await focusAndClick(page, 'button[type="submit"]');
+    await waitForSelectorToBeClickable(
+      page,
+      'div.mailpoet-form-actions > button',
+    );
+    await focusAndClick(page, 'div.mailpoet-form-actions > button');
     await page.waitForSelector('[data-automation-id="new-segment"]', {
       state: 'visible',
     });
