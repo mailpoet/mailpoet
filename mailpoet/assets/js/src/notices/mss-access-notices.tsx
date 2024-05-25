@@ -43,6 +43,8 @@ export function MssAccessNotices() {
         !MailPoet.emailVolumeLimitReached && (
           <InvalidMssKeyNotice
             mssKeyInvalid={MailPoet.hasInvalidMssApiKey}
+            pluginPartialKey={MailPoet.pluginPartialKey}
+            premiumKeyValid={MailPoet.hasValidPremiumKey}
             subscribersCount={MailPoet.subscribersCount}
           />
         )}
