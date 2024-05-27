@@ -10,7 +10,7 @@ import {
   privateApis as editorPrivateApis,
 } from '@wordpress/editor';
 import { useMemo } from '@wordpress/element';
-import { SlotFillProvider } from '@wordpress/components';
+import { SlotFillProvider, Spinner } from '@wordpress/components';
 import { store as coreStore } from '@wordpress/core-data';
 import { storeName } from '../../store';
 
@@ -77,7 +77,11 @@ export function InnerEditor({
   );
 
   if (!post || (currentPost.postType !== 'wp_template' && !template)) {
-    return null;
+    return (
+      <div className="spinner-container">
+        <Spinner style={{ width: '80px', height: '80px' }} />
+      </div>
+    );
   }
 
   return (
