@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use MailPoet\Config\Menu;
 use MailPoet\Features\FeaturesController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -35,6 +36,7 @@ class EmailEditor {
     $this->cli->initialize();
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
     $this->wp->addAction('rest_delete_mailpoet_email', [$this->emailApiController, 'trashEmail'], 10, 1);
+    $this->wp->addFilter('mailpoet_is_email_editor_page', [$this, 'isEditorPage'], 10, 1);
     $this->extendEmailPostApi();
   }
 
@@ -50,6 +52,10 @@ class EmailEditor {
       ],
     ];
     return $postTypes;
+  }
+
+  public function isEditorPage(bool $isEditorPage): bool {
+    return $isEditorPage || (isset($_GET['page']) && $_GET['page'] === Menu::EMAIL_EDITOR_V2_PAGE_SLUG);
   }
 
   public function extendEmailPostApi() {

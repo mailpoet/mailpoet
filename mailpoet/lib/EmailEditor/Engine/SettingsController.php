@@ -29,6 +29,8 @@ class SettingsController {
 
   private ThemeController $themeController;
 
+  private array $iframeAssets = [];
+
   /**
    * @param ThemeController $themeController
    */
@@ -38,21 +40,30 @@ class SettingsController {
     $this->themeController = $themeController;
   }
 
+  public function init() {
+    // We need to initialize these assets early because they are read from global variables $wp_styles and $wp_scripts
+    // and in later WordPress page load pages they contain stuff we don't want (e.g. html for admin login popup)
+    // in the post editor this is called directly in post.php
+    $this->iframeAssets = _wp_get_iframed_editor_assets();
+  }
+
   public function getSettings(): array {
     $coreDefaultSettings = \get_default_block_editor_settings();
     $themeSettings = $this->themeController->getSettings();
 
+    $settings = array_merge($coreDefaultSettings, self::DEFAULT_SETTINGS);
+    $settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
+    // Assets for iframe editor (component styles, scripts, etc.)
+    $settings['__unstableResolvedAssets'] = $this->iframeAssets;
+
+    // Custom editor content styles
     // body selector is later transformed to .editor-styles-wrapper
     // setting padding for bottom and top is needed because \WP_Theme_JSON::get_stylesheet() set them only for .wp-site-blocks selector
     $contentVariables = 'body {';
     $contentVariables .= 'padding-bottom: var(--wp--style--root--padding-bottom);';
     $contentVariables .= 'padding-top: var(--wp--style--root--padding-top);';
     $contentVariables .= '}';
-
-    $settings = array_merge($coreDefaultSettings, self::DEFAULT_SETTINGS);
-    $settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
     $flexEmailLayoutStyles = file_get_contents(__DIR__ . '/flex-email-layout.css');
-
     $settings['styles'] = [
       ['css' => $contentVariables],
       ['css' => $flexEmailLayoutStyles],
@@ -62,7 +73,6 @@ class SettingsController {
 
     // Enabling alignWide allows full width for specific blocks such as columns, heading, image, etc.
     $settings['alignWide'] = true;
-
     return $settings;
   }
 
