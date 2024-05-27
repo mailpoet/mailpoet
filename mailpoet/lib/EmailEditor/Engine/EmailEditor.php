@@ -20,17 +20,20 @@ class EmailEditor {
   private Templates $templates;
   private TemplatePreview $templatePreview;
   private Patterns $patterns;
+  private SettingsController $settingsController;
 
   public function __construct(
     EmailApiController $emailApiController,
     Templates $templates,
     TemplatePreview $templatePreview,
-    Patterns $patterns
+    Patterns $patterns,
+    SettingsController $settingsController
   ) {
     $this->emailApiController = $emailApiController;
     $this->templates = $templates;
     $this->templatePreview = $templatePreview;
     $this->patterns = $patterns;
+    $this->settingsController = $settingsController;
   }
 
   public function initialize(): void {
@@ -40,7 +43,11 @@ class EmailEditor {
     $this->registerBlockPatterns();
     $this->registerEmailPostTypes();
     $this->registerEmailPostSendStatus();
-    $this->extendEmailPostApi();
+    $isEditorPage = apply_filters('mailpoet_is_email_editor_page', false);
+    if ($isEditorPage) {
+      $this->extendEmailPostApi();
+      $this->settingsController->init();
+    }
   }
 
   private function registerBlockTemplates(): void {
