@@ -39,12 +39,6 @@ const BlockToolbar = WPBlockToolbar as React.FC<
   }
 >;
 
-// In older versions of Gutenberg (e.g. wp-6.4 and < 17.3) the fixed block toolbar is rendered automatically
-// This is a workaround to hide the block toolbar in these versions
-// We will remove this after we drop support for WP 6.4
-const isInlinedBlockToolbarAvailable =
-  window.MailPoetEmailEditor.bc_state.isInlinedBlockToolbarAvailable;
-
 export function Header() {
   const inserterButton = useRef();
   const listviewButton = useRef();
@@ -101,8 +95,7 @@ export function Header() {
           className="editor-header__toolbar edit-post-header-toolbar is-unstyled editor-document-tools"
           aria-label={__('Email document tools', 'mailpoet')}
         >
-          {/* edit-post-header-toolbar__left can be removed after we drop support of WP 6.4 */}
-          <div className="edit-post-header-toolbar__left editor-document-tools__left">
+          <div className="editor-document-tools__left">
             <ToolbarItem
               ref={inserterButton}
               as={Button}
@@ -156,33 +149,30 @@ export function Header() {
             />
           </div>
         </NavigableToolbar>
-        {isInlinedBlockToolbarAvailable &&
-          isFixedToolbarActive &&
-          isBlockSelected && (
-            <>
-              <div
-                className={classnames('selected-block-tools-wrapper', {
-                  'is-collapsed': isBlockToolsCollapsed,
-                })}
-              >
-                <BlockToolbar hideDragHandle />
-              </div>
-              <Button
-                className="editor-header__block-tools-toggle edit-post-header__block-tools-toggle"
-                icon={isBlockToolsCollapsed ? next : previous}
-                onClick={() => {
-                  setIsBlockToolsCollapsed((collapsed) => !collapsed);
-                }}
-                label={
-                  isBlockToolsCollapsed
-                    ? __('Show block tools', 'mailpoet')
-                    : __('Hide block tools', 'mailpoet')
-                }
-              />
-            </>
-          )}
-        {(!isInlinedBlockToolbarAvailable ||
-          !isFixedToolbarActive ||
+        {isFixedToolbarActive && isBlockSelected && (
+          <>
+            <div
+              className={classnames('selected-block-tools-wrapper', {
+                'is-collapsed': isBlockToolsCollapsed,
+              })}
+            >
+              <BlockToolbar hideDragHandle />
+            </div>
+            <Button
+              className="editor-header__block-tools-toggle edit-post-header__block-tools-toggle"
+              icon={isBlockToolsCollapsed ? next : previous}
+              onClick={() => {
+                setIsBlockToolsCollapsed((collapsed) => !collapsed);
+              }}
+              label={
+                isBlockToolsCollapsed
+                  ? __('Show block tools', 'mailpoet')
+                  : __('Hide block tools', 'mailpoet')
+              }
+            />
+          </>
+        )}
+        {(!isFixedToolbarActive ||
           !isBlockSelected ||
           isBlockToolsCollapsed) && (
           <div className="editor-header__center edit-post-header__center">
