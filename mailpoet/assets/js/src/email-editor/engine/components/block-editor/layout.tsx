@@ -61,7 +61,6 @@ export function Layout() {
       focusMode: select(storeName).isFeatureActive('focusMode'),
       styles: select(storeName).getStyles(),
       isEditingTemplate:
-        // @ts-expect-error No types for this exist yet.
         select(editorStore).getCurrentPostType() === 'wp_template',
     }),
     [],

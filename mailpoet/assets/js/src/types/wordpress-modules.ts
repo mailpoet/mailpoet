@@ -15,6 +15,22 @@ declare module '@wordpress/block-editor' {
   }>;
 }
 
+declare module '@wordpress/editor' {
+  import * as editorActions from '@wordpress/editor/store/actions';
+  import * as editorSelectors from '@wordpress/editor/store/selectors';
+  import { StoreDescriptor as GenericStoreDescriptor } from '@wordpress/data/build-types/types';
+
+  export * from '@wordpress/editor/index';
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - disable redeclaration error because it's a module declaration
+  export const store: { name: 'core/editor' } & GenericStoreDescriptor<{
+    reducer: () => unknown;
+    actions: typeof editorActions;
+    selectors: typeof editorSelectors;
+  }>;
+}
+
 // there are no @types/wordpress__interface yet
 declare module '@wordpress/interface' {
   import { StoreDescriptor } from '@wordpress/data/build-types/types';

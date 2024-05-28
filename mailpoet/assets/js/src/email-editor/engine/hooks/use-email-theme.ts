@@ -6,7 +6,6 @@ import { EmailTheme, storeName } from '../store';
 
 export function useEmailTheme() {
   const { templateTheme, templateId } = useSelect((select) => {
-    // @ts-expect-error Property 'getCurrentPostType' has no types
     const currentPostType = select(editorStore).getCurrentPostType();
     let templateThemeData: EmailTheme = {};
     let tId = null;
@@ -21,11 +20,12 @@ export function useEmailTheme() {
       // @ts-expect-error Todo types for template
       tContent = template?.content;
     } else {
-      // Edit email template mode
+      // @ts-expect-error Todo types for template with email_theme
       templateThemeData =
         // @ts-expect-error Property 'getCurrentPostAttribute' has no types
         select(editorStore).getCurrentPostAttribute('mailpoet_email_theme') ||
         {};
+      // @ts-expect-error Todo types for template with email_theme
       templateThemeData =
         // @ts-expect-error Property 'getCurrentPostAttribute' has no types
         select(editorStore).getCurrentPostAttribute('mailpoet_email_theme') ||

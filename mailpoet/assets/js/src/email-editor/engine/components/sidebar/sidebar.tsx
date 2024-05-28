@@ -25,7 +25,6 @@ export function Sidebar(props: Props): JSX.Element {
     (select) => ({
       activeTab: select(storeName).getSettingsSidebarActiveTab(),
       isEditingTemplate:
-        // @ts-expect-error No types for this exist yet.
         select(editorStore).getCurrentPostType() === 'wp_template',
     }),
     [],

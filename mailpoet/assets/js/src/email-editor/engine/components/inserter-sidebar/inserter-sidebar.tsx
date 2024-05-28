@@ -12,7 +12,6 @@ export function InserterSidebar() {
       postContentId: blocks.find((block) => block.name === 'core/post-content')
         ?.clientId,
       isEditingEmailContent:
-        // @ts-expect-error No types for this exist yet.
         select(editorStore).getCurrentPostType() !== 'wp_template',
     };
   });
