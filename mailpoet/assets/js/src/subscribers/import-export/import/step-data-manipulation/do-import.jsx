@@ -83,10 +83,7 @@ export const doImport = (
         .fail((response) => {
           MailPoet.Modal.progress(false);
           if (response.errors.length > 0) {
-            MailPoet.Notice.error(
-              response.errors.map((error) => error.message),
-              { scroll: true },
-            );
+            MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
           }
         });
       batchNumber += 1;

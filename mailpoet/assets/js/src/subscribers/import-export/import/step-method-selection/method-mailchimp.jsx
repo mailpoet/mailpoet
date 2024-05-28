@@ -35,10 +35,7 @@ function MethodMailChimp({ onFinish, onPrevious }) {
       .done((response) => setMailChimpLoadedLists(response.data))
       .fail((response) => {
         if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
-            { scroll: true },
-          );
+          MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
         }
       });
   };
@@ -60,10 +57,7 @@ function MethodMailChimp({ onFinish, onPrevious }) {
       .done((response) => onFinish(response.data))
       .fail((response) => {
         if (response.errors.length > 0) {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
-            { scroll: true },
-          );
+          MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
         }
       });
   };

@@ -172,10 +172,7 @@ const itemActions = [
           refresh();
         })
         .fail((response) => {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
-            { scroll: true },
-          );
+          MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
         }),
     display: function display(segment: Segment) {
       return !isSpecialSegment(segment);
@@ -229,10 +226,7 @@ const itemActions = [
         .fail((response) => {
           MailPoet.Modal.loading(false);
           if (response.errors.length > 0) {
-            MailPoet.Notice.error(
-              response.errors.map((error) => error.message),
-              { scroll: true },
-            );
+            MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
           }
         });
     },

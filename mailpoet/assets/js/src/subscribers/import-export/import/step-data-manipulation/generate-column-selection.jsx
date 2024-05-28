@@ -64,10 +64,9 @@ export const generateColumnSelection = () => {
               })
               .fail((response) => {
                 if (response.errors.length > 0) {
-                  MailPoet.Notice.error(
-                    response.errors.map((error) => error.message),
-                    { positionAfter: '#field_name' },
-                  );
+                  MailPoet.Notice.showApiErrorNotice(response, {
+                    positionAfter: '#field_name',
+                  });
                 }
               });
             return false;

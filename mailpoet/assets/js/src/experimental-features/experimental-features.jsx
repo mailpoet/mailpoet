@@ -24,7 +24,11 @@ function ExperimentalFeatures() {
         setFlags(flagsMap);
       })
       .fail((response) => {
-        if (response.errors.length > 0) {
+        if (!(response && response.errors && response.errors.length)) return;
+
+        if (JSON.stringify(response.errors).includes('reinstall_plugin')) {
+          MailPoet.Notice.showApiErrorNotice(response);
+        } else {
           showError(
             <>
               {response.errors.map((error) => (
@@ -59,7 +63,11 @@ function ExperimentalFeatures() {
         contextValue.notices.success(<p>{message}</p>);
       })
       .fail((response) => {
-        if (response.errors.length > 0) {
+        if (!(response && response.errors && response.errors.length)) return;
+
+        if (JSON.stringify(response.errors).includes('reinstall_plugin')) {
+          MailPoet.Notice.showApiErrorNotice(response);
+        } else {
           showError(
             response.errors.map((error) => (
               <p key={error.message}>{error.message}</p>

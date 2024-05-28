@@ -156,7 +156,11 @@ class FormComponent extends Component {
         }
       })
       .fail((response) => {
-        if (response.errors.length > 0) {
+        if (!(response && response.errors && response.errors.length)) return;
+
+        if (JSON.stringify(response.errors).includes('reinstall_plugin')) {
+          MailPoet.Notice.showApiErrorNotice(response);
+        } else {
           this.setState({ errors: response.errors });
         }
       });
