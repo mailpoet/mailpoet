@@ -2,6 +2,8 @@
 
 The **MailPoet** plugin.
 
+When looking for support please see the [Support](../SUPPORT.md) document.
+
 To use the official Docker-based development environment, see details
 in [the readme file](../README.md) in the root of this repository. If
 you'd like to use the plugin code directly, you can follow the instructions
