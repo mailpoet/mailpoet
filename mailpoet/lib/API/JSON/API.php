@@ -274,8 +274,13 @@ class API {
     ];
 
     if ($errorType === Error::BAD_REQUEST) {
-      $mpReinstallErrorMessage = __('The plugin has encountered an unexpected error. Please reload the page. If that does not help, re-install the MailPoet Plugin. See: https://kb.mailpoet.com/article/258-re-installing-updating-the-plugin-via-ftp', 'mailpoet');
-      $errorMessages[Error::REINSTALL_PLUGIN] = $mpReinstallErrorMessage; // not all places on the frontend accept html for an error message. we want this to be backwards compatible
+      $mpReinstallErrorMessage = __('The plugin has encountered an unexpected error. Please reload the page. If that does not help, re-install the MailPoet Plugin. See: [link] https://kb.mailpoet.com/article/258-re-installing-updating-the-plugin-via-ftp [/link] for more information', 'mailpoet');
+      $mpReinstallErrorMessage = Helpers::replaceLinkTags(
+        $mpReinstallErrorMessage,
+        'https://kb.mailpoet.com/article/258-re-installing-updating-the-plugin-via-ftp',
+        ['target' => '_blank']
+      );
+      $errorMessages[Error::REINSTALL_PLUGIN] = $mpReinstallErrorMessage;
     }
 
     $errorResponse = new ErrorResponse(
