@@ -25,7 +25,6 @@ export function SendButton() {
       hasEmptyContent: select(storeName).hasEmptyContent(),
       isEmailSent: select(storeName).isEmailSent(),
       isEditingTemplate:
-        // @ts-expect-error No types for this exist yet.
         select(editorStore).getCurrentPostType() === 'wp_template',
     }),
     [],

@@ -175,11 +175,9 @@ export const getEditedPostTemplate = createRegistrySelector((select) => () => {
 
 export const getCurrentTemplate = createRegistrySelector((select) => () => {
   const isEditingTemplate =
-    // @ts-expect-error Property 'getCurrentPostType' does not exist on type '{}'
     select(editorStore).getCurrentPostType() === 'wp_template';
 
   if (isEditingTemplate) {
-    // @ts-expect-error Property 'getCurrentPostId' does not exist on type '{}'
     const templateId = select(editorStore).getCurrentPostId();
 
     return select(coreDataStore).getEditedEntityRecord(
