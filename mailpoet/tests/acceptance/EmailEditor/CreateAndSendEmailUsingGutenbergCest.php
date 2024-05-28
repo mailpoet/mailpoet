@@ -49,7 +49,7 @@ class CreateAndSendEmailUsingGutenbergCest {
 
     $i->wantTo('Change subject and preheader');
     $i->click('[aria-label="Change campaign name"]');
-    $i->click('[data-automation-id="email_settings_tab"]');
+    $i->click('Email', '.edit-post-sidebar__panel-tabs');
     $i->fillField('[data-automation-id="email_subject"]', 'My New Subject');
     $i->fillField('[data-automation-id="email_preview_text"]', 'My New Preview Text');
 

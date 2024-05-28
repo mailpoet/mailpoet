@@ -1,9 +1,12 @@
-import { Panel } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useSelect } from '@wordpress/data';
-import { BlockInspector } from '@wordpress/block-editor';
+import { useContext, useRef, useEffect } from '@wordpress/element';
+import { privateApis as componentsPrivateApis } from '@wordpress/components';
+import { useSelect, useDispatch } from '@wordpress/data';
+import {
+  BlockInspector,
+  store as blockEditorStore,
+} from '@wordpress/block-editor';
 import { ComplementaryArea } from '@wordpress/interface';
-import { ComponentProps } from 'react';
 import { drawerRight } from '@wordpress/icons';
 import { store as editorStore } from '@wordpress/editor';
 import {
@@ -15,44 +18,80 @@ import {
 import { Header } from './header';
 import { EmailSettings } from './email-settings';
 import { TemplateSettings } from './template-settings';
+import { unlock } from '../../../lock-unlock';
 
 import './index.scss';
 
-type Props = ComponentProps<typeof ComplementaryArea>;
+const { Tabs } = unlock(componentsPrivateApis);
 
-export function Sidebar(props: Props): JSX.Element {
-  const { activeTab, isEditingTemplate } = useSelect(
+type Props = React.ComponentProps<typeof ComplementaryArea>;
+
+function SidebarContent(props: Props) {
+  const { isEditingTemplate } = useSelect(
     (select) => ({
-      activeTab: select(storeName).getSettingsSidebarActiveTab(),
       isEditingTemplate:
         select(editorStore).getCurrentPostType() === 'wp_template',
     }),
     [],
   );
 
+  const tabListRef = useRef(null);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const tabsContextValue = useContext(Tabs.Context);
+
   return (
     <ComplementaryArea
       identifier={mainSidebarId}
       headerClassName="edit-post-sidebar__panel-tabs"
       className="edit-post-sidebar"
-      header={<Header />}
+      header={
+        <Tabs.Context.Provider value={tabsContextValue}>
+          <Header ref={tabListRef} />
+        </Tabs.Context.Provider>
+      }
       icon={drawerRight}
       scope={storeName}
       smallScreenTitle={__('No title', 'mailpoet')}
       isActiveByDefault
       {...props}
     >
-      {activeTab === mainSidebarEmailTab && isEditingTemplate && (
-        <TemplateSettings />
-      )}
-      {activeTab === mainSidebarEmailTab && !isEditingTemplate && (
-        <EmailSettings />
-      )}
-      {activeTab === mainSidebarBlockTab && (
-        <Panel>
+      <Tabs.Context.Provider value={tabsContextValue}>
+        <Tabs.TabPanel tabId={mainSidebarEmailTab}>
+          {isEditingTemplate ? <TemplateSettings /> : <EmailSettings />}
+        </Tabs.TabPanel>
+        <Tabs.TabPanel tabId={mainSidebarBlockTab}>
           <BlockInspector />
-        </Panel>
-      )}
+        </Tabs.TabPanel>
+      </Tabs.Context.Provider>
     </ComplementaryArea>
+  );
+}
+
+export function Sidebar(props: Props) {
+  const { toggleSettingsSidebarActiveTab } = useDispatch(storeName);
+  const { activeTab, selectedBlockId } = useSelect(
+    (select) => ({
+      activeTab: select(storeName).getSettingsSidebarActiveTab(),
+      selectedBlockId: select(blockEditorStore).getSelectedBlockClientId(),
+    }),
+    [],
+  );
+
+  // Switch tab based on selected block.
+  useEffect(() => {
+    if (selectedBlockId) {
+      void toggleSettingsSidebarActiveTab(mainSidebarBlockTab);
+    } else {
+      void toggleSettingsSidebarActiveTab(mainSidebarEmailTab);
+    }
+  }, [selectedBlockId, toggleSettingsSidebarActiveTab]);
+
+  return (
+    <Tabs
+      selectedTabId={activeTab || mainSidebarEmailTab}
+      onSelect={(key) => toggleSettingsSidebarActiveTab(key as string)}
+    >
+      <SidebarContent {...props} />
+    </Tabs>
   );
 }
