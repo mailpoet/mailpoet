@@ -70,20 +70,12 @@ export function TemplatesPanel() {
   async function revertAndSaveTemplate() {
     try {
       await revertTemplate(template);
-      await saveEditedEntityRecord(
-        'postType',
-        // @ts-expect-error Todo template type is not defined
-        template.type as string,
-        // @ts-expect-error Todo template type is not defined
-        template.id as string,
-        {},
-      );
+      await saveEditedEntityRecord('postType', template.type, template.id, {});
       void createSuccessNotice(
         sprintf(
           /* translators: The template/part's name. */
           __('"%s" reset.', 'mailpoet'),
-          // @ts-expect-error template type is not defined
-          decodeEntities(template.title as string),
+          decodeEntities(template.title),
         ),
         {
           type: 'snackbar',
@@ -116,12 +108,10 @@ export function TemplatesPanel() {
           variant="primary"
           onClick={() => {
             onNavigateToEntityRecord({
-              // @ts-expect-error template type is not defined
               postId: template.id,
               postType: 'wp_template',
             });
           }}
-          // @ts-expect-error template type is not defined
           disabled={!template.id}
         >
           {__('Edit template', 'mailpoet')}

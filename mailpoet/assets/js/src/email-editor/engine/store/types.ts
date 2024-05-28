@@ -198,6 +198,16 @@ export type MailPoetEmailData = {
   preview_url: string;
 };
 
+export type EmailTemplate = {
+  id: string;
+  content: string;
+  email_theme_css: string;
+  mailpoet_email_theme?: EmailTheme;
+  theme: string;
+  title: string;
+  type: string;
+};
+
 export type Feature =
   | 'fullscreenMode'
   | 'showIconLabels'
