@@ -1,4 +1,5 @@
 import { EditorSettings, EditorColor } from '@wordpress/block-editor';
+import { BlockInstance } from '@wordpress/blocks';
 
 export enum SendingPreviewStatus {
   SUCCESS = 'success',
@@ -200,12 +201,31 @@ export type MailPoetEmailData = {
 
 export type EmailTemplate = {
   id: string;
+  slug: string;
   content: string;
   email_theme_css: string;
   mailpoet_email_theme?: EmailTheme;
   theme: string;
   title: string;
   type: string;
+};
+
+export type EmailTemplatePreview = Omit<EmailTemplate, 'content' | 'title'> & {
+  content: {
+    block_version: number;
+    raw: string;
+  };
+  title: {
+    raw: string;
+    rendered: string;
+  };
+};
+
+export type TemplatePreview = {
+  slug: string;
+  contentParsed: BlockInstance[];
+  patternParsed: BlockInstance[];
+  template: EmailTemplatePreview;
 };
 
 export type Feature =
