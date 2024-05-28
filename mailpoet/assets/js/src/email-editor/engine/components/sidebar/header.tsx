@@ -18,8 +18,7 @@ export function Header() {
       selectedBlockId: select(blockEditorStore).getSelectedBlockClientId(),
       activeTab: select(storeName).getSettingsSidebarActiveTab(),
       isEditingTemplate:
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error No types for this exist yet.
         select(editorStore).getCurrentPostType() === 'wp_template',
     }),
     [],

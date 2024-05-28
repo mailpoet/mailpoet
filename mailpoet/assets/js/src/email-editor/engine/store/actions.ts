@@ -108,8 +108,7 @@ export function* updateEmailMailPoetProperty(name: string, value: string) {
     'mailpoet_email',
     postId,
   );
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error Property 'mailpoet_data' does not exist on type 'Updatable<Attachment<any>>'.
   const mailpoetData = editedPost?.mailpoet_data || {};
   yield dispatch(coreDataStore).editEntityRecord(
     'postType',
