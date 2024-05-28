@@ -13,21 +13,13 @@ export function useEmailTheme() {
     // Edit email post mode
     if (currentPostType === 'mailpoet_email') {
       const template = select(storeName).getEditedPostTemplate();
-      // @ts-expect-error Todo types for template with email_theme
       templateThemeData = template?.mailpoet_email_theme || {};
-      // @ts-expect-error Todo types for template with email_theme
       tId = template?.id;
-      // @ts-expect-error Todo types for template
       tContent = template?.content;
     } else {
-      // @ts-expect-error Todo types for template with email_theme
+      // @ts-expect-error TS2322: Type 'string' has no properties in common with type 'EmailTheme'.
       templateThemeData =
-        // @ts-expect-error Property 'getCurrentPostAttribute' has no types
-        select(editorStore).getCurrentPostAttribute('mailpoet_email_theme') ||
-        {};
-      // @ts-expect-error Todo types for template with email_theme
-      templateThemeData =
-        // @ts-expect-error Property 'getCurrentPostAttribute' has no types
+        // @ts-expect-error Expected 0 arguments, but got 1.
         select(editorStore).getCurrentPostAttribute('mailpoet_email_theme') ||
         {};
     }

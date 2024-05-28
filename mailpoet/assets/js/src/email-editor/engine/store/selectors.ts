@@ -5,7 +5,7 @@ import { store as editorStore } from '@wordpress/editor';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { serialize, BlockInstance } from '@wordpress/blocks';
 import { storeName } from './constants';
-import { State, Feature } from './types';
+import { State, Feature, EmailTemplate } from './types';
 
 export const isFeatureActive = createRegistrySelector(
   (select) =>
@@ -135,43 +135,45 @@ export const getEditedEmailContent = createRegistrySelector(
  *
  * @return {Object?} Post Template.
  */
-export const getEditedPostTemplate = createRegistrySelector((select) => () => {
-  const currentTemplate =
-    // @ts-expect-error Property 'getEditedPostAttribute' does not exist on type '{}'
-    select(editorStore).getEditedPostAttribute('template');
+export const getEditedPostTemplate = createRegistrySelector(
+  (select) => (): EmailTemplate => {
+    const currentTemplate =
+      // @ts-expect-error Expected 0 arguments, but got 1.
+      select(editorStore).getEditedPostAttribute('template');
 
-  if (currentTemplate) {
-    const templateWithSameSlug = select(coreDataStore)
-      .getEntityRecords('postType', 'wp_template', { per_page: -1 })
-      // @ts-expect-error Missing property in type
-      ?.find((template) => template.slug === currentTemplate);
+    if (currentTemplate) {
+      const templateWithSameSlug = select(coreDataStore)
+        .getEntityRecords('postType', 'wp_template', { per_page: -1 })
+        // @ts-expect-error Missing property in type
+        ?.find((template) => template.slug === currentTemplate);
 
-    if (!templateWithSameSlug) {
-      return templateWithSameSlug;
+      if (!templateWithSameSlug) {
+        return templateWithSameSlug as EmailTemplate;
+      }
+
+      return select(coreDataStore).getEditedEntityRecord(
+        'postType',
+        'wp_template',
+
+        // @ts-expect-error getEditedPostAttribute
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        templateWithSameSlug.id,
+      ) as unknown as EmailTemplate;
     }
+
+    // @ts-expect-error Property 'getDefaultTemplateId' does not exist
+    const defaultTemplateId = select(coreDataStore).getDefaultTemplateId({
+      slug: 'email-general',
+    });
 
     return select(coreDataStore).getEditedEntityRecord(
       'postType',
       'wp_template',
-
-      // @ts-expect-error getEditedPostAttribute
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      templateWithSameSlug.id,
-    );
-  }
-
-  // @ts-expect-error Property 'getDefaultTemplateId' does not exist
-  const defaultTemplateId = select(coreDataStore).getDefaultTemplateId({
-    slug: 'email-general',
-  });
-
-  return select(coreDataStore).getEditedEntityRecord(
-    'postType',
-    'wp_template',
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    defaultTemplateId,
-  );
-});
+      defaultTemplateId,
+    ) as unknown as EmailTemplate;
+  },
+);
 
 export const getCurrentTemplate = createRegistrySelector((select) => () => {
   const isEditingTemplate =
