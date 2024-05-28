@@ -2,8 +2,8 @@
 
 The **MailPoet** plugin monorepo.
 
-When looking for support please see the [Support](SUPPORT.md) document.
 If you have **any questions or need help or support**, please see the [Support](SUPPORT.md) document.
+
 To use our Docker-based development environment (recommended), continue with the steps below.
 If you'd like to use the plugin code directly, see details in [the plugin's readme](mailpoet/README.md).
 
