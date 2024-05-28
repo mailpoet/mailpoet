@@ -32,8 +32,17 @@ export function SubscribersCacheMessage({
         window.location.reload();
       })
       .fail((response: ErrorResponse) => {
-        setErrors(response.errors.map((error) => error.message));
         setLoading(false);
+        if (!(response && response.errors && response.errors.length)) return;
+
+        if (JSON.stringify(response.errors).includes('reinstall_plugin')) {
+          MailPoet.Notice.showApiErrorNotice(response, {
+            static: true,
+            scroll: true,
+          });
+        } else {
+          setErrors(response.errors.map((error) => error.message));
+        }
       });
   };
 

@@ -16,6 +16,11 @@ import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context';
 import { withBoundary } from '../common';
 
+const getErrorObject = (errorResponse) =>
+  JSON.stringify(errorResponse.errors).includes('reinstall_plugin')
+    ? { static: true }
+    : {};
+
 class ListingComponent extends Component {
   constructor(props) {
     super(props);
@@ -201,7 +206,7 @@ class ListingComponent extends Component {
             response.errors.map((error) => (
               <p key={error.message}>{error.message}</p>
             )),
-            { scroll: true },
+            { scroll: true, ...getErrorObject(response) },
           );
         }
       });
@@ -281,7 +286,7 @@ class ListingComponent extends Component {
           response.errors.map((error) => (
             <p key={error.message}>{error.message}</p>
           )),
-          { scroll: true },
+          { scroll: true, ...getErrorObject(response) },
         );
       });
   };
@@ -314,7 +319,7 @@ class ListingComponent extends Component {
           response.errors.map((error) => (
             <p key={error.message}>{error.message}</p>
           )),
-          { scroll: true },
+          { scroll: true, ...getErrorObject(response) },
         );
         this.setState({ loading: false });
       });
@@ -348,7 +353,7 @@ class ListingComponent extends Component {
           response.errors.map((error) => (
             <p key={error.message}>{error.message}</p>
           )),
-          { scroll: true },
+          { scroll: true, ...getErrorObject(response) },
         );
       });
   };
@@ -373,7 +378,7 @@ class ListingComponent extends Component {
           response.errors.map((error) => (
             <p key={error.message}>{error.message}</p>
           )),
-          { scroll: true },
+          { scroll: true, ...getErrorObject(response) },
         );
       });
 
@@ -423,7 +428,7 @@ class ListingComponent extends Component {
             response.errors.map((error) => (
               <p key={error.message}>{error.message}</p>
             )),
-            { scroll: true },
+            { scroll: true, ...getErrorObject(response) },
           );
         }
       });

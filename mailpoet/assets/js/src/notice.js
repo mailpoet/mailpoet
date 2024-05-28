@@ -245,9 +245,13 @@ export const MailPoetNotice = {
     );
   },
   showApiErrorNotice: function showApiErrorNotice(response, options) {
-    var errorMessage = I18n.t('ajaxFailedErrorMessage');
+    let errorMessage = I18n.t('ajaxFailedErrorMessage');
+    let optionsObj = options;
     if (response && response.errors && response.errors.length > 0) {
       errorMessage = response.errors.map((error) => error.message);
+      optionsObj = JSON.stringify(response.errors).includes('reinstall_plugin')
+        ? { ...options, static: true, scroll: true }
+        : options;
     }
     this.show(
       jQuery.extend(
@@ -256,7 +260,7 @@ export const MailPoetNotice = {
           type: 'error',
           message: errorMessage,
         },
-        options,
+        optionsObj,
       ),
     );
   },

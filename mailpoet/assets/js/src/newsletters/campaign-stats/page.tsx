@@ -65,10 +65,7 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
           });
         })
         .fail((response: ErrorResponse) => {
-          MailPoet.Notice.error(
-            response.errors.map((error) => error.message),
-            { scroll: true },
-          );
+          MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
           setState({
             loading: false,
           });
