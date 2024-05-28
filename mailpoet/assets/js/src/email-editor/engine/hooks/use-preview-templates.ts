@@ -1,7 +1,7 @@
 import { BlockInstance, parse } from '@wordpress/blocks';
 import { useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
-import { storeName } from '../store/constants';
+import { storeName, EmailTemplatePreview, TemplatePreview } from '../store';
 
 /**
  * We need to merge pattern blocks and template blocks for BlockPreview component.
@@ -30,7 +30,7 @@ function setPostContentInnerBlocks(
   });
 }
 
-export function usePreviewTemplates() {
+export function usePreviewTemplates(): TemplatePreview[][] {
   const { templates, patterns } = useSelect((select) => {
     const contentBlockId =
       // @ts-expect-error getBlocksByName is not defined in types
@@ -55,11 +55,8 @@ export function usePreviewTemplates() {
     pattern?.name?.startsWith('mailpoet'),
   )?.blocks as BlockInstance[];
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return [
-    templates.map((template) => {
-      // @ts-expect-error Missing property type
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    templates.map((template: EmailTemplatePreview): TemplatePreview => {
       let parsedTemplate = parse(template.content?.raw);
       parsedTemplate = setPostContentInnerBlocks(
         parsedTemplate,
@@ -67,7 +64,6 @@ export function usePreviewTemplates() {
       );
 
       return {
-        // @ts-expect-error Missing property type
         slug: template.slug,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         contentParsed: parsedTemplate,

@@ -9,18 +9,17 @@ import {
 } from '@wordpress/components';
 import { Async } from './async';
 import { usePreviewTemplates } from '../../hooks';
-import { storeName } from '../../store/constants';
+import { storeName, TemplatePreview } from '../../store';
 
 const BLANK_TEMPLATE = 'email-general';
 
 export function SelectTemplateModal({ onSelectCallback }) {
   const [templates] = usePreviewTemplates();
 
-  const handleTemplateSelection = (template) => {
+  const handleTemplateSelection = (template: TemplatePreview) => {
     void dispatch(editorStore).resetEditorBlocks(template.patternParsed);
     void dispatch(storeName).setTemplateToPost(
       template.slug,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       template.template.mailpoet_email_theme ?? {},
     );
     onSelectCallback();
@@ -29,7 +28,7 @@ export function SelectTemplateModal({ onSelectCallback }) {
   const handleCloseWithoutSelection = () => {
     const blankTemplate = templates.find(
       (template) => template.slug === BLANK_TEMPLATE,
-    );
+    ) as unknown as TemplatePreview;
     if (!blankTemplate) return; // Prevent close if blank template is still not loaded
     handleTemplateSelection(blankTemplate);
   };
@@ -80,14 +79,12 @@ export function SelectTemplateModal({ onSelectCallback }) {
                       viewportWidth={900}
                       minHeight={300}
                       additionalStyles={[
-                        // @ts-expect-error No types for template
                         { css: template.template.email_theme_css },
                       ]}
                     />
 
                     <HStack className="block-editor-patterns__pattern-details">
                       <div className="block-editor-block-patterns-list__item-title">
-                        {/* @ts-expect-error No type for template */}
                         {template.template.title.rendered}
                       </div>
                     </HStack>
