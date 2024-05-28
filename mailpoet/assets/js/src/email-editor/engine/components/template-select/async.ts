@@ -2,8 +2,7 @@
  * WordPress dependencies
  */
 import { useEffect, useState, flushSync } from '@wordpress/element';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ts-expect-error TS7016 Could not find a declaration file for module '@wordpress/priority-queue'
 import { createQueue } from '@wordpress/priority-queue';
 
 const blockPreviewQueue = createQueue();

@@ -6,8 +6,7 @@ import {
 
 import {
   UnsavedChangesWarning,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error No types for this exist yet.
   privateApis as editorPrivateApis,
   store as editorStore,
 } from '@wordpress/editor';

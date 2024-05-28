@@ -55,8 +55,7 @@ export const isEmpty = createRegistrySelector((select) => (): boolean => {
   );
   if (!post) return true;
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error Missing property in type
   const { content, mailpoet_data: mailpoetData, title } = post;
   return (
     !content.raw &&
@@ -77,8 +76,7 @@ export const hasEmptyContent = createRegistrySelector(
     );
     if (!post) return true;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error Missing property in type
     const { content } = post;
     return !content.raw;
   },
@@ -94,8 +92,7 @@ export const isEmailSent = createRegistrySelector((select) => (): boolean => {
   );
   if (!post) return false;
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error Missing property in type
   const status = post.status;
   return status === 'sent';
 });
@@ -140,15 +137,13 @@ export const getEditedEmailContent = createRegistrySelector(
  */
 export const getEditedPostTemplate = createRegistrySelector((select) => () => {
   const currentTemplate =
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error Property 'getEditedPostAttribute' does not exist on type '{}'
     select(editorStore).getEditedPostAttribute('template');
 
   if (currentTemplate) {
     const templateWithSameSlug = select(coreDataStore)
       .getEntityRecords('postType', 'wp_template', { per_page: -1 })
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error Missing property in type
       ?.find((template) => template.slug === currentTemplate);
 
     if (!templateWithSameSlug) {
@@ -165,8 +160,7 @@ export const getEditedPostTemplate = createRegistrySelector((select) => () => {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error Property 'getDefaultTemplateId' does not exist
   const defaultTemplateId = select(coreDataStore).getDefaultTemplateId({
     slug: 'email-general',
   });
@@ -181,13 +175,11 @@ export const getEditedPostTemplate = createRegistrySelector((select) => () => {
 
 export const getCurrentTemplate = createRegistrySelector((select) => () => {
   const isEditingTemplate =
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error Property 'getCurrentPostType' does not exist on type '{}'
     select(editorStore).getCurrentPostType() === 'wp_template';
 
   if (isEditingTemplate) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error Property 'getCurrentPostId' does not exist on type '{}'
     const templateId = select(editorStore).getCurrentPostId();
 
     return select(coreDataStore).getEditedEntityRecord(

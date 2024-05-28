@@ -89,8 +89,7 @@ function Edit({
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ts-expect-error TS2322 Different types
 registerBlockType(metadata, {
   icon: {
     src: <Icon icon={MailPoetIcon} />,
