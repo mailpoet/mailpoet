@@ -1,71 +1,18 @@
-import { store as blockEditorStore } from '@wordpress/block-editor';
-import { store as editorStore } from '@wordpress/editor';
-import { useDispatch, useSelect } from '@wordpress/data';
-import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import classnames from 'classnames';
-import {
-  mainSidebarBlockTab,
-  mainSidebarEmailTab,
-  storeName,
-} from '../../store';
+import * as React from '@wordpress/element';
+import { privateApis as componentsPrivateApis } from '@wordpress/components';
+import { mainSidebarEmailTab, mainSidebarBlockTab } from '../../store';
+import { unlock } from '../../../lock-unlock';
 
-export function Header() {
-  const { toggleSettingsSidebarActiveTab } = useDispatch(storeName);
+const { Tabs } = unlock(componentsPrivateApis);
 
-  const { selectedBlockId, activeTab, isEditingTemplate } = useSelect(
-    (select) => ({
-      selectedBlockId: select(blockEditorStore).getSelectedBlockClientId(),
-      activeTab: select(storeName).getSettingsSidebarActiveTab(),
-      isEditingTemplate:
-        select(editorStore).getCurrentPostType() === 'wp_template',
-    }),
-    [],
-  );
-
-  // Switch tab based on selected block.
-  useEffect(() => {
-    if (selectedBlockId) {
-      void toggleSettingsSidebarActiveTab(mainSidebarBlockTab);
-    } else {
-      void toggleSettingsSidebarActiveTab(mainSidebarEmailTab);
-    }
-  }, [selectedBlockId, toggleSettingsSidebarActiveTab]);
-
+export function HeaderTabs(_, ref) {
   return (
-    <ul>
-      <li>
-        <button
-          onClick={() => {
-            void toggleSettingsSidebarActiveTab(mainSidebarEmailTab);
-          }}
-          className={classnames(
-            'components-button edit-post-sidebar__panel-tab',
-            { 'is-active': activeTab === mainSidebarEmailTab },
-          )}
-          data-automation-id="email_settings_tab"
-          type="button"
-        >
-          {isEditingTemplate
-            ? __('Template', 'mailpoet')
-            : __('Email', 'mailpoet')}
-        </button>
-      </li>
-      <li>
-        <button
-          onClick={() => {
-            void toggleSettingsSidebarActiveTab(mainSidebarBlockTab);
-          }}
-          className={classnames(
-            'components-button edit-post-sidebar__panel-tab',
-            { 'is-active': activeTab === mainSidebarBlockTab },
-          )}
-          data-automation-id="mailpoet_block_settings_tab"
-          type="button"
-        >
-          {__('Block', 'mailpoet')}
-        </button>
-      </li>
-    </ul>
+    <Tabs.TabList ref={ref}>
+      <Tabs.Tab tabId={mainSidebarEmailTab}>{__('Email', 'mailpoet')}</Tabs.Tab>
+      <Tabs.Tab tabId={mainSidebarBlockTab}>{__('Block')}</Tabs.Tab>
+    </Tabs.TabList>
   );
 }
+
+export const Header = React.forwardRef(HeaderTabs);
