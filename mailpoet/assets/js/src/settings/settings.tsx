@@ -1,3 +1,4 @@
+import { MssAccessNotices } from 'notices/mss-access-notices';
 import { Notices } from 'notices/notices.jsx';
 import { Loading } from 'common/loading';
 import { t } from 'common/functions';
@@ -23,6 +24,7 @@ export function Settings() {
       <TopBar />
       {isSaving && <Loading />}
       <Notices />
+      <MssAccessNotices />
       <UnsavedChangesNotice storeName="mailpoet-settings" />
       <RoutedTabs activeKey="basics">
         <Tab

@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { HashRouter, Route } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context';
+import { MssAccessNotices } from 'notices/mss-access-notices';
 import { Notices } from 'notices/notices.jsx';
 import { registerTranslations, withBoundary } from 'common';
 import { FormList } from './list.jsx';
@@ -10,6 +11,7 @@ function App() {
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <HashRouter>
         <Notices />
+        <MssAccessNotices />
         <Route path="*" render={withBoundary(FormList)} />
       </HashRouter>
     </GlobalContext.Provider>
