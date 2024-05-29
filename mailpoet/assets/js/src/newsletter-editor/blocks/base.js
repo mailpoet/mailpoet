@@ -5,6 +5,7 @@
  * BlockToolsView, BlockSettingsView and BlockWidgetView are optional.
  */
 import { App } from 'newsletter-editor/app';
+import { prependHTTPS } from '@wordpress/url';
 import Marionette from 'backbone.marionette';
 import SuperModel from 'backbone.supermodel';
 import _ from 'underscore';
@@ -307,6 +308,15 @@ Module.BlockSettingsView = Marionette.View.extend({
   },
   changeField: function changeField(field, event) {
     this.model.set(field, jQuery(event.target).val());
+  },
+  /*
+   * Prepends https:// if the value doesn't start as a shortcode '[' or there is already a protocol in place.
+   */
+  changeUrlField: function changeUrlField(field, event) {
+    const value = jQuery(event.target).val().trim();
+    const fixedValue = value.startsWith('[') ? value : prependHTTPS(value);
+    jQuery(event.target).val(fixedValue);
+    this.model.set(field, fixedValue);
   },
   changePixelField: function changePixelField(field, event) {
     this.changeFieldWithSuffix(field, event, 'px');
