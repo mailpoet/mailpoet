@@ -97,7 +97,6 @@ class CreateEmailAutomationAndWalkThroughCest {
 
     // Jump the waiting time by scheduling the delay action to now.
     $i->triggerAutomationActionScheduler(); // Initialize the run, creates the delay step
-    $i->triggerAutomationActionScheduler(); // Set delay scheduled at to now, runs delay and send email
 
     // Check that the send email step waits for email to be sent.
     $i->moveBack();
@@ -105,11 +104,14 @@ class CreateEmailAutomationAndWalkThroughCest {
     $i->click('Analytics', '.mailpoet-automation-listing');
     $emailStatsContainer = Locator::contains('.mailpoet-automation-editor-step-wrapper', 'Send email');
     $i->see('Sent 0', $emailStatsContainer);
+    $i->triggerAutomationActionScheduler(); // Set delay scheduled at to now, runs delay and send email
+    $i->reloadPage();
     $i->see('(1) waiting', $emailStatsContainer);
 
     // Send the email and check that the step status reflects that.
     $i->triggerMailPoetActionScheduler(); // Runs the email queue & updates the step status
     $i->reloadPage();
+    $i->waitForText('Welcome new subscribers');
     $i->see('Sent 1', $emailStatsContainer);
     $i->see('(0) waiting', $emailStatsContainer);
 
