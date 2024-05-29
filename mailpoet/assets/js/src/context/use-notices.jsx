@@ -75,13 +75,15 @@ export const useNotices = () => {
                       '<a> https://kb.mailpoet.com/article/258-re-installing-updating-the-plugin-via-ftp </a>',
                     ),
                     {
-                      // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
                       a: (
                         <a
+                          aria-label={err.error}
                           href="https://kb.mailpoet.com/article/258-re-installing-updating-the-plugin-via-ftp"
                           target="_blank"
                           rel="noopener noreferrer"
-                        />
+                        >
+                          &nbsp;
+                        </a>
                       ),
                     },
                   )
