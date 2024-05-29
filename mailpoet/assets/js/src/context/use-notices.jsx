@@ -1,4 +1,6 @@
 import { useState, useCallback } from 'react';
+import { createInterpolateElement } from '@wordpress/element';
+import { sprintf, __ } from '@wordpress/i18n';
 
 export const useNotices = () => {
   const [state, setState] = useState({
@@ -46,6 +48,62 @@ export const useNotices = () => {
     [add],
   );
 
+  /**
+   * This method fundamentally performs the same function as useNotices.error
+   * The only addition is the wrapper for checking reinstall_plugin error
+   */
+  const apiError = useCallback(
+    (response, props = {}) => {
+      let content = response;
+      let optionsObj = props;
+
+      if (response && response.errors && response.errors.length > 0) {
+        const containsReinstallPluginMessage = JSON.stringify(
+          response.errors,
+        ).includes('reinstall_plugin');
+
+        if (containsReinstallPluginMessage) {
+          content = response.errors.map((err) => (
+            <p key={err.message}>
+              {err.error === 'reinstall_plugin'
+                ? createInterpolateElement(
+                    sprintf(
+                      __(
+                        'The plugin has encountered an unexpected error. Please reload the page. If that does not help, re-install the MailPoet Plugin. See: %s for more information',
+                        'mailpoet',
+                      ),
+                      '<a> https://kb.mailpoet.com/article/258-re-installing-updating-the-plugin-via-ftp </a>',
+                    ),
+                    {
+                      // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+                      a: (
+                        <a
+                          href="https://kb.mailpoet.com/article/258-re-installing-updating-the-plugin-via-ftp"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        />
+                      ),
+                    },
+                  )
+                : err.message}
+            </p>
+          ));
+        } else {
+          content = response.errors.map((err) => (
+            <p key={err.message}>{err.message}</p>
+          ));
+        }
+
+        optionsObj = containsReinstallPluginMessage
+          ? { ...props, static: true, scroll: true }
+          : props;
+      }
+
+      return add({ ...optionsObj, type: 'error', children: content });
+    },
+    [add],
+  );
+
   return {
     items: state.items,
     success,
@@ -53,5 +111,6 @@ export const useNotices = () => {
     warning,
     error,
     remove,
+    apiError,
   };
 };
