@@ -37,12 +37,7 @@ export function EditorSelectModal({
         setIsLoading(false);
         onClose();
         if (response.errors.length > 0) {
-          notices.error(
-            response.errors.map((error) => (
-              <p key={error.message}>{error.message}</p>
-            )),
-            { scroll: true },
-          );
+          notices.apiError(response, { scroll: true });
         }
       });
   }, [notices, onClose]);

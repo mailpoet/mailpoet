@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useLocation, useRouteMatch } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { Loading } from 'common/loading';
-import { useGlobalContextValue } from 'context';
 
 import { StatsHeading } from './stats/heading';
 import { Summary } from './stats/summary';
@@ -16,8 +15,6 @@ export function SubscriberStats(): JSX.Element {
   const location = useLocation();
   const [stats, setStats] = useState<StatsType | null>(null);
   const [loading, setLoading] = useState(true);
-  const contextValue = useGlobalContextValue(window);
-  const showError = contextValue.notices.error;
 
   useEffect(() => {
     void MailPoet.Ajax.post({
@@ -35,21 +32,16 @@ export function SubscriberStats(): JSX.Element {
       .fail((response) => {
         setLoading(false);
         if (response.errors.length > 0) {
-          showError(
-            <>
-              {response.errors.map((error) => (
-                <p key={error.message}>{error.message}</p>
-              ))}
-            </>,
-            { scroll: true },
-          );
+          MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
         }
       });
-  }, [match.params.id, showError]);
+  }, [match.params.id]);
 
   if (loading) {
     return <Loading />;
   }
+
+  if (!stats) return null;
 
   return (
     <div className="mailpoet-subscriber-stats">

@@ -16,11 +16,6 @@ import { withRouter } from 'react-router-dom';
 import { GlobalContext } from 'context';
 import { withBoundary } from '../common';
 
-const getErrorObject = (errorResponse) =>
-  JSON.stringify(errorResponse.errors).includes('reinstall_plugin')
-    ? { static: true }
-    : {};
-
 class ListingComponent extends Component {
   constructor(props) {
     super(props);
@@ -202,12 +197,7 @@ class ListingComponent extends Component {
       })
       .fail((response) => {
         if (response.errors.length > 0) {
-          this.context.notices.error(
-            response.errors.map((error) => (
-              <p key={error.message}>{error.message}</p>
-            )),
-            { scroll: true, ...getErrorObject(response) },
-          );
+          this.context.notices.apiError(response, { scroll: true });
         }
       });
   };
@@ -282,12 +272,7 @@ class ListingComponent extends Component {
         this.getItems();
       })
       .fail((response) => {
-        this.context.notices.error(
-          response.errors.map((error) => (
-            <p key={error.message}>{error.message}</p>
-          )),
-          { scroll: true, ...getErrorObject(response) },
-        );
+        this.context.notices.apiError(response, { scroll: true });
       });
   };
 
@@ -315,12 +300,7 @@ class ListingComponent extends Component {
         this.getItems();
       })
       .fail((response) => {
-        this.context.notices.error(
-          response.errors.map((error) => (
-            <p key={error.message}>{error.message}</p>
-          )),
-          { scroll: true, ...getErrorObject(response) },
-        );
+        this.context.notices.apiError(response, { scroll: true });
         this.setState({ loading: false });
       });
   };
@@ -349,12 +329,7 @@ class ListingComponent extends Component {
         this.getItems();
       })
       .fail((response) => {
-        this.context.notices.error(
-          response.errors.map((error) => (
-            <p key={error.message}>{error.message}</p>
-          )),
-          { scroll: true, ...getErrorObject(response) },
-        );
+        this.context.notices.apiError(response, { scroll: true });
       });
   };
 
@@ -374,12 +349,7 @@ class ListingComponent extends Component {
         this.handleGroup('all');
       })
       .fail((response) => {
-        this.context.notices.error(
-          response.errors.map((error) => (
-            <p key={error.message}>{error.message}</p>
-          )),
-          { scroll: true, ...getErrorObject(response) },
-        );
+        this.context.notices.apiError(response, { scroll: true });
       });
 
   handleBulkAction = (selectedIds, params) => {
@@ -424,12 +394,7 @@ class ListingComponent extends Component {
       })
       .fail((response) => {
         if (response.errors.length > 0) {
-          this.context.notices.error(
-            response.errors.map((error) => (
-              <p key={error.message}>{error.message}</p>
-            )),
-            { scroll: true, ...getErrorObject(response) },
-          );
+          this.context.notices.apiError(response, { scroll: true });
         }
       });
   };

@@ -661,15 +661,7 @@ class NewsletterSendComponent extends Component<
 
   showError = (response) => {
     if (response.errors.length > 0) {
-      this.context.notices.error(
-        response.errors.map((error) => (
-          <p key={error.message}>{error.message}</p>
-        )),
-        {
-          scroll: true,
-          timeout: false,
-        },
-      );
+      this.context.notices.apiError(response, { scroll: true, timeout: false });
     }
   };
 

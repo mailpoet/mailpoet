@@ -70,12 +70,7 @@ class NewsletterNotificationComponent extends Component {
       })
       .fail((response) => {
         if (response.errors.length > 0) {
-          this.context.notices.error(
-            response.errors.map((error) => (
-              <p key={error.message}>{error.message}</p>
-            )),
-            { scroll: true },
-          );
+          this.context.notices.apiError(response, { scroll: true });
         }
       });
   };
