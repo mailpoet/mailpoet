@@ -206,7 +206,7 @@ SocialBlockSettingsIconView = Marionette.View.extend({
         this.changeField,
         'image',
       ),
-      'input .mailpoet_social_icon_field_link': this.changeLink,
+      'change .mailpoet_social_icon_field_link': this.changeLink,
       'input .mailpoet_social_icon_field_text': _.partial(
         this.changeField,
         'text',
@@ -253,9 +253,7 @@ SocialBlockSettingsIconView = Marionette.View.extend({
     }
     return undefined;
   },
-  changeField: function (field, event) {
-    this.model.set(field, jQuery(event.target).val());
-  },
+  changeField: base.BlockSettingsView.prototype.changeUrlField,
 });
 
 SocialBlockSettingsIconCollectionView = Marionette.CollectionView.extend({
