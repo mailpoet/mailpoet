@@ -81,7 +81,10 @@ Module.ButtonBlockSettingsView = base.BlockSettingsView.extend({
   events: function () {
     return {
       'input .mailpoet_field_button_text': _.partial(this.changeField, 'text'),
-      'input .mailpoet_field_button_url': _.partial(this.changeField, 'url'),
+      'change .mailpoet_field_button_url': _.partial(
+        this.changeUrlField,
+        'url',
+      ),
       'change .mailpoet_field_button_alignment': _.partial(
         this.changeField,
         'styles.block.textAlign',
