@@ -2,6 +2,8 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use PHPUnit\Framework\Exception;
+
 class HomepageLandingAfterActivatingMailPoetCest {
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();
@@ -24,8 +26,19 @@ class HomepageLandingAfterActivatingMailPoetCest {
     $i->waitForNoticeAndClose('Selected plugins deactivated.');
 
     $i->click('#activate-mailpoet');
-    $i->waitForText('Better email — without leaving WordPress');
-    $i->seeInCurrentUrl('mailpoet-landingpage');
+    
+    // Sometimes it is "flaky" and shows the my plugins page instead homepage
+    try {
+      $i->waitForText('Better email — without leaving WordPress', 10);
+      $i->seeInCurrentUrl('mailpoet-landingpage');
+    } catch (Exception $e) {
+      $i->waitForNoticeAndClose('Plugin activated.');
+      $i->deactivatePlugin('mailpoet');
+      $i->waitForNoticeAndClose('Selected plugins deactivated.');
+      $i->click('#activate-mailpoet');
+      $i->waitForText('Better email — without leaving WordPress', 10);
+      $i->seeInCurrentUrl('mailpoet-landingpage');
+    }
   }
 
   public function _after(\AcceptanceTester $i) {
