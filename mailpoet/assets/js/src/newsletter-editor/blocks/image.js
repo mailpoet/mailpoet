@@ -132,7 +132,10 @@ Module.ImageBlockSettingsView = base.BlockSettingsView.extend({
   },
   events: function () {
     return {
-      'input .mailpoet_field_image_link': _.partial(this.changeField, 'link'),
+      'change .mailpoet_field_image_link': _.partial(
+        this.changeUrlField,
+        'link',
+      ),
       'input .mailpoet_field_image_alt_text': _.partial(
         this.changeField,
         'alt',
