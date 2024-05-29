@@ -248,7 +248,7 @@ describe('Image', function () {
 
     describe('once rendered', function () {
       it('updates the model when link changes', function () {
-        view.$('.mailpoet_field_image_link').val(newLink).trigger('input');
+        view.$('.mailpoet_field_image_link').val(newLink).trigger('change');
         expect(model.get('link')).to.equal(newLink);
       });
 

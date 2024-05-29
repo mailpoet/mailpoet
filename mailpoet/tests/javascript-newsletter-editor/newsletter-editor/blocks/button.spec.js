@@ -413,9 +413,31 @@ describe('Button', function () {
       it('updates the model when link is changed', function () {
         var newValue = 'http://google.com/?q=123456';
 
-        view.$('.mailpoet_field_button_url').val(newValue).trigger('input');
+        view.$('.mailpoet_field_button_url').val(newValue).trigger('change');
 
         expect(model.get('url')).to.equal(newValue);
+      });
+
+      it('adds https protocol to url when needed', function () {
+        let newValue = 'example.com';
+        view.$('.mailpoet_field_button_url').val(newValue).trigger('change');
+        expect(model.get('url')).to.equal('https://example.com');
+
+        newValue = 'https://example2.com';
+        view.$('.mailpoet_field_button_url').val(newValue).trigger('change');
+        expect(model.get('url')).to.equal('https://example2.com');
+
+        newValue = 'http://example3.com';
+        view.$('.mailpoet_field_button_url').val(newValue).trigger('change');
+        expect(model.get('url')).to.equal('http://example3.com');
+
+        newValue = 'mailto:test@example.com';
+        view.$('.mailpoet_field_button_url').val(newValue).trigger('change');
+        expect(model.get('url')).to.equal('mailto:test@example.com');
+
+        newValue = '[shortcode]';
+        view.$('.mailpoet_field_button_url').val(newValue).trigger('change');
+        expect(model.get('url')).to.equal('[shortcode]');
       });
 
       it('updates the model when font color changes', function () {
