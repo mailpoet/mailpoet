@@ -964,7 +964,7 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_oldest
-          woo_core_version: 8.6.0
+          woo_core_version: 8.8.3
           woo_subscriptions_version: 5.6.0
           woo_memberships_version: 1.23.1
           automate_woo_version: 5.8.5
@@ -1004,7 +1004,7 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_oldest
-          woo_core_version: 8.6.0
+          woo_core_version: 8.8.3
           woo_subscriptions_version: 5.6.0
           woo_memberships_version: 1.24.0
           automate_woo_version: 5.8.5
