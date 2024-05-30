@@ -349,6 +349,7 @@ class SendingQueue {
           'Can\'t send corrupt newsletter',
           ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
         );
+        return;
       }
     }
   }
