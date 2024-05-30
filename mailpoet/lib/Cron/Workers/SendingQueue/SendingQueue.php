@@ -334,13 +334,11 @@ class SendingQueue {
           'after queue chunk processing',
           ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
         );
+        // In case we finished end sending properly before enforcing sending and execution limits
+        // The limit enforcing throws and exception and the sending end wouldn't be processed properly (stats notification, newsletter marked as sent etc.)
         if ($task->getStatus() === ScheduledTaskEntity::STATUS_COMPLETED) {
-          $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
-            'completed newsletter sending',
-            ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
-          );
-          $this->newsletterTask->markNewsletterAsSent($newsletter);
-          $this->statsNotificationsScheduler->schedule($newsletter);
+          $this->endSending($task, $newsletter);
+          return;
         }
         $this->enforceSendingAndExecutionLimits($timer);
       } else {
@@ -640,5 +638,17 @@ class SendingQueue {
     $this->scheduledTaskSubscribersRepository->deleteByScheduledTask($task);
     $this->scheduledTasksRepository->remove($task);
     $this->scheduledTasksRepository->flush();
+  }
+
+  private function endSending(ScheduledTaskEntity $task, NewsletterEntity $newsletter): void {
+    // Task is completed let's do all the stuff for the completed task
+    if ($task->getStatus() === ScheduledTaskEntity::STATUS_COMPLETED) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
+        'completed newsletter sending',
+        ['newsletter_id' => $newsletter->getId(), 'task_id' => $task->getId()]
+      );
+      $this->newsletterTask->markNewsletterAsSent($newsletter);
+      $this->statsNotificationsScheduler->schedule($newsletter);
+    }
   }
 }
