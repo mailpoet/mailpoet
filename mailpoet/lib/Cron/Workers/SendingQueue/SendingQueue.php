@@ -291,11 +291,7 @@ class SendingQueue {
         $this->scheduledTaskSubscribersRepository->deleteByScheduledTaskAndSubscriberIds($task, $subscribersToRemove);
         $this->sendingQueuesRepository->updateCounts($queue);
 
-        if (!$queue->getCountToProcess()) {
-          $this->newsletterTask->markNewsletterAsSent($newsletter);
-          continue;
-        }
-        // if there aren't any subscribers to process in batch (e.g. all unsubscribed or were deleted) continue with next batch
+        // if there aren't any subscribers to process in the batch (e.g. all unsubscribed or were deleted), continue with the next batch
         if (count($foundSubscribersIds) === 0) {
           continue;
         }
@@ -350,6 +346,9 @@ class SendingQueue {
         return;
       }
     }
+    // At this point all batches were processed or there are no batches to process
+    // Also none of the checks above paused or invalidated the task
+    $this->endSending($task, $newsletter);
   }
 
   public function getBatchSize(): int {

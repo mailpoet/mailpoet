@@ -840,6 +840,39 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountToProcess())->equals(0);
   }
 
+  public function testItCompletesEverythingProperlyWhenThereIsNoOneToSendTo() {
+    // Set the only scheduled task subscriber to unsubscribed
+    $this->subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
+    $this->entityManager->flush();
+
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'send' => Expected::never(),
+        ]
+      )
+    );
+    $sendingQueueWorker->process();
+
+    // queue status is set to completed
+    $sendingQueue = $this->sendingQueuesRepository->findOneById($this->sendingQueue->getId());
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->sendingQueuesRepository->refresh($sendingQueue);
+    $this->scheduledTasksRepository->refresh($scheduledTask);
+    $newsletter = $sendingQueue->getNewsletter();
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+
+    verify($sendingQueue->getCountTotal())->equals(0);
+    verify($sendingQueue->getCountProcessed())->equals(0);
+    verify($sendingQueue->getCountToProcess())->equals(0);
+    verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+  }
+
   public function testItRemovesSubscribersFromProcessingListWhenNewsletterHasSegmentAndSubscriberIsNotPartOfIt() {
     $subscriberNotPartOfNewsletterSegment = $this->createSubscriber('subscriber1@mailpoet.com', 'Subscriber', 'One');
 
@@ -951,6 +984,7 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountTotal())->equals(1);
     verify($sendingQueue->getCountProcessed())->equals(1);
     verify($sendingQueue->getCountToProcess())->equals(0);
+    verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
   }
 
   public function testItUpdatesQueueSubscriberCountWhenNoneOfSubscribersExist() {
@@ -975,6 +1009,9 @@ class SendingQueueTest extends \MailPoetTest {
     verify($this->sendingQueue->getCountTotal())->equals(0);
     verify($this->sendingQueue->getCountProcessed())->equals(0);
     verify($this->sendingQueue->getCountToProcess())->equals(0);
+    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($this->sendingQueue);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
   }
 
   public function testItDoesNotSendToTrashedSubscribers() {
@@ -995,6 +1032,9 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $this->sendingQueuesRepository->refresh($sendingQueue);
     verify($sendingQueue->getCountTotal())->equals(0);
+    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($this->sendingQueue);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
   }
 
   /**
@@ -1054,6 +1094,9 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $this->sendingQueuesRepository->refresh($sendingQueue);
     verify($sendingQueue->getCountTotal())->equals(0);
+    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($this->sendingQueue);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
   }
 
   public function testItDoesNotSendToSubscribersUnsubscribedFromSegments() {
@@ -1076,6 +1119,9 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $this->sendingQueuesRepository->refresh($sendingQueue);
     verify($sendingQueue->getCountTotal())->equals(0);
+    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($this->sendingQueue);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
   }
 
   public function testItDoesNotSendToInactiveSubscribers() {
@@ -1096,6 +1142,9 @@ class SendingQueueTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $this->sendingQueuesRepository->refresh($sendingQueue);
     verify($sendingQueue->getCountTotal())->equals(0);
+    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($this->sendingQueue);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
   }
 
   public function testItPausesSendingWhenProcessedSubscriberListCannotBeUpdated() {
