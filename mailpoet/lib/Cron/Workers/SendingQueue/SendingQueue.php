@@ -228,7 +228,12 @@ class SendingQueue {
 
     // get subscribers
     $subscriberBatches = new BatchIterator($task->getId(), $this->getBatchSize());
-    if ($subscriberBatches->count() === 0) {
+
+    // Set invalid state for sending task for non-campaign (no-bulk) newsletters with no subscribers (e.g. welcome emails, automatic emails).
+    // This cover cases when a welcome or automatic email was scheduled but before processing it the subscriber was deleted.
+    // The non-campaign emails are sent only to a single recipient, and we count stats based on sending tasks statues, so we can't mark them as completed.
+    // At the same time we want to keep a record abut processing them
+    if ($subscriberBatches->count() === 0 && !in_array($newsletter->getType(), NewsletterEntity::CAMPAIGN_TYPES, true)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
         'no subscribers to process',
         ['task_id' => $task->getId()]
@@ -640,6 +645,18 @@ class SendingQueue {
   }
 
   private function endSending(ScheduledTaskEntity $task, NewsletterEntity $newsletter): void {
+    // The task is running but there is no one to send to.
+    // This may happen when we send to all but the execution is interrupted (e.g. by PHP time limit) and we don't update the task status
+    // or if we trigger sending to a newsletter without any subscriber (e.g. scheduled for long time but all were deleted)
+    // Lets set status to completed and update the queue counts
+    if ($task->getStatus() === null && $this->scheduledTaskSubscribersRepository->countUnprocessed($task) === 0) {
+      $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
+      $queue = $task->getSendingQueue();
+      if ($queue) {
+        $this->sendingQueuesRepository->updateCounts($queue);
+      }
+      $this->scheduledTasksRepository->flush();
+    }
     // Task is completed let's do all the stuff for the completed task
     if ($task->getStatus() === ScheduledTaskEntity::STATUS_COMPLETED) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->info(
