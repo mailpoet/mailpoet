@@ -645,6 +645,20 @@ class SendingQueue {
   }
 
   private function endSending(ScheduledTaskEntity $task, NewsletterEntity $newsletter): void {
+    // We should handle all transitions into these states in the processSending method and end processing there or we throw an exception
+    // This might theoretically happen when multiple cron workers are running in parallel which we don't support and try to prevent
+    $unexpectedStates = [
+      ScheduledTaskEntity::STATUS_PAUSED,
+      ScheduledTaskEntity::STATUS_INVALID,
+      ScheduledTaskEntity::STATUS_SCHEDULED,
+    ];
+    if (in_array($task->getStatus(), $unexpectedStates)) {
+      $this->loggerFactory->getLogger(LoggerFactory::TOPIC_NEWSLETTERS)->error(
+        'Sending task reached end of processing in sending queue worker in an unexpected state.',
+        ['task_id' => $task->getId(), 'status' => $task->getStatus()]
+      );
+      return;
+    }
     // The task is running but there is no one to send to.
     // This may happen when we send to all but the execution is interrupted (e.g. by PHP time limit) and we don't update the task status
     // or if we trigger sending to a newsletter without any subscriber (e.g. scheduled for long time but all were deleted)
