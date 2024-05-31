@@ -16,6 +16,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Mailer as MailerTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Newsletter as NewsletterTask;
 use MailPoet\Cron\Workers\StatsNotifications\Scheduler as StatsNotificationsScheduler;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\LogEntity;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
@@ -54,6 +55,7 @@ use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\Security;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Monolog\Logger;
 
 class SendingQueueTest extends \MailPoetTest {
   /** @var SendingQueueWorker */
@@ -1459,6 +1461,36 @@ class SendingQueueTest extends \MailPoetTest {
     verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 
+  public function testItLogsWhenSendingReachesEndAndTaskHasAnUnexpectedState() {
+    // No subscribers in queue to skip batch processing
+    $this->scheduledTaskSubscribersRepository->setSubscribers(
+      $this->scheduledTask,
+      []
+    );
+
+    // To emulate unexpected task status change we switch task status to paused in mailer task mock
+    $task = $this->scheduledTask;
+    $em = $this->entityManager;
+    $mailerTaskMock = $this->createMock(MailerTask::class);
+    $mailerTaskMock
+      ->expects($this->once())
+      ->method('configureMailer')
+      ->willReturnCallback(function() use ($task, $em) {
+        $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+        $em->flush();
+      });
+
+    $sendingQueueWorker = $this->getSendingQueueWorker($mailerTaskMock);
+    $sendingQueueWorker->process();
+
+    $logs = $this->entityManager->getRepository(LogEntity::class)->findAll();
+    $log = $logs[0] ?? null;
+    $this->assertInstanceOf(LogEntity::class, $log);
+    verify($log->getLevel())->equals(Logger::ERROR);
+    verify($log->getMessage())->stringContainsString('Sending task reached end of processing in sending queue worker in an unexpected state.');
+    verify($log->getMessage())->stringContainsString('"task_id":' . $task->getId());
+  }
+
   public function testProcessMarksScheduledTaskInProgressAsFalseWhenProperlyProcessingTask() {
     $sendingQueueWorker = $this->getSendingQueueWorker();
     $sendingQueueWorker->process();
@@ -1600,7 +1632,7 @@ class SendingQueueTest extends \MailPoetTest {
       $this->sendingQueuesRepository,
       $this->entityManager,
       $this->statisticsNewslettersRepository,
-      $authorizedEmailControllerMock ?? $this->authorizedEmailsController
+      $authorizedEmailControllerMock ?? $this->authorizedEmailsController,
     );
   }
 
