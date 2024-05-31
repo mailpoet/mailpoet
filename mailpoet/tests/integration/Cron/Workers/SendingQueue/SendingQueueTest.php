@@ -840,10 +840,45 @@ class SendingQueueTest extends \MailPoetTest {
     verify($sendingQueue->getCountToProcess())->equals(0);
   }
 
-  public function testItCompletesEverythingProperlyWhenThereIsNoOneToSendTo() {
+  public function testItCompletesEverythingProperlyWhenThereIsNoSubscribedSubscriberToSendTo() {
     // Set the only scheduled task subscriber to unsubscribed
     $this->subscriber->setStatus(SubscriberEntity::STATUS_UNSUBSCRIBED);
     $this->entityManager->flush();
+
+    $sendingQueueWorker = $this->getSendingQueueWorker(
+      $this->construct(
+        MailerTask::class,
+        [$this->diContainer->get(MailerFactory::class)],
+        [
+          'send' => Expected::never(),
+        ]
+      )
+    );
+    $sendingQueueWorker->process();
+
+    // queue status is set to completed
+    $sendingQueue = $this->sendingQueuesRepository->findOneById($this->sendingQueue->getId());
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $scheduledTask = $this->scheduledTasksRepository->findOneBySendingQueue($sendingQueue);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $scheduledTask);
+    $this->sendingQueuesRepository->refresh($sendingQueue);
+    $this->scheduledTasksRepository->refresh($scheduledTask);
+    $newsletter = $sendingQueue->getNewsletter();
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+
+    verify($sendingQueue->getCountTotal())->equals(0);
+    verify($sendingQueue->getCountProcessed())->equals(0);
+    verify($sendingQueue->getCountToProcess())->equals(0);
+    verify($scheduledTask->getStatus())->equals(SendingQueueEntity::STATUS_COMPLETED);
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENT);
+  }
+
+  public function testItCompletesEverythingProperlyWhenThereIsNoOneToSendTo() {
+    // No subscribers in queue
+    $this->scheduledTaskSubscribersRepository->setSubscribers(
+      $this->scheduledTask,
+      []
+    );
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
       $this->construct(
@@ -1405,8 +1440,8 @@ class SendingQueueTest extends \MailPoetTest {
     }
   }
 
-  public function testSendingGetsStuckWhenSubscribersAreUnsubscribed() {
-    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, 'Subject With Deleted', NewsletterEntity::STATUS_SENDING);
+  public function testItMarksNonCampaignEmailWithNoSubscribersToSendToAsInvalid() {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_WELCOME, 'Subject With Deleted', NewsletterEntity::STATUS_SENDING);
     [$segment, $subscriber] = $this->createListWithSubscriber();
     $this->addSegmentToNewsletter($newsletter, $segment);
     $queue = $this->createQueueWithTask($newsletter, null, ['html' => 'Hello', 'text' => 'Hello']);
