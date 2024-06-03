@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email, email marketing, post notification, woocommerce emails, email automation, newsletter, newsletter builder, newsletter subscribers
 Requires at least: 6.4
 Tested up to: 6.5
-Stable tag: 4.51.0
+Stable tag: 4.51.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,10 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.51.1 - 2024-06-03 =
+* Updated: composer dependencies;
+* Improved: added URL validator when inserting link in email blocks.
 
 = 4.51.0 - 2024-05-27 =
 * Fixed: marking plugin as incompatible with WooCommerce HPOS on multisite;
