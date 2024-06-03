@@ -29,9 +29,7 @@ async function duplicateDynamicSegment(segment: DynamicSegment) {
     void dispatch(storeName).loadDynamicSegments();
   } catch (errorResponse: unknown) {
     if (isErrorResponse(errorResponse)) {
-      errorResponse.errors.forEach((e: { error: string; message: string }) => {
-        void dispatch(noticesStore).createErrorNotice(e.message);
-      });
+      MailPoet.Notice.showApiErrorNotice(errorResponse);
     }
   }
 }

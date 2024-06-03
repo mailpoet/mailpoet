@@ -36,9 +36,7 @@ async function bulkAction(
     });
 
     if (response.meta.errors && response.meta.errors.length > 0) {
-      response.meta.errors.forEach(
-        (error: string) => void dispatch(noticesStore).createErrorNotice(error),
-      );
+      MailPoet.Notice.showApiErrorNotice(response.meta.errors);
     }
 
     const count = response.meta.count;
@@ -86,11 +84,7 @@ async function bulkAction(
     if (isErrorResponse(errorResponse)) {
       let errorMessage = '';
       if (errorResponse.errors) {
-        errorResponse.errors.forEach(
-          (error) =>
-            void dispatch(noticesStore).createErrorNotice(error.message),
-          { explicitDismiss: true },
-        );
+        MailPoet.Notice.showApiErrorNotice(errorResponse);
       } else {
         switch (action) {
           case 'trash':

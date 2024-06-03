@@ -1,6 +1,5 @@
 import { ChangeEvent } from 'react';
 import { select, dispatch } from '@wordpress/data';
-import { store as noticesStore } from '@wordpress/notices';
 import { MailPoet } from 'mailpoet';
 
 import * as ROUTES from '../../routes';
@@ -269,8 +268,7 @@ export async function loadDynamicSegments(query?: Query) {
       return { type: 'NOOP' };
     }
     if (isErrorResponse(res)) {
-      const errors = res.errors.map((error) => error.message).join(', ');
-      void dispatch(noticesStore).createErrorNotice(errors);
+      MailPoet.Notice.showApiErrorNotice(res);
     }
   }
 
