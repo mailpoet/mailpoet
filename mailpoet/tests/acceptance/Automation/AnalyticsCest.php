@@ -126,7 +126,7 @@ class AnalyticsCest {
     $i->see('2clicked', '.woocommerce-table__summary');
 
     $i->wantTo("Compare historical data");
-    $date = (new \DateTimeImmutable('first day of this month'))->modify('+15 days')->modify('-3 months'); // 3 months ago, mid-month
+    $date = (new \DateTimeImmutable('first day of this month'))->modify('-3 months'); // 3 months ago
     $this->alterCreateDateForClick($click1, $date);
     $this->alterCreateDateForOpen($open2, $date);
 
@@ -230,7 +230,7 @@ class AnalyticsCest {
 
   private function createNewsletter($newsletterTitle) {
 
-    $date = (new \DateTimeImmutable('first day of this month'))->modify('+15 days')->modify('-3 months'); // 3 months ago, mid-month
+    $date = (new \DateTimeImmutable('first day of this month'))->modify('-3 months'); // 3 months ago
     return (new Newsletter())
       ->withSubject($newsletterTitle)
       ->loadBodyFrom('newsletterWithText.json')
