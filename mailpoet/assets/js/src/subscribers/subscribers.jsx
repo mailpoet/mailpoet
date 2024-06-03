@@ -5,6 +5,7 @@ import { SubscriberList } from 'subscribers/list.tsx';
 import { SubscriberForm } from 'subscribers/form.jsx';
 import { SubscriberStats } from 'subscribers/stats';
 import { GlobalContext, useGlobalContextValue } from 'context';
+import { GlobalNotices } from 'notices/global-notices.jsx';
 import { Notices } from 'notices/notices.jsx';
 import { registerTranslations, withBoundary } from 'common';
 
@@ -12,6 +13,7 @@ function App() {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <HashRouter>
+        <GlobalNotices />
         <Notices />
         <Switch>
           <Route path="/new" render={withBoundary(SubscriberForm)} />
