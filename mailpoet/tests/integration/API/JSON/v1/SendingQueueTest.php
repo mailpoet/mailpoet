@@ -5,6 +5,8 @@ namespace MailPoet\Test\API\JSON\v1;
 use Codeception\Util\Stub;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\SendingQueue as SendingQueueAPI;
+use MailPoet\Cron\CronHelper;
+use MailPoet\Cron\DaemonHttpRunner;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -227,5 +229,42 @@ class SendingQueueTest extends \MailPoetTest {
     $data = $sendingQueue->add(['newsletter_id' => $this->newsletter->getId()])->getData();
 
     $this->assertSame($expectedResult, $data);
+  }
+
+  public function testItReturnsErrorIfCronPingThrowsException() {
+    $errorMessage = 'some error';
+    $sendingQueue = $this->getServiceWithOverrides(SendingQueueAPI::class, [
+      'cronHelper' => Stub::make(CronHelper::class, ['pingDaemon' => function () use ($errorMessage) {
+        throw new \Exception($errorMessage);
+      }]),
+    ]);
+    $response = $sendingQueue->pingCron();
+    $response = $response->getData();
+    verify($response['errors'][0])->isArray();
+    verify($response['errors'][0]['message'])->stringContainsString($errorMessage);
+    verify($response['errors'][0]['error'])->stringContainsString('unknown');
+  }
+
+  public function testItReturnsErrorIfCronPingResponseIsInvalid() {
+    $errorResponse = 'timed out';
+    $sendingQueue = $this->getServiceWithOverrides(SendingQueueAPI::class, [
+      'cronHelper' => Stub::make(CronHelper::class, ['pingDaemon' => $errorResponse]),
+    ]);
+    $response = $sendingQueue->pingCron();
+    $response = $response->getData();
+    verify($response['errors'][0])->isArray();
+    verify($response['errors'][0]['message'])->stringContainsString($errorResponse);
+    verify($response['errors'][0]['error'])->stringContainsString('unknown');
+  }
+
+  public function testItPingsCronSuccessfully() {
+    $sendingQueue = $this->getServiceWithOverrides(SendingQueueAPI::class, [
+      'cronHelper' => Stub::make(CronHelper::class, ['pingDaemon' => DaemonHttpRunner::PING_SUCCESS_RESPONSE]),
+    ]);
+    $response = $sendingQueue->pingCron();
+    verify($response->status)->equals(200);
+    $response = $response->getData();
+    verify($response['data'])->empty();
+    verify(empty($response['errors']))->true();
   }
 }
