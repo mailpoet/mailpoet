@@ -1,9 +1,8 @@
-import { MenuGroup, MenuItem } from '@wordpress/components';
+import { MenuGroup, MenuItem, DropdownMenu } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { displayShortcut } from '@wordpress/keycodes';
 import { useEntityProp } from '@wordpress/core-data';
 import { __, _x } from '@wordpress/i18n';
-import { MoreMenuDropdown } from '@wordpress/interface';
 import { PreferenceToggleMenuItem } from '@wordpress/preferences';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { storeName } from '../../store';
@@ -35,11 +34,13 @@ export function MoreMenu(): JSX.Element {
 
   return (
     <>
-      <MoreMenuDropdown
+      <DropdownMenu
         className="edit-site-more-menu"
         popoverProps={{
           className: 'edit-site-more-menu__content',
         }}
+        icon="ellipsis"
+        label={__('More', 'mailpoet')}
       >
         {() => (
           <>
@@ -98,7 +99,7 @@ export function MoreMenu(): JSX.Element {
             </MenuGroup>
           </>
         )}
-      </MoreMenuDropdown>
+      </DropdownMenu>
       {showTrashModal && (
         <TrashModal
           onClose={() => setShowTrashModal(false)}
