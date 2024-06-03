@@ -1,3 +1,4 @@
+import { GlobalNotices } from 'notices/global-notices.jsx';
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { Notices } from 'notices/notices.jsx';
 import { Loading } from 'common/loading';
@@ -23,6 +24,7 @@ export function Settings() {
     <>
       <TopBar />
       {isSaving && <Loading />}
+      <GlobalNotices />
       <Notices />
       <MssAccessNotices />
       <UnsavedChangesNotice storeName="mailpoet-settings" />

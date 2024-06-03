@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { ErrorBoundary, registerTranslations } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
+import { GlobalNotices } from 'notices/global-notices.jsx';
 import { HomepageNotices } from 'homepage/notices';
 import { HomepageSections } from './components/homepage-sections';
 import { createStore } from './store/store';
@@ -16,6 +17,7 @@ function App(): JSX.Element {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <TopBarWithBeamer />
+      <GlobalNotices />
       <HomepageNotices />
       {isStoreInitialized ? <HomepageSections /> : null}
     </GlobalContext.Provider>

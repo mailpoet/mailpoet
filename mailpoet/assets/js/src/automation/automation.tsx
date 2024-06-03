@@ -5,6 +5,7 @@ import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { SlotFillProvider } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { registerTranslations } from 'common';
+import { GlobalNotices } from 'notices/global-notices.jsx';
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { initializeApi } from './api';
 import { legacyAutomationCount } from './config';
@@ -72,6 +73,7 @@ function Automations(): JSX.Element {
   return (
     <>
       <TopBarWithBeamer />
+      <GlobalNotices />
       <Notices />
       <MssAccessNotices />
       <Content />

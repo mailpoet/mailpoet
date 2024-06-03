@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { HashRouter, Route, Switch, useHistory } from 'react-router-dom';
 
 import { GlobalContext, useGlobalContextValue } from 'context';
+import { GlobalNotices } from 'notices/global-notices.jsx';
 import { Notices } from 'notices/notices.jsx';
 import { registerTranslations, withBoundary } from 'common';
 import { Editor } from 'segments/dynamic/editor';
@@ -38,6 +39,7 @@ function App(): JSX.Element {
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <HashRouter>
         <HistoryListener />
+        <GlobalNotices />
         <Notices />
         <Switch>
           <Route

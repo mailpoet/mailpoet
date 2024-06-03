@@ -5,6 +5,7 @@ import { SystemInfo } from 'help/system-info.tsx';
 import { SystemStatus } from 'help/system-status.jsx';
 import { YourPrivacy } from 'help/your-privacy.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context';
+import { GlobalNotices } from 'notices/global-notices.jsx';
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { Notices } from 'notices/notices.jsx';
 import { RoutedTabs } from '../common/tabs/routed-tabs';
@@ -15,6 +16,7 @@ function App() {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <TopBar />
+      <GlobalNotices />
       <Notices />
       <MssAccessNotices />
       <RoutedTabs activeKey="knowledgeBase">
