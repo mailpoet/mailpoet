@@ -48,7 +48,6 @@ declare module '@wordpress/interface' {
   }>;
   export const ComplementaryArea: any;
   export const FullscreenMode: any;
-  export const MoreMenuDropdown: any;
   export const InterfaceSkeleton: any;
   export const PinnedItems: any;
 }
