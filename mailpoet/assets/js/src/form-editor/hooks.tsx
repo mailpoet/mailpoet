@@ -1,6 +1,7 @@
 import { ComponentType } from 'react';
 // Hook for displaying warning when a block is inserted multiple times
-import '@wordpress/edit-post/build-module/hooks/validate-multiple-use/index.js';
+// @todo Find how it was replaced
+// import '@wordpress/edit-post/build-module/hooks/validate-multiple-use/index.js';
 
 import { MediaUpload } from '@wordpress/media-utils';
 import { addFilter } from '@wordpress/hooks';
