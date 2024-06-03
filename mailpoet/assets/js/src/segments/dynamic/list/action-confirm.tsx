@@ -36,7 +36,9 @@ async function bulkAction(
     });
 
     if (response.meta.errors && response.meta.errors.length > 0) {
-      MailPoet.Notice.showApiErrorNotice(response.meta.errors);
+      response.meta.errors.forEach(
+        (error: string) => void dispatch(noticesStore).createErrorNotice(error),
+      );
     }
 
     const count = response.meta.count;

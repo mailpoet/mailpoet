@@ -197,7 +197,7 @@ class ListingComponent extends Component {
       })
       .fail((response) => {
         if (response.errors.length > 0) {
-          this.context.notices.apiError(response, { scroll: true });
+          MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
         }
       });
   };
