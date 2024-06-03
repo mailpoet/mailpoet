@@ -88,6 +88,7 @@ export const MailPoet = {
   corrupt_newsletters: window.corrupt_newsletters ?? [],
   adminPluginsUrl: window.mailpoet_admin_plugins_url,
   isDotcom: window.mailpoet_is_dotcom,
+  cronTriggerMethod: window.mailpoet_cron_trigger_method,
 } as const;
 
 declare global {
