@@ -8,6 +8,7 @@ use MailPoet\API\JSON\Response;
 use MailPoet\API\JSON\ResponseBuilders\SendingQueuesResponseBuilder;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\ActionScheduler\Actions\DaemonTrigger;
+use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
@@ -59,6 +60,9 @@ class SendingQueue extends APIEndpoint {
   /** @var SendingQueuesResponseBuilder */
   private $sendingQueuesResponseBuilder;
 
+  /** @var CronHelper */
+  private $cronHelper;
+
   public function __construct(
     SubscribersFeature $subscribersFeature,
     NewslettersRepository $newsletterRepository,
@@ -69,7 +73,8 @@ class SendingQueue extends APIEndpoint {
     SettingsController $settings,
     DaemonTrigger $actionSchedulerDaemonTriggerAction,
     NewsletterValidator $newsletterValidator,
-    SendingQueuesResponseBuilder $sendingQueuesResponseBuilder
+    SendingQueuesResponseBuilder $sendingQueuesResponseBuilder,
+    CronHelper $cronHelper
   ) {
     $this->subscribersFeature = $subscribersFeature;
     $this->subscribersFinder = $subscribersFinder;
@@ -81,6 +86,7 @@ class SendingQueue extends APIEndpoint {
     $this->actionSchedulerDaemonTriggerAction = $actionSchedulerDaemonTriggerAction;
     $this->newsletterValidator = $newsletterValidator;
     $this->sendingQueuesResponseBuilder = $sendingQueuesResponseBuilder;
+    $this->cronHelper = $cronHelper;
   }
 
   public function add($data = []) {
@@ -243,6 +249,22 @@ class SendingQueue extends APIEndpoint {
         APIError::NOT_FOUND => __('This newsletter does not exist.', 'mailpoet'),
       ]);
     }
+  }
+
+  public function pingCron() {
+    try {
+      $cronPingResponse = $this->cronHelper->pingDaemon();
+    } catch (\Exception $e) {
+      return $this->errorResponse([
+        APIError::UNKNOWN => $e->getMessage(),
+      ]);
+    }
+    if (!$this->cronHelper->validatePingResponse($cronPingResponse)) {
+      return $this->errorResponse([
+        APIError::UNKNOWN => $cronPingResponse,
+      ]);
+    }
+    return $this->successResponse();
   }
 
   /**
