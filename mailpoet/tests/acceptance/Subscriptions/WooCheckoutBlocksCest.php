@@ -263,6 +263,7 @@ class WooCheckoutBlocksCest {
   }
 
   private function fillBlocksCustomerInfo(\AcceptanceTester $i, string $userEmail): void {
+    $i->waitForElementVisible('#billing-first_name');
     $i->fillField('#billing-first_name', 'John');
     $i->fillField('#billing-last_name', 'Doe');
     $i->fillField('#billing-address_1', 'Address 1');
