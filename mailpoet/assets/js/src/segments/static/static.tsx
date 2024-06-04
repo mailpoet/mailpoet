@@ -4,7 +4,7 @@ import { HashRouter, Route, Switch } from 'react-router-dom';
 import { SegmentList } from 'segments/static/list';
 import { SegmentForm } from 'segments/static/form';
 import { GlobalContext, useGlobalContextValue } from 'context';
-import { GlobalNotices } from 'notices/global-notices.jsx';
+import { GlobalNotices } from 'notices/global-notices';
 import { Notices } from 'notices/notices.jsx';
 import { registerTranslations, withBoundary } from 'common';
 

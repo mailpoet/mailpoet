@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { ErrorBoundary, registerTranslations } from 'common';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
-import { GlobalNotices } from 'notices/global-notices.jsx';
+import { GlobalNotices } from 'notices/global-notices';
 import { HomepageNotices } from 'homepage/notices';
 import { HomepageSections } from './components/homepage-sections';
 import { createStore } from './store/store';
