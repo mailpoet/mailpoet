@@ -15,7 +15,6 @@ export const InserterListboxItem = forwardRef<HTMLButtonElement, Props>(
     const state = useContext(InserterListboxContext);
     return (
       <CompositeItem ref={ref} state={state} role="option" focusable {...props}>
-        {/* @ts-expect-error: React expects node. This was copied from URL above */}
         {(htmlProps) => {
           const propsWithTabIndex = {
             ...htmlProps,

@@ -161,7 +161,6 @@ export const getEditedPostTemplate = createRegistrySelector(
       ) as unknown as EmailTemplate;
     }
 
-    // @ts-expect-error Property 'getDefaultTemplateId' does not exist
     const defaultTemplateId = select(coreDataStore).getDefaultTemplateId({
       slug: 'email-general',
     });
