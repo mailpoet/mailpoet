@@ -1,53 +1,24 @@
-import { Button } from '@wordpress/components';
-import { useDispatch } from '@wordpress/data';
+import { privateApis as componentsPrivateApis } from '@wordpress/components';
+import * as React from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { stepSidebarKey, storeName, automationSidebarKey } from '../../store';
+import { stepSidebarKey, automationSidebarKey } from '../../store';
+
+import { unlock } from '../../../lock-unlock';
+
+const { Tabs } = unlock(componentsPrivateApis);
 
 // See:
-//   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/sidebar/settings-header/index.js
-//   https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/sidebar/settings-header/index.js
+//   https://github.com/WordPress/gutenberg/blob/e841c9e52d28ba314a535065f9723ec0bc40342c/packages/editor/src/components/sidebar/header.js
 
-type Props = {
-  sidebarKey: string;
-};
-
-export function Header({ sidebarKey }: Props): JSX.Element {
-  const { openSidebar } = useDispatch(storeName);
-  const openAutomationSettings = () => openSidebar(automationSidebarKey);
-  const openStepSettings = () => openSidebar(stepSidebarKey);
-
-  const [automationAriaLabel, automationActiveClass] =
-    sidebarKey === automationSidebarKey
-      ? [__('Automation (selected)', 'mailpoet'), 'is-active']
-      : [__('Automation', 'mailpoet'), ''];
-
-  const [stepAriaLabel, stepActiveClass] =
-    sidebarKey === stepSidebarKey
-      ? [__('Step (selected)', 'mailpoet'), 'is-active']
-      : [__('Step', 'mailpoet'), ''];
-
+function HeaderTabs(_, ref) {
   return (
-    <ul>
-      <li>
-        <Button
-          onClick={openAutomationSettings}
-          className={`edit-site-sidebar-edit-mode__panel-tab ${automationActiveClass}`}
-          aria-label={automationAriaLabel}
-          data-label={__('Automation', 'mailpoet')}
-        >
-          {__('Automation', 'mailpoet')}
-        </Button>
-      </li>
-      <li>
-        <Button
-          onClick={openStepSettings}
-          className={`edit-site-sidebar-edit-mode__panel-tab ${stepActiveClass}`}
-          aria-label={stepAriaLabel}
-          data-label={__('Step', 'mailpoet')}
-        >
-          {__('Step', 'mailpoet')}
-        </Button>
-      </li>
-    </ul>
+    <Tabs.TabList ref={ref}>
+      <Tabs.Tab tabId={automationSidebarKey}>
+        {__('Automation', 'mailpoet')}
+      </Tabs.Tab>
+      <Tabs.Tab tabId={stepSidebarKey}>{__('Step', 'mailpoet')}</Tabs.Tab>
+    </Tabs.TabList>
   );
 }
+
+export const Header = React.forwardRef(HeaderTabs);
