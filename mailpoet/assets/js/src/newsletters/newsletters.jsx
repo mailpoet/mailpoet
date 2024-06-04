@@ -23,7 +23,7 @@ import { NewsletterListReEngagement } from 'newsletters/listings/re-engagement.j
 import { NewsletterListNotificationHistory } from 'newsletters/listings/notification-history.jsx';
 import { SendingStatus } from 'newsletters/sending-status.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context';
-import { GlobalNotices } from 'notices/global-notices.jsx';
+import { GlobalNotices } from 'notices/global-notices';
 import { Notices } from 'notices/notices.jsx';
 import { RoutedTabs } from 'common/tabs/routed-tabs';
 import { ErrorBoundary, registerTranslations, Tab, withBoundary } from 'common';

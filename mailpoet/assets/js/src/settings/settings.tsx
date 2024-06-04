@@ -1,4 +1,4 @@
-import { GlobalNotices } from 'notices/global-notices.jsx';
+import { GlobalNotices } from 'notices/global-notices';
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { Notices } from 'notices/notices.jsx';
 import { Loading } from 'common/loading';

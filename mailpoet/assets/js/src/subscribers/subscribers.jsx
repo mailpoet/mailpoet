@@ -5,7 +5,7 @@ import { SubscriberList } from 'subscribers/list.tsx';
 import { SubscriberForm } from 'subscribers/form.jsx';
 import { SubscriberStats } from 'subscribers/stats';
 import { GlobalContext, useGlobalContextValue } from 'context';
-import { GlobalNotices } from 'notices/global-notices.jsx';
+import { GlobalNotices } from 'notices/global-notices';
 import { Notices } from 'notices/notices.jsx';
 import { registerTranslations, withBoundary } from 'common';
 
