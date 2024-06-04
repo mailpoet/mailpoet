@@ -1,9 +1,26 @@
+// Fix for settings toolbar placement in header
+.edit-post-header {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+// Header buttons spacing
 .mailpoet-editor-header-button {
   padding-left: 8px;
   padding-right: 8px;
 
   @media (min-width: 600px) {
-    margin-right: 12px;
     padding: 0 12px;
+  }
+}
+
+// Close button animation
+.editor-document-tools__left > .edit-post-header-toolbar__inserter-toggle {
+  svg {
+    transition: transform cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s;
+  }
+
+  &.is-pressed svg {
+    transform: rotate(45deg);
   }
 }

@@ -12,12 +12,6 @@
   }
 }
 
-// Fix for settings toolbar placement in header
-.edit-post-header {
-  flex-direction: row-reverse;
-  justify-content: space-between;
-}
-
 // Fix for default appender appearance
 // We don't use any default block (WP Post editor has paragraph)
 // and CSS distributed within packages is works only with the paragraph block
@@ -138,18 +132,6 @@ h2 {
 // Unify padding o wp-block-columns with background with front end rendering
 .wp-block-columns.has-background {
   padding: 10px;
-}
-
-// Close button animation
-.edit-post-header-toolbar.edit-post-header-toolbar__left
-  > .edit-post-header-toolbar__inserter-toggle {
-  svg {
-    transition: transform cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s;
-  }
-
-  &.is-pressed svg {
-    transform: rotate(45deg);
-  }
 }
 
 // Hide block selector header with close button on desktops
