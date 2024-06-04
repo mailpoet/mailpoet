@@ -18,7 +18,7 @@
     "psr/cache": "^1.0",
     "sabberworm/php-css-parser": "8.5.1",
     "soundasleep/html2text": "dev-master",
-    "symfony/dependency-injection": "5.4.7",
+    "symfony/dependency-injection": "5.4.40",
     "symfony/polyfill-ctype": "1.18.1",
     "symfony/polyfill-iconv": "1.18.1",
     "symfony/polyfill-intl-idn": "1.18.1",
@@ -26,7 +26,7 @@
     "symfony/polyfill-mbstring": "1.18.1",
     "symfony/polyfill-php72": "1.23.0",
     "symfony/polyfill-php80": "1.23.1",
-    "symfony/validator": "5.4.7",
+    "symfony/validator": "5.4.*",
     "twig/twig": "3.10.3"
   },
   "scripts": {
