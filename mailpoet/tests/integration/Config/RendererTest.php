@@ -91,7 +91,7 @@ class RendererTest extends \MailPoetTest {
         return 'non-existing-template.html';
       }
 
-      public function render(array $context) {
+      public function render(array $context): string {
         return 'test render';
       }
 

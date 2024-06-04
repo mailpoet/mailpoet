@@ -245,6 +245,7 @@ $replacements = [
       '"use Twig\\\\Sandbox\\\\SecurityNotAllowedFilterError;',
       '"use Twig\\\\Sandbox\\\\SecurityNotAllowedFunctionError;',
       '"use Twig\\\\Extension\\\\SandboxExtension;',
+      '"use Twig\\\\Extension\\\\CoreExtension;',
     ],
     'replace' => [
       '"use MailPoetVendor\\\\Twig\\\\Environment;',
@@ -258,6 +259,7 @@ $replacements = [
       '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityNotAllowedFilterError;',
       '"use MailPoetVendor\\\\Twig\\\\Sandbox\\\\SecurityNotAllowedFunctionError;',
       '"use MailPoetVendor\\\\Twig\\\\Extension\\\\SandboxExtension;',
+      '"use MailPoetVendor\\\\Twig\\\\Extension\\\\CoreExtension;',
     ],
   ],
   [
@@ -307,6 +309,15 @@ $replacements = [
     ],
     'replace' => [
       '\'\\\\MailPoetVendor\\\\Twig\\\\Extension\\\\SandboxExtension',
+    ],
+  ],
+  [
+    'file' => '../vendor-prefixed/twig/twig/src/Node/CaptureNode.php',
+    'find' => [
+      '\'\\\\Twig\\\\Extension\\\\CoreExtension',
+    ],
+    'replace' => [
+      '\'\\\\MailPoetVendor\\\\Twig\\\\Extension\\\\CoreExtension',
     ],
   ],
 ];
