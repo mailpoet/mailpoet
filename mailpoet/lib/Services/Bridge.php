@@ -98,14 +98,18 @@ class Bridge {
     return !empty($key);
   }
 
-  public static function pingBridge() {
+  public function pingBridge() {
     $params = [
       'blocking' => true,
       'timeout' => 10,
     ];
     $wp = new WPFunctions();
     $result = $wp->wpRemoteGet(self::BRIDGE_URL, $params);
-    return $wp->wpRemoteRetrieveResponseCode($result) === 200;
+    return $wp->wpRemoteRetrieveResponseCode($result);
+  }
+
+  public function validateBridgePingResponse($responseCode) {
+    return $responseCode === 200;
   }
 
   /**

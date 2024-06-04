@@ -290,6 +290,23 @@ class Services extends APIEndpoint {
     ]);
   }
 
+  public function pingBridge() {
+    try {
+      $bridgePingResponse = $this->bridge->pingBridge();
+    } catch (\Exception $e) {
+      return $this->errorResponse([
+        APIError::UNKNOWN => $e->getMessage(),
+      ]);
+    }
+    if (!$this->bridge->validateBridgePingResponse($bridgePingResponse)) {
+      $code = $bridgePingResponse ?: Bridge::CHECK_ERROR_UNKNOWN;
+      return $this->errorResponse([
+        APIError::UNKNOWN => $this->getErrorDescriptionByCode($code),
+      ]);
+    }
+    return $this->successResponse();
+  }
+
   public function refreshMSSKeyStatus() {
     $key = $this->settings->get('mta.mailpoet_api_key');
     return $this->checkMSSKey(['key' => $key]);

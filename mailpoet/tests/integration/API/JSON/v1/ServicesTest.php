@@ -615,6 +615,54 @@ class ServicesTest extends \MailPoetTest {
     );
   }
 
+  public function testItReturnsErrorIfBridgePingThrowsException() {
+    $errorMessage = 'some error';
+    $bridge = $this->make(
+      new Bridge(),
+      [
+        'pingBridge' => function () use ($errorMessage) {
+          throw new \Exception($errorMessage);
+        },
+      ]
+    );
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
+    $response = $servicesEndpoint->pingBridge();
+    $response = $response->getData();
+    verify($response['errors'][0])->isArray();
+    verify($response['errors'][0]['message'])->stringContainsString($errorMessage);
+    verify($response['errors'][0]['error'])->stringContainsString('unknown');
+  }
+
+  public function testItReturnsErrorIfBridgePingResultIsUnsuccessful() {
+    $bridge = $this->make(
+      new Bridge(),
+      [
+        'pingBridge' => false,
+      ]
+    );
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
+    $response = $servicesEndpoint->pingBridge();
+    $response = $response->getData();
+    verify($response['errors'][0])->isArray();
+    verify($response['errors'][0]['message'])->stringContainsString('Contact your hosting support');
+    verify($response['errors'][0]['error'])->stringContainsString('unknown');
+  }
+
+  public function testItPingsBridgeSuccessfully() {
+    $bridge = $this->make(
+      new Bridge(),
+      [
+        'pingBridge' => 200, // HTTP OK
+      ]
+    );
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
+    $response = $servicesEndpoint->pingBridge();
+    verify($response->status)->equals(200);
+    $response = $response->getData();
+    verify($response['data'])->empty();
+    verify(empty($response['errors']))->true();
+  }
+
   private function createServicesEndpointWithMocks(array $mocks) {
     return new Services(
       $mocks['bridge'] ?? $this->diContainer->get(Bridge::class),
