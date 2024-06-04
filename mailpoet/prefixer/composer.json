@@ -12,7 +12,7 @@
     "doctrine/dbal": "2.13.8",
     "doctrine/orm": "2.11.2",
     "gregwar/captcha": "1.2.1",
-    "monolog/monolog": "2.4.0",
+    "monolog/monolog": "2.9.3",
     "nesbot/carbon": "2.63.0",
     "pelago/emogrifier": "^6.0",
     "psr/cache": "^1.0",
