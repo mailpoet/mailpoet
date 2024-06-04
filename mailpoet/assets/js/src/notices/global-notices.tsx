@@ -1,7 +1,13 @@
+import { BridgePingErrorNotice } from './bridge-ping-error-notice';
 import { CronPingErrorNotice } from './cron-ping-error-notice';
 
 function GlobalNotices() {
-  return <CronPingErrorNotice />;
+  return (
+    <>
+      <BridgePingErrorNotice />
+      <CronPingErrorNotice />
+    </>
+  );
 }
 
 GlobalNotices.displayName = 'GlobalNotices';
