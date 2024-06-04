@@ -35,8 +35,8 @@ function Header({ isInserterOpened, setIsInserterOpened }) {
     useDispatch(storeName);
 
   return (
-    <div className="edit-post-header">
-      <div className="edit-post-header__settings">
+    <div className="editor-header edit-post-header">
+      <div className="editor-header__settings">
         <Button
           variant="secondary"
           onClick={showPreview}
@@ -87,27 +87,29 @@ function Header({ isInserterOpened, setIsInserterOpened }) {
           )}
         </DropdownMenu>
       </div>
-      <div className="edit-post-header__toolbar">
-        <div className="toolbar edit-post-header-toolbar edit-post-header-toolbar__left">
-          <Button
-            variant="secondary"
-            href="?page=mailpoet-forms#/"
-            className="mailpoet-editor-header-button"
-          >
-            {MailPoet.I18n.t('back')}
-          </Button>
-          <ToolbarItem
-            as={Button}
-            data-automation-id="form_inserter_open"
-            className="edit-post-header-toolbar__inserter-toggle"
-            isPrimary
-            isPressed={isInserterOpened}
-            onClick={() => setIsInserterOpened(!isInserterOpened)}
-            icon={plus}
-            label={_x('Add block', 'Generic label for block inserter button')}
-          />
-          <HistoryUndo data-automation-id="form_undo_button" />
-          <HistoryRedo data-automation-id="form_redo_button" />
+      <div className="editor-header__toolbar">
+        <div className="toolbar edit-post-header-toolbar">
+          <div className="editor-document-tools__left">
+            <Button
+              variant="secondary"
+              href="?page=mailpoet-forms#/"
+              className="mailpoet-editor-header-button"
+            >
+              {MailPoet.I18n.t('back')}
+            </Button>
+            <ToolbarItem
+              as={Button}
+              data-automation-id="form_inserter_open"
+              className="edit-post-header-toolbar__inserter-toggle"
+              variant="primary"
+              isPressed={isInserterOpened}
+              onClick={() => setIsInserterOpened(!isInserterOpened)}
+              icon={plus}
+              label={_x('Add block', 'Generic label for block inserter button')}
+            />
+            <HistoryUndo data-automation-id="form_undo_button" />
+            <HistoryRedo data-automation-id="form_redo_button" />
+          </div>
         </div>
       </div>
     </div>
