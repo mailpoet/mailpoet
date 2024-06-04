@@ -83,7 +83,7 @@ class Help {
       ],
       'mss' => [
         'enabled' => $this->bridge->isMailpoetSendingServiceEnabled(),
-        'isReachable' => $this->bridge->pingBridge(),
+        'isReachable' => $this->bridge->validateBridgePingResponse($this->bridge->pingBridge()),
       ],
       'cronStatus' => $this->cronHelper->getDaemon(),
       'queueStatus' => $mailerLog,
