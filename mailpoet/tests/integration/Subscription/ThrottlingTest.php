@@ -31,6 +31,16 @@ class ThrottlingTest extends \MailPoetTest {
     verify($this->throttling->throttle())->equals(MINUTE_IN_SECONDS * pow(2, 10));
   }
 
+  public function testItDoesNotThrowErrorForBigNumbersAndCapsTimeout() {
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+    verify($this->throttling->throttle())->equals(false);
+    verify($this->throttling->throttle())->equals(60);
+    for ($i = 1; $i <= 64; $i++) {
+      $this->createSubscriberIP('127.0.0.1', Carbon::now()->subMinutes($i));
+    }
+    verify($this->throttling->throttle())->equals(DAY_IN_SECONDS);
+  }
+
   public function testItDoesNotThrottleIfDisabledByAHook() {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     $wp = new WPFunctions;
