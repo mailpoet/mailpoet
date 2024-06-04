@@ -1,17 +1,10 @@
 import { useState } from 'react';
-import { __experimentalConfirmDialog } from '@wordpress/components';
+import { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { Item } from './item';
 import { AutomationItem, storeName } from '../../store';
 import { AutomationStatus } from '../../automation';
-
-// With __experimentalConfirmDialog's type from build-types Typescript complains:
-// JSX element type __experimentalConfirmDialog does not have any construct or call signatures
-// Wrapping the type to React.FC fixes the issue
-const ConfirmDialog = __experimentalConfirmDialog as React.FC<
-  React.ComponentProps<typeof __experimentalConfirmDialog>
->;
 
 export const useTrashButton = (
   automation: AutomationItem,
