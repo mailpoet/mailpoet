@@ -1040,6 +1040,10 @@
                 }
               },
               {
+                "type": "text",
+                "text": "<p>Text containing <span class=\"screen-reader-text\">screen reader only text</span></p>"
+              },
+              {
                 "type": "social",
                 "iconSet": "default",
                 "icons": [
