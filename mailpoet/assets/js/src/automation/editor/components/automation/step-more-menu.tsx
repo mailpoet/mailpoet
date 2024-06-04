@@ -63,7 +63,7 @@ export function StepMoreMenu({ step }: Props): JSX.Element {
         label={__('More', 'mailpoet')}
         icon={moreVertical}
         popoverProps={{ placement: 'bottom-start' }}
-        toggleProps={{ isSmall: true }}
+        toggleProps={{ size: 'small' }}
         controls={Object.values(controls)}
       />
     </div>
