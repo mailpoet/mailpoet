@@ -6,7 +6,7 @@
     }
   ],
   "require": {
-    "php": ">=7.2",
+    "php": ">=7.4",
     "cerdic/css-tidy": "2.0.3",
     "doctrine/common": "3.2.2",
     "doctrine/dbal": "2.13.8",
@@ -50,7 +50,7 @@
   },
   "config": {
     "platform": {
-      "php": "7.2.5"
+      "php": "7.4"
     },
     "sort-packages": true
   },
