@@ -261,65 +261,63 @@ export function Header({ showInserterToggle }: Props): JSX.Element {
   );
 
   return (
-    <div className="edit-site-header-edit-mode">
-      <div className="edit-site-header-edit-mode_start">
+    <div className="editor-header edit-post-header">
+      <div className="editor-header__toolbar">
         <NavigableMenu
-          className="edit-site-header-edit-mode__toolbar"
+          className="editor-document-tools edit-post-header-toolbar"
           orientation="horizontal"
           role="toolbar"
         >
           {showInserterToggle && <InserterToggle />}
         </NavigableMenu>
-      </div>
 
-      <div className="edit-site-header-edit-mode_center">
-        <ErrorBoundary>
-          <DocumentActions>
-            {() => (
-              <div className="mailpoet-automation-editor-dropdown-name-edit">
-                <div className="mailpoet-automation-editor-dropdown-name-edit-title">
-                  {__('Automation name', 'mailpoet')}
-                </div>
-                <TextControl
-                  value={automationName}
-                  onChange={(newName) => setAutomationName(newName)}
-                  help={__(
-                    `Give the automation a name that indicates its purpose. E.g. "Abandoned cart recovery"`,
-                    'mailpoet',
-                  )}
-                />
-              </div>
-            )}
-          </DocumentActions>
-        </ErrorBoundary>
-      </div>
-
-      <div className="edit-site-header-edit-mode_end">
-        <div className="edit-site-header-edit-mode__actions">
+        <div className="editor-header__center">
           <ErrorBoundary>
-            <Errors />
+            <DocumentActions>
+              {() => (
+                <div className="mailpoet-automation-editor-dropdown-name-edit">
+                  <div className="mailpoet-automation-editor-dropdown-name-edit-title">
+                    {__('Automation name', 'mailpoet')}
+                  </div>
+                  <TextControl
+                    value={automationName}
+                    onChange={(newName) => setAutomationName(newName)}
+                    help={__(
+                      `Give the automation a name that indicates its purpose. E.g. "Abandoned cart recovery"`,
+                      'mailpoet',
+                    )}
+                  />
+                </div>
+              )}
+            </DocumentActions>
           </ErrorBoundary>
-          {automationStatus === AutomationStatus.DRAFT && (
-            <>
-              <SaveDraftButton />
-              <ActivateButton label={__('Activate', 'mailpoet')} />
-            </>
-          )}
-          {automationStatus === AutomationStatus.ACTIVE && (
-            <>
-              <DeactivateButton />
-              <UpdateButton />
-            </>
-          )}
-          {automationStatus === AutomationStatus.DEACTIVATING && (
-            <>
-              <DeactivateNowButton />
-              <ActivateButton label={__('Update & Activate', 'mailpoet')} />
-            </>
-          )}
-          <PinnedItems.Slot scope={storeName} />
-          <MoreMenu />
         </div>
+      </div>
+
+      <div className="editor-header__settings">
+        <ErrorBoundary>
+          <Errors />
+        </ErrorBoundary>
+        {automationStatus === AutomationStatus.DRAFT && (
+          <>
+            <SaveDraftButton />
+            <ActivateButton label={__('Activate', 'mailpoet')} />
+          </>
+        )}
+        {automationStatus === AutomationStatus.ACTIVE && (
+          <>
+            <DeactivateButton />
+            <UpdateButton />
+          </>
+        )}
+        {automationStatus === AutomationStatus.DEACTIVATING && (
+          <>
+            <DeactivateNowButton />
+            <ActivateButton label={__('Update & Activate', 'mailpoet')} />
+          </>
+        )}
+        <PinnedItems.Slot scope={storeName} />
+        <MoreMenu />
       </div>
     </div>
   );
