@@ -42,7 +42,7 @@ function SidebarContent(props: Props) {
   return (
     <ComplementaryArea
       identifier={mainSidebarId}
-      headerClassName="edit-post-sidebar__panel-tabs"
+      headerClassName="editor-sidebar__panel-tabs"
       className="edit-post-sidebar"
       header={
         <Tabs.Context.Provider value={tabsContextValue}>
