@@ -1,6 +1,7 @@
 import { MenuGroup, MenuItem, DropdownMenu } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { displayShortcut } from '@wordpress/keycodes';
+import { moreVertical } from '@wordpress/icons';
 import { useEntityProp } from '@wordpress/core-data';
 import { __, _x } from '@wordpress/i18n';
 import { PreferenceToggleMenuItem } from '@wordpress/preferences';
@@ -39,7 +40,7 @@ export function MoreMenu(): JSX.Element {
         popoverProps={{
           className: 'edit-site-more-menu__content',
         }}
-        icon="ellipsis"
+        icon={moreVertical}
         label={__('More', 'mailpoet')}
       >
         {() => (
