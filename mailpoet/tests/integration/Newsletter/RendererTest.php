@@ -723,6 +723,18 @@ class RendererTest extends \MailPoetTest {
     $this->assertEquals($expectedLanguage, $html->attr('lang'));
   }
 
+  public function testItRendersScreenReaderText() {
+    $body = json_decode(
+      (string)file_get_contents(dirname(__FILE__) . '/RendererTestData.json'),
+      true
+    );
+    $this->assertIsArray($body);
+    $this->newsletter->setBody($body);
+    $template = $this->renderer->render($this->newsletter);
+    $DOM = $this->dOMParser->parseStr($template['html']);
+    verify((string)$DOM)->stringContainsString('<span class="screen-reader-text" style="border:0;clip:rect(1px,1px,1px,1px);-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;word-wrap:normal;color:transparent;font-size:0;line-height:0;mso-hide:all">');
+  }
+
   private function currentGlobalLocale() {
     global $locale;
     return $locale;
