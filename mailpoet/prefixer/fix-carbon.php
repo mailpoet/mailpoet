@@ -62,7 +62,7 @@ exec('find ' . __DIR__ . "/../vendor-prefixed/nesbot/carbon -type f -name '*.neo
 
 // cleanup
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/nesbot/carbon/bin');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/nesbot/carbon/lazy');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/nesbot/carbon/src/Carbon/Cli');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/nesbot/carbon/src/Carbon/PHPStan');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/nesbot/carbon/src/Carbon/Laravel');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/nesbot/carbon/src/Carbon/Doctrine');
