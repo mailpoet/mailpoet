@@ -65,6 +65,27 @@
             overflow: hidden;
         }
 
+        /* Hide text meant for screen readers. Styles copied from WordPress' common.css file */
+        /* In addition, there are color, font-size, line-height, and mso-hide properties for clients where it doesn't work */
+        .screen-reader-text {
+            border: 0;
+            clip: rect(1px, 1px, 1px, 1px);
+            -webkit-clip-path: inset(50%);
+            clip-path: inset(50%);
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            padding: 0;
+            position: absolute;
+            width: 1px;
+            word-wrap: normal !important;
+
+            color: transparent;
+            font-size: 0;
+            line-height: 0;
+            mso-hide: all;
+        }
+
         @media screen and (max-width: 480px) {
             .mailpoet_button {width:100% !important;}
         }
