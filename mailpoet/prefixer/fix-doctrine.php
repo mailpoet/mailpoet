@@ -126,7 +126,6 @@ exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Plat
 
 // cleanup Doctrine ORM
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/bin');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/ci');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/SimplifiedXmlDriver.php');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/SimplifiedYamlDriver.php');
