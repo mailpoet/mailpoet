@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use PHPUnit\Framework\Exception;
-
 class HomepageLandingAfterActivatingMailPoetCest {
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();
