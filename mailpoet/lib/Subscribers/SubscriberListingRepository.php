@@ -10,7 +10,6 @@ use MailPoet\Listing\ListingRepository;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoet\Segments\SegmentSubscribersRepository;
 use MailPoet\Util\Helpers;
-use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder as DBALQueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
@@ -79,7 +78,7 @@ class SubscriberListingRepository extends ListingRepository {
       ->select("count(DISTINCT $subscribersTable.id)")
       ->from($subscribersTable);
     $subscribersIdsQuery = $this->applyConstraintsForDynamicSegment($subscribersIdsQuery, $definition, $dynamicSegment);
-    return (int)$subscribersIdsQuery->execute()->fetchColumn();
+    return (int)$subscribersIdsQuery->execute()->fetchOne();
   }
 
   public function getActionableIds(ListingDefinition $definition): array {
@@ -370,12 +369,7 @@ class SubscriberListingRepository extends ListingRepository {
     $subscribersIdsQuery->setFirstResult($definition->getOffset());
     $subscribersIdsQuery->setMaxResults($definition->getLimit());
 
-    $idsStatement = $subscribersIdsQuery->execute();
-    // This shouldn't happen because execute on select SQL always returns Statement, but PHPStan doesn't know that
-    if (!$idsStatement instanceof Statement) {
-      $queryBuilder->andWhere('0 = 1');
-      return;
-    }
+    $idsStatement = $subscribersIdsQuery->executeQuery();
     $result = $idsStatement->fetchAll();
     $ids = array_column($result, 'id');
     if (count($ids)) {

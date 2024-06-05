@@ -46,7 +46,7 @@ class UserRole implements Filter {
       ->join('wpusers', $wpdb->usermeta, 'wpusermeta', 'wpusers.id = wpusermeta.user_id')
       ->andWhere("wpusermeta.meta_key = '{$wpdb->prefix}capabilities' AND (" . $condition . ')');
     foreach ($role as $key => $userRole) {
-      $qb->setParameter(':role' . $key . $parameterSuffix, '%"' . $userRole . '"%');
+      $qb->setParameter('role' . $key . $parameterSuffix, '%"' . $userRole . '"%');
     }
     return $qb;
   }

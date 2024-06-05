@@ -25,23 +25,6 @@ $php7CachedItem = file_get_contents(__DIR__ . "/../vendor-prefixed/doctrine/cach
 $php7CachedItem = str_replace('final class CacheItem', 'final class TypedCacheItem', $php7CachedItem);
 file_put_contents(__DIR__ . "/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/Psr6/TypedCacheItem.php", $php7CachedItem);
 
-// Replace PHP8 syntax in ReflectionReadonlyProperty.
-// The class is used only in PHP8.1 but it fail to pass pre-commit checks in the plugin repository
-// See https://github.com/doctrine/orm/commit/580b9196e65adaacc05b9f7a50654739ad995597#diff-732e324167dd49e48b221477c3e0f6d7934f3eb5ec0970dbf1c06f6c7df15398R3790-R3793
-$readonlyProxy = file_get_contents(__DIR__ . "/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/ReflectionReadonlyProperty.php");
-$readonlyProxy = str_replace(
-  [
-    'public function __construct(private ReflectionProperty $wrappedProperty)',
-    'parent::__construct($wrappedProperty->class, $wrappedProperty->name);',
-  ],
-  [
-    "/** @var ReflectionProperty */\n    private \$wrappedProperty;\n\n    public function __construct(ReflectionProperty \$wrappedProperty)",
-    "\$this->wrappedProperty = \$wrappedProperty;\n    parent::__construct(\$wrappedProperty->class, \$wrappedProperty->name);",
-  ],
-  $readonlyProxy
-);
-file_put_contents(__DIR__ . "/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/ReflectionReadonlyProperty.php", $readonlyProxy);
-
 
 // cleanup file types by extension
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name '*.xsd' -delete");
@@ -54,75 +37,46 @@ exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'README.mar
 
 // cleanup Doctrine DBAL
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/bin');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Connections');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractOracleDriver');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/DrizzlePDOMySql');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/IBMDB2');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/Mysqli');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/OCI8');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOIbm');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOOracle');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOPgSql');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOSqlsrv');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/SQLAnywhere');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/SQLSrv');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Schema');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Sharding');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Tools');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractDB2Driver.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractOracleDriver.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractPostgreSQLDriver.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractSQLAnywhereDriver.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractSQLServerDriver.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/ConnectionEventArgs.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/Listeners/MysqlSessionInit.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/Listeners/OracleSessionInit.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/SchemaAlterTableAddColumnEventArgs.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/SchemaAlterTableChangeColumnEventArgs.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/SchemaAlterTableEventArgs.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/SchemaAlterTableRemoveColumnEventArgs.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/SchemaAlterTableRenameColumnEventArgs.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/SchemaColumnDefinitionEventArgs.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/SchemaCreateTableColumnEventArgs.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/SchemaCreateTableEventArgs.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/SchemaDropTableEventArgs.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/SchemaEventArgs.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Event/SchemaIndexDefinitionEventArgs.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/DB2Platform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/DrizzlePlatform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/DB2Keywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/DrizzleKeywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/OracleKeywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/PostgreSQL91Keywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/PostgreSQL92Keywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/PostgreSQL94Keywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/PostgreSQL100Keywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/PostgreSQLKeywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/SQLAnywhere11Keywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/SQLAnywhere12Keywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/SQLAnywhere16Keywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/SQLAnywhereKeywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/SQLiteKeywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/SQLServer2005Keywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/SQLServer2008Keywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/SQLServer2012Keywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/Keywords/SQLServerKeywords.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/OraclePlatform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/PostgreSQL91Platform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/PostgreSQL92Platform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/PostgreSQL94Platform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/PostgreSQL100Platform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/PostgreSqlPlatform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLAnywhere11Platform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLAnywhere12Platform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLAnywhere16Platform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLAnywherePlatform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLAzurePlatform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SqlitePlatform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLServer2005Platform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLServer2008Platform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLServer2012Platform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/lib/Doctrine/DBAL/Platforms/SQLServerPlatform.php');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Connections');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractOracleDriver');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/IBMDB2');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/Mysqli');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/OCI8');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/SQLSrv');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Tools');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractDB2Driver.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractOracleDriver.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractPostgreSQLDriver.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractSQLServerDriver.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/ConnectionEventArgs.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/Listeners/OracleSessionInit.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/SchemaAlterTableAddColumnEventArgs.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/SchemaAlterTableChangeColumnEventArgs.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/SchemaAlterTableEventArgs.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/SchemaAlterTableRemoveColumnEventArgs.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/SchemaAlterTableRenameColumnEventArgs.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/SchemaColumnDefinitionEventArgs.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/SchemaCreateTableColumnEventArgs.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/SchemaCreateTableEventArgs.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/SchemaDropTableEventArgs.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/SchemaEventArgs.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/SchemaIndexDefinitionEventArgs.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/DB2Platform.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords/DB2Keywords.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords/OracleKeywords.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords/PostgreSQL94Keywords.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords/PostgreSQL100Keywords.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords/PostgreSQLKeywords.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords/SQLiteKeywords.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords/SQLServer2012Keywords.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords/SQLServerKeywords.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/OraclePlatform.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/PostgreSQL94Platform.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/PostgreSQL100Platform.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/PostgreSqlPlatform.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/SqlitePlatform.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/SQLServer2012Platform.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/SQLServerPlatform.php');
 
 // cleanup Doctrine ORM
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/orm/bin');
@@ -147,3 +101,56 @@ exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/instantiator/docs');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/persistence/tests_php74');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/persistence/tests_php81');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/console');
+
+// Removing #[\SensitiveParameter] attribute because it can break the plugin on PHP 7.4
+$attributeReplacement = [
+  'find' => [
+    '#[\SensitiveParameter]',
+  ],
+  'replace' => [
+    '',
+  ],
+];
+$files = [
+  '../vendor-prefixed/doctrine/dbal/src/Connection.php',
+  '../vendor-prefixed/doctrine/dbal/src/Driver.php',
+  '../vendor-prefixed/doctrine/dbal/src/Driver/AbstractSQLiteDriver/Middleware/EnableForeignKeys.php',
+  '../vendor-prefixed/doctrine/dbal/src/Driver/Middleware/AbstractDriverMiddleware.php',
+  '../vendor-prefixed/doctrine/dbal/src/Driver/PDO/MySQL/Driver.php',
+  '../vendor-prefixed/doctrine/dbal/src/Driver/PDO/OCI/Driver.php',
+  '../vendor-prefixed/doctrine/dbal/src/Driver/PDO/PgSQL/Driver.php',
+  '../vendor-prefixed/doctrine/dbal/src/Driver/PDO/SQLSrv/Driver.php',
+  '../vendor-prefixed/doctrine/dbal/src/Driver/PDO/SQLite/Driver.php',
+  '../vendor-prefixed/doctrine/dbal/src/Driver/PgSQL/Driver.php',
+  '../vendor-prefixed/doctrine/dbal/src/Driver/SQLite3/Driver.php',
+  '../vendor-prefixed/doctrine/dbal/src/DriverManager.php',
+  '../vendor-prefixed/doctrine/dbal/src/Exception.php',
+  '../vendor-prefixed/doctrine/dbal/src/Logging/Driver.php',
+  '../vendor-prefixed/doctrine/dbal/src/Portability/Driver.php',
+];
+
+$replacements = [
+  [
+    'file' => '../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/ReflectionReadonlyProperty.php',
+    'find' => [
+      'private ReflectionProperty',
+    ],
+    'replace' => [
+      'ReflectionProperty',
+    ],
+  ],
+];
+
+foreach ($files as $file) {
+  $replacements[] = [
+    'file' => $file,
+    'find' => $attributeReplacement['find'],
+    'replace' => $attributeReplacement['replace'],
+  ];
+}
+
+foreach ($replacements as $singleFile) {
+  $data = file_get_contents($singleFile['file']);
+  $data = str_replace($singleFile['find'], $singleFile['replace'], $data);
+  file_put_contents($singleFile['file'], $data);
+}

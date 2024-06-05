@@ -9,7 +9,6 @@ use MailPoet\InvalidStateException;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Driver\PDO\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 /**
@@ -116,8 +115,8 @@ class LogRepository extends Repository {
       'limit' => $limit,
       ],
       [
-      'date' => Connection::PARAM_STR,
-      'limit' => Connection::PARAM_INT,
+      'date' => \PDO::PARAM_STR,
+      'limit' => \PDO::PARAM_INT,
       ]
     );
   }

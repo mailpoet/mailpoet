@@ -29,6 +29,14 @@ $data = file_get_contents($file);
 $data = str_replace('\\Normalizer::', '\\MailPoetVendor\\Normalizer::', $data);
 file_put_contents($file, $data);
 
+// Make the polyfill compatible with PHP 7.4
+$file = __DIR__ . '/../vendor-prefixed/symfony/polyfill-intl-grapheme/bootstrap80.php';
+$data = file_get_contents($file);
+$data = str_replace(') : string|false', ')', $data);
+$data = str_replace(') : int|false|null', ')', $data);
+$data = str_replace(') : int|false', ')', $data);
+file_put_contents($file, $data);
+
 // Remove unnecessary polyfills these polyfills are required by symfony/console
 // but don't use and remove the package
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/polyfill-php73');

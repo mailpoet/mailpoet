@@ -18,8 +18,8 @@ use MailPoet\Segments\DynamicSegments\Filters\Filter;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
+use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 require_once(ABSPATH . 'wp-admin/includes/user.php');
@@ -449,7 +449,7 @@ class IntegrationTester extends \Codeception\Actor {
    */
   public function getSubscriberEmailsFromQueryBuilder(QueryBuilder $queryBuilder): array {
     $statement = $queryBuilder->execute();
-    $results = $statement instanceof Statement ? $statement->fetchAllAssociative() : [];
+    $results = $statement instanceof Result ? $statement->fetchAllAssociative() : [];
     return array_map(function($row) {
       $subscriber = $this->entityManager->find(SubscriberEntity::class, $row['inner_subscriber_id']);
       if (!$subscriber instanceof SubscriberEntity) {

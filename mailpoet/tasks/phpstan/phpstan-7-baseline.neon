@@ -131,7 +131,7 @@ parameters:
 			path: ../../lib/Cache/TransientCache.php
 
 		-
-			message: "#^Parameter \\#1 \\$pdo of method MailPoet\\\\Config\\\\Database\\:\\:init\\(\\) expects PDO, MailPoetVendor\\\\Doctrine\\\\DBAL\\\\Driver\\\\Connection given\\.$#"
+			message: "#^Parameter \\#1 \\$pdo of method MailPoet\\\\Config\\\\Database\\:\\:init\\(\\) expects PDO, object\\|resource given\\.$#"
 			count: 1
 			path: ../../lib/Config/DatabaseInitializer.php
 
@@ -226,14 +226,9 @@ parameters:
 			path: ../../lib/Doctrine/TablePrefixMetadataFactory.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
+			message: "#^Method MailPoet\\\\Doctrine\\\\Types\\\\BigIntType\\:\\:convertToPHPValue\\(\\) should return string\\|null but returns int\\|null\\.$#"
 			count: 1
 			path: ../../lib/Doctrine/Types/BigIntType.php
-
-		-
-			message: "#^Parameter \\#1 \\$date of static method MailPoetVendor\\\\Carbon\\\\Carbon\\:\\:instance\\(\\) expects DateTimeInterface, mixed given\\.$#"
-			count: 1
-			path: ../../lib/Doctrine/Types/DateTimeTzToStringType.php
 
 		-
 			message: "#^Parameter \\#1 \\$data of function is_serialized expects string, mixed given\\.$#"
@@ -566,7 +561,7 @@ parameters:
 			path: ../../lib/Segments/SegmentsSimpleListRepository.php
 
 		-
-			message: "#^Method MailPoet\\\\Segments\\\\SegmentsSimpleListRepository\\:\\:getList\\(\\) should return array\\<array\\{id\\: string, name\\: string, type\\: string, subscribers\\: int\\}\\> but returns array\\.$#"
+			message: "#^Method MailPoet\\\\Segments\\\\SegmentsSimpleListRepository\\:\\:getList\\(\\) should return array\\<array\\{id\\: string, name\\: string, type\\: string, subscribers\\: int\\}\\> but returns array\\<int, mixed\\>\\.$#"
 			count: 1
 			path: ../../lib/Segments/SegmentsSimpleListRepository.php
 
@@ -800,3 +795,8 @@ parameters:
 			message: "#^Binary operation \"\\.\" between non-falsy-string and string\\|Stringable results in an error\\.$#"
 			count: 1
 			path: ../../lib/Doctrine/Validator/ValidationException.php
+
+		-
+			message: "#^Parameter \\#1 \\$params of method MailPoetVendor\\\\Doctrine\\\\DBAL\\\\Connection\\:\\:__construct\\(\\) expects array\\{application_name\\?\\: string, charset\\?\\: string, dbname\\?\\: string, defaultTableOptions\\?\\: array\\<string, mixed\\>, default_dbname\\?\\: string, driver\\?\\: 'ibm_db2'\\|'mysqli'\\|'oci8'\\|'pdo_mysql'\\|'pdo_oci'\\|'pdo_pgsql'\\|'pdo_sqlite'\\|'pdo_sqlsrv'\\|'pgsql'\\|'sqlite3'\\|'sqlsrv', driverClass\\?\\: class-string\\<MailPoetVendor\\\\Doctrine\\\\DBAL\\\\Driver\\>, driverOptions\\?\\: array, \\.\\.\\.\\}, array\\<string, array\\|bool\\|int\\|MailPoetVendor\\\\Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\|string\\> given\\.$#"
+			count: 1
+			path: ../../lib/Doctrine/SerializableConnection.php

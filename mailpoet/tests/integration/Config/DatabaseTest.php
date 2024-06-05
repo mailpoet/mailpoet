@@ -30,7 +30,7 @@ class DatabaseTest extends \MailPoetTest {
 
   public function testItSetsDBDriverOptions() {
     $connection = $this->diContainer->get(Connection::class);
-    $this->database->init($connection->getWrappedConnection());
+    $this->database->init($connection->getNativeConnection());
     $result = ORM::for_table("")
       ->raw_query(
         'SELECT ' .
