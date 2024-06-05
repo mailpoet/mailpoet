@@ -124,8 +124,12 @@
     padding-left: 16px;
   }
 }
-// This style hides the horizontal scrollbar in Firefox browser
+
+// This style hides the horizontal scrollbar in Firefox browser and add space for the support beacon
 .interface-interface-skeleton__sidebar {
   overflow-x: hidden;
-  padding-bottom: 100px;
+
+  div[role='tabpanel'] {
+    padding-bottom: 100px;
+  }
 }
