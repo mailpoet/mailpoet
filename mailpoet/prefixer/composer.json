@@ -8,7 +8,7 @@
   "require": {
     "php": ">=7.4",
     "cerdic/css-tidy": "2.1.0",
-    "doctrine/common": "3.2.2",
+    "doctrine/common": "3.4.4",
     "doctrine/dbal": "2.13.8",
     "doctrine/orm": "2.11.2",
     "gregwar/captcha": "1.2.1",
