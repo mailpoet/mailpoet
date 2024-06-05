@@ -10,13 +10,13 @@ use MailPoet\Doctrine\Types\JsonType;
 use MailPoet\Doctrine\Types\SerializedArrayType;
 use MailPoetVendor\Doctrine\DBAL\Driver\PDO\MySQL\Driver;
 use MailPoetVendor\Doctrine\DBAL\DriverManager;
-use MailPoetVendor\Doctrine\DBAL\Platforms\MySqlPlatform;
+use MailPoetVendor\Doctrine\DBAL\Platforms\MySQLPlatform;
 use MailPoetVendor\Doctrine\DBAL\Types\Type;
 use PDO;
 
 class ConnectionFactory {
   const DRIVER = 'pdo_mysql';
-  const PLATFORM_CLASS = MySqlPlatform::class;
+  const PLATFORM_CLASS = MySQLPlatform::class;
 
   private $minWaitTimeout = 60;
 

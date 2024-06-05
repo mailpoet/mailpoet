@@ -12,8 +12,8 @@ use MailPoet\NotFoundException;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoetVendor\Doctrine\DBAL\Connection;
-use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
+use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder as ORMQueryBuilder;
@@ -107,7 +107,7 @@ class SegmentSubscribersRepository {
 
     $statement = $this->executeQuery($queryBuilder);
     /** @var string $result */
-    $result = $statement->fetchColumn();
+    $result = $statement->fetchOne();
     return (int)$result;
   }
 
@@ -458,13 +458,13 @@ class SegmentSubscribersRepository {
     return $segment;
   }
 
-  private function executeQuery(QueryBuilder $queryBuilder): Statement {
-    $statement = $queryBuilder->execute();
+  private function executeQuery(QueryBuilder $queryBuilder): Result {
+    $result = $queryBuilder->execute();
     // Execute for select always returns statement but PHP Stan doesn't know that :(
-    if (!$statement instanceof Statement) {
+    if (!$result instanceof Result) {
       throw new InvalidStateException('Invalid query.');
     }
-    return $statement;
+    return $result;
   }
 
   public function getSubscribersGlobalStatusStatisticsCount(SegmentEntity $segment): array {

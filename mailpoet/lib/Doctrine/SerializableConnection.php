@@ -47,16 +47,4 @@ class SerializableConnection extends Connection {
       throw $e;
     }
   }
-
-  public function handleExceptionDuringQuery(Throwable $e, string $sql, array $params = [], array $types = []): void {
-    try {
-      parent::handleExceptionDuringQuery($e, $sql, $params, $types);
-    } catch (Throwable $err) {
-      $mySqlGoneAwayMessage = Helpers::mySqlGoneAwayExceptionHandler($err);
-      if ($mySqlGoneAwayMessage) {
-        throw new \Exception($mySqlGoneAwayMessage, (int)$err->getCode(), $err);
-      }
-      throw $err;
-    }
-  }
 }

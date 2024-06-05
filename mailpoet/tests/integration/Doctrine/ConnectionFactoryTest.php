@@ -7,8 +7,8 @@ use MailPoet\Doctrine\ConnectionFactory;
 use MailPoet\Doctrine\SerializableConnection;
 use MailPoet\Doctrine\Types\JsonOrSerializedType;
 use MailPoet\Doctrine\Types\JsonType;
-use MailPoetVendor\Doctrine\DBAL\Driver\PDOMySql;
-use MailPoetVendor\Doctrine\DBAL\Platforms\MySqlPlatform;
+use MailPoetVendor\Doctrine\DBAL\Driver\PDO\MySQL;
+use MailPoetVendor\Doctrine\DBAL\Platforms\MySQLPlatform;
 use MailPoetVendor\Doctrine\DBAL\Types\Type;
 use PDO;
 
@@ -29,9 +29,9 @@ class ConnectionFactoryTest extends \MailPoetTest {
     $connection = $connectionFactory->createConnection();
 
     verify($connection)->instanceOf(SerializableConnection::class);
-    verify($connection->getWrappedConnection())->instanceOf(PDO::class);
-    verify($connection->getDriver())->instanceOf(PDOMySql\Driver::class);
-    verify($connection->getDatabasePlatform())->instanceOf(MySqlPlatform::class);
+    verify($connection->getNativeConnection())->instanceOf(PDO::class);
+    verify($connection->getDriver())->instanceOf(MySQL\Driver::class);
+    verify($connection->getDatabasePlatform())->instanceOf(MySQLPlatform::class);
     $params = $connection->getParams();
     verify($params['host'])->equals(Env::$dbHost);
     verify($params)->arrayNotContains('unix_socket');
@@ -92,7 +92,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
     Env::$dbHost = '::ffff:' . gethostbyname($this->envBackup['db_host']);
     $connectionFactory = new ConnectionFactory();
     $connection = $connectionFactory->createConnection();
-    verify($connection->getWrappedConnection())->instanceOf(PDO::class);
+    verify($connection->getNativeConnection())->instanceOf(PDO::class);
     verify($connection->executeQuery('SELECT "abc"')->fetchOne())->same('abc');
   }
 
@@ -128,7 +128,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
       'minWaitTimeout' => 1,
     ]);
     $connection = $connectionFactory->createConnection();
-    $current = $connection->executeQuery('SELECT @@session.wait_timeout')->fetchColumn();
+    $current = $connection->executeQuery('SELECT @@session.wait_timeout')->fetchOne();
     verify($current)->greaterThan(1);
 
     // timeout will be set to higher value
@@ -136,7 +136,7 @@ class ConnectionFactoryTest extends \MailPoetTest {
       'minWaitTimeout' => 999999,
     ]);
     $connection = $connectionFactory->createConnection();
-    $current = $connection->executeQuery('SELECT @@session.wait_timeout')->fetchColumn();
+    $current = $connection->executeQuery('SELECT @@session.wait_timeout')->fetchOne();
     verify($current)->equals(999999);
   }
 

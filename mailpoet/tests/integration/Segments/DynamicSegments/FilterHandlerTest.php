@@ -9,8 +9,8 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Driver\Statement;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
+use MailPoetVendor\Doctrine\DBAL\Result;
 
 class FilterHandlerTest extends \MailPoetTest {
 
@@ -45,7 +45,7 @@ class FilterHandlerTest extends \MailPoetTest {
   public function testItAppliesFilter(): void {
     $segment = $this->getSegment('editor');
     $statement = $this->filterHandler->apply($this->getQueryBuilder(), $segment)->execute();
-    $this->assertInstanceOf(Statement::class, $statement);
+    $this->assertInstanceOf(Result::class, $statement);
     $result = $statement->fetchAll();
     verify($result)->arrayCount(2);
     $this->assertIsArray($result[0]);

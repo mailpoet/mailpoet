@@ -11,7 +11,7 @@ use MailPoet\Segments\DynamicSegments\Filters\WooFilterHelper;
 use MailPoet\WooCommerce\Helper;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
-use MailPoetVendor\Doctrine\DBAL\ForwardCompatibility\Result;
+use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class EngagementDataBackfiller {
