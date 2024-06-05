@@ -18,13 +18,7 @@ import { isFormValid } from './validator';
 import { PrivacyProtectionNotice } from './privacy-protection-notice';
 import { storeName } from './store';
 
-import {
-  FilterRow,
-  FilterValue,
-  GroupFilterValue,
-  Segment,
-  SubscriberCount,
-} from './types';
+import { FilterValue } from './types';
 
 interface Props {
   isNewSegment: boolean;
@@ -45,35 +39,22 @@ const FilterAfter = Hooks.applyFilters(
 );
 
 export function Form({ isNewSegment, newsletterId }: Props): JSX.Element {
-  const segment: Segment = useSelect(
-    (select) => select(storeName).getSegment(),
-    [],
-  );
+  const { segment, segmentFilters, subscriberCount, filterRows, errors } =
+    useSelect((select) => {
+      const segmentData = select(storeName).getSegment();
+      return {
+        segment: segmentData,
+        segmentFilters: select(storeName).getAvailableFilters(),
+        subscriberCount: select(storeName).getSubscriberCount(),
+        filterRows: select(storeName).findFiltersValueForSegment(segmentData),
+        errors: select(storeName).getErrors(),
+      };
+    }, []);
 
   const segmentFiltersCount = segment.filters.length;
   const segmentFiltersLimitReached =
     MailPoet.capabilities.segmentFilters.value > 0 && // 0 is unlimited
     segmentFiltersCount >= MailPoet.capabilities.segmentFilters.value;
-
-  const segmentFilters: GroupFilterValue[] = useSelect(
-    (select) => select(storeName).getAvailableFilters(),
-    [],
-  );
-
-  const filterRows: FilterRow[] = useSelect(
-    (select) => select(storeName).findFiltersValueForSegment(segment),
-    [segment],
-  );
-
-  const subscriberCount: SubscriberCount = useSelect(
-    (select) => select(storeName).getSubscriberCount(),
-    [],
-  );
-
-  const errors: string[] = useSelect(
-    (select) => select(storeName).getErrors(),
-    [],
-  );
 
   const { updateSegment, updateSegmentFilter, handleSave } =
     useDispatch(storeName);
