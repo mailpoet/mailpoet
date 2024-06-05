@@ -135,9 +135,13 @@ h2 {
 }
 
 // Hide block selector header with close button on desktops
-
 @include respond-to(not-small-screen) {
   .edit-post-editor__inserter-panel-header {
     display: none;
   }
+}
+
+// We don't have any patterns so we don't want to display tabs in the inserter panel
+.block-editor-inserter__tablist-and-close-button {
+  display: none !important;
 }
