@@ -75,15 +75,15 @@ class EditorUpdateNewFormCest {
     $i->fillField('.components-textarea-control__input', $newConfMessage);
 
     $i->wantTo('Update success and error message colors');
-    $i->click('[data-automation-id="mailpoet_form_settings_tab"]');
+    $i->click('Form', '.editor-sidebar__panel-tabs');
     $i->click('Styles');
     $i->click('Success');
     $i->selectPanelColor('[10]'); // Select Cyan blue
-    $i->click('[data-automation-id="mailpoet_form_settings_tab"]');
+    $i->click('Form', '.editor-sidebar__panel-tabs');
     $i->click('Error');
     $i->selectPanelColor('[12]'); // Select Vivid purple
-    $i->click('[data-automation-id="mailpoet_form_settings_tab"]');
-    
+    $i->click('Form', '.editor-sidebar__panel-tabs');
+
     $i->saveFormInEditor();
 
     $i->wantTo('Reload page and check data were saved');

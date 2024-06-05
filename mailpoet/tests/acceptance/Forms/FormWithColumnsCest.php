@@ -72,7 +72,7 @@ class FormWithColumnsCest {
     $appenderElementPath = '(//button[@class="components-button block-editor-button-block-appender"])[1]';
     $i->waitForElementClickable($appenderElementPath);
     $i->click($appenderElementPath);
-    $blockInserterSearchInput = '.block-editor-inserter__search .components-search-control__input';
+    $blockInserterSearchInput = '.block-editor-inserter__search .components-input-control__input';
     $i->waitForElementVisible($blockInserterSearchInput);
     $i->fillField($blockInserterSearchInput, $name);
     $i->waitForText($name, 5, '.block-editor-block-types-list__item-title');

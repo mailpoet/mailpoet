@@ -719,7 +719,7 @@ class AcceptanceTester extends \Codeception\Actor {
       $appender = "$context $appender";
     }
     $i->click($appender);// CLICK the button that adds new blocks
-    $i->fillField('.block-editor-inserter__search .components-search-control__input', $name);
+    $i->fillField('.block-editor-inserter__search [placeholder="Search"]', $name);
     $i->waitForText($name, 5, '.block-editor-block-types-list__item-title');
     $i->click($name, '.block-editor-block-types-list__list-item');
     $i->click($appender);// close the inserter
