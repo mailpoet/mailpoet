@@ -55,6 +55,6 @@
     "sort-packages": true
   },
   "require-dev": {
-    "doctrine/annotations": "^1.13"
+    "doctrine/annotations": "^1.14"
   }
 }
