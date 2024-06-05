@@ -22,6 +22,7 @@ type Props = Omit<ListboxItemProps, 'onSelect' | 'onHover'> & {
   onSelect: (item: Item, isModifierKey: boolean) => void;
   onHover: (item: Item) => void;
   isDraggable: boolean;
+  className?: string;
 };
 
 export const InserterListItem = memo(
@@ -45,12 +46,12 @@ export const InserterListItem = memo(
             className,
           )}
           disabled={item.isDisabled}
-          onClick={(event) => {
+          onClick={(event: MouseEvent) => {
             event.preventDefault();
             onSelect(item, isAppleOS() ? event.metaKey : event.ctrlKey);
             onHover(null);
           }}
-          onKeyDown={(event) => {
+          onKeyDown={(event: KeyboardEvent) => {
             const { keyCode } = event;
             if (keyCode === ENTER) {
               event.preventDefault();

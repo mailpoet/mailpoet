@@ -37,7 +37,7 @@ const getUnknownStepType = (step: StepData): StepType => {
     foreground: '#8c8f94',
     background: '#dcdcde',
     edit: () => null,
-    icon: () => blockMeta,
+    icon: () => blockMeta as JSX.Element,
   };
 };
 
