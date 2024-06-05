@@ -31,7 +31,7 @@ class HomepageLandingAfterActivatingMailPoetCest {
     try {
       $i->waitForText('Better email — without leaving WordPress', 10);
       $i->seeInCurrentUrl('mailpoet-landingpage');
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $i->waitForNoticeAndClose('Plugin activated.');
       $i->deactivatePlugin('mailpoet');
       $i->waitForNoticeAndClose('Selected plugins deactivated.');
