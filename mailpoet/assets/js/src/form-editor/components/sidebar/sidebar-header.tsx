@@ -16,7 +16,7 @@ export function SidebarHeader({ children, closeSidebar }: Props): JSX.Element {
         </span>
         <Button onClick={closeSidebar} icon="no-alt" />
       </div>
-      <div className="components-panel__header interface-complementary-area-header edit-post-sidebar__panel-tabs">
+      <div className="components-panel__header interface-complementary-area-header editor-sidebar__panel-tabs">
         {children}
         <Button onClick={closeSidebar} icon="no-alt" />
       </div>

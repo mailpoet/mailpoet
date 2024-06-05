@@ -7,19 +7,17 @@ import { storeName } from '../../store';
 function Sidebar(): JSX.Element {
   const { toggleSidebar, changeActiveSidebar } = useDispatch(storeName);
 
-  const activeSidebar = useSelect(
-    (select) => select(storeName).getActiveSidebar(),
+  const { activeSidebar, selectedBlockId } = useSelect(
+    (select) => ({
+      activeSidebar: select(storeName).getActiveSidebar(),
+      selectedBlockId: select('core/block-editor').getSelectedBlockClientId(),
+    }),
     [],
   );
 
   const closePlacementSettings = (): void => {
     void changeActiveSidebar('default');
   };
-
-  const selectedBlockId = useSelect(
-    (select) => select('core/block-editor').getSelectedBlockClientId(),
-    [],
-  );
 
   useEffect(() => {
     if (!selectedBlockId) {
