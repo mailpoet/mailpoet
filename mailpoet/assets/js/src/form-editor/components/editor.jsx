@@ -7,6 +7,7 @@ import {
   BlockEditorKeyboardShortcuts,
   BlockEditorProvider,
   BlockList,
+  InnerBlocks,
   BlockSelectionClearer,
   BlockTools,
   ObserveTyping,
@@ -146,7 +147,13 @@ export function Editor() {
                             <ObserveTyping>
                               <ErrorBoundary>
                                 <FormStylingBackground>
-                                  <BlockList />
+                                  <BlockList
+                                    renderAppender={
+                                      selectedBlock
+                                        ? false
+                                        : InnerBlocks.ButtonBlockAppender
+                                    }
+                                  />
                                 </FormStylingBackground>
                               </ErrorBoundary>
                             </ObserveTyping>
