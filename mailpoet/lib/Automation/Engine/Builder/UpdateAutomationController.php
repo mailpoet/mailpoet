@@ -163,7 +163,7 @@ class UpdateAutomationController {
       $runIds[$run->getId()] = $run;
     }
 
-    $actions = $this->actionScheduler->getScheduledActions(['hook' => Hooks::AUTOMATION_STEP, 'status' => 'pending']);
+    $actions = $this->actionScheduler->getScheduledActions(['hook' => Hooks::AUTOMATION_STEP, 'status' => \ActionScheduler_Store::STATUS_PENDING]);
 
     foreach ($actions as $action) {
       $args = $action->get_args();
