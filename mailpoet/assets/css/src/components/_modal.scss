@@ -154,4 +154,8 @@
       width: 64px;
     }
   }
+
+  .components-tooltip {
+    z-index: 99999999; // make tooltip visible within modals
+  }
 }
