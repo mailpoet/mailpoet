@@ -5,6 +5,7 @@ import { Grid } from 'common/grid';
 import { SenderDomainEntity } from './manage-sender-domain-types';
 import { DomainKeyComponent } from './domain-key-component';
 import { DomainStatusComponent } from './domain-status-component';
+import { DomainHostInfo, DomainValueInfo } from './domain-key-info';
 
 type Props = {
   rows: Array<SenderDomainEntity>;
@@ -87,6 +88,7 @@ function ManageSenderDomain({
                   readOnly
                   tooltip={__('Click here to copy', 'mailpoet')}
                 />
+                <DomainHostInfo dnsRecord={dnsRecord} />
               </td>
               <td>
                 <DomainKeyComponent
@@ -95,6 +97,7 @@ function ManageSenderDomain({
                   readOnly
                   tooltip={__('Click here to copy', 'mailpoet')}
                 />
+                <DomainValueInfo dnsRecord={dnsRecord} />
               </td>
               <td className="dns_record_type_column">
                 <DomainStatusComponent
