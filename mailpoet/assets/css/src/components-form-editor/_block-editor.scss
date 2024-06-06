@@ -126,6 +126,7 @@ h2 {
 
 .edit-post-visual-editor {
   background-color: $color-white;
+  height: 100%; // This is needed to catch all clicks to deselect a block
   padding: 50px 10px 100px;
 }
 
