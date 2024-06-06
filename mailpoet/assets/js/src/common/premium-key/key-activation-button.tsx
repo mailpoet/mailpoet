@@ -19,7 +19,8 @@ type KeyActivationButtonPropType = {
 };
 
 const reloadPageAfterKeyActivation = () => {
-  setTimeout(() => window.location.reload(), 1000); // using setTimeout to add a little delay
+  if (!window.location.href.includes('/premium')) return; // only reload on settings page
+  setTimeout(() => window.location.reload(), 100); // using setTimeout to add a little delay
 };
 
 export function KeyActivationButton({
