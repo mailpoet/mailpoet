@@ -4,7 +4,6 @@ import { __ } from '@wordpress/i18n';
 import { Grid } from 'common/grid';
 import { SenderDomainEntity } from './manage-sender-domain-types';
 import { DomainKeyComponent } from './domain-key-component';
-import { DomainStatusComponent } from './domain-status-component';
 import { DomainHostInfo, DomainValueInfo } from './domain-key-info';
 
 type Props = {
@@ -71,10 +70,6 @@ function ManageSenderDomain({
               {' '}
               {__('Value', 'mailpoet')}{' '}
             </th>
-            <th className="mailpoet_table_header">
-              {' '}
-              {__('Status', 'mailpoet')}{' '}
-            </th>
           </tr>
         </thead>
         <tbody>
@@ -98,13 +93,6 @@ function ManageSenderDomain({
                   tooltip={__('Click here to copy', 'mailpoet')}
                 />
                 <DomainValueInfo dnsRecord={dnsRecord} />
-              </td>
-              <td className="dns_record_type_column">
-                <DomainStatusComponent
-                  status={dnsRecord.status}
-                  message={dnsRecord.message}
-                  index={index}
-                />
               </td>
             </tr>
           ))}
