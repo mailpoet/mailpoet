@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { Modal } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
-import { Modal } from 'common/modal/modal';
 import {
   ManageSenderDomain,
   SenderDomainDnsItem,
@@ -173,8 +174,11 @@ function AuthorizeSenderDomainModal({
   );
   return useModal ? (
     <Modal
+      title={__('Manage Sender Domain', 'mailpoet')}
       onRequestClose={onRequestClose}
-      contentClassName="authorize-sender-domain-modal"
+      className="authorize-sender-domain-modal"
+      bodyOpenClassName="has-authorize-sender-domain-modal"
+      isDismissible
     >
       {content}
     </Modal>

@@ -1,4 +1,4 @@
-import { Button, Loader, TypographyHeading as Heading } from 'common';
+import { Button, Loader } from 'common';
 import { __ } from '@wordpress/i18n';
 import { Grid } from 'common/grid';
 import { SenderDomainEntity } from './manage-sender-domain-types';
@@ -27,13 +27,12 @@ function ManageSenderDomain({
 
   return (
     <div className="mailpoet_manage_sender_domain_wrapper">
-      <Heading level={2}> {__('Manage Sender Domain ', 'mailpoet')} </Heading>
-      <p>
+      <div>
         {__(
           'Authenticate your sender domain to send emails from your email address. This helps your recipients verify you are the author of these emails and helps mailbox providers fight spam and improves your email delivery rates.',
           'mailpoet',
         )}
-      </p>
+      </div>
 
       <ol>
         <li>
