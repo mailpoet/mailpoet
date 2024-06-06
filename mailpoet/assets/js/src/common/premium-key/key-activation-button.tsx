@@ -18,6 +18,10 @@ type KeyActivationButtonPropType = {
   isFullWidth?: boolean;
 };
 
+const reloadPageAfterKeyActivation = () => {
+  setTimeout(() => window.location.reload(), 1000); // using setTimeout to add a little delay
+};
+
 export function KeyActivationButton({
   label,
   isFullWidth = false,
@@ -75,6 +79,7 @@ export function KeyActivationButton({
     void setState({ fromAddressModalCanBeShown: true });
     // pending approval refresh link should only show on refresh of the page and should get hidden after the refresh button is clicked
     setShowRefreshMessage(false);
+    reloadPageAfterKeyActivation();
   };
 
   return (
