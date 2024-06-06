@@ -1,8 +1,7 @@
 import classnames from 'classnames';
-import { Tooltip } from 'common/tooltip/tooltip';
-import { Button } from 'common/button/button';
 import { useRef } from 'react';
-import { copy } from '@wordpress/icons';
+import { Button, Tooltip } from '@wordpress/components';
+import { copy, Icon } from '@wordpress/icons';
 
 const copyTextToClipboard = (value: string) => {
   if (!navigator.clipboard) {
@@ -35,18 +34,11 @@ function DomainKeyComponent({ className = '', tooltip = '', ...props }) {
       <input ref={inputRef} onClick={performActionOnClick} {...props} />
 
       {tooltip && (
-        <>
-          <Button
-            iconStart={copy}
-            variant="secondary"
-            onClick={performActionOnClick}
-            dataTip
-            dataFor={props.name}
-          />
-          <Tooltip id={props.name} place="top">
-            <span> {tooltip} </span>
-          </Tooltip>
-        </>
+        <Tooltip text={tooltip} delay={0} placement="top">
+          <Button variant="tertiary" onClick={performActionOnClick}>
+            <Icon icon={copy} size={20} />
+          </Button>
+        </Tooltip>
       )}
     </div>
   );
