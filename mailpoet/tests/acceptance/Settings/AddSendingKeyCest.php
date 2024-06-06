@@ -28,6 +28,7 @@ class AddSendingKeyCest {
     $i->waitForText('It’s time to set your default FROM address!');
     $i->waitForText('Set one of your authorized email addresses as the default FROM email for your MailPoet emails.');
     $i->dontSee('A test email was sent to');
+    $i->click('[data-automation-id="mailpoet-modal-close"]'); // close modal since we don't need it now
 
     // check the state after reload
     $i->reloadPage();
