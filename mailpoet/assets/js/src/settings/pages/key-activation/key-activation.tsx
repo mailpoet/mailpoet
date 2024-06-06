@@ -51,13 +51,17 @@ export function KeyActivation({ subscribersCount }: Props) {
   );
   const setSaveDone = useAction('setSaveDone');
   const setAuthorizedAddress = async (address: string) => {
+    sessionStorage.removeItem('mailpoet_from_address_modal_can_be_shown');
     await setSenderAddress(address);
     await setUnauthorizedAddresses(null);
     void setSaveDone();
   };
 
   const showFromAddressModal =
-    state.fromAddressModalCanBeShown &&
+    (state.fromAddressModalCanBeShown ||
+      JSON.parse(
+        sessionStorage.getItem('mailpoet_from_address_modal_can_be_shown'),
+      )) &&
     state.mssStatus === MssStatus.VALID_MSS_ACTIVE &&
     (!senderAddress || unauthorizedAddresses);
 
@@ -100,6 +104,9 @@ export function KeyActivation({ subscribersCount }: Props) {
           onRequestClose={() => {
             void setState({ fromAddressModalCanBeShown: false });
             void sendCongratulatoryMssEmail();
+            sessionStorage.removeItem(
+              'mailpoet_from_address_modal_can_be_shown',
+            );
           }}
           setAuthorizedAddress={setAuthorizedAddress}
         />
