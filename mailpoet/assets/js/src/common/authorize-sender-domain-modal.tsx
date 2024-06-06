@@ -8,6 +8,7 @@ import {
   SenderDomainEntity,
 } from 'common/manage-sender-domain';
 import { isErrorResponse, Response, ErrorResponse } from 'ajax';
+import { DomainStatus } from './manage-sender-domain/domain-status';
 
 interface SenderDomainApiResponseType extends Response {
   data: SenderDomainDnsItem[];
@@ -165,9 +166,16 @@ function AuthorizeSenderDomainModal({
       error={errorMessage}
     />
   );
+
   return useModal ? (
     <Modal
-      title={__('Manage Sender Domain', 'mailpoet')}
+      // @ts-expect-error -- typed as string but accepts elements
+      title={
+        <>
+          {__('Manage Sender Domain', 'mailpoet')}
+          {rowData && rowData.length > 0 && <DomainStatus data={rowData} />}
+        </>
+      }
       onRequestClose={onRequestClose}
       className="authorize-sender-domain-modal"
       bodyOpenClassName="has-authorize-sender-domain-modal"

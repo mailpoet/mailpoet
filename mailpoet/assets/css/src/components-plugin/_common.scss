@@ -145,6 +145,32 @@ p.sender_email_address_warning:first-child {
   }
 }
 
+.mailpoet_manage_sender_domain_status {
+  align-items: center;
+  border-radius: 2px;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: normal;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 4px 6px;
+
+  &.mailpoet_manage_sender_domain_status_valid {
+    background: #edfaef;
+    color: #005c12;
+  }
+
+  &.mailpoet_manage_sender_domain_status_invalid {
+    background: #fcf0f1;
+    color: #8a2424;
+  }
+
+  &.mailpoet_manage_sender_domain_status_pending {
+    background: #f0f0f0;
+    color: #757575;
+  }
+}
+
 .mailpoet_manage_sender_domain_error {
   background: #fcf0f1;
   display: grid;
