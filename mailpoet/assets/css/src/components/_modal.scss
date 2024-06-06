@@ -132,9 +132,19 @@
   z-index: $modal-screen-overlay-z-index + 4; // overlay other modals
 }
 
-.authorize-sender-domain-modal {
-  p {
-    max-width: 1005px;
-    padding-right: 48px;
+.has-authorize-sender-domain-modal {
+  overflow: hidden;
+
+  .components-modal__screen-overlay {
+    overflow: auto;
+    padding: 24px;
+  }
+
+  .components-modal__frame {
+    max-height: none;
+  }
+
+  .authorize-sender-domain-modal {
+    max-width: 1200px;
   }
 }
