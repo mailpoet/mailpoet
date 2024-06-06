@@ -1,5 +1,6 @@
 import classnames from 'classnames';
 import '@wordpress/core-data';
+import { useMemo } from '@wordpress/element';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { SlotFillProvider } from '@wordpress/components';
 import { uploadMedia } from '@wordpress/media-utils';
@@ -41,25 +42,20 @@ import { FONT_SIZES, storeName } from '../store';
  * https://developer.wordpress.org/block-editor/packages/packages-block-editor/
  */
 export function Editor() {
-  const sidebarOpened = useSelect(
-    (sel) => sel(storeName).getSidebarOpened(),
-    [],
-  );
-
-  const isInserterOpened = useSelect(
-    (sel) => sel(storeName).isInserterOpened(),
-    [],
-  );
-
-  const formBlocks = useSelect((sel) => sel(storeName).getFormBlocks(), []);
-
-  const canUserUpload = useSelect(
-    (sel) => sel('core').canUser('create', 'media'),
-    [],
-  );
-
-  const selectedBlock = useSelect(
-    (sel) => sel('core/block-editor').getSelectedBlock(),
+  const {
+    sidebarOpened,
+    isInserterOpened,
+    formBlocks,
+    canUserUpload,
+    selectedBlock,
+  } = useSelect(
+    (sel) => ({
+      sidebarOpened: sel(storeName).getSidebarOpened(),
+      isInserterOpened: sel(storeName).isInserterOpened(),
+      formBlocks: sel(storeName).getFormBlocks(),
+      canUserUpload: sel('core').canUser('create', 'media'),
+      selectedBlock: sel('core/block-editor').getSelectedBlock(),
+    }),
     [],
   );
 
@@ -74,36 +70,39 @@ export function Editor() {
   const { blocksChangedInBlockEditor, toggleInserter } = useDispatch(storeName);
 
   // Editor settings - see @wordpress/block-editor/src/store/defaults.js
-  const editorSettings = {
-    mediaUpload: canUserUpload ? uploadMedia : null,
-    supportsLayout: false, // Disable layout settings for columns because the wide configuration doesn't work properly
-    maxWidth: 580,
-    fontSizes: FONT_SIZES,
-    enableCustomSpacing: true,
-    enableCustomLineHeight: true,
-    disableCustomFontSizes: false,
-    enableCustomUnits: true,
-    __experimentalFetchLinkSuggestions: fetchLinkSuggestions,
-    __experimentalBlockPatterns: [], // we don't want patterns in our inserter
-    __experimentalBlockPatternCategories: [],
-    __experimentalSetIsInserterOpened: toggleInserter,
-    __experimentalFeatures: {
-      useRootPaddingAwareAlignments: true,
-      color: {
-        custom: true,
-        text: true,
-        background: true,
-        customGradient: true,
-        defaultPalette: true,
-        palette: {
-          default: SETTINGS_DEFAULTS.colors,
-        },
-        gradients: {
-          default: SETTINGS_DEFAULTS.gradients,
+  const editorSettings = useMemo(
+    () => ({
+      mediaUpload: canUserUpload ? uploadMedia : null,
+      supportsLayout: false, // Disable layout settings for columns because the wide configuration doesn't work properly
+      maxWidth: 580,
+      fontSizes: FONT_SIZES,
+      enableCustomSpacing: true,
+      enableCustomLineHeight: true,
+      disableCustomFontSizes: false,
+      enableCustomUnits: true,
+      __experimentalFetchLinkSuggestions: fetchLinkSuggestions,
+      __experimentalBlockPatterns: [], // we don't want patterns in our inserter
+      __experimentalBlockPatternCategories: [],
+      __experimentalSetIsInserterOpened: toggleInserter,
+      __experimentalFeatures: {
+        useRootPaddingAwareAlignments: true,
+        color: {
+          custom: true,
+          text: true,
+          background: true,
+          customGradient: true,
+          defaultPalette: true,
+          palette: {
+            default: SETTINGS_DEFAULTS.colors,
+          },
+          gradients: {
+            default: SETTINGS_DEFAULTS.gradients,
+          },
         },
       },
-    },
-  };
+    }),
+    [canUserUpload, toggleInserter],
+  );
 
   return (
     <>
