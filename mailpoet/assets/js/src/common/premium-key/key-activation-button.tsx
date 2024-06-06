@@ -35,10 +35,18 @@ export function KeyActivationButton({
   const sendCongratulatoryMssEmail = useAction('sendCongratulatoryMssEmail');
   const [apiKeyState] = useSetting('mta', 'mailpoet_api_key_state', 'data');
 
+  const saveStateFromAddressModalCanBeShown = (status: boolean) => {
+    sessionStorage.setItem(
+      'mailpoet_from_address_modal_can_be_shown',
+      JSON.stringify(status),
+    );
+    void setState({ fromAddressModalCanBeShown: status });
+  };
+
   async function activationCallback() {
     await verifyMssKey(state.key);
     void sendCongratulatoryMssEmail();
-    void setState({ fromAddressModalCanBeShown: true });
+    saveStateFromAddressModalCanBeShown(true);
   }
 
   const showPendingApprovalNotice =
@@ -76,7 +84,7 @@ export function KeyActivationButton({
     await verifyPremiumKey(state.key);
     void setState({ inProgress: false });
     MailPoet.Modal.loading(false);
-    void setState({ fromAddressModalCanBeShown: true });
+    saveStateFromAddressModalCanBeShown(true);
     // pending approval refresh link should only show on refresh of the page and should get hidden after the refresh button is clicked
     setShowRefreshMessage(false);
     reloadPageAfterKeyActivation();
