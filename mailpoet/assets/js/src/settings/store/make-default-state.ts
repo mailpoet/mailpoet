@@ -13,7 +13,9 @@ declare let window: SettingsWindow;
 function getPremiumStatus(keyValid, premiumInstalled, data): PremiumStatus {
   const pluginActive = !!MailPoet.premiumVersion;
   if (!keyValid) {
-    return data.premium?.premium_key_state?.state === 'valid_underprivileged'
+    return data.premium?.premium_key_state?.state === 'valid_underprivileged' &&
+      data.mta.mailpoet_api_key_state.access_restriction !==
+        'insufficient_privileges'
       ? PremiumStatus.VALID_UNDERPRIVILEGED
       : PremiumStatus.INVALID;
   }
@@ -27,7 +29,9 @@ function getPremiumStatus(keyValid, premiumInstalled, data): PremiumStatus {
 
 export function getMssStatus(keyValid, data): MssStatus {
   if (!keyValid)
-    return data.mta.mailpoet_api_key_state.state === 'valid_underprivileged'
+    return data.mta.mailpoet_api_key_state.state === 'valid_underprivileged' &&
+      data.mta.mailpoet_api_key_state.access_restriction !==
+        'insufficient_privileges'
       ? MssStatus.VALID_UNDERPRIVILEGED
       : MssStatus.INVALID;
 
