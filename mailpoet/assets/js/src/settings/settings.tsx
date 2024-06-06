@@ -14,6 +14,9 @@ import {
   WooCommerce,
 } from './pages';
 import { useSelector } from './store/hooks';
+import { SendingMethodConfirmationModal } from './components/sending-method-confirmation-modal';
+
+const isOnSendWithPage = window.location.href.includes('/mta');
 
 export function Settings() {
   const isSaving = useSelector('isSaving')();
@@ -72,6 +75,9 @@ export function Settings() {
           <KeyActivation subscribersCount={window.mailpoet_subscribers_count} />
         </Tab>
       </RoutedTabs>
+      {window.mailpoet_mss_active &&
+        !window.mailpoet_mss_key_valid &&
+        !isOnSendWithPage && <SendingMethodConfirmationModal />}
     </>
   );
 }
