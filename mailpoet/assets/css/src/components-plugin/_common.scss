@@ -145,6 +145,36 @@ p.sender_email_address_warning:first-child {
   }
 }
 
+.mailpoet_manage_sender_domain_item_error {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: auto 1fr;
+  margin-top: 8px;
+
+  svg {
+    color: #cc1818;
+    height: 18px;
+    margin-top: 1px;
+    width: 18px;
+  }
+
+  b {
+    overflow-wrap: anywhere;
+  }
+
+  ins {
+    background: #22918b;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  del {
+    background: #fae8e8;
+    color: #cc1818;
+    text-decoration: none;
+  }
+}
+
 body .components-modal__screen-overlay {
   z-index: 9999999; // increased to overlay Gutenberg block inserter
 }
