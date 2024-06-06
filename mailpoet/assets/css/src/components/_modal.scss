@@ -146,5 +146,12 @@
 
   .authorize-sender-domain-modal {
     max-width: 1200px;
+
+    .mailpoet_manage_sender_domain_spinner {
+      display: flex;
+      height: 64px;
+      margin: 24px auto;
+      width: 64px;
+    }
   }
 }

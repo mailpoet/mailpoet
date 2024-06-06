@@ -1,4 +1,4 @@
-import { Button, Loader } from 'common';
+import { Button, Spinner } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { Grid } from 'common/grid';
 import { SenderDomainEntity } from './manage-sender-domain-types';
@@ -16,12 +16,13 @@ function ManageSenderDomain({
   loadingButton,
   verifyDnsButtonClicked,
 }: Props) {
-  if (rows.length === 0)
+  if (rows.length === 0) {
     return (
       <Grid.Column align="center">
-        <Loader size={64} />
+        <Spinner className="mailpoet_manage_sender_domain_spinner" />
       </Grid.Column>
     );
+  }
 
   const { dns, domain } = rows[0];
 
@@ -107,14 +108,13 @@ function ManageSenderDomain({
               'mailpoet',
             )}
           </div>
-          <div className="mailpoet_manage_sender_domain_actions">
-            <Button
-              withSpinner={loadingButton}
-              onClick={verifyDnsButtonClicked}
-            >
-              {__('Verify the DNS records', 'mailpoet')}
-            </Button>
-          </div>
+          <Button
+            variant="primary"
+            isBusy={loadingButton}
+            onClick={verifyDnsButtonClicked}
+          >
+            {__('Verify the DNS records', 'mailpoet')}
+          </Button>
         </li>
       </ol>
     </div>
