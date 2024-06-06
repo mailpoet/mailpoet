@@ -61,6 +61,7 @@ class UpdateAutomationController {
     if (array_key_exists('name', $data)) {
       $automation->setName($data['name']);
     }
+    $originalStatus = $automation->getStatus();
 
     if (array_key_exists('status', $data)) {
       $this->checkAutomationStatus($data['status']);
@@ -76,7 +77,7 @@ class UpdateAutomationController {
       }
     }
 
-    if ($automation->getStatus() === Automation::STATUS_DRAFT) {
+    if (($automation->getStatus() === Automation::STATUS_DRAFT) && ($originalStatus === Automation::STATUS_ACTIVE)) {
       $this->unscheduleAutomationRuns($automation);
     }
 
