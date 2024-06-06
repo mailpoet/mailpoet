@@ -1,7 +1,8 @@
+import { useState } from 'react';
+import { createInterpolateElement } from '@wordpress/element';
 import { Modal } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { Button } from 'common';
-import { useState } from '@wordpress/element';
 
 function SendingMethodConfirmationModal(): JSX.Element {
   const [confirmationModalIsOpen, setConfirmationModalOpen] = useState(true);
@@ -14,13 +15,27 @@ function SendingMethodConfirmationModal(): JSX.Element {
       <Modal
         className="mailpoet-welcome-wizard-confirmation-modal"
         title={__('Confirm sending service selection', 'mailpoet')}
-        onRequestClose={() => {}} // users aren't permitted to close
+        onRequestClose={() => {}} // users aren't permitted to close the modal
         isDismissible={false}
       >
         <p>
-          {__(
-            'Your currently selected sending method is "MailPoet Sending Service". The API key you entered is not valid for sending with our sending service. You can either upgrade to a subscription which allows you sending with our service or choose a different',
-            'mailpoet',
+          {createInterpolateElement(
+            __(
+              'Your currently selected sending method is "MailPoet Sending Service". The API key you entered is not valid for sending with our sending service. You can either <link>upgrade to a subscription</link> that allows you to send with our service or choose a different sending service',
+              'mailpoet',
+            ),
+            {
+              link: (
+                <a
+                  href={`https://account.mailpoet.com/?s=${window.mailpoet_subscribers_count}&utm_source=plugin&utm_medium=settings&utm_campaign=switch-to-sending-plan&ref=settings-key-activation`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {' '}
+                  &nbsp;{' '}
+                </a>
+              ),
+            },
           )}
         </p>
         <div className="mailpoet-welcome-wizard-confirmation-modal-buttons">
