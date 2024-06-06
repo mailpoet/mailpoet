@@ -11,7 +11,7 @@
     "cerdic/css-tidy": "2.1.0",
     "doctrine/common": "3.4.4",
     "doctrine/dbal": "3.8.4",
-    "doctrine/orm": "2.13.5",
+    "doctrine/orm": "2.14.3",
     "gregwar/captcha": "1.2.1",
     "monolog/monolog": "2.9.3",
     "nesbot/carbon": "2.72.5",
