@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { createInterpolateElement } from '@wordpress/element';
-import { sprintf, __ } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 export const useNotices = () => {
   const [state, setState] = useState({
@@ -67,15 +67,12 @@ export const useNotices = () => {
             <p key={err.message}>
               {err.error === 'reinstall_plugin'
                 ? createInterpolateElement(
-                    sprintf(
-                      __(
-                        'The plugin has encountered an unexpected error. Please reload the page. If that does not help, re-install the MailPoet Plugin. See: %s for more information',
-                        'mailpoet',
-                      ),
-                      '<a> https://kb.mailpoet.com/article/258-re-installing-updating-the-plugin-via-ftp </a>',
+                    __(
+                      'The plugin has encountered an unexpected error. Please reload the page. If that does not help, <link>re-install the MailPoet Plugin.</link>',
+                      'mailpoet',
                     ),
                     {
-                      a: (
+                      link: (
                         <a
                           aria-label={err.error}
                           href="https://kb.mailpoet.com/article/258-re-installing-updating-the-plugin-via-ftp"
