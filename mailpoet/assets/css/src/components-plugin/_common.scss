@@ -90,15 +90,58 @@ p.sender_email_address_warning:first-child {
   }
 }
 
+.mailpoet_manage_sender_domain_wrapper {
+  ol {
+    counter-reset: item;
+
+    li {
+      counter-increment: item;
+      list-style: none;
+      margin: 24px 0 0 16px;
+      position: relative;
+    }
+
+    li:before {
+      align-items: center;
+      border: 1px solid #007cba;
+      border-radius: 99999px;
+      color: #007cba;
+      content: counter(item);
+      display: inline-flex;
+      height: 24px;
+      justify-content: center;
+      margin-left: -44px;
+      margin-right: 16px;
+      position: absolute;
+      width: 24px;
+    }
+  }
+
+  .mailpoet_manage_sender_domain_step_header {
+    padding: 2px 0 16px;
+  }
+}
+
 .mailpoet_manage_sender_domain {
+  th,
+  td {
+    padding-left: 16px;
+  }
+
   .mailpoet_table_header {
     font-weight: 700 !important;
-    text-align: center !important; // to prevent being overwritten by widefat table classes
   }
 
   .dns_record_type_column {
     font-weight: 550 !important;
-    text-align: center !important; // to prevent being overwritten by widefat table classes
+    padding: 16px;
+    width: 70px;
+  }
+
+  .mailpoet-form-input {
+    border: 1px solid #757575;
+    border-radius: 2px;
+    width: 100%;
   }
 }
 
