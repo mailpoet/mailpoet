@@ -25,7 +25,7 @@ function Diff({ issues }: DiffProps) {
       {message}{' '}
       {issues.has_errors && (
         // eslint-disable-next-line react/no-danger -- display pre-rendered diff
-        <span dangerouslySetInnerHTML={{ __html: issues.diff }} />
+        <strong dangerouslySetInnerHTML={{ __html: issues.diff }} />
       )}
     </>
   );
@@ -51,7 +51,9 @@ function Suffix({ dnsRecord }: SuffixProps) {
       {dnsRecord.issues.duplicate_values?.map((value: string, i: number) => (
         // eslint-disable-next-line react/no-array-index-key -- we have no other key
         <Fragment key={i}>
-          <del>{value}</del>
+          <strong>
+            <del>{value}</del>
+          </strong>
           {i === dnsRecord.issues.duplicate_values.length - 1 ? '' : ', '}
         </Fragment>
       ))}
