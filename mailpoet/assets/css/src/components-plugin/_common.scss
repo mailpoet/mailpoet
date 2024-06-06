@@ -145,6 +145,22 @@ p.sender_email_address_warning:first-child {
   }
 }
 
+.mailpoet_manage_sender_domain_error {
+  background: #fcf0f1;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: auto 1fr;
+  margin-bottom: 8px;
+  padding: 12px 16px;
+
+  svg {
+    color: #8a2424;
+    height: 24px;
+    margin-top: -2px;
+    width: 24px;
+  }
+}
+
 .mailpoet_manage_sender_domain_item_error {
   display: grid;
   gap: 4px;

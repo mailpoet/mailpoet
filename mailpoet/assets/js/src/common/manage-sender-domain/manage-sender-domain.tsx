@@ -1,20 +1,24 @@
 import { Button, Spinner } from '@wordpress/components';
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { Grid } from 'common/grid';
 import { SenderDomainEntity } from './manage-sender-domain-types';
 import { DomainKeyComponent } from './domain-key-component';
 import { DomainHostInfo, DomainValueInfo } from './domain-key-info';
+import { ErrorIcon } from './icons';
 
 type Props = {
   rows: Array<SenderDomainEntity>;
   loadingButton: boolean;
   verifyDnsButtonClicked: () => void;
+  error?: string;
 };
 
 function ManageSenderDomain({
   rows,
   loadingButton,
   verifyDnsButtonClicked,
+  error,
 }: Props) {
   if (rows.length === 0) {
     return (
@@ -51,6 +55,34 @@ function ManageSenderDomain({
               {__('Read the guide', 'mailpoet')}
             </a>
           </div>
+
+          {error && (
+            <div className="mailpoet_manage_sender_domain_error">
+              <ErrorIcon />
+              <div>
+                <strong>
+                  {__('Error authenticating your sender domain.', 'mailpoet')}
+                </strong>{' '}
+                {createInterpolateElement(
+                  __(
+                    'We detected different records from your domain. Please fix them by following the error messages below and reauthenticate your domain. For more help, <link>read our guide</link>.',
+                    'mailpoet',
+                  ),
+                  {
+                    link: (
+                      // eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+                      <a
+                        href="https://kb.mailpoet.com/article/295-spf-dkim-dmarc#authenticating"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    ),
+                  },
+                )}
+              </div>
+            </div>
+          )}
+
           <table className="mailpoet_manage_sender_domain widefat striped">
             <thead>
               <tr>

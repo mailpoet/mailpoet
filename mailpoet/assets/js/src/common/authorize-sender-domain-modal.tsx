@@ -158,19 +158,12 @@ function AuthorizeSenderDomainModal({
   }, [senderDomain]);
 
   const content = (
-    <>
-      {errorMessage && (
-        <strong className="mailpoet_error_item mailpoet_error">
-          {' '}
-          {errorMessage}{' '}
-        </strong>
-      )}
-      <ManageSenderDomain
-        rows={rowData}
-        verifyDnsButtonClicked={verifyDnsButtonClicked}
-        loadingButton={loadingButton}
-      />
-    </>
+    <ManageSenderDomain
+      rows={rowData}
+      verifyDnsButtonClicked={verifyDnsButtonClicked}
+      loadingButton={loadingButton}
+      error={errorMessage}
+    />
   );
   return useModal ? (
     <Modal
