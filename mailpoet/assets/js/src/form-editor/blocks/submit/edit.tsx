@@ -46,6 +46,11 @@ function SubmitEdit({ attributes, setAttributes }: Props): JSX.Element {
     </InspectorControls>
   );
 
+  const fontSize =
+    typeof attributes.styles.fontSize === 'number'
+      ? `${attributes.styles.fontSize}px`
+      : attributes.styles.fontSize;
+
   const styles: CSSProperties = !attributes.styles.inheritFromTheme
     ? {
         fontWeight: attributes.styles.bold ? 'bold' : 'inherit',
@@ -59,9 +64,7 @@ function SubmitEdit({ attributes, setAttributes }: Props): JSX.Element {
             : '1px',
         borderColor: attributes.styles.borderColor || 'transparent',
         borderStyle: 'solid',
-        fontSize: attributes.styles.fontSize
-          ? `${attributes.styles.fontSize}px`
-          : 'inherit',
+        fontSize: fontSize || 'inherit',
         color: attributes.styles.fontColor || 'inherit',
       }
     : {};
