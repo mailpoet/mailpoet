@@ -103,7 +103,7 @@ class AutomateWooHooks {
     }
   }
 
-  public function isWooCommerceSubscribed(SubscriberEntity $subscriber) {
+  private function isWooCommerceSubscribed(SubscriberEntity $subscriber) {
     return $subscriber->getStatus() === SubscriberEntity::STATUS_SUBSCRIBED
       && $this->subscribersRepository->getWooCommerceSegmentSubscriber($subscriber->getEmail());
   }
