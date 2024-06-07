@@ -1,4 +1,7 @@
-import { Color } from '@wordpress/components/build-types/palette-edit/types';
+import {
+  Color,
+  Gradient,
+} from '@wordpress/components/build-types/palette-edit/types';
 import { FontSize } from '@wordpress/components/build-types/font-size-picker/types';
 
 // eslint-disable-next-line import/no-named-default
@@ -23,6 +26,12 @@ import './wordpress-modules';
 /* eslint-disable no-underscore-dangle -- we have no control over 3rd-party naming conventions */
 
 export * from '../segments/dynamic/types';
+
+export type FontFamily = {
+  name: string;
+  slug: string;
+  fontFamily: string;
+};
 
 // fix and improve some @wordpress/data types
 declare module '@wordpress/data' {
@@ -104,8 +113,15 @@ declare module '@wordpress/block-editor' {
   export const __experimentalListView: any;
 
   // types for 'useSetting' are missing in @types/wordpress__block-editor
-  export function useSetting(path: string): unknown;
-  export function useSetting(path: 'color.palette'): Color[];
+  export function useSettings(path: string): unknown;
+  export function useSettings(
+    path1: 'typography.fontSizes',
+    path2: 'typography.fontFamilies',
+  ): [FontSize[], { default: FontFamily[] }];
+  export function useSettings(
+    path1: 'color.palette',
+    path2: 'color.gradients',
+  ): [Color[], Gradient[]];
   export function useSettings(path: 'typography.fontSizes'): [FontSize[]];
 
   // types for 'gradients' are missing in @types/wordpress__block-editor
