@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Dashicon } from '@wordpress/components';
 import { partial } from 'lodash';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable } from 'react-beautiful-dnd';
+import { StrictModeDroppable as Droppable } from 'form-editor/utils/strict-mode-droppable';
 
 function PreviewItem({ value, remove, onUpdate, onCheck, index }) {
   return (
