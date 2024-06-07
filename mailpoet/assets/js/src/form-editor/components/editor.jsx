@@ -75,7 +75,6 @@ export function Editor() {
       mediaUpload: canUserUpload ? uploadMedia : null,
       supportsLayout: false, // Disable layout settings for columns because the wide configuration doesn't work properly
       maxWidth: 580,
-      fontSizes: FONT_SIZES,
       enableCustomSpacing: true,
       enableCustomLineHeight: true,
       disableCustomFontSizes: false,
@@ -97,6 +96,12 @@ export function Editor() {
           },
           gradients: {
             default: SETTINGS_DEFAULTS.gradients,
+          },
+        },
+        typography: {
+          defaultFontSizes: true,
+          fontSizes: {
+            default: FONT_SIZES,
           },
         },
       },

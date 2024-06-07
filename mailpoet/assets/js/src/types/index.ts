@@ -106,7 +106,7 @@ declare module '@wordpress/block-editor' {
   // types for 'useSetting' are missing in @types/wordpress__block-editor
   export function useSetting(path: string): unknown;
   export function useSetting(path: 'color.palette'): Color[];
-  export function useSetting(path: 'typography.fontSizes'): FontSize[];
+  export function useSettings(path: 'typography.fontSizes'): [FontSize[]];
 
   // types for 'gradients' are missing in @types/wordpress__block-editor
   export interface EditorSettings {
