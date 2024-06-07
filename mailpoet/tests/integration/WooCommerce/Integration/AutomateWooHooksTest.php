@@ -88,7 +88,7 @@ class AutomateWooHooksTest extends \MailPoetTest {
     $automateWooHooksPartialMock->syncSubscriber((int)$subscribedSubscriber->getId());
   }
 
-  public function testNotOptsInSubscribedSubscriber() {
+  public function testOptsOutSubscribedSubscriberWithoutWooCommerceList() {
     $subscribedSubscriber = $this->subscriberFactory
       ->withEmail('subscribedUser@mailpoet.com')
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)->create();
@@ -100,7 +100,7 @@ class AutomateWooHooksTest extends \MailPoetTest {
       ->onlyMethods(['optOutSubscriber', 'optInSubscriber'])
       ->getMock();
 
-    $automateWooHooksPartialMock->expects($this->never())->method('optOutSubscriber');
+    $automateWooHooksPartialMock->expects($this->once())->method('optOutSubscriber');
     $automateWooHooksPartialMock->expects($this->never())->method('optInSubscriber');
 
     $automateWooHooksPartialMock->syncSubscriber((int)$subscribedSubscriber->getId());
