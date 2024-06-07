@@ -136,6 +136,8 @@ export const selectors = {
   getSidebarOpenedPanels(state: State) {
     return state.sidebar.openedPanels;
   },
+  // Initially filled at start of the app and then updated from block editor's onChange callback
+  // This is needed as a previous state for validation and auto fix functionality when we re-insert the required blocks (email, submit inputs).
   getFormBlocks(state: State) {
     return state.formBlocks;
   },

@@ -122,7 +122,6 @@ export function Editor() {
               <div className="interface-interface-skeleton__body">
                 <BlockEditorProvider
                   value={formBlocks}
-                  onInput={blocksChangedInBlockEditor}
                   onChange={blocksChangedInBlockEditor}
                   settings={editorSettings}
                   useSubRegistry={false}
