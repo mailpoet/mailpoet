@@ -87,10 +87,10 @@ class AutomateWooHooks {
       return;
     }
 
-    if ($subscriber->getStatus() === SubscriberEntity::STATUS_UNSUBSCRIBED) {
-      $this->optOutSubscriber($subscriber);
-    } else if ($this->isWooCommerceSubscribed($subscriber)) {
+    if ($this->isWooCommerceSubscribed($subscriber)) {
       $this->optInSubscriber($subscriber);
+    } else {
+      $this->optOutSubscriber($subscriber);
     }
   }
 
