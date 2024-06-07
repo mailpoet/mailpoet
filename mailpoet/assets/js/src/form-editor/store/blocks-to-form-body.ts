@@ -131,7 +131,7 @@ export const blocksToFormBodyFactory = (
               type: 'heading',
               id: 'heading',
               params: {
-                content: block.attributes.content,
+                content: block.attributes.content?.toString(),
                 level: block.attributes.level,
                 align: block.attributes.textAlign || 'left',
                 font_size: mapFontSizeSlugToValue(
@@ -169,7 +169,7 @@ export const blocksToFormBodyFactory = (
               type: 'paragraph',
               id: 'paragraph',
               params: {
-                content: block.attributes.content,
+                content: block.attributes.content?.toString(),
                 drop_cap: block.attributes.dropCap ? '1' : '0',
                 align: block.attributes.align || 'left',
                 font_size: mapFontSizeSlugToValue(

@@ -58,7 +58,8 @@ export const controls = {
       return;
     }
     const formData = select(storeName).getFormData();
-    const formBlocks = select(storeName).getFormBlocks();
+    // Use blocks from block editor store to ensure we have the latest state
+    const formBlocks = select(blockEditorStore).getBlocks();
     const customFields = select(storeName).getAllAvailableCustomFields();
     const blocksToFormBody = blocksToFormBodyFactory(
       FONT_SIZES,
