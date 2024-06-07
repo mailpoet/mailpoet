@@ -2,7 +2,7 @@ import {
   // We can remove the ts-expect-error comments once the types are available.
   // @ts-expect-error TS7016: Could not find a declaration file for module '@wordpress/block-editor'.
   __experimentalSpacingSizesControl as SpacingSizesControl,
-  useSetting,
+  useSettings,
 } from '@wordpress/block-editor';
 import {
   __experimentalToolsPanel as ToolsPanel,
@@ -14,7 +14,7 @@ import { isEqual } from 'lodash';
 import { useEmailStyles } from '../../../hooks';
 
 export function DimensionsPanel() {
-  const availableUnits = useSetting('spacing.units') as string[];
+  const [availableUnits] = useSettings('spacing.units') as [string[]];
   const units = useCustomUnits({
     availableUnits,
   });

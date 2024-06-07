@@ -1,5 +1,5 @@
 import PanelColorGradientSettings from '@wordpress/block-editor/build-module/components/colors-gradients/panel-color-gradient-settings';
-import { useSetting } from '@wordpress/block-editor';
+import { useSettings } from '@wordpress/block-editor';
 import { withBoundary } from 'common';
 
 type Setting = {
@@ -16,8 +16,10 @@ type Props = {
 };
 
 function ColorGradientSettings({ title, settings }: Props): JSX.Element {
-  const settingsColors = useSetting('color.palette');
-  const settingsGradients = useSetting('color.gradients');
+  const [settingsColors, settingsGradients] = useSettings(
+    'color.palette',
+    'color.gradients',
+  );
   return (
     <div>
       <PanelColorGradientSettings
