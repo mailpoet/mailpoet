@@ -25,6 +25,23 @@ $php7CachedItem = file_get_contents(__DIR__ . "/../vendor-prefixed/doctrine/cach
 $php7CachedItem = str_replace('final class CacheItem', 'final class TypedCacheItem', $php7CachedItem);
 file_put_contents(__DIR__ . "/../vendor-prefixed/doctrine/cache/lib/Doctrine/Common/Cache/Psr6/TypedCacheItem.php", $php7CachedItem);
 
+// Replace PHP8 syntax in ReflectionReadonlyProperty.
+// The class is used only in PHP8.1 but it fail to pass pre-commit checks in the plugin repository
+// See https://github.com/doctrine/orm/commit/580b9196e65adaacc05b9f7a50654739ad995597#diff-732e324167dd49e48b221477c3e0f6d7934f3eb5ec0970dbf1c06f6c7df15398R3790-R3793
+$readonlyProxy = file_get_contents(__DIR__ . "/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/ReflectionReadonlyProperty.php");
+$readonlyProxy = str_replace(
+  [
+    'public function __construct(private ReflectionProperty $wrappedProperty)',
+    'parent::__construct($wrappedProperty->class, $wrappedProperty->name);',
+  ],
+  [
+    "/** @var ReflectionProperty */\n    private \$wrappedProperty;\n\n    public function __construct(ReflectionProperty \$wrappedProperty)",
+    "\$this->wrappedProperty = \$wrappedProperty;\n    parent::__construct(\$wrappedProperty->class, \$wrappedProperty->name);",
+  ],
+  $readonlyProxy
+);
+file_put_contents(__DIR__ . "/../vendor-prefixed/doctrine/orm/lib/Doctrine/ORM/Mapping/ReflectionReadonlyProperty.php", $readonlyProxy);
+
 
 // cleanup file types by extension
 exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name '*.xsd' -delete");
