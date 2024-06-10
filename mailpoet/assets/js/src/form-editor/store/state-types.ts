@@ -77,6 +77,7 @@ export type State = {
   isPreviewReady: boolean;
   isCustomFieldDeleting: boolean;
   inserterPanel: BlockInsertionPoint;
+  isListViewOpened: boolean;
   notices: {
     id: string;
     content: string;

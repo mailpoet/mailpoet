@@ -22,6 +22,7 @@ import { switchDefaultSidebarTab } from './reducers/switch-sidebar-tab.jsx';
 import {
   toggleInserterSidebar,
   toggleSidebar,
+  toggleListView,
 } from './reducers/toggle-sidebar.ts';
 import { toggleSidebarPanel } from './reducers/toggle-sidebar-panel.ts';
 import { changeFormBlocks } from './reducers/change-form-blocks.jsx';
@@ -99,6 +100,8 @@ const mainReducer = (state, action) => {
       return toggleSidebar(state, action);
     case 'TOGGLE_INSERTER_SIDEBAR':
       return toggleInserterSidebar(state, action);
+    case 'TOGGLE_LIST_VIEW':
+      return toggleListView(state);
     case 'TOGGLE_SIDEBAR_PANEL':
       return toggleSidebarPanel(state, action);
     case 'DELETE_CUSTOM_FIELD_STARTED':

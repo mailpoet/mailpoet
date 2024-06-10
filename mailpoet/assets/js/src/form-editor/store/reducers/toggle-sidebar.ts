@@ -24,5 +24,12 @@ export const toggleInserterSidebar = (
   return {
     ...state,
     inserterPanel,
+    isListViewOpened: false,
   };
 };
+
+export const toggleListView = (state) => ({
+  ...state,
+  isListViewOpened: !state.isListViewOpened,
+  inserterPanel: null,
+});

@@ -20,7 +20,7 @@
     transition: transform cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s;
   }
 
-  &.is-pressed svg {
+  &.edit-post-header-toolbar__inserter-toggle.is-pressed svg {
     transform: rotate(45deg);
   }
 }

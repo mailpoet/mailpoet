@@ -24,6 +24,7 @@ import { Header } from './header.jsx';
 import { Tutorial } from './tutorial';
 import { Sidebar } from './sidebar/sidebar';
 import { Inserter } from './inserter';
+import { ListviewSidebar } from './list-view-sidebar';
 import { Notices } from './notices.jsx';
 import { FormStyles } from './form-styles.jsx';
 import { FormPreview } from './preview/preview';
@@ -45,6 +46,7 @@ export function Editor() {
   const {
     sidebarOpened,
     isInserterOpened,
+    isListViewOpened,
     formBlocks,
     canUserUpload,
     selectedBlock,
@@ -52,6 +54,7 @@ export function Editor() {
     (sel) => ({
       sidebarOpened: sel(storeName).getSidebarOpened(),
       isInserterOpened: sel(storeName).isInserterOpened(),
+      isListViewOpened: sel(storeName).isListViewOpened(),
       formBlocks: sel(storeName).getFormBlocks(),
       canUserUpload: sel('core').canUser('create', 'media'),
       selectedBlock: sel('core/block-editor').getSelectedBlock(),
@@ -134,6 +137,11 @@ export function Editor() {
                   {isInserterOpened && (
                     <div className="interface-interface-skeleton__secondary-sidebar">
                       <Inserter setIsInserterOpened={toggleInserter} />
+                    </div>
+                  )}
+                  {isListViewOpened && (
+                    <div className="interface-interface-skeleton__secondary-sidebar">
+                      <ListviewSidebar />
                     </div>
                   )}
                   <div className="interface-interface-skeleton__content">
