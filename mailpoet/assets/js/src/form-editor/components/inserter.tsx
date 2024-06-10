@@ -1,3 +1,4 @@
+import { useRef } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { close } from '@wordpress/icons';
 import { Button } from '@wordpress/components';
@@ -13,6 +14,8 @@ export function Inserter({ setIsInserterOpened }: Props): JSX.Element {
     (sel) => sel(storeName).getInserterPanelInsertPoint(),
     [],
   );
+  const libraryRef = useRef(null);
+
   return (
     <div className="editor-inserter-sidebar">
       <div className="editor-inserter-sidebar__header">
@@ -24,6 +27,7 @@ export function Inserter({ setIsInserterOpened }: Props): JSX.Element {
           showInserterHelpPanel={false}
           rootClientId={insertPoint.rootClientId ?? undefined}
           __experimentalInsertionIndex={insertPoint.insertionIndex ?? undefined}
+          ref={libraryRef}
         />
       </div>
     </div>
