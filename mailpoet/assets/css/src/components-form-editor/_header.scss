@@ -24,3 +24,10 @@
     transform: rotate(45deg);
   }
 }
+
+// Hide preview button on mobile
+@include respond-to(small-screen) {
+  .mailpoet-preview-button {
+    display: none;
+  }
+}
