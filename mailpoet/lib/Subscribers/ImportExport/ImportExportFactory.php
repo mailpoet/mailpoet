@@ -37,7 +37,7 @@ class ImportExportFactory {
 
   public function getSegments() {
     if ($this->action === self::IMPORT_ACTION) {
-      $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts([SegmentEntity::TYPE_DEFAULT, SegmentEntity::TYPE_WP_USERS]);
+      $segments = $this->segmentsListRepository->getListWithSubscribedSubscribersCounts([SegmentEntity::TYPE_DEFAULT]);
     } else {
       $segments = $this->segmentsListRepository->getListWithAssociatedSubscribersCounts();
       $segments = $this->segmentsListRepository->addVirtualSubscribersWithoutListSegment($segments);
