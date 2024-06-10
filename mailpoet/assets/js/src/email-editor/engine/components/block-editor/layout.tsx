@@ -28,7 +28,7 @@ import { BlockCompatibilityWarnings, Sidebar } from '../sidebar';
 import { Header } from '../header';
 import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
-import { EditorNotices, EditorSnackbars, SentEmailNotice } from '../notices';
+import { EditorNotices, SentEmailNotice } from '../notices';
 import { StylesSidebar } from '../styles-sidebar';
 import { unlock } from '../../../lock-unlock';
 import { TemplateSelection } from '../template-select';
@@ -107,12 +107,6 @@ export function Layout() {
         className={className}
         header={<Header />}
         editorNotices={<EditorNotices />}
-        notices={
-          <>
-            <EditorSnackbars context="global" />
-            <EditorSnackbars context="email-editor" />
-          </>
-        }
         content={
           <>
             <EditorNotices />
