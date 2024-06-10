@@ -118,6 +118,7 @@ class ImportExportRepository {
       }, $columns);
 
       foreach ($item as $columnKey => $column) {
+        // We need to remove the colon character from the query parameter name that is passed to the query builder
         $parameters[substr($paramNames[$columnKey], 1)] = $column;
       }
       $rows[] = "(" . implode(', ', $paramNames) . ")";
