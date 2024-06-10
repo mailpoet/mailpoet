@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Subscribers\ImportExport;
 
 use MailPoet\Entities\CustomFieldEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\ImportExport\ImportExportFactory;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -29,6 +30,8 @@ class ImportExportFactoryTest extends \MailPoetTest {
 
     $segment1 = $segmentFactory->withName('Unconfirmed Segment')->create();
     $segment2 = $segmentFactory->withName('Confirmed Segment')->create();
+    $segment3 = $segmentFactory->withName('WordPress Users')->withType(SegmentEntity::TYPE_WP_USERS)->create();
+    $segment4 = $segmentFactory->withName('WooCommerce Customers')->withType(SegmentEntity::TYPE_WC_USERS)->create();
 
     $subscriberFactory
       ->withFirstName('John')
@@ -44,6 +47,22 @@ class ImportExportFactoryTest extends \MailPoetTest {
       ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
       ->withEmail('mike@mailpoet.com')
       ->withSegments([$segment2])
+      ->create();
+
+    $subscriberFactory
+      ->withFirstName('John')
+      ->withLastName('Doe')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withEmail('john@doe.com')
+      ->withSegments([$segment3])
+      ->create();
+
+    $subscriberFactory
+      ->withFirstName('Jane')
+      ->withLastName('Doe')
+      ->withStatus(SubscriberEntity::STATUS_SUBSCRIBED)
+      ->withEmail('jane@doe.com')
+      ->withSegments([$segment4])
       ->create();
 
     $customFieldFactory
@@ -89,7 +108,7 @@ class ImportExportFactoryTest extends \MailPoetTest {
 
   public function testItCanGetPublicSegmentsForExport() {
     $segments = $this->exportFactory->getSegments();
-    verify(count($segments))->equals(2);
+    verify(count($segments))->equals(4);
 
     $subscriber = $this->subscribersRepository->findOneBy(['email' => 'john@mailpoet.com']);
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
@@ -99,17 +118,21 @@ class ImportExportFactoryTest extends \MailPoetTest {
 
     $this->clearSubscribersCountCache();
     $segments = $this->exportFactory->getSegments();
-    verify(count($segments))->equals(1);
+    verify(count($segments))->equals(3);
   }
 
   public function testItCanGetSegmentsForExport() {
     $segments = $this->exportFactory->getSegments();
-    verify(count($segments))->equals(2);
+    verify(count($segments))->equals(4);
 
     verify($segments[0]['name'])->equals('Confirmed Segment');
     verify($segments[0]['count'])->equals(1);
     verify($segments[1]['name'])->equals('Unconfirmed Segment');
     verify($segments[1]['count'])->equals(1);
+    verify($segments[2]['name'])->equals('WooCommerce Customers');
+    verify($segments[2]['count'])->equals(1);
+    verify($segments[3]['name'])->equals('WordPress Users');
+    verify($segments[3]['count'])->equals(1);
   }
 
   public function testItCanGetSubscriberFields() {
