@@ -29,6 +29,12 @@ export function toggleInserter(
   };
 }
 
+export function toggleListView() {
+  return {
+    type: 'TOGGLE_LIST_VIEW',
+  };
+}
+
 export function toggleForm(enabled) {
   if (enabled) {
     return {

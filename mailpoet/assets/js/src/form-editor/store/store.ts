@@ -86,6 +86,7 @@ export const initStore = () => {
     isPreviewReady: false,
     isCustomFieldDeleting: false,
     inserterPanel: null,
+    isListViewOpened: false,
     notices: [],
     hasUnsavedChanges: false,
     sidebar: {

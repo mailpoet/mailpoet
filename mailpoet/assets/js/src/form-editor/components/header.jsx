@@ -5,7 +5,7 @@ import {
   ToolbarItem,
 } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
-import { moreVertical, plus } from '@wordpress/icons';
+import { moreVertical, plus, listView } from '@wordpress/icons';
 import { __, _x } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
@@ -15,24 +15,30 @@ import { HistoryRedo } from './history-redo';
 import { storeName } from '../store';
 
 function Header({ isInserterOpened, setIsInserterOpened }) {
-  const sidebarOpened = useSelect(
-    (select) => select(storeName).getSidebarOpened(),
+  const {
+    sidebarOpened,
+    isFormSaving,
+    isPreview,
+    isFullscreen,
+    isListViewOpened,
+  } = useSelect(
+    (select) => ({
+      sidebarOpened: select(storeName).getSidebarOpened(),
+      isFormSaving: select(storeName).getIsFormSaving(),
+      isPreview: select(storeName).getIsPreviewShown(),
+      isFullscreen: select(storeName).isFullscreenEnabled(),
+      isListViewOpened: select(storeName).isListViewOpened(),
+    }),
     [],
   );
-  const isFormSaving = useSelect(
-    (select) => select(storeName).getIsFormSaving(),
-    [],
-  );
-  const isPreview = useSelect(
-    (select) => select(storeName).getIsPreviewShown(),
-    [],
-  );
-  const isFullscreen = useSelect(
-    (select) => select(storeName).isFullscreenEnabled(),
-    [],
-  );
-  const { toggleSidebar, saveForm, showPreview, toggleFullscreen } =
-    useDispatch(storeName);
+
+  const {
+    toggleListView,
+    toggleSidebar,
+    saveForm,
+    showPreview,
+    toggleFullscreen,
+  } = useDispatch(storeName);
 
   return (
     <div className="editor-header edit-post-header">
@@ -109,6 +115,15 @@ function Header({ isInserterOpened, setIsInserterOpened }) {
             />
             <HistoryUndo data-automation-id="form_undo_button" />
             <HistoryRedo data-automation-id="form_redo_button" />
+            <ToolbarItem
+              as={Button}
+              data-automation-id="form_listview_open"
+              isPressed={isListViewOpened}
+              onClick={() => toggleListView()}
+              icon={listView}
+              label={__('List view', 'mailpoet')}
+              showTooltip
+            />
           </div>
         </div>
       </div>

@@ -32,6 +32,9 @@ export const selectors = {
   getInserterPanelInsertPoint(state: State) {
     return state.inserterPanel;
   },
+  isListViewOpened(state: State) {
+    return state.isListViewOpened;
+  },
   getSidebarOpened(state: State) {
     return state.sidebarOpened;
   },
