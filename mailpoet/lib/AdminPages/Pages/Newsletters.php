@@ -109,7 +109,6 @@ class Newsletters {
       ->format(DateTime::DEFAULT_DATE_FORMAT);
     $data['current_time'] = $dateTime->getCurrentTime();
     $data['current_date_time'] = $dateTime->getCurrentDateTime()->format(DateTime::DEFAULT_DATE_TIME_FORMAT);
-    $data['server_timezone_in_minutes'] = $dateTime->getServerTimezoneInMinutes();
     $data['schedule_time_of_day'] = $dateTime->getTimeInterval(
       '00:00:00',
       '+15 minutes',
