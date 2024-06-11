@@ -20,6 +20,7 @@ export const MailPoetDate: {
   time: (date: MomentInput) => string;
   convertFormat: (format: string) => string;
   isInFuture: (dateString: string, currentTime: MomentInput) => boolean;
+  adjustForTimezoneDifference: (date: Date) => Date;
 } = {
   version: 0.1,
   options: {},
@@ -181,4 +182,16 @@ export const MailPoetDate: {
   },
   isInFuture: (dateString: string, currentTime: MomentInput): boolean =>
     Moment(dateString).isAfter(currentTime, 's'),
+  adjustForTimezoneDifference: function adjustForTimezoneDifference(
+    date: Date,
+  ): Date {
+    const serverOffsetMinutes = window.mailpoet_server_timezone_in_minutes || 0;
+    const browserOffsetMinutes = new Date().getTimezoneOffset();
+    const offsetDifference = browserOffsetMinutes - serverOffsetMinutes;
+    if (!offsetDifference) {
+      return date;
+    }
+    date.setMinutes(date.getMinutes() - offsetDifference);
+    return date;
+  },
 } as const;
