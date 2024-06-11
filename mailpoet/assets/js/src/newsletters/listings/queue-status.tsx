@@ -95,9 +95,12 @@ type QueueStatusProps = {
 
 function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
   const rawNewsletterDate = newsletter.sent_at || newsletter.queue.scheduled_at;
-  const newsletterDate = rawNewsletterDate
+  let newsletterDate = rawNewsletterDate
     ? parseDate(rawNewsletterDate, 'yyyy-MM-dd HH:mm:ss', new Date())
     : undefined;
+  if (newsletterDate) {
+    newsletterDate = MailPoet.Date.adjustForTimezoneDifference(newsletterDate);
+  }
 
   const isNewsletterSending =
     newsletter.queue && newsletter.queue.status !== 'scheduled';
