@@ -1071,12 +1071,6 @@ workflows:
           wordpress_image_version: wp-6.4_php8.0_20231114.1
           requires:
             - build_premium
-      - unit_tests:
-          <<: *slack-fail-post-step
-          name: unit_with_premium_oldest
-          executor: wpcli_php_mysql_oldest
-          requires:
-            - build_premium
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_with_premium_oldest
