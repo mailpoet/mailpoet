@@ -203,7 +203,7 @@ SocialBlockSettingsIconView = Marionette.View.extend({
         'iconType',
       ),
       'input .mailpoet_social_icon_field_image': _.partial(
-        this.changeField,
+        this.changeUrlField,
         'image',
       ),
       'change .mailpoet_social_icon_field_link': this.changeLink,
@@ -249,11 +249,12 @@ SocialBlockSettingsIconView = Marionette.View.extend({
     if (this.model.get('iconType') === 'email') {
       this.model.set('link', 'mailto:' + jQuery(event.target).val());
     } else {
-      return this.changeField('link', event);
+      return this.changeUrlField('link', event);
     }
     return undefined;
   },
-  changeField: base.BlockSettingsView.prototype.changeUrlField,
+  changeField: base.BlockSettingsView.prototype.changeField,
+  changeUrlField: base.BlockSettingsView.prototype.changeUrlField,
 });
 
 SocialBlockSettingsIconCollectionView = Marionette.CollectionView.extend({
