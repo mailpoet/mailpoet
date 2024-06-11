@@ -132,6 +132,7 @@ interface Window {
   mailpoet_date_offset: string;
   mailpoet_time_format: string;
   mailpoet_date_format: string;
+  mailpoet_server_timezone_in_minutes: number;
   mailpoet_listing_per_page: string;
   mailpoet_3rd_party_libs_enabled: string;
   mailpoet_datetime_format: string;

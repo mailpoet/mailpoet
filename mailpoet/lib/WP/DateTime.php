@@ -96,4 +96,10 @@ class DateTime {
   public function getCurrentDateTime(): \DateTime {
     return new \DateTime("now", wp_timezone());
   }
+
+  public function getServerTimezoneInMinutes(): int {
+    $date = $this->getCurrentDateTime();
+    $offsetInSeconds = $date->getOffset();
+    return $offsetInSeconds / 60;
+  }
 }
