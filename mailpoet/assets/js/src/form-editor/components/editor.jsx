@@ -81,12 +81,14 @@ export function Editor() {
       enableCustomSpacing: true,
       enableCustomLineHeight: true,
       disableCustomFontSizes: false,
-      enableCustomUnits: true,
       __experimentalFetchLinkSuggestions: fetchLinkSuggestions,
       __experimentalBlockPatterns: [], // we don't want patterns in our inserter
       __experimentalBlockPatternCategories: [],
       __experimentalSetIsInserterOpened: toggleInserter,
       __experimentalFeatures: {
+        spacing: {
+          units: ['px', 'em', 'rem', 'vh', 'vw', '%'],
+        },
         useRootPaddingAwareAlignments: true,
         color: {
           custom: true,
