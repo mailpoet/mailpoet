@@ -3,21 +3,21 @@ import { MailPoet } from 'mailpoet';
 import { TasksListDataRow } from './tasks-list-data-row.jsx';
 import { TasksListLabelsRow } from './tasks-list-labels-row.jsx';
 
-function TasksList({ tasks, show_scheduled_at: showScheduledAt = false }) {
-  const colsCount = showScheduledAt ? 6 : 5;
+function TasksList(props) {
+  const colsCount = props.show_scheduled_at ? 5 : 4;
 
   return (
     <table className="widefat fixed striped">
       <thead>
-        <TasksListLabelsRow show_scheduled_at={showScheduledAt} />
+        <TasksListLabelsRow show_scheduled_at={props.show_scheduled_at} />
       </thead>
       <tbody>
-        {tasks.length ? (
-          tasks.map((task) => (
+        {props.tasks.length ? (
+          props.tasks.map((task) => (
             <TasksListDataRow
               key={task.id}
               task={task}
-              show_scheduled_at={showScheduledAt}
+              show_scheduled_at={props.show_scheduled_at}
             />
           ))
         ) : (
@@ -27,7 +27,7 @@ function TasksList({ tasks, show_scheduled_at: showScheduledAt = false }) {
         )}
       </tbody>
       <tfoot>
-        <TasksListLabelsRow show_scheduled_at={showScheduledAt} />
+        <TasksListLabelsRow show_scheduled_at={props.show_scheduled_at} />
       </tfoot>
     </table>
   );
@@ -36,6 +36,10 @@ function TasksList({ tasks, show_scheduled_at: showScheduledAt = false }) {
 TasksList.propTypes = {
   show_scheduled_at: PropTypes.bool,
   tasks: PropTypes.arrayOf(TasksListDataRow.propTypes.task).isRequired,
+};
+
+TasksList.defaultProps = {
+  show_scheduled_at: false,
 };
 
 export { TasksList };
