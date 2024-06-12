@@ -2,11 +2,37 @@ import { Component, SyntheticEvent } from 'react';
 import { __, _x } from '@wordpress/i18n';
 import { registerLocale } from 'react-datepicker';
 import locale from 'date-fns/locale/en-US';
-import buildLocalizeFn from 'date-fns/locale/_lib/buildLocalizeFn';
-
 import { Datepicker } from 'common/datepicker/datepicker';
 import { MailPoet } from 'mailpoet';
 import { DateOptions } from 'date';
+
+/**
+ * This function is a copy of the buildLocalizeFn function from date-fns (date-fns/locale/_lib/buildLocalizeFn)
+ * After 3.0.0 the package contains exports which prevents us from including it via import form a file.
+ */
+function buildLocalizeFn(args) {
+  return (value, options) => {
+    const context = options?.context ? String(options.context) : 'standalone';
+
+    let valuesArray;
+    if (context === 'formatting' && args.formattingValues) {
+      const defaultWidth = args.defaultFormattingWidth || args.defaultWidth;
+      const width = options?.width ? String(options.width) : defaultWidth;
+
+      valuesArray =
+        args.formattingValues[width] || args.formattingValues[defaultWidth];
+    } else {
+      const defaultWidth = args.defaultWidth;
+      const width = options?.width ? String(options.width) : args.defaultWidth;
+
+      valuesArray = args.values[width] || args.values[defaultWidth];
+    }
+    const index = args.argumentCallback ? args.argumentCallback(value) : value;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return valuesArray[index];
+  };
+}
 
 const monthValues = {
   abbreviated: [
