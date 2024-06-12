@@ -371,6 +371,7 @@ class RoboFile extends \Robo\Tasks {
     $command = join(' ', [
       './node_modules/.bin/mocha',
       '-r tests/javascript-newsletter-editor/mocha-test-helper.js',
+      '-r tests/javascript-newsletter-editor/mocha-chai.mjs',
       'tests/javascript-newsletter-editor/testBundles/**/*.js',
       '--exit',
     ]);

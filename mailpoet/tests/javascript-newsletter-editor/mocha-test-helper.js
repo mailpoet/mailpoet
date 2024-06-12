@@ -1,16 +1,9 @@
-var chai = require('chai');
 var sinon = require('sinon');
-var sinonChai = require('sinon-chai');
-var chaiJq = require('chai-jq');
 var _ = require('underscore');
 var { JSDOM } = require('jsdom');
 var URL = require('url').URL;
 var nodeCrypto = require('crypto');
 
-chai.use(sinonChai);
-chai.use(chaiJq);
-
-global.expect = chai.expect;
 global.sinon = sinon;
 global.URL = URL;
 
