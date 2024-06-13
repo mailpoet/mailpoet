@@ -165,7 +165,7 @@
     "cross-env": "^7.0.3",
     "eslint-plugin-check-file": "^2.8.0",
     "exports-loader": "^5.0.0",
-    "expose-loader": "^4.1.0",
+    "expose-loader": "^5.0.0",
     "fork-ts-checker-webpack-plugin": "^7.2.1",
     "grunt-cli": "^1.4.3",
     "husky": "^8.0.3",
