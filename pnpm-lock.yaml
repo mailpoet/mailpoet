@@ -477,8 +477,8 @@ importers:
         specifier: ^9.0.11
         version: 9.0.11
       imports-loader:
-        specifier: ^4.0.1
-        version: 4.0.1(webpack@5.92.0)
+        specifier: ^5.0.0
+        version: 5.0.0(webpack@5.92.0)
       inject-loader:
         specifier: ^4.0.1
         version: 4.0.1(webpack@5.92.0)
@@ -14935,13 +14935,13 @@ packages:
   /import-locals@2.0.0:
     resolution: {integrity: sha512-1/bPE89IZhyf7dr5Pkz7b4UyVXy5pEt7PTEfye15UEn3AK8+2zwcDCfKk9Pwun4ltfhOSszOrReSsFcDKw/yoA==}
 
-  /imports-loader@4.0.1(webpack@5.92.0):
-    resolution: {integrity: sha512-ZiY+1xH5fqAJ1Qu1CFv+zw54rvPCC92DdYRDe0IIUboOhbJPLfOPbF/paA2iipelvMwjQUKWydcFOJ7f1+ZFcA==}
-    engines: {node: '>= 14.15.0'}
+  /imports-loader@5.0.0(webpack@5.92.0):
+    resolution: {integrity: sha512-tXgL8xxZFjOjQLLiE7my00UUQfktg4G8fdpXcZphL0bJWbk9eCxKKFaCwmFRcwyRJQl95GXBL1DoE1rCS/tcPw==}
+    engines: {node: '>= 18.12.0'}
     peerDependencies:
       webpack: ^5.0.0
     dependencies:
-      source-map: 0.6.1
+      source-map-js: 1.2.0
       strip-comments: 2.0.1
       webpack: 5.92.0(webpack-cli@5.1.4)
     dev: true
