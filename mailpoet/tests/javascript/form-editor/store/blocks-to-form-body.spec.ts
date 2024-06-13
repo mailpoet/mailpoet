@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { partial, isEmpty, isUndefined } from 'lodash';
 import { blocksToFormBodyFactory } from '../../../../assets/js/src/form-editor/store/blocks-to-form-body';
 import {

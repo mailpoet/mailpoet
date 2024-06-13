@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { createCustomFieldStartedFactory } from '../../../../../assets/js/src/form-editor/store/reducers/create-custom-field-started';
 import { CustomFieldStartedAction } from '../../../../../assets/js/src/form-editor/store/actions-types';
 import { createCustomFieldMock, createStateMock } from '../mocks/partial-mocks';

@@ -1,5 +1,3 @@
-import { expect } from 'chai';
-
 import { asNum } from '../../../../assets/js/src/form-editor/store/server-value-as-num';
 
 describe('Server value as num', () => {

@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { selectors } from '../../../../assets/js/src/form-editor/store/selectors';
 import {
   createBlocksMock,

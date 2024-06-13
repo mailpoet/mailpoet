@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import moment, { Moment } from 'moment';
 import { MailPoetDate } from '../../../assets/js/src/date';
 

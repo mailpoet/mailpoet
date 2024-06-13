@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { isEmpty } from 'lodash';
 import { validateForm as validate } from '../../../../assets/js/src/form-editor/store/form-validator.jsx';
 

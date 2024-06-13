@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { mapFormDataAfterLoading as map } from '../../../../assets/js/src/form-editor/store/map-form-data-after-loading.jsx';
 
 const data = {
