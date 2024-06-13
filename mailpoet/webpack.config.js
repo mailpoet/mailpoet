@@ -99,7 +99,7 @@ const baseConfig = {
       asyncqueue: 'vendor/jquery.asyncqueue.js',
       '@woocommerce/settings': path.resolve(
         __dirname,
-        'assets/js/src/mock-empty-module.js',
+        'assets/js/src/mock-woocommerce-settings.ts',
       ),
       '@automattic/tour-kit': path.resolve(
         __dirname,
