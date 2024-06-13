@@ -403,7 +403,6 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
           options: {
             presets: ['@wordpress/babel-preset-default'],
             plugins: [
-              require.resolve('@babel/plugin-proposal-class-properties'),
               require.resolve(
                 '@babel/plugin-proposal-nullish-coalescing-operator',
               ),
@@ -460,7 +459,6 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
           options: {
             presets: ['@wordpress/babel-preset-default'],
             plugins: [
-              require.resolve('@babel/plugin-proposal-class-properties'),
               require.resolve(
                 '@babel/plugin-proposal-nullish-coalescing-operator',
               ),
