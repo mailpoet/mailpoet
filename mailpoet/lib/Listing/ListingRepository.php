@@ -87,7 +87,7 @@ abstract class ListingRepository {
 
   abstract protected function applyGroup(QueryBuilder $queryBuilder, string $group);
 
-  abstract protected function applySearch(QueryBuilder $queryBuilder, string $search);
+  abstract protected function applySearch(QueryBuilder $queryBuilder, string $search, array $parameters);
 
   abstract protected function applyFilters(QueryBuilder $queryBuilder, array $filters);
 

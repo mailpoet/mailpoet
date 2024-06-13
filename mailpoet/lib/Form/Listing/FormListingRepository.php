@@ -60,7 +60,7 @@ class FormListingRepository extends ListingRepository {
     $queryBuilder->addOrderBy("f.$sortBy", $sortOrder);
   }
 
-  protected function applySearch(QueryBuilder $queryBuilder, string $search) {
+  protected function applySearch(QueryBuilder $queryBuilder, string $search, array $parameters = []) {
     // the parent class requires this method, but forms listing doesn't currently support this feature.
   }
 

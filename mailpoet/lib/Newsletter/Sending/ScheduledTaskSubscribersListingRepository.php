@@ -103,7 +103,7 @@ class ScheduledTaskSubscribersListingRepository extends ListingRepository {
     $queryBuilder->addOrderBy($sortBy, $sortOrder);
   }
 
-  protected function applySearch(QueryBuilder $queryBuilder, string $search) {
+  protected function applySearch(QueryBuilder $queryBuilder, string $search, array $parameters = []) {
     $search = Helpers::escapeSearch($search);
     $queryBuilder
       ->andWhere('s.email LIKE :search or s.firstName LIKE :search or s.lastName LIKE :search')
