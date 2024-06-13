@@ -39,7 +39,7 @@ class SegmentListingRepository extends ListingRepository {
     }
   }
 
-  protected function applySearch(QueryBuilder $queryBuilder, string $search) {
+  protected function applySearch(QueryBuilder $queryBuilder, string $search, array $parameters = []) {
     $search = Helpers::escapeSearch($search);
     $queryBuilder
       ->andWhere('s.name LIKE :search or s.description LIKE :search')
