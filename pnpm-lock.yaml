@@ -44,8 +44,8 @@ importers:
         specifier: ^7.24.7
         version: 7.24.7
       '@babel/runtime-corejs3':
-        specifier: ^7.22.11
-        version: 7.22.11
+        specifier: ^7.24.7
+        version: 7.24.7
       '@emotion/react':
         specifier: ^11.11.4
         version: 11.11.4(@types/react@18.0.28)(react@18.2.0)
@@ -2755,11 +2755,11 @@ packages:
     resolution: {integrity: sha512-x/rqGMdzj+fWZvCOYForTghzbtqPDZ5gPwaoNGHdgDfF2QA/XZbCBp4Moo5scrkAMPhB7z26XM/AaHuIJdgauA==}
     dev: true
 
-  /@babel/runtime-corejs3@7.22.11:
-    resolution: {integrity: sha512-NhfzUbdWbiE6fCFypbWCPu6AR8xre31EOPF7wwAIJEvGQ2avov04eymayWinCuyXmV1b0+jzoXP/HYzzUYdvwg==}
+  /@babel/runtime-corejs3@7.24.7:
+    resolution: {integrity: sha512-eytSX6JLBY6PVAeQa2bFlDx/7Mmln/gaEpsit5a3WEvjGfiIytEsgAwuIXCPM0xvw0v0cJn3ilq0/TvXrW0kgA==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      core-js-pure: 3.32.1
+      core-js-pure: 3.37.1
       regenerator-runtime: 0.14.1
     dev: false
 
@@ -3753,7 +3753,7 @@ packages:
         optional: true
     dependencies:
       ansi-html: 0.0.9
-      core-js-pure: 3.32.1
+      core-js-pure: 3.37.1
       error-stack-parser: 2.1.4
       html-entities: 2.4.0
       loader-utils: 2.0.4
@@ -11821,8 +11821,8 @@ packages:
       browserslist: 4.23.1
     dev: true
 
-  /core-js-pure@3.32.1:
-    resolution: {integrity: sha512-f52QZwkFVDPf7UEQZGHKx6NYxsxmVGJe5DIvbzOdRMJlmT6yv0KDjR8rmy3ngr/t5wU54c7Sp/qIJH0ppbhVpQ==}
+  /core-js-pure@3.37.1:
+    resolution: {integrity: sha512-J/r5JTHSmzTxbiYYrzXg9w1VpqrYt+gexenBE9pugeyhwPZTAEJddyiReJWsLO6uNQ8xJZFbod6XC7KKwatCiA==}
     requiresBuild: true
 
   /core-js@2.6.12:
