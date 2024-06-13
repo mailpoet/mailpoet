@@ -9,6 +9,7 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
   isMaxContentWidth?: boolean;
   iconStart?: JSX.Element;
   automationId?: string;
+  placeholder?: string;
 };
 
 export const Select = forwardRef(
