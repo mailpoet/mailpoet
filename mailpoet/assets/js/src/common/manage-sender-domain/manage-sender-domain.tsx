@@ -23,7 +23,14 @@ function ManageSenderDomain({
   if (rows.length === 0) {
     return (
       <Grid.Column align="center">
-        <Spinner className="mailpoet_manage_sender_domain_spinner" />
+        {error ? (
+          <strong className="mailpoet_error_item mailpoet_error">
+            {' '}
+            {error}{' '}
+          </strong>
+        ) : (
+          <Spinner className="mailpoet_manage_sender_domain_spinner" />
+        )}
       </Grid.Column>
     );
   }
