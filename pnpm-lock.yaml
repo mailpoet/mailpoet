@@ -312,8 +312,8 @@ importers:
         specifier: ^7.18.6
         version: 7.18.6(@babel/core@7.24.7)
       '@babel/plugin-proposal-throw-expressions':
-        specifier: ^7.22.5
-        version: 7.22.5(@babel/core@7.24.7)
+        specifier: ^7.24.7
+        version: 7.24.7(@babel/core@7.24.7)
       '@babel/plugin-syntax-dynamic-import':
         specifier: ^7.8.3
         version: 7.8.3(@babel/core@7.24.7)
@@ -1594,15 +1594,15 @@ packages:
       - supports-color
     dev: true
 
-  /@babel/plugin-proposal-throw-expressions@7.22.5(@babel/core@7.24.7):
-    resolution: {integrity: sha512-34kY5YjNKDhjXbj2oNDkxl0xNl2+yQTEsWu8Ia6kCTb6wz76bBCd4DzmeZokfr6g68yneu3eg8qAyYgKbyesFg==}
+  /@babel/plugin-proposal-throw-expressions@7.24.7(@babel/core@7.24.7):
+    resolution: {integrity: sha512-Rh4WoHyWKgsxvdkEMqDEZtKuGnZw+JwicMCvcZaIjYaQ3fK+a8JZYLhgcac9dKcL47Xqf+SG3MopTx+8BACdrQ==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.24.7
       '@babel/helper-plugin-utils': 7.24.7
-      '@babel/plugin-syntax-throw-expressions': 7.22.5(@babel/core@7.24.7)
+      '@babel/plugin-syntax-throw-expressions': 7.24.7(@babel/core@7.24.7)
     dev: true
 
   /@babel/plugin-proposal-unicode-property-regex@7.18.6(@babel/core@7.24.7):
@@ -1814,8 +1814,8 @@ packages:
       '@babel/helper-plugin-utils': 7.24.7
     dev: true
 
-  /@babel/plugin-syntax-throw-expressions@7.22.5(@babel/core@7.24.7):
-    resolution: {integrity: sha512-oCyfA7rDVcQIydA7ZOmnHCQTzz5JvG9arY++Z+ASL/q5q+mJLblaRNHoK6ggV54X2c14wCK/lQi7z1DujmEmZA==}
+  /@babel/plugin-syntax-throw-expressions@7.24.7(@babel/core@7.24.7):
+    resolution: {integrity: sha512-b1bdlAmUTy9VQ/g2cnBuJFwd7jeARNW2F65c9Gcn8qyNYGuVy/cYyqpiSL6SVmUAJTDbIYL2FzlZ8nH1qUCBXA==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
