@@ -39,11 +39,12 @@ class SenderField extends Component {
   }
 
   onChange(event) {
+    const { onValueChange = () => {} } = this.props.onValueChange;
     const emailAddress = event.target.value.toLowerCase();
     this.setState({
       emailAddress,
     });
-    this.props.onValueChange({
+    onValueChange({
       ...event,
       target: {
         ...event.target,
@@ -178,10 +179,5 @@ SenderField.propTypes = {
   onValueChange: PropTypes.func,
 };
 
-SenderField.defaultProps = {
-  onValueChange: function onValueChange() {
-    // no-op
-  },
-};
 SenderField.displayName = 'SenderField';
 export { SenderField };

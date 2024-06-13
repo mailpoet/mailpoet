@@ -149,7 +149,7 @@ class SendEventConditions extends Component {
       segment,
       eventOptionValue,
     } = this.state;
-    const { onValueChange } = this.props;
+    const { onValueChange = null } = this.props;
     if (!onValueChange) return;
 
     const options = {
@@ -193,8 +193,5 @@ SendEventConditions.propTypes = {
   onValueChange: PropTypes.func,
 };
 
-SendEventConditions.defaultProps = {
-  onValueChange: null,
-};
 SendEventConditions.displayName = 'SendEventConditions';
 export { SendEventConditions };

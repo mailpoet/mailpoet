@@ -3,7 +3,7 @@ import { Button } from '@wordpress/components';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 
-function CustomFieldDelete({ isBusy, onDelete }) {
+function CustomFieldDelete({ isBusy = false, onDelete = () => {} }) {
   const displayConfirm = useCallback(() => {
     const result = window.confirm(MailPoet.I18n.t('customFieldDeleteConfirm')); // eslint-disable-line no-alert
     if (result) {
@@ -27,11 +27,6 @@ function CustomFieldDelete({ isBusy, onDelete }) {
 CustomFieldDelete.propTypes = {
   isBusy: PropTypes.bool,
   onDelete: PropTypes.func,
-};
-
-CustomFieldDelete.defaultProps = {
-  isBusy: false,
-  onDelete: () => {},
 };
 
 export { CustomFieldDelete };

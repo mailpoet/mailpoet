@@ -29,8 +29,8 @@ const MenuItem = WpMenuItem as React.FC<
 >;
 
 function NewsletterTypesComponent({
-  filter,
   history,
+  filter = null,
   hideScreenOptions = true,
 }: Props): JSX.Element {
   const [isCreating, setIsCreating] = useState(false);
@@ -290,11 +290,6 @@ function NewsletterTypesComponent({
     </>
   );
 }
-
-NewsletterTypesComponent.defaultProps = {
-  filter: null,
-  hideScreenOptions: true,
-};
 
 export const NewsletterTypes = withRouter(
   NewsletterTypesComponent as ComponentType<RouteComponentProps>,

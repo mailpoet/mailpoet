@@ -91,7 +91,7 @@ class TemplateBox extends Component {
   }
 
   render() {
-    const { index, name, thumbnail, readonly } = this.props;
+    const { index, name, readonly, thumbnail = null } = this.props;
 
     let preview = '';
     if (typeof thumbnail === 'string' && thumbnail.length > 0) {
@@ -151,8 +151,5 @@ TemplateBox.propTypes = {
   afterSelect: PropTypes.func.isRequired,
 };
 
-TemplateBox.defaultProps = {
-  thumbnail: null,
-};
 TemplateBox.displayName = 'TemplateBox';
 export { TemplateBox };

@@ -10,7 +10,7 @@ type Props = {
   doneCallback?: (step: string) => void;
 };
 
-function StepsComponent({ count, current, titles, doneCallback }: Props) {
+function StepsComponent({ count, current, doneCallback, titles = [] }: Props) {
   return (
     <div className="mailpoet-steps">
       <ContentWrapperFix />
@@ -54,9 +54,6 @@ function StepsComponent({ count, current, titles, doneCallback }: Props) {
   );
 }
 
-StepsComponent.defaultProps = {
-  titles: [],
-};
 StepsComponent.displayName = 'StepsComponent';
 const Steps = withBoundary(StepsComponent);
 export { Steps };

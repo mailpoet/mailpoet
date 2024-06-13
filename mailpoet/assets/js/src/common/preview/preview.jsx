@@ -5,7 +5,11 @@ import classnames from 'classnames';
 import { MobileIcon } from './mobile-icon';
 import { DesktopIcon } from './desktop-icon';
 
-function Preview({ children, onDisplayTypeChange, selectedDisplayType }) {
+function Preview({
+  children,
+  onDisplayTypeChange = (type) => type,
+  selectedDisplayType = 'desktop',
+}) {
   const [displayType, setDisplayType] = useState(selectedDisplayType);
   const changeType = (type) => {
     setDisplayType(type);
@@ -76,9 +80,5 @@ Preview.propTypes = {
   selectedDisplayType: PropTypes.string,
 };
 
-Preview.defaultProps = {
-  onDisplayTypeChange: () => {},
-  selectedDisplayType: 'desktop',
-};
 Preview.displayName = 'FormEditorPreview';
 export { Preview };

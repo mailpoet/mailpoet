@@ -134,7 +134,13 @@ SendingStatusListing.propTypes = {
   }).isRequired,
 };
 
-function StatsLink({ newsletter }) {
+function StatsLink({
+  newsletter = {
+    id: null,
+    subject: null,
+    sent: false,
+  },
+}) {
   if (!newsletter.id || !newsletter.subject || !newsletter.sent) return null;
   return (
     <p>
@@ -150,16 +156,8 @@ StatsLink.propTypes = {
     sent: PropTypes.bool,
   }),
 };
-StatsLink.defaultProps = {
-  newsletter: {
-    id: null,
-    subject: null,
-    sent: false,
-  },
-};
 
 function ListingItem({
-  error,
   failed,
   taskId,
   processed,
@@ -167,6 +165,7 @@ function ListingItem({
   subscriberId,
   lastName,
   firstName,
+  error = '',
 }) {
   const resend = () => {
     MailPoet.Ajax.post({
@@ -262,9 +261,6 @@ ListingItem.propTypes = {
   firstName: PropTypes.string.isRequired,
   processed: PropTypes.number.isRequired,
   subscriberId: PropTypes.number.isRequired,
-};
-ListingItem.defaultProps = {
-  error: '',
 };
 ListingItem.displayName = 'ListingItem';
 SendingStatus.displayName = 'SendingStatus';

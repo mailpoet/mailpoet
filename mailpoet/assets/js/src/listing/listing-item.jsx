@@ -27,7 +27,22 @@ class ListingItem extends Component {
   render() {
     let checkbox = false;
 
-    if (this.props.is_selectable === true) {
+    const {
+      is_selectable: isSelectable,
+      item,
+      columns,
+      group,
+      selection,
+      item_actions: propsItemActions,
+      onRefreshItems,
+      isItemInactive,
+      onRenderItem,
+      location = undefined,
+      isItemDeletable = () => true,
+      isItemToggleable = () => false,
+    } = this.props;
+
+    if (isSelectable === true) {
       checkbox = (
         <th
           className="mailpoet-listing-check-column mailpoet-hide-on-mobile"
@@ -35,24 +50,24 @@ class ListingItem extends Component {
         >
           <label
             className="screen-reader-text"
-            htmlFor={`listing-row-checkbox-${this.props.item.id}`}
+            htmlFor={`listing-row-checkbox-${item.id}`}
           >
-            {`Select ${this.props.item[this.props.columns[0].name]}`}
+            {`Select ${item[columns[0].name]}`}
           </label>
           <Checkbox
-            value={this.props.item.id}
-            checked={this.props.item.selected || this.props.selection === 'all'}
+            value={item.id}
+            checked={item.selected || selection === 'all'}
             onCheck={() => {}}
             onChange={this.handleSelectItem}
-            disabled={this.props.selection === 'all'}
-            id={`listing-row-checkbox-${this.props.item.id}`}
-            automationId={`listing-row-checkbox-${this.props.item.id}`}
+            disabled={selection === 'all'}
+            id={`listing-row-checkbox-${item.id}`}
+            automationId={`listing-row-checkbox-${item.id}`}
           />
         </th>
       );
     }
 
-    const customActions = this.props.item_actions;
+    const customActions = propsItemActions;
     let itemActions = false;
 
     if (customActions.length > 0) {
@@ -75,10 +90,10 @@ class ListingItem extends Component {
                   href="#"
                   onClick={(event) => {
                     event.preventDefault();
-                    this.handleTrashItem(this.props.item.id);
+                    this.handleTrashItem(item.id);
                   }}
                 >
-                  {this.props.isItemToggleable(this.props.item)
+                  {isItemToggleable(item)
                     ? __('Trash and disable', 'mailpoet')
                     : __('Move to trash', 'mailpoet')}
                 </a>
@@ -87,7 +102,7 @@ class ListingItem extends Component {
           } else if (action.refresh) {
             customAction = (
               <span
-                onClick={this.props.onRefreshItems}
+                onClick={onRefreshItems}
                 key={`action-${action.name}`}
                 className={classnames(action.name, action.className)}
                 role="button"
@@ -98,11 +113,11 @@ class ListingItem extends Component {
                     ['Enter', ' '].includes(event.key)
                   ) {
                     event.preventDefault();
-                    this.props.onRefreshItems();
+                    onRefreshItems();
                   }
                 }}
               >
-                {action.link(this.props.item)}
+                {action.link(item)}
               </span>
             );
           } else if (action.link) {
@@ -111,7 +126,7 @@ class ListingItem extends Component {
                 key={`action-${action.name}`}
                 className={classnames(action.name, action.className)}
               >
-                {action.link(this.props.item, this.props.location)}
+                {action.link(item, location)}
               </span>
             );
           } else {
@@ -125,10 +140,7 @@ class ListingItem extends Component {
                   onClick={(event) => {
                     event.preventDefault();
                     if (action.onClick !== undefined) {
-                      action.onClick(
-                        this.props.item,
-                        this.props.onRefreshItems,
-                      );
+                      action.onClick(item, onRefreshItems);
                     }
                   }}
                 >
@@ -144,9 +156,9 @@ class ListingItem extends Component {
         <span className="edit mailpoet-hide-on-mobile">
           <Link
             to={{
-              pathname: `/edit/${this.props.item.id}`,
+              pathname: `/edit/${item.id}`,
               state: {
-                backUrl: this.props.location?.pathname,
+                backUrl: location?.pathname,
               },
             }}
           >
@@ -158,7 +170,7 @@ class ListingItem extends Component {
 
     let actions;
 
-    if (this.props.group === 'trash') {
+    if (group === 'trash') {
       actions = (
         <div className="mailpoet-listing-actions-holder">
           <div className="mailpoet-listing-actions">
@@ -167,22 +179,22 @@ class ListingItem extends Component {
                 href="#"
                 onClick={(event) => {
                   event.preventDefault();
-                  this.handleRestoreItem(this.props.item.id);
+                  this.handleRestoreItem(item.id);
                 }}
               >
-                {this.props.isItemToggleable(this.props.item)
+                {isItemToggleable(item)
                   ? __('Restore and enable', 'mailpoet')
                   : __('Restore', 'mailpoet')}
               </a>
             </span>
-            {this.props.isItemDeletable(this.props.item) && (
+            {isItemDeletable(item) && (
               <span className="delete">
                 <a
                   className="submitdelete"
                   href="#"
                   onClick={(event) => {
                     event.preventDefault();
-                    this.handleDeleteItem(this.props.item.id);
+                    this.handleDeleteItem(item.id);
                   }}
                 >
                   {__('Delete permanently', 'mailpoet')}
@@ -201,20 +213,14 @@ class ListingItem extends Component {
     }
 
     const rowClasses = classnames({
-      'mailpoet-listing-row-selected':
-        this.props.item.selected || this.props.selection === 'all',
-      'mailpoet-listing-row-inactive': this.props.isItemInactive(
-        this.props.item,
-      ),
+      'mailpoet-listing-row-selected': item.selected || selection === 'all',
+      'mailpoet-listing-row-inactive': isItemInactive(item),
     });
 
     return (
-      <tr
-        className={rowClasses}
-        data-automation-id={`listing_item_${this.props.item.id}`}
-      >
+      <tr className={rowClasses} data-automation-id={`listing_item_${item.id}`}>
         {checkbox}
-        {this.props.onRenderItem(this.props.item, actions)}
+        {onRenderItem(item, actions)}
       </tr>
     );
   }
@@ -243,12 +249,6 @@ ListingItem.propTypes = {
   }),
   isItemDeletable: PropTypes.func,
   isItemToggleable: PropTypes.func,
-};
-
-ListingItem.defaultProps = {
-  location: undefined,
-  isItemDeletable: () => true,
-  isItemToggleable: () => false,
 };
 
 export { ListingItem };

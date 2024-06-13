@@ -11,15 +11,15 @@ import { MailPoet } from 'mailpoet';
 import { CustomFieldDelete } from '../custom-field-delete.jsx';
 
 function CustomFieldSettings({
-  label,
-  mandatory,
-  validate,
-  isSaving,
-  onSave,
-  isDeleting,
-  onCustomFieldDelete,
-  onChange,
-  fieldType,
+  label = '',
+  mandatory = false,
+  validate = '',
+  isSaving = false,
+  onSave = null,
+  isDeleting = false,
+  onCustomFieldDelete = null,
+  onChange = null,
+  fieldType = '',
 }) {
   const [localLabel, setLocalLabel] = useState(label);
   const [localMandatory, setLocalMandatory] = useState(mandatory);
@@ -114,18 +114,6 @@ CustomFieldSettings.propTypes = {
   onCustomFieldDelete: PropTypes.func,
   onChange: PropTypes.func,
   fieldType: PropTypes.string,
-};
-
-CustomFieldSettings.defaultProps = {
-  label: '',
-  mandatory: false,
-  fieldType: '',
-  isSaving: false,
-  validate: '',
-  isDeleting: false,
-  onCustomFieldDelete: null,
-  onSave: null,
-  onChange: null,
 };
 
 export { CustomFieldSettings };

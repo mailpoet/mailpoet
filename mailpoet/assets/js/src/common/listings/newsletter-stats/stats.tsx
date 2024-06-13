@@ -69,6 +69,7 @@ export const getBadgeType = (statName, rate) => {
 };
 
 function StatsBadge(props: StatsBadgeProps) {
+  const { isInverted = true } = props;
   const badges = {
     excellent: {
       name: __('Excellent', 'mailpoet'),
@@ -119,7 +120,7 @@ function StatsBadge(props: StatsBadgeProps) {
 
   const content = (
     <Badge
-      isInverted={props.isInverted}
+      isInverted={isInverted}
       type={badgeType}
       name={badge.name}
       tooltip={tooltipText}
@@ -130,9 +131,5 @@ function StatsBadge(props: StatsBadgeProps) {
 
   return content;
 }
-
-StatsBadge.defaultProps = {
-  isInverted: true,
-};
 
 export { StatsBadge };

@@ -10,7 +10,7 @@ type Props = {
   onRequestClose?: () => void;
 };
 
-function App({ onRequestClose }: Props) {
+function App({ onRequestClose = noop }: Props) {
   const [showModal, setShowModal] = useState(false);
 
   // use jQuery since some of the targeted notices are added to the DOM using the old
@@ -35,10 +35,6 @@ function App({ onRequestClose }: Props) {
     </GlobalContext.Provider>
   );
 }
-
-App.defaultProps = {
-  onRequestClose: noop,
-};
 
 // nothing is actually rendered to the container because the <Modal> component uses
 // ReactDOM.createPortal() but we need an element as a React root on all pages

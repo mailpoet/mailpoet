@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 
-function KeyValueTable(props) {
+function KeyValueTable({ rows, max_width: maxWidth = 'auto' }) {
   return (
-    <table className="widefat fixed" style={{ maxWidth: props.max_width }}>
+    <table className="widefat fixed" style={{ maxWidth }}>
       <tbody>
-        {props.rows.map((row) => (
+        {rows.map((row) => (
           <tr key={`row_${row.key}`}>
             <td className="row-title">{row.key}</td>
             <td>{row.value}</td>
@@ -27,10 +27,6 @@ KeyValueTable.propTypes = {
       ]).isRequired,
     }),
   ).isRequired,
-};
-
-KeyValueTable.defaultProps = {
-  max_width: 'auto',
 };
 
 export { KeyValueTable };

@@ -3,7 +3,17 @@ import codemirror from 'codemirror';
 import 'codemirror/mode/css/css'; // Side effect
 import PropTypes from 'prop-types';
 
-function CodemirrorWrap({ options, value, onChange }) {
+function CodemirrorWrap({
+  value,
+  onChange,
+  options = {
+    lineNumbers: true,
+    tabMode: 'indent',
+    matchBrackets: true,
+    theme: 'neo',
+    mode: 'css',
+  },
+}) {
   const textArea = useRef(null);
   const editor = useRef(null);
 
@@ -54,16 +64,6 @@ CodemirrorWrap.propTypes = {
     theme: PropTypes.string,
     mode: PropTypes.string,
   }),
-};
-
-CodemirrorWrap.defaultProps = {
-  options: {
-    lineNumbers: true,
-    tabMode: 'indent',
-    matchBrackets: true,
-    theme: 'neo',
-    mode: 'css',
-  },
 };
 
 export { CodemirrorWrap };

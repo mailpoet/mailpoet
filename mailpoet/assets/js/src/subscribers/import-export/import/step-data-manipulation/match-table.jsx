@@ -7,7 +7,7 @@ import { matchColumns } from './match-columns.jsx';
 
 const MAX_SUBSCRIBERS_SHOWN = 10;
 
-function ColumnDataMatch({ header, subscribers }) {
+function ColumnDataMatch({ header = [], subscribers }) {
   const matchedColumnTypes = matchColumns(subscribers, header);
   return (
     <tr>
@@ -41,10 +41,6 @@ ColumnDataMatch.propTypes = {
     ),
   ).isRequired,
   header: PropTypes.arrayOf(PropTypes.string),
-};
-
-ColumnDataMatch.defaultProps = {
-  header: [],
 };
 
 function Header({ header }) {
@@ -127,7 +123,7 @@ Subscribers.propTypes = {
   ).isRequired,
 };
 
-function MatchTable({ subscribersCount, subscribers, header }) {
+function MatchTable({ subscribersCount = 0, subscribers = [], header = [] }) {
   useLayoutEffect(() => {
     generateColumnSelection();
   });
@@ -163,12 +159,6 @@ MatchTable.propTypes = {
     ),
   ),
   header: PropTypes.arrayOf(PropTypes.string),
-};
-
-MatchTable.defaultProps = {
-  subscribersCount: 0,
-  subscribers: [],
-  header: [],
 };
 
 export { MatchTable };

@@ -14,7 +14,7 @@ function TextInputEdit({
   name,
   mandatory,
   styles,
-  className,
+  className = '',
 }) {
   const settings = useSelect(
     (select) => select(storeName).getFormSettings(),
@@ -123,10 +123,6 @@ TextInputEdit.propTypes = {
   mandatory: PropTypes.bool.isRequired,
   className: PropTypes.string,
   styles: inputStylesPropTypes.isRequired,
-};
-
-TextInputEdit.defaultProps = {
-  className: '',
 };
 
 export { TextInputEdit };

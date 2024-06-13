@@ -180,6 +180,7 @@ class FormField extends Component {
 
   render() {
     let field = false;
+    const { onValueChange = () => {} } = this.props;
 
     if (this.props.field.fields !== undefined) {
       field = this.props.field.fields.map((subfield, index) =>
@@ -187,7 +188,7 @@ class FormField extends Component {
           index,
           field: subfield,
           item: this.props.item,
-          onValueChange: this.props.onValueChange || false,
+          onValueChange: onValueChange || false,
         }),
       );
     } else {
@@ -235,12 +236,6 @@ FormField.propTypes = {
     disabled: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
   }).isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-};
-
-FormField.defaultProps = {
-  onValueChange: function onValueChange() {
-    // no-op
-  },
 };
 
 export { FormField };

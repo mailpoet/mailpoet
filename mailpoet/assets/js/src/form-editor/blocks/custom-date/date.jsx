@@ -236,12 +236,13 @@ class FormFieldDate extends Component {
   }
 
   render() {
+    const { field, addDefaultClasses = false } = this.props;
     const monthNames = window.mailpoet_month_names || [];
     const dateFormats = window.mailpoet_date_formats || {};
-    const dateType = this.props.field.params.date_type;
+    const dateType = field.params.date_type;
     let dateFormat = dateFormats[dateType][0];
-    if (this.props.field.params.date_format) {
-      dateFormat = this.props.field.params.date_format;
+    if (field.params.date_format) {
+      dateFormat = field.params.date_format;
     }
     const dateSelects = dateFormat.split('/');
 
@@ -252,10 +253,10 @@ class FormFieldDate extends Component {
             <FormFieldDateYear
               onValueChange={this.onValueChange}
               key="year"
-              name={this.props.field.name}
-              addDefaultClasses={this.props.addDefaultClasses}
+              name={field.name}
+              addDefaultClasses={addDefaultClasses}
               year={this.state.year}
-              placeholder={this.props.field.year_placeholder}
+              placeholder={field.year_placeholder}
             />
           );
 
@@ -264,11 +265,11 @@ class FormFieldDate extends Component {
             <FormFieldDateMonth
               onValueChange={this.onValueChange}
               key="month"
-              name={this.props.field.name}
-              addDefaultClasses={this.props.addDefaultClasses}
+              name={field.name}
+              addDefaultClasses={addDefaultClasses}
               month={this.state.month}
               monthNames={monthNames}
-              placeholder={this.props.field.month_placeholder}
+              placeholder={field.month_placeholder}
             />
           );
 
@@ -277,10 +278,10 @@ class FormFieldDate extends Component {
             <FormFieldDateDay
               onValueChange={this.onValueChange}
               key="day"
-              name={this.props.field.name}
-              addDefaultClasses={this.props.addDefaultClasses}
+              name={field.name}
+              addDefaultClasses={addDefaultClasses}
               day={this.state.day}
-              placeholder={this.props.field.day_placeholder}
+              placeholder={field.day_placeholder}
             />
           );
 
@@ -304,10 +305,6 @@ FormFieldDate.propTypes = {
   }).isRequired,
   onValueChange: PropTypes.func.isRequired,
   addDefaultClasses: PropTypes.bool,
-};
-
-FormFieldDate.defaultProps = {
-  addDefaultClasses: false,
 };
 
 export { FormFieldDate };

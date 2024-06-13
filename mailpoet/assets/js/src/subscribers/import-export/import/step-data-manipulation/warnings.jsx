@@ -24,7 +24,13 @@ SingleWarning.propTypes = {
   subscribers: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-function Warnings({ stepMethodSelectionData }) {
+function Warnings({
+  stepMethodSelectionData = {
+    invalid: [],
+    duplicate: [],
+    role: [],
+  },
+}) {
   const { invalid, duplicate, role } = stepMethodSelectionData;
 
   const [detailsShown, setDetailsShown] = useState(false);
@@ -123,14 +129,6 @@ Warnings.propTypes = {
     invalid: PropTypes.arrayOf(PropTypes.string),
     role: PropTypes.arrayOf(PropTypes.string),
   }),
-};
-
-Warnings.defaultProps = {
-  stepMethodSelectionData: {
-    invalid: [],
-    duplicate: [],
-    role: [],
-  },
 };
 
 export { Warnings };

@@ -10,20 +10,43 @@ import { ListingItem } from 'listing/listing-item.jsx';
 // eslint-disable-next-line react/prefer-stateless-function, max-len
 class ListingItems extends Component {
   render() {
-    if (this.props.items.length === 0) {
+    const {
+      bulk_actions: bulkActions,
+      count,
+      columns,
+      group,
+      items,
+      is_selectable: isSelectable,
+      isItemInactive,
+      item_actions: itemActions,
+      limit,
+      loading,
+      messages,
+      onBulkAction,
+      onDeleteItem,
+      onRefreshItems,
+      onRenderItem,
+      onRestoreItem,
+      onSelectAll,
+      onSelectItem,
+      onTrashItem,
+      selected_ids: selectedIds,
+      selection,
+      getListingItemKey = undefined,
+      search = undefined,
+      location = undefined,
+      isItemDeletable = () => true,
+      isItemToggleable = () => false,
+    } = this.props;
+    if (items.length === 0) {
       let message;
-      if (this.props.loading === true) {
+      if (loading === true) {
         message =
-          (this.props.messages.onLoadingItems &&
-            this.props.messages.onLoadingItems(this.props.group)) ||
+          (messages.onLoadingItems && messages.onLoadingItems(group)) ||
           __('Loading ...', 'mailpoet');
       } else {
         message =
-          (this.props.messages.onNoItemsFound &&
-            this.props.messages.onNoItemsFound(
-              this.props.group,
-              this.props.search,
-            )) ||
+          (messages.onNoItemsFound && messages.onNoItemsFound(group, search)) ||
           __('No items found.', 'mailpoet');
       }
 
@@ -31,9 +54,7 @@ class ListingItems extends Component {
         <tbody>
           <tr className="mailpoet-listing-no-items">
             <td
-              colSpan={
-                this.props.columns.length + (this.props.is_selectable ? 1 : 0)
-              }
+              colSpan={columns.length + (isSelectable ? 1 : 0)}
               className="colspanchange"
             >
               {message}
@@ -43,11 +64,8 @@ class ListingItems extends Component {
       );
     }
 
-    const isSelectAllHidden =
-      this.props.selection === false || this.props.count <= this.props.limit;
-    const areBulkActionsHidden = !(
-      this.props.selected_ids.length > 0 || this.props.selection
-    );
+    const isSelectAllHidden = selection === false || count <= limit;
+    const areBulkActionsHidden = !(selectedIds.length > 0 || selection);
 
     const actionAndSelectAllRowClasses = classnames(
       'mailpoet-listing-actions-and-select-all-row',
@@ -62,39 +80,35 @@ class ListingItems extends Component {
     return (
       <tbody>
         <tr className={actionAndSelectAllRowClasses}>
-          <td
-            colSpan={
-              this.props.columns.length + (this.props.is_selectable ? 1 : 0)
-            }
-          >
+          <td colSpan={columns.length + (isSelectable ? 1 : 0)}>
             <Grid.SpaceBetween verticalAlign="center">
               <div className="mailpoet-listing-bulk-actions-container">
                 {!areBulkActionsHidden && (
                   <ListingBulkActions
-                    count={this.props.count}
-                    bulk_actions={this.props.bulk_actions}
-                    selection={this.props.selection}
-                    selected_ids={this.props.selected_ids}
-                    onBulkAction={this.props.onBulkAction}
+                    count={count}
+                    bulk_actions={bulkActions}
+                    selection={selection}
+                    selected_ids={selectedIds}
+                    onBulkAction={onBulkAction}
                   />
                 )}
               </div>
               <div className={selectAllClasses}>
-                {this.props.selection !== 'all'
+                {selection !== 'all'
                   ? __('All items on this page are selected.', 'mailpoet')
                   : __('All %d items are selected.', 'mailpoet').replace(
                       '%d',
-                      this.props.count.toLocaleString(),
+                      count.toLocaleString(),
                     )}
                 &nbsp;
                 <a
                   href="#"
                   onClick={(event) => {
                     event.preventDefault();
-                    this.props.onSelectAll(event);
+                    onSelectAll(event);
                   }}
                 >
-                  {this.props.selection !== 'all'
+                  {selection !== 'all'
                     ? __('Select all items on all pages', 'mailpoet')
                     : __('Clear selection', 'mailpoet')}
                 </a>
@@ -104,35 +118,34 @@ class ListingItems extends Component {
           </td>
         </tr>
 
-        {this.props.items.map((item) => {
+        {items.map((item) => {
           const renderItem = item;
           renderItem.id = parseInt(item.id, 10);
-          renderItem.selected =
-            this.props.selected_ids.indexOf(renderItem.id) !== -1;
+          renderItem.selected = selectedIds.indexOf(renderItem.id) !== -1;
           let key = `item-${renderItem.id}-${item.id}`;
-          if (typeof this.props.getListingItemKey === 'function') {
-            key = this.props.getListingItemKey(item);
+          if (typeof getListingItemKey === 'function') {
+            key = getListingItemKey(item);
           }
 
           return (
             <ListingItem
-              columns={this.props.columns}
-              isItemInactive={this.props.isItemInactive}
-              onSelectItem={this.props.onSelectItem}
-              onRenderItem={this.props.onRenderItem}
-              onDeleteItem={this.props.onDeleteItem}
-              onRestoreItem={this.props.onRestoreItem}
-              onTrashItem={this.props.onTrashItem}
-              onRefreshItems={this.props.onRefreshItems}
-              selection={this.props.selection}
-              is_selectable={this.props.is_selectable}
-              item_actions={this.props.item_actions}
-              group={this.props.group}
-              location={this.props.location}
+              columns={columns}
+              isItemInactive={isItemInactive}
+              onSelectItem={onSelectItem}
+              onRenderItem={onRenderItem}
+              onDeleteItem={onDeleteItem}
+              onRestoreItem={onRestoreItem}
+              onTrashItem={onTrashItem}
+              onRefreshItems={onRefreshItems}
+              selection={selection}
+              is_selectable={isSelectable}
+              item_actions={itemActions}
+              group={group}
+              location={location}
               key={key}
               item={renderItem}
-              isItemDeletable={this.props.isItemDeletable}
-              isItemToggleable={this.props.isItemToggleable}
+              isItemDeletable={isItemDeletable}
+              isItemToggleable={isItemToggleable}
             />
           );
         })}
@@ -177,14 +190,6 @@ ListingItems.propTypes = {
   }),
   isItemDeletable: PropTypes.func,
   isItemToggleable: PropTypes.func,
-};
-
-ListingItems.defaultProps = {
-  getListingItemKey: undefined,
-  search: undefined,
-  location: undefined,
-  isItemDeletable: () => true,
-  isItemToggleable: () => false,
 };
 
 export { ListingItems };

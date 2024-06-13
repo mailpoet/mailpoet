@@ -8,7 +8,11 @@ import ReactStringReplace from 'react-string-replace';
 import { Button } from 'common/button/button';
 import { ErrorBoundary } from 'common';
 
-function ResultMessage({ subscribersCount, segments, initialMessage }) {
+function ResultMessage({
+  subscribersCount = 0,
+  segments = [],
+  initialMessage = '',
+}) {
   if (subscribersCount) {
     let message = ReactStringReplace(initialMessage, '%1$s', () => (
       <strong key="%1$s">{subscribersCount.toLocaleString()}</strong>
@@ -29,14 +33,9 @@ ResultMessage.propTypes = {
   initialMessage: PropTypes.string,
 };
 
-ResultMessage.defaultProps = {
-  segments: [],
-  subscribersCount: 0,
-  initialMessage: '',
-};
 ResultMessage.displayName = 'ResultMessage';
 
-function NoAction({ createdSubscribers, updatedSubscribers }) {
+function NoAction({ createdSubscribers = 0, updatedSubscribers = 0 }) {
   if (!createdSubscribers && !updatedSubscribers) {
     return <p>{MailPoet.I18n.t('importNoAction')}</p>;
   }
@@ -48,13 +47,12 @@ NoAction.propTypes = {
   updatedSubscribers: PropTypes.number,
 };
 
-NoAction.defaultProps = {
-  createdSubscribers: 0,
-  updatedSubscribers: 0,
-};
 NoAction.displayName = 'NoAction';
 
-function SuppressionListReminder({ createdSubscribers, updatedSubscribers }) {
+function SuppressionListReminder({
+  createdSubscribers = 0,
+  updatedSubscribers = 0,
+}) {
   if (createdSubscribers || updatedSubscribers) {
     return (
       <>
@@ -89,13 +87,9 @@ SuppressionListReminder.propTypes = {
   updatedSubscribers: PropTypes.number,
 };
 
-SuppressionListReminder.defaultProps = {
-  createdSubscribers: 0,
-  updatedSubscribers: 0,
-};
 SuppressionListReminder.displayName = 'SuppressionListReminder';
 
-function NoWelcomeEmail({ addedToSegmentWithWelcomeNotification }) {
+function NoWelcomeEmail({ addedToSegmentWithWelcomeNotification = false }) {
   if (addedToSegmentWithWelcomeNotification) {
     return <p>{MailPoet.I18n.t('importNoWelcomeEmail')}</p>;
   }
@@ -106,18 +100,15 @@ NoWelcomeEmail.propTypes = {
   addedToSegmentWithWelcomeNotification: PropTypes.bool,
 };
 
-NoWelcomeEmail.defaultProps = {
-  addedToSegmentWithWelcomeNotification: false,
-};
 NoWelcomeEmail.diplayName = 'NoWelcomeEmail';
 
 function StepResultsComponent({
-  errors,
-  createdSubscribers,
-  updatedSubscribers,
-  segments,
-  addedToSegmentWithWelcomeNotification,
   history,
+  errors = [],
+  createdSubscribers = undefined,
+  updatedSubscribers = undefined,
+  segments = undefined,
+  addedToSegmentWithWelcomeNotification = undefined,
 }) {
   useEffect(() => {
     if (
@@ -204,12 +195,5 @@ StepResultsComponent.propTypes = {
   addedToSegmentWithWelcomeNotification: PropTypes.bool,
 };
 
-StepResultsComponent.defaultProps = {
-  errors: [],
-  segments: undefined,
-  createdSubscribers: undefined,
-  updatedSubscribers: undefined,
-  addedToSegmentWithWelcomeNotification: undefined,
-};
 StepResultsComponent.displayName = 'StepResultsComponent';
 export const StepResults = withRouter(StepResultsComponent);

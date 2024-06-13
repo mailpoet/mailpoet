@@ -16,15 +16,22 @@ class ListingHeader extends Component {
   }
 
   render() {
-    const columns = this.props.columns.map((column, index) => {
+    const {
+      onSort,
+      sort_by: sortBy,
+      sort_order: sortOrder,
+      is_selectable: isSelectable,
+      selection,
+      columns: propsColumns = [],
+    } = this.props;
+    const columns = propsColumns.map((column, index) => {
       const renderColumn = column;
       renderColumn.is_primary = index === 0;
-      renderColumn.sorted =
-        this.props.sort_by === column.name ? this.props.sort_order : 'desc';
+      renderColumn.sorted = sortBy === column.name ? sortOrder : 'desc';
       return (
         <ListingColumn
-          onSort={this.props.onSort}
-          sort_by={this.props.sort_by}
+          onSort={onSort}
+          sort_by={sortBy}
           key={`column-${column.name}`}
           column={renderColumn}
         />
@@ -33,7 +40,7 @@ class ListingHeader extends Component {
 
     let checkbox;
 
-    if (this.props.is_selectable === true) {
+    if (isSelectable === true) {
       checkbox = (
         <th className="manage-column column-cb mailpoet-listing-check-column">
           <label className="screen-reader-text" htmlFor="select_all">
@@ -43,7 +50,7 @@ class ListingHeader extends Component {
             name="select_all"
             id="select_all"
             automationId="select_all"
-            checked={this.props.selection}
+            checked={selection}
             onCheck={() => {}}
             onChange={this.handleSelectItems}
           />
@@ -68,12 +75,6 @@ ListingHeader.propTypes = {
   sort_order: PropTypes.string,
   is_selectable: PropTypes.bool.isRequired,
   selection: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]).isRequired,
-};
-
-ListingHeader.defaultProps = {
-  columns: [],
-  sort_by: undefined,
-  sort_order: 'desc',
 };
 
 export { ListingHeader };

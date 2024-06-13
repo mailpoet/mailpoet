@@ -9,6 +9,8 @@ export class FormFieldSelect extends Component {
       return false;
     }
 
+    const { automationId = '', onValueChange = () => {} } = this.props;
+
     let filter = false;
     let placeholder = false;
     let sortBy = false;
@@ -55,8 +57,8 @@ export class FormFieldSelect extends Component {
         name={this.props.field.name}
         id={`field_${this.props.field.name}`}
         value={this.props.item[this.props.field.name] || ''}
-        onChange={this.props.onValueChange}
-        automationId={this.props.automationId}
+        onChange={onValueChange}
+        automationId={automationId}
         {...this.props.field.validation}
       >
         {placeholder}
@@ -84,11 +86,4 @@ FormFieldSelect.propTypes = {
   }).isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   automationId: PropTypes.string,
-};
-
-FormFieldSelect.defaultProps = {
-  automationId: '',
-  onValueChange: function onValueChange() {
-    // no-op
-  },
 };

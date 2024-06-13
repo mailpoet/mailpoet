@@ -8,15 +8,15 @@ import { CustomFieldDelete } from '../custom-field-delete.jsx';
 import { Preview } from './settings-preview.jsx';
 
 function CustomFieldSettings({
-  label,
-  mandatory,
-  values,
-  isSaving,
-  onSave,
-  isDeleting,
-  onCustomFieldDelete,
-  onChange,
-  useDragAndDrop,
+  label = '',
+  mandatory = false,
+  values = [],
+  isSaving = false,
+  onSave = null,
+  isDeleting = false,
+  onCustomFieldDelete = null,
+  onChange = null,
+  useDragAndDrop = true,
 }) {
   const [localLabel, setLocalLabel] = useState(label);
   const [localMandatory, setLocalMandatory] = useState(mandatory);
@@ -147,18 +147,6 @@ CustomFieldSettings.propTypes = {
   onCustomFieldDelete: PropTypes.func,
   onChange: PropTypes.func,
   useDragAndDrop: PropTypes.bool,
-};
-
-CustomFieldSettings.defaultProps = {
-  label: '',
-  mandatory: false,
-  isSaving: false,
-  values: [],
-  isDeleting: false,
-  onCustomFieldDelete: null,
-  onSave: null,
-  onChange: null,
-  useDragAndDrop: true,
 };
 
 export { CustomFieldSettings };

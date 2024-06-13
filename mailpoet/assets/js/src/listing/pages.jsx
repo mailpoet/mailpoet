@@ -60,7 +60,8 @@ class ListingPages extends Component {
     Math.min(Math.max(1, Math.abs(Number(page))), this.getLastPage());
 
   render() {
-    if (this.props.count === 0) {
+    const { count, limit, page, position = '' } = this.props;
+    if (count === 0) {
       return false;
     }
     let pagination = false;
@@ -87,8 +88,8 @@ class ListingPages extends Component {
       </span>
     );
 
-    if (this.props.limit > 0 && this.props.count > this.props.limit) {
-      if (this.props.page > 1) {
+    if (limit > 0 && count > limit) {
+      if (page > 1) {
         previousPage = (
           <a
             href="#"
@@ -108,7 +109,7 @@ class ListingPages extends Component {
         );
       }
 
-      if (this.props.page > 2) {
+      if (page > 2) {
         firstPage = (
           <a
             href="#"
@@ -129,7 +130,7 @@ class ListingPages extends Component {
         );
       }
 
-      if (this.props.page < this.getLastPage()) {
+      if (page < this.getLastPage()) {
         nextPage = (
           <a
             href="#"
@@ -149,7 +150,7 @@ class ListingPages extends Component {
         );
       }
 
-      if (this.props.page < this.getLastPage() - 1) {
+      if (page < this.getLastPage() - 1) {
         lastPage = (
           <a
             href="#"
@@ -170,7 +171,7 @@ class ListingPages extends Component {
         );
       }
 
-      let pageValue = this.props.page;
+      let pageValue = page;
       if (this.state.page !== null) {
         pageValue = this.state.page;
       }
@@ -184,7 +185,7 @@ class ListingPages extends Component {
           <span className="mailpoet-listing-paging-input">
             <label
               className="screen-reader-text"
-              htmlFor={`current-page-selector-${this.props.position}`}
+              htmlFor={`current-page-selector-${position}`}
             >
               {__('Current page', 'mailpoet')}
             </label>
@@ -197,13 +198,13 @@ class ListingPages extends Component {
               size="2"
               value={pageValue}
               name="paged"
-              id={`current-page-selector-${this.props.position}`}
+              id={`current-page-selector-${position}`}
               className="mailpoet-listing-current-page"
             />
             {__('of', 'mailpoet')}
             &nbsp;
             <span className="mailpoet-listing-total-pages">
-              {Math.ceil(this.props.count / this.props.limit).toLocaleString()}
+              {Math.ceil(count / limit).toLocaleString()}
             </span>
           </span>
           &nbsp;
@@ -215,16 +216,16 @@ class ListingPages extends Component {
     }
 
     const classes = classnames('mailpoet-listing-pages', {
-      'one-page': this.props.count <= this.props.limit,
+      'one-page': count <= limit,
     });
 
     let numberOfItemsLabel;
-    if (Number(this.props.count) === 1) {
+    if (Number(count) === 1) {
       numberOfItemsLabel = __('1 item', 'mailpoet');
     } else {
       numberOfItemsLabel = __('%1$d items', 'mailpoet').replace(
         '%1$d',
-        parseInt(this.props.count, 10).toLocaleString(),
+        parseInt(count, 10).toLocaleString(),
       );
     }
 
@@ -245,16 +246,12 @@ ListingPages.propTypes = {
   limit: PropTypes.number.isRequired,
 };
 
-ListingPages.defaultProps = {
-  position: '',
-};
-
 /* type ArrowProps = {
   direction?: 'right',
   disabled?: boolean
 } */
 
-function Arrow({ direction, disabled }) {
+function Arrow({ direction = 'right', disabled = false }) {
   const arrowLeftPath =
     'M8 10V2c0-.552-.448-1-1-1-.216 0-.427.07-.6.2l-5.333 4c-.442.331-.532.958-.2 1.4.057.076.124.143.2.2l5.333 4c.442.331 1.069.242 1.4-.2.13-.173.2-.384.2-.6z';
   const arrowRightPath =
@@ -277,11 +274,6 @@ function Arrow({ direction, disabled }) {
 Arrow.propTypes = {
   direction: PropTypes.oneOf(['left', 'right']),
   disabled: PropTypes.bool,
-};
-
-Arrow.defaultProps = {
-  direction: 'right',
-  disabled: false,
 };
 
 export { ListingPages };

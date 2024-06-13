@@ -10,17 +10,18 @@ class ListingColumn extends Component {
   };
 
   render() {
+    const { column, sort_by: sortBy = undefined } = this.props;
     const classes = classnames(
       'manage-column',
-      { 'column-primary': this.props.column.is_primary },
-      { sortable: this.props.column.sortable },
-      this.props.column.sorted,
-      { sorted: this.props.sort_by === this.props.column.name },
-      this.props.column.className,
+      { 'column-primary': column.is_primary },
+      { sortable: column.sortable },
+      column.sorted,
+      { sorted: sortBy === column.name },
+      column.className,
     );
     let label;
 
-    if (this.props.column.sortable === true) {
+    if (column.sortable === true) {
       label = (
         <a
           onClick={this.handleSort}
@@ -36,21 +37,21 @@ class ListingColumn extends Component {
             }
           }}
         >
-          <span>{this.props.column.label}</span>
+          <span>{column.label}</span>
           <span className="mailpoet-listing-sorting-arrow" />
         </a>
       );
     } else {
-      label = this.props.column.label;
+      label = column.label;
     }
     return (
       <th
         role="columnheader"
         className={classes}
-        id={this.props.column.name}
+        id={column.name}
         scope="col"
-        width={this.props.column.width || null}
-        data-automation-id={`listing-column-header-${this.props.column.name}`}
+        width={column.width || null}
+        data-automation-id={`listing-column-header-${column.name}`}
       >
         {label}
       </th>
@@ -70,10 +71,6 @@ ListingColumn.propTypes = {
   }).isRequired,
   sort_by: PropTypes.string,
   onSort: PropTypes.func.isRequired,
-};
-
-ListingColumn.defaultProps = {
-  sort_by: undefined,
 };
 
 export { ListingColumn };

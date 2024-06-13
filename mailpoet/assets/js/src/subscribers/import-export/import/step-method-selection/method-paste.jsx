@@ -10,7 +10,13 @@ const kbLink =
 const placeholder =
   'Email, First Name, Last Name\njohn@doe.com, John, Doe\nmary@smith.com, Mary, Smith\njohnny@walker.com, Johnny, Walker';
 
-function MethodPaste({ onValueChange, canFinish, onFinish, data, onPrevious }) {
+function MethodPaste({
+  canFinish,
+  onValueChange,
+  data = '',
+  onFinish = () => {},
+  onPrevious = () => {},
+}) {
   const onChange = (e) => {
     onValueChange(e.target.value);
   };
@@ -64,10 +70,5 @@ MethodPaste.propTypes = {
   data: PropTypes.string,
 };
 
-MethodPaste.defaultProps = {
-  onFinish: () => {},
-  onPrevious: () => {},
-  data: '',
-};
 MethodPaste.displayName = 'MethodPaste';
 export { MethodPaste };

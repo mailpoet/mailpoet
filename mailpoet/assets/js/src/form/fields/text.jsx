@@ -5,12 +5,13 @@ import { Input } from 'common/form/input/input';
 // eslint-disable-next-line react/prefer-stateless-function, max-len
 class FormFieldText extends Component {
   render() {
+    const { onValueChange = () => {}, onBlurEvent = () => {} } = this.props;
     const name = this.props.field.name || null;
     const item = this.props.item || {};
     let value;
     let defaultValue;
     // value should only be set when onChangeValue is configured
-    if (this.props.onValueChange instanceof Function) {
+    if (onValueChange instanceof Function) {
       value = item[this.props.field.name];
       // set value to defaultValue if available
       value = value === undefined ? this.props.field.defaultValue || '' : value;
@@ -54,8 +55,8 @@ class FormFieldText extends Component {
         value={value}
         defaultValue={defaultValue}
         placeholder={this.props.field.placeholder}
-        onChange={this.props.onValueChange}
-        onBlur={this.props.onBlurEvent}
+        onChange={onValueChange}
+        onBlur={onBlurEvent}
         customLabel={this.props.field.customLabel}
         tooltip={this.props.field.tooltip}
         {...this.props.field.validation}
@@ -86,15 +87,6 @@ FormFieldText.propTypes = {
     tooltip: PropTypes.string,
   }).isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-};
-
-FormFieldText.defaultProps = {
-  onValueChange: function onValueChange() {
-    // no-op
-  },
-  onBlurEvent: function onValueChange() {
-    // no-op
-  },
 };
 
 export { FormFieldText };
