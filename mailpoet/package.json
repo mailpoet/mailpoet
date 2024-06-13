@@ -24,7 +24,7 @@
   "dependencies": {
     "@babel/runtime": "^7.22.11",
     "@babel/runtime-corejs3": "^7.22.11",
-    "@emotion/react": "^11.11.1",
+    "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@mailpoet/components": "workspace:^",
     "@marvelapp/react-ab-test": "^3.1.0",
