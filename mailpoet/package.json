@@ -127,7 +127,7 @@
     "@storybook/addon-actions": "^7.3.2",
     "@storybook/addon-links": "^7.3.2",
     "@storybook/addon-storysource": "^7.3.2",
-    "@storybook/addons": "^7.3.2",
+    "@storybook/addons": "^7.6.17",
     "@storybook/builder-webpack5": "^7.3.2",
     "@storybook/manager-webpack5": "^6.5.16",
     "@storybook/react": "^7.3.2",
