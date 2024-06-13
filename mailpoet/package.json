@@ -188,7 +188,7 @@
     "stylelint": "^15.10.3",
     "stylelint-order": "^6.0.4",
     "stylelint-scss": "^5.1.0",
-    "terser-webpack-plugin": "^5.3.9",
+    "terser-webpack-plugin": "^5.3.10",
     "ts-loader": "^9.4.4",
     "url": "^0.11.1",
     "webpack": "^5.88.2",
