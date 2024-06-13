@@ -182,8 +182,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       classnames:
-        specifier: ^2.3.2
-        version: 2.3.2
+        specifier: ^2.5.1
+        version: 2.5.1
       codemirror:
         specifier: ^5.65.2
         version: 5.65.2
@@ -684,7 +684,7 @@ packages:
       '@automattic/typography': 1.0.0
       '@wordpress/base-styles': 4.49.0
       '@wordpress/data': 10.0.0(react@18.2.0)
-      classnames: 2.3.2
+      classnames: 2.5.1
       gridicons: 3.4.1(react@18.2.0)
       i18n-calypso: 6.0.1(@types/react@18.0.28)(react@18.2.0)
       lodash: 4.17.21
@@ -819,7 +819,7 @@ packages:
       '@wordpress/icons': 9.49.0
       '@wordpress/primitives': 3.56.0
       '@wordpress/react-i18n': 3.36.0
-      classnames: 2.3.2
+      classnames: 2.5.1
       debug: 4.3.5
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -7192,7 +7192,7 @@ packages:
       '@wordpress/rich-text': 7.0.0(react@18.2.0)
       '@wordpress/url': 4.0.0
       '@wordpress/viewport': 6.0.0(react@18.2.0)
-      classnames: 2.3.2
+      classnames: 2.5.1
       core-js: 3.35.1
       d3-axis: 1.0.12
       d3-format: 1.4.5
@@ -7867,7 +7867,7 @@ packages:
       '@wordpress/primitives': 3.56.0
       '@wordpress/rich-text': 5.20.0(react@18.2.0)
       '@wordpress/warning': 2.58.0
-      classnames: 2.3.2
+      classnames: 2.5.1
       colord: 2.9.3
       dom-scroll-into-view: 1.2.1
       downshift: 6.1.12(react@18.2.0)
@@ -11503,8 +11503,8 @@ packages:
       static-extend: 0.1.2
     dev: true
 
-  /classnames@2.3.2:
-    resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
+  /classnames@2.5.1:
+    resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
     dev: false
 
   /clean-css@5.3.2:
@@ -19893,7 +19893,7 @@ packages:
       react-dom: ^16.9.0 || ^17 || ^18
     dependencies:
       '@popperjs/core': 2.11.8
-      classnames: 2.3.2
+      classnames: 2.5.1
       date-fns: 2.30.0
       prop-types: 15.8.1
       react: 18.2.0
