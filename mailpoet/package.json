@@ -161,7 +161,7 @@
     "chai": "^4.3.8",
     "chai-jq": "^0.0.9",
     "copy-webpack-plugin": "^11.0.0",
-    "core-js": "^3.32.1",
+    "core-js": "^3.37.1",
     "cross-env": "^7.0.3",
     "eslint-plugin-check-file": "^2.6.2",
     "exports-loader": "^4.0.0",
