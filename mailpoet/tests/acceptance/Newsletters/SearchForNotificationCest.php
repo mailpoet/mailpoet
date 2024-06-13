@@ -4,6 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
+use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;
 
 class SearchForNotificationCest {
@@ -54,7 +55,12 @@ class SearchForNotificationCest {
 
     $newsletterTitle = 'New Post Alert [newsletter:post_title]';
     $segmentName = 'New post alert list';
-    $postTitle = 'Hello how do you do';
+    $staticPostTitle = 'this is just another post';
+    $dynamicPostTitle = 'Hello how do you do';
+
+    (new Settings())
+      ->withTrackingDisabled()
+      ->withCronTriggerMethod('Action Scheduler');
 
     // step 1 - Prepare newsletter data
     $segmentFactory = new Segment();
@@ -72,27 +78,39 @@ class SearchForNotificationCest {
       ->create();
 
 
-    $postNotificationHistory = (new Newsletter())
-      ->withSubject($postTitle)
+    (new Newsletter())
+      ->withSubject($staticPostTitle)
       ->withPostNotificationHistoryType()
       ->withParent($newsletter)
       ->create();
 
+    $i->wait(1); //waiting 1 second so that post created time is after the newsletter
+
+    // create a  WP post
+    $i->cli(['post', 'create', "--post_title='$dynamicPostTitle'", '--post_content="Lorem Ipsum"', '--post_status=publish']);
+
+    $i->triggerNewsletterScheduledTask($newsletter->getId());
+    $i->triggerMailPoetActionScheduler();
+
+    $i->wait(1);
+
     // step 2 - Search post-notification
     $i->login();
-
-
     $i->amOnMailpoetPage('Emails');
     $i->click('Post Notifications', '[data-automation-id="newsletters_listing_tabs"]');
     $i->waitForListingItemsToLoad();
     $i->searchFor($newsletterTitle);
-    $i->waitForText($newsletterTitle, 15, '[data-automation-id="newsletters_listing_tabs"]'); // confirm post-notification as created
+    $i->waitForText($newsletterTitle, 15, '[data-automation-id="newsletters_listing_tabs"]'); // confirm post-notification is created
 
     // step 3 - Search post-notification history item
     $selector = sprintf('[data-automation-id="history-%d"]', $newsletter->getId());
     $i->click($selector);
-     $i->waitForElement(sprintf('[data-automation-id="listing_item_%d"]', $postNotificationHistory->getId()));
-    $i->searchFor($postTitle); // search by rendered post title
-    $i->waitForText($postTitle, 15, '[data-automation-id="newsletters_listing_tabs"]');
+    $i->waitForListingItemsToLoad();
+
+    $i->searchFor($staticPostTitle); // search by static newsletter subject
+    $i->waitForText($staticPostTitle, 15, '[data-automation-id="newsletters_listing_tabs"]');
+
+    $i->searchFor($dynamicPostTitle); // search by rendered post title
+    $i->waitForText($dynamicPostTitle, 15, '[data-automation-id="newsletters_listing_tabs"]');
   }
 }
