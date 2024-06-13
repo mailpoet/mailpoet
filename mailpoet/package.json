@@ -153,7 +153,7 @@
     "@wordpress/browserslist-config": "^6.0.0",
     "@wordpress/dependency-extraction-webpack-plugin": "5.9.0",
     "@wordpress/is-shallow-equal": "^5.0.0",
-    "autoprefixer": "^10.4.15",
+    "autoprefixer": "^10.4.19",
     "babel-loader": "^8.2.4",
     "babel-plugin-transform-commonjs": "^1.1.6",
     "browserslist": "^4.21.10",
