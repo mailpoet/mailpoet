@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.24.7",
-    "@babel/runtime-corejs3": "^7.22.11",
+    "@babel/runtime-corejs3": "^7.24.7",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mailpoet/components": "workspace:^",
