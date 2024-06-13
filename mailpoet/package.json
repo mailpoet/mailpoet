@@ -158,7 +158,7 @@
     "babel-plugin-transform-commonjs": "^1.1.6",
     "browserslist": "^4.23.1",
     "buffer": "^6.0.3",
-    "chai": "^4.3.8",
+    "chai": "^5.1.1",
     "chai-jq": "^0.0.9",
     "copy-webpack-plugin": "^11.0.0",
     "core-js": "^3.37.1",
