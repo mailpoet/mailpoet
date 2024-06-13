@@ -528,8 +528,8 @@ importers:
         specifier: ^15.10.3
         version: 15.10.3(typescript@5.0.2)
       stylelint-order:
-        specifier: ^6.0.3
-        version: 6.0.3(stylelint@15.10.3)
+        specifier: ^6.0.4
+        version: 6.0.4(stylelint@15.10.3)
       stylelint-scss:
         specifier: ^5.1.0
         version: 5.1.0(stylelint@15.10.3)
@@ -22716,10 +22716,10 @@ packages:
       stylelint: 14.16.1
     dev: true
 
-  /stylelint-order@6.0.3(stylelint@15.10.3):
-    resolution: {integrity: sha512-1j1lOb4EU/6w49qZeT2SQVJXm0Ht+Qnq9GMfUa3pMwoyojIWfuA+JUDmoR97Bht1RLn4ei0xtLGy87M7d29B1w==}
+  /stylelint-order@6.0.4(stylelint@15.10.3):
+    resolution: {integrity: sha512-0UuKo4+s1hgQ/uAxlYU4h0o0HS4NiQDud0NAUNI0aa8FJdmYHA5ZZTFHiV5FpmE3071e9pZx5j0QpVJW5zOCUA==}
     peerDependencies:
-      stylelint: ^14.0.0 || ^15.0.0
+      stylelint: ^14.0.0 || ^15.0.0 || ^16.0.1
     dependencies:
       postcss: 8.4.38
       postcss-sorting: 8.0.2(postcss@8.4.38)
