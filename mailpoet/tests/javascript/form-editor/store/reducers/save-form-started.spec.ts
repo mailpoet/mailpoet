@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { identity } from 'lodash';
 import { saveFormStartedFactory } from '../../../../../assets/js/src/form-editor/store/reducers/save-form-started';
 import { createStateMock } from '../mocks/partial-mocks';

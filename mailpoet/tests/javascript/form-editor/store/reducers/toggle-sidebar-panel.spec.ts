@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { toggleSidebarPanel as reducer } from '../../../../../assets/js/src/form-editor/store/reducers/toggle-sidebar-panel';
 import { ToggleSidebarPanelAction } from '../../../../../assets/js/src/form-editor/store/actions-types';
 import { createStateMock } from '../mocks/partial-mocks';
