@@ -876,6 +876,19 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->cli(['action-scheduler', 'run', '--force']);
   }
 
+  public function triggerNewsletterScheduledTask($newsletterId) {
+    $i = $this;
+
+    // scheduler will create a task and schedule run in the next minute.
+    // setting to a date and time in the past to force sending
+    $sql = "UPDATE mp_mailpoet_scheduled_tasks t "
+      . " JOIN mp_mailpoet_sending_queues q ON t.id = q.task_id "
+      . " SET t.scheduled_at= SUBTIME(now(), '01:00:00'), t.updated_at= SUBTIME(now(), '01:00:00'), t.created_at= SUBTIME(now(), '01:00:00'), q.created_at= SUBTIME(now(), '01:00:00') "
+      . " WHERE q.newsletter_id= $newsletterId;";
+
+    $i->importSql([$sql]);
+  }
+
   public function isWooCustomOrdersTableEnabled(): bool {
     return (bool)getenv('ENABLE_COT');
   }
