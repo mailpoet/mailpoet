@@ -211,8 +211,8 @@ class NewsletterListingRepository extends ListingRepository {
 
     if ($type && $type === NewsletterEntity::TYPE_NOTIFICATION_HISTORY) {
       $queryBuilder
-        ->join('n.queues', 'sq')
-        ->andWhere('sq.newsletterRenderedSubject LIKE :search')
+        ->leftJoin('n.queues', 'sq')
+        ->andWhere('sq.newsletterRenderedSubject LIKE :search or n.subject LIKE :search')
         ->setParameter('search', "%$search%");
     } else {
       $queryBuilder
