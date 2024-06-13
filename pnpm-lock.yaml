@@ -212,8 +212,8 @@ importers:
         specifier: ~1.2.8
         version: 1.2.8
       jquery:
-        specifier: ^3.7.0
-        version: 3.7.0
+        specifier: ^3.7.1
+        version: 3.7.1
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
@@ -17537,8 +17537,8 @@ packages:
     resolution: {integrity: sha512-WZzeDOEtTOBK4Mdsar0IqEU5sMr3vSV2RqkAIzUEV2BHnUfKGyswWFPFwK5EeDo93K3FohSHbLAjj0s1Wzd+dg==}
     dev: true
 
-  /jquery@3.7.0:
-    resolution: {integrity: sha512-umpJ0/k8X0MvD1ds0P9SfowREz2LenHsQaxSohMZ5OMNEU2r0tf8pdeEFTHMFxWVxKNyU9rTtK3CWzUCTKJUeQ==}
+  /jquery@3.7.1:
+    resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
     dev: false
 
   /js-cookie@3.0.5:
@@ -19518,7 +19518,7 @@ packages:
   /parsleyjs@2.9.2(patch_hash=omwuxp36airmeyyvhh2whskxvm):
     resolution: {integrity: sha512-DKS2XXTjEUZ1BJWUzgXAr+550kFBZrom2WYweubqdV7WzdNC1hjOajZDfeBPoAZMkXumJPlB3v37IKatbiW8zQ==}
     dependencies:
-      jquery: 3.7.0
+      jquery: 3.7.1
     dev: false
     patched: true
 
