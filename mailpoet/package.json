@@ -178,7 +178,7 @@
     "mocha": "^10.2.0",
     "phplint": "^2.0.5",
     "postcss-cli": "^10.1.0",
-    "postcss-scss": "^4.0.7",
+    "postcss-scss": "^4.0.9",
     "prismjs": "^1.29.0",
     "sass": "^1.66.1",
     "sinon": "^15.2.0",
