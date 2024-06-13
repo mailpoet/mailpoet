@@ -552,8 +552,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(webpack@5.92.0)
       wp-types:
-        specifier: ^3.62.4
-        version: 3.62.4
+        specifier: ^3.65.0
+        version: 3.65.0
 
   packages/js/components:
     devDependencies:
@@ -22762,8 +22762,8 @@ packages:
     hasBin: true
     dev: true
 
-  /typescript@5.2.2:
-    resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
+  /typescript@5.4.5:
+    resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true
@@ -23704,10 +23704,10 @@ packages:
     hasBin: true
     dev: true
 
-  /wp-types@3.62.4:
-    resolution: {integrity: sha512-hZ5a1LqxwLovLMj8BL9Ly1F95jriScKPtebJBQy044KgTK+poXfiZsscIv2UGn9JTQfIZV4gH4XWyKwYcItwzg==}
+  /wp-types@3.65.0:
+    resolution: {integrity: sha512-QX0D7zrMdfKhrV/BjCCmLcwFNjmG/FD1TJGG34GcxKTYzfZlVKEyty7SZZvxJpB/WEKCU+N1TsvZX9CD7CsfyQ==}
     dependencies:
-      typescript: 5.2.2
+      typescript: 5.4.5
     dev: true
 
   /wpcom-proxy-request@6.0.0:
