@@ -69,8 +69,10 @@ abstract class ListingRepository {
     }
 
     $search = $definition->getSearch();
+    $parameters = $definition->getParameters();
+
     if ($search && strlen(trim($search)) > 0) {
-      $this->applySearch($queryBuilder, $search);
+      $this->applySearch($queryBuilder, $search, $parameters ?: []);
     }
 
     $filters = $definition->getFilters();
@@ -78,7 +80,6 @@ abstract class ListingRepository {
       $this->applyFilters($queryBuilder, $filters);
     }
 
-    $parameters = $definition->getParameters();
     if ($parameters) {
       $this->applyParameters($queryBuilder, $parameters);
     }
