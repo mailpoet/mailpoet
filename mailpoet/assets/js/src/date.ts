@@ -185,12 +185,19 @@ export const MailPoetDate: {
   adjustForTimezoneDifference: function adjustForTimezoneDifference(
     date: Date,
   ): Date {
+    // PHP offset is the same as timezone, e.g., UTC-2 is -120 (minutes)
     const serverOffsetMinutes = window.mailpoet_server_timezone_in_minutes || 0;
+    // JS offset is the opposite, e.g., UTC-2 is +120 (minutes)
     const browserOffsetMinutes = new Date().getTimezoneOffset();
-    const offsetDifference = browserOffsetMinutes - serverOffsetMinutes;
+    // Because of this different representation, we can just sum these two
+    // E.g., server UTC-2, browser UTC+2: -120 + -120 = -240 minuts difference
+    // E.g., server UTC+1, browser UTC+2: +60 + -120 = -60 minutes difference
+    const offsetDifference = serverOffsetMinutes + browserOffsetMinutes;
     if (!offsetDifference) {
       return date;
     }
+    // Because the difference is calculated from browser to server, we need to subtract
+    // the difference to adjust server time to browser's time zone
     date.setMinutes(date.getMinutes() - offsetDifference);
     return date;
   },
