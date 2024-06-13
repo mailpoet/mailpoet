@@ -121,7 +121,7 @@
     "@babel/plugin-transform-runtime": "^7.24.7",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-react": "^7.24.7",
-    "@babel/preset-typescript": "^7.22.11",
+    "@babel/preset-typescript": "^7.24.7",
     "@babel/register": "^7.22.5",
     "@mailpoet/eslint-config": "workspace:^",
     "@storybook/addon-actions": "^7.3.2",
