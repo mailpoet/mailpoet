@@ -402,11 +402,6 @@ const marketingOptinBlock = Object.assign({}, wpScriptConfig, {
           loader: 'babel-loader?cacheDirectory',
           options: {
             presets: ['@wordpress/babel-preset-default'],
-            plugins: [
-              require.resolve(
-                '@babel/plugin-proposal-nullish-coalescing-operator',
-              ),
-            ].filter(Boolean),
           },
         },
       },
@@ -458,11 +453,6 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
           loader: 'babel-loader?cacheDirectory',
           options: {
             presets: ['@wordpress/babel-preset-default'],
-            plugins: [
-              require.resolve(
-                '@babel/plugin-proposal-nullish-coalescing-operator',
-              ),
-            ].filter(Boolean),
           },
         },
       },
