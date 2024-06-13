@@ -65,8 +65,8 @@ importers:
         specifier: ^12.1.0
         version: 12.1.0(patch_hash=iq5s3qie6a26r746nhxcxwvlye)(@babel/runtime@7.24.7)(@types/react-dom@18.0.11)(@types/react@18.0.28)(@wordpress/data@10.0.0)(lodash@4.17.21)(react-dom@18.2.0)(react@18.2.0)
       '@woocommerce/currency':
-        specifier: ^4.2.0
-        version: 4.2.0
+        specifier: ^4.3.0
+        version: 4.3.0
       '@woocommerce/date':
         specifier: ^4.2.0
         version: 4.2.0(lodash@4.17.21)
@@ -7245,6 +7245,18 @@ packages:
       '@wordpress/i18n': 5.0.0
     dev: false
 
+  /@woocommerce/currency@4.3.0:
+    resolution: {integrity: sha512-tme1Qoty8N590OQscvLR1/W+FO009zBD0Riao6ILoc4sVhEPcZ9ktK/ubaBnKyfc1jvHONoWJqXKJIAW3gvmgA==}
+    engines: {node: ^20.11.1, pnpm: ^9.1.0}
+    dependencies:
+      '@woocommerce/number': 2.5.0
+      '@wordpress/deprecated': 4.0.0
+      '@wordpress/element': 6.0.0
+      '@wordpress/hooks': 4.0.0
+      '@wordpress/html-entities': 4.0.0
+      '@wordpress/i18n': 5.0.0
+    dev: false
+
   /@woocommerce/data@4.1.0(@types/react@18.0.28)(@wordpress/core-data@7.0.0)(lodash@4.17.21)(moment@2.29.4)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-K8MuPH1oYLeeKOS8hjjd0Iblrsvq09c9SMpcSjcE2Etnx8OFom1MPOOjeUQTGTg/tgDelOPqw30sGsGzDPi4Lg==}
     peerDependencies:
@@ -7319,7 +7331,14 @@ packages:
   /@woocommerce/number@2.4.0:
     resolution: {integrity: sha512-SmEgad2zZ9fGZtpujrdk0/toSXjNuDOUxDKQutJ++ASID17bGKZtLxXcu/E7mvF1tTgszpiToPvqZlyC+vjOlg==}
     dependencies:
-      locutus: 2.0.16
+      locutus: 2.0.32
+    dev: false
+
+  /@woocommerce/number@2.5.0:
+    resolution: {integrity: sha512-fcCIsJCr6S5MjCFzXOUuMw6BiUIb4Xn9iYTrm5caNGKk7c01KLikqt9o5YmDzeI+SLxMb25cpPMDb4Hw1TUQgA==}
+    engines: {node: ^20.11.1, pnpm: ^9.1.0}
+    dependencies:
+      locutus: 2.0.32
     dev: false
 
   /@wordpress/a11y@3.58.0:
@@ -17314,9 +17333,9 @@ packages:
       p-locate: 6.0.0
     dev: true
 
-  /locutus@2.0.16:
-    resolution: {integrity: sha512-pGfl6Hb/1mXLzrX5kl5lH7gz25ey0vwQssZp8Qo2CEF59di6KrAgdFm+0pW8ghLnvNzzJGj5tlWhhv2QbK3jeQ==}
-    engines: {node: '>= 10'}
+  /locutus@2.0.32:
+    resolution: {integrity: sha512-fr7OCpbE4xeefhHqfh6hM2/l9ZB3XvClHgtgFnQNImrM/nqL950o6FO98vmUH8GysfQRCcyBYtZ4C8GcY52Edw==}
+    engines: {node: '>= 10', yarn: '>= 1'}
     dev: false
 
   /lodash._basecallback@3.3.1:

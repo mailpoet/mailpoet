@@ -30,7 +30,7 @@
     "@marvelapp/react-ab-test": "^3.1.0",
     "@types/select2": "^4.0.55",
     "@woocommerce/components": "^12.1.0",
-    "@woocommerce/currency": "^4.2.0",
+    "@woocommerce/currency": "^4.3.0",
     "@woocommerce/date": "^4.2.0",
     "@wordpress/a11y": "^4.0.0",
     "@wordpress/api-fetch": "^7.0.0",
