@@ -124,7 +124,7 @@
     "@babel/preset-typescript": "^7.24.7",
     "@babel/register": "^7.24.6",
     "@mailpoet/eslint-config": "workspace:^",
-    "@storybook/addon-actions": "^7.3.2",
+    "@storybook/addon-actions": "^8.1.8",
     "@storybook/addon-links": "^7.3.2",
     "@storybook/addon-storysource": "^7.3.2",
     "@storybook/addons": "^7.6.17",
