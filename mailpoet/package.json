@@ -128,7 +128,7 @@
     "@storybook/addon-links": "^8.1.8",
     "@storybook/addon-storysource": "^8.1.8",
     "@storybook/addons": "^7.6.17",
-    "@storybook/builder-webpack5": "^7.3.2",
+    "@storybook/builder-webpack5": "^8.1.8",
     "@storybook/manager-webpack5": "^6.5.16",
     "@storybook/react": "^7.3.2",
     "@types/grecaptcha": "^3.0.4",
