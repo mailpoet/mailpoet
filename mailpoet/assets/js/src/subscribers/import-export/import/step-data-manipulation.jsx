@@ -26,9 +26,9 @@ function getPreviousStepLink(importData, subscribersLimitForValidation) {
 
 function StepDataManipulationComponent({
   history,
-  stepMethodSelectionData,
   subscribersLimitForValidation,
   setStepDataManipulationData,
+  stepMethodSelectionData = undefined,
 }) {
   const [selectedSegments, setSelectedSegments] = useState([]);
   const [updateExistingSubscribers, setUpdateExistingSubscribers] =
@@ -130,10 +130,6 @@ StepDataManipulationComponent.propTypes = {
   }),
   subscribersLimitForValidation: PropTypes.number.isRequired,
   setStepDataManipulationData: PropTypes.func.isRequired,
-};
-
-StepDataManipulationComponent.defaultProps = {
-  stepMethodSelectionData: undefined,
 };
 
 export const StepDataManipulation = withRouter(StepDataManipulationComponent);

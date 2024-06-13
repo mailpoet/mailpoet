@@ -12,7 +12,7 @@ function FormPlacementOption({
   label,
   icon,
   active,
-  canBeActive,
+  canBeActive = true,
   onClick,
 }: Props): JSX.Element {
   return (
@@ -31,9 +31,5 @@ function FormPlacementOption({
     </SelectionItem>
   );
 }
-
-FormPlacementOption.defaultProps = {
-  canBeActive: true,
-};
 
 export { FormPlacementOption };

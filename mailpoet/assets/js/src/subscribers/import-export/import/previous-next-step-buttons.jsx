@@ -3,11 +3,11 @@ import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
 
 function PreviousNextStepButtons({
-  hidePrevious,
-  isLastStep,
-  canGoNext,
-  onPreviousAction,
-  onNextAction,
+  hidePrevious = false,
+  isLastStep = false,
+  canGoNext = true,
+  onPreviousAction = () => {},
+  onNextAction = () => {},
 }) {
   return (
     <div className="mailpoet-settings-save">
@@ -40,12 +40,5 @@ PreviousNextStepButtons.propTypes = {
   onNextAction: PropTypes.func,
 };
 
-PreviousNextStepButtons.defaultProps = {
-  hidePrevious: false,
-  isLastStep: false,
-  canGoNext: true,
-  onPreviousAction: () => {},
-  onNextAction: () => {},
-};
 PreviousNextStepButtons.displayName = 'PreviousNextStepButtons';
 export { PreviousNextStepButtons };

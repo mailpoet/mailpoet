@@ -22,8 +22,8 @@ type Props = {
 };
 
 function StepInputValidationComponent({
-  stepMethodSelectionData,
   history,
+  stepMethodSelectionData = undefined,
 }: Props): JSX.Element {
   const [importSource, setImportSource] = useState(undefined);
   const [lastSent, setLastSent] = useState(undefined);
@@ -68,10 +68,6 @@ function StepInputValidationComponent({
     </>
   );
 }
-
-StepInputValidationComponent.defaultProps = {
-  stepMethodSelectionData: undefined,
-};
 
 StepInputValidationComponent.displayName = 'StepInputValidationComponent';
 

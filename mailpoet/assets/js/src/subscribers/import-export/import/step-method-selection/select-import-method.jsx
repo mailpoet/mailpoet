@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Radio } from 'common/form/radio/radio';
 import { Tag } from 'common/tag/tag';
 
-function SelectImportMethod({ activeMethod, onMethodChange }) {
+function SelectImportMethod({ onMethodChange, activeMethod = undefined }) {
   return (
     <>
       <div className="mailpoet-settings-label">
@@ -74,8 +74,5 @@ SelectImportMethod.propTypes = {
   onMethodChange: PropTypes.func.isRequired,
 };
 
-SelectImportMethod.defaultProps = {
-  activeMethod: undefined,
-};
 SelectImportMethod.displayName = 'SelectImportMethod';
 export { SelectImportMethod };

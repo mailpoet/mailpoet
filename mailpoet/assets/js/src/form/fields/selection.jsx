@@ -19,10 +19,13 @@ class Selection extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    const { item = undefined } = this.props;
+    const { item: prevItem = undefined } = prevProps;
+
     if (
-      this.props.item !== undefined &&
-      prevProps.item !== undefined &&
-      this.props.item.id !== prevProps.item.id
+      item !== undefined &&
+      prevItem !== undefined &&
+      item.id !== prevItem.id
     ) {
       jQuery(`#${this.selectRef.current.id}`)
         .val(this.getSelectedValues())
@@ -50,16 +53,17 @@ class Selection extends Component {
   };
 
   getSelectedValues = () => {
-    if (this.props.field.selected !== undefined) {
-      return this.props.field.selected(this.props.item);
+    const { field, item = undefined } = this.props;
+    if (field.selected !== undefined) {
+      return field.selected(item);
     }
-    if (this.props.item !== undefined && this.props.field.name !== undefined) {
+    if (item !== undefined && field.name !== undefined) {
       if (this.allowMultipleValues()) {
-        if (_.isArray(this.props.item[this.props.field.name])) {
-          return this.props.item[this.props.field.name].map((item) => item.id);
+        if (_.isArray(item[field.name])) {
+          return item[field.name].map((it) => it.id);
         }
       } else {
-        return this.props.item[this.props.field.name];
+        return item[field.name];
       }
     }
     return null;
@@ -85,36 +89,41 @@ class Selection extends Component {
   };
 
   getLabel = (item) => {
-    if (this.props.field.getLabel !== undefined) {
-      return this.props.field.getLabel(item, this.props.item);
+    const { field, item: propsItem = undefined } = this.props;
+    if (field.getLabel !== undefined) {
+      return field.getLabel(item, propsItem);
     }
     return item.name;
   };
 
   getSearchLabel = (item) => {
-    if (this.props.field.getSearchLabel !== undefined) {
-      return this.props.field.getSearchLabel(item, this.props.item);
+    const { field, item: propsItem = undefined } = this.props;
+    if (field.getSearchLabel !== undefined) {
+      return field.getSearchLabel(item, propsItem);
     }
     return null;
   };
 
   getValue = (item) => {
-    if (this.props.field.getValue !== undefined) {
-      return this.props.field.getValue(item, this.props.item);
+    const { field, item: propsItem = undefined } = this.props;
+    if (field.getValue !== undefined) {
+      return field.getValue(item, propsItem);
     }
     return item.id;
   };
 
   getCount = (item) => {
-    if (this.props.field.getCount !== undefined) {
-      return this.props.field.getCount(item, this.props.item);
+    const { field, item: propsItem = undefined } = this.props;
+    if (field.getCount !== undefined) {
+      return field.getCount(item, propsItem);
     }
     return null;
   };
 
   getTag = (item) => {
-    if (this.props.field.getTag !== undefined) {
-      return this.props.field.getTag(item, this.props.item);
+    const { field, item: propsItem = undefined } = this.props;
+    if (field.getTag !== undefined) {
+      return field.getTag(item, propsItem);
     }
     return null;
   };
@@ -135,9 +144,11 @@ class Selection extends Component {
       return tpl;
     };
 
+    const { width = '', disabled = false } = this.props;
+
     let select2Options = {
-      disabled: this.props.disabled || false,
-      width: this.props.width || '',
+      disabled: disabled || false,
+      width: width || '',
       placeholder: {
         id: '', // the value of the option
         text: this.props.field.placeholder,
@@ -266,7 +277,7 @@ class Selection extends Component {
     this.allowMultipleValues() || this.props.field.forceSelect2;
 
   handleChange = (e) => {
-    if (this.props.onValueChange === undefined) return;
+    const { onValueChange = () => {} } = this.props;
 
     const valueTextPair = jQuery(`#${this.selectRef.current.id}`)
       .children(':selected')
@@ -278,7 +289,7 @@ class Selection extends Component {
       : _.pluck(valueTextPair, 'id').toString();
     const transformedValue = this.transformChangedValue(value, valueTextPair);
 
-    this.props.onValueChange({
+    onValueChange({
       target: {
         value: transformedValue,
         name: this.props.field.name,
@@ -388,15 +399,6 @@ Selection.propTypes = {
   item: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   disabled: PropTypes.bool,
   width: PropTypes.string,
-};
-
-Selection.defaultProps = {
-  onValueChange: function onValueChange() {
-    // no-op
-  },
-  disabled: false,
-  width: '',
-  item: undefined,
 };
 
 export { Selection };

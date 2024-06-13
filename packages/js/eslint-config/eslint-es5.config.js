@@ -38,6 +38,7 @@ module.exports = [
       'no-underscore-dangle': 0, // Backbone uses underscores, we cannot remove them
       'import/no-default-export': 1, // no default exports
       'no-only-tests/no-only-tests': 2,
+      'react/require-default-props': 0, // deprecated in react 18.3.1
       'check-file/filename-naming-convention': [
         'error',
         { '**/*.*': 'KEBAB_CASE' },

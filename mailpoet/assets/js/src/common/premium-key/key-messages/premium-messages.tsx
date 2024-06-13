@@ -65,7 +65,7 @@ function PremiumMessageWithModal(props: PremiumMessageProps) {
 
 type NotValidMessageProps = { message?: string };
 
-function NotValidMessage({ message }: NotValidMessageProps) {
+function NotValidMessage({ message = '' }: NotValidMessageProps) {
   return (
     <div className="mailpoet_error">
       {message
@@ -87,21 +87,17 @@ function NotValidMessage({ message }: NotValidMessageProps) {
   );
 }
 
-NotValidMessage.defaultProps = {
-  message: '',
-};
-
 type Props = {
   keyMessage?: string;
   canUseSuccessClass: boolean;
 };
 
-function PremiumMessages(props: Props) {
+function PremiumMessages({ canUseSuccessClass, keyMessage = '' }: Props) {
   const { premiumStatus: status } = useSelector('getKeyActivationState')();
 
   switch (status) {
     case PremiumStatus.VALID_PREMIUM_PLUGIN_ACTIVE:
-      return <ActiveMessage canUseSuccessClass={props.canUseSuccessClass} />;
+      return <ActiveMessage canUseSuccessClass={canUseSuccessClass} />;
     case PremiumStatus.VALID_PREMIUM_PLUGIN_NOT_INSTALLED:
       return (
         <PremiumMessageWithModal
@@ -132,14 +128,10 @@ function PremiumMessages(props: Props) {
         />
       );
     case PremiumStatus.INVALID:
-      return <NotValidMessage message={props.keyMessage} />;
+      return <NotValidMessage message={keyMessage} />;
     default:
       return null;
   }
 }
-
-PremiumMessages.defaultProps = {
-  keyMessage: '',
-};
 
 export { PremiumMessages, PremiumMessageWithModal };

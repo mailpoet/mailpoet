@@ -22,14 +22,14 @@ type Props = {
 };
 
 function Notice({
-  onClose,
-  onDisplay,
-  renderInPlace,
-  timeout,
-  scroll,
   children,
-  closable,
   type,
+  closable = true,
+  onClose = undefined,
+  onDisplay = undefined,
+  renderInPlace = false,
+  timeout = 10000,
+  scroll = false,
 }: Props) {
   const [hidden, setHidden] = useState(false);
   const elementRef = useRef(null);
@@ -88,14 +88,6 @@ function Notice({
   );
 }
 
-Notice.defaultProps = {
-  timeout: 10000,
-  scroll: false,
-  closable: true,
-  renderInPlace: false,
-  onDisplay: undefined,
-  onClose: undefined,
-};
 Notice.displayName = 'Notice';
 const NoticeWithBoundary = withBoundary(Notice);
 export { NoticeWithBoundary as Notice };

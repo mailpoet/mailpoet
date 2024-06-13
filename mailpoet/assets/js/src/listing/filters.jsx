@@ -33,14 +33,15 @@ class ListingFilters extends Component {
   handleEmptyTrash = () => this.props.onEmptyTrash();
 
   handleFilterAction = () => {
+    const { onSelectFilter, onBeforeSelectFilter = undefined } = this.props;
     const filters = {};
     this.getAvailableFilters().forEach((filter, i) => {
       filters[this[`filter-${i}`].name] = this[`filter-${i}`].value;
     });
-    if (this.props.onBeforeSelectFilter) {
-      this.props.onBeforeSelectFilter(filters);
+    if (onBeforeSelectFilter) {
+      onBeforeSelectFilter(filters);
     }
-    return this.props.onSelectFilter(filters);
+    return onSelectFilter(filters);
   };
 
   render() {
@@ -98,9 +99,6 @@ ListingFilters.propTypes = {
   group: PropTypes.string.isRequired,
 };
 
-ListingFilters.defaultProps = {
-  onBeforeSelectFilter: undefined,
-};
 ListingFilters.displayName = 'ListingFilters';
 const ListingFiltersWithBoundary = withBoundary(ListingFilters);
 export { ListingFiltersWithBoundary as ListingFilters };

@@ -88,7 +88,10 @@ type Props = {
   setAuthorizedAddress?: (address: string) => void;
 };
 
-function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
+function SetFromAddressModal({
+  onRequestClose,
+  setAuthorizedAddress = noop,
+}: Props) {
   const [address, setAddress] = useState<string>();
   const [showAuthorizedEmailModal, setShowAuthorizedEmailModal] =
     useState(false);
@@ -229,9 +232,5 @@ function SetFromAddressModal({ onRequestClose, setAuthorizedAddress }: Props) {
     </Modal>
   );
 }
-
-SetFromAddressModal.defaultProps = {
-  setAuthorizedAddress: noop,
-};
 
 export { SetFromAddressModal };

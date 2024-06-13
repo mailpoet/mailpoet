@@ -5,20 +5,28 @@ import { Select } from 'common/form/select/select.tsx';
 // eslint-disable-next-line react/prefer-stateless-function
 class TimeSelect extends Component {
   render() {
-    const options = Object.keys(this.props.timeOfDayItems).map((value) => (
-      <option key={`option-${this.props.timeOfDayItems[value]}`} value={value}>
-        {this.props.timeOfDayItems[value]}
+    const {
+      onChange,
+      timeOfDayItems,
+      value,
+      disabled = false,
+      name = 'time',
+      validation = {},
+    } = this.props;
+    const options = Object.keys(timeOfDayItems).map((val) => (
+      <option key={`option-${timeOfDayItems[value]}`} value={val}>
+        {timeOfDayItems[val]}
       </option>
     ));
 
     return (
       <Select
-        name={this.props.name || 'time'}
-        value={this.props.value}
-        disabled={this.props.disabled}
-        onChange={this.props.onChange}
+        name={name || 'time'}
+        value={value}
+        disabled={disabled}
+        onChange={onChange}
         isMinWidth
-        {...this.props.validation}
+        {...validation}
       >
         {options}
       </Select>
@@ -35,10 +43,5 @@ TimeSelect.propTypes = {
   validation: PropTypes.object, // eslint-disable-line react/forbid-prop-types
 };
 
-TimeSelect.defaultProps = {
-  name: 'time',
-  disabled: false,
-  validation: {},
-};
 TimeSelect.displayName = 'TimeSelect';
 export { TimeSelect };

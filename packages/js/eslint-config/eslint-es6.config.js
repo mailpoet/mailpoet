@@ -47,6 +47,7 @@ module.exports = [
       'no-only-tests/no-only-tests': 2,
       'class-methods-use-this': 0,
       'react/jsx-props-no-spreading': 0,
+      'react/require-default-props': 0, // deprecated in react 18.3.1
       'import/extensions': 0, // we wouldn't be able to import jQuery without this line
       'import/prefer-default-export': 0, // we want to stop using default exports and start using named exports
       'import/no-default-export': 1, // no default exports

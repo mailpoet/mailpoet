@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Notice } from 'notices/notice.tsx';
 
-function MailerStatusNotice({ error }) {
+function MailerStatusNotice({ error = null }) {
   if (!error || error.operation !== 'authorization') return null;
   return (
     <Notice type="error" timeout={false} closable={false}>
@@ -14,9 +14,6 @@ MailerStatusNotice.propTypes = {
     operation: PropTypes.string,
     error_message: PropTypes.string,
   }),
-};
-MailerStatusNotice.defaultProps = {
-  error: null,
 };
 
 export { MailerStatusNotice };

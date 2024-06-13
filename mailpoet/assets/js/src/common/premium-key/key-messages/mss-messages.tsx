@@ -20,7 +20,7 @@ function MssActiveMessage({ canUseSuccessClass }: MssActiveMessageProps) {
 
 type NotValidMessageProps = { message?: string };
 
-function NotValidMessage({ message }: NotValidMessageProps) {
+function NotValidMessage({ message = '' }: NotValidMessageProps) {
   return (
     <div className="mailpoet_error">
       {message
@@ -44,10 +44,6 @@ function NotValidMessage({ message }: NotValidMessageProps) {
     </div>
   );
 }
-
-NotValidMessage.defaultProps = {
-  message: '',
-};
 
 type MssNotActiveMessageProps = { activationCallback?: () => void };
 
@@ -74,19 +70,21 @@ type Props = {
   canUseSuccessClass: boolean;
 };
 
-export function MssMessages(props: Props) {
+export function MssMessages({
+  activationCallback,
+  canUseSuccessClass,
+  keyMessage = '',
+}: Props) {
   const { mssStatus, mssAccessRestriction } = useSelector(
     'getKeyActivationState',
   )();
   switch (mssStatus) {
     case MssStatus.VALID_MSS_ACTIVE:
-      return <MssActiveMessage canUseSuccessClass={props.canUseSuccessClass} />;
+      return <MssActiveMessage canUseSuccessClass={canUseSuccessClass} />;
     case MssStatus.VALID_MSS_NOT_ACTIVE:
-      return (
-        <MssNotActiveMessage activationCallback={props.activationCallback} />
-      );
+      return <MssNotActiveMessage activationCallback={activationCallback} />;
     case MssStatus.INVALID:
-      return <NotValidMessage message={props.keyMessage} />;
+      return <NotValidMessage message={keyMessage} />;
 
     case MssStatus.VALID_UNDERPRIVILEGED:
       if (
@@ -101,7 +99,3 @@ export function MssMessages(props: Props) {
       return null;
   }
 }
-
-MssMessages.defaultProps = {
-  keyMessage: '',
-};

@@ -56,10 +56,4 @@ Tooltip.propTypes = {
   className: PropTypes.string,
 };
 
-Tooltip.defaultProps = {
-  tooltipId: undefined,
-  place: undefined,
-  className: undefined,
-};
-
 export { Tooltip };

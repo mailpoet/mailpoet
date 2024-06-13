@@ -4,25 +4,31 @@ import ReactDOMServer from 'react-dom/server';
 
 import { MailPoet } from 'mailpoet';
 
-function ConfirmAlert(props) {
+function ConfirmAlert({
+  message,
+  onConfirm,
+  title = __('Confirm to proceed', 'mailpoet'),
+  cancelLabel = __('Cancel', 'mailpoet'),
+  confirmLabel = __('Confirm', 'mailpoet'),
+}) {
   MailPoet.Modal.popup({
-    title: props.title,
+    title,
     template: ReactDOMServer.renderToString(
       <>
-        <p>{props.message}</p>
+        <p>{message}</p>
         <button
           id="mailpoet_alert_cancel"
           className="button button-secondary"
           type="button"
         >
-          {props.cancelLabel}
+          {cancelLabel}
         </button>
         <button
           id="mailpoet_alert_confirm"
           className="button button-primary"
           type="submit"
         >
-          {props.confirmLabel}
+          {confirmLabel}
         </button>
       </>,
     ),
@@ -31,7 +37,7 @@ function ConfirmAlert(props) {
         .getElementById('mailpoet_alert_confirm')
         .addEventListener('click', () => {
           MailPoet.Modal.close();
-          props.onConfirm();
+          onConfirm();
         });
 
       document
@@ -48,12 +54,6 @@ ConfirmAlert.propTypes = {
   cancelLabel: PropTypes.string,
   confirmLabel: PropTypes.string,
   onConfirm: PropTypes.func.isRequired,
-};
-
-ConfirmAlert.defaultProps = {
-  title: __('Confirm to proceed', 'mailpoet'),
-  cancelLabel: __('Cancel', 'mailpoet'),
-  confirmLabel: __('Confirm', 'mailpoet'),
 };
 
 export function confirmAlert(props) {

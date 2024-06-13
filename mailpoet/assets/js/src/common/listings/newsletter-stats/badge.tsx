@@ -18,7 +18,7 @@ function Badge({
   tooltipId,
   tooltipPlace,
   type,
-  isInverted,
+  isInverted = true,
 }: BadgeProps) {
   return (
     <span>
@@ -37,9 +37,5 @@ function Badge({
     </span>
   );
 }
-
-Badge.defaultProps = {
-  isInverted: true,
-};
 
 export { Badge };

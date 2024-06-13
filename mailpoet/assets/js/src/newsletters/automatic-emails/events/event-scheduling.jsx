@@ -95,7 +95,10 @@ class EventScheduling extends Component {
   }
 
   displayAfterTimeNumberField() {
-    const { afterTimeNumberSize, event } = this.props;
+    const {
+      event,
+      afterTimeNumberSize = defaultAfterTimeNumberInputFieldSize,
+    } = this.props;
     const { afterTimeType, afterTimeNumber } = this.state;
     if (afterTimeType === 'immediate') return null;
     if (
@@ -135,7 +138,7 @@ class EventScheduling extends Component {
   }
 
   propagateChange(data) {
-    const { onValueChange } = this.props;
+    const { onValueChange = null } = this.props;
     if (!onValueChange) return;
 
     onValueChange(data);
@@ -197,9 +200,5 @@ EventScheduling.propTypes = {
   }).isRequired,
 };
 
-EventScheduling.defaultProps = {
-  afterTimeNumberSize: defaultAfterTimeNumberInputFieldSize,
-  onValueChange: null,
-};
 EventScheduling.displayName = 'EventScheduling';
 export { EventScheduling };

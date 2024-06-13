@@ -30,7 +30,11 @@ const wrapInLink = (content, params, id, totalSent) => {
   );
 };
 
-function Statistics({ newsletter, isSent, currentTime }) {
+function Statistics({
+  newsletter,
+  isSent = undefined,
+  currentTime = undefined,
+}) {
   let sent = isSent;
   if (sent === undefined) {
     // condition for standard and post notification listings
@@ -199,10 +203,6 @@ Statistics.propTypes = {
   currentTime: PropTypes.string,
 };
 
-Statistics.defaultProps = {
-  isSent: undefined,
-  currentTime: undefined,
-};
 Statistics.displayName = 'NewsletterStatistics';
 const StatisticsWithBoundary = withBoundary(Statistics);
 export { StatisticsWithBoundary as Statistics };

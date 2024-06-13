@@ -18,12 +18,12 @@ type Props = {
 function SelectionItem({
   label,
   active,
-  canBeActive,
   onClick,
   children,
-  className,
-  automationId,
-  displaySettingsIcon,
+  canBeActive = true,
+  className = undefined,
+  automationId = undefined,
+  displaySettingsIcon = true,
 }: Props): JSX.Element {
   const [hover, setHover] = useState(false);
   return (
@@ -74,12 +74,5 @@ function SelectionItem({
     </div>
   );
 }
-
-SelectionItem.defaultProps = {
-  canBeActive: true,
-  displaySettingsIcon: true,
-  className: undefined,
-  automationId: undefined,
-};
 
 export { SelectionItem };

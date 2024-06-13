@@ -9,7 +9,10 @@ class FormFieldRadio extends Component {
     this.onValueChange = this.onValueChange.bind(this);
   }
 
-  onValueChange = (value, e) => this.props.onValueChange(e);
+  onValueChange = (value, e) => {
+    const { onValueChange = () => {} } = this.props.onValueChange;
+    onValueChange(e);
+  };
 
   render() {
     if (this.props.field.values === undefined) {
@@ -41,12 +44,6 @@ FormFieldRadio.propTypes = {
     values: PropTypes.objectOf(PropTypes.string),
   }).isRequired,
   item: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-};
-
-FormFieldRadio.defaultProps = {
-  onValueChange: function onValueChange() {
-    // no-op
-  },
 };
 
 export { FormFieldRadio };
