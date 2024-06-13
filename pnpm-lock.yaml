@@ -462,8 +462,8 @@ importers:
         specifier: ^2.8.0
         version: 2.8.0
       exports-loader:
-        specifier: ^4.0.0
-        version: 4.0.0(webpack@5.92.0)
+        specifier: ^5.0.0
+        version: 5.0.0(webpack@5.92.0)
       expose-loader:
         specifier: ^4.1.0
         version: 4.1.0(webpack@5.92.0)
@@ -13251,9 +13251,9 @@ packages:
       jest-util: 29.7.0
     dev: true
 
-  /exports-loader@4.0.0(webpack@5.92.0):
-    resolution: {integrity: sha512-4iqFFIAnlVAbkAUMHhWceyxK6N6dMDWpQFbSHLmiayGEPMXl2bgWD4D11GYi1VNuEQwJaHGdATcPYTnXpwzSmw==}
-    engines: {node: '>= 14.15.0'}
+  /exports-loader@5.0.0(webpack@5.92.0):
+    resolution: {integrity: sha512-W15EyyytBwd30yCCieTCqZSCUvU/o3etj2IUItSMjVQEzAf5xOQx8JL9iMo7ERnuAzIA6eapGSFWl7E9F+Wy9g==}
+    engines: {node: '>= 18.12.0'}
     peerDependencies:
       webpack: ^5.0.0
     dependencies:
