@@ -126,7 +126,7 @@
     "@mailpoet/eslint-config": "workspace:^",
     "@storybook/addon-actions": "^8.1.8",
     "@storybook/addon-links": "^8.1.8",
-    "@storybook/addon-storysource": "^7.3.2",
+    "@storybook/addon-storysource": "^8.1.8",
     "@storybook/addons": "^7.6.17",
     "@storybook/builder-webpack5": "^7.3.2",
     "@storybook/manager-webpack5": "^6.5.16",
