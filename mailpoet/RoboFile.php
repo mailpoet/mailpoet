@@ -87,7 +87,6 @@ class RoboFile extends \Robo\Tasks {
       'react-router-dom', // MAILPOET-3911
       'react-tooltip', // MAILPOET-5482
       'codemirror', // MAILPOET-5483
-      '@babel/preset-env', // MAILPOET-5489
       'react-string-replace', // MAILPOET-5490
       'babel-loader', // MAILPOET-5491
       'stylelint', // MAILPOET-5462
