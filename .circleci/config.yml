@@ -1068,7 +1068,7 @@ workflows:
           woo_memberships_version: 1.25.2
           automate_woo_version: 5.8.5
           codeception_image_version: 7.4-cli_20220605.0
-          wordpress_image_version: wp-6.4_php8.0_20231114.1
+          wordpress_image_version: 6.4-php8.0
           requires:
             - build_premium
       - integration_tests:
