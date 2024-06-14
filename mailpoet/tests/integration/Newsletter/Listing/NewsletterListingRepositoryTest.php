@@ -7,6 +7,7 @@ use MailPoet\Entities\NewsletterOptionEntity;
 use MailPoet\Entities\NewsletterSegmentEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\Handler;
+use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterOptionField;
 
 class NewsletterListingRepositoryTest extends \MailPoetTest {
@@ -209,6 +210,78 @@ class NewsletterListingRepositoryTest extends \MailPoetTest {
       ],
     ]));
     verify($newsletters)->arrayCount(0);
+  }
+
+  public function testItSearchesInStaticAndRenderedSubjectsForPostNotification() {
+    $originalSubject = 'Notification history [newsletter:post_title]';
+    $renderedSubject = 'Notification history Hello World Post';
+
+    $parent = new NewsletterEntity();
+    $parent->setType(NewsletterEntity::TYPE_NOTIFICATION);
+    $parent->setSubject($originalSubject);
+    $this->entityManager->persist($parent);
+    $this->entityManager->flush();
+
+    $notificationHistoryNotSent = (new Newsletter())
+    ->withParent($parent)
+    ->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+    ->withSubject($originalSubject)
+    ->create();
+
+    $notificationHistorySent = (new Newsletter())
+      ->withParent($parent)
+      ->withType(NewsletterEntity::TYPE_NOTIFICATION_HISTORY)
+      ->withSubject($originalSubject)
+      ->withSendingQueue([
+        'status' => 'sent',
+        'subject' => $renderedSubject,
+      ])
+      ->create();
+
+    $listingHandler = new Handler();
+    $newsletterListingRepository = $this->diContainer->get(NewsletterListingRepository::class);
+
+    // Search by original subject with placeholder
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'params' => [
+        'parentId' => (string)$parent->getId(),
+        'type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
+      ],
+      'search' => $originalSubject,
+    ]));
+    verify($newsletters)->arrayCount(2);
+
+    // Search by common part of subject
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'params' => [
+        'parentId' => (string)$parent->getId(),
+        'type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
+      ],
+      'search' => 'history',
+    ]));
+    verify($newsletters)->arrayCount(2);
+
+    // Search by rendered subject
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'params' => [
+        'parentId' => (string)$parent->getId(),
+        'type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
+      ],
+      'search' => $renderedSubject,
+    ]));
+    verify($newsletters)->arrayCount(1);
+    verify($newsletters[0]->getId())->equals($notificationHistorySent->getId());
+
+    // Search by part of rendered subject
+    $newsletters = $newsletterListingRepository->getData($listingHandler->getListingDefinition([
+      'params' => [
+        'parentId' => (string)$parent->getId(),
+        'type' => NewsletterEntity::TYPE_NOTIFICATION_HISTORY,
+      ],
+      'search' => 'Hello World',
+    ]));
+    verify($newsletters)->arrayCount(1);
+    verify($newsletters[0]->getId())->equals($notificationHistorySent->getId());
   }
 
   public function testItAppliesSort() {
