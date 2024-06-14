@@ -71,7 +71,7 @@ services:
       - mailhog-data:/mailhog-data
 
   wordpress:
-    image: mailpoet/wordpress:${WORDPRESS_IMAGE_VERSION:-wp-6.5_php8.1_20240405.1}
+    image: wordpress:${WORDPRESS_IMAGE_VERSION:-6.5.4-php8.2}
     container_name: wordpress_${CIRCLE_NODE_INDEX:-default}
     depends_on:
       smtp:
@@ -80,6 +80,7 @@ services:
         condition: service_healthy
     volumes:
       - wp-core:/var/www/html
+      - ./install-extensions.sh:/usr/local/bin/install-extensions.sh
       - ../..:/var/www/html/wp-content/plugins/mailpoet
       - ../../../mailpoet-premium:/project/mailpoet-premium
     tmpfs:
@@ -93,6 +94,8 @@ services:
       WORDPRESS_TABLE_PREFIX: mp_
       MAILPOET_TRACY_PRODUCTION_MODE: 1
       MAILPOET_TRACY_LOG_DIR: /var/www/html/wp-content/plugins/mailpoet/tests/_output/exceptions
+    entrypoint: ['sh', '/usr/local/bin/install-extensions.sh']
+    command: ['docker-entrypoint.sh', 'apache2-foreground']
     networks:
       default:
         aliases:
