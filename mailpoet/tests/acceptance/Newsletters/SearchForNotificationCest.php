@@ -89,10 +89,8 @@ class SearchForNotificationCest {
     // create a  WP post
     $i->cli(['post', 'create', "--post_title='$dynamicPostTitle'", '--post_content="Lorem Ipsum"', '--post_status=publish']);
 
-    $i->triggerNewsletterScheduledTask($newsletter->getId());
+    $i->rescheduleNewsletterToBeSentImmediately($newsletter->getId());
     $i->triggerMailPoetActionScheduler();
-
-    $i->wait(1);
 
     // step 2 - Search post-notification
     $i->login();

@@ -876,7 +876,7 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->cli(['action-scheduler', 'run', '--force']);
   }
 
-  public function triggerNewsletterScheduledTask($newsletterId) {
+  public function rescheduleNewsletterToBeSentImmediately($newsletterId) {
     $i = $this;
 
     // scheduler will create a task and schedule run in the next minute.
