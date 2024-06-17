@@ -226,6 +226,7 @@ class ScheduledTasksRepository extends Repository {
     $type = null,
     $statuses = [
       ScheduledTaskEntity::STATUS_COMPLETED,
+      ScheduledTaskEntity::STATUS_CANCELLED,
       ScheduledTaskEntity::STATUS_SCHEDULED,
       ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING,
     ],

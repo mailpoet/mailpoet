@@ -153,6 +153,9 @@ class Help {
       'scheduled_at' => $task->getScheduledAt() ?
         $task->getScheduledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT)
         : null,
+      'cancelled_at' => $task->getCancelledAt() ?
+        $task->getCancelledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT)
+        : null,
       'status' => $task->getStatus(),
       'newsletter' => $queue && $newsletter ? [
         'newsletter_id' => $newsletter->getId(),
