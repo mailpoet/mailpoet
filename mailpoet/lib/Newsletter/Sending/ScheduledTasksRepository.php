@@ -2,7 +2,6 @@
 
 namespace MailPoet\Newsletter\Sending;
 
-use MailPoet\Cron\Workers\Scheduler;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Doctrine\Repository;
 use MailPoet\Entities\NewsletterEntity;
@@ -21,6 +20,8 @@ use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
  * @extends Repository<ScheduledTaskEntity>
  */
 class ScheduledTasksRepository extends Repository {
+  const TASK_BATCH_SIZE = 20;
+
   /** @var WPFunctions */
   private $wp;
 
@@ -228,7 +229,7 @@ class ScheduledTasksRepository extends Repository {
       ScheduledTaskEntity::STATUS_SCHEDULED,
       ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING,
     ],
-    $limit = Scheduler::TASK_BATCH_SIZE
+    $limit = self::TASK_BATCH_SIZE
   ) {
     $result = [];
     foreach ($statuses as $status) {
