@@ -45,3 +45,27 @@ function getMinorMajorVersion($version) {
   $parts = explode('.', $version);
   return $parts[0] . '.' . $parts[1];
 }
+
+function fetchGitHubTags($repo, $token) {
+  $url = "https://api.github.com/repos/$repo/tags";
+  $ch = curl_init($url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');  // GitHub API requires a user agent
+  curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    "Authorization: token $token"
+  ]);
+  $response = curl_exec($ch);
+  curl_close($ch);
+
+  if ($response === false) {
+    die("Failed to fetch tags from GitHub.");
+  }
+
+  $data = json_decode($response, true);
+
+  if (isset($data['message']) && $data['message'] == 'Not Found') {
+    die("Repository not found or access denied.");
+  }
+
+  return array_column($data, 'name');
+}
