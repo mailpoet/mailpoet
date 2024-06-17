@@ -3,7 +3,7 @@ import { MailPoet } from 'mailpoet';
 import { KnowledgeBase } from 'help/knowledge-base.tsx';
 import { SystemInfo } from 'help/system-info.tsx';
 import { SystemStatus } from 'help/system-status.jsx';
-import { YourPrivacy } from 'help/your-privacy.jsx';
+import { YourPrivacy } from 'help/your-privacy';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';
 import { MssAccessNotices } from 'notices/mss-access-notices';
