@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/helpers.php';
+
 function fetchData($url): array {
   $response = file_get_contents($url);
   return json_decode($response, true);
@@ -42,25 +44,6 @@ function getLatestAndPreviousVersions($sortedVersions) {
   }
 
   return [reset($latestVersionGroup), end($previousVersionGroup)];
-}
-
-function replaceVersionInFile($filePath, $pattern, $replacement) {
-  $content = file_get_contents($filePath);
-
-  if ($content === false) {
-    die("Failed to read the file at $filePath.");
-  }
-
-  $updatedContent = preg_replace($pattern, $replacement, $content);
-
-  if ($updatedContent === null || $updatedContent === $content) {
-    echo "Nothing to update in $filePath\n";
-    return;
-  }
-
-  if (file_put_contents($filePath, $updatedContent) === false) {
-    die("Failed to write the updated file at $filePath.");
-  }
 }
 
 function replaceLatestVersion($latestVersion) {
