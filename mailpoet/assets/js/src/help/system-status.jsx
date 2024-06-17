@@ -112,7 +112,7 @@ export function SystemStatus() {
       <CronStatus status_data={systemStatusData.cronStatus} />
       <ActionSchedulerStatus {...actionSchedulerData} />
       {actionSchedulerData ? (
-        <QueueStatus status_data={systemStatusData.queueStatus} />
+        <QueueStatus statusData={systemStatusData.queueStatus} />
       ) : null}
     </>
   );

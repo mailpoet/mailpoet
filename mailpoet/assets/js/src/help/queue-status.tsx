@@ -1,11 +1,31 @@
 import { MailPoet } from 'mailpoet';
-import PropTypes from 'prop-types';
 import { KeyValueTable } from 'common/key-value-table.jsx';
-import { TasksList } from './tasks-list/tasks-list.jsx';
-import { TasksListDataRow } from './tasks-list/tasks-list-data-row.jsx';
+import { TasksList } from './tasks-list/tasks-list';
+import { Props as TasksListDataRowProps } from './tasks-list/tasks-list-data-row';
 
-function QueueStatus(props) {
-  const status = props.status_data;
+type Props = {
+  statusData: {
+    status?: string;
+    started?: number;
+    sent?: number;
+    retryAttempt?: number;
+    retryAt?: number;
+    error: {
+      operation?: string;
+      errorMessage?: string;
+    };
+    tasksStatusCounts: {
+      completed: number;
+      running: number;
+      paused: number;
+      scheduled: number;
+    };
+    latestTasks: TasksListDataRowProps['task'][];
+  };
+};
+
+function QueueStatus({ statusData }: Props): JSX.Element {
+  const status = statusData;
   return (
     <>
       <h4>{MailPoet.I18n.t('systemStatusQueueTitle')}</h4>
@@ -31,18 +51,18 @@ function QueueStatus(props) {
           },
           {
             key: MailPoet.I18n.t('retryAttempt'),
-            value: status.retry_attempt || MailPoet.I18n.t('none'),
+            value: status.retryAttempt || MailPoet.I18n.t('none'),
           },
           {
             key: MailPoet.I18n.t('retryAt'),
-            value: status.retry_at
-              ? MailPoet.Date.full(status.retry_at * 1000)
+            value: status.retryAt
+              ? MailPoet.Date.full(status.retryAt * 1000)
               : MailPoet.I18n.t('none'),
           },
           {
             key: MailPoet.I18n.t('error'),
             value: status.error
-              ? status.error.error_message
+              ? status.error.errorMessage
               : MailPoet.I18n.t('none'),
           },
           {
@@ -65,13 +85,13 @@ function QueueStatus(props) {
       />
       <h5>{MailPoet.I18n.t('scheduledTasks')}</h5>
       <TasksList
-        show_scheduled_at
+        showScheduledAt
         tasks={status.latestTasks.filter((task) => task.status === 'scheduled')}
       />
 
       <h5>{MailPoet.I18n.t('cancelledTasks')}</h5>
       <TasksList
-        show_cancelled_at
+        showCancelledAt
         tasks={status.latestTasks.filter((task) => task.status === 'cancelled')}
       />
 
@@ -87,26 +107,5 @@ function QueueStatus(props) {
     </>
   );
 }
-
-QueueStatus.propTypes = {
-  status_data: PropTypes.shape({
-    status: PropTypes.string,
-    started: PropTypes.number,
-    sent: PropTypes.number,
-    retry_attempt: PropTypes.number,
-    retry_at: PropTypes.number,
-    error: PropTypes.shape({
-      operation: PropTypes.string,
-      error_message: PropTypes.string,
-    }),
-    tasksStatusCounts: PropTypes.shape({
-      completed: PropTypes.number.isRequired,
-      running: PropTypes.number.isRequired,
-      paused: PropTypes.number.isRequired,
-      scheduled: PropTypes.number.isRequired,
-    }).isRequired,
-    latestTasks: PropTypes.arrayOf(TasksListDataRow.propTypes.task).isRequired,
-  }).isRequired,
-};
 
 export { QueueStatus };
