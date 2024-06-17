@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import parseDate from 'date-fns/parse';
+import { CancelTaskButton, RescheduleTaskButton } from './tasks-list-actions';
 
 function TasksListDataRow(props) {
   let scheduled = props.task.scheduled_at;
@@ -68,6 +69,16 @@ function TasksListDataRow(props) {
           updated,
         )}`}</abbr>
       </td>
+      {props.show_scheduled_at ? (
+        <td>
+          <CancelTaskButton id={props.task.id} />
+        </td>
+      ) : null}
+      {props.show_cancelled_at ? (
+        <td>
+          <RescheduleTaskButton id={props.task.id} />
+        </td>
+      ) : null}
     </tr>
   );
 }
