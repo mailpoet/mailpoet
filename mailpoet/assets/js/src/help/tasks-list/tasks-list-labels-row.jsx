@@ -6,6 +6,7 @@ function TasksListLabelsRow({ show_scheduled_at: showScheduledAt = false }) {
     <tr>
       <th className="row-title">Id</th>
       <th className="row-title">{MailPoet.I18n.t('email')}</th>
+      <th className="row-title">{MailPoet.I18n.t('subscriber')}</th>
       <th className="row-title">{MailPoet.I18n.t('priority')}</th>
       {showScheduledAt ? (
         <th className="row-title">{MailPoet.I18n.t('scheduledAt')}</th>

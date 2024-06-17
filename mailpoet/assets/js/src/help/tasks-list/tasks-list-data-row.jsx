@@ -32,6 +32,17 @@ function TasksListDataRow(props) {
           MailPoet.I18n.t('none')
         )}
       </td>
+      <td className="column">
+        {props.task.subscriber_email ? (
+          <a
+            href={`admin.php?page=mailpoet-subscribers#/search[${props.task.subscriber_email}]`}
+          >
+            {props.task.subscriber_email}
+          </a>
+        ) : (
+          <i>{MailPoet.I18n.t('multipleSubscribers')}</i>
+        )}
+      </td>
       <td className="column">{props.task.priority}</td>
       {props.show_scheduled_at ? (
         <td className="column-date">
@@ -64,6 +75,7 @@ TasksListDataRow.propTypes = {
       preview_url: PropTypes.string.isRequired,
       subject: PropTypes.string,
     }),
+    subscriber_email: PropTypes.string,
   }).isRequired,
 };
 

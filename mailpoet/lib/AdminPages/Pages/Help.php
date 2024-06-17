@@ -135,10 +135,15 @@ class Help {
   }
 
   public function buildTaskData(ScheduledTaskEntity $task): array {
-    $queue = $newsletter = null;
+    $queue = $newsletter = $subscriber = null;
     if ($task->getType() === SendingQueue::TASK_TYPE) {
       $queue = $this->sendingQueuesRepository->findOneBy(['task' => $task]);
       $newsletter = $queue ? $queue->getNewsletter() : null;
+      $subscribers = $task->getSubscribers();
+      // We only show subscriber's email for 1:1 emails (e.g. automations) and not bulk campaigns
+      if ($subscribers->count() === 1) {
+        $subscriber = $subscribers->first() ? $subscribers->first()->getSubscriber() : null;
+      }
     }
     return [
       'id' => $task->getId(),
@@ -160,6 +165,7 @@ class Help {
         'subject' => null,
         'preview_url' => null,
       ],
+      'subscriber_email' => $subscriber ? $subscriber->getEmail() : null,
     ];
   }
 }
