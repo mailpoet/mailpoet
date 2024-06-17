@@ -56,7 +56,7 @@ function SenderEmailAddressWarning({
     MailPoet.freeMailDomains.indexOf(emailAddressDomain) > -1;
 
   if (mssActive) {
-    if (!isEmailAuthorized) {
+    if (!isEmailAuthorized && emailAddress) {
       displayElements.push(
         <div key="authorizeMyEmail">
           <p className="sender_email_address_warning">
