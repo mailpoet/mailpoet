@@ -149,26 +149,26 @@ class Help {
       'id' => $task->getId(),
       'type' => $task->getType(),
       'priority' => $task->getPriority(),
-      'updated_at' => $task->getUpdatedAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT),
-      'scheduled_at' => $task->getScheduledAt() ?
+      'updatedAt' => $task->getUpdatedAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT),
+      'scheduledAt' => $task->getScheduledAt() ?
         $task->getScheduledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT)
         : null,
-      'cancelled_at' => $task->getCancelledAt() ?
+      'cancelledAt' => $task->getCancelledAt() ?
         $task->getCancelledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT)
         : null,
       'status' => $task->getStatus(),
       'newsletter' => $queue && $newsletter ? [
-        'newsletter_id' => $newsletter->getId(),
-        'queue_id' => $queue->getId(),
+        'newsletterId' => $newsletter->getId(),
+        'queueId' => $queue->getId(),
         'subject' => $queue->getNewsletterRenderedSubject() ?: $newsletter->getSubject(),
-        'preview_url' => $this->newsletterUrl->getViewInBrowserUrl($newsletter, null, $queue),
+        'previewUrl' => $this->newsletterUrl->getViewInBrowserUrl($newsletter, null, $queue),
       ] : [
-        'newsletter_id' => null,
-        'queue_id' => null,
+        'newsletterId' => null,
+        'queueId' => null,
         'subject' => null,
-        'preview_url' => null,
+        'previewUrl' => null,
       ],
-      'subscriber_email' => $subscriber ? $subscriber->getEmail() : null,
+      'subscriberEmail' => $subscriber ? $subscriber->getEmail() : null,
     ];
   }
 }
