@@ -4,8 +4,13 @@ import parseDate from 'date-fns/parse';
 
 function TasksListDataRow(props) {
   let scheduled = props.task.scheduled_at;
-  if (scheduled) {
+  if (props.show_scheduled_at) {
     scheduled = parseDate(scheduled, 'yyyy-MM-dd HH:mm:ss', new Date());
+  }
+
+  let cancelled = props.task.cancelled_at;
+  if (props.show_cancelled_at) {
+    cancelled = parseDate(cancelled, 'yyyy-MM-dd HH:mm:ss', new Date());
   }
 
   const updated = parseDate(
@@ -51,6 +56,13 @@ function TasksListDataRow(props) {
           )}`}</abbr>
         </td>
       ) : null}
+      {props.show_cancelled_at ? (
+        <td className="column-date">
+          <abbr>{`${MailPoet.Date.short(cancelled)} ${MailPoet.Date.time(
+            cancelled,
+          )}`}</abbr>
+        </td>
+      ) : null}
       <td className="column-date">
         <abbr>{`${MailPoet.Date.short(updated)} ${MailPoet.Date.time(
           updated,
@@ -62,12 +74,14 @@ function TasksListDataRow(props) {
 
 TasksListDataRow.propTypes = {
   show_scheduled_at: PropTypes.bool,
+  show_cancelled_at: PropTypes.bool,
   task: PropTypes.shape({
     id: PropTypes.number.isRequired,
     type: PropTypes.string.isRequired,
     priority: PropTypes.number.isRequired,
     updated_at: PropTypes.string.isRequired,
     scheduled_at: PropTypes.string,
+    cancelled_at: PropTypes.string,
     status: PropTypes.string,
     newsletter: PropTypes.shape({
       newsletter_id: PropTypes.number.isRequired,
@@ -81,6 +95,7 @@ TasksListDataRow.propTypes = {
 
 TasksListDataRow.defaultProps = {
   show_scheduled_at: false,
+  show_cancelled_at: false,
 };
 
 export { TasksListDataRow };

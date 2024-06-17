@@ -69,6 +69,12 @@ function QueueStatus(props) {
         tasks={status.latestTasks.filter((task) => task.status === 'scheduled')}
       />
 
+      <h5>{MailPoet.I18n.t('cancelledTasks')}</h5>
+      <TasksList
+        show_cancelled_at
+        tasks={status.latestTasks.filter((task) => task.status === 'cancelled')}
+      />
+
       <h5>{MailPoet.I18n.t('runningTasks')}</h5>
       <TasksList
         tasks={status.latestTasks.filter((task) => task.status === null)}
