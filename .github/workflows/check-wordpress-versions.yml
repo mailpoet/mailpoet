@@ -1,0 +1,35 @@
+name: Check WordPress Docker Versions
+
+on:
+  workflow_dispatch: # Allows manual triggering
+    branches:
+      - circle-ci-wordpress-image
+jobs:
+  check-versions:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3' # Specify the PHP version you want to use
+
+      - name: Check WordPress Docker Versions
+        run: php .github/workflows/scripts/check_wordpress_versions.php
+
+      - name: Check for changes
+        id: git_diff
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git diff --exit-code || echo "::set-output name=changes::true"
+
+      - name: Commit changes
+        if: steps.git_diff.outputs.changes == 'true'
+        run: |
+          git add config.yml
+          git commit -m 'Update used WordPress images in Circle CI'
+          git push origin HEAD:refs/heads/circle-ci-wordpress-image
