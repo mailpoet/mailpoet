@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.4
 Tested up to: 6.5
-Stable tag: 4.51.2
+Stable tag: 4.52.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,15 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.52.0 - 2024-06-17 =
+* Updated: composer dependencies;
+* Updated: Gutenberg dependencies;
+* Improved: sender domain authentication screen contains more information;
+* Improved: display API connection error notice in more places;
+* Fixed: displaying product discounts in product block;
+* Fixed: display correct time for scheduled newsletters;
+* Fixed: removed WordPress Users list from lists to import to.
 
 = 4.51.2 - 2024-06-11 =
 * Added: an error message when ping is not working;
