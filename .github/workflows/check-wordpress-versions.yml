@@ -4,6 +4,7 @@ on:
   workflow_dispatch: # Allows manual triggering
     branches:
       - circle-ci-wordpress-image
+
 jobs:
   check-versions:
     runs-on: ubuntu-latest
@@ -21,17 +22,17 @@ jobs:
       - name: Check WordPress Docker Versions
         run: php .github/workflows/scripts/check_wordpress_versions.php
 
-      - name: Check for changes
-        id: git_diff
+      - name: Check for WordPress changes
+        id: git_diff_wp
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git diff --exit-code || echo "::set-output name=changes::true"
+          git diff --exit-code || echo "::set-output name=wordpress-changes::true"
 
-      - name: Commit changes
-        if: steps.git_diff.outputs.changes == 'true'
+      - name: Commit WordPress changes
+        if: steps.git_diff_wp.outputs.wordpress-changes == 'true'
         run: |
-          git add config.yml
+          git add .
           git commit -m 'Update used WordPress images in Circle CI'
           git push origin HEAD:refs/heads/circle-ci-wordpress-image
 
@@ -39,16 +40,76 @@ jobs:
       - name: Check WooCommerce Versions
         run: php .github/workflows/scripts/check_woocommerce_versions.php
 
-      - name: Check for changes
-        id: git_diff
+      - name: Check for WooCommerce changes
+        id: git_diff_wc
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git diff --exit-code || echo "::set-output name=changes::true"
+          git diff --exit-code || echo "::set-output name=woocommerce-changes::true"
 
-      - name: Commit changes
-        if: steps.git_diff.outputs.changes == 'true'
+      - name: Commit WooCommerce changes
+        if: steps.git_diff_wc.outputs.woocommerce-changes == 'true'
         run: |
-          git add config.yml
+          git add .
           git commit -m 'Update used WooCommerce plugin in Circle CI'
+          git push origin HEAD:refs/heads/circle-ci-wordpress-image
+
+      # Updating used Automate Woo plugin
+      - name: Check Automate Woo Versions
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: php .github/workflows/scripts/check_automate_woo_versions.php
+
+      - name: Check for Automate Woo changes
+        id: git_diff_aw
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git diff --exit-code || echo "::set-output name=automate-woo-changes::true"
+
+      - name: Commit Automate Woo changes
+        if: steps.git_diff_aw.outputs.automate-woo-changes == 'true'
+        run: |
+          git add .
+          git commit -m 'Update used Automate Woo plugin in Circle CI'
+          git push origin HEAD:refs/heads/circle-ci-wordpress-image
+
+      # Updating used WooCommerce Subscriptions plugin
+      - name: Check WooCommerce Subscriptions Versions
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: php .github/workflows/scripts/check_woocommerce_subscriptions_versions.php
+
+      - name: Check for WooCommerce Subscriptions changes
+        id: git_diff_ws
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git diff --exit-code || echo "::set-output name=subscriptions-changes::true"
+
+      - name: Commit changes WooCommerce Subscriptions changes
+        if: steps.git_diff_ws.outputs.subscriptions-changes == 'true'
+        run: |
+          git add .
+          git commit -m 'Update used WooCommerce Subscriptions plugin in Circle CI'
+          git push origin HEAD:refs/heads/circle-ci-wordpress-image
+
+      # Updating used WooCommerce Memberships plugin
+      - name: Check WooCommerce Memberships Versions
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: php .github/workflows/scripts/check_woocommerce_memberships_versions.php
+
+      - name: Check for WooCommerce Memberships changes
+        id: git_diff_wm
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git diff --exit-code || echo "::set-output name=memberships-changes::true"
+
+      - name: Commit WooCommerce Memberships changes
+        if: steps.git_diff_wm.outputs.memberships-changes == 'true'
+        run: |
+          git add .
+          git commit -m 'Update used WooCommerce Memberships plugin in Circle CI'
           git push origin HEAD:refs/heads/circle-ci-wordpress-image
