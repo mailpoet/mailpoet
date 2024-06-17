@@ -4,7 +4,7 @@ import { TasksListDataRow } from './tasks-list-data-row.jsx';
 import { TasksListLabelsRow } from './tasks-list-labels-row.jsx';
 
 function TasksList(props) {
-  const colsCount = props.show_scheduled_at || props.show_cancelled_at ? 6 : 5;
+  const colsCount = props.show_scheduled_at || props.show_cancelled_at ? 7 : 5;
 
   return (
     <table className="widefat fixed striped">

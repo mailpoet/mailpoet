@@ -15,6 +15,9 @@ function TasksListLabelsRow(props) {
         <th className="row-title">{MailPoet.I18n.t('cancelledAt')}</th>
       ) : null}
       <th className="row-title">{MailPoet.I18n.t('updatedAt')}</th>
+      {props.show_scheduled_at || props.show_cancelled_at ? (
+        <th className="row-title">{MailPoet.I18n.t('action')}</th>
+      ) : null}
     </tr>
   );
 }
