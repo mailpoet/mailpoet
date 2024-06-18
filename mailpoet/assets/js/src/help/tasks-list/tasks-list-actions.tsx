@@ -1,11 +1,19 @@
 import { Button } from '@wordpress/components';
-import { MailPoet } from 'mailpoet';
+import { __ } from '@wordpress/i18n';
 
 function TaskButton({ id, type }: { id: number, type: string }): JSX.Element {
+  const isCancelButton = type === 'cancel';
+
   return (
-    <Button variant="secondary" size="small" isDestructive={type === 'cancel'}>
-      {MailPoet.I18n.t(`${type}Action`)}
-    </Button>
+    <>
+      <Button
+        variant="secondary"
+        size="small"
+        isDestructive={isCancelButton}
+      >
+        {isCancelButton ? __('Cancel task', 'mailpoet'): __('Reschedule task', 'mailpoet')}
+      </Button>
+    </>
   );
 }
 
