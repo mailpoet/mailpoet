@@ -344,6 +344,27 @@ class ScheduledTasksRepository extends Repository {
     $this->flush();
   }
 
+  public function cancelTask(ScheduledTaskEntity $task): void {
+    if ($task->getStatus() !== ScheduledTaskEntity::STATUS_SCHEDULED) {
+      throw new \Exception(__('Only scheduled tasks can be cancelled', 'mailpoet'), 400);
+    }
+    $task->setStatus(ScheduledTaskEntity::STATUS_CANCELLED);
+    $task->setCancelledAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
+    $this->persist($task);
+    $this->flush();
+  }
+
+  public function rescheduleTask(ScheduledTaskEntity $task): void {
+    if ($task->getStatus() !== ScheduledTaskEntity::STATUS_CANCELLED) {
+      throw new \Exception(__('Only cancelled tasks can be rescheduled', 'mailpoet'), 400);
+    }
+    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    $task->setInProgress(null);
+    $task->setCancelledAt(null);
+    $this->persist($task);
+    $this->flush();
+  }
+
   /** @param int[] $ids */
   public function deleteByIds(array $ids): void {
     $this->entityManager->createQueryBuilder()
