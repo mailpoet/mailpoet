@@ -31,18 +31,27 @@ function TasksListDataRow({
   let scheduled: Date;
   if (showScheduledAt) {
     scheduled = parseDate(task.scheduledAt, 'yyyy-MM-dd HH:mm:ss', new Date());
+    if (scheduled) {
+      scheduled = MailPoet.Date.adjustForTimezoneDifference(scheduled);
+    }
   }
 
   let cancelled: Date;
   if (showCancelledAt) {
     cancelled = parseDate(task.cancelledAt, 'yyyy-MM-dd HH:mm:ss', new Date());
+    if (cancelled) {
+      cancelled = MailPoet.Date.adjustForTimezoneDifference(cancelled);
+    }
   }
 
-  const updated: Date = parseDate(
+  let updated: Date = parseDate(
     task.updatedAt,
     'yyyy-MM-dd HH:mm:ss',
     new Date(),
   );
+  if (updated) {
+    updated = MailPoet.Date.adjustForTimezoneDifference(updated);
+  }
 
   return (
     <tr>
