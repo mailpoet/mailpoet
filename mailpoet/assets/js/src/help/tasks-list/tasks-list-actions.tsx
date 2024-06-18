@@ -1,7 +1,29 @@
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-function TaskButton({ id, type }: { id: number, type: string }): JSX.Element {
+type TasksListDataRowProps = {
+  id: number;
+  type: string;
+  priority: number;
+  updatedAt: string;
+  scheduledAt?: string;
+  cancelledAt?: string;
+  status?: string;
+  newsletter: {
+    newsletterId?: number;
+    queueId?: number;
+    previewUrl?: string;
+    subject?: string;
+  };
+  subscriberEmail?: string;
+};
+
+type Props = {
+  task: TasksListDataRowProps;
+  type: 'cancel' | 'reschedule';
+};
+
+function TaskButton({ task, type }: Props): JSX.Element {
   const isCancelButton = type === 'cancel';
 
   return (
@@ -17,10 +39,14 @@ function TaskButton({ id, type }: { id: number, type: string }): JSX.Element {
   );
 }
 
-export function CancelTaskButton({ id }: { id: number }): JSX.Element {
-  return <TaskButton id={id} type="cancel" />;
+type ButtonProps = {
+  task: TasksListDataRowProps;
+};
+
+export function CancelTaskButton({ task }: ButtonProps): JSX.Element {
+  return <TaskButton task={task} type="cancel" />;
 }
 
-export function RescheduleTaskButton({ id }: { id: number }): JSX.Element {
-  return <TaskButton id={id} type="reschedule" />;
+export function RescheduleTaskButton({ task }: ButtonProps): JSX.Element {
+  return <TaskButton task={task} type="reschedule" />;
 }
