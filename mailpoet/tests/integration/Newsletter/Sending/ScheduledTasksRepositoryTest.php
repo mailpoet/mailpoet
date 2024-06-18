@@ -31,6 +31,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay(), Carbon::now()); // deleted (should not be fetched)
     $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay()); // scheduled in future (should not be fetched)
     $this->scheduledTaskFactory->create('test', '', Carbon::now()->subDay()); // wrong status (should not be fetched)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_CANCELLED, Carbon::now()->subDay()); // due, but cancelled (should not be fetched)
     $expectedResult[] = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // due (scheduled in past)
     $expectedResult[] = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // due (scheduled in past)
     $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // due (scheduled in past)
@@ -45,6 +46,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->scheduledTaskFactory->create('test', null, Carbon::now()->subDay(), Carbon::now()); // deleted (should not be fetched)
     $this->scheduledTaskFactory->create('test', null, Carbon::now()->addDay()); // scheduled in future (should not be fetched)
     $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay()); // wrong status (should not be fetched)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_CANCELLED, Carbon::now()->subDay()); // wrong status (should not be fetched)
 
     $tasks = $this->repository->findRunningByType('test', 10);
     $this->assertSame($expectedResult, $tasks);
@@ -55,6 +57,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay(), Carbon::now()); // deleted (should not be fetched)
     $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay()); // scheduled in future (should not be fetched)
     $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // wrong status (should not be fetched)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_CANCELLED, Carbon::now()->subDay()); // wrong status (should not be fetched)
 
     $tasks = $this->repository->findCompletedByType('test', 10);
     $this->assertSame($expectedResult, $tasks);
@@ -65,6 +68,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay(), Carbon::now()); // deleted (should not be fetched)
     $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay()); // scheduled in past (should not be fetched)
     $this->scheduledTaskFactory->create('test', null, Carbon::now()->addDay()); // wrong status (should not be fetched)
+    $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_CANCELLED, Carbon::now()->addDay()); // wrong status (should not be fetched)
 
     $tasks = $this->repository->findFutureScheduledByType('test', 10);
     $this->assertSame($expectedResult, $tasks);
@@ -98,6 +102,8 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDays(3));
     $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDays(5));
     $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_INVALID, Carbon::now()->addDays(4));
+    $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_CANCELLED, Carbon::now()->subDay());
+    $this->scheduledTaskFactory->create('sending', ScheduledTaskEntity::STATUS_CANCELLED, Carbon::now()->addDay());
     $this->scheduledTaskFactory->create('sending', null, Carbon::now()->addDays(4));
 
     $counts = $this->repository->getCountsPerStatus();
@@ -107,6 +113,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
       ScheduledTaskEntity::STATUS_INVALID => 1,
       ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING => 1,
       ScheduledTaskEntity::STATUS_COMPLETED => 0,
+      ScheduledTaskEntity::STATUS_CANCELLED => 2,
     ], $counts);
   }
 
@@ -143,6 +150,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
   public function testItCanFilterTasksByStatus() {
     $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
     $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_CANCELLED, Carbon::now()->subDay());
     $data = $this->repository->getLatestTasks(null, [ScheduledTaskEntity::STATUS_COMPLETED]);
     verify(count($data))->equals(1);
     verify($data[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
@@ -191,6 +199,9 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay());
     // wrong status
     $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->subDay());
+    $this->sendingQueueFactory->create($task);
+    // wrong status
+    $task = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_CANCELLED, Carbon::now()->subDay());
     $this->sendingQueueFactory->create($task);
     // wrong type
     $task = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->subDay());
