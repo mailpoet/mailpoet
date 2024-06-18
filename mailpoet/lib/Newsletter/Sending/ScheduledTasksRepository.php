@@ -21,6 +21,11 @@ use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
  */
 class ScheduledTasksRepository extends Repository {
   const TASK_BATCH_SIZE = 20;
+  const CANCELLABLE_STATUSES = [
+    ScheduledTaskEntity::STATUS_SCHEDULED,
+    ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING,
+    null,
+  ];
 
   /** @var WPFunctions */
   private $wp;
@@ -345,8 +350,8 @@ class ScheduledTasksRepository extends Repository {
   }
 
   public function cancelTask(ScheduledTaskEntity $task): void {
-    if ($task->getStatus() !== ScheduledTaskEntity::STATUS_SCHEDULED) {
-      throw new \Exception(__('Only scheduled tasks can be cancelled', 'mailpoet'), 400);
+    if (!in_array($task->getStatus(), self::CANCELLABLE_STATUSES)) {
+      throw new \Exception(__('Only scheduled and running tasks can be cancelled', 'mailpoet'), 400);
     }
     $task->setStatus(ScheduledTaskEntity::STATUS_CANCELLED);
     $task->setCancelledAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
