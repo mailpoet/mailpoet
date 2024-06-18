@@ -62,7 +62,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
         slug="set up abandoned cart email"
         title={MailPoet.I18n.t('setUpAbandonedCartEmail')}
         description={MailPoet.I18n.t('setUpAbandonedCartEmailDesc')}
-        link="admin.php?page=mailpoet-newsletters#/new/woocommerce/woocommerce_abandoned_shopping_cart/conditions"
+        link="admin.php?page=mailpoet-automation-templates"
         imgSrc={`${MailPoet.cdnUrl}homepage/woo-cart-email-illustration.png`}
         isDone={tasksStatus.setUpAbandonedCartEmail}
         doneMessage={MailPoet.I18n.t('setUpAbandonedCartEmailDone')}
