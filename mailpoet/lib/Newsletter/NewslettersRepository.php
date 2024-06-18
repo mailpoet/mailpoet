@@ -16,6 +16,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Util\Helpers;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
@@ -76,12 +77,12 @@ class NewslettersRepository extends Repository {
       ->from(NewsletterEntity::class, 'n')
       ->where('n.status = :status')
       ->andWhere('n.deletedAt IS NULL')
-      ->andWhere('n.type = :type')
+      ->andWhere('n.type IN (:types)')
       ->join('n.options', 'o', Join::WITH, 'o.value = :event')
-      ->join('o.optionField', 'f', Join::WITH, 'f.name = :nameEvent AND f.newsletterType = :type')
+      ->join('o.optionField', 'f', Join::WITH, 'f.name = :nameEvent AND f.newsletterType IN (:types)')
       ->setParameter('status', NewsletterEntity::STATUS_ACTIVE)
       ->setParameter('nameEvent', NewsletterOptionFieldEntity::NAME_EVENT)
-      ->setParameter('type', NewsletterEntity::TYPE_AUTOMATIC)
+      ->setParameter('types', [NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL, NewsletterEntity::TYPE_AUTOMATIC], ArrayParameterType::STRING)
       ->setParameter('event', $event)
       ->getQuery()
       ->getSingleScalarResult());
