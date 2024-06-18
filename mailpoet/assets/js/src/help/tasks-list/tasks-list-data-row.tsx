@@ -95,12 +95,12 @@ function TasksListDataRow({
       </td>
       {showScheduledAt ? (
         <td>
-          <CancelTaskButton id={task.id} />
+          <CancelTaskButton task={task} />
         </td>
       ) : null}
       {showCancelledAt ? (
         <td>
-          <RescheduleTaskButton id={task.id} />
+          <RescheduleTaskButton task={task} />
         </td>
       ) : null}
     </tr>
