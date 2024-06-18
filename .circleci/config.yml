@@ -192,7 +192,7 @@ jobs:
           command: |
             ./do download:woo-commerce-zip latest
             ./do download:woo-commerce-subscriptions-zip 5.7.0
-            ./do download:woo-commerce-memberships-zip 1.25.2
+            ./do download:woo-commerce-memberships-zip 1.26.5
             ./do download:automate-woo-zip 6.0.10
       - run:
           name: Dump tests ENV variables for acceptance tests
