@@ -58,10 +58,10 @@ class HelpTest extends \MailPoetTest {
       ->create();
     $queue = $this->createNewSendingQueue($task, $newsletter);
     $data = $this->helpPage->buildTaskData($task);
-    verify($data['newsletter']['newsletter_id'])->equals($newsletter->getId());
-    verify($data['newsletter']['queue_id'])->equals($queue->getId());
+    verify($data['newsletter']['newsletterId'])->equals($newsletter->getId());
+    verify($data['newsletter']['queueId'])->equals($queue->getId());
     verify($data['newsletter']['subject'])->equals('Rendered Subject');
-    verify($data['newsletter']['preview_url'])->notEmpty();
+    verify($data['newsletter']['previewUrl'])->notEmpty();
   }
 
   public function testItDoesNotFailForSendingTaskWithMissingNewsletterInconsistentData() {
@@ -71,10 +71,10 @@ class HelpTest extends \MailPoetTest {
       Carbon::now()->addDay()
     );
     $data = $this->helpPage->buildTaskData($task);
-    verify($data['newsletter']['newsletter_id'])->equals(null);
-    verify($data['newsletter']['queue_id'])->equals(null);
+    verify($data['newsletter']['newsletterId'])->equals(null);
+    verify($data['newsletter']['queueId'])->equals(null);
     verify($data['newsletter']['subject'])->equals(null);
-    verify($data['newsletter']['preview_url'])->equals(null);
+    verify($data['newsletter']['previewUrl'])->equals(null);
   }
 
   private function createNewSendingQueue(?ScheduledTaskEntity $task, ?NewsletterEntity $newsletter, $renderedSubject = null): SendingQueueEntity {
