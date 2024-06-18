@@ -62,7 +62,7 @@ class Help extends APIEndpoint {
   }
 
   private function handleException($message): \MailPoet\API\JSON\ErrorResponse {
-    return $this->errorResponse([
+    return $this->badRequest([
       ApiError::BAD_REQUEST => $message,
     ]);
   }
