@@ -1,4 +1,8 @@
-import { Button } from '@wordpress/components';
+import {
+  Button,
+  __experimentalConfirmDialog as ConfirmDialog,
+} from '@wordpress/components';
+import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 
 type TasksListDataRowProps = {
@@ -24,16 +28,40 @@ type Props = {
 };
 
 function TaskButton({ task, type }: Props): JSX.Element {
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const isCancelButton = type === 'cancel';
 
   return (
     <>
+      <ConfirmDialog
+        isOpen={showConfirmDialog}
+        title={
+          isCancelButton
+            ? __('Cancel task', 'mailpoet')
+            : __('Reschedule task', 'mailpoet')
+        }
+        cancelButtonText={__('Not now', 'mailpoet')}
+        confirmButtonText={
+          isCancelButton
+            ? __('Yes, cancel task', 'mailpoet')
+            : __('Yes, reschedule task', 'mailpoet')
+        }
+        onConfirm={() => {}}
+        onCancel={() => setShowConfirmDialog(false)}
+        __experimentalHideHeader={false}
+      >
+        <div />
+      </ConfirmDialog>
+
       <Button
         variant="secondary"
         size="small"
         isDestructive={isCancelButton}
+        onClick={() => setShowConfirmDialog(true)}
       >
-        {isCancelButton ? __('Cancel task', 'mailpoet'): __('Reschedule task', 'mailpoet')}
+        {isCancelButton
+          ? __('Cancel task', 'mailpoet')
+          : __('Reschedule task', 'mailpoet')}
       </Button>
     </>
   );
