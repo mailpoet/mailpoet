@@ -6,6 +6,8 @@ import {
 import { MailPoet } from 'mailpoet';
 import { useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import parseDate from 'date-fns/parse';
+import { isPast } from 'date-fns';
 
 type TasksListDataRowProps = {
   id: number;
@@ -33,6 +35,15 @@ function TaskButton({ task, type }: Props): JSX.Element {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const isCancelButton = type === 'cancel';
+  const isRescheduleButton = type === 'reschedule';
+
+  let scheduledDate = task.scheduledAt
+    ? parseDate(task.scheduledAt, 'yyyy-MM-dd HH:mm:ss', new Date())
+    : undefined;
+  if (scheduledDate) {
+    scheduledDate = MailPoet.Date.adjustForTimezoneDifference(scheduledDate);
+  }
+  const isScheduledInPast = isPast(scheduledDate);
 
   return (
     <>
@@ -88,6 +99,28 @@ function TaskButton({ task, type }: Props): JSX.Element {
             task.id,
             // translators: used when the email subject is empty
             task.newsletter.subject || __('(no subject)', 'mailpoet'),
+          )}
+        {isRescheduleButton &&
+          sprintf(
+            // translators: %1$s is a number, %2$s is the email subject (when empty, "(no subject)" is used)
+            __(
+              'Are you sure you want to reschedule the task with ID %s for the email "%2$s"?',
+              'mailpoet',
+            ),
+            task.id,
+            // translators: used when the email subject is empty
+            task.newsletter.subject || __('(no subject)', 'mailpoet'),
+          )}{' '}
+        {isRescheduleButton &&
+          isScheduledInPast &&
+          __('The email will be sent immediately.', 'mailpoet')}
+        {isRescheduleButton &&
+          !isScheduledInPast &&
+          sprintf(
+            __('The task will be scheduled for sending on %s.', 'mailpoet'),
+            `${MailPoet.Date.short(scheduledDate)} ${MailPoet.Date.time(
+              scheduledDate,
+            )}`,
           )}
       </ConfirmDialog>
 
