@@ -1,6 +1,7 @@
 import {
   Button,
   __experimentalConfirmDialog as ConfirmDialog,
+  Notice,
 } from '@wordpress/components';
 import { MailPoet } from 'mailpoet';
 import { useState } from 'react';
@@ -30,6 +31,7 @@ type Props = {
 
 function TaskButton({ task, type }: Props): JSX.Element {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
   const isCancelButton = type === 'cancel';
 
   return (
@@ -57,14 +59,25 @@ function TaskButton({ task, type }: Props): JSX.Element {
             },
           })
             .done(() => {
+              setErrorMessage(null);
               setShowConfirmDialog(false);
               window.location.reload();
+            })
+            .catch((e) => {
+              setErrorMessage(e.errors.map((error) => error.message).join(' '));
             });
         }}
         onCancel={() => setShowConfirmDialog(false)}
         __experimentalHideHeader={false}
       >
-        <div />
+        {errorMessage && (
+          <>
+            <Notice status="error" isDismissible={false}>
+              {errorMessage}
+            </Notice>
+            <br />
+          </>
+        )}
       </ConfirmDialog>
 
       <Button
