@@ -6,34 +6,27 @@ import {
 import { TasksListLabelsRow } from './tasks-list-labels-row';
 
 type Props = {
-  showScheduledAt?: boolean;
-  showCancelledAt?: boolean;
   tasks: TasksListLabelsRowProps['task'][];
+  type: string;
 };
-function TasksList({
-  showScheduledAt = false,
-  showCancelledAt = false,
-  tasks,
-}: Props): JSX.Element {
-  const colsCount = showScheduledAt || showCancelledAt ? 7 : 5;
+function TasksList({ tasks, type }: Props): JSX.Element {
+  let colsCount = 5;
+  if (type === 'running') {
+    colsCount += 1;
+  }
+  if (type === 'scheduled' || type === 'cancelled') {
+    colsCount += 2;
+  }
 
   return (
     <table className="widefat fixed striped">
       <thead>
-        <TasksListLabelsRow
-          showScheduledAt={showScheduledAt}
-          showCancelledAt={showCancelledAt}
-        />
+        <TasksListLabelsRow type={type} />
       </thead>
       <tbody>
         {tasks.length ? (
           tasks.map((task) => (
-            <TasksListDataRow
-              key={task.id}
-              task={task}
-              showScheduledAt={showScheduledAt}
-              showCancelledAt={showCancelledAt}
-            />
+            <TasksListDataRow key={task.id} task={task} type={type} />
           ))
         ) : (
           <tr className="mailpoet-listing-no-items">
@@ -42,10 +35,7 @@ function TasksList({
         )}
       </tbody>
       <tfoot>
-        <TasksListLabelsRow
-          showScheduledAt={showScheduledAt}
-          showCancelledAt={showCancelledAt}
-        />
+        <TasksListLabelsRow type={type} />
       </tfoot>
     </table>
   );
