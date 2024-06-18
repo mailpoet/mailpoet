@@ -5,7 +5,7 @@ import {
 } from '@wordpress/components';
 import { MailPoet } from 'mailpoet';
 import { useState } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 type TasksListDataRowProps = {
   id: number;
@@ -78,6 +78,17 @@ function TaskButton({ task, type }: Props): JSX.Element {
             <br />
           </>
         )}
+        {isCancelButton &&
+          sprintf(
+            // translators: %1$s is a number, %2$s is the email subject (when empty, "(no subject)" is used)
+            __(
+              'Are you sure you want to cancel the task with ID %1$s for the email "%2$s"? Once cancelled, the email will not be sent.',
+              'mailpoet',
+            ),
+            task.id,
+            // translators: used when the email subject is empty
+            task.newsletter.subject || __('(no subject)', 'mailpoet'),
+          )}
       </ConfirmDialog>
 
       <Button
