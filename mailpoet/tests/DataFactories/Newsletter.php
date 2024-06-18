@@ -258,6 +258,21 @@ class Newsletter {
   }
 
   /**
+   * @return Newsletter
+   */
+  public function withAutomationTransactionalTypeWooCommerceAbandonedCart() {
+    $this->data['type'] = NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL;
+    $this->withOptions([
+      NewsletterOptionFieldEntity::NAME_GROUP => 'woocommerce',
+      NewsletterOptionFieldEntity::NAME_EVENT => 'woocommerce_abandoned_shopping_cart',
+      NewsletterOptionFieldEntity::NAME_SEND_TO => 'user',
+      NewsletterOptionFieldEntity::NAME_AFTER_TIME_NUMBER => '1',
+      NewsletterOptionFieldEntity::NAME_AFTER_TIME_TYPE => 'weeks',
+    ]);
+    return $this;
+  }
+
+  /**
    * @param array $products Array of products.
    *  $products = [
    *    [
