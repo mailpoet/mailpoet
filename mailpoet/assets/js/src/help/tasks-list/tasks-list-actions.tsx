@@ -2,6 +2,7 @@ import {
   Button,
   __experimentalConfirmDialog as ConfirmDialog,
 } from '@wordpress/components';
+import { MailPoet } from 'mailpoet';
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 
@@ -46,7 +47,20 @@ function TaskButton({ task, type }: Props): JSX.Element {
             ? __('Yes, cancel task', 'mailpoet')
             : __('Yes, reschedule task', 'mailpoet')
         }
-        onConfirm={() => {}}
+        onConfirm={async () => {
+          await MailPoet.Ajax.post({
+            api_version: window.mailpoet_api_version,
+            endpoint: 'help',
+            action: isCancelButton ? 'cancelTask' : 'rescheduleTask',
+            data: {
+              id: task.id,
+            },
+          })
+            .done(() => {
+              setShowConfirmDialog(false);
+              window.location.reload();
+            });
+        }}
         onCancel={() => setShowConfirmDialog(false)}
         __experimentalHideHeader={false}
       >
