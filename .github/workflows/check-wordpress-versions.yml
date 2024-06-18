@@ -57,7 +57,7 @@ jobs:
       # Updating used Automate Woo plugin
       - name: Check Automate Woo Versions
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.WP_GITHUB_TOKEN }}
         run: php .github/workflows/scripts/check_automate_woo_versions.php
 
       - name: Check for Automate Woo changes
@@ -77,7 +77,7 @@ jobs:
       # Updating used WooCommerce Subscriptions plugin
       - name: Check WooCommerce Subscriptions Versions
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.WP_GITHUB_TOKEN }}
         run: php .github/workflows/scripts/check_woocommerce_subscriptions_versions.php
 
       - name: Check for WooCommerce Subscriptions changes
@@ -97,7 +97,7 @@ jobs:
       # Updating used WooCommerce Memberships plugin
       - name: Check WooCommerce Memberships Versions
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.WP_GITHUB_TOKEN }}
         run: php .github/workflows/scripts/check_woocommerce_memberships_versions.php
 
       - name: Check for WooCommerce Memberships changes
