@@ -1,28 +1,25 @@
 import { MailPoet } from 'mailpoet';
 
 type Props = {
-  showScheduledAt?: boolean;
-  showCancelledAt?: boolean;
+  type: string;
 };
 
-function TasksListLabelsRow({
-  showScheduledAt = false,
-  showCancelledAt = false,
-}: Props): JSX.Element {
+function TasksListLabelsRow({ type }: Props): JSX.Element {
+  const hasAction = ['scheduled', 'running', 'cancelled'].includes(type);
   return (
     <tr>
       <th className="row-title">Id</th>
       <th className="row-title">{MailPoet.I18n.t('email')}</th>
       <th className="row-title">{MailPoet.I18n.t('subscriber')}</th>
       <th className="row-title">{MailPoet.I18n.t('priority')}</th>
-      {showScheduledAt ? (
+      {type === 'scheduled' ? (
         <th className="row-title">{MailPoet.I18n.t('scheduledAt')}</th>
       ) : null}
-      {showCancelledAt ? (
+      {type === 'cancelled' ? (
         <th className="row-title">{MailPoet.I18n.t('cancelledAt')}</th>
       ) : null}
       <th className="row-title">{MailPoet.I18n.t('updatedAt')}</th>
-      {showScheduledAt || showCancelledAt ? (
+      {hasAction ? (
         <th className="row-title">{MailPoet.I18n.t('action')}</th>
       ) : null}
     </tr>

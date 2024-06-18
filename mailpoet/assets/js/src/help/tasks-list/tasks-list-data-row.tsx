@@ -3,8 +3,7 @@ import parseDate from 'date-fns/parse';
 import { CancelTaskButton, RescheduleTaskButton } from './tasks-list-actions';
 
 export type Props = {
-  showScheduledAt: boolean;
-  showCancelledAt: boolean;
+  type: string;
   task: {
     id: number;
     type: string;
@@ -23,11 +22,12 @@ export type Props = {
   };
 };
 
-function TasksListDataRow({
-  showScheduledAt = false,
-  showCancelledAt = false,
-  task,
-}: Props): JSX.Element {
+function TasksListDataRow({ type, task }: Props): JSX.Element {
+  const showScheduledAt = type === 'scheduled';
+  const showCancelledAt = type === 'cancelled';
+  const canCancelTask = type === 'scheduled' || type === 'running';
+  const canRescheduleTask = type === 'cancelled';
+
   let scheduled: Date;
   if (showScheduledAt) {
     scheduled = parseDate(task.scheduledAt, 'yyyy-MM-dd HH:mm:ss', new Date());
@@ -102,12 +102,12 @@ function TasksListDataRow({
           updated,
         )}`}</abbr>
       </td>
-      {showScheduledAt ? (
+      {canCancelTask ? (
         <td>
           <CancelTaskButton task={task} />
         </td>
       ) : null}
-      {showCancelledAt ? (
+      {canRescheduleTask ? (
         <td>
           <RescheduleTaskButton task={task} />
         </td>

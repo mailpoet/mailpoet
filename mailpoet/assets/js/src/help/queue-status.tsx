@@ -85,23 +85,25 @@ function QueueStatus({ statusData }: Props): JSX.Element {
       />
       <h5>{MailPoet.I18n.t('scheduledTasks')}</h5>
       <TasksList
-        showScheduledAt
+        type="scheduled"
         tasks={status.latestTasks.filter((task) => task.status === 'scheduled')}
       />
 
       <h5>{MailPoet.I18n.t('cancelledTasks')}</h5>
       <TasksList
-        showCancelledAt
+        type="cancelled"
         tasks={status.latestTasks.filter((task) => task.status === 'cancelled')}
       />
 
       <h5>{MailPoet.I18n.t('runningTasks')}</h5>
       <TasksList
+        type="running"
         tasks={status.latestTasks.filter((task) => task.status === null)}
       />
 
       <h5>{MailPoet.I18n.t('completedTasks')}</h5>
       <TasksList
+        type="completed"
         tasks={status.latestTasks.filter((task) => task.status === 'completed')}
       />
     </>
