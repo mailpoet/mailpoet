@@ -34,7 +34,16 @@ $stableVersions = filterStableVersions($allVersions);
 echo "Latest Automate Woo version: $latestVersion\n";
 echo "Previous Automate Woo version: $previousVersion\n";
 
-echo "Replacing the latest version in the config file...\n";
-replaceLatestVersion($latestVersion);
-echo "Replacing the previous version in the config file...\n";
-replacePreviousVersion($previousVersion);
+if ($latestVersion) {
+  echo "Replacing the latest version in the config file...\n";
+  replaceLatestVersion($latestVersion);
+} else {
+  echo "No latest version found.\n";
+}
+
+if ($previousVersion) {
+  echo "Replacing the previous version in the config file...\n";
+  replacePreviousVersion($previousVersion);
+} else {
+  echo "No previous version found.\n";
+}
