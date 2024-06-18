@@ -178,6 +178,29 @@ class HomepageDataControllerTest extends \MailPoetTest {
     verify($productDiscoveryStatus['setUpAbandonedCartEmail'])->false();
 
     $newsletter = (new Newsletter())
+      ->withAutomationTransactionalTypeWooCommerceAbandonedCart()
+      ->withStatus(NewsletterEntity::STATUS_DRAFT)
+      ->create();
+
+    // Not done when abandoned cart email is draft
+    $productDiscoveryStatus = $this->homepageDataController->getPageData()['productDiscoveryStatus'];
+    verify($productDiscoveryStatus['setUpAbandonedCartEmail'])->false();
+
+    // Done when abandoned cart email is active
+    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
+    $this->entityManager->flush();
+    $productDiscoveryStatus = $this->homepageDataController->getPageData()['productDiscoveryStatus'];
+    verify($productDiscoveryStatus['setUpAbandonedCartEmail'])->true();
+  }
+
+  /**
+   * Some customers can have abandoned cart emails with legacy type `automatic`
+   */
+  public function testItFetchesProductDiscoveryStatusSetUpAbandonedCartEmailWithLegacyType(): void {
+    $productDiscoveryStatus = $this->homepageDataController->getPageData()['productDiscoveryStatus'];
+    verify($productDiscoveryStatus['setUpAbandonedCartEmail'])->false();
+
+    $newsletter = (new Newsletter())
       ->withAutomaticTypeWooCommerceAbandonedCart()
       ->withStatus(NewsletterEntity::STATUS_DRAFT)
       ->create();
