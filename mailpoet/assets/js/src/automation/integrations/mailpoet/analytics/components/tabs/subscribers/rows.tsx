@@ -1,6 +1,7 @@
 import { SubscriberSection } from '../../../store';
 import { CustomerCell } from '../orders/cells/customer';
 import { MailPoet } from '../../../../../../../mailpoet';
+import { ActivityCell } from './cells/activity';
 import { StepCell } from './cells/step';
 import { AutomationRunStatus } from '../../../../../../components/status';
 
@@ -34,6 +35,9 @@ export function transformSubscribersToRows(data: SubscriberSection['data']) {
         {
           display: MailPoet.Date.format(new Date(subscriber.date)),
           value: subscriber.date,
+        },
+        {
+          display: <ActivityCell />,
         },
       ]);
 }

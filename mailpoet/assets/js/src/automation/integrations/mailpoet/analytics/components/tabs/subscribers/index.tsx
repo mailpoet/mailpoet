@@ -27,6 +27,11 @@ const headers = [
     isSortable: true,
     label: __('Updated on', 'mailpoet'),
   },
+  {
+    key: 'action',
+    isSortable: false,
+    label: null,
+  },
 ];
 
 export function Subscribers(): JSX.Element {
