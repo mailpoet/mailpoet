@@ -19,10 +19,11 @@ class Selection extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    const { field, item = undefined } = this.props;
     if (
-      this.props.item !== undefined &&
+      item !== undefined &&
       prevProps.item !== undefined &&
-      this.props.item.id !== prevProps.item.id
+      item.id !== prevProps.item.id
     ) {
       jQuery(`#${this.selectRef.current.id}`)
         .val(this.getSelectedValues())
@@ -33,14 +34,11 @@ class Selection extends Component {
     // It happened only when component allowed multipleValues
     // Following lines are modified lines on top for multipeValues
     if (
-      this.props.item !== undefined &&
+      item !== undefined &&
       prevProps.item !== undefined &&
       this.allowMultipleValues() &&
-      _.isArray(this.props.item[this.props.field.name]) &&
-      !_.isEqual(
-        this.props.item[this.props.field.name],
-        prevProps.item[this.props.field.name],
-      )
+      _.isArray(item[field.name]) &&
+      !_.isEqual(item[field.name], prevProps.item[field.name])
     ) {
       jQuery(`#${this.selectRef.current.id}`)
         .val(this.getSelectedValues())
@@ -50,7 +48,7 @@ class Selection extends Component {
     if (
       this.isSelect2Initialized() &&
       this.getFieldId(this.props) !== this.getFieldId(prevProps) &&
-      this.props.field.resetSelect2OnUpdate !== undefined
+      field.resetSelect2OnUpdate !== undefined
     ) {
       this.resetSelect2();
     }
@@ -68,34 +66,34 @@ class Selection extends Component {
   };
 
   getSelectedValues = () => {
-    if (this.props.field.selected !== undefined) {
-      return this.props.field.selected(this.props.item);
+    const { field, item = undefined } = this.props;
+    if (field.selected !== undefined) {
+      return field.selected(item);
     }
-    if (this.props.item !== undefined && this.props.field.name !== undefined) {
+    if (item !== undefined && field.name !== undefined) {
       if (this.allowMultipleValues()) {
-        if (_.isArray(this.props.item[this.props.field.name])) {
-          return this.props.item[this.props.field.name].map((item) => item.id);
+        if (_.isArray(item[field.name])) {
+          return item[field.name].map((it) => it.id);
         }
       } else {
-        return this.props.item[this.props.field.name];
+        return item[field.name];
       }
     }
     return null;
   };
 
   getItems = () => {
+    const { field } = this.props;
     let items;
-    if (
-      typeof window[`mailpoet_${this.props.field.endpoint}`] !== 'undefined'
-    ) {
-      items = window[`mailpoet_${this.props.field.endpoint}`];
-    } else if (this.props.field.values !== undefined) {
-      items = this.props.field.values;
+    if (typeof window[`mailpoet_${field.endpoint}`] !== 'undefined') {
+      items = window[`mailpoet_${field.endpoint}`];
+    } else if (field.values !== undefined) {
+      items = field.values;
     }
 
     if (_.isArray(items)) {
-      if (this.props.field.filter !== undefined) {
-        items = items.filter(this.props.field.filter);
+      if (field.filter !== undefined) {
+        items = items.filter(field.filter);
       }
     }
 
@@ -103,22 +101,25 @@ class Selection extends Component {
   };
 
   getLabel = (item) => {
-    if (this.props.field.getLabel !== undefined) {
-      return this.props.field.getLabel(item, this.props.item);
+    const { field, item: propsItem = undefined } = this.props;
+    if (field.getLabel !== undefined) {
+      return field.getLabel(item, propsItem);
     }
     return item.name;
   };
 
   getSearchLabel = (item) => {
-    if (this.props.field.getSearchLabel !== undefined) {
-      return this.props.field.getSearchLabel(item, this.props.item);
+    const { field, item: propsItem = undefined } = this.props;
+    if (field.getSearchLabel !== undefined) {
+      return field.getSearchLabel(item, propsItem);
     }
     return null;
   };
 
   getValue = (item) => {
-    if (this.props.field.getValue !== undefined) {
-      return this.props.field.getValue(item, this.props.item);
+    const { field, item: propsItem = undefined } = this.props;
+    if (field.getValue !== undefined) {
+      return field.getValue(item, propsItem);
     }
     return item.id;
   };
@@ -128,12 +129,19 @@ class Selection extends Component {
       return;
     }
 
+    const {
+      field,
+      disabled = false,
+      dropDownParent = undefined,
+      width = '',
+    } = this.props;
+
     let select2Options = {
-      disabled: this.props.disabled || false,
-      width: this.props.width || '',
+      disabled: disabled || false,
+      width: width || '',
       placeholder: {
         id: '', // the value of the option
-        text: this.props.field.placeholder,
+        text: field.placeholder,
       },
       templateResult: function templateResult(item) {
         if (item.element && item.element.selected) {
@@ -145,11 +153,11 @@ class Selection extends Component {
         return item.text;
       },
     };
-    if (this.props.dropDownParent) {
-      select2Options.dropdownParent = jQuery(this.props.dropDownParent);
+    if (dropDownParent) {
+      select2Options.dropdownParent = jQuery(dropDownParent);
     }
 
-    const remoteQuery = this.props.field.remoteQuery || null;
+    const remoteQuery = field.remoteQuery || null;
     if (remoteQuery) {
       select2Options = Object.assign(select2Options, {
         ajax: {
@@ -184,10 +192,10 @@ class Selection extends Component {
       });
     }
 
-    if (this.props.field.extendSelect2Options !== undefined) {
+    if (field.extendSelect2Options !== undefined) {
       select2Options = Object.assign(
         select2Options,
-        this.props.field.extendSelect2Options,
+        field.extendSelect2Options,
       );
     }
 
@@ -244,22 +252,24 @@ class Selection extends Component {
     this.allowMultipleValues() || this.props.field.forceSelect2;
 
   handleChange = (e) => {
-    if (this.props.onValueChange === undefined) return;
+    const { field, onValueChange = undefined } = this.props;
+
+    if (typeof onValueChange !== 'function') return;
 
     const valueTextPair = jQuery(`#${this.selectRef.current.id}`)
       .children(':selected')
       .map(function element() {
         return { id: jQuery(this).val(), text: jQuery(this).text() };
       });
-    const value = this.props.field.multiple
+    const value = field.multiple
       ? _.pluck(valueTextPair, 'id')
       : _.pluck(valueTextPair, 'id').toString();
     const transformedValue = this.transformChangedValue(value, valueTextPair);
 
-    this.props.onValueChange({
+    onValueChange({
       target: {
         value: transformedValue,
-        name: this.props.field.name,
+        name: field.name,
         id: e.target.id,
       },
     });
@@ -269,22 +279,20 @@ class Selection extends Component {
   // this function may be used to transform the placeholder value into
   // desired value.
   transformChangedValue = (value, textValuePair) => {
-    if (typeof this.props.field.transformChangedValue === 'function') {
-      return this.props.field.transformChangedValue.call(
-        this,
-        value,
-        textValuePair,
-      );
+    const { field } = this.props;
+    if (typeof field.transformChangedValue === 'function') {
+      return field.transformChangedValue.call(this, value, textValuePair);
     }
     return value;
   };
 
   insertEmptyOption = () => {
+    const { field } = this.props;
     // https://select2.org/placeholders
     // For single selects only, in order for the placeholder value to appear,
     // we must have a blank <option> as the first option in the <select> control.
     if (this.allowMultipleValues()) return undefined;
-    if (this.props.field.placeholder) {
+    if (field.placeholder) {
       return (
         <option className="default" /> // eslint-disable-line jsx-a11y/control-has-associated-label
       );
@@ -293,7 +301,9 @@ class Selection extends Component {
   };
 
   render() {
-    const items = this.getItems(this.props.field);
+    const { field } = this.props;
+
+    const items = this.getItems(field);
     const selectedValues = this.getSelectedValues();
     const options = items.map((item) => {
       const label = this.getLabel(item);
@@ -316,11 +326,11 @@ class Selection extends Component {
       <select
         id={this.getFieldId()}
         ref={this.selectRef}
-        disabled={this.props.field.disabled}
-        data-placeholder={this.props.field.placeholder}
-        multiple={this.props.field.multiple}
+        disabled={field.disabled}
+        data-placeholder={field.placeholder}
+        multiple={field.multiple}
         defaultValue={selectedValues}
-        {...this.props.field.validation}
+        {...field.validation}
       >
         {this.insertEmptyOption()}
         {options}
@@ -364,15 +374,6 @@ Selection.propTypes = {
   dropDownParent: PropTypes.string,
 };
 
-Selection.defaultProps = {
-  onValueChange: function onValueChange() {
-    // no-op
-  },
-  disabled: false,
-  width: '',
-  item: undefined,
-  dropDownParent: undefined,
-};
 Selection.displayName = 'FormEditorSelection';
 const SelectionWithBoundary = withBoundary(Selection);
 export { SelectionWithBoundary as Selection };
