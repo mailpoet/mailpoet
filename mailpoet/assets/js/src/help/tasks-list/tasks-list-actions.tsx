@@ -48,6 +48,7 @@ function TaskButton({ task, type }: Props): JSX.Element {
   return (
     <>
       <ConfirmDialog
+        className="mailpoet-help-modal"
         isOpen={showConfirmDialog}
         title={
           isCancelButton
