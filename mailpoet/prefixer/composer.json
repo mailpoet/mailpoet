@@ -25,7 +25,6 @@
     "symfony/polyfill-intl-idn": "1.18.1",
     "symfony/polyfill-intl-normalizer": "1.18.1",
     "symfony/polyfill-mbstring": "1.18.1",
-    "symfony/polyfill-php72": "1.23.0",
     "symfony/polyfill-php80": "1.23.1",
     "symfony/validator": "5.4.*",
     "twig/twig": "3.10.3"
