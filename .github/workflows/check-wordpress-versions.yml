@@ -127,3 +127,13 @@ jobs:
         if: env.CHANGES_DETECTED == 'true'
         run: |
           git push origin HEAD:refs/heads/update-plugins-and-wordpress
+
+      # Create a pull request if there are changes
+      - name: Create Pull Request
+        if: env.CHANGES_DETECTED == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update-plugins-and-wordpress
+          title: 'Update WordPress Docker and WooCommerce Versions'
+          base: trunk
