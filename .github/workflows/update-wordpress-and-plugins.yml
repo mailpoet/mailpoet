@@ -30,11 +30,15 @@ jobs:
             echo "WORDPRESS_CHANGES=true" >> $GITHUB_ENV
           fi
 
+      - name: Get WordPress versions from file
+        id: get_wp_version
+        run: echo "WORDPRESS_VERSION=$(cat /tmp/wordpress_versions.txt)" >> $GITHUB_ENV
+
       - name: Commit WordPress changes
         if: env.WORDPRESS_CHANGES == 'true'
         run: |
           git add .
-          git commit -m 'Update used WordPress images in Circle CI'
+          git commit -m "Update used WordPress images in Circle CI" -m "${{ env.WORDPRESS_VERSION }}"
 
       # Updating used WooCommerce plugin
       - name: Check WooCommerce Versions

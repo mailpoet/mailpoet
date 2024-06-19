@@ -2,21 +2,32 @@
 
 require_once __DIR__ . '/helpers.php';
 
-function fetchData($url): array {
-  $response = file_get_contents($url);
-  return json_decode($response, true);
-}
-
+/**
+ * We try to get the current available official Docker images for WordPress.
+ */
 function getWordpressVersions($page = 1, $pageSize = 100): array {
   $url = "https://registry.hub.docker.com/v2/repositories/library/wordpress/tags?page_size={$pageSize}&page={$page}";
-  $data = fetchData($url);
+  $response = file_get_contents($url);
+  $data = json_decode($response, true);
   return array_column($data['results'], 'name');
 }
 
+/**
+ * We prefer the latest patch versions of WordPress with specified PHP versions.
+ * For example: 6.5.4-php8.3
+ */
 function filterVersions($versions): array {
   return array_filter($versions, fn($version) => preg_match('/^\d+\.\d+\.\d+-php\d+\.\d+$/', $version));
 }
 
+/**
+ * We sort the versions by WordPress version and PHP version.
+ * The expected output is:
+ *    - 6.5.4-php8.3
+ *    - 6.5.4-php8.2
+ *    - 6.5.3-php8.3
+ *    - 6.5.3-php8.2
+ */
 function sortVersions(&$versions) {
   usort($versions, function($a, $b) {
     [$wpA, $phpA] = explode('-php', $a);
@@ -27,7 +38,11 @@ function sortVersions(&$versions) {
   });
 }
 
-function getLatestAndPreviousVersions($sortedVersions) {
+/**
+ * This function group docker tags by the WordPress version and returns the latest with the higher PHP version
+ * abd the previous with the lower PHP version.
+ */
+function getLatestAndPreviousVersions($sortedVersions): array {
   $uniqueVersions = [];
   foreach ($sortedVersions as $version) {
     [$wpVersion] = explode('-php', $version);
@@ -46,7 +61,10 @@ function getLatestAndPreviousVersions($sortedVersions) {
   return [reset($latestVersionGroup), end($previousVersionGroup)];
 }
 
-function replaceLatestVersion($latestVersion) {
+/**
+ * We specify the latest WordPress version only in the docker-compose file for the tests.
+ */
+function replaceLatestVersion($latestVersion): void {
   replaceVersionInFile(
     __DIR__ . './../../../mailpoet/tests/docker/docker-compose.yml',
     '/(wordpress:\${WORDPRESS_IMAGE_VERSION:-\s*)\d+\.\d+\.?\d*-php\d+\.\d+(})/',
@@ -54,7 +72,10 @@ function replaceLatestVersion($latestVersion) {
   );
 }
 
-function replacePreviousVersion($previousVersion) {
+/**
+ * We use the previous WordPress version only in the CircleCI config file.
+ */
+function replacePreviousVersion($previousVersion): void {
   replaceVersionInFile(
     __DIR__ . './../../../.circleci/config.yml',
     '/(wordpress_image_version: )\d+\.\d+\.?\d*-php\d+\.\d+/',
@@ -70,6 +91,7 @@ $previousVersion = null;
 
 echo "Fetching WordPress versions...\n";
 
+// We fetch the versions until we find the latest and previous versions. But there is a limit of 4 pages.
 while (($latestVersion === null || $previousVersion === null) && $page <= $maxPages) {
   $versions = getWordpressVersions($page);
   $allVersions = array_merge($allVersions, $versions);
@@ -82,7 +104,18 @@ while (($latestVersion === null || $previousVersion === null) && $page <= $maxPa
 echo "Latest version: $latestVersion\n";
 echo "Previous version: $previousVersion\n";
 
-echo "Replacing the latest version in the docker file...\n";
-replaceLatestVersion($latestVersion);
-echo "Replacing the previous version in the config file...\n";
-replacePreviousVersion($previousVersion);
+if ($latestVersion) {
+  echo "Replacing the latest version in the docker file...\n";
+  replaceLatestVersion($latestVersion);
+} else {
+  echo "No latest version found.\n";
+}
+
+if ($previousVersion) {
+  echo "Replacing the previous version in the config file...\n";
+  replacePreviousVersion($previousVersion);
+} else {
+  echo "No previous version found.\n";
+}
+
+saveVersionsToFile($latestVersion, $previousVersion, 'wordpress_versions.txt');

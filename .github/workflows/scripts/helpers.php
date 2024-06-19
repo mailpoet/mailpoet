@@ -69,3 +69,14 @@ function fetchGitHubTags($repo, $token) {
 
   return array_column($data, 'name');
 }
+
+function saveVersionsToFile($latestVersion, $previousVersion, $fileName): void {
+  $value = "";
+  if ($latestVersion) {
+    $value .= "- latest version: {$latestVersion}\n";
+  }
+  if ($previousVersion) {
+    $value .= "- previous version: {$previousVersion}\n";
+  }
+  file_put_contents("/tmp/{$fileName}", $value);
+}
