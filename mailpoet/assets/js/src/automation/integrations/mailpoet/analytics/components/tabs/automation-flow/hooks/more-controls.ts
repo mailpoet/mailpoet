@@ -63,7 +63,7 @@ export function moreControls(
       key: 'view-subscribers',
       control: {
         icon: null,
-        title: __('View subscribers', 'mailpoet'),
+        title: __('View subscribers activity', 'mailpoet'),
         isDisabled: false,
         onClick: () => {
           openTab('subscribers', {
