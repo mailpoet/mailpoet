@@ -60,11 +60,11 @@ jobs:
 
       # Updating used Automate Woo plugin
       - name: Check Automate Woo Versions
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: php .github/workflows/scripts/check_automate_woo_versions.php
 
       - name: Check for Automate Woo changes
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         id: check_aw_changes
         run: |
           git config --global user.name 'github-actions[bot]'
