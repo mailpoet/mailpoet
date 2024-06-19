@@ -12,6 +12,7 @@ import { MailPoet } from 'mailpoet';
 import { TemplateBox } from 'newsletters/templates/template-box.jsx';
 import { ImportTemplate } from 'newsletters/templates/import-template.jsx';
 import { ErrorBoundary } from '../common';
+import { automationTypes } from './listings/utils';
 
 const getEditorUrl = (id) => {
   const context = new URLSearchParams(window.location.search).get('context');
@@ -318,7 +319,7 @@ class NewsletterTemplates extends Component {
 
     let buttons = null;
     let onClick;
-    if (this.state.emailType === 'automation') {
+    if (automationTypes.includes(this.state.emailType)) {
       const automationId = this.state.emailOptions?.automationId;
       const goToUrl = automationId
         ? `admin.php?page=mailpoet-automation-editor&id=${automationId}`
