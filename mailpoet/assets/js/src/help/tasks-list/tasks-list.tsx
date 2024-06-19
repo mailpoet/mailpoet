@@ -1,12 +1,12 @@
 import { MailPoet } from 'mailpoet';
 import {
   TasksListDataRow,
-  Props as TasksListLabelsRowProps,
+  Props as TasksListDataRowProps,
 } from './tasks-list-data-row';
 import { TasksListLabelsRow } from './tasks-list-labels-row';
 
 type Props = {
-  tasks: TasksListLabelsRowProps['task'][];
+  tasks: TasksListDataRowProps['task'][];
   type: string;
 };
 function TasksList({ tasks, type }: Props): JSX.Element {
