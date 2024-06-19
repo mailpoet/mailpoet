@@ -290,8 +290,8 @@ importers:
         specifier: ^1.8.1
         version: 1.8.1(patch_hash=km5kmldrym63lx54pzrt7a3qq4)
       tinymce:
-        specifier: ^6.7.3
-        version: 6.7.3
+        specifier: ^7.2.0
+        version: 7.2.0
       underscore:
         specifier: ^1.13.6
         version: 1.13.6
@@ -21068,8 +21068,8 @@ packages:
     resolution: {integrity: sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==}
     dev: false
 
-  /tinymce@6.7.3:
-    resolution: {integrity: sha512-J7WmYIi/gt1RvZ6Ap2oQiUjzAoiS9pfV+d4GnKuZuPu8agmlAEAInNmMvMjfCNBzHv4JnZXY7qlHUAI0IuYQVA==}
+  /tinymce@7.2.0:
+    resolution: {integrity: sha512-R460NlE4REIFuLcZd9mpHK8zRsHdOueLV2m6Wsn0JHfGhDWMcfB1IqUX2QGrSbJga93ygJbJbNMwb2sakFlE/g==}
     dev: false
 
   /tmpl@1.0.5:
