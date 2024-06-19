@@ -27,16 +27,18 @@ class FormComponent extends Component {
   }
 
   componentDidMount() {
-    if (this.props.params.id !== undefined) {
-      this.loadItem(this.props.params.id);
+    const { fields = undefined, params = {} } = this.props;
+
+    if (params.id !== undefined) {
+      this.loadItem(params.id);
     } else {
       setImmediate(() => {
         const defaultValues =
           jQuery('.mailpoet_form').mailpoetSerializeObject();
         const checkboxField =
-          Array.isArray(this.props.fields) &&
-          this.props.fields.length > 0 &&
-          this.props.fields.find(
+          Array.isArray(fields) &&
+          fields.length > 0 &&
+          fields.find(
             (field) => field?.type === 'checkbox' && field?.isChecked,
           );
         if (checkboxField && checkboxField.name) {
@@ -50,9 +52,11 @@ class FormComponent extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    const { item = undefined, location = {}, params = {} } = this.props;
+
     if (
-      this.props.params.id === undefined &&
-      prevProps.location.pathname !== this.props.location.pathname
+      params.id === undefined &&
+      prevProps.location.pathname !== location.pathname
     ) {
       setImmediate(() => {
         this.setState({
@@ -60,7 +64,7 @@ class FormComponent extends Component {
           item: {},
         });
       });
-      if (this.props.item === undefined) {
+      if (item === undefined) {
         this.formRef.current.reset();
       }
     }
@@ -71,11 +75,17 @@ class FormComponent extends Component {
   getErrors = () => this.props.errors || this.state.errors;
 
   loadItem = (id) => {
+    const {
+      history,
+      endpoint = undefined,
+      onItemLoad = undefined,
+    } = this.props;
+
     this.setState({ loading: true });
-    if (!this.props.endpoint) return;
+    if (!endpoint) return;
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
-      endpoint: this.props.endpoint,
+      endpoint,
       action: 'get',
       data: {
         id,
@@ -86,8 +96,8 @@ class FormComponent extends Component {
           loading: false,
           item: response.data,
         });
-        if (typeof this.props.onItemLoad === 'function') {
-          this.props.onItemLoad(response.data);
+        if (typeof onItemLoad === 'function') {
+          onItemLoad(response.data);
         }
       })
       .fail(() => {
@@ -96,8 +106,8 @@ class FormComponent extends Component {
             loading: false,
             item: {},
           },
-          function failSetStateCallback() {
-            this.props.history.push('/lists');
+          () => {
+            history.push('/lists');
           },
         );
       });
@@ -106,9 +116,22 @@ class FormComponent extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
 
+    const {
+      history,
+      endpoint = undefined,
+      fields = [],
+      isValid = undefined,
+      messages = {
+        onUpdate: () => {},
+        onCreate: () => {},
+      },
+      onSuccess = undefined,
+      params = {},
+    } = this.props;
+
     // handle validation
-    if (this.props.isValid !== undefined) {
-      if (this.props.isValid() === false) {
+    if (typeof isValid === 'function') {
+      if (isValid() === false) {
         return;
       }
     }
@@ -117,7 +140,7 @@ class FormComponent extends Component {
 
     // only get values from displayed fields
     const item = {};
-    this.props.fields.forEach((field) => {
+    fields.forEach((field) => {
       if (field.fields !== undefined) {
         field.fields.forEach((subfield) => {
           item[subfield.name] = this.state.item[subfield.name];
@@ -127,15 +150,15 @@ class FormComponent extends Component {
       }
     });
     // set id if specified
-    if (this.props.params.id !== undefined) {
-      item.id = this.props.params.id;
+    if (params.id !== undefined) {
+      item.id = params.id;
     }
 
-    if (!this.props.endpoint) return;
+    if (!endpoint) return;
 
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
-      endpoint: this.props.endpoint,
+      endpoint,
       action: 'save',
       data: item,
     })
@@ -143,16 +166,16 @@ class FormComponent extends Component {
         this.setState({ loading: false });
       })
       .done(() => {
-        if (this.props.onSuccess !== undefined) {
-          this.props.onSuccess();
+        if (typeof onSuccess === 'function') {
+          onSuccess();
         } else {
-          this.props.history.push('/');
+          history.push('/');
         }
 
-        if (this.props.params.id !== undefined) {
-          this.props.messages.onUpdate();
+        if (params.id !== undefined) {
+          messages.onUpdate();
         } else {
-          this.props.messages.onCreate();
+          messages.onCreate();
         }
       })
       .fail((response) => {
@@ -167,12 +190,13 @@ class FormComponent extends Component {
   };
 
   handleValueChange = (e) => {
+    const { onChange = undefined } = this.props;
     // Because we need to support events that don't have the original event we need to check that the property target exists
     const { name, value } = Object.prototype.hasOwnProperty.call(e, 'target')
       ? e.target
       : e;
-    if (this.props.onChange) {
-      return this.props.onChange(e);
+    if (typeof onChange === 'function') {
+      return onChange(e);
     }
     this.setState((prevState) => {
       const item = prevState.item;
@@ -187,6 +211,14 @@ class FormComponent extends Component {
   };
 
   render() {
+    const {
+      children,
+      afterFormContent: propsAfterFormContent = undefined,
+      beforeFormContent: propsBeforeFormContent = undefined,
+      onSubmit = undefined,
+      fields: propsFields = [],
+      id = '',
+    } = this.props;
     let errors;
     if (this.getErrors() !== undefined) {
       errors = this.getErrors().map((error) => (
@@ -206,15 +238,15 @@ class FormComponent extends Component {
     let beforeFormContent = false;
     let afterFormContent = false;
 
-    if (this.props.beforeFormContent !== undefined) {
-      beforeFormContent = this.props.beforeFormContent(this.getValues());
+    if (typeof propsBeforeFormContent === 'function') {
+      beforeFormContent = propsBeforeFormContent(this.getValues());
     }
 
-    if (this.props.afterFormContent !== undefined) {
-      afterFormContent = this.props.afterFormContent(this.getValues());
+    if (typeof propsAfterFormContent === 'function') {
+      afterFormContent = propsAfterFormContent(this.getValues());
     }
 
-    const fields = this.props.fields.map((field) => {
+    const fields = propsFields.map((field) => {
       // Compose an onChange handler from the default and custom one
       let onValueChange = this.handleValueChange;
       if (field.onBeforeChange) {
@@ -236,8 +268,8 @@ class FormComponent extends Component {
     });
 
     let actions = false;
-    if (this.props.children) {
-      actions = this.props.children;
+    if (children) {
+      actions = children;
     } else {
       actions = (
         <Button type="submit" isDisabled={this.state.loading}>
@@ -250,13 +282,11 @@ class FormComponent extends Component {
       <div>
         <div className="mailpoet-form-content-around">{beforeFormContent}</div>
         <form
-          id={this.props.id}
+          id={id}
           ref={this.formRef}
           className={formClasses}
           onSubmit={
-            this.props.onSubmit !== undefined
-              ? this.props.onSubmit
-              : this.handleSubmit
+            typeof onSubmit === 'function' ? onSubmit : this.handleSubmit
           }
           data-automation-id={this.props.automationId}
         >
@@ -303,34 +333,6 @@ FormComponent.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
-};
-
-FormComponent.defaultProps = {
-  params: {},
-  location: {},
-  errors: undefined,
-  fields: undefined,
-  item: undefined,
-  onItemLoad: undefined,
-  isValid: undefined,
-  onSuccess: undefined,
-  onChange: undefined,
-  loading: false,
-  beforeFormContent: undefined,
-  afterFormContent: undefined,
-  children: undefined,
-  id: '',
-  onSubmit: undefined,
-  automationId: '',
-  messages: {
-    onUpdate: () => {
-      /* no-op */
-    },
-    onCreate: () => {
-      /* no-op */
-    },
-  },
-  endpoint: undefined,
 };
 
 export const Form = withRouter(FormComponent);
