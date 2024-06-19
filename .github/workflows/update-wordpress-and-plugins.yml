@@ -54,11 +54,15 @@ jobs:
             echo "WOOCOMMERCE_CHANGES=true" >> $GITHUB_ENV
           fi
 
+      - name: Get WooCommerce versions from file
+        id: get_wp_version
+        run: echo "WOOCOMMERCE_VERSION=$(cat /tmp/woocommerce_versions.txt)" >> $GITHUB_ENV
+
       - name: Commit WooCommerce changes
         if: env.WOOCOMMERCE_CHANGES == 'true'
         run: |
           git add .
-          git commit -m 'Update used WooCommerce plugin in Circle CI'
+          git commit -m 'Update used WooCommerce plugin in Circle CI' -m "${{ env.WOOCOMMERCE_VERSION }}"
 
       # Updating used Automate Woo plugin
       - name: Check Automate Woo Versions
