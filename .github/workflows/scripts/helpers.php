@@ -1,6 +1,9 @@
 <?php
 
-function replaceVersionInFile($filePath, $pattern, $replacement) {
+/**
+ * Function replacing versions in a file by the regex pattern.
+ */
+function replaceVersionInFile($filePath, $pattern, $replacement): void {
   $content = file_get_contents($filePath);
 
   if ($content === false) {
@@ -19,14 +22,20 @@ function replaceVersionInFile($filePath, $pattern, $replacement) {
   }
 }
 
-function filterStableVersions($versions) {
+/**
+ * Function to filter stable versions from a list of versions.
+ */
+function filterStableVersions($versions): array {
   return array_filter($versions, function($version) {
     // Only include stable versions (exclude versions with -rc, -beta, -alpha, etc.)
     return preg_match('/^\d+\.\d+\.\d+$/', $version);
   });
 }
 
-function getLatestAndPreviousMinorMajorVersions($versions) {
+/**
+ * Function to get the latest and previous minor/major versions from a list of versions.
+ */
+function getLatestAndPreviousMinorMajorVersions($versions): array {
   usort($versions, 'version_compare');
   $currentVersion = end($versions);
 
@@ -41,12 +50,15 @@ function getLatestAndPreviousMinorMajorVersions($versions) {
   return [$currentVersion, $previousVersion];
 }
 
-function getMinorMajorVersion($version) {
+function getMinorMajorVersion($version): string {
   $parts = explode('.', $version);
   return $parts[0] . '.' . $parts[1];
 }
 
-function fetchGitHubTags($repo, $token) {
+/**
+ * Function to fetch tags from a GitHub repository.
+ */
+function fetchGitHubTags($repo, $token): array {
   $url = "https://api.github.com/repos/$repo/tags";
   $ch = curl_init($url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -70,6 +82,9 @@ function fetchGitHubTags($repo, $token) {
   return array_column($data, 'name');
 }
 
+/**
+ * Function saving versions to a temporary file.
+ */
 function saveVersionsToFile($latestVersion, $previousVersion, $fileName): void {
   $value = "";
   if ($latestVersion) {
@@ -79,4 +94,56 @@ function saveVersionsToFile($latestVersion, $previousVersion, $fileName): void {
     $value .= "- previous version: {$previousVersion}\n";
   }
   file_put_contents("/tmp/{$fileName}", $value);
+}
+
+function replaceLatestVersion($latestVersion, $downloadCommand): void {
+  replaceVersionInFile(
+    __DIR__ . '/../../../.circleci/config.yml',
+    '/(.\/do ' . $downloadCommand . ' )\d+\.\d+\.\d+/',
+    '${1}' . $latestVersion
+  );
+}
+
+function replacePreviousVersion($previousVersion, $configParameterName): void {
+  replaceVersionInFile(
+    __DIR__ . '/../../../.circleci/config.yml',
+    '/(' . $configParameterName . ': )\d+\.\d+\.\d+/',
+    '${1}' . $previousVersion
+  );
+}
+
+/**
+ * Function replacing the latest and previous versions of a private plugin in the config file.
+ * The function fetches the tags from the GitHub repository, filters stable versions,
+ * gets the latest and previous minor/major versions, and replaces the versions in the CircleCI config file.
+ */
+function replacePrivatePluginVersion($repository, $downloadCommand, $configParameterName, $versionsFilename): void {
+// Read the GitHub token from environment variable
+  $token = getenv('GH_TOKEN');
+  if (!$token) {
+    die("GitHub token not found. Make sure it's set in the environment variable 'GH_TOKEN'.");
+  }
+
+  $allVersions = fetchGitHubTags($repository, $token);
+  $stableVersions = filterStableVersions($allVersions);
+  [$latestVersion, $previousVersion] = getLatestAndPreviousMinorMajorVersions($stableVersions);
+
+  echo "Latest version: $latestVersion\n";
+  echo "Previous version: $previousVersion\n";
+
+  if ($latestVersion) {
+    echo "Replacing the latest version in the config file...\n";
+    replaceLatestVersion($latestVersion, $downloadCommand);
+  } else {
+    echo "No latest version found.\n";
+  }
+
+  if ($previousVersion) {
+    echo "Replacing the previous version in the config file...\n";
+    replacePreviousVersion($previousVersion, $configParameterName);
+  } else {
+    echo "No previous version found.\n";
+  }
+
+  saveVersionsToFile($latestVersion, $previousVersion, $versionsFilename);
 }
