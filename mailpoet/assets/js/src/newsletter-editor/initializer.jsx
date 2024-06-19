@@ -3,7 +3,10 @@ import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
 import { createRoot } from 'react-dom/client';
 import { ListingHeadingSteps } from 'newsletters/listings/heading-steps';
-import { newsletterTypesWithActivation } from 'newsletters/listings/utils';
+import {
+  automationTypes,
+  newsletterTypesWithActivation,
+} from 'newsletters/listings/utils';
 import { fetchAutomaticEmailShortcodes } from 'newsletters/automatic-emails/fetch-editor-shortcodes.jsx';
 import { ErrorBoundary } from 'common';
 import { initTutorial } from './tutorial';
@@ -13,11 +16,7 @@ const renderHeading = (newsletterType, newsletterOptions) => {
     const stepsHeadingContainer = document.getElementById(
       'mailpoet_editor_steps_heading',
     );
-    const step = ['automation', 'automation_transactional'].includes(
-      newsletterType,
-    )
-      ? 2
-      : 3;
+    const step = automationTypes.includes(newsletterType) ? 2 : 3;
 
     let buttons = null;
     let onLogoClick = () => {

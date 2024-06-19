@@ -6,6 +6,7 @@ import { HideScreenOptions } from '../../common/hide-screen-options/hide-screen-
 import { MailPoetLogoResponsive } from '../../common/top-bar/mailpoet-logo-responsive';
 import { Steps } from '../../common/steps/steps';
 import { displayTutorial } from '../../newsletter-editor/tutorial';
+import { automationTypes } from './utils';
 
 export const mapPathToSteps = (
   location: Location,
@@ -13,12 +14,12 @@ export const mapPathToSteps = (
 ): number | null => {
   const stepsMap = [
     ['/new/.+', 1],
-    ['/template/.+', emailType === 'automation' ? 1 : 2],
+    ['/template/.+', automationTypes.includes(emailType) ? 1 : 2],
     ['/send/.+', 4],
   ];
 
   if (location.search.match(/page=mailpoet-newsletter-editor/g)) {
-    return emailType === 'automation' ? 2 : 3;
+    return automationTypes.includes(emailType) ? 2 : 3;
   }
 
   let stepNumber = null;
@@ -101,7 +102,7 @@ const stepsListingHeading = (
     getEmailSendTitle(emailType),
   ];
   // Automation email has only 2 steps
-  if (emailType === 'automation') {
+  if (automationTypes.includes(emailType)) {
     stepTitles = [__('Template', 'mailpoet'), __('Design', 'mailpoet')];
   }
 
@@ -119,8 +120,7 @@ const stepsListingHeading = (
         {' '}
       </h1>
       <div className="mailpoet-flex-grow" />
-      {!['automation', 'automation_transactional'].includes(emailType) &&
-        step === 3 && <TutorialIcon />}
+      {!automationTypes.includes(emailType) && step === 3 && <TutorialIcon />}
     </div>
   );
 };

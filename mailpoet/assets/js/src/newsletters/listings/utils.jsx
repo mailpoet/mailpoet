@@ -99,6 +99,8 @@ export const newsletterTypesWithActivation = [
   're_engagement',
 ];
 
+export const automationTypes = ['automation', 'automation_transactional'];
+
 export const confirmEdit = (newsletter) => {
   const editorHref = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
 

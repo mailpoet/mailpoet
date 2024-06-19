@@ -4,6 +4,7 @@ import _ from 'underscore';
 import { MailPoet } from 'mailpoet';
 import { __ } from '@wordpress/i18n';
 import { NewsletterType } from '../../common/newsletter';
+import { automationTypes } from '../../newsletters/listings/utils';
 
 var Module = {};
 
@@ -26,9 +27,7 @@ Module.NewsletterModel = SuperModel.extend({
     return this.get('type') === 'wc_transactional';
   },
   isAutomationEmail: function isAutomationEmail() {
-    return ['automation', 'automation_transactional'].includes(
-      this.get('type'),
-    );
+    return automationTypes.includes(this.get('type'));
   },
   isConfirmationEmailTemplate: function isConfirmationEmailTemplate() {
     return this.get('type') === 'confirmation_email';
