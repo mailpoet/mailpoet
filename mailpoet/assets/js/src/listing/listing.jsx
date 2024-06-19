@@ -23,11 +23,13 @@ class ListingComponent extends Component {
   }
 
   componentDidMount() {
+    const { params: propsParams, auto_refresh: autoRefresh = false } =
+      this.props;
     this.isComponentMounted = true;
-    const params = this.props.params || {};
+    const params = propsParams || {};
     this.initWithParams(params);
 
-    if (this.props.auto_refresh) {
+    if (autoRefresh) {
       jQuery(document).on('heartbeat-tick.mailpoet', () => {
         this.getItems();
       });
@@ -65,7 +67,8 @@ class ListingComponent extends Component {
   });
 
   setParams = () => {
-    if (this.props.location) {
+    const { history, location = undefined } = this.props;
+    if (location) {
       const params = Object.keys(this.state)
         .filter(
           (key) =>
@@ -97,16 +100,14 @@ class ListingComponent extends Component {
       // set url
       const url = this.getUrlWithParams(params);
 
-      if (this.props.location.pathname !== url) {
-        this.props.history.push(`${url}`);
+      if (location.pathname !== url) {
+        history.push(`${url}`);
       }
     }
   };
 
   getUrlWithParams = (params) => {
-    let baseUrl =
-      this.props.base_url !== undefined ? this.props.base_url : null;
-
+    let { base_url: baseUrl = null } = this.props;
     if (baseUrl) {
       baseUrl = this.setBaseUrlParams(baseUrl);
       return `/${baseUrl}/${params}`;
@@ -129,12 +130,13 @@ class ListingComponent extends Component {
   };
 
   getParams = () => {
-    const params = _.omit(this.props.params, 'splat');
+    const { params: propsParams, type = undefined } = this.props;
+    const params = _.omit(propsParams, 'splat');
     // TODO:
     // find a way to set the "type" in the routes definition
     // so that it appears in `this.props.params`
-    if (this.props.type) {
-      params.type = this.props.type;
+    if (type) {
+      params.type = type;
     }
     return params;
   };
@@ -149,12 +151,14 @@ class ListingComponent extends Component {
   getItems = () => {
     if (!this.isComponentMounted) return;
 
+    const { endpoint, afterGetItems = undefined } = this.props;
+
     this.setState({ loading: true });
     this.clearSelection();
 
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
-      endpoint: this.props.endpoint,
+      endpoint,
       action: 'listing',
       data: {
         params: this.getParams(),
@@ -189,8 +193,8 @@ class ListingComponent extends Component {
             }
 
             // trigger afterGetItems callback if specified
-            if (this.props.afterGetItems !== undefined) {
-              this.props.afterGetItems(this.state);
+            if (typeof afterGetItems === 'function') {
+              afterGetItems(this.state);
             }
           },
         );
@@ -203,6 +207,11 @@ class ListingComponent extends Component {
   };
 
   initWithParams = (params) => {
+    const {
+      limit = 10,
+      sort_by: sortBy = null,
+      sort_order: sortOrder = undefined,
+    } = this.props;
     const state = this.getEmptyState();
     // check for url params
     _.mapObject(params, (param) => {
@@ -229,18 +238,18 @@ class ListingComponent extends Component {
     });
 
     // limit per page
-    if (this.props.limit !== undefined) {
-      state.limit = Math.abs(Number(this.props.limit));
+    if (limit !== undefined) {
+      state.limit = Math.abs(Number(limit));
     }
 
     // sort by
-    if (state.sort_by === null && this.props.sort_by !== undefined) {
-      state.sort_by = this.props.sort_by;
+    if (state.sort_by === null && sortBy !== undefined) {
+      state.sort_by = sortBy;
     }
 
     // sort order
-    if (state.sort_order === null && this.props.sort_order !== undefined) {
-      state.sort_order = this.props.sort_order;
+    if (state.sort_order === null && sortOrder !== undefined) {
+      state.sort_order = sortOrder;
     }
 
     this.setState(state, () => {
@@ -249,6 +258,7 @@ class ListingComponent extends Component {
   };
 
   handleRestoreItem = (id) => {
+    const { endpoint, messages = undefined } = this.props;
     this.setState({
       loading: true,
       page: 1,
@@ -256,18 +266,15 @@ class ListingComponent extends Component {
 
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
-      endpoint: this.props.endpoint,
+      endpoint,
       action: 'restore',
       data: {
         id,
       },
     })
       .done((response) => {
-        if (
-          this.props.messages !== undefined &&
-          this.props.messages.onRestore !== undefined
-        ) {
-          this.props.messages.onRestore(response);
+        if (messages !== undefined && messages.onRestore !== undefined) {
+          messages.onRestore(response);
         }
         this.getItems();
       })
@@ -277,6 +284,7 @@ class ListingComponent extends Component {
   };
 
   handleTrashItem = (id) => {
+    const { endpoint, messages = undefined } = this.props;
     this.setState({
       loading: true,
       page: 1,
@@ -284,18 +292,15 @@ class ListingComponent extends Component {
 
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
-      endpoint: this.props.endpoint,
+      endpoint,
       action: 'trash',
       data: {
         id,
       },
     })
       .done((response) => {
-        if (
-          this.props.messages !== undefined &&
-          this.props.messages.onTrash !== undefined
-        ) {
-          this.props.messages.onTrash(response);
+        if (messages !== undefined && messages.onTrash !== undefined) {
+          messages.onTrash(response);
         }
         this.getItems();
       })
@@ -306,6 +311,7 @@ class ListingComponent extends Component {
   };
 
   handleDeleteItem = (id) => {
+    const { endpoint, messages = undefined } = this.props;
     this.setState({
       loading: true,
       page: 1,
@@ -313,18 +319,15 @@ class ListingComponent extends Component {
 
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
-      endpoint: this.props.endpoint,
+      endpoint,
       action: 'delete',
       data: {
         id,
       },
     })
       .done((response) => {
-        if (
-          this.props.messages !== undefined &&
-          this.props.messages.onDelete !== undefined
-        ) {
-          this.props.messages.onDelete(response);
+        if (messages !== undefined && messages.onDelete !== undefined) {
+          messages.onDelete(response);
         }
         this.getItems();
       })
@@ -339,11 +342,9 @@ class ListingComponent extends Component {
       group: 'trash',
     })
       .done((response) => {
-        if (
-          this.props.messages !== undefined &&
-          this.props.messages.onDelete !== undefined
-        ) {
-          this.props.messages.onDelete(response);
+        const { messages = undefined } = this.props;
+        if (messages !== undefined && messages.onDelete !== undefined) {
+          messages.onDelete(response);
         }
         // redirect to default group
         this.handleGroup('all');
@@ -360,6 +361,7 @@ class ListingComponent extends Component {
     ) {
       return false;
     }
+    const { endpoint } = this.props;
 
     this.setState({ loading: true });
 
@@ -378,7 +380,7 @@ class ListingComponent extends Component {
 
     return MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
-      endpoint: this.props.endpoint,
+      endpoint,
       action: 'bulkAction',
       data,
     })
@@ -524,7 +526,8 @@ class ListingComponent extends Component {
   };
 
   handleRenderItem = (item, actions) => {
-    const render = this.props.onRenderItem(item, actions, this.state.meta);
+    const { onRenderItem } = this.props;
+    const render = onRenderItem(item, actions, this.state.meta);
     return render.props.children;
   };
 
@@ -536,6 +539,20 @@ class ListingComponent extends Component {
     const items = this.state.items;
     const sortBy = this.state.sort_by;
     const sortOrder = this.state.sort_order;
+
+    const {
+      className = undefined,
+      groups: propsGroups = true,
+      getListingItemKey = undefined,
+      isItemDeletable = () => true,
+      isItemInactive = () => false,
+      isItemToggleable = () => false,
+      location = undefined,
+      messages: propsMessages = undefined,
+      renderExtraActions = undefined,
+      onBeforeSelectFilter = undefined,
+      search: propsSearch = true,
+    } = this.props;
 
     // columns
     let columns = this.props.columns || [];
@@ -572,7 +589,7 @@ class ListingComponent extends Component {
     let search = (
       <ListingSearch onSearch={this.handleSearch} search={this.state.search} />
     );
-    if (this.props.search === false) {
+    if (propsSearch === false) {
       search = false;
     }
 
@@ -596,24 +613,21 @@ class ListingComponent extends Component {
         onSelect={this.handleGroup}
       />
     );
-    if (this.props.groups === false) {
+    if (propsGroups === false) {
       groups = false;
     }
 
     // messages
     let messages = {};
-    if (this.props.messages !== undefined) {
-      messages = this.props.messages;
+    if (propsMessages !== undefined) {
+      messages = propsMessages;
     }
     let extraActions;
-    if (typeof this.props.renderExtraActions === 'function') {
-      extraActions = this.props.renderExtraActions(this.state);
+    if (typeof renderExtraActions === 'function') {
+      extraActions = renderExtraActions(this.state);
     }
 
-    const listingClassName = classnames(
-      'mailpoet-listing',
-      this.props.className,
-    );
+    const listingClassName = classnames('mailpoet-listing', className);
 
     return (
       <>
@@ -632,7 +646,7 @@ class ListingComponent extends Component {
                 filters={this.state.filters}
                 filter={this.state.filter}
                 group={this.state.group}
-                onBeforeSelectFilter={this.props.onBeforeSelectFilter || null}
+                onBeforeSelectFilter={onBeforeSelectFilter || null}
                 onSelectFilter={this.handleFilter}
                 onEmptyTrash={this.handleEmptyTrash}
               />
@@ -661,12 +675,12 @@ class ListingComponent extends Component {
 
             <ListingItems
               onRenderItem={this.handleRenderItem}
-              getListingItemKey={this.props.getListingItemKey}
+              getListingItemKey={getListingItemKey}
               onDeleteItem={this.handleDeleteItem}
               onRestoreItem={this.handleRestoreItem}
               onTrashItem={this.handleTrashItem}
               onRefreshItems={this.handleRefreshItems}
-              isItemInactive={this.props.isItemInactive}
+              isItemInactive={isItemInactive}
               columns={columns}
               is_selectable={bulkActions.length > 0}
               onSelectItem={this.handleSelectItem}
@@ -683,9 +697,9 @@ class ListingComponent extends Component {
               messages={messages}
               items={items}
               search={this.state.search}
-              location={this.props.location}
-              isItemDeletable={this.props.isItemDeletable}
-              isItemToggleable={this.props.isItemToggleable}
+              location={location}
+              isItemDeletable={isItemDeletable}
+              isItemToggleable={isItemToggleable}
             />
           </table>
           <div className="mailpoet-listing-footer clearfix">
@@ -705,7 +719,6 @@ class ListingComponent extends Component {
 
 ListingComponent.contextType = GlobalContext;
 
-/* eslint-disable react/require-default-props */
 ListingComponent.propTypes = {
   limit: PropTypes.number,
   sort_by: PropTypes.string,
@@ -740,31 +753,6 @@ ListingComponent.propTypes = {
   isItemDeletable: PropTypes.func,
   isItemToggleable: PropTypes.func,
   className: PropTypes.string,
-};
-/* eslint-enable react/require-default-props */
-
-ListingComponent.defaultProps = {
-  limit: 10,
-  sort_by: null,
-  sort_order: undefined,
-  auto_refresh: false,
-  location: undefined,
-  base_url: '',
-  type: undefined,
-  afterGetItems: undefined,
-  messages: undefined,
-  columns: [],
-  bulk_actions: [],
-  item_actions: [],
-  search: true,
-  groups: true,
-  renderExtraActions: undefined,
-  onBeforeSelectFilter: undefined,
-  getListingItemKey: undefined,
-  isItemDeletable: () => true,
-  isItemInactive: () => false,
-  isItemToggleable: () => false,
-  className: undefined,
 };
 
 ListingComponent.displayName = 'Listing';
