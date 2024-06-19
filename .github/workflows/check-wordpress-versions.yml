@@ -1,9 +1,7 @@
-name: Check WordPress Docker Versions
+name: Check new versions of plugins and WordPress
 
 on:
   workflow_dispatch: # Allows manual triggering
-    branches:
-      - circle-ci-wordpress-image
 
 jobs:
   check-versions:
@@ -128,4 +126,4 @@ jobs:
       - name: Push changes
         if: env.CHANGES_DETECTED == 'true'
         run: |
-          git push origin HEAD:refs/heads/circle-ci-wordpress-image
+          git push origin HEAD:refs/heads/update-plugins-and-wordpress
