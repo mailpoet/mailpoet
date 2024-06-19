@@ -22,13 +22,15 @@ class EditorAbandonedCartBlockCest {
     // Prepare newsletter without AC block
     $newsletter = (new Newsletter())
       ->loadBodyFrom('newsletterWithText.json')
-      ->withAutomaticTypeWooCommerceAbandonedCart()
+      ->withAutomationTransactionalTypeWooCommerceAbandonedCart()
       ->withStatus(NewsletterEntity::STATUS_DRAFT)
       ->create();
 
     $i->login();
     $i->activateWooCommerce();
-    $i->amEditingNewsletter($newsletter->getId());
+    $i->amOnPage('/wp-admin/admin.php?page=mailpoet-newsletter-editor&id=' . $newsletter->getId());
+    $i->waitForElement('#mailpoet_editor_content');
+    $i->waitForElementNotVisible('.velocity-animating');
 
     // Move the Abandoned Cart block to the editor
     $i->dragAndDrop('#automation_editor_block_abandoned_cart_content', '#mce_1');
