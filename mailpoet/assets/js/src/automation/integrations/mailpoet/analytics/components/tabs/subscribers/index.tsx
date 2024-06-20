@@ -5,6 +5,7 @@ import { Hooks } from 'wp-js-hooks';
 import { storeName, SubscriberSection } from '../../../store';
 import { transformSubscribersToRows } from './rows';
 import { Upgrade } from '../orders/upgrade';
+import { ActivityModal } from './activity-modal';
 
 const headers = [
   {
@@ -98,6 +99,7 @@ export function Subscribers(): JSX.Element {
         }
         isLoading={subscriberSection.data?.items === undefined}
       />
+      <ActivityModal />
     </div>
   );
 }
