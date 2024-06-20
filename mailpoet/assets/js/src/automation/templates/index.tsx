@@ -35,7 +35,11 @@ const tabs = [
 ];
 
 function Templates(): JSX.Element {
-  if (window.location.search.includes('loadedvia=woo_multichannel_dashboard')) {
+  const pageParams = new URLSearchParams(window.location.search);
+  const loadedviaParam = pageParams.get('loadedvia');
+  const initialTabParam = pageParams.get('initialTab');
+
+  if (loadedviaParam === 'woo_multichannel_dashboard') {
     window.MailPoet.trackEvent(
       'MailPoet - WooCommerce Multichannel Marketing dashboard > Automation template selection page',
       {
@@ -59,7 +63,7 @@ function Templates(): JSX.Element {
         <FromScratchButton />
       </PageHeader>
 
-      <TabPanel tabs={tabs}>
+      <TabPanel tabs={tabs} initialTabName={initialTabParam}>
         {(tab) => (
           <TemplatesGrid
             templates={automationTemplates.filter(
