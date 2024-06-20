@@ -26,7 +26,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
       slug="set up welcome campaign"
       title={MailPoet.I18n.t('setUpWelcomeCampaign')}
       description={MailPoet.I18n.t('setUpWelcomeCampaignDesc')}
-      link="admin.php?page=mailpoet-automation-templates"
+      link="admin.php?page=mailpoet-automation-templates&initialTab=welcome"
       imgSrc={`${MailPoet.cdnUrl}homepage/welcome-email-illustration.png`}
       isDone={tasksStatus.setUpWelcomeCampaign}
       doneMessage={MailPoet.I18n.t('setUpWelcomeCampaignDone')}
@@ -62,7 +62,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
         slug="set up abandoned cart email"
         title={MailPoet.I18n.t('setUpAbandonedCartEmail')}
         description={MailPoet.I18n.t('setUpAbandonedCartEmailDesc')}
-        link="admin.php?page=mailpoet-automation-templates"
+        link="admin.php?page=mailpoet-automation-templates&initialTab=abandoned-cart"
         imgSrc={`${MailPoet.cdnUrl}homepage/woo-cart-email-illustration.png`}
         isDone={tasksStatus.setUpAbandonedCartEmail}
         doneMessage={MailPoet.I18n.t('setUpAbandonedCartEmailDone')}
