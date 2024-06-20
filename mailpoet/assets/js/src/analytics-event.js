@@ -27,7 +27,7 @@ function track(name, data = [], options = {}, callback = null) {
   const optionsData = options === CacheEventOptionSaveInStorage ? {} : options;
 
   if (typeof window.mixpanel.track !== 'function') {
-    window.mixpanel.init(window.mixpanelTrackingId);
+    window.mixpanel.init(window.mixpanelTrackingId, window.mixpanelInitConfig);
   }
 
   if (typeof window.mailpoet_version !== 'undefined') {
@@ -38,7 +38,14 @@ function track(name, data = [], options = {}, callback = null) {
     trackedData['MailPoet Premium version'] = window.mailpoet_premium_version;
   }
 
-  window.mixpanel.track(name, trackedData, optionsData, callback);
+  // Fallback when Mixpanel is not loaded (e.g., blocked by AdBlock)
+  if (!window.mixpanelIsLoaded) {
+    if (callback) {
+      callback();
+    }
+  } else {
+    window.mixpanel.track(name, trackedData, optionsData, callback);
+  }
 }
 
 function exportMixpanel() {
