@@ -168,7 +168,7 @@ class AbandonedCart {
 
   private function scheduleAbandonedCartEmail(array $cartProductIds = []) {
     $subscriber = $this->getSubscriber();
-    if (!$subscriber || $subscriber->getStatus() !== SubscriberEntity::STATUS_SUBSCRIBED) {
+    if (!$subscriber) {
       return;
     }
 
