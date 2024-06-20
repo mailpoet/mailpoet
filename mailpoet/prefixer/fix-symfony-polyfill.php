@@ -37,6 +37,17 @@ $data = str_replace(') : int|false|null', ')', $data);
 $data = str_replace(') : int|false', ')', $data);
 file_put_contents($file, $data);
 
+// Scoper (prefixer) was adding MailPoetVendor\\\mb_str_pad when it wasn't required
+$file = __DIR__ . '/../vendor-prefixed/symfony/polyfill-mbstring/bootstrap.php';
+$data = file_get_contents($file);
+$data = str_replace('MailPoetVendor\\\mb_str_pad', 'mb_str_pad', $data);
+file_put_contents($file, $data);
+
+$file = __DIR__ . '/../vendor-prefixed/symfony/polyfill-mbstring/bootstrap80.php';
+$data = file_get_contents($file);
+$data = str_replace('MailPoetVendor\\\mb_str_pad', 'mb_str_pad', $data);
+file_put_contents($file, $data);
+
 // Remove unnecessary polyfills these polyfills are required by symfony/console
 // but don't use and remove the package
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/symfony/polyfill-php73');
