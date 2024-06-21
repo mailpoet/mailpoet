@@ -164,7 +164,7 @@ class AbandonedCartTest extends \MailPoetTest {
 
   public function testItSchedulesAbandonedCartAlsoForNonSubscribedSubscribers() {
     $this->createNewsletter();
-    $this->createSubscriberAsCurrentUser('unconfirmed');
+    $this->createSubscriberAsCurrentUser(SubscriberEntity::STATUS_UNCONFIRMED);
     $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
 
     $abandonedCartEmail = $this->createAbandonedCartEmail();
@@ -359,14 +359,14 @@ class AbandonedCartTest extends \MailPoetTest {
     return $scheduledTask;
   }
 
-  private function createSubscriber(string $status = 'subscribed'): SubscriberEntity {
+  private function createSubscriber(string $status = SubscriberEntity::STATUS_SUBSCRIBED): SubscriberEntity {
     return (new SubscriberFactory())
       ->withWpUserId(123)
       ->withStatus($status)
       ->create();
   }
 
-  private function createSubscriberAsCurrentUser(string $status = 'subscribed'): SubscriberEntity {
+  private function createSubscriberAsCurrentUser(string $status = SubscriberEntity::STATUS_SUBSCRIBED): SubscriberEntity {
     $subscriber = $this->createSubscriber($status);
     $this->wp->method('wpGetCurrentUser')->willReturn(
       $this->makeEmpty(WP_User::class, [
