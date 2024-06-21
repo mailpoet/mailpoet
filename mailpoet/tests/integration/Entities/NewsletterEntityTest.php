@@ -2,8 +2,10 @@
 
 namespace MailPoet\Entities;
 
+use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Newsletter\NewslettersRepository;
+use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\Segments\SegmentsRepository;
@@ -16,8 +18,16 @@ class NewsletterEntityTest extends \MailPoetTest {
   /** @var SegmentsRepository */
   private $segmentRepository;
 
+  /** @var NewsletterOptionFieldsRepository */
+  private $newsletterOptionFieldsRepository;
+
+  /** @var NewsletterOptionsRepository */
+  private $newsletterOptionsRepository;
+
   public function _before() {
     $this->newsletterRepository = $this->diContainer->get(NewslettersRepository::class);
+    $this->newsletterOptionFieldsRepository = $this->diContainer->get(NewsletterOptionFieldsRepository::class);
+    $this->newsletterOptionsRepository = $this->diContainer->get(NewsletterOptionsRepository::class);
     $this->segmentRepository = $this->diContainer->get(SegmentsRepository::class);
   }
 
@@ -53,7 +63,7 @@ class NewsletterEntityTest extends \MailPoetTest {
     $this->entityManager->flush();
     verify($newsletter->getOptions()->count())->same(0);
 
-    $newsletterSegments = $this->diContainer->get(NewsletterOptionsRepository::class)->findBy(['newsletter' => $newsletter]);
+    $newsletterSegments = $this->newsletterOptionsRepository->findBy(['newsletter' => $newsletter]);
     verify($newsletterSegments)->arrayCount(0);
   }
 
@@ -227,6 +237,20 @@ class NewsletterEntityTest extends \MailPoetTest {
     $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL);
     $this->assertTrue($newsletter->isTransactional());
     $newsletter->setType(NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL);
+    $this->assertTrue($newsletter->isTransactional());
+    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATIC);
+    $this->assertFalse($newsletter->isTransactional());
+
+    /** @var NewsletterOptionFieldEntity $field */
+    $field = $this->newsletterOptionFieldsRepository->findOneBy([
+      'name' => NewsletterOptionFieldEntity::NAME_EVENT,
+      'newsletterType' => $newsletter->getType(),
+    ]);
+
+    $option = new NewsletterOptionEntity($newsletter, $field);
+    $option->setValue(AbandonedCart::SLUG);
+    $this->newsletterOptionsRepository->persist($option);
+    $newsletter->getOptions()->add($option);
     $this->assertTrue($newsletter->isTransactional());
   }
 
