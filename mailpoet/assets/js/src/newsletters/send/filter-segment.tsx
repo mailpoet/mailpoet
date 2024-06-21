@@ -148,7 +148,7 @@ export function FilterSegment({
           icon={help}
         />
       </span>
-      <Tooltip place="right" multiline id="filter-segment-tooltip">
+      <Tooltip place="right" id="filter-segment-tooltip">
         <div>
           {__(
             `Subscribers selected in 'Send to' will only receive an email if they also belong to this segment.`,

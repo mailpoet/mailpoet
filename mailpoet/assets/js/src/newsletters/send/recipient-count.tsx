@@ -82,7 +82,7 @@ export function RecipientCount(props: RecipientCountProps) {
       )}
       {!isLoading && (
         <>
-          <Tooltip place="right" multiline id="estimated-count-tooltip">
+          <Tooltip place="right" id="estimated-count-tooltip">
             {__('This count may change at the time of sending.', 'mailpoet')}
           </Tooltip>
           <span

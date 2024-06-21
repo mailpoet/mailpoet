@@ -28,7 +28,6 @@ function Badge({
       {tooltip && (
         <Tooltip
           place={tooltipPlace || 'top'}
-          multiline
           id={tooltipId || tooltip.toString()}
         >
           {tooltip}
