@@ -1,9 +1,10 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php declare(strict_types = 1);
 
 namespace MailPoet\API\JSON\v1;
 
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\API\JSON\Error as APIError;
+use MailPoet\API\JSON\Response;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -22,47 +23,46 @@ class Help extends APIEndpoint {
     $this->scheduledTasksRepository = $scheduledTasksRepository;
   }
 
-  public function cancelTask($data) {
-    $task = $this->validateAndFindTask($data);
-    if (!($task instanceof ScheduledTaskEntity)) {
-      return $task;
-    }
+  public function cancelTask($data): Response {
     try {
+      $this->validateTaskId($data);
+
+      $task = $this->scheduledTasksRepository->findOneById($data['id']);
+      if (!$task instanceof ScheduledTaskEntity) {
+        return $this->errorResponse([
+          APIError::NOT_FOUND => __('Task not found.', 'mailpoet'),
+        ]);
+      }
+
       $this->scheduledTasksRepository->cancelTask($task);
       return $this->successResponse();
     } catch (\Exception $e) {
-      return $this->handleException($e->getMessage());
+      return $this->badRequest([ApiError::BAD_REQUEST => $e->getMessage()]);
     }
   }
 
-  public function rescheduleTask($data) {
-    $task = $this->validateAndFindTask($data);
-    if (!($task instanceof ScheduledTaskEntity)) {
-      return $task;
-    }
+  public function rescheduleTask($data): Response {
     try {
+      $this->validateTaskId($data);
+
+      $task = $this->scheduledTasksRepository->findOneById($data['id']);
+      if (!$task instanceof ScheduledTaskEntity) {
+        return $this->errorResponse([
+          APIError::NOT_FOUND => __('Task not found.', 'mailpoet'),
+        ]);
+      }
+
       $this->scheduledTasksRepository->rescheduleTask($task);
       return $this->successResponse();
     } catch (\Exception $e) {
-      return $this->handleException($e->getMessage());
+      return $this->badRequest([ApiError::BAD_REQUEST => $e->getMessage()]);
     }
   }
 
-  private function validateAndFindTask($data) {
-    if (!isset($data['id'])) {
-      return $this->handleException(__('Missing mandatory argument `id`.', 'mailpoet'));
+  private function validateTaskId($data): void {
+    $isValid = isset($data['id']) && is_numeric($data['id']);
+    if (!$isValid) {
+      throw new \Exception(__('Invalid or missing parameter `id`.', 'mailpoet'));
     }
-    $id = $data['id'];
-    $task = $this->scheduledTasksRepository->findOneById($id);
-    if (!$task) {
-      return $this->handleException(__('Task not found.', 'mailpoet'));
-    }
-    return $task;
-  }
-
-  private function handleException($message): \MailPoet\API\JSON\ErrorResponse {
-    return $this->badRequest([
-      ApiError::BAD_REQUEST => $message,
-    ]);
   }
 }
