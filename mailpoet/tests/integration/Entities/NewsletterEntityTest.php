@@ -220,6 +220,16 @@ class NewsletterEntityTest extends \MailPoetTest {
     verify($notificationHistoryNewsletter->getFilterSegmentId())->equals(2);
   }
 
+  public function testIsTransactional(): void {
+    $newsletter = $this->createNewsletter();
+    $this->assertFalse($newsletter->isTransactional());
+
+    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL);
+    $this->assertTrue($newsletter->isTransactional());
+    $newsletter->setType(NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL);
+    $this->assertTrue($newsletter->isTransactional());
+  }
+
   private function createNewsletter(string $type = NewsletterEntity::TYPE_STANDARD): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType($type);

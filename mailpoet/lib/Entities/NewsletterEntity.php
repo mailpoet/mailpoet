@@ -608,4 +608,11 @@ class NewsletterEntity {
     $campaignName = $this->getCampaignName();
     return $campaignName ?: $this->getSubject();
   }
+
+  public function isTransactional(): bool {
+    return in_array($this->getType(), [
+      NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
+      NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL,
+    ]);
+  }
 }
