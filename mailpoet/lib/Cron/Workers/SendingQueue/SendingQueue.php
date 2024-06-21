@@ -187,11 +187,6 @@ class SendingQueue {
       return;
     }
 
-    $isTransactional = in_array($newsletter->getType(), [
-      NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL,
-      NewsletterEntity::TYPE_WC_TRANSACTIONAL_EMAIL,
-    ]);
-
     // configure mailer
     $this->mailerTask->configureMailer($newsletter);
     // get newsletter segments
@@ -272,7 +267,7 @@ class SendingQueue {
           ->setParameter('subscriberIds', $subscribersToProcessIds)
           ->andWhere('s.deletedAt IS NULL');
 
-        if ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL) {
+        if ($newsletter->isTransactional()) {
           $queryBuilder->andWhere('s.status != :bouncedStatus')
             ->setParameter('bouncedStatus', SubscriberEntity::STATUS_BOUNCED);
         } else {
@@ -323,7 +318,7 @@ class SendingQueue {
           $foundSubscribers,
           $timer
         );
-        if (!$isTransactional) {
+        if (!$newsletter->isTransactional()) {
           $this->entityManager->wrapInTransaction(function() use ($foundSubscribersIds) {
             $now = Carbon::createFromTimestamp((int)current_time('timestamp'));
             $this->subscribersRepository->bulkUpdateLastSendingAt($foundSubscribersIds, $now);
