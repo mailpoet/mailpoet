@@ -1,12 +1,12 @@
 import { __, _x } from '@wordpress/i18n';
-import { Place } from 'react-tooltip';
+import { PlacesType } from 'react-tooltip';
 import { Badge } from './badge';
 
 type StatsBadgeProps = {
   stat: string;
   rate: number;
   tooltipId?: string;
-  tooltipPlace?: Place;
+  tooltipPlace?: PlacesType;
   isInverted?: boolean;
 };
 

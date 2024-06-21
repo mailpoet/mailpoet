@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Place } from 'react-tooltip';
+import { PlacesType } from 'react-tooltip';
 import { Tag } from '../../tag';
 import { Tooltip } from '../../tooltip/tooltip';
 
@@ -7,7 +7,7 @@ type BadgeProps = {
   name: string;
   tooltip?: string | ReactNode;
   tooltipId?: string;
-  tooltipPlace?: Place;
+  tooltipPlace?: PlacesType;
   type?: 'average' | 'good' | 'excellent' | 'critical' | 'unknown';
   isInverted?: boolean;
 };
