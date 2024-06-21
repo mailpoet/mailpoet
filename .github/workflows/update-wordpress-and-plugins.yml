@@ -155,5 +155,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update-plugins-and-wordpress
-          title: 'Update WordPress Docker and WooCommerce Versions'
+          title: 'Update used WordPress Docker image and used plugin versions in Circle CI jobs'
           base: trunk
