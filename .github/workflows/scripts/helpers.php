@@ -83,17 +83,12 @@ function fetchGitHubTags(string $repo, string $token): array {
 }
 
 /**
- * Function saving versions to a temporary file.
+ * Function saving versions to a temporary files.
+ * File containing latest version is prefixed with 'latest_' and previous version is prefixed with 'previous_'.
  */
-function saveVersionsToFile(string $latestVersion, string $previousVersion, string $fileName): void {
-  $value = "";
-  if ($latestVersion) {
-    $value .= "- latest version: {$latestVersion}\n";
-  }
-  if ($previousVersion) {
-    $value .= "- previous version: {$previousVersion}\n";
-  }
-  file_put_contents("/tmp/{$fileName}", $value);
+function saveVersionsToFiles(string $latestVersion, string $previousVersion, string $fileNameSuffix): void {
+  file_put_contents("/tmp/latest_{$fileNameSuffix}", $latestVersion);
+  file_put_contents("/tmp/previous_{$fileNameSuffix}", $previousVersion);
 }
 
 function replaceLatestVersion(string $latestVersion, string $downloadCommand): void {
@@ -150,5 +145,5 @@ function replacePrivatePluginVersion(
     echo "No previous version found.\n";
   }
 
-  saveVersionsToFile($latestVersion, $previousVersion, $versionsFilename);
+  saveVersionsToFiles($latestVersion, $previousVersion, $versionsFilename);
 }

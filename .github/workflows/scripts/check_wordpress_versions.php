@@ -117,4 +117,4 @@ if ($previousVersion) {
   echo "No previous version found.\n";
 }
 
-saveVersionsToFile($latestVersion, $previousVersion, 'wordpress_versions.txt');
+saveVersionsToFiles($latestVersion, $previousVersion, 'wordpress_version.txt');

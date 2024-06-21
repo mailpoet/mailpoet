@@ -4,7 +4,7 @@ require_once __DIR__ . '/helpers.php';
 
 $downloadCommand = 'download:woo-commerce-zip';
 $configParameterName = 'woo_core_version';
-$versionsFilename = 'woocommerce_versions.txt';
+$versionsFilenameSuffix = 'woocommerce_version.txt';
 
 /**
  * We get the official WooCommerce versions from the WordPress API.
@@ -42,4 +42,4 @@ if ($previousVersion) {
   echo "No previous version found.\n";
 }
 
-saveVersionsToFile($latestVersion, $previousVersion, $versionsFilename);
+saveVersionsToFiles($latestVersion, $previousVersion, $versionsFilenameSuffix);
