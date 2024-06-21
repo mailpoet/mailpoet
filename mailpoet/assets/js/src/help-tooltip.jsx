@@ -9,6 +9,9 @@ function Tooltip(props) {
   if (!props.tooltipId && typeof props.tooltip === 'string') {
     tooltipId = props.tooltip;
   }
+  if (!tooltipId) {
+    tooltipId = (Math.random() + 1).toString(36).substring(7);
+  }
 
   if (typeof props.tooltip === 'string') {
     tooltip = (
