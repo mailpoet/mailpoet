@@ -14,8 +14,7 @@ class Help extends APIEndpoint {
     'global' => AccessControl::PERMISSION_MANAGE_HELP,
   ];
 
-  /** @var ScheduledTasksRepository */
-  private $scheduledTasksRepository;
+  private ScheduledTasksRepository $scheduledTasksRepository;
 
   public function __construct(
     ScheduledTasksRepository $scheduledTasksRepository
