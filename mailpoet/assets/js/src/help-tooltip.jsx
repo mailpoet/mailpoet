@@ -31,14 +31,13 @@ function Tooltip(props) {
           cursor: 'pointer',
         }}
         className="tooltip dashicons dashicons-editor-help"
-        data-event="click"
         data-tip
-        data-for={tooltipId}
+        data-tooltip-id={tooltipId}
       />
       <ReactTooltip
         globalEventOff="click"
+        openOnClick
         className="mailpoet-tooltip-message"
-        multiline
         id={tooltipId}
         place={props.place}
       >
