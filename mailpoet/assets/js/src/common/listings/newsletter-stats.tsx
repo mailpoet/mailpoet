@@ -62,7 +62,7 @@ export function NewsletterStats({
         <Tag data-tip data-for={revenuesTooltipId}>
           {revenues}
         </Tag>
-        <Tooltip place="top" multiline id={revenuesTooltipId}>
+        <Tooltip place="top" id={revenuesTooltipId}>
           <div className="mailpoet-listing-stats-tooltip-content">
             {__(
               'Revenues by customers who clicked on this email in the last 2 weeks.',

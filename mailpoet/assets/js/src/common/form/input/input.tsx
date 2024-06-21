@@ -43,7 +43,7 @@ export function Input({
               data-for={attributes.name}
             />
           </span>
-          <Tooltip place="right" multiline id={attributes.name}>
+          <Tooltip place="right" id={attributes.name}>
             {tooltip}
           </Tooltip>
         </>
