@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import ReactTooltip, { TooltipProps } from 'react-tooltip';
+import { Tooltip as ReactTooltip, ITooltip } from 'react-tooltip';
 
 export function Tooltip({
   effect,
@@ -10,7 +10,7 @@ export function Tooltip({
   className,
   children,
   ...props
-}: TooltipProps) {
+}: ITooltip) {
   return (
     <ReactTooltip
       effect={effect || 'solid'}

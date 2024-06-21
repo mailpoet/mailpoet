@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import ReactHtmlParser from 'react-html-parser';
 
 function Tooltip(props) {
@@ -40,7 +40,6 @@ function Tooltip(props) {
         className="mailpoet-tooltip-message"
         multiline
         id={tooltipId}
-        efect="solid"
         place={props.place}
       >
         {tooltip}
