@@ -5,6 +5,6 @@ require_once __DIR__ . '/helpers.php';
 $repository = 'woocommerce/woocommerce-subscriptions';
 $downloadCommand = 'download:woo-commerce-subscriptions-zip';
 $configParameterName = 'woo_subscriptions_version';
-$versionsFilename = 'woocommerce_subscriptions_versions.txt';
+$versionsFilenameSuffix = 'woocommerce_subscriptions_version.txt';
 
-replacePrivatePluginVersion($repository, $downloadCommand, $configParameterName, $versionsFilename);
+replacePrivatePluginVersion($repository, $downloadCommand, $configParameterName, $versionsFilenameSuffix);

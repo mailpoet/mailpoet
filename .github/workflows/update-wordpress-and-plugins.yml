@@ -30,15 +30,17 @@ jobs:
             echo "WORDPRESS_CHANGES=true" >> $GITHUB_ENV
           fi
 
-      - name: Get WordPress versions from file
+      - name: Get WordPress versions from files
         id: get_wp_versions
-        run: echo "WORDPRESS_VERSION=$(cat /tmp/wordpress_versions.txt)" >> $GITHUB_ENV
+        run: |
+          echo "WORDPRESS_LATEST_VERSION=$(cat /tmp/latest_wordpress_version.txt)" >> $GITHUB_ENV
+          echo "WORDPRESS_PREVIOUS_VERSION=$(cat /tmp/previous_wordpress_version.txt)" >> $GITHUB_ENV
 
       - name: Commit WordPress changes
         if: env.WORDPRESS_CHANGES == 'true'
         run: |
           git add .
-          git commit -m "Update used WordPress images in Circle CI" -m "${{ env.WORDPRESS_VERSION }}"
+          git commit -m "Update used WordPress images in Circle CI\n\n - latest version: ${{ env.WORDPRESS_LATEST_VERSION }}\n - previous version: ${{ env.WORDPRESS_PREVIOUS_VERSION }}"
 
       # Updating used WooCommerce plugin
       - name: Check WooCommerce Versions
@@ -54,15 +56,17 @@ jobs:
             echo "WOOCOMMERCE_CHANGES=true" >> $GITHUB_ENV
           fi
 
-      - name: Get WooCommerce versions from file
+      - name: Get WooCommerce versions from files
         id: get_wc_versions
-        run: echo "WOOCOMMERCE_VERSION=$(cat /tmp/woocommerce_versions.txt)" >> $GITHUB_ENV
+        run: |
+          echo "WOOCOMMERCE_LATEST_VERSION=$(cat /tmp/latest_woocommerce_version.txt)" >> $GITHUB_ENV
+          echo "WOOCOMMERCE_PREVIOUS_VERSION=$(cat /tmp/previous_woocommerce_version.txt)" >> $GITHUB_ENV
 
       - name: Commit WooCommerce changes
         if: env.WOOCOMMERCE_CHANGES == 'true'
         run: |
           git add .
-          git commit -m 'Update used WooCommerce plugin in Circle CI' -m "${{ env.WOOCOMMERCE_VERSION }}"
+          git commit -m 'Update used WooCommerce plugin in Circle CI\n\n - latest version: ${{ env.WOOCOMMERCE_LATEST_VERSION }}\n - previous version: ${{ env.WOOCOMMERCE_PREVIOUS_VERSION }}'
 
       # Updating used Automate Woo plugin
       - name: Check Automate Woo Versions
@@ -80,15 +84,17 @@ jobs:
             echo "AUTOMATE_WOO_CHANGES=true" >> $GITHUB_ENV
           fi
 
-      - name: Get Automate Woo versions from file
+      - name: Get Automate Woo versions from files
         id: get_aw_versions
-        run: echo "AUTOMATE_WOO_VERSION=$(cat /tmp/automate_woo_versions.txt)" >> $GITHUB_ENV
+        run: |
+          echo "AUTOMATE_WOO_LATEST_VERSION=$(cat /tmp/latest_automate_woo_version.txt)" >> $GITHUB_ENV
+          echo "AUTOMATE_WOO_PREVIOUS_VERSION=$(cat /tmp/previous_automate_woo_version.txt)" >> $GITHUB_ENV
 
       - name: Commit Automate Woo changes
         if: env.AUTOMATE_WOO_CHANGES == 'true'
         run: |
           git add .
-          git commit -m 'Update used Automate Woo plugin in Circle CI' -m "${{ env.AUTOMATE_WOO_VERSION }}"
+          git commit -m 'Update used Automate Woo plugin in Circle CI\n\n - latest version: ${{ env.AUTOMATE_WOO_LATEST_VERSION }}\n - previous version: ${{ env.AUTOMATE_WOO_PREVIOUS_VERSION }}'
 
       # Updating used WooCommerce Subscriptions plugin
       - name: Check WooCommerce Subscriptions Versions
@@ -106,15 +112,17 @@ jobs:
             echo "SUBSCRIPTIONS_CHANGES=true" >> $GITHUB_ENV
           fi
 
-      - name: Get WooCommerce Subscriptions versions from file
+      - name: Get WooCommerce Subscriptions versions from files
         id: get_ws_versions
-        run: echo "WOOCOMMERCE_SUBSCRIPTIONS_VERSION=$(cat /tmp/woocommerce_subscriptions_versions.txt)" >> $GITHUB_ENV
+        run: |
+          echo "WOOCOMMERCE_SUBSCRIPTIONS_LATEST_VERSION=$(cat /tmp/latest_woocommerce_subscriptions_version.txt)" >> $GITHUB_ENV
+          echo "WOOCOMMERCE_SUBSCRIPTIONS_PREVIOUS_VERSION=$(cat /tmp/previous_woocommerce_subscriptions_version.txt)" >> $GITHUB_ENV
 
       - name: Commit WooCommerce Subscriptions changes
         if: env.SUBSCRIPTIONS_CHANGES == 'true'
         run: |
           git add .
-          git commit -m 'Update used WooCommerce Subscriptions plugin in Circle CI' -m "${{ env.WOOCOMMERCE_SUBSCRIPTIONS_VERSION }}"
+          git commit -m 'Update used WooCommerce Subscriptions plugin in Circle CI\n\n - latest version: ${{ env.WOOCOMMERCE_SUBSCRIPTIONS_LATEST_VERSION }}\n - previous version: ${{ env.WOOCOMMERCE_SUBSCRIPTIONS_PREVIOUS_VERSION }}'
 
       # Updating used WooCommerce Memberships plugin
       - name: Check WooCommerce Memberships Versions
@@ -132,15 +140,17 @@ jobs:
             echo "MEMBERSHIPS_CHANGES=true" >> $GITHUB_ENV
           fi
 
-      - name: Get WooCommerce Memberships versions from file
+      - name: Get WooCommerce Memberships versions from files
         id: get_wm_versions
-        run: echo "WOOCOMMERCE_MEMBERSHIPS_VERSION=$(cat /tmp/woocommerce_memberships_versions.txt)" >> $GITHUB_ENV
+        run: |
+          echo "WOOCOMMERCE_MEMBERSHIPS_LATEST_VERSION=$(cat /tmp/latest_woocommerce_memberships_version.txt)" >> $GITHUB_ENV
+          echo "WOOCOMMERCE_MEMBERSHIPS_PREVIOUS_VERSION=$(cat /tmp/previous_woocommerce_memberships_version.txt)" >> $GITHUB_ENV
 
       - name: Commit WooCommerce Memberships changes
         if: env.MEMBERSHIPS_CHANGES == 'true'
         run: |
           git add .
-          git commit -m 'Update used WooCommerce Memberships plugin in Circle CI' -m "${{ env.WOOCOMMERCE_MEMBERSHIPS_VERSION }}"
+          git commit -m 'Update used WooCommerce Memberships plugin in Circle CI\n\n - latest version: ${{ env.WOOCOMMERCE_MEMBERSHIPS_LATEST_VERSION }}\n - previous version: ${{ env.WOOCOMMERCE_MEMBERSHIPS_PREVIOUS_VERSION }}'
 
       # Push all changes at the end if any changes were detected
       - name: Push changes
@@ -153,7 +163,7 @@ jobs:
         if: env.CHANGES_DETECTED == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
           branch: update-plugins-and-wordpress
           title: 'Update used WordPress Docker image and used plugin versions in Circle CI jobs'
           base: trunk
