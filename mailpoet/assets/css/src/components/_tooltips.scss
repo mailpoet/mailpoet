@@ -2,9 +2,11 @@
   background-color: #fafbfe;
   border-color: #e5e9f8;
   border-radius: 4px;
+  border-style: solid;
+  border-width: 1px;
   box-shadow: 0 2px 4px 0 rgba(229, 233, 248, 0.4),
     0 5px 30px 0 $color-tertiary-light;
-  color: $gray-90;
+  color: #1d2327;
   max-width: 400px;
   padding: $grid-gap-half;
   z-index: 9990; // Allow tooltip to display over #adminmenuwrap (lefthand menu) core style
