@@ -37,7 +37,7 @@ export function Textarea({
             <span
               className="mailpoet-form-tooltip-icon"
               data-tip
-              data-for={attributes.name}
+              data-tooltip-id={attributes.name}
             />
           </span>
           <Tooltip place="right" id={attributes.name}>

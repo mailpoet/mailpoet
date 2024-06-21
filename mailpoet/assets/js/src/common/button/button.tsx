@@ -63,7 +63,7 @@ export function Button({
       })}
       data-automation-id={automationId}
       data-tip={dataTip}
-      data-for={dataFor}
+      data-tooltip-id={dataFor}
     >
       {iconStart}
       {children && <span>{children}</span>}
