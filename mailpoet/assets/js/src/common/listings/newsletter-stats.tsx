@@ -59,7 +59,7 @@ export function NewsletterStats({
     const revenuesTooltipId = `revenues-${newsletterId || '0'}`;
     revenueStats = (
       <div>
-        <Tag data-tip data-for={revenuesTooltipId}>
+        <Tag data-tip data-tooltip-id={revenuesTooltipId}>
           {revenues}
         </Tag>
         <Tooltip place="top" id={revenuesTooltipId}>

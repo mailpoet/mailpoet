@@ -10,14 +10,14 @@ export function Tooltips() {
     <>
       <Heading level={1}>Placements</Heading>
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-        <p data-tip data-for="bottom">
+        <p data-tip data-tooltip-id="bottom">
           Bottom Tooltip
         </p>
         <Tooltip id="bottom" place="bottom">
           <span>The tooltip content</span>
         </Tooltip>
 
-        <p data-tip data-for="top">
+        <p data-tip data-tooltip-id="top">
           Top Tooltip
         </p>
         <Tooltip id="top" place="top">

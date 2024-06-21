@@ -73,7 +73,7 @@ function Tags({ children, tags, dimension, variant, isInverted }: TagProps) {
           const tooltipId = `tag-tooltip-${randomId}`;
           const tagWithTooltip = React.cloneElement(tag, {
             'data-tip': true,
-            'data-for': tooltipId,
+            'data-tooltip-id': tooltipId,
           });
 
           return (
@@ -96,7 +96,7 @@ function Tags({ children, tags, dimension, variant, isInverted }: TagProps) {
                 {item.tooltip}
               </Tooltip>
             )}
-            <a data-tip="" data-for={tooltipId} href={item.target}>
+            <a data-tip="" data-tooltip-id={tooltipId} href={item.target}>
               {tag}
             </a>
           </div>

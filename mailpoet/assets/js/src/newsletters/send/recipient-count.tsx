@@ -87,7 +87,7 @@ export function RecipientCount(props: RecipientCountProps) {
           </Tooltip>
           <span
             data-tip
-            data-for="estimated-count-tooltip"
+            data-tooltip-id="estimated-count-tooltip"
             className="estimated-recipient-count"
           >
             {recipientCount.toLocaleString()}

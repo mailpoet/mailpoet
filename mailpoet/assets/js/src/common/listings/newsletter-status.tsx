@@ -106,7 +106,7 @@ function NewsletterStatus({
         : __('Tomorrow', 'mailpoet');
       label = (
         <>
-          <span data-tip data-for={randomId}>
+          <span data-tip data-tooltip-id={randomId}>
             {dateWord}
           </span>
           <Tooltip place="right" id={randomId}>

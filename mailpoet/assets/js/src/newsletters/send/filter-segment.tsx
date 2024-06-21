@@ -143,7 +143,7 @@ export function FilterSegment({
         {__('Filter by segment', 'mailpoet')}
         <Icon
           data-tip
-          data-for="filter-segment-tooltip"
+          data-tooltip-id="filter-segment-tooltip"
           className="filter-segment-tooltip"
           icon={help}
         />
