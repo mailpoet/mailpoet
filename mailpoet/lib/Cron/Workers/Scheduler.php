@@ -363,7 +363,7 @@ class Scheduler {
   public function verifySubscriber(SubscriberEntity $subscriber, ScheduledTaskEntity $task): bool {
     $queue = $task->getSendingQueue();
     $newsletter = $queue ? $queue->getNewsletter() : null;
-    if ($newsletter && $newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL) {
+    if ($newsletter && $newsletter->isTransactional()) {
       return $subscriber->getStatus() !== SubscriberEntity::STATUS_BOUNCED;
     }
     if ($subscriber->getStatus() === SubscriberEntity::STATUS_UNCONFIRMED) {
