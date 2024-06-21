@@ -7,4 +7,4 @@ $downloadCommand = 'download:woo-commerce-memberships-zip';
 $configParameterName = 'woo_memberships_version';
 $versionsFilename = 'woocommerce_memberships_versions.txt';
 
-replacePrivatePluginVersion($repository, $downloadCommand, $configParameterName);
+replacePrivatePluginVersion($repository, $downloadCommand, $configParameterName, $versionsFilename);
