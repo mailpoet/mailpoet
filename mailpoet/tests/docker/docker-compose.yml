@@ -71,7 +71,7 @@ services:
       - mailhog-data:/mailhog-data
 
   wordpress:
-    image: wordpress:${WORDPRESS_IMAGE_VERSION:-6.5.4-php8.2}
+    image: wordpress:${WORDPRESS_IMAGE_VERSION:-6.5.4-php8.3}
     container_name: wordpress_${CIRCLE_NODE_INDEX:-default}
     depends_on:
       smtp:
