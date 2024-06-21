@@ -2,6 +2,10 @@
 
 require_once __DIR__ . '/helpers.php';
 
+$downloadCommand = 'download:woo-commerce-zip';
+$configParameterName = 'woo_core_version';
+$versionsFilename = 'woocommerce_versions.txt';
+
 /**
  * We get the official WooCommerce versions from the WordPress API.
  */
@@ -17,22 +21,6 @@ function getWooCommerceVersions(): array {
   return array_keys($data['versions']);
 }
 
-function replaceLatestVersion($latestVersion): void {
-  replaceVersionInFile(
-    __DIR__ . './../../../.circleci/config.yml',
-    '/(.\/do download:woo-commerce-zip )\d+\.\d+\.\d+/',
-    '${1}' . $latestVersion
-  );
-}
-
-function replacePreviousVersion($previousVersion): void {
-  replaceVersionInFile(
-    __DIR__ . './../../../.circleci/config.yml',
-    '/(woo_core_version: )\d+\.\d+\.?\d*/',
-    '${1}' . $previousVersion
-  );
-}
-
 $allVersions = getWooCommerceVersions();
 $stableVersions = filterStableVersions($allVersions);
 [$latestVersion, $previousVersion] = getLatestAndPreviousMinorMajorVersions($stableVersions);
@@ -42,16 +30,16 @@ echo "Previous  WooCommerce version: $previousVersion\n";
 
 if ($latestVersion) {
   echo "Replacing the latest version in the config file...\n";
-  replaceLatestVersion($latestVersion);
+  replaceLatestVersion($latestVersion, $downloadCommand);
 } else {
   echo "No latest version found.\n";
 }
 
 if ($previousVersion) {
   echo "Replacing the previous version in the config file...\n";
-  replacePreviousVersion($previousVersion);
+  replacePreviousVersion($previousVersion, $configParameterName);
 } else {
   echo "No previous version found.\n";
 }
 
-saveVersionsToFile($latestVersion, $previousVersion, 'woocommerce_versions.txt');
+saveVersionsToFile($latestVersion, $previousVersion, $versionsFilename);

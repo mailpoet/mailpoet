@@ -3,7 +3,7 @@
 /**
  * Function replacing versions in a file by the regex pattern.
  */
-function replaceVersionInFile($filePath, $pattern, $replacement): void {
+function replaceVersionInFile(string $filePath, string $pattern, string $replacement): void {
   $content = file_get_contents($filePath);
 
   if ($content === false) {
@@ -25,7 +25,7 @@ function replaceVersionInFile($filePath, $pattern, $replacement): void {
 /**
  * Function to filter stable versions from a list of versions.
  */
-function filterStableVersions($versions): array {
+function filterStableVersions(array $versions): array {
   return array_filter($versions, function($version) {
     // Only include stable versions (exclude versions with -rc, -beta, -alpha, etc.)
     return preg_match('/^\d+\.\d+\.\d+$/', $version);
@@ -35,7 +35,7 @@ function filterStableVersions($versions): array {
 /**
  * Function to get the latest and previous minor/major versions from a list of versions.
  */
-function getLatestAndPreviousMinorMajorVersions($versions): array {
+function getLatestAndPreviousMinorMajorVersions(array $versions): array {
   usort($versions, 'version_compare');
   $currentVersion = end($versions);
 
@@ -50,7 +50,7 @@ function getLatestAndPreviousMinorMajorVersions($versions): array {
   return [$currentVersion, $previousVersion];
 }
 
-function getMinorMajorVersion($version): string {
+function getMinorMajorVersion(string $version): string {
   $parts = explode('.', $version);
   return $parts[0] . '.' . $parts[1];
 }
@@ -58,7 +58,7 @@ function getMinorMajorVersion($version): string {
 /**
  * Function to fetch tags from a GitHub repository.
  */
-function fetchGitHubTags($repo, $token): array {
+function fetchGitHubTags(string $repo, string $token): array {
   $url = "https://api.github.com/repos/$repo/tags";
   $ch = curl_init($url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -85,7 +85,7 @@ function fetchGitHubTags($repo, $token): array {
 /**
  * Function saving versions to a temporary file.
  */
-function saveVersionsToFile($latestVersion, $previousVersion, $fileName): void {
+function saveVersionsToFile(string $latestVersion, string $previousVersion, string $fileName): void {
   $value = "";
   if ($latestVersion) {
     $value .= "- latest version: {$latestVersion}\n";
@@ -96,7 +96,7 @@ function saveVersionsToFile($latestVersion, $previousVersion, $fileName): void {
   file_put_contents("/tmp/{$fileName}", $value);
 }
 
-function replaceLatestVersion($latestVersion, $downloadCommand): void {
+function replaceLatestVersion(string $latestVersion, string $downloadCommand): void {
   replaceVersionInFile(
     __DIR__ . '/../../../.circleci/config.yml',
     '/(.\/do ' . $downloadCommand . ' )\d+\.\d+\.\d+/',
@@ -104,7 +104,7 @@ function replaceLatestVersion($latestVersion, $downloadCommand): void {
   );
 }
 
-function replacePreviousVersion($previousVersion, $configParameterName): void {
+function replacePreviousVersion(string $previousVersion, string $configParameterName): void {
   replaceVersionInFile(
     __DIR__ . '/../../../.circleci/config.yml',
     '/(' . $configParameterName . ': )\d+\.\d+\.\d+/',
@@ -117,7 +117,12 @@ function replacePreviousVersion($previousVersion, $configParameterName): void {
  * The function fetches the tags from the GitHub repository, filters stable versions,
  * gets the latest and previous minor/major versions, and replaces the versions in the CircleCI config file.
  */
-function replacePrivatePluginVersion($repository, $downloadCommand, $configParameterName, $versionsFilename): void {
+function replacePrivatePluginVersion(
+  string $repository,
+  string $downloadCommand,
+  string $configParameterName,
+  string $versionsFilename
+): void {
 // Read the GitHub token from environment variable
   $token = getenv('GH_TOKEN');
   if (!$token) {
