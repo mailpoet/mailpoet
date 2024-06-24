@@ -1,6 +1,8 @@
 import { Steps } from '../../../../../../../editor/components/automation/types';
 import { Subscriber } from '../../../../store';
 
+export type ActivityModalState = 'loading' | 'loaded' | 'error' | 'hidden';
+
 export type Run = {
   automation_id: number;
   version_id: number;
