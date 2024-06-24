@@ -30,8 +30,6 @@
   .tox {
     /* Small style changes to better fit TinyMCE to our editor */
     &.tox-tinymce-inline {
-      border: 1px solid $color-editor-border-content;
-      border-radius: 3px;
       box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.05);
 
       /* Fix for fixed TinyMCE toolbar to be above WP menu */
@@ -50,6 +48,11 @@
       &:first-child {
         border-top: 0;
       }
+    }
+
+    /* Override white button color when not selected or manipulated to let them match the background */
+    .tox-tbtn:not(.tox-tbtn--enabled):not(:hover):not(:active) {
+      background: transparent;
     }
 
     /* Slightly smaller TinyMCE button */
