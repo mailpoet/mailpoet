@@ -8,9 +8,6 @@ overrides:
   typescript: ^5.0.2
 
 patchedDependencies:
-  '@woocommerce/components@12.1.0':
-    hash: iq5s3qie6a26r746nhxcxwvlye
-    path: patches/@woocommerce__components@12.1.0.patch
   backbone.supermodel@1.2.0:
     hash: hhsvgimsfhfs4itf7ipk47fane
     path: patches/backbone.supermodel@1.2.0.patch
@@ -62,8 +59,8 @@ importers:
         specifier: ^4.0.55
         version: 4.0.55
       '@woocommerce/components':
-        specifier: ^12.1.0
-        version: 12.1.0(patch_hash=iq5s3qie6a26r746nhxcxwvlye)(@babel/runtime@7.24.7)(@types/react-dom@18.3.0)(@types/react@18.3.3)(@wordpress/data@10.0.0)(lodash@4.17.21)(react-dom@18.3.1)(react@18.3.1)
+        specifier: ^12.3.0
+        version: 12.3.0(@babel/runtime@7.24.7)(@types/react-dom@18.3.0)(@types/react@18.3.3)(@wordpress/data@10.0.0)(lodash@4.17.21)(react-dom@18.3.1)(react@18.3.1)
       '@woocommerce/currency':
         specifier: ^4.3.0
         version: 4.3.0
@@ -679,7 +676,7 @@ packages:
       '@wordpress/base-styles': 4.49.0
       '@wordpress/data': 10.0.0(react@18.3.1)
       classnames: 2.5.1
-      gridicons: 3.4.1(react@18.3.1)
+      gridicons: 3.4.2(react@18.3.1)
       i18n-calypso: 6.0.1(@types/react@18.3.3)(react@18.3.1)
       lodash: 4.17.21
       prop-types: 15.8.1
@@ -5134,7 +5131,6 @@ packages:
 
   /@types/node@16.18.46:
     resolution: {integrity: sha512-Mnq3O9Xz52exs3mlxMcQuA7/9VFe/dXcrgAyfjLkABIqxXKOgBRjyazTxUbjsxDa4BP7hhPliyjVTP9RDP14xg==}
-    dev: true
 
   /@types/node@18.6.1:
     resolution: {integrity: sha512-z+2vB6yDt1fNwKOeGbckpmirO+VBDuQqecXkgeIqDlaOtmKn6hPR/viQ8cxCfqLU4fTlvM3+YjM367TukWdxpg==}
@@ -6004,12 +6000,12 @@ packages:
       webpack-dev-server: 4.15.2(webpack-cli@5.1.4)(webpack@5.92.0)
     dev: true
 
-  /@woocommerce/components@12.1.0(patch_hash=iq5s3qie6a26r746nhxcxwvlye)(@babel/runtime@7.24.7)(@types/react-dom@18.3.0)(@types/react@18.3.3)(@wordpress/data@10.0.0)(lodash@4.17.21)(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-Y5e2ay2ITKC4ZYAZCjvHL53QQK+q0q/vPwboKOPa1NSj75MUvJ0HMFVNANKOZjKZuSuL1DTIhQpapoY3Eueffw==}
-    engines: {node: ^16.14.1, pnpm: ^8.6.5}
+  /@woocommerce/components@12.3.0(@babel/runtime@7.24.7)(@types/react-dom@18.3.0)(@types/react@18.3.3)(@wordpress/data@10.0.0)(lodash@4.17.21)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-1opGsZBI6SppDLw/9uu+f3STqcmj5uE94WlZsnj6ChuU5IrI9Bv0tgyb4DYUSdOoNgUjTH1TZUlV9r3xXQDnLg==}
+    engines: {node: ^20.11.1, pnpm: ^8.12.1}
     peerDependencies:
-      '@types/react': ^17.0.2
-      '@types/react-dom': ^17.0.2
+      '@types/react': ^17.0.71
+      '@types/react-dom': ^17.0.25
       '@wordpress/data': wp-6.0
       lodash: ^4.17.0
       react: ^17.0.2
@@ -6025,7 +6021,7 @@ packages:
       '@types/wordpress__blocks': 12.5.14(react-dom@18.3.1)(react@18.3.1)
       '@types/wordpress__components': 23.0.11(react-dom@18.3.1)(react@18.3.1)
       '@types/wordpress__rich-text': 6.4.5(react@18.3.1)
-      '@woocommerce/csv-export': 1.7.0
+      '@woocommerce/csv-export': 1.8.0
       '@woocommerce/currency': 4.2.0
       '@woocommerce/data': 4.1.0(@types/react@18.3.3)(@wordpress/core-data@7.0.0)(lodash@4.17.21)(moment@2.30.1)(react-dom@18.3.1)(react@18.3.1)
       '@woocommerce/date': 4.2.0(lodash@4.17.21)
@@ -6054,6 +6050,7 @@ packages:
       '@wordpress/rich-text': 7.0.0(react@18.3.1)
       '@wordpress/url': 4.0.0
       '@wordpress/viewport': 6.0.0(react@18.3.1)
+      canvas-confetti: 1.9.3
       classnames: 2.5.1
       core-js: 3.37.1
       d3-axis: 1.0.12
@@ -6063,10 +6060,10 @@ packages:
       d3-selection: 1.4.2
       d3-shape: 1.3.7
       d3-time-format: 2.3.0
-      dompurify: 2.4.5
+      dompurify: 2.5.5
       downshift: 6.1.12(react@18.3.1)
       emoji-flags: 1.3.0
-      gridicons: 3.4.1(react@18.3.1)
+      gridicons: 3.4.2(react@18.3.1)
       lodash: 4.17.21
       memoize-one: 6.0.0
       moment: 2.30.1
@@ -6088,11 +6085,12 @@ packages:
       - supports-color
       - utf-8-validate
     dev: false
-    patched: true
 
-  /@woocommerce/csv-export@1.7.0:
-    resolution: {integrity: sha512-mBEYSc3WOibJ2thDE5KpQ8r7oD9ul6FHHDzm+N/ToqcJVdhjHOKqiR+9nrDOmpI9ut8jcD4uwZV8egzyP3xOuQ==}
+  /@woocommerce/csv-export@1.8.0:
+    resolution: {integrity: sha512-LfbwPWu1fyN3lNcuigiJ7g86Ute7rRQokbRkUP5m48wCrgxWmulmbXJD19642oXNLM1G8JY1UM0VFNIn7qMI3w==}
+    engines: {node: ^16.14.1, pnpm: ^8.6.7}
     dependencies:
+      '@types/node': 16.18.46
       browser-filesaver: 1.1.1
       moment: 2.30.1
     dev: false
@@ -6139,7 +6137,7 @@ packages:
       '@wordpress/hooks': 4.0.0
       '@wordpress/i18n': 5.0.0
       '@wordpress/url': 4.0.0
-      dompurify: 2.4.5
+      dompurify: 2.5.5
       md5: 2.3.0
       moment: 2.30.1
       qs: 6.12.1
@@ -10092,6 +10090,10 @@ packages:
     resolution: {integrity: sha512-6sT0yf/z5jqf8tISAgpJDrmwOpLsrpnyCdD/lOZKvKkkJK4Dn0X5i7KF7THEZhOq+30bmhwBlNEaqPUiHiKtZg==}
     dev: true
 
+  /canvas-confetti@1.9.3:
+    resolution: {integrity: sha512-rFfTURMvmVEX1gyXFgn5QMn81bYk70qa0HLzcIOSVEyl57n6o9ItHeBtUSWdvKAPY0xlvBHno4/v3QPrT83q9g==}
+    dev: false
+
   /capital-case@1.0.4:
     resolution: {integrity: sha512-ds37W8CytHgwnhGGTi88pcPyR15qoNkOpYwmMMfnWqqWgESapLqvDx6huFjQ5vqWSn2Z06173XNA7LtMOeUh1A==}
     dependencies:
@@ -11768,8 +11770,8 @@ packages:
       domelementtype: 2.3.0
     dev: true
 
-  /dompurify@2.4.5:
-    resolution: {integrity: sha512-jggCCd+8Iqp4Tsz0nIvpcb22InKEBrGz5dw3EQJMs8HPJDsKbFIO3STYtAvCfDx26Muevn1MHVI0XxjgFfmiSA==}
+  /dompurify@2.5.5:
+    resolution: {integrity: sha512-FgbqnEPiv5Vdtwt6Mxl7XSylttCC03cqP5ldNT2z+Kj0nLxPHJH4+1Cyf5Jasxhw93Rl4Oo11qRoUV72fmya2Q==}
     dev: false
 
   /domutils@1.7.0:
@@ -13820,8 +13822,8 @@ packages:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
     dev: true
 
-  /gridicons@3.4.1(react@18.3.1):
-    resolution: {integrity: sha512-gbOa8H82TRfzTkisszvRsXLt2niuBoZOfAagXzHNfjFEfOoBhKM2gT0Y05TQMUSQjMmto6q4T9wiJJybROvxpQ==}
+  /gridicons@3.4.2(react@18.3.1):
+    resolution: {integrity: sha512-KC2BzPDh3F0vJzYa7KYBWJOO9gTHoKoFiHNazZEU9Gq2jIJ2zObOA67wlZjZkPHPCjZiLQrko3AYFLrMrHXKrA==}
     peerDependencies:
       react: 15 - 18
     dependencies:
