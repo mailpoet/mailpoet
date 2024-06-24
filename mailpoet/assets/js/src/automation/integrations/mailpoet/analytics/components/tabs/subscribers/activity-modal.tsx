@@ -1,8 +1,9 @@
-import { Modal } from '@wordpress/components';
+import { Modal, Spinner } from '@wordpress/components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { ActivityModalState, RunData } from './modal/types';
+import { Header } from './modal/header';
 
 export function ActivityModal(): JSX.Element {
   const history = useHistory();
@@ -59,13 +60,29 @@ export function ActivityModal(): JSX.Element {
     };
   }, [runId]);
 
+  if (state === 'hidden') {
+    return <div />;
+  }
+
+  if (state === 'loading') {
+    return (
+      <Modal
+        onRequestClose={closeModal}
+        __experimentalHideHeader
+        className="mailpoet-analytics-activity-modal-spinner"
+      >
+        <Spinner className="mailpoet-automation-thumbnail-spinner" />
+      </Modal>
+    );
+  }
+
   return (
-    <>
-      {(state === 'loading' || state === 'loaded') && (
-        <Modal onRequestClose={closeModal} title={run?.subscriber.email}>
-          <div />
-        </Modal>
-      )}
-    </>
+    <Modal
+      onRequestClose={closeModal}
+      __experimentalHideHeader
+      className="mailpoet-analytics-activity-modal"
+    >
+      <Header subscriber={run.subscriber} onClose={closeModal} />
+    </Modal>
   );
 }
