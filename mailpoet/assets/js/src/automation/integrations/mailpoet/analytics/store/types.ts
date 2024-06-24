@@ -123,15 +123,17 @@ export type OrderSection = Section & {
   updateCallback: () => void;
 };
 
+export type Subscriber = {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  avatar: string;
+};
+
 export type SubscriberData = {
   date: string;
-  subscriber: {
-    id: number;
-    email: string;
-    first_name: string;
-    last_name: string;
-    avatar: string;
-  };
+  subscriber: Subscriber;
   run: {
     id: number;
     status: string;
