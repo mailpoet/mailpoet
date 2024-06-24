@@ -39,3 +39,15 @@
     grid-column-start: 2;
   }
 }
+
+.mailpoet-analytics-activity-modal-spinner {
+  text-align: center;
+}
+
+.mailpoet-analytics-activity-modal {
+  min-width: 500px;
+
+  .components-modal__header-heading {
+    margin-right: 10px;
+  }
+}
