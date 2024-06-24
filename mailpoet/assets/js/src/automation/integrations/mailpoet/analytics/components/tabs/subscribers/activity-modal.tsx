@@ -1,9 +1,11 @@
 import { Modal, Spinner } from '@wordpress/components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
+import { Table } from '@woocommerce/components';
 import apiFetch from '@wordpress/api-fetch';
 import { ActivityModalState, RunData } from './modal/types';
 import { Header } from './modal/header';
+import { headers, transformLogsToRows } from './modal/rows';
 
 export function ActivityModal(): JSX.Element {
   const history = useHistory();
@@ -83,6 +85,12 @@ export function ActivityModal(): JSX.Element {
       className="mailpoet-analytics-activity-modal"
     >
       <Header subscriber={run.subscriber} onClose={closeModal} />
+
+      <Table
+        className="mailpoet-analytics-activity-modal-table"
+        headers={headers}
+        rows={transformLogsToRows(run.logs, run.steps)}
+      />
     </Modal>
   );
 }
