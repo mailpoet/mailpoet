@@ -1,0 +1,22 @@
+diff --git a/build-style/style.css b/build-style/style.css
+index 3db807f278a470f83f0ab65f033bc6a9596af81a..7f11ceae63d0e9fe2d1aac59c550f42712ade727 100644
+--- a/build-style/style.css
++++ b/build-style/style.css
+@@ -157,7 +157,7 @@
+ }
+ .SingleDatePicker_closeButton:focus,
+ .SingleDatePicker_closeButton:hover {
+-  color: darken(#cacccd,10%);
++  color: #b0b3b4;
+   text-decoration: none
+ }
+ .SingleDatePicker_closeButton_svg {
+@@ -884,7 +884,7 @@
+ }
+ .DateRangePicker_closeButton:focus,
+ .DateRangePicker_closeButton:hover {
+-  color: darken(#cacccd,10%);
++  color: #b0b3b4;
+   text-decoration: none
+ }
+ .DateRangePicker_closeButton_svg {
