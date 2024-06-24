@@ -269,8 +269,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       react-tooltip:
-        specifier: ^4.2.21
-        version: 4.2.21(react-dom@18.3.1)(react@18.3.1)
+        specifier: ^5.27.0
+        version: 5.27.0(react-dom@18.3.1)(react@18.3.1)
       reakit:
         specifier: ^1.3.11
         version: 1.3.11(react-dom@18.3.1)(react@18.3.1)
@@ -18908,17 +18908,16 @@ packages:
       react: 18.3.1
       tslib: 2.6.3
 
-  /react-tooltip@4.2.21(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-zSLprMymBDowknr0KVDiJ05IjZn9mQhhg4PRsqln0OZtURAJ1snt1xi5daZfagsh6vfsziZrc9pErPTDY1ACig==}
-    engines: {npm: '>=6.13'}
+  /react-tooltip@5.27.0(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-JXROcdfCEbCqkAkh8LyTSP3guQ0dG53iY2E2o4fw3D8clKzziMpE6QG6CclDaHELEKTzpMSeAOsdtg0ahoQosw==}
     peerDependencies:
-      react: '>=16.0.0'
-      react-dom: '>=16.0.0'
+      react: '>=16.14.0'
+      react-dom: '>=16.14.0'
     dependencies:
-      prop-types: 15.8.1
+      '@floating-ui/dom': 1.6.5
+      classnames: 2.5.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      uuid: 7.0.3
     dev: false
 
   /react-transition-group@4.4.5(react-dom@18.3.1)(react@18.3.1):
