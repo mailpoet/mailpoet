@@ -25,11 +25,3 @@ foreach ($replacements as $singleFile) {
   $data = str_replace($singleFile['find'], $singleFile['replace'], $data);
   file_put_contents($singleFile['file'], $data);
 }
-
-// removing attribute classes because contain features from PHP 8.0, and then the job qa:php-max-wporg fails
-exec('rm ' . __DIR__ . '/../vendor-prefixed/symfony/dependency-injection/Attribute/AsTaggedItem.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/symfony/dependency-injection/Attribute/Autoconfigure.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/symfony/dependency-injection/Attribute/AutoconfigureTag.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/symfony/dependency-injection/Attribute/TaggedIterator.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/symfony/dependency-injection/Attribute/TaggedLocator.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/symfony/dependency-injection/Attribute/When.php');
