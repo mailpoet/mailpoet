@@ -22,8 +22,7 @@
     "patchedDependencies": {
       "backbone.supermodel@1.2.0": "patches/backbone.supermodel@1.2.0.patch",
       "parsleyjs@2.9.2": "patches/parsleyjs@2.9.2.patch",
-      "spectrum-colorpicker@1.8.1": "patches/spectrum-colorpicker@1.8.1.patch",
-      "@woocommerce/components@12.1.0": "patches/@woocommerce__components@12.1.0.patch"
+      "spectrum-colorpicker@1.8.1": "patches/spectrum-colorpicker@1.8.1.patch"
     },
     "overrides": {
       "react": "18.3.1",
