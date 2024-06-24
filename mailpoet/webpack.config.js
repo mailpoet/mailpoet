@@ -184,6 +184,11 @@ const baseConfig = {
               replace: "resolve('mailpoetTinymce",
               flags: 'g',
             },
+            {
+              search: 'tinymce.Resource',
+              replace: 'mailpoetTinymce.Resource',
+              flags: 'g',
+            },
           ],
         },
       },
