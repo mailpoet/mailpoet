@@ -32,6 +32,8 @@ export type Step = {
   filters?: Filters;
 };
 
+export type Steps = Record<string, Step> & { root: Step };
+
 export type Automation = {
   id: number;
   name: string;
@@ -51,6 +53,6 @@ export type Automation = {
       exited: number;
     };
   };
-  steps: Record<string, Step> & { root: Step };
+  steps: Steps;
   meta: Record<string, unknown>;
 };
