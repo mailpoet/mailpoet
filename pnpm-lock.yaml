@@ -9,7 +9,7 @@ overrides:
 
 patchedDependencies:
   '@woocommerce/components@12.3.0':
-    hash: alxnpiftcq2tsdebprukoovsne
+    hash: rc6hnjhca2pqrlb5fea6tr4fze
     path: patches/@woocommerce__components@12.3.0.patch
   backbone.supermodel@1.2.0:
     hash: hhsvgimsfhfs4itf7ipk47fane
@@ -63,7 +63,7 @@ importers:
         version: 4.0.55
       '@woocommerce/components':
         specifier: ^12.3.0
-        version: 12.3.0(patch_hash=alxnpiftcq2tsdebprukoovsne)(@babel/runtime@7.24.7)(@types/react-dom@18.0.11)(@types/react@18.0.28)(@wordpress/data@10.0.0)(lodash@4.17.21)(react-dom@18.2.0)(react@18.2.0)
+        version: 12.3.0(patch_hash=rc6hnjhca2pqrlb5fea6tr4fze)(@babel/runtime@7.24.7)(@types/react-dom@18.0.11)(@types/react@18.0.28)(@wordpress/data@10.0.0)(lodash@4.17.21)(react-dom@18.2.0)(react@18.2.0)
       '@woocommerce/currency':
         specifier: ^4.3.0
         version: 4.3.0
@@ -6003,7 +6003,7 @@ packages:
       webpack-dev-server: 4.15.2(webpack-cli@5.1.4)(webpack@5.92.0)
     dev: true
 
-  /@woocommerce/components@12.3.0(patch_hash=alxnpiftcq2tsdebprukoovsne)(@babel/runtime@7.24.7)(@types/react-dom@18.0.11)(@types/react@18.0.28)(@wordpress/data@10.0.0)(lodash@4.17.21)(react-dom@18.2.0)(react@18.2.0):
+  /@woocommerce/components@12.3.0(patch_hash=rc6hnjhca2pqrlb5fea6tr4fze)(@babel/runtime@7.24.7)(@types/react-dom@18.0.11)(@types/react@18.0.28)(@wordpress/data@10.0.0)(lodash@4.17.21)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-1opGsZBI6SppDLw/9uu+f3STqcmj5uE94WlZsnj6ChuU5IrI9Bv0tgyb4DYUSdOoNgUjTH1TZUlV9r3xXQDnLg==}
     engines: {node: ^20.11.1, pnpm: ^8.12.1}
     peerDependencies:
