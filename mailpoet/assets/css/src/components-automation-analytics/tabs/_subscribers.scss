@@ -59,3 +59,17 @@
 .mailpoet-analytics-activity-modal-header-spacer {
   flex-grow: 10;
 }
+
+.mailpoet-analytics-activity-modal-footer {
+  align-items: center;
+  color: $color-gutenberg-grey-700;
+  display: flex;
+  font-size: 13px;
+  font-weight: 600;
+  justify-content: center;
+  padding-top: 24px;
+
+  svg {
+    margin-right: 10px;
+  }
+}
