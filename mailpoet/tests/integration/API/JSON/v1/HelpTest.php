@@ -23,13 +23,13 @@ class HelpTest extends \MailPoetTest {
   public function testItReturnsErrorWhenIdIsMissing() {
     /** @var ErrorResponse $response */
     $response = $this->endpoint->cancelTask([]);
-    verify($response)->instanceOf('\MailPoet\API\JSON\ErrorResponse');
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->status)->equals(400);
     verify($response->errors[0]['message'])->equals('Invalid or missing parameter `id`.');
 
     /** @var ErrorResponse $response */
     $response = $this->endpoint->rescheduleTask([]);
-    verify($response)->instanceOf('\MailPoet\API\JSON\ErrorResponse');
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->status)->equals(400);
     verify($response->errors[0]['message'])->equals('Invalid or missing parameter `id`.');
   }
@@ -37,13 +37,13 @@ class HelpTest extends \MailPoetTest {
   public function testItReturnsErrorWhenTaskDoesntExist() {
     /** @var ErrorResponse $response */
     $response = $this->endpoint->cancelTask(['id' => 99999]);
-    verify($response)->instanceOf('\MailPoet\API\JSON\ErrorResponse');
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->status)->equals(404);
     verify($response->errors[0]['message'])->equals('Task not found.');
 
     /** @var ErrorResponse $response */
     $response = $this->endpoint->rescheduleTask(['id' => 99999]);
-    verify($response)->instanceOf('\MailPoet\API\JSON\ErrorResponse');
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->status)->equals(404);
     verify($response->errors[0]['message'])->equals('Task not found.');
   }
@@ -52,7 +52,7 @@ class HelpTest extends \MailPoetTest {
     $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_COMPLETED, new \DateTime());
     /** @var ErrorResponse $response */
     $response = $this->endpoint->cancelTask(['id' => $task->getId()]);
-    verify($response)->instanceOf('\MailPoet\API\JSON\ErrorResponse');
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->status)->equals(400);
     verify($response->errors[0]['message'])->equals('Only scheduled and running tasks can be cancelled');
   }
@@ -61,7 +61,7 @@ class HelpTest extends \MailPoetTest {
     $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_COMPLETED, new \DateTime());
     /** @var ErrorResponse $response */
     $response = $this->endpoint->rescheduleTask(['id' => $task->getId()]);
-    verify($response)->instanceOf('\MailPoet\API\JSON\ErrorResponse');
+    verify($response)->instanceOf(ErrorResponse::class);
     verify($response->status)->equals(400);
     verify($response->errors[0]['message'])->equals('Only cancelled tasks can be rescheduled');
   }
