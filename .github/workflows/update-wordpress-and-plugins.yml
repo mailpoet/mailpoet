@@ -1,6 +1,8 @@
 name: Check new versions of plugins and WordPress
 
 on:
+  schedule:
+    - cron: '0 6 * * 1' # At 06:00 on Monday
   workflow_dispatch: # Allows manual triggering
 
 jobs:
