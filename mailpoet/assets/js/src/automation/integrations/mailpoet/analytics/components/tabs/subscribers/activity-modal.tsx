@@ -6,6 +6,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { ActivityModalState, RunData } from './modal/types';
 import { Header } from './modal/header';
 import { headers, transformLogsToRows } from './modal/rows';
+import { Footer } from './modal/footer';
 
 export function ActivityModal(): JSX.Element {
   const history = useHistory();
@@ -91,6 +92,8 @@ export function ActivityModal(): JSX.Element {
         headers={headers}
         rows={transformLogsToRows(run.logs, run.steps)}
       />
+
+      <Footer runStatus={run.run.status} />
     </Modal>
   );
 }
