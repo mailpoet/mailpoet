@@ -53,6 +53,7 @@ BehaviorsLookup.TextEditorBehavior = Marionette.Behavior.extend({
         target: this.el.querySelector(this.options.selector),
         inline: true,
         contextmenu: false,
+        license_key: 'gpl',
 
         menubar: false,
         toolbar1: this.options.toolbar1,
