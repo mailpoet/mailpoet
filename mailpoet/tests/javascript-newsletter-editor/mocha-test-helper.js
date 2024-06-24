@@ -34,6 +34,10 @@ global.window.wp = global.window.wp || {
     getLocaleData: () => {},
   },
 };
+global.MutationObserver = global.window.MutationObserver;
+global.CustomEvent = global.window.CustomEvent;
+global.HTMLElement = global.window.HTMLElement;
+global.getComputedStyle = global.window.getComputedStyle;
 
 testHelpers.loadScript(
   'tests/javascript-newsletter-editor/testBundles/vendor.js',
