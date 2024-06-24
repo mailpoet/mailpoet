@@ -61,7 +61,7 @@ class EditorTextBlockCest {
     $i->assertAttributeContains($textInEditor . ' h1', 'style', 'left');
     $i->assertAttributeContains($textInEditor . ' h2', 'style', 'center');
     $i->assertAttributeContains($textInEditor . ' h3', 'style', 'right');
-    $i->assertAttributeContains($textInEditor . ' h2 > strong > span', 'style', 'rgb(253, 0, 0)');
+    $i->assertAttributeContains($textInEditor . ' h2 > strong > span', 'style', '#fd0000');
     $i->seeElement($textInEditor . ' > h3 > em');
   }
 }
