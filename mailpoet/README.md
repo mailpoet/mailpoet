@@ -126,34 +126,6 @@ $ ./do container:dump      # Generates DI container cache.
 $ ./do generate:data [<generatorName>] [<threads>] # Generates random usage data (Note: requires WooCommerce active) e.g. ./do generate:data past_revenues 4
 ```
 
-## Storybook
-
-We use [Storybook.js](https://storybook.js.org/) to showcase our React components, which can be used throughout the plugin.
-
-### Usage
-
-Currently, we don't have Storybook published publicly, so developers need to run or build it locally.
-
-To run it locally (on `http://localhost:8083`) while watching the changes (recommended when developing new component), run
-
-```bash
-./do storybook:watch
-```
-
-To build the static version, which can be accessed via browser, run
-
-```bash
-./do storybook:build
-```
-
-which will create a `storybook-static` folder with all necessary files. Don't forget to rebuild it when new components are added.
-
-### Building new components
-
-- All stories should be located in `_stories` folder inside the component folder they belong to.
-- Run `./do storybook:watch` so all changes are automatically reflected in `http://localhost:8083`.
-- Examples are available in `assets/js/src/storybook_demo/_stories` folder.
-
 ## Coding and Testing
 
 ### DI
