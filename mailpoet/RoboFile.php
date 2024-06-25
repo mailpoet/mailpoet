@@ -350,7 +350,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  public function testIntegration(array $opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => false, 'debug' => false, 'skip-deps' => false, 'skip-plugins' => false, 'disable-hpos' => false, 'enable-hpos-sync' => false, 'enable-hpos' => false, 'stop-on-fail' => false]) {
+  public function testIntegration(array $opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => false, 'debug' => false, 'skip-deps' => false, 'skip-plugins' => false, 'disable-hpos' => false, 'enable-hpos-sync' => false, 'enable-hpos' => false, 'stop-on-fail' => false, 'beta-version' => null]) {
     return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration']));
   }
 
