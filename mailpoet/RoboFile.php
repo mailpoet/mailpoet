@@ -83,11 +83,8 @@ class RoboFile extends \Robo\Tasks {
     }, ARRAY_FILTER_USE_KEY);
 
     $excludePackages = [
-      'tinymce',
       'react-router-dom', // MAILPOET-3911
-      'react-tooltip', // MAILPOET-5482
       'codemirror', // MAILPOET-5483
-      'react-string-replace', // MAILPOET-5490
       'babel-loader', // MAILPOET-5491
       'stylelint', // MAILPOET-5462
       'backbone', // Will remove with new email editor
