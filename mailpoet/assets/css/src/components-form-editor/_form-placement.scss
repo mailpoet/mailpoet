@@ -1,15 +1,8 @@
 .form-placement-option-list {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  margin: 0 -12px;
-}
-
-.form-placement-option {
-  height: $form-placement-option-height;
+  display: grid;
+  grid-gap: $grid-gap;
+  grid-template-columns: 1fr 1fr;
   text-align: center;
-  width: $form-placement-option-width;
 }
 
 .form-placement-settings {
