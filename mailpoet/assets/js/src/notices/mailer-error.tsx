@@ -1,4 +1,4 @@
-import { ReactNodeArray, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import ReactStringReplace from 'react-string-replace';
 import classnames from 'classnames';
@@ -132,7 +132,7 @@ export function MailerError({
     );
   }
 
-  let message: string | ReactNodeArray = mtaLog.error.error_message;
+  let message: string | ReactNode[] = mtaLog.error.error_message;
   const code = mtaLog.error.error_code;
   const className = classnames('mailpoet_notice notice notice-error', {
     inline: isInline,
