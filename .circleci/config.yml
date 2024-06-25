@@ -695,10 +695,6 @@ jobs:
       - attach_workspace:
           at: /home/circleci
       - run:
-          name: 'Pull test docker images'
-          # Pull docker images with 3 retries
-          command: i='0';while ! docker-compose -f tests/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
-      - run:
           name: Check for Latest WordPress Beta Version
           command: |
             if [ "<< parameters.use_wordpress_beta >>" == "true" ]; then
@@ -729,6 +725,10 @@ jobs:
               echo "export WOOCOMMERCE_VERSION=<< parameters.woo_core_version >>" >> $BASH_ENV
               echo "Not using WooCommerce Beta Version"
             fi
+      - run:
+          name: 'Pull test docker images'
+          # Pull docker images with 3 retries
+          command: i='0';while ! docker-compose -f tests/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
       - run:
           name: Create docker containers for test
           # We experienced some failures when creating containers so we do it explicitly with one retry
