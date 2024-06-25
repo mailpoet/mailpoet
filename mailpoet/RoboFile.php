@@ -852,14 +852,6 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('./tools/semgrep.sh lib/ lib-3rd-party/');
   }
 
-  public function storybookBuild() {
-    return $this->_exec('pnpm run build-storybook');
-  }
-
-  public function storybookWatch() {
-    return $this->_exec('pnpm run storybook');
-  }
-
   public function svnCheckout() {
     $svnDir = ".mp_svn";
 

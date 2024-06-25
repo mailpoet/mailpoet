@@ -11,8 +11,6 @@
     "stylelint-check": "stylelint",
     "test": "env NODE_PATH=$NODE_PATH:./assets/js/src mocha --recursive --require tests/javascript/mocha-env.mjs  tests/javascript --extension spec.ts",
     "check-types": "NODE_OPTIONS=--max_old_space_size=2048 tsc --noEmit",
-    "storybook": "start-storybook -s ./ -p 8083",
-    "build-storybook": "build-storybook",
     "postinstall": "INIT_CWD=$PWD ./tasks/npm_post_install.sh",
     "prepare": "cd .. && husky install"
   },
