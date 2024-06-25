@@ -392,6 +392,9 @@ jobs:
       use_wordpress_beta:
         type: boolean
         default: false
+      use_woocommerce_beta:
+        type: boolean
+        default: false
     environment:
       MYSQL_COMMAND: << parameters.mysql_command >>
       MYSQL_IMAGE: << parameters.mysql_image >>
@@ -407,16 +410,32 @@ jobs:
           name: Check for Latest WordPress Beta Version
           command: |
             if [ "<< parameters.use_wordpress_beta >>" == "true" ]; then
-              LATEST_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-              if [ -z "$LATEST_BETA" ]; then
+              LATEST_WP_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
+              if [ -z "$LATEST_WP_BETA" ]; then
                 echo "No latest beta version found. Ending job early."
                 circleci-agent step halt
               else
-                echo "export LATEST_BETA=$LATEST_BETA" >> $BASH_ENV
-                echo "Using WordPress Beta Version: $LATEST_BETA"
+                echo "export LATEST_WP_BETA=$LATEST_WP_BETA" >> $BASH_ENV
+                echo "Using WordPress Beta Version: $LATEST_WP_BETA"
               fi
             else
               echo "Not using WordPress Beta Version"
+            fi
+      - run:
+          name: Check for Latest WooCommerce Beta Version
+          command: |
+            if [ "<< parameters.use_woocommerce_beta >>" == "true" ]; then
+              LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
+              if [ -z "$LATEST_WC_BETA" ]; then
+                echo "No WooCommerce Beta version found. Ending job early."
+                circleci-agent step halt
+              else
+                echo "export WOOCOMMERCE_VERSION=$LATEST_WC_BETA" >> $BASH_ENV
+                echo "Using WooCommerce Beta Version: $LATEST_WC_BETA"
+              fi
+            else
+              echo "export WOOCOMMERCE_VERSION=<< parameters.woo_core_version >>" >> $BASH_ENV
+              echo "Not using WooCommerce Beta Version"
             fi
       - run:
           name: 'Pull test docker images'
@@ -435,13 +454,13 @@ jobs:
             cd tests/docker
             docker-compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" codeception_acceptance
       - when:
-          condition: << parameters.woo_core_version >>
+          condition: ${WOOCOMMERCE_VERSION}
           steps:
             - run:
                 name: Download WooCommerce Core
                 command: |
                   cd tests/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip << parameters.woo_core_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
+                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip ${WOOCOMMERCE_VERSION}" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
       - when:
           condition: << parameters.woo_subscriptions_version >>
           steps:
@@ -502,7 +521,7 @@ jobs:
             -e ENABLE_HPOS=<< parameters.enable_hpos >> \
             -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
             -e DISABLE_HPOS=<< parameters.disable_hpos >> \
-            -e LATEST_BETA=${LATEST_BETA} \
+            -e LATEST_BETA=${LATEST_WP_BETA} \
             codeception_acceptance "${args[@]}"
       - run:
           name: Check exceptions
@@ -669,6 +688,9 @@ jobs:
       use_wordpress_beta:
         type: boolean
         default: false
+      use_woocommerce_beta:
+        type: boolean
+        default: false
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -680,16 +702,32 @@ jobs:
           name: Check for Latest WordPress Beta Version
           command: |
             if [ "<< parameters.use_wordpress_beta >>" == "true" ]; then
-              LATEST_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-              if [ -z "$LATEST_BETA" ]; then
+              LATEST_WP_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
+              if [ -z "$LATEST_WP_BETA" ]; then
                 echo "No latest beta version found. Ending job early."
                 circleci-agent step halt
               else
-                echo "export LATEST_BETA=$LATEST_BETA" >> $BASH_ENV
-                echo "Using WordPress Beta Version: $LATEST_BETA"
+                echo "export LATEST_WP_BETA=$LATEST_WP_BETA" >> $BASH_ENV
+                echo "Using WordPress Beta Version: $LATEST_WP_BETA"
               fi
             else
               echo "Not using WordPress Beta Version"
+            fi
+      - run:
+          name: Check for Latest WooCommerce Beta Version
+          command: |
+            if [ "<< parameters.use_woocommerce_beta >>" == "true" ]; then
+              LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
+              if [ -z "$LATEST_WC_BETA" ]; then
+                echo "No WooCommerce Beta version found. Ending job early."
+                circleci-agent step halt
+              else
+                echo "export WOOCOMMERCE_VERSION=$LATEST_WC_BETA" >> $BASH_ENV
+                echo "Using WooCommerce Beta Version: $LATEST_WC_BETA"
+              fi
+            else
+              echo "export WOOCOMMERCE_VERSION=<< parameters.woo_core_version >>" >> $BASH_ENV
+              echo "Not using WooCommerce Beta Version"
             fi
       - run:
           name: Create docker containers for test
@@ -704,13 +742,13 @@ jobs:
             cd tests/docker
             docker-compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" codeception_integration
       - when:
-          condition: << parameters.woo_core_version >>
+          condition: ${WOOCOMMERCE_VERSION}
           steps:
             - run:
                 name: Download WooCommerce Core
                 command: |
                   cd tests/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip << parameters.woo_core_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
+                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip ${WOOCOMMERCE_VERSION}" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
       - when:
           condition: << parameters.woo_subscriptions_version >>
           steps:
@@ -773,7 +811,7 @@ jobs:
               -e ENABLE_HPOS=<< parameters.enable_hpos >> \
               -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
               -e DISABLE_HPOS=<< parameters.disable_hpos >> \
-              -e LATEST_BETA=${LATEST_BETA} \
+              -e LATEST_BETA=${LATEST_WP_BETA} \
               codeception_integration "${args[@]}"
       - store_test_results:
           path: tests/_output
@@ -1089,11 +1127,26 @@ workflows:
           mysql_command: --default-authentication-plugin=mysql_native_password
           requires:
             - build
+      - integration_tests:
+          <<: *slack-fail-post-step
+          name: integration_tests_woocommerce_beta
+          use_woocommerce_beta: true
+          mysql_image: mysql:8.3
+          mysql_command: --default-authentication-plugin=mysql_native_password
+          requires:
+            - build
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_tests_wordpress_beta
           enable_hpos: 1
           use_wordpress_beta: true
+          requires:
+            - build
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_woocommerce_beta
+          enable_hpos: 1
+          use_woocommerce_beta: true
           requires:
             - build
       - unit_tests:
