@@ -10,8 +10,7 @@ body.mailpoet_modal_opened {
   height: 100%;
   justify-content: center;
   left: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden auto;
   padding: $legacy-modal-popup-margin;
   position: fixed;
   top: 0;
@@ -114,8 +113,7 @@ body.mailpoet_modal_opened {
   border: 1px solid #e1e1e1;
   border-top: 0 none;
   height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden auto;
   top: 0;
   width: 100%;
   z-index: 0;
