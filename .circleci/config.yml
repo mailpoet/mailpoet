@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   slack: circleci/slack@4.2.0
+  jq: circleci/jq@3.0.0
 
 slack-fail-post-step: &slack-fail-post-step
   post-steps:
@@ -388,6 +389,9 @@ jobs:
       disable_hpos:
         type: integer
         default: 0
+      use_wordpress_beta:
+        type: boolean
+        default: false
     environment:
       MYSQL_COMMAND: << parameters.mysql_command >>
       MYSQL_IMAGE: << parameters.mysql_image >>
@@ -415,6 +419,21 @@ jobs:
           command: |
             cd tests/docker
             docker-compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" codeception_acceptance
+      - run:
+          name: Check for Latest WordPress Beta Version
+          command: |
+            if [ "<< parameters.use_wordpress_beta >>" == "true" ]; then
+              LATEST_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
+              if [ -z "$LATEST_BETA" ]; then
+                echo "No latest beta version found. Ending job early."
+                circleci-agent step halt
+              else
+                echo "export LATEST_BETA=$LATEST_BETA" >> $BASH_ENV
+                echo "Using WordPress Beta Version: $LATEST_BETA"
+              fi
+            else
+              echo "Not using WordPress Beta Version"
+            fi
       - when:
           condition: << parameters.woo_core_version >>
           steps:
@@ -483,6 +502,7 @@ jobs:
             -e ENABLE_HPOS=<< parameters.enable_hpos >> \
             -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
             -e DISABLE_HPOS=<< parameters.disable_hpos >> \
+            -e LATEST_BETA=${LATEST_BETA} \
             codeception_acceptance "${args[@]}"
       - run:
           name: Check exceptions
@@ -1042,6 +1062,13 @@ workflows:
           name: acceptance_with_premium_latest
           requires:
             - build_premium
+      - acceptance_tests:
+          <<: *slack-fail-post-step
+          name: acceptance_tests_wordpress_beta
+          enable_hpos: 1
+          use_wordpress_beta: true
+          requires:
+            - build
       - unit_tests:
           <<: *slack-fail-post-step
           name: unit_with_premium_latest
