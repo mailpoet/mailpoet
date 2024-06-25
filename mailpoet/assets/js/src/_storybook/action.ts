@@ -9,6 +9,7 @@
  * This action is the workaround for this issue.
  */
 
+// @ts-expect-error - We have removed Storybook from project but we want to keep stories
 import { action as brokenAction } from '@storybook/addon-actions'; // eslint-disable-line import/no-extraneous-dependencies
 
 export const action: typeof brokenAction = (actionName) => {
