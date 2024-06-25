@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.4
 Tested up to: 6.5
-Stable tag: 4.52.0
+Stable tag: 4.53.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,15 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 6. WooCommerce emails
 
 == Changelog ==
+
+= 4.53.0 - 2024-06-25 =
+* Updated: npm dependencies;
+* Improved: Processing Captcha image;
+* Improved: Search for post notification history items now return updated results;
+* Improved: Newsletter social icons style and images;
+* Improved: MailPoet form editor button styles;
+* Fixed: Update abandoned cart email task status;
+* Fixed: link to Setup abandoned cart email from homepage.
 
 = 4.52.0 - 2024-06-17 =
 * Updated: composer dependencies;
