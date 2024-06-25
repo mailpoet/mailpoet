@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useRef } from 'react';
-import codemirror from 'codemirror';
-import 'codemirror/mode/css/css'; // Side effect
+import { useCallback } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
 import PropTypes from 'prop-types';
 
 function CodemirrorWrap({
@@ -10,47 +9,25 @@ function CodemirrorWrap({
     lineNumbers: true,
     tabMode: 'indent',
     matchBrackets: true,
-    theme: 'neo',
-    mode: 'css',
   },
 }) {
-  const textArea = useRef(null);
-  const editor = useRef(null);
-
   const changeEvent = useCallback(
-    (doc) => {
-      onChange(doc.getValue());
+    (currentValue) => {
+      onChange(currentValue);
     },
     [onChange],
   );
 
-  useEffect(() => {
-    editor.current = codemirror.fromTextArea(textArea.current, options);
-    editor.current.on('change', changeEvent);
-    return () => {
-      if (editor.current) {
-        editor.current.toTextArea();
-      }
-    };
-  }, [options, changeEvent]);
-
-  useEffect(() => {
-    if (editor.current.getValue() !== value) {
-      editor.current.off('change', changeEvent);
-      editor.current.setValue(value);
-      editor.current.on('change', changeEvent);
-    }
-  }, [value, changeEvent]);
-
   return (
-    <div>
-      <textarea
-        ref={textArea}
-        name="name"
-        defaultValue={value}
-        autoComplete="off"
-      />
-    </div>
+    <CodeMirror
+      value={value}
+      onChange={changeEvent}
+      basicSetup={{
+        lineNumbers: options.lineNumbers,
+        indentWithTabs: options.tabMode === 'indent',
+        bracketMatching: options.matchBrackets,
+      }}
+    />
   );
 }
 
@@ -61,8 +38,6 @@ CodemirrorWrap.propTypes = {
     lineNumbers: PropTypes.bool,
     tabMode: PropTypes.string,
     matchBrackets: PropTypes.bool,
-    theme: PropTypes.string,
-    mode: PropTypes.string,
   }),
 };
 
