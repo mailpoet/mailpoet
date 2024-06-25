@@ -98,6 +98,7 @@ export function Shortcode({ name, title, description }: Props) {
                 'Include newsletters sent no more than this many days ago. This overrides start and end dates.',
                 'mailpoet',
               )}
+              name="in_the_last_days"
               placeholder={__('In the last days', 'mailpoet')}
               onChange={(event) => {
                 const inputValue = event.target.value.trim();
