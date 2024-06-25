@@ -266,8 +266,8 @@ importers:
         specifier: ^5.8.0
         version: 5.8.0(@types/react@18.3.3)(react-dom@18.3.1)(react@18.3.1)
       react-string-replace:
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.1.1
+        version: 1.1.1
       react-tooltip:
         specifier: ^5.27.0
         version: 5.27.0(react-dom@18.3.1)(react@18.3.1)
@@ -18887,8 +18887,8 @@ packages:
       - supports-color
     dev: false
 
-  /react-string-replace@1.0.0:
-    resolution: {integrity: sha512-+iLsyE4AeSmnfctgswXOf1PmKRgns6wJ4LVb+8ADMU6mDK3jvBE11QzfMQf7CYtPUUiBCDjZ9ZppzXOIYrzCRg==}
+  /react-string-replace@1.1.1:
+    resolution: {integrity: sha512-26TUbLzLfHQ5jO5N7y3Mx88eeKo0Ml0UjCQuX4BMfOd/JX+enQqlKpL1CZnmjeBRvQE8TR+ds9j1rqx9CxhKHQ==}
     engines: {node: '>=0.12.0'}
     dev: false
 
