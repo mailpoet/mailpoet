@@ -404,6 +404,21 @@ jobs:
           name: 'Set up virtual host'
           command: echo 127.0.0.1 mailpoet.loc | sudo tee -a /etc/hosts
       - run:
+          name: Check for Latest WordPress Beta Version
+          command: |
+            if [ "<< parameters.use_wordpress_beta >>" == "true" ]; then
+              LATEST_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
+              if [ -z "$LATEST_BETA" ]; then
+                echo "No latest beta version found. Ending job early."
+                circleci-agent step halt
+              else
+                echo "export LATEST_BETA=$LATEST_BETA" >> $BASH_ENV
+                echo "Using WordPress Beta Version: $LATEST_BETA"
+              fi
+            else
+              echo "Not using WordPress Beta Version"
+            fi
+      - run:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
           command: i='0';while ! docker-compose -f tests/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
@@ -419,21 +434,6 @@ jobs:
           command: |
             cd tests/docker
             docker-compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" codeception_acceptance
-      - run:
-          name: Check for Latest WordPress Beta Version
-          command: |
-            if [ "<< parameters.use_wordpress_beta >>" == "true" ]; then
-              LATEST_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
-              if [ -z "$LATEST_BETA" ]; then
-                echo "No latest beta version found. Ending job early."
-                circleci-agent step halt
-              else
-                echo "export LATEST_BETA=$LATEST_BETA" >> $BASH_ENV
-                echo "Using WordPress Beta Version: $LATEST_BETA"
-              fi
-            else
-              echo "Not using WordPress Beta Version"
-            fi
       - when:
           condition: << parameters.woo_core_version >>
           steps:
@@ -666,6 +666,9 @@ jobs:
       automate_woo_version:
         type: string
         default: ''
+      use_wordpress_beta:
+        type: boolean
+        default: false
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -673,6 +676,21 @@ jobs:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
           command: i='0';while ! docker-compose -f tests/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
+      - run:
+          name: Check for Latest WordPress Beta Version
+          command: |
+            if [ "<< parameters.use_wordpress_beta >>" == "true" ]; then
+              LATEST_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
+              if [ -z "$LATEST_BETA" ]; then
+                echo "No latest beta version found. Ending job early."
+                circleci-agent step halt
+              else
+                echo "export LATEST_BETA=$LATEST_BETA" >> $BASH_ENV
+                echo "Using WordPress Beta Version: $LATEST_BETA"
+              fi
+            else
+              echo "Not using WordPress Beta Version"
+            fi
       - run:
           name: Create docker containers for test
           # We experienced some failures when creating containers so we do it explicitly with one retry
@@ -755,6 +773,7 @@ jobs:
               -e ENABLE_HPOS=<< parameters.enable_hpos >> \
               -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
               -e DISABLE_HPOS=<< parameters.disable_hpos >> \
+              -e LATEST_BETA=${LATEST_BETA} \
               codeception_integration "${args[@]}"
       - store_test_results:
           path: tests/_output
@@ -1062,6 +1081,14 @@ workflows:
           name: acceptance_with_premium_latest
           requires:
             - build_premium
+      - integration_tests:
+          <<: *slack-fail-post-step
+          name: integration_tests_wordpress_beta
+          use_wordpress_beta: true
+          mysql_image: mysql:8.3
+          mysql_command: --default-authentication-plugin=mysql_native_password
+          requires:
+            - build
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_tests_wordpress_beta
