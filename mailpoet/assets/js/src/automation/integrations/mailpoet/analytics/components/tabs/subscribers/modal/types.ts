@@ -4,19 +4,9 @@ import { Subscriber } from '../../../../store';
 export type ActivityModalState = 'loading' | 'loaded' | 'error' | 'hidden';
 
 export type Run = {
+  id: number;
   automation_id: number;
-  version_id: number;
-  trigger_key: string;
   status: string;
-  created_at: string;
-  updated_at: string;
-  subjects: Subject[];
-};
-
-export type Subject = {
-  key: string;
-  args: string;
-  hash: string;
 };
 
 export type Log = {
