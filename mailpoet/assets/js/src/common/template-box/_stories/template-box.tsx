@@ -1,4 +1,5 @@
 import { MailPoet } from 'mailpoet';
+// @ts-expect-error - We have removed Storybook from project but we want to keep stories
 import { action } from '@storybook/addon-actions';
 import { TemplateBox } from '../template-box';
 
