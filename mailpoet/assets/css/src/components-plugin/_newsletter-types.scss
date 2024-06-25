@@ -46,9 +46,8 @@
 }
 
 .mailpoet-newsletter-type-action {
-  align-self: flex-end;
-  justify-self: flex-end;
   margin-top: $grid-gap-medium;
+  place-self: flex-end flex-end;
   .mailpoet-dropdown-button-group {
     display: inline-flex;
   }

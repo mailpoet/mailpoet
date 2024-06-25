@@ -24,8 +24,8 @@ $task-icon-size: 32px;
   display: flex;
   flex-direction: column;
   font-size: 14px;
-  justify-content: center;
   line-height: 20px;
+  place-content: center;
 
   p {
     color: $color-text-light;
