@@ -67,6 +67,8 @@ p.sender_email_address_warning:first-child {
 .mailpoet-subscribers-in-plan {
   font-size: 18px;
   margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
 
   .mailpoet-subscribers-in-plan-spacer {
     display: inline-block;
