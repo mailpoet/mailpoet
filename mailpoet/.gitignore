@@ -26,5 +26,4 @@ tasks/code_sniffer/vendor
 tasks/phpstan/vendor
 tasks/phpstan/_phpstan-wp-source.neon
 /tools/vendor
-/storybook-static
 assets/js/src/newsletter-editor/behaviors/tinymce-icons.js
