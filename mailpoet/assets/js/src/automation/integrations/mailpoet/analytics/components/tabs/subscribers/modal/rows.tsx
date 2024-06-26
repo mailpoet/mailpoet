@@ -3,7 +3,7 @@ import { Steps } from '../../../../../../../editor/components/automation/types';
 import { MailPoet } from '../../../../../../../../mailpoet';
 import { StepCell } from '../cells/step';
 import { AutomationRunStatus } from '../../../../../../../components/status';
-import { Log } from '../../../../store';
+import { Log, NextStep } from '../../../../store';
 
 export const headers = [
   {
@@ -28,8 +28,12 @@ export const headers = [
   },
 ];
 
-export function transformLogsToRows(logs: Log[], steps: Steps) {
-  return logs
+export function transformLogsToRows(
+  logs: Log[],
+  steps: Steps,
+  nextStep: NextStep,
+) {
+  const items = logs
     ? logs.map((log) => [
         {
           display: (
@@ -63,4 +67,24 @@ export function transformLogsToRows(logs: Log[], steps: Steps) {
         },
       ])
     : [];
+  if (nextStep) {
+    items.push([
+      {
+        display: <StepCell name={nextStep.name} data={nextStep.step} />,
+        value: nextStep.name,
+      },
+      {
+        display: MailPoet.Date.format(new Date(logs.at(-1).updated_at)),
+        value: logs.at(-1).updated_at,
+      },
+      {
+        display: '-',
+        value: '',
+      },
+      {
+        display: <AutomationRunStatus status="running" />,
+      },
+    ]);
+  }
+  return items;
 }
