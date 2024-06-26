@@ -1,5 +1,4 @@
-@import '../colors';
-@import 'mixins';
+@import '../../components-automation/colors';
 
 .mailpoet-analytics-tab-orders,
 .mailpoet-analytics-tab-subscribers {
@@ -54,26 +53,6 @@
       }
     }
   }
-}
-
-.mailpoet-analytics-order-status {
-  @include badge;
-}
-
-.mailpoet-analytics-order-status-completed,
-.mailpoet-analytics-order-status-processing {
-  background: $color-wp-green-0;
-  color: $color-wp-green-60;
-}
-
-.mailpoet-analytics-order-status-failed {
-  background: $color-wp-red-0;
-  color: $color-wp-red-60;
-}
-
-.mailpoet-analytics-order-status-on-hold {
-  background: $color-wp-yellow-0;
-  color: $color-wp-yellow-60;
 }
 
 .mailpoet-analytics-upgrade-banner {

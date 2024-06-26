@@ -1,5 +1,4 @@
-@import '../colors';
-@import 'mixins';
+@import '../../components-automation/colors';
 
 .mailpoet-analytics-main-value {
   font-size: 13px;
@@ -8,38 +7,12 @@
   margin: 0 0 4px;
 }
 
-.mailpoet-analytics-badge {
-  font-weight: 600;
-}
-
-.mailpoet-analytics-badge-text {
-  @include badge;
-}
-
 .mailpoet-automation-analytics-email-name {
   max-width: 300px;
 }
 
 .mailpoet-automation-analytics-email-clicked {
   font-weight: 600;
-}
-
-.mailpoet-analytics-badge-success {
-  color: $color-gutenberg-alert-green;
-
-  .mailpoet-analytics-badge-text {
-    background: $color-wp-green-0;
-    color: $color-wp-green-60;
-  }
-}
-
-.mailpoet-analytics-badge-warning {
-  color: $color-wp-yellow-50;
-
-  .mailpoet-analytics-badge-text {
-    background: $color-wp-yellow-0;
-    color: $color-wp-yellow-60;
-  }
 }
 
 .mailpoet-automation-analytics-table-subvalue {

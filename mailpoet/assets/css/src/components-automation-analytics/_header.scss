@@ -1,4 +1,4 @@
-@import 'colors';
+@import '../components-automation/colors';
 
 .mailpoet-automation-analytics-title {
   color: $color-gutenberg-grey-700;
@@ -12,7 +12,7 @@
     color: $color-gutenberg-grey-900;
   }
 
-  .mailpoet-analytics-badge {
+  .mailpoet-automation-status {
     display: inline-block;
     margin-left: 8px;
   }

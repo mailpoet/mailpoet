@@ -1,0 +1,28 @@
+@import 'colors';
+
+.mailpoet-automation-status {
+  background: $color-gutenberg-grey-100;
+  border-radius: 2px;
+  color: $color-gutenberg-grey-800;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+  margin-right: 4px;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.mailpoet-automation-status-success {
+  background: $color-wp-green-0;
+  color: $color-wp-green-60;
+}
+
+.mailpoet-automation-status-warning {
+  background: $color-wp-yellow-0;
+  color: $color-wp-yellow-60;
+}
+
+.mailpoet-automation-status-error {
+  background: $color-wp-red-0;
+  color: $color-wp-red-60;
+}
