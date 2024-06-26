@@ -1,11 +1,6 @@
 export function Icon() {
   return (
-    <svg
-      viewBox="0 0 16 16"
-      height="24"
-      width="24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
       <path d="M 8,0 H 9.5873 V 3.7 H 8 Z" />
       <path d="M 8,6.7 H 9.5873 V 5.2 H 8 Z" />
       <path d="m 3.18254,14.5 c 0,-0.8 0.70635,-1.5 1.57936,-1.5 0.87302,0 1.5873,0.7 1.5873,1.5 0,0.8 -0.71428,1.5 -1.5873,1.5 -0.87301,0 -1.57936,-0.7 -1.57936,-1.5 z" />

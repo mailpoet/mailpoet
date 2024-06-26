@@ -54,9 +54,6 @@ export const step: StepType = {
   icon: () => (
     <div
       style={{
-        width: '100%',
-        height: '100%',
-        scale: '1.3',
         transform: 'rotate(90deg)',
       }}
     >
