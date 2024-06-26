@@ -58,8 +58,8 @@ function getMinorMajorVersion(string $version): string {
 /**
  * Function to fetch tags from a GitHub repository.
  */
-function fetchGitHubTags(string $repo, string $token): array {
-  $url = "https://api.github.com/repos/$repo/tags";
+function fetchGitHubTags(string $repo, string $token, int $page = 1, int $limit = 50): array {
+  $url = "https://api.github.com/repos/$repo/tags?per_page=$limit&page=$page";
   $ch = curl_init($url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');  // GitHub API requires a user agent
@@ -86,7 +86,7 @@ function fetchGitHubTags(string $repo, string $token): array {
  * Function saving versions to a temporary files.
  * File containing latest version is prefixed with 'latest_' and previous version is prefixed with 'previous_'.
  */
-function saveVersionsToFiles(string $latestVersion, string $previousVersion, string $fileNameSuffix): void {
+function saveVersionsToFiles(?string $latestVersion, ?string $previousVersion, string $fileNameSuffix): void {
   file_put_contents("/tmp/latest_{$fileNameSuffix}", $latestVersion);
   file_put_contents("/tmp/previous_{$fileNameSuffix}", $previousVersion);
 }
@@ -124,9 +124,16 @@ function replacePrivatePluginVersion(
     die("GitHub token not found. Make sure it's set in the environment variable 'GH_TOKEN'.");
   }
 
-  $allVersions = fetchGitHubTags($repository, $token);
-  $stableVersions = filterStableVersions($allVersions);
-  [$latestVersion, $previousVersion] = getLatestAndPreviousMinorMajorVersions($stableVersions);
+  $page = 1;
+  $latestVersion = null;
+  $previousVersion = null;
+  $allVersions = [];
+  while (($latestVersion === null || $previousVersion === null) && $page < 10) {
+    $allVersions = array_merge($allVersions, fetchGitHubTags($repository, $token, $page));
+    $stableVersions = filterStableVersions($allVersions);
+    [$latestVersion, $previousVersion] = getLatestAndPreviousMinorMajorVersions($stableVersions);
+    $page++;
+  }
 
   echo "Latest version: $latestVersion\n";
   echo "Previous version: $previousVersion\n";
