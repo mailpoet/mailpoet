@@ -14,7 +14,7 @@ function App() {
         <GlobalNotices />
         <Notices />
         <MssAccessNotices />
-        <Route path="*" render={withBoundary(FormList)} />
+        <Route path="*">{withBoundary(FormList)}</Route>
       </HashRouter>
     </GlobalContext.Provider>
   );

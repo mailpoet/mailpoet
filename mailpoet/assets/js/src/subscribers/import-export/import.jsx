@@ -27,32 +27,26 @@ function ImportSubscribers() {
         <Notices />
         <ScrollToTop>
           <Switch>
-            <Route
-              path="/step_clean_list"
-              render={withBoundary(StepCleanList)}
-            />
-            <Route
-              path="/step_method_selection"
-              render={(props) => (
+            <Route path="/step_clean_list">{withBoundary(StepCleanList)}</Route>
+            <Route path="/step_method_selection">
+              {(props) => (
                 <StepMethodSelection
                   {...props}
                   setStepMethodSelectionData={setStepMethodSelectionData}
                   subscribersLimitForValidation={subscribersLimitForValidation}
                 />
               )}
-            />
-            <Route
-              path="/step_input_validation"
-              render={(props) => (
+            </Route>
+            <Route path="/step_input_validation">
+              {(props) => (
                 <StepInputValidation
                   {...props}
                   stepMethodSelectionData={stepMethodSelectionData}
                 />
               )}
-            />
-            <Route
-              path="/step_data_manipulation"
-              render={(props) => (
+            </Route>
+            <Route path="/step_data_manipulation">
+              {(props) => (
                 <StepDataManipulation
                   {...props}
                   stepMethodSelectionData={stepMethodSelectionData}
@@ -60,10 +54,9 @@ function ImportSubscribers() {
                   setStepDataManipulationData={setStepDataManipulationData}
                 />
               )}
-            />
-            <Route
-              path="/step_results"
-              render={(props) => (
+            </Route>
+            <Route path="/step_results">
+              {(props) => (
                 <StepResults
                   {...props}
                   errors={stepDataManipulationData.errors}
@@ -75,8 +68,8 @@ function ImportSubscribers() {
                   }
                 />
               )}
-            />
-            <Route path="*" render={() => <Redirect to="/step_clean_list" />} />
+            </Route>
+            <Route path="*">{() => <Redirect to="/step_clean_list" />}</Route>
           </Switch>
         </ScrollToTop>
       </HashRouter>

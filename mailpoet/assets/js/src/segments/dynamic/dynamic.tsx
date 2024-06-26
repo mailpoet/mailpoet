@@ -34,6 +34,10 @@ function HistoryListener() {
   return null;
 }
 
+const EditorWithBoundary = withBoundary(Editor);
+const TemplatesWithBoundary = withBoundary(SegmentTemplates);
+const ListWithBoundary = withBoundary(DynamicSegmentList);
+
 function App(): JSX.Element {
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
@@ -42,19 +46,18 @@ function App(): JSX.Element {
         <GlobalNotices />
         <Notices />
         <Switch>
-          <Route
-            path={ROUTES.NEW_DYNAMIC_SEGMENT}
-            component={withBoundary(Editor)}
-          />
-          <Route
-            path={`${ROUTES.EDIT_DYNAMIC_SEGMENT}/:id`}
-            component={withBoundary(Editor)}
-          />
-          <Route
-            path={ROUTES.DYNAMIC_SEGMENT_TEMPLATES}
-            component={withBoundary(SegmentTemplates)}
-          />
-          <Route path="*" component={withBoundary(DynamicSegmentList)} />
+          <Route path={ROUTES.NEW_DYNAMIC_SEGMENT}>
+            <EditorWithBoundary />
+          </Route>
+          <Route path={`${ROUTES.EDIT_DYNAMIC_SEGMENT}/:id`}>
+            <EditorWithBoundary />
+          </Route>
+          <Route path={ROUTES.DYNAMIC_SEGMENT_TEMPLATES}>
+            <TemplatesWithBoundary />
+          </Route>
+          <Route path="*">
+            <ListWithBoundary />
+          </Route>
         </Switch>
       </HashRouter>
     </GlobalContext.Provider>

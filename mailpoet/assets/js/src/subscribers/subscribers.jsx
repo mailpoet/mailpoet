@@ -16,13 +16,10 @@ function App() {
         <GlobalNotices />
         <Notices />
         <Switch>
-          <Route path="/new" render={withBoundary(SubscriberForm)} />
-          <Route path="/edit/:id" render={withBoundary(SubscriberForm)} />
-          <Route
-            path="/stats/:id/(.*)?"
-            component={withBoundary(SubscriberStats)}
-          />
-          <Route path="*" component={withBoundary(SubscriberList)} />
+          <Route path="/new">{withBoundary(SubscriberForm)}</Route>
+          <Route path="/edit/:id">{withBoundary(SubscriberForm)}</Route>
+          <Route path="/stats/:id/(.*)?">{withBoundary(SubscriberStats)}</Route>
+          <Route path="*">{withBoundary(SubscriberList)}</Route>
         </Switch>
       </HashRouter>
     </GlobalContext.Provider>

@@ -9,6 +9,8 @@ import { Notices } from 'notices/notices.jsx';
 import { registerTranslations, withBoundary } from 'common';
 
 const container = document.getElementById('static_segments_container');
+const FormWithBoundary = withBoundary(SegmentForm);
+const ListWithBoundary = withBoundary(SegmentList);
 
 function App(): JSX.Element {
   return (
@@ -17,9 +19,15 @@ function App(): JSX.Element {
         <GlobalNotices />
         <Notices />
         <Switch>
-          <Route path="/new" component={withBoundary(SegmentForm)} />
-          <Route path="/edit/:id" component={withBoundary(SegmentForm)} />
-          <Route path="*" component={withBoundary(SegmentList)} />
+          <Route path="/new">
+            <FormWithBoundary />
+          </Route>
+          <Route path="/edit/:id">
+            <FormWithBoundary />
+          </Route>
+          <Route path="*">
+            <ListWithBoundary />
+          </Route>
         </Switch>
       </HashRouter>
     </GlobalContext.Provider>
