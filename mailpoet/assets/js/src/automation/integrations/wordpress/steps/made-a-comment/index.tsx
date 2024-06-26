@@ -19,11 +19,7 @@ export const step: StepType = {
   keywords,
   foreground: '#2271b1',
   background: '#f0f6fc',
-  icon: () => (
-    <div style={{ width: '100%', height: '100%', scale: '1.25' }}>
-      <Icon />
-    </div>
-  ),
+  icon: () => <Icon />,
   edit: () => (
     <PremiumModalForStepEdit
       tracking={{

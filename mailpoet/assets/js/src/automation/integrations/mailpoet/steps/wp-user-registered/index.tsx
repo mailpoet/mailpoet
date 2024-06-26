@@ -24,10 +24,6 @@ export const step: StepType = {
     ),
   subtitle: () => _x('Trigger', 'noun', 'mailpoet'),
   keywords,
-  icon: () => (
-    <div style={{ width: '100%', height: '100%', scale: '1.12' }}>
-      {wordpress}
-    </div>
-  ),
+  icon: () => wordpress,
   edit: () => <Edit />,
 } as const;
