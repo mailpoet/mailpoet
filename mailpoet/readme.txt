@@ -225,3 +225,17 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 4. Newsletter stats (Premium)
 5. Subscriber import (via a CSV file or directly from MailChimp)
 6. WooCommerce emails
+
+== Changelog ==
+
+= 4.53.0 - 2024-06-25 =
+
+- Updated: npm dependencies;
+- Improved: Processing Captcha image;
+- Improved: Search for post notification history items now return updated results;
+- Improved: Newsletter social icons style and images;
+- Improved: MailPoet form editor button styles;
+- Fixed: Update abandoned cart email task status;
+- Fixed: link to Setup abandoned cart email from homepage.
+
+[See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)
