@@ -3,12 +3,22 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { Table } from '@woocommerce/components';
 import apiFetch from '@wordpress/api-fetch';
+import { Hooks } from 'wp-js-hooks';
 import { Header } from './modal/header';
 import { headers, transformLogsToRows } from './modal/rows';
 import { Footer } from './modal/footer';
 import { RunData } from '../../../store';
+import { runLogs as SampleRunLogData } from '../../../store/samples/run-logs';
 
 export type ActivityModalState = 'loading' | 'loaded' | 'error' | 'hidden';
+
+function getSampleData(): RunData | undefined {
+  return Hooks.applyFilters(
+    'mailpoet_analytics_section_sample_data',
+    SampleRunLogData,
+    'runLogs',
+  ) as RunData | undefined;
+}
 
 export function ActivityModal(): JSX.Element {
   const history = useHistory();
@@ -41,6 +51,13 @@ export function ActivityModal(): JSX.Element {
         return;
       }
       setState('loading');
+
+      const sampleData = getSampleData();
+      if (sampleData) {
+        setRun(sampleData);
+        setState('loaded');
+        return;
+      }
 
       try {
         const data = await apiFetch<{ data: RunData }>({
