@@ -1,5 +1,5 @@
 import { Modal, Spinner } from '@wordpress/components';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { Table } from '@woocommerce/components';
 import apiFetch from '@wordpress/api-fetch';
@@ -22,7 +22,7 @@ function getSampleData(runId: number): RunData | undefined {
 }
 
 export function ActivityModal(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const pageParams = useMemo(
     () => new URLSearchParams(location.search),
@@ -36,7 +36,7 @@ export function ActivityModal(): JSX.Element {
     setState('hidden');
     setRun(null);
     pageParams.delete('runId');
-    history.push({ search: pageParams.toString() });
+    navigate({ search: pageParams.toString() });
   };
 
   useEffect(() => {

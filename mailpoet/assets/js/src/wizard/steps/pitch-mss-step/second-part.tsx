@@ -1,4 +1,4 @@
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 import { MailPoet } from 'mailpoet';
 import { Heading } from 'common';
@@ -10,15 +10,15 @@ import { OwnEmailServiceNote } from './own-email-service-note';
 import { navigateToPath } from '../../navigate-to-path';
 
 function MSSStepSecondPart(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { step } = useParams<{ step: string }>();
   const state = useSelector('getKeyActivationState')();
 
   useEffect(() => {
     if (state.isKeyValid === true) {
-      navigateToPath(history, `/steps/${step}/part/3`, true);
+      navigateToPath(navigate, `/steps/${step}/part/3`, true);
     }
-  }, [state.isKeyValid, history, step]);
+  }, [state.isKeyValid, navigate, step]);
 
   return (
     <>

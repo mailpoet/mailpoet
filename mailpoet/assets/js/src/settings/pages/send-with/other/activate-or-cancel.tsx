@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { MailPoet } from 'mailpoet';
 import { Button } from 'common/button/button';
@@ -8,15 +8,15 @@ import { useAction } from 'settings/store/hooks';
 export function ActivateOrCancel() {
   const saveSettings = useAction('saveSettings');
   const loadSettings = useAction('loadSettings');
-  const history = useHistory();
+  const navigate = useNavigate();
   const activate = async () => {
     await saveSettings();
-    history.push('/mta');
+    navigate('/mta');
   };
   const cancel = async () => {
     MailPoet.Modal.loading(true);
     await loadSettings();
-    history.push('/mta');
+    navigate('/mta');
     MailPoet.Modal.loading(false);
   };
   return (

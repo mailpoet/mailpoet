@@ -1,4 +1,3 @@
-import { History } from 'history';
 import { navigateToPath } from './navigate-to-path';
 
 const getSteps = (): string[] => {
@@ -21,14 +20,14 @@ export const mapStepNumberToStepName = (stepNumber: number): string | null =>
   getSteps()[stepNumber - 1] || null;
 
 export const redirectToNextStep = async (
-  history: History,
+  navigate,
   finishWizard: () => void,
   currentStep: number,
 ) => {
   const stepsCount = getStepsCount();
   if (currentStep < stepsCount) {
     const nextPath = `/steps/${currentStep + 1}`;
-    navigateToPath(history, nextPath);
+    navigateToPath(navigate, nextPath);
   } else {
     finishWizard();
   }
