@@ -3,9 +3,9 @@ import { OrderCell } from './cells/order';
 import { CustomerCell } from './cells/customer';
 import { ProductsCell } from './cells/products';
 import { EmailCell } from './cells/email';
-import { OrderStatusCell } from './cells/order-status';
 import { formattedPrice } from '../../../formatter';
 import { MailPoet } from '../../../../../../../mailpoet';
+import { OrderStatus } from '../../../../../../components/status';
 
 export function transformOrdersToRows(data: OrderSection['data'] | undefined) {
   const orders = data?.items;
@@ -38,8 +38,8 @@ export function transformOrdersToRows(data: OrderSection['data'] | undefined) {
         },
         {
           display: (
-            <OrderStatusCell
-              id={order.details.status.id}
+            <OrderStatus
+              status={order.details.status.id}
               name={order.details.status.name}
             />
           ),
