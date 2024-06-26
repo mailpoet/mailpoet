@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { calculatePercentage } from '../../formatter/calculate-percentage';
 import { EmailStats } from '../../store';
+import { StatusBadge } from '../../../../../components/status';
 
 function percentageBadgeCalculation(percentage: number): {
   badge: string;
@@ -9,28 +10,27 @@ function percentageBadgeCalculation(percentage: number): {
   if (percentage > 3) {
     return {
       badge: __('Excellent', 'mailpoet'),
-      badgeType: 'mailpoet-analytics-badge-success',
+      badgeType: 'success',
     };
   }
 
   if (percentage > 1) {
     return {
       badge: __('Good', 'mailpoet'),
-      badgeType: 'mailpoet-analytics-badge-success',
+      badgeType: 'success',
     };
   }
   return {
     badge: __('Average', 'mailpoet'),
-    badgeType: 'mailpoet-analytics-badge-warning',
+    badgeType: 'warning',
   };
 }
 
 type BadgeProps = {
   email: EmailStats | undefined;
   property: 'clicked' | 'opened';
-  className?: string;
 };
-export function Badge({ email, property, className }: BadgeProps): JSX.Element {
+export function Badge({ email, property }: BadgeProps): JSX.Element {
   if (!email) {
     return <>0</>;
   }
@@ -46,15 +46,12 @@ export function Badge({ email, property, className }: BadgeProps): JSX.Element {
   const clickedBadge = percentageBadgeCalculation(clickedPercentage);
 
   return (
-    <div
-      className={`mailpoet-analytics-badge ${className ?? ''} ${
-        clickedBadge.badgeType ?? ''
-      }`}
-    >
-      <span className="mailpoet-analytics-badge-text">
-        {clickedBadge.badge}
-      </span>
+    <>
+      <StatusBadge
+        name={clickedBadge.badge}
+        className={clickedBadge.badgeType}
+      />
       {`${email[property]}`}
-    </div>
+    </>
   );
 }
