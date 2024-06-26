@@ -1,6 +1,6 @@
 import {
   useRouteMatch,
-  Switch,
+  Routes,
   Route,
   useParams,
   useHistory,
@@ -25,17 +25,11 @@ function WelcomeWizardPitchMSSStep(): JSX.Element {
   }, [step, path, history, location]);
 
   return (
-    <Switch>
-      <Route path={`${path}/part/1`}>
-        <MSSStepFirstPart />
-      </Route>
-      <Route path={`${path}/part/2`}>
-        <MSSStepSecondPart />
-      </Route>
-      <Route path={`${path}/part/3`}>
-        <MSSStepThirdPart />
-      </Route>
-    </Switch>
+    <Routes>
+      <Route path={`${path}/part/1`} element={<MSSStepFirstPart />} />
+      <Route path={`${path}/part/2`} element={<MSSStepSecondPart />} />
+      <Route path={`${path}/part/3`} element={<MSSStepThirdPart />} />
+    </Routes>
   );
 }
 

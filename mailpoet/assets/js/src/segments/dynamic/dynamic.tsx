@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { HashRouter, Route, Switch, useHistory } from 'react-router-dom';
+import { HashRouter, Route, Routes, useHistory } from 'react-router-dom';
 
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';
@@ -45,20 +45,21 @@ function App(): JSX.Element {
         <HistoryListener />
         <GlobalNotices />
         <Notices />
-        <Switch>
-          <Route path={ROUTES.NEW_DYNAMIC_SEGMENT}>
-            <EditorWithBoundary />
-          </Route>
-          <Route path={`${ROUTES.EDIT_DYNAMIC_SEGMENT}/:id`}>
-            <EditorWithBoundary />
-          </Route>
-          <Route path={ROUTES.DYNAMIC_SEGMENT_TEMPLATES}>
-            <TemplatesWithBoundary />
-          </Route>
-          <Route path="*">
-            <ListWithBoundary />
-          </Route>
-        </Switch>
+        <Routes>
+          <Route
+            path={ROUTES.NEW_DYNAMIC_SEGMENT}
+            element={<EditorWithBoundary />}
+          />
+          <Route
+            path={`${ROUTES.EDIT_DYNAMIC_SEGMENT}/:id`}
+            element={<EditorWithBoundary />}
+          />
+          <Route
+            path={ROUTES.DYNAMIC_SEGMENT_TEMPLATES}
+            element={<TemplatesWithBoundary />}
+          />
+          <Route path="*" element={<ListWithBoundary />} />
+        </Routes>
       </HashRouter>
     </GlobalContext.Provider>
   );

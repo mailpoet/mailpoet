@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 
 import { SegmentList } from 'segments/static/list';
 import { SegmentForm } from 'segments/static/form';
@@ -18,17 +18,11 @@ function App(): JSX.Element {
       <HashRouter>
         <GlobalNotices />
         <Notices />
-        <Switch>
-          <Route path="/new">
-            <FormWithBoundary />
-          </Route>
-          <Route path="/edit/:id">
-            <FormWithBoundary />
-          </Route>
-          <Route path="*">
-            <ListWithBoundary />
-          </Route>
-        </Switch>
+        <Routes>
+          <Route path="/new" element={<FormWithBoundary />} />
+          <Route path="/edit/:id" element={<FormWithBoundary />} />
+          <Route path="*" element={<ListWithBoundary />} />
+        </Routes>
       </HashRouter>
     </GlobalContext.Provider>
   );
