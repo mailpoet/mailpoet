@@ -1,12 +1,15 @@
 // See: https://github.com/WordPress/gutenberg/blob/af7da80dd54d7fe52772890e2cc1b65073db9655/packages/block-editor/src/components/block-icon/style.scss
 
-.block-editor-block-icon {
+.block-editor-block-icon,
+.block-editor-block-icon > div {
   align-items: center;
   display: flex;
   height: 24px;
   justify-content: center;
   width: 24px;
+}
 
+.block-editor-block-icon {
   &.has-colors {
     svg {
       fill: currentColor;
@@ -26,9 +29,10 @@
   // indicated size.
   // See: https://github.com/WordPress/gutenberg/pull/9828
   svg {
-    max-height: 24px;
-    max-width: 24px;
-    min-height: 20px;
-    min-width: 20px;
+    margin: -4px;
+    max-height: 32px;
+    max-width: 32px;
+    min-height: 26px;
+    min-width: 26px;
   }
 }
