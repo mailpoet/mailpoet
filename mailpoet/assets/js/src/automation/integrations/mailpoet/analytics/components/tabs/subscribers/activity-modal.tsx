@@ -10,7 +10,7 @@ import { Footer } from './modal/footer';
 import { RunData } from '../../../store';
 import { runLogs as SampleRunLogData } from '../../../store/samples/run-logs';
 
-export type ActivityModalState = 'loading' | 'loaded' | 'error' | 'hidden';
+export type ActivityModalState = 'loading' | 'loaded' | 'hidden';
 
 function getSampleData(): RunData | undefined {
   return Hooks.applyFilters(
@@ -69,7 +69,7 @@ export function ActivityModal(): JSX.Element {
         setState('loaded');
       } catch (error) {
         if (!controller.signal?.aborted) {
-          setState('error');
+          setState('hidden');
         }
       }
     };
