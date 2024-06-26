@@ -48,11 +48,11 @@ class DelayAction implements Action {
 
   public function run(StepRunArgs $args, StepRunController $controller): void {
     if ($args->isFirstRun()) {
-      $controller->scheduleProgress(time() + $this->calculateSeconds($args->getStep()));
+      $controller->scheduleProgress(time() + self::calculateSeconds($args->getStep()));
     }
   }
 
-  private function calculateSeconds(Step $step): int {
+  public static function calculateSeconds(Step $step): int {
     $delay = (int)($step->getArgs()['delay'] ?? null);
     switch ($step->getArgs()['delay_type']) {
       case "MINUTES":

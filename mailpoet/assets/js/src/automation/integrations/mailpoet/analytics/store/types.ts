@@ -218,6 +218,7 @@ export type Log = {
 
 export type NextStep = {
   name: string;
+  time_left: string;
   step: Step;
 } | null;
 

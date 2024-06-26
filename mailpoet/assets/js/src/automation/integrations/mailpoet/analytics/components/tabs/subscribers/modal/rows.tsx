@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Steps } from '../../../../../../../editor/components/automation/types';
 import { MailPoet } from '../../../../../../../../mailpoet';
 import { StepCell } from '../cells/step';
@@ -82,7 +82,17 @@ export function transformLogsToRows(
         value: '',
       },
       {
-        display: <AutomationRunStatus status="running" />,
+        display: (
+          <>
+            <AutomationRunStatus status="running" />
+            <div className="mailpoet-analytics-activity-modal-status-info">
+              {
+                // translators: "Time left: 1 hour" or "Time left: 1 minute", uses WordPress' human_time_diff() to get the value
+                sprintf(__('Time left: %s', 'mailpoet'), nextStep.time_left)
+              }
+            </div>
+          </>
+        ),
       },
     ]);
   }
