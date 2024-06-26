@@ -206,4 +206,8 @@ class WordPress {
   public function getUserBy(string $field, $value) {
     return get_user_by($field, $value);
   }
+
+  public function humanTimeDiff(int $from, int $to = 0): string {
+    return human_time_diff($from, $to);
+  }
 }
