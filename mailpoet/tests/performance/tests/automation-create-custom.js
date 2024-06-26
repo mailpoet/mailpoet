@@ -30,7 +30,7 @@ import {
 } from '../utils/helpers.js';
 
 export async function automationCreateCustom() {
-  const page = browser.newPage();
+  const page = await browser.newPage();
   const triggerbutton = '.mailpoet-automation-add-trigger';
 
   try {
@@ -133,8 +133,8 @@ export async function automationCreateCustom() {
     // Thinking time and closing
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
-    page.close();
-    browser.context().close();
+    await page.close();
+    await browser.context().close();
   }
 }
 

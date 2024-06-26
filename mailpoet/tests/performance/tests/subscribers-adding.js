@@ -27,7 +27,7 @@ import {
 import { login, selectInSelect2 } from '../utils/helpers.js';
 
 export async function subscribersAdding() {
-  const page = browser.newPage();
+  const page = await browser.newPage();
 
   try {
     let subscriberEmail = 'blackhole+automation' + Date.now() + '@mailpoet.com';
@@ -103,8 +103,8 @@ export async function subscribersAdding() {
     // Thinking time and closing
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
-    page.close();
-    browser.context().close();
+    await page.close();
+    await browser.context().close();
   }
 }
 

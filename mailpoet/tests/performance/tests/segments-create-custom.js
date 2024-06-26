@@ -29,7 +29,7 @@ import {
 } from '../utils/helpers.js';
 
 export async function segmentsCreateCustom() {
-  const page = browser.newPage();
+  const page = await browser.newPage();
 
   try {
     const complexSegmentName = 'Complex Segment ' + Date.now();
@@ -151,8 +151,8 @@ export async function segmentsCreateCustom() {
     // Thinking time and closing
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
-    page.close();
-    browser.context().close();
+    await page.close();
+    await browser.context().close();
   }
 }
 

@@ -25,7 +25,7 @@ import { login, selectInSelect2, waitAndType } from '../utils/helpers.js';
 /* global Promise */
 
 export async function newsletterReEngagement() {
-  const page = browser.newPage();
+  const page = await browser.newPage();
 
   try {
     // Log in to WP Admin
@@ -117,8 +117,8 @@ export async function newsletterReEngagement() {
     // Thinking time and closing
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
-    page.close();
-    browser.context().close();
+    await page.close();
+    await browser.context().close();
   }
 }
 
