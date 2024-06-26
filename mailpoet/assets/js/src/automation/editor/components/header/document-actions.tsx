@@ -9,7 +9,7 @@ import { useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { chevronDown } from '@wordpress/icons';
 import { storeName } from '../../store';
-import { AutomationStatus } from '../../../listing/automation';
+import { AutomationStatus } from '../../../components/status';
 
 // See: https://github.com/WordPress/gutenberg/blob/eff0cab2b3181c004dbd15398e570ecec28a3726/packages/edit-site/src/components/header/document-actions/index.js
 
@@ -26,13 +26,6 @@ function DocumentActions({ children }): JSX.Element {
   // The title ref is passed to the popover as the anchorRef so that the dropdown
   // is centered over the whole title area rather than just one part of it.
   const titleRef = useRef();
-
-  let chipClass = 'mailpoet-automation-editor-chip-gray';
-  if (automationStatus === AutomationStatus.ACTIVE) {
-    chipClass = 'mailpoet-automation-editor-chip-success';
-  } else if (automationStatus === AutomationStatus.DEACTIVATING) {
-    chipClass = 'mailpoet-automation-editor-chip-danger';
-  }
 
   return (
     <div className="edit-site-document-actions has-secondary-label mailpoet-automation-editor-edit-site-document-actions">
@@ -60,17 +53,7 @@ function DocumentActions({ children }): JSX.Element {
                     {automationName}
                   </Text>
 
-                  <Text
-                    size="body"
-                    className={`edit-site-document-actions__secondary-item ${chipClass}`}
-                  >
-                    {automationStatus === AutomationStatus.ACTIVE &&
-                      __('Active', 'mailpoet')}
-                    {automationStatus === AutomationStatus.DEACTIVATING &&
-                      __('Deactivating', 'mailpoet')}
-                    {automationStatus === AutomationStatus.DRAFT &&
-                      __('Draft', 'mailpoet')}
-                  </Text>
+                  <AutomationStatus status={automationStatus} />
                 </Button>
                 <Button
                   className="edit-site-document-actions__get-info"
