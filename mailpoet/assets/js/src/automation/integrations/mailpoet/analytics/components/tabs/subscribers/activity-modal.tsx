@@ -109,7 +109,7 @@ export function ActivityModal(): JSX.Element {
       <Table
         className="mailpoet-analytics-activity-modal-table"
         headers={headers}
-        rows={transformLogsToRows(run.logs, run.steps)}
+        rows={transformLogsToRows(run.logs, run.steps, run.next_step)}
       />
 
       <Footer runStatus={run.run.status} />

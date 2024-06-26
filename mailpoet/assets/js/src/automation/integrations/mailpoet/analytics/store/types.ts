@@ -216,9 +216,15 @@ export type Log = {
   error: Error | null;
 };
 
+export type NextStep = {
+  name: string;
+  step: Step;
+} | null;
+
 export type RunData = {
   run: Run;
   logs: Log[];
+  next_step: NextStep;
   steps: Steps;
   subscriber: Subscriber;
 };

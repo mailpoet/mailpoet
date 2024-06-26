@@ -98,6 +98,7 @@ export const runLogs: RunData = {
       },
     },
   ],
+  next_step: null,
   steps: {
     root: {
       id: 'root',
