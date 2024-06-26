@@ -9,11 +9,11 @@ for version in $VERSIONS; do
   LATEST_VERSION=$version
 done
 
-# Check if the latest version is a beta version
-if [[ $LATEST_VERSION != *'beta'* ]]; then
-  echo "No WooCommerce beta version found."
+# Check if the latest version is a beta/RC version
+if [[ $LATEST_VERSION != *'beta'* || $LATEST_VERSION != *'rc'* ]]; then
+  echo "No WooCommerce beta/RC version found."
   echo "LATEST_BETA="
 else
-  echo "Latest WooCommerce beta version: $LATEST_VERSION"
+  echo "Latest WooCommerce beta/RC version: $LATEST_VERSION"
   echo "LATEST_BETA=$LATEST_VERSION"
 fi
