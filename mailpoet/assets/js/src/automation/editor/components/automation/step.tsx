@@ -112,8 +112,8 @@ export function Step({ step, isSelected }: Props): JSX.Element {
             icon={stepTypeData.icon}
             foreground={stepTypeData.foreground}
             background={stepTypeData.background}
-            width="23px"
-            height="23px"
+            width="32px"
+            height="32px"
           />
         </div>
         <div>
