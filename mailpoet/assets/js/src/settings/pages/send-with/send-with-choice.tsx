@@ -1,4 +1,4 @@
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
 import { useSelector, useAction, useSetting } from 'settings/store/hooks';
@@ -12,7 +12,7 @@ interface SendWithChoiceWindow extends Window {
 declare let window: SendWithChoiceWindow;
 
 export function SendWithChoice() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const isMssActive = useSelector('isMssActive')();
   const [key] = useSetting('mta', 'mailpoet_api_key');
   const { mssStatus, premiumStatus } = useSelector('getKeyActivationState')();
@@ -33,7 +33,7 @@ export function SendWithChoice() {
   const mssChosen = async (e) => {
     e.preventDefault();
     if (!isMssActive && !isMssKeyValid) {
-      history.push('/premium');
+      navigate('/premium');
     }
     if (!isMssActive && isMssKeyValid) {
       await activateMss();
@@ -42,7 +42,7 @@ export function SendWithChoice() {
 
   const otherChosen = (e) => {
     e.preventDefault();
-    history.push('/mta/other');
+    navigate('/mta/other');
   };
 
   return (

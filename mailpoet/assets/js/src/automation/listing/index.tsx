@@ -3,7 +3,7 @@ import { Button, TabPanel } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
 import { ComponentProps, useCallback, useEffect, useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { plusIcon } from 'common/button/icon/plus';
 import { getRow } from './get-row';
 import { AutomationItem, storeName } from './store';
@@ -40,7 +40,7 @@ export function AutomationListingHeader(): JSX.Element {
 }
 
 export function AutomationListing(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const pageSearch = useMemo(
     () => new URLSearchParams(location.search),
@@ -73,9 +73,9 @@ export function AutomationListing(): JSX.Element {
       ) {
         newSearch.delete('paged');
       }
-      history.push({ search: newSearch.toString() });
+      navigate({ search: newSearch.toString() });
     },
-    [pageSearch, history],
+    [pageSearch, navigate],
   );
 
   const groupedAutomations = useMemo<Record<string, Automation[]>>(() => {

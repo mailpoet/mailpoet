@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSetting } from 'settings/store/hooks';
 import { Settings } from 'settings/store/types';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { partial } from 'underscore';
 
 import { WelcomeWizardSenderStep } from './steps/sender-step';
@@ -25,8 +25,8 @@ import { updateSettings } from './update-settings';
 import { navigateToPath } from './navigate-to-path';
 
 function WelcomeWizardStepsController(): JSX.Element {
-  const params: { step: string } = useParams();
-  const history = useHistory();
+  const params = useParams();
+  const navigate = useNavigate();
 
   const stepsCount = getStepsCount();
   const step = parseInt(params.step, 10);
@@ -38,11 +38,11 @@ function WelcomeWizardStepsController(): JSX.Element {
 
   useEffect(() => {
     if (step > stepsCount || step < 1) {
-      navigateToPath(history, '/steps/1');
+      navigateToPath(navigate, '/steps/1');
     }
-  }, [step, stepsCount, history]);
+  }, [step, stepsCount, navigate]);
 
-  const redirect = partial(redirectToNextStep, history, finishWizard);
+  const redirect = partial(redirectToNextStep, navigate, finishWizard);
 
   const updateTracking = useCallback(
     async (analytics: boolean, libs3rdParty: boolean) => {
@@ -119,7 +119,7 @@ function WelcomeWizardStepsController(): JSX.Element {
           count={stepsCount}
           current={step}
           doneCallback={(stepString: string) => {
-            navigateToPath(history, `/steps/${stepString}`);
+            navigateToPath(navigate, `/steps/${stepString}`);
           }}
         />
       </TopBar>

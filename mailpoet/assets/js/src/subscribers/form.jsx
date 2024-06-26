@@ -1,4 +1,4 @@
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
@@ -238,7 +238,7 @@ function afterFormContent(values) {
 
 function SubscriberForm({ match }) {
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const backUrl = location.state?.backUrl || '/';
   return (
     <div className="mailpoet-main-container">
@@ -250,7 +250,7 @@ function SubscriberForm({ match }) {
         heading={MailPoet.I18n.t('subscriber')}
         headingPrefix={
           <BackButton
-            onClick={() => history.push(backUrl)}
+            onClick={() => navigate(backUrl)}
             label={MailPoet.I18n.t('backToList')}
           />
         }
@@ -266,7 +266,7 @@ function SubscriberForm({ match }) {
         messages={messages}
         beforeFormContent={beforeFormContent}
         afterFormContent={afterFormContent}
-        onSuccess={() => history.push(backUrl)}
+        onSuccess={() => navigate(backUrl)}
       />
     </div>
   );

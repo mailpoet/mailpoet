@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 import { TabPanel } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -13,7 +13,7 @@ import { storeName as editorStoreName } from '../../../../../editor/store/consta
 import { MailPoet } from '../../../../../../mailpoet';
 
 export function Tabs(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const { hasEmails } = useSelect((s) => ({
     hasEmails: s(editorStoreName).automationHasStep('mailpoet:send-email'),
@@ -78,9 +78,9 @@ export function Tabs(): JSX.Element {
           tab,
         },
       });
-      history.push({ search: newSearch.toString() });
+      navigate({ search: newSearch.toString() });
     },
-    [pageParams, history],
+    [pageParams, navigate],
   );
 
   return (

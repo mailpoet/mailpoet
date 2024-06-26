@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { external, Icon } from '@wordpress/icons';
 import { Heading } from 'common/typography/heading/heading';
 import { MailPoet } from 'mailpoet';
 import { Button, List } from 'common';
-import { History } from 'history';
 import { OwnEmailServiceNote } from './own-email-service-note';
 import { useSelector } from '../../../settings/store/hooks';
 import { navigateToPath } from '../../navigate-to-path';
@@ -12,26 +11,22 @@ import { navigateToPath } from '../../navigate-to-path';
 const mailpoetAccountUrl =
   'https://account.mailpoet.com/?ref=plugin-wizard&utm_source=plugin&utm_medium=onboarding&utm_campaign=purchase';
 
-function openMailPoetShopAndGoToTheNextPart(
-  event,
-  history: History,
-  step: string,
-) {
+function openMailPoetShopAndGoToTheNextPart(event, navigate, step: string) {
   event.preventDefault();
   window.open(mailpoetAccountUrl);
-  navigateToPath(history, `/steps/${step}/part/2`);
+  navigateToPath(navigate, `/steps/${step}/part/2`);
 }
 
 function MSSStepFirstPart(): JSX.Element {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { step } = useParams<{ step: string }>();
   const state = useSelector('getKeyActivationState')();
 
   useEffect(() => {
     if (state.isKeyValid === true) {
-      navigateToPath(history, `/steps/${step}/part/3`, true);
+      navigateToPath(navigate, `/steps/${step}/part/3`, true);
     }
-  }, [state.isKeyValid, history, step]);
+  }, [state.isKeyValid, navigate, step]);
 
   return (
     <>
@@ -65,7 +60,7 @@ function MSSStepFirstPart(): JSX.Element {
         target="_blank"
         rel="noopener noreferrer"
         onClick={(event) =>
-          openMailPoetShopAndGoToTheNextPart(event, history, step)
+          openMailPoetShopAndGoToTheNextPart(event, navigate, step)
         }
         iconEnd={<Icon icon={external} />}
       >

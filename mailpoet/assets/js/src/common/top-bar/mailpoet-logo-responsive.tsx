@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { __ } from '@wordpress/i18n';
 import { MailPoetLogo } from './mailpoet-logo';
 import { MailPoetLogoMobile } from './mailpoet-logo-mobile';
@@ -9,11 +9,11 @@ type Props = {
 };
 
 export function MailPoetLogoResponsive({ onClick, withLink = true }: Props) {
-  const history = useHistory();
+  const navigate = useNavigate();
   let logo;
   let onLogoClick = onClick;
   if (!onClick) {
-    onLogoClick = () => history.push('/');
+    onLogoClick = () => navigate('/');
   }
 
   if (withLink) {

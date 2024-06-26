@@ -5,8 +5,9 @@ import {
   Redirect,
   Route,
   Routes,
-  useHistory,
+  useNavigate,
   useRouteMatch,
+  useLocation,
 } from 'react-router-dom';
 import { noop } from 'lodash';
 
@@ -19,7 +20,8 @@ function RouterAwareTabs(
   },
 ) {
   const match = useRouteMatch();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const activeKey = Object.keys(props.keyPathMap).find(
     (key) => props.keyPathMap[key] === match.path,
@@ -30,8 +32,8 @@ function RouterAwareTabs(
       activeKey={activeKey}
       onSwitch={(tabKey) => {
         const path = `${props.routerPrefix}${tabKey}`;
-        if (history.location && path !== history.location.pathname) {
-          history.push(path);
+        if (location && path !== location.pathname) {
+          navigate(path);
         }
         props.onSwitch(tabKey);
       }}
@@ -70,26 +72,25 @@ function RoutedTabs({
     );
   }
 
-  // Notes about performance:
-  //  1. We use a single route with an array of all tab URLs (all render the same component).
-  //  2. Using 'render' (not 'component') ensures it is reused even when wrapped in a callback.
   const routedTabs = (
     <Routes>
-      <Route
-        exact
-        path={Object.values(keyPathMap)}
-        element={
-          <RouterAwareTabs
-            activeKey={activeKey}
-            onSwitch={onSwitch}
-            automationId={automationId}
-            keyPathMap={keyPathMap}
-            routerPrefix={routerPrefix}
-          >
-            {children}
-          </RouterAwareTabs>
-        }
-      />
+      {Object.values(keyPathMap).map((path) => (
+        <Route
+          path={path}
+          element={
+            <RouterAwareTabs
+              activeKey={activeKey}
+              onSwitch={onSwitch}
+              automationId={automationId}
+              keyPathMap={keyPathMap}
+              routerPrefix={routerPrefix}
+            >
+              {children}
+            </RouterAwareTabs>
+          }
+        />
+      ))}
+
       <Route element={<Redirect to={`${routerPrefix}${activeKey}`} />} />
     </Routes>
   );

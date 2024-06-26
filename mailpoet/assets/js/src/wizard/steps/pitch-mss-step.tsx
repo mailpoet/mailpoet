@@ -3,7 +3,7 @@ import {
   Routes,
   Route,
   useParams,
-  useHistory,
+  useNavigate,
   useLocation,
 } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -15,14 +15,14 @@ import { navigateToPath } from '../navigate-to-path';
 function WelcomeWizardPitchMSSStep(): JSX.Element {
   const { path } = useRouteMatch();
   const { step } = useParams<{ step: string }>();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     if (!location.pathname.includes('part')) {
-      navigateToPath(history, `/steps/${step}/part/1`, true);
+      navigateToPath(navigate, `/steps/${step}/part/1`, true);
     }
-  }, [step, path, history, location]);
+  }, [step, path, navigate, location]);
 
   return (
     <Routes>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { __, assoc, compose } from 'lodash/fp';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { __ as t } from '@wordpress/i18n';
 
 import { MailPoet } from 'mailpoet';
@@ -27,10 +27,10 @@ export function NewsletterTypeReEngagement(): JSX.Element {
   });
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   function showTemplateSelection(newsletterId: string) {
-    history.push(`/template/${newsletterId}`);
+    navigate(`/template/${newsletterId}`);
   }
 
   function handleNext() {

@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { HashRouter, Route, Routes, useHistory } from 'react-router-dom';
+import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';
@@ -17,19 +17,14 @@ const container = document.getElementById('dynamic_segments_container');
 
 function HistoryListener() {
   const { setPreviousPage } = useDispatch(storeName);
-  const history = useHistory();
+  const location = useLocation();
 
-  const previousPageRef = useRef(history.location.pathname);
+  const previousPageRef = useRef(location.pathname);
 
-  useEffect(
-    () =>
-      history.listen((location) => {
-        void setPreviousPage(previousPageRef.current);
-
-        previousPageRef.current = location.pathname;
-      }),
-    [history, setPreviousPage],
-  );
+  useEffect(() => {
+    void setPreviousPage(previousPageRef.current);
+    previousPageRef.current = location.pathname;
+  }, [location, setPreviousPage]);
 
   return null;
 }
