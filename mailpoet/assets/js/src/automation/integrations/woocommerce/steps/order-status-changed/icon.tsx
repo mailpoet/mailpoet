@@ -1,6 +1,6 @@
 export function Icon(): JSX.Element {
   return (
-    <svg viewBox="0 0 14 16" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="-2 -2 18 20" xmlns="http://www.w3.org/2000/svg">
       <path
         fillRule="evenodd"
         clipRule="evenodd"
