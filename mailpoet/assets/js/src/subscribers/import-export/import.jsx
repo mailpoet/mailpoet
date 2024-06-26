@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { HashRouter, Redirect, Route, Routes } from 'react-router-dom';
 import { ScrollToTop } from 'common/scroll-to-top.jsx';
 
 import { GlobalContext, useGlobalContextValue } from 'context';
@@ -26,27 +26,30 @@ function ImportSubscribers() {
       <HashRouter>
         <Notices />
         <ScrollToTop>
-          <Switch>
+          <Routes>
             <Route path="/step_clean_list">{withBoundary(StepCleanList)}</Route>
-            <Route path="/step_method_selection">
-              {(props) => (
+            <Route
+              path="/step_method_selection"
+              element={(props) => (
                 <StepMethodSelection
                   {...props}
                   setStepMethodSelectionData={setStepMethodSelectionData}
                   subscribersLimitForValidation={subscribersLimitForValidation}
                 />
               )}
-            </Route>
-            <Route path="/step_input_validation">
-              {(props) => (
+            ></Route>
+            <Route
+              path="/step_input_validation"
+              element={(props) => (
                 <StepInputValidation
                   {...props}
                   stepMethodSelectionData={stepMethodSelectionData}
                 />
               )}
-            </Route>
-            <Route path="/step_data_manipulation">
-              {(props) => (
+            ></Route>
+            <Route
+              path="/step_data_manipulation"
+              element={(props) => (
                 <StepDataManipulation
                   {...props}
                   stepMethodSelectionData={stepMethodSelectionData}
@@ -54,9 +57,10 @@ function ImportSubscribers() {
                   setStepDataManipulationData={setStepDataManipulationData}
                 />
               )}
-            </Route>
-            <Route path="/step_results">
-              {(props) => (
+            ></Route>
+            <Route
+              path="/step_results"
+              element={(props) => (
                 <StepResults
                   {...props}
                   errors={stepDataManipulationData.errors}
@@ -68,9 +72,12 @@ function ImportSubscribers() {
                   }
                 />
               )}
-            </Route>
-            <Route path="*">{() => <Redirect to="/step_clean_list" />}</Route>
-          </Switch>
+            ></Route>
+            <Route
+              path="*"
+              element={() => <Redirect to="/step_clean_list" />}
+            ></Route>
+          </Routes>
         </ScrollToTop>
       </HashRouter>
     </GlobalContext.Provider>

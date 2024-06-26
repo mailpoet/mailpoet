@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 
 import { SubscriberList } from 'subscribers/list.tsx';
 import { SubscriberForm } from 'subscribers/form.jsx';
@@ -15,12 +15,15 @@ function App() {
       <HashRouter>
         <GlobalNotices />
         <Notices />
-        <Switch>
-          <Route path="/new">{withBoundary(SubscriberForm)}</Route>
-          <Route path="/edit/:id">{withBoundary(SubscriberForm)}</Route>
-          <Route path="/stats/:id/(.*)?">{withBoundary(SubscriberStats)}</Route>
-          <Route path="*">{withBoundary(SubscriberList)}</Route>
-        </Switch>
+        <Routes>
+          <Route path="/new" element={withBoundary(SubscriberForm)} />
+          <Route path="/edit/:id" element={withBoundary(SubscriberForm)} />
+          <Route
+            path="/stats/:id/(.*)?"
+            element={withBoundary(SubscriberStats)}
+          />
+          <Route path="*" element={withBoundary(SubscriberList)} />
+        </Routes>
       </HashRouter>
     </GlobalContext.Provider>
   );

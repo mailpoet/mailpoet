@@ -3,7 +3,7 @@ import {
   HashRouter,
   Redirect,
   Route,
-  Switch,
+  Routes,
   useParams,
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -196,16 +196,18 @@ function App() {
         <ErrorBoundary>
           <MssAccessNotices />
         </ErrorBoundary>
-        <Switch>
-          <Route exact path="/">
-            {() => (
+        <Routes>
+          <Route
+            exact
+            path="/"
+            element={
               <Redirect
                 to={
                   window.mailpoet_newsletters_count === 0 ? '/new' : '/standard'
                 }
               />
-            )}
-          </Route>
+            }
+          />
           {routes.map((route) => (
             <Route
               key={route.path}
@@ -213,11 +215,10 @@ function App() {
               component={route.component}
               name={route.name || null}
               data={route.data || null}
-            >
-              {route.children}
-            </Route>
+              element={route.children}
+            />
           ))}
-        </Switch>
+        </Routes>
       </HashRouter>
     </GlobalContext.Provider>
   );

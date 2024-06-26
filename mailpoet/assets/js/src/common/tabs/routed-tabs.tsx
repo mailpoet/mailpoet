@@ -4,7 +4,7 @@ import {
   HashRouter,
   Redirect,
   Route,
-  Switch,
+  Routes,
   useHistory,
   useRouteMatch,
 } from 'react-router-dom';
@@ -74,11 +74,11 @@ function RoutedTabs({
   //  1. We use a single route with an array of all tab URLs (all render the same component).
   //  2. Using 'render' (not 'component') ensures it is reused even when wrapped in a callback.
   const routedTabs = (
-    <Switch>
+    <Routes>
       <Route
         exact
         path={Object.values(keyPathMap)}
-        render={() => (
+        element={
           <RouterAwareTabs
             activeKey={activeKey}
             onSwitch={onSwitch}
@@ -88,10 +88,10 @@ function RoutedTabs({
           >
             {children}
           </RouterAwareTabs>
-        )}
+        }
       />
-      <Route>{() => <Redirect to={`${routerPrefix}${activeKey}`} />}</Route>
-    </Switch>
+      <Route element={<Redirect to={`${routerPrefix}${activeKey}`} />} />
+    </Routes>
   );
 
   if (routerType === 'switch-only') {
