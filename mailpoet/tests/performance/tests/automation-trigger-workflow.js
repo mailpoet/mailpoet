@@ -27,7 +27,7 @@ import {
 } from '../utils/helpers.js';
 
 export async function automationTriggerWorkflow() {
-  const page = browser.newPage();
+  const page = await browser.newPage();
 
   try {
     const subscriberEmail =
@@ -129,8 +129,8 @@ export async function automationTriggerWorkflow() {
     // Thinking time and closing
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
-    page.close();
-    browser.context().close();
+    await page.close();
+    await browser.context().close();
   }
 }
 

@@ -75,7 +75,7 @@ export async function waitForSelectorToBeClickable(page, element) {
 
 // Add an item to the automation workflow
 export async function addActionTriggerItemToWorkflow(page, actionName) {
-  await page.locator('.components-search-control__input').type(actionName);
+  await page.locator('.components-input-control__input').type(actionName);
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
   await page.keyboard.press('Enter');

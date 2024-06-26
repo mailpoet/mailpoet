@@ -27,7 +27,7 @@ import {
 } from '../utils/helpers.js';
 
 export async function formsSubscribing() {
-  const page = browser.newPage();
+  const page = await browser.newPage();
 
   try {
     let subscriberEmail = 'blackhole+testform' + Date.now() + '@mailpoet.com';
@@ -96,8 +96,8 @@ export async function formsSubscribing() {
     // Thinking time and closing
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
-    page.close();
-    browser.context().close();
+    await page.close();
+    await browser.context().close();
   }
 }
 

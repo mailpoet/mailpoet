@@ -23,7 +23,7 @@ import {
 import { login, waitForSelectorToBeVisible } from '../utils/helpers.js';
 
 export async function automationTrashRestore() {
-  const page = browser.newPage();
+  const page = await browser.newPage();
 
   try {
     // Log in to WP Admin
@@ -92,8 +92,8 @@ export async function automationTrashRestore() {
     // Thinking time and closing
     sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
-    page.close();
-    browser.context().close();
+    await page.close();
+    await browser.context().close();
   }
 }
 
