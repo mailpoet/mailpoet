@@ -55,8 +55,8 @@ function StepError({ stepId }: StepErrorProps): JSX.Element {
         icon={step.icon}
         foreground={step.foreground}
         background={step.background}
-        width="23px"
-        height="23px"
+        width="32px"
+        height="32px"
       />
       {step.title(stepData, 'other')}
     </CompositeItem>
