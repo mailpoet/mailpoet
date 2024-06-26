@@ -86,7 +86,11 @@ export const runLogs: RunData = {
       updated_at: `${datePrefix}-26T14:22:02.000Z`,
       run_number: 1,
       data: '{}',
-      error: null,
+      error: {
+        message: 'Subscriber is not subscribed to marketing emails.',
+        errorClass: '',
+        code: 400,
+      },
     },
   ],
   steps: {
