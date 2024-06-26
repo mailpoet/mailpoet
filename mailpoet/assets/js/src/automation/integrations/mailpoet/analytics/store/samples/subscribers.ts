@@ -1,6 +1,5 @@
 import { __ } from '@wordpress/i18n';
 import { SubscriberSection } from '../types';
-import { statusMap } from '../../components/tabs/subscribers/cells/status';
 
 const year = new Date().getFullYear();
 const month = new Date().getMonth();
@@ -32,7 +31,7 @@ export const subscribers: SubscriberSection['data'] = {
       },
       run: {
         id: 1,
-        status: statusMap.complete,
+        status: 'complete',
         step: { id: 'send-email', name: __('Send email', 'mailpoet') },
       },
     },
@@ -47,7 +46,7 @@ export const subscribers: SubscriberSection['data'] = {
       },
       run: {
         id: 2,
-        status: statusMap.running,
+        status: 'running',
         step: { id: 'delay', name: __('Delay', 'mailpoet') },
       },
     },
@@ -62,7 +61,7 @@ export const subscribers: SubscriberSection['data'] = {
       },
       run: {
         id: 3,
-        status: statusMap.complete,
+        status: 'failed',
         step: { id: 'send-email', name: __('Send email', 'mailpoet') },
       },
     },
@@ -77,7 +76,7 @@ export const subscribers: SubscriberSection['data'] = {
       },
       run: {
         id: 4,
-        status: statusMap.complete,
+        status: 'complete',
         step: {
           id: 'update-subscriber',
           name: __('Update subscriber', 'mailpoet'),
