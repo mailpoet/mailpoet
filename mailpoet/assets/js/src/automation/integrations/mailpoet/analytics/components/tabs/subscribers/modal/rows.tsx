@@ -3,7 +3,7 @@ import { Log } from './types';
 import { Steps } from '../../../../../../../editor/components/automation/types';
 import { MailPoet } from '../../../../../../../../mailpoet';
 import { StepCell } from '../cells/step';
-import { StatusCell } from '../cells/status';
+import { AutomationRunStatus } from '../../../../../../../components/status';
 
 export const headers = [
   {
@@ -47,7 +47,7 @@ export function transformLogsToRows(logs: Log[], steps: Steps) {
           value: log.updated_at,
         },
         {
-          display: <StatusCell status={log.status} />,
+          display: <AutomationRunStatus status={log.status} />,
         },
       ])
     : [];
