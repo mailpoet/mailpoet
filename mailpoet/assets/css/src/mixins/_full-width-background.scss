@@ -4,7 +4,7 @@
   &:before {
     background: $background;
     content: '';
-    inset: (-$grid-gap-large) -100vw (-$grid-gap-large) -100vw;
+    inset: (-$grid-gap-large) -100vw;
     position: absolute;
     z-index: -1;
   }
