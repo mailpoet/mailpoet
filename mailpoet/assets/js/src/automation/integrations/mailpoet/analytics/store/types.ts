@@ -189,6 +189,12 @@ export type State = {
   };
 };
 
+export type Error = {
+  message: string;
+  errorClass: string;
+  code: number;
+};
+
 export type Run = {
   id: number;
   automation_id: number;
@@ -206,7 +212,7 @@ export type Log = {
   updated_at: string;
   run_number: number;
   data: string;
-  error: string | null;
+  error: Error | null;
 };
 
 export type RunData = {

@@ -47,7 +47,14 @@ export function transformLogsToRows(logs: Log[], steps: Steps) {
           value: log.updated_at,
         },
         {
-          display: <AutomationRunStatus status={log.status} />,
+          display: (
+            <>
+              <AutomationRunStatus status={log.status} />
+              <div className="mailpoet-analytics-activity-modal-status-info">
+                {log.error && log.error.message}
+              </div>
+            </>
+          ),
         },
       ])
     : [];
