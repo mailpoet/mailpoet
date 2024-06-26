@@ -207,6 +207,7 @@ export type Log = {
   step_id: string;
   step_type: string;
   step_key: string;
+  step_name: string;
   status: string;
   started_at: string;
   updated_at: string;
