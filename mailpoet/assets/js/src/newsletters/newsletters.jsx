@@ -128,53 +128,53 @@ const routes = [
   /* Listings */
   {
     path: '/notification/history/:parentId/(.*)?',
-    render: withBoundary(Tabs),
+    children: withBoundary(Tabs),
   },
   {
     path: '/(standard|notification|re_engagement)/(.*)?',
-    render: withBoundary(Tabs),
+    children: withBoundary(Tabs),
   },
   /* New newsletter: types */
   {
     path: '/new/standard',
-    render: withBoundary(NewsletterTypeStandard),
+    children: withBoundary(NewsletterTypeStandard),
   },
   {
     path: '/new/notification',
-    render: withBoundary(NewsletterNotification),
+    children: withBoundary(NewsletterNotification),
   },
   {
     path: '/new/re-engagement',
-    render: withBoundary(NewsletterTypeReEngagement),
+    children: withBoundary(NewsletterTypeReEngagement),
   },
   /* Newsletter: type selection */
   {
     path: '/new',
-    render: withBoundary(NewNewsletter),
+    children: withBoundary(NewNewsletter),
   },
   /* Template selection */
   {
     name: 'template',
     path: '/template/:id',
-    render: withBoundary(NewsletterTemplates),
+    children: withBoundary(NewsletterTemplates),
   },
   /* congratulate */
   {
     path: '/send/congratulate/:id',
-    render: withBoundary(Congratulate),
+    children: withBoundary(Congratulate),
   },
   /* Sending options */
   {
     path: '/send/:id',
-    render: withBoundary(NewsletterSend),
+    children: withBoundary(NewsletterSend),
   },
   {
     path: '/sending-status/:id/(.*)?',
-    render: withBoundary(SendingStatus),
+    children: withBoundary(SendingStatus),
   },
   {
     path: '/stats/:id/(.*)?',
-    render: withBoundary(CampaignStatsPage),
+    children: withBoundary(CampaignStatsPage),
   },
 ];
 
@@ -197,17 +197,15 @@ function App() {
           <MssAccessNotices />
         </ErrorBoundary>
         <Switch>
-          <Route
-            exact
-            path="/"
-            render={() => (
+          <Route exact path="/">
+            {() => (
               <Redirect
                 to={
                   window.mailpoet_newsletters_count === 0 ? '/new' : '/standard'
                 }
               />
             )}
-          />
+          </Route>
           {routes.map((route) => (
             <Route
               key={route.path}
@@ -215,8 +213,9 @@ function App() {
               component={route.component}
               name={route.name || null}
               data={route.data || null}
-              render={route.render}
-            />
+            >
+              {route.children}
+            </Route>
           ))}
         </Switch>
       </HashRouter>

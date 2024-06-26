@@ -8,8 +8,8 @@ import { WelcomeWizardStepLayout } from './layout/step-layout.jsx';
 import { ErrorBoundary } from '../common';
 
 type WooCommerceControllerPropType = {
-  isWizardStep: boolean;
-  redirectToNextStep: () => void;
+  isWizardStep?: boolean;
+  redirectToNextStep?: () => void;
 };
 
 function WooCommerceController({

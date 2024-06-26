@@ -4,6 +4,7 @@ import { Form } from 'form/form.jsx';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { SubscribersLimitNotice } from 'notices/subscribers-limit-notice';
 import { MailPoet } from 'mailpoet';
+import { useParams } from 'react-router-dom';
 import { BackButton, PageHeader } from '../../common/page-header';
 import { TopBarWithBeamer } from '../../common/top-bar/top-bar';
 
@@ -43,15 +44,9 @@ const messages = {
   },
 };
 
-type SegmentFormPropType = {
-  match: {
-    params: {
-      id: string;
-    };
-  };
-};
+function SegmentForm() {
+  const params = useParams();
 
-function SegmentForm({ match }: SegmentFormPropType) {
   return (
     <div className="mailpoet-main-container">
       <TopBarWithBeamer />
@@ -73,7 +68,7 @@ function SegmentForm({ match }: SegmentFormPropType) {
       <Form
         endpoint="segments"
         fields={fields}
-        params={match.params}
+        params={params}
         messages={messages}
       />
     </div>

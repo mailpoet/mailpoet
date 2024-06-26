@@ -7,6 +7,9 @@ import { WooCommerceController } from './woocommerce-controller';
 import { registerTranslations, withBoundary } from '../common';
 import { WelcomeWizardStepsController } from './welcome-wizard-controller';
 
+const WizardWithBoundary = withBoundary(WelcomeWizardStepsController);
+const WooCommerceWithBoundary = withBoundary(WooCommerceController);
+
 function App(): JSX.Element {
   let basePath = '/steps/1';
   const savedStep = window.mailpoet_welcome_wizard_current_step;
@@ -22,15 +25,13 @@ function App(): JSX.Element {
       <HashRouter>
         <Notices />
         <Switch>
-          <Route
-            path="/steps/:step"
-            component={withBoundary(WelcomeWizardStepsController)}
-          />
-          <Route
-            path="/woocommerce"
-            component={withBoundary(WooCommerceController)}
-          />
-          <Route render={() => <Redirect to={basePath} />} />
+          <Route path="/steps/:step">
+            <WizardWithBoundary />
+          </Route>
+          <Route path="/woocommerce">
+            <WooCommerceWithBoundary />
+          </Route>
+          <Route>{() => <Redirect to={basePath} />}</Route>
         </Switch>
       </HashRouter>
     </GlobalContext.Provider>

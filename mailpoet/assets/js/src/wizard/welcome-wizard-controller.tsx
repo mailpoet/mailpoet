@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSetting } from 'settings/store/hooks';
 import { Settings } from 'settings/store/types';
+import { useHistory, useParams } from 'react-router-dom';
 import { partial } from 'underscore';
 
-import { History } from 'history';
 import { WelcomeWizardSenderStep } from './steps/sender-step';
 import { WelcomeWizardUsageTrackingStep } from './steps/usage-tracking-step';
 import { WelcomeWizardPitchMSSStep } from './steps/pitch-mss-step';
 import { WooCommerceController } from './woocommerce-controller';
 import { WelcomeWizardStepLayout } from './layout/step-layout.jsx';
-
 import { createSenderSettings } from './create-sender-settings.jsx';
 import {
   getStepsCount,
@@ -25,17 +24,12 @@ import { finishWizard } from './finish-wizard';
 import { updateSettings } from './update-settings';
 import { navigateToPath } from './navigate-to-path';
 
-type WelcomeWizardStepsControllerPropType = {
-  match: { params: { step: string } };
-  history: History;
-};
+function WelcomeWizardStepsController(): JSX.Element {
+  const params: { step: string } = useParams();
+  const history = useHistory();
 
-function WelcomeWizardStepsController({
-  match,
-  history,
-}: WelcomeWizardStepsControllerPropType): JSX.Element {
   const stepsCount = getStepsCount();
-  const step = parseInt(match.params.step, 10);
+  const step = parseInt(params.step, 10);
 
   const [loading, setLoading] = useState(false);
   const [sender, setSender] = useSetting('sender');
