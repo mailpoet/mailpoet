@@ -1,8 +1,8 @@
 import { SubscriberSection } from '../../../store';
 import { CustomerCell } from '../orders/cells/customer';
 import { MailPoet } from '../../../../../../../mailpoet';
-import { StatusCell } from './cells/status';
 import { StepCell } from './cells/step';
+import { AutomationRunStatus } from '../../../../../../components/status';
 
 export function transformSubscribersToRows(data: SubscriberSection['data']) {
   const subscribers = data?.items;
@@ -28,7 +28,7 @@ export function transformSubscribersToRows(data: SubscriberSection['data']) {
           value: subscriber.run.step.name,
         },
         {
-          display: <StatusCell status={subscriber.run.status} />,
+          display: <AutomationRunStatus status={subscriber.run.status} />,
           value: subscriber.run.status,
         },
         {
