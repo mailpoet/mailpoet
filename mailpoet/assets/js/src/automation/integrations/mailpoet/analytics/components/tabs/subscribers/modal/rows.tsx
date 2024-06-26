@@ -1,9 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { Log } from './types';
 import { Steps } from '../../../../../../../editor/components/automation/types';
 import { MailPoet } from '../../../../../../../../mailpoet';
 import { StepCell } from '../cells/step';
 import { AutomationRunStatus } from '../../../../../../../components/status';
+import { Log } from '../../../../store';
 
 export const headers = [
   {
