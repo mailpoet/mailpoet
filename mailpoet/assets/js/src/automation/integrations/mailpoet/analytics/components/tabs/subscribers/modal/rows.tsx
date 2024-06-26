@@ -32,8 +32,13 @@ export function transformLogsToRows(logs: Log[], steps: Steps) {
   return logs
     ? logs.map((log) => [
         {
-          display: <StepCell name={log.step_key} data={steps[log.step_id]} />,
-          value: log.step_key,
+          display: (
+            <StepCell
+              name={log.step_name || log.step_key}
+              data={steps[log.step_id]}
+            />
+          ),
+          value: log.step_name || log.step_key,
         },
         {
           display: MailPoet.Date.format(new Date(log.started_at)),
