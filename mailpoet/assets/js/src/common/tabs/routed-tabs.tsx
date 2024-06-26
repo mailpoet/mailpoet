@@ -90,7 +90,7 @@ function RoutedTabs({
           </RouterAwareTabs>
         )}
       />
-      <Redirect to={`${routerPrefix}${activeKey}`} />
+      <Route>{() => <Redirect to={`${routerPrefix}${activeKey}`} />}</Route>
     </Switch>
   );
 
