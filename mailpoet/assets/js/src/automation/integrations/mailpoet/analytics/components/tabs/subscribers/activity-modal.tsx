@@ -3,10 +3,12 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { Table } from '@woocommerce/components';
 import apiFetch from '@wordpress/api-fetch';
-import { ActivityModalState, RunData } from './modal/types';
 import { Header } from './modal/header';
 import { headers, transformLogsToRows } from './modal/rows';
 import { Footer } from './modal/footer';
+import { RunData } from '../../../store';
+
+export type ActivityModalState = 'loading' | 'loaded' | 'error' | 'hidden';
 
 export function ActivityModal(): JSX.Element {
   const history = useHistory();

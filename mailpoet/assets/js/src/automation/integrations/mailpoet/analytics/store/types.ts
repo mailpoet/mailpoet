@@ -2,6 +2,7 @@ import { Data } from 'common/premium-modal/upgrade-info';
 import {
   Automation,
   Step,
+  Steps,
 } from '../../../../editor/components/automation/types';
 
 export type CurrentAndPrevious = {
@@ -186,4 +187,31 @@ export type State = {
     utmCampaign?: string;
     data?: Data;
   };
+};
+
+export type Run = {
+  id: number;
+  automation_id: number;
+  status: string;
+};
+
+export type Log = {
+  id: number;
+  automation_run_id: number;
+  step_id: string;
+  step_type: string;
+  step_key: string;
+  status: string;
+  started_at: string;
+  updated_at: string;
+  run_number: number;
+  data: string;
+  error: string | null;
+};
+
+export type RunData = {
+  run: Run;
+  logs: Log[];
+  steps: Steps;
+  subscriber: Subscriber;
 };
