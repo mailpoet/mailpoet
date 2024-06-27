@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useRouteMatch } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { Loading } from 'common/loading';
 
@@ -11,7 +11,7 @@ import { EngagementSummary } from './stats/engagement-summary';
 import { StatsType } from './types';
 
 export function SubscriberStats(): JSX.Element {
-  const match = useRouteMatch<{ id: string }>();
+  const params = useParams();
   const location = useLocation();
   const [stats, setStats] = useState<StatsType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,7 @@ export function SubscriberStats(): JSX.Element {
       endpoint: 'subscriberStats',
       action: 'get',
       data: {
-        subscriber_id: match.params.id,
+        subscriber_id: params.id,
       },
     })
       .done((response) => {
@@ -35,7 +35,7 @@ export function SubscriberStats(): JSX.Element {
           MailPoet.Notice.showApiErrorNotice(response, { scroll: true });
         }
       });
-  }, [match.params.id]);
+  }, [params.id]);
 
   if (loading) {
     return <Loading />;
@@ -50,14 +50,14 @@ export function SubscriberStats(): JSX.Element {
         <Summary
           stats={stats}
           subscriber={{
-            id: Number(match.params.id),
+            id: Number(params.id),
             engagement_score: stats.engagement_score,
           }}
         />
         <EngagementSummary stats={stats} />
         {stats.is_woo_active && <WoocommerceRevenues stats={stats} />}
       </div>
-      <OpenedEmailsStats params={match.params} location={location} />
+      <OpenedEmailsStats params={params} location={location} />
     </div>
   );
 }
