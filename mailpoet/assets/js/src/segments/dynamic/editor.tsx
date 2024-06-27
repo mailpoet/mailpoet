@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 
-import { useRouteMatch, useLocation } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
@@ -11,7 +11,7 @@ import { storeName } from './store';
 import { BackButton, PageHeader } from '../../common/page-header';
 
 export function Editor(): JSX.Element {
-  const match = useRouteMatch<{ id: string }>();
+  const matchParams = useParams();
 
   const { pageLoaded, pageUnloaded } = useDispatch(storeName);
   const previousPage: string = useSelect((select) =>
@@ -24,15 +24,15 @@ export function Editor(): JSX.Element {
   const newsletterId = params.get('newsletterId') || null;
 
   useEffect(() => {
-    void pageLoaded(match.params.id);
+    void pageLoaded(matchParams.id);
 
     return () => {
       void pageUnloaded();
     };
-  }, [match.params.id, pageLoaded, pageUnloaded]);
+  }, [matchParams.id, pageLoaded, pageUnloaded]);
 
   const isNewSegment =
-    match.params.id === undefined || Number.isNaN(Number(match.params.id));
+    matchParams.id === undefined || Number.isNaN(Number(matchParams.id));
 
   return (
     <div className="mailpoet-main-container">
@@ -41,7 +41,7 @@ export function Editor(): JSX.Element {
 
       <PageHeader
         heading={
-          match.params.id
+          matchParams.id
             ? __('Edit segment', 'mailpoet')
             : __('New segment', 'mailpoet')
         }

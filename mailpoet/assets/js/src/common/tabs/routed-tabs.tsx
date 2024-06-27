@@ -6,7 +6,6 @@ import {
   Route,
   Routes,
   useNavigate,
-  useRouteMatch,
   useLocation,
 } from 'react-router-dom';
 import { noop } from 'lodash';
@@ -19,12 +18,11 @@ function RouterAwareTabs(
     routerPrefix?: string;
   },
 ) {
-  const match = useRouteMatch();
   const navigate = useNavigate();
   const location = useLocation();
 
   const activeKey = Object.keys(props.keyPathMap).find(
-    (key) => props.keyPathMap[key] === match.path,
+    (key) => props.keyPathMap[key] === location.pathname,
   );
 
   return (

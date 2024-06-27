@@ -1,5 +1,4 @@
 import {
-  useRouteMatch,
   Routes,
   Route,
   useParams,
@@ -13,7 +12,7 @@ import { MSSStepThirdPart } from './pitch-mss-step/third-part';
 import { navigateToPath } from '../navigate-to-path';
 
 function WelcomeWizardPitchMSSStep(): JSX.Element {
-  const { path } = useRouteMatch();
+  const { pathname } = useLocation();
   const { step } = useParams<{ step: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,13 +21,13 @@ function WelcomeWizardPitchMSSStep(): JSX.Element {
     if (!location.pathname.includes('part')) {
       navigateToPath(navigate, `/steps/${step}/part/1`, true);
     }
-  }, [step, path, navigate, location]);
+  }, [step, pathname, navigate, location]);
 
   return (
     <Routes>
-      <Route path={`${path}/part/1`} element={<MSSStepFirstPart />} />
-      <Route path={`${path}/part/2`} element={<MSSStepSecondPart />} />
-      <Route path={`${path}/part/3`} element={<MSSStepThirdPart />} />
+      <Route path={`${pathname}/part/1`} element={<MSSStepFirstPart />} />
+      <Route path={`${pathname}/part/2`} element={<MSSStepSecondPart />} />
+      <Route path={`${pathname}/part/3`} element={<MSSStepThirdPart />} />
     </Routes>
   );
 }
