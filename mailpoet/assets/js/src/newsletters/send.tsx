@@ -2,10 +2,16 @@ import _ from 'lodash';
 import { ChangeEvent, Component, ContextType } from 'react';
 import jQuery from 'jquery';
 import { __, _x } from '@wordpress/i18n';
-import { History, Location } from 'history';
 import ReactStringReplace from 'react-string-replace';
 import slugify from 'slugify';
-import { match as RouterMatch, withRouter } from 'react-router-dom';
+import {
+  useNavigate,
+  useLocation,
+  NavigateFunction,
+  Location,
+  useParams,
+  Params,
+} from 'react-router-dom';
 
 import { Background } from 'common/background/background';
 import { Button, ErrorBoundary } from 'common';
@@ -40,11 +46,9 @@ const generateGaTrackingCampaignName = (
 };
 
 type NewsletterSendComponentProps = {
-  match: RouterMatch<{
-    id: string;
-  }>;
-  history: History;
+  navigate: NavigateFunction;
   location: Location;
+  params: Params;
 };
 
 type NewsletterSendComponentState = {
@@ -184,7 +188,7 @@ class NewsletterSendComponent extends Component<
 
   componentDidMount() {
     // safe to ignore since even on rejection the state is updated
-    void this.loadItem(this.props.match.params.id).always(() => {
+    void this.loadItem(this.props.params.id).always(() => {
       this.setState({ loading: false });
     });
     jQuery('#mailpoet_newsletter').parsley({
@@ -193,9 +197,9 @@ class NewsletterSendComponent extends Component<
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.match.params.id !== prevProps.match.params.id) {
+    if (this.props.params.id !== prevProps.match.params.id) {
       // safe to ignore since even on rejection the state is updated
-      void this.loadItem(this.props.match.params.id).always(() => {
+      void this.loadItem(this.props.params.id).always(() => {
         this.setState({ loading: false });
       });
     }
@@ -295,7 +299,7 @@ class NewsletterSendComponent extends Component<
               item: {} as NewsLetter,
             },
             () => {
-              this.props.history.push(goToUrl);
+              this.props.navigate(goToUrl);
             },
           );
         }
@@ -326,7 +330,7 @@ class NewsletterSendComponent extends Component<
             item: {} as NewsLetter,
           },
           () => {
-            this.props.history.push('/new');
+            this.props.navigate('/new');
           },
         );
       });
@@ -443,7 +447,7 @@ class NewsletterSendComponent extends Component<
         this.saveTemplate(saveResponse, () => {
           if (window.mailpoet_show_congratulate_after_first_newsletter) {
             MailPoet.Modal.loading(false);
-            this.props.history.push(`/send/congratulate/${this.state.item.id}`);
+            this.props.navigate(`/send/congratulate/${this.state.item.id}`);
             return;
           }
           this.redirectToListing('activated');
@@ -493,7 +497,7 @@ class NewsletterSendComponent extends Component<
       endpoint: 'newsletters',
       action: 'setStatus',
       data: {
-        id: this.props.match.params.id,
+        id: this.props.params.id,
         status: 'active',
       },
     })
@@ -502,7 +506,7 @@ class NewsletterSendComponent extends Component<
         this.saveTemplate(saveResponse, () => {
           if (window.mailpoet_show_congratulate_after_first_newsletter) {
             MailPoet.Modal.loading(false);
-            this.props.history.push(`/send/congratulate/${this.state.item.id}`);
+            this.props.navigate(`/send/congratulate/${this.state.item.id}`);
             return;
           }
           this.redirectToListing('activated');
@@ -612,7 +616,7 @@ class NewsletterSendComponent extends Component<
     if (['automatic', 'welcome'].includes(this.state.item.type)) {
       window.location.href = `admin.php?page=mailpoet-automation&notice=${action}`;
     } else {
-      this.props.history.push(`/${this.state.item.type}`);
+      this.props.navigate(`/${this.state.item.type}`);
     }
   };
 
@@ -874,7 +878,7 @@ class NewsletterSendComponent extends Component<
                           wpPostId,
                         )}`
                       : `?page=mailpoet-newsletter-editor&id=${Number(
-                          this.props.match.params.id,
+                          this.props.params.id,
                         )}`
                   }
                   onClick={this.handleRedirectToDesign}
@@ -905,4 +909,17 @@ class NewsletterSendComponent extends Component<
 }
 
 NewsletterSendComponent.contextType = GlobalContext;
-export const NewsletterSend = withRouter(NewsletterSendComponent);
+
+export function NewsletterSend(props) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = useParams();
+  return (
+    <NewsletterSendComponent
+      {...props}
+      location={location}
+      navigate={navigate}
+      params={params}
+    />
+  );
+}

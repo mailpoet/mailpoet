@@ -1,8 +1,8 @@
 import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
 import { Component, createRef } from 'react';
-import { withRouter } from 'react-router-dom';
 import jQuery from 'jquery';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { MailPoet } from 'mailpoet';
@@ -56,7 +56,7 @@ class FormComponent extends Component {
 
     if (
       params.id === undefined &&
-      prevProps.location.pathname !== location.pathname
+      prevProps.location?.pathname !== location.pathname
     ) {
       setImmediate(() => {
         this.setState({
@@ -76,7 +76,7 @@ class FormComponent extends Component {
 
   loadItem = (id) => {
     const {
-      history,
+      navigate,
       endpoint = undefined,
       onItemLoad = undefined,
     } = this.props;
@@ -107,7 +107,7 @@ class FormComponent extends Component {
             item: {},
           },
           () => {
-            history.push('/lists');
+            navigate('/lists');
           },
         );
       });
@@ -117,7 +117,7 @@ class FormComponent extends Component {
     e.preventDefault();
 
     const {
-      history,
+      navigate,
       endpoint = undefined,
       fields = [],
       isValid = undefined,
@@ -169,7 +169,7 @@ class FormComponent extends Component {
         if (typeof onSuccess === 'function') {
           onSuccess();
         } else {
-          history.push('/');
+          navigate('/');
         }
 
         if (params.id !== undefined) {
@@ -330,9 +330,10 @@ FormComponent.propTypes = {
   onChange: PropTypes.func,
   onSubmit: PropTypes.func,
   onSuccess: PropTypes.func,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
+  navigate: PropTypes.func.isRequired,
 };
 
-export const Form = withRouter(FormComponent);
+export function Form(props) {
+  const navigate = useNavigate();
+  return <FormComponent {...props} navigate={navigate} />;
+}

@@ -12,7 +12,7 @@ import { ListingSearch } from 'listing/search.jsx';
 import { ListingFilters } from 'listing/filters.jsx';
 import { ListingItems } from 'listing/listing-items.jsx';
 import { MailerError } from 'notices/mailer-error';
-import { withRouter } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { GlobalContext } from 'context';
 import { withBoundary } from '../common';
 
@@ -67,7 +67,7 @@ class ListingComponent extends Component {
   });
 
   setParams = () => {
-    const { history, location = undefined } = this.props;
+    const { navigate, location = undefined } = this.props;
     if (location) {
       const params = Object.keys(this.state)
         .filter(
@@ -101,7 +101,7 @@ class ListingComponent extends Component {
       const url = this.getUrlWithParams(params);
 
       if (location.pathname !== url) {
-        history.push(`${url}`);
+        navigate(`${url}`);
       }
     }
   };
@@ -747,14 +747,19 @@ ListingComponent.propTypes = {
   renderExtraActions: PropTypes.func,
   onBeforeSelectFilter: PropTypes.func,
   getListingItemKey: PropTypes.func,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
+  navigate: PropTypes.func.isRequired,
   isItemDeletable: PropTypes.func,
   isItemToggleable: PropTypes.func,
   className: PropTypes.string,
 };
 
 ListingComponent.displayName = 'Listing';
+const ListingWithBoundary = withBoundary(ListingComponent);
 
-export const Listing = withRouter(withBoundary(ListingComponent));
+export function Listing(props) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  return (
+    <ListingWithBoundary {...props} navigate={navigate} location={location} />
+  );
+}

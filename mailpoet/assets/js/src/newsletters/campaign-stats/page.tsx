@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { __, _x } from '@wordpress/i18n';
 import { Hooks } from 'wp-js-hooks';
 import { MailPoet } from 'mailpoet';
-import { withRouter } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { RemoveWrapMargin } from 'common/remove-wrap-margin/remove-wrap-margin';
@@ -14,29 +14,20 @@ import { NewsletterType } from './newsletter-type';
 import { NewsletterStatsInfo } from './newsletter-stats-info';
 import { PremiumBanner } from './premium-banner';
 
-type Props = {
-  match: {
-    params: {
-      id: string;
-    };
-  };
-  history: {
-    push: (string) => void;
-  };
-  // eslint-disable-next-line @typescript-eslint/ban-types -- we need to match `withRouter`
-  location: object;
-};
-
 type State = {
   item?: NewsletterType;
   loading: boolean;
 };
 
-function CampaignStatsPageComponent({ match, history, location }: Props) {
+export function CampaignStatsPage() {
   const [state, setState] = useState<State>({
     item: undefined,
     loading: true,
   });
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = useParams();
 
   const loadItem = useCallback(
     (id) => {
@@ -68,20 +59,20 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
           setState({
             loading: false,
           });
-          history.push('/');
+          navigate('/');
         });
     },
-    [history, state.item],
+    [navigate, state.item],
   );
 
   useEffect(() => {
     // Scroll to top in case we're coming
     // from the middle of a long newsletter listing
     window.scrollTo(0, 0);
-    if (state.item?.id !== match.params.id) {
-      loadItem(match.params.id);
+    if (state.item?.id !== params.id) {
+      loadItem(params.id);
     }
-  }, [match.params.id, loadItem, state.item]);
+  }, [params.id, loadItem, state.item]);
 
   const { item, loading } = state;
   const newsletter = item;
@@ -142,7 +133,7 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
               'mailpoet_newsletters_subscriber_engagement',
               <PremiumBanner />,
               location,
-              match.params,
+              params,
               newsletter,
             )}
           </Tab>
@@ -160,7 +151,7 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
               'mailpoet_newsletters_bounces',
               <PremiumBanner />,
               location,
-              match.params,
+              params,
             )}
           </Tab>
         </Tabs>
@@ -169,5 +160,4 @@ function CampaignStatsPageComponent({ match, history, location }: Props) {
   );
 }
 
-CampaignStatsPageComponent.displayName = 'CampaignStatsPage';
-export const CampaignStatsPage = withRouter(CampaignStatsPageComponent);
+CampaignStatsPage.displayName = 'CampaignStatsPage';

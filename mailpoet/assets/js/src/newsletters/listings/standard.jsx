@@ -4,7 +4,7 @@ import { escapeHTML } from '@wordpress/escape-html';
 import { Component } from 'react';
 import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 import { confirmAlert } from 'common/confirm-alert.jsx';
 import { FilterSegmentTag, SegmentTags } from 'common/tag/tags';
@@ -294,7 +294,7 @@ class NewsletterListStandardComponent extends Component {
           <Listing
             limit={window.mailpoet_listing_per_page}
             location={this.props.location}
-            params={this.props.match.params}
+            params={this.props.params}
             endpoint="newsletters"
             type="standard"
             base_url="standard"
@@ -329,11 +329,14 @@ NewsletterListStandardComponent.contextType = GlobalContext;
 
 NewsletterListStandardComponent.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  match: PropTypes.shape({
-    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  }).isRequired,
+  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 NewsletterListStandardComponent.displayName = 'NewsletterListStandard';
-export const NewsletterListStandard = withRouter(
-  withBoundary(NewsletterListStandardComponent),
-);
+
+const WithBoundary = withBoundary(NewsletterListStandardComponent);
+
+export function NewsletterListStandard(props) {
+  const location = useLocation();
+  const params = useParams();
+  return <WithBoundary {...props} location={location} params={params} />;
+}

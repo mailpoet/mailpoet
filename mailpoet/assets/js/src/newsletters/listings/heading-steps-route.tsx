@@ -1,8 +1,7 @@
-import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { ListingHeadingSteps, Props } from './heading-steps';
+import { useLocation } from 'react-router-dom';
+import { ListingHeadingSteps } from './heading-steps';
 
-interface PropsWithRouter extends RouteComponentProps, Props {}
-
-export const ListingHeadingStepsRoute = withRouter((props: PropsWithRouter) => (
-  <ListingHeadingSteps {...props} />
-));
+export function ListingHeadingStepsRoute(props) {
+  const location = useLocation();
+  return <ListingHeadingSteps {...props} location={location} />;
+}

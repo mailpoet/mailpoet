@@ -1,10 +1,11 @@
-import PropTypes from 'prop-types';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import { TopBarWithBeamer } from 'common/top-bar/top-bar';
 import { plusIcon } from 'common/button/icon/plus';
 
-function SubscribersHeadingComponent({ location }) {
+export function SubscribersHeading() {
+  const location = useLocation();
+
   return (
     <TopBarWithBeamer>
       <Link
@@ -38,9 +39,3 @@ function SubscribersHeadingComponent({ location }) {
     </TopBarWithBeamer>
   );
 }
-
-SubscribersHeadingComponent.propTypes = {
-  location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-};
-
-export const SubscribersHeading = withRouter(SubscribersHeadingComponent);

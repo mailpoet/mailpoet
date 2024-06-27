@@ -1,22 +1,20 @@
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
-import { withRouter } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { withBoundary } from './error-boundary';
 
-function ScrollToTopComponent({ children, location: { pathname } }) {
+export function ScrollToTopComponent({ children }) {
+  const location = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [location.pathname]);
 
   return children || null;
 }
 
 ScrollToTopComponent.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string.isRequired,
-  }).isRequired,
   children: PropTypes.node.isRequired,
 };
 
 ScrollToTopComponent.displayName = 'ScrollToTopComponent';
-export const ScrollToTop = withRouter(withBoundary(ScrollToTopComponent));
+export const ScrollToTop = withBoundary(ScrollToTopComponent);

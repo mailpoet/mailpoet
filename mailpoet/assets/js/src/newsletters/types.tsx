@@ -4,13 +4,13 @@ import {
   Dropdown,
   MenuItem as WpMenuItem,
 } from '@wordpress/components';
-import { ComponentType, useState } from 'react';
+import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { chevronDown, Icon } from '@wordpress/icons';
 import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
 import _ from 'underscore';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Heading } from 'common/typography/heading/heading';
 import { EditorSelectModal } from 'newsletters/editor-select-modal';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
@@ -19,7 +19,6 @@ import { Info } from './types/info';
 
 interface Props {
   filter?: () => void;
-  history: RouteComponentProps['history'];
   hideScreenOptions?: boolean;
 }
 
@@ -28,11 +27,12 @@ const MenuItem = WpMenuItem as React.FC<
   React.ComponentProps<typeof WpMenuItem> & { variant: string }
 >;
 
-function NewsletterTypesComponent({
-  history,
+export function NewsletterTypes({
   filter = null,
   hideScreenOptions = true,
 }: Props): JSX.Element {
+  const navigate = useNavigate();
+
   const [isCreating, setIsCreating] = useState(false);
 
   const [isSelectEditorModalOpen, setIsSelectEditorModalOpen] = useState(false);
@@ -42,7 +42,7 @@ function NewsletterTypesComponent({
 
   const setupNewsletter = (type): void => {
     if (type !== undefined) {
-      history.push(`/new/${type}`);
+      navigate(`/new/${type}`);
       MailPoet.trackEvent('Emails > Type selected', {
         'Email type': type,
       });
@@ -105,7 +105,7 @@ function NewsletterTypesComponent({
       },
     })
       .done((response) => {
-        history.push(`/template/${response.data.id}`);
+        navigate(`/template/${response.data.id}`);
       })
       .fail((response) => {
         setIsCreating(false);
@@ -290,7 +290,3 @@ function NewsletterTypesComponent({
     </>
   );
 }
-
-export const NewsletterTypes = withRouter(
-  NewsletterTypesComponent as ComponentType<RouteComponentProps>,
-);

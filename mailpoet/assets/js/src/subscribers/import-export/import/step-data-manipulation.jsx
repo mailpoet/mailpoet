@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PreviousNextStepButtons } from './previous-next-step-buttons.jsx';
 import { Warnings } from './step-data-manipulation/warnings.jsx';
 import { MatchTable } from './step-data-manipulation/match-table.jsx';
@@ -24,12 +24,12 @@ function getPreviousStepLink(importData, subscribersLimitForValidation) {
   return 'step_input_validation';
 }
 
-function StepDataManipulationComponent({
-  history,
+export function StepDataManipulation({
   subscribersLimitForValidation,
   setStepDataManipulationData,
   stepMethodSelectionData = undefined,
 }) {
+  const navigate = useNavigate();
   const [selectedSegments, setSelectedSegments] = useState([]);
   const [updateExistingSubscribers, setUpdateExistingSubscribers] =
     useState(true);
@@ -40,9 +40,9 @@ function StepDataManipulationComponent({
   const [selectedTags, setSelectedTags] = useState([]);
   useEffect(() => {
     if (typeof stepMethodSelectionData === 'undefined') {
-      history.replace('step_method_selection');
+      navigate('step_method_selection', { replace: true });
     }
-  }, [stepMethodSelectionData, history]);
+  }, [stepMethodSelectionData, navigate]);
 
   const importSubscribers = () => {
     doImport(
@@ -54,7 +54,7 @@ function StepDataManipulationComponent({
       selectedTags,
       (importResults) => {
         setStepDataManipulationData(importResults);
-        history.push('step_results');
+        navigate('step_results');
       },
     );
   };
@@ -91,7 +91,7 @@ function StepDataManipulationComponent({
         <PreviousNextStepButtons
           canGoNext={selectedSegments.length > 0}
           onPreviousAction={() =>
-            history.push(
+            navigate(
               getPreviousStepLink(
                 stepMethodSelectionData,
                 subscribersLimitForValidation,
@@ -106,11 +106,7 @@ function StepDataManipulationComponent({
   );
 }
 
-StepDataManipulationComponent.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-    replace: PropTypes.func.isRequired,
-  }).isRequired,
+StepDataManipulation.propTypes = {
   stepMethodSelectionData: PropTypes.shape({
     duplicate: PropTypes.arrayOf(PropTypes.string),
     header: PropTypes.arrayOf(PropTypes.string),
@@ -131,5 +127,3 @@ StepDataManipulationComponent.propTypes = {
   subscribersLimitForValidation: PropTypes.number.isRequired,
   setStepDataManipulationData: PropTypes.func.isRequired,
 };
-
-export const StepDataManipulation = withRouter(StepDataManipulationComponent);

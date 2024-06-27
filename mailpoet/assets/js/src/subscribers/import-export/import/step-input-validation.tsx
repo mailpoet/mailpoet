@@ -1,5 +1,5 @@
-import { ComponentType, useCallback, useEffect, useState } from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { CleanList } from 'subscribers/import-export/import/clean-list';
 import { ErrorBoundary } from 'common';
@@ -17,38 +17,37 @@ type StepMethodSelectionData = {
 };
 
 type Props = {
-  history: RouteComponentProps['history'];
   stepMethodSelectionData?: StepMethodSelectionData;
 };
 
-function StepInputValidationComponent({
-  history,
+export function StepInputValidation({
   stepMethodSelectionData = undefined,
 }: Props): JSX.Element {
+  const navigate = useNavigate();
   const [importSource, setImportSource] = useState(undefined);
   const [lastSent, setLastSent] = useState(undefined);
 
   useEffect(() => {
     if (stepMethodSelectionData === undefined) {
-      history.replace('step_method_selection');
+      navigate('step_method_selection', { replace: true });
     }
-  }, [stepMethodSelectionData, history]);
+  }, [stepMethodSelectionData, navigate]);
 
   const lastSentSubmit = useCallback(
     (when) => {
       setLastSent(when);
       if (when === 'recently') {
-        history.push('step_data_manipulation');
+        navigate('step_data_manipulation');
       }
     },
-    [history, setLastSent],
+    [navigate, setLastSent],
   );
 
   return (
     <>
       {importSource === undefined && (
         <ErrorBoundary>
-          <InitialQuestion onSubmit={setImportSource} history={history} />
+          <InitialQuestion onSubmit={setImportSource} />
         </ErrorBoundary>
       )}
 
@@ -69,8 +68,4 @@ function StepInputValidationComponent({
   );
 }
 
-StepInputValidationComponent.displayName = 'StepInputValidationComponent';
-
-export const StepInputValidation = withRouter(
-  StepInputValidationComponent as ComponentType<RouteComponentProps>,
-);
+StepInputValidation.displayName = 'StepInputValidation';

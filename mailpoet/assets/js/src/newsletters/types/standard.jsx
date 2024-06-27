@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { ListingHeadingStepsRoute } from 'newsletters/listings/heading-steps-route';
 import { MailPoet } from 'mailpoet';
-import { withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from 'context';
 import { __ } from '@wordpress/i18n';
 
@@ -42,7 +42,7 @@ class NewsletterStandardComponent extends Component {
   }
 
   showTemplateSelection = (newsletterId) => {
-    this.props.history.push(`/template/${newsletterId}`);
+    this.props.navigate(`/template/${newsletterId}`);
   };
 
   render() {
@@ -60,11 +60,12 @@ class NewsletterStandardComponent extends Component {
 NewsletterStandardComponent.contextType = GlobalContext;
 
 NewsletterStandardComponent.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
+  navigate: PropTypes.func.isRequired,
 };
 
 NewsletterStandardComponent.displayName = 'NewsletterStandard';
 
-export const NewsletterTypeStandard = withRouter(NewsletterStandardComponent);
+export function NewsletterTypeStandard(props) {
+  const navigate = useNavigate();
+  return <NewsletterStandardComponent {...props} navigate={navigate} />;
+}

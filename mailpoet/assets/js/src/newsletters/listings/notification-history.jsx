@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import { Listing } from 'listing/listing.jsx';
@@ -182,6 +182,9 @@ const renderItem = (newsletter, actions, meta) => {
 };
 
 function NewsletterListNotificationHistoryComponent(props) {
+  const params = useParams();
+  const location = useLocation();
+
   return (
     <>
       <Link
@@ -193,9 +196,9 @@ function NewsletterListNotificationHistoryComponent(props) {
 
       <Listing
         limit={window.mailpoet_listing_per_page}
-        location={props.location}
+        location={location}
         params={{
-          ...props.match.params,
+          ...params,
           parentId: props.parentId,
         }}
         endpoint="newsletters"
@@ -220,17 +223,10 @@ function NewsletterListNotificationHistoryComponent(props) {
 
 NewsletterListNotificationHistoryComponent.propTypes = {
   parentId: PropTypes.string.isRequired,
-  location: PropTypes.shape({
-    pathname: PropTypes.string,
-  }).isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.node,
-    }).isRequired,
-  }).isRequired,
 };
 NewsletterListNotificationHistoryComponent.displayName =
   'NewsletterListNotificationHistory';
-export const NewsletterListNotificationHistory = withRouter(
-  withBoundary(NewsletterListNotificationHistoryComponent),
+
+export const NewsletterListNotificationHistory = withBoundary(
+  NewsletterListNotificationHistoryComponent,
 );
