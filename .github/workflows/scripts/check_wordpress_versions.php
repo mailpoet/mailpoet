@@ -84,7 +84,7 @@ function replacePreviousWordPressVersion(string $previousVersion): void {
 
 $allVersions = [];
 $page = 1;
-$maxPages = 4;
+$maxPages = 8;
 $latestVersion = null;
 $previousVersion = null;
 
@@ -92,6 +92,7 @@ echo "Fetching WordPress versions...\n";
 
 // We fetch the versions until we find the latest and previous versions. But there is a limit of 4 pages.
 while (($latestVersion === null || $previousVersion === null) && $page <= $maxPages) {
+  echo "Fetching page $page...\n";
   $versions = getWordpressVersions($page);
   $allVersions = array_merge($allVersions, $versions);
   $allVersions = filterVersions($allVersions);
