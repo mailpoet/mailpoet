@@ -1,11 +1,11 @@
 import { AutomationStatus } from '../../listing/automation';
 
-const SUCCESS_CLASS = 'success';
-const WARNING_CLASS = 'warning';
-const ERROR_CLASS = 'error';
-const DEFAULT_CLASS = '';
+export const SUCCESS_CLASS = 'success';
+export const WARNING_CLASS = 'warning';
+export const ERROR_CLASS = 'error';
+export const DEFAULT_CLASS = '';
 
-type ClassProps = {
+export type ClassProps = {
   [key: string]: string;
 };
 
@@ -21,11 +21,4 @@ export const automationRunStatusClasses: ClassProps = {
   cancelled: ERROR_CLASS,
   complete: DEFAULT_CLASS,
   failed: ERROR_CLASS,
-};
-
-export const orderStatusClasses: ClassProps = {
-  processing: SUCCESS_CLASS,
-  'on-hold': WARNING_CLASS,
-  failed: ERROR_CLASS,
-  trash: ERROR_CLASS,
 };

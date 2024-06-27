@@ -1,10 +1,6 @@
 import classNames from 'classnames';
 import { automationRunStatusNames, automationStatusNames } from './names';
-import {
-  automationRunStatusClasses,
-  automationStatusClasses,
-  orderStatusClasses,
-} from './classes';
+import { automationRunStatusClasses, automationStatusClasses } from './classes';
 
 type StatusBadgeProps = {
   name: string;
@@ -13,10 +9,6 @@ type StatusBadgeProps = {
 
 type StatusProps = {
   status: string;
-};
-
-type OrderStatusProps = StatusProps & {
-  name: string;
 };
 
 export function StatusBadge({
@@ -50,11 +42,5 @@ export function AutomationRunStatus({ status }: StatusProps): JSX.Element {
       name={automationRunStatusNames[status] ?? status}
       className={automationRunStatusClasses[status] ?? status}
     />
-  );
-}
-
-export function OrderStatus({ status, name }: OrderStatusProps): JSX.Element {
-  return (
-    <StatusBadge name={name} className={orderStatusClasses[status] ?? status} />
   );
 }
