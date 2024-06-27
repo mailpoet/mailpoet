@@ -72,6 +72,14 @@ class ChangelogController {
   }
 
   private function updateReadme($heading, $changesList) {
+    if (file_exists(dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'CHANGELOG.md')) {
+      $this->updateReadmeWitchChangelogFile($heading, $changesList);
+    } else {
+      $this->addChangelogEntryToReadmeFile($heading, $changesList);
+    }
+  }
+
+  private function addChangelogEntryToReadmeFile($heading, $changesList) {
     $headingPrefix = explode(self::HEADING_GLUE, $heading)[0];
     $readme = file_get_contents($this->readmeFile);
     $changelog = "$heading\n$changesList";
@@ -82,6 +90,34 @@ class ChangelogController {
     } else {
       $readme = preg_replace("/== Changelog ==\n/u", "== Changelog ==\n\n$changelog\n", $readme);
     }
+    file_put_contents($this->readmeFile, $readme);
+  }
+
+  private function updateReadmeWitchChangelogFile($heading, $changesList) {
+    $this->copyPreviousChangelogFromReadmeFile();
+    $this->removePreviousChangelogFromReadmeFile();
+    $this->addChangelogEntryToReadmeFile($heading, $changesList);
+  }
+
+  private function copyPreviousChangelogFromReadmeFile() {
+    $changelogFile = dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'CHANGELOG.md';
+    $readme = file_get_contents($this->readmeFile);
+    $pattern = '/== Changelog ==(.*)\[See the changelog for all versions.\]/s';
+    preg_match($pattern, $readme, $matches);
+    if (!isset($matches[1]) || strlen($matches[1]) < 1) {
+      throw new \Exception('Changelog not found in readme file');
+    }
+    $changelog = trim($matches[1]);
+
+    $newContent = preg_replace("/== Changelog ==\n/u", "== Changelog ==\n\n$changelog\n", file_get_contents($changelogFile));
+
+    file_put_contents($changelogFile, $newContent);
+  }
+
+  private function removePreviousChangelogFromReadmeFile() {
+    $readme = file_get_contents($this->readmeFile);
+    $pattern = '/== Changelog ==(.*)\[See the changelog for all versions.\]/s';
+    $readme = preg_replace($pattern, "== Changelog ==\n\n[See the changelog for all versions.]", $readme);
     file_put_contents($this->readmeFile, $readme);
   }
 }
