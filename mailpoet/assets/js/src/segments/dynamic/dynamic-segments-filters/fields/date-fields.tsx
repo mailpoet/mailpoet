@@ -51,6 +51,7 @@ const convertDateToString = (
 };
 
 const parseDate = (value: string): Date | undefined => {
+  if (!value) return undefined;
   const date = parseISO(value);
   if (!isValid(date)) return undefined;
   return date;
