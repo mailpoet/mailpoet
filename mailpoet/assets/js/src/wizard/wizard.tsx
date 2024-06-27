@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { HashRouter, Redirect, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
 import { initStore as initSettingsStore } from 'settings/store';
@@ -27,7 +27,7 @@ function App(): JSX.Element {
         <Routes>
           <Route path="/steps/:step" element={<WizardWithBoundary />} />
           <Route path="/woocommerce" element={<WooCommerceWithBoundary />} />
-          <Route element={<Redirect to={basePath} />} />
+          <Route element={<Navigate to={basePath} />} />
         </Routes>
       </HashRouter>
     </GlobalContext.Provider>

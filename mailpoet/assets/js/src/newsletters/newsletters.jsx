@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import {
   HashRouter,
-  Redirect,
+  Navigate,
   Route,
   Routes,
   useParams,
@@ -201,7 +201,7 @@ function App() {
             exact
             path="/"
             element={
-              <Redirect
+              <Navigate
                 to={
                   window.mailpoet_newsletters_count === 0 ? '/new' : '/standard'
                 }
