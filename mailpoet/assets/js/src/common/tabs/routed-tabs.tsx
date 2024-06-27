@@ -2,7 +2,7 @@ import { Children, ReactElement } from 'react';
 import {
   BrowserRouter,
   HashRouter,
-  Redirect,
+  Navigate,
   Route,
   Routes,
   useNavigate,
@@ -89,7 +89,7 @@ function RoutedTabs({
         />
       ))}
 
-      <Route element={<Redirect to={`${routerPrefix}${activeKey}`} />} />
+      <Route element={<Navigate to={`${routerPrefix}${activeKey}`} />} />
     </Routes>
   );
 

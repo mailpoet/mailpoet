@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { HashRouter, Redirect, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ScrollToTop } from 'common/scroll-to-top.jsx';
 
 import { GlobalContext, useGlobalContextValue } from 'context';
@@ -30,39 +30,35 @@ function ImportSubscribers() {
             <Route path="/step_clean_list">{withBoundary(StepCleanList)}</Route>
             <Route
               path="/step_method_selection"
-              element={(props) => (
+              element={
                 <StepMethodSelection
-                  {...props}
                   setStepMethodSelectionData={setStepMethodSelectionData}
                   subscribersLimitForValidation={subscribersLimitForValidation}
                 />
-              )}
-            ></Route>
+              }
+            />
             <Route
               path="/step_input_validation"
-              element={(props) => (
+              element={
                 <StepInputValidation
-                  {...props}
                   stepMethodSelectionData={stepMethodSelectionData}
                 />
-              )}
-            ></Route>
+              }
+            />
             <Route
               path="/step_data_manipulation"
-              element={(props) => (
+              element={
                 <StepDataManipulation
-                  {...props}
                   stepMethodSelectionData={stepMethodSelectionData}
                   subscribersLimitForValidation={subscribersLimitForValidation}
                   setStepDataManipulationData={setStepDataManipulationData}
                 />
-              )}
-            ></Route>
+              }
+            />
             <Route
               path="/step_results"
-              element={(props) => (
+              element={
                 <StepResults
-                  {...props}
                   errors={stepDataManipulationData.errors}
                   createdSubscribers={stepDataManipulationData.created}
                   updatedSubscribers={stepDataManipulationData.updated}
@@ -71,12 +67,9 @@ function ImportSubscribers() {
                     stepDataManipulationData.added_to_segment_with_welcome_notification
                   }
                 />
-              )}
-            ></Route>
-            <Route
-              path="*"
-              element={() => <Redirect to="/step_clean_list" />}
-            ></Route>
+              }
+            />
+            <Route path="*" element={<Navigate to="/step_clean_list" />} />
           </Routes>
         </ScrollToTop>
       </HashRouter>
