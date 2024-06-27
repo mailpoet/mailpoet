@@ -2,7 +2,7 @@ import classnames from 'classnames';
 import { Component, Fragment } from 'react';
 import { __ } from '@wordpress/i18n';
 import { escapeHTML } from '@wordpress/escape-html';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
 
@@ -388,7 +388,7 @@ class NewsletterListNotificationComponent extends Component {
           <Listing
             limit={window.mailpoet_listing_per_page}
             location={this.props.location}
-            params={this.props.match.params}
+            params={this.props.params}
             endpoint="newsletters"
             type="notification"
             base_url="notification"
@@ -421,11 +421,14 @@ class NewsletterListNotificationComponent extends Component {
 
 NewsletterListNotificationComponent.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  match: PropTypes.shape({
-    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  }).isRequired,
+  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 NewsletterListNotificationComponent.displayName = 'NewsletterListNotification';
-export const NewsletterListNotification = withRouter(
-  withBoundary(NewsletterListNotificationComponent),
-);
+
+const WithBoundary = withBoundary(NewsletterListNotificationComponent);
+
+export function NewsletterListNotification(props) {
+  const location = useLocation();
+  const params = useParams();
+  return <WithBoundary {...props} location={location} params={params} />;
+}

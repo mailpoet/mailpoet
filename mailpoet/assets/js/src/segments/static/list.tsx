@@ -1,5 +1,11 @@
 import { Component, ReactNode } from 'react';
-import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
+import {
+  Link,
+  useLocation,
+  useParams,
+  Location,
+  Params,
+} from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
 import { escapeHTML, escapeAttribute } from '@wordpress/escape-html';
@@ -258,7 +264,12 @@ const itemActions = [
   },
 ];
 
-class SegmentListComponent extends Component<RouteComponentProps> {
+type SegmentListComponentProps = {
+  params: Params;
+  location: Location;
+};
+
+class SegmentListComponent extends Component<SegmentListComponentProps> {
   renderItem = (segment: Segment, actions: ReactNode) => {
     const rowClasses = classnames(
       'manage-column',
@@ -363,7 +374,7 @@ class SegmentListComponent extends Component<RouteComponentProps> {
           <Listing
             limit={window.mailpoet_listing_per_page}
             location={this.props.location}
-            params={this.props.match.params}
+            params={this.props.params}
             messages={messages}
             search={false}
             endpoint="segments"
@@ -383,4 +394,10 @@ class SegmentListComponent extends Component<RouteComponentProps> {
   }
 }
 
-export const SegmentList = withRouter(SegmentListComponent);
+export function SegmentList(props) {
+  const params = useParams();
+  const location = useLocation();
+  return (
+    <SegmentListComponent {...props} params={params} location={location} />
+  );
+}

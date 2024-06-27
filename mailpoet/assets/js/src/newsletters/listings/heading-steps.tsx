@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import { Location } from 'history';
 import { Icon, video } from '@wordpress/icons';
+import { Location } from 'react-router-dom';
 import { __ } from '@wordpress/i18n';
 import { HideScreenOptions } from '../../common/hide-screen-options/hide-screen-options';
 import { MailPoetLogoResponsive } from '../../common/top-bar/mailpoet-logo-responsive';
@@ -129,7 +129,7 @@ export interface Props {
   step?: number;
   emailType?: string;
   automationId?: string;
-  location: Location;
+  location?: Location;
   onLogoClick?: () => void;
   buttons?: ReactNode;
 }
@@ -137,8 +137,8 @@ export interface Props {
 function ListingHeadingSteps({
   step,
   emailType,
-  location,
   automationId,
+  location,
   buttons,
   onLogoClick,
 }: Props): JSX.Element {

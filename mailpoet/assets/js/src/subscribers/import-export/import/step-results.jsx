@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import _ from 'underscore';
-import { withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
 import { Button } from 'common/button/button';
@@ -102,14 +102,14 @@ NoWelcomeEmail.propTypes = {
 
 NoWelcomeEmail.diplayName = 'NoWelcomeEmail';
 
-function StepResultsComponent({
-  history,
+export function StepResults({
   errors = [],
   createdSubscribers = undefined,
   updatedSubscribers = undefined,
   segments = undefined,
   addedToSegmentWithWelcomeNotification = undefined,
 }) {
+  const navigate = useNavigate();
   useEffect(() => {
     if (
       typeof segments === 'undefined' &&
@@ -117,13 +117,13 @@ function StepResultsComponent({
       typeof createdSubscribers === 'undefined' &&
       typeof updatedSubscribers === 'undefined'
     ) {
-      history.replace('step_method_selection');
+      navigate('step_method_selection', { replace: true });
     }
   }, [
     segments,
     createdSubscribers,
     errors.length,
-    history,
+    navigate,
     updatedSubscribers,
   ]);
   if (errors.length) {
@@ -165,7 +165,7 @@ function StepResultsComponent({
           <Button
             variant="secondary"
             type="button"
-            onClick={() => history.push('step_method_selection')}
+            onClick={() => navigate('step_method_selection')}
           >
             {MailPoet.I18n.t('importAgain')}
           </Button>
@@ -183,11 +183,7 @@ function StepResultsComponent({
   );
 }
 
-StepResultsComponent.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-    replace: PropTypes.func.isRequired,
-  }).isRequired,
+StepResults.propTypes = {
   errors: PropTypes.arrayOf(PropTypes.string.isRequired),
   segments: PropTypes.arrayOf(PropTypes.string.isRequired),
   createdSubscribers: PropTypes.number,
@@ -195,5 +191,4 @@ StepResultsComponent.propTypes = {
   addedToSegmentWithWelcomeNotification: PropTypes.bool,
 };
 
-StepResultsComponent.displayName = 'StepResultsComponent';
-export const StepResults = withRouter(StepResultsComponent);
+StepResults.displayName = 'StepResults';

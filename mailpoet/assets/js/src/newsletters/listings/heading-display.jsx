@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { mapPathToSteps } from './heading-steps.tsx';
 
 const isHeaderHidden = (location) =>
   location.hash.match(/^#\/new/) || location.pathname.match(/^\/new/);
 
-function ListingHeadingDisplayComponent({ children, location }) {
+export function ListingHeadingDisplay({ children }) {
+  const location = useLocation();
   const stepNumber = mapPathToSteps(location);
   if (stepNumber === null && !isHeaderHidden(location)) {
     return children;
@@ -13,9 +14,6 @@ function ListingHeadingDisplayComponent({ children, location }) {
   return null;
 }
 
-ListingHeadingDisplayComponent.propTypes = {
-  location: PropTypes.string.isRequired,
+ListingHeadingDisplay.propTypes = {
   children: PropTypes.node.isRequired,
 };
-
-export const ListingHeadingDisplay = withRouter(ListingHeadingDisplayComponent);

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
 import { ErrorBoundary } from 'common';
@@ -26,24 +26,24 @@ const getNextStepLink = (importData, subscribersLimitForValidation, method) => {
   return 'step_input_validation';
 };
 
-function StepMethodSelectionComponent({
-  history,
+export function StepMethodSelection({
   setStepMethodSelectionData,
   subscribersLimitForValidation,
 }) {
+  const navigate = useNavigate();
   const [method, setMethod] = useState(undefined);
   const [pastedCsvData, setPastedCsvData] = useState('');
   const [file, setFile] = useState(undefined);
 
   const finish = (parsedData) => {
     setStepMethodSelectionData(parsedData);
-    history.push(
+    navigate(
       getNextStepLink(parsedData, subscribersLimitForValidation, method),
     );
   };
 
   const previousStep = () => {
-    history.push('/step_clean_list');
+    navigate('/step_clean_list');
   };
 
   const processLocal = () => {
@@ -108,12 +108,8 @@ function StepMethodSelectionComponent({
   );
 }
 
-StepMethodSelectionComponent.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
+StepMethodSelection.propTypes = {
   setStepMethodSelectionData: PropTypes.func.isRequired,
   subscribersLimitForValidation: PropTypes.number.isRequired,
 };
-StepMethodSelectionComponent.diplayName = 'StepMethodSelection';
-export const StepMethodSelection = withRouter(StepMethodSelectionComponent);
+StepMethodSelection.diplayName = 'StepMethodSelection';

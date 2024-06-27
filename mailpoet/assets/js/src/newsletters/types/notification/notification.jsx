@@ -10,7 +10,7 @@ import { Background } from 'common/background/background';
 import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
 import { Grid } from 'common/grid';
-import { withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from 'context';
 
 const field = {
@@ -76,7 +76,7 @@ class NewsletterNotificationComponent extends Component {
   };
 
   showTemplateSelection = (newsletterId) => {
-    this.props.history.push(`/template/${newsletterId}`);
+    this.props.navigate(`/template/${newsletterId}`);
   };
 
   render() {
@@ -112,13 +112,12 @@ class NewsletterNotificationComponent extends Component {
 NewsletterNotificationComponent.contextType = GlobalContext;
 
 NewsletterNotificationComponent.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
+  navigate: PropTypes.func.isRequired,
 };
 
 NewsletterNotificationComponent.displayName = 'NewsletterNotification';
 
-export const NewsletterNotification = withRouter(
-  NewsletterNotificationComponent,
-);
+export function NewsletterNotification(props) {
+  const navigate = useNavigate();
+  return <NewsletterNotificationComponent {...props} navigate={navigate} />;
+}

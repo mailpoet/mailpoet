@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
+import { useNavigate } from 'react-router-dom';
 import { Radio } from 'common/form/radio/radio';
 import { PreviousNextStepButtons } from '../previous-next-step-buttons.jsx';
 
-function InitialQuestion({ onSubmit, history }) {
+function InitialQuestion({ onSubmit }) {
+  const navigate = useNavigate();
   const [importSource, setImportSource] = useState(undefined);
 
   function isFormValid() {
@@ -44,7 +46,7 @@ function InitialQuestion({ onSubmit, history }) {
       </div>
       <PreviousNextStepButtons
         canGoNext={isFormValid()}
-        onPreviousAction={() => history.push('step_method_selection')}
+        onPreviousAction={() => navigate('step_method_selection')}
         onNextAction={() => onSubmit(importSource)}
       />
     </div>
@@ -52,9 +54,6 @@ function InitialQuestion({ onSubmit, history }) {
 }
 
 InitialQuestion.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
   onSubmit: PropTypes.func.isRequired,
 };
 InitialQuestion.displayName = 'InitialQuestion';

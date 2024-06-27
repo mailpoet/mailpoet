@@ -3,7 +3,7 @@ import { __, _x } from '@wordpress/i18n';
 import { escapeHTML } from '@wordpress/escape-html';
 import { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import ReactStringReplace from 'react-string-replace';
 
 import { Toggle } from 'common/form/toggle/toggle';
@@ -379,7 +379,7 @@ class NewsletterListReEngagementComponent extends Component {
           <Listing
             limit={window.mailpoet_listing_per_page}
             location={this.props.location}
-            params={this.props.match.params}
+            params={this.props.params}
             endpoint="newsletters"
             type="re_engagement"
             base_url="re_engagement"
@@ -412,11 +412,14 @@ class NewsletterListReEngagementComponent extends Component {
 
 NewsletterListReEngagementComponent.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  match: PropTypes.shape({
-    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  }).isRequired,
+  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 NewsletterListReEngagementComponent.displayName = 'NewsletterListReEngagement';
-export const NewsletterListReEngagement = withRouter(
-  withBoundary(NewsletterListReEngagementComponent),
-);
+
+const WithBoundary = withBoundary(NewsletterListReEngagementComponent);
+
+export function NewsletterListReEngagement(props) {
+  const location = useLocation();
+  const params = useParams();
+  return <WithBoundary {...props} location={location} params={params} />;
+}

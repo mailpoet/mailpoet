@@ -9,7 +9,7 @@ import { Button } from 'common/button/button';
 import { Heading } from 'common/typography/heading/heading';
 import { GlobalContext } from 'context';
 import { Grid } from 'common/grid';
-import { ListingHeadingStepsRoute } from 'newsletters/listings/heading-steps-route';
+import { ListingHeadingSteps } from 'newsletters/listings/heading-steps';
 import { EventScheduling } from 'newsletters/automatic-emails/events/event-scheduling.jsx';
 import { EventOptions } from 'newsletters/automatic-emails/events/event-options';
 import { MailPoet } from 'mailpoet';
@@ -261,7 +261,7 @@ class EventsConditions extends Component {
       <div>
         <Background color="#fff" />
 
-        <ListingHeadingStepsRoute
+        <ListingHeadingSteps
           emailType="woocommerce"
           automationId="woocommerce_email_creation_heading"
         />
