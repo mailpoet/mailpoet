@@ -73,45 +73,36 @@ class ChangelogController {
 
   private function updateReadme($heading, $changesList) {
     if (file_exists(dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'CHANGELOG.md')) {
+      // for the free plugin, in the premium, we don't use the changelog file
       $this->updateReadmeWithChangelogFile($heading, $changesList);
-    } else {
-      $this->addChangelogEntryToReadmeFile($heading, $changesList);
     }
+    $this->addChangelogEntryToFile($heading, $changesList, $this->readmeFile);
   }
 
-  private function addChangelogEntryToReadmeFile($heading, $changesList) {
+  private function addChangelogEntryToFile($heading, $changesList, $fileName) {
     $headingPrefix = explode(self::HEADING_GLUE, $heading)[0];
-    $readme = file_get_contents($this->readmeFile);
-    $changelog = "$heading\n$changesList";
+    $headersDelimiter = "\n";
 
-    if (strpos($readme, $headingPrefix) !== false) {
-      $start = preg_quote($headingPrefix);
-      $readme = preg_replace("/$start.*?(?:\r*\n){2}/us", "$changelog\n\n", $readme);
-    } else {
-      $readme = preg_replace("/== Changelog ==\n/u", "== Changelog ==\n\n$changelog\n", $readme);
+    if (strpos($fileName, '.md') !== false) {
+      $headersDelimiter .= "\n";
+      $changesList = preg_replace("/^\*/m", "-", $changesList);
     }
-    file_put_contents($this->readmeFile, $readme);
+
+    $fileContents = file_get_contents($fileName);
+    $changelog = "$heading$headersDelimiter$changesList";
+
+    if (strpos($fileContents, $headingPrefix) !== false) {
+      $start = preg_quote($headingPrefix);
+      $fileContents = preg_replace("/$start.*?(?:\r*\n){2}([=\[])/us", "$changelog\n\n$1", $fileContents);
+    } else {
+      $fileContents = preg_replace("/== Changelog ==\n/u", "== Changelog ==\n\n$changelog\n", $fileContents);
+    }
+    file_put_contents($fileName, $fileContents);
   }
 
   private function updateReadmeWithChangelogFile($heading, $changesList) {
-    $this->copyPreviousChangelogFromReadmeFile();
+    $this->addChangelogEntryToFile($heading, $changesList, dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'CHANGELOG.md');
     $this->removePreviousChangelogFromReadmeFile();
-    $this->addChangelogEntryToReadmeFile($heading, $changesList);
-  }
-
-  private function copyPreviousChangelogFromReadmeFile() {
-    $changelogFile = dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'CHANGELOG.md';
-    $readme = file_get_contents($this->readmeFile);
-    $pattern = '/== Changelog ==(.*)\[See the changelog for all versions.\]/s';
-    preg_match($pattern, $readme, $matches);
-    if (!isset($matches[1]) || strlen($matches[1]) < 1) {
-      throw new \Exception('Changelog not found in readme file');
-    }
-    $changelog = trim($matches[1]);
-
-    $newContent = preg_replace("/== Changelog ==\n/u", "== Changelog ==\n\n$changelog\n", file_get_contents($changelogFile));
-
-    file_put_contents($changelogFile, $newContent);
   }
 
   private function removePreviousChangelogFromReadmeFile() {
