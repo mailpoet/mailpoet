@@ -3,6 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { Table } from '@woocommerce/components';
 import apiFetch from '@wordpress/api-fetch';
+import { addQueryArgs } from '@wordpress/url';
 import { Hooks } from 'wp-js-hooks';
 import { Header } from './modal/header';
 import { headers, transformLogsToRows } from './modal/rows';
@@ -61,7 +62,7 @@ export function ActivityModal(): JSX.Element {
 
       try {
         const data = await apiFetch<{ data: RunData }>({
-          path: `/automation/analytics/run-logs&id=${runId}`,
+          path: addQueryArgs('/automation/analytics/run-logs', { id: runId }),
           method: 'GET',
           signal: controller.signal,
         });
