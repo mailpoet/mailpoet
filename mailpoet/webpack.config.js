@@ -295,6 +295,21 @@ const testConfig = {
       'blocks/text.spec.js',
     ],
   },
+  module: {
+    ...baseConfig.module,
+    rules: [
+      {
+        test: /\.(j|t)sx?$/,
+        exclude: /(node_modules|src\/vendor)/,
+        loader: 'babel-loader',
+        resolve: { fullySpecified: false },
+        options: {
+          presets: [['@babel/preset-env', { modules: 'commonjs' }]],
+        },
+      },
+      ...baseConfig.module.rules,
+    ],
+  },
   output: {
     path: path.join(
       __dirname,
