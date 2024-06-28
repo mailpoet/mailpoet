@@ -105,7 +105,10 @@ function RoutedTabs({
         />
       ))}
 
-      <Route element={<Navigate to={`${routerPrefix}${activeKey}`} />} />
+      <Route
+        path="*"
+        element={<Navigate to={`${routerPrefix}${activeKey}`} />}
+      />
     </Routes>
   );
 
