@@ -68,7 +68,7 @@
     "backbone.supermodel": "1.2.0",
     "blob-tmp": "^1.0.0",
     "classnames": "^2.5.1",
-    "codemirror": "^5.65.2",
+    "codemirror": "^6.0.1",
     "css": "^3.0.0",
     "date-fns": "^3.6.0",
     "deepmerge": "^4.3.1",
