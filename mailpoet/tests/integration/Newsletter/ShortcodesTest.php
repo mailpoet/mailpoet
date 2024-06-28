@@ -414,8 +414,8 @@ class ShortcodesTest extends \MailPoetTest {
   }
 
   public function testItCanProcessSiteTitleShortcode() {
-    $optionName = 'blogname';
-    $siteName = get_option($optionName);
+    $siteName = 'Test site name with characters like ’, <, >, &';
+    update_option('blogname', $siteName);
 
     $shortcode = '[site:title]';
     $shortcodesObject = $this->shortcodesObject;
