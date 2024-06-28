@@ -63,7 +63,7 @@ const Tabs = withNpsPoll(() => {
       >
         <Tab
           key="standard"
-          route="standard/(.*)?"
+          route="standard/*"
           title={__('Newsletters', 'mailpoet')}
           automationId={`tab-${__('Newsletters', 'mailpoet')}`}
         >
@@ -71,7 +71,7 @@ const Tabs = withNpsPoll(() => {
         </Tab>
         <Tab
           key="notification"
-          route="notification/(.*)?"
+          route="notification/*"
           title={__('Post Notifications', 'mailpoet')}
           automationId={`tab-${__('Post Notifications', 'mailpoet')}`}
         >
@@ -83,7 +83,7 @@ const Tabs = withNpsPoll(() => {
         </Tab>
         <Tab
           key="re_engagement"
-          route="re_engagement/(.*)?"
+          route="re_engagement/*"
           title={__('Re-engagement Emails', 'mailpoet')}
           automationId={`tab-${__('Re-engagement Emails', 'mailpoet')}`}
         >
@@ -131,7 +131,15 @@ const routes = [
     children: withBoundary(Tabs),
   },
   {
-    path: '/(standard|notification|re_engagement)/(.*)?',
+    path: '/standard/*',
+    children: withBoundary(Tabs),
+  },
+  {
+    path: '/notification/*',
+    children: withBoundary(Tabs),
+  },
+  {
+    path: '/re_engagement/*',
     children: withBoundary(Tabs),
   },
   /* New newsletter: types */
@@ -212,10 +220,9 @@ function App() {
             <Route
               key={route.path}
               path={route.path}
-              component={route.component}
               name={route.name || null}
               data={route.data || null}
-              element={route.children}
+              element={<route.children />}
             />
           ))}
         </Routes>
