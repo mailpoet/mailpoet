@@ -7,6 +7,7 @@ import {
   Routes,
   useNavigate,
   useLocation,
+  matchPath,
 } from 'react-router-dom';
 import { noop } from 'lodash';
 
@@ -21,8 +22,8 @@ function RouterAwareTabs(
   const navigate = useNavigate();
   const location = useLocation();
 
-  const activeKey = Object.keys(props.keyPathMap).find(
-    (key) => props.keyPathMap[key] === location.pathname,
+  const activeKey = Object.keys(props.keyPathMap).find((key) =>
+    matchPath(props.keyPathMap[key], location.pathname),
   );
 
   return (
@@ -70,10 +71,25 @@ function RoutedTabs({
     );
   }
 
+  if (routerType === 'switch-only') {
+    return (
+      <RouterAwareTabs
+        activeKey={activeKey}
+        onSwitch={onSwitch}
+        automationId={automationId}
+        keyPathMap={keyPathMap}
+        routerPrefix={routerPrefix}
+      >
+        {children}
+      </RouterAwareTabs>
+    );
+  }
+
   const routedTabs = (
     <Routes>
       {Object.values(keyPathMap).map((path) => (
         <Route
+          key={path}
           path={path}
           element={
             <RouterAwareTabs
@@ -92,10 +108,6 @@ function RoutedTabs({
       <Route element={<Navigate to={`${routerPrefix}${activeKey}`} />} />
     </Routes>
   );
-
-  if (routerType === 'switch-only') {
-    return routedTabs;
-  }
 
   return routerType === 'browser' ? (
     <BrowserRouter>{routedTabs}</BrowserRouter>
