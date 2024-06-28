@@ -33,7 +33,6 @@ services:
         GID: ${GID:-1000}
     ports:
       - '8002:80'
-      - '8083:8083' # Storybook port number, see package.json
     depends_on:
       - db
       - smtp
