@@ -1,4 +1,3 @@
-import { HashRouter } from 'react-router-dom';
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { ListingTabs } from './list/listing-tabs';
@@ -14,7 +13,7 @@ import { MssAccessNotices } from '../../notices/mss-access-notices';
 
 export function DynamicSegmentList(): JSX.Element {
   return (
-    <HashRouter>
+    <>
       <TopBarWithBeamer hideScreenOptions />
       <Notices />
 
@@ -43,6 +42,6 @@ export function DynamicSegmentList(): JSX.Element {
       </div>
       <MssAccessNotices />
       <ListingTabs />
-    </HashRouter>
+    </>
   );
 }
