@@ -73,7 +73,7 @@ class ChangelogController {
 
   private function updateReadme($heading, $changesList) {
     if (file_exists(dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'CHANGELOG.md')) {
-      $this->updateReadmeWitchChangelogFile($heading, $changesList);
+      $this->updateReadmeWithChangelogFile($heading, $changesList);
     } else {
       $this->addChangelogEntryToReadmeFile($heading, $changesList);
     }
@@ -93,7 +93,7 @@ class ChangelogController {
     file_put_contents($this->readmeFile, $readme);
   }
 
-  private function updateReadmeWitchChangelogFile($heading, $changesList) {
+  private function updateReadmeWithChangelogFile($heading, $changesList) {
     $this->copyPreviousChangelogFromReadmeFile();
     $this->removePreviousChangelogFromReadmeFile();
     $this->addChangelogEntryToReadmeFile($heading, $changesList);
