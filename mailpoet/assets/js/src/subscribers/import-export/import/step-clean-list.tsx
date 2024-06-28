@@ -4,7 +4,7 @@ import { CleanList } from './clean-list';
 function StepCleanList(): JSX.Element {
   const navigate = useNavigate();
   return (
-    <CleanList onProceed={(): void => navigate('step_method_selection')} />
+    <CleanList onProceed={(): void => navigate('/step_method_selection')} />
   );
 }
 

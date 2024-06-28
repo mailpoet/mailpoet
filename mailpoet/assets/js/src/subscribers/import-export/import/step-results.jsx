@@ -117,7 +117,7 @@ export function StepResults({
       typeof createdSubscribers === 'undefined' &&
       typeof updatedSubscribers === 'undefined'
     ) {
-      navigate('step_method_selection', { replace: true });
+      navigate('/step_method_selection', { replace: true });
     }
   }, [
     segments,
@@ -165,7 +165,7 @@ export function StepResults({
           <Button
             variant="secondary"
             type="button"
-            onClick={() => navigate('step_method_selection')}
+            onClick={() => navigate('/step_method_selection')}
           >
             {MailPoet.I18n.t('importAgain')}
           </Button>

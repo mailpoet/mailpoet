@@ -46,7 +46,7 @@ function InitialQuestion({ onSubmit }) {
       </div>
       <PreviousNextStepButtons
         canGoNext={isFormValid()}
-        onPreviousAction={() => navigate('step_method_selection')}
+        onPreviousAction={() => navigate('/step_method_selection')}
         onNextAction={() => onSubmit(importSource)}
       />
     </div>

@@ -12,18 +12,18 @@ import { PreviousNextStepButtons } from './previous-next-step-buttons';
 
 const getNextStepLink = (importData, subscribersLimitForValidation, method) => {
   if (importData === undefined) {
-    return 'step_data_manipulation';
+    return '/step_data_manipulation';
   }
   if (importData.subscribersCount === undefined) {
-    return 'step_data_manipulation';
+    return '/step_data_manipulation';
   }
   if (importData.subscribersCount < subscribersLimitForValidation) {
-    return 'step_data_manipulation';
+    return '/step_data_manipulation';
   }
   if (method === 'mailchimp-method') {
-    return 'step_data_manipulation';
+    return '/step_data_manipulation';
   }
-  return 'step_input_validation';
+  return '/step_input_validation';
 };
 
 export function StepMethodSelection({

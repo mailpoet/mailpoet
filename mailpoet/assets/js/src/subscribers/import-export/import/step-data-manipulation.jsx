@@ -13,15 +13,15 @@ import { AssignTags } from './step-data-manipulation/assign-tags';
 
 function getPreviousStepLink(importData, subscribersLimitForValidation) {
   if (importData === undefined) {
-    return 'step_method_selection';
+    return '/step_method_selection';
   }
   if (importData.subscribersCount === undefined) {
-    return 'step_method_selection';
+    return '/step_method_selection';
   }
   if (importData.subscribersCount < subscribersLimitForValidation) {
-    return 'step_method_selection';
+    return '/step_method_selection';
   }
-  return 'step_input_validation';
+  return '/step_input_validation';
 }
 
 export function StepDataManipulation({
@@ -40,7 +40,7 @@ export function StepDataManipulation({
   const [selectedTags, setSelectedTags] = useState([]);
   useEffect(() => {
     if (typeof stepMethodSelectionData === 'undefined') {
-      navigate('step_method_selection', { replace: true });
+      navigate('/step_method_selection', { replace: true });
     }
   }, [stepMethodSelectionData, navigate]);
 
@@ -54,7 +54,7 @@ export function StepDataManipulation({
       selectedTags,
       (importResults) => {
         setStepDataManipulationData(importResults);
-        navigate('step_results');
+        navigate('/step_results');
       },
     );
   };
