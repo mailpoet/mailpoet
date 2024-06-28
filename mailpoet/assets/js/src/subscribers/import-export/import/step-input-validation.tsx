@@ -29,7 +29,7 @@ export function StepInputValidation({
 
   useEffect(() => {
     if (stepMethodSelectionData === undefined) {
-      navigate('step_method_selection', { replace: true });
+      navigate('/step_method_selection', { replace: true });
     }
   }, [stepMethodSelectionData, navigate]);
 
@@ -37,7 +37,7 @@ export function StepInputValidation({
     (when) => {
       setLastSent(when);
       if (when === 'recently') {
-        navigate('step_data_manipulation');
+        navigate('/step_data_manipulation');
       }
     },
     [navigate, setLastSent],

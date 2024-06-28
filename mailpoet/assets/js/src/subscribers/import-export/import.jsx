@@ -5,7 +5,7 @@ import { ScrollToTop } from 'common/scroll-to-top.jsx';
 
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { Notices } from 'notices/notices.jsx';
-import { registerTranslations, withBoundary } from 'common';
+import { registerTranslations, ErrorBoundary } from 'common';
 import { StepMethodSelection } from './import/step-method-selection.jsx';
 import { StepInputValidation } from './import/step-input-validation';
 import { StepDataManipulation } from './import/step-data-manipulation.jsx';
@@ -27,7 +27,14 @@ function ImportSubscribers() {
         <Notices />
         <ScrollToTop>
           <Routes>
-            <Route path="/step_clean_list">{withBoundary(StepCleanList)}</Route>
+            <Route
+              path="/step_clean_list"
+              element={
+                <ErrorBoundary>
+                  <StepCleanList />
+                </ErrorBoundary>
+              }
+            />
             <Route
               path="/step_method_selection"
               element={
