@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { MailPoet } from 'mailpoet';
+import { useParams } from 'react-router-dom';
 import moment from 'moment';
 
 import { Success } from './success.jsx';
@@ -76,7 +77,7 @@ function renderLoading(showRichLoadingScreen) {
   );
 }
 
-class Congratulate extends Component {
+class CongratulateComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -90,13 +91,13 @@ class Congratulate extends Component {
   }
 
   componentDidMount() {
-    this.loadNewsletter(this.props.match.params.id);
+    this.loadNewsletter(this.props.params.id);
     this.tick();
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.match.params.id !== this.props.match.params.id) {
-      this.loadNewsletter(this.props.match.params.id);
+    if (prevProps.params.id !== this.props.params.id) {
+      this.loadNewsletter(this.props.params.id);
     }
   }
 
@@ -109,7 +110,7 @@ class Congratulate extends Component {
       this.setState({ error: true, loading: false });
     }
     if (this.state.loading) {
-      this.loadNewsletter(this.props.match.params.id);
+      this.loadNewsletter(this.props.params.id);
     }
     if (
       moment()
@@ -179,14 +180,15 @@ class Congratulate extends Component {
   }
 }
 
-Congratulate.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string,
-    }).isRequired,
+CongratulateComponent.propTypes = {
+  params: PropTypes.shape({
+    id: PropTypes.string,
   }).isRequired,
 };
 
-Congratulate.displayName = 'Congratulate';
+CongratulateComponent.displayName = 'Congratulate';
 
-export { Congratulate };
+export function Congratulate(props) {
+  const params = useParams();
+  return <CongratulateComponent {...props} params={params} />;
+}

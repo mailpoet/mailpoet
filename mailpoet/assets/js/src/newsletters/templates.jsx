@@ -1,6 +1,7 @@
 import _ from 'underscore';
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { useParams } from 'react-router-dom';
 import { __, _x } from '@wordpress/i18n';
 
 import { Background } from 'common/background/background';
@@ -69,7 +70,7 @@ templatesCategories.push(
   ],
 );
 
-class NewsletterTemplates extends Component {
+class NewsletterTemplatesComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -184,7 +185,7 @@ class NewsletterTemplates extends Component {
       endpoint: 'newsletters',
       action: 'get',
       data: {
-        id: this.props.match.params.id,
+        id: this.props.params.id,
       },
     })
       .done((response) => {
@@ -302,7 +303,7 @@ class NewsletterTemplates extends Component {
           <TemplateBox
             key={template.id}
             index={index}
-            newsletterId={this.props.match.params.id}
+            newsletterId={this.props.params.id}
             beforeDelete={() => this.setState({ loading: true })}
             afterDelete={this.afterTemplateDelete}
             beforeSelect={() => this.setState({ loading: true })}
@@ -363,16 +364,15 @@ class NewsletterTemplates extends Component {
   }
 }
 
-NewsletterTemplates.contextType = GlobalContext;
+NewsletterTemplatesComponent.contextType = GlobalContext;
 
-NewsletterTemplates.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string,
-    }).isRequired,
+NewsletterTemplatesComponent.propTypes = {
+  params: PropTypes.shape({
+    id: PropTypes.string,
   }).isRequired,
 };
 
-NewsletterTemplates.display = 'NewsletterTemplates';
-
-export { NewsletterTemplates };
+export function NewsletterTemplates(props) {
+  const params = useParams();
+  return <NewsletterTemplatesComponent {...props} params={params} />;
+}

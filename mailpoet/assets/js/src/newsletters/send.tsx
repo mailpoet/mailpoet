@@ -197,7 +197,7 @@ class NewsletterSendComponent extends Component<
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.params.id !== prevProps.match.params.id) {
+    if (this.props.params.id !== prevProps.params.id) {
       // safe to ignore since even on rejection the state is updated
       void this.loadItem(this.props.params.id).always(() => {
         this.setState({ loading: false });
