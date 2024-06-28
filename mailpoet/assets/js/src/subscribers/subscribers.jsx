@@ -7,7 +7,7 @@ import { SubscriberStats } from 'subscribers/stats';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';
 import { Notices } from 'notices/notices.jsx';
-import { registerTranslations, withBoundary } from 'common';
+import { registerTranslations, ErrorBoundary } from 'common';
 
 function App() {
   return (
@@ -16,13 +16,38 @@ function App() {
         <GlobalNotices />
         <Notices />
         <Routes>
-          <Route path="/new" element={withBoundary(SubscriberForm)} />
-          <Route path="/edit/:id" element={withBoundary(SubscriberForm)} />
           <Route
-            path="/stats/:id/(.*)?"
-            element={withBoundary(SubscriberStats)}
+            path="/new"
+            element={
+              <ErrorBoundary>
+                <SubscriberForm />
+              </ErrorBoundary>
+            }
           />
-          <Route path="*" element={withBoundary(SubscriberList)} />
+          <Route
+            path="/edit/:id"
+            element={
+              <ErrorBoundary>
+                <SubscriberForm />
+              </ErrorBoundary>
+            }
+          />
+          <Route
+            path="/stats/:id/*"
+            element={
+              <ErrorBoundary>
+                <SubscriberStats />
+              </ErrorBoundary>
+            }
+          />
+          <Route
+            path="*"
+            element={
+              <ErrorBoundary>
+                <SubscriberList />
+              </ErrorBoundary>
+            }
+          />
         </Routes>
       </HashRouter>
     </GlobalContext.Provider>
