@@ -1,10 +1,10 @@
 import { createRoot } from 'react-dom/client';
-import { HashRouter, Route } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';
 import { MssAccessNotices } from 'notices/mss-access-notices';
 import { Notices } from 'notices/notices.jsx';
-import { registerTranslations, withBoundary } from 'common';
+import { registerTranslations, ErrorBoundary } from 'common';
 import { FormList } from './list.jsx';
 
 function App() {
@@ -14,7 +14,16 @@ function App() {
         <GlobalNotices />
         <Notices />
         <MssAccessNotices />
-        <Route path="*">{withBoundary(FormList)}</Route>
+        <Routes>
+          <Route
+            path="*"
+            element={
+              <ErrorBoundary>
+                <FormList />
+              </ErrorBoundary>
+            }
+          />
+        </Routes>
       </HashRouter>
     </GlobalContext.Provider>
   );
