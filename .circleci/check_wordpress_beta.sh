@@ -7,7 +7,7 @@ RSS_FEED=$(curl -s https://wordpress.org/news/category/releases/feed/)
 LAST_VERSION=$(echo "$RSS_FEED" | grep -o '<title>WordPress [^<]*</title>' | sed -E 's/<\/?title>//g' | head -n 1 | tr [:upper:] [:lower:])
 
 # Check if a beta or RC version is found
-if [[ $LAST_VERSION != *'beta'* || $LAST_VERSION != *'rc'* ]]; then
+if [[ $LAST_VERSION != *'beta'* && $LAST_VERSION != *'rc'* ]]; then
   echo "No WordPress beta/RC version found."
   echo "LATEST_BETA="
 else
