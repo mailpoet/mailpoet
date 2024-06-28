@@ -155,11 +155,9 @@ class ListingItem extends Component {
       itemActions = (
         <span className="edit mailpoet-hide-on-mobile">
           <Link
-            to={{
-              pathname: `/edit/${item.id}`,
-              state: {
-                backUrl: location?.pathname,
-              },
+            to={`/edit/${item.id}`}
+            state={{
+              backUrl: location?.pathname,
             }}
           >
             {__('Edit', 'mailpoet')}

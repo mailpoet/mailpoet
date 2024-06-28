@@ -389,11 +389,9 @@ const itemActions = [
     link: function link(subscriber: Subscriber, location) {
       return (
         <Link
-          to={{
-            pathname: `/stats/${subscriber.id}`,
-            state: {
-              backUrl: location?.pathname,
-            },
+          to={`/stats/${subscriber.id}`}
+          state={{
+            backUrl: location?.pathname,
           }}
         >
           {MailPoet.I18n.t('statsListingActionTitle')}
@@ -407,11 +405,9 @@ const itemActions = [
     link: function link(subscriber: Subscriber, location) {
       return (
         <Link
-          to={{
-            pathname: `/edit/${subscriber.id}`,
-            state: {
-              backUrl: location?.pathname,
-            },
+          to={`/edit/${subscriber.id}`}
+          state={{
+            backUrl: location?.pathname,
           }}
         >
           {MailPoet.I18n.t('edit')}
@@ -524,11 +520,9 @@ function SubscriberList({ match }) {
         <td className={rowClasses}>
           <Link
             className="mailpoet-listing-title"
-            to={{
-              pathname: `/edit/${subscriber.id}`,
-              state: {
-                backUrl: location?.pathname,
-              },
+            to={`/edit/${subscriber.id}`}
+            state={{
+              backUrl: location?.pathname,
             }}
           >
             {subscriber.email}
