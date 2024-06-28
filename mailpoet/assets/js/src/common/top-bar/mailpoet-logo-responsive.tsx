@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { __ } from '@wordpress/i18n';
+import { MailPoet } from 'mailpoet';
 import { MailPoetLogo } from './mailpoet-logo';
 import { MailPoetLogoMobile } from './mailpoet-logo-mobile';
 
@@ -9,11 +10,22 @@ type Props = {
 };
 
 export function MailPoetLogoResponsive({ onClick, withLink = true }: Props) {
-  const navigate = useNavigate();
+  let navigateFallback;
+  // The component is used on many places and not all of them have access to the router.
+  // We try to obtain the navigate function and if it fails we fallback to redirect to homepage.
+  try {
+    const navigate = useNavigate();
+    navigateFallback = () => navigate('/');
+  } catch (e) {
+    navigateFallback = () => {
+      window.location.href = `admin.php?page=${MailPoet.mainPageSlug}`;
+    };
+  }
+
   let logo;
   let onLogoClick = onClick;
   if (!onClick) {
-    onLogoClick = () => navigate('/');
+    onLogoClick = navigateFallback;
   }
 
   if (withLink) {
