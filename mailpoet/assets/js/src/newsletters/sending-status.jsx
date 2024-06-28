@@ -1,9 +1,9 @@
 import classnames from 'classnames';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { memo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { __, _x } from '@wordpress/i18n';
 
-import { Link } from 'react-router-dom';
 import { Listing } from 'listing/listing.jsx';
 import {
   checkCronStatus,
@@ -35,9 +35,12 @@ const messages = {
   onNoItemsFound: () => __('No sending task found.', 'mailpoet'),
 };
 
-function SendingStatus(props) {
+function SendingStatus() {
+  const params = useParams();
+  const location = useLocation();
+
   const [newsletter, setNewsletter] = useState({
-    id: props.match.params.id,
+    id: params.id,
     subject: '',
     sent: false,
   });
@@ -71,24 +74,10 @@ function SendingStatus(props) {
         )}
       </h1>
       <StatsLink newsletter={newsletter} />
-      <SendingStatusListing
-        location={props.location}
-        params={props.match.params}
-      />
+      <SendingStatusListing location={location} params={params} />
     </>
   );
 }
-
-SendingStatus.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string,
-  }).isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
-};
 
 SendingStatus.displayName = 'SendingStatus';
 

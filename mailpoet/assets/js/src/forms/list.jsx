@@ -3,6 +3,7 @@ import { Component } from 'react';
 import jQuery from 'jquery';
 import PropTypes from 'prop-types';
 import { escapeHTML } from '@wordpress/escape-html';
+import { useLocation, useParams } from 'react-router-dom';
 
 import { Button } from 'common';
 import { Listing } from 'listing/listing.jsx';
@@ -298,7 +299,7 @@ class FormListComponent extends Component {
           limit={window.mailpoet_listing_per_page}
           className="mailpoet-forms-listing"
           location={this.props.location}
-          params={this.props.match.params}
+          params={this.props.params}
           messages={messages}
           search={false}
           endpoint="forms"
@@ -315,9 +316,13 @@ class FormListComponent extends Component {
 
 FormListComponent.propTypes = {
   location: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  match: PropTypes.shape({
-    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  }).isRequired,
+  params: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 FormListComponent.displayName = 'FormList';
-export const FormList = withNpsPoll(FormListComponent);
+const FormListWithPoll = withNpsPoll(FormListComponent);
+
+export function FormList(props) {
+  const location = useLocation();
+  const params = useParams();
+  return <FormListWithPoll {...props} location={location} params={params} />;
+}

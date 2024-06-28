@@ -1,7 +1,6 @@
 import classnames from 'classnames';
 import jQuery from 'jquery';
-import { Link, useLocation } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { Button, SegmentTags, SubscriberTags } from 'common';
 import { Listing } from 'listing/listing.jsx';
@@ -463,8 +462,9 @@ const getSegmentFromId = (segmentId): Segment => {
   return result;
 };
 
-function SubscriberList({ match }) {
+function SubscriberList() {
   const location = useLocation();
+  const params = useParams();
 
   const renderItem = (subscriber: Subscriber, actions) => {
     const rowClasses = classnames(
@@ -609,7 +609,7 @@ function SubscriberList({ match }) {
       <Listing
         limit={window.mailpoet_listing_per_page}
         location={location}
-        params={match.params}
+        params={params}
         endpoint="subscribers"
         onRenderItem={renderItem}
         columns={columns}
@@ -623,12 +623,6 @@ function SubscriberList({ match }) {
     </div>
   );
 }
-
-SubscriberList.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  }).isRequired,
-};
 
 SubscriberList.displayName = 'SubscriberList';
 export { SubscriberList };

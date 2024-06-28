@@ -1,6 +1,5 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import moment from 'moment';
-import PropTypes from 'prop-types';
 import ReactStringReplace from 'react-string-replace';
 
 import { Background } from 'common/background/background';
@@ -236,8 +235,9 @@ function afterFormContent(values) {
   );
 }
 
-function SubscriberForm({ match }) {
+function SubscriberForm() {
   const location = useLocation();
+  const params = useParams();
   const navigate = useNavigate();
   const backUrl = location.state?.backUrl || '/';
   return (
@@ -262,7 +262,7 @@ function SubscriberForm({ match }) {
         automationId="subscriber_edit_form"
         endpoint="subscribers"
         fields={fields}
-        params={match.params}
+        params={params}
         messages={messages}
         beforeFormContent={beforeFormContent}
         afterFormContent={afterFormContent}
@@ -271,14 +271,6 @@ function SubscriberForm({ match }) {
     </div>
   );
 }
-
-SubscriberForm.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string,
-    }).isRequired,
-  }).isRequired,
-};
 
 SubscriberForm.displayName = 'SubscriberForm';
 
