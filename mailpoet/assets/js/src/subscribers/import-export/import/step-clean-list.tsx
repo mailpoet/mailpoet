@@ -1,9 +1,10 @@
-import { RouteComponentProps } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { CleanList } from './clean-list';
 
-function StepCleanList({ history }: RouteComponentProps): JSX.Element {
+function StepCleanList(): JSX.Element {
+  const navigate = useNavigate();
   return (
-    <CleanList onProceed={(): void => history.push('step_method_selection')} />
+    <CleanList onProceed={(): void => navigate('step_method_selection')} />
   );
 }
 
