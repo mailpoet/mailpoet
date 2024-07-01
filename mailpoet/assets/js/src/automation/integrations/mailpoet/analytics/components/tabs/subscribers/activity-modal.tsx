@@ -84,7 +84,7 @@ export function ActivityModal(): JSX.Element {
   }, [runId]);
 
   if (state === 'hidden') {
-    return <div />;
+    return null;
   }
 
   if (state === 'loading') {
