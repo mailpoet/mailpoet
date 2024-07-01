@@ -226,6 +226,8 @@ export type RunData = {
   run: Run;
   logs: Log[];
   next_step: NextStep;
-  steps: Steps;
+  automation: {
+    steps: Steps;
+  };
   subscriber: Subscriber;
 };
