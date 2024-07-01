@@ -103,7 +103,7 @@ export function StepFooter({ step }: { step: Step }): JSX.Element | null {
   return (
     <>
       <FailedStep step={step} />
-      <Tooltip text={__('View subscribers activity', 'mailpoet')}>
+      <Tooltip text={__('View subscriber activity', 'mailpoet')}>
         <div className="mailpoet-automation-analytics-step-footer">
           <p>
             <a
