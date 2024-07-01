@@ -68,6 +68,13 @@ class Exceptions {
       ->withMessage(sprintf(__("Automation with ID '%d' not found.", 'mailpoet'), $id));
   }
 
+  public static function automationNotFoundInTimeSpan(int $id): NotFoundException {
+    return NotFoundException::create()
+      ->withErrorCode(self::AUTOMATION_NOT_FOUND)
+      // translators: %d is the ID of the automation.
+      ->withMessage(sprintf(__("Automation with ID '%d' not found in selected time span.", 'mailpoet'), $id));
+  }
+
   public static function automationVersionNotFound(int $automation, int $version): NotFoundException {
     return NotFoundException::create()
       ->withErrorCode(self::AUTOMATION_VERSION_NOT_FOUND)
