@@ -42,38 +42,36 @@ export function transformLogsToRows(
   steps: Steps,
   nextStep: NextStep,
 ) {
-  const items = logs
-    ? logs.map((log) => [
-        {
-          display: (
-            <StepCell
-              name={log.step_name || log.step_key}
-              data={steps[log.step_id]}
-            />
-          ),
-          value: log.step_name || log.step_key,
-        },
-        {
-          display: MailPoet.Date.format(new Date(log.started_at)),
-          value: log.started_at,
-        },
-        {
-          display:
-            log.status === 'complete'
-              ? MailPoet.Date.format(new Date(log.updated_at))
-              : '-',
-          value: log.updated_at,
-        },
-        {
-          display: (
-            <>
-              <AutomationRunStatus status={log.status} />
-              <StatusInfo info={log.error && log.error.message} />
-            </>
-          ),
-        },
-      ])
-    : [];
+  const items = logs.map((log) => [
+    {
+      display: (
+        <StepCell
+          name={log.step_name || log.step_key}
+          data={steps[log.step_id]}
+        />
+      ),
+      value: log.step_name || log.step_key,
+    },
+    {
+      display: MailPoet.Date.format(new Date(log.started_at)),
+      value: log.started_at,
+    },
+    {
+      display:
+        log.status === 'complete'
+          ? MailPoet.Date.format(new Date(log.updated_at))
+          : '-',
+      value: log.updated_at,
+    },
+    {
+      display: (
+        <>
+          <AutomationRunStatus status={log.status} />
+          <StatusInfo info={log.error && log.error.message} />
+        </>
+      ),
+    },
+  ]);
   if (nextStep) {
     // translators: "Time left: 1 hour" or "Time left: 1 minute", uses WordPress' human_time_diff() to get the value
     const timeLeft = sprintf(
