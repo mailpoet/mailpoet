@@ -47,7 +47,7 @@ export function ActivityModal(): JSX.Element {
       }
       setState('loading');
 
-      const sampleData = getSampleData(runId);
+      const sampleData = getSampleData(parseInt(runId, 10));
       if (sampleData) {
         setRun(sampleData);
         setState('loaded');
