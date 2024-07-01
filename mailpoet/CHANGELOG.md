@@ -1,5 +1,18 @@
 == Changelog ==
 
+= 4.54.0 - 2024-07-01 =
+
+- Updated: composer dependencies;
+- Updated: npm dependencies;
+- Improved: automation is now triggered when tag is added via form submission;
+- Improved: abandoned cart automation is triggered also for non-subscribed contacts;
+- Changed: when automation is reactivated, old runs won't be reactivated;
+- Fixed: error when creating a segment with "Subscriber date" condition;
+- Fixed: misaligned icons in automation steps;
+- Fixed: info tooltip for Archive shortcode in Settings doesn't show up;
+- Fixed: subscribers count tooltip is overlayed with Recalculate button;
+- Fixed: blurred automation step icons in Firefox.
+
 = 4.53.0 - 2024-06-25 =
 
 - Updated: npm dependencies;
