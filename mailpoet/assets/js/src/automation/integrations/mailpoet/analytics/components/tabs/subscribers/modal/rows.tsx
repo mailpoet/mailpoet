@@ -28,6 +28,15 @@ export const headers = [
   },
 ];
 
+function StatusInfo({ info }: { info: string | null }): JSX.Element {
+  if (!info) {
+    return null;
+  }
+  return (
+    <div className="mailpoet-analytics-activity-modal-status-info">{info}</div>
+  );
+}
+
 export function transformLogsToRows(
   logs: Log[],
   steps: Steps,
@@ -59,15 +68,18 @@ export function transformLogsToRows(
           display: (
             <>
               <AutomationRunStatus status={log.status} />
-              <div className="mailpoet-analytics-activity-modal-status-info">
-                {log.error && log.error.message}
-              </div>
+              <StatusInfo info={log.error && log.error.message} />
             </>
           ),
         },
       ])
     : [];
   if (nextStep) {
+    // translators: "Time left: 1 hour" or "Time left: 1 minute", uses WordPress' human_time_diff() to get the value
+    const timeLeft = sprintf(
+      __('Time left: %s', 'mailpoet'),
+      nextStep.time_left,
+    );
     items.push([
       {
         display: <StepCell name={nextStep.name} data={nextStep.step} />,
@@ -85,12 +97,7 @@ export function transformLogsToRows(
         display: (
           <>
             <AutomationRunStatus status="running" />
-            <div className="mailpoet-analytics-activity-modal-status-info">
-              {
-                // translators: "Time left: 1 hour" or "Time left: 1 minute", uses WordPress' human_time_diff() to get the value
-                sprintf(__('Time left: %s', 'mailpoet'), nextStep.time_left)
-              }
-            </div>
+            <StatusInfo info={timeLeft} />
           </>
         ),
       },
