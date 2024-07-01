@@ -96,7 +96,7 @@ export const subscribers: SubscriberSection['data'] = {
       id: 'delay',
       type: 'action',
       key: 'core:delay',
-      args: { delay: 2, delay_type: 'WEEKS' },
+      args: { delay: 1, delay_type: 'HOURS' },
       next_steps: [],
     },
     'update-subscriber': {

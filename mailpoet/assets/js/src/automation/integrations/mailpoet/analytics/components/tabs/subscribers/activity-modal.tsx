@@ -13,10 +13,10 @@ import { runLogs as SampleRunLogData } from '../../../store/samples/run-logs';
 
 export type ActivityModalState = 'loading' | 'loaded' | 'hidden';
 
-function getSampleData(): RunData | undefined {
+function getSampleData(runId: number): RunData | undefined {
   return Hooks.applyFilters(
     'mailpoet_analytics_section_sample_data',
-    SampleRunLogData,
+    SampleRunLogData[runId],
     'runLogs',
   ) as RunData | undefined;
 }
@@ -47,7 +47,7 @@ export function ActivityModal(): JSX.Element {
       }
       setState('loading');
 
-      const sampleData = getSampleData();
+      const sampleData = getSampleData(runId);
       if (sampleData) {
         setRun(sampleData);
         setState('loaded');
