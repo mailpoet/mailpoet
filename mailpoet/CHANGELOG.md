@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 4.54.0 - 2024-07-01 =
+
+- Fixed: info tooltip for Archive shortcode in Settings doesn't show up;
+- Fixed: subscribers count tooltip is overlayed with Recalculate button.
+
 = 4.53.0 - 2024-06-25 =
 
 - Updated: npm dependencies;
