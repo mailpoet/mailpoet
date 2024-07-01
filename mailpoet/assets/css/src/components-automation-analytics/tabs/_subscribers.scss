@@ -79,6 +79,9 @@
 }
 
 .mailpoet-analytics-activity-modal-status-info {
-  margin-top: 8px;
   max-width: 220px;
+
+  &:not(:empty) {
+    margin-top: 8px;
+  }
 }
