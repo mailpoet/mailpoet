@@ -28,9 +28,8 @@ export function ActivityModal(): JSX.Element {
     () => new URLSearchParams(location.search),
     [location],
   );
+  const runId = pageParams.get('runId');
   const [state, setState] = useState<ActivityModalState>('hidden');
-
-  const [runId, setRunId] = useState<number | null>(null);
   const [run, setRun] = useState<RunData | null>(null);
 
   const closeModal = () => {
@@ -39,11 +38,6 @@ export function ActivityModal(): JSX.Element {
     pageParams.delete('runId');
     history.push({ search: pageParams.toString() });
   };
-
-  // Open modal when activity param changes in the URL
-  useEffect(() => {
-    setRunId(parseInt(pageParams.get('runId'), 10));
-  }, [pageParams]);
 
   useEffect(() => {
     const controller = new AbortController();
