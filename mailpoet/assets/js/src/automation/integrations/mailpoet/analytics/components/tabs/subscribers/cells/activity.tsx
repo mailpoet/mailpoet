@@ -13,7 +13,7 @@ export function ActivityCell({ runId }: { runId: number }): JSX.Element {
   };
 
   return (
-    <Button variant="link" onClick={openActivityModal}>
+    <Button variant="tertiary" onClick={openActivityModal}>
       {__('View activity', 'mailpoet')}
     </Button>
   );
