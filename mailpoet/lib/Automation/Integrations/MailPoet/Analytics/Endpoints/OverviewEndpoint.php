@@ -5,7 +5,7 @@ namespace MailPoet\Automation\Integrations\MailPoet\Analytics\Endpoints;
 use MailPoet\API\REST\Request;
 use MailPoet\API\REST\Response;
 use MailPoet\Automation\Engine\API\Endpoint;
-use MailPoet\Automation\Engine\Exceptions\NotFoundException;
+use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Controller\OverviewStatisticsController;
 use MailPoet\Automation\Integrations\MailPoet\Analytics\Entities\QueryWithCompare;
@@ -28,9 +28,10 @@ class OverviewEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
-    $automation = $this->automationStorage->getAutomation((int)$request->getParam('id'));
+    $id = absint($request->getParam('id'));
+    $automation = $this->automationStorage->getAutomation($id);
     if (!$automation) {
-      throw new NotFoundException(__('Automation not found', 'mailpoet'));
+      throw Exceptions::automationNotFound($id);
     }
     $query = QueryWithCompare::fromRequest($request);
 
