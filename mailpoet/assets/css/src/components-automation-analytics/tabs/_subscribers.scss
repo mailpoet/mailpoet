@@ -58,6 +58,12 @@
 
 .mailpoet-analytics-activity-modal-header {
   background: $color-white;
+
+  .components-modal__header-heading,
+  .mailpoet-analytics-orders__customer {
+    font-size: 1.2rem;
+    height: 20px;
+  }
 }
 
 .mailpoet-analytics-activity-modal-header-spacer {
