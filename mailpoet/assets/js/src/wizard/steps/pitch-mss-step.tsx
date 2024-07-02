@@ -25,9 +25,9 @@ function WelcomeWizardPitchMSSStep(): JSX.Element {
 
   return (
     <Routes>
-      <Route path={`${pathname}/part/1`} element={<MSSStepFirstPart />} />
-      <Route path={`${pathname}/part/2`} element={<MSSStepSecondPart />} />
-      <Route path={`${pathname}/part/3`} element={<MSSStepThirdPart />} />
+      <Route path="part/1" element={<MSSStepFirstPart />} />
+      <Route path="part/2" element={<MSSStepSecondPart />} />
+      <Route path="part/3" element={<MSSStepThirdPart />} />
     </Routes>
   );
 }

@@ -25,7 +25,7 @@ function App(): JSX.Element {
       <HashRouter>
         <Notices />
         <Routes>
-          <Route path="/steps/:step" element={<WizardWithBoundary />} />
+          <Route path="/steps/:step/*" element={<WizardWithBoundary />} />
           <Route path="/woocommerce" element={<WooCommerceWithBoundary />} />
           <Route path="*" element={<Navigate to={basePath} />} />
         </Routes>
