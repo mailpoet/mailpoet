@@ -20,6 +20,10 @@
     font-size: $font-size;
     left: -1px;
     width: $grid-column;
+
+    * {
+      box-sizing: border-box;
+    }
   }
 
   .react-datepicker-wrapper,
@@ -49,7 +53,7 @@
   .react-datepicker__current-month {
     color: $color-tertiary;
     font-size: $heading-font-size-h3;
-    height: 40px;
+    height: 40px + $grid-gap * 2;
     line-height: 40px;
     padding: $grid-gap 0;
   }
@@ -74,11 +78,11 @@
     color: $color-tertiary;
     display: inline-block;
     font-weight: bold;
-    height: 48px;
+    height: 50px;
     line-height: 48px;
     margin: 0 -1px -1px 0;
     text-align: center;
-    width: 49px;
+    width: 51px;
   }
 
   .react-datepicker__day:hover {
