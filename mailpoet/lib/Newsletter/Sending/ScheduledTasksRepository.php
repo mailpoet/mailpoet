@@ -244,11 +244,12 @@ class ScheduledTasksRepository extends Repository {
     foreach ($statuses as $status) {
       $tasksQuery = $this->doctrineRepository->createQueryBuilder('st')
         ->select('st')
-        ->where('st.deletedAt IS NULL')
-        ->where('st.status = :status');
+        ->where('st.deletedAt IS NULL');
 
       if ($status === ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING) {
-        $tasksQuery = $tasksQuery->orWhere('st.status IS NULL');
+        $tasksQuery = $tasksQuery->andWhere('st.status = :status OR st.status IS NULL');
+      } else {
+        $tasksQuery = $tasksQuery->andWhere('st.status = :status');
       }
 
       if ($type) {
