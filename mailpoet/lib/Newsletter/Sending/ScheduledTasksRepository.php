@@ -200,6 +200,7 @@ class ScheduledTasksRepository extends Repository {
       ScheduledTaskEntity::STATUS_COMPLETED => 0,
       ScheduledTaskEntity::STATUS_PAUSED => 0,
       ScheduledTaskEntity::STATUS_SCHEDULED => 0,
+      ScheduledTaskEntity::STATUS_CANCELLED => 0,
       ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING => 0,
     ];
 
