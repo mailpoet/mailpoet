@@ -122,11 +122,11 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $task2 = $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, Carbon::now()->addDay());
     $data = $this->repository->getLatestTasks();
     verify(count($data))->equals(2);
-    $ids = array_map(function ($d){ return $d->getId();
-
+    $ids = array_map(function ($d){
+      return $d->getId();
     }, $data);
-    $types = array_map(function ($d){ return $d->getType();
-
+    $types = array_map(function ($d){
+      return $d->getType();
     }, $data);
     $this->assertContains($task1->getId(), $ids);
     $this->assertContains($task2->getId(), $ids);
@@ -134,7 +134,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->assertContains(Bounce::TASK_TYPE, $types);
     verify(is_int($data[1]->getPriority()))->true();
     verify($data[1]->getUpdatedAt())->instanceOf(\DateTimeInterface::class);
-    verify($data[1]->getStatus())->notEmpty();
+    verify($data[1]->getStatus())->null(); // running tasks have status null
     verify($data[0])->instanceOf(ScheduledTaskEntity::class);
     verify($data[1])->instanceOf(ScheduledTaskEntity::class);
   }
