@@ -8,6 +8,7 @@ use MailPoet\API\JSON\v1\Help;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoetVendor\Carbon\Carbon;
 
 class HelpTest extends \MailPoetTest {
 
@@ -96,8 +97,9 @@ class HelpTest extends \MailPoetTest {
     }
   }
 
-  public function testItCanRescheduleTask() {
-    $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_CANCELLED, new \DateTime());
+  public function testItCanRescheduleTaskInFuture() {
+    $futureDate = Carbon::now()->addDay();
+    $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_CANCELLED, $futureDate);
     $response = $this->endpoint->rescheduleTask(['id' => $task->getId()]);
     verify($response)->instanceOf(APIResponse::class);
     verify($response->status)->equals(200);
@@ -107,7 +109,21 @@ class HelpTest extends \MailPoetTest {
     if ($task) {
       verify($task->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
       verify($task->getCancelledAt())->null();
-      verify($task->getInProgress())->null();
+    }
+  }
+
+  public function testItCanRescheduleTaskInProgress() {
+    $pastDate = Carbon::now()->subDay();
+    $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_CANCELLED, $pastDate);
+    $response = $this->endpoint->rescheduleTask(['id' => $task->getId()]);
+    verify($response)->instanceOf(APIResponse::class);
+    verify($response->status)->equals(200);
+
+    $task = $this->scheduledTasksRepository->findOneById($task->getId());
+    verify($task)->instanceOf(ScheduledTaskEntity::class);
+    if ($task) {
+      verify($task->getStatus())->equals(null); // task is running
+      verify($task->getCancelledAt())->null();
     }
   }
 }
