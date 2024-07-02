@@ -131,6 +131,9 @@ class ScheduledTaskEntity {
    * @param string|null $status
    */
   public function setStatus($status) {
+    if ($status === self::VIRTUAL_STATUS_RUNNING) {
+      $status = null;
+    }
     $this->status = $status;
   }
 
