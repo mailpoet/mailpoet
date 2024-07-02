@@ -86,6 +86,19 @@ function QueueSending({ newsletter }: QueueSendingProps) {
   );
 }
 
+function CancelledNewsletter() {
+  return (
+    <div className="mailpoet-listing-stats-too-early">
+      <a
+        href="admin.php?page=mailpoet-help#/systemStatus"
+        className="mailpoet-tag mailpoet-tag-inverted mailpoet-tag-unknown"
+      >
+        {__('Cancelled', 'mailpoet')}
+      </a>
+    </div>
+  );
+}
+
 type QueueStatusProps = {
   newsletter: NewsLetter;
   mailerLog: {
@@ -102,6 +115,8 @@ function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
     newsletterDate = MailPoet.Date.adjustForTimezoneDifference(newsletterDate);
   }
 
+  const isNewsletterCancelled =
+    newsletter.queue && newsletter.queue.status === 'cancelled';
   const isNewsletterSending =
     newsletter.queue && newsletter.queue.status !== 'scheduled';
   const isMtaPaused = mailerLog.status === 'paused';
@@ -121,9 +136,10 @@ function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
           logs={newsletter.logs}
         />
       </Link>
-      {newsletter.queue.status !== 'completed' && !isMtaPaused && (
-        <QueueSending newsletter={newsletter} />
-      )}
+      {isNewsletterCancelled && <CancelledNewsletter />}
+      {newsletter.queue.status !== 'completed' &&
+        !isNewsletterCancelled &&
+        !isMtaPaused && <QueueSending newsletter={newsletter} />}
     </>
   );
 
