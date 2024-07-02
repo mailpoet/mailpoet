@@ -236,6 +236,7 @@ class ScheduledTasksRepository extends Repository {
       ScheduledTaskEntity::STATUS_COMPLETED,
       ScheduledTaskEntity::STATUS_CANCELLED,
       ScheduledTaskEntity::STATUS_SCHEDULED,
+      ScheduledTaskEntity::STATUS_PAUSED,
       ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING,
     ],
     $limit = self::TASK_BATCH_SIZE
