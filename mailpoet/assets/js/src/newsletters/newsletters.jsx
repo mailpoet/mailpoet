@@ -127,7 +127,7 @@ NewNewsletter.displayName = 'NewNewsletter';
 const routes = [
   /* Listings */
   {
-    path: '/notification/history/:parentId/(.*)?',
+    path: '/notification/history/:parentId/*',
     children: withBoundary(Tabs),
   },
   {
@@ -177,11 +177,11 @@ const routes = [
     children: withBoundary(NewsletterSend),
   },
   {
-    path: '/sending-status/:id/(.*)?',
+    path: '/sending-status/:id/*',
     children: withBoundary(SendingStatus),
   },
   {
-    path: '/stats/:id/(.*)?',
+    path: '/stats/:id/*',
     children: withBoundary(CampaignStatsPage),
   },
 ];
