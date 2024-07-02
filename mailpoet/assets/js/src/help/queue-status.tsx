@@ -19,6 +19,7 @@ type Props = {
       running: number;
       paused: number;
       scheduled: number;
+      cancelled: number;
     };
     latestTasks: TasksListDataRowProps['task'][];
   };
@@ -76,6 +77,10 @@ function QueueStatus({ statusData }: Props): JSX.Element {
           {
             key: MailPoet.I18n.t('totalPausedTasks'),
             value: status.tasksStatusCounts.paused,
+          },
+          {
+            key: MailPoet.I18n.t('totalCancelledTasks'),
+            value: status.tasksStatusCounts.cancelled,
           },
           {
             key: MailPoet.I18n.t('totalScheduledTasks'),
