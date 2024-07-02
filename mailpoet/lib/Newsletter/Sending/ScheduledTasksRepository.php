@@ -27,14 +27,16 @@ class ScheduledTasksRepository extends Repository {
     null,
   ];
 
-  /** @var WPFunctions */
-  private $wp;
+  private WPFunctions $wp;
+  private SendingQueuesRepository $sendingQueuesRepository;
 
   public function __construct(
     EntityManager $entityManager,
-    WPFunctions $wp
+    WPFunctions $wp,
+    SendingQueuesRepository $sendingQueuesRepository
   ) {
     $this->wp = $wp;
+    $this->sendingQueuesRepository = $sendingQueuesRepository;
     parent::__construct($entityManager);
   }
 
@@ -363,8 +365,15 @@ class ScheduledTasksRepository extends Repository {
     if ($task->getStatus() !== ScheduledTaskEntity::STATUS_CANCELLED) {
       throw new \Exception(__('Only cancelled tasks can be rescheduled', 'mailpoet'), 400);
     }
-    $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
-    $task->setInProgress(null);
+    if ($task->getScheduledAt() <= Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))) {
+      $task->setStatus(ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING);
+      $queue = $task->getSendingQueue();
+      if ($queue) {
+        $this->sendingQueuesRepository->resume($queue);
+      }
+    } else {
+      $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
+    }
     $task->setCancelledAt(null);
     $this->persist($task);
     $this->flush();
