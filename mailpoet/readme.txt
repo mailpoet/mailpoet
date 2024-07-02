@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.4
 Tested up to: 6.5
-Stable tag: 4.53.0
+Stable tag: 4.54.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -228,13 +228,17 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 4.53.0 - 2024-06-25 =
+= 4.54.0 - 2024-07-02 =
+* Updated: composer dependencies;
 * Updated: npm dependencies;
-* Improved: Processing Captcha image;
-* Improved: Search for post notification history items now return updated results;
-* Improved: Newsletter social icons style and images;
-* Improved: MailPoet form editor button styles;
-* Fixed: Update abandoned cart email task status;
-* Fixed: link to Setup abandoned cart email from homepage.
+* Improved: automation is now triggered when tag is added via form submission;
+* Improved: abandoned cart automation is triggered also for non-subscribed contacts;
+* Changed: when automation is reactivated, old runs won't be reactivated;
+* Fixed: misaligned icons in automation steps;
+* Fixed: error when creating a segment with "Subscriber date" condition;
+* Fixed: blurred automation step icons in Firefox;
+* Fixed: changing radio buttons when editing subscriber doesn't work;
+* Fixed: info tooltip for Archive shortcode in Settings doesn't show up;
+* Fixed: subscribers count tooltip is overlayed with Recalculate button.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)
