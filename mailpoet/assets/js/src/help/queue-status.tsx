@@ -106,6 +106,12 @@ function QueueStatus({ statusData }: Props): JSX.Element {
         tasks={status.latestTasks.filter((task) => task.status === null)}
       />
 
+      <h5>{MailPoet.I18n.t('pausedTasks')}</h5>
+      <TasksList
+        type="paused"
+        tasks={status.latestTasks.filter((task) => task.status === 'paused')}
+      />
+
       <h5>{MailPoet.I18n.t('completedTasks')}</h5>
       <TasksList
         type="completed"
