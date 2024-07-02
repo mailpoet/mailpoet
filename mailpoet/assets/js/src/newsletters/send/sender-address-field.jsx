@@ -39,7 +39,7 @@ class SenderField extends Component {
   }
 
   onChange(event) {
-    const { onValueChange = () => {} } = this.props.onValueChange;
+    const { onValueChange = () => {} } = this.props;
     const emailAddress = event.target.value.toLowerCase();
     this.setState({
       emailAddress,

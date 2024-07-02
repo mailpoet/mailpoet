@@ -10,7 +10,7 @@ class FormFieldRadio extends Component {
   }
 
   onValueChange = (value, e) => {
-    const { onValueChange = () => {} } = this.props.onValueChange;
+    const { onValueChange = () => {} } = this.props;
     onValueChange(e);
   };
 
