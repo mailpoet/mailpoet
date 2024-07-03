@@ -84,7 +84,9 @@ function Automations(): JSX.Element {
 function App(): JSX.Element {
   return (
     <SlotFillProvider>
-      <BrowserRouter>
+      <BrowserRouter
+        basename={new URL(MailPoet.urls.automationListing).pathname}
+      >
         <Automations />
       </BrowserRouter>
     </SlotFillProvider>
