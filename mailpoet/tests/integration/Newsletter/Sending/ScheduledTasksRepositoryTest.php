@@ -7,24 +7,22 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Carbon\CarbonImmutable;
 
 class ScheduledTasksRepositoryTest extends \MailPoetTest {
-  /** @var ScheduledTasksRepository */
-  private $repository;
-
-  /** @var ScheduledTaskFactory */
-  private $scheduledTaskFactory;
-
-  /** @var SendingQueue */
-  private $sendingQueueFactory;
+  private ScheduledTasksRepository $repository;
+  private ScheduledTaskFactory $scheduledTaskFactory;
+  private SendingQueue $sendingQueueFactory;
+  private WPFunctions $wp;
 
   public function _before() {
     parent::_before();
     $this->repository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->sendingQueueFactory = new SendingQueue();
+    $this->wp = $this->diContainer->get(WPFunctions::class);
   }
 
   public function testItCanGetDueTasks() {
@@ -215,5 +213,77 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
 
     $tasks = $this->repository->findScheduledSendingTasks();
     $this->assertSame($expectedResult, $tasks);
+  }
+
+  public function testItCanCancelScheduledOrRunningTask(): void {
+    $scheduledTask = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
+    $this->repository->cancelTask($scheduledTask);
+    $cancelledTask = $this->repository->findOneById($scheduledTask->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $cancelledTask);
+    $this->assertEquals(ScheduledTaskEntity::STATUS_CANCELLED, $cancelledTask->getStatus());
+    $this->assertNotNull($cancelledTask->getCancelledAt());
+
+    $runningTask = $this->scheduledTaskFactory->create('test', null, Carbon::now()->addDay());
+    $this->repository->cancelTask($runningTask);
+    $cancelledTask = $this->repository->findOneById($runningTask->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $cancelledTask);
+    $this->assertEquals(ScheduledTaskEntity::STATUS_CANCELLED, $cancelledTask->getStatus());
+    $this->assertNotNull($cancelledTask->getCancelledAt());
+  }
+
+  public function testItCantCancelCompletedOrPausedTask(): void {
+    $completedTask = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
+    $this->expectException(\Exception::class);
+    $this->expectExceptionMessage('Only scheduled and running tasks can be cancelled');
+    $this->expectExceptionCode(400);
+    $this->repository->cancelTask($completedTask);
+
+    $pausedTask = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDay());
+    $this->expectException(\Exception::class);
+    $this->expectExceptionMessage('Only scheduled and running tasks can be cancelled');
+    $this->expectExceptionCode(400);
+    $this->repository->cancelTask($pausedTask);
+  }
+
+  public function testItCanRescheduleCancelledScheduledTask(): void {
+    $scheduledTask = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_CANCELLED, Carbon::now()->addDay());
+    $this->repository->rescheduleTask($scheduledTask);
+    $rescheduledTask = $this->repository->findOneById($scheduledTask->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $rescheduledTask);
+    $this->assertEquals(ScheduledTaskEntity::STATUS_SCHEDULED, $rescheduledTask->getStatus());
+  }
+
+  public function testItCanRescheduleCancelledRunningTaskAndResumesSendingQueue(): void {
+    $sendingQueuesRepositoryMock = $this->createMock(SendingQueuesRepository::class);
+
+    $runningTask = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_CANCELLED, Carbon::now()->subDay());
+    $runningTask->setSendingQueue($this->sendingQueueFactory->create($runningTask));
+    $sendingQueuesRepositoryMock->expects($this->once())->method('resume')->with($runningTask->getSendingQueue());
+
+    $scheduledTaskRepositoryMock = new ScheduledTasksRepository($this->entityManager, $this->wp, $sendingQueuesRepositoryMock);
+    $scheduledTaskRepositoryMock->rescheduleTask($runningTask);
+
+    $this->assertNull($runningTask->getStatus()); // running task has status null
+    $this->assertNull($runningTask->getCancelledAt());
+  }
+
+  public function testItCantRescheduleCompletedOrScheduledOrRunningTask(): void {
+    $completedTask = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
+    $this->expectException(\Exception::class);
+    $this->expectExceptionMessage('Only cancelled tasks can be rescheduled');
+    $this->expectExceptionCode(400);
+    $this->repository->rescheduleTask($completedTask);
+
+    $scheduledTask = $this->scheduledTaskFactory->create('test', ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
+    $this->expectException(\Exception::class);
+    $this->expectExceptionMessage('Only cancelled tasks can be rescheduled');
+    $this->expectExceptionCode(400);
+    $this->repository->rescheduleTask($scheduledTask);
+
+    $running = $this->scheduledTaskFactory->create('test', null, Carbon::now()->addDay());
+    $this->expectException(\Exception::class);
+    $this->expectExceptionMessage('Only cancelled tasks can be rescheduled');
+    $this->expectExceptionCode(400);
+    $this->repository->rescheduleTask($running);
   }
 }
