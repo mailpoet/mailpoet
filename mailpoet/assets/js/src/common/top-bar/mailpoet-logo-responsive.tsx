@@ -18,7 +18,10 @@ export function MailPoetLogoResponsive({ onClick, withLink = true }: Props) {
     navigateFallback = () => navigate('/');
   } catch (e) {
     navigateFallback = () => {
-      window.location.href = `admin.php?page=${MailPoet.mainPageSlug}`;
+      window.location.href = `admin.php?page=${
+        new URL(window.location.href).searchParams.get('page') ??
+        MailPoet.mainPageSlug
+      }`;
     };
   }
 
