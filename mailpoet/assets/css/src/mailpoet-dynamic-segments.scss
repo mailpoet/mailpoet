@@ -1,6 +1,10 @@
 @import 'settings/colors';
 @import 'mailpoet-listing';
 
+#dynamic_segments_container * {
+  box-sizing: border-box;
+}
+
 .mailpoet-segment-subscriber-count {
   align-items: center;
   display: flex;
