@@ -120,6 +120,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
   public function testItCanFetchBasicTasksData() {
     $task1 = $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, Carbon::now()->addDay());
     $task2 = $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, Carbon::now()->addDay(), Carbon::now()); // deleted (should not be fetched)
     $data = $this->repository->getLatestTasks();
     verify(count($data))->equals(2);
     $ids = array_map(function ($d){
@@ -142,6 +143,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
   public function testItCanFilterTasksByType() {
     $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
     $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
+    $this->scheduledTaskFactory->create(Bounce::TASK_TYPE, ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING, Carbon::now()->addDay(), Carbon::now()); // deleted (should not be fetched)
     $data = $this->repository->getLatestTasks(Bounce::TASK_TYPE);
     verify(count($data))->equals(1);
     verify($data[0]->getType())->equals(Bounce::TASK_TYPE);
@@ -151,6 +153,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay());
     $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_PAUSED, Carbon::now()->addDay());
     $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_CANCELLED, Carbon::now()->subDay());
+    $this->scheduledTaskFactory->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_COMPLETED, Carbon::now()->addDay(), Carbon::now()); // deleted (should not be fetched)
     $data = $this->repository->getLatestTasks(null, [ScheduledTaskEntity::STATUS_COMPLETED]);
     verify(count($data))->equals(1);
     verify($data[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_COMPLETED);
