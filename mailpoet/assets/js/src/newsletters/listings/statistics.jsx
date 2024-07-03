@@ -60,6 +60,12 @@ function Statistics({
     newsletter.total_sent || newsletter.queue.count_processed,
   );
 
+  const isCancelled =
+    newsletter.queue && newsletter.queue.status === 'cancelled';
+  if (isCancelled && totalSent === 0) {
+    return null;
+  }
+
   let percentageClicked = 0;
   let percentageOpened = 0;
   let revenue = null;
@@ -75,7 +81,7 @@ function Statistics({
   let sentHoursAgo;
   let tooEarlyForStats;
   let showKbLink;
-  if (currentTime !== undefined) {
+  if (!isCancelled && currentTime !== undefined) {
     // standard emails and post notifications:
     // display green box for newsletters that were just sent
     showStatsTimeout = 6; // in hours
