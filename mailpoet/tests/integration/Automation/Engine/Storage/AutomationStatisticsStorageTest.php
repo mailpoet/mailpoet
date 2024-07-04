@@ -30,7 +30,6 @@ class AutomationStatisticsStorageTest extends \MailPoetTest {
 
     for ($i = 1; $i <= 3; $i++) {
       $automation = $this->tester->createAutomation((string)$i);
-      $this->assertInstanceOf(Automation::class, $automation);
       $this->automations[] = $automation->getId();
     }
   }

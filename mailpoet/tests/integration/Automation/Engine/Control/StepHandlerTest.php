@@ -55,9 +55,7 @@ class StepHandlerTest extends \MailPoetTest {
     // run step
     $stepHandler = $this->getServiceWithOverrides(StepHandler::class, ['registry' => $registry]);
     $automation = $this->createAutomation();
-    $this->assertInstanceOf(Automation::class, $automation);
     $run = $this->tester->createAutomationRun($automation);
-    $this->assertInstanceOf(AutomationRun::class, $run);
     $stepHandler->handle(['automation_run_id' => $run->getId(), 'step_id' => 'a1', 'run_number' => 1]);
   }
 
@@ -70,9 +68,7 @@ class StepHandlerTest extends \MailPoetTest {
 
     $stepHandler = $this->getServiceWithOverrides(StepHandler::class, ['registry' => $registry]);
     $automation = $this->createAutomation();
-    $this->assertInstanceOf(Automation::class, $automation);
     $run = $this->tester->createAutomationRun($automation);
-    $this->assertInstanceOf(AutomationRun::class, $run);
 
     // create start log and modify "updated_at" to an older date
     $oldDate = new DateTimeImmutable('2000-01-01 00:00:00');
@@ -104,9 +100,7 @@ class StepHandlerTest extends \MailPoetTest {
 
     $stepHandler = $this->getServiceWithOverrides(StepHandler::class, ['registry' => $registry]);
     $automation = $this->createAutomation();
-    $this->assertInstanceOf(Automation::class, $automation);
     $run = $this->tester->createAutomationRun($automation);
-    $this->assertInstanceOf(AutomationRun::class, $run);
 
     // create start log and modify "updated_at" to an older date
     $oldDate = new DateTimeImmutable('2000-01-01 00:00:00');
@@ -144,10 +138,8 @@ class StepHandlerTest extends \MailPoetTest {
     ]);
 
     $automation = $this->createAutomation();
-    $this->assertInstanceOf(Automation::class, $automation);
     $steps = $automation->getSteps();
     $automationRun = $this->tester->createAutomationRun($automation);
-    $this->assertInstanceOf(AutomationRun::class, $automationRun);
 
     $currentStep = current($steps);
     $this->assertInstanceOf(Step::class, $currentStep);
@@ -178,7 +170,6 @@ class StepHandlerTest extends \MailPoetTest {
       $automation->setStatus($status);
       $this->automationStorage->updateAutomation($automation);
       $automationRun = $this->tester->createAutomationRun($automation);
-      $this->assertInstanceOf(AutomationRun::class, $automationRun);
       $error = null;
       try {
         $stepHandler->handle(['automation_run_id' => $automationRun->getId(), 'step_id' => $currentStep->getId()]);
@@ -204,11 +195,8 @@ class StepHandlerTest extends \MailPoetTest {
     ]);
 
     $automation = $this->createAutomation();
-    $this->assertInstanceOf(Automation::class, $automation);
     $automationRun1 = $this->tester->createAutomationRun($automation);
-    $this->assertInstanceOf(AutomationRun::class, $automationRun1);
     $automationRun2 = $this->tester->createAutomationRun($automation);
-    $this->assertInstanceOf(AutomationRun::class, $automationRun2);
     $automation->setStatus(Automation::STATUS_DEACTIVATING);
     $this->automationStorage->updateAutomation($automation);
 
@@ -233,7 +221,7 @@ class StepHandlerTest extends \MailPoetTest {
     $this->assertSame(AutomationRun::STATUS_COMPLETE, $updatedautomationRun->getStatus());
   }
 
-  private function createAutomation(): ?Automation {
+  private function createAutomation(): Automation {
     return $this->tester->createAutomation(
       'Test automation',
       new Step('t', Step::TYPE_TRIGGER, 'test:trigger', [], [new NextStep('a1')]),

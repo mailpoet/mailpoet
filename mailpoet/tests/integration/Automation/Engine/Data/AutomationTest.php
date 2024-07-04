@@ -16,7 +16,6 @@ class AutomationTest extends \MailPoetTest {
 
   public function testMetaDataIsStored() {
     $automation = $this->tester->createAutomation('test');
-    $this->assertInstanceOf(Automation::class, $automation);
 
     $automation->setMeta('foo', 'bar');
     $this->assertEquals('bar', $automation->getMeta('foo'));
@@ -31,7 +30,6 @@ class AutomationTest extends \MailPoetTest {
   public function testMetaDataIsDeleted() {
 
     $automation = $this->tester->createAutomation('test');
-    $this->assertInstanceOf(Automation::class, $automation);
 
     $automation->setMeta('foo', 'bar');
     $automation->deleteMeta('foo');
@@ -49,7 +47,6 @@ class AutomationTest extends \MailPoetTest {
 
   public function testAutomationComparisonWorks() {
     $automation = $this->tester->createAutomation('test');
-    $this->assertInstanceOf(Automation::class, $automation);
 
     $automation2 = clone $automation;
     $automation2->setMeta('foo', 'bar');
@@ -63,7 +60,6 @@ class AutomationTest extends \MailPoetTest {
    */
   public function testFullValidationWorks($status, $expected) {
     $automation = $this->tester->createAutomation('test');
-    $this->assertInstanceOf(Automation::class, $automation);
     $automation->setStatus($status);
     $this->assertEquals($expected, $automation->needsFullValidation());
   }

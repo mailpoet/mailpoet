@@ -30,7 +30,6 @@ class AutomationTimeSpanControllerTest extends \MailPoetTest {
 
   public function testItReturnsNoEmailWhenNoEmailStepExist() {
     $automation = $this->tester->createAutomation('test');
-    $this->assertInstanceOf(Automation::class, $automation);
     $this->createEmail();
     $emails = $this->testee->getEmailsFromAutomations([$automation]);
     $this->assertEmpty($emails);
@@ -67,7 +66,6 @@ class AutomationTimeSpanControllerTest extends \MailPoetTest {
       []
     );
     $automation = $this->tester->createAutomation('test', $trigger, $firstEmail, $secondEmail);
-    $this->assertInstanceOf(Automation::class, $automation);
 
     $emails = $this->testee->getEmailsFromAutomations([$automation]);
     $this->assertCount(2, $emails);
@@ -83,7 +81,6 @@ class AutomationTimeSpanControllerTest extends \MailPoetTest {
     $after = new \DateTimeImmutable('2022-01-01 00:00:00');
     $before = new \DateTimeImmutable('2022-02-02 00:00:00');
     $automation = $this->tester->createAutomation('test');
-    $this->assertInstanceOf(Automation::class, $automation);
     $emailBefore = $this->createEmail('emailBefore');
     $emailInTimeSpan = $this->createEmail('emailInTimeSpan');
     $emailInTimeSpan2 = $this->createEmail('emailInTimeSpan2');

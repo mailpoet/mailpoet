@@ -4,7 +4,6 @@ namespace MailPoet\Test\Automation\Integrations\MailPoet\SubjectTransformers;
 
 use MailPoet\Automation\Engine\Control\StepHandler;
 use MailPoet\Automation\Engine\Control\TriggerHandler;
-use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
@@ -67,7 +66,6 @@ class OrderSubjectToSubscriberSubjectTransformerTest extends \MailPoetTest {
       new Step('action', Step::TYPE_ACTION, $testAction->getKey(), [], []),
     ];
     $automation = $this->tester->createAutomation('test', ...$steps);
-    $this->assertInstanceOf(Automation::class, $automation);
 
     /**
      * We need to register the hooks ourselves because the active automation has been created too late

@@ -390,7 +390,7 @@ class IntegrationTester extends \Codeception\Actor {
     verify($date1->getTimestamp())->equalsWithDelta($date2->getTimestamp(), $delta);
   }
 
-  public function createAutomation(string $name, Step ...$steps): ?Automation {
+  public function createAutomation(string $name, Step ...$steps): Automation {
     $automationStorage = ContainerWrapper::getInstance()->get(AutomationStorage::class);
 
     if (!$steps) {
@@ -416,10 +416,13 @@ class IntegrationTester extends \Codeception\Actor {
     }
     $automation = new Automation($name, $stepsWithIds, wp_get_current_user());
     $automation->setStatus(Automation::STATUS_ACTIVE);
-    return $automationStorage->getAutomation($automationStorage->createAutomation($automation));
+    $automation = $automationStorage->getAutomation($automationStorage->createAutomation($automation));
+    $this->assertInstanceOf(Automation::class, $automation);
+    /** @var Automation $automation -- PHPStan fails to exclude "null" */
+    return $automation;
   }
 
-  public function createAutomationRun(Automation $automation, $subjects = []): ?AutomationRun {
+  public function createAutomationRun(Automation $automation, $subjects = []): AutomationRun {
     $trigger = array_values($automation->getTriggers())[0] ?? null;
     $triggerKey = $trigger ? $trigger->getKey() : '';
     $automationRun = new AutomationRun(
@@ -429,7 +432,10 @@ class IntegrationTester extends \Codeception\Actor {
       $subjects
     );
     $automationRunStorage = ContainerWrapper::getInstance()->get(AutomationRunStorage::class);
-    return $automationRunStorage->getAutomationRun($automationRunStorage->createAutomationRun($automationRun));
+    $automationRun = $automationRunStorage->getAutomationRun($automationRunStorage->createAutomationRun($automationRun));
+    $this->assertInstanceOf(AutomationRun::class, $automationRun);
+    /** @var AutomationRun $automationRun -- PHPStan fails to exclude "null" */
+    return $automationRun;
   }
 
   public function getSubscriberEmailsMatchingDynamicFilter(DynamicSegmentFilterData $data, Filter $filter): array {
