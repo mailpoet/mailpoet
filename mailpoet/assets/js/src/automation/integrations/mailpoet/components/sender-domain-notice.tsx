@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { extractEmailDomain } from 'common/functions';
-import { SenderEmailAddressWarning } from '../../../../../../common/sender-email-address-warning';
-import { MailPoet } from '../../../../../../mailpoet';
-import { useSelectContext, updateSenderDomainsConfig } from '../../../context';
+import { SenderEmailAddressWarning } from '../../../../common/sender-email-address-warning';
+import { MailPoet } from '../../../../mailpoet';
+import { useSelectContext, updateSenderDomainsConfig } from '../context';
 
 type SenderDomainInlineNoticeProps = {
   email: string;
