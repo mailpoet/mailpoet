@@ -85,7 +85,17 @@ export function EmailPanel(): JSX.Element {
         className={
           senderAddressErrorMessage ? 'mailpoet-automation-field__error' : ''
         }
-        help={senderAddressErrorMessage}
+        help={
+          <>
+            {senderAddressErrorMessage}
+            {window.mailpoet_mss_active &&
+              isEmail((selectedStep.args.sender_address as string) ?? '') && (
+                <SenderDomainNotice
+                  email={(selectedStep.args.sender_address as string) ?? ''}
+                />
+              )}
+          </>
+        }
         type="email"
         label={__('"From" email address', 'mailpoet')}
         placeholder={
@@ -101,12 +111,6 @@ export function EmailPanel(): JSX.Element {
           )
         }
       />
-      {window.mailpoet_mss_active &&
-        isEmail((selectedStep.args.sender_address as string) ?? '') && (
-          <SenderDomainNotice
-            email={(selectedStep.args.sender_address as string) ?? ''}
-          />
-        )}
       <SingleLineTextareaControl
         className={
           subjectErrorMessage ? 'mailpoet-automation-field__error' : ''
