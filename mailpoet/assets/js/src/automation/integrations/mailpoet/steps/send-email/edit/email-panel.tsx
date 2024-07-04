@@ -4,7 +4,7 @@ import { dispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { isEmail } from 'common/functions';
 import { ShortcodeHelpText } from './shortcode-help-text';
-import { SenderDomainNotice } from './sender-domain-notice';
+import { SenderDomainNotice } from '../../../components/sender-domain-notice';
 import { PlainBodyTitle } from '../../../../../editor/components';
 import { storeName } from '../../../../../editor/store';
 import { StepName } from '../../../../../editor/components/panel/step-name';
