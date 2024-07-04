@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Automation\Engine\Control;
 
 use MailPoet\Automation\Engine\Control\TriggerHandler;
-use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\Filter;
 use MailPoet\Automation\Engine\Data\FilterGroup;
 use MailPoet\Automation\Engine\Data\Filters;
@@ -82,8 +81,6 @@ class TriggerHandlerTest extends \MailPoetTest {
         []
       )
     );
-    $this->assertInstanceOf(Automation::class, $automation1);
-    $this->assertInstanceOf(Automation::class, $automation2);
 
     $this->assertEmpty($this->automationRunStorage->getAutomationRunsForAutomation($automation1));
     $this->assertEmpty($this->automationRunStorage->getAutomationRunsForAutomation($automation2));
@@ -129,8 +126,6 @@ class TriggerHandlerTest extends \MailPoetTest {
         []
       )
     );
-    $this->assertInstanceOf(Automation::class, $automation1);
-    $this->assertInstanceOf(Automation::class, $automation2);
 
     $this->assertEmpty($this->automationRunStorage->getAutomationRunsForAutomation($automation1));
     $this->assertEmpty($this->automationRunStorage->getAutomationRunsForAutomation($automation2));
@@ -158,7 +153,6 @@ class TriggerHandlerTest extends \MailPoetTest {
         []
       )
     );
-    $this->assertInstanceOf(Automation::class, $automation1);
 
     $this->assertEmpty($this->automationRunStorage->getAutomationRunsForAutomation($automation1));
 
@@ -184,7 +178,6 @@ class TriggerHandlerTest extends \MailPoetTest {
       'Will not run',
       new Step('trigger', Step::TYPE_TRIGGER, $trigger->getKey(), [], [], $filters)
     );
-    $this->assertInstanceOf(Automation::class, $automation);
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
     $this->testee->processTrigger($trigger, [$segmentSubject, $subscriberSubject]);
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
@@ -196,7 +189,6 @@ class TriggerHandlerTest extends \MailPoetTest {
       'Will run',
       new Step('trigger', Step::TYPE_TRIGGER, $trigger->getKey(), [], [], $filters)
     );
-    $this->assertInstanceOf(Automation::class, $automation);
     $this->assertCount(0, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
     $this->testee->processTrigger($trigger, [$segmentSubject, $subscriberSubject]);
     $this->assertCount(1, $this->automationRunStorage->getAutomationRunsForAutomation($automation));
@@ -205,9 +197,7 @@ class TriggerHandlerTest extends \MailPoetTest {
   public function testItLogs(): void {
     $trigger = $this->diContainer->get(SomeoneSubscribesTrigger::class);
     $automation1 = $this->tester->createAutomation('Test 1', new Step('trigger-1', Step::TYPE_TRIGGER, $trigger->getKey(), [], []));
-    $this->assertInstanceOf(Automation::class, $automation1);
     $automation2 = $this->tester->createAutomation('Test 2', new Step('trigger-2', Step::TYPE_TRIGGER, $trigger->getKey(), [], []));
-    $this->assertInstanceOf(Automation::class, $automation2);
 
     $segmentSubject = new Subject(SegmentSubject::KEY, ['segment_id' => $this->segments['segment_1']->getId()]);
     $this->testee->processTrigger($trigger, [$segmentSubject]);
