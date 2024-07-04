@@ -55,4 +55,5 @@ export * as Listing from 'listing';
 export * as DynamicSegments from 'segments/dynamic';
 export * as AutomationEditorComponents from 'automation/editor/components';
 export * as AutomationAnalyticsStore from 'automation/integrations/mailpoet/analytics/store';
+export * as AutomationIntegrationsMailPoet from 'automation/integrations/mailpoet/expose';
 export * as AutomationIntegrationsWooCommerceContext from 'automation/integrations/woocommerce/context';
