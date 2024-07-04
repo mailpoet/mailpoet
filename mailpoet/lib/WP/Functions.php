@@ -498,6 +498,10 @@ class Functions {
     status_header($code, $description);
   }
 
+  public function stripShortcodes($value) {
+    return strip_shortcodes($value);
+  }
+
   public function stripslashesDeep($value) {
     return stripslashes_deep($value);
   }
