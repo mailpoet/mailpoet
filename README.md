@@ -1,4 +1,4 @@
-# MailPoet
+## MailPoet
 
 The **MailPoet** plugin monorepo.
 
@@ -7,16 +7,16 @@ If you have **any questions or need help or support**, please see the [Support](
 To use our Docker-based development environment (recommended), continue with the steps below.
 If you'd like to use the plugin code directly, see details in [the plugin's readme](mailpoet/README.md).
 
-## 🔌 Initial setup
+## Initial setup
 
 1. Run `./do setup` to pull everything and install necessary dependencies.
 2. Add secrets to `.env` files in `mailpoet` and `mailpoet-premium` directories. Go to the Secret Store and look for "MailPoet: plugin .env"
 3. Run `./do start` to start the stack.
 4. Go to http://localhost:8888 to see the dashboard of the dev environment.
 
-## ✅ Additional dependencies
+### Additional dependencies
 
-Even though it possible to run everything using Docker, in the development workflow,
+Even though it's possible to run everything using Docker, in the development workflow,
 it may be faster and more convenient to run some tasks outside the container. Therefore,
 the following tools are recommended:
 
@@ -24,7 +24,9 @@ the following tools are recommended:
 2. **Node.js**, as specified by `.nvmrc`. For automatic management use [nvm](https://github.com/nvm-sh/nvm), [FNM](https://github.com/Schniz/fnm), or [Volta](https://github.com/volta-cli/volta).
 3. **pnpm**, as specified in `package.json`. For automatic setup enable [Corepack](https://nodejs.org/docs/latest-v17.x/api/corepack.html) using `corepack enable`.
 
-## 🔍 PHPStorm setup for XDebug
+## Xdebug
+
+### PhpStorm setup
 
 In `Languages & Preferences > PHP > Servers` set path mappings:
 
@@ -41,7 +43,7 @@ To use XDebug inside the **cron**, you need to pass a URL argument `&XDEBUG_TRIG
 [in the cron request](https://github.com/mailpoet/mailpoet/blob/bf7bd6d2d9090ed6ec7b8b575bb7d6b08e663a52/lib/Cron/CronHelper.php#L155-L166).
 Alternatively, you can add `XDEBUG_TRIGGER: yes` to the `wordpress` service in `docker-compose.yml` and restart it (which will run XDebug also for all other requests).
 
-## Xdebug develop mode
+### Xdebug develop mode
 
 [Xdebug develop mode](https://xdebug.org/docs/develop) is disabled by default because it causes performance issues due to conflicts with the DI container.
 
@@ -52,7 +54,7 @@ environment:
     XDEBUG_MODE: debug, develop
 ```
 
-## Xdebug for integration tests
+### Xdebug for integration tests
 
 - In Languages & Preferences > PHP > Servers create a new sever named `MailPoetTest`, set the host to `localhost` and port to `80` and set following path mappings:
 
@@ -67,7 +69,9 @@ mailpoet/vendor/bin/wp -> /usr/local/bin/wp
 - Add `XDEBUG_TRIGGER: 1` environment to `mailpoet/tests/docker/docker-compose.yml` -> codeception service to start triggering Xdebug
 - Make PHPStorm listen to connections by clicking on the phone icon
 
-## 💾 NFS volume sharing for Mac
+## Local development
+
+### NFS volume sharing for Mac
 
 NFS volumes can bring more stability and performance on Docker for Mac. To setup NFS volume sharing run:
 
@@ -87,7 +91,7 @@ docker-compose up -d
 **NOTE:** If you are on MacOS Catalina or newer, make sure to put the repository
 outside your `Documents` folder, otherwise you may run into [file permission issues](https://objekt.click/2019/11/docker-the-problem-with-macos-catalina/).
 
-# 🐶 Husky
+### Husky hooks
 
 We use [Husky](https://github.com/typicode/husky) to run automated checks in pre-commit hooks.
 
@@ -102,7 +106,9 @@ export NVM_DIR="$HOME/.nvm"
 
 Without it, you may experience errors in some Git clients.
 
-## 🕹 Commands
+## Docker
+
+### Commands
 
 The `./do` script define aliases for most of the commands you will need while working on plugins:
 
@@ -124,7 +130,7 @@ Options:
 
 You can access this help in your command line running `./do` without parameters.
 
-## 🚥 Testing with different PHP versions
+### Available PHP versions
 
 To switch the environment to a different PHP version:
 
@@ -144,7 +150,7 @@ To switch the environment to a different PHP version:
 To switch back to the default PHP version remove what was added in 2) and, run `docker-compose build wordpress` for application container and `docker-compose build test_wordpress` for tests container,
 and start the stack using `./do start`.
 
-## Disabling the Tracy panel
+### Disabling the Tracy panel
 
 To disable the Tracy panel, add the following to `docker-compose.override.yml`:
 
@@ -179,6 +185,9 @@ cd ../mailpoet-premium # switch to premium plugin directory
 ./do test:unit --file=tests/unit/Config/EnvTest.php
 ```
 
-## ✅ TODO
+## TODO
 
-- install woo commerce, members and other useful plugins by default
+- [ ] Install WooCommerce
+- [ ] Install Members
+- [ ] Install other useful plugins by default
+- [ ] Run individual acceptance test in premium plugin
