@@ -44,7 +44,7 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
       ignoreFrom: this.options.ignoreSelector,
     })
       .draggable({
-        // allow dragging of multple elements at the same time
+        // allow dragging of multiple elements at the same time
         max: Infinity,
 
         // Scroll when dragging near edges of a window
@@ -65,7 +65,6 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
             }
             // Or use a clone
             clone = tempClone || event.target.cloneNode(true);
-            jQuery(event.target);
             $clone = jQuery(clone);
 
             $clone.addClass('mailpoet_droppable_active');
@@ -82,7 +81,7 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
             $clone.css('top', event.pageY - centerYOffset);
             $clone.css('left', event.pageX - centerXOffset);
 
-            event.interaction.element = clone;
+            event.target.__clone = clone;
 
             if (that.options.hideOriginal === true) {
               that.view.$el.addClass('mailpoet_hidden');
@@ -93,10 +92,15 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
         },
         // call this function on every dragmove event
         onmove: function onmove(event) {
-          var target = event.target;
+          var target = event.target.__clone;
+          var x;
+          var y;
+          if (!target) {
+            return;
+          }
           // keep the dragged position in the data-x/data-y attributes
-          var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-          var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+          x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+          y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
           // translate the element
           target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
@@ -107,14 +111,14 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
           target.setAttribute('data-y', y);
         },
         onend: function onend(event) {
-          var target = event.target;
+          var target = event.target.__clone;
+          if (!target) {
+            return;
+          }
           target.style.transform = '';
           target.style.webkitTransform = target.style.transform;
           target.removeAttribute('data-x');
           target.removeAttribute('data-y');
-          jQuery(event.interaction.element).addClass(
-            'mailpoet_droppable_active',
-          );
 
           if (that.options.cloneOriginal === true) {
             jQuery(target).remove();
