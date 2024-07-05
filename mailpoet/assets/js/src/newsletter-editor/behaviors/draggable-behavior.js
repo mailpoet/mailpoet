@@ -58,6 +58,9 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
           var clone;
           var $clone;
 
+          // Prevent text selection while dragging
+          document.body.classList.add('mailpoet-is-dragging');
+
           if (that.options.cloneOriginal === true) {
             // Use substitution instead of a clone
             if (_.isFunction(that.options.onDragSubstituteBy)) {
@@ -112,6 +115,10 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
         },
         onend: function onend(event) {
           var target = event.target.__clone;
+
+          // Allow text selection when not dragging
+          document.body.classList.remove('mailpoet-is-dragging');
+
           if (!target) {
             return;
           }
