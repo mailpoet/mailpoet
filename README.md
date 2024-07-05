@@ -1,3 +1,22 @@
+### Table of Contents
+
+1. [MailPoet](#mailpoet)
+2. [Initial setup](#initial-setup)
+   1. [Additional dependencies](#additional-dependencies)
+3. [Xdebug](#xdebug)
+   1. [PhpStorm setup](#phpstorm-setup)
+   2. [Xdebug develop mode](#xdebug-develop-mode)
+   3. [Xdebug for integration tests](#xdebug-for-integration-tests)
+4. [Local development](#local-development)
+   1. [NFS volume sharing for Mac](#nfs-volume-sharing-for-mac)
+   2. [Husky hooks](#husky-hooks)
+5. [Docker](#docker)
+   1. [Commands](#commands)
+   2. [Available PHP versions](#available-php-versions)
+   3. [Disabling the Tracy panel](#disabling-the-tracy-panel)
+   4. [Running individual tests](#running-individual-tests)
+6. [TODO](#todo)
+
 ## MailPoet
 
 The **MailPoet** plugin monorepo.
