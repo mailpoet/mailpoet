@@ -1,26 +1,14 @@
-# MailPoet
+## MailPoet
 
-The **MailPoet** plugin.
-
-If you have **any questions or need help or support**, please see the [Support](../SUPPORT.md) document.
-
-To use the official Docker-based development environment, see details
-in [the readme file](../README.md) in the root of this repository. If
-you'd like to use the plugin code directly, you can follow the instructions
-below.
-
-## Contents
-
-- [Setup](#setup)
-- [Frameworks and libraries](#frameworks-and-libraries)
-- [Workflow Commands](#workflow-commands)
-- [Coding and Testing](#coding-and-testing)
+- For help with product, visit [SUPPORT](../SUPPORT.md).
+- To use the Docker-based development environment, see [monorepo README](../README.md).
+- To use plugin code directly, follow instructions below.
 
 ## Setup
 
 ### Requirements
 
-- PHP >= 7.3 (only for the development environment, to run the plugin PHP >= 7.2 is required)
+- PHP >= 7.4
 - NodeJS
 - WordPress
 
@@ -48,9 +36,8 @@ cp .env.sample .env
 ./do compile:all
 ```
 
-## Frameworks and libraries
+### Frameworks and libraries
 
-- [Paris ORM](https://github.com/j4mie/paris).
 - [Symfony/dependency-injection](https://github.com/symfony/dependency-injection) ([docs for 3.4](https://symfony.com/doc/3.4/components/dependency_injection.html)).
 - [PHP-Scoper](https://github.com/humbug/php-scoper) for moving dependencies into MP namespace
 - [Twig](https://twig.symfony.com/) and [Handlebars](https://handlebarsjs.com/) are used for templates rendering.
@@ -141,7 +128,7 @@ Dependencies handled by PHP-Scoper are configured in extra configuration files `
 
 ### i18n
 
-We use functions `__()`, `_n()`, `_x()`, and `_nx()` with domain `mailpoet` to translate strings.
+We use functions `__()`, `_n()`, `_x()`, and `_nx()` with domain `mailpoet` to translate strings. Please follow [best practices](https://codex.wordpress.org/I18n_for_WordPress_Developers).
 
 #### Comments for translators
 
@@ -157,7 +144,7 @@ $customErrorMessage = sprintf(
 );
 ```
 
-**in PHP code**
+#### In PHP code
 
 ```php
 __('text to translate', 'mailpoet');
@@ -166,7 +153,7 @@ _x('text to translate', 'context', 'mailpoet');
 _xn('single text', 'plural text', $number, 'context', 'mailpoet');
 ```
 
-**in JavaScript/TypeScript code**
+#### In JavaScript/TypeScript code
 
 ```ts
 import { __, _n, _x, _xn } from '@wordpress/i18n';
