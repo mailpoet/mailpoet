@@ -124,10 +124,6 @@ Options:
 
 You can access this help in your command line running `./do` without parameters.
 
-## ✉️ Adding new templates to the plugin
-
-[Read the article.](https://mailpoet.atlassian.net/wiki/spaces/MAILPOET/pages/629374977/Adding+new+templates+to+the+plugin)
-
 ## 🚥 Testing with different PHP versions
 
 To switch the environment to a different PHP version:
