@@ -1,3 +1,17 @@
+### Table of Contents
+
+1. [MailPoet](#mailpoet)
+2. [Setup](#setup)
+   1. [Requirements](#requirements)
+   2. [Installation](#installation)
+   3. [Frameworks and libraries](#frameworks-and-libraries)
+3. [Workflow Commands](#workflow-commands)
+4. [Coding and Testing](#coding-and-testing)
+   1. [DI](#di)
+   2. [PHP-Scoper](#php-scoper)
+   3. [i18n](#i18n)
+   4. [Acceptance testing](#acceptance-testing)
+
 ## MailPoet
 
 - For help with product, visit [SUPPORT](../SUPPORT.md).
