@@ -45,12 +45,6 @@ There is a `./do` command that helps with the development process. See README.md
 - Use good commit messages as explained here https://chris.beams.io/posts/git-commit
 - Wait for review from another developer.
 
-## Issues creation
-
-- Issues are managed on Jira.
-- Discuss issues on public Slack chats, discuss code in pull requests.
-- Open a small Jira issue only when it has been discussed.
-
 ## Feature flags
 
 We use feature flags to control the visibility of new features. This allows us to work on new features in smaller chunks before they are released to all customers.
