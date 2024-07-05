@@ -143,6 +143,20 @@ Dependencies handled by PHP-Scoper are configured in extra configuration files `
 
 We use functions `__()`, `_n()`, `_x()`, and `_nx()` with domain `mailpoet` to translate strings.
 
+#### Comments for translators
+
+When the translation string can be ambiguous, add [a translators comment](https://codex.wordpress.org/I18n_for_WordPress_Developers#Descriptions) for clarification. Don't use `_x()` or `_xn()` for clarification.
+
+```php
+// translators:
+$customErrorMessage = sprintf(
+  // translators: %1$s is the link, %2$s is the error message.
+  __('Please see %1$s for more information. %2$s.', 'mailpoet'),
+  'https://kb.mailpoet.com',
+  $errorMessage
+);
+```
+
 **in PHP code**
 
 ```php
