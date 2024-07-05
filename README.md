@@ -159,6 +159,30 @@ services:
       MAILPOET_DISABLE_TRACY_PANEL: 1
 ```
 
+### Running individual tests
+
+It's recommended to run tests in Docker. Free plugin tests can be run using --test flag (`./do --test`). However, to run a premium test, you need to ssh into test container (`./do ssh --test`) and run tests there.
+
+#### Integration test in the free plugin
+
+```shell
+./do --test test:integration --skip-deps --file=tests/integration/WP/EmojiTest.php
+```
+
+#### Acceptance test in the free plugin
+
+```shell
+./do --test test:acceptance --skip-deps --file=tests/acceptance/Misc/MailpoetMenuCest.php
+```
+
+#### Unit/integration test in the premium plugin
+
+```shell
+./do ssh --test # to enter the container
+cd ../mailpoet-premium # switch to premium plugin directory
+./do test:unit --file=tests/unit/Config/EnvTest.php
+```
+
 ## ✅ TODO
 
 - install woo commerce, members and other useful plugins by default
