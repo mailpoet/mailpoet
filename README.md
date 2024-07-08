@@ -204,9 +204,15 @@ cd ../mailpoet-premium # switch to premium plugin directory
 ./do test:unit --file=tests/unit/Config/EnvTest.php
 ```
 
+#### Acceptance test in the premium plugin
+
+```shell
+cd ./mailpoet-premium # switch to premium plugin directory on your local machine
+./do test:acceptance --skip-deps --file tests/acceptance/PremiumCheckCest.php
+```
+
 ## TODO
 
 - [ ] Install WooCommerce
 - [ ] Install Members
 - [ ] Install other useful plugins by default
-- [ ] Run individual acceptance test in premium plugin
