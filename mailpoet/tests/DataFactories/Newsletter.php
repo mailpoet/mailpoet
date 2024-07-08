@@ -357,6 +357,12 @@ class Newsletter {
     return $this;
   }
 
+  public function withDefaultSegments() {
+    $defaultSegment = (new Segment())->withType(SegmentEntity::TYPE_DEFAULT)->create();
+    $this->segments[$defaultSegment->getId()] = $defaultSegment;
+    return $this;
+  }
+
   /**
    * @param SegmentEntity[] $segments
    * @return Newsletter

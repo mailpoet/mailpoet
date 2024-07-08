@@ -31,6 +31,18 @@ class NewsletterValidatorTest extends \MailPoetTest {
     verify($validationError)->equals('All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.');
   }
 
+  public function testItRequiresSegments() {
+    $newsletter = (new Newsletter())->withPostNotificationsType()->create();
+    $validationError = $this->newsletterValidator->validate($newsletter);
+    verify($validationError)->equals('You need to select a list to send to.');
+    $newsletter = (new Newsletter())->withReengagementType()->create();
+    $validationError = $this->newsletterValidator->validate($newsletter);
+    verify($validationError)->equals('You need to select a list to send to.');
+    $newsletter = (new Newsletter())->create();
+    $validationError = $this->newsletterValidator->validate($newsletter);
+    verify($validationError)->equals(null);
+  }
+
   public function testItRequiresBodyContent() {
     $newsletter = (new Newsletter())->withBody('')->create();
     $validationError = $this->newsletterValidator->validate($newsletter);
@@ -55,13 +67,13 @@ class NewsletterValidatorTest extends \MailPoetTest {
   }
 
   public function testItRequiresReengagementShortcodes() {
-    $newsletter = (new Newsletter())->withReengagementType()->withDefaultBody()->create();
+    $newsletter = (new Newsletter())->withReengagementType()->withDefaultSegments()->withDefaultBody()->create();
     $validationError = $this->newsletterValidator->validate($newsletter);
     verify($validationError)->equals('A re-engagement email must include a link with [link:subscription_re_engage_url] shortcode.');
   }
 
   public function testReengagementNewsletterIsValidWithRequiredShortcode() {
-    $newsletter = (new Newsletter())->withReengagementType()->withBody([
+    $newsletter = (new Newsletter())->withReengagementType()->withDefaultSegments()->withBody([
       'content' => [
         'blocks' => [
           [
@@ -76,7 +88,7 @@ class NewsletterValidatorTest extends \MailPoetTest {
   }
 
   public function testItRequiresTrackingForReengagementEmails() {
-    $newsletter = (new Newsletter())->withReengagementType()->withBody([
+    $newsletter = (new Newsletter())->withReengagementType()->withDefaultSegments()->withBody([
       'content' => [
         'blocks' => [
           [
@@ -94,13 +106,13 @@ class NewsletterValidatorTest extends \MailPoetTest {
   }
 
   public function testAlcEmailFailsValidationWithoutAlcBlock() {
-    $newsletter = (new Newsletter())->withDefaultBody()->withPostNotificationsType()->create();
+    $newsletter = (new Newsletter())->withDefaultBody()->withPostNotificationsType()->withDefaultSegments()->create();
     $validationError = $this->newsletterValidator->validate($newsletter);
     verify($validationError)->equals('Please add an “Automatic Latest Content” widget to the email from the right sidebar.');
   }
 
   public function testAlcEmailPassesWithAlcBlock() {
-    $newsletter = (new Newsletter())->loadBodyFrom('newsletterWithALC.json')->withPostNotificationsType()->create();
+    $newsletter = (new Newsletter())->loadBodyFrom('newsletterWithALC.json')->withPostNotificationsType()->withDefaultSegments()->create();
     $validationError = $this->newsletterValidator->validate($newsletter);
     verify($validationError)->null();
   }

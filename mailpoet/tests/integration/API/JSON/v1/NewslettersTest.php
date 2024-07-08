@@ -311,6 +311,9 @@ class NewslettersTest extends \MailPoetTest {
       );
     (new SendingQueueFactory())->create($scheduledTask3, $this->postNotification);
 
+    $segment1 = $this->segmentRepository->createOrUpdate('Segment 1');
+    $this->createNewsletterSegment($this->postNotification, $segment1);
+
     $this->entityManager->clear();
     $this->endpoint->setStatus(
       [
@@ -334,6 +337,10 @@ class NewslettersTest extends \MailPoetTest {
     $schedule = '* * * * *';
     (new NewsletterOption())->create($this->postNotification, NewsletterOptionFieldEntity::NAME_SCHEDULE, $schedule);
 
+    $segment1 = $this->segmentRepository->createOrUpdate('Segment 1');
+    $this->createNewsletterSegment($this->postNotification, $segment1);
+
+    $this->entityManager->clear();
     $this->endpoint->setStatus(
       [
         'id' => $this->postNotification->getId(),
