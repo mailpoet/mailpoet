@@ -1,5 +1,13 @@
 == Changelog ==
 
+= 4.55.0 - 2024-07-08 =
+
+- Added: cancelling scheduled or running sending tasks;
+- Added: show automations run logs;
+- Fixed: calendar view UI glitch;
+- Fixed: confirmation message in welcome wizard;
+- Fixed: shortcode in email subject rendering.
+
 = 4.54.0 - 2024-07-02 =
 
 - Updated: composer dependencies;
