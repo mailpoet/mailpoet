@@ -38,6 +38,7 @@ class NewsletterValidator {
       return null;
     }
     try {
+      $this->validateSegments($newsletterEntity);
       $this->validateBody($newsletterEntity);
       $this->validateUnsubscribeRequirements($newsletterEntity);
       $this->validateReEngagementRequirements($newsletterEntity);
@@ -58,6 +59,22 @@ class NewsletterValidator {
 
     if (!$hasUnsubscribeLink && !$hasUnsubscribeUrl) {
       throw new ValidationException(__('All emails must include an "Unsubscribe" link. Add a footer widget to your email to continue.', 'mailpoet'));
+    }
+  }
+
+  private function validateSegments(NewsletterEntity $newsletterEntity): void {
+    if (
+      $newsletterEntity->getType() !== NewsletterEntity::TYPE_NOTIFICATION
+      && $newsletterEntity->getType() !== NewsletterEntity::TYPE_RE_ENGAGEMENT
+    ) {
+      return;
+    }
+
+    $emptySegmentsErrorMessage = __('You need to select a list to send to.', 'mailpoet');
+    $segmentIds = $newsletterEntity->getSegmentIds();
+
+    if (empty($segmentIds)) {
+      throw new ValidationException($emptySegmentsErrorMessage);
     }
   }
 
