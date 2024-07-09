@@ -58,6 +58,10 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
           var clone;
           var $clone;
 
+          if (event.target.__clone) {
+            return;
+          }
+
           // Prevent text selection while dragging
           document.body.classList.add('mailpoet-is-dragging');
 
@@ -114,7 +118,8 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
           target.setAttribute('data-y', y);
         },
         onend: function onend(event) {
-          var target = event.target.__clone;
+          var endEvent = event;
+          var target = endEvent.target.__clone;
 
           // Allow text selection when not dragging
           document.body.classList.remove('mailpoet-is-dragging');
@@ -129,6 +134,7 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
 
           if (that.options.cloneOriginal === true) {
             jQuery(target).remove();
+            endEvent.target.__clone = undefined;
 
             if (that.options.hideOriginal === true) {
               that.view.$el.removeClass('mailpoet_hidden');
