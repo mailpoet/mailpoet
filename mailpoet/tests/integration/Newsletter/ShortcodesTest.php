@@ -42,6 +42,9 @@ class ShortcodesTest extends \MailPoetTest {
   /** @var NewsletterUrl */
   private $newsletterUrl;
 
+  /** @var string */
+  private $blognameBackup;
+
   public function _before() {
     parent::_before();
     $this->cleanup();
@@ -63,6 +66,10 @@ class ShortcodesTest extends \MailPoetTest {
     $this->settings->set('tracking.level', TrackingConfig::LEVEL_BASIC);
     $this->subscriptionUrlFactory = new SubscriptionUrlFactory(WPFunctions::get(), $this->settings, $this->linkTokens);
     $this->entityManager->flush();
+
+    $blogname = get_option('blogname');
+    $this->assertIsString($blogname);
+    $this->blognameBackup = $blogname;
   }
 
   public function testItCanExtractShortcodes() {
@@ -496,6 +503,9 @@ class ShortcodesTest extends \MailPoetTest {
   public function _after() {
     parent::_after();
     $this->cleanup();
+    if (get_option('blogname') !== $this->blognameBackup) {
+      update_option('blogname', $this->blognameBackup);
+    }
   }
 
   public function cleanup() {
