@@ -870,8 +870,12 @@ class NewsletterSendComponent extends Component<
                     MailPoet.FeaturesController.isSupported(
                       'gutenberg_email_editor',
                     ) && wpPostId
-                      ? `admin.php?page=mailpoet-email-editor&postId=${wpPostId}`
-                      : `?page=mailpoet-newsletter-editor&id=${this.props.match.params.id}`
+                      ? `admin.php?page=mailpoet-email-editor&postId=${Number(
+                          wpPostId,
+                        )}`
+                      : `?page=mailpoet-newsletter-editor&id=${Number(
+                          this.props.match.params.id,
+                        )}`
                   }
                   onClick={this.handleRedirectToDesign}
                 >
