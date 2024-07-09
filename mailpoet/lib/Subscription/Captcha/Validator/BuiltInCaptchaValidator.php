@@ -71,7 +71,7 @@ class BuiltInCaptchaValidator implements CaptchaValidator {
     }
 
     if (!hash_equals(strtolower($data['captcha']), strtolower($captchaHash))) {
-      $this->captchaPhrase->resetPhrase();
+      $this->captchaPhrase->createPhrase();
       throw new ValidationError(
         __('The characters entered do not match with the previous CAPTCHA.', 'mailpoet'),
         [

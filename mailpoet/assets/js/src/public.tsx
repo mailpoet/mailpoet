@@ -71,29 +71,33 @@ jQuery(($) => {
     audio.play().catch(() => {});
   }
 
-  function updateCaptcha(e?: Event) {
-    const imgSelector = 'img.mailpoet_captcha';
-    const audioSelector = '.mailpoet_captcha_player';
-    const captcha = document.querySelector(imgSelector);
-    const audioCaptcha =
-      document.querySelector<HTMLAudioElement>(audioSelector);
-    if (!captcha || !audioCaptcha) {
+  async function updateCaptcha(e?: Event) {
+    const image = document.querySelector('img.mailpoet_captcha');
+    const audio = document.querySelector<HTMLAudioElement>(
+      '.mailpoet_captcha_player',
+    );
+    if (!image || !audio) {
       return false;
     }
-    const audioCaptchaSource = audioCaptcha.querySelector('source');
-    let captchaSrc = captcha.getAttribute('src');
-    let hashPos = captchaSrc.indexOf('&cachebust=');
-    let newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
-    captcha.setAttribute('src', `${newSrc}&cachebust=${new Date().getTime()}`);
 
-    captchaSrc = audioCaptchaSource.getAttribute('src');
-    hashPos = captchaSrc.indexOf('&cachebust=');
-    newSrc = hashPos > 0 ? captchaSrc.substring(0, hashPos) : captchaSrc;
-    audioCaptchaSource.setAttribute(
-      'src',
-      `${newSrc}&cachebust=${new Date().getTime()}`,
-    );
-    audioCaptcha.load();
+    // page reload invalidates CAPTCHA, but we can do it with AJAX
+    await fetch(window.location.href);
+
+    // image
+    if (image) {
+      const imageUrl = new URL(image.getAttribute('src'));
+      imageUrl.searchParams.set('cachebust', `${new Date().getTime()}`);
+      image.setAttribute('src', imageUrl.toString());
+    }
+
+    // audio
+    if (audio) {
+      const audioSource = audio.querySelector('source');
+      const audioUrl = new URL(audioSource.getAttribute('src'));
+      audioUrl.searchParams.set('cachebust', `${new Date().getTime()}`);
+      audioSource.setAttribute('src', audioUrl.toString());
+      audio.load();
+    }
 
     if (e) e.preventDefault();
     return true;
@@ -143,7 +147,7 @@ jQuery(($) => {
           window.top.location.href = response.meta.redirect_url;
         } else {
           if (response.meta && response.meta.refresh_captcha) {
-            updateCaptcha();
+            void updateCaptcha();
           }
           if (window.grecaptcha && formData.recaptchaWidgetId) {
             window.grecaptcha.reset(formData.recaptchaWidgetId);
@@ -474,7 +478,10 @@ jQuery(($) => {
       });
     });
 
-    $('.mailpoet_captcha_update').on('click', updateCaptcha);
+    $('.mailpoet_captcha_update').on(
+      'click',
+      (e: Event) => void updateCaptcha(e),
+    );
     $('.mailpoet_captcha_audio').on('click', playCaptcha);
 
     // Manage subscription form

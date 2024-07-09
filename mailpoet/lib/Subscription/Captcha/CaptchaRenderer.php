@@ -23,9 +23,12 @@ class CaptchaRenderer {
   }
 
   public function renderAudio($sessionId, $return = false) {
+    if (!$this->isSupported()) {
+      return false;
+    }
 
     $audioPath = Env::$assetsPath . '/audio/';
-    $phrase = $this->phrase->getPhraseForType($this->determineAudioType(), $sessionId);
+    $phrase = $this->getPhrase($sessionId);
     $audio = null;
     foreach (str_split($phrase) as $character) {
       $file = $audioPath . strtolower($character) . '.mp3';
@@ -47,14 +50,6 @@ class CaptchaRenderer {
     exit;
   }
 
-  private function determineAudioType(): string {
-    $type = 'audio';
-    if (isset($_SERVER['HTTP_RANGE'])) {
-      $type .= '-range-' . sanitize_text_field(wp_unslash($_SERVER['HTTP_RANGE']));
-    }
-    return $type;
-  }
-
   public function renderImage($width = null, $height = null, $sessionId = null, $return = false) {
     if (!$this->isSupported()) {
       return false;
@@ -70,7 +65,7 @@ class CaptchaRenderer {
     $captchaDirectory = dirname((string)$reflector->getFileName());
     $font = $captchaDirectory . '/Font/captcha' . $fontNumber . '.ttf';
 
-    $phrase = $this->phrase->getPhraseForType('image', $sessionId);
+    $phrase = $this->getPhrase($sessionId);
     $builder = CaptchaBuilder::create($phrase)
       ->setBackgroundColor(255, 255, 255)
       ->setTextColor(1, 1, 1)
@@ -92,5 +87,13 @@ class CaptchaRenderer {
     header('Content-Type: image/jpeg');
     $builder->output();
     exit;
+  }
+
+  private function getPhrase(string $sessionId = null): string {
+    $phrase = $this->phrase->getPhrase($sessionId);
+    if (!$phrase) {
+      throw new \RuntimeException("No CAPTCHA phrase was generated.");
+    }
+    return $phrase;
   }
 }

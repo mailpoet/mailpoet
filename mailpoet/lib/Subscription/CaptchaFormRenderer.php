@@ -7,6 +7,7 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util\Styles;
+use MailPoet\Subscription\Captcha\CaptchaPhrase;
 use MailPoet\Subscription\Captcha\CaptchaSession;
 use MailPoet\Util\Url as UrlHelper;
 
@@ -16,6 +17,9 @@ class CaptchaFormRenderer {
 
   /** @var CaptchaSession */
   private $captchaSession;
+
+  /** @var CaptchaPhrase */
+  private $captchaPhrase;
 
   /** @var SubscriptionUrlFactory */
   private $subscriptionUrlFactory;
@@ -32,6 +36,7 @@ class CaptchaFormRenderer {
   public function __construct(
     UrlHelper $urlHelper,
     CaptchaSession $captchaSession,
+    CaptchaPhrase $captchaPhrase,
     SubscriptionUrlFactory $subscriptionUrlFactory,
     FormsRepository $formsRepository,
     FormRenderer $formRenderer,
@@ -39,6 +44,7 @@ class CaptchaFormRenderer {
   ) {
     $this->urlHelper = $urlHelper;
     $this->captchaSession = $captchaSession;
+    $this->captchaPhrase = $captchaPhrase;
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->formRenderer = $formRenderer;
     $this->formsRepository = $formsRepository;
@@ -50,8 +56,8 @@ class CaptchaFormRenderer {
   }
 
   public function getCaptchaPageContent($sessionId) {
-
     $this->captchaSession->init($sessionId);
+    $this->captchaPhrase->createPhrase();
     $captchaSessionForm = $this->captchaSession->getFormData();
     $showSuccessMessage = !empty($_GET['mailpoet_success']);
     $showErrorMessage = !empty($_GET['mailpoet_error']);
