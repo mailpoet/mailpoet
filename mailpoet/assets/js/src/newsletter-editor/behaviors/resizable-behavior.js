@@ -61,6 +61,9 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
       .on('resizestart', function resizestart() {
         that.view.model.trigger('startResizing');
         document.activeElement.blur();
+
+        // Prevent text selection while resizing
+        document.body.classList.add('mailpoet-is-dragging');
       })
       .on('resizemove', function resizemove(event) {
         var onResize = that.options.onResize.bind(that);
@@ -69,6 +72,9 @@ BL.ResizableBehavior = Marionette.Behavior.extend({
       .on('resizeend', function resizeend(event) {
         that.view.model.trigger('stopResizing', event);
         that.$el.removeClass('mailpoet_resize_active');
+
+        // Allow text selection when not resizing
+        document.body.classList.remove('mailpoet-is-dragging');
       });
   },
 });
