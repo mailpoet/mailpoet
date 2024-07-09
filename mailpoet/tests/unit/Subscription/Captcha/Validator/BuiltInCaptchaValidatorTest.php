@@ -250,7 +250,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       CaptchaPhrase::class,
       [
         'getPhrase' => $phrase . 'd',
-        'resetPhrase' => null,
+        'createPhrase' => 'null',
       ],
       $this
     );
