@@ -132,8 +132,13 @@ class GutenbergFormBlockCest {
     $i->waitForElementVisible('[data-automation-id="form_email"]');
     $i->waitForElementVisible('[data-automation-id="form_first_name"]');
     $i->waitForElementVisible('[data-automation-id="form_last_name"]');
-    $i->click('Update');
-    $i->waitForText('Page updated.');
+    // From WP 6.6 the button label is Save
+    if (version_compare($i->getWordPressVersion(), '6.6', '<')) {
+      $i->click('Update');
+    } else {
+      $i->click('Save');
+    }
+    $i->waitForText('Post updated.');
 
     $i->wantTo('Verify the added form on the front-end');
     $i->amOnPage("/?p={$postId}");
@@ -145,7 +150,7 @@ class GutenbergFormBlockCest {
   private function createPost(\AcceptanceTester $i, int $formId): int {
     return $i->havePostInDatabase([
       'post_author' => 1,
-      'post_type' => 'page',
+      'post_type' => 'post',
       'post_name' => 'form-test',
       'post_title' => 'My form',
       'post_content' => '
@@ -158,7 +163,7 @@ class GutenbergFormBlockCest {
   private function createEmptyPost(\AcceptanceTester $i): int {
     return $i->havePostInDatabase([
       'post_author' => 1,
-      'post_type' => 'page',
+      'post_type' => 'post',
       'post_name' => 'gutenberg-form-test',
       'post_title' => 'My Gutenberg form',
       'post_content' => '',
