@@ -60,7 +60,7 @@ class BuiltInCaptchaValidator implements CaptchaValidator {
         ]
       );
     }
-    $captchaHash = $this->captchaPhrase->getPhrase();
+    $captchaHash = $this->captchaPhrase->getPhrase($this->captchaSession->getId());
     if (empty($captchaHash)) {
       throw new ValidationError(
         __('Please regenerate the CAPTCHA.', 'mailpoet'),
@@ -71,7 +71,7 @@ class BuiltInCaptchaValidator implements CaptchaValidator {
     }
 
     if (!hash_equals(strtolower($data['captcha']), strtolower($captchaHash))) {
-      $this->captchaPhrase->createPhrase();
+      $this->captchaPhrase->createPhrase($this->captchaSession->getId());
       throw new ValidationError(
         __('The characters entered do not match with the previous CAPTCHA.', 'mailpoet'),
         [

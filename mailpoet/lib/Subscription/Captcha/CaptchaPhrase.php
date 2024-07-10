@@ -1,4 +1,4 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Subscription\Captcha;
 
@@ -16,16 +16,15 @@ class CaptchaPhrase {
     $this->phraseBuilder = $phraseBuilder ?? new PhraseBuilder();
   }
 
-  public function createPhrase(): string {
+  public function createPhrase(string $sessionId): string {
+    $this->session->init($sessionId);
     $storage = ['phrase' => $this->phraseBuilder->build()];
     $this->session->setCaptchaHash($storage);
     return $storage['phrase'];
   }
 
-  public function getPhrase(string $sessionId = null): ?string {
-    if ($sessionId) {
-      $this->session->init($sessionId);
-    }
+  public function getPhrase(string $sessionId): ?string {
+    $this->session->init($sessionId);
     $storage = $this->session->getCaptchaHash();
     return (isset($storage['phrase']) && is_string($storage['phrase'])) ? $storage['phrase'] : null;
   }

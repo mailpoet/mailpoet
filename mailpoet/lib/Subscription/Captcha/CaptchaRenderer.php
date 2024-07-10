@@ -90,7 +90,7 @@ class CaptchaRenderer {
   }
 
   private function getPhrase(string $sessionId = null): string {
-    $phrase = $this->phrase->getPhrase($sessionId);
+    $phrase = $sessionId ? $this->phrase->getPhrase($sessionId) : null;
     if (!$phrase) {
       throw new \RuntimeException("No CAPTCHA phrase was generated.");
     }
