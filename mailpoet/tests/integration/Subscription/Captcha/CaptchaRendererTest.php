@@ -15,15 +15,15 @@ class CaptchaRendererTest extends \MailPoetTest {
   }
 
   public function testItRendersImage(): void {
-    $sessionId = $this->session->getId();
-    $this->session->setCaptchaHash(['phrase' => 'a']);
-    $result = $this->testee->renderImage(null, null, $sessionId, true);
+    $sessionId = '123';
+    $this->session->setCaptchaHash($sessionId, ['phrase' => 'a']);
+    $result = $this->testee->renderImage($sessionId, null, null, true);
     $this->assertStringContainsString('JPEG', $result);
   }
 
   public function testItRendersAudio(): void {
-    $sessionId = $this->session->getId();
-    $this->session->setCaptchaHash(['phrase' => 'a']);
+    $sessionId = '123';
+    $this->session->setCaptchaHash($sessionId, ['phrase' => 'a']);
     $result = $this->testee->renderAudio($sessionId, true);
     $partOfAudio = '(-1166::BBKKQQVZZ^^bbggkkoosxx|';
     $this->assertStringContainsString($partOfAudio, $result);

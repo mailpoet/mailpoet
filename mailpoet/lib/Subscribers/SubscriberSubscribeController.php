@@ -153,9 +153,9 @@ class SubscriberSubscribeController {
 
     [$subscriber, $subscriptionMeta] = $this->subscriberActions->subscribe($data, $segmentIds);
 
-    if (!empty($captchaSettings['type']) && $captchaSettings['type'] === CaptchaConstants::TYPE_BUILTIN) {
+    if (!empty($captchaSettings['type']) && $captchaSettings['type'] === CaptchaConstants::TYPE_BUILTIN && isset($data['captcha_session_id'])) {
       // Captcha has been verified, invalidate the session vars
-      $this->captchaSession->reset();
+      $this->captchaSession->reset($data['captcha_session_id']);
     }
 
     // record form statistics
@@ -213,14 +213,18 @@ class SubscriberSubscribeController {
       return $data;
     }
 
-    $captchaSessionId = isset($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
-    $this->captchaSession->init($captchaSessionId);
+    // When serving the built-in CAPTCHA for the first time, generate a new session ID.
+    if (!isset($data['captcha_session_id'])) {
+      $data['captcha_session_id'] = $this->captchaSession->generateSessionId();
+    }
+    $sessionId = $data['captcha_session_id'];
+
     if (!isset($data['captcha'])) {
       // Save form data to session
-      $this->captchaSession->setFormData(array_merge($data, ['form_id' => $form->getId()]));
-    } elseif ($this->captchaSession->getFormData()) {
+      $this->captchaSession->setFormData($sessionId, array_merge($data, ['form_id' => $form->getId()]));
+    } elseif ($this->captchaSession->getFormData($sessionId)) {
       // Restore form data from session
-      $data = array_merge($this->captchaSession->getFormData(), ['captcha' => $data['captcha']]);
+      $data = array_merge($this->captchaSession->getFormData($sessionId), ['captcha' => $data['captcha']]);
     }
     return $data;
   }

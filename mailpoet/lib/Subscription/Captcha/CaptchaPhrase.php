@@ -17,15 +17,13 @@ class CaptchaPhrase {
   }
 
   public function createPhrase(string $sessionId): string {
-    $this->session->init($sessionId);
     $storage = ['phrase' => $this->phraseBuilder->build()];
-    $this->session->setCaptchaHash($storage);
+    $this->session->setCaptchaHash($sessionId, $storage);
     return $storage['phrase'];
   }
 
   public function getPhrase(string $sessionId): ?string {
-    $this->session->init($sessionId);
-    $storage = $this->session->getCaptchaHash();
+    $storage = $this->session->getCaptchaHash($sessionId);
     return (isset($storage['phrase']) && is_string($storage['phrase'])) ? $storage['phrase'] : null;
   }
 }

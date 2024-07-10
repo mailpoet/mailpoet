@@ -9,7 +9,6 @@ use MailPoet\Subscription\CaptchaFormRenderer;
 
 class CaptchaFormRendererTest extends \MailPoetTest {
   public function testCaptchaSubmitTextIsConfigurable() {
-
     $expectedLabel = 'EXPECTED_LABEL';
     $formRepository = $this->diContainer->get(FormsRepository::class);
     $form = new FormEntity('captcha-render-test-form');
@@ -31,17 +30,17 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $form->setId(1);
     $formRepository->persist($form);
     $formRepository->flush();
+
+    $sessionId = '123';
     $captchaSession = $this->diContainer->get(CaptchaSession::class);
-    $captchaSession->init();
-    $captchaSession->setFormData(['form_id' => $form->getId()]);
+    $captchaSession->setFormData($sessionId, ['form_id' => $form->getId()]);
 
     $testee = $this->diContainer->get(CaptchaFormRenderer::class);
-    $result = $testee->getCaptchaPageContent($captchaSession->getId());
+    $result = $testee->getCaptchaPageContent($sessionId);
     $this->assertStringContainsString('value="' . $expectedLabel . '"', $result);
   }
 
   public function testCaptchaSubmitTextHasDefault() {
-
     $formRepository = $this->diContainer->get(FormsRepository::class);
     $form = new FormEntity('captcha-render-test-form');
     $form->setBody([
@@ -62,12 +61,13 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $form->setId(1);
     $formRepository->persist($form);
     $formRepository->flush();
+
+    $sessionId = '123';
     $captchaSession = $this->diContainer->get(CaptchaSession::class);
-    $captchaSession->init();
-    $captchaSession->setFormData(['form_id' => $form->getId()]);
+    $captchaSession->setFormData($sessionId, ['form_id' => $form->getId()]);
 
     $testee = $this->diContainer->get(CaptchaFormRenderer::class);
-    $result = $testee->getCaptchaPageContent($captchaSession->getId());
+    $result = $testee->getCaptchaPageContent($sessionId);
     $this->assertStringContainsString('value="Subscribe"', $result);
   }
 
