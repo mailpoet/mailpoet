@@ -567,6 +567,10 @@ class Functions {
     return wp_get_current_user();
   }
 
+  public function wpGetImageMime($file) {
+    return wp_get_image_mime($file);
+  }
+
   public function wpGetPostTerms($postId, $taxonomy = 'post_tag', array $args = []) {
     return wp_get_post_terms($postId, $taxonomy, $args);
   }
