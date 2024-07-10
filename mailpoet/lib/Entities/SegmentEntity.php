@@ -27,6 +27,13 @@ class SegmentEntity {
   const TYPE_DYNAMIC = 'dynamic';
   const TYPE_WITHOUT_LIST = 'without-list';
 
+  const NON_WOO_RELATED_TYPES = [
+    self::TYPE_WP_USERS,
+    self::TYPE_DEFAULT,
+    self::TYPE_DYNAMIC,
+    self::TYPE_WITHOUT_LIST,
+  ];
+
   const SEGMENT_ENABLED = 'active';
   const SEGMENT_DISABLED = 'disabled';
 
