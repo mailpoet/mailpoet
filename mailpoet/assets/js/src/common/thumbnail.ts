@@ -3,6 +3,15 @@ import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import html2canvas from 'html2canvas';
 
+const getProxyURL = (url) => {
+  const params = new URLSearchParams({
+    mailpoet_router: '',
+    endpoint: 'template_image',
+    action: 'get_external_image',
+  });
+  return `${url}?${params.toString()}`;
+};
+
 /**
  * Generates a thumbnail from a HTML element.
  *
@@ -12,6 +21,7 @@ import html2canvas from 'html2canvas';
 export const fromDom = async (element: HTMLElement) => {
   const canvas = await html2canvas(element, {
     logging: false,
+    proxy: getProxyURL('/'),
     scale: 1, // Use a constant scale to prevent generating large images on Retina displays
   });
   return canvas.toDataURL('image/jpeg');
