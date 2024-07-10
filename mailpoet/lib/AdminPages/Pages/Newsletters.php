@@ -22,38 +22,27 @@ use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Newsletters {
-  /** @var PageRenderer */
-  private $pageRenderer;
+  private PageRenderer $pageRenderer;
 
-  /** @var PageLimit */
-  private $listingPageLimit;
+  private PageLimit $listingPageLimit;
 
-  /** @var WPFunctions */
-  private $wp;
+  private WPFunctions $wp;
 
-  /** @var SettingsController */
-  private $settings;
+  private SettingsController $settings;
 
-  /** @var NewsletterTemplatesRepository */
-  private $newsletterTemplatesRepository;
+  private NewsletterTemplatesRepository $newsletterTemplatesRepository;
 
-  /** @var AutomaticEmails */
-  private $automaticEmails;
+  private AutomaticEmails $automaticEmails;
 
-  /** @var WPPostListLoader */
-  private $wpPostListLoader;
+  private WPPostListLoader $wpPostListLoader;
 
-  /** @var SegmentsSimpleListRepository */
-  private $segmentsListRepository;
+  private SegmentsSimpleListRepository $segmentsListRepository;
 
-  /** @var NewslettersRepository */
-  private $newslettersRepository;
+  private NewslettersRepository $newslettersRepository;
 
-  /** @var Bridge */
-  private $bridge;
+  private Bridge $bridge;
 
-  /** @var AuthorizedSenderDomainController */
-  private $senderDomainController;
+  private AuthorizedSenderDomainController $senderDomainController;
 
   private UserFlagsController $userFlagsController;
 
