@@ -328,8 +328,10 @@ class Pages {
 
       switch ($this->action) {
         case self::ACTION_CAPTCHA:
-
-          $captchaSessionId = isset($this->data['captcha_session_id']) ? $this->data['captcha_session_id'] : null;
+          $captchaSessionId = $this->data['captcha_session_id'] ?? null;
+          if (!$captchaSessionId) {
+            return false;
+          }
           $content = $this->captchaRenderer->getCaptchaPageContent($captchaSessionId);
           break;
         case self::ACTION_CONFIRM:

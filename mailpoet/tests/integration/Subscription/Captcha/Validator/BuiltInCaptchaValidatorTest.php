@@ -11,23 +11,26 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class BuiltInCaptchaValidatorTest extends \MailPoetTest {
-
-
-  /** @var BuiltInCaptchaValidator */
-  private $testee;
-
-  /** @var CaptchaSession */
-  private $session;
+  private BuiltInCaptchaValidator $testee;
+  private CaptchaSession $session;
 
   public function _before() {
     $this->testee = $this->diContainer->get(BuiltInCaptchaValidator::class);
     $this->session = $this->diContainer->get(CaptchaSession::class);
   }
 
-  public function testEmptyCaptchaThrowsError() {
-
+  public function testMissingCaptchaSessionIdThrowsError() {
     try {
       $this->testee->validate([]);
+    } catch (ValidationError $error) {
+      $meta = $error->getMeta();
+      $this->assertEquals('CAPTCHA verification failed.', $meta['error']);
+    }
+  }
+
+  public function testEmptyCaptchaThrowsError() {
+    try {
+      $this->testee->validate(['captcha_session_id' => '123']);
     } catch (ValidationError $error) {
       $meta = $error->getMeta();
       $this->assertEquals('Please fill in the CAPTCHA.', $meta['error']);
@@ -36,11 +39,10 @@ class BuiltInCaptchaValidatorTest extends \MailPoetTest {
   }
 
   public function testWrongCaptchaThrowsError() {
-
-    $this->session->init();
-    $this->session->setCaptchaHash(['phrase' => 'abc']);
+    $sessionId = '123';
+    $this->session->setCaptchaHash($sessionId, ['phrase' => 'abc']);
     try {
-      $this->testee->validate(['captcha' => '123']);
+      $this->testee->validate(['captcha' => 'xyz', 'captcha_session_id' => $sessionId]);
     } catch (ValidationError $error) {
       $meta = $error->getMeta();
       $this->assertEquals('The characters entered do not match with the previous CAPTCHA.', $meta['error']);
@@ -48,11 +50,10 @@ class BuiltInCaptchaValidatorTest extends \MailPoetTest {
   }
 
   public function testThrowsErrorWhenCaptchaHasTimedOut() {
-
-    $this->session->init();
-    $this->session->setCaptchaHash(['phrase' => null]);
+    $sessionId = '123';
+    $this->session->setCaptchaHash($sessionId, ['phrase' => null]);
     try {
-      $this->testee->validate(['captcha' => '123']);
+      $this->testee->validate(['captcha' => 'xyz', 'captcha_session_id' => $sessionId]);
     } catch (ValidationError $error) {
       $meta = $error->getMeta();
       $this->assertEquals('Please regenerate the CAPTCHA.', $meta['error']);
@@ -61,10 +62,9 @@ class BuiltInCaptchaValidatorTest extends \MailPoetTest {
   }
 
   public function testReturnsTrueWhenCaptchaIsSolved() {
-
-    $this->session->init();
-    $this->session->setCaptchaHash(['phrase' => 'abc']);
-    $this->assertTrue($this->testee->validate(['captcha' => 'abc']));
+    $sessionId = '123';
+    $this->session->setCaptchaHash($sessionId, ['phrase' => 'abc']);
+    $this->assertTrue($this->testee->validate(['captcha' => 'abc', 'captcha_session_id' => $sessionId]));
   }
 
   public function testItRequiresCaptchaForFirstSubscription() {

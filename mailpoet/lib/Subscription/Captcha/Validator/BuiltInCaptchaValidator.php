@@ -5,22 +5,16 @@ namespace MailPoet\Subscription\Captcha\Validator;
 use MailPoet\Subscribers\SubscriberIPsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Subscription\Captcha\CaptchaPhrase;
-use MailPoet\Subscription\Captcha\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class BuiltInCaptchaValidator implements CaptchaValidator {
-
-
   /** @var SubscriptionUrlFactory  */
   private $subscriptionUrlFactory;
 
   /** @var CaptchaPhrase  */
   private $captchaPhrase;
-
-  /** @var CaptchaSession  */
-  private $captchaSession;
 
   /** @var WPFunctions  */
   private $wp;
@@ -34,14 +28,12 @@ class BuiltInCaptchaValidator implements CaptchaValidator {
   public function __construct(
     SubscriptionUrlFactory $subscriptionUrlFactory,
     CaptchaPhrase $captchaPhrase,
-    CaptchaSession $captchaSession,
     WPFunctions $wp,
     SubscriberIPsRepository $subscriberIPsRepository,
     SubscribersRepository $subscribersRepository
   ) {
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->captchaPhrase = $captchaPhrase;
-    $this->captchaSession = $captchaSession;
     $this->wp = $wp;
     $this->subscriberIPsRepository = $subscriberIPsRepository;
     $this->subscribersRepository = $subscribersRepository;
@@ -52,26 +44,34 @@ class BuiltInCaptchaValidator implements CaptchaValidator {
     if (!$isBuiltinCaptchaRequired) {
       return true;
     }
+
+    // session ID must be set at this point
+    $sessionId = $data['captcha_session_id'] ?? null;
+    if (!$sessionId) {
+      throw new ValidationError(__('CAPTCHA verification failed.', 'mailpoet'));
+    }
+
     if (empty($data['captcha'])) {
       throw new ValidationError(
         __('Please fill in the CAPTCHA.', 'mailpoet'),
         [
-          'redirect_url' => $this->subscriptionUrlFactory->getCaptchaUrl($this->captchaSession->getId()),
+          'redirect_url' => $this->subscriptionUrlFactory->getCaptchaUrl($sessionId),
         ]
       );
     }
-    $captchaHash = $this->captchaPhrase->getPhrase($this->captchaSession->getId());
+
+    $captchaHash = $this->captchaPhrase->getPhrase($sessionId);
     if (empty($captchaHash)) {
       throw new ValidationError(
         __('Please regenerate the CAPTCHA.', 'mailpoet'),
         [
-          'redirect_url' => $this->subscriptionUrlFactory->getCaptchaUrl($this->captchaSession->getId()),
+          'redirect_url' => $this->subscriptionUrlFactory->getCaptchaUrl($sessionId),
         ]
       );
     }
 
     if (!hash_equals(strtolower($data['captcha']), strtolower($captchaHash))) {
-      $this->captchaPhrase->createPhrase($this->captchaSession->getId());
+      $this->captchaPhrase->createPhrase($sessionId);
       throw new ValidationError(
         __('The characters entered do not match with the previous CAPTCHA.', 'mailpoet'),
         [

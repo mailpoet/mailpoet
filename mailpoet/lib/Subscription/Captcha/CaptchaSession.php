@@ -1,4 +1,4 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Subscription\Captcha;
 
@@ -12,11 +12,7 @@ class CaptchaSession {
   const SESSION_HASH_KEY = 'hash';
   const SESSION_FORM_KEY = 'form';
 
-  /** @var WPFunctions */
-  private $wp;
-
-  /** @var string */
-  private $id = '';
+  private WPFunctions $wp;
 
   public function __construct(
     WPFunctions $wp
@@ -24,39 +20,38 @@ class CaptchaSession {
     $this->wp = $wp;
   }
 
-  public function init(string $id = null) {
-    $this->id = $id ?: Security::generateRandomString(self::ID_LENGTH);
+  public function generateSessionId(): string {
+    return Security::generateRandomString(self::ID_LENGTH);
   }
 
-  public function getId(): string {
-    if (!$this->id) {
-      $this->init();
-    }
-    return $this->id;
+  public function reset(string $sessionId): void {
+    $formKey = $this->getKey($sessionId, self::SESSION_FORM_KEY);
+    $hashKey = $this->getKey($sessionId, self::SESSION_HASH_KEY);
+    $this->wp->deleteTransient($formKey);
+    $this->wp->deleteTransient($hashKey);
   }
 
-  public function reset() {
-    $this->wp->deleteTransient($this->getKey(self::SESSION_FORM_KEY));
-    $this->wp->deleteTransient($this->getKey(self::SESSION_HASH_KEY));
+  public function setFormData(string $sessionId, array $data): void {
+    $key = $this->getKey($sessionId, self::SESSION_FORM_KEY);
+    $this->wp->setTransient($key, $data, self::EXPIRATION);
   }
 
-  public function setFormData(array $data) {
-    $this->wp->setTransient($this->getKey(self::SESSION_FORM_KEY), $data, self::EXPIRATION);
+  public function getFormData(string $sessionId) {
+    $key = $this->getKey($sessionId, self::SESSION_FORM_KEY);
+    return $this->wp->getTransient($key);
   }
 
-  public function getFormData() {
-    return $this->wp->getTransient($this->getKey(self::SESSION_FORM_KEY));
+  public function setCaptchaHash(string $sessionId, $hash): void {
+    $key = $this->getKey($sessionId, self::SESSION_HASH_KEY);
+    $this->wp->setTransient($key, $hash, self::EXPIRATION);
   }
 
-  public function setCaptchaHash($hash) {
-    $this->wp->setTransient($this->getKey(self::SESSION_HASH_KEY), $hash, self::EXPIRATION);
+  public function getCaptchaHash(string $sessionId) {
+    $key = $this->getKey($sessionId, self::SESSION_HASH_KEY);
+    return $this->wp->getTransient($key);
   }
 
-  public function getCaptchaHash() {
-    return $this->wp->getTransient($this->getKey(self::SESSION_HASH_KEY));
-  }
-
-  private function getKey($type) {
-    return \implode('_', ['MAILPOET', $this->getId(), $type]);
+  private function getKey(string $sessionId, string $type): string {
+    return implode('_', ['MAILPOET', $sessionId, $type]);
   }
 }

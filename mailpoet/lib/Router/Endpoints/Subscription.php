@@ -65,12 +65,18 @@ class Subscription {
   public function captchaImage($data) {
     $width = !empty($data['width']) ? (int)$data['width'] : null;
     $height = !empty($data['height']) ? (int)$data['height'] : null;
-    $sessionId = !empty($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
-    return $this->captchaRenderer->renderImage($width, $height, $sessionId);
+    $sessionId = $data['captcha_session_id'] ?? null;
+    if (!$sessionId) {
+      return false;
+    }
+    return $this->captchaRenderer->renderImage($sessionId, $width, $height);
   }
 
   public function captchaAudio($data) {
-    $sessionId = !empty($data['captcha_session_id']) ? $data['captcha_session_id'] : null;
+    $sessionId = $data['captcha_session_id'] ?? null;
+    if (!$sessionId) {
+      return false;
+    }
     return $this->captchaRenderer->renderAudio($sessionId);
   }
 

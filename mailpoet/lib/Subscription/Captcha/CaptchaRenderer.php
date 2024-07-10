@@ -1,4 +1,4 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php declare(strict_types = 1);
 
 namespace MailPoet\Subscription\Captcha;
 
@@ -6,11 +6,10 @@ use MailPoet\Config\Env;
 use MailPoetVendor\Gregwar\Captcha\CaptchaBuilder;
 
 class CaptchaRenderer {
-
   const DEFAULT_WIDTH = 220;
   const DEFAULT_HEIGHT = 60;
 
-  private $phrase;
+  private CaptchaPhrase $phrase;
 
   public function __construct(
     CaptchaPhrase $phrase
@@ -18,11 +17,11 @@ class CaptchaRenderer {
     $this->phrase = $phrase;
   }
 
-  public function isSupported() {
+  public function isSupported(): bool {
     return extension_loaded('gd') && function_exists('imagettftext');
   }
 
-  public function renderAudio($sessionId, $return = false) {
+  public function renderAudio(string $sessionId, $return = false) {
     if (!$this->isSupported()) {
       return false;
     }
@@ -50,7 +49,7 @@ class CaptchaRenderer {
     exit;
   }
 
-  public function renderImage($width = null, $height = null, $sessionId = null, $return = false) {
+  public function renderImage(string $sessionId, $width = null, $height = null, $return = false) {
     if (!$this->isSupported()) {
       return false;
     }
@@ -89,8 +88,8 @@ class CaptchaRenderer {
     exit;
   }
 
-  private function getPhrase(string $sessionId = null): string {
-    $phrase = $sessionId ? $this->phrase->getPhrase($sessionId) : null;
+  private function getPhrase(string $sessionId): string {
+    $phrase = $this->phrase->getPhrase($sessionId);
     if (!$phrase) {
       throw new \RuntimeException("No CAPTCHA phrase was generated.");
     }
