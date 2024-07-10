@@ -17,7 +17,7 @@ class CaptchaPhraseTest extends \MailPoetUnitTest {
     $phraseBuilder = $this->make(PhraseBuilder::class, ['build' => $expectedPhrase]);
 
     $captchaPhrase = new CaptchaPhrase($session, $phraseBuilder);
-    $phrase = $captchaPhrase->createPhrase();
+    $phrase = $captchaPhrase->createPhrase('123');
     $this->assertSame($expectedPhrase, $phrase);
   }
 
@@ -32,7 +32,7 @@ class CaptchaPhraseTest extends \MailPoetUnitTest {
     $phraseBuilder = $this->make(PhraseBuilder::class, ['build' => $expectedPhrase]);
 
     $captchaPhrase = new CaptchaPhrase($session, $phraseBuilder);
-    $phrase = $captchaPhrase->getPhrase();
+    $phrase = $captchaPhrase->getPhrase('123');
     $this->assertSame($expectedPhrase, $phrase);
   }
 }

@@ -56,8 +56,7 @@ class CaptchaFormRenderer {
   }
 
   public function getCaptchaPageContent($sessionId) {
-    $this->captchaSession->init($sessionId);
-    $this->captchaPhrase->createPhrase();
+    $this->captchaPhrase->createPhrase($sessionId);
     $captchaSessionForm = $this->captchaSession->getFormData();
     $showSuccessMessage = !empty($_GET['mailpoet_success']);
     $showErrorMessage = !empty($_GET['mailpoet_error']);
