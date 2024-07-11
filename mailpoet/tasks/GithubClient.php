@@ -3,6 +3,7 @@
 namespace MailPoetTasks;
 
 use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
 
 class GithubClient {
   /** @var Client */
@@ -58,13 +59,25 @@ class GithubClient {
     if (!is_dir($downloadDir)) {
       mkdir($downloadDir, 0777, true);
     }
-    $this->httpClient->get($assetDownloadUrl, ['sink' => $downloadDir . $zip, 'headers' => ['Accept' => 'application/octet-stream']]);
+    $this->get($assetDownloadUrl, ['sink' => $downloadDir . $zip, 'headers' => ['Accept' => 'application/octet-stream']]);
     file_put_contents($downloadDir . '/' . $zip . '-info', $assetDownloadInfo);
   }
 
   private function getRelease($tag = null) {
     $path = 'releases/' . ($tag && $tag !== 'latest' ? "tags/$tag" : 'latest');
-    $response = $this->httpClient->get($path);
+    $response = $this->get($path);
     return json_decode($response->getBody()->getContents(), true);
+  }
+
+  private function get($uri, array $options = []): ResponseInterface {
+    $retries = 0;
+    do {
+      $response = $this->httpClient->get($uri, $options);
+      if ($response->getStatusCode() < 500) {
+        return $response;
+      }
+      sleep(10);
+    } while ($retries++ < 3);
+    throw new \Exception("Failed to download file ${uri} after 3 retries");
   }
 }
