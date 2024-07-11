@@ -21,37 +21,28 @@ class CaptchaRenderer {
     return extension_loaded('gd') && function_exists('imagettftext');
   }
 
-  public function renderAudio(string $sessionId, $return = false) {
+  public function renderAudio(string $sessionId): void {
     if (!$this->isSupported()) {
-      return false;
-    }
-
-    $audioPath = Env::$assetsPath . '/audio/';
-    $phrase = $this->getPhrase($sessionId);
-    $audio = null;
-    foreach (str_split($phrase) as $character) {
-      $file = $audioPath . strtolower($character) . '.mp3';
-      if (!file_exists($file)) {
-        throw new \RuntimeException("File not found.");
-      }
-      $audio .= file_get_contents($file);
-    }
-
-    if ($return) {
-      return $audio;
+      return;
     }
 
     header("Cache-Control: no-store, no-cache, must-revalidate");
     header('Content-Type: audio/mpeg');
 
-    //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
-    echo $audio;
-    exit;
+    $audioPath = Env::$assetsPath . '/audio/';
+    $phrase = $this->getPhrase($sessionId);
+    foreach (str_split($phrase) as $character) {
+      $file = $audioPath . strtolower($character) . '.mp3';
+      if (!file_exists($file)) {
+        throw new \RuntimeException("File not found.");
+      }
+      readfile($file);
+    }
   }
 
-  public function renderImage(string $sessionId, $width = null, $height = null, $return = false) {
+  public function renderImage(string $sessionId, $width = null, $height = null): void {
     if (!$this->isSupported()) {
-      return false;
+      return;
     }
 
     $width = (isset($width) && $width > 0) ? intval($width) : self::DEFAULT_WIDTH;
@@ -71,10 +62,6 @@ class CaptchaRenderer {
       ->setMaxBehindLines(0)
       ->build($width, $height, $font);
 
-    if ($return) {
-      return $builder->get();
-    }
-
     header("Expires: Sat, 01 Jan 2019 01:00:00 GMT"); // time in the past
     header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
     header("Cache-Control: no-store, no-cache, must-revalidate");
@@ -85,7 +72,6 @@ class CaptchaRenderer {
 
     header('Content-Type: image/jpeg');
     $builder->output();
-    exit;
   }
 
   private function getPhrase(string $sessionId): string {
