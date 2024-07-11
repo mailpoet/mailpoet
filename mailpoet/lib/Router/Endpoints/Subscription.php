@@ -62,22 +62,24 @@ class Subscription {
     $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CAPTCHA, $data);
   }
 
-  public function captchaImage($data) {
+  public function captchaImage($data): void {
     $width = !empty($data['width']) ? (int)$data['width'] : null;
     $height = !empty($data['height']) ? (int)$data['height'] : null;
     $sessionId = $data['captcha_session_id'] ?? null;
     if (!$sessionId) {
-      return false;
+      return;
     }
-    return $this->captchaRenderer->renderImage($sessionId, $width, $height);
+    $this->captchaRenderer->renderImage($sessionId, $width, $height);
+    exit;
   }
 
-  public function captchaAudio($data) {
+  public function captchaAudio($data): void {
     $sessionId = $data['captcha_session_id'] ?? null;
     if (!$sessionId) {
-      return false;
+      return;
     }
-    return $this->captchaRenderer->renderAudio($sessionId);
+    $this->captchaRenderer->renderAudio($sessionId);
+    exit;
   }
 
   public function confirm($data) {
