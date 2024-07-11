@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   codeception_acceptance:
     image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.0-cli_20220605.0}
