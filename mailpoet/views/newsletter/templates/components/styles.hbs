@@ -49,6 +49,10 @@
       .mailpoet_woocommerce_content {
         color: {{ text.fontColor }};
       }
+      .mailpoet_woocommerce_content * {
+        font-family: {{fontWithFallback text.fontFamily }} !important;
+        font-size: {{ text.fontSize }};
+      }
       .mailpoet_woocommerce_content a {
         color: {{ link.fontColor }};
       }
