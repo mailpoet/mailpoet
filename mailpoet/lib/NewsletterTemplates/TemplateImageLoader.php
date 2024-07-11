@@ -29,6 +29,7 @@ class TemplateImageLoader {
       // Failed to load the image
       return false;
     }
+    $mime = $this->wp->wpGetImageMime($image);
     if (!$this->isTypeAllowed($image, $mime)) {
       // Wrong file type
       @unlink($image);
@@ -46,11 +47,11 @@ class TemplateImageLoader {
   }
 
   private function isUrlAllowed($url) {
-    $urlParts = parse_url($url);
+    $urlParts = $this->wp->wpParseUrl($url);
     $allowedExtensions = ['gif', 'png', 'jpg', 'jpeg'];
     if (
       !isset($urlParts['path'])
-      || !preg_match('/(' . join('|', $allowedExtensions) . ')$/', $urlParts['path'])
+      || !preg_match('/\.(' . join('|', $allowedExtensions) . ')$/i', $urlParts['path'])
     ) {
       return false;
     }
@@ -59,10 +60,12 @@ class TemplateImageLoader {
       'https://ps.w.org/mailpoet/assets/newsletter-templates/',
     ]);
     foreach ($allowedUrls as $allowedUrl) {
-      $allowedUrlParts = parse_url($allowedUrl);
+      $allowedUrlParts = $this->wp->wpParseUrl($allowedUrl);
       if (
-        isset($urlParts['host'], $allowedUrlParts['host'], $allowedUrlParts['path'])
+        isset($urlParts['host'], $urlParts['scheme'])
+        && isset($allowedUrlParts['host'], $allowedUrlParts['scheme'], $allowedUrlParts['path'])
         && $urlParts['host'] === $allowedUrlParts['host']
+        && $urlParts['scheme'] === $allowedUrlParts['scheme']
         && strpos($urlParts['path'], $allowedUrlParts['path']) === 0
       ) {
         return true;
@@ -71,13 +74,12 @@ class TemplateImageLoader {
     return false;
   }
 
-  private function isTypeAllowed($image, &$mime = null) {
+  private function isTypeAllowed($image, $mime) {
     $allowedMimeTypes = [
       'image/gif',
       'image/jpeg',
       'image/png',
     ];
-    $mime = $this->wp->wpGetImageMime($image);
     return $mime && in_array($mime, $allowedMimeTypes);
   }
 }
