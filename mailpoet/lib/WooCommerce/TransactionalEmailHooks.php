@@ -60,7 +60,7 @@ class TransactionalEmailHooks {
         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
         echo $this->renderer->getHTMLAfterContent();
       });
-      $this->wp->addAction('woocommerce_email_styles', [$this->renderer, 'prefixCss']);
+      $this->wp->addAction('woocommerce_email_styles', [$this, 'alterEmailStyles']);
     });
   }
 
@@ -99,5 +99,13 @@ class TransactionalEmailHooks {
       if (!$newsletter instanceof NewsletterEntity) return $value;
       return $newsletter->getGlobalStyle('text', 'fontColor') ?? $value;
     });
+  }
+
+  public function alterEmailStyles($styles) {
+    $newsletter = $this->getNewsletter();
+    if (!$newsletter) {
+      return $styles;
+    }
+    return $this->renderer->enhanceCss($styles, $newsletter);
   }
 }

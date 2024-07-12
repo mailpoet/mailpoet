@@ -181,7 +181,7 @@ class TransactionalEmailHooksTest extends \MailPoetTest {
       'getHTMLAfterContent' => function() {
         return 'HTML after content';
       },
-      'prefixCss' => function($css) {
+      'enhanceCss' => function($css) {
         return 'prefixed ' . $css;
       },
     ]);
