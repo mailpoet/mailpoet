@@ -20,6 +20,7 @@ use MailPoet\WooCommerce\Helper;
 use MailPoet\WooCommerce\Subscription;
 use MailPoet\WP\Functions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 
 class WPTest extends \MailPoetTest {
   /** @var array<int> */
@@ -717,7 +718,7 @@ class WPTest extends \MailPoetTest {
     $this->entityManager->getConnection()->executeQuery(
       "UPDATE {$wpdb->users} SET user_email = :userEmail WHERE id = :id",
       ['userEmail' => $email, 'id' => $id],
-      [\PDO::PARAM_STR, \PDO::PARAM_INT]
+      [ParameterType::STRING, ParameterType::INTEGER]
     );
   }
 
@@ -727,7 +728,7 @@ class WPTest extends \MailPoetTest {
     $this->entityManager->getConnection()->executeQuery(
       "UPDATE {$wpdb->users} SET display_name = :displayName WHERE id = :id",
       ['displayName' => $name, 'id' => $id],
-      [\PDO::PARAM_STR, \PDO::PARAM_INT]
+      [ParameterType::STRING, ParameterType::INTEGER]
     );
   }
 
