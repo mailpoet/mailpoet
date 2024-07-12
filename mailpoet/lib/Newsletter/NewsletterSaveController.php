@@ -123,7 +123,8 @@ class NewsletterSaveController {
     }
 
     if (!empty($data['body'])) {
-      $body = $this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', $data['body']);
+      $newslettersTableName = $this->newslettersRepository->getTableName();
+      $body = $this->emoji->encodeForUTF8Column($newslettersTableName, 'body', $data['body']);
       $body = $this->dataSanitizer->sanitizeBody(json_decode($body, true));
       $data['body'] = json_encode($body);
     }

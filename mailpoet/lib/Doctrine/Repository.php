@@ -167,6 +167,10 @@ abstract class Repository {
     return $result;
   }
 
+  public function getTableName(): string {
+    return $this->classMetadata->getTableName();
+  }
+
   /**
    * @return class-string<T>
    */
