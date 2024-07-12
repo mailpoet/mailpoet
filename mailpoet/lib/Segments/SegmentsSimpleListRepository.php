@@ -5,7 +5,7 @@ namespace MailPoet\Segments;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersCountsController;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -82,7 +82,7 @@ class SegmentsSimpleListRepository {
     if (!empty($segmentTypes)) {
       $segmentsDataQuery
         ->andWhere('segments.type IN (:typesParam)')
-        ->setParameter('typesParam', $segmentTypes, Connection::PARAM_STR_ARRAY);
+        ->setParameter('typesParam', $segmentTypes, ArrayParameterType::STRING);
     }
 
     $result = $segmentsDataQuery->executeQuery();

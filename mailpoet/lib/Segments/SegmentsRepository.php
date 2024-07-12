@@ -17,7 +17,7 @@ use MailPoet\Newsletter\Segment\NewsletterSegmentRepository;
 use MailPoet\NotFoundException;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\ORMException;
@@ -254,27 +254,27 @@ class SegmentsRepository extends Repository {
       ", [
         'ids' => $ids,
         'type' => $type,
-      ], ['ids' => Connection::PARAM_INT_ARRAY]);
+      ], ['ids' => ArrayParameterType::INTEGER]);
 
       $entityManager->getConnection()->executeStatement("
          DELETE df FROM $segmentFiltersTable df
          WHERE df.`segment_id` IN (:ids)
       ", [
         'ids' => $ids,
-      ], ['ids' => Connection::PARAM_INT_ARRAY]);
+      ], ['ids' => ArrayParameterType::INTEGER]);
 
       $queryBuilder = $entityManager->createQueryBuilder();
       $count = $queryBuilder->delete(SegmentEntity::class, 's')
         ->where('s.id IN (:ids)')
         ->andWhere('s.type = :type')
-        ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
+        ->setParameter('ids', $ids, ArrayParameterType::INTEGER)
         ->setParameter('type', $type, ParameterType::STRING)
         ->getQuery()->execute();
 
       $queryBuilder = $entityManager->createQueryBuilder();
       $queryBuilder->delete(NewsletterSegmentEntity::class, 'ns')
         ->where('ns.segment IN (:ids)')
-        ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
+        ->setParameter('ids', $ids, ArrayParameterType::INTEGER)
         ->getQuery()->execute();
     });
     return $count;
