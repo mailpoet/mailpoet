@@ -18,6 +18,7 @@ use MailPoet\NotFoundException;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\ORMException;
 
@@ -267,7 +268,7 @@ class SegmentsRepository extends Repository {
         ->where('s.id IN (:ids)')
         ->andWhere('s.type = :type')
         ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
-        ->setParameter('type', $type, \PDO::PARAM_STR)
+        ->setParameter('type', $type, ParameterType::STRING)
         ->getQuery()->execute();
 
       $queryBuilder = $entityManager->createQueryBuilder();

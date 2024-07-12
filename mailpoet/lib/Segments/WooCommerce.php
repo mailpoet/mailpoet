@@ -17,6 +17,7 @@ use MailPoet\WooCommerce\Subscription;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class WooCommerce {
@@ -287,8 +288,8 @@ class WooCommerce {
       'highestOrderId' => $lastProcessedOrderId + $batchSize,
     ];
     $parametersType = [
-      'lowestOrderId' => \PDO::PARAM_INT,
-      'highestOrderId' => \PDO::PARAM_INT,
+      'lowestOrderId' => ParameterType::INTEGER,
+      'highestOrderId' => ParameterType::INTEGER,
     ];
 
     if ($this->woocommerceHelper->isWooCommerceCustomOrdersTableEnabled()) {
@@ -441,7 +442,7 @@ class WooCommerce {
       WHERE is_woocommerce_user = 1
     ",
       ['segmentId' => $wcSegment->getId()],
-      ['segmentId' => \PDO::PARAM_INT]
+      ['segmentId' => ParameterType::INTEGER]
     );
   }
 
@@ -457,7 +458,7 @@ class WooCommerce {
       WHERE mpss.segment_id = :segmentId AND (mps.is_woocommerce_user = 0 OR mps.email = '' OR mps.email IS NULL)
     ",
       ['segmentId' => $wcSegment->getId()],
-      ['segmentId' => \PDO::PARAM_INT]
+      ['segmentId' => ParameterType::INTEGER]
     );
   }
 
@@ -475,7 +476,7 @@ class WooCommerce {
         AND mps.is_woocommerce_user = 1
     ",
       ['statusUnsubscribed' => SubscriberEntity::STATUS_UNSUBSCRIBED],
-      ['statusUnsubscribed' => \PDO::PARAM_STR]
+      ['statusUnsubscribed' => ParameterType::INTEGER]
     );
     // SET global status unsubscribed to all woocommerce users who have only 1 segment and it is woocommerce segment and they are not subscribed
     // You can't specify target table 'mps' for update in FROM clause
@@ -493,7 +494,7 @@ class WooCommerce {
       )
     ",
       ['statusUnsubscribed' => SubscriberEntity::STATUS_UNSUBSCRIBED, 'segmentId' => $wcSegment->getId()],
-      ['statusUnsubscribed' => \PDO::PARAM_STR, 'segmentId' => \PDO::PARAM_INT]
+      ['statusUnsubscribed' => ParameterType::STRING, 'segmentId' => ParameterType::INTEGER]
     );
   }
 
@@ -620,7 +621,7 @@ class WooCommerce {
         AND mps.is_woocommerce_user = 1
     ",
       ['status' => $status, 'segmentId' => $wcSegment->getId()],
-      ['status' => \PDO::PARAM_STR, 'segmentId' => \PDO::PARAM_INT]
+      ['status' => ParameterType::STRING, 'segmentId' => ParameterType::INTEGER]
     );
   }
 }

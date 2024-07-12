@@ -2,9 +2,9 @@
 
 namespace MailPoet\Doctrine\Types;
 
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\DBAL\Platforms\AbstractPlatform;
 use MailPoetVendor\Doctrine\DBAL\Types\BigIntType as DoctrineBigIntType;
-use PDO;
 
 class BigIntType extends DoctrineBigIntType {
   // override Doctrine's bigint type that historically maps DB's "bigint" to PHP's "string"
@@ -12,7 +12,7 @@ class BigIntType extends DoctrineBigIntType {
   const NAME = 'bigint';
 
   public function getBindingType() {
-    return PDO::PARAM_INT;
+    return ParameterType::INTEGER;
   }
 
   public function convertToPHPValue($value, AbstractPlatform $platform) {
