@@ -238,7 +238,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Config\AssetsLoader::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Populator::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Changelog::class)->setPublic(true);
-    $container->autowire(\MailPoet\Config\DatabaseInitializer::class);
     $container->autowire(\MailPoet\Config\Hooks::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\HooksWooCommerce::class)->setPublic(true);
     $container->autowire(\MailPoet\Config\Initializer::class)->setPublic(true);
