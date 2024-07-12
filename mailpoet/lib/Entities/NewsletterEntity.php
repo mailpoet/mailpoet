@@ -552,6 +552,14 @@ class NewsletterEntity {
     return $body['globalStyles'][$category][$style] ?? null;
   }
 
+  public function setGlobalStyle(string $category, string $style, $value): void {
+    $body = $this->getBody();
+    if ($body === null) {
+      return;
+    }
+    $this->body['globalStyles'][$category][$style] = $value;
+  }
+
   public function getProcessedAt(): ?DateTimeInterface {
     $processedAt = null;
     $queue = $this->getLatestQueue();

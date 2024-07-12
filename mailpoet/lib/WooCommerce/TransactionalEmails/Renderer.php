@@ -39,10 +39,11 @@ class Renderer {
   }
 
   public function render(NewsletterEntity $newsletter, ?string $subject = null) {
-    $renderedNewsletter = $this->renderer->renderAsPreview($newsletter, 'html', $subject);
+    $preparedNewsletter = $this->prepareNewsletterForRendering($newsletter);
+    $renderedNewsletter = $this->renderer->renderAsPreview($preparedNewsletter, 'html', $subject);
     $headingText = $subject ?? '';
 
-    $renderedHtml = $this->processShortcodes($newsletter, $renderedNewsletter);
+    $renderedHtml = $this->processShortcodes($preparedNewsletter, $renderedNewsletter);
 
     $renderedHtml = str_replace(ContentPreprocessor::WC_HEADING_PLACEHOLDER, $headingText, $renderedHtml);
     $html = explode(ContentPreprocessor::WC_CONTENT_PLACEHOLDER, $renderedHtml);
@@ -123,5 +124,22 @@ class Renderer {
     $this->shortcodes->setSubscriber(null);
     $this->shortcodes->setNewsletter($newsletter);
     return $this->shortcodes->replace($content);
+  }
+
+  /**
+   * This method prepares the newsletter for rendering
+   * - We ensure that the font-family and branding color are used as default for all headings
+   */
+  private function prepareNewsletterForRendering(NewsletterEntity $newsletter): NewsletterEntity {
+    $newsletterClone = clone($newsletter);
+    $fontFamily = $newsletter->getGlobalStyle('text', 'fontFamily');
+    $brandingColor = $newsletter->getGlobalStyle('woocommerce', 'brandingColor');
+    $newsletterClone->setGlobalStyle('h1', 'fontFamily', $fontFamily);
+    $newsletterClone->setGlobalStyle('h1', 'color', $brandingColor);
+    $newsletterClone->setGlobalStyle('h2', 'fontFamily', $fontFamily);
+    $newsletterClone->setGlobalStyle('h2', 'color', $brandingColor);
+    $newsletterClone->setGlobalStyle('h3', 'fontFamily', $fontFamily);
+    $newsletterClone->setGlobalStyle('h3', 'color', $brandingColor);
+    return $newsletterClone;
   }
 }
