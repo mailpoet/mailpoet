@@ -127,11 +127,6 @@ parameters:
 			path: ../../lib/Cache/TransientCache.php
 
 		-
-			message: "#^Parameter \\#1 \\$pdo of method MailPoet\\\\Config\\\\Database\\:\\:init\\(\\) expects PDO, object\\|resource given\\.$#"
-			count: 1
-			path: ../../lib/Config/DatabaseInitializer.php
-
-		-
 			message: "#^Cannot use array destructuring on array\\|true\\.$#"
 			count: 1
 			path: ../../lib/Config/Env.php
@@ -275,11 +270,6 @@ parameters:
 			message: "#^Method MailPoet\\\\Listing\\\\ListingRepository\\:\\:getData\\(\\) should return array but returns mixed\\.$#"
 			count: 1
 			path: ../../lib/Listing/ListingRepository.php
-
-		-
-			message: "#^Parameter \\#2 \\$array of function implode expects array\\<string\\>, array\\<array\\<int, mixed\\>\\|string\\> given\\.$#"
-			count: 1
-			path: ../../lib/Models/Subscriber.php
 
 		-
 			message: "#^Variable \\$terms in empty\\(\\) always exists and is not falsy\\.$#"
