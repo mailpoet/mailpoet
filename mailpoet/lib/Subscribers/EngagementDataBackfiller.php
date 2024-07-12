@@ -10,7 +10,7 @@ use MailPoet\Segments\DynamicSegments\Filters\FilterHelper;
 use MailPoet\Segments\DynamicSegments\Filters\WooFilterHelper;
 use MailPoet\WooCommerce\Helper;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -113,7 +113,7 @@ class EngagementDataBackfiller {
       ->from($subscribersTable)
       ->innerJoin($subscribersTable, $clicksTable, 'clicks', "$subscribersTable.id = clicks.subscriber_id")
       ->andWhere("$subscribersTable.id IN (:subscriberIds)")
-      ->setParameter('subscriberIds', $subscriberIds, Connection::PARAM_INT_ARRAY)
+      ->setParameter('subscriberIds', $subscriberIds, ArrayParameterType::INTEGER)
       ->groupBy("$subscribersTable.id");
 
     $result = $query->execute();
@@ -138,7 +138,7 @@ class EngagementDataBackfiller {
       ->select("$subscribersTable.id, MAX(orderStats.date_created) as last_purchase_at")
       ->from($subscribersTable)
       ->andWhere("$subscribersTable.id IN (:subscriberIds)")
-      ->setParameter('subscriberIds', $subscriberIds, Connection::PARAM_INT_ARRAY);
+      ->setParameter('subscriberIds', $subscriberIds, ArrayParameterType::INTEGER);
     $this->wooFilterHelper->applyOrderStatusFilter($query);
     $query->groupBy("$subscribersTable.id");
 
@@ -161,7 +161,7 @@ class EngagementDataBackfiller {
       ->from($subscribersTable)
       ->innerJoin($subscribersTable, $opensTable, 'opens', "$subscribersTable.id = opens.subscriber_id")
       ->andWhere("$subscribersTable.id IN (:subscriberIds)")
-      ->setParameter('subscriberIds', $subscriberIds, Connection::PARAM_INT_ARRAY)
+      ->setParameter('subscriberIds', $subscriberIds, ArrayParameterType::INTEGER)
       ->groupBy("$subscribersTable.id");
 
     $result = $query->execute();
@@ -183,7 +183,7 @@ class EngagementDataBackfiller {
       ->from($subscribersTable)
       ->innerJoin($subscribersTable, $sendsTable, 'sends', "$subscribersTable.id = sends.subscriber_id")
       ->andWhere("$subscribersTable.id IN (:subscriberIds)")
-      ->setParameter('subscriberIds', $subscriberIds, Connection::PARAM_INT_ARRAY)
+      ->setParameter('subscriberIds', $subscriberIds, ArrayParameterType::INTEGER)
       ->groupBy("$subscribersTable.id");
 
     $result = $query->execute();

@@ -7,7 +7,7 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\WooCommerce\Helper;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class WooCommerceUsedShippingMethod implements Filter {
@@ -111,7 +111,7 @@ class WooCommerceUsedShippingMethod implements Filter {
       ->andWhere("$orderItemsTableAlias.order_item_type = 'shipping'")
       ->andWhere("$orderItemMetaTableAlias.meta_key = 'instance_id'")
       ->andWhere("$orderItemMetaTableAlias.meta_value IN (:$instanceIdsParam)")
-      ->setParameter($instanceIdsParam, $shippingMethodInstanceIds, Connection::PARAM_STR_ARRAY);
+      ->setParameter($instanceIdsParam, $shippingMethodInstanceIds, ArrayParameterType::STRING);
     if (!$isAllTime) {
       $dateParam = $this->filterHelper->getUniqueParameterName('date');
       $queryBuilder
@@ -137,7 +137,7 @@ class WooCommerceUsedShippingMethod implements Filter {
       ->andWhere("$orderItemMetaTableAlias.meta_key = 'instance_id'")
       ->andWhere("$orderItemMetaTableAlias.meta_value IN (:$instanceIdsParam)")
       ->setParameter($orderItemTypeParam, 'shipping')
-      ->setParameter($instanceIdsParam, $shippingMethodInstanceIds, Connection::PARAM_STR_ARRAY)
+      ->setParameter($instanceIdsParam, $shippingMethodInstanceIds, ArrayParameterType::STRING)
       ->groupBy('inner_subscriber_id')
       ->having("COUNT(DISTINCT($orderItemMetaTableAlias.meta_value)) = " . count($shippingMethodInstanceIds));
 

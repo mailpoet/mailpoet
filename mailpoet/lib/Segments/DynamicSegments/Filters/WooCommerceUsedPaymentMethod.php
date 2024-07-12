@@ -7,7 +7,7 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\WooCommerce\Helper;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use WC_Payment_Gateway;
 
@@ -112,7 +112,7 @@ class WooCommerceUsedPaymentMethod implements Filter {
       ->andWhere("postmeta.meta_key = :$paymentMethodMetaKeyParam")
       ->andWhere("postmeta.meta_value IN (:$paymentMethodParam)")
       ->setParameter($paymentMethodMetaKeyParam, '_payment_method')
-      ->setParameter($paymentMethodParam, $paymentMethods, Connection::PARAM_STR_ARRAY);
+      ->setParameter($paymentMethodParam, $paymentMethods, ArrayParameterType::STRING);
     if (!$isAllTime) {
       $dateParam = $this->filterHelper->getUniqueParameterName('date');
       $queryBuilder
@@ -129,7 +129,7 @@ class WooCommerceUsedPaymentMethod implements Filter {
     $queryBuilder
       ->innerJoin($orderStatsAlias, $ordersTable, 'orders', "$orderStatsAlias.order_id = orders.id")
       ->andWhere("$ordersAlias.payment_method IN (:$paymentMethodParam)")
-      ->setParameter($paymentMethodParam, $paymentMethods, Connection::PARAM_STR_ARRAY);
+      ->setParameter($paymentMethodParam, $paymentMethods, ArrayParameterType::STRING);
     if (!$isAllTime) {
       $dateParam = $this->filterHelper->getUniqueParameterName('date');
       $queryBuilder

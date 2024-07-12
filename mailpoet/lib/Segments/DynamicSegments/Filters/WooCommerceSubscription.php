@@ -8,7 +8,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Util\DBCollationChecker;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -50,7 +50,7 @@ class WooCommerceSubscription implements Filter {
         ->andWhere("itemmeta.meta_value IN (:products" . $parameterSuffix . ")")
         ->groupBy("$subscribersTable.id")
         ->having("COUNT($subscribersTable.id) = :count$parameterSuffix")
-        ->setParameter('products' . $parameterSuffix, $productIds, Connection::PARAM_STR_ARRAY)
+        ->setParameter('products' . $parameterSuffix, $productIds, ArrayParameterType::STRING)
         ->setParameter('count' . $parameterSuffix, count($productIds));
     }
 
@@ -66,7 +66,7 @@ class WooCommerceSubscription implements Filter {
       $subQueryBuilder
         ->andWhere("itemmeta.meta_value IN (:products" . $parameterSuffix . ")");
       return $queryBuilder->where("{$subscribersTable}.id NOT IN ({$subQueryBuilder->getSQL()})")
-        ->setParameter('products' . $parameterSuffix, $productIds, Connection::PARAM_STR_ARRAY);
+        ->setParameter('products' . $parameterSuffix, $productIds, ArrayParameterType::STRING);
     }
 
     // ANY
@@ -75,7 +75,7 @@ class WooCommerceSubscription implements Filter {
     $this->applyOrderItemmetaJoin($queryBuilder);
     return $queryBuilder
       ->andWhere("itemmeta.meta_value IN (:products" . $parameterSuffix . ")")
-      ->setParameter('products' . $parameterSuffix, $productIds, Connection::PARAM_STR_ARRAY);
+      ->setParameter('products' . $parameterSuffix, $productIds, ArrayParameterType::STRING);
   }
 
   private function applyPostmetaAndPostJoin(QueryBuilder $queryBuilder): QueryBuilder {

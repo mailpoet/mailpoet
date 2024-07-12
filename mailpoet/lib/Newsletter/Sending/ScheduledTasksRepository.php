@@ -12,7 +12,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Carbon\CarbonImmutable;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 
@@ -317,7 +317,7 @@ class ScheduledTasksRepository extends Repository {
       ->set('st.updatedAt', ':updatedAt')
       ->setParameter('updatedAt', $now)
       ->where('st.id IN (:ids)')
-      ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
+      ->setParameter('ids', $ids, ArrayParameterType::INTEGER)
       ->getQuery()
       ->execute();
 
