@@ -42,7 +42,7 @@ class PreprocessorTest extends \MailPoetUnitTest {
           'blocks' => [
             [
               'type' => 'text',
-              'text' => Preprocessor::WC_HEADING_BEFORE . '<h1 style="color:{base_text_color};">[mailpoet_woocommerce_heading_placeholder]</h1>' . Preprocessor::WC_HEADING_AFTER,
+              'text' => Preprocessor::WC_HEADING_BEFORE . '<h1 id="mailpoet-woo-email-header" style="color:{base_text_color};">[mailpoet_woocommerce_heading_placeholder]</h1>' . Preprocessor::WC_HEADING_AFTER,
             ],
           ],
         ],

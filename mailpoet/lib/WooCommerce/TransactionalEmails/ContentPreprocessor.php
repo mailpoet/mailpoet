@@ -33,7 +33,7 @@ class ContentPreprocessor {
 
   public function preprocessHeader() {
     $wcEmailSettings = $this->transactionalEmails->getWCEmailSettings();
-    $content = self::WC_HEADING_BEFORE . '<h1 style="color:' . $wcEmailSettings['base_text_color'] . ';">' . self::WC_HEADING_PLACEHOLDER . '</h1>' . self::WC_HEADING_AFTER;
+    $content = self::WC_HEADING_BEFORE . '<h1 id="mailpoet-woo-email-header" style="color:' . $wcEmailSettings['base_text_color'] . ';">' . self::WC_HEADING_PLACEHOLDER . '</h1>' . self::WC_HEADING_AFTER;
     return $this->renderTextBlock($content, ['backgroundColor' => $wcEmailSettings['base_color']]);
   }
 
