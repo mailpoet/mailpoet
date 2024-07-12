@@ -96,6 +96,7 @@ class Renderer {
   public function enhanceCss(string $css, NewsletterEntity $newsletter): string {
     // We allow setting global font family in the editor. The global font is saved in text.fontFamily
     $fontFamily = $newsletter->getGlobalStyle('text', 'fontFamily');
+    $fontSize = $newsletter->getGlobalStyle('text', 'fontSize');
     $this->cssParser->settings['compress_colors'] = false;
     $this->cssParser->parse($css);
     foreach ($this->cssParser->css as $index => $rules) {
@@ -109,6 +110,10 @@ class Renderer {
         // Update font family if it's set in the editor
         if ($fontFamily && !empty($properties['font-family'])) {
           $properties['font-family'] = $fontFamily;
+        }
+        // Update font size for inner content
+        if ($fontSize && ($selectors === '#' . self::CONTENT_CONTAINER_ID . ' #body_content_inner')) {
+          $properties['font-size'] = $fontSize;
         }
         $this->cssParser->css[$index][$selectors] = $properties;
       }
