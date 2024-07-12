@@ -8,6 +8,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class InactiveSubscribersController {
@@ -165,7 +166,7 @@ class InactiveSubscribersController {
       'thresholdDate' => $thresholdDate,
       'statusInactive' => SubscriberEntity::STATUS_INACTIVE,
       'batchSize' => $batchSize,
-    ], ['batchSize' => \PDO::PARAM_INT])->fetchAllAssociative();
+    ], ['batchSize' => ParameterType::INTEGER])->fetchAllAssociative();
 
     $idsToActivate = array_map(
       function($id) {

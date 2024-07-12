@@ -18,6 +18,7 @@ use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
 
@@ -574,7 +575,7 @@ class SubscribersRepository extends Repository {
        LEFT JOIN {$wpdb->users} u ON s.wp_user_id = u.id
        WHERE ss.segment_id = :segmentId AND (u.id IS NULL OR s.email = '')",
       ['segmentId' => $segmentId],
-      ['segmentId' => \PDO::PARAM_INT]
+      ['segmentId' => ParameterType::INTEGER]
     );
   }
 
