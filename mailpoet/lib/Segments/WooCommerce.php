@@ -221,8 +221,9 @@ class WooCommerce {
       return;
     }
     global $wpdb;
+    $subscribersTableName = esc_sql($this->subscribersRepository->getTableName());
     $mailpoetEmailColumn = $wpdb->get_row(
-      "SHOW FULL COLUMNS FROM " . MP_SUBSCRIBERS_TABLE . " WHERE Field = 'email'"
+      "SHOW FULL COLUMNS FROM " . $subscribersTableName . " WHERE Field = 'email'"
     );
     $this->mailpoetEmailCollation = $mailpoetEmailColumn->Collation; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $wpPostmetaValueColumn = $wpdb->get_row(

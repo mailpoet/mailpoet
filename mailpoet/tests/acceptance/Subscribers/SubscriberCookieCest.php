@@ -4,6 +4,8 @@ namespace MailPoet\Test\Acceptance;
 
 use AcceptanceTester;
 use Codeception\Util\Locator;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
@@ -161,7 +163,8 @@ class SubscriberCookieCest {
   }
 
   private function checkSubscriberCookie(AcceptanceTester $i, string $email): void {
-    $subscriberId = $i->grabFromDatabase(MP_SUBSCRIBERS_TABLE, 'id', ['email' => $email]);
+    $subscribersTableName = ContainerWrapper::getInstance()->get(SubscribersRepository::class)->getTableName();
+    $subscriberId = $i->grabFromDatabase($subscribersTableName, 'id', ['email' => $email]);
     Assert::assertIsString($subscriberId);
     $i->canSeeCookie(self::SUBSCRIBER_COOKIE_NAME);
     $cookie = $i->grabCookie(self::SUBSCRIBER_COOKIE_NAME);

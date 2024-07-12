@@ -323,8 +323,9 @@ class Newsletters extends APIEndpoint {
       ]);
     }
 
+    $newslettersTableName = $this->newslettersRepository->getTableName();
     $newsletter->setBody(
-      json_decode($this->emoji->encodeForUTF8Column(MP_NEWSLETTERS_TABLE, 'body', $data['body']), true)
+      json_decode($this->emoji->encodeForUTF8Column($newslettersTableName, 'body', $data['body']), true)
     );
     $this->newslettersRepository->flush();
 

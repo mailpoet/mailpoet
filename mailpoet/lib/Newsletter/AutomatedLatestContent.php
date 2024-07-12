@@ -14,21 +14,27 @@ class AutomatedLatestContent {
   /** @var int|false */
   private $newsletterId;
 
+  /** @var NewsletterPostsRepository */
+  private $newsletterPostsRepository;
+
   /** @var WPFunctions */
   private $wp;
 
   public function __construct(
     LoggerFactory $loggerFactory,
+    NewsletterPostsRepository $newsletterPostsRepository,
     WPFunctions $wp
   ) {
     $this->loggerFactory = $loggerFactory;
+    $this->newsletterPostsRepository = $newsletterPostsRepository;
     $this->wp = $wp;
   }
 
   public function filterOutSentPosts(string $where): string {
-    $sentPostsQuery = 'SELECT ' . MP_NEWSLETTER_POSTS_TABLE . '.post_id FROM '
-      . MP_NEWSLETTER_POSTS_TABLE . ' WHERE '
-      . MP_NEWSLETTER_POSTS_TABLE . ".newsletter_id='" . $this->newsletterId . "'";
+    $newsletterPostsTableName = $this->newsletterPostsRepository->getTableName();
+    $sentPostsQuery = 'SELECT ' . $newsletterPostsTableName . '.post_id FROM '
+      . $newsletterPostsTableName . ' WHERE '
+      . $newsletterPostsTableName . ".newsletter_id='" . $this->newsletterId . "'";
 
     $wherePostUnsent = 'ID NOT IN (' . $sentPostsQuery . ')';
 
