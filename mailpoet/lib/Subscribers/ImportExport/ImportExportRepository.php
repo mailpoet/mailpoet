@@ -12,7 +12,7 @@ use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
 use MailPoet\Subscribers\SubscriberCustomFieldRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -161,7 +161,7 @@ class ImportExportRepository {
       $parameters[$keyColumn] = array_map(function(array $row) use ($columnIndex) {
         return $row[$columnIndex];
       }, $data);
-      $parameterTypes[$keyColumn] = Connection::PARAM_STR_ARRAY;
+      $parameterTypes[$keyColumn] = ArrayParameterType::STRING;
       $keyColumnsConditions[] = "{$keyColumn} IN (:{$keyColumn})";
     }
 
@@ -327,6 +327,6 @@ class ImportExportRepository {
       SELECT id
       FROM {$tableName}
       WHERE email IN (:emails)
-    ", ['emails' => $emails], ['emails' => Connection::PARAM_STR_ARRAY])->fetchFirstColumn();
+    ", ['emails' => $emails], ['emails' => ArrayParameterType::STRING])->fetchFirstColumn();
   }
 }

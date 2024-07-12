@@ -7,7 +7,7 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\WooCommerce\Helper;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class WooCommerceUsedCouponCode implements Filter {
@@ -83,7 +83,7 @@ class WooCommerceUsedCouponCode implements Filter {
     $couponCodeIdsParam = $this->filterHelper->getUniqueParameterName('couponCodeIds');
     $queryBuilder
       ->andWhere("couponLookup.coupon_id IN (:$couponCodeIdsParam)")
-      ->setParameter($couponCodeIdsParam, $couponIds, Connection::PARAM_INT_ARRAY);
+      ->setParameter($couponCodeIdsParam, $couponIds, ArrayParameterType::INTEGER);
   }
 
   private function applyForAllOperator(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filter): void {

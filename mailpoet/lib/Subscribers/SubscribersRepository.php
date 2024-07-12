@@ -17,7 +17,7 @@ use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Carbon\CarbonImmutable;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
@@ -187,7 +187,7 @@ class SubscribersRepository extends Repository {
          WHERE scs.`subscriber_id` IN (:ids)
          AND s.`is_woocommerce_user` = false
          AND s.`wp_user_id` IS NULL
-      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+      ", ['ids' => $ids], ['ids' => ArrayParameterType::INTEGER]);
 
       // Delete subscriber tags
       $subscriberTagTable = $entityManager->getClassMetadata(SubscriberTagEntity::class)->getTableName();
@@ -197,7 +197,7 @@ class SubscribersRepository extends Repository {
          WHERE st.`subscriber_id` IN (:ids)
          AND s.`is_woocommerce_user` = false
          AND s.`wp_user_id` IS NULL
-      ", ['ids' => $ids], ['ids' => Connection::PARAM_INT_ARRAY]);
+      ", ['ids' => $ids], ['ids' => ArrayParameterType::INTEGER]);
 
       $queryBuilder = $entityManager->createQueryBuilder();
       $count = $queryBuilder->delete(SubscriberEntity::class, 's')
@@ -226,7 +226,7 @@ class SubscribersRepository extends Repository {
        DELETE ss FROM $subscriberSegmentsTable ss
        WHERE ss.`subscriber_id` IN (:ids)
        AND ss.`segment_id` = :segment_id
-    ", ['ids' => $ids, 'segment_id' => $segment->getId()], ['ids' => Connection::PARAM_INT_ARRAY]);
+    ", ['ids' => $ids, 'segment_id' => $segment->getId()], ['ids' => ArrayParameterType::INTEGER]);
 
     $this->changesNotifier->subscribersUpdated($ids);
     return $count;
@@ -554,7 +554,7 @@ class SubscribersRepository extends Repository {
        DELETE st FROM $subscriberTagsTable st
        WHERE st.`subscriber_id` IN (:ids)
        AND st.`tag_id` = :tag_id
-    ", ['ids' => $ids, 'tag_id' => $tag->getId()], ['ids' => Connection::PARAM_INT_ARRAY]);
+    ", ['ids' => $ids, 'tag_id' => $tag->getId()], ['ids' => ArrayParameterType::INTEGER]);
 
     $this->changesNotifier->subscribersUpdated($ids);
     return $count;
@@ -607,7 +607,7 @@ class SubscribersRepository extends Repository {
     ", [
       'ids' => $ids,
       'typeDefault' => SegmentEntity::TYPE_DEFAULT,
-    ], ['ids' => Connection::PARAM_INT_ARRAY]);
+    ], ['ids' => ArrayParameterType::INTEGER]);
 
     return $count;
   }

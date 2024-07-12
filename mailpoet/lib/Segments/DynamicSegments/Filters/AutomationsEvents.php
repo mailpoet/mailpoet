@@ -7,7 +7,7 @@ use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class AutomationsEvents implements Filter {
@@ -85,7 +85,7 @@ class AutomationsEvents implements Filter {
         'automations.id = runs.automation_id'
       )
       ->andWhere("automations.id IN (:$automationIdsParam)")
-      ->setParameter($automationIdsParam, $automationIds, Connection::PARAM_STR_ARRAY);
+      ->setParameter($automationIdsParam, $automationIds, ArrayParameterType::STRING);
 
     if ($action === self::EXITED_ACTION) {
       $statusParam = $this->filterHelper->getUniqueParameterName('status');

@@ -8,7 +8,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\InvalidStateException;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -129,13 +129,13 @@ class SubscribersFinder {
       ->setParameter('processed', ScheduledTaskSubscriberEntity::STATUS_UNPROCESSED, ParameterType::INTEGER)
       ->setParameter('subscribers_status', SubscriberEntity::STATUS_SUBSCRIBED, ParameterType::STRING)
       ->setParameter('relation_status', SubscriberEntity::STATUS_SUBSCRIBED, ParameterType::STRING)
-      ->setParameter('segment_ids', $segmentIds, Connection::PARAM_INT_ARRAY);
+      ->setParameter('segment_ids', $segmentIds, ArrayParameterType::INTEGER);
 
     if ($filterSegmentId) {
       $filterSegmentSubscriberIds = $this->segmentSubscriberRepository->findSubscribersIdsInSegment($filterSegmentId);
       $selectQueryBuilder
         ->andWhere($selectQueryBuilder->expr()->in('subscribers.id', ':filterSegmentSubscriberIds'))
-        ->setParameter('filterSegmentSubscriberIds', $filterSegmentSubscriberIds, Connection::PARAM_INT_ARRAY);
+        ->setParameter('filterSegmentSubscriberIds', $filterSegmentSubscriberIds, ArrayParameterType::INTEGER);
     }
 
     // queryBuilder doesn't support INSERT IGNORE directly
@@ -198,7 +198,7 @@ class SubscribersFinder {
         ParameterType::INTEGER,
         ParameterType::INTEGER,
         ParameterType::STRING,
-        Connection::PARAM_INT_ARRAY,
+        ArrayParameterType::INTEGER,
       ]
     );
 
