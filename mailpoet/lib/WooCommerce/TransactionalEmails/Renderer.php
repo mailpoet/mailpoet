@@ -121,7 +121,13 @@ class Renderer {
 
     /** @var csstidy_print */
     $print = $this->cssParser->print;
-    return $print->plain();
+    $css = $print->plain();
+
+    // Enforce the special heading color for the WooCommerce email header
+    $wooHeadingColor = $newsletter->getGlobalStyle('woocommerce', 'headingFontColor');
+    $css .= "#mailpoet-woo-email-header { color: $wooHeadingColor !important; }";
+
+    return $css;
   }
 
   private function processShortcodes(NewsletterEntity $newsletter, $content) {
