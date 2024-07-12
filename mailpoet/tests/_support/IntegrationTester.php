@@ -18,6 +18,7 @@ use MailPoet\Segments\DynamicSegments\Filters\Filter;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -95,7 +96,7 @@ class IntegrationTester extends \Codeception\Actor {
     $this->entityManager->getConnection()->executeStatement(
       "DELETE FROM {$wpdb->users} WHERE id = :id",
       ['id' => $id],
-      ['id' => \PDO::PARAM_INT]
+      ['id' => ParameterType::INTEGER]
     );
   }
 
