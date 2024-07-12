@@ -64,7 +64,14 @@ class Renderer {
     return '</td></tr></table></div></div></div>' . $this->htmlAfterContent;
   }
 
-  public function prefixCss($css) {
+  /**
+   * In this method we alter CSS that is later inlined into the WooCommerce email template. WooCommerce use Emogrifier to inline CSS.
+   * - We prefix the original selectors to avoid inlining those rules into content added int the MailPoet's editor.
+   * - We update the font-family in the original CSS if it's set in the editor.
+   */
+  public function enhanceCss(string $css, NewsletterEntity $newsletter): string {
+    // We allow setting global font family in the editor. The global font is saved in text.fontFamily
+    $fontFamily = $newsletter->getGlobalStyle('text', 'fontFamily');
     $this->cssParser->settings['compress_colors'] = false;
     $this->cssParser->parse($css);
     foreach ($this->cssParser->css as $index => $rules) {
@@ -75,9 +82,14 @@ class Renderer {
           return '#' . self::CONTENT_CONTAINER_ID . ' ' . $selector;
         }, $selectors);
         $selectors = implode(',', $selectors);
+        // Update font family if it's set in the editor
+        if ($fontFamily && !empty($properties['font-family'])) {
+          $properties['font-family'] = $fontFamily;
+        }
         $this->cssParser->css[$index][$selectors] = $properties;
       }
     }
+
     /** @var csstidy_print */
     $print = $this->cssParser->print;
     return $print->plain();
