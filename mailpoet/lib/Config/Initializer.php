@@ -24,7 +24,6 @@ use MailPoet\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberActivityTracker;
 use MailPoet\Util\ConflictResolver;
-use MailPoet\Util\Helpers;
 use MailPoet\Util\Notices\PermanentNotices;
 use MailPoet\Util\Url;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -77,9 +76,6 @@ class Initializer {
 
   /** @var Shortcodes */
   private $shortcodes;
-
-  /** @var DatabaseInitializer */
-  private $databaseInitializer;
 
   /** @var WCTransactionalEmails */
   private $wcTransactionalEmails;
@@ -160,7 +156,6 @@ class Initializer {
     CronTrigger $cronTrigger,
     PermanentNotices $permanentNotices,
     Shortcodes $shortcodes,
-    DatabaseInitializer $databaseInitializer,
     WCTransactionalEmails $wcTransactionalEmails,
     PostEditorBlock $postEditorBlock,
     WooCommerceBlocksIntegration $woocommerceBlocksIntegration,
@@ -196,7 +191,6 @@ class Initializer {
     $this->cronTrigger = $cronTrigger;
     $this->permanentNotices = $permanentNotices;
     $this->shortcodes = $shortcodes;
-    $this->databaseInitializer = $databaseInitializer;
     $this->wcTransactionalEmails = $wcTransactionalEmails;
     $this->wcHelper = $wcHelper;
     $this->postEditorBlock = $postEditorBlock;
@@ -225,18 +219,6 @@ class Initializer {
 
     // load translations and setup translations update/download
     $this->setupLocalizer();
-
-    try {
-      $this->databaseInitializer->initializeConnection();
-    } catch (\Exception $e) {
-      return WPNotice::displayError(Helpers::replaceLinkTags(
-        __('Unable to connect to the database (the database is unable to open a file or folder), the connection is likely not configured correctly. Please read our [link] Knowledge Base article [/link] for steps how to resolve it.', 'mailpoet'),
-        'https://kb.mailpoet.com/article/200-solving-database-connection-issues',
-        [
-          'target' => '_blank',
-        ]
-      ));
-    }
 
     // activation function
     $this->wpFunctions->registerActivationHook(
