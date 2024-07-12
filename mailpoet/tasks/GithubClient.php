@@ -3,9 +3,13 @@
 namespace MailPoetTasks;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ServerException;
 use Psr\Http\Message\ResponseInterface;
 
 class GithubClient {
+  const RETRIES_COUNT = 3;
+  const SECONDS_SLEEP_BEFORE_RETRY = 10;
+
   /** @var Client */
   private $httpClient;
 
@@ -71,13 +75,15 @@ class GithubClient {
 
   private function get($uri, array $options = []): ResponseInterface {
     $retries = 0;
-    do {
-      $response = $this->httpClient->get($uri, $options);
-      if ($response->getStatusCode() < 500) {
-        return $response;
+    while (true) {
+      try {
+        return $this->httpClient->get($uri, $options);
+      } catch (ServerException $e) {
+        if ($retries++ >= self::RETRIES_COUNT) {
+          throw $e;
+        }
+        sleep(self::SECONDS_SLEEP_BEFORE_RETRY);
       }
-      sleep(10);
-    } while ($retries++ < 3);
-    throw new \Exception("Failed to download file ${uri} after 3 retries");
+    }
   }
 }
