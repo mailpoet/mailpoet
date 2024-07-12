@@ -14,7 +14,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\UserAgentEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Util\Security;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -137,7 +137,7 @@ class EmailAction implements Filter {
     $queryBuilder = $queryBuilder->andWhere($where);
     if ($linkIds) {
       $queryBuilder = $queryBuilder
-        ->setParameter('links' . $parameterSuffix, $linkIds, Connection::PARAM_STR_ARRAY);
+        ->setParameter('links' . $parameterSuffix, $linkIds, ArrayParameterType::STRING);
     }
     return $queryBuilder;
   }
@@ -164,7 +164,7 @@ class EmailAction implements Filter {
         $statsTable,
         'stats',
         "statssent.subscriber_id = stats.subscriber_id AND stats.newsletter_id IN (:newsletters" . $parameterSuffix . ')'
-      )->setParameter('newsletters' . $parameterSuffix, $newsletters, Connection::PARAM_INT_ARRAY);
+      )->setParameter('newsletters' . $parameterSuffix, $newsletters, ArrayParameterType::INTEGER);
       $where .= ' AND stats.id IS NULL';
     } else {
       $queryBuilder = $queryBuilder->innerJoin(
@@ -172,7 +172,7 @@ class EmailAction implements Filter {
         $statsTable,
         'stats',
         "stats.subscriber_id = $subscribersTable.id AND stats.newsletter_id IN (:newsletters" . $parameterSuffix . ')'
-      )->setParameter('newsletters' . $parameterSuffix, $newsletters, Connection::PARAM_INT_ARRAY);
+      )->setParameter('newsletters' . $parameterSuffix, $newsletters, ArrayParameterType::INTEGER);
 
       if ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
         $queryBuilder->groupBy('subscriber_id');
@@ -212,7 +212,7 @@ class EmailAction implements Filter {
         'statisticsNewsletter',
         "$subscribersTable.id = statisticsNewsletter.subscriber_id AND statisticsNewsletter.newsletter_id IN (:newsletters" . $parameterSuffix . ')'
       )
-        ->setParameter('newsletters' . $parameterSuffix, $newsletters, Connection::PARAM_INT_ARRAY)
+        ->setParameter('newsletters' . $parameterSuffix, $newsletters, ArrayParameterType::INTEGER)
         ->andWhere('statisticsNewsletter.subscriber_id IS NULL');
     } else {
       $queryBuilder->innerJoin(
@@ -220,7 +220,7 @@ class EmailAction implements Filter {
         $statisticsNewslettersTable,
         'statisticsNewsletter',
         "statisticsNewsletter.subscriber_id = $subscribersTable.id AND statisticsNewsletter.newsletter_id IN (:newsletters" . $parameterSuffix . ')'
-      )->setParameter('newsletters' . $parameterSuffix, $newsletters, Connection::PARAM_INT_ARRAY);
+      )->setParameter('newsletters' . $parameterSuffix, $newsletters, ArrayParameterType::INTEGER);
 
       if ($operator === DynamicSegmentFilterData::OPERATOR_ALL) {
         $queryBuilder->groupBy('subscriber_id');

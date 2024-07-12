@@ -9,7 +9,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 /**
@@ -90,7 +90,7 @@ class ScheduledTaskSubscribersRepository extends Repository {
         ->set('sts.processed', ScheduledTaskSubscriberEntity::STATUS_PROCESSED)
         ->where('sts.subscriber IN (:subscriberIds)')
         ->andWhere('sts.task = :task')
-        ->setParameter('subscriberIds', $subscriberIds, Connection::PARAM_INT_ARRAY)
+        ->setParameter('subscriberIds', $subscriberIds, ArrayParameterType::INTEGER)
         ->setParameter('task', $task)
         ->getQuery()
         ->execute();
@@ -159,7 +159,7 @@ class ScheduledTaskSubscribersRepository extends Repository {
       ->where('sts.task = :task')
       ->andWhere('sts.subscriber IN (:subscriberIds)')
       ->setParameter('task', $scheduledTask)
-      ->setParameter('subscriberIds', $subscriberIds, Connection::PARAM_INT_ARRAY)
+      ->setParameter('subscriberIds', $subscriberIds, ArrayParameterType::INTEGER)
       ->getQuery()
       ->execute();
 

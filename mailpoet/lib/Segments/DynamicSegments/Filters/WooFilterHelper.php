@@ -3,7 +3,7 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Util\DBCollationChecker;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class WooFilterHelper {
@@ -81,7 +81,7 @@ class WooFilterHelper {
     $statusParam = $this->filterHelper->getUniqueParameterName('status');
     $orderStatsAlias = $this->applyCustomerOrderJoin($queryBuilder);
     $queryBuilder->andWhere("$orderStatsAlias.status IN (:$statusParam)");
-    $queryBuilder->setParameter($statusParam, $allowedStatuses, Connection::PARAM_STR_ARRAY);
+    $queryBuilder->setParameter($statusParam, $allowedStatuses, ArrayParameterType::STRING);
     return $orderStatsAlias;
   }
 

@@ -6,7 +6,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\WP\Functions;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class WooCommercePurchasedWithAttribute implements Filter {
@@ -54,7 +54,7 @@ class WooCommercePurchasedWithAttribute implements Filter {
     $productAlias = $this->applyProductJoin($queryBuilder, $orderStatsAlias);
     $attributeAlias = $this->applyTaxonomyAttributeJoin($queryBuilder, $productAlias, $attributeTaxonomySlug);
     $queryBuilder->andWhere("$attributeAlias.term_id IN (:$termIdsParam)");
-    $queryBuilder->setParameter($termIdsParam, $attributeTermIds, Connection::PARAM_STR_ARRAY);
+    $queryBuilder->setParameter($termIdsParam, $attributeTermIds, ArrayParameterType::STRING);
   }
 
   private function applyProductJoin(QueryBuilder $queryBuilder, string $orderStatsAlias, string $alias = 'product'): string {
@@ -203,6 +203,6 @@ class WooCommercePurchasedWithAttribute implements Filter {
     );
 
     $queryBuilder->setParameter($keyParam, sprintf("attribute_%s", $attributeName));
-    $queryBuilder->setParameter($valuesParam, $attributeValues, Connection::PARAM_STR_ARRAY);
+    $queryBuilder->setParameter($valuesParam, $attributeValues, ArrayParameterType::STRING);
   }
 }

@@ -8,7 +8,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Util\DBCollationChecker;
 use MailPoet\Util\Security;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -98,7 +98,7 @@ class WooCommerceNumberOfOrders implements Filter {
       ],
     ], \true)
       ->setParameter('date' . $parameterSuffix, $date->toDateTimeString())
-      ->setParameter('allowedStatuses' . $parameterSuffix, $this->wooFilterHelper->defaultIncludedStatuses(), Connection::PARAM_STR_ARRAY)
+      ->setParameter('allowedStatuses' . $parameterSuffix, $this->wooFilterHelper->defaultIncludedStatuses(), ArrayParameterType::STRING)
       ->groupBy('inner_subscriber_id');
 
     if ($type === '=') {

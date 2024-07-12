@@ -16,6 +16,7 @@ use MailPoet\WooCommerce\Helper as WCHelper;
 use MailPoet\WooCommerce\Subscription;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -344,7 +345,7 @@ class WooCommerce {
       UPDATE ' . $subscribersTable . ' mps
       SET mps.is_woocommerce_user = 1
       WHERE mps.email IN (:emails)
-    ', ['emails' => $emails], ['emails' => Connection::PARAM_STR_ARRAY]);
+    ', ['emails' => $emails], ['emails' => ArrayParameterType::STRING]);
 
     // Save timestamp about new subscribers before insert
     $this->subscriberChangesNotifier->subscribersBatchCreate();
@@ -376,7 +377,7 @@ class WooCommerce {
         FROM {$addressesTableName}
         WHERE order_id IN (:orderIds) and address_type = 'billing'",
         ['orderIds' => array_values($orders)],
-        ['orderIds' => Connection::PARAM_INT_ARRAY]
+        ['orderIds' => ArrayParameterType::INTEGER]
       )->fetchAllAssociative();
 
       // format data in the same format that is used when querying wp_postmeta (see below).
@@ -403,7 +404,7 @@ class WooCommerce {
         WHERE meta_key IN ('_billing_first_name', '_billing_last_name') AND post_id IN (:postIds)
       ",
         ['metaKeys' => $metaKeys, 'postIds' => array_values($orders)],
-        ['metaKeys' => Connection::PARAM_STR_ARRAY, 'postIds' => Connection::PARAM_INT_ARRAY]
+        ['metaKeys' => ArrayParameterType::STRING, 'postIds' => ArrayParameterType::INTEGER]
       )->fetchAllAssociative();
     }
 

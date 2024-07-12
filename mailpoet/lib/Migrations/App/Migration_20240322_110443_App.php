@@ -5,7 +5,7 @@ namespace MailPoet\Migrations\App;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Migrator\AppMigration;
 use MailPoet\WooCommerce\Helper;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 
 class Migration_20240322_110443_App extends AppMigration {
   public function run(): void {
@@ -46,7 +46,7 @@ class Migration_20240322_110443_App extends AppMigration {
       $orders = $this->entityManager->getConnection()->executeQuery(
         $query,
         ['orderIds' => $orderIds],
-        ['orderIds' => Connection::PARAM_INT_ARRAY],
+        ['orderIds' => ArrayParameterType::INTEGER],
       )->fetchAllAssociative();
 
       foreach ($orders as $order) {

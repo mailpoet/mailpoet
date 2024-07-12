@@ -7,7 +7,7 @@ use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Util\Security;
 use MailPoet\WooCommerce\Helper;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use WC_Product;
@@ -69,7 +69,7 @@ class WooCommerceProduct implements Filter {
       $queryBuilder->where("{$subscribersTable}.id NOT IN ({$this->filterHelper->getInterpolatedSQL($subQuery)})");
     }
     return $queryBuilder
-      ->setParameter("products_{$parameterSuffix}", $productIds, Connection::PARAM_STR_ARRAY);
+      ->setParameter("products_{$parameterSuffix}", $productIds, ArrayParameterType::STRING);
   }
 
   private function applyProductJoin(QueryBuilder $queryBuilder, string $orderStatsAlias): QueryBuilder {

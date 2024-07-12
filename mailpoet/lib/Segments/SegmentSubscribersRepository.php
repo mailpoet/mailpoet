@@ -11,7 +11,7 @@ use MailPoet\InvalidStateException;
 use MailPoet\NotFoundException;
 use MailPoet\Segments\DynamicSegments\Exceptions\InvalidFilterException;
 use MailPoet\Segments\DynamicSegments\FilterHandler;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\DBAL\Result;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -386,7 +386,7 @@ class SegmentSubscribersRepository {
 
     if ($candidateIds) {
       $queryBuilder->andWhere("$subscribersTable.id IN (:candidateIds)")
-        ->setParameter('candidateIds', $candidateIds, Connection::PARAM_STR_ARRAY);
+        ->setParameter('candidateIds', $candidateIds, ArrayParameterType::STRING);
     }
 
     $statement = $this->executeQuery($queryBuilder);

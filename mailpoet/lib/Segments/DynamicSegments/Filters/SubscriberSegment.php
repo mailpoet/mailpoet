@@ -8,7 +8,7 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Util\Security;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -50,7 +50,7 @@ class SubscriberSegment implements Filter {
     );
 
     $queryBuilder->setParameter($statusSubscribedParam, SubscriberEntity::STATUS_SUBSCRIBED);
-    $queryBuilder->setParameter($segmentsParam, $segments, Connection::PARAM_INT_ARRAY);
+    $queryBuilder->setParameter($segmentsParam, $segments, ArrayParameterType::INTEGER);
 
     if ($operator === DynamicSegmentFilterData::OPERATOR_NONE) {
       $queryBuilder->andWhere('subscriber_segments.id IS NULL');
