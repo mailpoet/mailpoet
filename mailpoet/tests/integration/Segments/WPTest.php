@@ -732,8 +732,9 @@ class WPTest extends \MailPoetTest {
   }
 
   private function clearEmail(SubscriberEntity $subscriber): void {
+    $subscribersTableName = $this->subscribersRepository->getTableName();
     $this->connection->executeStatement(
-      'UPDATE ' . MP_SUBSCRIBERS_TABLE . '
+      'UPDATE ' . $subscribersTableName . '
       SET `email` = "" WHERE `id` = ' . $subscriber->getId()
     );
   }
