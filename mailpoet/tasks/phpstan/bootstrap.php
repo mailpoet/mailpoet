@@ -12,10 +12,6 @@ define('DB_USER', 'wordpress');
 define('DB_PASSWORD', '12345');
 define('MAILPOET_PREMIUM_VERSION', '1.0.0');
 
-// Define Database Tables constants
-$dbConfig = new \MailPoet\Config\Database();
-$dbConfig->defineTables();
-
 // This needs to be set because \MailPoet\Doctrine\TablePrefixMetadataFactory can't construct without it
 MailPoet\Config\Env::$dbPrefix = 'wp_';
 
