@@ -6,7 +6,7 @@ use MailPoet\Entities\DynamicSegmentFilterData;
 use MailPoet\Entities\DynamicSegmentFilterEntity;
 use MailPoet\Entities\StatisticsFormEntity;
 use MailPoet\Form\FormsRepository;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class SubscriberSubscribedViaForm implements Filter {
@@ -54,7 +54,7 @@ class SubscriberSubscribedViaForm implements Filter {
       $queryBuilder->andWhere("statisticsForms.subscriber_id IS NULL");
     }
 
-    $queryBuilder->setParameter($formIdsParam, $formIds, Connection::PARAM_INT_ARRAY);
+    $queryBuilder->setParameter($formIdsParam, $formIds, ArrayParameterType::INTEGER);
 
     return $queryBuilder;
   }

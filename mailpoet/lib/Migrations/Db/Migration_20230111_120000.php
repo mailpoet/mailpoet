@@ -5,7 +5,7 @@ namespace MailPoet\Migrations\Db;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SettingEntity;
 use MailPoet\Migrator\DbMigration;
-use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 
 class Migration_20230111_120000 extends DbMigration {
   public function run(): void {
@@ -35,7 +35,7 @@ class Migration_20230111_120000 extends DbMigration {
         UPDATE {$segmentsTable}
         SET {$columnName} = 1
         WHERE id IN (?)
-      ", [$segmentIds], [Connection::PARAM_INT_ARRAY]);
+      ", [$segmentIds], [ArrayParameterType::INTEGER]);
 
       $subscriptionSetting['segments'] = [];
       $this->connection->executeStatement(
