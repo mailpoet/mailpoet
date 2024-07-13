@@ -78,7 +78,6 @@ services:
         condition: service_healthy
     volumes:
       - wp-core:/var/www/html
-      - ./install-extensions.sh:/usr/local/bin/install-extensions.sh
       - ../..:/var/www/html/wp-content/plugins/mailpoet
       - ../../../mailpoet-premium:/project/mailpoet-premium
     tmpfs:
@@ -92,7 +91,6 @@ services:
       WORDPRESS_TABLE_PREFIX: mp_
       MAILPOET_TRACY_PRODUCTION_MODE: 1
       MAILPOET_TRACY_LOG_DIR: /var/www/html/wp-content/plugins/mailpoet/tests/_output/exceptions
-    entrypoint: ['sh', '/usr/local/bin/install-extensions.sh']
     command: ['docker-entrypoint.sh', 'apache2-foreground']
     networks:
       default:
