@@ -2,6 +2,7 @@
 
 namespace MailPoet\Doctrine\WPDB;
 
+use MailPoet\Doctrine\WPDB\Exceptions\ConnectionException;
 use MailPoetUnitTest;
 use MailPoetVendor\Doctrine\DBAL\Driver\API\MySQL\ExceptionConverter;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MariaDb1052Platform;
@@ -15,5 +16,11 @@ class DriverTest extends MailPoetUnitTest {
     $this->assertInstanceOf(MySQLPlatform::class, $driver->getDatabasePlatform());
     $this->assertInstanceOf(MariaDb1052Platform::class, $driver->createDatabasePlatformForVersion('10.5.8-MariaDB-1:10.5.8+maria~focal'));
     $this->assertInstanceOf(ExceptionConverter::class, $driver->getExceptionConverter());
+  }
+
+  public function testConnectFailsWhenWpdbNotInitialized(): void {
+    $driver = new Driver();
+    $this->expectException(ConnectionException::class);
+    $driver->connect([]);
   }
 }
