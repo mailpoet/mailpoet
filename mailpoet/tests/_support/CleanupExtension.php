@@ -22,7 +22,7 @@ class CleanupExtension extends Extension {
     Events::TEST_BEFORE => 'cleanupEnvironment',
   ];
 
-  /** @var PDO */
+  /** @var mysqli */
   private $rootConnection;
 
   public function __construct(
@@ -30,8 +30,8 @@ class CleanupExtension extends Extension {
     $options
   ) {
     parent::__construct($config, $options);
-    $this->rootConnection = new PDO($this->createDsnConnectionString(), self::DB_USERNAME, self::DB_PASSWORD);
-    $this->rootConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    $this->rootConnection = new mysqli(self::DB_HOST, self::DB_USERNAME, self::DB_PASSWORD, self::DB_NAME);
   }
 
   public function backupDatabase(SuiteEvent $event) {
@@ -74,7 +74,14 @@ class CleanupExtension extends Extension {
     if (!is_string($backupSql)) {
       throw new \RuntimeException('Missing or empty DB backup file: ' . self::DB_BACKUP_PATH);
     }
-    $this->rootConnection->exec($backupSql);
+
+    $result = $this->rootConnection->multi_query($backupSql);
+    if ($result === false) {
+      throw new \RuntimeException('Failed to restore DB backup: ' . $this->rootConnection->error);
+    }
+    while ($this->rootConnection->next_result()) {
+      // flush all multi_query results
+    }
     exec('rm -rf ' . self::MAILHOG_DATA_PATH . '/*', $output);
 
     // cleanup EntityManager for data factories that are using it
@@ -88,10 +95,6 @@ class CleanupExtension extends Extension {
     if ($wp_object_cache) {
       $wp_object_cache->flush();
     }
-  }
-
-  private function createDsnConnectionString() {
-    return sprintf('mysql:host=%s;dbname=%s', self::DB_HOST, self::DB_NAME);
   }
 
   private function createMysqlDumpCommand() {
