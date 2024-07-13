@@ -81,7 +81,7 @@ class WooCommerceMembership implements Filter {
       'posts',
       $wpdb->posts,
       'parentposts',
-      'posts.post_parent = parentposts.id AND parentposts.post_type = "wc_membership_plan" AND parentposts.post_status = "publish"'
+      "posts.post_parent = parentposts.id AND parentposts.post_type = 'wc_membership_plan' AND parentposts.post_status = 'publish'"
     );
   }
 

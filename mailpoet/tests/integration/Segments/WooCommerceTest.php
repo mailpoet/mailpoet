@@ -772,8 +772,8 @@ class WooCommerceTest extends \MailPoetTest {
   private function clearEmail(SubscriberEntity $subscriber): void {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $this->entityManager->getConnection()->executeQuery('
-      UPDATE ' . $subscribersTable . '
-      SET `email` = "" WHERE `id` = ' . $subscriber->getId());
+      UPDATE ' . $subscribersTable . "
+      SET `email` = '' WHERE `id` = " . $subscriber->getId());
   }
 
   private function createSubscriber(
