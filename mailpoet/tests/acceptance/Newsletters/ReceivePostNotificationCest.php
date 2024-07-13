@@ -60,7 +60,7 @@ class ReceivePostNotificationCest {
 
     $sql = 'UPDATE `' . $scheduledTaskTable . '` t '
       . ' JOIN `' . $sendingQueueTable . '` q ON t.`id` = q.`task_id` '
-      . ' SET t.scheduled_at="2016-01-01 01:02:03", t.updated_at="2016-01-01 01:02:03" '
+      . " SET t.scheduled_at= '2016-01-01 01:02:03', t.updated_at='2016-01-01 01:02:03' "
       . ' WHERE q.newsletter_id=' . $newsletter->getId();
 
     $stmt = $entityManager->getConnection()->prepare($sql);
