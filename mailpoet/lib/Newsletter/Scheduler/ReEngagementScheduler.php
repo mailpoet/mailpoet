@@ -161,13 +161,13 @@ class ReEngagementScheduler {
     ";
 
     $statement = $this->entityManager->getConnection()->prepare($query);
-    $statement->bindParam('now', $nowSql, ParameterType::STRING);
-    $statement->bindParam('taskId', $taskId, ParameterType::INTEGER);
-    $statement->bindParam('subscribed', $subscribedStatus, ParameterType::STRING);
-    $statement->bindParam('thresholdDate', $thresholdDateSql, ParameterType::STRING);
-    $statement->bindParam('upperThresholdDate', $upperThresholdDate, ParameterType::STRING);
-    $statement->bindParam('newsletterId', $newsletterId, ParameterType::INTEGER);
-    $statement->bindParam('segmentId', $segmentId, ParameterType::INTEGER);
+    $statement->bindValue('now', $nowSql, ParameterType::STRING);
+    $statement->bindValue('taskId', $taskId, ParameterType::INTEGER);
+    $statement->bindValue('subscribed', $subscribedStatus, ParameterType::STRING);
+    $statement->bindValue('thresholdDate', $thresholdDateSql, ParameterType::STRING);
+    $statement->bindValue('upperThresholdDate', $upperThresholdDate, ParameterType::STRING);
+    $statement->bindValue('newsletterId', $newsletterId, ParameterType::INTEGER);
+    $statement->bindValue('segmentId', $segmentId, ParameterType::INTEGER);
 
     $result = $statement->executeQuery();
     return $result->rowCount();
