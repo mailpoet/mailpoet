@@ -11,8 +11,6 @@
     "ext-mbstring": "*",
     "ext-mysqli": "*",
     "ext-pcre": "*",
-    "ext-pdo": "*",
-    "ext-pdo_mysql": "*",
     "ext-xml": "*",
     "ext-zip": "*",
     "codeception/codeception": "4.2.2",
