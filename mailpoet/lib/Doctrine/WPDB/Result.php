@@ -4,40 +4,69 @@ namespace MailPoet\Doctrine\WPDB;
 
 use MailPoetVendor\Doctrine\DBAL\Driver\Result as ResultInterface;
 
+/**
+ * WPDB fetches all results from the underlying database driver,
+ * so we need to implement the result methods on in-memory data.
+ */
 class Result implements ResultInterface {
+  /** @var array[] */
+  private array $result = [];
+  private int $rowCount;
+  private int $cursor = 0;
+
+  public function __construct(
+    array $result,
+    int $rowCount
+  ) {
+    foreach ($result as $value) {
+      $this->result[] = (array)$value;
+    }
+    $this->rowCount = $rowCount;
+  }
+
   public function fetchNumeric() {
-    // TODO: Implement fetchNumeric() method.
+    $value = $this->result[$this->cursor++] ?? null;
+    return $value === null ? false : array_values($value);
   }
 
   public function fetchAssociative() {
-    // TODO: Implement fetchAssociative() method.
+    return $this->result[$this->cursor++] ?? false;
   }
 
   public function fetchOne() {
-    // TODO: Implement fetchOne() method.
+    $value = $this->result[$this->cursor++] ?? null;
+    return $value === null ? false : reset($value);
   }
 
   public function fetchAllNumeric(): array {
-    // TODO: Implement fetchAllNumeric() method.
+    $result = [];
+    foreach ($this->result as $value) {
+      $result[] = array_values($value);
+    }
+    return $result;
   }
 
   public function fetchAllAssociative(): array {
-    // TODO: Implement fetchAllAssociative() method.
+    return $this->result;
   }
 
   public function fetchFirstColumn(): array {
-    // TODO: Implement fetchFirstColumn() method.
+    $result = [];
+    foreach ($this->result as $value) {
+      $result[] = reset($value);
+    }
+    return $result;
   }
 
   public function rowCount(): int {
-    // TODO: Implement rowCount() method.
+    return $this->rowCount;
   }
 
   public function columnCount(): int {
-    // TODO: Implement columnCount() method.
+    return count($this->result[0] ?? []);
   }
 
   public function free(): void {
-    // TODO: Implement free() method.
+    $this->cursor = 0;
   }
 }
