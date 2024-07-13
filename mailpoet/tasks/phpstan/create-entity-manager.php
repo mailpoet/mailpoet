@@ -31,6 +31,6 @@ $configuration->setMetadataDriverImpl(
 );
 $platformClass = ConnectionFactory::PLATFORM_CLASS;
 return EntityManager::create([
-  'driver' => ConnectionFactory::DRIVER,
+  'driverClass' => ConnectionFactory::DRIVER_CLASS,
   'platform' => new $platformClass,
 ], $configuration);
