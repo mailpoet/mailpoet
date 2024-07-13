@@ -21,7 +21,7 @@ class Connection implements ServerInfoAwareConnection {
   }
 
   public function prepare(string $sql): Statement {
-    // TODO: Implement prepare() method.
+    return new Statement($this, $sql);
   }
 
   public function query(string $sql): Result {
