@@ -6,9 +6,11 @@ use MailPoet\Doctrine\WPDB\Exceptions\NotSupportedException;
 use MailPoetVendor\Doctrine\DBAL\Driver\Result;
 use MailPoetVendor\Doctrine\DBAL\Driver\Statement as StatementInterface;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
+use MailPoetVendor\Doctrine\DBAL\SQL\Parser;
 
 class Statement implements StatementInterface {
   private Connection $connection;
+  private Parser $parser;
   private string $sql;
   private array $params = [];
 
@@ -17,6 +19,7 @@ class Statement implements StatementInterface {
     string $sql
   ) {
     $this->connection = $connection;
+    $this->parser = new Parser(false);
     $this->sql = $sql;
   }
 
@@ -51,16 +54,12 @@ class Statement implements StatementInterface {
       );
     }
 
-    // Convert "?" placeholders to sprintf-like format expected by WPDB (basic implementation).
-    // Note that this doesn't parse the SQL query properly and doesn't support named parameters.
-    $sql = $this->sql;
-    $values = [];
-    foreach ($this->params as [$param, $value, $type]) {
-      $replacement = $type === ParameterType::INTEGER || ParameterType::BOOLEAN ? '%d' : '%s';
-      $pos = strpos($this->sql, '?');
-      $sql = substr_replace($this->sql, $replacement, $pos, 1);
-      $values[$param] = $value;
-    }
+    // Convert '?' parameters to WPDB format (sprintf-like: '%s', '%d', ...),
+    // and add support for named parameters that are not supported by mysqli.
+    $visitor = new ConvertParameters($this->params);
+    $this->parser->parse($this->sql, $visitor);
+    $sql = $visitor->getSQL();
+    $values = $visitor->getValues();
 
     global $wpdb;
     $query = count($values) > 0 ? $wpdb->prepare($sql, $values) : $sql;
