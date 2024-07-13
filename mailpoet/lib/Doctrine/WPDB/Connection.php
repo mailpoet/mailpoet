@@ -25,7 +25,10 @@ class Connection implements ServerInfoAwareConnection {
   }
 
   public function query(string $sql): Result {
-    // TODO: Implement query() method.
+    global $wpdb;
+    $value = $this->runQuery($sql);
+    $result = $wpdb->last_result;
+    return new Result($result, is_int($value) ? $value : 0);
   }
 
   public function exec(string $sql): int {

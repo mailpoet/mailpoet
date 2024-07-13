@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Doctrine\WPDB;
 
 use MailPoet\Doctrine\WPDB\Connection;
+use MailPoet\Doctrine\WPDB\Result;
 use MailPoetTest;
 use mysqli;
 
@@ -22,6 +23,30 @@ class ConnectionTest extends MailPoetTest {
     $dsn = sprintf('mysql:host=%s;dbname=%s', DB_HOST, DB_NAME);
     $this->pdo = new \PDO($dsn, DB_USER, DB_PASSWORD);
     $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+  }
+
+  public function testQuery(): void {
+    $connection = new Connection();
+
+    // select
+    $result = $connection->query('SELECT 123');
+    $this->assertInstanceOf(Result::class, $result);
+    $this->assertSame('123', $result->fetchOne());
+
+    // insert
+    $result = $connection->query(sprintf("INSERT INTO %s (value) VALUES ('test')", self::TEST_TABLE_NAME));
+    $this->assertInstanceOf(Result::class, $result);
+    $this->assertFalse($result->fetchOne());
+
+    // update
+    $result = $connection->query(sprintf("UPDATE %s SET value = 'updated' WHERE id = %d", self::TEST_TABLE_NAME, $connection->lastInsertId()));
+    $this->assertInstanceOf(Result::class, $result);
+    $this->assertFalse($result->fetchOne());
+
+    // delete
+    $result = $connection->query(sprintf("DELETE FROM %s WHERE id = %d", self::TEST_TABLE_NAME, $connection->lastInsertId()));
+    $this->assertInstanceOf(Result::class, $result);
+    $this->assertFalse($result->fetchOne());
   }
 
   public function testExec(): void {
