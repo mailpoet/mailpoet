@@ -5,8 +5,12 @@ namespace MailPoet\Test\Doctrine\WPDB;
 use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Doctrine\WPDB\Result;
 use MailPoetTest;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use mysqli;
 
+/**
+ * @phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+ */
 class ConnectionTest extends MailPoetTest {
   private const TEST_TABLE_NAME = 'doctrine_wpdb_driver_test';
 
@@ -19,10 +23,26 @@ class ConnectionTest extends MailPoetTest {
         id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         value varchar(255) NOT NULL)
     ', self::TEST_TABLE_NAME));
+  }
 
-    $dsn = sprintf('mysql:host=%s;dbname=%s', DB_HOST, DB_NAME);
-    $this->pdo = new \PDO($dsn, DB_USER, DB_PASSWORD);
-    $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+  public function testPrepare(): void {
+    $connection = new Connection();
+
+    // prepare data
+    $connection->query(sprintf("INSERT INTO %s (value) VALUES ('test')", self::TEST_TABLE_NAME));
+    $id = $connection->lastInsertId();
+
+    // prepare statement
+    $statement = $connection->prepare(sprintf("SELECT value FROM %s WHERE id = ?", self::TEST_TABLE_NAME));
+    $statement->bindValue(1, $id, ParameterType::INTEGER);
+
+    // execute
+    $result = $statement->execute();
+    $this->assertInstanceOf(Result::class, $result);
+    $this->assertSame('test', $result->fetchOne());
+
+    global $wpdb;
+    $this->assertSame(sprintf("SELECT value FROM %s WHERE id = %d", self::TEST_TABLE_NAME, $id), $wpdb->last_query);
   }
 
   public function testQuery(): void {
