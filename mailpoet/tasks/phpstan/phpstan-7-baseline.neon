@@ -781,8 +781,3 @@ parameters:
 			message: "#^Binary operation \"\\.\" between non-falsy-string and string\\|Stringable results in an error\\.$#"
 			count: 1
 			path: ../../lib/Doctrine/Validator/ValidationException.php
-
-		-
-			message: "#^Parameter \\#1 \\$params of method MailPoetVendor\\\\Doctrine\\\\DBAL\\\\Connection\\:\\:__construct\\(\\) expects array\\{application_name\\?\\: string, charset\\?\\: string, dbname\\?\\: string, defaultTableOptions\\?\\: array\\<string, mixed\\>, default_dbname\\?\\: string, driver\\?\\: 'ibm_db2'\\|'mysqli'\\|'oci8'\\|'pdo_mysql'\\|'pdo_oci'\\|'pdo_pgsql'\\|'pdo_sqlite'\\|'pdo_sqlsrv'\\|'pgsql'\\|'sqlite3'\\|'sqlsrv', driverClass\\?\\: class-string\\<MailPoetVendor\\\\Doctrine\\\\DBAL\\\\Driver\\>, driverOptions\\?\\: array, \\.\\.\\.\\}, array\\<string, array\\|bool\\|int\\|MailPoetVendor\\\\Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\|string\\> given\\.$#"
-			count: 1
-			path: ../../lib/Doctrine/SerializableConnection.php
