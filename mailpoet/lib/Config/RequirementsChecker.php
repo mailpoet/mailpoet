@@ -7,7 +7,6 @@ use MailPoet\WP\Notice as WPNotice;
 
 class RequirementsChecker {
   const TEST_FOLDER_PERMISSIONS = 'TempFolderCreation';
-  const TEST_PDO_EXTENSION = 'PDOExtension';
   const TEST_XML_EXTENSION = 'XmlExtension';
   const TEST_VENDOR_SOURCE = 'VendorSource';
 
@@ -24,7 +23,6 @@ class RequirementsChecker {
 
   public function checkAllRequirements() {
     $availableTests = [
-      self::TEST_PDO_EXTENSION,
       self::TEST_FOLDER_PERMISSIONS,
       self::TEST_XML_EXTENSION,
       self::TEST_VENDOR_SOURCE,
@@ -61,16 +59,6 @@ class RequirementsChecker {
       }
     }
     return true;
-  }
-
-  public function checkPDOExtension() {
-    if (extension_loaded('pdo') && extension_loaded('pdo_mysql')) return true;
-    $error = Helpers::replaceLinkTags(
-      __('MailPoet requires a PDO_MYSQL PHP extension. Please read our [link]instructions[/link] on how to resolve this issue.', 'mailpoet'),
-      'https://kb.mailpoet.com/article/152-minimum-requirements-for-mailpoet-3#php_extension',
-      ['target' => '_blank']
-    );
-    return $this->processError($error);
   }
 
   public function checkXmlExtension() {
