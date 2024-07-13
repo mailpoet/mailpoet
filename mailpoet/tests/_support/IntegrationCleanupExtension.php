@@ -10,6 +10,7 @@ use MailPoet\Config\Env;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SettingEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
+use mysqli;
 
 class IntegrationCleanupExtension extends Extension {
   /** @var EntityManager */
@@ -53,6 +54,14 @@ class IntegrationCleanupExtension extends Extension {
   }
 
   public function beforeTest(TestEvent $event) {
-    $this->entityManager->getConnection()->executeStatement($this->cleanupStatements);
+    $mysqli = $this->entityManager->getConnection()->getNativeConnection();
+    $result = $mysqli instanceof mysqli ? $mysqli->multi_query($this->cleanupStatements) : false;
+    if ($result === false) {
+      $error = $mysqli instanceof mysqli ? $mysqli->error : 'Unknown error';
+      throw new \RuntimeException('Failed to execute DB cleanup statements: ' . $error);
+    }
+    while ($mysqli->next_result()) {
+      // flush all multi_query results
+    }
   }
 }
