@@ -63,4 +63,61 @@ class StatementTest extends MailPoetUnitTest {
     $statement->bindValue(1, 'abc');
     $statement->execute();
   }
+
+  /**
+   * @dataProvider parameterReplacementProvider
+   */
+  public function testParameterReplacement(string $inputSql, string $outputSql, int $parameterCount): void {
+    $wpdb = $this->getMockBuilder(stdClass::class)->addMethods(['prepare'])->getMock();
+    $wpdb->expects($this->once())
+      ->method('prepare')
+      ->with($outputSql)
+      ->willReturn('');
+
+    $GLOBALS['wpdb'] = $wpdb;
+    $connection = $this->createMock(Connection::class);
+    $statement = new Statement($connection, $inputSql);
+    for ($i = 1; $i <= $parameterCount; $i++) {
+      $statement->bindValue($i, 'abc');
+    }
+    $statement->execute();
+  }
+
+  public function parameterReplacementProvider(): iterable {
+    yield 'simple' => [
+      'SELECT * FROM test_table WHERE value = ?',
+      'SELECT * FROM test_table WHERE value = %s',
+      1,
+    ];
+
+    yield 'with ? in string' => [
+      "SELECT * FROM test_table WHERE value = ? AND name = 'a?c'",
+      "SELECT * FROM test_table WHERE value = %s AND name = 'a?c'",
+      1,
+    ];
+
+    yield 'with ? in string and multiple parameters' => [
+      "SELECT * FROM test_table WHERE value = ? AND name = 'a?c' AND id = ?",
+      "SELECT * FROM test_table WHERE value = %s AND name = 'a?c' AND id = %s",
+      2,
+    ];
+
+    yield 'with JOIN' => [
+      'SELECT * FROM test_table JOIN other_table ON test_table.id = other_table.id WHERE value = ?',
+      'SELECT * FROM test_table JOIN other_table ON test_table.id = other_table.id WHERE value = %s',
+      1,
+    ];
+
+    yield 'with subquery' => [
+      "SELECT * FROM test_table WHERE value = ? AND name = (SELECT name FROM other_table WHERE id = ?)",
+      'SELECT * FROM test_table WHERE value = %s AND name = (SELECT name FROM other_table WHERE id = %s)',
+      2,
+    ];
+
+    yield 'complex' => [
+      "SELECT CONCAT(key, '?') FROM test_table WHERE value = ? AND name = 'a?c' AND id = ? AND (SELECT name FROM other_table WHERE id = ?)",
+      "SELECT CONCAT(key, '?') FROM test_table WHERE value = %s AND name = 'a?c' AND id = %s AND (SELECT name FROM other_table WHERE id = %s)",
+      3,
+    ];
+  }
 }
