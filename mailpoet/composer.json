@@ -9,6 +9,7 @@
     "ext-gd": "*",
     "ext-json": "*",
     "ext-mbstring": "*",
+    "ext-mysqli": "*",
     "ext-pcre": "*",
     "ext-pdo": "*",
     "ext-pdo_mysql": "*",
