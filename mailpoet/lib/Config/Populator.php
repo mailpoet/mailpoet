@@ -624,21 +624,21 @@ class Populator {
     $this->entityManager->getConnection()->executeStatement(
       ' UPDATE LOW_PRIORITY `' . $subscriberTable . '` subscriber ' .
       ' JOIN `' . $statisticsFormTable . '` stats ON stats.subscriber_id=subscriber.id ' .
-      ' SET `source` = "' . Source::FORM . '"' .
-      ' WHERE `source` = "' . Source::UNKNOWN . '"'
+      " SET `source` = '" . Source::FORM . "'" .
+      " WHERE `source` = '" . Source::UNKNOWN . "'"
     );
 
     $this->entityManager->getConnection()->executeStatement(
       'UPDATE LOW_PRIORITY `' . $subscriberTable . '`' .
-      ' SET `source` = "' . Source::WORDPRESS_USER . '"' .
-      ' WHERE `source` = "' . Source::UNKNOWN . '"' .
+      " SET `source` = '" . Source::WORDPRESS_USER . "'" .
+      " WHERE `source` = '" . Source::UNKNOWN . "'" .
       ' AND `wp_user_id` IS NOT NULL'
     );
 
     $this->entityManager->getConnection()->executeStatement(
       'UPDATE LOW_PRIORITY `' . $subscriberTable . '`' .
-      ' SET `source` = "' . Source::WOOCOMMERCE_USER . '"' .
-      ' WHERE `source` = "' . Source::UNKNOWN . '"' .
+      " SET `source` = '" . Source::WOOCOMMERCE_USER . "'" .
+      " WHERE `source` = '" . Source::UNKNOWN . "'" .
       ' AND `is_woocommerce_user` = 1'
     );
   }
