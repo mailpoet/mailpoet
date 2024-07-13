@@ -1613,7 +1613,7 @@ class RoboFile extends \Robo\Tasks {
     $configuration = (new \MailPoet\Doctrine\ConfigurationFactory($annotationReaderProvider, true))->createConfiguration();
     $platformClass = \MailPoet\Doctrine\ConnectionFactory::PLATFORM_CLASS;
     return \MailPoetVendor\Doctrine\ORM\EntityManager::create([
-      'driver' => \MailPoet\Doctrine\ConnectionFactory::DRIVER,
+      'driverClass' => \MailPoet\Doctrine\ConnectionFactory::DRIVER_CLASS,
       'platform' => new $platformClass,
     ], $configuration);
   }
