@@ -159,10 +159,8 @@ class Activator {
       }, $tables)
     );
 
-    $this->connection->executeStatement("
-      SET foreign_key_checks = 0;
-      DROP TABLE IF EXISTS $tablesSql;
-      SET foreign_key_checks = 1;
-    ");
+    $this->connection->executeStatement('SET foreign_key_checks = 0');
+    $this->connection->executeStatement("DROP TABLE IF EXISTS $tablesSql");
+    $this->connection->executeStatement('SET foreign_key_checks = 1');
   }
 }
