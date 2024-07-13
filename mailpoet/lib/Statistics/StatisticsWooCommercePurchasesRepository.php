@@ -79,7 +79,7 @@ class StatisticsWooCommercePurchasesRepository extends Repository {
         COALESCE(n.parent_id, swp.newsletter_id) AS campaign_id,
         (
             CASE
-                WHEN n.type IS NULL THEN "unknown"
+                WHEN n.type IS NULL THEN \'unknown\'
                 WHEN n.type = :notification_history_type THEN :notification_type
                 ELSE n.type
             END
