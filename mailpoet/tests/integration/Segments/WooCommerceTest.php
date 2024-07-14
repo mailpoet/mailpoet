@@ -695,7 +695,7 @@ class WooCommerceTest extends \MailPoetTest {
         '2017-01-02 12:31:12'
       )", ['number' => $numberSql]);
     $id = $connection->lastInsertId();
-    if (!is_string($id)) {
+    if (!is_int($id)) {
       throw new \RuntimeException('Unexpected error when creating WP user.');
     }
     if ($firstName) {
