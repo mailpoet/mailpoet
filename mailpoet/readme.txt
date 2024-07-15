@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.4
 Tested up to: 6.5
-Stable tag: 4.55.0
+Stable tag: 4.56.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -228,11 +228,13 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 4.55.0 - 2024-07-09 =
-* Added: cancelling scheduled or running sending tasks;
-* Added: show automations run logs;
-* Fixed: calendar view UI glitch;
-* Fixed: confirmation message in welcome wizard;
-* Fixed: shortcode in email subject rendering.
+= 4.56.0 - 2024-07-15 =
+* Updated: react dependencies;
+* Improved: email validation on email listing page;
+* Improved: email validation in automations editor;
+* Improved: hiding WooCommerce list when WooCommerce plugin is not active;
+* Fixed: stopping automation when it is canceled;
+* Fixed: displaying text in square brackets in post notifications;
+* Fixed: links to privacy policy in forms.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)
