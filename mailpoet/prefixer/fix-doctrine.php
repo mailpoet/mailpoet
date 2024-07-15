@@ -31,15 +31,29 @@ exec('find ' . __DIR__ . "/../vendor-prefixed/doctrine -type f -name 'README.mar
 // cleanup Doctrine DBAL
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/bin');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Connections');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/API/IBMDB2');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/API/OCI');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/API/PostgreSQL');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/API/SQLite');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/API/SQLSrv');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractOracleDriver');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractSQLiteDriver');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractSQLServerDriver');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/IBMDB2');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/Mysqli');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/OCI8');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/PgSQL');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/PDO');
+exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/SQLite3');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/SQLSrv');
+exec('rm -r' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/SQLite');
+exec('rm -r' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/SQLServer');
+exec('rm -r' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Schema');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Tools');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractDB2Driver.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractOracleDriver.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractPostgreSQLDriver.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractSQLiteDriver.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractSQLServerDriver.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/ConnectionEventArgs.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Event/Listeners/OracleSessionInit.php');
@@ -63,6 +77,7 @@ exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords/SQLiteKeywords.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords/SQLServer2012Keywords.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords/SQLServerKeywords.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/DB2111Platform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/OraclePlatform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/PostgreSQL94Platform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/PostgreSQL100Platform.php');
@@ -107,15 +122,7 @@ $attributeReplacement = [
 $files = [
   '../vendor-prefixed/doctrine/dbal/src/Connection.php',
   '../vendor-prefixed/doctrine/dbal/src/Driver.php',
-  '../vendor-prefixed/doctrine/dbal/src/Driver/AbstractSQLiteDriver/Middleware/EnableForeignKeys.php',
   '../vendor-prefixed/doctrine/dbal/src/Driver/Middleware/AbstractDriverMiddleware.php',
-  '../vendor-prefixed/doctrine/dbal/src/Driver/PDO/MySQL/Driver.php',
-  '../vendor-prefixed/doctrine/dbal/src/Driver/PDO/OCI/Driver.php',
-  '../vendor-prefixed/doctrine/dbal/src/Driver/PDO/PgSQL/Driver.php',
-  '../vendor-prefixed/doctrine/dbal/src/Driver/PDO/SQLSrv/Driver.php',
-  '../vendor-prefixed/doctrine/dbal/src/Driver/PDO/SQLite/Driver.php',
-  '../vendor-prefixed/doctrine/dbal/src/Driver/PgSQL/Driver.php',
-  '../vendor-prefixed/doctrine/dbal/src/Driver/SQLite3/Driver.php',
   '../vendor-prefixed/doctrine/dbal/src/DriverManager.php',
   '../vendor-prefixed/doctrine/dbal/src/Exception.php',
   '../vendor-prefixed/doctrine/dbal/src/Logging/Driver.php',
