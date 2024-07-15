@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Doctrine\WPDB;
 
 use MailPoet\Doctrine\WPDB\Connection;
+use MailPoet\Doctrine\WPDB\Exceptions\QueryException;
 use MailPoet\Doctrine\WPDB\Result;
 use MailPoetTest;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
@@ -149,6 +150,22 @@ class ConnectionTest extends MailPoetTest {
   public function testGetNativeConnection(): void {
     $connection = new Connection();
     $this->assertInstanceOf(mysqli::class, $connection->getNativeConnection());
+  }
+
+  public function testQueryException(): void {
+    $connection = new Connection();
+
+    $exception = null;
+    try {
+      $connection->exec('SELECT * FROM non_existent_table');
+    } catch (QueryException $e) {
+      $exception = $e;
+    }
+
+    $this->assertInstanceOf(QueryException::class, $exception);
+    $this->assertSame(sprintf("Table '%s.non_existent_table' doesn't exist", DB_NAME), $exception->getMessage());
+    $this->assertSame('42S02', $exception->getSQLState());
+    $this->assertSame(1146, $exception->getCode());
   }
 
   public function _after() {
