@@ -99,6 +99,7 @@ class Renderer {
    * The inlining is called after the rendering and after the modifications we apply to the rendered content in self::updateRenderedContent
    * - We prefix the original selectors to avoid inlining those rules into content added int the MailPoet's editor.
    * - We update the font-family in the original CSS if it's set in the editor.
+   * - We update the font-size for the inner content if it's set in the editor.
    */
   public function enhanceCss(string $css, NewsletterEntity $newsletter): string {
     $isSavedWithStyledWooBlock = $newsletter->getGlobalStyle('woocommerce', 'isSavedWithUpdatedStyles');
@@ -110,12 +111,6 @@ class Renderer {
     foreach ($this->cssParser->css as $index => $rules) {
       $this->cssParser->css[$index] = [];
       foreach ($rules as $selectors => $properties) {
-        $selectors = explode(',', $selectors);
-        $selectors = array_map(function($selector) {
-          return '#' . self::CONTENT_CONTAINER_ID . ' ' . $selector;
-        }, $selectors);
-        $selectors = implode(',', $selectors);
-
         // For Backward compatibility do not apply styles for content unless the template was edited with the editor
         // and user visually checked and is aware of updated styles feature.
         // This check is save to remove after 2025-07-31
@@ -125,10 +120,24 @@ class Renderer {
             $properties['font-family'] = $fontFamily;
           }
           // Update font size for inner content
-          if ($fontSize && ($selectors === '#' . self::CONTENT_CONTAINER_ID . ' #body_content_inner')) {
+          if ($fontSize && ($selectors === '#body_content_inner')) {
             $properties['font-size'] = $fontSize;
           }
+          // Update heading font sizes
+          $supportedHeadings = ['h1', 'h2', 'h3'];
+          foreach ($supportedHeadings as $heading) {
+            $headingFontSize = $newsletter->getGlobalStyle($heading, 'fontSize');
+            if ($headingFontSize && ($selectors === $heading)) {
+              $properties['font-size'] = $headingFontSize;
+            }
+          }
         }
+
+        $selectors = explode(',', $selectors);
+        $selectors = array_map(function($selector) {
+          return '#' . self::CONTENT_CONTAINER_ID . ' ' . $selector;
+        }, $selectors);
+        $selectors = implode(',', $selectors);
 
         $this->cssParser->css[$index][$selectors] = $properties;
       }
