@@ -94,7 +94,10 @@ class Connection implements ServerInfoAwareConnection {
     global $wpdb;
     $value = $wpdb->query($sql); // phpcs:ignore WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
     if ($value === false) {
-      throw new QueryException($wpdb->last_error);
+      $nativeConnection = $this->getNativeConnection();
+      $sqlState = $nativeConnection instanceof mysqli ? $nativeConnection->sqlstate : null;
+      $code = $nativeConnection instanceof mysqli ? $nativeConnection->errno : 0;
+      throw new QueryException($wpdb->last_error, $sqlState, $code);
     }
     return $value;
   }
