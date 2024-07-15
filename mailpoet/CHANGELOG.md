@@ -1,5 +1,15 @@
 == Changelog ==
 
+= 4.56.0 - 2024-07-15 =
+
+- Updated: react dependencies;
+- Improved: email validation on email listing page;
+- Improved: email validation in automations editor;
+- Improved: hiding WooCommerce list when WooCommerce plugin is not active;
+- Fixed: stopping automation when it is canceled;
+- Fixed: displaying text in square brackets in post notifications;
+- Fixed: links to privacy policy in forms.
+
 = 4.55.0 - 2024-07-09 =
 
 - Added: cancelling scheduled or running sending tasks;
