@@ -224,7 +224,8 @@ class WooCheckoutBlocksCest {
     $i->click('[aria-label="Block: Contact Information"]');
 
     // From WP 6.6 the button label is Save
-    if (version_compare($i->getWordPressVersion(), '6.6', '<')) {
+    $version = (string)preg_replace('/-(RC|beta)\d*/', '', $i->getWordPressVersion());
+    if (version_compare($version, '6.6', '<')) {
       $i->click('Update');
     } else {
       $i->click('Save');
