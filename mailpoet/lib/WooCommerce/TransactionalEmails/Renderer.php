@@ -105,6 +105,7 @@ class Renderer {
     $isSavedWithStyledWooBlock = $newsletter->getGlobalStyle('woocommerce', 'isSavedWithUpdatedStyles');
     // We allow setting global font family in the editor. The global font is saved in text.fontFamily
     $fontFamily = $newsletter->getGlobalStyle('text', 'fontFamily');
+    $headingFontFamily = $newsletter->getGlobalStyle('woocommerce', 'headingFontFamily');
     $fontSize = $newsletter->getGlobalStyle('text', 'fontSize');
     $this->cssParser->settings['compress_colors'] = false;
     $this->cssParser->parse($css);
@@ -129,6 +130,7 @@ class Renderer {
             $headingFontSize = $newsletter->getGlobalStyle($heading, 'fontSize');
             if ($headingFontSize && ($selectors === $heading)) {
               $properties['font-size'] = $headingFontSize;
+              $properties['font-family'] = $headingFontFamily;
             }
           }
         }
@@ -167,13 +169,13 @@ class Renderer {
    */
   private function prepareNewsletterForRendering(NewsletterEntity $newsletter): NewsletterEntity {
     $newsletterClone = clone($newsletter);
-    $fontFamily = $newsletter->getGlobalStyle('text', 'fontFamily');
+    $headingFontFamily = $newsletter->getGlobalStyle('woocommerce', 'headingFontFamily');
     $brandingColor = $newsletter->getGlobalStyle('woocommerce', 'brandingColor');
-    $newsletterClone->setGlobalStyle('h1', 'fontFamily', $fontFamily);
+    $newsletterClone->setGlobalStyle('h1', 'fontFamily', $headingFontFamily);
     $newsletterClone->setGlobalStyle('h1', 'color', $brandingColor);
-    $newsletterClone->setGlobalStyle('h2', 'fontFamily', $fontFamily);
+    $newsletterClone->setGlobalStyle('h2', 'fontFamily', $headingFontFamily);
     $newsletterClone->setGlobalStyle('h2', 'color', $brandingColor);
-    $newsletterClone->setGlobalStyle('h3', 'fontFamily', $fontFamily);
+    $newsletterClone->setGlobalStyle('h3', 'fontFamily', $headingFontFamily);
     $newsletterClone->setGlobalStyle('h3', 'color', $brandingColor);
     return $newsletterClone;
   }
