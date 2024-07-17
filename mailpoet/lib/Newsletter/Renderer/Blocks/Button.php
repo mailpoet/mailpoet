@@ -8,7 +8,7 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 class Button {
   public function render($element, $columnBaseWidth) {
     $element['styles']['block']['width'] = $this->calculateWidth($element, $columnBaseWidth);
-    $styles = 'display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-decoration:none;text-align:center;' . StylesHelper::getBlockStyles($element, $exclude = ['textAlign']);
+    $styles = 'display:block;text-decoration:none;text-align:center;' . StylesHelper::getBlockStyles($element, $exclude = ['textAlign']);
     $styles = EHelper::escapeHtmlStyleAttr($styles);
     $template = '
       <tr>
@@ -35,7 +35,29 @@ class Button {
                   </v:roundrect>
                   <![endif]-->
                   <!--[if !mso]><!-- -->
-                  <a class="mailpoet_button" href="' . EHelper::escapeHtmlLinkAttr($element['url']) . '" style="' . $styles . '"> ' . EHelper::escapeHtmlText($element['text']) . '</a>
+                  <table
+                    border="0"
+                    cellspacing="0"
+                    cellpadding="0"
+                    role="presentation"
+                    style="display:inline-block;border-collapse:separate;mso-table-lspace:0;mso-table-rspace:0;width:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['width']) . '"
+                    width="' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['width']) . '"
+                  >
+                    <tr>
+                      <td class="mailpoet_table_button"
+                        valign="middle"
+                        role="presentation"
+                        style="mso-table-lspace: 0;mso-table-rspace: 0;' . $styles . '"
+                      >
+                        <a class="mailpoet_button" style="
+                          text-decoration: none;
+                          display: block;
+                          line-height: ' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['lineHeight']) . ';
+                          color: ' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['fontColor']) . ';
+                        " href="' . EHelper::escapeHtmlLinkAttr($element['url']) . '" target="_blank">' . EHelper::escapeHtmlText($element['text']) . '</a>
+                      </td>
+                    </tr>
+                  </table>
                   <!--<![endif]-->
                 </td>
               </tr>
@@ -46,7 +68,7 @@ class Button {
     return $template;
   }
 
-  public function calculateWidth($element, $columnBaseWidth) {
+  public function calculateWidth($element, $columnBaseWidth): string {
     $columnWidth = $columnBaseWidth - (StylesHelper::$paddingWidth * 2);
     $borderWidth = (int)$element['styles']['block']['borderWidth'];
     $buttonWidth = (int)$element['styles']['block']['width'];

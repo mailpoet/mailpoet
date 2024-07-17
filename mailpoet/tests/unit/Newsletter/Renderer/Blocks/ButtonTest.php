@@ -53,7 +53,29 @@ class ButtonTest extends \MailPoetUnitTest {
                   </v:roundrect>
                   <![endif]-->
                   <!--[if !mso]><!-- -->
-                  <a class="mailpoet_button" href="https://example.com" style="display:inline-block;-webkit-text-size-adjust:none;mso-hide:all;text-decoration:none;text-align:center;background-color: #252525;border-color: #363636;border-width: 2px;border-radius: 5px;border-style: solid;width: 156px;line-height: 40px;color: #ffffff;font-family: \'source sans pro\', \'helvetica neue\', helvetica, arial, sans-serif;font-size: 14px;font-weight: bold;"> Button</a>
+                  <table
+                    border="0"
+                    cellspacing="0"
+                    cellpadding="0"
+                    role="presentation"
+                    style="display:inline-block;border-collapse:separate;mso-table-lspace:0;mso-table-rspace:0;width:156px"
+                    width="156px"
+                  >
+                    <tr>
+                      <td class="mailpoet_table_button"
+                        valign="middle"
+                        role="presentation"
+                        style="mso-table-lspace: 0;mso-table-rspace: 0;display:block;text-decoration:none;text-align:center;background-color: #252525;border-color: #363636;border-width: 2px;border-radius: 5px;border-style: solid;width: 156px;line-height: 40px;color: #ffffff;font-family: \'source sans pro\', \'helvetica neue\', helvetica, arial, sans-serif;font-size: 14px;font-weight: bold;"
+                      >
+                        <a class="mailpoet_button" style="
+                          text-decoration: none;
+                          display: block;
+                          line-height: 40px;
+                          color: #ffffff;
+                        " href="https://example.com" target="_blank">Button</a>
+                      </td>
+                    </tr>
+                  </table>
                   <!--<![endif]-->
                 </td>
               </tr>
