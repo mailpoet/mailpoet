@@ -14,7 +14,7 @@
         <div class="mailpoet_form_field mailpoet_form_narrow_select2">
             <label for="mailpoet_text_font_family">
                 {{#if isWoocommerceTransactional}}
-                    <%= __('Typography') %>
+                    <%= __('Text font styles') %>
                 {{else}}
                     <%= __('Text') %>
                 {{/if}}
@@ -36,18 +36,34 @@
             </optgroup>
             {{/if}}
             </select>
-            {{#if isWoocommerceTransactional}}
-                </div><div>
-                <label for="mailpoet_text_font_size">
-                    <%= __('Text') %>
-                </label>
-            {{/if}}
             <select id="mailpoet_text_font_size" name="text-size" class="mailpoet_font_size mailpoet_select mailpoet_select_small">
             {{#each availableStyles.textSizes}}
                 <option value="{{ this }}" {{#ifCond this '==' ../model.text.fontSize}}SELECTED{{/ifCond}}>{{ this }}</option>
             {{/each}}
             </select>
         </div>
+        {{#if isWoocommerceTransactional}}
+            <hr />
+            <div class="mailpoet_form_field mailpoet_form_narrow_select2">
+                <label for="mailpoet_text_font_size">
+                    <%= __('Heading font styles') %>
+                </label>
+                <select id="mailpoet_wc_heading_font_family" name="woo-heading-family" class="mailpoet_font_family mailpoet_select mailpoet_select_medium">
+                    <optgroup label="<%= __('Standard fonts')%>">
+                    {{#each availableStyles.fonts.standard}}
+                        <option value="{{ this }}" {{#ifCond this '==' ../model.woocommerce.headingFontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
+                    {{/each}}
+                    </optgroup>
+                    {{#if availableStyles.fonts.custom.length}}
+                    <optgroup label="<%= __('Custom fonts')%>">
+                    {{#each availableStyles.fonts.custom}}
+                        <option value="{{ this }}" {{#ifCond this '==' ../model.woocommerce.headingFontFamily}}SELECTED{{/ifCond}}>{{ this }}</option>
+                    {{/each}}
+                    </optgroup>
+                    {{/if}}
+                </select>
+            </div>
+        {{/if}}
         <div class="mailpoet_form_field mailpoet_form_narrow_select2">
             <label for="mailpoet_h1_font_size">
                 <%= __('Heading 1') %>

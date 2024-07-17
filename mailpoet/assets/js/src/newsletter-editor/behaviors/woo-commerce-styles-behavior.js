@@ -32,6 +32,13 @@ BL.WooCommerceStylesBehavior = Marionette.Behavior.extend({
         this.view.model.set('woocommerce.headingFontColor', headingFontColor);
         this.view.model.set('link.fontColor', linkFontColor);
       },
+      'change #mailpoet_wc_heading_font_family':
+        function changeHeadinfFontFamily(event) {
+          this.view.model.set(
+            'woocommerce.headingFontFamily',
+            event.target.value,
+          );
+        },
     };
   },
   // This is the wc_hex_is_light() WooCommerce function ported from PHP to JS.
