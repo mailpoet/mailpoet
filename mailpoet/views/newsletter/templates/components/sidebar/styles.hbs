@@ -1,7 +1,7 @@
 <div class="handlediv" title="<%= __('Click to toggle') %>"><br></div>
 <h3><%= __('Styles') %></h3>
 <div class="mailpoet_region_content">
-    <form id="mailpoet_newsletter_styles" action="" method="post" accept-charset="utf-8">
+    <form id="mailpoet_newsletter_styles" class="mailpoet_newsletter_styles" action="" method="post" accept-charset="utf-8">
         <div id='mailpoet_brand_styles'></div>
         {{#if isWoocommerceTransactional}}
             <div class="mailpoet_form_field">
@@ -12,6 +12,13 @@
             <hr />
         {{/if}}
         <div class="mailpoet_form_field mailpoet_form_narrow_select2">
+            <label for="mailpoet_text_font_family">
+                {{#if isWoocommerceTransactional}}
+                    <%= __('Typography') %>
+                {{else}}
+                    <%= __('Text') %>
+                {{/if}}
+            </label>
             <span>
                 <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="text-color" value="{{ model.text.fontColor }}" id="mailpoet_text_font_color"></span>
             </span>
@@ -29,14 +36,22 @@
             </optgroup>
             {{/if}}
             </select>
-          {{#if isWoocommerceTransactional}}</div><div>{{/if}}
+            {{#if isWoocommerceTransactional}}
+                </div><div>
+                <label for="mailpoet_text_font_size">
+                    <%= __('Text') %>
+                </label>
+            {{/if}}
             <select id="mailpoet_text_font_size" name="text-size" class="mailpoet_font_size mailpoet_select mailpoet_select_small">
             {{#each availableStyles.textSizes}}
                 <option value="{{ this }}" {{#ifCond this '==' ../model.text.fontSize}}SELECTED{{/ifCond}}>{{ this }}</option>
             {{/each}}
-            </select> <%= __('Text') %>
+            </select>
         </div>
         <div class="mailpoet_form_field mailpoet_form_narrow_select2">
+            <label for="mailpoet_h1_font_size">
+                <%= __('Heading 1') %>
+            </label>
             {{#unless isWoocommerceTransactional}}
                 <span>
                     <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="h1-color" value="{{ model.h1.fontColor }}" id="mailpoet_h1_font_color"></span>
@@ -60,9 +75,12 @@
             {{#each availableStyles.headingSizes}}
                 <option value="{{ this }}" {{#ifCond this '==' ../model.h1.fontSize}}SELECTED{{/ifCond}}>{{ this }}</option>
             {{/each}}
-            </select> <%= __('Heading 1') %>
+            </select>
         </div>
         <div class="mailpoet_form_field mailpoet_form_narrow_select2">
+            <label for="mailpoet_h2_font_size">
+                <%= __('Heading 2') %>
+            </label>
             {{#unless isWoocommerceTransactional}}
                 <span>
                     <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="h2-color" value="{{ model.h2.fontColor }}" id="mailpoet_h2_font_color"></span>
@@ -86,9 +104,12 @@
             {{#each availableStyles.headingSizes}}
                 <option value="{{ this }}" {{#ifCond this '==' ../model.h2.fontSize}}SELECTED{{/ifCond}}>{{ this }}</option>
             {{/each}}
-            </select> <%= __('Heading 2') %>
+            </select>
         </div>
         <div class="mailpoet_form_field mailpoet_form_narrow_select2">
+            <label for="mailpoet_h3_font_size">
+                <%= __('Heading 3') %>
+            </label>
             {{#unless isWoocommerceTransactional}}
                 <span>
                     <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="h3-color" value="{{ model.h3.fontColor }}" id="mailpoet_h3_font_color"></span>
@@ -112,35 +133,39 @@
             {{#each availableStyles.headingSizes}}
                 <option value="{{ this }}" {{#ifCond this '==' ../model.h3.fontSize}}SELECTED{{/ifCond}}>{{ this }}</option>
             {{/each}}
-            </select> <%= __('Heading 3') %>
+            </select>
         </div>
         {{#unless isWoocommerceTransactional}}
           <div class="mailpoet_form_field mailpoet_form_narrow_select2">
-              <span>
-                  <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="link-color" value="{{ model.link.fontColor }}" id="mailpoet_a_font_color"></span>
-              </span><%= __('Links') %> <label><input type="checkbox" name="underline" value="underline" id="mailpoet_a_font_underline" {{#ifCond model.link.textDecoration '==' 'underline'}}CHECKED{{/ifCond}} class="mailpoet_option_offset_left_small"/> <%= __('Underline') %></label>
+            <label>
+                <%= __('Links') %>
+            </label>
+            <span>
+               <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="link-color" value="{{ model.link.fontColor }}" id="mailpoet_a_font_color"></span>
+            </span><input type="checkbox" name="underline" value="underline" id="mailpoet_a_font_underline" {{#ifCond model.link.textDecoration '==' 'underline'}}CHECKED{{/ifCond}} class="mailpoet_option_offset_left_small"/> <%= __('Underline') %></label>
           </div>
           <hr />
           <div class="mailpoet_form_field">
-              <label>
-              <%= __('Text line height') %>
+              <label for="mailpoet_text_line_height">
+                  <%= __('Text line height') %>
+              </label>
               <select id="mailpoet_text_line_height" name="text-line-height">
               {{#each availableStyles.lineHeights}}
                   <option value="{{ this }}" {{#ifCond this '==' ../model.text.lineHeight}}SELECTED{{/ifCond}}>{{ this }}</option>
               {{/each}}
               </select>
-              </label>
+
           </div>
           <div class="mailpoet_form_field">
-              <label>
-              <%= __('Heading line height') %>
+              <label for="mailpoet_heading_line_height">
+                  <%= __('Heading line height') %>
+              </label>
               <select id="mailpoet_heading_line_height" name="heading-line-height">
               {{#each availableStyles.lineHeights}}
                   {{!-- Checking against h1 only since all headings have the same line height value. --}}
                   <option value="{{ this }}" {{#ifCond this '==' ../model.h1.lineHeight}}SELECTED{{/ifCond}}>{{ this }}</option>
               {{/each}}
               </select>
-              </label>
           </div>
         {{/unless}}
         <hr />
