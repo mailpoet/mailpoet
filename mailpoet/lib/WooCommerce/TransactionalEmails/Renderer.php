@@ -102,39 +102,12 @@ class Renderer {
    * - We update the font-size for the inner content if it's set in the editor.
    */
   public function enhanceCss(string $css, NewsletterEntity $newsletter): string {
-    $isSavedWithStyledWooBlock = $newsletter->getGlobalStyle('woocommerce', 'isSavedWithUpdatedStyles');
-    // We allow setting global font family in the editor. The global font is saved in text.fontFamily
-    $fontFamily = $newsletter->getGlobalStyle('text', 'fontFamily');
-    $headingFontFamily = $newsletter->getGlobalStyle('woocommerce', 'headingFontFamily');
-    $fontSize = $newsletter->getGlobalStyle('text', 'fontSize');
     $this->cssParser->settings['compress_colors'] = false;
     $this->cssParser->parse($css);
     foreach ($this->cssParser->css as $index => $rules) {
       $this->cssParser->css[$index] = [];
       foreach ($rules as $selectors => $properties) {
-        // For Backward compatibility do not apply styles for content unless the template was edited with the editor
-        // and user visually checked and is aware of updated styles feature.
-        // This check is save to remove after 2025-07-31
-        if ($isSavedWithStyledWooBlock) {
-          // Update font family if it's set in the editor
-          if ($fontFamily && !empty($properties['font-family'])) {
-            $properties['font-family'] = $fontFamily;
-          }
-          // Update font size for inner content
-          if ($fontSize && ($selectors === '#body_content_inner')) {
-            $properties['font-size'] = $fontSize;
-          }
-          // Update heading font sizes
-          $supportedHeadings = ['h1', 'h2', 'h3'];
-          foreach ($supportedHeadings as $heading) {
-            $headingFontSize = $newsletter->getGlobalStyle($heading, 'fontSize');
-            if ($headingFontSize && ($selectors === $heading)) {
-              $properties['font-size'] = $headingFontSize;
-              $properties['font-family'] = $headingFontFamily;
-            }
-          }
-        }
-
+        $properties = $this->updateStyleDefinition($selectors, $newsletter, $properties);
         $selectors = explode(',', $selectors);
         $selectors = array_map(function($selector) {
           return '#' . self::CONTENT_CONTAINER_ID . ' ' . $selector;
@@ -178,5 +151,44 @@ class Renderer {
     $newsletterClone->setGlobalStyle('h3', 'fontFamily', $headingFontFamily);
     $newsletterClone->setGlobalStyle('h3', 'color', $brandingColor);
     return $newsletterClone;
+  }
+
+  private function updateStyleDefinition(string $selectors, NewsletterEntity $newsletter, $properties) {
+    // For Backward compatibility do not apply styles for content unless the template was edited with the editor
+    // and user visually checked and is aware of updated styles feature.
+    // This check is save to remove after 2025-07-31
+    $isSavedWithStyledWooBlock = $newsletter->getGlobalStyle('woocommerce', 'isSavedWithUpdatedStyles');
+    if (!$isSavedWithStyledWooBlock) {
+      return $properties;
+    }
+
+    if (!is_array($properties)) {
+      $properties = [];
+    }
+    $fontFamily = $newsletter->getGlobalStyle('text', 'fontFamily');
+    $headingFontFamily = $newsletter->getGlobalStyle('woocommerce', 'headingFontFamily');
+    $fontSize = $newsletter->getGlobalStyle('text', 'fontSize');
+
+    // Update font family if it's set in the editor
+    if ($fontFamily && !empty($properties['font-family'])) {
+      $properties['font-family'] = $fontFamily;
+    }
+    // Update font size for inner content
+    if ($fontSize && ($selectors === '#body_content_inner')) {
+      $properties['font-size'] = $fontSize;
+    }
+
+    // Update heading font sizes and font family
+    $supportedHeadings = ['h1', 'h2', 'h3'];
+    foreach ($supportedHeadings as $heading) {
+      $headingFontSize = $newsletter->getGlobalStyle($heading, 'fontSize');
+      if ($headingFontSize && ($selectors === $heading)) {
+        $properties['font-size'] = $headingFontSize;
+      }
+      if ($headingFontFamily && ($selectors === $heading)) {
+        $properties['font-family'] = $headingFontFamily;
+      }
+    }
+    return $properties;
   }
 }
