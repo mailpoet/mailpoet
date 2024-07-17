@@ -42,6 +42,9 @@ Module.StylesModel = SuperModel.extend({
     body: {
       backgroundColor: '#cccccc',
     },
+    woocommerce: {
+      headingFontFamily: 'Arial',
+    },
   },
   // eslint-disable-next-line func-names
   initialize: function (data) {
