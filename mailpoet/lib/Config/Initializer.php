@@ -24,6 +24,7 @@ use MailPoet\Router;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\Track\SubscriberActivityTracker;
 use MailPoet\Util\ConflictResolver;
+use MailPoet\Util\LegacyDatabase;
 use MailPoet\Util\Notices\PermanentNotices;
 use MailPoet\Util\Url;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -216,6 +217,9 @@ class Initializer {
   public function init() {
     // Initialize Action Scheduler. It needs to be called early because it hooks into `plugins_loaded`.
     require_once __DIR__ . '/../../vendor/woocommerce/action-scheduler/action-scheduler.php';
+
+    // define legacy constants for DB tables - for back compatibility
+    LegacyDatabase::defineTableConstants();
 
     // load translations and setup translations update/download
     $this->setupLocalizer();
