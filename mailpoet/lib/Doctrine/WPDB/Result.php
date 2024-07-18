@@ -18,15 +18,15 @@ class Result implements ResultInterface {
     array $result,
     int $rowCount
   ) {
-    foreach ($result as $value) {
-      $this->result[] = (array)$value;
+    foreach ($result as $row) {
+      $this->result[] = (array)$row;
     }
     $this->rowCount = $rowCount;
   }
 
   public function fetchNumeric() {
-    $value = $this->result[$this->cursor++] ?? null;
-    return $value === null ? false : array_values($value);
+    $row = $this->result[$this->cursor++] ?? null;
+    return $row === null ? false : array_values($row);
   }
 
   public function fetchAssociative() {
@@ -34,14 +34,14 @@ class Result implements ResultInterface {
   }
 
   public function fetchOne() {
-    $value = $this->result[$this->cursor++] ?? null;
-    return $value === null ? false : reset($value);
+    $row = $this->result[$this->cursor++] ?? null;
+    return $row === null ? false : reset($row);
   }
 
   public function fetchAllNumeric(): array {
     $result = [];
-    foreach ($this->result as $value) {
-      $result[] = array_values($value);
+    foreach ($this->result as $row) {
+      $result[] = array_values($row);
     }
     return $result;
   }
@@ -52,8 +52,8 @@ class Result implements ResultInterface {
 
   public function fetchFirstColumn(): array {
     $result = [];
-    foreach ($this->result as $value) {
-      $result[] = reset($value);
+    foreach ($this->result as $row) {
+      $result[] = reset($row);
     }
     return $result;
   }
