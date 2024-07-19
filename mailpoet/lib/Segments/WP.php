@@ -273,7 +273,7 @@ class WP {
       return $item['id'];
     },
     array_filter($updatedEmails, function($updatedEmail) {
-      return !$this->validator->validateEmail($updatedEmail['email']);
+      return !$this->validator->validateEmail($updatedEmail['email']) && $updatedEmail['id'] !== null;
     }));
     if (!$invalidWpUserIds) {
       return;
