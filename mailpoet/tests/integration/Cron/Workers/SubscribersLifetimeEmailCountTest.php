@@ -61,7 +61,10 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $subscriber2 = $this->createSubscriber('s2@email.com', 90);
     $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 80);
 
-    $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
+    $task = (new ScheduledTaskFactory())
+      ->create(SubscribersEmailCount::TASK_TYPE, null);
+
+    $this->worker->processTaskStrategy($task, microtime(true));
 
     $this->entityManager->clear();
     $subscriber1 = $this->subscribersRepository->findOneById($subscriber1->getId());
@@ -78,7 +81,8 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $subscriber2 = $this->createSubscriber('s2@email.com', 90);
     $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 80);
 
-    $task = new ScheduledTaskEntity();
+    $task = (new ScheduledTaskFactory())
+      ->create(SubscribersEmailCount::TASK_TYPE, null);
     $meta = ['highest_subscriber_id' => $subscriber2->getId(), 'last_subscriber_id' => $subscriber2->getId()];
     $task->setMeta($meta);
     $this->worker->processTaskStrategy($task, microtime(true));
@@ -99,7 +103,8 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     $subscriber2 = $this->createSubscriber('s2@email.com', 90);
     $this->createCompletedSendingTasksForSubscriber($subscriber2, 8, 80);
 
-    $task = new ScheduledTaskEntity();
+    $task = (new ScheduledTaskFactory())
+      ->create(SubscribersEmailCount::TASK_TYPE, null);
     $meta = ['highest_subscriber_id' => $subscriber2->getId(), 'last_subscriber_id' => $subscriber2->getId()];
     $task->setMeta($meta);
     $this->worker->processTaskStrategy($task, microtime(true));
@@ -138,7 +143,9 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
   }
 
   public function testItSchedulesNextRunWhenFinished() {
-    $this->worker->processTaskStrategy(new ScheduledTaskEntity(), microtime(true));
+    $task = (new ScheduledTaskFactory())
+      ->create(SubscribersEmailCount::TASK_TYPE, null);
+    $this->worker->processTaskStrategy($task, microtime(true));
 
     $task = $this->scheduledTasksRepository->findOneBy(
       ['type' => SubscribersEmailCount::TASK_TYPE, 'status' => ScheduledTaskEntity::STATUS_SCHEDULED]
