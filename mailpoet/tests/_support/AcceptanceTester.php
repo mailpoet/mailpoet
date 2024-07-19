@@ -912,4 +912,11 @@ class AcceptanceTester extends \Codeception\Actor {
     $cache = ContainerWrapper::getInstance()->get(TransientCache::class);
     $cache->invalidateAllItems();
   }
+
+  public function selectSegmentTemplate($templateName) {
+    $i = $this;
+    $segmentName = Locator::contains('.mailpoet-templates-card-header-title', $templateName);
+    $i->waitForElement($segmentName);
+    $i->click($segmentName);
+  }
 }
