@@ -101,9 +101,8 @@ class NewslettersResponseBuilder {
         $data['children_count'] = $this->newslettersStatsRepository->getChildrenCount($newsletter);
       }
       if ($relation === self::RELATION_SCHEDULED) {
-        $data['total_scheduled'] = $this->sendingQueuesRepository->countAllByNewsletterAndTaskStatus(
-          $newsletter,
-          SendingQueueEntity::STATUS_SCHEDULED
+        $data['total_scheduled'] = $this->sendingQueuesRepository->countAllToProcessByNewsletter(
+          $newsletter
         );
       }
 
@@ -170,9 +169,8 @@ class NewslettersResponseBuilder {
       $data['segments'] = [];
       $data['options'] = $this->buildOptions($newsletter);
       $data['total_sent'] = $statistics ? $statistics->getTotalSentCount() : 0;
-      $data['total_scheduled'] = $this->sendingQueuesRepository->countAllByNewsletterAndTaskStatus(
-        $newsletter,
-        SendingQueueEntity::STATUS_SCHEDULED
+      $data['total_scheduled'] = $this->sendingQueuesRepository->countAllToProcessByNewsletter(
+        $newsletter
       );
     } elseif ($newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION) {
       $data['segments'] = $this->buildSegments($newsletter);

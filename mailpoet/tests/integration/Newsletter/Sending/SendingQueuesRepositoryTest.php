@@ -91,7 +91,7 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 
-  public function testItReturnsCountOfQueuesByNewsletterAndTaskStatus() {
+  public function testItReturnsCountOfQueuesByNewsletter() {
     $taskStatus = ScheduledTaskEntity::STATUS_PAUSED;
 
     $task1 = $this->createTask();
@@ -105,13 +105,13 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
 
     $task3 = $this->createTask();
     $task3->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
-    $this->createQueue($task3, $newsletter);
+    $queue3 = $this->createQueue($task3, $newsletter);
+    $queue3->setCountToProcess(5);
 
     $this->entityManager->flush();
 
     $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
-    // should return the two queues with tasks of the type STATUS_PAUSED and exclude the queue with task of the type STATUS_SCHEDULED
-    $this->assertSame(2, $this->repository->countAllByNewsletterAndTaskStatus($newsletter, $taskStatus));
+    $this->assertSame(7, $this->repository->countAllToProcessByNewsletter($newsletter));
   }
 
   private function createTaskSubscriber(ScheduledTaskEntity $task, SubscriberEntity $subscriber, int $processed) {
@@ -140,6 +140,7 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     $queue = new SendingQueueEntity();
     $queue->setNewsletter($newsletter);
     $queue->setTask($task);
+    $queue->setCountToProcess(1);
     $this->entityManager->persist($queue);
 
     return $queue;

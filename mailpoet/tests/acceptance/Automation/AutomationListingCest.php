@@ -89,7 +89,7 @@ class AutomationListingCest {
       ->withWelcomeTypeForSegment()
       ->withCreatedAt('2020-01-20 12:00:00')
       ->withActiveStatus()
-      ->withScheduledQueue()
+      ->withScheduledQueue(['count_to_process' => 2])
       ->withScheduledQueue()
       ->withScheduledQueue(['status' => ScheduledTaskEntity::STATUS_COMPLETED, 'count_processed' => 1])
       ->create();

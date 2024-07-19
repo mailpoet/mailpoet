@@ -506,8 +506,11 @@ class Newsletter {
       if ($queue['processed_at'] ?? null) {
         $scheduledTask->setProcessedAt($queue['processed_at']);
       }
-      if ($queue['meta']) {
+      if (isset($queue['meta'])) {
         $sendingQueue->setMeta($queue['meta']);
+      }
+      if (isset($queue['count_to_process'])) {
+        $sendingQueue->setCountToProcess($queue['count_to_process']);
       }
       $entityManager->persist($sendingQueue);
       $sendingQueue->setNewsletter($newsletter);

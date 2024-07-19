@@ -73,14 +73,11 @@ class SendingQueuesRepository extends Repository {
     return $queryBuilder->getQuery()->getOneOrNullResult();
   }
 
-  public function countAllByNewsletterAndTaskStatus(NewsletterEntity $newsletter, string $status): int {
+  public function countAllToProcessByNewsletter(NewsletterEntity $newsletter): int {
     return intval($this->entityManager->createQueryBuilder()
-      ->select('count(s.task)')
+      ->select('sum(s.countToProcess)')
       ->from(SendingQueueEntity::class, 's')
-      ->join('s.task', 't')
-      ->where('t.status = :status')
       ->andWhere('s.newsletter = :newsletter')
-      ->setParameter('status', $status)
       ->setParameter('newsletter', $newsletter)
       ->getQuery()
       ->getSingleScalarResult());
@@ -141,21 +138,21 @@ class SendingQueuesRepository extends Repository {
 
     return $this->doctrineRepository->createQueryBuilder('q')
       ->select('
-        n.type as newsletterType, 
-        q.meta as sendingQueueMeta, 
-        CASE 
+        n.type as newsletterType,
+        q.meta as sendingQueueMeta,
+        CASE
             WHEN COUNT(s.id) > 0 THEN true
             ELSE false
         END as sentToSegment,
-        CASE 
+        CASE
             WHEN t.processedAt >= :sevenDaysAgo THEN true
             ELSE false
         END as sentLast7Days,
-        CASE 
+        CASE
             WHEN t.processedAt >= :thirtyDaysAgo THEN true
             ELSE false
         END as sentLast30Days,
-        CASE 
+        CASE
             WHEN t.processedAt >= :threeMonthsAgo THEN true
             ELSE false
         END as sentLast3Months')
