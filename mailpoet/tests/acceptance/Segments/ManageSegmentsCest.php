@@ -402,9 +402,9 @@ class ManageSegmentsCest {
     $i->login();
     $i->amOnMailpoetPage('Segments');
     $i->click('[data-automation-id="new-segment"]');
-    $i->waitForElement('.mailpoet-templates-card-grid div:first-child');
-    $i->click('.mailpoet-templates-card-grid div:first-child');
-    $i->waitForText('Recently Subscribed');
+    $i->selectSegmentTemplate('Recently Subscribed');
+    $i->waitForElementVisible('[data-automation-id="input-name"]');
+    $i->seeInField('[data-automation-id="input-name"]', 'Recently Subscribed');
     $i->click('#mailpoet-segments-back-button');
     $i->waitForText('Recently Subscribed');
     $i->seeNoJSErrors();
