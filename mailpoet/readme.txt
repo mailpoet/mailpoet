@@ -1,8 +1,8 @@
 === MailPoet - Newsletters, Email Marketing, and Automation ===
 Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
-Requires at least: 6.4
-Tested up to: 6.5
+Requires at least: 6.5
+Tested up to: 6.6
 Stable tag: 4.56.0
 Requires PHP: 7.4
 License: GPLv3
