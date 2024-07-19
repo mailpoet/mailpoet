@@ -124,8 +124,9 @@ class Renderer {
 
     // Enforce the special heading color for the WooCommerce email header
     $wooHeadingColor = $newsletter->getGlobalStyle('woocommerce', 'headingFontColor');
-    $css .= "#mailpoet-woo-email-header { color: $wooHeadingColor !important; }";
-
+    if ($wooHeadingColor) {
+      $css .= "#mailpoet-woo-email-header { color: $wooHeadingColor !important; }";
+    }
     return $css;
   }
 
@@ -143,13 +144,17 @@ class Renderer {
   private function prepareNewsletterForRendering(NewsletterEntity $newsletter): NewsletterEntity {
     $newsletterClone = clone($newsletter);
     $headingFontFamily = $newsletter->getGlobalStyle('woocommerce', 'headingFontFamily');
+    if ($headingFontFamily) {
+      $newsletterClone->setGlobalStyle('h1', 'fontFamily', $headingFontFamily);
+      $newsletterClone->setGlobalStyle('h2', 'fontFamily', $headingFontFamily);
+      $newsletterClone->setGlobalStyle('h3', 'fontFamily', $headingFontFamily);
+    }
     $brandingColor = $newsletter->getGlobalStyle('woocommerce', 'brandingColor');
-    $newsletterClone->setGlobalStyle('h1', 'fontFamily', $headingFontFamily);
-    $newsletterClone->setGlobalStyle('h1', 'color', $brandingColor);
-    $newsletterClone->setGlobalStyle('h2', 'fontFamily', $headingFontFamily);
-    $newsletterClone->setGlobalStyle('h2', 'color', $brandingColor);
-    $newsletterClone->setGlobalStyle('h3', 'fontFamily', $headingFontFamily);
-    $newsletterClone->setGlobalStyle('h3', 'color', $brandingColor);
+    if ($brandingColor) {
+      $newsletterClone->setGlobalStyle('h1', 'color', $brandingColor);
+      $newsletterClone->setGlobalStyle('h2', 'color', $brandingColor);
+      $newsletterClone->setGlobalStyle('h3', 'color', $brandingColor);
+    }
     return $newsletterClone;
   }
 

@@ -84,13 +84,13 @@ class RendererTest extends \MailPoetTest {
 
   public function testPrefixCss() {
     $renderer = $this->getRenderer(true);
-    $css = $renderer->prefixCss('
+    $css = $renderer->enhanceCss('
       #some_id {color: black}
       .some-class {height: 50px; width: 30px}
       h1 {
         font-weight:bold;
       }
-    ');
+    ', $this->newsletter);
     verify($css)->stringContainsString("#mailpoet_woocommerce_container #some_id {\ncolor:black\n}");
     verify($css)->stringContainsString("#mailpoet_woocommerce_container .some-class {\nheight:50px;\nwidth:30px\n}");
     verify($css)->stringContainsString("#mailpoet_woocommerce_container h1 {\nfont-weight:700\n}");
@@ -130,6 +130,116 @@ class RendererTest extends \MailPoetTest {
     verify($html)->stringContainsString(date_i18n('Y', WPFunctions::get()->currentTime('timestamp'))); // [date:y]
   }
 
+  public function testItDoesntChangeFontFamilyWhenNotSaveWithFlag() {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'woocommerce' => [
+          'headingFontFamily' => 'Comic Sans MS',
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles();
+    $updatedCss = $this->getRenderer(true)->enhanceCss($css, $this->newsletter);
+    verify($updatedCss)->stringNotContainsString('Comic Sans MS');
+  }
+
+  public function testItChangesCssForHeadings() {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'h1' => [
+          'fontSize' => '1px',
+        ],
+        'h2' => [
+          'fontSize' => '2px',
+        ],
+        'h3' => [
+          'fontSize' => '3px',
+        ],
+        'woocommerce' => [
+          'headingFontFamily' => 'Comic Sans MS',
+          'isSavedWithUpdatedStyles' => true,
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles();
+    $updatedCss = $this->getRenderer(true)->enhanceCss($css, $this->newsletter);
+    $h1Styles = $this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container h1', $updatedCss);
+    verify($h1Styles)->stringContainsString('font-family:Comic Sans MS');
+    verify($h1Styles)->stringContainsString('font-size:1px');
+    $h2Styles = $this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container h2', $updatedCss);
+    verify($h2Styles)->stringContainsString('font-family:Comic Sans MS');
+    verify($h2Styles)->stringContainsString('font-size:2px');
+    $h3Styles = $this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container h3', $updatedCss);
+    verify($h3Styles)->stringContainsString('font-family:Comic Sans MS');
+    verify($h3Styles)->stringContainsString('font-size:3px');
+  }
+
+  public function testItChangesStylesForWooContent() {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'text' => [
+          'fontFamily' => 'Comic Sans MS',
+          'fontSize' => '1px',
+        ],
+        'woocommerce' => [
+          'isSavedWithUpdatedStyles' => true,
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles();
+    $updatedCss = $this->getRenderer(true)->enhanceCss($css, $this->newsletter);
+    $contentStyles = $this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container #body_content_inner', $updatedCss);
+    verify($contentStyles)->stringContainsString('font-family:Comic Sans MS');
+    verify($contentStyles)->stringContainsString('font-size:1px');
+  }
+
+  public function testItAddCSSForWooHeading() {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'woocommerce' => [
+          'isSavedWithUpdatedStyles' => true,
+          'headingFontColor' => '#ff0000',
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles();
+    $updatedCss = $this->getRenderer(true)->enhanceCss($css, $this->newsletter);
+    $headerStyles = $this->getCssDefinitionsForSelector('#mailpoet-woo-email-header', $updatedCss);
+    verify($headerStyles)->stringContainsString('color: #ff0000 !important');
+  }
+
+  public function testIt() {
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'woocommerce' => [
+          'isSavedWithUpdatedStyles' => true,
+          'headingFontColor' => '#ff0000',
+        ],
+      ],
+    ]);
+    $css = $this->getWooEmailStyles();
+    $updatedCss = $this->getRenderer(true)->enhanceCss($css, $this->newsletter);
+    $headerStyles = $this->getCssDefinitionsForSelector('#mailpoet-woo-email-header', $updatedCss);
+    verify($headerStyles)->stringContainsString('color: #ff0000 !important');
+  }
+
+  public function testItUpdatesFontFamilyInsideWooContentAndRemovesSeparators() {
+    $emailContent = '<h1 style="font-family:Arial;">Heading not in Woo</h1><!--WooContent--><p style="font-family:Arial;">Content</p><!--WooContent--><h2 style="font-family:Arial;">Footer not in Woo</h2>';
+    $this->newsletter->setBody([
+      'globalStyles' => [
+        'text' => [
+          'fontFamily' => 'Verdana',
+        ],
+        'woocommerce' => [
+          'isSavedWithUpdatedStyles' => true,
+        ],
+      ],
+    ]);
+    $renderer = $this->getRenderer(true);
+    $html = $renderer->updateRenderedContent($this->newsletter, $emailContent);
+    verify($html)->equals('<h1 style="font-family:Arial;">Heading not in Woo</h1><p style="font-family:Verdana;">Content</p><h2 style="font-family:Arial;">Footer not in Woo</h2>');
+  }
+
   private function getNewsletterRenderer(): NewsletterRenderer {
     $wooPreprocessor = new ContentPreprocessor(Stub::make(
       \MailPoet\WooCommerce\TransactionalEmails::class,
@@ -166,5 +276,25 @@ class RendererTest extends \MailPoetTest {
       $newsletterRenderer,
       $this->diContainer->get(NewsletterShortcodes::class)
     );
+  }
+
+  private function getWooEmailStyles() {
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $wp->updateOption('woocommerce_email_background_color', '#ffffff');
+    $wp->updateOption('woocommerce_email_body_background_color', '#ffffff');
+    $wp->updateOption('woocommerce_email_base_color', '#663399');
+    $wp->updateOption('woocommerce_email_text_color', '#111111');
+    ob_start();
+    wc_get_template('emails/email-styles.php');
+    return ob_get_clean();
+  }
+
+  private function getCssDefinitionsForSelector(string $selector, string $css) {
+    $pattern = '/' . preg_quote($selector, '/') . '[^}]*\{([^}]*)}/';
+    if (preg_match($pattern, $css, $matches)) {
+      return trim($matches[1]);
+    } else {
+      return '';
+    }
   }
 }
