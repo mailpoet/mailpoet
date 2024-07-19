@@ -116,11 +116,13 @@ class CreateSegmentEmailAbsoluteCountCest {
 
     $i->click('Save');
     $i->waitForNoticeAndClose('Segment successfully updated!');
+    $i->waitForListingItemsToLoad();
 
     $i->wantTo('Check subscribers of the segment');
     $i->waitForText($segmentTitle);
     $i->clickWooTableActionByItemName($segmentTitle, 'View subscribers');
-    $i->seeInCurrentUrl('mailpoet-subscribers#');
+    $i->waitForText($segmentTitle);
+    $i->waitForElementVisible('[data-automation-id="listing-column-header-created_at"]');
     $i->see($segmentTitle, ['css' => 'select[name=segment]']);
     $i->see('stats_test1@example.com');
     $i->see('stats_test2@example.com');
