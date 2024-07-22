@@ -150,6 +150,13 @@ class StepHandler {
     $step->validate($validationArgs);
     $step->run($args, $this->stepRunControllerFactory->createController($args));
 
+    // check if run is not completed by now (e.g., one of if/else branches is empty)
+    $automationRun = $this->automationRunStorage->getAutomationRun($runId);
+    if ($automationRun && $automationRun->getStatus() !== AutomationRun::STATUS_RUNNING) {
+      $logger->logSuccess();
+      return;
+    }
+
     // schedule next step if not scheduled by action
     if (!$this->stepScheduler->hasScheduledStep($args)) {
       $this->stepScheduler->scheduleNextStep($args);
