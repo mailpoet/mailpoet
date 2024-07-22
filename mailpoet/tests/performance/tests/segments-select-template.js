@@ -55,18 +55,17 @@ export async function segmentsSelectTemplate() {
       page.waitForLoadState('networkidle'),
     ]);
 
+    await page.screenshot({
+      path: screenshotPath + 'Segments_Select_Template_02.png',
+      fullPage: fullPageSet,
+    });
+
     // Save the segment
     await waitForSelectorToBeClickable(
       page,
       'div.mailpoet-form-actions > button',
     );
     await focusAndClick(page, 'div.mailpoet-form-actions > button');
-
-    await page.waitForLoadState('networkidle');
-    await page.screenshot({
-      path: screenshotPath + 'Segments_Select_Template_02.png',
-      fullPage: fullPageSet,
-    });
 
     await page.waitForSelector('[data-automation-id="select_all"]');
     const segmentUpdatedMessage =
