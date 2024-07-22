@@ -143,7 +143,7 @@ function ManageSenderDomain({
               )}
             </strong>{' '}
             {__(
-              'MailPoet would verify your DNS records to ensure it matches. Do note that it may take up to 24 hours for DNS changes to propagate after you make the change.',
+              'MailPoet will verify your DNS records to ensure it matches. Do note that it may take up to 24 hours for DNS changes to propagate after you make the change.',
               'mailpoet',
             )}
           </div>
