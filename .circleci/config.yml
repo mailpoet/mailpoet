@@ -931,14 +931,6 @@ workflows:
             - static_analysis_php8
             - qa_js
             - qa_php
-      - performance_tests:
-          <<: *slack-fail-post-step
-          name: performance_tests
-          requires:
-            - unit_tests
-            - static_analysis_php8
-            - qa_js
-            - qa_php
       - js_tests:
           <<: *slack-fail-post-step
           requires:
@@ -1029,7 +1021,6 @@ workflows:
             - acceptance_tests_woo_hpos_sync_on
             - acceptance_tests_woo_hpos_off
             - acceptance_tests_blockbased_theme
-            # performance_tests disabled
 
   nightly:
     triggers:
