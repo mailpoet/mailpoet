@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 4.57.0 - 2024-07-22 =
+
+- Fixed: formatting tags in post titles are allowed;
+- Fixed: externally hosted images are displayed in template thumbnails.
+
 = 4.56.0 - 2024-07-15 =
 
 - Updated: react dependencies;
