@@ -318,7 +318,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $confirmationNewsletter = $confirmationEmailCustomizer->getNewsletter();
     verify($confirmationNewsletter->getId())->equals($newsletter->getId());
     $confirmationMailBody = $sender->getMailBodyWithCustomizer($this->subscriber, ['test_segment']);
-    verify($confirmationMailBody['body']['html'])->stringContainsString('<a class="mailpoet_button" href="https://example.com"');
+    verify($confirmationMailBody['body']['html'])->stringMatchesRegExp('/<a class="mailpoet_button" .* href="https:\/\/example\.com".*>Click here to confirm your subscription<\/a>/');
 
 
     // See MAILPOET-5253
@@ -354,7 +354,7 @@ class ConfirmationEmailMailerTest extends \MailPoetTest {
     $confirmationNewsletter = $confirmationEmailCustomizer->getNewsletter();
     verify($confirmationNewsletter->getId())->equals($newsletter->getId());
     $confirmationMailBody = $sender->getMailBodyWithCustomizer($this->subscriber, ['test_segment']);
-    verify($confirmationMailBody['body']['html'])->stringContainsString('<a class="mailpoet_button" href="https://example.com"');
+    verify($confirmationMailBody['body']['html'])->stringMatchesRegExp('/<a class="mailpoet_button" .* href="https:\/\/example\.com".*>Click here to confirm your subscription<\/a>/');
 
   }
 }
