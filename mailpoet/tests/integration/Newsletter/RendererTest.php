@@ -502,7 +502,7 @@ class RendererTest extends \MailPoetTest {
     $DOM = $this->dOMParser->parseStr((new Button)->render($template, self::COLUMN_BASE_WIDTH));
     // element should be properly nested with arcsize/styles/fillcolor set
     verify(
-      $DOM('tr > td > div > table > tr > td > a.mailpoet_button', 0)->html()
+      $DOM('tr > td > div > table > tr > td > table > tr > td > a.mailpoet_button', 0)->html()
     )->notEmpty();
     verify(
       preg_match(
@@ -541,7 +541,7 @@ class RendererTest extends \MailPoetTest {
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][5];
     $template['styles']['block']['fontFamily'] = 'Lucida';
     $DOM = $this->dOMParser->parseStr((new Button)->render($template, self::COLUMN_BASE_WIDTH));
-    $style = $DOM('a.mailpoet_button', 0)->attr('style');
+    $style = $DOM('td.mailpoet_table_button', 0)->attr('style');
     verify($style)->stringContainsString('font-family: \'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif');
   }
 
@@ -672,7 +672,7 @@ class RendererTest extends \MailPoetTest {
     verify(preg_match('/link%20with%20space.jpg/s', $template['html']))->equals(0);
 
     // non mso condition for button is rendered correctly
-    verify(preg_match('/<\!--\[if \!mso\]><\!-- -->\s+<a class=\"mailpoet\_button\".+<\/a>\s+<\!--<\!\[endif\]-->/s', $template['html']))->equals(1);
+    verify(preg_match('/<\!--\[if \!mso\]><\!-- -->\s*<table.*<td class=\"mailpoet\_table\_button\".+<\/td>.*<\/table>\s*<\!--<\!\[endif\]-->/s', $template['html']))->equals(1);
   }
 
   // Test case for MAILPOET-3660
