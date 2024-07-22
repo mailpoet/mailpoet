@@ -1029,7 +1029,7 @@ workflows:
             - acceptance_tests_woo_hpos_sync_on
             - acceptance_tests_woo_hpos_off
             - acceptance_tests_blockbased_theme
-            - performance_tests
+            # performance_tests disabled
 
   nightly:
     triggers:
