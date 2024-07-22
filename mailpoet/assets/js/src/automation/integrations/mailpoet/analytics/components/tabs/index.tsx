@@ -29,6 +29,20 @@ export function Tabs(): JSX.Element {
       className: 'mailpoet-analytics-tab-flow',
       title: __('Automation flow', 'mailpoet'),
     },
+    {
+      name: 'automation-subscribers',
+      className: classNames(
+        'mailpoet-analytics-tab-subscribers',
+        !MailPoet.capabilities.detailedAnalytics.isRestricted
+          ? 'is-unlocked'
+          : '',
+      ),
+      title: (
+        <>
+          {__('Subscribers', 'mailpoet')} <Icon icon={lockSmall} />
+        </>
+      ) as unknown as string,
+    },
   ];
   if (hasEmails) {
     tabs.push({
@@ -54,20 +68,6 @@ export function Tabs(): JSX.Element {
         ) as unknown as string,
       });
     }
-    tabs.push({
-      name: 'automation-subscribers',
-      className: classNames(
-        'mailpoet-analytics-tab-subscribers',
-        !MailPoet.capabilities.detailedAnalytics.isRestricted
-          ? 'is-unlocked'
-          : '',
-      ),
-      title: (
-        <>
-          {__('Subscribers', 'mailpoet')} <Icon icon={lockSmall} />
-        </>
-      ) as unknown as string,
-    });
   }
 
   const updateUrlSearchString = useCallback(
