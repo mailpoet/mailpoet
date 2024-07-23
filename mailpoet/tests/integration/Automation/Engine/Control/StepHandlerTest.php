@@ -87,6 +87,46 @@ class StepHandlerTest extends \MailPoetTest {
     $this->assertGreaterThan($oldDate, $logs[0]->getUpdatedAt());
   }
 
+  public function testItLogsSuccessWhenRunCompletedDuringHandling(): void {
+    $step = $this->createMock(Action::class);
+    $step->expects(self::once())->method('run')->will($this->returnCallback(
+      // Simulate empty else branch
+      function (StepRunArgs $args) {
+        $runId = $args->getAutomationRun()->getId();
+        $this->automationRunStorage->updateNextStep($runId, null);
+        $this->automationRunStorage->updateStatus($runId, AutomationRun::STATUS_COMPLETE);
+      }
+    ));
+
+    $registry = $this->createMock(Registry::class);
+    $registry->expects(self::once())->method('getStep')->willReturn($step);
+
+    $stepHandler = $this->getServiceWithOverrides(StepHandler::class, ['registry' => $registry]);
+    $automation = $this->tester->createAutomation(
+      'Test automation',
+      new Step('t', Step::TYPE_TRIGGER, 'test:trigger', [], [new NextStep('a1')]),
+      new Step('a1', Step::TYPE_ACTION, 'test:if-else', [], [new NextStep('a2'), new NextStep(null)]),
+      new Step('a2', Step::TYPE_ACTION, 'test:action', [], [])
+    );
+    $run = $this->tester->createAutomationRun($automation);
+
+    // create start log and modify "updated_at" to an older date
+    $oldDate = new DateTimeImmutable('2000-01-01 00:00:00');
+    $log = new AutomationRunLog($run->getId(), 'a1', AutomationRunLog::TYPE_ACTION);
+    $log->setUpdatedAt($oldDate);
+    $logId = $this->automationRunLogStorage->createAutomationRunLog($log);
+    $log = $this->automationRunLogStorage->getAutomationRunLog($logId);
+    $this->assertInstanceOf(AutomationRunLog::class, $log);
+    $this->assertEquals($oldDate, $log->getUpdatedAt());
+
+    // run step
+    $stepHandler->handle(['automation_run_id' => $run->getId(), 'step_id' => 'a1', 'run_number' => 1]);
+    $logs = $this->automationRunLogStorage->getLogsForAutomationRun($run->getId());
+    $this->assertCount(1, $logs);
+    $this->assertSame(AutomationRunLog::STATUS_COMPLETE, $logs[0]->getStatus());
+    $this->assertGreaterThan($oldDate, $logs[0]->getUpdatedAt());
+  }
+
   public function testItLogsFailure(): void {
     $step = $this->createMock(Action::class);
     $step->expects(self::once())->method('run')->willReturnCallback(
