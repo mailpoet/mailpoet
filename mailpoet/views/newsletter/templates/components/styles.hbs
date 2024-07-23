@@ -36,13 +36,13 @@
     }
     {{#if isWoocommerceTransactional}}
       .mailpoet_text_block .mailpoet_content,
-      .mailpoet_text_block .mailpoet_content p,
+      .mailpoet_text_block .mailpoet_content p {
          font-family: {{fontWithFallback text.fontFamily }};
       }
       .mailpoet_text_block .mailpoet_content h1,
       .mailpoet_text_block .mailpoet_content h2,
       .mailpoet_text_block .mailpoet_content h3 {
-          color: {{ woocommerce.brandingColor }};
+          color: {{#if woocommerce.contentHeadingFontColor }}{{ woocommerce.contentHeadingFontColor }}{{else}}{{ woocommerce.brandingColor }}{{/if}};
       }
       .mailpoet_content h1 {
         font-size: {{ h1.fontSize }} !important;
@@ -50,11 +50,11 @@
       }
       .mailpoet_content h2 {
         font-size: {{ h2.fontSize }} !important;
-        font-family: {{ woocommerce.headingFontFamily }} !important;;
+        font-family: {{ woocommerce.headingFontFamily }} !important;
       }
       .mailpoet_content h3 {
         font-size: {{ h3.fontSize }} !important;
-        font-family: {{ woocommerce.headingFontFamily }} !important;;
+        font-family: {{ woocommerce.headingFontFamily }} !important;
       }
       .mailpoet_woocommerce_heading {
         padding: 30px 20px;
@@ -79,7 +79,7 @@
       .mailpoet_woocommerce_content h1,
       .mailpoet_woocommerce_content h2,
       .mailpoet_woocommerce_content h3 {
-        color: {{ woocommerce.brandingColor }};
+        color: {{#if woocommerce.contentHeadingFontColor }}{{ woocommerce.contentHeadingFontColor }}{{else}}{{ woocommerce.brandingColor }}{{/if}};
       }
     {{/if}}
     .mailpoet_editor_confirmation_email_section {
