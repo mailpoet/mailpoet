@@ -58,8 +58,8 @@ class ButtonTest extends \MailPoetUnitTest {
                     cellspacing="0"
                     cellpadding="0"
                     role="presentation"
-                    style="display:inline-block;border-collapse:separate;mso-table-lspace:0;mso-table-rspace:0;width:156px"
-                    width="156px"
+                    style="display:inline-block;border-collapse:separate;mso-table-lspace:0;mso-table-rspace:0;width:180px"
+                    width="180px"
                   >
                     <tr>
                       <td class="mailpoet_table_button"
