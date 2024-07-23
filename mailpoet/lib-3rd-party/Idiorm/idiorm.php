@@ -341,6 +341,19 @@ use PDOStatement;
 
                 $db->setAttribute(PDO::ATTR_ERRMODE, self::$_config[$connection_name]['error_mode']);
                 self::set_db($db, $connection_name);
+
+                try {
+                  $currentOptions = self::for_table("")
+                    ->raw_query('SELECT @@session.wait_timeout as wait_timeout')
+                    ->findOne();
+                  if ($currentOptions && (int)$currentOptions->wait_timeout < 60) {
+                    self::raw_execute('SET SESSION wait_timeout = ' . 60);
+                  }
+                } catch (\PDOException $e) {
+                  // Rethrow PDOExceptions to prevent exposing sensitive data in stack traces
+                  throw new \Exception($e->getMessage());
+                }
+
             }
         }
 

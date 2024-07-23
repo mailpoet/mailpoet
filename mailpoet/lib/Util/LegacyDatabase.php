@@ -3,17 +3,75 @@
 namespace MailPoet\Util;
 
 use MailPoet\Config\Env;
+use MailPoetVendor\Idiorm\ORM;
+use PDO;
 
 /**
  * These constants for table names were used with the idiorm ORM library that we removed.
  * They are kept here for sometime for back compatibility with extensions that may still use them.
  *
  * PHP doesn't have a built-in support for deprecation of constants defined with define() function.
- * But some IDEs like PHPStorm can recognize the @deprecated annotation and show warnings.
+ * But some IDEs like PHPStorm can recognize the deprecated annotation and show warnings.
  *
  * We will remove them after January 2025.
  */
 class LegacyDatabase {
+  public static function init() {
+    LegacyDatabase::setupConnection();
+    LegacyDatabase::setupLogging();
+    LegacyDatabase::setupDriverOptions();
+    LegacyDatabase::defineTableConstants();
+  }
+
+  private static function setupConnection() {
+    ORM::configure(LegacyDatabase::getSourceName());
+    ORM::configure('username', Env::$dbUsername);
+    ORM::configure('password', Env::$dbPassword);
+  }
+
+  private static function setupLogging() {
+    ORM::configure('logging', WP_DEBUG);
+  }
+
+  private static function setupDriverOptions() {
+    $driverOptions = [
+      'TIME_ZONE = "' . Env::$dbTimezoneOffset . '"',
+      "sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))",
+    ];
+
+    if (!empty(Env::$dbCharset)) {
+      $characterSet = 'NAMES ' . Env::$dbCharset;
+      if (!empty(Env::$dbCollation)) {
+        $characterSet .= ' COLLATE ' . Env::$dbCollation;
+      }
+      $driverOptions[] = $characterSet;
+    }
+
+    ORM::configure('driver_options', [
+      PDO::MYSQL_ATTR_INIT_COMMAND => 'SET ' . implode(', ', $driverOptions),
+    ]);
+  }
+
+  private static function getSourceName(): string {
+    $sourceName = [
+      'mysql:host=',
+      Env::$dbHost,
+      ';',
+      'port=',
+      Env::$dbPort,
+      ';',
+      'dbname=',
+      Env::$dbName,
+    ];
+    if (!empty($socket)) {
+      $sourceName[] = ';unix_socket=' . $socket;
+    }
+    if (!empty($charset)) {
+      $sourceName[] = ';charset=' . $charset;
+    }
+    return implode('', $sourceName);
+  }
+
   public static function defineTableConstants() {
     if (!defined('MP_SETTINGS_TABLE')) {
       /** @deprecated */

@@ -219,7 +219,7 @@ class Initializer {
     require_once __DIR__ . '/../../vendor/woocommerce/action-scheduler/action-scheduler.php';
 
     // define legacy constants for DB tables - for back compatibility
-    LegacyDatabase::defineTableConstants();
+    LegacyDatabase::init();
 
     // load translations and setup translations update/download
     $this->setupLocalizer();
