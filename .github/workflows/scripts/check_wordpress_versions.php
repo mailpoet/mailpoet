@@ -65,7 +65,7 @@ function getLatestAndPreviousVersions(array $sortedVersions): array {
  */
 function replaceLatestWordPressVersion(string $latestVersion): void {
   replaceVersionInFile(
-    __DIR__ . './../../../mailpoet/tests/docker/docker-compose.yml',
+    __DIR__ . './../../../tests_env/docker/docker-compose.yml',
     '/(wordpress:\${WORDPRESS_IMAGE_VERSION:-\s*)\d+\.\d+\.?\d*-php\d+\.\d+(})/',
     '${1}' . $latestVersion . '${2}'
   );

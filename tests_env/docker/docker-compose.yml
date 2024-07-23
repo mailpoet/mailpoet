@@ -8,12 +8,12 @@ services:
     volumes:
       - wp-core:/wp-core
       - mailhog-data:/mailhog-data
-      - ../..:/project
-      - ../..:/wp-core/wp-content/plugins/mailpoet
-      - ../../../mailpoet-premium:/project/mailpoet-premium
+      - ../../mailpoet:/project
+      - ../../mailpoet:/wp-core/wp-content/plugins/mailpoet
+      - ../../mailpoet-premium:/project/mailpoet-premium
       - ./codeception/docker-entrypoint.sh:/docker-entrypoint.sh
-      - ../../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
-      - ../../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+      - ../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
+      - ../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     entrypoint: /docker-entrypoint.sh
     environment:
       WP_ROOT: /wp-core
@@ -35,12 +35,12 @@ services:
     volumes:
       - wp-core:/wp-core
       - mailhog-data:/mailhog-data
-      - ../..:/project
-      - ../..:/wp-core/wp-content/plugins/mailpoet
-      - ../../../mailpoet-premium:/project/mailpoet-premium
+      - ../../mailpoet:/project
+      - ../../mailpoet:/wp-core/wp-content/plugins/mailpoet
+      - ../../mailpoet-premium:/project/mailpoet-premium
       - ./codeception/docker-entrypoint.sh:/docker-entrypoint.sh
-      - ../../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
-      - ../../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+      - ../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
+      - ../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     entrypoint: /docker-entrypoint.sh
     environment:
       WP_ROOT: /wp-core
@@ -79,8 +79,9 @@ services:
     volumes:
       - wp-core:/var/www/html
       - ./install-extensions.sh:/usr/local/bin/install-extensions.sh
-      - ../..:/var/www/html/wp-content/plugins/mailpoet
-      - ../../../mailpoet-premium:/project/mailpoet-premium
+      - ../../mailpoet:/project
+      - ../../mailpoet:/var/www/html/wp-content/plugins/mailpoet
+      - ../../mailpoet-premium:/project/mailpoet-premium
     tmpfs:
       - /var/www/html/wp-content/uploads/mailpoet/
     ports:
