@@ -9,6 +9,11 @@
 
 .mailpoet-automation-editor-automation-wrapper {
   padding: 0 20px 50px;
+
+  // Fix for action selector popup on small devices
+  .components-popover__content {
+    min-width: 280px;
+  }
 }
 
 .mailpoet-automation-editor-automation-flow {
