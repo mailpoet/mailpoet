@@ -73,7 +73,6 @@ class Renderer {
     $isSavedWithStyledWooBlock = $newsletter->getGlobalStyle('woocommerce', 'isSavedWithUpdatedStyles');
     // For Backward compatibility do not apply styles for content unless the template was edited with the editor
     // and user visually checked and is aware of updated styles feature.
-    // This check is save to remove after 2025-07-31
     if (!$isSavedWithStyledWooBlock) {
       return $content;
     }
@@ -162,7 +161,6 @@ class Renderer {
   private function updateStyleDefinition(string $selectors, NewsletterEntity $newsletter, $properties) {
     // For Backward compatibility do not apply styles for content unless the template was edited with the editor
     // and user visually checked and is aware of updated styles feature.
-    // This check is save to remove after 2025-07-31
     $isSavedWithStyledWooBlock = $newsletter->getGlobalStyle('woocommerce', 'isSavedWithUpdatedStyles');
     if (!$isSavedWithStyledWooBlock) {
       return $properties;
