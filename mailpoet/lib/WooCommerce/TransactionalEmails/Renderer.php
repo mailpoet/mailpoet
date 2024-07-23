@@ -150,10 +150,11 @@ class Renderer {
       $newsletterClone->setGlobalStyle('h3', 'fontFamily', $headingFontFamily);
     }
     $brandingColor = $newsletter->getGlobalStyle('woocommerce', 'brandingColor');
-    if ($brandingColor) {
-      $newsletterClone->setGlobalStyle('h1', 'color', $brandingColor);
-      $newsletterClone->setGlobalStyle('h2', 'color', $brandingColor);
-      $newsletterClone->setGlobalStyle('h3', 'color', $brandingColor);
+    $contentHeadingColor = $newsletter->getGlobalStyle('woocommerce', 'contentHeadingFontColor') ?? $brandingColor;
+    if ($contentHeadingColor) {
+      $newsletterClone->setGlobalStyle('h1', 'color', $contentHeadingColor);
+      $newsletterClone->setGlobalStyle('h2', 'color', $contentHeadingColor);
+      $newsletterClone->setGlobalStyle('h3', 'color', $contentHeadingColor);
     }
     return $newsletterClone;
   }
@@ -173,6 +174,8 @@ class Renderer {
     $fontFamily = $newsletter->getGlobalStyle('text', 'fontFamily');
     $headingFontFamily = $newsletter->getGlobalStyle('woocommerce', 'headingFontFamily');
     $fontSize = $newsletter->getGlobalStyle('text', 'fontSize');
+    $brandingColor = $newsletter->getGlobalStyle('woocommerce', 'brandingColor');
+    $contentHeadingColor = $newsletter->getGlobalStyle('woocommerce', 'contentHeadingFontColor') ?? $brandingColor;
 
     // Update font family if it's set in the editor
     if ($fontFamily && !empty($properties['font-family'])) {
@@ -192,6 +195,9 @@ class Renderer {
       }
       if ($headingFontFamily && ($selectors === $heading)) {
         $properties['font-family'] = $headingFontFamily;
+      }
+      if ($contentHeadingColor && ($selectors === $heading)) {
+        $properties['color'] = $contentHeadingColor;
       }
     }
     return $properties;
