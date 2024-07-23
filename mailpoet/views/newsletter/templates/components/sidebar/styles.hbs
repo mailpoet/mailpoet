@@ -48,6 +48,9 @@
                 <label for="mailpoet_text_font_size">
                     <%= __('Heading font styles') %>
                 </label>
+                <span>
+                    <span><input type="text" class="mailpoet_color" size="6" maxlength="6" name="woocommerce-content-heading-color" value="{{ model.woocommerce.contentHeadingFontColor }}" id="mailpoet_wc_content_heading_font_color"></span>
+                </span>
                 <select id="mailpoet_wc_heading_font_family" name="woo-heading-family" class="mailpoet_font_family mailpoet_select mailpoet_select_medium">
                     <optgroup label="<%= __('Standard fonts')%>">
                     {{#each availableStyles.fonts.standard}}

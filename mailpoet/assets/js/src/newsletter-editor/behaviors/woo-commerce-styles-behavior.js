@@ -33,9 +33,16 @@ BL.WooCommerceStylesBehavior = Marionette.Behavior.extend({
         this.view.model.set('link.fontColor', linkFontColor);
       },
       'change #mailpoet_wc_heading_font_family':
-        function changeHeadinfFontFamily(event) {
+        function changeHeadingfFontFamily(event) {
           this.view.model.set(
             'woocommerce.headingFontFamily',
+            event.target.value,
+          );
+        },
+      'change #mailpoet_wc_content_heading_font_color':
+        function changeContentHeadingFontColor(event) {
+          this.view.model.set(
+            'woocommerce.contentHeadingFontColor',
             event.target.value,
           );
         },
