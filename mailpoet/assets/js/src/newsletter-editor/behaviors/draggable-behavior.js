@@ -40,13 +40,11 @@ BL.DraggableBehavior = Marionette.Behavior.extend({
     // Give instances more control over whether Draggable should be applied
     if (!this.options.testAttachToInstance(this.view.model, this.view)) return;
 
-    interactable = interact(this.$el.get(0), {
-      ignoreFrom: this.options.ignoreSelector,
-    })
+    interactable = interact(this.$el.get(0))
       .draggable({
+        ignoreFrom: this.options.ignoreSelector,
         // allow dragging of multiple elements at the same time
         max: Infinity,
-
         // Scroll when dragging near edges of a window
         autoScroll: true,
 
