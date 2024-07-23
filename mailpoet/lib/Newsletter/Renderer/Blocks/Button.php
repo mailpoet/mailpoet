@@ -7,6 +7,7 @@ use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Button {
   public function render($element, $columnBaseWidth) {
+    $originalWidth = $element['styles']['block']['width'];
     $element['styles']['block']['width'] = $this->calculateWidth($element, $columnBaseWidth);
     $styles = 'display:block;text-decoration:none;text-align:center;' . StylesHelper::getBlockStyles($element, $exclude = ['textAlign']);
     $styles = EHelper::escapeHtmlStyleAttr($styles);
@@ -40,8 +41,8 @@ class Button {
                     cellspacing="0"
                     cellpadding="0"
                     role="presentation"
-                    style="display:inline-block;border-collapse:separate;mso-table-lspace:0;mso-table-rspace:0;width:' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['width']) . '"
-                    width="' . EHelper::escapeHtmlStyleAttr($element['styles']['block']['width']) . '"
+                    style="display:inline-block;border-collapse:separate;mso-table-lspace:0;mso-table-rspace:0;width:' . EHelper::escapeHtmlStyleAttr($originalWidth) . '"
+                    width="' . EHelper::escapeHtmlStyleAttr($originalWidth) . '"
                   >
                     <tr>
                       <td class="mailpoet_table_button"
