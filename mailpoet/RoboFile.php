@@ -493,7 +493,7 @@ class RoboFile extends \Robo\Tasks {
   public function deleteDocker() {
     return $this->taskExec(
       'docker-compose down -v --remove-orphans --rmi all'
-    )->dir(__DIR__ . '/tests/docker')->run();
+    )->dir(__DIR__ . '/../tests_env/docker')->run();
   }
 
   /**
@@ -503,7 +503,7 @@ class RoboFile extends \Robo\Tasks {
     return $this
       ->taskExec(
         'docker-compose down -v --remove-orphans'
-      )->dir(__DIR__ . '/tests/docker')
+      )->dir(__DIR__ . '/../tests_env/docker')
       ->addCode([$this, 'cleanupCachedFiles'])
       ->run();
   }
@@ -1637,7 +1637,7 @@ class RoboFile extends \Robo\Tasks {
       (isset($opts['skip-group']) && $opts['skip-group'] ? '--skip-group ' . $opts['skip-group'] . ' ' : '') .
       (isset($opts['stop-on-fail']) && $opts['stop-on-fail'] ? '-f ' : '') .
       (isset($opts['file']) && $opts['file'] ? $opts['file'] : '')
-    )->dir(__DIR__ . '/tests/docker')->run();
+    )->dir(__DIR__ . '/../tests_env/docker')->run();
   }
 
   private function getParallelism(int $multiplier = 1, int $min = 4, int $max = 32): int {

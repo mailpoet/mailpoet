@@ -85,7 +85,7 @@ mailpoet/vendor/bin/codecept -> /project/vendor/bin/codecept
 mailpoet/vendor/bin/wp -> /usr/local/bin/wp
 ```
 
-- Add `XDEBUG_TRIGGER: 1` environment to `mailpoet/tests/docker/docker-compose.yml` -> codeception service to start triggering Xdebug
+- Add `XDEBUG_TRIGGER: 1` environment to `tests_env/docker/docker-compose.yml` -> codeception service to start triggering Xdebug
 - Make PHPStorm listen to connections by clicking on the phone icon
 
 ## Local development
