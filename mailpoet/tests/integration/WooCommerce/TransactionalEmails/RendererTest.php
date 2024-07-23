@@ -157,6 +157,7 @@ class RendererTest extends \MailPoetTest {
         ],
         'woocommerce' => [
           'headingFontFamily' => 'Comic Sans MS',
+          'contentHeadingFontColor' => '#aaaaaa',
           'isSavedWithUpdatedStyles' => true,
         ],
       ],
@@ -166,12 +167,15 @@ class RendererTest extends \MailPoetTest {
     $h1Styles = $this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container h1', $updatedCss);
     verify($h1Styles)->stringContainsString('font-family:Comic Sans MS');
     verify($h1Styles)->stringContainsString('font-size:1px');
+    verify($h1Styles)->stringContainsString('color:#aaaaaa');
     $h2Styles = $this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container h2', $updatedCss);
     verify($h2Styles)->stringContainsString('font-family:Comic Sans MS');
     verify($h2Styles)->stringContainsString('font-size:2px');
+    verify($h2Styles)->stringContainsString('color:#aaaaaa');
     $h3Styles = $this->getCssDefinitionsForSelector('#mailpoet_woocommerce_container h3', $updatedCss);
     verify($h3Styles)->stringContainsString('font-family:Comic Sans MS');
     verify($h3Styles)->stringContainsString('font-size:3px');
+    verify($h3Styles)->stringContainsString('color:#aaaaaa');
   }
 
   public function testItChangesStylesForWooContent() {
@@ -208,7 +212,7 @@ class RendererTest extends \MailPoetTest {
     verify($headerStyles)->stringContainsString('color: #ff0000 !important');
   }
 
-  public function testIt() {
+  public function testItSetsProperColorForHeadingInHeader() {
     $this->newsletter->setBody([
       'globalStyles' => [
         'woocommerce' => [
