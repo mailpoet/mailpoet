@@ -111,7 +111,7 @@ export function ActivityModal(): JSX.Element {
         )}
       />
 
-      <Footer runStatus={run.run.status} />
+      <Footer run={run.run} />
     </Modal>
   );
 }
