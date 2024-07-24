@@ -174,6 +174,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
     // create scheduled task & subscriber
     $scheduledTask = (new ScheduledTask())->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED);
+    $scheduledTask->setMeta(['automation' => ['run_id' => $run->getId(), 'step_id' => $step->getId(), 'run_number' => 1]]);
     (new SendingQueue())->create($scheduledTask, $email);
     $scheduledTaskSubscriber = (new ScheduledTaskSubscriber())->createFailed($scheduledTask, $subscriber, 'Test error');
 
