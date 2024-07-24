@@ -39,7 +39,7 @@ export function InserterPopover(): JSX.Element | null {
       <Popover
         placement="bottom"
         ref={popoverRef}
-        anchorRect={inserterPopover.anchor.getBoundingClientRect()}
+        anchor={inserterPopover.anchor}
         onClose={() => {
           if (!showModal) {
             void setInserterPopover(undefined);
