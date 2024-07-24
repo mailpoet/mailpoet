@@ -199,6 +199,7 @@ export type Run = {
   id: number;
   automation_id: number;
   status: string;
+  is_past_due: boolean;
 };
 
 export type Log = {
