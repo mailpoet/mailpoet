@@ -214,7 +214,7 @@ class WooCheckoutBlocksCest {
       $i->waitForText('Choose a pattern', 5);
       $i->click('button[aria-label="Close"]');
     } catch (\Exception $e) {
-      $i->say('Choose a pattern was not present, skipping action.');
+      $i->wantTo('Choose a pattern was not present, skipping action.');
     }
     $this->closeDialog($i);
     $i->click('[aria-label="Add title"]'); // For block inserter to show up
