@@ -217,16 +217,9 @@ export type Log = {
   error: Error | null;
 };
 
-export type NextStep = {
-  name: string;
-  time_left: string;
-  step: Step;
-} | null;
-
 export type RunData = {
   run: Run;
   logs: Log[];
-  next_step: NextStep;
   automation: {
     steps: Steps;
   };

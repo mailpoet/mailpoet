@@ -1,9 +1,9 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { Steps } from '../../../../../../../editor/components/automation/types';
 import { MailPoet } from '../../../../../../../../mailpoet';
 import { StepCell } from '../cells/step';
 import { AutomationRunStatus } from '../../../../../../../components/status';
-import { Log, NextStep } from '../../../../store';
+import { Log } from '../../../../store';
 
 export const headers = [
   {
@@ -37,12 +37,8 @@ function StatusInfo({ info }: { info: string | null }): JSX.Element {
   );
 }
 
-export function transformLogsToRows(
-  logs: Log[],
-  steps: Steps,
-  nextStep: NextStep,
-) {
-  const items = logs.map((log) => [
+export function transformLogsToRows(logs: Log[], steps: Steps) {
+  return logs.map((log) => [
     {
       display: <StepCell name={log.step_name} data={steps[log.step_id]} />,
       value: log.step_name,
@@ -67,34 +63,4 @@ export function transformLogsToRows(
       ),
     },
   ]);
-  if (nextStep) {
-    // translators: "Time left: 1 hour" or "Time left: 1 minute", uses WordPress' human_time_diff() to get the value
-    const timeLeft = sprintf(
-      __('Time left: %s', 'mailpoet'),
-      nextStep.time_left,
-    );
-    items.push([
-      {
-        display: <StepCell name={nextStep.name} data={nextStep.step} />,
-        value: nextStep.name,
-      },
-      {
-        display: MailPoet.Date.format(new Date(logs.at(-1).updated_at)),
-        value: logs.at(-1).updated_at,
-      },
-      {
-        display: '-',
-        value: '',
-      },
-      {
-        display: (
-          <>
-            <AutomationRunStatus status="running" />
-            <StatusInfo info={timeLeft} />
-          </>
-        ),
-      },
-    ]);
-  }
-  return items;
 }
