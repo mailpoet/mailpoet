@@ -1,6 +1,6 @@
 import { Modal, Spinner } from '@wordpress/components';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Table } from '@woocommerce/components';
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
@@ -32,12 +32,12 @@ export function ActivityModal(): JSX.Element {
   const [state, setState] = useState<ActivityModalState>('hidden');
   const [run, setRun] = useState<RunData | null>(null);
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setState('hidden');
     setRun(null);
     pageParams.delete('runId');
     navigate({ search: pageParams.toString() });
-  };
+  }, [navigate, pageParams]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -64,7 +64,7 @@ export function ActivityModal(): JSX.Element {
         setState('loaded');
       } catch (error) {
         if (!controller.signal?.aborted) {
-          setState('hidden');
+          closeModal();
         }
       }
     };
@@ -75,7 +75,7 @@ export function ActivityModal(): JSX.Element {
       setState('hidden');
       controller.abort();
     };
-  }, [runId]);
+  }, [runId, closeModal]);
 
   if (state === 'hidden') {
     return null;
