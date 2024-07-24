@@ -214,6 +214,7 @@ export type Log = {
   updated_at: string;
   run_number: number;
   data: string;
+  time_left: string | null;
   error: Error | null;
 };
 
