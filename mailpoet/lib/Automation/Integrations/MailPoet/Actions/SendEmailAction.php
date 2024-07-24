@@ -157,10 +157,11 @@ class SendEmailAction implements Action {
   public function run(StepRunArgs $args, StepRunController $controller): void {
     $newsletter = $this->getEmailForStep($args->getStep());
     $subscriber = $this->getSubscriber($args);
+    $runId = $args->getAutomationRun()->getId();
 
     // sync sending status with the automation step
     if (!$args->isFirstRun()) {
-      $this->checkSendingStatus($newsletter, $subscriber);
+      $this->checkSendingStatus($newsletter, $subscriber, $runId);
       return;
     }
 
@@ -210,8 +211,8 @@ class SendEmailAction implements Action {
     $this->automationController->enqueueProgress($runId, $stepId);
   }
 
-  private function checkSendingStatus(NewsletterEntity $newsletter, SubscriberEntity $subscriber): void {
-    $scheduledTaskSubscriber = $this->automationEmailScheduler->getScheduledTaskSubscriber($newsletter, $subscriber);
+  private function checkSendingStatus(NewsletterEntity $newsletter, SubscriberEntity $subscriber, int $runId): void {
+    $scheduledTaskSubscriber = $this->automationEmailScheduler->getScheduledTaskSubscriber($newsletter, $subscriber, $runId);
     if (!$scheduledTaskSubscriber) {
       throw InvalidStateException::create()->withMessage('Email failed to schedule.');
     }

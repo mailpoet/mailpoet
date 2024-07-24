@@ -64,8 +64,8 @@ class AutomationEmailScheduler {
     return $task;
   }
 
-  public function getScheduledTaskSubscriber(NewsletterEntity $email, SubscriberEntity $subscriber): ?ScheduledTaskSubscriberEntity {
-    $result = $this->entityManager->createQueryBuilder()
+  public function getScheduledTaskSubscriber(NewsletterEntity $email, SubscriberEntity $subscriber, int $runId): ?ScheduledTaskSubscriberEntity {
+    $results = $this->entityManager->createQueryBuilder()
       ->select('sts')
       ->from(ScheduledTaskSubscriberEntity::class, 'sts')
       ->join('sts.task', 'st')
@@ -75,7 +75,19 @@ class AutomationEmailScheduler {
       ->setParameter('newsletter', $email)
       ->setParameter('subscriber', $subscriber)
       ->getQuery()
-      ->getOneOrNullResult();
+      ->getResult();
+    $result = null;
+    foreach ($results as $scheduledTaskSubscriber) {
+      $task = $scheduledTaskSubscriber->getTask();
+      if (!$task instanceof ScheduledTaskEntity) {
+        continue;
+      }
+      $meta = $task->getMeta();
+      if (($meta['automation']['run_id'] ?? null) === $runId) {
+        $result = $scheduledTaskSubscriber;
+        break;
+      }
+    }
     return $result instanceof ScheduledTaskSubscriberEntity ? $result : null;
   }
 
