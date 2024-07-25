@@ -810,6 +810,16 @@ class SubscribersTest extends \MailPoetTest {
     $this->assertEquals('new value', $result['cf_' . $customField->getId()]);
   }
 
+  public function testUpdateSubscriberFailsForNonExisting() {
+    $this->expectException(APIException::class);
+    $this->expectExceptionMessage('This subscriber does not exist.');
+    
+    $this->getApi()->updateSubscriber('non existing', [
+      'email' => 'newemail@example.com',
+      'first_name' => 'New Name',
+    ]);
+  }
+
   public function testItGetsSubscriber() {
     $subscriber = $this->subscriberFactory->create();
     $segment = $this->getSegment();
