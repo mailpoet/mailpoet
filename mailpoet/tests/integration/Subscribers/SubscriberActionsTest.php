@@ -227,7 +227,6 @@ class SubscriberActionsTest extends \MailPoetTest {
     verify($subscriber->getEmail())->equals($data['email']);
     verify($subscriber->getFirstName())->equals($data['first_name']);
     verify($subscriber->getLastName())->equals($data['last_name']);
-    codecept_debug($subscriber->getSubscriberCustomFields()->count());
     $subscriberCustomField = $subscriber->getSubscriberCustomField($customField);
     $this->assertInstanceOf(SubscriberCustomFieldEntity::class, $subscriberCustomField);
     verify($subscriberCustomField->getValue())->equals($data['cf_' . $customField->getId()]);
