@@ -14,6 +14,7 @@ use MailPoet\Config\Changelog;
 use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Newsletter\Scheduler\WelcomeScheduler;
 use MailPoet\Segments\SegmentsRepository;
@@ -785,6 +786,28 @@ class SubscribersTest extends \MailPoetTest {
     $segments = [1];
     $options = ['send_confirmation_email' => false];
     $API->addSubscriber($subscriber, $segments, $options);
+  }
+
+  public function testUpdateSubscriber() {
+    $subscriber = $this->subscriberFactory->create();
+    $customField = $this->customFieldRepository->createOrUpdate([
+      'name' => 'test custom field',
+      'type' => CustomFieldEntity::TYPE_TEXT,
+    ]);
+    $scfe = new SubscriberCustomFieldEntity($subscriber, $customField, 'value');
+    $subscriber->getSubscriberCustomFields()->add($scfe);
+    $this->entityManager->persist($scfe);
+    $this->entityManager->flush();
+
+    $result = $this->getApi()->updateSubscriber($subscriber->getId(), [
+      'email' => 'newemail@example.com',
+      'cf_' . $customField->getId() => 'new value',
+      'first_name' => 'New Name',
+    ]);
+
+    $this->assertEquals('newemail@example.com', $result['email']);
+    $this->assertEquals('New Name', $result['first_name']);
+    $this->assertEquals('new value', $result['cf_' . $customField->getId()]);
   }
 
   public function testItGetsSubscriber() {
