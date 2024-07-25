@@ -141,6 +141,8 @@ class AbandonedCartTest extends \MailPoetTest {
     verify($registeredActions)->arrayContains('woocommerce_before_cart_item_quantity_zero');
     verify($registeredActions)->arrayContains('woocommerce_cart_emptied');
     verify($registeredActions)->arrayContains('woocommerce_cart_item_restored');
+    verify($registeredActions)->arrayContains('woocommerce_load_cart_from_session');
+    verify($registeredActions)->arrayContains('woocommerce_cart_loaded_from_session');
   }
 
   public function testItRegistersToSubscriberActivityEvent() {
@@ -253,6 +255,29 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->assertCount(0, $this->scheduledTasksRepository->findAll());
     $this->assertCount(0, $this->scheduledTaskSubscribersRepository->findAll());
     $this->assertCount(0, $this->sendingQueuesRepository->findAll());
+  }
+
+  public function testItSchedulesEmailWhenCartLoadedFromSessionOnLogin() {
+    $this->createNewsletter();
+    $subscriber = $this->createSubscriberAsCurrentUser();
+
+    $this->wooCommerceCartMock->method('is_empty')->willReturn(false);
+    $this->wooCommerceCartMock->method('get_cart')->willReturn([
+      ['product_id' => 789], ['product_id' => 987], // dummy product IDs
+    ]);
+    $abandonedCartEmail = $this->createAbandonedCartEmail();
+    $abandonedCartEmail->init();
+    $this->wp->method('getCurrentUserId')->willReturn($subscriber->getWpUserId());
+    $this->wp->method('getUserMeta')->willReturn(1); // mock for _woocommerce_load_saved_cart_after_login
+    $abandonedCartEmail->handleUserLogin();
+    $abandonedCartEmail->handleCartChangeOnLogin();
+
+    $scheduledTasks = $this->scheduledTasksRepository->findAll();
+    $this->assertCount(1, $scheduledTasks);
+    $this->assertEquals($scheduledTasks[0]->getStatus(), ScheduledTaskEntity::STATUS_SCHEDULED);
+    $sendingQueue = $this->sendingQueuesRepository->findOneBy(['task' => $scheduledTasks[0]]);
+    $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
+    $this->assertEquals($sendingQueue->getMeta(), [AbandonedCart::TASK_META_NAME => [789, 987]]);
   }
 
   public function testItSchedulesNewEmailWhenEmailAlreadySent() {
