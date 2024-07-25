@@ -165,6 +165,46 @@ class Subscribers {
     return $this->subscribersResponseBuilder->build($subscriberEntity);
   }
 
+  public function updateSubscriber($subscriberIdOrEmail, array $data): array {
+    $this->checkSubscriberParam($subscriberIdOrEmail);
+
+    $subscriber = $this->findSubscriber($subscriberIdOrEmail);
+
+    [$defaultFields, $customFields] = $this->extractCustomFieldsFromFromSubscriberData($data);
+
+    $this->requiredCustomFieldsValidator->validate($customFields);
+
+    // filter out all incoming data that we don't want to change, like status ...
+    $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip']));
+
+    if (empty($defaultFields['subscribed_ip'])) {
+      $defaultFields['subscribed_ip'] = Helpers::getIP();
+    }
+    $defaultFields['source'] = Source::API;
+
+    try {
+      $subscriberEntity = $this->subscriberSaveController->createOrUpdate($defaultFields, $subscriber);
+    } catch (\Exception $e) {
+      throw new APIException(
+      // translators: %s is an error message.
+        sprintf(__('Failed to update subscriber: %s', 'mailpoet'), $e->getMessage()),
+        APIException::FAILED_TO_SAVE_SUBSCRIBER
+      );
+    }
+
+    try {
+      $this->subscriberSaveController->updateCustomFields($customFields, $subscriberEntity);
+    } catch (\Exception $e) {
+      throw new APIException(
+      // translators: %s is an error message
+        sprintf(__('Failed to save subscriber custom fields: %s', 'mailpoet'), $e->getMessage()),
+        APIException::FAILED_TO_SAVE_SUBSCRIBER
+      );
+    }
+    
+    return $this->subscribersResponseBuilder->build($subscriberEntity);
+  }
+
   /**
    * @throws APIException
    */
