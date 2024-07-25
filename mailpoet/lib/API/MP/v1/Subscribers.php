@@ -177,6 +177,12 @@ class Subscribers {
     // filter out all incoming data that we don't want to change, like status ...
     $defaultFields = array_intersect_key($defaultFields, array_flip(['email', 'first_name', 'last_name', 'subscribed_ip']));
 
+    if ($subscriber->getWpUserId() !== null) {
+      unset($defaultFields['email']);
+      unset($defaultFields['first_name']);
+      unset($defaultFields['last_name']);
+    };
+
     if (empty($defaultFields['subscribed_ip'])) {
       $defaultFields['subscribed_ip'] = Helpers::getIP();
     }
@@ -201,7 +207,7 @@ class Subscribers {
         APIException::FAILED_TO_SAVE_SUBSCRIBER
       );
     }
-    
+
     return $this->subscribersResponseBuilder->build($subscriberEntity);
   }
 

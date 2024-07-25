@@ -9,6 +9,8 @@ The argument `$subscriber` is similar to [Add Subscriber](AddSubscriber.md) meth
 
 It returns the updated subscriber. See [Get Subscriber](GetSubscriber.md) for a subscriber data structure.
 
+If the subscriber is a WordPress user, the method does not allow updating `email`, `first_name` and `last_name`. It needs to be updated in the `wp_users` and MailPoet will synchronise the new values.
+
 ## Arguments
 
 | Argument             | Type          | Description                               |
