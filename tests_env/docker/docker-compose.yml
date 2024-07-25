@@ -11,6 +11,7 @@ services:
       - ../../mailpoet:/project
       - ../../mailpoet:/wp-core/wp-content/plugins/mailpoet
       - ../../mailpoet-premium:/project/mailpoet-premium
+      - ../../mailpoet-premium:/wp-core/wp-content/plugins/mailpoet-premium
       - ./codeception/docker-entrypoint.sh:/docker-entrypoint.sh
       - ../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
       - ../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
@@ -38,6 +39,7 @@ services:
       - ../../mailpoet:/project
       - ../../mailpoet:/wp-core/wp-content/plugins/mailpoet
       - ../../mailpoet-premium:/project/mailpoet-premium
+      - ../../mailpoet-premium:/wp-core/wp-content/plugins/mailpoet-premium
       - ./codeception/docker-entrypoint.sh:/docker-entrypoint.sh
       - ../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
       - ../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
@@ -82,6 +84,7 @@ services:
       - ../../mailpoet:/project
       - ../../mailpoet:/var/www/html/wp-content/plugins/mailpoet
       - ../../mailpoet-premium:/project/mailpoet-premium
+      - ../../mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium
     tmpfs:
       - /var/www/html/wp-content/uploads/mailpoet/
     ports:

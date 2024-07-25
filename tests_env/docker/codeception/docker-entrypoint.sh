@@ -190,13 +190,13 @@ if [[ $MULTISITE == "1" ]]; then
   wp plugin activate mailpoet/mailpoet.php --url=$HTTP_HOST/$WP_TEST_MULTISITE_SLUG
 fi
 
-if [[ $CIRCLE_JOB == *"_with_premium_"* ]]; then
+if [[ $CIRCLE_JOB == *"_with_premium_"* || $WITH_PREMIUM == "1" ]]; then
   # Copy MailPoet Premium to plugin path
-  cp -r -n /project/mailpoet-premium /wp-core/wp-content/plugins/mailpoet-premium
+#  cp -r -n /project/mailpoet-premium /wp-core/wp-content/plugins/mailpoet-premium
   chown www-data:www-data /wp-core/wp-content/plugins/mailpoet-premium/generated
   chmod -R 755 /wp-core/wp-content/plugins/mailpoet-premium/generated
   # Activate MailPoet Premium
-  wp plugin activate mailpoet-premium || { echo "MailPoet Premium plugin activation failed!" ; exit 1; }
+  wp plugin activate mailpoet-premium/mailpoet-premium.php || { echo "MailPoet Premium plugin activation failed!" ; exit 1; }
 fi
 
 # WP installs translations into the `lang` folder, and it should be writable, this change has been added in WP 6.2
@@ -218,8 +218,13 @@ mysql -u wordpress -pwordpress wordpress -h mysql -e "SELECT @@global.sql_mode"
 # print tables info
 mysql -u wordpress -pwordpress wordpress -h mysql -e "SELECT TABLE_NAME, ENGINE, TABLE_COLLATION FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'wordpress'"
 
-cd /wp-core/wp-content/plugins/mailpoet
-/project/vendor/bin/codecept run $TEST_TYPE $@
+if [[ $WITH_PREMIUM == "1" ]]; then
+  cd /wp-core/wp-content/plugins/mailpoet-premium
+else
+  cd /wp-core/wp-content/plugins/mailpoet
+fi
+
+/wp-core/wp-content/plugins/mailpoet/vendor/bin/codecept run $TEST_TYPE $@ -vvv
 exitcode=$?
 
 exit $exitcode
