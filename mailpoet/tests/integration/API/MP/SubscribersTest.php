@@ -810,10 +810,24 @@ class SubscribersTest extends \MailPoetTest {
     $this->assertEquals('new value', $result['cf_' . $customField->getId()]);
   }
 
+  public function testUpdateSubscriberWordPressUser() {
+    $subscriber = $this->subscriberFactory->create();
+    $subscriber->setWpUserId(4);
+    $this->entityManager->flush();
+
+    $result = $this->getApi()->updateSubscriber($subscriber->getId(), [
+      'email' => 'newemail@example.com',
+      'first_name' => 'New Name',
+    ]);
+
+    $this->assertEquals($subscriber->getEmail(), $result['email']);
+    $this->assertEquals($subscriber->getFirstName(), $result['first_name']);
+  }
+
   public function testUpdateSubscriberFailsForNonExisting() {
     $this->expectException(APIException::class);
     $this->expectExceptionMessage('This subscriber does not exist.');
-    
+
     $this->getApi()->updateSubscriber('non existing', [
       'email' => 'newemail@example.com',
       'first_name' => 'New Name',
