@@ -66,7 +66,7 @@ exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/Keywords
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/OraclePlatform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/PostgreSQL94Platform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/PostgreSQL100Platform.php');
-exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/PostgreSqlPlatform.php');
+exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/PostgreSQLPlatform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/SqlitePlatform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/SQLServer2012Platform.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/SQLServerPlatform.php');
