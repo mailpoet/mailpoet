@@ -23,6 +23,7 @@ export const runLogs: RunLogsProps = {
       id: 1,
       automation_id: 1,
       status: 'complete',
+      is_past_due: false,
     },
     logs: [
       {
@@ -37,6 +38,7 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T14:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: null,
         error: null,
       },
       {
@@ -51,6 +53,7 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T14:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: null,
         error: null,
       },
       {
@@ -65,6 +68,7 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T15:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: null,
         error: null,
       },
       {
@@ -79,10 +83,10 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T15:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: null,
         error: null,
       },
     ],
-    next_step: null,
     automation: {
       steps: {
         root: {
@@ -145,6 +149,7 @@ export const runLogs: RunLogsProps = {
       id: 1,
       automation_id: 1,
       status: 'running',
+      is_past_due: false,
     },
     logs: [
       {
@@ -159,6 +164,7 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T14:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: null,
         error: null,
       },
       {
@@ -173,6 +179,7 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T14:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: null,
         error: null,
       },
       {
@@ -187,10 +194,10 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T14:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: '8 minutes',
         error: null,
       },
     ],
-    next_step: null,
     automation: {
       steps: {
         root: {
@@ -245,6 +252,7 @@ export const runLogs: RunLogsProps = {
       id: 1,
       automation_id: 1,
       status: 'failed',
+      is_past_due: false,
     },
     logs: [
       {
@@ -259,6 +267,7 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T14:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: null,
         error: null,
       },
       {
@@ -273,6 +282,7 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T14:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: null,
         error: null,
       },
       {
@@ -287,6 +297,7 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T15:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: null,
         error: null,
       },
       {
@@ -301,6 +312,7 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T15:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: null,
         error: {
           message: 'Subscriber is not subscribed to marketing emails.',
           errorClass: '',
@@ -308,7 +320,6 @@ export const runLogs: RunLogsProps = {
         },
       },
     ],
-    next_step: null,
     automation: {
       steps: {
         root: {
@@ -371,6 +382,7 @@ export const runLogs: RunLogsProps = {
       id: 1,
       automation_id: 1,
       status: 'complete',
+      is_past_due: false,
     },
     logs: [
       {
@@ -385,6 +397,7 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T14:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: null,
         error: null,
       },
       {
@@ -399,10 +412,10 @@ export const runLogs: RunLogsProps = {
         updated_at: `${datePrefix}-26T14:22:02.000Z`,
         run_number: 1,
         data: '{}',
+        time_left: null,
         error: null,
       },
     ],
-    next_step: null,
     automation: {
       steps: {
         root: {
