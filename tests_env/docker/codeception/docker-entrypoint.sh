@@ -47,9 +47,9 @@ else
   wp site create --slug=$WP_TEST_MULTISITE_SLUG
 fi
 
-if [[ $LATEST_BETA != "" ]]; then
-  echo "Installing WordPress beta version: $LATEST_BETA"
-  wp core update --version=$LATEST_BETA
+if [[ $WORDPRESS_VERSION != "" ]]; then
+  echo "Installing WordPress version: $WORDPRESS_VERSION"
+  wp core update --version=$WORDPRESS_VERSION
 fi
 echo "WORDPRESS VERSION:"
 wp core version
