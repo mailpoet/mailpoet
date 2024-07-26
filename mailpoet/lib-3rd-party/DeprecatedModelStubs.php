@@ -82,6 +82,7 @@ class Model {
     'filterWithOptions',
     'filterStatus',
     'findOneWithOptions',
+    'getPublished',
     'filter',
     'pauseAllByNewsletter',
     'setScheduledAllByNewsletter',
@@ -134,7 +135,6 @@ class Model {
     'extractSubscribersIds',
     'extractCustomFieldsFromFromObject',
     'getAllSegmentNamesWithStatus',
-
   ];
 
   private static array $methodsReturningFalse = [
@@ -152,7 +152,6 @@ class Model {
     'subscribeToSegments',
     'resetSubscriptions',
     'subscribeManyToSegments',
-
   ];
 
   public function __construct() {
