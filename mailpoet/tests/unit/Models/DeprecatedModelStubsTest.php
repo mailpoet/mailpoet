@@ -70,6 +70,21 @@ class DeprecatedModelStubsTest extends \MailPoetUnitTest {
     verify($this->loggedErrors[2])->equals('Calling MailPoet\Models\Newsletter::someNonsense was deprecated and has been removed.');
   }
 
+  public function testItReturnsProperValuesForFoundKnownUsageCases(): void {
+    // https://github.com/deckerweb/toolbar-extras/blob/adc9c7a68e7b5a12413739d22a2eaadee6a05f52/includes/plugins-forms/items-mailpoet.php#L68
+    $result = Newsletter::getPublished()->findArray();
+    verify($result)->equals([]);
+    // https://github.com/UncannyOwl/Uncanny-Automator/blob/b1f95146052cb0de31b9b5a081ccf32bcaa68b93/src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php#L179
+    $result = Subscriber::findOne('test@email.com');
+    verify($result)->equals(false);
+    // https://github.com/the-marketer/wooCommerce/blob/9b8ecd2e7651ab676171377ab70c097920ef6c86/Tracker/Routes/saveOrder.php#L66
+    $result = Subscriber::getWooCommerceSegmentSubscriber('test@email.com');
+    verify($result)->false();
+    // https://github.com/kingfunnel/wp-fusion/blob/da70adff8bbdcdc43b19374fb613b0ce121f5cf1/includes/crms/mailpoet/class-mailpoet.php#L323
+    $result = Subscriber::createOrUpdate([]);
+    verify($result)->instanceOf(Subscriber::class);
+  }
+
   public function errorHandler($errno, $errstr): void {
     $this->loggedErrors[] = $errstr;
   }
