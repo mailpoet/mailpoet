@@ -67,6 +67,56 @@ class Model {
     'createOrUpdate',
     'save',
     'duplicate',
+    'subscribers',
+    'queue',
+    'children',
+    'parent',
+    'segments',
+    'segmentRelations',
+    'trash',
+    'restore',
+    'setStatus',
+    'withSegments',
+    'withDeletedSegments',
+    'withSendingQueue',
+    'filterWithOptions',
+    'filterStatus',
+    'findOneWithOptions',
+    'filter',
+    'pauseAllByNewsletter',
+    'setScheduledAllByNewsletter',
+    'findOneScheduledByNewsletterIdAndSubscriberId',
+    'task',
+    'addSubscribers',
+    'newsletters',
+    'addSubscriber',
+    'getWPSegment',
+    'getPublic',
+    'getTasks',
+    'joinWithTasks',
+    'joinWithSubscribers',
+    'findTaskByNewsletterId',
+    'createMultiple',
+    'getAllForSubscriber',
+    'search',
+    'filters',
+    'filterBy',
+    'filterWithCustomFields',
+    'filterWithCustomFieldsForExport',
+    'customFields',
+    'withCustomFields',
+    'withSegments',
+    'withSubscriptions',
+    'subscribed',
+    'unsubscribed',
+    'unconfirmed',
+    'bounced',
+    'inactive',
+    'withoutSegments',
+    'updateMultiple',
+    'findSubscribersInSegments',
+    'subscribe',
+    'resubscribeToAllSegments',
   ];
 
   private static array $methodsReturningArray = [
@@ -75,10 +125,34 @@ class Model {
     'findMany',
     'findArray',
     'asArray',
+    'getMeta',
+    'getSegmentTypes',
+    'bulkTrash',
+    'bulkDelete',
+    'filterOutReservedColumns',
+    'getSubscribedInSegments',
+    'extractSubscribersIds',
+    'extractCustomFieldsFromFromObject',
+    'getAllSegmentNamesWithStatus',
+
   ];
 
-  private static array $methodsReturningBool = [
+  private static array $methodsReturningFalse = [
     'findOne', // Returns false if not found
+    'getByHash', // Returns findOne()
+    'resume',
+    'complete',
+    'getWooCommerceSegment',
+    'isWPUser',
+    'isWooCommerceUser',
+    'getCurrentWPUser',
+    'getWooCommerceSegment',
+    'getWooCommerceSegmentSubscriber',
+    'unsubscribeFromSegments',
+    'subscribeToSegments',
+    'resetSubscriptions',
+    'subscribeManyToSegments',
+
   ];
 
   public function __construct() {
@@ -112,7 +186,7 @@ class Model {
     if (in_array($method, self::$methodsReturningArray, true)) {
       return [];
     }
-    if (in_array($method, self::$methodsReturningBool, true)) {
+    if (in_array($method, self::$methodsReturningFalse, true)) {
       return false;
     }
     return null;
