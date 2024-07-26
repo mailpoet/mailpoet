@@ -521,7 +521,7 @@ jobs:
             -e ENABLE_HPOS=<< parameters.enable_hpos >> \
             -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
             -e DISABLE_HPOS=<< parameters.disable_hpos >> \
-            -e LATEST_BETA=${LATEST_WP_BETA} \
+            -e WORDPRESS_VERSION=${LATEST_WP_BETA} \
             codeception_acceptance "${args[@]}"
       - run:
           name: Check exceptions
@@ -811,7 +811,7 @@ jobs:
               -e ENABLE_HPOS=<< parameters.enable_hpos >> \
               -e ENABLE_HPOS_SYNC=<< parameters.enable_hpos_sync >> \
               -e DISABLE_HPOS=<< parameters.disable_hpos >> \
-              -e LATEST_BETA=${LATEST_WP_BETA} \
+              -e WORDPRESS_VERSION=${LATEST_WP_BETA} \
               codeception_integration "${args[@]}"
       - store_test_results:
           path: tests/_output

@@ -345,7 +345,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec($command);
   }
 
-  public function testIntegration(array $opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => false, 'debug' => false, 'skip-deps' => false, 'skip-plugins' => false, 'disable-hpos' => false, 'enable-hpos-sync' => false, 'enable-hpos' => false, 'stop-on-fail' => false, 'beta-version' => null]) {
+  public function testIntegration(array $opts = ['file' => null, 'group' => null, 'skip-group' => null, 'xml' => false, 'multisite' => false, 'debug' => false, 'skip-deps' => false, 'skip-plugins' => false, 'disable-hpos' => false, 'enable-hpos-sync' => false, 'enable-hpos' => false, 'stop-on-fail' => false, 'wordpress-version' => null]) {
     return $this->runTestsInContainer(array_merge($opts, ['test_type' => 'integration']));
   }
 
@@ -402,7 +402,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->testIntegration($opts);
   }
 
-  public function testAcceptance($opts = ['file' => null, 'skip-deps' => false, 'group' => null, 'timeout' => null, 'disable-hpos' => false, 'enable-hpos-sync' => false, 'enable-hpos' => false, 'beta-version' => null]) {
+  public function testAcceptance($opts = ['file' => null, 'skip-deps' => false, 'group' => null, 'timeout' => null, 'disable-hpos' => false, 'enable-hpos-sync' => false, 'enable-hpos' => false, 'wordpress-version' => null]) {
     return $this->runTestsInContainer($opts);
   }
 
@@ -1623,7 +1623,7 @@ class RoboFile extends \Robo\Tasks {
     $this->doctrineGenerateCache();
     return $this->taskExec(
       'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
-      (isset($opts['beta-version']) && $opts['beta-version'] ? '-e LATEST_BETA=' . $opts['beta-version'] . ' ' : '') .
+      (isset($opts['wordpress-version']) && $opts['wordpress-version'] ? '-e WORDPRESS_VERSION=' . $opts['wordpress-version'] . ' ' : '') .
       (isset($opts['skip-deps']) && $opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
       (isset($opts['disable-hpos']) && $opts['disable-hpos'] ? '-e DISABLE_HPOS=1 ' : '') .
       (isset($opts['enable-hpos-sync']) && $opts['enable-hpos-sync'] ? '-e ENABLE_HPOS_SYNC=1 ' : '') .
