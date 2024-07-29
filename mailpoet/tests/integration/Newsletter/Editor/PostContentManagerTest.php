@@ -157,41 +157,23 @@ class PostContentManagerTest extends \MailPoetTest {
   }
 
   public function testItStripsShortcodesWhenGettingPostContent() {
-    // registered shortcodes are stripped in excerpt
+    // shortcodes are stripped in excerpt
     $post = (object)[
-      'post_excerpt' => 'Test [embed]some text in excerpt[/embed]text',
+      'post_excerpt' => '[shortcode]some text in excerpt[/shortcode]',
     ];
-    verify($this->postContent->getContent($post, 'excerpt'))->equals('Test text');
+    verify($this->postContent->getContent($post, 'excerpt'))->equals('some text in excerpt');
 
-    // registered shortcodes are stripped in post content when excerpt doesn't exist
+    // shortcodes are stripped in post content when excerpt doesn't exist
     $post = (object)[
-      'post_content' => 'Test [embed]some text in content[/embed]text',
+      'post_content' => '[shortcode]some text in content[/shortcode]',
     ];
-    verify($this->postContent->getContent($post, 'excerpt'))->equals('Test text');
+    verify($this->postContent->getContent($post, 'excerpt'))->equals('some text in content');
 
-    // registered shortcodes are stripped in post content
+    // shortcodes are stripped in post content
     $post = (object)[
-      'post_content' => 'Test [embed]some text in content[/embed]text',
+      'post_content' => '[shortcode]some text in content[/shortcode]',
     ];
-    verify($this->postContent->getContent($post, ''))->equals('Test text');
-
-    // unregistered shortcodes are kept in excerpt
-    $post = (object)[
-      'post_excerpt' => 'Test [shortcode]some text in excerpt[/shortcode]text',
-    ];
-    verify($this->postContent->getContent($post, 'excerpt'))->equals($post->post_excerpt); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-
-    // unregistered shortcodes are kept in post content when excerpt doesn't exist
-    $post = (object)[
-      'post_content' => 'Test [shortcode]some text in content[/shortcode]text',
-    ];
-    verify($this->postContent->getContent($post, 'excerpt'))->equals($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-
-    // unregistered shortcodes are kept in post content
-    $post = (object)[
-      'post_content' => 'Test [shortcode]some text in content[/shortcode]text',
-    ];
-    verify($this->postContent->getContent($post, ''))->equals($post->post_content); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    verify($this->postContent->getContent($post, ''))->equals('some text in content');
   }
 
   public function testItRemovesImageCaptionsFromClassicEditorPosts() {
