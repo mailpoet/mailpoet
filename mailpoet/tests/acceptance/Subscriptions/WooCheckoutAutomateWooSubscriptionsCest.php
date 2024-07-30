@@ -43,7 +43,10 @@ class WooCheckoutAutomateWooSubscriptionsCest {
   public function checkoutOptInDisabled(\AcceptanceTester $i) {
     $this->settingsFactory->withWooCommerceCheckoutOptinDisabled();
     $i->addProductToCart($this->product);
-    $i->goToCheckout();
+    $i->goToBlockCheckout();
+    $i->waitForText(self::AUTOMATE_WOO_OPTIN_TEXT, 10);
+    $i->dontSee(self::MAILPOET_OPTIN_TEXT);
+    $i->goToShortcodeCheckout();
     $i->waitForText(self::AUTOMATE_WOO_OPTIN_TEXT, 10);
     $i->dontSee(self::MAILPOET_OPTIN_TEXT);
   }
@@ -51,7 +54,10 @@ class WooCheckoutAutomateWooSubscriptionsCest {
   public function checkoutOptInEnabled(\AcceptanceTester $i, $scenario) {
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $i->addProductToCart($this->product);
-    $i->goToCheckout();
+    $i->goToBlockCheckout();
+    $i->waitForText(self::MAILPOET_OPTIN_TEXT, 10);
+    $i->dontSee(self::AUTOMATE_WOO_OPTIN_TEXT);
+    $i->goToShortcodeCheckout();
     $i->waitForText(self::MAILPOET_OPTIN_TEXT, 10);
     $i->dontSee(self::AUTOMATE_WOO_OPTIN_TEXT);
   }
