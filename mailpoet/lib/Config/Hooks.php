@@ -286,6 +286,13 @@ class Hooks {
         $optInHook,
         [$this->hooksWooCommerce, 'extendWooCommerceCheckoutForm']
       );
+
+      $this->wp->addAction(
+        'woocommerce_checkout_after_terms_and_conditions',
+        [$this->hooksWooCommerce, 'hideAutomateWooOptinCheckbox'],
+        5,
+        0
+      );
     }
 
     $this->wp->addAction(
