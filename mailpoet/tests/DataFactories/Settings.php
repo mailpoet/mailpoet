@@ -11,10 +11,10 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 
 class Settings {
-  /** @var SettingsController */
-  private $settings;
-
-  private $authorizedEmailsController;
+  const DEFAULT_OPTIN_MESSAGE = 'Yes, I would like to be added to your mailing list';
+  
+  private SettingsController $settings;
+  private AuthorizedEmailsController $authorizedEmailsController;
 
   public function __construct() {
     $this->settings = SettingsController::getInstance();
@@ -222,9 +222,9 @@ class Settings {
     return $this;
   }
 
-  public function withWooCommerceCheckoutOptinEnabled() {
+  public function withWooCommerceCheckoutOptinEnabled($message = self::DEFAULT_OPTIN_MESSAGE) {
     $this->settings->set('woocommerce.optin_on_checkout.enabled', true);
-    $this->settings->set('woocommerce.optin_on_checkout.message', 'Yes, I would like to be added to your mailing list');
+    $this->settings->set('woocommerce.optin_on_checkout.message', $message);
     return $this;
   }
 
