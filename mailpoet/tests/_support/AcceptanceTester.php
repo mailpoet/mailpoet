@@ -154,7 +154,7 @@ class AcceptanceTester extends \Codeception\Actor {
   public function clickWooTableActionByItemName($itemName, $actionLinkText) {
     $i = $this;
     $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//a[text()="' . $actionLinkText . '"]'];
-    $i->waitForElementClickable($xpath); 
+    $i->waitForElementClickable($xpath);
     $i->click($xpath);
   }
 
@@ -545,9 +545,17 @@ class AcceptanceTester extends \Codeception\Actor {
   }
 
   /**
-   * Go to the checkout page
+   * Go to the shortcode checkout page
    */
-  public function goToCheckout() {
+  public function goToShortcodeCheckout() {
+    $i = $this;
+    $i->amOnPage('shortcode-checkout');
+  }
+
+  /**
+   * Go to the block checkout page
+   */
+  public function goToBlockCheckout() {
     $i = $this;
     $i->amOnPage('checkout');
   }
