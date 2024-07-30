@@ -123,6 +123,7 @@ export type Settings = {
       enabled: '1' | '';
       segments: string[];
       message: string;
+      position?: string;
     };
     accept_cookie_revenue_tracking: {
       set: '1' | '';
