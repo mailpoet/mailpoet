@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { t, onChange } from 'common/functions';
+import { onChange } from 'common/functions';
 import { Checkbox } from 'common/form/checkbox/checkbox';
 import { Input } from 'common/form/input/input';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 import { useSetting, useAction } from 'settings/store/hooks';
+import { __ } from '@wordpress/i18n';
 
 export function CheckoutOptin() {
   const [enabled, setEnabled] = useSetting(
@@ -30,8 +31,12 @@ export function CheckoutOptin() {
   return (
     <>
       <Label
-        title={t('wcOptinTitle')}
-        description={t('wcOptinDescription')}
+        // translators: settings area: add an email opt-in checkbox on the checkout page (e-commerce websites)
+        title={__('Opt-in on checkout', 'mailpoet')}
+        description={__(
+          'Customers can subscribe to the "WooCommerce Customers" list and optionally other lists via a checkbox on the checkout page.',
+          'mailpoet',
+        )}
         htmlFor="mailpoet_wc_checkout_optin"
       />
       <Inputs>
@@ -45,16 +50,20 @@ export function CheckoutOptin() {
           <>
             <br />
             <label htmlFor="mailpoet_wc_checkout_optin_segments">
-              {t('wcOptinSegmentsTitle')}
+              {__('Lists to also subscribe customers to:', 'mailpoet')}
               <br />
-              <span>{t('leaveEmptyToSubscribeToWCCustomers')}</span>
+              <span>
+                {__(
+                  'Leave empty to subscribe only to "WooCommerce Customers" list',
+                )}
+              </span>
             </label>
             <br />
             <SegmentsSelect
               id="mailpoet_wc_checkout_optin_segments"
               value={segments}
               setValue={setSegments}
-              placeholder={t('wcOptinSegmentsPlaceholder')}
+              placeholder={__('Select lists...', 'mailpoet')}
             />
           </>
         )}
@@ -62,8 +71,11 @@ export function CheckoutOptin() {
       {enabled === '1' && (
         <>
           <Label
-            title={t('wcOptinMsgTitle')}
-            description={t('wcOptinMsgDescription')}
+            // translators: settings area: set the email opt-in message on the checkout page (e-commerce websites)
+            title={__('Checkbox opt-in message', 'mailpoet')}
+            description={__(
+              'This is the checkbox message your customers will see on your WooCommerce checkout page to subscribe to the "WooCommerce Customers" list and lists selected in "Opt-in on checkout" setting.',
+            )}
             htmlFor="mailpoet_wc_checkout_optin_message"
           />
           <Inputs>
@@ -74,12 +86,13 @@ export function CheckoutOptin() {
               data-automation-id="mailpoet_wc_checkout_optin_message"
               value={message}
               onChange={onChange(setMessage)}
-              placeholder={t('wcOptinMsgPlaceholder')}
+              // translators: placeholder text for the WooCommerce checkout opt-in message
+              placeholder={__('Checkbox opt-in message', 'mailpoet')}
             />
             <br />
             {emptyMessage && (
               <span className="mailpoet_error_item mailpoet_error">
-                {t('wcOptinMsgCannotBeEmpty')}
+                {__('The checkbox opt-in message cannot be empty.', 'mailpoet')}
               </span>
             )}
           </Inputs>
