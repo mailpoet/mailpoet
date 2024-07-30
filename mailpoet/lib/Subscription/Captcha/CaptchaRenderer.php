@@ -22,10 +22,6 @@ class CaptchaRenderer {
   }
 
   public function renderAudio(string $sessionId): void {
-    if (!$this->isSupported()) {
-      return;
-    }
-
     header("Cache-Control: no-store, no-cache, must-revalidate");
     header('Content-Type: audio/mpeg');
 
