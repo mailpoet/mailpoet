@@ -157,8 +157,11 @@ jobs:
       # Push all changes at the end if any changes were detected
       - name: Push changes
         if: env.CHANGES_DETECTED == 'true'
+        env:
+          GH_PAT: ${{ secrets.GH_TOKEN }}
         run: |
-          git push origin HEAD:refs/heads/update-plugins-and-wordpress
+          git remote set-url origin https://${GH_PAT}@github.com/mailpoet/mailpoet
+          git push origin HEAD:refs/heads/update-plugins-and-wordpress-test
 
       # Create a pull request if there are changes
       - name: Create Pull Request
@@ -166,6 +169,11 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GH_TOKEN }}
-          branch: update-plugins-and-wordpress
-          title: 'Update used WordPress Docker image and used plugin versions in Circle CI jobs'
+          branch: update-plugins-and-wordpress-test
+          title: Update WordPress and plugins in CI jobs (TESTING)
           base: trunk
+          labels: automated
+          body: |
+            IGNORE ME IT IS JUST A TEST
+            1. If all checks passed, you can merge this PR.
+            2. If the build failed, please investigate the failure and either address the issues or delegate the job. Then, make sure these changes are merged.
