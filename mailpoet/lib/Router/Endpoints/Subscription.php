@@ -85,6 +85,7 @@ class Subscription {
   }
 
   public function captchaRefresh($data): void {
+    $this->captchaRenderer->setNoCacheHeaders();
     $captchaSessionId = $data['captcha_session_id'] ?? null;
     if (!$captchaSessionId) {
       return;
