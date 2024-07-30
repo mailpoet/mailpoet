@@ -161,7 +161,7 @@ jobs:
           GH_PAT: ${{ secrets.GH_TOKEN }}
         run: |
           git remote set-url origin https://${GH_PAT}@github.com/mailpoet/mailpoet
-          git push origin HEAD:refs/heads/update-plugins-and-wordpress-test
+          git push -f origin HEAD:refs/heads/update-plugins-and-wordpress-test
 
       # Create a pull request if there are changes
       - name: Create Pull Request
@@ -175,5 +175,6 @@ jobs:
           labels: automated
           body: |
             IGNORE ME IT IS JUST A TEST
+            UPDATED!!
             1. If all checks passed, you can merge this PR.
             2. If the build failed, please investigate the failure and either address the issues or delegate the job. Then, make sure these changes are merged.
