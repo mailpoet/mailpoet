@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
-import { onChange } from 'common/functions';
-import { Checkbox } from 'common/form/checkbox/checkbox';
-import { Input } from 'common/form/input/input';
+import { onChange, Checkbox, Input, Select } from 'common';
 import { Label, Inputs, SegmentsSelect } from 'settings/components';
 import { useSetting, useAction } from 'settings/store/hooks';
 import { __ } from '@wordpress/i18n';
@@ -21,6 +19,11 @@ export function CheckoutOptin() {
     'woocommerce',
     'optin_on_checkout',
     'message',
+  );
+  const [position, setPosition] = useSetting(
+    'woocommerce',
+    'optin_on_checkout',
+    'position',
   );
   const setErrorFlag = useAction('setErrorFlag');
   const emptyMessage = message.trim() === '';
@@ -95,6 +98,75 @@ export function CheckoutOptin() {
                 {__('The checkbox opt-in message cannot be empty.', 'mailpoet')}
               </span>
             )}
+          </Inputs>
+        </>
+      )}
+      {enabled === '1' && (
+        <>
+          <Label
+            // translators: settings area: choose the email opt-in position on the checkout page (e-commerce websites)
+            title={__('Checkbox opt-in position', 'mailpoet')}
+            description={__(
+              'Select where the marketing opt-in checkbox appears on the checkout page.',
+              'mailpoet',
+            )}
+            htmlFor="mailpoet_wc_checkout_optin_position"
+          />
+          <Inputs>
+            <Select
+              id="mailpoet_wc_checkout_optin_position"
+              value={position}
+              onChange={onChange(setPosition)}
+              automationId="mailpoet_wc_checkout_optin_position"
+              isMinWidth
+              dimension="small"
+            >
+              <option
+                value="after_billing_info"
+                data-automation-id="after_billing_info"
+              >
+                {
+                  // translators: one of options for opt-in position at the checkout page
+                  __('After billing info', 'mailpoet')
+                }
+              </option>
+              <option
+                value="after_order_notes"
+                data-automation-id="after_order_notes"
+              >
+                {
+                  // translators: one of options for opt-in position at the checkout page
+                  __('After order notes', 'mailpoet')
+                }
+              </option>
+              <option
+                value="after_terms_and_conditions"
+                data-automation-id="after_terms_and_conditions"
+              >
+                {
+                  // translators: one of options for opt-in position at the checkout page
+                  __('After terms and conditions', 'mailpoet')
+                }
+              </option>
+              <option
+                value="before_payment_methods"
+                data-automation-id="before_payment_methods"
+              >
+                {
+                  // translators: one of options for opt-in position at the checkout page
+                  __('Before payment methods', 'mailpoet')
+                }
+              </option>
+              <option
+                value="before_terms_and_conditions"
+                data-automation-id="before_terms_and_conditions"
+              >
+                {
+                  // translators: one of options for opt-in position at the checkout page
+                  __('Before terms and conditions', 'mailpoet')
+                }
+              </option>
+            </Select>
           </Inputs>
         </>
       )}
