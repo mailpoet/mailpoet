@@ -155,6 +155,13 @@ jobs:
           git commit -m $'Update used WooCommerce Memberships plugin in Circle CI\n\n - latest version: ${{ env.WOOCOMMERCE_MEMBERSHIPS_LATEST_VERSION }}\n - previous version: ${{ env.WOOCOMMERCE_MEMBERSHIPS_PREVIOUS_VERSION }}'
 
       # Push all changes at the end if any changes were detected
+      #
+      # For local testing with act tool add following:
+      # env:
+      #   GH_PAT: ${{ secrets.GH_TOKEN }}
+      # run: |
+      #   git remote set-url origin https://${GH_PAT}@github.com/mailpoet/mailpoet
+      #   git push -f origin HEAD:refs/heads/update-plugins-and-wordpress-test
       - name: Push changes
         if: env.CHANGES_DETECTED == 'true'
         run: |
