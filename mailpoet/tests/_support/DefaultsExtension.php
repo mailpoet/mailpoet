@@ -71,10 +71,11 @@ class DefaultsExtension extends Extension {
     update_option('woocommerce_price_decimal_sep', ',', 'yes');
 
     // pages
+    // block-based pages are created automatically by WooCommerce
     $shopPageId = $this->createPage('shop', 'Shop', '');
-    $cartPageId = $this->createPage('cart', 'Cart', '[woocommerce_cart]');
-    $checkoutPageId = $this->createPage('checkout', 'Checkout', '[woocommerce_checkout]');
-    $myAccountPageId = $this->createPage('my-account', 'My account', '[woocommerce_my_account]');
+    $cartPageId = $this->createPage('shortcode-cart', 'Shortcode Cart', '[woocommerce_cart]');
+    $checkoutPageId = $this->createPage('shortcode-checkout', 'Shortcode Checkout', '[woocommerce_checkout]');
+    $myAccountPageId = $this->createPage('shortcode-my-account', 'Shortcode My account', '[woocommerce_my_account]');
 
     update_option('woocommerce_shop_page_id', $shopPageId, 'yes');
     update_option('woocommerce_cart_page_id', $cartPageId, 'yes');
