@@ -22,16 +22,21 @@ class CaptchaRenderer {
   }
 
   public function renderAudio(string $sessionId): void {
-    header("Cache-Control: no-store, no-cache, must-revalidate");
-    header('Content-Type: audio/mpeg');
-
     $audioPath = Env::$assetsPath . '/audio/';
     $phrase = $this->getPhrase($sessionId);
+
+    $files = [];
     foreach (str_split($phrase) as $character) {
       $file = $audioPath . strtolower($character) . '.mp3';
       if (!file_exists($file)) {
         throw new \RuntimeException("File not found.");
       }
+      $files[] = $file;
+    }
+
+    header("Cache-Control: no-store, no-cache, must-revalidate");
+    header('Content-Type: audio/mpeg');
+    foreach ($files as $file) {
       readfile($file);
     }
   }
