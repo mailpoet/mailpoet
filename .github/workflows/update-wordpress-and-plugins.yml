@@ -167,5 +167,9 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
           branch: update-plugins-and-wordpress
-          title: 'Update used WordPress Docker image and used plugin versions in Circle CI jobs'
+          title: Update WordPress and plugins in CI jobs
           base: trunk
+          labels: automated
+          body: |
+            1. If all checks passed, you can merge this PR.
+            2. If the build failed, please investigate the failure and either address the issues or delegate the job. Then, make sure these changes are merged.
