@@ -192,6 +192,7 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
         enabled: enabledRadio,
         segments: emptyArray,
         message: text,
+        position: text,
       }),
       accept_cookie_revenue_tracking: asObject({
         set: enabledRadio,
