@@ -1308,6 +1308,29 @@ class RoboFile extends \Robo\Tasks {
     $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
   }
 
+  public function releaseVerifyDownloadedZip($version) {
+    $this->say('Verifying ZIP file');
+    $zip = new ZipArchive();
+
+    $versionFound = false;
+    if ($zip->open(self::ZIP_BUILD_PATH) === true) {
+      $fileContent = $zip->getFromName('mailpoet/readme.txt');
+      if ($fileContent !== false) {
+        $versionFound = strpos($fileContent, 'Stable tag: ' . $version);
+      }
+      $zip->close();
+    } else {
+      $this->yell('ZIP file could not be opened!', 40, 'red');
+      exit(1);
+    }
+
+    if (!$versionFound) {
+      $this->yell('ZIP file does not contain required version: "' . $version . '" in readme.txt! ', 40, 'red');
+      exit(1);
+    }
+    $this->say('ZIP file contains required version: "' . $version . '" in readme.txt.');
+  }
+
   public function releaseDownloadZip() {
     $circleciController = $this->createCircleCiController();
     $path = $circleciController->downloadLatestBuild(self::ZIP_BUILD_PATH);
