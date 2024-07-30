@@ -13,6 +13,7 @@ class Subscription {
   const ACTION_CAPTCHA = 'captcha';
   const ACTION_CAPTCHA_IMAGE = 'captchaImage';
   const ACTION_CAPTCHA_AUDIO = 'captchaAudio';
+  const ACTION_CAPTCHA_REFRESH = 'captchaRefresh';
   const ACTION_CONFIRM = 'confirm';
   const ACTION_MANAGE = 'manage';
   const ACTION_UNSUBSCRIBE = 'unsubscribe';
@@ -23,6 +24,7 @@ class Subscription {
     self::ACTION_CAPTCHA,
     self::ACTION_CAPTCHA_IMAGE,
     self::ACTION_CAPTCHA_AUDIO,
+    self::ACTION_CAPTCHA_REFRESH,
     self::ACTION_CONFIRM,
     self::ACTION_MANAGE,
     self::ACTION_UNSUBSCRIBE,
@@ -80,6 +82,14 @@ class Subscription {
     }
     $this->captchaRenderer->renderAudio($sessionId);
     exit;
+  }
+
+  public function captchaRefresh($data): void {
+    $captchaSessionId = $data['captcha_session_id'] ?? null;
+    if (!$captchaSessionId) {
+      return;
+    }
+    $this->captchaRenderer->refreshPhrase($captchaSessionId);
   }
 
   public function confirm($data) {

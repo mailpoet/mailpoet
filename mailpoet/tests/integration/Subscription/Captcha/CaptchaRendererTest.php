@@ -30,4 +30,11 @@ class CaptchaRendererTest extends \MailPoetTest {
       $this->getActualOutputForAssertion()
     );
   }
+
+  public function testItRefreshesPhrase(): void {
+    $sessionId = '123';
+    $this->session->setCaptchaHash($sessionId, ['phrase' => 'abc']);
+    $this->testee->refreshPhrase($sessionId);
+    $this->assertNotEquals('abc', $this->session->getCaptchaHash($sessionId)['phrase']);
+  }
 }

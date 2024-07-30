@@ -75,6 +75,10 @@ class CaptchaRenderer {
     $builder->output();
   }
 
+  public function refreshPhrase(string $sessionId): string {
+    return $this->phrase->createPhrase($sessionId);
+  }
+
   private function getPhrase(string $sessionId): string {
     $phrase = $this->phrase->getPhrase($sessionId);
     if (!$phrase) {

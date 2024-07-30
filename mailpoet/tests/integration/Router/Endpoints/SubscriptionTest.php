@@ -6,6 +6,7 @@ use Codeception\Stub;
 use Codeception\Stub\Expected;
 use MailPoet\Router\Endpoints\Subscription;
 use MailPoet\Subscription\Captcha\CaptchaRenderer;
+use MailPoet\Subscription\Captcha\CaptchaSession;
 use MailPoet\Subscription\Pages;
 use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;
@@ -57,5 +58,14 @@ class SubscriptionTest extends \MailPoetTest {
     ], $this);
     $subscription = new Subscription($pages, $this->wp, $this->captchaRenderer, $this->request);
     $subscription->unsubscribe($this->data);
+  }
+
+  public function testItRefreshesCaptcha(): void {
+    $captchaSession = $this->diContainer->get(CaptchaSession::class);
+    $captchaSession->setCaptchaHash('123', ['phrase' => 'abc']);
+
+    $subscription = new Subscription($this->make(Pages::class), $this->wp, $this->captchaRenderer, $this->request);
+    $subscription->captchaRefresh(['captcha_session_id' => '123']);
+    $this->assertNotEquals('abc', $captchaSession->getCaptchaHash('123')['phrase']);
   }
 }
