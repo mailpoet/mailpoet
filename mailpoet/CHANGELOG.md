@@ -1,5 +1,13 @@
 == Changelog ==
 
+= 4.58.0 - 2024-07-30 =
+
+- Added: Method to update a subscriber to our public API;
+- Improved: more styling options of WooCommerce transactional emails;
+- Changed: revert change from 4.56.0 that introduced new detection of shortcodes in post notifications;
+- Fixed: automation is marked as failed when if/else branch is empty;
+- Fixed: too narrow automation action selector on mobile devices.
+
 = 4.57.0 - 2024-07-22 =
 
 - Fixed: formatting tags in post titles are allowed;
