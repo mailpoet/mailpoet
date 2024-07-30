@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Config\Hooks;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\WooCommerceProduct;
@@ -43,23 +44,29 @@ class WooCheckoutAutomateWooSubscriptionsCest {
   public function checkoutOptInDisabled(\AcceptanceTester $i) {
     $this->settingsFactory->withWooCommerceCheckoutOptinDisabled();
     $i->addProductToCart($this->product);
-    $i->goToBlockCheckout();
-    $i->waitForText(self::AUTOMATE_WOO_OPTIN_TEXT, 10);
-    $i->dontSee(self::MAILPOET_OPTIN_TEXT);
-    $i->goToShortcodeCheckout();
-    $i->waitForText(self::AUTOMATE_WOO_OPTIN_TEXT, 10);
-    $i->dontSee(self::MAILPOET_OPTIN_TEXT);
+    foreach (array_keys(Hooks::OPTIN_HOOKS) as $optInPosition) {
+      $this->settingsFactory->withWooCommerceCheckoutOptinPosition($optInPosition);
+      $i->goToBlockCheckout();
+      $i->waitForText(self::AUTOMATE_WOO_OPTIN_TEXT, 10);
+      $i->dontSee(self::MAILPOET_OPTIN_TEXT);
+      $i->goToShortcodeCheckout();
+      $i->waitForText(self::AUTOMATE_WOO_OPTIN_TEXT, 10);
+      $i->dontSee(self::MAILPOET_OPTIN_TEXT);
+    }
   }
 
   public function checkoutOptInEnabled(\AcceptanceTester $i, $scenario) {
     $this->settingsFactory->withWooCommerceCheckoutOptinEnabled();
     $i->addProductToCart($this->product);
-    $i->goToBlockCheckout();
-    $i->waitForText(self::MAILPOET_OPTIN_TEXT, 10);
-    $i->dontSee(self::AUTOMATE_WOO_OPTIN_TEXT);
-    $i->goToShortcodeCheckout();
-    $i->waitForText(self::MAILPOET_OPTIN_TEXT, 10);
-    $i->dontSee(self::AUTOMATE_WOO_OPTIN_TEXT);
+    foreach (array_keys(Hooks::OPTIN_HOOKS) as $optInPosition) {
+      $this->settingsFactory->withWooCommerceCheckoutOptinPosition($optInPosition);
+      $i->goToBlockCheckout();
+      $i->waitForText(self::MAILPOET_OPTIN_TEXT, 10);
+      $i->dontSee(self::AUTOMATE_WOO_OPTIN_TEXT);
+      $i->goToShortcodeCheckout();
+      $i->waitForText(self::MAILPOET_OPTIN_TEXT, 10);
+      $i->dontSee(self::AUTOMATE_WOO_OPTIN_TEXT);
+    }
   }
 
   public function checkoutOptInUnchecked(\AcceptanceTester $i) {
