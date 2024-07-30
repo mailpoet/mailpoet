@@ -1126,6 +1126,9 @@ class RoboFile extends \Robo\Tasks {
       ->addCode(function () {
         return $this->releaseDownloadZip();
       })
+      ->addCode(function () use ($version) {
+        return $this->releaseVerifyDownloadedZip();
+      })
       ->addCode(function () {
         return $this->translationsGetPotFileFromBuild();
       })
@@ -1149,6 +1152,9 @@ class RoboFile extends \Robo\Tasks {
       })
       ->addCode(function () {
         return $this->releaseMergePullRequest(\MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH);
+      })
+      ->addCode(function () {
+        return $this->releaseDeleteDownloadedZip();
       })
       ->run();
   }
