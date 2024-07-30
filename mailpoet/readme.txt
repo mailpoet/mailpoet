@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.5
 Tested up to: 6.6
-Stable tag: 4.57.0
+Stable tag: 4.58.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -229,8 +229,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 4.57.0 - 2024-07-22 =
-* Fixed: formatting tags in post titles are allowed;
-* Fixed: externally hosted images are displayed in template thumbnails.
+= 4.58.0 - 2024-07-30 =
+* Added: Method to update a subscriber to our public API;
+* Improved: more styling options of WooCommerce transactional emails;
+* Changed: revert change from 4.56.0 that introduced new detection of shortcodes in post notifications;
+* Fixed: automation is marked as failed when if/else branch is empty;
+* Fixed: too narrow automation action selector on mobile devices.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)
