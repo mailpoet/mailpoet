@@ -20,7 +20,7 @@ class WooCommerceSettingsTabCest {
 
   /** @var array WooCommerce Product data*/
   private $product;
-  
+
   /** @var string */
   private $segmentName;
 
@@ -51,7 +51,9 @@ class WooCommerceSettingsTabCest {
     $i->click('Save settings');
     $i->waitForText('Settings saved');
     $i->addProductToCart($this->product);
-    $i->goToCheckout();
+    $i->goToBlockCheckout();
+    $i->see('I want to opt-in with the custom message.');
+    $i->goToShortcodeCheckout();
     $i->see('I want to opt-in with the custom message.');
   }
 
