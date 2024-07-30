@@ -3,6 +3,7 @@
 namespace MailPoet\Test\DataFactories;
 
 use MailPoet\Config\Env;
+use MailPoet\Config\Hooks;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Services\AuthorizedEmailsController;
@@ -12,7 +13,7 @@ use MailPoet\UnexpectedValueException;
 
 class Settings {
   const DEFAULT_OPTIN_MESSAGE = 'Yes, I would like to be added to your mailing list';
-  
+
   private SettingsController $settings;
   private AuthorizedEmailsController $authorizedEmailsController;
 
@@ -231,6 +232,11 @@ class Settings {
   public function withWooCommerceCheckoutOptinDisabled() {
     $this->settings->set('woocommerce.optin_on_checkout.enabled', false);
     $this->settings->set('woocommerce.optin_on_checkout.message', '');
+    return $this;
+  }
+
+  public function withWooCommerceCheckoutOptinPosition($position = Hooks::DEFAULT_OPTIN_POSITION) {
+    $this->settings->set('woocommerce.optin_on_checkout.position', $position);
     return $this;
   }
 
