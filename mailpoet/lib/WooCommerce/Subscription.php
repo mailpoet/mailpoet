@@ -19,6 +19,7 @@ class Subscription {
   const OPTIN_ENABLED_SETTING_NAME = 'woocommerce.optin_on_checkout.enabled';
   const OPTIN_SEGMENTS_SETTING_NAME = 'woocommerce.optin_on_checkout.segments';
   const OPTIN_MESSAGE_SETTING_NAME = 'woocommerce.optin_on_checkout.message';
+  const OPTIN_POSITION_SETTING_NAME = 'woocommerce.optin_on_checkout.position';
 
   private $allowedHtml = [
     'input' => [
