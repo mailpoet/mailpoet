@@ -1315,6 +1315,12 @@ class RoboFile extends \Robo\Tasks {
     $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path) / pow(1024, 2)));
   }
 
+  public function releaseDeleteDownloadedZip() {
+    $this->say('Delete downloaded ZIP: ' . self::ZIP_BUILD_PATH);
+    $this->taskExec('rm -f ' . self::ZIP_BUILD_PATH)->run();
+    $this->say('ZIP file was deleted');
+  }
+
   public function releasePublishGithub($version = null) {
     $jiraController = $this->createJiraController();
     $version = $jiraController->getVersion($version);
