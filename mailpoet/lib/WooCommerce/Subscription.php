@@ -85,7 +85,6 @@ class Subscription {
   }
 
   public function extendWooCommerceCheckoutForm() {
-    $this->hideAutomateWooOptinCheckbox();
     $inputName = self::CHECKOUT_OPTIN_INPUT_NAME;
     $checked = false;
     if (!empty($_POST[self::CHECKOUT_OPTIN_INPUT_NAME])) {
@@ -212,7 +211,7 @@ class Subscription {
     }
   }
 
-  private function hideAutomateWooOptinCheckbox(): void {
+  public function hideAutomateWooOptinCheckbox(): void {
     if (!$this->wp->isPluginActive('automatewoo/automatewoo.php')) {
       return;
     }
