@@ -72,21 +72,37 @@ jQuery(($) => {
   }
 
   async function updateCaptcha(e?: Event) {
+    const captchaSessionId = document.querySelector<HTMLInputElement>(
+      '#mailpoet_captcha_form input[name="data[captcha_session_id]"]',
+    )?.value;
     const image = document.querySelector('img.mailpoet_captcha');
     const audio = document.querySelector<HTMLAudioElement>(
       '.mailpoet_captcha_player',
     );
-    if (!image || !audio) {
+
+    if (!captchaSessionId || !image || !audio) {
       return false;
     }
 
-    // page reload invalidates CAPTCHA, but we can do it with AJAX
-    await fetch(window.location.href);
+    const cachebust = `${new Date().getTime()}`;
+
+    // regenerate captcha phrase
+    const url = new URL(window.location.href.split('?')[0]);
+    url.searchParams.set('mailpoet_router', '');
+    url.searchParams.set('mailpoet_page', 'subscriptions');
+    url.searchParams.set('endpoint', 'subscription');
+    url.searchParams.set('action', 'captchaRefresh');
+    url.searchParams.set(
+      'data',
+      btoa(JSON.stringify({ captcha_session_id: captchaSessionId })),
+    );
+    url.searchParams.set('cachebust', cachebust);
+    await fetch(url);
 
     // image
     if (image) {
       const imageUrl = new URL(image.getAttribute('src'));
-      imageUrl.searchParams.set('cachebust', `${new Date().getTime()}`);
+      imageUrl.searchParams.set('cachebust', cachebust);
       image.setAttribute('src', imageUrl.toString());
     }
 
@@ -94,7 +110,7 @@ jQuery(($) => {
     if (audio) {
       const audioSource = audio.querySelector('source');
       const audioUrl = new URL(audioSource.getAttribute('src'));
-      audioUrl.searchParams.set('cachebust', `${new Date().getTime()}`);
+      audioUrl.searchParams.set('cachebust', cachebust);
       audioSource.setAttribute('src', audioUrl.toString());
       audio.load();
     }
