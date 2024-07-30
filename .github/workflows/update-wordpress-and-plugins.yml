@@ -158,7 +158,7 @@ jobs:
       - name: Push changes
         if: env.CHANGES_DETECTED == 'true'
         run: |
-          git push origin HEAD:refs/heads/update-plugins-and-wordpress
+          git push -f origin HEAD:refs/heads/update-plugins-and-wordpress
 
       # Create a pull request if there are changes
       - name: Create Pull Request
