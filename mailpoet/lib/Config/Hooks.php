@@ -14,6 +14,7 @@ use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
 use MailPoet\WooCommerce\Integrations\AutomateWooHooks;
+use MailPoet\WooCommerce\Subscription;
 use MailPoet\WooCommerce\WooSystemInfoController;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WPCOM\DotcomLicenseProvisioner;
@@ -262,9 +263,9 @@ class Hooks {
   }
 
   public function setupWooCommerceSubscriptionEvents() {
-    $woocommerce = $this->settings->get('woocommerce', []);
+    $optInEnabled = (bool)$this->settings->get(Subscription::OPTIN_ENABLED_SETTING_NAME, false);
     // WooCommerce: subscribe on checkout
-    if (!empty($woocommerce['optin_on_checkout']['enabled'])) {
+    if ($optInEnabled) {
       $this->wp->addAction(
         'woocommerce_checkout_before_terms_and_conditions',
         [$this->hooksWooCommerce, 'extendWooCommerceCheckoutForm']
