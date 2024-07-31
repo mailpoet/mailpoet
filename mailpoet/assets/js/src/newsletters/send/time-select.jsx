@@ -14,7 +14,7 @@ class TimeSelect extends Component {
       validation = {},
     } = this.props;
     const options = Object.keys(timeOfDayItems).map((val) => (
-      <option key={`option-${timeOfDayItems[value]}`} value={val}>
+      <option key={`option-${timeOfDayItems[val]}`} value={val}>
         {timeOfDayItems[val]}
       </option>
     ));
