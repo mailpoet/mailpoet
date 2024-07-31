@@ -16,6 +16,7 @@ use MailPoet\Services\Bridge;
 use MailPoet\SystemReport\SystemReportCollector;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Util\DataInconsistency\DataInconsistencyController;
 use MailPoetVendor\Carbon\Carbon;
 
 class HelpTest extends \MailPoetTest {
@@ -43,6 +44,7 @@ class HelpTest extends \MailPoetTest {
       $this->diContainer->get(Bridge::class),
       $this->diContainer->get(ScheduledTasksRepository::class),
       $this->sendingQueuesRepository,
+      $this->diContainer->get(DataInconsistencyController::class),
       $this->diContainer->get(Url::class)
     );
   }
