@@ -290,4 +290,7 @@ interface Window {
   mailpoet_is_dotcom: boolean;
   mailpoet_cron_trigger_method: string;
   mailpoet_dynamic_segment_count: number;
+  dataInconsistencies: {
+    [key: string]: number;
+  };
 }
