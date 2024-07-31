@@ -19,26 +19,13 @@ use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Help {
-  /** @var PageRenderer */
-  private $pageRenderer;
-
-  /** @var CronHelper */
-  private $cronHelper;
-
-  /** @var SystemReportCollector */
-  private $systemReportCollector;
-
-  /** @var Bridge $bridge */
-  private $bridge;
-
-  /*** @var ScheduledTasksRepository */
-  private $scheduledTasksRepository;
-
-  /*** @var SendingQueuesRepository */
-  private $sendingQueuesRepository;
-
-  /*** @var NewsletterURL */
-  private $newsletterUrl;
+  private PageRenderer $pageRenderer;
+  private CronHelper $cronHelper;
+  private SystemReportCollector $systemReportCollector;
+  private Bridge $bridge;
+  private ScheduledTasksRepository $scheduledTasksRepository;
+  private SendingQueuesRepository $sendingQueuesRepository;
+  private NewsletterURL $newsletterUrl;
 
   public function __construct(
     PageRenderer $pageRenderer,
