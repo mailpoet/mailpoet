@@ -1,5 +1,5 @@
 import { MailPoet } from 'mailpoet';
-import { KeyValueTable } from 'common/key-value-table.jsx';
+import { KeyValueTable } from 'common/key-value-table';
 import { TasksList } from './tasks-list/tasks-list';
 import { Props as TasksListDataRowProps } from './tasks-list/tasks-list-data-row';
 
