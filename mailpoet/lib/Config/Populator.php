@@ -306,6 +306,7 @@ class Populator {
       $this->settings->set('woocommerce.optin_on_checkout', [
         'enabled' => empty($settingsDbVersion), // enable on new installs only
         'message' => $currentLabelText,
+        'position' => Hooks::DEFAULT_OPTIN_POSITION,
       ]);
     } elseif (isset($woocommerceOptinOnCheckout['message']) && $woocommerceOptinOnCheckout['message'] === $legacyLabelText) {
       $this->settings->set('woocommerce.optin_on_checkout.message', $currentLabelText);
