@@ -1,5 +1,5 @@
 import { MailPoet } from 'mailpoet';
-import { KeyValueTable } from 'common/key-value-table.jsx';
+import { KeyValueTable } from 'common/key-value-table';
 import Moment from 'moment';
 
 type ActionSchedulerStatusProps = {
