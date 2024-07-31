@@ -3,6 +3,7 @@ import ReactStringReplace from 'react-string-replace';
 import { CronStatus } from './cron-status.jsx';
 import { QueueStatus } from './queue-status';
 import { ActionSchedulerStatus } from './action-scheduler-status';
+import { DataInconsistencies } from './data-inconsistencies';
 
 function renderStatusMessage(
   status,
@@ -97,6 +98,7 @@ function renderMSSSection(data) {
 export function SystemStatus() {
   const systemStatusData = window.systemStatusData;
   const actionSchedulerData = window.actionSchedulerData;
+  const dataInconsistencies = window.dataInconsistencies;
 
   return (
     <>
@@ -114,6 +116,7 @@ export function SystemStatus() {
       {actionSchedulerData ? (
         <QueueStatus statusData={systemStatusData.queueStatus} />
       ) : null}
+      <DataInconsistencies dataInconsistencies={dataInconsistencies} />
     </>
   );
 }
