@@ -46,7 +46,6 @@ class ScheduleNewsletterCest {
     $segmentName = $i->createListWithSubscriber();
     /** @var string $value - for PHPStan because strval() doesn't accept a value of mixed */
     $value = $i->executeJS('return window.mailpoet_current_date_time');
-    $currentDateTime = new \DateTime(strval($value));
 
     // step 2 - Go to newsletter send page
     $i->login();
@@ -58,15 +57,13 @@ class ScheduleNewsletterCest {
 
     $i->wantTo('Wait for datetime picker');
     $i->waitForElement('form input[name=date]');
-
-    // `Schedule` caption
-    $i->selectOption('form select[name=time]', $currentDateTime->modify("+1 hour")->format('g:00 a'));
+    // By default, tomorrow 8am is selected, so the Schedule button should be visible immediately
     $i->see("Schedule", "button span");
 
     $i->wantTo('Pick today‘s date');
     $i->click('form input[name=date]');
-    // The calendar preselects tomorrow's date, making today's date not clickable on the last day of a month.
-    // In case it is not clickable try switching to previous month
+    // If tomorrow falls on the 1st of the month, today's date is not clickable.
+    // We need to switch to previous month first
     try {
       $i->waitForElementClickable(['class' => 'react-datepicker__day--today'], 1);
     } catch (TimeoutException $e) {
@@ -75,13 +72,18 @@ class ScheduleNewsletterCest {
     }
     $i->click(['class' => "react-datepicker__day--today"]);
 
-    // `Send` caption - change time to 1 hour before now
-    $i->selectOption('form select[name=time]', $currentDateTime->modify("-1 hour")->format('g:00 a'));
+    // `Send` caption - change time to midnight of the current day simulating selecting time in past
+    $i->selectOption('form select[name=time]', '12:00 am');
     $i->see("Send", "button span");
 
-    $i->wantTo('Pick tomorrow‘s date');
-    $i->click('select[name=time]');
-    $i->selectOption('form select[name=time]', $currentDateTime->modify("+25 hour")->format('g:00 a'));
+    // `Schedule` caption
+    $i->wantTo('Pick future date');
+    // Open datepicker
+    $i->click('form input[name=date]');
+    // Select next month
+    $i->click(['class' => 'react-datepicker__navigation--next']);
+    // Click on 1st
+    $i->click(['class' => 'react-datepicker__day--001']);
     $i->see("Schedule", "button span");
   }
 }
