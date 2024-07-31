@@ -617,6 +617,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\NewsletterTemplates\ThumbnailSaver::class)->setPublic(true);
     $container->autowire(\MailPoet\NewsletterTemplates\BrandStyles::class)->setPublic(true);
     // Util
+    $container->autowire(\MailPoet\Util\DataInconsistency\DataInconsistencyController::class)->setPublic(true);
+    $container->autowire(\MailPoet\Util\DataInconsistency\DataInconsistencyRepository::class)->setPublic(true);
     $container->autowire(\MailPoet\Util\Cookies::class)->setPublic(true);
     $container->autowire(\MailPoet\Util\DBCollationChecker::class);
     $container->autowire(\MailPoet\Util\FreeDomains::class);
