@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
-use Facebook\WebDriver\Exception\TimeoutException;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -23,9 +22,6 @@ class ReceiveScheduledEmailCest {
   public function receiveScheduledEmail(\AcceptanceTester $i) {
     $i->wantTo('Receive a scheduled standard newsletter as a subscriber');
     $this->settings->withCronTriggerMethod('Action Scheduler');
-    /** @var string $value - for PHPStan because strval() doesn't accept a value of mixed */
-    $value = $i->executeJS('return window.mailpoet_current_date_time');
-    $currentDateTime = new \DateTime(strval($value));
 
     $newsletterTitle = 'Scheduled Test Newsletter';
     $standardTemplate = '[data-automation-id="select_template_0"]';
@@ -53,23 +49,15 @@ class ReceiveScheduledEmailCest {
     $i->waitForElement($sendFormElement);
     $i->selectOptionInSelect2($segmentName);
 
-    $i->wantTo('Schedule newsletter in the past');
+    $i->wantTo('Schedule newsletter at midnight on the 1st of next month');
     $i->click('[data-automation-id="email-schedule-checkbox"]');
     $i->waitForElement('form select[name=time]');
-    $i->selectOption('form select[name=time]', $currentDateTime->modify("+1 hour")->format('g:00 a'));
-
-    $i->wantTo('Pick today‘s date');
+    $i->selectOption('form select[name=time]', '12:00 am');
     $i->waitForElement('form input[name=date]');
     $i->click('form input[name=date]');
-    // The calendar preselects tomorrow's date, making today's date not clickable on the last day of a month.
-    // In case it is not clickable try switching to previous month
-    try {
-      $i->waitForElementClickable(['class' => 'react-datepicker__day--today'], 1);
-    } catch (TimeoutException $e) {
-      $i->click(['class' => 'react-datepicker__navigation--previous']);
-      $i->waitForElementClickable(['class' => 'react-datepicker__day--today']);
-    }
-    $i->click(['class' => "react-datepicker__day--today"]);
+    $i->waitForElement('.react-datepicker');
+    $i->click(['class' => 'react-datepicker__navigation--next']);
+    $i->click(['class' => 'react-datepicker__day--001']);
     $i->click('Schedule');
     $i->waitForText('The newsletter has been scheduled.');
 
@@ -81,7 +69,7 @@ class ReceiveScheduledEmailCest {
     if ($newsletter instanceof NewsletterEntity) {
       $scheduledTask = $scheduledTasksRepository->findOneByNewsletter($newsletter);
       if ($scheduledTask instanceof ScheduledTaskEntity) {
-        $scheduledTask->setScheduledAt($currentDateTime->modify("-2 hour"));
+        $scheduledTask->setScheduledAt((new \DateTime)->modify("-1 day"));
         $scheduledTasksRepository->persist($scheduledTask);
         $scheduledTasksRepository->flush();
       }
