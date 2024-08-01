@@ -9,6 +9,7 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
+use MailPoet\Test\DataFactories\NewsletterPost;
 use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\ScheduledTaskSubscriber;
 use MailPoet\Test\DataFactories\Segment;
@@ -158,5 +159,19 @@ class DataInconsistencyRepositoryTest extends \MailPoetTest {
     verify($this->repository->getOrphanedNewsletterLinksCount())->equals(2);
     $this->repository->cleanupOrphanedNewsletterLinks();
     verify($this->repository->getOrphanedNewsletterLinksCount())->equals(0);
+  }
+
+  public function testItHandlesOrphanedNewsletterPosts(): void {
+    $newsletterToDelete = (new Newsletter())->create();
+    $newsletterToKeep = (new Newsletter())->create();
+    (new NewsletterPost($newsletterToDelete))->create();
+    (new NewsletterPost($newsletterToKeep))->create();
+
+    $this->entityManager->remove($newsletterToDelete);
+    $this->entityManager->flush();
+
+    verify($this->repository->getOrphanedNewsletterPostsCount())->equals(1);
+    $this->repository->cleanupOrphanedNewsletterPosts();
+    verify($this->repository->getOrphanedNewsletterPostsCount())->equals(0);
   }
 }

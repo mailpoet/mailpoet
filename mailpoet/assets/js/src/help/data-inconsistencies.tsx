@@ -29,6 +29,7 @@ export function DataInconsistencies({ dataInconsistencies }: Props) {
       ),
       orphaned_subscriptions: __('Orphaned Subscriptions', 'mailpoet'),
       orphaned_links: __('Orphaned Links', 'mailpoet'),
+      orphaned_newsletter_posts: __('Orphaned Newsletter Posts', 'mailpoet'),
     }),
     [],
   );
