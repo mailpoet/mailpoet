@@ -3,19 +3,20 @@
 namespace MailPoet\Test\DataFactories;
 
 use DateTimeImmutable;
-use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\Automation as AutomationEntity;
 use MailPoet\Automation\Engine\Data\AutomationRun as Entity;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\InvalidStateException;
+use MailPoet\Test\DataFactories\Automation as AutomationFactory;
 
 class AutomationRun {
   /** @var ?Entity */
   private $automationRun = null;
 
-  /** @var Automation  */
-  private $automation;
+  /** @var AutomationEntity | null  */
+  private $automation = null;
 
   /** @var array Subject[] */
   private $subjects = [];
@@ -41,7 +42,7 @@ class AutomationRun {
     $this->storage = ContainerWrapper::getInstance(WP_DEBUG)->get(AutomationRunStorage::class);
   }
 
-  public function withAutomation(Automation $automation): self {
+  public function withAutomation(AutomationEntity $automation): self {
     $this->automation = $automation;
     return $this;
   }
@@ -84,10 +85,11 @@ class AutomationRun {
 
   public function create(): Entity {
     $now = new DateTimeImmutable();
+    $automation = $this->automation ?? (new AutomationFactory())->create();
     $automationRun = Entity::fromArray([
       'id' => 0,
-      'automation_id' => $this->automation->getId(),
-      'version_id' => $this->automation->getVersionId(),
+      'automation_id' => $automation->getId(),
+      'version_id' => $automation->getVersionId(),
       'trigger_key' => $this->triggerKey,
       'status' => $this->status,
       'created_at' => ($this->createdAt ?? $now)->format(DateTimeImmutable::W3C),

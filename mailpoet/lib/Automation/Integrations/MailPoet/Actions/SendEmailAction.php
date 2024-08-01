@@ -6,6 +6,7 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\Automation\Engine\Control\AutomationController;
 use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
@@ -157,11 +158,11 @@ class SendEmailAction implements Action {
   public function run(StepRunArgs $args, StepRunController $controller): void {
     $newsletter = $this->getEmailForStep($args->getStep());
     $subscriber = $this->getSubscriber($args);
-    $runId = $args->getAutomationRun()->getId();
+    $run = $args->getAutomationRun();
 
     // sync sending status with the automation step
     if (!$args->isFirstRun()) {
-      $this->checkSendingStatus($newsletter, $subscriber, $runId);
+      $this->checkSendingStatus($newsletter, $subscriber, $run);
       return;
     }
 
@@ -211,8 +212,8 @@ class SendEmailAction implements Action {
     $this->automationController->enqueueProgress($runId, $stepId);
   }
 
-  private function checkSendingStatus(NewsletterEntity $newsletter, SubscriberEntity $subscriber, int $runId): void {
-    $scheduledTaskSubscriber = $this->automationEmailScheduler->getScheduledTaskSubscriber($newsletter, $subscriber, $runId);
+  private function checkSendingStatus(NewsletterEntity $newsletter, SubscriberEntity $subscriber, AutomationRun $run): void {
+    $scheduledTaskSubscriber = $this->automationEmailScheduler->getScheduledTaskSubscriber($newsletter, $subscriber, $run);
     if (!$scheduledTaskSubscriber) {
       throw InvalidStateException::create()->withMessage('Email failed to schedule.');
     }
