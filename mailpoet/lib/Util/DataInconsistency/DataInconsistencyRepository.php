@@ -4,6 +4,7 @@ namespace MailPoet\Util\DataInconsistency;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
@@ -29,12 +30,27 @@ class DataInconsistencyRepository {
       ->select('st.id')
     )->getResult();
 
+    if (!$ids) {
+      return 0;
+    }
+
+    // delete the orphaned tasks
     $qb = $this->entityManager->createQueryBuilder();
-    return $qb->delete(ScheduledTaskEntity::class, 'st')
+    $countDeletedTasks = $qb->delete(ScheduledTaskEntity::class, 'st')
       ->where($qb->expr()->in('st.id', ':ids'))
       ->setParameter('ids', array_column($ids, 'id'))
       ->getQuery()
       ->execute();
+
+    // delete the scheduled tasks subscribers
+    $qb = $this->entityManager->createQueryBuilder();
+    $qb->delete(ScheduledTaskSubscriberEntity::class, 'sts')
+      ->where($qb->expr()->in('sts.task', ':ids'))
+      ->setParameter('ids', array_column($ids, 'id'))
+      ->getQuery()
+      ->execute();
+
+    return $countDeletedTasks;
   }
 
   private function buildOrphanedSendingTasksQuery(QueryBuilder $queryBuilder): Query {
