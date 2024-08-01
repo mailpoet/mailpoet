@@ -3,8 +3,10 @@
 namespace MailPoet\Util\DataInconsistency;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
@@ -31,6 +33,17 @@ class DataInconsistencyRepository {
       SELECT count(*) FROM $stsTable sts
       LEFT JOIN $stTable st ON st.`id` = sts.`task_id`
       WHERE st.`id` IS NULL
+    ")->fetchOne();
+    return intval($count);
+  }
+
+  public function getSendingQueuesWithoutNewsletterCount(): int {
+    $sqTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $count = $this->entityManager->getConnection()->executeQuery("
+      SELECT count(*) FROM $sqTable sq
+      LEFT JOIN $newsletterTable n ON n.`id` = sq.`newsletter_id`
+      WHERE n.`id` IS NULL
     ")->fetchOne();
     return intval($count);
   }
@@ -72,6 +85,19 @@ class DataInconsistencyRepository {
        LEFT JOIN $stTable st ON st.`id` = sts.`task_id`
        WHERE st.`id` IS NULL
     ");
+  }
+
+  public function cleanupSendingQueuesWithoutNewsletter(): int {
+    $sqTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $deletedQueuesCount = (int)$this->entityManager->getConnection()->executeStatement("
+      DELETE sq FROM $sqTable sq
+      LEFT JOIN $newsletterTable n ON n.`id` = sq.`newsletter_id`
+      WHERE n.`id` IS NULL
+    ");
+
+    $this->cleanupOrphanedSendingTasks();
+    return $deletedQueuesCount;
   }
 
   private function buildOrphanedSendingTasksQuery(QueryBuilder $queryBuilder): Query {
