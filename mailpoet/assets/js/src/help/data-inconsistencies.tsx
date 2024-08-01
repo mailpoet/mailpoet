@@ -60,7 +60,7 @@ export function DataInconsistencies({ dataInconsistencies }: Props) {
   }
 
   const rowsData = Object.entries(data)
-    .filter(([key]) => key !== 'total')
+    .filter(([key, value]) => key !== 'total' && value > 0)
     .map(([key, value]) => ({
       key: labelsMap[key],
       value: (
