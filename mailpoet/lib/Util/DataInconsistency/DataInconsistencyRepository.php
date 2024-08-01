@@ -5,6 +5,7 @@ namespace MailPoet\Util\DataInconsistency;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterLinkEntity;
+use MailPoet\Entities\NewsletterPostEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -74,6 +75,17 @@ class DataInconsistencyRepository {
       LEFT JOIN $newsletterTable n ON n.`id` = nl.`newsletter_id`
       LEFT JOIN $sendingQueueTable sq ON sq.`id` = nl.`queue_id`
       WHERE n.`id` IS NULL OR sq.`id` IS NULL
+    ")->fetchOne();
+    return intval($count);
+  }
+
+  public function getOrphanedNewsletterPostsCount(): int {
+    $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $newsletterPostTable = $this->entityManager->getClassMetadata(NewsletterPostEntity::class)->getTableName();
+    $count = $this->entityManager->getConnection()->executeQuery("
+      SELECT count(distinct np.`id`) FROM $newsletterPostTable np
+      LEFT JOIN $newsletterTable n ON n.`id` = np.`newsletter_id`
+      WHERE n.`id` IS NULL
     ")->fetchOne();
     return intval($count);
   }
@@ -151,6 +163,16 @@ class DataInconsistencyRepository {
       LEFT JOIN $newsletterTable n ON n.`id` = nl.`newsletter_id`
       LEFT JOIN $sendingQueueTable sq ON sq.`id` = nl.`queue_id`
       WHERE n.`id` IS NULL OR sq.`id` IS NULL
+    ");
+  }
+
+  public function cleanupOrphanedNewsletterPosts(): int {
+    $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $newsletterPostTable = $this->entityManager->getClassMetadata(NewsletterPostEntity::class)->getTableName();
+    return (int)$this->entityManager->getConnection()->executeStatement("
+      DELETE np FROM $newsletterPostTable np
+      LEFT JOIN $newsletterTable n ON n.`id` = np.`newsletter_id`
+      WHERE n.`id` IS NULL
     ");
   }
 

@@ -10,6 +10,7 @@ class DataInconsistencyController {
   const SENDING_QUEUE_WITHOUT_NEWSLETTER = 'sending_queue_without_newsletter';
   const ORPHANED_SUBSCRIPTIONS = 'orphaned_subscriptions';
   const ORPHANED_LINKS = 'orphaned_links';
+  const ORPHANED_NEWSLETTER_POSTS = 'orphaned_newsletter_posts';
 
   const SUPPORTED_INCONSISTENCY_CHECKS = [
     self::ORPHANED_SENDING_TASKS,
@@ -17,6 +18,7 @@ class DataInconsistencyController {
     self::SENDING_QUEUE_WITHOUT_NEWSLETTER,
     self::ORPHANED_SUBSCRIPTIONS,
     self::ORPHANED_LINKS,
+    self::ORPHANED_NEWSLETTER_POSTS,
   ];
 
   private DataInconsistencyRepository $repository;
@@ -34,6 +36,7 @@ class DataInconsistencyController {
       self::SENDING_QUEUE_WITHOUT_NEWSLETTER => $this->repository->getSendingQueuesWithoutNewsletterCount(),
       self::ORPHANED_SUBSCRIPTIONS => $this->repository->getOrphanedSubscriptionsCount(),
       self::ORPHANED_LINKS => $this->repository->getOrphanedNewsletterLinksCount(),
+      self::ORPHANED_NEWSLETTER_POSTS => $this->repository->getOrphanedNewsletterPostsCount(),
     ];
     $result['total'] = array_sum($result);
     return $result;
@@ -53,6 +56,8 @@ class DataInconsistencyController {
       $this->repository->cleanupOrphanedSubscriptions();
     } elseif ($inconsistency === self::ORPHANED_LINKS) {
       $this->repository->cleanupOrphanedNewsletterLinks();
+    } elseif ($inconsistency === self::ORPHANED_NEWSLETTER_POSTS) {
+      $this->repository->cleanupOrphanedNewsletterPosts();
     }
   }
 }
