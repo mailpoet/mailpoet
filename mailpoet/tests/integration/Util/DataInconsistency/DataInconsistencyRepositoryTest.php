@@ -10,11 +10,11 @@ use MailPoet\Test\DataFactories\SendingQueue;
 class DataInconsistencyRepositoryTest extends \MailPoetTest {
   private DataInconsistencyRepository $repository;
 
-  public function _before() {
+  public function _before(): void {
     $this->repository = $this->diContainer->get(DataInconsistencyRepository::class);
   }
 
-  public function testItFetchesOrphanedSendingTasksCount() {
+  public function testItFetchesOrphanedSendingTasksCount(): void {
     $orphanedSendingTasksCount = $this->repository->getOrphanedSendingTasksCount();
     verify($orphanedSendingTasksCount)->equals(0);
 
@@ -29,5 +29,16 @@ class DataInconsistencyRepositoryTest extends \MailPoetTest {
     (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, null);
     $orphanedSendingTasksCount = $this->repository->getOrphanedSendingTasksCount();
     verify($orphanedSendingTasksCount)->equals(2);
+  }
+
+  public function testItCleansUpOrphanedSendingTasks(): void {
+    (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, null);
+    $orphanedSendingTasksCount = $this->repository->getOrphanedSendingTasksCount();
+    verify($orphanedSendingTasksCount)->equals(2);
+
+    $this->repository->cleanupOrphanedSendingTasks();
+    $orphanedSendingTasksCount = $this->repository->getOrphanedSendingTasksCount();
+    verify($orphanedSendingTasksCount)->equals(0);
   }
 }
