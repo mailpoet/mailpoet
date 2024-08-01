@@ -4,6 +4,7 @@ namespace MailPoet\Util\DataInconsistency;
 
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\NewsletterLinkEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
@@ -60,6 +61,19 @@ class DataInconsistencyRepository {
       LEFT JOIN $segmentTable seg ON seg.`id` = ss.`segment_id`
       LEFT JOIN $subscriberTable sub ON sub.`id` = ss.`subscriber_id`
       WHERE seg.`id` IS NULL OR sub.`id` IS NULL
+    ")->fetchOne();
+    return intval($count);
+  }
+
+  public function getOrphanedNewsletterLinksCount(): int {
+    $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $newsletterLinkTable = $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
+    $count = $this->entityManager->getConnection()->executeQuery("
+      SELECT count(distinct nl.`id`) FROM $newsletterLinkTable nl
+      LEFT JOIN $newsletterTable n ON n.`id` = nl.`newsletter_id`
+      LEFT JOIN $sendingQueueTable sq ON sq.`id` = nl.`queue_id`
+      WHERE n.`id` IS NULL OR sq.`id` IS NULL
     ")->fetchOne();
     return intval($count);
   }
@@ -125,6 +139,18 @@ class DataInconsistencyRepository {
       LEFT JOIN $segmentTable seg ON seg.`id` = ss.`segment_id`
       LEFT JOIN $subscriberTable sub ON sub.`id` = ss.`subscriber_id`
       WHERE seg.`id` IS NULL OR sub.`id` IS NULL
+    ");
+  }
+
+  public function cleanupOrphanedNewsletterLinks(): int {
+    $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
+    $newsletterLinkTable = $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
+    return (int)$this->entityManager->getConnection()->executeStatement("
+      DELETE nl FROM $newsletterLinkTable nl
+      LEFT JOIN $newsletterTable n ON n.`id` = nl.`newsletter_id`
+      LEFT JOIN $sendingQueueTable sq ON sq.`id` = nl.`queue_id`
+      WHERE n.`id` IS NULL OR sq.`id` IS NULL
     ");
   }
 

@@ -8,6 +8,7 @@ use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\Newsletter;
+use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\ScheduledTaskSubscriber;
 use MailPoet\Test\DataFactories\Segment;
@@ -128,5 +129,34 @@ class DataInconsistencyRepositoryTest extends \MailPoetTest {
     $this->entityManager->detach($segmentToKeep);
     $segmentToKeep = $this->entityManager->find(SegmentEntity::class, $segmentToKeep->getId());
     $this->assertInstanceOf(SegmentEntity::class, $segmentToKeep);
+  }
+
+  public function testItHandlesOrphanedLinks(): void {
+    $newsletterToDelete = (new Newsletter())->create();
+    $task1 = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    (new SendingQueue())->create($task1, $newsletterToDelete);
+    $this->entityManager->refresh($newsletterToDelete);
+
+    $newsletterToKeep = (new Newsletter())->create();
+    $task2 = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $queueToDelete = (new SendingQueue())->create($task2, $newsletterToKeep);
+    $this->entityManager->refresh($newsletterToKeep);
+
+    $newsletterToKeep2 = (new Newsletter())->create();
+    $task3 = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    (new SendingQueue())->create($task3, $newsletterToKeep2);
+    $this->entityManager->refresh($newsletterToKeep2);
+
+    (new NewsletterLink($newsletterToDelete))->create();
+    (new NewsletterLink($newsletterToKeep))->create();
+    (new NewsletterLink($newsletterToKeep2))->create();
+
+    $this->entityManager->remove($newsletterToDelete);
+    $this->entityManager->remove($queueToDelete);
+    $this->entityManager->flush();
+
+    verify($this->repository->getOrphanedNewsletterLinksCount())->equals(2);
+    $this->repository->cleanupOrphanedNewsletterLinks();
+    verify($this->repository->getOrphanedNewsletterLinksCount())->equals(0);
   }
 }
