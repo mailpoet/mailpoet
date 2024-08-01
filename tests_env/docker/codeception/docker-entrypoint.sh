@@ -50,6 +50,7 @@ fi
 if [[ $WORDPRESS_VERSION != "" ]]; then
   echo "Installing WordPress version: $WORDPRESS_VERSION"
   wp core update --version=$WORDPRESS_VERSION
+  wp core update-db
 fi
 echo "WORDPRESS VERSION:"
 wp core version
