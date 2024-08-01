@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\Scheduler;
 
+use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -64,7 +65,7 @@ class AutomationEmailScheduler {
     return $task;
   }
 
-  public function getScheduledTaskSubscriber(NewsletterEntity $email, SubscriberEntity $subscriber, int $runId): ?ScheduledTaskSubscriberEntity {
+  public function getScheduledTaskSubscriber(NewsletterEntity $email, SubscriberEntity $subscriber, AutomationRun $run): ?ScheduledTaskSubscriberEntity {
     $results = $this->entityManager->createQueryBuilder()
       ->select('sts')
       ->from(ScheduledTaskSubscriberEntity::class, 'sts')
@@ -72,8 +73,10 @@ class AutomationEmailScheduler {
       ->join('st.sendingQueue', 'sq')
       ->where('sq.newsletter = :newsletter')
       ->andWhere('sts.subscriber = :subscriber')
+      ->andWhere('st.createdAt >= :runCreatedAt')
       ->setParameter('newsletter', $email)
       ->setParameter('subscriber', $subscriber)
+      ->setParameter('runCreatedAt', $run->getCreatedAt())
       ->getQuery()
       ->getResult();
     $result = null;
@@ -83,7 +86,7 @@ class AutomationEmailScheduler {
         continue;
       }
       $meta = $task->getMeta();
-      if (($meta['automation']['run_id'] ?? null) === $runId) {
+      if (($meta['automation']['run_id'] ?? null) === $run->getId()) {
         $result = $scheduledTaskSubscriber;
         break;
       }
