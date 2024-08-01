@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 4.59.0 - 2024-08-01 =
+
+- Improved: minor changes and fixes.
+
 = 4.58.0 - 2024-07-30 =
 
 - Added: Method to update a subscriber to our public API;
