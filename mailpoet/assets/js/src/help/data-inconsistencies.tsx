@@ -48,7 +48,7 @@ export function DataInconsistencies({ dataInconsistencies }: Props) {
         setCleaningKey('');
         setData((response.data as DataInconsistencies) || null);
         MailPoet.Notice.show({
-          message: __('Inconsistency cleaned', 'mailpoet'),
+          message: __('Inconsistency fixed!', 'mailpoet'),
           scroll: true,
         });
       })
@@ -70,27 +70,31 @@ export function DataInconsistencies({ dataInconsistencies }: Props) {
     .filter(([key, value]) => key !== 'total' && value > 0)
     .map(([key, value]) => ({
       key: labelsMap[key],
-      value: (
-        <div>
-          {value} (
-          <Button
-            variant="link"
-            label={__('Clean', 'mailpoet')}
-            onClick={() => fixInconsistency(key)}
-            isBusy={cleaningKey === key}
-            disabled={!!cleaningKey}
-          >
-            {__('Fix', 'mailpoet')}
-          </Button>
-          )
-        </div>
+      value,
+      action: (
+        <Button
+          variant="primary"
+          size="small"
+          label={__('Clean', 'mailpoet')}
+          onClick={() => fixInconsistency(key)}
+          isBusy={cleaningKey === key}
+          disabled={!!cleaningKey}
+        >
+          {__('Fix', 'mailpoet')}
+        </Button>
       ),
     }));
 
   return (
     <div>
       <h2>{__('Data Inconsistencies', 'mailpoet')}</h2>
-      <KeyValueTable rows={rowsData} />
+      <p>
+        {__(
+          'We found the following data inconsistencies in your DB. Click the "Fix" button to clean them.',
+          'mailpoet',
+        )}
+      </p>
+      <KeyValueTable rows={rowsData} max_width="400px" is_fixed={false} />
     </div>
   );
 }
