@@ -132,10 +132,15 @@ class HelpTest extends \MailPoetTest {
     $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED);
     $this->entityManager->detach($task);
 
-    $response = (array)$this->endpoint->fixInconsistentData(['inconsistency' => DataInconsistencyController::ORPHANED_SENDING_TASKS]);
+    $response = $this->endpoint->fixInconsistentData(['inconsistency' => DataInconsistencyController::ORPHANED_SENDING_TASKS]);
     $task = $this->scheduledTasksRepository->findOneById($task->getId());
     verify($task)->null();
-    verify($response['data']['total'] ?? null)->equals(0);
-    verify($response['data'][DataInconsistencyController::ORPHANED_SENDING_TASKS] ?? null)->equals(0);
+    verify($response->data['total'] ?? null)->equals(0);
+    verify($response->data[DataInconsistencyController::ORPHANED_SENDING_TASKS] ?? null)->equals(0);
+    verify($response->data[DataInconsistencyController::ORPHANED_NEWSLETTER_POSTS] ?? null)->equals(0);
+    verify($response->data[DataInconsistencyController::ORPHANED_SUBSCRIPTIONS] ?? null)->equals(0);
+    verify($response->data[DataInconsistencyController::ORPHANED_SENDING_TASK_SUBSCRIBERS] ?? null)->equals(0);
+    verify($response->data[DataInconsistencyController::SENDING_QUEUE_WITHOUT_NEWSLETTER] ?? null)->equals(0);
+    verify($response->data[DataInconsistencyController::ORPHANED_LINKS] ?? null)->equals(0);
   }
 }
