@@ -34,6 +34,7 @@ class DataInconsistencyRepository {
   public function getOrphanedScheduledTasksSubscribersCount(): int {
     $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    /** @var string $count */
     $count = $this->entityManager->getConnection()->executeQuery("
       SELECT count(*) FROM $stsTable sts
       LEFT JOIN $stTable st ON st.`id` = sts.`task_id`
@@ -45,6 +46,7 @@ class DataInconsistencyRepository {
   public function getSendingQueuesWithoutNewsletterCount(): int {
     $sqTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
     $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
+    /** @var string $count */
     $count = $this->entityManager->getConnection()->executeQuery("
       SELECT count(*) FROM $sqTable sq
       LEFT JOIN $newsletterTable n ON n.`id` = sq.`newsletter_id`
@@ -57,6 +59,7 @@ class DataInconsistencyRepository {
     $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $segmentTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
     $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    /** @var string $count */
     $count = $this->entityManager->getConnection()->executeQuery("
       SELECT count(distinct ss.`id`) FROM $subscriberSegmentTable ss
       LEFT JOIN $segmentTable seg ON seg.`id` = ss.`segment_id`
@@ -70,6 +73,7 @@ class DataInconsistencyRepository {
     $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
     $sendingQueueTable = $this->entityManager->getClassMetadata(SendingQueueEntity::class)->getTableName();
     $newsletterLinkTable = $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
+    /** @var string $count */
     $count = $this->entityManager->getConnection()->executeQuery("
       SELECT count(distinct nl.`id`) FROM $newsletterLinkTable nl
       LEFT JOIN $newsletterTable n ON n.`id` = nl.`newsletter_id`
@@ -82,6 +86,7 @@ class DataInconsistencyRepository {
   public function getOrphanedNewsletterPostsCount(): int {
     $newsletterTable = $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName();
     $newsletterPostTable = $this->entityManager->getClassMetadata(NewsletterPostEntity::class)->getTableName();
+    /** @var string $count */
     $count = $this->entityManager->getConnection()->executeQuery("
       SELECT count(distinct np.`id`) FROM $newsletterPostTable np
       LEFT JOIN $newsletterTable n ON n.`id` = np.`newsletter_id`
@@ -91,6 +96,7 @@ class DataInconsistencyRepository {
   }
 
   public function cleanupOrphanedSendingTasks(): int {
+    /** @var array<int, array{id: string}> $ids */
     $ids = $this->buildOrphanedSendingTasksQuery(
       $this->entityManager->createQueryBuilder()
       ->select('st.id')
@@ -99,12 +105,12 @@ class DataInconsistencyRepository {
     if (!$ids) {
       return 0;
     }
-
+    $ids = array_column($ids, 'id');
     // delete the orphaned tasks
     $qb = $this->entityManager->createQueryBuilder();
     $countDeletedTasks = $qb->delete(ScheduledTaskEntity::class, 'st')
       ->where($qb->expr()->in('st.id', ':ids'))
-      ->setParameter('ids', array_column($ids, 'id'))
+      ->setParameter('ids', $ids)
       ->getQuery()
       ->execute();
 
@@ -112,7 +118,7 @@ class DataInconsistencyRepository {
     $qb = $this->entityManager->createQueryBuilder();
     $qb->delete(ScheduledTaskSubscriberEntity::class, 'sts')
       ->where($qb->expr()->in('sts.task', ':ids'))
-      ->setParameter('ids', array_column($ids, 'id'))
+      ->setParameter('ids', $ids)
       ->getQuery()
       ->execute();
 
