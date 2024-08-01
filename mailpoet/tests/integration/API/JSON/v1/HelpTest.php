@@ -8,6 +8,7 @@ use MailPoet\API\JSON\v1\Help;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
+use MailPoet\Util\DataInconsistency\DataInconsistencyController;
 use MailPoetVendor\Carbon\Carbon;
 
 class HelpTest extends \MailPoetTest {
@@ -21,7 +22,7 @@ class HelpTest extends \MailPoetTest {
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
   }
 
-  public function testItReturnsErrorWhenIdIsMissing() {
+  public function testItReturnsErrorWhenIdIsMissing(): void {
     /** @var ErrorResponse $response */
     $response = $this->endpoint->cancelTask([]);
     verify($response)->instanceOf(ErrorResponse::class);
@@ -35,7 +36,7 @@ class HelpTest extends \MailPoetTest {
     verify($response->errors[0]['message'])->equals('Invalid or missing parameter `id`.');
   }
 
-  public function testItReturnsErrorWhenTaskDoesntExist() {
+  public function testItReturnsErrorWhenTaskDoesntExist(): void {
     /** @var ErrorResponse $response */
     $response = $this->endpoint->cancelTask(['id' => 99999]);
     verify($response)->instanceOf(ErrorResponse::class);
@@ -49,7 +50,7 @@ class HelpTest extends \MailPoetTest {
     verify($response->errors[0]['message'])->equals('Task not found.');
   }
 
-  public function testItReturnsErrorWhenCancellingCompletedTask() {
+  public function testItReturnsErrorWhenCancellingCompletedTask(): void {
     $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_COMPLETED, new \DateTime());
     /** @var ErrorResponse $response */
     $response = $this->endpoint->cancelTask(['id' => $task->getId()]);
@@ -58,7 +59,7 @@ class HelpTest extends \MailPoetTest {
     verify($response->errors[0]['message'])->equals('Only scheduled and running tasks can be cancelled');
   }
 
-  public function testItReturnsErrorWhenReschedulingCompletedTask() {
+  public function testItReturnsErrorWhenReschedulingCompletedTask(): void {
     $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_COMPLETED, new \DateTime());
     /** @var ErrorResponse $response */
     $response = $this->endpoint->rescheduleTask(['id' => $task->getId()]);
@@ -67,7 +68,7 @@ class HelpTest extends \MailPoetTest {
     verify($response->errors[0]['message'])->equals('Only cancelled tasks can be rescheduled');
   }
 
-  public function testItCanCancelScheduledTask() {
+  public function testItCanCancelScheduledTask(): void {
     $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED, new \DateTime());
     $response = $this->endpoint->cancelTask(['id' => $task->getId()]);
     verify($response)->instanceOf(APIResponse::class);
@@ -82,7 +83,7 @@ class HelpTest extends \MailPoetTest {
     }
   }
 
-  public function testItCanCancelRunningTask() {
+  public function testItCanCancelRunningTask(): void {
     $task = (new ScheduledTaskFactory())->create('sending', null, new \DateTime());
     $response = $this->endpoint->cancelTask(['id' => $task->getId()]);
     verify($response)->instanceOf(APIResponse::class);
@@ -97,7 +98,7 @@ class HelpTest extends \MailPoetTest {
     }
   }
 
-  public function testItCanRescheduleTaskInFuture() {
+  public function testItCanRescheduleTaskInFuture(): void {
     $futureDate = Carbon::now()->addDay();
     $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_CANCELLED, $futureDate);
     $response = $this->endpoint->rescheduleTask(['id' => $task->getId()]);
@@ -112,7 +113,7 @@ class HelpTest extends \MailPoetTest {
     }
   }
 
-  public function testItCanRescheduleTaskInProgress() {
+  public function testItCanRescheduleTaskInProgress(): void {
     $pastDate = Carbon::now()->subDay();
     $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_CANCELLED, $pastDate);
     $response = $this->endpoint->rescheduleTask(['id' => $task->getId()]);
@@ -125,5 +126,16 @@ class HelpTest extends \MailPoetTest {
       verify($task->getStatus())->equals(null); // task is running
       verify($task->getCancelledAt())->null();
     }
+  }
+
+  public function testItFixesInconsistentData(): void {
+    $task = (new ScheduledTaskFactory())->create('sending', ScheduledTaskEntity::STATUS_SCHEDULED);
+    $this->entityManager->detach($task);
+
+    $response = (array)$this->endpoint->fixInconsistentData(['inconsistency' => DataInconsistencyController::ORPHANED_SENDING_TASKS]);
+    $task = $this->scheduledTasksRepository->findOneById($task->getId());
+    verify($task)->null();
+    verify($response['data']['total'] ?? null)->equals(0);
+    verify($response['data'][DataInconsistencyController::ORPHANED_SENDING_TASKS] ?? null)->equals(0);
   }
 }

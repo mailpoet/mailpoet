@@ -8,6 +8,7 @@ use MailPoet\API\JSON\Response;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
+use MailPoet\Util\DataInconsistency\DataInconsistencyController;
 
 class Help extends APIEndpoint {
 
@@ -16,11 +17,14 @@ class Help extends APIEndpoint {
   ];
 
   private ScheduledTasksRepository $scheduledTasksRepository;
+  private DataInconsistencyController $dataInconsistencyController;
 
   public function __construct(
-    ScheduledTasksRepository $scheduledTasksRepository
+    ScheduledTasksRepository $scheduledTasksRepository,
+    DataInconsistencyController $dataInconsistencyController
   ) {
     $this->scheduledTasksRepository = $scheduledTasksRepository;
+    $this->dataInconsistencyController = $dataInconsistencyController;
   }
 
   public function cancelTask($data): Response {
@@ -57,6 +61,15 @@ class Help extends APIEndpoint {
     } catch (\Exception $e) {
       return $this->badRequest([ApiError::BAD_REQUEST => $e->getMessage()]);
     }
+  }
+
+  public function fixInconsistentData($data): Response {
+    try {
+      $this->dataInconsistencyController->fixInconsistentData($data['inconsistency'] ?? '');
+    } catch (\Exception $e) {
+      return $this->badRequest([ApiError::BAD_REQUEST => $e->getMessage()]);
+    }
+    return $this->successResponse($this->dataInconsistencyController->getInconsistentDataStatus());
   }
 
   private function validateTaskId($data): void {
