@@ -1126,6 +1126,9 @@ class RoboFile extends \Robo\Tasks {
       ->addCode(function () {
         return $this->releaseDownloadZip();
       })
+      ->addCode(function () use ($version) {
+        return $this->releaseVerifyDownloadedZip();
+      })
       ->addCode(function () {
         return $this->translationsGetPotFileFromBuild();
       })
@@ -1149,6 +1152,9 @@ class RoboFile extends \Robo\Tasks {
       })
       ->addCode(function () {
         return $this->releaseMergePullRequest(\MailPoetTasks\Release\GitHubController::RELEASE_SOURCE_BRANCH);
+      })
+      ->addCode(function () {
+        return $this->releaseDeleteDownloadedZip();
       })
       ->run();
   }
@@ -1308,11 +1314,40 @@ class RoboFile extends \Robo\Tasks {
     $this->say("IMPORTANT NOTES \n" . ($outputs[2] ?: 'none'));
   }
 
+  public function releaseVerifyDownloadedZip($version) {
+    $this->say('Verifying ZIP file');
+    $zip = new ZipArchive();
+
+    $versionFound = false;
+    if ($zip->open(self::ZIP_BUILD_PATH) === true) {
+      $fileContent = $zip->getFromName('mailpoet/readme.txt');
+      if ($fileContent !== false) {
+        $versionFound = strpos($fileContent, 'Stable tag: ' . $version);
+      }
+      $zip->close();
+    } else {
+      $this->yell('ZIP file could not be opened!', 40, 'red');
+      exit(1);
+    }
+
+    if (!$versionFound) {
+      $this->yell('ZIP file does not contain required version: "' . $version . '" in readme.txt! ', 40, 'red');
+      exit(1);
+    }
+    $this->say('ZIP file contains required version: "' . $version . '" in readme.txt.');
+  }
+
   public function releaseDownloadZip() {
     $circleciController = $this->createCircleCiController();
     $path = $circleciController->downloadLatestBuild(self::ZIP_BUILD_PATH);
     $this->say('Release ZIP downloaded to: ' . $path);
     $this->say(sprintf('Release ZIP file size: %.2F MB', filesize($path) / pow(1024, 2)));
+  }
+
+  public function releaseDeleteDownloadedZip() {
+    $this->say('Delete downloaded ZIP: ' . self::ZIP_BUILD_PATH);
+    $this->taskExec('rm -f ' . self::ZIP_BUILD_PATH)->run();
+    $this->say('ZIP file was deleted');
   }
 
   public function releasePublishGithub($version = null) {
