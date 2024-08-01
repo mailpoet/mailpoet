@@ -24,6 +24,17 @@ class DataInconsistencyRepository {
     return (int)$this->buildOrphanedSendingTasksQuery($builder)->getSingleScalarResult();
   }
 
+  public function getOrphanedScheduledTasksSubscribersCount(): int {
+    $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $count = $this->entityManager->getConnection()->executeQuery("
+      SELECT count(*) FROM $stsTable sts
+      LEFT JOIN $stTable st ON st.`id` = sts.`task_id`
+      WHERE st.`id` IS NULL
+    ")->fetchOne();
+    return intval($count);
+  }
+
   public function cleanupOrphanedSendingTasks(): int {
     $ids = $this->buildOrphanedSendingTasksQuery(
       $this->entityManager->createQueryBuilder()
@@ -51,6 +62,16 @@ class DataInconsistencyRepository {
       ->execute();
 
     return $countDeletedTasks;
+  }
+
+  public function cleanupOrphanedScheduledTaskSubscribers(): int {
+    $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    return (int)$this->entityManager->getConnection()->executeStatement("
+       DELETE sts FROM $stsTable sts
+       LEFT JOIN $stTable st ON st.`id` = sts.`task_id`
+       WHERE st.`id` IS NULL
+    ");
   }
 
   private function buildOrphanedSendingTasksQuery(QueryBuilder $queryBuilder): Query {

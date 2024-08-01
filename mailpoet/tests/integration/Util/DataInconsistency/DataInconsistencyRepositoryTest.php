@@ -60,4 +60,20 @@ class DataInconsistencyRepositoryTest extends \MailPoetTest {
     $taskSubscriberCount = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->count([]);
     verify($taskSubscriberCount)->equals(0);
   }
+
+  public function testItHandlesOrphanedScheduledTaskSubscribers(): void {
+    $taskWithSubscriber = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+
+    $subscriber1 = (new Subscriber())->create();
+    (new ScheduledTaskSubscriber())->createProcessed($taskWithSubscriber, $subscriber1);
+    $subscriber2 = (new Subscriber())->create();
+    (new ScheduledTaskSubscriber())->createProcessed($taskWithSubscriber, $subscriber2);
+
+    $this->entityManager->remove($taskWithSubscriber);
+    $this->entityManager->flush();
+
+    verify($this->repository->getOrphanedScheduledTasksSubscribersCount())->equals(2);
+    $this->repository->cleanupOrphanedScheduledTaskSubscribers();
+    verify($this->repository->getOrphanedScheduledTasksSubscribersCount())->equals(0);
+  }
 }

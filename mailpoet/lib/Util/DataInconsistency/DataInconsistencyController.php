@@ -6,9 +6,11 @@ use MailPoet\UnexpectedValueException;
 
 class DataInconsistencyController {
   const ORPHANED_SENDING_TASKS = 'orphaned_sending_tasks';
+  const ORPHANED_SENDING_TASK_SUBSCRIBERS = 'orphaned_sending_task_subscribers';
 
   const SUPPORTED_INCONSISTENCY_CHECKS = [
     self::ORPHANED_SENDING_TASKS,
+    self::ORPHANED_SENDING_TASK_SUBSCRIBERS,
   ];
 
   private DataInconsistencyRepository $repository;
@@ -22,6 +24,7 @@ class DataInconsistencyController {
   public function getInconsistentDataStatus(): array {
     $result = [
       self::ORPHANED_SENDING_TASKS => $this->repository->getOrphanedSendingTasksCount(),
+      self::ORPHANED_SENDING_TASK_SUBSCRIBERS => $this->repository->getOrphanedScheduledTasksSubscribersCount(),
     ];
     $result['total'] = array_sum($result);
     return $result;
@@ -33,7 +36,8 @@ class DataInconsistencyController {
     }
     if ($inconsistency === self::ORPHANED_SENDING_TASKS) {
       $this->repository->cleanupOrphanedSendingTasks();
-      return;
+    } elseif ($inconsistency === self::ORPHANED_SENDING_TASK_SUBSCRIBERS) {
+      $this->repository->cleanupOrphanedScheduledTaskSubscribers();
     }
   }
 }

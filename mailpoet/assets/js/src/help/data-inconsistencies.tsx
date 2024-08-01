@@ -19,6 +19,10 @@ export function DataInconsistencies({ dataInconsistencies }: Props) {
   const labelsMap = useMemo(
     () => ({
       orphaned_sending_tasks: __('Orphaned Sending Tasks', 'mailpoet'),
+      orphaned_sending_task_subscribers: __(
+        'Orphaned Sending Task Subscribers',
+        'mailpoet',
+      ),
     }),
     [],
   );
