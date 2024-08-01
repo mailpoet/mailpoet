@@ -27,6 +27,7 @@ export function DataInconsistencies({ dataInconsistencies }: Props) {
         'Sending Queues without Newsletter',
         'mailpoet',
       ),
+      orphaned_subscriptions: __('Orphaned Subscriptions', 'mailpoet'),
     }),
     [],
   );
