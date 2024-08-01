@@ -23,6 +23,10 @@ export function DataInconsistencies({ dataInconsistencies }: Props) {
         'Orphaned Sending Task Subscribers',
         'mailpoet',
       ),
+      sending_queue_without_newsletter: __(
+        'Sending Queues without Newsletter',
+        'mailpoet',
+      ),
     }),
     [],
   );

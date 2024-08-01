@@ -6,6 +6,7 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\ScheduledTaskSubscriber;
 use MailPoet\Test\DataFactories\SendingQueue;
@@ -74,6 +75,27 @@ class DataInconsistencyRepositoryTest extends \MailPoetTest {
 
     verify($this->repository->getOrphanedScheduledTasksSubscribersCount())->equals(2);
     $this->repository->cleanupOrphanedScheduledTaskSubscribers();
+    verify($this->repository->getOrphanedScheduledTasksSubscribersCount())->equals(0);
+  }
+
+  public function testItHandlesSendingQueuesWithoutNewsletter(): void {
+    $newsletter = (new Newsletter())->create();
+    $taskWithSubscriber = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+
+    $subscriber1 = (new Subscriber())->create();
+    (new ScheduledTaskSubscriber())->createProcessed($taskWithSubscriber, $subscriber1);
+    $subscriber2 = (new Subscriber())->create();
+    (new ScheduledTaskSubscriber())->createProcessed($taskWithSubscriber, $subscriber2);
+
+    (new SendingQueue())->create($taskWithSubscriber, $newsletter);
+
+    $this->entityManager->remove($newsletter);
+    $this->entityManager->flush();
+
+    verify($this->repository->getSendingQueuesWithoutNewsletterCount())->equals(1);
+    $this->repository->cleanupSendingQueuesWithoutNewsletter();
+    verify($this->repository->getSendingQueuesWithoutNewsletterCount())->equals(0);
+    verify($this->repository->getOrphanedSendingTasksCount())->equals(0);
     verify($this->repository->getOrphanedScheduledTasksSubscribersCount())->equals(0);
   }
 }
