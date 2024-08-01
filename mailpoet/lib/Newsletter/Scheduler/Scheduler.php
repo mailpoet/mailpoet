@@ -39,7 +39,7 @@ class Scheduler {
     // 3) We convert the calculated time to UTC
     $from = $this->wp->currentDatetime();
     try {
-      $schedule = \Cron\CronExpression::factory($schedule);
+      $schedule = new \Cron\CronExpression((string)$schedule);
       $previousRunDate = $schedule->getPreviousRunDate(Carbon::instance($from));
       $previousRunDate->setTimezone(new \DateTimeZone('UTC'));
       $previousRunDate = $previousRunDate->format('Y-m-d H:i:s');
@@ -94,9 +94,13 @@ class Scheduler {
     //$fromTimestamp = $this->wp->currentTime('timestamp', false);
     $from = $this->wp->currentDatetime();
     try {
-      $schedule = \Cron\CronExpression::factory($schedule);
+      $schedule = new \Cron\CronExpression((string)$schedule);
       $nextRunDate = $schedule->getNextRunDate(Carbon::instance($from));
       $nextRunDate->setTimezone(new \DateTimeZone('UTC'));
+      // Work around CronExpression transforming Carbon into DateTime
+      if (!$nextRunDate instanceof Carbon) {
+        $nextRunDate = new Carbon($nextRunDate);
+      }
     } catch (\Exception $e) {
       $nextRunDate = false;
     }

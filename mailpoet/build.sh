@@ -111,7 +111,7 @@ echo '[BUILD] Removing unit tests from vendor libraries'
 rm -rf $plugin_name/vendor-prefixed/cerdic/css-tidy/COPYING
 rm -rf $plugin_name/vendor-prefixed/cerdic/css-tidy/NEWS
 rm -rf $plugin_name/vendor-prefixed/cerdic/css-tidy/testing
-rm -rf $plugin_name/vendor/mtdowling/cron-expression/tests
+rm -rf $plugin_name/vendor/dragonmantank/cron-expression/tests
 rm -rf $plugin_name/vendor/phpmailer/phpmailer/test
 rm -rf $plugin_name/vendor-prefixed/psr/log/Psr/Log/Test
 rm -rf $plugin_name/vendor-prefixed/sabberworm/php-css-parser/tests
