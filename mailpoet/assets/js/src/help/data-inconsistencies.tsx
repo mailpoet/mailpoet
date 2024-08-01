@@ -1,6 +1,6 @@
 import { MailPoet } from 'mailpoet';
 import { Button } from '@wordpress/components';
-import { useState, useCallback } from '@wordpress/element';
+import { useState, useCallback, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { KeyValueTable } from 'common/key-value-table';
 
@@ -15,6 +15,13 @@ type Props = {
 export function DataInconsistencies({ dataInconsistencies }: Props) {
   const [data, setData] = useState(dataInconsistencies);
   const [cleaningKey, setCleaningKey] = useState('');
+
+  const labelsMap = useMemo(
+    () => ({
+      orphaned_sending_tasks: __('Orphaned Sending Tasks', 'mailpoet'),
+    }),
+    [],
+  );
 
   const fixInconsistency = useCallback((key) => {
     setCleaningKey(key as string);
@@ -51,7 +58,7 @@ export function DataInconsistencies({ dataInconsistencies }: Props) {
   const rowsData = Object.entries(data)
     .filter(([key]) => key !== 'total')
     .map(([key, value]) => ({
-      key,
+      key: labelsMap[key],
       value: (
         <div>
           {value} (
