@@ -6,7 +6,10 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
+use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
+use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
@@ -44,6 +47,19 @@ class DataInconsistencyRepository {
       SELECT count(*) FROM $sqTable sq
       LEFT JOIN $newsletterTable n ON n.`id` = sq.`newsletter_id`
       WHERE n.`id` IS NULL
+    ")->fetchOne();
+    return intval($count);
+  }
+
+  public function getOrphanedSubscriptionsCount(): int {
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $segmentTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+    $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    $count = $this->entityManager->getConnection()->executeQuery("
+      SELECT count(distinct ss.`id`) FROM $subscriberSegmentTable ss
+      LEFT JOIN $segmentTable seg ON seg.`id` = ss.`segment_id`
+      LEFT JOIN $subscriberTable sub ON sub.`id` = ss.`subscriber_id`
+      WHERE seg.`id` IS NULL OR sub.`id` IS NULL
     ")->fetchOne();
     return intval($count);
   }
@@ -98,6 +114,18 @@ class DataInconsistencyRepository {
 
     $this->cleanupOrphanedSendingTasks();
     return $deletedQueuesCount;
+  }
+
+  public function cleanupOrphanedSubscriptions(): int {
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $segmentTable = $this->entityManager->getClassMetadata(SegmentEntity::class)->getTableName();
+    $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+    return (int)$this->entityManager->getConnection()->executeStatement("
+      DELETE ss FROM $subscriberSegmentTable ss
+      LEFT JOIN $segmentTable seg ON seg.`id` = ss.`segment_id`
+      LEFT JOIN $subscriberTable sub ON sub.`id` = ss.`subscriber_id`
+      WHERE seg.`id` IS NULL OR sub.`id` IS NULL
+    ");
   }
 
   private function buildOrphanedSendingTasksQuery(QueryBuilder $queryBuilder): Query {
