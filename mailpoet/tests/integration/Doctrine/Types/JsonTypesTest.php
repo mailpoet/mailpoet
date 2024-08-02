@@ -188,7 +188,7 @@ class JsonTypesTest extends \MailPoetTest {
     $configuration->setMetadataCacheImpl(new ArrayCache());
 
     $validatorFactory = new ValidatorFactory($annotationReaderProvider);
-    $timestampListener = new TimestampListener($this->wp);
+    $timestampListener = new TimestampListener();
     $validationListener = new ValidationListener($validatorFactory->createValidator());
     $emojiEncodingListener = new EmojiEncodingListener(new Emoji($this->wp));
     $lastSubscribedAtListener = new LastSubscribedAtListener($this->wp);
