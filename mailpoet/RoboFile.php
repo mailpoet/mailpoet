@@ -1127,7 +1127,7 @@ class RoboFile extends \Robo\Tasks {
         return $this->releaseDownloadZip();
       })
       ->addCode(function () use ($version) {
-        return $this->releaseVerifyDownloadedZip();
+        return $this->releaseVerifyDownloadedZip($version);
       })
       ->addCode(function () {
         return $this->translationsGetPotFileFromBuild();
