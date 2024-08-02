@@ -10,18 +10,19 @@ use MailPoetVendor\Doctrine\ORM\Event\LifecycleEventArgs;
 use ReflectionObject;
 
 class TimestampListener {
-  /** @var Carbon */
-  private $now;
+  /** @var WPFunctions */
+  private $wp;
 
   public function __construct(
     WPFunctions $wp
   ) {
-    $this->now = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
+    $this->wp = $wp;
   }
 
   public function prePersist(LifecycleEventArgs $eventArgs) {
     $entity = $eventArgs->getEntity();
     $entityTraits = $this->getEntityTraits($entity);
+    $now = $this->getNow();
 
     if (
       in_array(CreatedAtTrait::class, $entityTraits, true)
@@ -29,11 +30,11 @@ class TimestampListener {
       && method_exists($entity, 'getCreatedAt')
       && !$entity->getCreatedAt()
     ) {
-      $entity->setCreatedAt($this->now->copy());
+      $entity->setCreatedAt(clone $now);
     }
 
     if (in_array(UpdatedAtTrait::class, $entityTraits, true) && method_exists($entity, 'setUpdatedAt')) {
-      $entity->setUpdatedAt($this->now->copy());
+      $entity->setUpdatedAt(clone $now);
     }
   }
 
@@ -42,12 +43,16 @@ class TimestampListener {
     $entityTraits = $this->getEntityTraits($entity);
 
     if (in_array(UpdatedAtTrait::class, $entityTraits, true) && method_exists($entity, 'setUpdatedAt')) {
-      $entity->setUpdatedAt($this->now->copy());
+      $entity->setUpdatedAt($this->getNow());
     }
   }
 
   private function getEntityTraits($entity) {
     $entityReflection = new ReflectionObject($entity);
     return $entityReflection->getTraitNames();
+  }
+
+  private function getNow(): \DateTimeInterface {
+    return Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
   }
 }
