@@ -2,36 +2,16 @@
 
 namespace MailPoet\Test\Doctrine\EventListeners;
 
-use MailPoet\Doctrine\EventListeners\TimestampListener;
-use MailPoet\WP\Functions as WPFunctions;
-use MailPoetVendor\Carbon\Carbon;
+use DateTimeImmutable;
 
 require_once __DIR__ . '/EventListenersBaseTest.php';
 require_once __DIR__ . '/TimestampEntity.php';
 
 class TimestampListenerTest extends EventListenersBaseTest {
-  /** @var Carbon */
-  private $now;
-
-  /** @var WPFunctions */
-  private $wp;
-
   /** @var string */
   private $tableName;
 
-  /** @var TimestampListener */
-  private $timestampListener;
-
   public function _before() {
-    $timestamp = time();
-    $this->now = Carbon::createFromTimestamp($timestamp);
-    $this->wp = $this->make(WPFunctions::class, [
-      'currentTime' => $timestamp,
-    ]);
-    $this->timestampListener = new TimestampListener($this->wp);
-    $originalListener = $this->diContainer->get(TimestampListener::class);
-    $this->replaceListeners($originalListener, $this->timestampListener);
-
     $this->tableName = $this->entityManager->getClassMetadata(TimestampEntity::class)->getTableName();
     $this->connection->executeStatement("DROP TABLE IF EXISTS $this->tableName");
     $this->connection->executeStatement("
@@ -45,17 +25,20 @@ class TimestampListenerTest extends EventListenersBaseTest {
   }
 
   public function testItSetsTimestampsOnCreate() {
+    $now = new DateTimeImmutable();
     $entity = new TimestampEntity();
     $entity->setName('Created');
 
     $this->entityManager->persist($entity);
     $this->entityManager->flush();
 
-    verify($entity->getCreatedAt())->equals($this->now);
-    verify($entity->getUpdatedAt())->equals($this->now);
+    $createdAt = $entity->getCreatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
+    verify($createdAt->getTimestamp())->equalsWithDelta($now->getTimestamp(), 1);
+    verify($entity->getUpdatedAt()->getTimestamp())->equalsWithDelta($now->getTimestamp(), 1);
   }
 
-  public function testItSetsTimestampOnUpdate() {
+  public function testItSetsTimestampOnUpdate(): void {
     $this->connection->executeStatement("
       INSERT INTO $this->tableName (id, created_at, updated_at, name) VALUES (
         123,
@@ -64,7 +47,7 @@ class TimestampListenerTest extends EventListenersBaseTest {
         'Created'
       )
     ");
-
+    $now = new DateTimeImmutable();
     $entity = $this->entityManager->find(TimestampEntity::class, 123);
     $this->assertInstanceOf(TimestampEntity::class, $entity); // PHPStan
     $entity->setName('Updated');
@@ -73,19 +56,15 @@ class TimestampListenerTest extends EventListenersBaseTest {
     $createdAt = $entity->getCreatedAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
     verify($createdAt->format('Y-m-d H:i:s'))->equals('2000-01-01 12:00:00');
-    verify($entity->getUpdatedAt())->equals($this->now);
+    verify($entity->getUpdatedAt()->getTimestamp())->equalsWithDelta($now->getTimestamp(), 1);
   }
 
-  public function testItUsesDifferentTimesWhenCreatingDifferentEntities() {
+  public function testItUsesDifferentTimesWhenCreatingDifferentEntities(): void {
     $entity1 = new TimestampEntity();
     $entity1->setName('Entity 1');
 
     $this->entityManager->persist($entity1);
     $this->entityManager->flush();
-
-    $createdAt1 = $entity1->getCreatedAt();
-    $this->assertInstanceOf(Carbon::class, $createdAt1);
-    $createdAt1->subMonth();
 
     $entity2 = new TimestampEntity();
     $entity2->setName('Entity 2');
@@ -93,13 +72,29 @@ class TimestampListenerTest extends EventListenersBaseTest {
     $this->entityManager->persist($entity2);
     $this->entityManager->flush();
 
-    $this->assertEquals($this->now, $entity2->getCreatedAt());
+    $this->assertNotSame($entity1->getCreatedAt(), $entity2->getCreatedAt());
+  }
+
+  public function testItStoresUTCTimestampEvenWithGmtOffset(): void {
+    $originalOffset = get_option('gmt_offset');
+    update_option('gmt_offset', -10);
+
+    $entity2 = new TimestampEntity();
+    $entity2->setName('Entity 2');
+
+    $now = new DateTimeImmutable();
+    $this->entityManager->persist($entity2);
+    $this->entityManager->flush();
+
+    $this->entityManager->refresh($entity2);
+    $createdAt = $entity2->getCreatedAt();
+    $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
+    verify($createdAt->getTimestamp())->equalsWithDelta($now->getTimestamp(), 1);
+    update_option('gmt_offset', $originalOffset);
   }
 
   public function _after() {
     parent::_after();
-    $originalListener = $this->diContainer->get(TimestampListener::class);
-    $this->replaceListeners($this->timestampListener, $originalListener);
     $this->connection->executeStatement("DROP TABLE IF EXISTS $this->tableName");
   }
 }
