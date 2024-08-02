@@ -198,15 +198,17 @@ class RoboFile extends \Robo\Tasks {
     return $collection->run();
   }
 
-  public function compileJs($opts = ['env' => null, 'skip-tests' => false]) {
+  public function compileJs($opts = ['env' => null, 'skip-tests' => false, 'only-tests' => false]) {
     if (!is_dir('assets/dist/js')) {
       mkdir('assets/dist/js', 0777, true);
     }
-    $this->_exec('rm -rf ' . __DIR__ . '/assets/dist/js/*');
+    if (!$opts['only-tests']) {
+      $this->_exec('rm -rf ' . __DIR__ . '/assets/dist/js/*');
+    }
     $env = ($opts['env']) ?
       sprintf('./node_modules/.bin/cross-env NODE_ENV="%s"', $opts['env']) :
       null;
-    return $this->_exec($env . ' ./node_modules/webpack/bin/webpack.js --env BUILD_TESTS=' . ($opts['skip-tests'] ? 'skip' : 'build'));
+    return $this->_exec($env . ' ./node_modules/webpack/bin/webpack.js --env BUILD_TESTS=' . ($opts['skip-tests'] ? 'skip' : 'build') . '--env BUILD_ONLY_TESTS=' . ($opts['only-tests'] ? 'true' : 'false'));
   }
 
   public function compileCss($opts = ['env' => null]) {
