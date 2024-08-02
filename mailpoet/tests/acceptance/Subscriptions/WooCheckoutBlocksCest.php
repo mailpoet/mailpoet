@@ -195,7 +195,7 @@ class WooCheckoutBlocksCest {
       $i->click(Locator::contains('label', $settings->get('woocommerce.optin_on_checkout.message')));
     }
     if ($doRegister) {
-      $i->click(Locator::contains('label', 'Create an account?'));
+      $i->click(Locator::contains('label', 'Create an account'));
     }
     $this->placeOrder($i);
     $i->logOut();

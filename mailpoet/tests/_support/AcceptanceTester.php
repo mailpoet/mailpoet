@@ -588,7 +588,7 @@ class AcceptanceTester extends \Codeception\Actor {
     if (version_compare($wooCommerceVersion, '8.3.0', '>=')) {
       $isCheckboxVisible = $i->executeJS('return document.getElementsByClassName("wc-block-checkout__create-account")');
       if ($isCheckboxVisible) {
-        $i->click(Locator::contains('label', 'Create an account?'));
+        $i->click(Locator::contains('label', 'Create an account'));
       }
     } else {
       $isCheckboxVisible = $i->executeJS('return document.getElementById("createaccount")');
