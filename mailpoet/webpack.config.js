@@ -265,6 +265,7 @@ const publicConfig = {
 // Newsletter Editor Tests Config
 const testConfig = {
   name: 'test',
+  mode: PRODUCTION_ENV ? 'production' : 'development', // Add mode directly to testConfig
   entry: {
     vendor: 'webpack-vendor-index.jsx',
     testNewsletterEditor: [
@@ -529,6 +530,12 @@ module.exports = (env) => {
   if (env && env.BUILD_TESTS === 'build') {
     configs.push(testConfig);
   }
+
+  // If only the test build is requested
+  if (env && env.BUILD_ONLY_TESTS === 'true') {
+    return [testConfig];
+  }
+
   return configs.map((conf) => {
     const config = Object.assign({}, conf);
     if (

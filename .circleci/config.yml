@@ -330,6 +330,7 @@ jobs:
           name: 'JS Newsletter Editor Tests'
           command: |
             mkdir test-results/mocha
+            ./do compile:js --env production --only-tests
             ./do t:newsletter-editor test-results/mocha/newsletter_editor_junit.xml
       - run:
           name: 'JS Tests'
