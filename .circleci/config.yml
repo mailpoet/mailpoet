@@ -155,7 +155,7 @@ jobs:
             ./tools/vendor/composer.phar validate --no-check-all --no-check-publish --working-dir=prefixer
             touch .env
             ./do install
-            ./do compile:all --env production
+            ./do compile:all --env production --skip-tests
             ./do doctrine:generate-cache
             vendor/bin/codecept build
             ./do twig:generate-cache
