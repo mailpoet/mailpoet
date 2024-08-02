@@ -4,21 +4,11 @@ namespace MailPoet\Doctrine\EventListeners;
 
 use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\Event\LifecycleEventArgs;
 use ReflectionObject;
 
 class TimestampListener {
-  /** @var WPFunctions */
-  private $wp;
-
-  public function __construct(
-    WPFunctions $wp
-  ) {
-    $this->wp = $wp;
-  }
-
   public function prePersist(LifecycleEventArgs $eventArgs) {
     $entity = $eventArgs->getEntity();
     $entityTraits = $this->getEntityTraits($entity);
@@ -52,7 +42,7 @@ class TimestampListener {
     return $entityReflection->getTraitNames();
   }
 
-  private function getNow(): \DateTimeInterface {
-    return Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+  public function getNow(): \DateTimeInterface {
+    return Carbon::now();
   }
 }
