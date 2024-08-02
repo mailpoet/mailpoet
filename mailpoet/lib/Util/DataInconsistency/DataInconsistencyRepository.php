@@ -12,11 +12,15 @@ use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
+use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
 
 class DataInconsistencyRepository {
+  const DELETE_ROWS_LIMIT = 10000;
+
   private EntityManager $entityManager;
 
   public function __construct(
@@ -115,6 +119,19 @@ class DataInconsistencyRepository {
       ->execute();
 
     // delete the scheduled tasks subscribers
+    $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement(
+      "DELETE sts_top FROM $stsTable sts_top
+      JOIN (
+        SELECT sts.`task_id`, sts.`subscriber_id` FROM $stsTable sts
+        WHERE `task_id` IN (:ids)
+        LIMIT :limit
+      ) as to_delete ON sts_top.`task_id` = to_delete.`task_id` AND sts_top.`subscriber_id` = to_delete.`subscriber_id`",
+      ['limit' => self::DELETE_ROWS_LIMIT, 'ids' => $ids],
+      ['limit' => ParameterType::INTEGER, 'ids' => ArrayParameterType::INTEGER]
+    );
+
+
     $qb = $this->entityManager->createQueryBuilder();
     $qb->delete(ScheduledTaskSubscriberEntity::class, 'sts')
       ->where($qb->expr()->in('sts.task', ':ids'))
@@ -128,11 +145,21 @@ class DataInconsistencyRepository {
   public function cleanupOrphanedScheduledTaskSubscribers(): int {
     $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
-    return (int)$this->entityManager->getConnection()->executeStatement("
-       DELETE sts FROM $stsTable sts
-       LEFT JOIN $stTable st ON st.`id` = sts.`task_id`
-       WHERE st.`id` IS NULL
-    ");
+    $deletedCount = 0;
+    do {
+      $deletedCount += (int)$this->entityManager->getConnection()->executeStatement(
+        "DELETE sts_top FROM $stsTable sts_top
+        JOIN (
+          SELECT sts.`task_id`, sts.`subscriber_id` FROM $stsTable sts
+          LEFT JOIN $stTable st ON st.`id` = sts.`task_id`
+          WHERE st.`id` IS NULL
+          LIMIT :limit
+        ) as to_delete ON sts_top.`task_id` = to_delete.`task_id` AND sts_top.`subscriber_id` = to_delete.`subscriber_id`",
+        ['limit' => self::DELETE_ROWS_LIMIT],
+        ['limit' => ParameterType::INTEGER]
+      );
+    } while ($this->getOrphanedScheduledTasksSubscribersCount() > 0);
+    return $deletedCount;
   }
 
   public function cleanupSendingQueuesWithoutNewsletter(): int {

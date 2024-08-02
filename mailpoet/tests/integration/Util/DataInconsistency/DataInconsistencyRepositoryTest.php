@@ -67,19 +67,29 @@ class DataInconsistencyRepositoryTest extends \MailPoetTest {
   }
 
   public function testItHandlesOrphanedScheduledTaskSubscribers(): void {
-    $taskWithSubscriber = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $taskToDelete = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    $taskToKeep = (new ScheduledTask())->create(SendingQueueWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
 
     $subscriber1 = (new Subscriber())->create();
-    (new ScheduledTaskSubscriber())->createProcessed($taskWithSubscriber, $subscriber1);
+    (new ScheduledTaskSubscriber())->createProcessed($taskToDelete, $subscriber1);
+    (new ScheduledTaskSubscriber())->createProcessed($taskToKeep, $subscriber1);
     $subscriber2 = (new Subscriber())->create();
-    (new ScheduledTaskSubscriber())->createProcessed($taskWithSubscriber, $subscriber2);
+    (new ScheduledTaskSubscriber())->createProcessed($taskToDelete, $subscriber2);
+    (new ScheduledTaskSubscriber())->createProcessed($taskToKeep, $subscriber2);
 
-    $this->entityManager->remove($taskWithSubscriber);
+    $this->entityManager->remove($taskToDelete);
     $this->entityManager->flush();
+
+    $taskSubscriberCount = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->count([]);
+    verify($taskSubscriberCount)->equals(4);
 
     verify($this->repository->getOrphanedScheduledTasksSubscribersCount())->equals(2);
     $this->repository->cleanupOrphanedScheduledTaskSubscribers();
     verify($this->repository->getOrphanedScheduledTasksSubscribersCount())->equals(0);
+
+    // We keep the task and subscriber that was associated with the task we kept
+    $taskSubscriberCount = $this->entityManager->getRepository(ScheduledTaskSubscriberEntity::class)->count([]);
+    verify($taskSubscriberCount)->equals(2);
   }
 
   public function testItHandlesSendingQueuesWithoutNewsletter(): void {
