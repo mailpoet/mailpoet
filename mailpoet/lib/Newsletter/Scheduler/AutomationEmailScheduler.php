@@ -76,7 +76,8 @@ class AutomationEmailScheduler {
       ->andWhere('st.createdAt >= :runCreatedAt')
       ->setParameter('newsletter', $email)
       ->setParameter('subscriber', $subscriber)
-      ->setParameter('runCreatedAt', $run->getCreatedAt())
+      // Subtract one second to prevent rounding issue as $run->getCreatedAt() may contain milliseconds
+      ->setParameter('runCreatedAt', $run->getCreatedAt()->modify('-1 second'))
       ->getQuery()
       ->getResult();
     $result = null;
