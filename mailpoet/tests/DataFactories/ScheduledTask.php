@@ -14,7 +14,6 @@ use MailPoet\Cron\Workers\WooCommercePastOrders;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -72,7 +71,7 @@ class ScheduledTask {
    * Reschedules tasks created after plugin activation so that they don't block cron tasks in tests
    */
   public function withDefaultTasks() {
-    $datetime = Carbon::createFromTimestamp((int)WPFunctions::get()->currentTime('timestamp'));
+    $datetime = Carbon::now();
     $datetime->addDay();
     $this->scheduleTask(WooCommercePastOrders::TASK_TYPE, $datetime);
     $this->scheduleTask(UnsubscribeTokens::TASK_TYPE, $datetime);

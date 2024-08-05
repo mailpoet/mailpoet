@@ -86,7 +86,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
       ['user1@export-test.com', 'OneOne', 'UserOne'],
       ['user2@export-test.com', 'TwoTwo', 'UserTwo'],
     ];
-    $updatedAt = Carbon::createFromTimestamp(time());
+    $updatedAt = Carbon::now()->millisecond(0);
     $count = $this->repository->updateMultiple(
       SubscriberEntity::class,
       $columns,
@@ -162,7 +162,7 @@ class ImportExportRepositoryTest extends \MailPoetTest {
       [$subscriber1->getId(), $customField->getId(), 20],
       [$subscriber2->getId(), $customField->getId(), 25],
     ];
-    $updatedAt = Carbon::createFromTimestamp(time());
+    $updatedAt = Carbon::now()->millisecond(0);
     $count = $this->repository->updateMultiple(
       SubscriberCustomFieldEntity::class,
       $columns,

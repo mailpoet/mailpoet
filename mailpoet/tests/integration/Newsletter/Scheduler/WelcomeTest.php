@@ -96,7 +96,7 @@ class WelcomeTest extends \MailPoetTest {
       'segment' => $this->segment->getId(),
     ]);
 
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     $welcomeScheduler = $this->createWelcomeSchedulerWithMockedWPCurrentTime($currentTime);
 
     $welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
@@ -124,7 +124,7 @@ class WelcomeTest extends \MailPoetTest {
       'event' => 'segment',
       'segment' => $this->segment->getId(),
     ]);
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     $welcomeScheduler = $this->createWelcomeSchedulerWithMockedWPCurrentTime($currentTime);
 
     $welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
@@ -149,7 +149,7 @@ class WelcomeTest extends \MailPoetTest {
       'event' => 'segment',
       'segment' => $this->segment->getId(),
     ]);
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     $welcomeScheduler = $this->createWelcomeSchedulerWithMockedWPCurrentTime($currentTime);
 
     $welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
@@ -175,7 +175,7 @@ class WelcomeTest extends \MailPoetTest {
       'segment' => $this->segment->getId(),
     ]);
 
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     $welcomeScheduler = $this->createWelcomeSchedulerWithMockedWPCurrentTime($currentTime);
 
     $welcomeScheduler->createWelcomeNotificationSendingTask($newsletter, $this->subscriber->getId());
@@ -227,7 +227,7 @@ class WelcomeTest extends \MailPoetTest {
         $segment3->getId(),
       ]
     );
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     $this->entityManager->refresh($newsletter);
     $queue = $newsletter->getLatestQueue();
@@ -405,7 +405,7 @@ class WelcomeTest extends \MailPoetTest {
       $this->subscriber->getId(),
       ['roles' => ['administrator']]
     );
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     // queue is created and scheduled for delivery one day later
     $this->entityManager->refresh($newsletter);
@@ -433,7 +433,7 @@ class WelcomeTest extends \MailPoetTest {
       $this->subscriber->getId(),
       ['roles' => ['administrator']]
     );
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     // queue is created and scheduled for delivery one day later
     $this->entityManager->refresh($newsletter);

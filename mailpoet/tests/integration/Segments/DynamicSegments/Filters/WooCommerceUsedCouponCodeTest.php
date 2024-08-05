@@ -58,9 +58,9 @@ class WooCommerceUsedCouponCodeTest extends \MailPoetTest {
     $coupon1Id = $this->tester->createWooCommerceCoupon(['code' => 'Coupon 1']);
     $coupon2Id = $this->tester->createWooCommerceCoupon(['code' => 'Coupon 2']);
 
-    $this->createOrder($customer1, ['Coupon 1'], Carbon::now()->subDays(10));
-    $this->createOrder($customer2, ['Coupon 2'], Carbon::now()->subDays(15));
-    $this->createOrder($customer3, ['Coupon 1'], Carbon::now()->subDays(25));
+    $this->createOrder($customer1, ['Coupon 1'], Carbon::now()->millisecond(0)->subDays(10));
+    $this->createOrder($customer2, ['Coupon 2'], Carbon::now()->millisecond(0)->subDays(15));
+    $this->createOrder($customer3, ['Coupon 1'], Carbon::now()->millisecond(0)->subDays(25));
 
     $this->assertFilterReturnsEmails('any', [$coupon1Id, $coupon2Id], 20, 'inTheLast', ['customer1@example.com', 'customer2@example.com']);
     $this->assertFilterReturnsEmails('any', [$coupon1Id, $coupon2Id], 14, 'inTheLast', ['customer1@example.com']);
@@ -112,9 +112,9 @@ class WooCommerceUsedCouponCodeTest extends \MailPoetTest {
     $coupon1Id = $this->tester->createWooCommerceCoupon(['code' => 'Coupon 1']);
     $coupon2Id = $this->tester->createWooCommerceCoupon(['code' => 'Coupon 2']);
 
-    $this->createOrder($customer1, ['Coupon 1', 'Coupon 2'], Carbon::now()->subDays(10));
-    $this->createOrder($customer2, ['Coupon 1'], Carbon::now()->subDays(15));
-    $this->createOrder($customer3, ['Coupon 1', 'Coupon 2'], Carbon::now()->subDays(25));
+    $this->createOrder($customer1, ['Coupon 1', 'Coupon 2'], Carbon::now()->millisecond(0)->subDays(10));
+    $this->createOrder($customer2, ['Coupon 1'], Carbon::now()->millisecond(0)->subDays(15));
+    $this->createOrder($customer3, ['Coupon 1', 'Coupon 2'], Carbon::now()->millisecond(0)->subDays(25));
 
     $this->assertFilterReturnsEmails('all', [$coupon1Id, $coupon2Id], 20, 'inTheLast', ['customer1@example.com']);
     $this->assertFilterReturnsEmails('all', [$coupon1Id, $coupon2Id], 30, 'inTheLast', ['customer1@example.com', 'customer3@example.com']);
@@ -161,9 +161,9 @@ class WooCommerceUsedCouponCodeTest extends \MailPoetTest {
     $coupon1Id = $this->tester->createWooCommerceCoupon(['code' => 'Coupon 1']);
     $coupon2Id = $this->tester->createWooCommerceCoupon(['code' => 'Coupon 2']);
 
-    $this->createOrder($customer1, ['Coupon 1'], Carbon::now()->subDays(10));
-    $this->createOrder($customer2, ['Coupon 2'], Carbon::now()->subDays(15));
-    $this->createOrder($customer3, ['Coupon 1', 'Coupon 2'], Carbon::now()->subDays(25));
+    $this->createOrder($customer1, ['Coupon 1'], Carbon::now()->millisecond(0)->subDays(10));
+    $this->createOrder($customer2, ['Coupon 2'], Carbon::now()->millisecond(0)->subDays(15));
+    $this->createOrder($customer3, ['Coupon 1', 'Coupon 2'], Carbon::now()->millisecond(0)->subDays(25));
 
     $this->assertFilterReturnsEmails('none', [$coupon1Id, $coupon2Id], 20, 'inTheLast', ['customer3@example.com', 'customer4@example.com']);
     $this->assertFilterReturnsEmails('none', [$coupon1Id, $coupon2Id], 30, 'inTheLast', ['customer4@example.com']);
@@ -176,13 +176,13 @@ class WooCommerceUsedCouponCodeTest extends \MailPoetTest {
     $coupon1Id = $this->tester->createWooCommerceCoupon(['code' => 'Coupon 1']);
     $coupon2Id = $this->tester->createWooCommerceCoupon(['code' => 'Coupon 2']);
 
-    $this->createOrder($customer1, ['Coupon 1'], Carbon::now()->subDays(1000));
+    $this->createOrder($customer1, ['Coupon 1'], Carbon::now()->millisecond(0)->subDays(1000));
 
     $this->assertFilterReturnsEmails('any', [$coupon1Id], 50, 'inTheLast', []);
     $this->assertFilterReturnsEmails('any', [$coupon1Id], 0, 'allTime', ['customer1@example.com']);
 
 
-    $this->createOrder($customer1, ['Coupon 2'], Carbon::now()->subDays(1000));
+    $this->createOrder($customer1, ['Coupon 2'], Carbon::now()->millisecond(0)->subDays(1000));
     $this->assertFilterReturnsEmails('all', [$coupon1Id, $coupon2Id], 50, 'inTheLast', []);
     $this->assertFilterReturnsEmails('all', [$coupon1Id, $coupon2Id], 0, 'allTime', ['customer1@example.com']);
 
@@ -315,7 +315,7 @@ class WooCommerceUsedCouponCodeTest extends \MailPoetTest {
 
   private function createOrder(int $customerId, array $couponCodes = [], Carbon $createdAt = null): int {
     if (is_null($createdAt)) {
-      $createdAt = Carbon::now()->subDay();
+      $createdAt = Carbon::now()->millisecond(0)->subDay();
     }
     $order = $this->tester->createWooCommerceOrder();
     $order->set_customer_id($customerId);

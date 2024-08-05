@@ -283,8 +283,8 @@ class NewslettersTest extends \MailPoetTest {
   }
 
   public function testItReschedulesPastDuePostNotificationsWhenStatusIsSetBackToActive() {
-    $schedule = sprintf('0 %d * * *', Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->hour); // every day at current hour
-    $randomFutureDate = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addDays(10); // 10 days from now
+    $schedule = sprintf('0 %d * * *', Carbon::now()->millisecond(0)->hour); // every day at current hour
+    $randomFutureDate = Carbon::now()->millisecond(0)->addDays(10); // 10 days from now
     (new NewsletterOption())->create($this->postNotification, NewsletterOptionFieldEntity::NAME_SCHEDULE, $schedule);
 
     $scheduledTask1 = (new ScheduledTaskFactory())

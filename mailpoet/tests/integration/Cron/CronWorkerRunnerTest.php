@@ -237,7 +237,7 @@ class CronWorkerRunnerTest extends \MailPoetTest {
     return $factory->create(
       SimpleWorkerMockImplementation::TASK_TYPE,
       $status,
-      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+      Carbon::now()
     );
   }
 }

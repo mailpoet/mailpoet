@@ -77,7 +77,7 @@ class AbandonedCartTest extends \MailPoetTest {
     $this->sendingQueuesRepository = $this->diContainer->get(SendingQueuesRepository::class);
     $this->scheduledTaskSubscribersRepository = $this->diContainer->get(ScheduledTaskSubscribersRepository::class);
 
-    $this->currentTime = Carbon::createFromTimestamp((new WPFunctions())->currentTime('timestamp'));
+    $this->currentTime = Carbon::now()->millisecond(0);
     Carbon::setTestNow($this->currentTime);
     $this->subscriberActivityTrackerMock = $this->createMock(SubscriberActivityTracker::class);
 

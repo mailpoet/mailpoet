@@ -355,7 +355,7 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItUpdatesSubscriberEngagementForHumanAgent() {
-    $now = Carbon::createFromTimestamp(time());
+    $now = Carbon::now();
     Carbon::setTestNow($now);
     $this->trackData->userAgent = 'User agent';
     $opens = Stub::construct($this->opens, [
@@ -377,7 +377,7 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItUpdatesSubscriberEngagementForUnknownAgent() {
-    $now = Carbon::createFromTimestamp(time());
+    $now = Carbon::now();
     Carbon::setTestNow($now);
     $this->trackData->userAgent = null;
     $opens = Stub::construct($this->opens, [
@@ -399,7 +399,7 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItUpdatesSubscriberTimestampsForMachineAgent() {
-    $now = Carbon::createFromTimestamp(time());
+    $now = Carbon::now();
     Carbon::setTestNow($now);
     $this->trackData->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $opens = Stub::construct($this->opens, [

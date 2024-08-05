@@ -18,7 +18,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsBouncesRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 require_once('BounceTestMockAPI.php');
@@ -214,7 +213,7 @@ class BounceTest extends \MailPoetTest {
     return $this->scheduledTaskFactory->create(
       'bounce',
       ScheduledTaskEntity::STATUS_SCHEDULED,
-      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+      Carbon::now()
     );
   }
 
@@ -222,7 +221,7 @@ class BounceTest extends \MailPoetTest {
     return $this->scheduledTaskFactory->create(
       'bounce',
       null,
-      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+      Carbon::now()
     );
   }
 
