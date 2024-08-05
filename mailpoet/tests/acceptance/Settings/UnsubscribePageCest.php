@@ -50,6 +50,7 @@ class UnsubscribePageCest {
 
     $i->login();
     $i->amOnMailPoetPage('Settings');
+    $i->closeNoticeIfVisible(); // Waning about used PHP can cause test failure on testing with the lowest supported PHP version
     $i->scrollTo('[data-automation-id="subscription-manage-page-selection"]');
     $i->click(['css' => '[data-automation-id="unsubscribe-confirmation-page-selection"]']);
     $i->selectOption('[data-automation-id="unsubscribe-confirmation-page-selection"]', $this->pageTitleConfirmation);
@@ -57,7 +58,7 @@ class UnsubscribePageCest {
     $i->waitForNoticeAndClose('Settings saved');
 
     $i->wantTo('Click the Unsubscribe link and verify the Confirmation page');
-    
+
     // Making a shortcut in this scenario by providing required url in the conf email
     $i->click('[data-automation-id="signup_settings_tab"]');
     $i->checkOption('[data-automation-id="mailpoet_confirmation_email_customizer"]');
@@ -86,6 +87,7 @@ class UnsubscribePageCest {
 
     $i->login();
     $i->amOnMailPoetPage('Settings');
+    $i->closeNoticeIfVisible(); // Waning about used PHP can cause test failure on testing with the lowest supported PHP version
     $i->scrollTo('[data-automation-id="subscription-manage-page-selection"]');
     $i->click(['css' => '[data-automation-id="unsubscribe-success-page-selection"]']);
     $i->selectOption('[data-automation-id="unsubscribe-success-page-selection"]', $this->pageTitleSuccess);
