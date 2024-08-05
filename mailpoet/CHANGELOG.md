@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 4.58.1 - 2024-08-05 =
+
+- Fixed: button rendering in Outlook 2023.
+
 = 4.58.0 - 2024-07-30 =
 
 - Added: Method to update a subscriber to our public API;
