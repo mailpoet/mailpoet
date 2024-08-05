@@ -6,7 +6,6 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\Automation\Engine\Control\AutomationController;
 use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
@@ -35,6 +34,18 @@ use Throwable;
 
 class SendEmailAction implements Action {
   const KEY = 'mailpoet:send-email';
+
+  // Intervals to poll for email status after sending. These are only
+  // used when immediate status sync fails or the email is never sent.
+  private const POLL_INTERVALS = [
+    5 * MINUTE_IN_SECONDS, // ~5 minutes
+    10 * MINUTE_IN_SECONDS, // ~15 minutes
+    45 * MINUTE_IN_SECONDS, // ~1 hour
+    4 * HOUR_IN_SECONDS, // ~5 hours           ...from email scheduling
+    19 * HOUR_IN_SECONDS, // ~1 day
+    4 * DAY_IN_SECONDS, // ~5 days
+    25 * DAY_IN_SECONDS, // ~1 month
+  ];
 
   private const TRANSACTIONAL_TRIGGERS = [
     'woocommerce:order-status-changed',
@@ -158,33 +169,38 @@ class SendEmailAction implements Action {
   public function run(StepRunArgs $args, StepRunController $controller): void {
     $newsletter = $this->getEmailForStep($args->getStep());
     $subscriber = $this->getSubscriber($args);
-    $run = $args->getAutomationRun();
 
-    // sync sending status with the automation step
-    if (!$args->isFirstRun()) {
-      $this->checkSendingStatus($newsletter, $subscriber, $run);
-      return;
+    if ($args->isFirstRun()) {
+      // run #1: schedule email sending
+      $subscriberStatus = $subscriber->getStatus();
+      if ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL && $subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
+        throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriberStatus));
+      }
+
+      if ($subscriberStatus === SubscriberEntity::STATUS_BOUNCED) {
+        throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule an email for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriberStatus));
+      }
+
+      $meta = $this->getNewsletterMeta($args);
+      try {
+        $this->automationEmailScheduler->createSendingTask($newsletter, $subscriber, $meta);
+      } catch (Throwable $e) {
+        throw InvalidStateException::create()->withMessage('Could not create sending task.');
+      }
+
+    } else {
+      // run #N: check/sync sending status with the automation step
+      $success = $this->checkSendingStatus($args, $newsletter, $subscriber);
+      if ($success) {
+        return;
+      }
     }
 
-    $subscriberStatus = $subscriber->getStatus();
-    if ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL && $subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
-      throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriberStatus));
-    }
-
-    if ($subscriberStatus === SubscriberEntity::STATUS_BOUNCED) {
-      throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule an email for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriberStatus));
-    }
-
-    $meta = $this->getNewsletterMeta($args);
-    try {
-      $this->automationEmailScheduler->createSendingTask($newsletter, $subscriber, $meta);
-    } catch (Throwable $e) {
-      throw InvalidStateException::create()->withMessage('Could not create sending task.');
-    }
-
-    // schedule a progress run to sync email sending status to the automation step
-    // (1 month is a timout, the progress will normally be executed after sending)
-    $controller->scheduleProgress(time() + MONTH_IN_SECONDS);
+    // Schedule a progress run to sync the email sending status to the automation step.
+    // Normally, a progress run is executed immediately after sending; we're scheduling
+    // these runs to poll for the status if sync fails or email never sends (timeout).
+    $nextInterval = self::POLL_INTERVALS[$args->getRunNumber() - 1] ?? 0;
+    $controller->scheduleProgress(time() + $nextInterval);
   }
 
   /** @param mixed $data */
@@ -212,8 +228,8 @@ class SendEmailAction implements Action {
     $this->automationController->enqueueProgress($runId, $stepId);
   }
 
-  private function checkSendingStatus(NewsletterEntity $newsletter, SubscriberEntity $subscriber, AutomationRun $run): void {
-    $scheduledTaskSubscriber = $this->automationEmailScheduler->getScheduledTaskSubscriber($newsletter, $subscriber, $run);
+  private function checkSendingStatus(StepRunArgs $args, NewsletterEntity $newsletter, SubscriberEntity $subscriber): bool {
+    $scheduledTaskSubscriber = $this->automationEmailScheduler->getScheduledTaskSubscriber($newsletter, $subscriber, $args->getAutomationRun());
     if (!$scheduledTaskSubscriber) {
       throw InvalidStateException::create()->withMessage('Email failed to schedule.');
     }
@@ -225,14 +241,17 @@ class SendEmailAction implements Action {
       );
     }
 
+    $wasSent = $scheduledTaskSubscriber->getProcessed() === ScheduledTaskSubscriberEntity::STATUS_PROCESSED;
+    $isLastRun = $args->getRunNumber() >= count(self::POLL_INTERVALS);
+
     // email was never sent
-    if ($scheduledTaskSubscriber->getProcessed() !== ScheduledTaskSubscriberEntity::STATUS_PROCESSED) {
+    if (!$wasSent && $isLastRun) {
       $error = 'Email sending process timed out.';
       $this->automationEmailScheduler->saveError($scheduledTaskSubscriber, $error);
       throw InvalidStateException::create()->withMessage($error);
     }
 
-    // email was sent, complete the run
+    return $wasSent;
   }
 
   private function getNewsletterMeta(StepRunArgs $args): array {

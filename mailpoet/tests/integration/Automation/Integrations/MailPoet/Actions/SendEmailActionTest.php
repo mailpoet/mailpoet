@@ -4,6 +4,7 @@ namespace MailPoet\Test\Automation\Integrations\MailPoet\Actions;
 
 use Codeception\Stub\Expected;
 use MailPoet\Automation\Engine\Builder\UpdateAutomationController;
+use MailPoet\Automation\Engine\Control\ActionScheduler;
 use MailPoet\Automation\Engine\Control\AutomationController;
 use MailPoet\Automation\Engine\Control\StepRunControllerFactory;
 use MailPoet\Automation\Engine\Data\Automation;
@@ -63,6 +64,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
   public function _before() {
     parent::_before();
+    $this->cleanup();
 
     $this->scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->segmentsRepository = $this->diContainer->get(SegmentsRepository::class);
@@ -72,6 +74,11 @@ class SendEmailActionTest extends \MailPoetTest {
     $this->segmentSubject = $this->diContainer->get(SegmentSubject::class);
 
     $this->automation = new Automation('test-automation', [], new \WP_User());
+  }
+
+  public function _after() {
+    parent::_after();
+    $this->cleanup();
   }
 
   public function testItReturnsRequiredSubjects() {
@@ -191,7 +198,17 @@ class SendEmailActionTest extends \MailPoetTest {
     $scheduledTaskSubscriber->setFailed(ScheduledTaskSubscriberEntity::FAIL_STATUS_OK);
     $scheduledTaskSubscriber->setError(null);
 
-    // email was never sent
+    // email was not sent yet, scheduling next progress (no exception)
+    $actionScheduler = $this->diContainer->get(ActionScheduler::class);
+    $this->assertCount(0, $actionScheduler->getScheduledActions());
+    $this->action->run($args, $controller);
+    $actions = array_values($actionScheduler->getScheduledActions());
+    $this->assertCount(1, $actions);
+    $this->assertSame('mailpoet/automation/step', $actions[0]->get_hook());
+    $this->assertSame([['automation_run_id' => $run->getId(), 'step_id' => 'step-id', 'run_number' => 3]], $actions[0]->get_args());
+
+    // email was never sent (7th run is the last check after ~1 month)
+    $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 7);
     $this->assertThrowsExceptionWithMessage(
       'Email sending process timed out.',
       function() use ($args, $controller) {
@@ -512,5 +529,11 @@ class SendEmailActionTest extends \MailPoetTest {
       $error = $e->getMessage();
     }
     $this->assertSame($expectedMessage, $error);
+  }
+
+  private function cleanup(): void {
+    global $wpdb;
+    $wpdb->query('TRUNCATE ' . $wpdb->prefix . 'actionscheduler_actions');
+    $wpdb->query('TRUNCATE ' . $wpdb->prefix . 'actionscheduler_claims');
   }
 }
