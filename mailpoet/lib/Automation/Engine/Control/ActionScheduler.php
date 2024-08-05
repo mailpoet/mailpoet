@@ -8,11 +8,13 @@ class ActionScheduler {
   private const GROUP_ID = 'mailpoet-automation';
 
   public function enqueue(string $hook, array $args = []): int {
-    return as_enqueue_async_action($hook, $args, self::GROUP_ID);
+    $result = as_enqueue_async_action($hook, $args, self::GROUP_ID);
+    return is_int($result) ? $result : 0;
   }
 
   public function schedule(int $timestamp, string $hook, array $args = []): int {
-    return as_schedule_single_action($timestamp, $hook, $args, self::GROUP_ID);
+    $result = as_schedule_single_action($timestamp, $hook, $args, self::GROUP_ID);
+    return is_int($result) ? $result : 0;
   }
 
   public function hasScheduledAction(string $hook, array $args = []): bool {

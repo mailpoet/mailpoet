@@ -17,11 +17,13 @@ class ActionScheduler {
   }
 
   public function scheduleRecurringAction(int $timestamp, int $interval_in_seconds, string $hook, array $args = [], bool $unique = true): int {
-    return as_schedule_recurring_action($timestamp, $interval_in_seconds, $hook, $args, self::GROUP_ID, $unique);
+    $result = as_schedule_recurring_action($timestamp, $interval_in_seconds, $hook, $args, self::GROUP_ID, $unique);
+    return is_int($result) ? $result : 0;
   }
 
   public function scheduleImmediateSingleAction(string $hook, array $args = [], bool $unique = true): int {
-    return as_schedule_single_action($this->wp->currentTime('timestamp', true), $hook, $args, self::GROUP_ID, $unique);
+    $result = as_schedule_single_action($this->wp->currentTime('timestamp', true), $hook, $args, self::GROUP_ID, $unique);
+    return is_int($result) ? $result : 0;
   }
 
   public function unscheduleAction(string $hook, array $args = []): ?int {
