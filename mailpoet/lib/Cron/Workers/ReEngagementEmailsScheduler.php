@@ -25,6 +25,6 @@ class ReEngagementEmailsScheduler extends SimpleWorker {
   }
 
   public function getNextRunDate() {
-    return Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addDay();
+    return Carbon::now()->millisecond(0)->addDay();
   }
 }

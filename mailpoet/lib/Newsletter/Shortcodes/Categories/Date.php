@@ -34,10 +34,10 @@ class Date implements CategoryInterface {
       $date = $newsletter->getSentAt()->getTimestamp();
     }
     if (!empty($actionMapping[$shortcodeDetails['action']])) {
-      return WPFunctions::get()->dateI18n($actionMapping[$shortcodeDetails['action']], $date);
+      return $wp->dateI18n($actionMapping[$shortcodeDetails['action']], $date);
     }
     return ($shortcodeDetails['action'] === 'custom' && $shortcodeDetails['action_argument'] === 'format') ?
-      WPFunctions::get()->dateI18n($shortcodeDetails['action_argument_value'], $date) :
+      $wp->dateI18n($shortcodeDetails['action_argument_value'], $date) :
       null;
   }
 }

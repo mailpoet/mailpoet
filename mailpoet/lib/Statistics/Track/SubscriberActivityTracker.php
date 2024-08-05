@@ -67,7 +67,7 @@ class SubscriberActivityTracker {
       $latestTimestamp = $this->getLatestTimestampFromSubscriber($subscriber);
     }
 
-    if ($latestTimestamp + self::TRACK_INTERVAL > $this->wp->currentTime('timestamp')) {
+    if ($latestTimestamp + self::TRACK_INTERVAL > $this->wp->currentTime('timestamp', true)) {
       return false;
     }
 
@@ -93,7 +93,7 @@ class SubscriberActivityTracker {
 
   private function processTracking(SubscriberEntity $subscriber): void {
     $this->subscribersRepository->maybeUpdateLastPageViewAt($subscriber);
-    $this->pageViewCookie->setPageViewTimestamp($this->wp->currentTime('timestamp'));
+    $this->pageViewCookie->setPageViewTimestamp($this->wp->currentTime('timestamp', true));
     foreach ($this->callbacks as $callback) {
       $callback($subscriber);
     }

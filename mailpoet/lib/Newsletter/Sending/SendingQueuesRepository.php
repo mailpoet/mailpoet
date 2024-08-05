@@ -11,7 +11,6 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Segments\DynamicSegments\FilterFactory;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -22,9 +21,6 @@ class SendingQueuesRepository extends Repository {
   /** @var ScheduledTaskSubscribersRepository */
   private $scheduledTaskSubscribersRepository;
 
-  /** @var WPFunctions */
-  private $wp;
-
   /** @var FilterFactory */
   private $filterFactory;
 
@@ -33,14 +29,12 @@ class SendingQueuesRepository extends Repository {
 
   public function __construct(
     EntityManager $entityManager,
-    WPFunctions $wp,
     ScheduledTaskSubscribersRepository $scheduledTaskSubscribersRepository,
     FilterFactory $filterFactory,
     LoggerFactory $loggerFactory
   ) {
     parent::__construct($entityManager);
     $this->scheduledTaskSubscribersRepository = $scheduledTaskSubscribersRepository;
-    $this->wp = $wp;
     $this->filterFactory = $filterFactory;
     $this->loggerFactory = $loggerFactory;
   }
@@ -187,7 +181,7 @@ class SendingQueuesRepository extends Repository {
     if (!$task instanceof ScheduledTaskEntity) return;
 
     if ($queue->getCountProcessed() === $queue->getCountTotal()) {
-      $processedAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+      $processedAt = Carbon::now()->millisecond(0);
       $task->setProcessedAt($processedAt);
       $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
       // Update also status of newsletter if necessary

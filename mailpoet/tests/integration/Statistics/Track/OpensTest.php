@@ -4,7 +4,6 @@ namespace MailPoet\Test\Statistics\Track;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
-use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -17,7 +16,6 @@ use MailPoet\Statistics\Track\Opens;
 use MailPoet\Statistics\UserAgentsRepository;
 use MailPoet\Subscribers\LinkTokens;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class OpensTest extends \MailPoetTest {
@@ -357,22 +355,13 @@ class OpensTest extends \MailPoetTest {
   }
 
   public function testItUpdatesSubscriberEngagementForHumanAgent() {
-    $now = Carbon::now();
-    $wpMock = $this->createMock(WPFunctions::class);
-    $wpMock->expects($this->once())
-      ->method('currentTime')
-      ->willReturn($now->getTimestamp());
+    $now = Carbon::createFromTimestamp(time());
+    Carbon::setTestNow($now);
     $this->trackData->userAgent = 'User agent';
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      $this->getServiceWithOverrides(
-        SubscribersRepository::class,
-        [
-          'changesNotifier' => new SubscriberChangesNotifier($wpMock),
-          'wp' => $wpMock,
-        ]
-      ),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -384,25 +373,17 @@ class OpensTest extends \MailPoetTest {
     $this->assertInstanceOf(\DateTimeInterface::class, $savedOpenTime);
     verify($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
     verify($savedOpenTime->getTimestamp())->equals($now->getTimestamp());
+    Carbon::setTestNow();
   }
 
   public function testItUpdatesSubscriberEngagementForUnknownAgent() {
-    $now = Carbon::now();
-    $wpMock = $this->createMock(WPFunctions::class);
-    $wpMock->expects($this->once())
-      ->method('currentTime')
-      ->willReturn($now->getTimestamp());
+    $now = Carbon::createFromTimestamp(time());
+    Carbon::setTestNow($now);
     $this->trackData->userAgent = null;
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      $this->getServiceWithOverrides(
-        SubscribersRepository::class,
-        [
-          'changesNotifier' => new SubscriberChangesNotifier($wpMock),
-          'wp' => $wpMock,
-        ]
-      ),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -414,25 +395,17 @@ class OpensTest extends \MailPoetTest {
     $this->assertInstanceOf(\DateTimeInterface::class, $savedOpenTime);
     verify($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
     verify($savedOpenTime->getTimestamp())->equals($now->getTimestamp());
+    Carbon::setTestNow();
   }
 
   public function testItUpdatesSubscriberTimestampsForMachineAgent() {
-    $now = Carbon::now();
-    $wpMock = $this->createMock(WPFunctions::class);
-    $wpMock->expects($this->once())
-      ->method('currentTime')
-      ->willReturn($now->getTimestamp());
+    $now = Carbon::createFromTimestamp(time());
+    Carbon::setTestNow($now);
     $this->trackData->userAgent = UserAgentEntity::MACHINE_USER_AGENTS[0];
     $opens = Stub::construct($this->opens, [
       $this->diContainer->get(StatisticsOpensRepository::class),
       $this->diContainer->get(UserAgentsRepository::class),
-      $this->getServiceWithOverrides(
-        SubscribersRepository::class,
-        [
-          'changesNotifier' => new SubscriberChangesNotifier($wpMock),
-          'wp' => $wpMock,
-        ]
-      ),
+      $this->diContainer->get(SubscribersRepository::class),
     ], [
       'returnResponse' => null,
     ], $this);
@@ -444,5 +417,6 @@ class OpensTest extends \MailPoetTest {
     $this->assertInstanceOf(\DateTimeInterface::class, $savedOpenTime);
     verify($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
     verify($savedOpenTime->getTimestamp())->equals($now->getTimestamp());
+    Carbon::setTestNow();
   }
 }

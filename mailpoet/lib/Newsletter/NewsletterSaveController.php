@@ -171,7 +171,7 @@ class NewsletterSaveController {
     $duplicate = clone $newsletter;
 
     // reset timestamps
-    $createdAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $createdAt = Carbon::now()->millisecond(0);
     $duplicate->setCreatedAt($createdAt);
     $duplicate->setUpdatedAt($createdAt);
     $duplicate->setDeletedAt(null);

@@ -4,21 +4,15 @@ namespace MailPoet\Cron;
 
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class CronWorkerScheduler {
-  /** @var WPFunctions */
-  private $wp;
-
   /** @var ScheduledTasksRepository */
   private $scheduledTaskRepository;
 
   public function __construct(
-    WPFunctions $wp,
     ScheduledTasksRepository $scheduledTaskRepository
   ) {
-    $this->wp = $wp;
     $this->scheduledTaskRepository = $scheduledTaskRepository;
   }
 
@@ -28,7 +22,7 @@ class CronWorkerScheduler {
     if (($task instanceof ScheduledTaskEntity) && $task->getStatus() === null) {
       return $task;
     }
-    $now = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $now = Carbon::now()->millisecond(0);
     // Reschedule existing scheduled task
     if ($task instanceof ScheduledTaskEntity) {
       $task->setScheduledAt($now);
@@ -55,7 +49,7 @@ class CronWorkerScheduler {
   }
 
   public function reschedule(ScheduledTaskEntity $task, $timeout) {
-    $scheduledAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $scheduledAt = Carbon::now()->millisecond(0);
     $task->setScheduledAt($scheduledAt->addMinutes($timeout));
     $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
     $this->scheduledTaskRepository->persist($task);
@@ -63,7 +57,7 @@ class CronWorkerScheduler {
   }
 
   public function rescheduleProgressively(ScheduledTaskEntity $task): int {
-    $scheduledAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $scheduledAt = Carbon::now()->millisecond(0);
     $rescheduleCount = $task->getRescheduleCount();
     $timeout = (int)min(ScheduledTaskEntity::BASIC_RESCHEDULE_TIMEOUT * pow(2, $rescheduleCount), ScheduledTaskEntity::MAX_RESCHEDULE_TIMEOUT);
     $task->setScheduledAt($scheduledAt->addMinutes($timeout));

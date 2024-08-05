@@ -162,8 +162,7 @@ class AutomatedEmails extends SimpleWorker {
   }
 
   public function getNextRunDate() {
-    $wp = new WPFunctions;
-    $date = Carbon::createFromTimestamp($wp->currentTime('timestamp'));
+    $date = Carbon::now()->millisecond(0);
     return $date->endOfMonth()->next(Carbon::MONDAY)->midDay();
   }
 }

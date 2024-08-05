@@ -8,10 +8,8 @@ use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Segments\SegmentSubscribersRepository;
-use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Tags\TagRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscribersCountsController {
@@ -33,17 +31,13 @@ class SubscribersCountsController {
   /** @var SubscribersFeature */
   private $subscribersFeature;
 
-  /** @var WPFunctions */
-  private $wp;
-
   public function __construct(
     SegmentsRepository $segmentsRepository,
     SegmentSubscribersRepository $segmentSubscribersRepository,
     SubscribersRepository $subscribersRepository,
     TagRepository $subscriberTagRepository,
     TransientCache $transientCache,
-    SubscribersFeature $subscribersFeature,
-    WPFunctions $wp
+    SubscribersFeature $subscribersFeature
   ) {
 
     $this->segmentSubscribersRepository = $segmentSubscribersRepository;
@@ -52,7 +46,6 @@ class SubscribersCountsController {
     $this->subscribersRepository = $subscribersRepository;
     $this->tagRepository = $subscriberTagRepository;
     $this->subscribersFeature = $subscribersFeature;
-    $this->wp = $wp;
   }
 
   public function getSubscribersWithoutSegmentStatisticsCount(): array {
@@ -108,7 +101,7 @@ class SubscribersCountsController {
   }
 
   public function recalculateHomepageStatisticsCache(): array {
-    $thirtyDaysAgo = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(30);
+    $thirtyDaysAgo = Carbon::now()->millisecond(0)->subDays(30);
     $result = [];
     $result['listsDataSubscribed'] = $this->subscribersRepository->getListLevelCountsOfSubscribedAfter($thirtyDaysAgo);
     $result['listsDataUnsubscribed'] = $this->subscribersRepository->getListLevelCountsOfUnsubscribedAfter($thirtyDaysAgo);

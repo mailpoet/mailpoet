@@ -7,7 +7,6 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\ORM\QueryBuilder;
@@ -208,7 +207,7 @@ class ScheduledTaskSubscribersRepository extends Repository {
     $count = $this->countUnprocessed($task);
     if ($count === 0) {
       $task->setStatus(ScheduledTaskEntity::STATUS_COMPLETED);
-      $task->setProcessedAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
+      $task->setProcessedAt(Carbon::now()->millisecond(0));
       $this->entityManager->flush();
     }
   }

@@ -16,7 +16,6 @@ use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Util\License\Features\Subscribers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -673,7 +672,7 @@ class SubscribersRepository extends Repository {
     return count($subscribers);
   }
 
-  private function getCurrentDateTime(): CarbonImmutable {
-    return CarbonImmutable::createFromTimestamp((int)$this->wp->currentTime('timestamp'));
+  private function getCurrentDateTime(): Carbon {
+    return Carbon::now()->setMilliseconds(0);
   }
 }

@@ -329,7 +329,7 @@ class WooCommerce {
   private function insertSubscribers(array $emails, string $status = SubscriberEntity::STATUS_SUBSCRIBED): int {
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     $subscribersValues = [];
-    $now = (Carbon::createFromTimestamp($this->wp->currentTime('timestamp')))->format('Y-m-d H:i:s');
+    $now = Carbon::now()->format('Y-m-d H:i:s');
     $source = Source::WOOCOMMERCE_USER;
     foreach ($emails as $email) {
       /** @var string $email */

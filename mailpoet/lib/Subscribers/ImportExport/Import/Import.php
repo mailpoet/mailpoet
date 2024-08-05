@@ -108,8 +108,8 @@ class Import {
       array_keys($data['columns'])
     );
     $this->subscribersCount = (reset($this->subscribersData) === false) ? 0 : count(reset($this->subscribersData));
-    $this->createdAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    $this->updatedAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 1);
+    $this->createdAt = Carbon::now()->millisecond(0);
+    $this->updatedAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp', true) + 1);
     $this->requiredSubscribersFields = [
       'status' => SubscriberEntity::STATUS_SUBSCRIBED,
       'first_name' => '',

@@ -43,6 +43,6 @@ class TimestampListener {
   }
 
   public function getNow(): \DateTimeInterface {
-    return Carbon::now();
+    return Carbon::now()->millisecond(0);
   }
 }

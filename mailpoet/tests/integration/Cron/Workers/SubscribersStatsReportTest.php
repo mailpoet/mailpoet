@@ -6,7 +6,6 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Services\SubscribersCountReporter;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -29,20 +28,15 @@ class SubscribersStatsReportTest extends \MailPoetTest {
   /** @var ServicesChecker & MockObject */
   private $servicesCheckerMock;
 
-  /** @var WPFunctions & MockObject */
-  private $wpMock;
-
   public function _before() {
     parent::_before();
     $this->countReporerMock = $this->createMock(SubscribersCountReporter::class);
     $this->schedulerMock = $this->createMock(CronWorkerScheduler::class);
     $this->servicesCheckerMock = $this->createMock(ServicesChecker::class);
-    $this->wpMock = $this->createMock(WPFunctions::class);
     $this->worker = new SubscribersStatsReport(
       $this->countReporerMock,
       $this->servicesCheckerMock,
       $this->schedulerMock,
-      $this->wpMock
     );
   }
 
@@ -99,10 +93,8 @@ class SubscribersStatsReportTest extends \MailPoetTest {
 
   public function testItGeneratesRandomNextRunDate() {
     $time = time();
+    Carbon::setTestNow(Carbon::createFromTimestamp($time));
     $maxExpectedScheduleInterval = 30 * 60 * 60; // 30 hours
-    $this->wpMock->expects($this->exactly(2))
-      ->method('currentTime')
-      ->willReturn($time);
     $result = $this->worker->getNextRunDate();
     verify($result)->instanceOf(Carbon::class);
     verify($result->getTimestamp())->greaterThan($time);
@@ -112,5 +104,6 @@ class SubscribersStatsReportTest extends \MailPoetTest {
     verify($result2->getTimestamp())->greaterThan($time);
     verify($result2->getTimestamp())->lessThan($time + $maxExpectedScheduleInterval);
     verify($result2->getTimestamp())->notEquals($result->getTimestamp());
+    Carbon::setTestNow();
   }
 }
