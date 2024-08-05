@@ -4,7 +4,6 @@ namespace MailPoet\Test\Doctrine\EventListeners;
 
 use MailPoet\Doctrine\EventListeners\LastSubscribedAtListener;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 require_once __DIR__ . '/EventListenersBaseTest.php';
@@ -13,17 +12,12 @@ class LastSubscribedAtTest extends EventListenersBaseTest {
   /** @var Carbon */
   private $now;
 
-  /** @var WPFunctions */
-  private $wp;
-
   public function _before() {
     $timestamp = time();
     $this->now = Carbon::createFromTimestamp($timestamp);
-    $this->wp = $this->make(WPFunctions::class, [
-      'currentTime' => $timestamp,
-    ]);
+    Carbon::setTestNow($this->now);
 
-    $newTimestampListener = new LastSubscribedAtListener($this->wp);
+    $newTimestampListener = new LastSubscribedAtListener();
     $originalListener = $this->diContainer->get(LastSubscribedAtListener::class);
     $this->replaceListeners($originalListener, $newTimestampListener);
   }
@@ -106,5 +100,10 @@ class LastSubscribedAtTest extends EventListenersBaseTest {
     $this->entityManager->flush();
 
     $this->assertEquals($this->now, $entity2->getLastSubscribedAt());
+  }
+
+  public function _after() {
+    parent::_after();
+    Carbon::setTestNow();
   }
 }
