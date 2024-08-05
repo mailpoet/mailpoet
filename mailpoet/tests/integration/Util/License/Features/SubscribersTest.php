@@ -114,7 +114,7 @@ class SubscribersTest extends \MailPoetTest {
     // modify timestamp, check count (-> uncached value)
     $this->wp->updateOption(
       '_transient_timeout_' . Subscribers::SUBSCRIBERS_COUNT_CACHE_KEY,
-      $this->wp->currentTime('timestamp') - 1
+      $this->wp->currentTime('timestamp', true) - 1
     );
     $count = $subscribers->getSubscribersCount();
     verify($count)->same(999999);

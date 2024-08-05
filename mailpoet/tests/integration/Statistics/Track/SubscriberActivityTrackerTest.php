@@ -53,7 +53,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $oldEngagementTime = Carbon::now()->subMinutes(2);
     $subscriber->setLastEngagementAt($oldEngagementTime);
     $this->entityManager->flush();
-    $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 180; // 3 minutes ago
+    $oldPageViewTimestamp = $this->wp->currentTime('timestamp', true) - 180; // 3 minutes ago
     $this->setPageViewCookieTimestamp($oldPageViewTimestamp);
     $this->setSubscriberCookieSubscriber($subscriber);
     $this->pageViewCookie
@@ -77,7 +77,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $oldEngagementTime = Carbon::now()->subMinutes(2);
     $subscriber->setLastEngagementAt($oldEngagementTime);
     $this->entityManager->flush();
-    $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 180; // 3 minutes ago
+    $oldPageViewTimestamp = $this->wp->currentTime('timestamp', true) - 180; // 3 minutes ago
     $this->setPageViewCookieTimestamp($oldPageViewTimestamp);
     $this->setSubscriberCookieSubscriber($subscriber);
     $this->pageViewCookie
@@ -94,7 +94,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $this->tester->deleteWordPressUser($wpUserEmail);
     $user = (new User())->createUser('tracking_enabled', 'editor', $wpUserEmail);
     wp_set_current_user($user->ID);
-    $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 180; // 3 minutes ago
+    $oldPageViewTimestamp = $this->wp->currentTime('timestamp', true) - 180; // 3 minutes ago
     $this->setPageViewCookieTimestamp($oldPageViewTimestamp);
     $this->setSubscriberCookieSubscriber(null);
     $this->pageViewCookie
@@ -173,7 +173,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     wp_set_current_user(0);
     $result = $this->tracker->trackActivity();
     $subscriber = $this->createSubscriber();
-    $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 180; // 3 minutes ago
+    $oldPageViewTimestamp = $this->wp->currentTime('timestamp', true) - 180; // 3 minutes ago
     $this->setPageViewCookieTimestamp($oldPageViewTimestamp);
     $this->setSubscriberCookieSubscriber($subscriber);
     verify($result)->false();
@@ -183,7 +183,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
     $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_FULL);
     $result = $this->tracker->trackActivity();
     $subscriber = $this->createSubscriber();
-    $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 50; // 50 seconds  ago
+    $oldPageViewTimestamp = $this->wp->currentTime('timestamp', true) - 50; // 50 seconds  ago
     $this->setPageViewCookieTimestamp($oldPageViewTimestamp);
     $this->setSubscriberCookieSubscriber($subscriber);
     verify($result)->false();
@@ -192,7 +192,7 @@ class SubscriberActivityTrackerTest extends \MailPoetTest {
   public function testItDoesntTrackWhenCantDetermineSubscriber() {
     $this->diContainer->get(SettingsController::class)->set('tracking.level', TrackingConfig::LEVEL_FULL);
     $result = $this->tracker->trackActivity();
-    $oldPageViewTimestamp = $this->wp->currentTime('timestamp') - 180; // 3 minutes  ago
+    $oldPageViewTimestamp = $this->wp->currentTime('timestamp', true) - 180; // 3 minutes  ago
     $this->setPageViewCookieTimestamp($oldPageViewTimestamp);
     $this->setSubscriberCookieSubscriber(null);
     verify($result)->false();

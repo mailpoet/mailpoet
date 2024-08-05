@@ -2,7 +2,6 @@
 
 namespace MailPoet\Services\Bridge;
 
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class BridgeTestMockAPI extends API {
@@ -110,7 +109,7 @@ class BridgeTestMockAPI extends API {
         $code = 200;
         $body = [
           'subscriber_limit' => 10000,
-          'expire_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+          'expire_at' => Carbon::now()->millisecond(0)
             ->addMonth()->format('c'),
         ];
         break;
@@ -128,7 +127,7 @@ class BridgeTestMockAPI extends API {
         // a special case of a valid key
         $code = 200;
         $body = [
-          'expire_at' => Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+          'expire_at' => Carbon::now()->millisecond(0)
             ->addMonth()->format('c'),
         ];
         break;

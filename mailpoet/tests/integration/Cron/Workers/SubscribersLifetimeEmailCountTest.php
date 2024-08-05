@@ -13,7 +13,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
@@ -160,7 +159,7 @@ class SubscribersLifetimeEmailCountTest extends \MailPoetTest {
     return $this->scheduledTaskFactory->create(
       SubscribersEmailCount::TASK_TYPE,
       null,
-      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))
+      Carbon::now()
     );
   }
 

@@ -7,7 +7,6 @@ use MailPoet\Cron\Workers\WooCommerceSync;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class ImportExportTest extends \MailPoetTest {
@@ -78,7 +77,7 @@ class ImportExportTest extends \MailPoetTest {
 
   private function createTask($type, $status = null, $scheduledAt = null) {
     if (!$scheduledAt) {
-      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+      Carbon::now()->millisecond(0);
     }
     $task = new ScheduledTaskEntity();
     $task->setType($type);

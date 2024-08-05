@@ -788,8 +788,8 @@ class ImportTest extends \MailPoetTest {
     $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
     $this->subscriberRepository->remove($subscriber);
     $this->subscriberRepository->flush();
-    $this->import->createdAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
-    $this->import->updatedAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 1);
+    $this->import->createdAt = Carbon::now()->millisecond(0);
+    $this->import->updatedAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp', true) + 1);
     $this->import->requiredSubscribersFields['created_at'] = $this->import->createdAt;
     $result = $this->import->process();
     verify($result['created'])->equals(1);

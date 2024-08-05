@@ -7,7 +7,6 @@ use MailPoet\Cron\Workers\SendingQueue\SendingQueue as SendingQueueWorker;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\SendingQueue;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Carbon\CarbonImmutable;
 
@@ -15,14 +14,12 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
   private ScheduledTasksRepository $repository;
   private ScheduledTaskFactory $scheduledTaskFactory;
   private SendingQueue $sendingQueueFactory;
-  private WPFunctions $wp;
 
   public function _before() {
     parent::_before();
     $this->repository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->scheduledTaskFactory = new ScheduledTaskFactory();
     $this->sendingQueueFactory = new SendingQueue();
-    $this->wp = $this->diContainer->get(WPFunctions::class);
   }
 
   public function testItCanGetDueTasks() {
@@ -260,7 +257,7 @@ class ScheduledTasksRepositoryTest extends \MailPoetTest {
     $runningTask->setSendingQueue($this->sendingQueueFactory->create($runningTask));
     $sendingQueuesRepositoryMock->expects($this->once())->method('resume')->with($runningTask->getSendingQueue());
 
-    $scheduledTaskRepositoryMock = new ScheduledTasksRepository($this->entityManager, $this->wp, $sendingQueuesRepositoryMock);
+    $scheduledTaskRepositoryMock = new ScheduledTasksRepository($this->entityManager, $sendingQueuesRepositoryMock);
     $scheduledTaskRepositoryMock->rescheduleTask($runningTask);
 
     $this->assertNull($runningTask->getStatus()); // running task has status null

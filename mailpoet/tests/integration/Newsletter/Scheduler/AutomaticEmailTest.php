@@ -58,7 +58,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     // new scheduled task should be created
     $task = $this->scheduledTasksRepository->findOneByNewsletter($newsletter);
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
-    $expectedTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(2);
+    $expectedTime = Carbon::now()->millisecond(0)->addHours(2);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getId())->greaterThanOrEqual(1);
     verify($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);
@@ -94,7 +94,7 @@ class AutomaticEmailTest extends \MailPoetTest {
     $this->automaticEmailScheduler->createAutomaticEmailScheduledTask($newsletter, null);
     // new scheduled task should be created
     $task = $this->scheduledTasksRepository->findOneByNewsletter($newsletter);
-    $expectedTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(2);
+    $expectedTime = Carbon::now()->millisecond(0)->addHours(2);
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     verify($task->getId())->greaterThanOrEqual(1);
     verify($task->getPriority())->equals(SendingQueueEntity::PRIORITY_MEDIUM);

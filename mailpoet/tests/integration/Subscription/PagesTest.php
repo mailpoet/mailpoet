@@ -53,9 +53,6 @@ class PagesTest extends \MailPoetTest {
   /** @var SubscribersRepository */
   private $subscribersRepository;
 
-  /** @var WPFunctions */
-  private $wp;
-
   /*** @var StatisticsUnsubscribesRepository */
   private $statisticsUnsubscribesRepository;
 
@@ -73,7 +70,6 @@ class PagesTest extends \MailPoetTest {
     $this->subscribersRepository = $this->diContainer->get(SubscribersRepository::class);
     $this->statisticsUnsubscribesRepository = $this->diContainer->get(StatisticsUnsubscribesRepository::class);
     $this->statisticsClicksRepository = $this->diContainer->get(StatisticsClicksRepository::class);
-    $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->subscriber = new SubscriberEntity();
     $this->subscriber->setEmail('jane.doe@example.com');
     $this->subscriber->setStatus(SubscriberEntity::STATUS_UNCONFIRMED);
@@ -142,7 +138,7 @@ class PagesTest extends \MailPoetTest {
     $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $subscriber->setFirstName('First name');
     $subscriber->setUnconfirmedData(null);
-    $subscriber->setLastSubscribedAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subDays(10));
+    $subscriber->setLastSubscribedAt(Carbon::now()->millisecond(0)->subDays(10));
     $subscriber->setConfirmedIp('111.111.111.111');
     $this->entityManager->flush();
     $subscription = $pages->init(false, $this->testData, false, false);
@@ -151,10 +147,10 @@ class PagesTest extends \MailPoetTest {
     $confirmedSubscriber = $this->subscribersRepository->findOneById($subscriber->getId());
     $this->assertInstanceOf(SubscriberEntity::class, $confirmedSubscriber);
     verify($confirmedSubscriber->getStatus())->equals(SubscriberEntity::STATUS_SUBSCRIBED);
-    verify($confirmedSubscriber->getConfirmedAt())->greaterThanOrEqual(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
-    verify($confirmedSubscriber->getConfirmedAt())->lessThanOrEqual(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
-    verify($confirmedSubscriber->getLastSubscribedAt())->greaterThanOrEqual(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subSecond());
-    verify($confirmedSubscriber->getLastSubscribedAt())->lessThanOrEqual(Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addSecond());
+    verify($confirmedSubscriber->getConfirmedAt())->greaterThanOrEqual(Carbon::now()->millisecond(0)->subSecond());
+    verify($confirmedSubscriber->getConfirmedAt())->lessThanOrEqual(Carbon::now()->millisecond(0)->addSecond());
+    verify($confirmedSubscriber->getLastSubscribedAt())->greaterThanOrEqual(Carbon::now()->millisecond(0)->subSecond());
+    verify($confirmedSubscriber->getLastSubscribedAt())->lessThanOrEqual(Carbon::now()->millisecond(0)->addSecond());
     verify($confirmedSubscriber->getFirstName())->equals('First name');
   }
 

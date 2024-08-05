@@ -52,7 +52,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
       $this
     );
 
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     $task = $this->createRunningTask($currentTime);
 
     $result = $worker->processTaskStrategy($task, microtime(true));
@@ -73,7 +73,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
       $this
     );
 
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     $task = $this->createRunningTask($currentTime);
 
     $result = $worker->processTaskStrategy($task, microtime(true));
@@ -108,7 +108,7 @@ class KeyCheckWorkerTest extends \MailPoetTest {
 
   private function createRunningTask(Carbon $scheduledAt = null) {
     if (!$scheduledAt) {
-      $scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+      $scheduledAt = Carbon::now()->millisecond(0);
     }
 
     return $this->scheduledTaskFactory->create(

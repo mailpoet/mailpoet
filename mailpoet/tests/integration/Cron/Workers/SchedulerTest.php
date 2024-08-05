@@ -30,7 +30,6 @@ use MailPoet\Test\DataFactories\ScheduledTask as ScheduledTaskFactory;
 use MailPoet\Test\DataFactories\Segment as SegmentFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\Util\Security;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use WP_User;
 
@@ -363,12 +362,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItReschedulesQueueDeliveryWhenMailpoetSubscriberHasNotConfirmedSubscription() {
-    $timestamp = WPFunctions::get()->currentTime('timestamp');
-    $wpFunctions = $this->make(WPFunctions::class, [
-      'currentTime' => $timestamp,
-    ]);
-    WPFunctions::set($wpFunctions);
-    $currentTime = Carbon::createFromTimestamp($timestamp);
+    $currentTime = Carbon::now();
     Carbon::setTestNow($currentTime); // mock carbon to return current time
 
     $subscriber = $this->_createSubscriber(0, 'unconfirmed');
@@ -394,7 +388,7 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItDoesntRunQueueDeliveryWhenMailpoetSubscriberHasUnsubscribed() {
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentTime = Carbon::now();
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     $subscriber = $this->_createSubscriber(0, 'unsubscribed');
     $segment = $this->_createSegment();
@@ -625,7 +619,7 @@ class SchedulerTest extends \MailPoetTest {
     $this->scheduledTaskFactory->create(
       'bounce',
       ScheduledTaskEntity::STATUS_SCHEDULED,
-      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMinutes(5)
+      Carbon::now()->addMinutes(5)
     );
 
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_DRAFT);
@@ -635,7 +629,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler->processScheduledStandardNewsletter($newsletter, $task);
     $refetchedTask = $this->scheduledTasksRepository->findOneById($task->getId());
     $this->assertInstanceOf(ScheduledTaskEntity::class, $refetchedTask);
-    verify($refetchedTask->getScheduledAt())->lessThan(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(1));
+    verify($refetchedTask->getScheduledAt())->lessThan(Carbon::now()->addHours(1));
   }
 
   /**
@@ -782,10 +776,10 @@ class SchedulerTest extends \MailPoetTest {
   }
 
   public function testItUpdatesUpdateTime() {
-    $originalUpdated = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(5);
+    $originalUpdated = Carbon::now()->subHours(5);
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_WELCOME, NewsletterEntity::STATUS_DRAFT);
     $task = $this->createTaskWithQueue($newsletter);
-    $task->setScheduledAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
+    $task->setScheduledAt(Carbon::now());
     $task->setUpdatedAt($originalUpdated);
     $this->entityManager->flush();
     $scheduler = $this->getScheduler();

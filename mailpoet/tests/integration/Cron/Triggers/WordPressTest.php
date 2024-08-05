@@ -52,7 +52,7 @@ class WordPressTest extends \MailPoetTest {
       'method' => 'none',
     ]);
 
-    $future = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 600);
+    $future = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp', true) + 600);
     $this->addScheduledTask(Beamer::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     $this->addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     $this->wordpressTrigger = $this->diContainer->get(WordPress::class);
@@ -288,7 +288,7 @@ class WordPressTest extends \MailPoetTest {
   }
 
   public function testItDoesNotExecuteWhenTasksAreScheduledInFuture() {
-    $future = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp') + 600);
+    $future = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp', true) + 600);
     $this->addScheduledTask(NewsletterTemplateThumbnails::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     $this->addScheduledTask(SubscribersLastEngagement::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     $this->addScheduledTask(SubscribersCountCacheRecalculation::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
@@ -321,9 +321,7 @@ class WordPressTest extends \MailPoetTest {
   }
 
   private function addQueue($status): SendingQueueEntity {
-    $scheduledAt = ($status === SendingQueueEntity::STATUS_SCHEDULED) ?
-      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')) :
-      null;
+    $scheduledAt = ($status === SendingQueueEntity::STATUS_SCHEDULED) ? Carbon::now() : null;
     $newsletter = (new NewsletterFactory())->create();
     $scheduledTask = (new ScheduledTaskFactory())->create(SendingQueue::TASK_TYPE, $status, $scheduledAt);
     $sendingQueue = (new SendingQueueFactory())->create($scheduledTask, $newsletter);
@@ -332,7 +330,7 @@ class WordPressTest extends \MailPoetTest {
 
   private function addScheduledTask($type, $status, $scheduledAt = null) {
     if (!$scheduledAt && $status === ScheduledTaskEntity::STATUS_SCHEDULED) {
-      $scheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+      $scheduledAt = Carbon::now();
     }
 
     $task = new ScheduledTaskEntity();

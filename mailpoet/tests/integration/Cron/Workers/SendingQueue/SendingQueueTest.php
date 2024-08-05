@@ -709,7 +709,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testItUpdatesUpdateTime() {
-    $originalUpdated = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->subHours(5);
+    $originalUpdated = Carbon::now()->millisecond(0)->subHours(5);
     $this->setUpdatedAtForEntity($this->scheduledTask, $originalUpdated);
 
     $this->newsletter->setType(NewsletterEntity::TYPE_WELCOME);
@@ -1274,7 +1274,7 @@ class SendingQueueTest extends \MailPoetTest {
     $task = (new ScheduledTaskFactory())->create(
       Bounce::TASK_TYPE,
       ScheduledTaskEntity::STATUS_SCHEDULED,
-      Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addMonths(1)
+      Carbon::now()->millisecond(0)->addMonths(1)
     );
 
     $sendingQueueWorker = $this->getSendingQueueWorker(
@@ -1288,7 +1288,7 @@ class SendingQueueTest extends \MailPoetTest {
   }
 
   public function testDoesNotRescheduleBounceTaskWhenPlannedInNearFuture() {
-    $inOneHour = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'))->addHours(1);
+    $inOneHour = Carbon::now()->millisecond(0)->addHours(1);
     $task = (new ScheduledTaskFactory())->create(
       Bounce::TASK_TYPE,
       ScheduledTaskEntity::STATUS_SCHEDULED,
