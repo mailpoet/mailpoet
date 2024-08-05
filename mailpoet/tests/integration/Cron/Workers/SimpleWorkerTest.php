@@ -7,7 +7,6 @@ use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\SimpleWorkerMockImplementation as MockSimpleWorker;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 require_once __DIR__ . '/SimpleWorkerMockImplementation.php';
@@ -57,7 +56,7 @@ class SimpleWorkerTest extends \MailPoetTest {
   }
 
   public function testItCalculatesNextRunDateWithinNextWeekBoundaries() {
-    $currentDate = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentDate = Carbon::now()->millisecond(0);
     /** @var Carbon $nextRunDate */
     $nextRunDate = (new MockSimpleWorker())->getNextRunDate();
     $difference = $nextRunDate->diffInDays($currentDate);

@@ -9,7 +9,6 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\SubscribersCountReporter;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SettingsChangeHandlerTest extends \MailPoetTest {
@@ -36,7 +35,7 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTime::class, $scheduledAt);
-    $expectedScheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $expectedScheduledAt = Carbon::now()->millisecond(0);
     $expectedScheduledAt->subMinute();
     $this->tester->assertEqualDateTimes($task->getScheduledAt(), $expectedScheduledAt, 1);
     verify($newTask->getId())->equals($task->getId());
@@ -59,7 +58,7 @@ class SettingsChangeHandlerTest extends \MailPoetTest {
     $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
     $scheduledAt = $task->getScheduledAt();
     $this->assertInstanceOf(\DateTime::class, $scheduledAt);
-    $expectedScheduledAt = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $expectedScheduledAt = Carbon::now()->millisecond(0);
     $expectedScheduledAt->subMinute();
     $this->tester->assertEqualDateTimes($task->getScheduledAt(), $expectedScheduledAt, 1);
     verify($newTask->getId())->equals($task->getId());

@@ -317,7 +317,7 @@ class NewsletterTest extends \MailPoetTest {
     $this->assertInstanceOf(SendingQueueEntity::class, $sendingQueue);
     $wp = new WPFunctions();
     verify($sendingQueue->getNewsletterRenderedSubject())
-      ->stringContainsString(date_i18n('jS', $wp->currentTime('timestamp')));
+      ->stringContainsString(date_i18n('jS', $wp->currentTime('timestamp', true)));
   }
 
   public function testItUsesADefaultSubjectIfRenderedSubjectIsEmptyWhenPreprocessingNewsletter() {

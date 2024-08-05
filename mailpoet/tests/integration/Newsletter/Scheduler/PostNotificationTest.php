@@ -19,7 +19,6 @@ use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionsFactory;
 use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\WP\DateTime;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -146,11 +145,11 @@ class PostNotificationTest extends \MailPoetTest {
 
     // queue is created and scheduled for delivery one day later at 5 a.m.
     $this->postNotificationScheduler->schedulePostNotification(10);
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     $nextRunDate = ($currentTime->hour < 5) ?
       $currentTime :
-      $currentTime->addDay();
+      $currentTime->copy()->addDay();
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
     verify($queue->getTask()->getScheduledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT))
       ->equals($nextRunDate->format('Y-m-d 05:00:00'));
@@ -163,11 +162,11 @@ class PostNotificationTest extends \MailPoetTest {
 
     // queue is created and scheduled for delivery one day later at 5 a.m.
     $this->postNotificationScheduler->schedulePostNotification(10);
-    $currentTime = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     Carbon::setTestNow($currentTime); // mock carbon to return current time
     $nextRunDate = ($currentTime->hour < 5) || ($currentTime->hour === 5 && $currentTime->minute < 45) ?
       $currentTime :
-      $currentTime->addDay();
+      $currentTime->copy()->addDay();
     $queue = $this->sendingQueuesRepository->findOneBy(['newsletter' => $newsletter]);
     verify($queue->getTask()->getScheduledAt()->format(DateTime::DEFAULT_DATE_TIME_FORMAT))
       ->equals($nextRunDate->format('Y-m-d 05:45:00'));
@@ -404,7 +403,7 @@ class PostNotificationTest extends \MailPoetTest {
     $task = (new ScheduledTask())->create(
       SendingQueue::TASK_TYPE,
       SendingQueueEntity::STATUS_SCHEDULED,
-      Carbon::now()
+      Carbon::now()->millisecond(0)
       ->addDay()
     );
 
