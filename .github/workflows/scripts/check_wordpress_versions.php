@@ -77,7 +77,7 @@ function replaceLatestWordPressVersion(string $latestVersion): void {
 function replacePreviousWordPressVersion(string $previousVersion): void {
   replaceVersionInFile(
     __DIR__ . './../../../.circleci/config.yml',
-    '/(wordpress_image_version: )\d+\.\d+\.?\d*-php\d+\.\d+/',
+    '/(wordpress_version: )\d+\.\d+\.?\d*/',
     '${1}' . $previousVersion
   );
 }
@@ -113,6 +113,8 @@ if ($latestVersion) {
 
 if ($previousVersion) {
   echo "Replacing the previous version in the config file...\n";
+  // We install previous WordPress version via CLI so we need a version without PHP in the name.
+  $previousVersion = preg_replace('/-php\d+\.\d+$/', '', $previousVersion);
   replacePreviousWordPressVersion($previousVersion);
 } else {
   echo "No previous version found.\n";
