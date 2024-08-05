@@ -154,7 +154,7 @@ class AcceptanceTester extends \Codeception\Actor {
   public function clickWooTableActionByItemName($itemName, $actionLinkText) {
     $i = $this;
     $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//a[text()="' . $actionLinkText . '"]'];
-    $i->waitForElementClickable($xpath); 
+    $i->waitForElementClickable($xpath);
     $i->click($xpath);
   }
 
@@ -409,6 +409,16 @@ class AcceptanceTester extends \Codeception\Actor {
     $this->_waitForText($text, $this->getDefaultTimeout($timeout), $selector);
     $this->waitForElementVisible('.notice-dismiss', 1);
     $this->click('.notice-dismiss');
+  }
+
+  public function closeNoticeIfVisible() {
+    // Dismiss notice if it is visible. This is needed especially for the tests with the lowest supported PHP version
+    // because we display a warning about the minimum required PHP version.
+    $noticeIsVisible = $this->executeJS('return document.getElementsByClassName("notice-dismiss")');
+    if ($noticeIsVisible) {
+      $this->click('.notice-dismiss');
+      $this->waitForElementNotVisible('.notice-dismiss', 3);
+    }
   }
 
   public function scrollToTop() {

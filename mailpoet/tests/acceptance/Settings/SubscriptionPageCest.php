@@ -38,6 +38,7 @@ class SubscriptionPageCest {
     $i->login();
 
     $i->amOnMailPoetPage('Settings');
+    $i->closeNoticeIfVisible(); // Waning about used PHP can cause test failure on testing with the lowest supported PHP version
     $i->click(['css' => '[data-automation-id="subscription-manage-page-selection"]']);
     $i->selectOption('[data-automation-id="subscription-manage-page-selection"]', $pageTitle);
     $i->click('[data-automation-id="settings-submit-button"]');
