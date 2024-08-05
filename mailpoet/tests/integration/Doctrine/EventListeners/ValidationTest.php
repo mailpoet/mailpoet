@@ -113,7 +113,7 @@ class ValidationTest extends \MailPoetTest {
     $timestampListener = new TimestampListener();
     $validationListener = new ValidationListener($validatorFactory->createValidator());
     $emojiEncodingListener = new EmojiEncodingListener(new Emoji($this->wp));
-    $lastSubscribedAtListener = new LastSubscribedAtListener($this->wp);
+    $lastSubscribedAtListener = new LastSubscribedAtListener();
     $newsletterListener = new NewsletterListener($this->wp);
     $subscriberListener = new SubscriberListener(new SubscriberChangesNotifier($this->wp));
     $entityManagerFactory = new EntityManagerFactory(

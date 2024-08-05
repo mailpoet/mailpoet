@@ -300,7 +300,7 @@ class Newsletter {
        $newsletter->getType() === NewsletterEntity::TYPE_NOTIFICATION_HISTORY
     ) {
       $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
-      $newsletter->setSentAt(Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp')));
+      $newsletter->setSentAt(Carbon::now()->millisecond(0));
       $this->newslettersRepository->persist($newsletter);
       $this->newslettersRepository->flush();
     }

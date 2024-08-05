@@ -6,7 +6,6 @@ use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
@@ -41,7 +40,6 @@ class SubscriberLinkTokens extends SimpleWorker {
   }
 
   public function getNextRunDate() {
-    $wp = new WPFunctions();
-    return Carbon::createFromTimestamp($wp->currentTime('timestamp'));
+    return Carbon::now()->millisecond(0);
   }
 }

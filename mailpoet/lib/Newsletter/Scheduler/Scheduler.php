@@ -33,7 +33,7 @@ class Scheduler {
   }
 
   public function getPreviousRunDate($schedule, $fromTimestamp = false) {
-    $fromTimestamp = ($fromTimestamp) ? $fromTimestamp : $this->wp->currentTime('timestamp');
+    $fromTimestamp = ($fromTimestamp) ?: $this->wp->currentTime('timestamp', true);
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
       $previousRunDate = $schedule->getPreviousRunDate(Carbon::createFromTimestamp($fromTimestamp))
@@ -45,7 +45,7 @@ class Scheduler {
   }
 
   public function getScheduledTimeWithDelay($afterTimeType, $afterTimeNumber): Carbon {
-    $currentTime = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     switch ($afterTimeType) {
       case 'minutes':
         $currentTime->addMinutes($afterTimeNumber);
@@ -82,7 +82,7 @@ class Scheduler {
    * @return \DateTime|false
    */
   public function getNextRunDateTime($schedule, $fromTimestamp = false) {
-    $fromTimestamp = $fromTimestamp ?: $this->wp->currentTime('timestamp');
+    $fromTimestamp = $fromTimestamp ?: $this->wp->currentTime('timestamp', true);
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
       $nextRunDate = $schedule->getNextRunDate(Carbon::createFromTimestamp($fromTimestamp));

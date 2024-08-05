@@ -194,8 +194,8 @@ class Pages {
 
     $this->subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
     $this->subscriber->setConfirmedIp(Helpers::getIP());
-    $this->subscriber->setConfirmedAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
-    $this->subscriber->setLastSubscribedAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
+    $this->subscriber->setConfirmedAt(Carbon::now()->millisecond(0));
+    $this->subscriber->setLastSubscribedAt(Carbon::now()->millisecond(0));
     $this->subscriber->setUnconfirmedData(null);
 
     try {

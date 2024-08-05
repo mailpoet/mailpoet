@@ -3,7 +3,6 @@
 namespace MailPoet\Form;
 
 use MailPoet\Entities\FormEntity;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -11,15 +10,10 @@ class FormSaveController {
   /** @var EntityManager */
   private $entityManager;
 
-  /** @var WPFunctions */
-  private $wp;
-
   public function __construct(
-    EntityManager $entityManager,
-    WPFunctions $wp
+    EntityManager $entityManager
   ) {
     $this->entityManager = $entityManager;
-    $this->wp = $wp;
   }
 
   public function duplicate(FormEntity $formEntity): FormEntity {
@@ -28,7 +22,7 @@ class FormSaveController {
     $duplicate->setName(sprintf(__('Copy of %s', 'mailpoet'), $formEntity->getName()));
 
     // reset timestamps
-    $now = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $now = Carbon::now()->millisecond(0);
     $duplicate->setCreatedAt($now);
     $duplicate->setUpdatedAt($now);
     $duplicate->setDeletedAt(null);

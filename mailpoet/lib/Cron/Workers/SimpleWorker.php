@@ -9,7 +9,6 @@ use MailPoet\Cron\CronWorkerScheduler;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 abstract class SimpleWorker implements CronWorkerInterface {
@@ -25,21 +24,13 @@ abstract class SimpleWorker implements CronWorkerInterface {
   /** @var CronWorkerScheduler */
   protected $cronWorkerScheduler;
 
-  /** @var WPFunctions */
-  protected $wp;
-
   /** @var ScheduledTasksRepository */
   protected $scheduledTasksRepository;
 
-  public function __construct(
-    WPFunctions $wp = null
-  ) {
+  public function __construct() {
     if (static::TASK_TYPE === null) {
       throw new \Exception('Constant TASK_TYPE is not defined on subclass ' . get_class($this));
     }
-
-    if ($wp === null) $wp = ContainerWrapper::getInstance()->get(WPFunctions::class);
-    $this->wp = $wp;
     $this->cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
     $this->cronWorkerScheduler = ContainerWrapper::getInstance()->get(CronWorkerScheduler::class);
     $this->scheduledTasksRepository = ContainerWrapper::getInstance()->get(ScheduledTasksRepository::class);
@@ -78,14 +69,14 @@ abstract class SimpleWorker implements CronWorkerInterface {
 
   public function getNextRunDate() {
     // random day of the next week
-    $date = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $date = Carbon::now()->millisecond(0);
     $date->setISODate((int)$date->format('o'), ((int)$date->format('W')) + 1, mt_rand(1, 7));
     $date->startOfDay();
     return $date;
   }
 
   protected function getNextRunDateImmediately(): Carbon {
-    return Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    return Carbon::now()->millisecond(0);
   }
 
   public function scheduleAutomatically() {

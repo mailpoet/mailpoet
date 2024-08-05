@@ -226,7 +226,7 @@ class Newsletters extends APIEndpoint {
         $task = $queue->getTask();
         if (
           $task &&
-          $task->getScheduledAt() <= Carbon::createFromTimestamp($this->wp->currentTime('timestamp')) &&
+          $task->getScheduledAt() <= Carbon::now()->millisecond(0) &&
           $task->getStatus() === SendingQueueEntity::STATUS_SCHEDULED
         ) {
           $nextRunDate = $nextRunDate ? Carbon::createFromFormat('Y-m-d H:i:s', $nextRunDate) : null;

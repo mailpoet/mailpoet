@@ -40,7 +40,7 @@ class SendingServiceKeyCheck extends KeyCheckWorker {
   public function getNextRunDate() {
     // when key pending approval, check key sate every hour
     if ($this->servicesChecker->isMailPoetAPIKeyPendingApproval()) {
-      $date = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+      $date = Carbon::now()->millisecond(0);
       return $date->addHour();
     }
     return parent::getNextRunDate();

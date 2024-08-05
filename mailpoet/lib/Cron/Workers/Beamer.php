@@ -12,14 +12,15 @@ class Beamer extends SimpleWorker {
   const API_URL = 'https://api.getbeamer.com/v0';
   const API_KEY = 'b_neUUX8kIYVEYZqQzSnwhmVggVLA6lT+GzDQOW7hrP38=';
 
-  /** @var SettingsController */
-  private $settings;
+  private SettingsController $settings;
+  private WPFunctions $wp;
 
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp
   ) {
-    parent::__construct($wp);
+    parent::__construct();
+    $this->wp = $wp;
     $this->settings = $settings;
   }
 
@@ -51,7 +52,7 @@ class Beamer extends SimpleWorker {
 
   public function getNextRunDate() {
     // once every two weeks on a random day of the week, random time of the day
-    $date = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $date = Carbon::now()->millisecond(0);
     return $date
       ->next(Carbon::MONDAY)
       ->startOfDay()

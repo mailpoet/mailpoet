@@ -29,7 +29,6 @@ use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\Util\Notices\DisabledMailFunctionNotice;
 use MailPoet\WooCommerce\TransactionalEmails;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -52,9 +51,6 @@ class Settings extends APIEndpoint {
 
   /** @var ServicesChecker */
   private $servicesChecker;
-
-  /** @var WPFunctions */
-  private $wp;
 
   /** @var EntityManager */
   private $entityManager;
@@ -95,7 +91,6 @@ class Settings extends APIEndpoint {
     AuthorizedEmailsController $authorizedEmailsController,
     AuthorizedSenderDomainController $senderDomainController,
     TransactionalEmails $wcTransactionalEmails,
-    WPFunctions $wp,
     EntityManager $entityManager,
     NewslettersRepository $newslettersRepository,
     StatisticsOpensRepository $statisticsOpensRepository,
@@ -114,7 +109,6 @@ class Settings extends APIEndpoint {
     $this->senderDomainController = $senderDomainController;
     $this->wcTransactionalEmails = $wcTransactionalEmails;
     $this->servicesChecker = $servicesChecker;
-    $this->wp = $wp;
     $this->entityManager = $entityManager;
     $this->newsletterRepository = $newslettersRepository;
     $this->statisticsOpensRepository = $statisticsOpensRepository;
@@ -212,7 +206,7 @@ class Settings extends APIEndpoint {
       $task->setType(SubscribersEngagementScore::TASK_TYPE);
       $task->setStatus(ScheduledTaskEntity::STATUS_SCHEDULED);
     }
-    $task->setScheduledAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
+    $task->setScheduledAt(Carbon::now()->millisecond(0));
     $this->entityManager->persist($task);
     $this->entityManager->flush();
     return $this->successResponse();

@@ -5,7 +5,6 @@ namespace MailPoet\Logging;
 use MailPoet\Doctrine\EntityManagerFactory;
 use MailPoet\Entities\LogEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -104,7 +103,7 @@ class LogHandlerTest extends \MailPoetTest {
 
   public function testItResilientToSqlError(): void {
     $entityManager = $this->entityManagerFactory->createEntityManager();
-    $logRepository = new LogRepository($entityManager, new WPFunctions());
+    $logRepository = new LogRepository($entityManager);
     $logHandler = new LogHandler($logRepository);
     $time = new \DateTime();
 

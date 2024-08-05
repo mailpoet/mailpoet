@@ -23,7 +23,6 @@ use MailPoet\Segments\SubscribersFinder;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Util\Security;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityNotFoundException;
 
@@ -60,9 +59,6 @@ class Scheduler {
   /** @var NewsletterSegmentRepository */
   private $newsletterSegmentRepository;
 
-  /** @var WPFunctions */
-  private $wp;
-
   /** @var Security */
   private $security;
 
@@ -86,7 +82,6 @@ class Scheduler {
     NewslettersRepository $newslettersRepository,
     SegmentsRepository $segmentsRepository,
     NewsletterSegmentRepository $newsletterSegmentRepository,
-    WPFunctions $wp,
     Security $security,
     NewsletterScheduler $scheduler,
     SubscriberSegmentRepository $subscriberSegmentRepository,
@@ -102,7 +97,6 @@ class Scheduler {
     $this->newslettersRepository = $newslettersRepository;
     $this->segmentsRepository = $segmentsRepository;
     $this->newsletterSegmentRepository = $newsletterSegmentRepository;
-    $this->wp = $wp;
     $this->security = $security;
     $this->scheduler = $scheduler;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
@@ -400,7 +394,7 @@ class Scheduler {
     $notificationHistory->setUnsubscribeToken($this->security->generateUnsubscribeTokenByEntity($notificationHistory));
 
     // reset timestamps
-    $createdAt = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $createdAt = Carbon::now()->millisecond(0);
     $notificationHistory->setCreatedAt($createdAt);
     $notificationHistory->setUpdatedAt($createdAt);
     $notificationHistory->setDeletedAt(null);

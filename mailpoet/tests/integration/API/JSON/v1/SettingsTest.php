@@ -30,7 +30,6 @@ use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\WooCommerce\TransactionalEmails;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -60,7 +59,6 @@ class SettingsTest extends \MailPoetTest {
       $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => null]),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
-      WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
@@ -105,7 +103,6 @@ class SettingsTest extends \MailPoetTest {
       $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once()]),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
-      WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
@@ -142,7 +139,6 @@ class SettingsTest extends \MailPoetTest {
       new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class), $senderDomainController),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
-      WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
@@ -174,7 +170,6 @@ class SettingsTest extends \MailPoetTest {
       new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class), $senderDomainController),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
-      WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
@@ -208,7 +203,6 @@ class SettingsTest extends \MailPoetTest {
       new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class), $senderDomainController),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
-      WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
@@ -321,7 +315,6 @@ class SettingsTest extends \MailPoetTest {
       $this->make(AuthorizedEmailsController::class, ['onSettingsSave' => Expected::once()]),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
-      WPFunctions::get(),
       $this->diContainer->get(EntityManager::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(StatisticsOpensRepository::class),
