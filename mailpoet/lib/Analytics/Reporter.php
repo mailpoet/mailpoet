@@ -54,6 +54,7 @@ use MailPoet\Subscribers\SubscriberListingRepository;
 use MailPoet\Tags\TagRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
+use MailPoet\WooCommerce\Subscription;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WPCOM\DotcomHelperFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -273,7 +274,8 @@ class Reporter {
     if ($hasWc) {
       $result['WooCommerce version'] = $woocommerce->version;
       $result['Number of WooCommerce subscribers'] = isset($segments['woocommerce_users']) ? (int)$segments['woocommerce_users'] : 0;
-      $result['WooCommerce: opt-in on checkout is active'] = $this->settings->get('woocommerce.optin_on_checkout.enabled') ?: false;
+      $result['WooCommerce: opt-in on checkout is active'] = $this->settings->get(Subscription::OPTIN_ENABLED_SETTING_NAME) ?: false;
+      $result['WooCommerce: opt-in on checkout position'] = $this->settings->get(Subscription::OPTIN_POSITION_SETTING_NAME) ?: '';
       $result['WooCommerce: set old customers as subscribed'] = $this->settings->get('mailpoet_subscribe_old_woocommerce_customers.enabled') ?: false;
       $result['WooCommerce email customizer is active'] = $this->settings->get('woocommerce.use_mailpoet_editor') ?: false;
 
