@@ -253,7 +253,7 @@ class WordPress {
       GROUP BY type, status, scheduled_in";
 
     $stmt = $this->entityManager->getConnection()->prepare($sql);
-    $stmt->bindValue('now', date('Y-m-d H:i:s', $this->wp->currentTime('timestamp')));
+    $stmt->bindValue('now', date('Y-m-d H:i:s', $this->wp->currentTime('timestamp', true)));
     $stmt->bindValue('past', self::SCHEDULED_IN_THE_PAST);
     $stmt->bindValue('future', self::SCHEDULED_IN_THE_FUTURE);
     $stmt->bindValue('statusCompleted', ScheduledTaskEntity::STATUS_COMPLETED);

@@ -4,7 +4,6 @@ namespace MailPoet\Cron\Workers;
 
 use MailPoet\Analytics\Analytics;
 use MailPoet\Entities\ScheduledTaskEntity;
-use MailPoet\WP\Functions;
 use Mixpanel as MixpanelLibrary;
 
 class Mixpanel extends SimpleWorker {
@@ -16,14 +15,12 @@ class Mixpanel extends SimpleWorker {
 
   const TASK_TYPE = 'mixpanel';
 
-  /** @var MixpanelLibrary */
-  private $mixpanel;
+  private MixpanelLibrary $mixpanel;
 
   public function __construct(
-    Analytics $analytics,
-    Functions $wp
+    Analytics $analytics
   ) {
-    parent::__construct($wp);
+    parent::__construct();
     $this->analytics = $analytics;
     $this->mixpanel = MixpanelLibrary::getInstance(self::PRODUCTION_PROJECT_ID);
     $this->mixpanel->register('Platform', 'Plugin');

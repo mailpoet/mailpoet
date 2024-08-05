@@ -7,7 +7,6 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\InvalidStateException;
 use MailPoet\Util\Security;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -23,11 +22,10 @@ class UnsubscribeTokens extends SimpleWorker {
   private $entityManager;
 
   public function __construct(
-    WPFunctions $wp,
     Security $security,
     EntityManager $entityManager
   ) {
-    parent::__construct($wp);
+    parent::__construct();
     $this->security = $security;
     $this->entityManager = $entityManager;
   }
@@ -93,6 +91,6 @@ class UnsubscribeTokens extends SimpleWorker {
   }
 
   public function getNextRunDate() {
-    return Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    return Carbon::now()->millisecond(0);
   }
 }

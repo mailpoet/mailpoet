@@ -9,9 +9,7 @@ use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\ScheduledTaskSubscriberEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
-use MailPoetVendor\Carbon\CarbonImmutable;
 use MailPoetVendor\Doctrine\DBAL\ArrayParameterType;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Query\Expr\Join;
@@ -27,15 +25,12 @@ class ScheduledTasksRepository extends Repository {
     null,
   ];
 
-  private WPFunctions $wp;
   private SendingQueuesRepository $sendingQueuesRepository;
 
   public function __construct(
     EntityManager $entityManager,
-    WPFunctions $wp,
     SendingQueuesRepository $sendingQueuesRepository
   ) {
-    $this->wp = $wp;
     $this->sendingQueuesRepository = $sendingQueuesRepository;
     parent::__construct($entityManager);
   }
@@ -311,7 +306,7 @@ class ScheduledTasksRepository extends Repository {
   }
 
   public function touchAllByIds(array $ids): void {
-    $now = CarbonImmutable::createFromTimestamp((int)$this->wp->currentTime('timestamp'));
+    $now = Carbon::now()->millisecond(0);
     $this->entityManager->createQueryBuilder()
       ->update(ScheduledTaskEntity::class, 'st')
       ->set('st.updatedAt', ':updatedAt')
@@ -331,7 +326,7 @@ class ScheduledTasksRepository extends Repository {
    * @return ScheduledTaskEntity[]
    */
   public function findScheduledSendingTasks(?int $limit = null): array {
-    $now = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $now = Carbon::now()->millisecond(0);
     return $this->doctrineRepository->createQueryBuilder('st')
       ->select('st')
       ->join('st.sendingQueue', 'sq')
@@ -359,7 +354,7 @@ class ScheduledTasksRepository extends Repository {
       throw new \Exception(__('Only scheduled and running tasks can be cancelled', 'mailpoet'), 400);
     }
     $task->setStatus(ScheduledTaskEntity::STATUS_CANCELLED);
-    $task->setCancelledAt(Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
+    $task->setCancelledAt(Carbon::now()->millisecond(0));
     $this->persist($task);
     $this->flush();
   }
@@ -368,7 +363,7 @@ class ScheduledTasksRepository extends Repository {
     if ($task->getStatus() !== ScheduledTaskEntity::STATUS_CANCELLED) {
       throw new \Exception(__('Only cancelled tasks can be rescheduled', 'mailpoet'), 400);
     }
-    if ($task->getScheduledAt() <= Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))) {
+    if ($task->getScheduledAt() <= Carbon::now()->millisecond(0)) {
       $task->setStatus(ScheduledTaskEntity::VIRTUAL_STATUS_RUNNING);
       $queue = $task->getSendingQueue();
       if ($queue) {
@@ -418,7 +413,7 @@ class ScheduledTasksRepository extends Repository {
       $queryBuilder->andWhere('st.scheduledAt <= :now');
     }
 
-    $now = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $now = Carbon::now()->millisecond(0);
     $queryBuilder->setParameter('now', $now);
 
     if ($limit) {

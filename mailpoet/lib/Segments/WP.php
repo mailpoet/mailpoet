@@ -159,7 +159,7 @@ class WP {
     // When WP Segment is disabled force trashed state and unconfirmed status for new WPUsers without active segment
     // or who are not WooCommerce customers at the same time since customers are added to the WooCommerce list
     if ($addingNewUserToDisabledWPSegment && !$otherActiveSegments && !$isWooCustomer) {
-      $data['deleted_at'] = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+      $data['deleted_at'] = Carbon::now()->millisecond(0);
       $data['status'] = SubscriberEntity::STATUS_UNCONFIRMED;
     }
 

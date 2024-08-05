@@ -9,7 +9,6 @@ use MailPoet\Mailer\Mailer;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\SubscribersCountReporter;
-use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SettingsChangeHandler {
@@ -47,7 +46,7 @@ class SettingsChangeHandler {
     if (!($task instanceof ScheduledTaskEntity)) {
       $task = $this->createScheduledTask(WooCommerceSync::TASK_TYPE);
     }
-    $datetime = Carbon::createFromTimestamp((int)WPFunctions::get()->currentTime('timestamp'));
+    $datetime = Carbon::now()->millisecond(0);
     $task->setScheduledAt($datetime->subMinute());
     $this->scheduledTasksRepository->persist($task);
     $this->scheduledTasksRepository->flush();
@@ -62,7 +61,7 @@ class SettingsChangeHandler {
     if (!($task instanceof ScheduledTaskEntity)) {
       $task = $this->createScheduledTask(InactiveSubscribers::TASK_TYPE);
     }
-    $datetime = Carbon::createFromTimestamp((int)WPFunctions::get()->currentTime('timestamp'));
+    $datetime = Carbon::now()->millisecond(0);
     $task->setScheduledAt($datetime->subMinute());
     $this->scheduledTasksRepository->persist($task);
     $this->scheduledTasksRepository->flush();

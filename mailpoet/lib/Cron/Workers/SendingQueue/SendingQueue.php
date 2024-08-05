@@ -602,7 +602,7 @@ class SendingQueue {
   }
 
   private function isTimeout(ScheduledTaskEntity $task): bool {
-    $currentTime = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $currentTime = Carbon::now()->millisecond(0);
     $updatedAt = new Carbon($task->getUpdatedAt());
     if ($updatedAt->diffInSeconds($currentTime, false) > $this->getExecutionLimit()) {
       return true;

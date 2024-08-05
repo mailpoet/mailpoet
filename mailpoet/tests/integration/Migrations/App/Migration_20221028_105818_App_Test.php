@@ -2,7 +2,6 @@
 
 namespace MailPoet\Migrations\App;
 
-use Codeception\Stub;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
@@ -68,14 +67,7 @@ class Migration_20221028_105818_App_Test extends \MailPoetTest {
   public function testItCreatesInactiveSubscribersTaskIfOneNotAlreadyScheduled() {
     $this->settings->delete('deactivate_subscriber_after_inactive_days');
     $currentTime = Carbon::now()->microsecond(0);
-
-    /** @var WPFunctions $wpStub */
-    $wpStub = Stub::make(new WPFunctions(), [
-      'currentTime' => asCallable(function() use ($currentTime) {
-        return $currentTime->getTimestamp();
-      }),
-    ]);
-    WPFunctions::set($wpStub);
+    Carbon::setTestNow($currentTime);
 
     // Double check there isn't already a task in the DB
     $scheduledTasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
@@ -95,19 +87,14 @@ class Migration_20221028_105818_App_Test extends \MailPoetTest {
     ]);
     $this->assertNotNull($task);
     $this->assertEquals($currentTime->subMinute(), $task->getScheduledAt());
+    Carbon::setTestNow();
   }
 
   public function testItReschedulesScheduledInactiveSubscribersTask() {
     $this->settings->delete('deactivate_subscriber_after_inactive_days');
     $currentTime = Carbon::now()->microsecond(0);
+    Carbon::setTestNow($currentTime);
 
-    /** @var WPFunctions $wpStub */
-    $wpStub = Stub::make(new WPFunctions(), [
-      'currentTime' => asCallable(function() use ($currentTime) {
-        return $currentTime->getTimestamp();
-      }),
-    ]);
-    WPFunctions::set($wpStub);
     $twoHoursFromNow = $currentTime->copy()->addHours(2);
 
     // Create existing task scheduled for the future
@@ -125,6 +112,7 @@ class Migration_20221028_105818_App_Test extends \MailPoetTest {
     $this->migration->run();
 
     $this->assertEquals($currentTime->subMinute(), $existingTask->getScheduledAt());
+    Carbon::setTestNow();
   }
 
   public function testItMigratesTrackingSettings() {

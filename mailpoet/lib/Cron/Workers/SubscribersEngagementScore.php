@@ -68,7 +68,7 @@ class SubscribersEngagementScore extends SimpleWorker {
 
   public function getNextRunDate() {
     // random day of the next week
-    $date = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $date = Carbon::now()->millisecond(0);
     $date->addDay();
     $date->setTime(mt_rand(0, 23), mt_rand(0, 59));
     return $date;

@@ -647,7 +647,7 @@ class Populator {
   private function scheduleInitialInactiveSubscribersCheck() {
     $this->scheduleTask(
       InactiveSubscribers::TASK_TYPE,
-      Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->addHour()
+      Carbon::now()->millisecond(0)->addHour()
     );
   }
 
@@ -657,7 +657,7 @@ class Populator {
     }
     $this->scheduleTask(
       AuthorizedSendingEmailsCheck::TASK_TYPE,
-      Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
+      Carbon::now()->millisecond(0)
     );
   }
 
@@ -665,7 +665,7 @@ class Populator {
     if (!$this->settings->get('last_announcement_date')) {
       $this->scheduleTask(
         Beamer::TASK_TYPE,
-        Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
+        Carbon::now()->millisecond(0)
       );
     }
   }
@@ -673,19 +673,19 @@ class Populator {
   private function scheduleUnsubscribeTokens() {
     $this->scheduleTask(
       UnsubscribeTokens::TASK_TYPE,
-      Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
+      Carbon::now()->millisecond(0)
     );
   }
 
   private function scheduleSubscriberLinkTokens() {
     $this->scheduleTask(
       SubscriberLinkTokens::TASK_TYPE,
-      Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
+      Carbon::now()->millisecond(0)
     );
   }
 
   private function scheduleMixpanel() {
-    $this->scheduleTask(Mixpanel::TASK_TYPE, Carbon::createFromTimestamp($this->wp->currentTime('timestamp')));
+    $this->scheduleTask(Mixpanel::TASK_TYPE, Carbon::now()->millisecond(0));
   }
 
   private function scheduleTask($type, $datetime, $priority = null) {
@@ -723,14 +723,14 @@ class Populator {
     }
     $this->scheduleTask(
       SubscribersLastEngagement::TASK_TYPE,
-      Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
+      Carbon::now()->millisecond(0)
     );
   }
 
   private function scheduleNewsletterTemplateThumbnails() {
     $this->scheduleTask(
       NewsletterTemplateThumbnails::TASK_TYPE,
-      Carbon::createFromTimestamp($this->wp->currentTime('timestamp')),
+      Carbon::now()->millisecond(0),
       ScheduledTaskEntity::PRIORITY_LOW
     );
   }
@@ -746,7 +746,7 @@ class Populator {
     }
     $this->scheduleTask(
       BackfillEngagementData::TASK_TYPE,
-      Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))
+      Carbon::now()->millisecond(0)
     );
   }
 }
