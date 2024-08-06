@@ -114,6 +114,9 @@ class Renderer {
       </noscript>
       <input class="mailpoet_recaptcha_field" type="hidden" name="recaptchaWidgetId">
     </div>';
+    if ($size !== 'invisible') {
+      $html .= '<div class="parsley-errors-list parsley-required mailpoet_error_recaptcha">' . __('This field is required.', 'mailpoet') . '</div>';
+    }
 
     return $html;
   }

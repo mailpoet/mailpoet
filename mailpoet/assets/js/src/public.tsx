@@ -435,6 +435,24 @@ jQuery(($) => {
     // setup form validation
     $('form.mailpoet_form').each((_, element) => {
       const form = $(element);
+
+      form
+        .parsley()
+        .on('form:validate', (formInstance: { validationResult: boolean }) => {
+          const reCaptcha = form.find('.mailpoet_recaptcha');
+          const isReCatpchaVisible =
+            reCaptcha.length &&
+            reCaptcha.first().attr('data-size') !== 'invisible';
+          if (isReCatpchaVisible) {
+            if (window.grecaptcha.getResponse() === '') {
+              // eslint-disable-next-line no-param-reassign
+              formInstance.validationResult = false;
+              form.find('.mailpoet_error_recaptcha').addClass('filled');
+            } else {
+              form.find('.mailpoet_error_recaptcha').removeClass('filled');
+            }
+          }
+        });
       // Detect form is placed in tight container
       form.parsley().on('form:validated', () => {
         // clear messages
