@@ -43,8 +43,8 @@ class AutomationEmailSchedulerTest extends \MailPoetTest {
     verify($scheduledTaskSubscriber)->null();
   }
 
-  public function testGetScheduledTaskSubscriberOnlyFetchesScheduledTasksCreatedAfterRun() {
-    $run1 = (new AutomationRun())->withCreatedAt(new \DateTimeImmutable('now + 1 hour'))->create();
+  public function testGetScheduledTaskSubscriberOnlyIgnoresScheduledTasksCreatedLongTimeBeforeRun() {
+    $run1 = (new AutomationRun())->withCreatedAt(new \DateTimeImmutable('now + 2 days'))->create();
     $run2 = (new AutomationRun())->withCreatedAt(new \DateTimeImmutable('now - 1 hour'))->create();
     $this->automationEmailScheduler->createSendingTask($this->newsletter, $this->subscriber, $this->getMeta($run1->getId()));
     $this->automationEmailScheduler->createSendingTask($this->newsletter, $this->subscriber, $this->getMeta($run2->getId()));

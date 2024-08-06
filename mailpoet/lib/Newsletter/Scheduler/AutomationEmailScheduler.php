@@ -76,8 +76,11 @@ class AutomationEmailScheduler {
       ->andWhere('st.createdAt >= :runCreatedAt')
       ->setParameter('newsletter', $email)
       ->setParameter('subscriber', $subscriber)
-      // Subtract one second to prevent rounding issue as $run->getCreatedAt() may contain milliseconds
-      ->setParameter('runCreatedAt', $run->getCreatedAt()->modify('-1 second'))
+      // Automation Run is fetched via WPDB and it ignores the gmt_offset. This query is processed via Doctrine.
+      // Doctrine uses PDO connection and uses offset. So the run's created_at is expected to be provided with the offset.
+      // By removing one day we make sure the offset is not a problem. It makes no harm as this is only performance optimization.
+      // After we switch to WPDB we could remove this modification and use the exact created_at.
+      ->setParameter('runCreatedAt', $run->getCreatedAt()->modify('-1 day'))
       ->getQuery()
       ->getResult();
     $result = null;
