@@ -187,7 +187,7 @@ class RoboFile extends \Robo\Tasks {
     $this->_exec('./node_modules/webpack/bin/webpack.js --watch');
   }
 
-  public function compileAll($opts = ['env' => null, 'skip-tests' => false]) {
+  public function compileAll($opts = ['env' => null, 'skip-tests' => false, 'only-tests' => false]) {
     $collection = $this->collectionBuilder();
     $collection->addCode(function() use ($opts) {
       return call_user_func([$this, 'compileJs'], $opts);
