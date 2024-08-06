@@ -219,7 +219,7 @@ class EditorCreateCustomFieldCest {
     $i->waitForText('Option 2');
     $i->waitForText('Option 3');
     $i->click('.mailpoet_submit');
-    $i->waitForText('Please select at least one option.');
+    $i->waitForText('This field is required.');
     $i->click('(//input[@class="mailpoet_radio"])[1]'); // Select the first radio button
     $i->click('.mailpoet_submit');
     $i->waitForText('Check your inbox or spam folder to confirm your subscription.');
@@ -263,7 +263,7 @@ class EditorCreateCustomFieldCest {
     $i->waitForText($customFieldName . ' updated *');
     $i->waitForText('New option');
     $i->click('.mailpoet_submit');
-    $i->waitForText('Please select at least one option.');
+    $i->waitForText('This field is required.');
     $i->click('.mailpoet_checkbox'); // Select the checkbox
     $i->click('.mailpoet_submit');
     $i->waitForText('Check your inbox or spam folder to confirm your subscription.');

@@ -75,7 +75,7 @@ class BlockRendererHelper {
     if (in_array($block['type'], ['radio', 'checkbox'])) {
       $rules['group'] = 'custom_field_' . $blockId;
       $rules['errors-container'] = '.mailpoet_error_' . $blockId . ($formId ? '_' . $formId : '');
-      $rules['required-message'] = __('Please select at least one option.', 'mailpoet');
+      $rules['required-message'] = __('This field is required.', 'mailpoet');
     }
 
     if ($block['type'] === 'date') {
