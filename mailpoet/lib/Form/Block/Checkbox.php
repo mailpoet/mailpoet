@@ -74,7 +74,7 @@ class Checkbox {
 
     $html .= '</fieldset>';
 
-    $html .= '<span class="mailpoet_error_' . $this->wp->escAttr($block['id']) . ($formId ? '_' . $formId : '') . '"></span>';
+    $html .= $this->rendererHelper->renderErrorsContainer($block, $formId);
 
     return $this->wrapper->render($block, $html);
   }

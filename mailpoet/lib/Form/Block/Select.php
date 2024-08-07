@@ -32,7 +32,7 @@ class Select {
     $this->blockStylesRenderer = $blockStylesRenderer;
   }
 
-  public function render(array $block, array $formSettings): string {
+  public function render(array $block, array $formSettings, ?int $formId = null): string {
     $html = '';
 
     $fieldName = 'data[' . $this->rendererHelper->getFieldName($block) . ']';
@@ -93,6 +93,8 @@ class Select {
       $html .= '</option>';
     }
     $html .= '</select>';
+
+    $html .= $this->rendererHelper->renderErrorsContainer($block, $formId);
 
     return $this->wrapper->render($block, $html);
   }

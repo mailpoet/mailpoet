@@ -31,7 +31,7 @@ class Textarea {
     $this->wp = $wp;
   }
 
-  public function render(array $block, array $formSettings): string {
+  public function render(array $block, array $formSettings, ?int $formId = null): string {
     $html = '';
     $name = $this->rendererHelper->getFieldName($block);
     $styles = $this->inputStylesRenderer->renderForTextInput($block['styles'] ?? [], $formSettings);
@@ -56,6 +56,8 @@ class Textarea {
     }
 
     $html .= '>' . $this->rendererHelper->escapeShortCodes($this->rendererHelper->getFieldValue($block)) . '</textarea>';
+
+    $html .= $this->rendererHelper->renderErrorsContainer($block, $formId);
 
     return $this->wrapper->render($block, $html);
   }

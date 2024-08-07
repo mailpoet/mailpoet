@@ -18,6 +18,7 @@ use MailPoet\Form\Block\Select;
 use MailPoet\Form\Block\Submit;
 use MailPoet\Form\Block\Text;
 use MailPoet\Form\Block\Textarea;
+use MailPoet\Util\Security;
 
 class BlocksRenderer {
   /** @var Checkbox */
@@ -104,6 +105,9 @@ class BlocksRenderer {
     if ($formId) {
       $formSettings['id'] = $formId;
     }
+    // This is used to properly show validation message when
+    // the same form is rendered on a page multiple times
+    $block['validation_id'] = Security::generateRandomString();
     switch ($block['type']) {
       case FormEntity::HTML_BLOCK_TYPE:
         $html .= $this->html->render($block, $formSettings);
@@ -142,15 +146,15 @@ class BlocksRenderer {
         break;
 
       case FormEntity::SELECT_BLOCK_TYPE:
-        $html .= $this->select->render($block, $formSettings);
+        $html .= $this->select->render($block, $formSettings, $formId);
         break;
 
       case FormEntity::TEXT_BLOCK_TYPE:
-        $html .= $this->text->render($block, $formSettings);
+        $html .= $this->text->render($block, $formSettings, $formId);
         break;
 
       case FormEntity::TEXTAREA_BLOCK_TYPE:
-        $html .= $this->textarea->render($block, $formSettings);
+        $html .= $this->textarea->render($block, $formSettings, $formId);
         break;
 
       case FormEntity::SUBMIT_BLOCK_TYPE:
