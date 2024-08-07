@@ -3,6 +3,7 @@
 namespace MailPoet\Test\DataFactories;
 
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Form\FormMessageController;
@@ -82,6 +83,23 @@ class Form {
       'styles' => [
         'full_width' => '0',
       ],
+    ]);
+  }
+
+  /**
+   * @return $this
+   */
+  public function withCustomField(CustomFieldEntity $customField) {
+    return $this->addFormBlock([
+      'type' => $customField->getType(),
+      'params' => [
+        'label' => $customField->getName(),
+        'class_name' => '',
+        'required' => $customField->getParams()['required'] ?? '0',
+        'values' => $customField->getParams()['values'] ?? [],
+      ],
+      'id' => $customField->getId(),
+      'name' => $customField->getName(),
     ]);
   }
 

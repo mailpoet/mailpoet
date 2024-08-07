@@ -3,7 +3,9 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
+use MailPoet\Test\DataFactories\CustomField;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\WP\Functions as WPFunctions;
@@ -15,12 +17,16 @@ class SubscriptionFormCest {
 
   const CONFIRMATION_MESSAGE_TIMEOUT = 20;
   const FORM_NAME = 'Subscription Acceptance Test Form';
+  const FIRST_FORM_CLASS = 'first-form';
 
   /** @var string */
   private $subscriberEmail;
 
   /** @var int|null */
   private $formId;
+
+  /** @var int|null */
+  private $formIdWithCustomField;
 
   public function __construct() {
     $this->subscriberEmail = 'test-form@example.com';
@@ -37,6 +43,20 @@ class SubscriptionFormCest {
     $formFactory = new Form();
     $this->formId = $formFactory->withName(self::FORM_NAME)->create()->getId();
 
+    $customFieldFactory = new CustomField();
+    $customField = $customFieldFactory
+      ->withType(CustomFieldEntity::TYPE_CHECKBOX)
+      ->withParams([
+        'required' => '1',
+        'values' => [['value' => 'Option 1', 'is_checked' => '']],
+      ])
+      ->create();
+    $this->formIdWithCustomField = $formFactory
+      ->withName(self::FORM_NAME)
+      ->withCustomField($customField)
+      ->create()
+      ->getId();
+
     $i->havePostInDatabase([
       'post_author' => 1,
       'post_type' => 'page',
@@ -47,6 +67,21 @@ class SubscriptionFormCest {
           [mailpoet_form id="' . $this->formId . '"]
         Iframe form:
           <iframe class="mailpoet_form_iframe" id="mailpoet_form_iframe" tabindex="0" src="http://test.local?mailpoet_form_iframe=1" width="100%" height="100%" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+      ',
+      'post_status' => 'publish',
+    ]);
+    $i->havePostInDatabase([
+      'post_author' => 1,
+      'post_type' => 'page',
+      'post_name' => 'form-test-double',
+      'post_title' => 'Form Test Double',
+      'post_content' => '
+        <div class="' . self::FIRST_FORM_CLASS . '">
+          [mailpoet_form id="' . $this->formIdWithCustomField . '"]
+        </div>
+        <div class="second-form">
+          [mailpoet_form id="' . $this->formIdWithCustomField . '"]
+        </div>
       ',
       'post_status' => 'publish',
     ]);
@@ -80,6 +115,17 @@ class SubscriptionFormCest {
     $i->waitForText('Check your inbox or spam folder to confirm your subscription.', self::CONFIRMATION_MESSAGE_TIMEOUT, '.mailpoet_validate_success');
     $i->seeNoJSErrors();
     $i->seeCurrentUrlEquals('/form-test/');
+  }
+
+  public function subscriptionTheSameFormRenderedMultipleTimes(\AcceptanceTester $i) {
+    $i->wantTo('See error message in the correct form');
+
+    $i->amOnPage('/form-test-double');
+    $firstFormButton = '.' . self::FIRST_FORM_CLASS . ' .mailpoet_submit';
+    $i->scrollTo($firstFormButton);
+    $i->click($firstFormButton);
+    // Look for validation error for checkbox field
+    $i->waitForText('This field is required.', 10, '.' . self::FIRST_FORM_CLASS . ' fieldset + span[class*="mailpoet_error_"]');
   }
 
   public function subscriptionFormIframe(\AcceptanceTester $i) {
