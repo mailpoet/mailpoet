@@ -45,6 +45,11 @@ class CustomField {
     return $this;
   }
 
+  public function withParams(array $params): CustomField {
+    $this->data['params'] = array_merge($this->data['params'], $params);
+    return $this;
+  }
+
   public function create(): CustomFieldEntity {
     $customField = $this->repository->createOrUpdate($this->data);
     foreach ($this->data['subscribers'] as $subscriberData) {
