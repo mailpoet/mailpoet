@@ -691,11 +691,7 @@ class Migration_20221028_105818 extends DbMigration {
     $wpdb->query($updateCreatedAtQuery);
 
     // Add updated_at column in case it doesn't exist
-    $updatedAtColumnExists = $wpdb->get_results($wpdb->prepare("
-      SELECT COLUMN_NAME
-      FROM INFORMATION_SCHEMA.COLUMNS
-      WHERE table_name = %s AND column_name = 'updated_at';
-     ", $scheduledTasksSubscribersTable));
+    $updatedAtColumnExists = $this->columnExists($scheduledTasksSubscribersTable, 'updated_at');
     if (empty($updatedAtColumnExists)) {
       $addUpdatedAtQuery = "
         ALTER TABLE `$scheduledTasksSubscribersTable`
@@ -719,13 +715,7 @@ class Migration_20221028_105818 extends DbMigration {
       esc_sql("{$this->prefix}statistics_opens"),
     ];
     foreach ($statisticsTables as $statisticsTable) {
-      $oldStatisticsIndexExists = $wpdb->get_results($wpdb->prepare("
-      SELECT DISTINCT INDEX_NAME
-      FROM INFORMATION_SCHEMA.STATISTICS
-      WHERE TABLE_SCHEMA = %s
-        AND TABLE_NAME = %s
-        AND INDEX_NAME='newsletter_id_subscriber_id'
-     ", $dbName, $statisticsTable));
+      $oldStatisticsIndexExists = $this->indexExists($statisticsTable, 'newsletter_id_subscriber_id');
       if (!empty($oldStatisticsIndexExists)) {
         $dropIndexQuery = "
         ALTER TABLE `{$statisticsTable}`
@@ -1027,13 +1017,7 @@ class Migration_20221028_105818 extends DbMigration {
       return;
     }
     $premiumTableName = $wpdb->prefix . 'mailpoet_premium_newsletter_extra_data';
-    $premiumTableExists = (int)$wpdb->get_var(
-      $wpdb->prepare(
-        "SELECT COUNT(1) FROM information_schema.tables WHERE table_schema=%s AND table_name=%s;",
-        $wpdb->dbname,
-        $premiumTableName
-      )
-    );
+    $premiumTableExists = $this->tableExists($premiumTableName);
     if ($premiumTableExists) {
       $table = esc_sql($this->getTableName(NewsletterEntity::class));
       $query = "
