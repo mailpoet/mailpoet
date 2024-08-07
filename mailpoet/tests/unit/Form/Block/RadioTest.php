@@ -80,13 +80,13 @@ class RadioTest extends \MailPoetUnitTest {
     verify($this->htmlParser->getAttribute($radio2Input, 'checked')->value)->equals('checked');
   }
 
-  public function testItShouldRenderErrorContainerWithFormId() {
+  public function testItShouldRenderErrorContainer() {
     $this->baseMock->expects($this->once())->method('renderLegend')->willReturn('<legend></legend>');
     $this->baseMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
-    $this->baseMock->expects($this->once())->method('getInputValidation')->willReturn(' validation="1" ');
     $this->baseMock->expects($this->once())->method('getFieldValue')->willReturn('Radio 2');
+    $this->baseMock->expects($this->once())->method('renderErrorsContainer')->willReturn('<span class="mailpoet_error_1_31"></span>');
 
-    $html = $this->radio->render($this->block, [], 31);
+    $html = $this->radio->render($this->block, []);
 
     $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_1_31']");
     verify($errorContainer)->notEmpty();
