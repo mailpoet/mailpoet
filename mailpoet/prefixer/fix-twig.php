@@ -322,13 +322,26 @@ $replacements = [
   ],
 ];
 
+function replaceInFile($file, $find, $replace) {
+  $data = file_get_contents($file);
+  $data = str_replace($find, $replace, $data);
+  file_put_contents($file, $data);
+}
+
 foreach ($replacements as $singleFile) {
-  $data = file_get_contents($singleFile['file']);
-  $data = str_replace($singleFile['find'], $singleFile['replace'], $data);
-  file_put_contents($singleFile['file'], $data);
+  replaceInFile($singleFile['file'], $singleFile['find'], $singleFile['replace']);
 }
 
 // Remove unwanted class aliases in lib/Twig
 exec("rm -rf ../vendor-prefixed/twig/twig/lib/Twig");
 exec("rm ../vendor-prefixed/twig/twig/README.rst");
 exec("rm -rf ../vendor-prefixed/twig/twig/src/Test");
+
+// Restore prefixed attributes in Twig PHP files
+$it = new RecursiveDirectoryIterator('../vendor-prefixed/twig/twig/src/', RecursiveDirectoryIterator::SKIP_DOTS);
+foreach (new RecursiveIteratorIterator($it) as $file) {
+  if (substr($file, -3) !== 'php') {
+    continue;
+  }
+  replaceInFile($file, '#[\Twig\Attribute\YieldReady]', '#[YieldReady]');
+}
