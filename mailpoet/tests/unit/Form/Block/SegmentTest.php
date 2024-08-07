@@ -88,16 +88,16 @@ class SegmentTest extends \MailPoetUnitTest {
     verify($this->htmlParser->getAttribute($checkbox1Input, 'checked')->value)->equals('checked');
   }
 
-  public function testItShouldRenderErrorContainerWithFormId(): void {
+  public function testItShouldRenderErrorContainer(): void {
     $this->rendererHelperMock->expects($this->once())->method('renderLegend')->willReturn('<legend></legend>');
-    $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
     $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Segments');
     $this->segmentsRepositoryMock->expects($this->once())->method('findBy')->willReturn([
       $this->createSegmentMock(1, 'List 1'),
       $this->createSegmentMock(2, 'List 2'),
     ]);
+    $this->rendererHelperMock->expects($this->once())->method('renderErrorsContainer')->willReturn('<span class="mailpoet_error_segment_1"></span>');
 
-    $html = $this->segment->render($this->block, [], 1);
+    $html = $this->segment->render($this->block, []);
 
     $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_segment_1']");
     verify($errorContainer)->notEmpty();

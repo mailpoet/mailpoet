@@ -72,13 +72,14 @@ class CheckboxTest extends \MailPoetUnitTest {
     verify($checked->value)->equals('checked');
   }
 
-  public function testItShouldRenderErrorContainerWithFormId() {
+  public function testItShouldRenderErrorContainer() {
     $this->rendererHelperMock->expects($this->once())->method('renderLegend')->willReturn('<legend></legend>');
     $this->rendererHelperMock->expects($this->once())->method('getFieldName')->willReturn('Field name');
-    $this->rendererHelperMock->expects($this->once())->method('getInputValidation')->willReturn('validation="1"');
     $this->rendererHelperMock->expects($this->once())->method('getFieldValue')->willReturn('1');
+    $this->rendererHelperMock->expects($this->once())->method('renderErrorsContainer')->willReturn('<span class="mailpoet_error_1_213"></span>');
 
-    $html = $this->checkbox->render($this->block, [], 213);
+
+    $html = $this->checkbox->render($this->block, []);
 
     $errorContainer = $this->htmlParser->getElementByXpath($html, "//span[@class='mailpoet_error_1_213']");
     verify($errorContainer)->notEmpty();

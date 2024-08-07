@@ -102,57 +102,61 @@ class BlockRendererHelperTest extends \MailPoetUnitTest {
   public function testItShouldRenderInputValidations() {
     $block = $this->block;
     $validation = $this->rendererHelper->getInputValidation($block);
-    verify($validation)->equals('');
+    verify($validation)->equals('data-parsley-errors-container=".mailpoet_error_1"');
 
     $block['params']['required'] = '1';
     $validation = $this->rendererHelper->getInputValidation($block, [], 2);
-    verify($validation)->equals('data-parsley-required="true" data-parsley-errors-container=".mailpoet_error_1_2" data-parsley-required-message="This field is required."');
+    verify($validation)->equals('data-parsley-errors-container=".mailpoet_error_1_2" data-parsley-required="true" data-parsley-required-message="This field is required."');
 
     $block['params']['required'] = '0';
     $block['id'] = 'email';
     $validation = $this->rendererHelper->getInputValidation($block);
-    verify($validation)->equals('data-parsley-required="true" data-parsley-minlength="6" data-parsley-maxlength="150" data-parsley-type-message="This value should be a valid email."');
+    verify($validation)->equals('data-parsley-errors-container=".mailpoet_error_email" data-parsley-required="true" data-parsley-minlength="6" data-parsley-maxlength="150" data-parsley-type-message="This value should be a valid email."');
 
     $block = $this->block;
     $block['params']['validate'] = 'phone';
     $validation = $this->rendererHelper->getInputValidation($block);
-    verify($validation)->equals('data-parsley-pattern="^[\d\+\-\.\(\)\/\s]*$" data-parsley-error-message="Please specify a valid phone number."');
+    verify($validation)->equals('data-parsley-errors-container=".mailpoet_error_1" data-parsley-pattern="^[\d\+\-\.\(\)\/\s]*$" data-parsley-error-message="Please specify a valid phone number."');
 
     $block = $this->block;
     $block['type'] = 'radio';
     $validation = $this->rendererHelper->getInputValidation($block);
-    verify($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1" data-parsley-required-message="This field is required."');
+    verify($validation)->equals('data-parsley-errors-container=".mailpoet_error_1" data-parsley-group="custom_field_1" data-parsley-required-message="This field is required."');
 
     $block = $this->block;
     $block['type'] = 'date';
     $validation = $this->rendererHelper->getInputValidation($block);
-    verify($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1"');
+    verify($validation)->equals('data-parsley-errors-container=".mailpoet_error_1" data-parsley-group="custom_field_1"');
 
     $block = $this->block;
     $validation = $this->rendererHelper->getInputValidation($block, ['custom']);
-    verify($validation)->equals('data-parsley-0="custom"');
+    verify($validation)->equals('data-parsley-errors-container=".mailpoet_error_1" data-parsley-0="custom"');
   }
 
-  public function testItShouldRenderInputValidationsWithFormId(): void {
+  public function testItShouldRenderInputValidationsWithValidationId(): void {
     $block = $this->block;
     $block['type'] = 'radio';
-    $validation = $this->rendererHelper->getInputValidation($block, [], 1);
-    verify($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1_1" data-parsley-required-message="This field is required."');
+    $block['validation_id'] = '1';
+    $validation = $this->rendererHelper->getInputValidation($block);
+    verify($validation)->equals('data-parsley-errors-container=".mailpoet_error_1" data-parsley-group="custom_field_1" data-parsley-required-message="This field is required."');
 
     $block = $this->block;
     $block['type'] = 'checkbox';
-    $validation = $this->rendererHelper->getInputValidation($block, [], 2);
-    verify($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1_2" data-parsley-required-message="This field is required."');
+    $block['validation_id'] = '2';
+    $validation = $this->rendererHelper->getInputValidation($block);
+    verify($validation)->equals('data-parsley-errors-container=".mailpoet_error_2" data-parsley-group="custom_field_1" data-parsley-required-message="This field is required."');
 
     $block = $this->block;
     $block['type'] = 'date';
-    $validation = $this->rendererHelper->getInputValidation($block, [], 3);
-    verify($validation)->equals('data-parsley-group="custom_field_1" data-parsley-errors-container=".mailpoet_error_1_3"');
+    $block['validation_id'] = '3';
+    $validation = $this->rendererHelper->getInputValidation($block);
+    verify($validation)->equals('data-parsley-errors-container=".mailpoet_error_3" data-parsley-group="custom_field_1"');
 
     $block = $this->block;
     $block['id'] = 'segments';
-    $validation = $this->rendererHelper->getInputValidation($block, [], 4);
-    verify($validation)->equals('data-parsley-required="true" data-parsley-group="segments" data-parsley-errors-container=".mailpoet_error_segments_4" data-parsley-required-message="Please select a list."');
+    $block['validation_id'] = '4';
+    $validation = $this->rendererHelper->getInputValidation($block, [], 1);
+    verify($validation)->equals('data-parsley-errors-container=".mailpoet_error_4" data-parsley-required="true" data-parsley-group="segments" data-parsley-required-message="Please select a list."');
   }
 
   public function testItShouldObfuscateFieldNameIfNeeded() {
