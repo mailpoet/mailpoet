@@ -27,7 +27,9 @@ class BlockRendererHelper {
   }
 
   public function getInputValidation(array $block, array $extraRules = [], ?int $formId = null): string {
-    $rules = [];
+    $rules = [
+      'errors-container' => '.' . $this->getErrorsContainerClass($block, $formId),
+    ];
     $blockId = $this->wp->escAttr($block['id']);
 
     if ($blockId === 'email') {
@@ -52,13 +54,11 @@ class BlockRendererHelper {
       $rules['required'] = true;
       $rules['mincheck'] = 1;
       $rules['group'] = $blockId;
-      $rules['errors-container'] = '.mailpoet_error_' . $blockId . '_' . $formId;
       $rules['required-message'] = __('Please select a list.', 'mailpoet');
     }
 
     if (!empty($block['params']['required'])) {
       $rules['required'] = true;
-      $rules['errors-container'] = '.mailpoet_error_' . $blockId . '_' . $formId;
       $rules['required-message'] = __('This field is required.', 'mailpoet');
     }
 
@@ -74,13 +74,11 @@ class BlockRendererHelper {
 
     if (in_array($block['type'], ['radio', 'checkbox'])) {
       $rules['group'] = 'custom_field_' . $blockId;
-      $rules['errors-container'] = '.mailpoet_error_' . $blockId . ($formId ? '_' . $formId : '');
       $rules['required-message'] = __('This field is required.', 'mailpoet');
     }
 
     if ($block['type'] === 'date') {
       $rules['group'] = 'custom_field_' . $blockId;
-      $rules['errors-container'] = '.mailpoet_error_' . $blockId . ($formId ? '_' . $formId : '');
     }
 
     $validation = [];
@@ -265,6 +263,22 @@ class BlockRendererHelper {
     return preg_replace_callback('/' . $this->wp->getShortcodeRegex() . '/s', function ($matches) {
       return str_replace(['[', ']'], ['&#91;', '&#93;'], $matches[0]);
     }, $value);
+  }
+
+  public function renderErrorsContainer(array $block = [], ?int $formId = null): string {
+    $errorContainerClass = $this->getErrorsContainerClass($block, $formId);
+    return '<span class="' . $errorContainerClass . '"></span>';
+  }
+
+  private function getErrorsContainerClass(array $block = [], ?int $formId = null): string {
+    $validationId = $block['validation_id'] ?? null;
+    if (!$validationId) {
+      $validationId = $this->wp->escAttr($block['id']);
+      if ($formId) {
+        $validationId .= '_' . $formId;
+      }
+    }
+    return 'mailpoet_error_' . $validationId;
   }
 
   private function translateValidationErrorMessage(string $validate): string {
