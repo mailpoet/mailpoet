@@ -28,6 +28,7 @@ class Logs {
     $offset = isset($_GET['offset']) ? sanitize_text_field(wp_unslash($_GET['offset'])) : null;
     $limit = isset($_GET['limit']) ? sanitize_text_field(wp_unslash($_GET['limit'])) : null;
     $dateFrom = (new Carbon())->subDays(7);
+    $defaultFrom = $dateFrom->format('Y-m-d');
     if (isset($from)) {
       $dateFrom = new Carbon($from);
     }
@@ -38,6 +39,7 @@ class Logs {
     $logs = $this->logRepository->getLogs($dateFrom, $dateTo, $search, $offset, $limit);
     $data = [
       'logs' => [],
+      'logs_default_from' => $defaultFrom,
     ];
     foreach ($logs as $log) {
       $data['logs'][] = [
