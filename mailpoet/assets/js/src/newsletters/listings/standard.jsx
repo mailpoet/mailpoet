@@ -269,9 +269,9 @@ class NewsletterListStandardComponent extends Component {
         >
           {newsletter.sent_at ? (
             <>
-              {MailPoet.Date.short(newsletter.sent_at)}
+              {MailPoet.Date.shortFromGmt(newsletter.sent_at)}
               <br />
-              {MailPoet.Date.time(newsletter.sent_at)}
+              {MailPoet.Date.timeFromGmt(newsletter.sent_at)}
             </>
           ) : null}
         </td>

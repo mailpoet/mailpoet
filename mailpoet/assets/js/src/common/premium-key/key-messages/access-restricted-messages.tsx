@@ -40,7 +40,7 @@ function EmailVolumeLimitReachedMessage() {
   const message = __(
     'You have sent more emails this month than your MailPoet plan includes, and sending has been temporarily paused. To continue sending with MailPoet Sending Service please [link]upgrade your plan[/link], or wait until sending is automatically resumed on %1$s',
     'mailpoet',
-  ).replace('%1$s', MailPoet.Date.short(startOfNextMonth));
+  ).replace('%1$s', MailPoet.Date.shortFromGmt(startOfNextMonth));
 
   return (
     <div className="mailpoet_error">

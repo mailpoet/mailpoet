@@ -54,7 +54,7 @@ function Log({ log }: LogProps): JSX.Element {
         </Button>
       </td>
       <td className="mailpoet-logs-min-width" role="gridcell">
-        {MailPoet.Date.full(log.created_at)}
+        {MailPoet.Date.fullFromGmt(log.created_at)}
       </td>
     </tr>
   );
@@ -104,7 +104,7 @@ function List({
       const formatting = {
         format: 'Y-m-d',
       };
-      setter(MailPoet.Date.format(value, formatting));
+      setter(MailPoet.Date.formatFromGmt(value, formatting));
     },
   );
 

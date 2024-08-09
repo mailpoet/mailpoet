@@ -159,9 +159,9 @@ function NewsletterStatsInfo({ newsletter }: Props) {
           </Tag>
           &nbsp;
           <b>
-            {MailPoet.Date.short(newsletterDate)}
+            {MailPoet.Date.shortFromGmt(newsletterDate)}
             {' • '}
-            {MailPoet.Date.time(newsletterDate)}
+            {MailPoet.Date.timeFromGmt(newsletterDate)}
           </b>
         </div>
         {Array.isArray(newsletter.segments) && newsletter.segments.length && (

@@ -365,9 +365,9 @@ class NewsletterListNotificationComponent extends Component {
           className="column-date mailpoet-hide-on-mobile"
           data-colname={__('Last modified on', 'mailpoet')}
         >
-          {MailPoet.Date.short(newsletter.updated_at)}
+          {MailPoet.Date.shortFromGmt(newsletter.updated_at)}
           <br />
-          {MailPoet.Date.time(newsletter.updated_at)}
+          {MailPoet.Date.timeFromGmt(newsletter.updated_at)}
         </td>
       </div>
     );

@@ -56,13 +56,13 @@ export function transformLogsToRows(logs: Log[], steps: Steps) {
         value: log.step_name,
       },
       {
-        display: MailPoet.Date.format(new Date(log.started_at)),
+        display: MailPoet.Date.formatFromGmt(new Date(log.started_at)),
         value: log.started_at,
       },
       {
         display:
           log.status === 'complete'
-            ? MailPoet.Date.format(new Date(log.updated_at))
+            ? MailPoet.Date.formatFromGmt(new Date(log.updated_at))
             : '-',
         value: log.updated_at,
       },
