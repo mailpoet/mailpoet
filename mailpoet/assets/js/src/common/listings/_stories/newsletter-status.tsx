@@ -24,20 +24,24 @@ export function NewsletterStatuses() {
       <div className="mailpoet-gap" />
 
       <Heading level={3}>Scheduled in the future</Heading>
-      <NewsletterStatus scheduledFor={inOneHour} />
-      <NewsletterStatus scheduledFor={inSixHours} />
-      <NewsletterStatus scheduledFor={inTwelveHours} />
-      <NewsletterStatus scheduledFor={inOneDay} />
-      <NewsletterStatus scheduledFor={inOneDay} isPaused />
+      <NewsletterStatus scheduledFor={inOneHour.toISOString()} />
+      <NewsletterStatus scheduledFor={inSixHours.toISOString()} />
+      <NewsletterStatus scheduledFor={inTwelveHours.toISOString()} />
+      <NewsletterStatus scheduledFor={inOneDay.toISOString()} />
+      <NewsletterStatus scheduledFor={inOneDay.toISOString()} isPaused />
 
       <div className="mailpoet-gap" />
 
       <Heading level={3}>Sending in progress</Heading>
       <NewsletterStatus total={200} processed={0} />
       <NewsletterStatus total={400} processed={150} />
-      <NewsletterStatus scheduledFor={inPast} total={300} processed={270} />
       <NewsletterStatus
-        scheduledFor={inPast}
+        scheduledFor={inPast.toISOString()}
+        total={300}
+        processed={270}
+      />
+      <NewsletterStatus
+        scheduledFor={inPast.toISOString()}
         total={300}
         processed={270}
         isPaused
