@@ -1,4 +1,5 @@
 import { Component, SyntheticEvent } from 'react';
+import { MailPoet } from 'mailpoet';
 
 import { Grid } from 'common/grid';
 import { DateText } from 'newsletters/send/date-text';
@@ -54,11 +55,16 @@ class DateTime extends Component<DateTimeProps, DateTimeState> {
     }
   }
 
-  getDateTime = () =>
-    [this.state.date, this.state.time].join(this.DATE_TIME_SEPARATOR);
+  getDateTime = () => {
+    const localTime = [this.state.date, this.state.time].join(
+      this.DATE_TIME_SEPARATOR,
+    );
+    return MailPoet.Date.siteToGmtTimestamp(localTime);
+  };
 
   buildStateFromProps = (props: DateTimeProps): DateTimeState => {
-    const value = props.value || this.props.defaultDateTime;
+    const valueUtc = props.value || this.props.defaultDateTime;
+    const value = MailPoet.Date.gmtToSiteTimestamp(valueUtc);
     const [date, time] = value.split(this.DATE_TIME_SEPARATOR);
     return {
       date,
