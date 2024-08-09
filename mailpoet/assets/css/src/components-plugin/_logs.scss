@@ -1,7 +1,17 @@
-.mailpoet-logs-full-message {
+.mailpoet-logs-message {
   font-size: 12px;
-  height: 120px;
-  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mailpoet-logs-message-full {
+  white-space: normal;
+}
+
+.mailpoet-logs-min-width {
+  white-space: nowrap;
+  width: 1px;
 }
 
 .mailpoet-logs {
