@@ -64,6 +64,9 @@ class PermanentNotices {
   /** @var SenderDomainAuthenticationNotices */
   private $senderDomainAuthenticationNotices;
 
+  /** @var DatabaseEngineNotice */
+  private $databaseEngineNotice;
+
   public function __construct(
     WPFunctions $wp,
     TrackingConfig $trackingConfig,
@@ -90,6 +93,7 @@ class PermanentNotices {
     $this->pendingApprovalNotice = new PendingApprovalNotice($settings);
     $this->woocommerceVersionWarning = new WooCommerceVersionWarning($wp);
     $this->premiumFeaturesAvailableNotice = new PremiumFeaturesAvailableNotice($subscribersFeature, $serviceChecker, $wp);
+    $this->databaseEngineNotice = new DatabaseEngineNotice($wp);
     $this->senderDomainAuthenticationNotices = $senderDomainAuthenticationNotices;
   }
 
@@ -150,6 +154,9 @@ class PermanentNotices {
     $this->premiumFeaturesAvailableNotice->init(
       Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
+    $this->databaseEngineNotice->init(
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
+    );
     $excludeDomainAuthenticationNotices = [
       'mailpoet-settings',
       'mailpoet-newsletter-editor',
@@ -192,6 +199,9 @@ class PermanentNotices {
         break;
       case (WooCommerceVersionWarning::OPTION_NAME):
         $this->woocommerceVersionWarning->disable();
+        break;
+      case (DatabaseEngineNotice::OPTION_NAME):
+        $this->databaseEngineNotice->disable();
         break;
       case (PremiumFeaturesAvailableNotice::OPTION_NAME):
         $this->premiumFeaturesAvailableNotice->disable();
