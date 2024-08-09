@@ -6,8 +6,6 @@ import {
 import { MailPoet } from 'mailpoet';
 import { useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import parseDate from 'date-fns/parse';
-import { isPast } from 'date-fns';
 
 type TasksListDataRowProps = {
   id: number;
@@ -37,13 +35,11 @@ function TaskButton({ task, type }: Props): JSX.Element {
   const isCancelButton = type === 'cancel';
   const isRescheduleButton = type === 'reschedule';
 
-  let scheduledDate = task.scheduledAt
-    ? parseDate(task.scheduledAt, 'yyyy-MM-dd HH:mm:ss', new Date())
-    : undefined;
-  if (scheduledDate) {
-    scheduledDate = MailPoet.Date.adjustForTimezoneDifference(scheduledDate);
-  }
-  const isScheduledInPast = isPast(scheduledDate);
+  const scheduledDate = task.scheduledAt;
+  const isScheduledInPast = MailPoet.Date.isInPastGmt(
+    scheduledDate,
+    new Date().toISOString(),
+  );
 
   return (
     <>

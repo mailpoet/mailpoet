@@ -1,5 +1,4 @@
 import { MailPoet } from 'mailpoet';
-import parseDate from 'date-fns/parse';
 import { CancelTaskButton, RescheduleTaskButton } from './tasks-list-actions';
 
 export type Props = {
@@ -27,31 +26,6 @@ function TasksListDataRow({ type, task }: Props): JSX.Element {
   const showCancelledAt = type === 'cancelled';
   const canCancelTask = type === 'scheduled' || type === 'running';
   const canRescheduleTask = type === 'cancelled';
-
-  let scheduled: Date;
-  if (showScheduledAt) {
-    scheduled = parseDate(task.scheduledAt, 'yyyy-MM-dd HH:mm:ss', new Date());
-    if (scheduled) {
-      scheduled = MailPoet.Date.adjustForTimezoneDifference(scheduled);
-    }
-  }
-
-  let cancelled: Date;
-  if (showCancelledAt) {
-    cancelled = parseDate(task.cancelledAt, 'yyyy-MM-dd HH:mm:ss', new Date());
-    if (cancelled) {
-      cancelled = MailPoet.Date.adjustForTimezoneDifference(cancelled);
-    }
-  }
-
-  let updated: Date = parseDate(
-    task.updatedAt,
-    'yyyy-MM-dd HH:mm:ss',
-    new Date(),
-  );
-  if (updated) {
-    updated = MailPoet.Date.adjustForTimezoneDifference(updated);
-  }
 
   return (
     <tr>
@@ -86,21 +60,21 @@ function TasksListDataRow({ type, task }: Props): JSX.Element {
       {showScheduledAt ? (
         <td className="column-date">
           <abbr>{`${MailPoet.Date.shortFromGmt(
-            scheduled,
-          )} ${MailPoet.Date.timeFromGmt(scheduled)}`}</abbr>
+            task.scheduledAt,
+          )} ${MailPoet.Date.timeFromGmt(task.scheduledAt)}`}</abbr>
         </td>
       ) : null}
       {showCancelledAt ? (
         <td className="column-date">
           <abbr>{`${MailPoet.Date.shortFromGmt(
-            cancelled,
-          )} ${MailPoet.Date.timeFromGmt(cancelled)}`}</abbr>
+            task.cancelledAt,
+          )} ${MailPoet.Date.timeFromGmt(task.cancelledAt)}`}</abbr>
         </td>
       ) : null}
       <td className="column-date">
         <abbr>{`${MailPoet.Date.shortFromGmt(
-          updated,
-        )} ${MailPoet.Date.timeFromGmt(updated)}`}</abbr>
+          task.updatedAt,
+        )} ${MailPoet.Date.timeFromGmt(task.updatedAt)}`}</abbr>
       </td>
       {canCancelTask ? (
         <td>
