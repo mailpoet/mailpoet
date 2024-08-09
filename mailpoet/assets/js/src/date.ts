@@ -16,6 +16,7 @@ export const MailPoetDate: {
   format: (date: MomentInput, opts?: DateOptions) => string;
   formatFromGmt: (date: MomentInput, opts?: DateOptions) => string;
   toDate: (date: MomentInput, opts?: DateOptions) => Date;
+  toDateFromGmt: (date: MomentInput, opts?: DateOptions) => Date;
   short: (date: MomentInput) => string;
   shortFromGmt: (date: MomentInput) => string;
   full: (date: MomentInput) => string;
@@ -90,6 +91,14 @@ export const MailPoetDate: {
     this.init(options);
 
     return Moment(date).toDate();
+  },
+  toDateFromGmt: function toDateFromGmt(
+    date: MomentInput,
+    opts?: DateOptions,
+  ): Date {
+    const options = opts || {};
+    this.init(options);
+    return Moment.utc(date).toDate();
   },
   shortFromGmt: function shortFromGmt(date: MomentInput): string {
     return this.formatFromGmt(date, {

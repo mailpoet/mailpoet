@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import classnames from 'classnames';
-import { addDays, differenceInMinutes, isFuture, isPast } from 'date-fns';
+import { addDays, differenceInMinutes } from 'date-fns';
 import {
   NewsLetter,
   NewsletterStatus as NewsletterStatusEnum,
@@ -60,7 +60,7 @@ export function ScheduledIcon() {
 }
 
 type NewsletterStatusProps = {
-  scheduledFor?: Date;
+  scheduledFor?: string;
   processed?: number;
   total?: number;
   isPaused?: boolean;
@@ -78,9 +78,15 @@ function NewsletterStatus({
 }: NewsletterStatusProps) {
   const isCorrupt = status === 'corrupt';
   const unknown = !scheduledFor && !processed && !total;
-  const scheduled = scheduledFor && isFuture(scheduledFor);
+  const now = new Date();
+  const scheduled =
+    scheduledFor &&
+    MailPoet.Date.isInFutureGmt(scheduledFor, now.toISOString());
   const inProgress =
-    (!scheduledFor || isPast(scheduledFor)) && processed < total && !isCorrupt;
+    (!scheduledFor ||
+      MailPoet.Date.isInPastGmt(scheduledFor, now.toISOString())) &&
+    processed < total &&
+    !isCorrupt;
   const sent = status === 'sent' && processed >= total;
   const sentWithoutQueue = status === 'sent' && total === undefined;
   let percentage = 0;
@@ -92,13 +98,13 @@ function NewsletterStatus({
     )} / ${MailPoet.Num.toLocaleFixed(total)}`;
     percentage = 100;
   } else if (scheduled) {
-    const scheduledDate = MailPoet.Date.short(scheduledFor);
-    const scheduledTime = MailPoet.Date.time(scheduledFor);
-    const now = new Date();
+    const scheduledDate = MailPoet.Date.shortFromGmt(scheduledFor);
+    const scheduledTime = MailPoet.Date.timeFromGmt(scheduledFor);
     const tomorrow = addDays(now, 1);
-    const isScheduledForToday = MailPoet.Date.short(now) === scheduledDate;
+    const isScheduledForToday =
+      MailPoet.Date.shortFromGmt(now.toISOString()) === scheduledDate;
     const isScheduledForTomorrow =
-      MailPoet.Date.short(tomorrow) === scheduledDate;
+      MailPoet.Date.shortFromGmt(tomorrow.toISOString()) === scheduledDate;
     if (isScheduledForToday || isScheduledForTomorrow) {
       const randomId = Math.random().toString(36).substring(2, 15);
       const dateWord = isScheduledForToday
@@ -126,7 +132,10 @@ function NewsletterStatus({
       );
     }
     const minutesIn12Hours = 720;
-    const minutesLeft = differenceInMinutes(scheduledFor, now);
+    const minutesLeft = differenceInMinutes(
+      MailPoet.Date.toDateFromGmt(scheduledFor),
+      MailPoet.Date.toDateFromGmt(now.toISOString()),
+    );
     if (minutesLeft < minutesIn12Hours) {
       percentage = 100 * (minutesLeft / minutesIn12Hours);
     } else {
