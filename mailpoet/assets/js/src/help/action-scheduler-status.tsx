@@ -1,6 +1,5 @@
 import { MailPoet } from 'mailpoet';
 import { KeyValueTable } from 'common/key-value-table';
-import Moment from 'moment';
 
 type ActionSchedulerStatusProps = {
   version: string;
@@ -33,17 +32,15 @@ function ActionSchedulerStatus({
           },
           {
             key: MailPoet.I18n.t('latestActionSchedulerTrigger'),
-            value: MailPoet.Date.full(Moment.utc(latestTrigger).local()),
+            value: MailPoet.Date.fullFromGmt(latestTrigger),
           },
           {
             key: MailPoet.I18n.t('latestActionSchedulerCompletedTrigger'),
-            value: MailPoet.Date.full(
-              Moment.utc(latestCompletedTrigger).local(),
-            ),
+            value: MailPoet.Date.fullFromGmt(latestCompletedTrigger),
           },
           {
             key: MailPoet.I18n.t('latestActionSchedulerCompletedRun'),
-            value: MailPoet.Date.full(Moment.utc(latestCompletedRun).local()),
+            value: MailPoet.Date.fullFromGmt(latestCompletedRun),
           },
         ]}
       />
