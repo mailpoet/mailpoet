@@ -27,6 +27,8 @@ export const MailPoetDate: {
   isInFutureGmt: (dateString: string, currentTime: MomentInput) => boolean;
   isInPast: (dateString: string, currentTime: MomentInput) => boolean;
   isInPastGmt: (dateString: string, currentTime: MomentInput) => boolean;
+  gmtToSiteTimestamp: (utcTimeStamp: string) => string;
+  siteToGmtTimestamp: (siteTimeStamp: string) => string;
   adjustForTimezoneDifference: (date: Date) => Date;
 } = {
   version: 0.1,
@@ -66,7 +68,6 @@ export const MailPoetDate: {
   format: function format(date: MomentInput, opts?: DateOptions): string {
     const options = opts || {};
     this.init(options);
-
     const momentDate = Moment(date);
     return momentDate.format(this.convertFormat(this.options.format) as string);
   },
@@ -118,6 +119,19 @@ export const MailPoetDate: {
   time: function time(date: MomentInput): string {
     return this.time(date, {
       format: window.mailpoet_time_format || 'H:i:s',
+    });
+  },
+  gmtToSiteTimestamp: function gmtToSiteTimestamp(
+    gmtTimeStamp: string,
+  ): string {
+    return this.formatFromGmt(gmtTimeStamp, { format: 'Y-m-d H:i:s' });
+  },
+  siteToGmtTimestamp: function siteToGmtTimestamp(
+    gmtTimeStamp: string,
+  ): string {
+    return this.formatFromGmt(gmtTimeStamp, {
+      format: 'Y-m-d H:i:s',
+      offset: parseFloat(window.mailpoet_date_offset || '0') * -1,
     });
   },
   convertFormat: function convertFormat(format: string): string {
