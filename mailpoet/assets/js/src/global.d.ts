@@ -157,7 +157,6 @@ interface Window {
   mailpoet_capabilities: Capabilities;
   mailpoet_tier: number | null;
   mailpoet_current_wp_user_email: string;
-  mailpoet_current_time?: string;
   mailpoet_current_date?: string;
   mailpoet_tomorrow_date?: string;
   mailpoet_schedule_time_of_day?: string;
