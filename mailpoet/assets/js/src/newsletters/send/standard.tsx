@@ -1,7 +1,6 @@
 import { ChangeEvent, Component } from 'react';
 import { MailPoet } from 'mailpoet';
 import { Hooks } from 'wp-js-hooks';
-import Moment from 'moment';
 import { __ } from '@wordpress/i18n';
 
 import { DateTime } from 'newsletters/send/date-time';
@@ -13,7 +12,6 @@ import { NewsLetter, NewsletterStatus } from 'common/newsletter';
 import { Field } from 'form/types';
 import { SendToFieldWithCount } from './send-to-field';
 
-const currentTime = window.mailpoet_current_time || '00:00';
 const tomorrowDateTime = `${window.mailpoet_tomorrow_date} 08:00:00`;
 const timeOfDayItems = window.mailpoet_schedule_time_of_day as unknown as {
   [key: string]: string;
@@ -85,7 +83,8 @@ class StandardScheduling extends Component<StandardSchedulingProps> {
       schedulingOptions = (
         <>
           <span className="mailpoet-form-schedule-time">
-            {__('Your website’s time is', 'mailpoet')} {currentTime}
+            {__('Your website’s time is', 'mailpoet')}{' '}
+            {MailPoet.Date.timeFromGmt(new Date().toISOString())}
           </span>
           <div className="mailpoet-gap" />
           <div id="mailpoet_scheduling">
@@ -239,13 +238,12 @@ export const StandardNewsletterFields = {
   getSendButtonOptions: (
     newsletter: Partial<NewsLetter> = {},
   ): SendButtonOptions => {
-    const currentDateTime = Moment(window.mailpoet_current_date_time);
     const isScheduled =
       typeof newsletter.options === 'object' &&
       newsletter.options?.isScheduled === '1' &&
-      MailPoet.Date.isInFuture(
+      MailPoet.Date.isInFutureGmt(
         newsletter.options?.scheduledAt,
-        currentDateTime,
+        new Date().toISOString(),
       );
 
     const options: SendButtonOptions = {
