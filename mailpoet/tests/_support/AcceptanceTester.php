@@ -154,7 +154,9 @@ class AcceptanceTester extends \Codeception\Actor {
   public function clickWooTableActionByItemName($itemName, $actionLinkText) {
     $i = $this;
     $xpath = ['xpath' => '//tr[.//a[text()="' . $itemName . '"]]//a[text()="' . $actionLinkText . '"]'];
+    $i->waitForElementVisible($xpath);
     $i->waitForElementClickable($xpath);
+    $i->moveMouseOver($xpath);
     $i->click($xpath);
   }
 
