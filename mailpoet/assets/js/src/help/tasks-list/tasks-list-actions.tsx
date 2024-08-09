@@ -119,9 +119,9 @@ function TaskButton({ task, type }: Props): JSX.Element {
           !isScheduledInPast &&
           sprintf(
             __('The task will be scheduled for sending on %s.', 'mailpoet'),
-            `${MailPoet.Date.short(scheduledDate)} ${MailPoet.Date.time(
+            `${MailPoet.Date.shortFromGmt(
               scheduledDate,
-            )}`,
+            )} ${MailPoet.Date.timeFromGmt(scheduledDate)}`,
           )}
       </ConfirmDialog>
 

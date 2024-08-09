@@ -358,9 +358,9 @@ class SegmentListComponent extends Component<SegmentListComponentProps> {
           className="column-date mailpoet-hide-on-mobile"
           data-colname={MailPoet.I18n.t('createdOn')}
         >
-          {MailPoet.Date.short(segment.created_at)}
+          {MailPoet.Date.shortFromGmt(segment.created_at)}
           <br />
-          {MailPoet.Date.time(segment.created_at)}
+          {MailPoet.Date.timeFromGmt(segment.created_at)}
         </td>
       </div>
     );

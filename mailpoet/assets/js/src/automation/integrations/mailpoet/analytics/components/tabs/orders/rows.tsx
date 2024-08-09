@@ -13,7 +13,7 @@ export function transformOrdersToRows(data: OrderSection['data'] | undefined) {
     ? []
     : orders.map((order) => [
         {
-          display: MailPoet.Date.format(new Date(order.date)),
+          display: MailPoet.Date.formatFromGmt(new Date(order.date)),
           value: order.date,
         },
         {
