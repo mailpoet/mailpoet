@@ -32,9 +32,9 @@ const timeOfDayValues = _.object(
     (seconds) => {
       const date = new Date(null);
       date.setSeconds(seconds);
-      const timeLabel = MailPoet.Date.format(date, {
+      const timeLabel = MailPoet.Date.formatFromGmt(date, {
         format: timeFormat,
-        offset: 0,
+        offset: 0, // Override site timezone to enforce GMT. We want the list of time start at 12:00 am
       });
       return [seconds, timeLabel];
     },
