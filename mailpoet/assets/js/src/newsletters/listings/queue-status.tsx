@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
 import { Link } from 'react-router-dom';
-import parseDate from 'date-fns/parse';
 import { APIErrorsNotice } from 'notices/api-errors-notice';
 import { Button } from 'common/button/button';
 import { NewsletterStatus } from 'common/listings';
@@ -107,14 +106,7 @@ type QueueStatusProps = {
 };
 
 function QueueStatus({ newsletter, mailerLog }: QueueStatusProps) {
-  const rawNewsletterDate = newsletter.sent_at || newsletter.queue.scheduled_at;
-  let newsletterDate = rawNewsletterDate
-    ? parseDate(rawNewsletterDate, 'yyyy-MM-dd HH:mm:ss', new Date())
-    : undefined;
-  if (newsletterDate) {
-    newsletterDate = MailPoet.Date.adjustForTimezoneDifference(newsletterDate);
-  }
-
+  const newsletterDate = newsletter.sent_at || newsletter.queue.scheduled_at;
   const isNewsletterCancelled =
     newsletter.queue && newsletter.queue.status === 'cancelled';
   const isNewsletterSending =
