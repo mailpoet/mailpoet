@@ -51,6 +51,7 @@ use MailPoet\Settings\TrackingConfig;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberListingRepository;
+use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Tags\TagRepository;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -186,6 +187,7 @@ class Reporter {
       'Number of lists' => isset($segments['default']) ? (int)$segments['default'] : 0,
       'Number of subscriber tags' => $this->tagRepository->countBy([]),
       'Stop sending to inactive subscribers' => $inactiveSubscribersStatus,
+      'CAPTCHA setting' => $this->settings->get(CaptchaConstants::TYPE_SETTING_NAME, '') ?: 'disabled',
       'Plugin > MailPoet Premium' => $this->wp->isPluginActive('mailpoet-premium/mailpoet-premium.php'),
       'Plugin > bounce add-on' => $this->wp->isPluginActive('mailpoet-bounce-handler/mailpoet-bounce-handler.php'),
       'Plugin > Bloom' => $this->wp->isPluginActive('bloom-for-publishers/bloom.php'),
