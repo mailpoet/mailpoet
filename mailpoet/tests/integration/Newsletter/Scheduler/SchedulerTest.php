@@ -6,6 +6,7 @@ use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Scheduler\Scheduler;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
 use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionFactory;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class SchedulerTest extends \MailPoetTest {
@@ -48,6 +49,27 @@ class SchedulerTest extends \MailPoetTest {
     verify($this->testee->getNextRunDate('invalid CRON expression'))->false();
   }
 
+  public function testItCanGetCorrectNextRunDateInGMTTimezone() {
+    $currentTime = '2024-08-09 09:00:00';
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('currentTime')->willReturn(strtotime($currentTime));
+    $wpMock->method('wpTimezone')->willReturn(new \DateTimeZone('UTC'));
+    $scheduler = $this->getServiceWithOverrides(Scheduler::class, ['wp' => $wpMock]);
+    verify($scheduler->getNextRunDate('0 10 * * *'))
+      ->equals('2024-08-09 10:00:00');
+  }
+
+  public function testItCanGetCorrectNextRunDateInNewYorkTimezone() {
+    $currentTime = '2024-08-09 09:00:00';
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('currentTime')->willReturn(strtotime($currentTime));
+    $wpMock->method('wpTimezone')->willReturn(new \DateTimeZone('America/New_York'));
+    $scheduler = $this->getServiceWithOverrides(Scheduler::class, ['wp' => $wpMock]);
+    // Cron was set by user in NewYork timezone (0 10 * * *) in UTC it would be (0 14 * * *)
+    verify($scheduler->getNextRunDate('0 10 * * *'))
+      ->equals('2024-08-09 14:00:00');
+  }
+
   public function testItCanGetPreviousRunDate() {
     // it accepts cron syntax and returns previous run date
     $currentTime = Carbon::now()->millisecond(0);
@@ -56,6 +78,27 @@ class SchedulerTest extends \MailPoetTest {
       ->equals($currentTime->subMinute()->format('Y-m-d H:i:00'));
     // when invalid CRON expression is used, false response is returned
     verify($this->testee->getPreviousRunDate('invalid CRON expression'))->false();
+  }
+
+  public function testItCanGetCorrectPreviousRunDateInGMTTimezone() {
+    $currentTime = '2024-08-09 09:00:00';
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('currentTime')->willReturn(strtotime($currentTime));
+    $wpMock->method('wpTimezone')->willReturn(new \DateTimeZone('UTC'));
+    $scheduler = $this->getServiceWithOverrides(Scheduler::class, ['wp' => $wpMock]);
+    verify($scheduler->getPreviousRunDate('0 10 * * *'))
+      ->equals('2024-08-08 10:00:00');
+  }
+
+  public function testItCanGetCorrectPreviousRunDateInNewYorkTimezone() {
+    $currentTime = '2024-08-09 09:00:00';
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('currentTime')->willReturn(strtotime($currentTime));
+    $wpMock->method('wpTimezone')->willReturn(new \DateTimeZone('America/New_York'));
+    $scheduler = $this->getServiceWithOverrides(Scheduler::class, ['wp' => $wpMock]);
+    // Cron was set by user in NewYork timezone (0 10 * * *) in UTC it would be (0 14 * * *)
+    verify($scheduler->getPreviousRunDate('0 10 * * *'))
+      ->equals('2024-08-08 14:00:00');
   }
 
   public function testItFormatsDatetimeString() {

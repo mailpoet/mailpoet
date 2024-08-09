@@ -140,6 +140,10 @@ class Functions {
     return current_time($type, $gmt);
   }
 
+  public function wpTimezone() {
+    return wp_timezone();
+  }
+
   public function currentUserCan($capability) {
     return current_user_can($capability);
   }
