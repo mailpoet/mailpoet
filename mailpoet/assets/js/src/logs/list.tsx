@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import { curry } from 'lodash';
 import { parseISO } from 'date-fns';
+import { __ } from '@wordpress/i18n';
 
 import { Datepicker } from '../common/datepicker/datepicker';
 import { Button, ErrorBoundary, Input } from '../common';
@@ -16,52 +17,45 @@ type LogData = {
 
 export type Logs = LogData[];
 
-function isCtrl(event: {
-  ctrlKey?: boolean;
-  metaKey?: boolean;
-  altKey?: boolean;
-}): boolean {
-  return (event.ctrlKey || event.metaKey) && !event.altKey; // shiftKey allowed
-}
-
-type MessageProps = {
-  message: string;
-  editing: boolean;
-};
-
-function Message({ message, editing }: MessageProps): JSX.Element {
-  if (!editing) {
-    return <>{`${message.substr(0, 150)}…`}</>;
-  }
-  return (
-    <textarea value={message} className="mailpoet-logs-full-message" readOnly />
-  );
-}
-
 type LogProps = {
   log: LogData;
 };
 
 function Log({ log }: LogProps): JSX.Element {
-  const [editing, setEditing] = useState(false);
+  const [showFullMessage, setShowFullMessage] = useState(false);
 
-  function messageClick(event: {
-    ctrlKey?: boolean;
-    metaKey?: boolean;
-    altKey?: boolean;
-  }): void {
-    if (!isCtrl(event)) return;
-    if (editing) return;
-    setEditing(true);
-  }
+  const toggleFullMessage = () => {
+    setShowFullMessage(!showFullMessage);
+  };
 
   return (
     <tr key={`log-row-${log.id}`}>
-      <td role="gridcell">{log.name}</td>
-      <td onClick={messageClick} role="gridcell">
-        <Message message={log.message} editing={editing} />
+      <td role="gridcell" className="mailpoet-logs-min-width">
+        {log.name}
       </td>
-      <td role="gridcell">{MailPoet.Date.full(log.created_at)}</td>
+      <td role="gridcell">
+        <div
+          className={`mailpoet-logs-message ${
+            showFullMessage ? 'mailpoet-logs-message-full' : ''
+          }`}
+        >
+          {log.message}
+        </div>
+      </td>
+      <td role="gridcell" className="mailpoet-logs-min-width">
+        <Button
+          dimension="small"
+          variant="secondary"
+          onClick={toggleFullMessage}
+        >
+          {showFullMessage
+            ? __('Show less', 'mailpoet')
+            : __('Show more', 'mailpoet')}
+        </Button>
+      </td>
+      <td className="mailpoet-logs-min-width" role="gridcell">
+        {MailPoet.Date.full(log.created_at)}
+      </td>
     </tr>
   );
 }
@@ -210,6 +204,7 @@ function List({
           <tr>
             <th>{MailPoet.I18n.t('tableHeaderName')}</th>
             <th>{MailPoet.I18n.t('tableHeaderMessage')}</th>
+            <th>{__('Action', 'mailpoet')}</th>
             <th>{MailPoet.I18n.t('tableHeaderCreatedOn')}</th>
           </tr>
         </thead>
