@@ -166,7 +166,7 @@ class DateText extends Component<DateTextProps> {
     const formatting = {
       format: this.props.storageFormat,
     };
-    return MailPoet.Date.format(date, formatting);
+    return MailPoet.Date.formatFromGmt(date, formatting);
   };
 
   render() {

@@ -569,9 +569,9 @@ function SubscriberList() {
         >
           {subscriber.last_subscribed_at ? (
             <>
-              {MailPoet.Date.short(subscriber.last_subscribed_at)}
+              {MailPoet.Date.shortFromGmt(subscriber.last_subscribed_at)}
               <br />
-              {MailPoet.Date.time(subscriber.last_subscribed_at)}
+              {MailPoet.Date.timeFromGmt(subscriber.last_subscribed_at)}
             </>
           ) : null}
         </td>
@@ -581,9 +581,9 @@ function SubscriberList() {
         >
           {subscriber.created_at ? (
             <>
-              {MailPoet.Date.short(subscriber.created_at)}
+              {MailPoet.Date.shortFromGmt(subscriber.created_at)}
               <br />
-              {MailPoet.Date.time(subscriber.created_at)}
+              {MailPoet.Date.timeFromGmt(subscriber.created_at)}
             </>
           ) : null}
         </td>

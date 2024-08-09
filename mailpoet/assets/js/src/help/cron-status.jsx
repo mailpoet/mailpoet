@@ -40,19 +40,19 @@ function CronStatus(props) {
           {
             key: MailPoet.I18n.t('lastUpdated'),
             value: status.updated_at
-              ? MailPoet.Date.full(status.updated_at * 1000)
+              ? MailPoet.Date.fullFromGmt(status.updated_at * 1000)
               : MailPoet.I18n.t('unknown'),
           },
           {
             key: MailPoet.I18n.t('lastRunStarted'),
             value: status.run_accessed_at
-              ? MailPoet.Date.full(status.run_started_at * 1000)
+              ? MailPoet.Date.fullFromGmt(status.run_started_at * 1000)
               : MailPoet.I18n.t('unknown'),
           },
           {
             key: MailPoet.I18n.t('lastRunCompleted'),
             value: status.run_completed_at
-              ? MailPoet.Date.full(status.run_completed_at * 1000)
+              ? MailPoet.Date.fullFromGmt(status.run_completed_at * 1000)
               : MailPoet.I18n.t('unknown'),
           },
           {
@@ -62,7 +62,7 @@ function CronStatus(props) {
           {
             key: MailPoet.I18n.t('lastSeenErrorDate'),
             value: status.last_error_date
-              ? MailPoet.Date.full(status.last_error_date * 1000)
+              ? MailPoet.Date.fullFromGmt(status.last_error_date * 1000)
               : MailPoet.I18n.t('unknown'),
           },
         ]}

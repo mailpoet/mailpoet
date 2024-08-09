@@ -43,7 +43,7 @@ function QueueStatus({ statusData }: Props): JSX.Element {
           {
             key: MailPoet.I18n.t('startedAt'),
             value: status.started
-              ? MailPoet.Date.full(status.started * 1000)
+              ? MailPoet.Date.fullFromGmt(status.started * 1000)
               : MailPoet.I18n.t('unknown'),
           },
           {
@@ -57,7 +57,7 @@ function QueueStatus({ statusData }: Props): JSX.Element {
           {
             key: MailPoet.I18n.t('retryAt'),
             value: status.retryAt
-              ? MailPoet.Date.full(status.retryAt * 1000)
+              ? MailPoet.Date.fullFromGmt(status.retryAt * 1000)
               : MailPoet.I18n.t('none'),
           },
           {

@@ -85,22 +85,22 @@ function TasksListDataRow({ type, task }: Props): JSX.Element {
       <td className="column">{task.priority}</td>
       {showScheduledAt ? (
         <td className="column-date">
-          <abbr>{`${MailPoet.Date.short(scheduled)} ${MailPoet.Date.time(
+          <abbr>{`${MailPoet.Date.shortFromGmt(
             scheduled,
-          )}`}</abbr>
+          )} ${MailPoet.Date.timeFromGmt(scheduled)}`}</abbr>
         </td>
       ) : null}
       {showCancelledAt ? (
         <td className="column-date">
-          <abbr>{`${MailPoet.Date.short(cancelled)} ${MailPoet.Date.time(
+          <abbr>{`${MailPoet.Date.shortFromGmt(
             cancelled,
-          )}`}</abbr>
+          )} ${MailPoet.Date.timeFromGmt(cancelled)}`}</abbr>
         </td>
       ) : null}
       <td className="column-date">
-        <abbr>{`${MailPoet.Date.short(updated)} ${MailPoet.Date.time(
+        <abbr>{`${MailPoet.Date.shortFromGmt(
           updated,
-        )}`}</abbr>
+        )} ${MailPoet.Date.timeFromGmt(updated)}`}</abbr>
       </td>
       {canCancelTask ? (
         <td>
