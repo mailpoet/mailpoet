@@ -5,6 +5,7 @@ import { FilterType, List, Logs } from './list';
 
 interface LogsWindow extends Window {
   mailpoet_logs: Logs;
+  mailpoet_logs_default_from: string;
 }
 
 declare let window: LogsWindow;
@@ -19,7 +20,9 @@ if (container) {
     <ErrorBoundary>
       <List
         logs={window.mailpoet_logs}
-        originalFrom={url.searchParams.get('from')}
+        originalFrom={
+          url.searchParams.get('from') || window.mailpoet_logs_default_from
+        }
         originalTo={url.searchParams.get('to')}
         originalSearch={url.searchParams.get('search')}
         originalOffset={url.searchParams.get('offset')}

@@ -10,6 +10,7 @@
   <script type="text/javascript">
     <% autoescape 'js' %>
       var mailpoet_logs = <%= json_encode(logs) %>;
+      var mailpoet_logs_default_from = '<%= logs_default_from %>';
     <% endautoescape %>
   </script>
 </div>
