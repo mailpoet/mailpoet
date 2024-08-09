@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { MailPoet } from 'mailpoet';
 import { curry } from 'lodash';
 import { parseISO } from 'date-fns';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 import { Datepicker } from '../common/datepicker/datepicker';
 import { Button, ErrorBoundary, Input } from '../common';
@@ -133,7 +133,7 @@ function List({
       <div className="mailpoet-listing-header">
         <div className="mailpoet-listing-search">
           <label htmlFor="search_input" className="screen-reader-text">
-            {MailPoet.I18n.t('searchLabel')}
+            {__('Search', 'mailpoet')}
           </label>
           <Input
             dimension="small"
@@ -143,11 +143,14 @@ function List({
             name="s"
             onChange={(event): void => setSearch(event.target.value)}
             value={search}
-            placeholder={MailPoet.I18n.t('searchLabel')}
+            placeholder={__('Search', 'mailpoet')}
           />
         </div>
         <div className="mailpoet-listing-filters">
-          {`${MailPoet.I18n.t('from')}:`}
+          {
+            // translators: Date from when filtering
+            `${__('From', 'mailpoet')}:`
+          }
           <ErrorBoundary>
             <Datepicker
               dateFormat="MMMM d, yyyy"
@@ -156,7 +159,10 @@ function List({
               selected={from ? parseISO(from) : undefined}
               dimension="small"
             />
-            {`${MailPoet.I18n.t('to')}:`}
+            {
+              // translators: Date to when filtering
+              `${__('To', 'mailpoet')}:`
+            }
             <Datepicker
               dateFormat="MMMM d, yyyy"
               onChange={dateChanged(setTo)}
@@ -168,7 +174,10 @@ function List({
         </div>
         <div className="mailpoet-logs-limit">
           <label htmlFor="offset_input" className="screen-reader-text">
-            {MailPoet.I18n.t('offsetLabel')}
+            {
+              // translators: Offset of search results when filtering
+              __('Offset', 'mailpoet')
+            }
           </label>
           <Input
             dimension="small"
@@ -177,12 +186,12 @@ function List({
             type="number"
             onChange={(event): void => setOffset(event.target.value)}
             value={offset}
-            placeholder={MailPoet.I18n.t('offsetLabel')}
+            placeholder={__('Offset', 'mailpoet')}
           />
         </div>
         <div className="mailpoet-logs-limit">
           <label htmlFor="limit_input" className="screen-reader-text">
-            {MailPoet.I18n.t('limitLabel')}
+            {__('Limit', 'mailpoet')}
           </label>
           <Input
             dimension="small"
@@ -191,21 +200,24 @@ function List({
             type="number"
             onChange={(event): void => setLimit(event.target.value)}
             value={limit}
-            placeholder={MailPoet.I18n.t('limitLabel')}
+            placeholder={__('Limit', 'mailpoet')}
           />
         </div>
         <Button dimension="small" onClick={filterClick}>
-          {MailPoet.I18n.t('filter')}
+          {
+            // translators: Button to filter logs
+            _x('Filter', 'verb', 'mailpoet')
+          }
         </Button>
       </div>
 
       <table className="mailpoet-listing-table widefat striped" role="grid">
         <thead>
           <tr>
-            <th>{MailPoet.I18n.t('tableHeaderName')}</th>
-            <th>{MailPoet.I18n.t('tableHeaderMessage')}</th>
+            <th>{__('Name', 'mailpoet')}</th>
+            <th>{__('Message', 'mailpoet')}</th>
             <th>{__('Action', 'mailpoet')}</th>
-            <th>{MailPoet.I18n.t('tableHeaderCreatedOn')}</th>
+            <th>{__('Created On', 'mailpoet')}</th>
           </tr>
         </thead>
         <tbody>
