@@ -11,6 +11,7 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 class DatabaseEngineNotice {
   const OPTION_NAME = 'database-engine-notice';
   const DISMISS_NOTICE_TIMEOUT_SECONDS = 15_552_000; // 6 months
+  const CACHE_TIMEOUT_SECONDS = 86_400; // 1 day
   const MAX_TABLES_TO_DISPLAY = 2;
 
   private WPFunctions $wp;
@@ -25,7 +26,6 @@ class DatabaseEngineNotice {
     $this->entityManager = $entityManager;
   }
 
-  //TODO: check only once a day
   public function init($shouldDisplay): ?Notice {
     if (!$shouldDisplay || $this->wp->getTransient(self::OPTION_NAME)) {
       return null;
@@ -43,6 +43,19 @@ class DatabaseEngineNotice {
    * Returns a list of table names that are not using the InnoDB engine.
    */
   private function checkTableEngines(): array {
+    $cacheKey = self::OPTION_NAME . '-cache';
+    $cachedTables = $this->wp->getTransient($cacheKey);
+    if (is_array($cachedTables)) {
+      return $cachedTables;
+    }
+
+    $tables = $this->loadTablesWithIncorrectEngines();
+
+    $this->wp->setTransient($cacheKey, $tables, self::CACHE_TIMEOUT_SECONDS);
+    return $tables;
+  }
+
+  private function loadTablesWithIncorrectEngines(): array {
     $data = $this->entityManager->getConnection()->executeQuery(
       'SHOW TABLE STATUS WHERE Name LIKE :prefix',
       [
@@ -54,12 +67,12 @@ class DatabaseEngineNotice {
       fn($row) => $row['Name'],
       array_filter(
         $data,
-        fn($row) => strtolower($row['Engine']) !== 'innodb'
+        fn($row) => is_string($row['Engine']) && (strtolower($row['Engine']) !== 'innodb')
       )
     );
   }
 
-  private function display(array $tablesWithIncorrectEngine): ?Notice {
+  private function display(array $tablesWithIncorrectEngine): Notice {
     // translators: %s is the list of the table names
     $errorString = __('Some of the MailPoet plugin’s tables are not using the InnoDB engine (%s). This may cause performance and compatibility issues. Please ensure all MailPoet tables are converted to use the InnoDB engine. For more information, check out [link]this guide[/link].', 'mailpoet');
     $tables = $this->formatTableNames($tablesWithIncorrectEngine);
