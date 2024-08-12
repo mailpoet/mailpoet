@@ -2,7 +2,10 @@
 
 namespace MailPoet\Util\Notices;
 
+use MailPoet\Entities\FormEntity;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
+use MailPoet\Entities\SubscriberEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
 class DatabaseEngineNoticeTest extends \MailPoetTest {
@@ -39,6 +42,27 @@ class DatabaseEngineNoticeTest extends \MailPoetTest {
     verify($message)->stringContainsString('Some of the MailPoet plugin’s tables are not using the InnoDB engine');
     verify($message)->stringContainsString('https://kb.mailpoet.com/article/200-solving-database-connection-issues#database-configuration');
     verify($message)->stringContainsString($this->tableName);
+  }
+
+  public function testItDisplaysNoticeWithMultipleTables() {
+    $tables = [
+      $this->entityManager->getClassMetadata(FormEntity::class)->getTableName(),
+      $this->entityManager->getClassMetadata(NewsletterEntity::class)->getTableName(),
+      $this->tableName,
+      $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName(),
+    ];
+    foreach ($tables as $table) {
+      $this->entityManager->getConnection()->executeStatement("ALTER TABLE {$table} ENGINE = MyISAM;");
+    }
+    $result = $this->notice->init(true);
+    verify($result)->notEmpty();
+    $message = $result->getMessage();
+    verify($message)->stringContainsString('and 2 more');
+    verify($message)->stringContainsString('“' . $tables[0] . '”');
+
+    foreach ($tables as $table) {
+      $this->entityManager->getConnection()->executeStatement("ALTER TABLE {$table} ENGINE = INNODB;");
+    }
   }
 
   public function testItDoesntDisplayWhenDisabled() {
