@@ -102,6 +102,10 @@ class Connection implements ServerInfoAwareConnection {
     return $getDbh->call($wpdb);
   }
 
+  public static function isSQLite(): bool {
+    return defined('DB_ENGINE') && DB_ENGINE === 'sqlite';
+  }
+
   private function runQuery(string $sql) {
     global $wpdb;
     try {
