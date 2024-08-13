@@ -3,10 +3,11 @@
 namespace MailPoet\Test\Config;
 
 use MailPoet\Doctrine\ConnectionFactory;
+use MailPoet\Doctrine\Middlewares\PostConnectMiddleware;
 use MailPoet\Doctrine\Types\JsonOrSerializedType;
 use MailPoet\Doctrine\Types\JsonType;
-use MailPoet\Doctrine\WPDB\Driver as WPDBDriver;
 use MailPoetVendor\Doctrine\DBAL\Connection;
+use MailPoetVendor\Doctrine\DBAL\Driver;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MySQLPlatform;
 use MailPoetVendor\Doctrine\DBAL\Types\Type;
 
@@ -16,7 +17,8 @@ class ConnectionFactoryTest extends \MailPoetTest {
     $connection = $connectionFactory->createConnection();
 
     verify($connection)->instanceOf(Connection::class);
-    verify($connection->getDriver())->instanceOf(WPDBDriver::class);
+    verify($connection->getDriver())->instanceOf(Driver::class);
+    verify($connection->getDriver())->instanceOf(PostConnectMiddleware::class);
     verify($connection->getDatabasePlatform())->instanceOf(MySQLPlatform::class);
 
     verify(Type::getType(JsonType::NAME))->instanceOf(JsonType::class);

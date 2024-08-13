@@ -2,12 +2,16 @@
 
 namespace MailPoet\Doctrine;
 
+use MailPoet\Doctrine\Middlewares\PostConnectMiddleware;
 use MailPoet\Doctrine\Types\BigIntType;
 use MailPoet\Doctrine\Types\DateTimeTzToStringType;
 use MailPoet\Doctrine\Types\JsonOrSerializedType;
 use MailPoet\Doctrine\Types\JsonType;
 use MailPoet\Doctrine\Types\SerializedArrayType;
 use MailPoet\Doctrine\WPDB\Driver as WPDBDriver;
+use MailPoetVendor\Doctrine\DBAL\Configuration;
+use MailPoetVendor\Doctrine\DBAL\Driver;
+use MailPoetVendor\Doctrine\DBAL\Driver\Middleware;
 use MailPoetVendor\Doctrine\DBAL\DriverManager;
 use MailPoetVendor\Doctrine\DBAL\Platforms\MySQLPlatform;
 use MailPoetVendor\Doctrine\DBAL\Types\Type;
@@ -32,7 +36,7 @@ class ConnectionFactory {
     ];
 
     $this->setupTypes();
-    return DriverManager::getConnection($connectionParams);
+    return DriverManager::getConnection($connectionParams, $this->getConfiguration());
   }
 
   private function setupTypes() {
@@ -43,5 +47,16 @@ class ConnectionFactory {
         Type::addType($name, $class);
       }
     }
+  }
+
+  private function getConfiguration(): Configuration {
+    $config = new Configuration();
+    $driverMiddleware = new class implements Middleware {
+      public function wrap(Driver $driver): Driver {
+        return new PostConnectMiddleware($driver);
+      }
+    };
+    $config->setMiddlewares([$driverMiddleware]);
+    return $config;
   }
 }

@@ -18,11 +18,6 @@ class Connection implements ServerInfoAwareConnection {
     if (!$wpdb instanceof wpdb) {
       throw new ConnectionException('WPDB is not initialized.');
     }
-    /**
-     * Ensure connection is in UTC timezone.
-     * We use timestamp columns and we expect to get UTC time
-     */
-    $wpdb->query("SET time_zone = '+00:00'");
   }
 
   public function prepare(string $sql): Statement {
