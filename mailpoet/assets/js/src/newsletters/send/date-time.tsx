@@ -59,12 +59,12 @@ class DateTime extends Component<DateTimeProps, DateTimeState> {
     const localTime = [this.state.date, this.state.time].join(
       this.DATE_TIME_SEPARATOR,
     );
-    return MailPoet.Date.siteToGmtTimestamp(localTime);
+    return MailPoet.Date.toGmtDatetimeString(localTime);
   };
 
   buildStateFromProps = (props: DateTimeProps): DateTimeState => {
     const valueUtc = props.value || this.props.defaultDateTime;
-    const value = MailPoet.Date.gmtToSiteTimestamp(valueUtc);
+    const value = MailPoet.Date.datetimeString(valueUtc);
     const [date, time] = value.split(this.DATE_TIME_SEPARATOR);
     return {
       date,
