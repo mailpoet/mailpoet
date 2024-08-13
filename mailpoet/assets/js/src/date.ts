@@ -14,20 +14,13 @@ export const MailPoetDate: {
   };
   init: (opts?: DateOptions) => typeof MailPoetDate;
   format: (date: MomentInput, opts?: DateOptions) => string;
-  formatFromGmt: (date: MomentInput, opts?: DateOptions) => string;
   toDate: (date: MomentInput, opts?: DateOptions) => Date;
-  toDateFromGmt: (date: MomentInput, opts?: DateOptions) => Date;
   short: (date: MomentInput) => string;
-  shortFromGmt: (date: MomentInput) => string;
   full: (date: MomentInput) => string;
-  fullFromGmt: (date: MomentInput) => string;
   time: (date: MomentInput) => string;
-  timeFromGmt: (date: MomentInput) => string;
   convertFormat: (format: string) => string;
   isInFuture: (dateString: string, currentTime: MomentInput) => boolean;
-  isInFutureGmt: (dateString: string, currentTime: MomentInput) => boolean;
   isInPast: (dateString: string, currentTime: MomentInput) => boolean;
-  isInPastGmt: (dateString: string, currentTime: MomentInput) => boolean;
   gmtToSiteTimestamp: (utcTimeStamp: string) => string;
   siteToGmtTimestamp: (siteTimeStamp: string) => string;
 } = {
@@ -67,15 +60,6 @@ export const MailPoetDate: {
   },
   format: function format(date: MomentInput, opts?: DateOptions): string {
     const options = opts || {};
-    this.init(options);
-    const momentDate = Moment(date);
-    return momentDate.format(this.convertFormat(this.options.format) as string);
-  },
-  formatFromGmt: function format(
-    date: MomentInput,
-    opts?: DateOptions,
-  ): string {
-    const options = opts || {};
     let momentDate;
     this.init(options);
 
@@ -88,30 +72,11 @@ export const MailPoetDate: {
   toDate: function toDate(date: MomentInput, opts?: DateOptions): Date {
     const options = opts || {};
     this.init(options);
-
-    return Moment(date).toDate();
-  },
-  toDateFromGmt: function toDateFromGmt(
-    date: MomentInput,
-    opts?: DateOptions,
-  ): Date {
-    const options = opts || {};
-    this.init(options);
     return Moment.utc(date).toDate();
-  },
-  shortFromGmt: function shortFromGmt(date: MomentInput): string {
-    return this.formatFromGmt(date, {
-      format: window.mailpoet_date_format || 'F j, Y',
-    });
   },
   short: function short(date: MomentInput): string {
     return this.format(date, {
       format: window.mailpoet_date_format || 'F j, Y',
-    });
-  },
-  fullFromGmt: function fullFromGmt(date: MomentInput): string {
-    return this.formatFromGmt(date, {
-      format: window.mailpoet_datetime_format || 'F j, Y H:i:s',
     });
   },
   full: function full(date: MomentInput): string {
@@ -119,25 +84,20 @@ export const MailPoetDate: {
       format: window.mailpoet_datetime_format || 'F j, Y H:i:s',
     });
   },
-  timeFromGmt: function time(date: MomentInput): string {
-    return this.formatFromGmt(date, {
-      format: window.mailpoet_time_format || 'H:i:s',
-    });
-  },
   time: function time(date: MomentInput): string {
-    return this.time(date, {
+    return this.format(date, {
       format: window.mailpoet_time_format || 'H:i:s',
     });
   },
   gmtToSiteTimestamp: function gmtToSiteTimestamp(
     gmtTimeStamp: string,
   ): string {
-    return this.formatFromGmt(gmtTimeStamp, { format: 'Y-m-d H:i:s' });
+    return this.format(gmtTimeStamp, { format: 'Y-m-d H:i:s' });
   },
   siteToGmtTimestamp: function siteToGmtTimestamp(
     gmtTimeStamp: string,
   ): string {
-    return this.formatFromGmt(gmtTimeStamp, {
+    return this.format(gmtTimeStamp, {
       format: 'Y-m-d H:i:s',
       offset: parseFloat(window.mailpoet_date_offset || '0') * -1,
     });
@@ -237,11 +197,7 @@ export const MailPoetDate: {
     return convertedFormat.join('');
   },
   isInFuture: (dateString: string, currentTime: MomentInput): boolean =>
-    Moment(dateString).isAfter(currentTime, 's'),
-  isInFutureGmt: (dateString: string, currentTime: MomentInput): boolean =>
     Moment.utc(dateString).isAfter(currentTime, 's'),
   isInPast: (dateString: string, currentTime: MomentInput): boolean =>
-    Moment(dateString).isBefore(currentTime, 's'),
-  isInPastGmt: (dateString: string, currentTime: MomentInput): boolean =>
     Moment.utc(dateString).isBefore(currentTime, 's'),
 } as const;
