@@ -140,6 +140,10 @@ class Functions {
     return current_time($type, $gmt);
   }
 
+  public function currentDatetime() {
+    return current_datetime();
+  }
+
   public function wpTimezone() {
     return wp_timezone();
   }

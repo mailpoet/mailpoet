@@ -34,13 +34,13 @@ class Scheduler {
 
   public function getPreviousRunDate($schedule) {
     // User enters time in WordPress site timezone, but we need to calculate it in UTC before we save it to DB
-    // 1) As the initial time we use time in site timezone (gmt is false)
+    // 1) As the initial time we use time in site timezone via current_datetime
     // 2) We use CronExpression to calculate previous run (still in site's timezone)
     // 3) We convert the calculated time to UTC
-    $fromTimestamp = $this->wp->currentTime('timestamp', false);
+    $from = $this->wp->currentDatetime();
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
-      $previousRunDate = $schedule->getPreviousRunDate(Carbon::createFromTimestamp($fromTimestamp, $this->wp->wpTimezone()));
+      $previousRunDate = $schedule->getPreviousRunDate(Carbon::instance($from));
       $previousRunDate->setTimezone(new \DateTimeZone('UTC'));
       $previousRunDate = $previousRunDate->format('Y-m-d H:i:s');
     } catch (\Exception $e) {
@@ -88,13 +88,14 @@ class Scheduler {
    */
   public function getNextRunDateTime($schedule) {
     // User enters time in WordPress site timezone, but we need to calculate it in UTC before we save it to DB
-    // 1) As the initial time we use time in site timezone (gmt is false)
+    // 1) As the initial time we use time in site timezone via current_datetime
     // 2) We use CronExpression to calculate next run (still in site's timezone)
     // 3) We convert the calculated time to UTC
-    $fromTimestamp = $this->wp->currentTime('timestamp', false);
+    //$fromTimestamp = $this->wp->currentTime('timestamp', false);
+    $from = $this->wp->currentDatetime();
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
-      $nextRunDate = $schedule->getNextRunDate(Carbon::createFromTimestamp($fromTimestamp, $this->wp->wpTimezone()));
+      $nextRunDate = $schedule->getNextRunDate(Carbon::instance($from));
       $nextRunDate->setTimezone(new \DateTimeZone('UTC'));
     } catch (\Exception $e) {
       $nextRunDate = false;
