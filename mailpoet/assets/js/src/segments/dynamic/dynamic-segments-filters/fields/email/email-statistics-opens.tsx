@@ -33,7 +33,7 @@ export function EmailOpenStatisticsFields({
 
   const newsletterOptions = newslettersList?.map((newsletter) => {
     const sentAt = newsletter.sent_at
-      ? MailPoet.Date.formatFromGmt(newsletter.sent_at)
+      ? MailPoet.Date.format(newsletter.sent_at)
       : MailPoet.I18n.t('notSentYet');
     return {
       label: newsletter.name,

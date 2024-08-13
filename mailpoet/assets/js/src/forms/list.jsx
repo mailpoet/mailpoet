@@ -282,9 +282,9 @@ class FormListComponent extends Component {
           className="column-date mailpoet-hide-on-mobile"
           data-colname={MailPoet.I18n.t('updatedAt')}
         >
-          {MailPoet.Date.shortFromGmt(form.updated_at)}
+          {MailPoet.Date.short(form.updated_at)}
           <br />
-          {MailPoet.Date.timeFromGmt(form.updated_at)}
+          {MailPoet.Date.time(form.updated_at)}
         </td>
       </>
     );

@@ -41,7 +41,7 @@ export function EmailClickStatisticsFields({
 
   const newsletterOptions = newslettersList?.map((newsletter) => {
     const sentAt = newsletter.sent_at
-      ? MailPoet.Date.formatFromGmt(newsletter.sent_at)
+      ? MailPoet.Date.format(newsletter.sent_at)
       : __('Not sent yet', 'mailpoet');
     return {
       label: newsletter.name,
