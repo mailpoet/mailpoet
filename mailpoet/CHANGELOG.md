@@ -1,5 +1,14 @@
 == Changelog ==
 
+= 4.58.2 - 2024-08-13 =
+
+- Added: option to change position of opt-in checkbox on the shortcode checkout page;
+- Added: new table with database inconsistencies in Help section;
+- Improved: more robust race-condition checks in automations;
+- Improved: better checking of email sent status in automations;
+- Fixed: Abandoned cart email is now triggered when user logs in after adding items to cart;
+- Fixed: sending multiple emails to single subscriber in an automation.
+
 = 4.58.1 - 2024-08-05 =
 
 - Fixed: button rendering in Outlook 2023.
