@@ -7,6 +7,9 @@ use MailPoet\Doctrine\WPDB\Exceptions\QueryException;
 use MailPoetVendor\Doctrine\DBAL\Driver\ServerInfoAwareConnection;
 use MailPoetVendor\Doctrine\DBAL\ParameterType;
 use mysqli;
+use PDO;
+use PDOException;
+use Throwable;
 use wpdb;
 
 /**
@@ -78,27 +81,52 @@ class Connection implements ServerInfoAwareConnection {
     return $wpdb->db_server_info();
   }
 
-  /** @return mysqli|false|null */
+  /**
+   * MySQL — returns an instance of mysqli.
+   * SQLite — returns an instance of PDO.
+   *
+   * @return mysqli|PDO|false|null
+   */
   public function getNativeConnection() {
     global $wpdb;
 
     // WPDB keeps connection instance (mysqli) in a protected property $dbh.
     // We can access it using a closure that is bound to the $wpdb instance.
-    $getConnection = function () {
+    $getDbh = function () {
       return $this->dbh; // @phpstan-ignore-line -- PHPStan doesn't know the binding context
     };
-    return $getConnection->call($wpdb);
+    $dbh = $getDbh->call($wpdb);
+    if (is_object($dbh) && method_exists($dbh, 'get_pdo')) {
+      return $dbh->get_pdo();
+    }
+    return $getDbh->call($wpdb);
   }
 
   private function runQuery(string $sql) {
     global $wpdb;
-    $value = $wpdb->query($sql); // phpcs:ignore WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
+    try {
+      $value = $wpdb->query($sql); // phpcs:ignore WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
+    } catch (Throwable $e) {
+      if ($e instanceof PDOException) {
+        throw new QueryException($e->getMessage(), $e->errorInfo[0] ?? null, $e->errorInfo[1] ?? 0);
+      }
+      throw new QueryException($e->getMessage(), null, 0, $e);
+    }
     if ($value === false) {
-      $nativeConnection = $this->getNativeConnection();
-      $sqlState = $nativeConnection instanceof mysqli ? $nativeConnection->sqlstate : null;
-      $code = $nativeConnection instanceof mysqli ? $nativeConnection->errno : 0;
-      throw new QueryException($wpdb->last_error, $sqlState, $code);
+      $this->handleQueryError();
     }
     return $value;
+  }
+
+  private function handleQueryError(): void {
+    global $wpdb;
+    $nativeConnection = $this->getNativeConnection();
+    if ($nativeConnection instanceof mysqli) {
+      throw new QueryException($wpdb->last_error, $nativeConnection->sqlstate, $nativeConnection->errno);
+    } elseif ($nativeConnection instanceof PDO) {
+      $info = $nativeConnection->errorInfo();
+      throw new QueryException($wpdb->last_error, $info[0] ?? null, $info[1] ?? 0);
+    }
+    throw new QueryException($wpdb->last_error);
   }
 }
