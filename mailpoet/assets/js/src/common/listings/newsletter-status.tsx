@@ -80,11 +80,10 @@ function NewsletterStatus({
   const unknown = !scheduledFor && !processed && !total;
   const now = new Date();
   const scheduled =
-    scheduledFor &&
-    MailPoet.Date.isInFutureGmt(scheduledFor, now.toISOString());
+    scheduledFor && MailPoet.Date.isInFuture(scheduledFor, now.toISOString());
   const inProgress =
     (!scheduledFor ||
-      MailPoet.Date.isInPastGmt(scheduledFor, now.toISOString())) &&
+      MailPoet.Date.isInPast(scheduledFor, now.toISOString())) &&
     processed < total &&
     !isCorrupt;
   const sent = status === 'sent' && processed >= total;
@@ -98,8 +97,8 @@ function NewsletterStatus({
     )} / ${MailPoet.Num.toLocaleFixed(total)}`;
     percentage = 100;
   } else if (scheduled) {
-    const scheduledDate = MailPoet.Date.shortFromGmt(scheduledFor);
-    const scheduledTime = MailPoet.Date.timeFromGmt(scheduledFor);
+    const scheduledDate = MailPoet.Date.short(scheduledFor);
+    const scheduledTime = MailPoet.Date.time(scheduledFor);
     const tomorrow = addDays(now, 1);
     const isScheduledForToday =
       MailPoet.Date.shortFromGmt(now.toISOString()) === scheduledDate;

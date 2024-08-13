@@ -28,13 +28,13 @@ export function Shortcode({ name, title, description }: Props) {
   }
 
   if (startDate) {
-    shortcode += ` start_date="${MailPoet.Date.formatFromGmt(startDate, {
+    shortcode += ` start_date="${MailPoet.Date.format(startDate, {
       format: 'Y-m-d',
     })}"`;
   }
 
   if (endDate) {
-    shortcode += ` end_date="${MailPoet.Date.formatFromGmt(endDate, {
+    shortcode += ` end_date="${MailPoet.Date.format(endDate, {
       format: 'Y-m-d',
     })}"`;
   }

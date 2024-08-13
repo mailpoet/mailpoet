@@ -171,9 +171,9 @@ const renderItem = (newsletter, actions, meta) => {
       >
         {newsletter.sent_at ? (
           <>
-            {MailPoet.Date.shortFromGmt(newsletter.sent_at)}
+            {MailPoet.Date.short(newsletter.sent_at)}
             <br />
-            {MailPoet.Date.timeFromGmt(newsletter.sent_at)}
+            {MailPoet.Date.time(newsletter.sent_at)}
           </>
         ) : null}
       </td>

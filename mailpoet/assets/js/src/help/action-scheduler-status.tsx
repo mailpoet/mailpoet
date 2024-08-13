@@ -32,15 +32,15 @@ function ActionSchedulerStatus({
           },
           {
             key: MailPoet.I18n.t('latestActionSchedulerTrigger'),
-            value: MailPoet.Date.fullFromGmt(latestTrigger),
+            value: MailPoet.Date.full(latestTrigger),
           },
           {
             key: MailPoet.I18n.t('latestActionSchedulerCompletedTrigger'),
-            value: MailPoet.Date.fullFromGmt(latestCompletedTrigger),
+            value: MailPoet.Date.full(latestCompletedTrigger),
           },
           {
             key: MailPoet.I18n.t('latestActionSchedulerCompletedRun'),
-            value: MailPoet.Date.fullFromGmt(latestCompletedRun),
+            value: MailPoet.Date.full(latestCompletedRun),
           },
         ]}
       />

@@ -53,9 +53,7 @@ function EmailVolumeLimitNotice(): JSX.Element {
     toContinueUpgradeYourPlanOrWaitUntil,
     /<b>\[date]<\/b>\./g,
     () =>
-      ReactHtmlParser(
-        `<b>${MailPoet.Date.shortFromGmt(firstDayOfTheNextMonth)}</b>.`,
-      ),
+      ReactHtmlParser(`<b>${MailPoet.Date.short(firstDayOfTheNextMonth)}</b>.`),
   );
 
   return (

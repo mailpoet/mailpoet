@@ -33,7 +33,7 @@ export function transformSubscribersToRows(data: SubscriberSection['data']) {
           value: subscriber.run.status,
         },
         {
-          display: MailPoet.Date.formatFromGmt(new Date(subscriber.date)),
+          display: MailPoet.Date.format(new Date(subscriber.date)),
           value: subscriber.date,
         },
         {

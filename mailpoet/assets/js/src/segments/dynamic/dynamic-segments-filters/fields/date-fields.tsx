@@ -47,7 +47,7 @@ const convertDateToString = (
       'convertDateToString can process only single date array given',
     );
   }
-  return MailPoet.Date.formatFromGmt(value, { format: 'Y-m-d' });
+  return MailPoet.Date.format(value, { format: 'Y-m-d' });
 };
 
 const parseDate = (value: string): Date | undefined => {
