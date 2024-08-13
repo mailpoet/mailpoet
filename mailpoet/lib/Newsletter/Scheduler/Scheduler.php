@@ -27,17 +27,17 @@ class Scheduler {
   /**
    * @return string|false
    */
-  public function getNextRunDate($schedule, $fromTimestamp = false) {
-    $nextRunDateTime = $this->getNextRunDateTime($schedule, $fromTimestamp);
+  public function getNextRunDate($schedule) {
+    $nextRunDateTime = $this->getNextRunDateTime($schedule);
     return $nextRunDateTime ? $nextRunDateTime->format('Y-m-d H:i:s') : $nextRunDateTime;
   }
 
-  public function getPreviousRunDate($schedule, $fromTimestamp = false) {
+  public function getPreviousRunDate($schedule) {
     // User enters time in WordPress site timezone, but we need to calculate it in UTC before we save it to DB
-    // 1) As the initial tile we use time in site timezone (gmt is false)
+    // 1) As the initial time we use time in site timezone (gmt is false)
     // 2) We use CronExpression to calculate previous run (still in site's timezone)
     // 3) We convert the calculated time to UTC
-    $fromTimestamp = ($fromTimestamp) ?: $this->wp->currentTime('timestamp', false);
+    $fromTimestamp = $this->wp->currentTime('timestamp', false);
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
       $previousRunDate = $schedule->getPreviousRunDate(Carbon::createFromTimestamp($fromTimestamp, $this->wp->wpTimezone()));
@@ -86,12 +86,12 @@ class Scheduler {
   /**
    * @return \DateTime|false
    */
-  public function getNextRunDateTime($schedule, $fromTimestamp = false) {
+  public function getNextRunDateTime($schedule) {
     // User enters time in WordPress site timezone, but we need to calculate it in UTC before we save it to DB
-    // 1) As the initial tile we use time in site timezone (gmt is false)
+    // 1) As the initial time we use time in site timezone (gmt is false)
     // 2) We use CronExpression to calculate next run (still in site's timezone)
     // 3) We convert the calculated time to UTC
-    $fromTimestamp = $fromTimestamp ?: $this->wp->currentTime('timestamp', false);
+    $fromTimestamp = $this->wp->currentTime('timestamp', false);
     try {
       $schedule = \Cron\CronExpression::factory($schedule);
       $nextRunDate = $schedule->getNextRunDate(Carbon::createFromTimestamp($fromTimestamp, $this->wp->wpTimezone()));

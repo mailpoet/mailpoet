@@ -19,6 +19,7 @@ use MailPoet\Test\DataFactories\NewsletterOption as NewsletterOptionsFactory;
 use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\SendingQueue as SendingQueueFactory;
 use MailPoet\WP\DateTime;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Posts as WPPosts;
 use MailPoetVendor\Carbon\Carbon;
 
@@ -187,8 +188,8 @@ class PostNotificationTest extends \MailPoetTest {
 
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
-    $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    $scheduler = $this->getSchedulerWithMockedTime(1483275600); // Sunday, 1 January 2017 @ 1:00pm (UTC)
+    verify($scheduler->getNextRunDate($scheduleOption->getValue()))
       ->equals('2017-01-01 14:00:00');
 
     // testing scheduling by minutes
@@ -206,8 +207,7 @@ class PostNotificationTest extends \MailPoetTest {
 
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
-    $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($scheduler->getNextRunDate($scheduleOption->getValue()))
       ->equals('2017-01-01 14:15:00');
   }
 
@@ -228,8 +228,8 @@ class PostNotificationTest extends \MailPoetTest {
 
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
-    $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    $scheduler = $this->getSchedulerWithMockedTime(1483275600); // Sunday, 1 January 2017 @ 1:00pm (UTC)
+    verify($scheduler->getNextRunDate($scheduleOption->getValue()))
       ->equals('2017-01-03 14:00:00');
 
     // testing scheduling by minutes
@@ -248,8 +248,7 @@ class PostNotificationTest extends \MailPoetTest {
 
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
-    $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($scheduler->getNextRunDate($scheduleOption->getValue()))
       ->equals('2017-01-03 23:45:00');
   }
 
@@ -269,8 +268,8 @@ class PostNotificationTest extends \MailPoetTest {
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
-    $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    $scheduler = $this->getSchedulerWithMockedTime(1483275600); // Sunday, 1 January 2017 @ 1:00pm (UTC)
+    verify($scheduler->getNextRunDate($scheduleOption->getValue()))
       ->equals('2017-01-19 14:00:00');
 
     // testing scheduling by minutes
@@ -288,8 +287,7 @@ class PostNotificationTest extends \MailPoetTest {
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
-    $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($scheduler->getNextRunDate($scheduleOption->getValue()))
       ->equals('2017-01-19 00:45:00');
   }
 
@@ -309,8 +307,8 @@ class PostNotificationTest extends \MailPoetTest {
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
-    $currentTime = 1485694800; // Sunday, 29 January 2017 @ 1:00pm (UTC)
-    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    $scheduler = $this->getSchedulerWithMockedTime(1485694800);// Sunday, 29 January 2017 @ 1:00pm (UTC)
+    verify($scheduler->getNextRunDate($scheduleOption->getValue()))
       ->equals('2017-02-25 14:00:00');
 
     // testing scheduling by minutes
@@ -328,8 +326,7 @@ class PostNotificationTest extends \MailPoetTest {
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
-    $currentTime = 1485694800; // Sunday, 29 January 2017 @ 1:00pm (UTC)
-    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    verify($scheduler->getNextRunDate($scheduleOption->getValue()))
       ->equals('2017-02-25 14:15:00');
   }
 
@@ -349,8 +346,8 @@ class PostNotificationTest extends \MailPoetTest {
     $this->postNotificationScheduler->processPostNotificationSchedule($newsletter);
     $scheduleOption = $newsletter->getOption(NewsletterOptionFieldEntity::NAME_SCHEDULE);
     $this->assertInstanceOf(NewsletterOptionEntity::class, $scheduleOption);
-    $currentTime = 1483275600; // Sunday, 1 January 2017 @ 1:00pm (UTC)
-    verify($this->scheduler->getNextRunDate($scheduleOption->getValue(), $currentTime))
+    $scheduler = $this->getSchedulerWithMockedTime(1483275600);
+    verify($scheduler->getNextRunDate($scheduleOption->getValue()))
       ->equals('2017-01-01 13:01:00');
   }
 
@@ -446,5 +443,13 @@ class PostNotificationTest extends \MailPoetTest {
     $this->newsletterPostsRepository->persist($newsletterPost);
     $this->newsletterPostsRepository->flush();
     return $newsletterPost;
+  }
+
+  private function getSchedulerWithMockedTime(int $timestamp): Scheduler {
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('currentTime')->willReturn($timestamp);
+    return $this->getServiceWithOverrides(Scheduler::class, [
+      'wp' => $wpMock,
+    ]);
   }
 }
