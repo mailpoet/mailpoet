@@ -8,7 +8,7 @@ export type PropTypes = {
 
 function dateOrNever(date?: string): string {
   if (typeof date === 'string') {
-    return MailPoet.Date.formatFromGmt(date);
+    return MailPoet.Date.format(date);
   }
   return __('never', 'mailpoet');
 }

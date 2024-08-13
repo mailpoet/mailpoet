@@ -36,7 +36,7 @@ function TaskButton({ task, type }: Props): JSX.Element {
   const isRescheduleButton = type === 'reschedule';
 
   const scheduledDate = task.scheduledAt;
-  const isScheduledInPast = MailPoet.Date.isInPastGmt(
+  const isScheduledInPast = MailPoet.Date.isInPast(
     scheduledDate,
     new Date().toISOString(),
   );
@@ -115,9 +115,9 @@ function TaskButton({ task, type }: Props): JSX.Element {
           !isScheduledInPast &&
           sprintf(
             __('The task will be scheduled for sending on %s.', 'mailpoet'),
-            `${MailPoet.Date.shortFromGmt(
+            `${MailPoet.Date.short(scheduledDate)} ${MailPoet.Date.time(
               scheduledDate,
-            )} ${MailPoet.Date.timeFromGmt(scheduledDate)}`,
+            )}`,
           )}
       </ConfirmDialog>
 

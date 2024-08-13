@@ -93,7 +93,7 @@ const fields = [
             label = segment.name;
 
             if (subscription.status === 'unsubscribed') {
-              const unsubscribedAt = MailPoet.Date.formatFromGmt(
+              const unsubscribedAt = MailPoet.Date.format(
                 subscription.updated_at,
               );
               label += ' (%1$s)'.replace(

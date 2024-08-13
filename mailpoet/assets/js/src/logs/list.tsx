@@ -61,7 +61,7 @@ function Log({ log }: LogProps): JSX.Element {
       <td onClick={messageClick} role="gridcell">
         <Message message={log.message} editing={editing} />
       </td>
-      <td role="gridcell">{MailPoet.Date.fullFromGmt(log.created_at)}</td>
+      <td role="gridcell">{MailPoet.Date.full(log.created_at)}</td>
     </tr>
   );
 }
@@ -110,7 +110,7 @@ function List({
       const formatting = {
         format: 'Y-m-d',
       };
-      setter(MailPoet.Date.formatFromGmt(value, formatting));
+      setter(MailPoet.Date.format(value, formatting));
     },
   );
 
