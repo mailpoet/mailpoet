@@ -36,10 +36,7 @@ function TaskButton({ task, type }: Props): JSX.Element {
   const isRescheduleButton = type === 'reschedule';
 
   const scheduledDate = task.scheduledAt;
-  const isScheduledInPast = MailPoet.Date.isInPast(
-    scheduledDate,
-    new Date().toISOString(),
-  );
+  const isScheduledInPast = MailPoet.Date.isInPast(scheduledDate, new Date());
 
   return (
     <>

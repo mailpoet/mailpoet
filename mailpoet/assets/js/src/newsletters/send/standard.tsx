@@ -84,7 +84,7 @@ class StandardScheduling extends Component<StandardSchedulingProps> {
         <>
           <span className="mailpoet-form-schedule-time">
             {__('Your website’s time is', 'mailpoet')}{' '}
-            {MailPoet.Date.time(new Date().toISOString())}
+            {MailPoet.Date.time(new Date())}
           </span>
           <div className="mailpoet-gap" />
           <div id="mailpoet_scheduling">
@@ -241,10 +241,7 @@ export const StandardNewsletterFields = {
     const isScheduled =
       typeof newsletter.options === 'object' &&
       newsletter.options?.isScheduled === '1' &&
-      MailPoet.Date.isInFuture(
-        newsletter.options?.scheduledAt,
-        new Date().toISOString(),
-      );
+      MailPoet.Date.isInFuture(newsletter.options?.scheduledAt, new Date());
 
     const options: SendButtonOptions = {
       value: isScheduled ? __('Schedule', 'mailpoet') : __('Send', 'mailpoet'),
