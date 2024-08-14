@@ -57,6 +57,7 @@ class Services extends APIEndpoint {
 
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SETTINGS,
+    'methods' => ['pingBridge' => AccessControl::PERMISSION_ACCESS_PLUGIN_ADMIN],
   ];
 
   public function __construct(
