@@ -31,12 +31,16 @@ class DatabaseEngineNotice {
       return null;
     }
 
-    $tablesWithIncorrectEngine = $this->checkTableEngines();
-    if ($tablesWithIncorrectEngine === []) {
-      return null;
-    }
+    try {
+      $tablesWithIncorrectEngine = $this->checkTableEngines();
+      if ($tablesWithIncorrectEngine === []) {
+        return null;
+      }
 
-    return $this->display($tablesWithIncorrectEngine);
+      return $this->display($tablesWithIncorrectEngine);
+    } catch (\Exception $e) {
+        return null;
+    }
   }
 
   /**
