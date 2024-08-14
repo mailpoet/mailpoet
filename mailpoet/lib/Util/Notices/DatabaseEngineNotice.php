@@ -71,7 +71,7 @@ class DatabaseEngineNotice {
       fn($row) => $row['Name'],
       array_filter(
         $data,
-        fn($row) => is_string($row['Engine']) && (strtolower($row['Engine']) !== 'innodb')
+        fn($row) => isset($row['Engine']) && is_string($row['Engine']) && (strtolower($row['Engine']) !== 'innodb')
       )
     );
   }
