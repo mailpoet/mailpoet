@@ -144,8 +144,8 @@ class Functions {
     return current_datetime();
   }
 
-  public function wpTimezone() {
-    return wp_timezone();
+  public function wpTimezoneString() {
+    return wp_timezone_string();
   }
 
   public function currentUserCan($capability) {
