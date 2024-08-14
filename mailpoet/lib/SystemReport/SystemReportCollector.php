@@ -82,7 +82,7 @@ class SystemReportCollector {
       'Web server' => (!empty($_SERVER["SERVER_SOFTWARE"])) ? sanitize_text_field(wp_unslash($_SERVER["SERVER_SOFTWARE"])) : 'N/A',
       'Server OS' => (function_exists('php_uname')) ? php_uname() : 'N/A',
       'WP info' => 'WP_MEMORY_LIMIT: ' . WP_MEMORY_LIMIT . ' - WP_MAX_MEMORY_LIMIT: ' . WP_MAX_MEMORY_LIMIT . ' - WP_DEBUG: ' . WP_DEBUG .
-        ' - WordPress language: ' . $this->wp->getLocale(),
+        ' - WordPress language: ' . $this->wp->getLocale() . ' - WordPress timezone: ' . $this->wp->wpTimezoneString(),
       'PHP info' => 'PHP max_execution_time: ' . ini_get('max_execution_time') . ' - PHP memory_limit: ' . ini_get('memory_limit') .
         ' - PHP upload_max_filesize: ' . ini_get('upload_max_filesize') . ' - PHP post_max_size: ' . ini_get('post_max_size'),
       'Multisite environment?' => (is_multisite() ? 'Yes' : 'No'),
