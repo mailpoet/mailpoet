@@ -68,6 +68,7 @@ class Registration {
       if (
         isset($_POST['mailpoet']['subscribe_on_register'])
         && (bool)$_POST['mailpoet']['subscribe_on_register'] === true
+        && !empty($result['user_email'])
       ) {
         $this->subscribeNewUser(
           $result['user_name'],

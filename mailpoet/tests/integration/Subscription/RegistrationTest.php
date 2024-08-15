@@ -34,4 +34,28 @@ class RegistrationTest extends \MailPoetTest {
     $this->registration->onRegister(new \WP_Error(), 'login', '');
     verify($initialCount)->equals(count($this->subscribersRepository->findAll()));
   }
+
+  public function testItAddsSubscriberOnMultisite() {
+    $_POST['mailpoet']['subscribe_on_register'] = true;
+    $result = [
+      'errors' => new \WP_Error(),
+      'user_name' => 'login',
+      'user_email' => 'tester@email.com',
+    ];
+    $this->registration->onMultiSiteRegister($result);
+    $subscriber = $this->subscribersRepository->findOneBy(['email' => 'tester@email.com']);
+    $this->assertInstanceOf(SubscriberEntity::class, $subscriber);
+  }
+
+  public function testItDoesntAddSubscriberWithEmptyOnMultisite() {
+    $_POST['mailpoet']['subscribe_on_register'] = true;
+    $result = [
+      'errors' => new \WP_Error(),
+      'user_name' => 'login',
+      'user_email' => '',
+    ];
+    $initialCount = count($this->subscribersRepository->findAll());
+    $this->registration->onMultiSiteRegister($result);
+    verify($initialCount)->equals(count($this->subscribersRepository->findAll()));
+  }
 }
