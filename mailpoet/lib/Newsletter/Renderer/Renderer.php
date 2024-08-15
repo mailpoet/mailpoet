@@ -222,9 +222,7 @@ class Renderer {
     foreach ($templateDom->query('img') as $image) {
       $image->src = str_replace(' ', '%20', $image->src);
     }
-    // because tburry/pquery contains a bug and replaces the opening non mso condition incorrectly we have to replace the opening tag with correct value
     $template = $templateDom->__toString();
-    $template = str_replace('<!--[if !mso]><![endif]-->', '<!--[if !mso]><!-- -->', $template);
     $template = $this->wp->applyFilters(
       self::FILTER_POST_PROCESS,
       $template
