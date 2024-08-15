@@ -92,6 +92,15 @@ class GATrackingTest extends \MailPoetTest {
     verify($result['html'])->stringContainsString('email=[subscriber:email]');
   }
 
+  public function testItDoesntBreakSpecialHtmlComments() {
+    $this->renderedNewsletter = [
+      'html' => '<p><!--[if !mso]><!-- -->Test</p>',
+      'text' => 'Test',
+    ];
+    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
+    verify($result['html'])->stringContainsString('<!--[if !mso]><!-- -->');
+  }
+
   public function testItDoesNotOverwriteExistingParameters() {
     $link = add_query_arg(
       [

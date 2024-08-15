@@ -271,7 +271,9 @@ class DomNode implements IQuery {
 	 * @access private
 	 */
 	function __toString() {
-		return (($this->tag === '~root~') ? $this->toString(true, true, 1) : $this->tag);
+		$string = (($this->tag === '~root~') ? $this->toString(true, true, 1) : $this->tag);
+		// because tburry/pquery contains a bug and replaces the opening non mso condition incorrectly we have to replace the opening tag with correct value
+		return str_replace('<!--[if !mso]><![endif]-->', '<!--[if !mso]><!-- -->', $string);;
 	}
 
 	/**

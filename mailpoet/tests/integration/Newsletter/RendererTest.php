@@ -88,6 +88,12 @@ class RendererTest extends \MailPoetTest {
 
     // nested vertical container should be rendered
     verify(count($DOM('.nested-vertical-container')))->equals(1);
+
+    // Verify it doesn't replace <!--[if !mso]><!-- --> with <!--[if !mso]><![endif]-->
+    // This comment is needed for outlook and should not be replaced. There was an issue in pQuery that was replacing it.
+    // The email content contain button and the button contains this comment.
+    verify($template['html'])->stringContainsString('mailpoet_table_button');
+    verify($template['html'])->stringContainsString('<!--[if !mso]><!-- -->');
   }
 
   public function testItRendersOneColumn() {
