@@ -1,6 +1,6 @@
 == Changelog ==
 
-= 4.59.0 - 2024-08-19 =
+= 5.0.0 - 2024-08-19 =
 
 - Changed: replaced PDO database connection in favor of WordPress's native wpdb;
 - Fixed: dual buttons in MS Outlook;
