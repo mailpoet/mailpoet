@@ -49,6 +49,7 @@ export type Settings = {
   };
   tracking: {
     level: 'full' | 'basic' | 'partial';
+    opens: 'merged' | 'separated';
   };
   '3rd_party_libs': {
     enabled: '' | '1';

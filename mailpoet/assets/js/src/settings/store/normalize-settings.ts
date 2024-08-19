@@ -115,7 +115,10 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
         'Action Scheduler',
       ),
     }),
-    tracking: asObject({ level: asEnum(['full', 'partial', 'basic'], 'full') }),
+    tracking: asObject({
+      level: asEnum(['full', 'partial', 'basic'], 'full'),
+      opens: asEnum(['merged', 'separated'], 'merged'),
+    }),
     send_transactional_emails: disabledRadio,
     deactivate_subscriber_after_inactive_days: asEnum(
       ['', '90', '180', '365', '540'],

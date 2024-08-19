@@ -64,6 +64,7 @@ function WooCommerceController({
       MailPoet.trackingConfig.level === 'basic' ? 'basic' : 'partial';
     const trackingData: Settings['tracking'] = {
       level: allowed ? 'full' : trackingLevelForDisabledCookies,
+      opens: 'merged',
     };
     const subscribeOldCustomersData: Settings['mailpoet_subscribe_old_woocommerce_customers'] =
       {
@@ -77,6 +78,8 @@ function WooCommerceController({
       // cookies allowed
       'tracking.level': trackingData.level,
       'woocommerce.accept_cookie_revenue_tracking.set': '1',
+      // human and machine opens
+      'tracking.opens': trackingData.opens,
     };
     await updateSettings(settings);
     setTracking(trackingData);
