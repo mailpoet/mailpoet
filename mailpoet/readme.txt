@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.5
 Tested up to: 6.6
-Stable tag: 4.58.2
+Stable tag: 4.59.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -229,12 +229,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 4.58.2 - 2024-08-13 =
-* Added: option to change position of opt-in checkbox on the shortcode checkout page;
-* Added: new table with database inconsistencies in Help section;
-* Improved: more robust race-condition checks in automations;
-* Improved: better checking of email sent status in automations;
-* Fixed: Abandoned cart email is now triggered when user logs in after adding items to cart;
-* Fixed: sending multiple emails to single subscriber in an automation.
+= 4.59.0 - 2024-08-19 =
+* Changed: replaced PDO database connection in favor of WordPress's native wpdb;
+* Fixed: dual buttons in MS Outlook;
+* Fixed: false error notice about MSS connection for editor users.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)
