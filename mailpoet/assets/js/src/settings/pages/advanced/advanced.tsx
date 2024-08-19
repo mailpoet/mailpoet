@@ -2,6 +2,7 @@ import { SaveButton } from 'settings/components';
 import { TaskScheduler } from './task-scheduler';
 import { Roles } from './roles';
 import { EngagementTracking } from './engagement-tracking';
+import { HumanAndMachineOpens } from './human-and-machine-opens';
 import { Transactional } from './transactional';
 import { InactiveSubscribers } from './inactive-subscribers';
 import { ShareData } from './share-data';
@@ -19,6 +20,7 @@ export function Advanced() {
       <TaskScheduler />
       <Roles />
       <EngagementTracking />
+      <HumanAndMachineOpens />
       <Transactional />
       <RecalculateSubscriberScore />
       <InactiveSubscribers />
