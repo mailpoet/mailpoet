@@ -295,7 +295,11 @@ class SendEmailAction implements Action {
     ]);
 
     if (!$subscriberSegment) {
-      throw InvalidStateException::create()->withMessage(sprintf("Subscriber ID '%s' is not subscribed to segment ID '%s'.", $subscriberId, $segmentId));
+      $segment = $this->segmentsRepository->findOneById($segmentId);
+      if (!$segment) { // This state should not happen because it is checked in the validation.
+        throw InvalidStateException::create()->withMessage("Cannot send the email because the list was not found.");
+      }
+      throw InvalidStateException::create()->withMessage(sprintf("Cannot send the email because the subscriber is not subscribed to the '%s' list.", $segment->getName()));
     }
 
     $subscriber = $subscriberSegment->getSubscriber();
