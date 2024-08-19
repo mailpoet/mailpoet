@@ -8,10 +8,13 @@ use MailPoet\Entities\StatisticsClickEntity;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Newsletter\Statistics\NewsletterStatisticsRepository;
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Statistics\StatisticsWooCommercePurchasesRepository;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\StatisticsClicks;
+use MailPoet\Test\DataFactories\StatisticsOpens;
 use MailPoet\Test\DataFactories\Subscriber;
 
 /**
@@ -32,6 +35,9 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
   /** @var \MailPoet\Entities\SubscriberEntity */
   private $subscriber;
 
+  /** @var \MailPoet\Entities\SubscriberEntity */
+  private $subscriber2;
+
   /** @var StatisticsClickEntity */
   private $click1;
 
@@ -44,11 +50,28 @@ class NewsletterStatisticsRepositoryTest extends \MailPoetTest {
     $this->newsletter = (new Newsletter())->withSendingQueue()->create();
     $this->assertInstanceOf(NewsletterEntity::class, $this->newsletter);
     $this->subscriber = (new Subscriber())->create();
+    $this->subscriber2 = (new Subscriber())->create();
 
     $link = (new NewsletterLink($this->newsletter))->create();
     $this->click1 = (new StatisticsClicks($link, $this->subscriber))->create();
     $link = (new NewsletterLink($this->newsletter))->create();
     $this->click2 = (new StatisticsClicks($link, $this->subscriber))->create();
+  }
+
+  public function testItGetsMergedOpens() {
+    $open = (new StatisticsOpens($this->newsletter, $this->subscriber))->create();
+    $open2 = (new StatisticsOpens($this->newsletter, $this->subscriber2))->withMachineUserAgentType()->create();
+    SettingsController::getInstance()->set('tracking.opens', TrackingConfig::OPENS_MERGED);
+    $count = $this->testee->getStatisticsOpenCount($this->newsletter);
+    verify($count)->equals(2);
+  }
+
+  public function testItGetsSeparatedOpens() {
+    $open = (new StatisticsOpens($this->newsletter, $this->subscriber))->create();
+    $open2 = (new StatisticsOpens($this->newsletter, $this->subscriber2))->withMachineUserAgentType()->create();
+    SettingsController::getInstance()->set('tracking.opens', TrackingConfig::OPENS_SEPARATED);
+    $count = $this->testee->getStatisticsOpenCount($this->newsletter);
+    verify($count)->equals(1);
   }
 
   public function testItGetsOnlyStatisticsWithTheCorrectStatus() {

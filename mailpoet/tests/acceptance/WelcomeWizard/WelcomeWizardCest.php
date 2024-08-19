@@ -77,7 +77,7 @@ class WelcomeWizardCest {
     Assert::assertSame($senderAddress, $this->findSetting('sender')->getValue()['address']);
     Assert::assertSame(['enabled' => '1'], $this->findSetting('3rd_party_libs')->getValue());
     Assert::assertSame(['enabled' => '1'], $this->findSetting('analytics')->getValue());
-    Assert::assertSame(['level' => 'full'], $this->findSetting('tracking')->getValue());
+    Assert::assertSame(['level' => 'full', 'opens' => 'merged'], $this->findSetting('tracking')->getValue());
     Assert::assertSame($mailPoetSendingKey, $this->findSetting('mta')->getValue()['mailpoet_api_key']);
   }
 
@@ -118,7 +118,7 @@ class WelcomeWizardCest {
     Assert::assertSame($senderAddress, $this->findSetting('sender')->getValue()['address']);
     Assert::assertSame(['enabled' => '1'], $this->findSetting('3rd_party_libs')->getValue());
     Assert::assertSame(['enabled' => '1'], $this->findSetting('analytics')->getValue());
-    Assert::assertSame(['level' => 'full'], $this->findSetting('tracking')->getValue());
+    Assert::assertSame(['level' => 'full', 'opens' => 'merged'], $this->findSetting('tracking')->getValue());
     Assert::assertSame($mailPoetSendingKey, $this->findSetting('mta')->getValue()['mailpoet_api_key']);
   }
 
