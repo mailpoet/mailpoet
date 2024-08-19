@@ -3,6 +3,8 @@
 namespace MailPoet\Subscribers\Statistics;
 
 use MailPoet\Newsletter\Statistics\WooCommerceRevenue;
+use MailPoet\Settings\SettingsController;
+use MailPoet\Settings\TrackingConfig;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\NewsletterLink;
 use MailPoet\Test\DataFactories\StatisticsClicks;
@@ -19,9 +21,13 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
   /** @var SubscriberStatisticsRepository */
   private $repository;
 
+  /** @var SettingsController */
+  private $settings;
+
   public function _before() {
     parent::_before();
     $this->repository = $this->diContainer->get(SubscriberStatisticsRepository::class);
+    $this->settings = SettingsController::getInstance();
   }
 
   public function testItFetchesClickCount(): void {
@@ -77,6 +83,42 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     verify($this->repository->getStatisticsMachineOpenCount($subscriber, null))->equals(0);
   }
 
+  public function testItFetchesOpenCountMergedWithMachineCount(): void {
+    $subscriber = (new Subscriber())->create();
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $newsletter2 = (new Newsletter())->withSendingQueue()->create();
+    $yearAgo = Carbon::now()->subYear();
+    $open = (new StatisticsOpens($newsletter, $subscriber))->withCreatedAt($yearAgo)->create();
+    $open2 = (new StatisticsOpens($newsletter2, $subscriber))->withMachineUserAgentType()->withCreatedAt($yearAgo)->create();
+    $newsletterSendStat = (new StatisticsNewsletters($newsletter, $subscriber))->withSentAt($yearAgo)->create();
+    $newsletterSendStat2 = (new StatisticsNewsletters($newsletter2, $subscriber))->withSentAt($yearAgo)->create();
+
+    $this->settings->set('tracking.opens', TrackingConfig::OPENS_MERGED);
+
+    verify($this->repository->getStatisticsOpenCount($subscriber, null))->equals(2);
+    verify($this->repository->getStatisticsOpenCount($subscriber, $yearAgo))->equals(2);
+    verify($this->repository->getStatisticsOpenCount($subscriber, Carbon::now()->subMonth()))->equals(0);
+    verify($this->repository->getStatisticsMachineOpenCount($subscriber, null))->equals(1);
+  }
+
+  public function testItFetchesOpenCountSeparatedFromMachineCount(): void {
+    $subscriber = (new Subscriber())->create();
+    $newsletter = (new Newsletter())->withSendingQueue()->create();
+    $newsletter2 = (new Newsletter())->withSendingQueue()->create();
+    $yearAgo = Carbon::now()->subYear();
+    $open = (new StatisticsOpens($newsletter, $subscriber))->withCreatedAt($yearAgo)->create();
+    $open2 = (new StatisticsOpens($newsletter2, $subscriber))->withMachineUserAgentType()->withCreatedAt($yearAgo)->create();
+    $newsletterSendStat = (new StatisticsNewsletters($newsletter, $subscriber))->withSentAt($yearAgo)->create();
+    $newsletterSendStat2 = (new StatisticsNewsletters($newsletter2, $subscriber))->withSentAt($yearAgo)->create();
+
+    $this->settings->set('tracking.opens', TrackingConfig::OPENS_SEPARATED);
+
+    verify($this->repository->getStatisticsOpenCount($subscriber, null))->equals(1);
+    verify($this->repository->getStatisticsOpenCount($subscriber, $yearAgo))->equals(1);
+    verify($this->repository->getStatisticsOpenCount($subscriber, Carbon::now()->subMonth()))->equals(0);
+    verify($this->repository->getStatisticsMachineOpenCount($subscriber, null))->equals(1);
+  }
+
   public function testItFetchesMachineOpenCount(): void {
     $subscriber = (new Subscriber())->create();
     $newsletter = (new Newsletter())->withSendingQueue()->create();
@@ -87,7 +129,9 @@ class SubscriberStatisticsRepositoryTest extends \MailPoetTest {
     verify($this->repository->getStatisticsMachineOpenCount($subscriber, null))->equals(1);
     verify($this->repository->getStatisticsMachineOpenCount($subscriber, $yearAgo))->equals(1);
     verify($this->repository->getStatisticsMachineOpenCount($subscriber, Carbon::now()->subMonth()))->equals(0);
-    verify($this->repository->getStatisticsOpenCount($subscriber, null))->equals(0);
+    verify($this->repository->getStatisticsOpenCount($subscriber, null))->equals(1); // Merged with machine count
+    $this->settings->set('tracking.opens', TrackingConfig::OPENS_SEPARATED);
+    verify($this->repository->getStatisticsOpenCount($subscriber, null))->equals(0); // Separated from machine count
   }
 
   public function testItFetchesTotalSentCount(): void {
