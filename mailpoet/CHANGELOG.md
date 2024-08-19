@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 4.58.3 - 2024-08-19 =
+
+- Fixed: dual buttons in MS Outlook;
+- Fixed: false error notice about MSS connection for editor users.
+
 = 4.58.2 - 2024-08-13 =
 
 - Added: option to change position of opt-in checkbox on the shortcode checkout page;
