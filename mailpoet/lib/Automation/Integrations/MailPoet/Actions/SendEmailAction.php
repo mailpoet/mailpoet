@@ -25,6 +25,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionFieldsRepository;
 use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Newsletter\Scheduler\AutomationEmailScheduler;
+use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
@@ -62,29 +63,23 @@ class SendEmailAction implements Action {
     'woocommerce-subscriptions:trial-started',
   ];
 
-  /** @var AutomationController */
-  private $automationController;
+  private AutomationController $automationController;
 
-  /** @var SettingsController */
-  private $settings;
+  private SettingsController $settings;
 
-  /** @var NewslettersRepository */
-  private $newslettersRepository;
+  private NewslettersRepository $newslettersRepository;
 
-  /** @var SubscriberSegmentRepository */
-  private $subscriberSegmentRepository;
+  private SubscriberSegmentRepository $subscriberSegmentRepository;
 
-  /** @var SubscribersRepository  */
-  private $subscribersRepository;
+  private SubscribersRepository $subscribersRepository;
 
-  /** @var AutomationEmailScheduler */
-  private $automationEmailScheduler;
+  private SegmentsRepository $segmentsRepository;
 
-  /** @var NewsletterOptionsRepository */
-  private $newsletterOptionsRepository;
+  private AutomationEmailScheduler $automationEmailScheduler;
 
-  /** @var NewsletterOptionFieldsRepository */
-  private $newsletterOptionFieldsRepository;
+  private NewsletterOptionsRepository $newsletterOptionsRepository;
+
+  private NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository;
 
   public function __construct(
     AutomationController $automationController,
@@ -92,6 +87,7 @@ class SendEmailAction implements Action {
     NewslettersRepository $newslettersRepository,
     SubscriberSegmentRepository $subscriberSegmentRepository,
     SubscribersRepository $subscribersRepository,
+    SegmentsRepository $segmentsRepository,
     AutomationEmailScheduler $automationEmailScheduler,
     NewsletterOptionsRepository $newsletterOptionsRepository,
     NewsletterOptionFieldsRepository $newsletterOptionFieldsRepository
@@ -101,6 +97,7 @@ class SendEmailAction implements Action {
     $this->newslettersRepository = $newslettersRepository;
     $this->subscriberSegmentRepository = $subscriberSegmentRepository;
     $this->subscribersRepository = $subscribersRepository;
+    $this->segmentsRepository = $segmentsRepository;
     $this->automationEmailScheduler = $automationEmailScheduler;
     $this->newsletterOptionsRepository = $newsletterOptionsRepository;
     $this->newsletterOptionFieldsRepository = $newsletterOptionFieldsRepository;
