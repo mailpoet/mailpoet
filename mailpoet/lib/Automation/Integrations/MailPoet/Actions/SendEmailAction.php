@@ -149,17 +149,20 @@ class SendEmailAction implements Action {
     try {
       $this->getEmailForStep($args->getStep());
     } catch (InvalidStateException $exception) {
+      $exception = ValidationException::create()
+        ->withMessage(__('Cannot send the email because it was not found. Please, go to the automation editor and update the email contents.', 'mailpoet'));
+
       $emailId = $args->getStep()->getArgs()['email_id'] ?? '';
       if (empty($emailId)) {
-        throw ValidationException::create()
-          ->withError('email_id', __("Automation email not found.", 'mailpoet'));
-      }
-      throw ValidationException::create()
-        ->withError(
+        $exception->withError('email_id', __("Automation email not found.", 'mailpoet'));
+      } else {
+        $exception->withError(
           'email_id',
           // translators: %s is the ID of email.
           sprintf(__("Automation email with ID '%s' not found.", 'mailpoet'), $emailId)
         );
+      }
+      throw $exception;
     }
   }
 
