@@ -183,6 +183,7 @@ export interface EmailFormItem extends FormItem {
   opens?: string;
   emails?: string;
   clicks?: string;
+  timeframe?: Timeframe;
 }
 
 export type DynamicSegment = {
