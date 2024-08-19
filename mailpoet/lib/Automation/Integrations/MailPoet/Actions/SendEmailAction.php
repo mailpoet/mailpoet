@@ -174,11 +174,11 @@ class SendEmailAction implements Action {
       // run #1: schedule email sending
       $subscriberStatus = $subscriber->getStatus();
       if ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL && $subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
-        throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule a newsletter for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriberStatus));
+        throw InvalidStateException::create()->withMessage(sprintf("Cannot send the email because the subscriber's status is '%s'.", $subscriberStatus));
       }
 
       if ($subscriberStatus === SubscriberEntity::STATUS_BOUNCED) {
-        throw InvalidStateException::create()->withMessage(sprintf("Cannot schedule an email for subscriber ID '%s' because their status is '%s'.", $subscriber->getId(), $subscriberStatus));
+        throw InvalidStateException::create()->withMessage(sprintf("Cannot send the email because the subscriber's status is '%s'.", $subscriberStatus));
       }
 
       $meta = $this->getNewsletterMeta($args);
