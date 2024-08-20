@@ -145,6 +145,9 @@ interface Window {
     level: 'full' | 'partial' | 'basic';
     cookieTrackingEnabled: boolean;
     emailTrackingEnabled: boolean;
+    opens: 'merged' | 'separated';
+    opensMerged: boolean;
+    opensSeparated: boolean;
   }>;
   mailpoet_display_detailed_stats: boolean;
   mailpoet_premium_plugin_installed: boolean;

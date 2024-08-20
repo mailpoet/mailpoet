@@ -43,6 +43,9 @@ class TrackingConfig {
       'level' => $this->settings->get('tracking.level', self::LEVEL_FULL),
       'emailTrackingEnabled' => $this->isEmailTrackingEnabled(),
       'cookieTrackingEnabled' => $this->isCookieTrackingEnabled(),
+      'opens' => $this->settings->get('tracking.opens', self::OPENS_MERGED),
+      'opensMerged' => $this->areOpensMerged(),
+      'opensSeparated' => $this->areOpensSeparated(),
     ];
   }
 }
