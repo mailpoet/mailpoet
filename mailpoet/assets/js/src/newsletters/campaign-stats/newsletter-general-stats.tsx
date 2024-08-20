@@ -255,7 +255,7 @@ function NewsletterGeneralStats({ newsletter, isWoocommerceActive }: Props) {
         <div>{clicked}</div>
         <div className="mailpoet-statistics-with-left-separator">
           {opened}
-          {machineOpened}
+          {MailPoet.trackingConfig.opensSeparated && machineOpened}
         </div>
         {isWoocommerceActive && (
           <div className="mailpoet-statistics-with-left-separator">

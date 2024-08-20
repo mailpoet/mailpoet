@@ -59,46 +59,49 @@ export function Summary({ stats, subscriber }: PropTypes): JSX.Element {
                 },
               )}
             </tr>
-            <tr>
-              <td>
-                <Tag>{MailPoet.I18n.t('statsMachineOpened')}</Tag>
-                <Tooltip
-                  tooltip={ReactStringReplace(
-                    MailPoet.I18n.t('statsMachineOpenedTooltip'),
-                    /\[link](.*?)\[\/link]/,
-                    (match) => (
-                      <span
-                        style={{ pointerEvents: 'all' }}
-                        key="machine-opened-info"
-                      >
-                        <a
-                          href="https://kb.mailpoet.com/article/368-what-are-machine-opens"
-                          key="kb-link"
-                          target="_blank"
-                          rel="noopener noreferrer"
+            {MailPoet.trackingConfig.opensSeparated && (
+              <tr>
+                <td>
+                  <Tag>{MailPoet.I18n.t('statsMachineOpened')}</Tag>
+                  <Tooltip
+                    tooltip={ReactStringReplace(
+                      MailPoet.I18n.t('statsMachineOpenedTooltip'),
+                      /\[link](.*?)\[\/link]/,
+                      (match) => (
+                        <span
+                          style={{ pointerEvents: 'all' }}
+                          key="machine-opened-info"
                         >
-                          {match}
-                        </a>
-                      </span>
-                    ),
-                  )}
-                />
-              </td>
-              {stats.periodic_stats.map(
-                (periodicStats: PeriodicStats): JSX.Element => {
-                  const displayPercentage = periodicStats.total_sent > 0;
-                  let cell = periodicStats.machine_open.toLocaleString();
-                  if (displayPercentage) {
-                    const percentage = Math.round(
-                      (periodicStats.machine_open / periodicStats.total_sent) *
-                        100,
-                    );
-                    cell += ` (${percentage}%)`;
-                  }
-                  return <td key={periodicStats.timeframe}>{cell}</td>;
-                },
-              )}
-            </tr>
+                          <a
+                            href="https://kb.mailpoet.com/article/368-what-are-machine-opens"
+                            key="kb-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {match}
+                          </a>
+                        </span>
+                      ),
+                    )}
+                  />
+                </td>
+                {stats.periodic_stats.map(
+                  (periodicStats: PeriodicStats): JSX.Element => {
+                    const displayPercentage = periodicStats.total_sent > 0;
+                    let cell = periodicStats.machine_open.toLocaleString();
+                    if (displayPercentage) {
+                      const percentage = Math.round(
+                        (periodicStats.machine_open /
+                          periodicStats.total_sent) *
+                          100,
+                      );
+                      cell += ` (${percentage}%)`;
+                    }
+                    return <td key={periodicStats.timeframe}>{cell}</td>;
+                  },
+                )}
+              </tr>
+            )}
             <tr>
               <td>
                 <Tag isInverted>{MailPoet.I18n.t('statsClicked')}</Tag>
