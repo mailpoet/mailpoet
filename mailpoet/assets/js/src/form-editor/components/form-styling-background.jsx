@@ -28,11 +28,6 @@ function FormStylingBackground({ children }) {
     [previewSettings.formType],
   );
 
-  let borderStyle;
-  if (borderSize && borderColor) {
-    borderStyle = 'solid';
-  }
-
   let radius;
   if (borderRadius) radius = Number(borderRadius);
   let padding;
@@ -51,15 +46,18 @@ function FormStylingBackground({ children }) {
     fontFamily,
     lineHeight: 1.2,
     borderRadius: radius,
-    borderWidth: borderSize,
-    borderColor,
-    borderStyle,
     textAlign,
     padding,
     width: formWidth.unit === 'pixel' ? formWidth.value : `${formWidth.value}%`,
     margin: '0 auto',
     maxWidth: '100%',
   };
+
+  if (borderSize && borderColor) {
+    style.borderWidth = borderSize;
+    style.borderColor = borderColor;
+    style.borderStyle = 'solid';
+  }
 
   // Render virtual container for widgets and below pages/post forms with width in percent
   if (
