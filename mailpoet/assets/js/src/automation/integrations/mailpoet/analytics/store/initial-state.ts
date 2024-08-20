@@ -38,7 +38,7 @@ const sections: Record<string, Section> = {
       },
     },
     customQuery: {
-      order: 'asc',
+      order: 'desc',
       order_by: 'updated_at',
       limit: 25,
       page: 1,
