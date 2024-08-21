@@ -204,6 +204,7 @@ class CustomerOrderFieldsFactory {
         AND o.status IN ($statusesPlaceholder)
         AND o.date_created_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
       ";
+      // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
       $statement = (string)$wpdb->prepare($query, array_merge([$customer->get_id()], $statuses, [$inTheLastSeconds]));
     } else {
       /** @var literal-string $query */
@@ -217,8 +218,10 @@ class CustomerOrderFieldsFactory {
         AND pm_user.meta_value = %d
         AND p.post_date_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
       ";
+      // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
       $statement = (string)$wpdb->prepare($query, array_merge($statuses, [$customer->get_id(), $inTheLastSeconds]));
     }
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table names are sanitized and values are prepared with the placeholder
     return (float)$wpdb->get_var($statement);
   }
 
@@ -236,6 +239,7 @@ class CustomerOrderFieldsFactory {
         AND o.status IN ($statusesPlaceholder)
         AND o.date_created_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
        ";
+      // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
       $statement = (string)$wpdb->prepare($query, array_merge([$customer->get_id()], $statuses, [$inTheLastSeconds]));
     } else {
       /** @var literal-string $query */
@@ -248,8 +252,10 @@ class CustomerOrderFieldsFactory {
         AND pm_user.meta_value = %d
         AND p.post_date_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
       ";
+      // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
       $statement = (string)$wpdb->prepare($query, array_merge($statuses, [$customer->get_id(), $inTheLastSeconds]));
     }
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
     return (int)$wpdb->get_var($statement);
   }
 
@@ -272,6 +278,7 @@ class CustomerOrderFieldsFactory {
         ORDER BY o.date_created_gmt {$sorting}
         LIMIT 1
       ";
+      // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
       $statement = (string)$wpdb->prepare($query, array_merge([$customer->get_id()], $statuses));
     } else {
       /** @var literal-string $query */
@@ -287,9 +294,11 @@ class CustomerOrderFieldsFactory {
         ORDER BY p.post_date_gmt {$sorting}
         LIMIT 1
       ";
+      // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
       $statement = (string)$wpdb->prepare($query, array_merge($statuses, [$customer->get_id()]));
     }
 
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
     $date = $wpdb->get_var($statement);
     return $date ? new DateTimeImmutable($date, new DateTimeZone('GMT')) : null;
   }
@@ -336,17 +345,18 @@ class CustomerOrderFieldsFactory {
       WHERE tt.taxonomy = %s
       ORDER BY tt.term_id ASC
     ";
-    $statement = (string)$wpdb->prepare(
-      $query,
-      array_merge(
-        $statuses,
-        [$customer->get_id()],
-        isset($inTheLastSeconds) ? [intval($inTheLastSeconds)] : [],
-        [(string)($taxonomy)]
-      )
-    );
 
-    return array_map('intval', $wpdb->get_col($statement));
+    return array_map('intval', $wpdb->get_col(
+      $wpdb->prepare(
+        $query, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table names are sanitized and values are prepared with placeholders
+        array_merge(
+          $statuses,
+          [$customer->get_id()],
+          isset($inTheLastSeconds) ? [intval($inTheLastSeconds)] : [],
+          [(string)($taxonomy)]
+        )
+      )
+    ));
   }
 
   private function isInTheLastSeconds(WC_Order $order, ?int $inTheLastSeconds): bool {

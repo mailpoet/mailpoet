@@ -69,8 +69,8 @@ class CustomerReviewFieldsFactory {
       $inTheLastFilter
     ";
     return (int)$wpdb->get_var(
-      (string)$wpdb->prepare(
-        $sql,
+      $wpdb->prepare(
+        $sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The query is prepared with a placeholder
         array_merge(
           [$customer->get_id(), $customer->get_email()],
           isset($inTheLastSeconds) ? [intval($inTheLastSeconds)] : []
@@ -81,9 +81,10 @@ class CustomerReviewFieldsFactory {
 
   private function getLastReviewDate(WC_Customer $customer): ?DateTimeImmutable {
     $wpdb = $this->wordPress->getWpdb();
-    /** @var literal-string $sql */
-    $sql = "
-      SELECT c.comment_date FROM {$wpdb->comments} c
+
+    $date = $wpdb->get_var((string)$wpdb->prepare("
+      SELECT c.comment_date
+      FROM {$wpdb->comments} c
       JOIN {$wpdb->posts} p ON c.comment_post_ID = p.ID
       WHERE p.post_type = 'product'
       AND c.comment_parent = 0
@@ -92,11 +93,7 @@ class CustomerReviewFieldsFactory {
       AND (c.user_ID = %d OR c.comment_author_email = %s)
       ORDER BY c.comment_date DESC
       LIMIT 1
-    ";
-
-    $date = $wpdb->get_var(
-      (string)$wpdb->prepare($sql, [$customer->get_id(), $customer->get_email()])
-    );
+    ", [$customer->get_id(), $customer->get_email()]));
     return $date ? new DateTimeImmutable($date, $this->wordPress->wpTimezone()) : null;
   }
 }
