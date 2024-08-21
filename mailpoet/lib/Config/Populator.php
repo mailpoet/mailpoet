@@ -566,16 +566,22 @@ class Populator {
   private function rowExists(string $tableName, array $columns): bool {
     global $wpdb;
 
-    $conditions = array_map(function($key, $value) {
-      return esc_sql($key) . "='" . esc_sql($value) . "'";
-    }, array_keys($columns), $columns);
+    $placeholders = [];
+    $values = [$tableName]; // Start with the table name as the first value for %i
 
-    $table = esc_sql($tableName);
-    // $conditions is escaped
-    // phpcs:ignore WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter
-    return $wpdb->get_var(
-      "SELECT COUNT(*) FROM $table WHERE " . implode(' AND ', $conditions)
-    ) > 0;
+    foreach ($columns as $key => $value) {
+      $placeholders[] = "%i = %s"; // Use %i for the column name and %s for the value
+      $values[] = $key;
+      $values[] = $value;
+    }
+
+    $whereClause = implode(' AND ', $placeholders);
+
+
+    return $wpdb->get_var($wpdb->prepare(
+      "SELECT COUNT(*) FROM %i WHERE $whereClause", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- All values are prepared with placeholders
+      ...$values
+    )) > 0;
   }
 
   private function insertRow($table, $row) {
@@ -603,35 +609,33 @@ class Populator {
     $conditions = ['1=1'];
     $values = [];
     foreach ($where as $field => $value) {
-      $conditions[] = "`t1`.`" . esc_sql($field) . "` = `t2`.`" . esc_sql($field) . "`";
-      $conditions[] = "`t1`.`" . esc_sql($field) . "` = %s";
+      $conditions[] = "`t1`.%i = `t2`.%i";
+      $conditions[] = "`t1`.%i = %s";
+      $values[] = $field;
+      $values[] = $field;
+      $values[] = $field;
       $values[] = $value;
     }
 
-    $conditions = implode(' AND ', $conditions);
-
-    $table = esc_sql($table);
-
     // SQLite doesn't support JOIN in DELETE queries, we need to use a subquery.
     if (Connection::isSQLite()) {
+      $sql = "
+        DELETE FROM %i WHERE id IN (
+        SELECT t1.id
+        FROM %i t1
+        JOIN %i t2 ON t1.id < t2.id AND " . implode(' AND ', $conditions) . "
+      )";
       return $wpdb->query(
         $wpdb->prepare(
-          "DELETE FROM $table WHERE id IN (
-            SELECT t1.id
-            FROM $table t1
-            JOIN $table t2 ON t1.id < t2.id AND $conditions
-          )",
-          $values
+          $sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- All values are prepared with placeholders in a variable
+          array_merge([$table, $table, $table], $values)
         )
       );
     }
 
-    return $wpdb->query(
-      $wpdb->prepare(
-        "DELETE t1 FROM $table t1, $table t2 WHERE t1.id < t2.id AND $conditions",
-        $values
-      )
-    );
+    $sql = "DELETE t1 FROM %i t1, %i t2 WHERE t1.id < t2.id AND " . implode(' AND ', $conditions);
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- All values are prepared with placeholders in a variable
+    return $wpdb->query($wpdb->prepare($sql, array_merge([$table, $table], $values)));
   }
 
   private function createSourceForSubscribers() {

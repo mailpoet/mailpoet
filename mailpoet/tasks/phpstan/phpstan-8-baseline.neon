@@ -137,21 +137,6 @@ parameters:
 			path: ../../lib/Config/Populator.php
 
 		-
-			message: "#^Binary operation \"\\.\" between non-falsy-string and array\\|string results in an error\\.$#"
-			count: 2
-			path: ../../lib/Config/Populator.php
-
-		-
-			message: "#^Binary operation \"\\.\" between '`t1`\\.`' and array\\|string results in an error\\.$#"
-			count: 2
-			path: ../../lib/Config/Populator.php
-
-		-
-			message: "#^Part \\$table \\(array\\|string\\) of encapsed string cannot be cast to string\\.$#"
-			count: 5
-			path: ../../lib/Config/Populator.php
-
-		-
 			message: "#^Parameter \\#2 \\$args of method MailPoet\\\\WP\\\\Functions\\:\\:wpRemotePost\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: ../../lib/Cron/CronHelper.php
