@@ -32,9 +32,9 @@ class TermParentsLoader {
       WHERE tt.parent != 0
       AND tt.term_id IN ($idsPlaceholder)
     ";
-    $statement = (string)$wpdb->prepare($query, $termIds);
 
-    $parentIds = array_map('intval', $wpdb->get_col($statement));
+    // // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The value is prepared with the placeholder
+    $parentIds = array_map('intval', $wpdb->get_col((string)$wpdb->prepare($query, $termIds)));
     if (count($parentIds) === 0) {
       return [];
     }

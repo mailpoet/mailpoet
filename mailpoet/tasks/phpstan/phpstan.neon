@@ -82,12 +82,20 @@ parameters:
       count: 1
       path: ../../lib/Logging/PluginVersionProcessor.php
     -
-      message: "#^Cannot cast string|void to string\\.$#"
-      count: 7
+      message: '/^Parameter #1 $query of method wpdb::get_var() expects string|null, string|void given\.$/'
+      count: 1
       path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerOrderFieldsFactory.php
     -
       message: "#^Cannot cast string|void to string\\.$#"
-      count: 2
+      count: 6
+      path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerOrderFieldsFactory.php
+    -
+      message: '/^Parameter #1 $query of method wpdb::get_var() expects string|null, string|void given\.$/'
+      count: 1
+      path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerReviewFieldsFactory.php
+    -
+      message: "#^Cannot cast string|void to string\\.$#"
+      count: 1
       path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerReviewFieldsFactory.php
     -
       message: "#^Cannot cast string|void to string\\.$#"
