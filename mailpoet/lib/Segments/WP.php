@@ -4,6 +4,7 @@ namespace MailPoet\Segments;
 
 use MailPoet\Config\SubscriberChangesNotifier;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Entities\SubscriberSegmentEntity;
@@ -246,6 +247,12 @@ class WP {
   }
 
   public function synchronizeUsers(): bool {
+    // Temporarily skip synchronization in WP Playground.
+    // Some of the queries are not yet supported by the SQLite integration.
+    if (Connection::isSQLite()) {
+      return true;
+    }
+
     // Save timestamp about changes and update before insert
     $this->subscriberChangesNotifier->subscribersBatchCreate();
     $this->subscriberChangesNotifier->subscribersBatchUpdate();

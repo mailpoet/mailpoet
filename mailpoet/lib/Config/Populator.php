@@ -13,6 +13,7 @@ use MailPoet\Cron\Workers\StatsNotifications\Worker;
 use MailPoet\Cron\Workers\SubscriberLinkTokens;
 use MailPoet\Cron\Workers\SubscribersLastEngagement;
 use MailPoet\Cron\Workers\UnsubscribeTokens;
+use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
@@ -636,6 +637,12 @@ class Populator {
   private function createSourceForSubscribers() {
     $statisticsFormTable = $this->entityManager->getClassMetadata(StatisticsFormEntity::class)->getTableName();
     $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+
+    // Temporarily skip the queries in WP Playground.
+    // UPDATE with JOIN is not yet supported by the SQLite integration.
+    if (Connection::isSQLite()) {
+      return;
+    }
 
     $this->entityManager->getConnection()->executeStatement(
       ' UPDATE LOW_PRIORITY `' . $subscriberTable . '` subscriber ' .
