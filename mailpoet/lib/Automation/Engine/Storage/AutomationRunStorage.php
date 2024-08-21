@@ -46,6 +46,7 @@ class AutomationRunStorage {
       $values[] = (string)$this->wpdb->prepare("(%d,%s,%s,%s)", $automationRunId, $entry['key'], $entry['args'], $entry['hash']);
     }
     $sql = sprintf($sql, implode(',', $values));
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and dynamic values are prepared with placeholders
     $result = $this->wpdb->query($sql);
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
@@ -55,19 +56,19 @@ class AutomationRunStorage {
   }
 
   public function getAutomationRun(int $id): ?AutomationRun {
-    $table = esc_sql($this->table);
-    $subjectTable = esc_sql($this->subjectTable);
-    /** @var literal-string $sql */
-    $sql = "SELECT * FROM $table  WHERE id = %d";
-    $query = (string)$this->wpdb->prepare($sql, $id);
-    $data = $this->wpdb->get_row($query, ARRAY_A);
+    $wpdb = $this->wpdb;
+
+    $data = $wpdb->get_row((string)$wpdb->prepare("
+      SELECT * FROM %i  WHERE id = %d
+    ", $this->table, $id), ARRAY_A);
+
     if (!is_array($data) || !$data) {
       return null;
     }
-    /** @var literal-string $sql */
-    $sql = "SELECT * FROM $subjectTable WHERE automation_run_id = %d";
-    $query = (string)$this->wpdb->prepare($sql, $id);
-    $subjects = $this->wpdb->get_results($query, ARRAY_A);
+
+    $subjects = $wpdb->get_results((string)$wpdb->prepare("
+      SELECT * FROM %i WHERE automation_run_id = %d
+    ", $this->subjectTable, $id), ARRAY_A);
     $data['subjects'] = is_array($subjects) ? $subjects : [];
     return AutomationRun::fromArray((array)$data);
   }
@@ -77,21 +78,19 @@ class AutomationRunStorage {
    * @return AutomationRun[]
    */
   public function getAutomationRunsForAutomation(Automation $automation): array {
-    $table = esc_sql($this->table);
-    $subjectTable = esc_sql($this->subjectTable);
-    /** @var literal-string $sql */
-    $sql = "SELECT * FROM $table WHERE automation_id = %d order by id";
-    $query = (string)$this->wpdb->prepare($sql, $automation->getId());
-    $automationRuns = $this->wpdb->get_results($query, ARRAY_A);
+    $wpdb = $this->wpdb;
+
+    $automationRuns = $wpdb->get_results((string)$wpdb->prepare("
+      SELECT * FROM %i WHERE automation_id = %d order by id
+    ", $this->table, $automation->getId()), ARRAY_A);
     if (!is_array($automationRuns) || !$automationRuns) {
       return [];
     }
 
     $automationRunIds = array_column($automationRuns, 'id');
 
-    /** @var literal-string $sql */
-    $sql = sprintf(
-      "SELECT * FROM $subjectTable WHERE automation_run_id in (%s) order by automation_run_id, id",
+    $whereCondition = sprintf(
+      "WHERE automation_run_id in (%s)",
       implode(
         ',',
         array_map(
@@ -103,8 +102,14 @@ class AutomationRunStorage {
       )
     );
 
-    $query = (string)$this->wpdb->prepare($sql, ...$automationRunIds);
-    $subjects = $this->wpdb->get_results($query, ARRAY_A);
+    // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- The variable $whereCondition only contains placeholders
+    $subjects = $wpdb->get_results((string)$wpdb->prepare("
+      SELECT *
+      FROM %i
+      $whereCondition
+      ORDER BY automation_run_id, id
+    ", ...array_merge([$this->subjectTable], $automationRunIds)), ARRAY_A); // The array_merge function is used to avoid PHPCS error about incorrect number of parameters in prepare function
+    // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
     return array_map(
       function($runData) use ($subjects): AutomationRun {
@@ -127,76 +132,63 @@ class AutomationRunStorage {
    * @return int
    */
   public function getCountByAutomationAndSubject(Automation $automation, Subject $subject): int {
-    $table = esc_sql($this->table);
-    $subjectTable = esc_sql($this->subjectTable);
-    /** @var literal-string $sql */
-    $sql = "SELECT count(DISTINCT runs.id) as count from $table as runs
-      JOIN $subjectTable as subjects on runs.id = subjects.automation_run_id
-      WHERE runs.automation_id = %d
-      AND subjects.hash = %s";
+    $wpdb = $this->wpdb;
 
-    $result = $this->wpdb->get_col(
-      (string)$this->wpdb->prepare($sql, $automation->getId(), $subject->getHash())
-    );
+    $result = $wpdb->get_col((string)$wpdb->prepare("
+      SELECT count(DISTINCT runs.id) AS count FROM %i AS runs
+      JOIN %i AS subjects ON runs.id = subjects.automation_run_id
+      WHERE runs.automation_id = %d
+      AND subjects.hash = %s
+    ", $this->table, $this->subjectTable, $automation->getId(), $subject->getHash()));
 
     return $result ? (int)current($result) : 0;
   }
 
   public function getCountForAutomation(Automation $automation, string ...$status): int {
-    $table = esc_sql($this->table);
+    $wpdb = $this->wpdb;
 
     if (!count($status)) {
-      /** @var literal-string $sql */
-      $sql = "
+      $result = $wpdb->get_col((string)$wpdb->prepare("
         SELECT COUNT(id) as count
-        FROM $table
+        FROM %i
         WHERE automation_id = %d
-      ";
-      $query = (string)$this->wpdb->prepare($sql, $automation->getId());
-      $result = $this->wpdb->get_col($query);
+      ", $this->table, $automation->getId()));
       return $result ? (int)current($result) : 0;
     }
 
     $statusSql = (string)$this->wpdb->prepare(implode(',', array_fill(0, count($status), '%s')), ...$status);
-    /** @var literal-string $sql */
-    $sql = "
+    // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- The variable is prepared with placeholders
+    $result = $wpdb->get_col((string)$wpdb->prepare("
       SELECT COUNT(id) as count
-      FROM $table
+      FROM %i
       WHERE automation_id = %d
       AND status IN ($statusSql)
-    ";
-    $query = (string)$this->wpdb->prepare($sql, $automation->getId());
-    $result = $this->wpdb->get_col($query);
+    ", $this->table, $automation->getId()));
+    // php:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     return $result ? (int)current($result) : 0;
   }
 
   public function updateStatus(int $id, string $status): void {
-    $table = esc_sql($this->table);
-    /** @var literal-string $sql */
-    $sql = "
-      UPDATE $table
+    $wpdb = $this->wpdb;
+    $result = $wpdb->query((string)$wpdb->prepare("
+      UPDATE %i
       SET status = %s, updated_at = current_timestamp()
       WHERE id = %d
-    ";
-    $query = (string)$this->wpdb->prepare($sql, $status, $id);
-    $result = $this->wpdb->query($query);
+    ", $this->table, $status, $id));
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
   }
 
   public function updateNextStep(int $id, ?string $nextStepId): void {
-    $table = esc_sql($this->table);
-    /** @var literal-string $sql */
-    $sql = "
-      UPDATE $table
+    $wpdb = $this->wpdb;
+    $result = $wpdb->query((string)$wpdb->prepare("
+      UPDATE %i
       SET next_step_id = %s, updated_at = current_timestamp()
       WHERE id = %d
-    ";
-    $query = (string)$this->wpdb->prepare($sql, $nextStepId, $id);
-    $result = $this->wpdb->query($query);
+    ", $this->table, $nextStepId, $id));
     if ($result === false) {
-      throw Exceptions::databaseError($this->wpdb->last_error);
+      throw Exceptions::databaseError($wpdb->last_error); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
   }
 
@@ -220,17 +212,18 @@ class AutomationRunStorage {
     ";
 
     $sql = $versionId ?
-      $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'), $versionId) :
-      $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'));
+      $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'), $versionId) : // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with placeholders
+      $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s')); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with placeholders
     $sql = is_string($sql) ? $sql : '';
-    $result = $this->wpdb->get_results($sql, ARRAY_A);
+
+    $result = $this->wpdb->get_results($sql, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with placeholders
     return is_array($result) ? $result : [];
   }
 
   public function truncate(): void {
-    $table = esc_sql($this->table);
-    $this->wpdb->query("TRUNCATE $table");
-    $table = esc_sql($this->subjectTable);
-    $this->wpdb->query("TRUNCATE $table");
+    $wpdb = $this->wpdb;
+
+    $wpdb->query((string)$wpdb->prepare("TRUNCATE %i", $this->table));
+    $wpdb->query((string)$wpdb->prepare("TRUNCATE %i", $this->subjectTable));
   }
 }
