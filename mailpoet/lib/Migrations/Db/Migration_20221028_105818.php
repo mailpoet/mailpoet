@@ -658,13 +658,11 @@ class Migration_20221028_105818 extends DbMigration {
     if (version_compare($this->getDbVersion('3.47.6'), '3.47.6', '>')) {
       return false;
     }
-    $table = esc_sql("{$this->prefix}statistics_unsubscribes");
-    $query = "
-    ALTER TABLE `{$table}`
+    $wpdb->query($wpdb->prepare("
+      ALTER TABLE %i
       CHANGE `newsletter_id` `newsletter_id` int(11) unsigned NULL,
       CHANGE `queue_id` `queue_id` int(11) unsigned NULL;
-    ";
-    $wpdb->query($query);
+    ", "{$this->prefix}statistics_unsubscribes"));
     return true;
   }
 
@@ -682,22 +680,21 @@ class Migration_20221028_105818 extends DbMigration {
     }
 
     global $wpdb;
-    $scheduledTasksSubscribersTable = esc_sql("{$this->prefix}scheduled_task_subscribers");
+    $scheduledTasksSubscribersTable = "{$this->prefix}scheduled_task_subscribers";
     // Remove default CURRENT_TIMESTAMP from created_at
-    $updateCreatedAtQuery = "
-      ALTER TABLE `$scheduledTasksSubscribersTable`
+    $wpdb->query($wpdb->prepare("
+      ALTER TABLE %i
       CHANGE `created_at` `created_at` timestamp NULL;
-    ";
-    $wpdb->query($updateCreatedAtQuery);
+    ", $scheduledTasksSubscribersTable));
 
     // Add updated_at column in case it doesn't exist
+
     $updatedAtColumnExists = $this->columnExists($scheduledTasksSubscribersTable, 'updated_at');
     if (empty($updatedAtColumnExists)) {
-      $addUpdatedAtQuery = "
-        ALTER TABLE `$scheduledTasksSubscribersTable`
+      $wpdb->query($wpdb->prepare("
+        ALTER TABLE %i
         ADD `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
-      ";
-      $wpdb->query($addUpdatedAtQuery);
+      ", $scheduledTasksSubscribersTable));
     }
     return true;
   }
@@ -717,11 +714,10 @@ class Migration_20221028_105818 extends DbMigration {
     foreach ($statisticsTables as $statisticsTable) {
       $oldStatisticsIndexExists = $this->indexExists($statisticsTable, 'newsletter_id_subscriber_id');
       if (!empty($oldStatisticsIndexExists)) {
-        $dropIndexQuery = "
-        ALTER TABLE `{$statisticsTable}`
+        $wpdb->query($wpdb->prepare("
+          ALTER TABLE %i
           DROP INDEX `newsletter_id_subscriber_id`
-      ";
-        $wpdb->query($dropIndexQuery);
+        ", $statisticsTable));
       }
     }
 
@@ -736,10 +732,10 @@ class Migration_20221028_105818 extends DbMigration {
     }
 
     $dynamicSegmentFiltersTable = esc_sql("{$this->prefix}dynamic_segment_filters");
-    $dynamicSegmentFilters = $wpdb->get_results("
+    $dynamicSegmentFilters = $wpdb->get_results($wpdb->prepare("
       SELECT id, filter_data, filter_type, `action`
-      FROM {$dynamicSegmentFiltersTable}
-    ", ARRAY_A);
+      FROM %i
+    ", $dynamicSegmentFiltersTable), ARRAY_A);
     foreach ($dynamicSegmentFilters as $dynamicSegmentFilter) {
       if ($dynamicSegmentFilter['filter_type'] && $dynamicSegmentFilter['action']) {
         continue;
@@ -769,12 +765,13 @@ class Migration_20221028_105818 extends DbMigration {
     $dynamicSegmentFiltersTable = esc_sql("{$this->prefix}dynamic_segment_filters");
     $filterType = DynamicSegmentFilterData::TYPE_WOOCOMMERCE;
     $action = WooCommerceProduct::ACTION_PRODUCT;
-    $dynamicSegmentFilters = $wpdb->get_results("
+
+    $dynamicSegmentFilters = $wpdb->get_results($wpdb->prepare("
       SELECT `id`, `filter_data`, `filter_type`, `action`
-      FROM {$dynamicSegmentFiltersTable}
-      WHERE `filter_type` = '{$filterType}'
-        AND `action` = '{$action}'
-    ", ARRAY_A);
+      FROM %i
+      WHERE `filter_type` = %s
+        AND `action` = %s
+    ", $dynamicSegmentFiltersTable, $filterType, $action), ARRAY_A);
 
     foreach ($dynamicSegmentFilters as $dynamicSegmentFilter) {
       /** @var array $filterData */
@@ -807,15 +804,16 @@ class Migration_20221028_105818 extends DbMigration {
       return false;
     }
 
-    $dynamicSegmentFiltersTable = esc_sql("{$this->prefix}dynamic_segment_filters");
+    $dynamicSegmentFiltersTable = "{$this->prefix}dynamic_segment_filters";
     $filterType = DynamicSegmentFilterData::TYPE_WOOCOMMERCE;
     $action = WooCommerceCategory::ACTION_CATEGORY;
+
     $dynamicSegmentFilters = $wpdb->get_results($wpdb->prepare("
       SELECT `id`, `filter_data`, `filter_type`, `action`
-      FROM {$dynamicSegmentFiltersTable}
+      FROM %i
       WHERE `filter_type` = %s
         AND `action` = %s
-    ", $filterType, $action), ARRAY_A);
+    ", $dynamicSegmentFiltersTable, $filterType, $action), ARRAY_A);
 
     foreach ($dynamicSegmentFilters as $dynamicSegmentFilter) {
       /** @var array $filterData */
@@ -848,15 +846,16 @@ class Migration_20221028_105818 extends DbMigration {
       return false;
     }
 
-    $dynamicSegmentFiltersTable = esc_sql("{$this->prefix}dynamic_segment_filters");
+    $dynamicSegmentFiltersTable = "{$this->prefix}dynamic_segment_filters";
     $filterType = DynamicSegmentFilterData::TYPE_WOOCOMMERCE_SUBSCRIPTION;
     $action = WooCommerceSubscription::ACTION_HAS_ACTIVE;
+
     $dynamicSegmentFilters = $wpdb->get_results($wpdb->prepare("
       SELECT `id`, `filter_data`, `filter_type`, `action`
-      FROM {$dynamicSegmentFiltersTable}
+      FROM %i
       WHERE `filter_type` = %s
         AND `action` = %s
-    ", $filterType, $action), ARRAY_A);
+    ", $dynamicSegmentFiltersTable, $filterType, $action), ARRAY_A);
 
     foreach ($dynamicSegmentFilters as $dynamicSegmentFilter) {
       /** @var array $filterData */
@@ -888,13 +887,14 @@ class Migration_20221028_105818 extends DbMigration {
       return false;
     }
 
-    $dynamicSegmentFiltersTable = esc_sql("{$this->prefix}dynamic_segment_filters");
+    $dynamicSegmentFiltersTable = "{$this->prefix}dynamic_segment_filters";
     $filterType = DynamicSegmentFilterData::TYPE_EMAIL;
-    $dynamicSegmentFilters = $wpdb->get_results("
+
+    $dynamicSegmentFilters = $wpdb->get_results($wpdb->prepare("
       SELECT `id`, `filter_data`, `filter_type`, `action`
-      FROM {$dynamicSegmentFiltersTable}
-      WHERE `filter_type` = '{$filterType}'
-    ", ARRAY_A);
+      FROM %i
+      WHERE `filter_type` = %s
+    ", $dynamicSegmentFiltersTable, $filterType), ARRAY_A);
 
     foreach ($dynamicSegmentFilters as $dynamicSegmentFilter) {
       if (!is_array($dynamicSegmentFilter)) {
@@ -975,9 +975,10 @@ class Migration_20221028_105818 extends DbMigration {
       return;
     }
     global $wpdb;
-    $table = esc_sql($this->getTableName(NewsletterLinkEntity::class));
+
     $wpdb->query($wpdb->prepare(
-      "UPDATE `$table` SET `url` = %s WHERE `url` = %s;",
+      "UPDATE %i SET `url` = %s WHERE `url` = %s",
+      $this->getTableName(NewsletterLinkEntity::class),
       NewsletterLinkEntity::INSTANT_UNSUBSCRIBE_LINK_SHORT_CODE,
       NewsletterLinkEntity::UNSUBSCRIBE_LINK_SHORT_CODE
     ));
@@ -1016,17 +1017,16 @@ class Migration_20221028_105818 extends DbMigration {
     if (version_compare($this->getDbVersion('3.38.2'), '3.38.1', '>')) {
       return;
     }
+
     $premiumTableName = $wpdb->prefix . 'mailpoet_premium_newsletter_extra_data';
     $premiumTableExists = $this->tableExists($premiumTableName);
     if ($premiumTableExists) {
-      $table = esc_sql($this->getTableName(NewsletterEntity::class));
-      $query = "
+      $wpdb->query($wpdb->prepare("
         UPDATE
-          `{$table}` as n
-        JOIN `$premiumTableName` as ped ON n.id=ped.newsletter_id
+          %i as n
+        JOIN %i as ped ON n.id=ped.newsletter_id
           SET n.ga_campaign = ped.ga_campaign
-      ";
-      $wpdb->query($query);
+      ", $this->getTableName(NewsletterEntity::class), $premiumTableName));
     }
     return true;
   }
@@ -1037,12 +1037,12 @@ class Migration_20221028_105818 extends DbMigration {
     if (version_compare($this->getDbVersion('3.42.1'), '3.42.0', '>')) {
       return false;
     }
-    $table = esc_sql($this->getTableName(SubscriberEntity::class));
-    $query = $wpdb->prepare(
-      "UPDATE `{$table}` SET last_subscribed_at = GREATEST(COALESCE(confirmed_at, 0), COALESCE(created_at, 0)) WHERE status != %s AND last_subscribed_at IS NULL;",
+
+    $wpdb->query($wpdb->prepare(
+      "UPDATE %i SET last_subscribed_at = GREATEST(COALESCE(confirmed_at, 0), COALESCE(created_at, 0)) WHERE status != %s AND last_subscribed_at IS NULL",
+      $this->getTableName(SubscriberEntity::class),
       SubscriberEntity::STATUS_UNCONFIRMED
-    );
-    $wpdb->query($query);
+    ));
     return true;
   }
 
