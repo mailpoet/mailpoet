@@ -223,14 +223,16 @@ class WooCommerce {
       return;
     }
     global $wpdb;
-    $subscribersTableName = esc_sql($this->subscribersRepository->getTableName());
-    $mailpoetEmailColumn = $wpdb->get_row(
-      "SHOW FULL COLUMNS FROM " . $subscribersTableName . " WHERE Field = 'email'"
-    );
+
+    $mailpoetEmailColumn = $wpdb->get_row($wpdb->prepare(
+      "SHOW FULL COLUMNS FROM %i WHERE Field = 'email'",
+      $this->subscribersRepository->getTableName()
+    ));
     $this->mailpoetEmailCollation = $mailpoetEmailColumn->Collation; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    $wpPostmetaValueColumn = $wpdb->get_row(
-      "SHOW FULL COLUMNS FROM " . $wpdb->postmeta . " WHERE Field = 'meta_value'"
-    );
+    $wpPostmetaValueColumn = $wpdb->get_row($wpdb->prepare(
+      "SHOW FULL COLUMNS FROM %i WHERE Field = 'meta_value'",
+      $wpdb->postmeta
+    ));
     $this->wpPostmetaValueCollation = $wpPostmetaValueColumn->Collation; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
