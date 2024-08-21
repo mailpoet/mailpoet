@@ -51,25 +51,22 @@ class AutomationRunLogStorage {
       WHERE $whereCondition
       GROUP BY log.step_id";
 
-    $sql = $versionId ? $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'), $versionId)
-      : $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'));
+    $sql = $versionId ?
+      $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'), $versionId) : // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with placeholders
+      $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s')); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with placeholders
 
     $sql = is_string($sql) ? $sql : "";
-    $results = $this->wpdb->get_results($sql, ARRAY_A);
+
+    $results = $this->wpdb->get_results($sql, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with placeholders
     return is_array($results) ? $results : [];
   }
 
   public function getAutomationRunLog(int $id): ?AutomationRunLog {
-    $table = esc_sql($this->table);
-    /** @var literal-string $sql */
-    $sql = "SELECT * FROM $table WHERE id = %d";
-    $query = $this->wpdb->prepare($sql, $id);
+    $wpdb = $this->wpdb;
 
-    if (!is_string($query)) {
-      throw InvalidStateException::create();
-    }
-
-    $result = $this->wpdb->get_row($query, ARRAY_A);
+    $result = $wpdb->get_row((string)$wpdb->prepare("
+      SELECT * FROM %i WHERE id = %d
+    ", $this->table, $id), ARRAY_A);
 
     if ($result) {
       $data = (array)$result;
@@ -79,14 +76,11 @@ class AutomationRunLogStorage {
   }
 
   public function getAutomationRunLogByRunAndStepId(int $runId, string $stepId): ?AutomationRunLog {
-    $table = esc_sql($this->table);
-    /** @var literal-string $sql */
-    $sql = "SELECT * FROM $table WHERE automation_run_id = %d AND step_id = %s";
-    $query = $this->wpdb->prepare($sql, $runId, $stepId);
-    if (!is_string($query)) {
-      throw InvalidStateException::create();
-    }
-    $result = $this->wpdb->get_row($query, ARRAY_A);
+    $wpdb = $this->wpdb;
+
+    $result = $wpdb->get_row((string)$wpdb->prepare("
+      SELECT * FROM %i WHERE automation_run_id = %d AND step_id = %s
+    ", $this->table, $runId, $stepId), ARRAY_A);
     return $result ? AutomationRunLog::fromArray((array)$result) : null;
   }
 
@@ -96,21 +90,14 @@ class AutomationRunLogStorage {
    * @throws InvalidStateException
    */
   public function getLogsForAutomationRun(int $automationRunId): array {
-    $table = esc_sql($this->table);
-    /** @var literal-string $sql */
-    $sql = "
+    $wpdb = $this->wpdb;
+
+    $results = $wpdb->get_results((string)$wpdb->prepare("
       SELECT *
-      FROM $table
+      FROM %i
       WHERE automation_run_id = %d
       ORDER BY id ASC
-    ";
-    $query = $this->wpdb->prepare($sql, $automationRunId);
-
-    if (!is_string($query)) {
-      throw InvalidStateException::create();
-    }
-
-    $results = $this->wpdb->get_results($query, ARRAY_A);
+    ", $this->table, $automationRunId), ARRAY_A);
 
     if (!is_array($results)) {
       throw InvalidStateException::create();
@@ -127,8 +114,7 @@ class AutomationRunLogStorage {
   }
 
   public function truncate(): void {
-    $table = esc_sql($this->table);
-    $sql = "TRUNCATE $table";
-    $this->wpdb->query($sql);
+    $wpdb = $this->wpdb;
+    $wpdb->query((string)$wpdb->prepare("TRUNCATE %i", $this->table));
   }
 }

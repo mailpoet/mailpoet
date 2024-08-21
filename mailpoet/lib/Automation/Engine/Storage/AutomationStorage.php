@@ -82,8 +82,8 @@ class AutomationStorage {
       WHERE automation_id = %d
       ORDER BY id DESC
     ";
-    $query = (string)$this->wpdb->prepare($sql, $automationId);
-    $data = $this->wpdb->get_results($query, ARRAY_A);
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- This is safe because the only variable is the table name which is known
+    $data = $this->wpdb->get_results((string)$this->wpdb->prepare($sql, $automationId), ARRAY_A);
     return is_array($data) ? array_map(
       function($row): array {
         /** @var array{id: string, created_at: string} $row */
@@ -114,8 +114,8 @@ class AutomationStorage {
       WHERE v.automation_id = a.id AND v.id IN (" . implode(',', array_fill(0, count($versionIds), '%d')) . ")
       ORDER BY v.id DESC
     ";
-    $query = (string)$this->wpdb->prepare($sql, ...$versionIds);
-    $data = $this->wpdb->get_results($query, ARRAY_A);
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- This is safe because table names are known and ids are integers
+    $data = $this->wpdb->get_results((string)$this->wpdb->prepare($sql, ...$versionIds), ARRAY_A);
     return is_array($data) ? array_map(
       function($row): Automation {
         return Automation::fromArray((array)$row);
@@ -140,8 +140,8 @@ class AutomationStorage {
       ORDER BY v.id DESC
       LIMIT 1
     ";
-    $query = (string)$this->wpdb->prepare($sql, $automationId);
-    $data = $this->wpdb->get_row($query, ARRAY_A);
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- This is safe because the only variables are the tables name which are known
+    $data = $this->wpdb->get_row((string)$this->wpdb->prepare($sql, $automationId), ARRAY_A);
     return $data ? Automation::fromArray((array)$data) : null;
   }
 
@@ -163,8 +163,8 @@ class AutomationStorage {
       ORDER BY a.id DESC
     ";
 
-    $query = $status ? (string)$this->wpdb->prepare($sql, ...$status) : $sql;
-    $data = $this->wpdb->get_results($query, ARRAY_A);
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table names are sanitized and dynamic values are prepared with placeholders
+    $data = $this->wpdb->get_results($status ? (string)$this->wpdb->prepare($sql, ...$status) : $sql, ARRAY_A);
     return array_map(function ($automationData) {
       /** @var array $automationData - for PHPStan because it conflicts with expected callable(mixed): mixed)|null */
       return Automation::fromArray($automationData);
@@ -192,18 +192,20 @@ class AutomationStorage {
       ORDER BY a.id DESC
     ";
     $query = (string)$this->wpdb->prepare(
-      $sql,
+      $sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table names are sanitized and dynamic values are prepared with placeholders
       array_merge(
         [$subject->getHash()],
         $runStatus ?? [],
         isset($inTheLastSeconds) ? [intval($inTheLastSeconds)] : [],
       )
     );
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table names are sanitized and dynamic values are prepared with placeholders
     return array_map('intval', $this->wpdb->get_col($query));
   }
 
   public function getAutomationCount(): int {
     $automationsTable = esc_sql($this->automationsTable);
+    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- The table name is sanitized
     return (int)$this->wpdb->get_var("SELECT COUNT(*) FROM $automationsTable");
   }
 
@@ -220,8 +222,8 @@ class AutomationStorage {
         WHERE a.status = %s AND a.id = t.automation_id
         ORDER BY trigger_key DESC
       ";
-    $query = (string)$this->wpdb->prepare($sql, Automation::STATUS_ACTIVE);
-    return $this->wpdb->get_col($query);
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table names are sanitized and dynamic values are prepared with placeholders
+    return $this->wpdb->get_col((string)$this->wpdb->prepare($sql, Automation::STATUS_ACTIVE));
   }
 
   /** @return Automation[] */
@@ -247,9 +249,9 @@ class AutomationStorage {
           SELECT MAX(id) FROM $versionsTable WHERE automation_id = v.automation_id
         )
       ";
-    $query = (string)$this->wpdb->prepare($sql, Automation::STATUS_ACTIVE, $triggerKey);
 
-    $data = $this->wpdb->get_results($query, ARRAY_A);
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table names are sanitized and dynamic values are prepared with placeholders
+    $data = $this->wpdb->get_results((string)$this->wpdb->prepare($sql, Automation::STATUS_ACTIVE, $triggerKey), ARRAY_A);
     return array_map(function ($automationData) {
       /** @var array $automationData - for PHPStan because it conflicts with expected callable(mixed): mixed)|null */
       return Automation::fromArray($automationData);
@@ -279,9 +281,9 @@ class AutomationStorage {
         WHERE a.status = %s
         AND v.steps LIKE %s
       ";
-    $query = (string)$this->wpdb->prepare($sql, $queryArgs);
 
-    return (int)$this->wpdb->get_var($query);
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table names are sanitized and dynamic values are prepared with placeholders
+    return (int)$this->wpdb->get_var((string)$this->wpdb->prepare($sql, $queryArgs));
   }
 
   public function deleteAutomation(Automation $automation): void {
@@ -297,9 +299,9 @@ class AutomationStorage {
           WHERE automation_id = %d
         )
       ";
-    $runLogsQuery = (string)$this->wpdb->prepare($sql, $automationId);
 
-    $logsDeleted = $this->wpdb->query($runLogsQuery);
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- This is safe because the only variables are the tables name which are known
+    $logsDeleted = $this->wpdb->query((string)$this->wpdb->prepare($sql, $automationId));
     if ($logsDeleted === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
@@ -327,18 +329,21 @@ class AutomationStorage {
 
   public function truncate(): void {
     $automationsTable = esc_sql($this->automationsTable);
+    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- The table name is known and sanitized
     $result = $this->wpdb->query("TRUNCATE {$automationsTable}");
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
 
     $versionsTable = esc_sql($this->versionsTable);
+    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- The table name is known and sanitized
     $result = $this->wpdb->query("TRUNCATE {$versionsTable}");
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }
 
     $triggersTable = esc_sql($this->triggersTable);
+    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- The table name is known and sanitized
     $result = $this->wpdb->query("TRUNCATE {$triggersTable}");
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
@@ -373,6 +378,7 @@ class AutomationStorage {
   }
 
   private function insertAutomationTriggers(int $automationId, Automation $automation): void {
+    $wpdb = $this->wpdb;
     $triggerKeys = [];
     foreach ($automation->getSteps() as $step) {
       if ($step->getType() === Step::TYPE_TRIGGER) {
@@ -380,23 +386,19 @@ class AutomationStorage {
       }
     }
 
-    $triggersTable = esc_sql($this->triggersTable);
-
     // insert/update
     if ($triggerKeys) {
       $placeholders = implode(',', array_fill(0, count($triggerKeys), '(%d, %s)'));
-      /** @var literal-string $sql */
-      $sql = "INSERT IGNORE INTO {$triggersTable} (automation_id, trigger_key) VALUES {$placeholders}";
-      $query = (string)$this->wpdb->prepare(
-        $sql,
+
+      $result = $wpdb->query((string)$wpdb->prepare(
+        "INSERT IGNORE INTO %i (automation_id, trigger_key) VALUES {$placeholders}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- The variable is prepared with placeholders
         array_merge(
+          [$this->triggersTable],
           ...array_map(function (string $key) use ($automationId) {
             return [$automationId, $key];
           }, $triggerKeys)
         )
-      );
-
-      $result = $this->wpdb->query($query);
+      ));
       if ($result === false) {
         throw Exceptions::databaseError($this->wpdb->last_error);
       }
@@ -405,16 +407,16 @@ class AutomationStorage {
     // delete
     $placeholders = implode(',', array_fill(0, count($triggerKeys), '%s'));
     if ($triggerKeys) {
-      /** @var literal-string $sql */
-      $sql = "DELETE FROM {$triggersTable} WHERE automation_id = %d AND trigger_key NOT IN ({$placeholders})";
-      $query = (string)$this->wpdb->prepare($sql, array_merge([$automationId], $triggerKeys));
+      $result = $wpdb->query((string)$wpdb->prepare(
+        "DELETE FROM %i WHERE automation_id = %d AND trigger_key NOT IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- The variable is prepared with placeholders
+        $this->triggersTable,
+        ...array_merge([$automationId], $triggerKeys) // The merge is here to avoid warning PHPCS about invalid number of arguments in prepare
+      ));
     } else {
-      /** @var literal-string $sql */
-      $sql = "DELETE FROM {$triggersTable} WHERE automation_id = %d";
-      $query = (string)$this->wpdb->prepare($sql, $automationId);
+      $result = $wpdb->query((string)$wpdb->prepare("
+        DELETE FROM %i WHERE automation_id = %d
+      ", $this->triggersTable, $automationId));
     }
-
-    $result = $this->wpdb->query($query);
     if ($result === false) {
       throw Exceptions::databaseError($this->wpdb->last_error);
     }

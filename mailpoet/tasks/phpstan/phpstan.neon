@@ -34,6 +34,9 @@ parameters:
     - '/(Method|Property|Function) (?!MailPoet\\Automation\\).*has no (return )?type specified/'
     - '/(Method|Function) (?!MailPoet\\Automation\\).*has parameter (\$[_A-Z]{1}[_a-z]+)? with no type (specified)?/i'
 
+    # exclude specific warning about $wpdb
+    - '/Parameter #1 \$query of method wpdb::prepare\(\) expects literal-string, non-falsy-string given./'
+
     - # Primary keys ScheduledTaskSubscriberEntity of are foreign keys and foreign keys may be null because of missing related record
       message: '#Property MailPoet\\Entities\\[a-zA-Z]+::\$[a-z]+ type mapping mismatch: property can contain MailPoet\\Entities\\[a-zA-Z]+\|null but database expects MailPoet\\Entities\\[a-zA-Z]+.#'
       path: ../../lib/Entities/ScheduledTaskSubscriberEntity.php
@@ -42,7 +45,11 @@ parameters:
     - '/Call to method getName\(\) on an unknown class _generated\\([a-zA-Z])*Cookie/' # codeception generate incorrect return type in ../../tests/_support/_generated
     -
       message: "#^Cannot cast string|void to string\\.$#"
-      count: 11
+      count: 4
+      path: ../../lib/Automation/Engine/Storage/AutomationRunLogStorage.php
+    -
+      message: "#^Cannot cast string|void to string\\.$#"
+      count: 13
       path: ../../lib/Automation/Engine/Storage/AutomationRunStorage.php
     -
       message: "#^Cannot cast string|void to string\\.$#"
