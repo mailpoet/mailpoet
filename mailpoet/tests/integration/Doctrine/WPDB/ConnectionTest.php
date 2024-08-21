@@ -101,13 +101,23 @@ class ConnectionTest extends MailPoetTest {
   }
 
   public function testTransactionRollBack(): void {
+    global $wpdb;
+    $tableStatus = (array)$wpdb->get_row($wpdb->prepare("SHOW TABLE STATUS LIKE %s", self::TEST_TABLE_NAME));
+
     $connection = new Connection();
 
     $this->assertTrue($connection->beginTransaction());
     $connection->exec(sprintf("INSERT INTO %s (value) VALUES ('test')", self::TEST_TABLE_NAME));
 
     $this->assertTrue($connection->rollBack());
-    $this->assertSame('0', $connection->query(sprintf('SELECT COUNT(*) FROM %s', self::TEST_TABLE_NAME))->fetchOne());
+    $rowCount = $connection->query(sprintf('SELECT COUNT(*) FROM %s', self::TEST_TABLE_NAME))->fetchOne();
+    if ($tableStatus['Engine'] === 'MyISAM') {
+      // MyISAM does not support transactions. It ignores transaction commands as noop, so the insert is not rolled back.
+      $this->assertSame('1', $rowCount);
+    } else {
+      $this->assertSame('0', $rowCount);
+    }
+
   }
 
   public function testQuote(): void {
