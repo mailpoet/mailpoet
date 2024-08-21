@@ -43,8 +43,8 @@ class Migration_20230215_050813 extends DbMigration {
     if (!$this->columnExists($runTable, 'subjects')) {
       return;
     }
-    $sql = "SELECT id,subjects FROM $runTable";
-    $results = $wpdb->get_results($sql, ARRAY_A);
+
+    $results = $wpdb->get_results($wpdb->prepare("SELECT id,subjects FROM %i", $runTable), ARRAY_A);
     if (!is_array($results) || !$results) {
       return;
     }
@@ -62,13 +62,11 @@ class Migration_20230215_050813 extends DbMigration {
       foreach ($subjects as $subject) {
         $values[] = (string)$wpdb->prepare("(%d,%s,%s)", $result['id'], $subject['key'], json_encode($subject['args']));
       }
-      $sql = sprintf("INSERT INTO $subjectTable (`automation_run_id`, `key`, `args`) VALUES %s", implode(',', $values));
-      if ($wpdb->query($sql) === false) {
+      if ($wpdb->query($wpdb->prepare("INSERT INTO %i (`automation_run_id`, `key`, `args`) VALUES %s", $subjectTable, implode(',', $values))) === false) {
         continue;
       }
 
-      $sql = $wpdb->prepare('UPDATE ' . $runTable . ' SET subjects = NULL WHERE id = %d', $result['id']);
-      $wpdb->query($sql);
+      $wpdb->query($wpdb->prepare("UPDATE %i SET subjects = NULL WHERE id = %d", $runTable, $result['id']));
     }
   }
 
@@ -79,6 +77,6 @@ class Migration_20230215_050813 extends DbMigration {
       return;
     }
 
-    $wpdb->query("ALTER TABLE $tableName DROP COLUMN subjects");
+    $wpdb->query($wpdb->prepare("ALTER TABLE %i DROP COLUMN subjects", $tableName));
   }
 }
