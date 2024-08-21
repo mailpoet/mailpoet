@@ -798,6 +798,10 @@ class RoboFile extends \Robo\Tasks {
     return $this->_exec('./tools/semgrep.sh lib/ lib-3rd-party/');
   }
 
+  public function qaQitSecurity() {
+    return $this->_exec('./vendor/bin/qit run:security mailpoet --zip=mailpoet.zip --wait');
+  }
+
   public function svnCheckout() {
     $svnDir = ".mp_svn";
 
