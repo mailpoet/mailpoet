@@ -1,8 +1,8 @@
 import { ReactElement } from 'react';
-import { t } from 'common/functions';
 import { Radio } from 'common/form/radio/radio';
 import { useSetting } from 'settings/store/hooks';
 import { Label, Inputs } from 'settings/components';
+import { __ } from '@wordpress/i18n';
 
 export function HumanAndMachineOpens(): ReactElement {
   const [opens, setOpensMode] = useSetting('tracking', 'opens');
@@ -10,8 +10,11 @@ export function HumanAndMachineOpens(): ReactElement {
   return (
     <>
       <Label
-        title={t('humanAndMachineOpensTitle')}
-        description={t('humanAndMachineOpensDescription')}
+        title={__('Human and machine opens', 'mailpoet')}
+        description={__(
+          'Choose how human and machine opens should be displayed.',
+          'mailpoet',
+        )}
         htmlFor="opens_mode"
       />
       <Inputs>
@@ -24,7 +27,10 @@ export function HumanAndMachineOpens(): ReactElement {
             automationId="opens-merged-radio"
           />
           <label htmlFor="opens-merged">
-            {t('humanAndMachineOpensMerged')}
+            {__(
+              'Merged – both are counted as total opens. Similar to other email marketing tools.',
+              'mailpoet',
+            )}
           </label>
         </div>
         <div className="mailpoet-settings-inputs-row">
@@ -36,7 +42,10 @@ export function HumanAndMachineOpens(): ReactElement {
             automationId="opens-separated-radio"
           />
           <label htmlFor="opens-separated">
-            {t('humanAndMachineOpensSeparated')}
+            {__(
+              'Separated – only human opens are counted as total opens. More accurate, but the numbers tend to be lower.',
+              'mailpoet',
+            )}
           </label>
         </div>
       </Inputs>
