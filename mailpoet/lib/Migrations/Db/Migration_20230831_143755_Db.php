@@ -2,6 +2,7 @@
 
 namespace MailPoet\Migrations\Db;
 
+use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Migrator\DbMigration;
 
 class Migration_20230831_143755_Db extends DbMigration {
@@ -18,19 +19,40 @@ class Migration_20230831_143755_Db extends DbMigration {
     // add "step_type" column
     if (!$this->columnExists($logsTable, 'step_type')) {
       $this->connection->executeStatement("ALTER TABLE $logsTable ADD COLUMN step_type VARCHAR(255) NOT NULL DEFAULT 'action' AFTER `step_id`");
-      $this->connection->executeStatement("ALTER TABLE $logsTable ALTER COLUMN step_type DROP DEFAULT");
+
+      // Temporarily use a full column definition to drop default in WP Playground.
+      // DROP DEFAULT is not yet supported by the SQLite integration.
+      if (Connection::isSQLite()) {
+        $this->connection->executeStatement("ALTER TABLE $logsTable CHANGE COLUMN step_type step_type VARCHAR(255) NOT NULL");
+      } else {
+        $this->connection->executeStatement("ALTER TABLE $logsTable ALTER COLUMN step_type DROP DEFAULT");
+      }
     }
 
     // add "step_key" column
     if (!$this->columnExists($logsTable, 'step_key')) {
       $this->connection->executeStatement("ALTER TABLE $logsTable ADD COLUMN step_key VARCHAR(255) NOT NULL DEFAULT '' AFTER `step_type`");
-      $this->connection->executeStatement("ALTER TABLE $logsTable ALTER COLUMN step_key DROP DEFAULT");
+
+      // Temporarily use a full column definition to drop default in WP Playground.
+      // DROP DEFAULT is not yet supported by the SQLite integration.
+      if (Connection::isSQLite()) {
+        $this->connection->executeStatement("ALTER TABLE $logsTable CHANGE COLUMN step_key step_key VARCHAR(255) NOT NULL");
+      } else {
+        $this->connection->executeStatement("ALTER TABLE $logsTable ALTER COLUMN step_key DROP DEFAULT");
+      }
     }
 
     // add "run_number" column
     if (!$this->columnExists($logsTable, 'run_number')) {
       $this->connection->executeStatement("ALTER TABLE $logsTable ADD COLUMN run_number INT NOT NULL DEFAULT 1 AFTER `updated_at`");
-      $this->connection->executeStatement("ALTER TABLE $logsTable ALTER COLUMN run_number DROP DEFAULT");
+
+      // Temporarily use a full column definition to drop default in WP Playground.
+      // DROP DEFAULT is not yet supported by the SQLite integration.
+      if (Connection::isSQLite()) {
+        $this->connection->executeStatement("ALTER TABLE $logsTable CHANGE COLUMN run_number run_number INT NOT NULL");
+      } else {
+        $this->connection->executeStatement("ALTER TABLE $logsTable ALTER COLUMN run_number DROP DEFAULT");
+      }
     }
 
     // go through automation data and backfill step keys and trigger logs
