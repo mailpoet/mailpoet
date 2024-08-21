@@ -857,6 +857,30 @@ jobs:
           root: /home/circleci/mailpoet
           paths:
             - mailpoet/release_zip_build_number.txt
+            - mailpoet/mailpoet.zip
+  qit_security_scan:
+    executor: wpcli_php_latest
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run:
+          name: 'Set up environment'
+          command: |
+            # Copy built ZIP to local directory for easier access from QIT
+            cp /home/circleci/mailpoet/mailpoet.zip .
+            # Authenticate in QIT
+            ./vendor/bin/qit partner:add --user="${QIT_PARTNER_USER}" --application_password="${QIT_PARTNER_SECRET}"
+      - run:
+          name: 'QIT Security Test'
+          command: ./do qa:qit-security | tee tests/_output/qit-security
+      - run:
+          name: 'Retrieve test results'
+          command: |
+            # Download HTML report from QIT servers
+            grep "Result Url" tests/_output/qit-security | awk '{ print $3 }' | xargs curl -o tests/_output/report.html
+          when: always
+      - store_artifacts:
+          path: tests/_output
 
 workflows:
   build_and_test:
@@ -1034,6 +1058,10 @@ workflows:
             - acceptance_tests_woo_hpos_sync_on
             - acceptance_tests_woo_hpos_off
             - acceptance_tests_blockbased_theme
+      - qit_security_scan:
+          <<: *slack-fail-post-step
+          requires:
+            - build_release_zip
 
   nightly:
     triggers:
