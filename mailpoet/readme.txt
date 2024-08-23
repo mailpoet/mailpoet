@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.5
 Tested up to: 6.6
-Stable tag: 5.0.0
+Stable tag: 5.0.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -229,9 +229,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.0.0 - 2024-08-19 =
-* Changed: replaced PDO database connection in favor of WordPress's native wpdb;
-* Fixed: dual buttons in MS Outlook;
-* Fixed: false error notice about MSS connection for editor users.
+= 5.0.1 - 2024-08-23 =
+* Fixed: incorrect date in the scheduling calendar on the send page.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)

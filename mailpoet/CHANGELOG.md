@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.0.1 - 2024-08-23 =
+
+- Fixed: incorrect date in the scheduling calendar on the send page.
+
 = 5.0.0 - 2024-08-19 =
 
 - Changed: replaced PDO database connection in favor of WordPress's native wpdb;
