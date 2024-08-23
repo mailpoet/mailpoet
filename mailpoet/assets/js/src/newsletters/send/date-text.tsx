@@ -1,10 +1,10 @@
 import { Component, SyntheticEvent } from 'react';
+import Moment from 'moment';
 import { __, _x } from '@wordpress/i18n';
 import { registerLocale } from 'react-datepicker';
 import locale from 'date-fns/locale/en-US';
 import { Datepicker } from 'common/datepicker/datepicker';
 import { MailPoet } from 'mailpoet';
-import { DateOptions } from 'date';
 
 /**
  * This function is a copy of the buildLocalizeFn function from date-fns (date-fns/locale/_lib/buildLocalizeFn)
@@ -134,10 +134,10 @@ class DateText extends Component<DateTextProps> {
   onChange = (value: Date, event) => {
     const changeEvent: DateTextEvent = event;
     // Swap display format to storage format
-    const storageDate = this.getStorageDate(value);
+    const formattedDate = this.getAsStringInFormat(value);
 
     changeEvent.target.name = this.getFieldName();
-    changeEvent.target.value = storageDate;
+    changeEvent.target.value = formattedDate;
     this.props.onChange(changeEvent);
   };
 
@@ -155,19 +155,10 @@ class DateText extends Component<DateTextProps> {
       .replace(/\]/g, '');
   };
 
-  getDate = (date: string) => {
-    const formatting = {
-      parseFormat: this.props.storageFormat,
-    } as DateOptions;
-    return MailPoet.Date.toDate(date, formatting);
-  };
+  getDate = (date: string) => Moment(date).toDate();
 
-  getStorageDate = (date: Date) => {
-    const formatting = {
-      format: this.props.storageFormat,
-    };
-    return MailPoet.Date.format(date, formatting);
-  };
+  getAsStringInFormat = (date: Date) =>
+    Moment(date).format(MailPoet.Date.convertFormat(this.props.storageFormat));
 
   render() {
     return (
