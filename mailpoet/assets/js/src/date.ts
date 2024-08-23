@@ -69,9 +69,7 @@ export const MailPoetDate: {
     }
     return momentDate.format(this.convertFormat(this.options.format));
   },
-  toDate: function toDate(date: MomentInput, opts?: DateOptions): Date {
-    const options = opts || {};
-    this.init(options);
+  toDate: function toDate(date: MomentInput): Date {
     return Moment.utc(date).toDate();
   },
   short: function short(date: MomentInput): string {
