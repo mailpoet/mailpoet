@@ -1,4 +1,4 @@
-import { t } from 'common/functions';
+import { __ } from '@wordpress/i18n';
 import { Input } from 'common/form/input/input';
 import { Radio } from 'common/form/radio/radio';
 import { useSetting, useSelector } from 'settings/store/hooks';
@@ -11,17 +11,20 @@ export function TaskScheduler() {
   return (
     <>
       <Label
-        title={t('taskCron')}
+        title={__('Newsletter task scheduler (cron)', 'mailpoet')}
         description={
           <>
-            {t('taskCronDescription')}{' '}
+            {__('Select what will activate your newsletter queue.', 'mailpoet')}{' '}
             <a
               className="mailpoet-link"
               href="https://kb.mailpoet.com/article/129-what-is-the-newsletter-task-scheduler"
               rel="noopener noreferrer"
               target="_blank"
             >
-              {t('readMore')}
+              {
+                // translators: support article link label
+                __('Read more.', 'mailpoet')
+              }
             </a>
           </>
         }
@@ -37,7 +40,7 @@ export function TaskScheduler() {
             automationId="action_scheduler_cron_radio"
           />
           <label htmlFor="cron_trigger-method-action-scheduler">
-            {t('actionSchedulerCron')}
+            {__('Action Scheduler (recommended)', 'mailpoet')}
           </label>
         </div>
         <div className="mailpoet-settings-inputs-row">
@@ -49,7 +52,7 @@ export function TaskScheduler() {
             automationId="wordress_cron_radio"
           />
           <label htmlFor="cron_trigger-method-wordpress">
-            {t('websiteVisitors')}
+            {__('Visitors to your website', 'mailpoet')}
           </label>
         </div>
         <div className="mailpoet-settings-inputs-row">
@@ -60,12 +63,17 @@ export function TaskScheduler() {
             onCheck={setMethod}
             automationId="linux_cron_radio"
           />
-          <label htmlFor="cron_trigger-method-cron">{t('serverCron')}</label>
+          <label htmlFor="cron_trigger-method-cron">
+            {__('Server side cron (Linux cron)', 'mailpoet')}
+          </label>
         </div>
         {method === 'Linux Cron' && (
           <div className="mailpoet-settings-inputs-row">
             <div className="mailpoet-settings-inputs-row">
-              {t('addCommandToCrontab')}
+              {__(
+                'To use this option please add this command to your crontab:',
+                'mailpoet',
+              )}
             </div>
             <Input
               dimension="small"
@@ -74,7 +82,7 @@ export function TaskScheduler() {
               value={`php ${paths.plugin}/mailpoet-cron.php ${paths.root}`}
             />
             <div className="mailpoet-settings-inputs-row">
-              {t('withFrequency')}
+              {__('With the frequency of running it every minute:', 'mailpoet')}
             </div>
             <Input dimension="small" type="text" readOnly value="*/1 * * * *" />
           </div>
