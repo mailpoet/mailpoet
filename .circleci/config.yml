@@ -191,7 +191,7 @@ jobs:
       - run:
           name: Download additional WP Plugins for tests
           command: |
-            ./do download:woo-commerce-zip 9.1.4
+            ./do download:woo-commerce-zip 9.2.2
             ./do download:woo-commerce-subscriptions-zip 6.5.0
             ./do download:woo-commerce-memberships-zip 1.26.5
             ./do download:automate-woo-zip 6.0.31
@@ -1065,7 +1065,7 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_oldest
-          woo_core_version: 9.0.2
+          woo_core_version: 9.1.4
           woo_subscriptions_version: 6.4.1
           woo_memberships_version: 1.25.2
           automate_woo_version: 5.8.5
@@ -1106,7 +1106,7 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_oldest
-          woo_core_version: 9.0.2
+          woo_core_version: 9.1.4
           woo_subscriptions_version: 6.4.1
           woo_memberships_version: 1.25.2
           automate_woo_version: 5.8.5
@@ -1169,7 +1169,7 @@ workflows:
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_with_premium_oldest
-          woo_core_version: 9.0.2
+          woo_core_version: 9.1.4
           woo_subscriptions_version: 6.4.1
           woo_memberships_version: 1.25.2
           automate_woo_version: 5.8.5
@@ -1181,7 +1181,7 @@ workflows:
       - integration_tests:
           <<: *slack-fail-post-step
           name: integration_with_premium_oldest
-          woo_core_version: 9.0.2
+          woo_core_version: 9.1.4
           woo_subscriptions_version: 6.4.1
           woo_memberships_version: 1.25.2
           automate_woo_version: 5.8.5
