@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.5
 Tested up to: 6.6
-Stable tag: 5.0.1
+Stable tag: 5.0.2
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -230,7 +230,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.0.1 - 2024-08-23 =
-* Fixed: incorrect date in the scheduling calendar on the send page.
+= 5.0.2 - 2024-08-26 =
+* Added: Ukrainian translations;
+* Improved: error messages in automations;
+* Changed: human and machine opens are merged by default, old behavior can be restored in settings.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)
