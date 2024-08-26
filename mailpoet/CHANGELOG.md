@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.0.2 - 2024-08-26 =
+
+- Added: Ukrainian translations;
+- Improved: error messages in automations;
+- Changed: human and machine opens are merged by default, old behavior can be restored in settings.
+
 = 5.0.1 - 2024-08-23 =
 
 - Fixed: incorrect date in the scheduling calendar on the send page.
