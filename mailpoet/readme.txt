@@ -138,6 +138,7 @@ Please note:
 * Persian
 * Polish
 * Romanian
+* Ukrainian
 
 We welcome experienced translators to translate directly on [our Transifex project](https://www.transifex.com/wysija/mp3/). Please note that any translations submitted via the "Translating WordPress" website will not work.
 
