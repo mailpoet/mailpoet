@@ -158,7 +158,7 @@ class WooCommerceCategory implements Filter {
       'categories' => [],
     ];
     $categoryIds = $filterData->getArrayParam('category_ids');
-    $terms = $this->wp->getTerms('product_cat', ['include' => $categoryIds, 'hide_empty' => false]);
+    $terms = $this->wp->getTerms(['taxonomy' => 'product_cat', 'include' => $categoryIds, 'hide_empty' => false]);
     /** @var WP_Term[] $terms */
     foreach ($terms as $term) {
       $lookupData['categories'][$term->term_id] = $term->name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps

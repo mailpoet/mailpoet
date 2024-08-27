@@ -100,11 +100,10 @@ class WordPress {
 
   /**
    * @param array|string $args
-   * @param array|string $deprecated
    * @return WP_Term[]|int[]|string[]|string|WP_Error
    */
-  public function getTerms($args = [], $deprecated = '') {
-    return get_terms($args, $deprecated);
+  public function getTerms($args = []) {
+    return get_terms($args);
   }
 
   /**

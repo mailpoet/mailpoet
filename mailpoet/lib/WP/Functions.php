@@ -304,8 +304,8 @@ class Functions {
     return get_role($role);
   }
 
-  public function getSiteOption($option, $default = false, $deprecated = true) {
-    return get_site_option($option, $default, $deprecated);
+  public function getSiteOption($option, $default = false) {
+    return get_site_option($option, $default);
   }
 
   public function getSiteUrl($blogId = null, $path = '', $scheme = null) {
@@ -318,10 +318,9 @@ class Functions {
 
   /**
    * @param string|array $args
-   * @param string|array $deprecated
    */
-  public function getTerms($args = [], $deprecated = '') {
-    return get_terms($args, $deprecated);
+  public function getTerms($args = []) {
+    return get_terms($args);
   }
 
   /**
