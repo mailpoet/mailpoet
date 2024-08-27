@@ -2,7 +2,7 @@
  * Internal dependencies
  */
 import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
-import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.1.0/index.js';
 import { scenario, k6CloudID, projectName } from './config.js';
 import { newsletterListing } from './tests/newsletter-listing.js';
 import { subscribersListing } from './tests/subscribers-listing.js';
