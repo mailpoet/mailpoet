@@ -19,7 +19,8 @@ class DeleteNewsletterCest {
     $i->waitForNoticeAndClose('1 email was moved to the trash.');
     // click to select all newsletters
     $i->click('[data-automation-id="select_all"]');
-    $i->click('Move to trash');
+    $i->waitForElementVisible('[data-automation-id="action-trash"]');
+    $i->click('[data-automation-id="action-trash"]');
     $i->waitForNoticeAndClose('2 emails were moved to the trash.');
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
@@ -40,7 +41,8 @@ class DeleteNewsletterCest {
     $i->waitForText('1 email has been restored from the Trash.');
     // click to select all newsletters
     $i->click('[data-automation-id="select_all"]');
-    $i->click('Restore');
+    $i->waitForElementVisible('[data-automation-id="action-restore"]');
+    $i->click('[data-automation-id="action-restore"]');
     $i->waitForText('2 emails have been restored from the Trash.', 20);
     $i->changeGroupInListingFilter('all');
     $i->waitForText($newsletterName);
@@ -106,7 +108,8 @@ class DeleteNewsletterCest {
     $i->waitForText('All items on this page are selected.');
     $i->click('Select all items on all pages');
     $i->waitForText('All 22 items are selected.');
-    $i->click('Move to trash');
+    $i->waitForElementVisible('[data-automation-id="action-trash"]');
+    $i->click('[data-automation-id="action-trash"]');
     $i->waitForText('22 emails were moved to the trash.');
     $i->changeGroupInListingFilter('trash');
     $i->waitForText($newsletterName);
