@@ -3,12 +3,12 @@
  * External dependencies
  */
 import { sleep } from 'k6';
-import { browser } from 'k6/experimental/browser';
-import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.1.0/index.js';
+import { browser } from 'k6/browser';
+import { randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.5.0/index.js';
 import {
   expect,
   describe,
-} from 'https://jslib.k6.io/k6chaijs/4.3.4.2/index.js';
+} from 'https://jslib.k6.io/k6chaijs/4.5.0.0/index.js';
 
 /**
  * Internal dependencies
