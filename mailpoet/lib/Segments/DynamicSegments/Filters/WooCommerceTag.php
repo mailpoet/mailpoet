@@ -105,7 +105,7 @@ class WooCommerceTag implements Filter {
       'tags' => [],
     ];
     $tagIds = $filterData->getArrayParam('tag_ids');
-    $terms = $this->wp->getTerms('product_tag', ['include' => $tagIds, 'hide_empty' => false]);
+    $terms = $this->wp->getTerms(['taxonomy' => 'product_tag', 'include' => $tagIds, 'hide_empty' => false]);
     /** @var WP_Term[] $terms */
     foreach ($terms as $term) {
       $lookupData['tags'][$term->term_id] = $term->name; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
