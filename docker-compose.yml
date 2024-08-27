@@ -49,6 +49,7 @@ services:
     volumes:
       - './wordpress:/var/www/html'
       - './tsconfig.base.json:/var/www/html/wp-content/plugins/tsconfig.base.json:ro'
+      - './.npmrc:/var/www/html/wp-content/plugins/.npmrc'
       - './package.json:/var/www/html/wp-content/plugins/package.json'
       - './pnpm-lock.yaml:/var/www/html/wp-content/plugins/pnpm-lock.yaml'
       - './pnpm-workspace.yaml:/var/www/html/wp-content/plugins/pnpm-workspace.yaml'
