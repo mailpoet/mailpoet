@@ -5,7 +5,6 @@ namespace MailPoet\Automation\Integrations\WooCommerce\Fields;
 use DateTimeImmutable;
 use DateTimeZone;
 use MailPoet\Automation\Engine\Data\Field;
-use MailPoet\Automation\Engine\WordPress;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\CustomerPayload;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerce;
 use WC_Customer;
@@ -17,9 +16,6 @@ class CustomerOrderFieldsFactory {
   /** @var WooCommerce */
   private $wooCommerce;
 
-  /** @var WordPress */
-  private $wordPress;
-
   /** @var TermOptionsBuilder */
   private $termOptionsBuilder;
 
@@ -27,12 +23,10 @@ class CustomerOrderFieldsFactory {
   private $termParentsLoader;
 
   public function __construct(
-    WordPress $wordPress,
     WooCommerce $wooCommerce,
     TermOptionsBuilder $termOptionsBuilder,
     TermParentsLoader $termParentsLoader
   ) {
-    $this->wordPress = $wordPress;
     $this->wooCommerce = $wooCommerce;
     $this->termOptionsBuilder = $termOptionsBuilder;
     $this->termParentsLoader = $termParentsLoader;
@@ -189,122 +183,157 @@ class CustomerOrderFieldsFactory {
   }
 
   private function getRecentSpentTotal(WC_Customer $customer, int $inTheLastSeconds): float {
-    $wpdb = $this->wordPress->getWpdb();
+    global $wpdb;
     $statuses = array_map(function (string $status) {
       return "wc-$status";
     }, $this->wooCommerce->wcGetIsPaidStatuses());
-    $statusesPlaceholder = implode(',', array_fill(0, count($statuses), '%s'));
 
     if ($this->wooCommerce->isWooCommerceCustomOrdersTableEnabled()) {
-      /** @var literal-string $query */
-      $query = "
-        SELECT SUM(o.total_amount)
-        FROM {$wpdb->prefix}wc_orders o
-        WHERE o.customer_id = %d
-        AND o.status IN ($statusesPlaceholder)
-        AND o.date_created_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
-      ";
-      // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
-      $statement = (string)$wpdb->prepare($query, array_merge([$customer->get_id()], $statuses, [$inTheLastSeconds]));
-    } else {
-      /** @var literal-string $query */
-      $query = "
-        SELECT SUM(pm_total.meta_value)
-        FROM {$wpdb->posts} p
-        LEFT JOIN {$wpdb->postmeta} pm_user ON p.ID = pm_user.post_id AND pm_user.meta_key = '_customer_user'
-        LEFT JOIN {$wpdb->postmeta} pm_total ON p.ID = pm_total.post_id AND pm_total.meta_key = '_order_total'
-        WHERE p.post_type = 'shop_order'
-        AND p.post_status IN ($statusesPlaceholder)
-        AND pm_user.meta_value = %d
-        AND p.post_date_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
-      ";
-      // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
-      $statement = (string)$wpdb->prepare($query, array_merge($statuses, [$customer->get_id(), $inTheLastSeconds]));
+      return (float)$wpdb->get_var(
+        $wpdb->prepare(
+          '
+            SELECT SUM(o.total_amount)
+            FROM %i o
+            WHERE o.customer_id = %d
+            AND o.status IN (' . implode(',', array_fill(0, count($statuses), '%s')) . ')
+            AND o.date_created_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
+          ',
+          array_merge(
+            [
+              $wpdb->prefix . 'wc_orders',
+              $customer->get_id(),
+            ],
+            $statuses,
+            [$inTheLastSeconds]
+          )
+        )
+      );
     }
-    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table names are sanitized and values are prepared with the placeholder
-    return (float)$wpdb->get_var($statement);
+
+    return (float)$wpdb->get_var(
+      $wpdb->prepare(
+        "
+          SELECT SUM(pm_total.meta_value)
+          FROM {$wpdb->posts} p
+          LEFT JOIN {$wpdb->postmeta} pm_user ON p.ID = pm_user.post_id AND pm_user.meta_key = '_customer_user'
+          LEFT JOIN {$wpdb->postmeta} pm_total ON p.ID = pm_total.post_id AND pm_total.meta_key = '_order_total'
+          WHERE p.post_type = 'shop_order'
+          AND p.post_status IN (" . implode(',', array_fill(0, count($statuses), '%s')) . ")
+          AND pm_user.meta_value = %d
+          AND p.post_date_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
+        ",
+        array_merge(
+          $statuses,
+          [$customer->get_id(), $inTheLastSeconds]
+        )
+      )
+    );
   }
 
   private function getRecentOrderCount(WC_Customer $customer, int $inTheLastSeconds): int {
-    $wpdb = $this->wordPress->getWpdb();
+    global $wpdb;
     $statuses = array_keys($this->wooCommerce->wcGetOrderStatuses());
-    $statusesPlaceholder = implode(',', array_fill(0, count($statuses), '%s'));
 
     if ($this->wooCommerce->isWooCommerceCustomOrdersTableEnabled()) {
-      /** @var literal-string $query */
-      $query = "
-        SELECT COUNT(o.id)
-        FROM {$wpdb->prefix}wc_orders o
-        WHERE o.customer_id = %d
-        AND o.status IN ($statusesPlaceholder)
-        AND o.date_created_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
-       ";
-      // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
-      $statement = (string)$wpdb->prepare($query, array_merge([$customer->get_id()], $statuses, [$inTheLastSeconds]));
-    } else {
-      /** @var literal-string $query */
-      $query = "
-        SELECT COUNT(p.ID)
-        FROM {$wpdb->posts} p
-        LEFT JOIN {$wpdb->postmeta} pm_user ON p.ID = pm_user.post_id AND pm_user.meta_key = '_customer_user'
-        WHERE p.post_type = 'shop_order'
-        AND p.post_status IN ($statusesPlaceholder)
-        AND pm_user.meta_value = %d
-        AND p.post_date_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
-      ";
-      // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
-      $statement = (string)$wpdb->prepare($query, array_merge($statuses, [$customer->get_id(), $inTheLastSeconds]));
+      return (int)$wpdb->get_var(
+        $wpdb->prepare(
+          '
+            SELECT COUNT(o.id)
+            FROM %i o
+            WHERE o.customer_id = %d
+            AND o.status IN (' . implode(',', array_fill(0, count($statuses), '%s')) . ')
+            AND o.date_created_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
+          ',
+          array_merge(
+            [
+              $wpdb->prefix . 'wc_orders',
+              $customer->get_id(),
+            ],
+            $statuses,
+            [$inTheLastSeconds]
+          )
+        )
+      );
     }
-    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
-    return (int)$wpdb->get_var($statement);
+
+    return (int)$wpdb->get_var(
+      $wpdb->prepare(
+        "
+          SELECT COUNT(p.ID)
+          FROM {$wpdb->posts} p
+          LEFT JOIN {$wpdb->postmeta} pm_user ON p.ID = pm_user.post_id AND pm_user.meta_key = '_customer_user'
+          WHERE p.post_type = 'shop_order'
+          AND p.post_status IN (" . implode(',', array_fill(0, count($statuses), '%s')) . ")
+          AND pm_user.meta_value = %d
+          AND p.post_date_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)
+        ",
+        array_merge(
+          $statuses,
+          [
+            $customer->get_id(),
+            $inTheLastSeconds,
+          ]
+        )
+      )
+    );
   }
 
   private function getPaidOrderDate(WC_Customer $customer, bool $fetchFirst): ?DateTimeImmutable {
-    $wpdb = $this->wordPress->getWpdb();
+    global $wpdb;
     $sorting = $fetchFirst ? 'ASC' : 'DESC';
     $statuses = array_map(function (string $status) {
       return "wc-$status";
     }, $this->wooCommerce->wcGetIsPaidStatuses());
-    $statusesPlaceholder = implode(',', array_fill(0, count($statuses), '%s'));
 
     if ($this->wooCommerce->isWooCommerceCustomOrdersTableEnabled()) {
-      /** @var literal-string $query */
-      $query = "
-        SELECT o.date_created_gmt
-        FROM {$wpdb->prefix}wc_orders o
-        WHERE o.customer_id = %d
-        AND o.status IN ($statusesPlaceholder)
-        AND o.total_amount > 0
-        ORDER BY o.date_created_gmt {$sorting}
-        LIMIT 1
-      ";
-      // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
-      $statement = (string)$wpdb->prepare($query, array_merge([$customer->get_id()], $statuses));
+      $date = $wpdb->get_var(
+        $wpdb->prepare(
+          '
+            SELECT o.date_created_gmt
+            FROM %i o
+            WHERE o.customer_id = %d
+            AND o.status IN (' . implode(',', array_fill(0, count($statuses), '%s')) . ')
+            AND o.total_amount > 0
+            ORDER BY o.date_created_gmt ' . $sorting /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The argument is safe. */ . '
+            LIMIT 1
+          ',
+          array_merge(
+            [
+              $wpdb->prefix . 'wc_orders',
+              $customer->get_id(),
+            ],
+            $statuses
+          )
+        )
+      );
     } else {
-      /** @var literal-string $query */
-      $query = "
-        SELECT p.post_date_gmt
-        FROM {$wpdb->prefix}posts p
-        LEFT JOIN {$wpdb->prefix}postmeta pm_total ON p.ID = pm_total.post_id AND pm_total.meta_key = '_order_total'
-        LEFT JOIN {$wpdb->prefix}postmeta pm_user ON p.ID = pm_user.post_id AND pm_user.meta_key = '_customer_user'
-        WHERE p.post_type = 'shop_order'
-        AND p.post_status IN ($statusesPlaceholder)
-        AND pm_user.meta_value = %d
-        AND pm_total.meta_value > 0
-        ORDER BY p.post_date_gmt {$sorting}
-        LIMIT 1
-      ";
-      // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
-      $statement = (string)$wpdb->prepare($query, array_merge($statuses, [$customer->get_id()]));
+      $date = $wpdb->get_var(
+        $wpdb->prepare(
+          "
+            SELECT p.post_date_gmt
+            FROM {$wpdb->prefix}posts p
+            LEFT JOIN {$wpdb->prefix}postmeta pm_total ON p.ID = pm_total.post_id AND pm_total.meta_key = '_order_total'
+            LEFT JOIN {$wpdb->prefix}postmeta pm_user ON p.ID = pm_user.post_id AND pm_user.meta_key = '_customer_user'
+            WHERE p.post_type = 'shop_order'
+            AND p.post_status IN (" . implode(',', array_fill(0, count($statuses), '%s')) . ")
+            AND pm_user.meta_value = %d
+            AND pm_total.meta_value > 0
+            ORDER BY p.post_date_gmt " . $sorting /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The argument is safe. */ . "
+            LIMIT 1
+          ",
+          array_merge(
+            $statuses,
+            [$customer->get_id()]
+          )
+        )
+      );
     }
 
-    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with the placeholder
-    $date = $wpdb->get_var($statement);
     return $date ? new DateTimeImmutable($date, new DateTimeZone('GMT')) : null;
   }
 
   private function getOrderProductTermIds(WC_Customer $customer, string $taxonomy, int $inTheLastSeconds = null): array {
-    $wpdb = $this->wordPress->getWpdb();
+    global $wpdb;
 
     $statuses = array_map(function (string $status) {
       return "wc-$status";
@@ -314,49 +343,63 @@ class CustomerOrderFieldsFactory {
     // get all product categories that the customer has purchased
     if ($this->wooCommerce->isWooCommerceCustomOrdersTableEnabled()) {
       $inTheLastFilter = isset($inTheLastSeconds) ? 'AND o.date_created_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)' : '';
+
       $orderIdsSubquery = "
         SELECT o.id
-        FROM {$wpdb->prefix}wc_orders o
+        FROM %i o
         WHERE o.status IN ($statusesPlaceholder)
         AND o.customer_id = %d
         $inTheLastFilter
       ";
+      $orderIdsSubqueryArgs = array_merge(
+        [$wpdb->prefix . 'wc_orders'],
+        $statuses,
+        [$customer->get_id()],
+        $inTheLastSeconds ? [$inTheLastSeconds] : []
+      );
     } else {
       $inTheLastFilter = isset($inTheLastSeconds) ? 'AND p.post_date_gmt >= DATE_SUB(current_timestamp, INTERVAL %d SECOND)' : '';
+
       $orderIdsSubquery = "
         SELECT p.ID
-        FROM {$wpdb->prefix}posts p
-        LEFT JOIN {$wpdb->prefix}postmeta pm_user ON p.ID = pm_user.post_id AND pm_user.meta_key = '_customer_user'
+        FROM {$wpdb->posts} p
+        LEFT JOIN {$wpdb->postmeta} pm_user ON p.ID = pm_user.post_id AND pm_user.meta_key = '_customer_user'
         WHERE p.post_type = 'shop_order'
         AND p.post_status IN ($statusesPlaceholder)
         AND pm_user.meta_value = %d
         $inTheLastFilter
       ";
+      $orderIdsSubqueryArgs = array_merge(
+        $statuses,
+        [$customer->get_id()],
+        $inTheLastSeconds ? [$inTheLastSeconds] : []
+      );
     }
 
-    /** @var literal-string $query */
-    $query = "
-      SELECT DISTINCT tt.term_id
-      FROM {$wpdb->prefix}term_taxonomy tt
-      JOIN {$wpdb->prefix}woocommerce_order_items AS oi ON oi.order_id IN ($orderIdsSubquery) AND oi.order_item_type = 'line_item'
-      JOIN {$wpdb->prefix}woocommerce_order_itemmeta AS pid ON oi.order_item_id = pid.order_item_id AND pid.meta_key = '_product_id'
-      JOIN {$wpdb->prefix}posts p ON pid.meta_value = p.ID
-      JOIN {$wpdb->prefix}term_relationships tr ON IF(p.post_type = 'product_variation', p.post_parent, p.ID) = tr.object_id AND tr.term_taxonomy_id = tt.term_taxonomy_id
-      WHERE tt.taxonomy = %s
-      ORDER BY tt.term_id ASC
-    ";
-
-    return array_map('intval', $wpdb->get_col(
+    $result = $wpdb->get_col(
+      // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The number of replacements is dynamic.
       $wpdb->prepare(
-        $query, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table names are sanitized and values are prepared with placeholders
+        "
+          SELECT DISTINCT tt.term_id
+          FROM {$wpdb->term_taxonomy} tt
+          JOIN %i AS oi ON oi.order_id IN (" . $orderIdsSubquery . /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The subquery uses placeholders. */ ") AND oi.order_item_type = 'line_item'
+          JOIN %i AS pid ON oi.order_item_id = pid.order_item_id AND pid.meta_key = '_product_id'
+          JOIN {$wpdb->posts} p ON pid.meta_value = p.ID
+          JOIN {$wpdb->term_relationships} tr ON IF(p.post_type = 'product_variation', p.post_parent, p.ID) = tr.object_id AND tr.term_taxonomy_id = tt.term_taxonomy_id
+          WHERE tt.taxonomy = %s
+          ORDER BY tt.term_id ASC
+        ",
         array_merge(
-          $statuses,
-          [$customer->get_id()],
-          isset($inTheLastSeconds) ? [intval($inTheLastSeconds)] : [],
-          [(string)($taxonomy)]
+          [$wpdb->prefix . 'woocommerce_order_items'],
+          $orderIdsSubqueryArgs,
+          [
+            $wpdb->prefix . 'woocommerce_order_itemmeta',
+            (string)($taxonomy),
+          ]
         )
       )
-    ));
+    );
+    return array_map('intval', $result);
   }
 
   private function isInTheLastSeconds(WC_Order $order, ?int $inTheLastSeconds): bool {
