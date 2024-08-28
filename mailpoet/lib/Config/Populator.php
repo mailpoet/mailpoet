@@ -564,24 +564,21 @@ class Populator {
   }
 
   private function rowExists(string $tableName, array $columns): bool {
-    global $wpdb;
-
-    $placeholders = [];
-    $values = [$tableName]; // Start with the table name as the first value for %i
-
-    foreach ($columns as $key => $value) {
-      $placeholders[] = "%i = %s"; // Use %i for the column name and %s for the value
-      $values[] = $key;
-      $values[] = $value;
-    }
-
-    $whereClause = implode(' AND ', $placeholders);
-
-
-    return $wpdb->get_var($wpdb->prepare(
-      "SELECT COUNT(*) FROM %i WHERE $whereClause", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- All values are prepared with placeholders
-      ...$values
-    )) > 0;
+    $qb = $this->entityManager->getConnection()->createQueryBuilder();
+    $qb->select('COUNT(*)')
+      ->from($tableName, 't')
+      ->where(
+        $qb->expr()->and(
+          ...array_map(
+            function ($column, $value) use ($qb) {
+              return $qb->expr()->eq('t.' . $column, $qb->createNamedParameter($value));
+            },
+            array_keys($columns),
+            $columns
+          )
+        )
+      );
+    return $qb->executeQuery()->fetchOne() > 0;
   }
 
   private function insertRow($table, $row) {
@@ -604,38 +601,42 @@ class Populator {
   }
 
   private function removeDuplicates($table, $row, $where) {
-    global $wpdb;
-
-    $conditions = ['1=1'];
-    $values = [];
-    foreach ($where as $field => $value) {
-      $conditions[] = "`t1`.%i = `t2`.%i";
-      $conditions[] = "`t1`.%i = %s";
-      $values[] = $field;
-      $values[] = $field;
-      $values[] = $field;
-      $values[] = $value;
-    }
+    $qb = $this->entityManager->getConnection()->createQueryBuilder();
+    $conditions = $qb->expr()->and(
+      $qb->expr()->eq(1, 1),
+      ...array_map(
+        function ($field) use ($qb) {
+          return $qb->expr()->eq('t1.' . $field, 't2.' . $field);
+        },
+        array_keys($where)
+      ),
+      ...array_map(
+        function ($field, $value) use ($qb) {
+          return $qb->expr()->eq('t1.' . $field, $qb->createNamedParameter($value));
+        },
+        array_keys($where),
+        $where
+      )
+    );
 
     // SQLite doesn't support JOIN in DELETE queries, we need to use a subquery.
     if (Connection::isSQLite()) {
-      $sql = "
-        DELETE FROM %i WHERE id IN (
-        SELECT t1.id
-        FROM %i t1
-        JOIN %i t2 ON t1.id < t2.id AND " . implode(' AND ', $conditions) . "
-      )";
-      return $wpdb->query(
-        $wpdb->prepare(
-          $sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- All values are prepared with placeholders in a variable
-          array_merge([$table, $table, $table], $values)
-        )
-      );
+      $subquery = $qb->select('t1.id')
+        ->from($table, 't1')
+        ->join('t1', $table, 't2', 't1.id < t2.id')
+        ->where($conditions);
+
+      $qb = $this->entityManager->getConnection()->createQueryBuilder();
+      return $qb->delete($table)
+        ->where($qb->expr()->in('id', $subquery->getSQL()))
+        ->setParameters($subquery->getParameters())
+        ->executeStatement();
     }
 
-    $sql = "DELETE t1 FROM %i t1, %i t2 WHERE t1.id < t2.id AND " . implode(' AND ', $conditions);
-    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- All values are prepared with placeholders in a variable
-    return $wpdb->query($wpdb->prepare($sql, array_merge([$table, $table], $values)));
+    return $this->entityManager->getConnection()->executeStatement(
+      "DELETE t1 FROM `$table` t1, `$table` t2 WHERE t1.id < t2.id AND $conditions",
+      $qb->getParameters()
+    );
   }
 
   private function createSourceForSubscribers() {
