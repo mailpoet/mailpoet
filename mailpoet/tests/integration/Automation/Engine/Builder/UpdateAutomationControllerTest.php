@@ -112,7 +112,7 @@ class UpdateAutomationControllerTest extends MailPoetTest {
     $this->diContainer->get(AutomationRunStorage::class)->truncate();
 
     global $wpdb;
-    $actionsTable = $wpdb->prefix . 'actionscheduler_actions';
-    $wpdb->query('TRUNCATE ' . $actionsTable);
+    $wpdb->query($wpdb->prepare('TRUNCATE %i', $wpdb->prefix . 'actionscheduler_actions'));
+    $wpdb->query($wpdb->prepare('TRUNCATE %i', $wpdb->prefix . 'actionscheduler_claims'));
   }
 }

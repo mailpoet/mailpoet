@@ -533,7 +533,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
   private function cleanup(): void {
     global $wpdb;
-    $wpdb->query('TRUNCATE ' . $wpdb->prefix . 'actionscheduler_actions');
-    $wpdb->query('TRUNCATE ' . $wpdb->prefix . 'actionscheduler_claims');
+    $wpdb->query($wpdb->prepare('TRUNCATE %i', $wpdb->prefix . 'actionscheduler_actions'));
+    $wpdb->query($wpdb->prepare('TRUNCATE %i', $wpdb->prefix . 'actionscheduler_claims'));
   }
 }

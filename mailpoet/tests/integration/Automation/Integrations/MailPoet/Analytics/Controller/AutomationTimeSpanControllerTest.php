@@ -146,13 +146,15 @@ class AutomationTimeSpanControllerTest extends \MailPoetTest {
       $this->assertInstanceOf(Automation::class, $automation);
 
       // Update the created_at value of the version
-      $sql = 'update ' . $wpdb->prefix . 'mailpoet_automation_versions set created_at=%s where id=%d';
-      $sql = $wpdb->prepare(
-        $sql,
-        $emailCreatedAt['date']->format('Y-m-d H:i:s'),
-        $automation->getVersionId()
+      $result = $wpdb->query(
+        $wpdb->prepare(
+          'UPDATE %i SET created_at = %s WHERE id = %d',
+          $wpdb->prefix . 'mailpoet_automation_versions',
+          $emailCreatedAt['date']->format('Y-m-d H:i:s'),
+          $automation->getVersionId()
+        )
       );
-      $this->assertEquals(1, $wpdb->query($sql));
+      $this->assertEquals(1, $result);
     }
 
     $emails = $this->testee->getAutomationEmailsInTimeSpan($automation, $after, $before);

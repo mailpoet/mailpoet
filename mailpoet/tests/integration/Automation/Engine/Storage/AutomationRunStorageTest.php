@@ -44,7 +44,7 @@ class AutomationRunStorageTest extends \MailPoetTest {
       "($automationId, 2,         '2020-01-02 00:00:01', '$status', 'trigger_key', 'step-1')," . // Outside of timeframe
       "($automationId, 1,         '2020-01-01 00:00:00', 'complete', 'trigger_key', 'step-1')," . // Wrong status
       "(2,             1,         '2020-01-01 00:00:00', '$status', 'trigger_key', 'step-1')"; // Wrong automation id
-    $this->assertNotFalse($wpdb->query($sql));
+    $this->assertNotFalse($wpdb->query($sql)); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
     $result = $this->testee->getAutomationStepStatisticForTimeFrame($automationId, $status, $timeFrame['after'], $timeFrame['before']);
     $this->assertEquals($expected, $result);

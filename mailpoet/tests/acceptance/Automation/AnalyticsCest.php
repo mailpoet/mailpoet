@@ -46,8 +46,14 @@ class AnalyticsCest {
 
     // We need to alter the created_at date of the versions, so we can do historical comparisons.
     global $wpdb;
-    $sql = 'update ' . $wpdb->prefix . 'mailpoet_automation_versions set created_at = %s where automation_id=%d';
-    $wpdb->query($wpdb->prepare($sql, $createdAt->format(\DateTimeImmutable::W3C), $this->automation->getId()));
+    $wpdb->query(
+      $wpdb->prepare(
+        'UPDATE %i SET created_at = %s WHERE automation_id = %d',
+        $wpdb->prefix . 'mailpoet_automation_versions',
+        $createdAt->format(\DateTimeImmutable::W3C),
+        $this->automation->getId()
+      )
+    );
   }
 
   public function testOverviewOpens(\AcceptanceTester $i) {
