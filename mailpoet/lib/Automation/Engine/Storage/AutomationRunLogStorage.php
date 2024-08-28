@@ -5,68 +5,71 @@ namespace MailPoet\Automation\Engine\Storage;
 use MailPoet\Automation\Engine\Data\AutomationRunLog;
 use MailPoet\Automation\Engine\Exceptions;
 use MailPoet\InvalidStateException;
-use wpdb;
 
 class AutomationRunLogStorage {
   /** @var string */
   private $table;
 
-  /** @var wpdb */
-  private $wpdb;
-
   public function __construct() {
     global $wpdb;
     $this->table = $wpdb->prefix . 'mailpoet_automation_run_logs';
-    $this->wpdb = $wpdb;
   }
 
   public function createAutomationRunLog(AutomationRunLog $automationRunLog): int {
-    $result = $this->wpdb->insert($this->table, $automationRunLog->toArray());
+    global $wpdb;
+    $result = $wpdb->insert($this->table, $automationRunLog->toArray());
     if ($result === false) {
-      throw Exceptions::databaseError($this->wpdb->last_error);
+      $this->throwDatabaseError();
     }
-    return $this->wpdb->insert_id;
+    return $wpdb->insert_id; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 
   public function updateAutomationRunLog(AutomationRunLog $automationRunLog): void {
-    $result = $this->wpdb->update($this->table, $automationRunLog->toArray(), ['id' => $automationRunLog->getId()]);
+    global $wpdb;
+    $result = $wpdb->update($this->table, $automationRunLog->toArray(), ['id' => $automationRunLog->getId()]);
     if ($result === false) {
-      throw Exceptions::databaseError($this->wpdb->last_error);
+      $this->throwDatabaseError();
     }
   }
 
   public function getAutomationRunStatisticsForAutomationInTimeFrame(int $automationId, string $status, \DateTimeImmutable $after, \DateTimeImmutable $before, int $versionId = null): array {
-    $logTable = esc_sql($this->table);
-    $runTable = esc_sql($this->wpdb->prefix . 'mailpoet_automation_runs');
-
-    $whereCondition = 'run.automation_id = %d
-      AND log.status = %s
-      AND run.created_at BETWEEN %s AND %s';
-    if ($versionId !== null) {
-      $whereCondition .= ' AND run.version_id = %d';
-    }
-    /** @var literal-string $sql */
-    $sql = "SELECT count(log.id) as `count`, log.step_id FROM $logTable AS log
-      JOIN $runTable AS run ON log.automation_run_id = run.id
-      WHERE $whereCondition
-      GROUP BY log.step_id";
-
-    $sql = $versionId ?
-      $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s'), $versionId) : // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with placeholders
-      $this->wpdb->prepare($sql, $automationId, $status, $after->format('Y-m-d H:i:s'), $before->format('Y-m-d H:i:s')); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with placeholders
-
-    $sql = is_string($sql) ? $sql : "";
-
-    $results = $this->wpdb->get_results($sql, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The table name is sanitized and values are prepared with placeholders
+    global $wpdb;
+    $andWhere = $versionId ? 'AND run.version_id = %d' : '';
+    $results = $wpdb->get_results(
+      // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The number of replacements is dynamic.
+      $wpdb->prepare(
+        '
+          SELECT COUNT(log.id) AS count, log.step_id
+          FROM %i AS log
+          JOIN %i AS run ON log.automation_run_id = run.id
+          WHERE run.automation_id = %d AND log.status = %s AND run.created_at BETWEEN %s AND %s
+          ' . $andWhere . /* phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The condition uses placeholders. */ '
+          GROUP BY log.step_id
+        ',
+        array_merge(
+          [
+            $this->table,
+            $wpdb->prefix . 'mailpoet_automation_runs',
+            $automationId,
+            $status,
+            $after->format('Y-m-d H:i:s'),
+            $before->format('Y-m-d H:i:s'),
+          ],
+          $versionId ? [$versionId] : []
+        )
+      ),
+      ARRAY_A
+    );
     return is_array($results) ? $results : [];
   }
 
   public function getAutomationRunLog(int $id): ?AutomationRunLog {
-    $wpdb = $this->wpdb;
+    global $wpdb;
 
-    $result = $wpdb->get_row((string)$wpdb->prepare("
-      SELECT * FROM %i WHERE id = %d
-    ", $this->table, $id), ARRAY_A);
+    $result = $wpdb->get_row(
+      $wpdb->prepare('SELECT * FROM %i WHERE id = %d', $this->table, $id),
+      ARRAY_A
+    );
 
     if ($result) {
       $data = (array)$result;
@@ -76,28 +79,31 @@ class AutomationRunLogStorage {
   }
 
   public function getAutomationRunLogByRunAndStepId(int $runId, string $stepId): ?AutomationRunLog {
-    $wpdb = $this->wpdb;
-
-    $result = $wpdb->get_row((string)$wpdb->prepare("
-      SELECT * FROM %i WHERE automation_run_id = %d AND step_id = %s
-    ", $this->table, $runId, $stepId), ARRAY_A);
+    global $wpdb;
+    $result = $wpdb->get_row(
+      $wpdb->prepare('SELECT * FROM %i WHERE automation_run_id = %d AND step_id = %s', $this->table, $runId, $stepId),
+      ARRAY_A
+    );
     return $result ? AutomationRunLog::fromArray((array)$result) : null;
   }
 
-  /**
-   * @param int $automationRunId
-   * @return AutomationRunLog[]
-   * @throws InvalidStateException
-   */
+  /** @return AutomationRunLog[] */
   public function getLogsForAutomationRun(int $automationRunId): array {
-    $wpdb = $this->wpdb;
+    global $wpdb;
 
-    $results = $wpdb->get_results((string)$wpdb->prepare("
-      SELECT *
-      FROM %i
-      WHERE automation_run_id = %d
-      ORDER BY id ASC
-    ", $this->table, $automationRunId), ARRAY_A);
+    $results = $wpdb->get_results(
+      $wpdb->prepare(
+        '
+          SELECT *
+          FROM %i
+          WHERE automation_run_id = %d
+          ORDER BY id ASC
+        ',
+        $this->table,
+        $automationRunId
+      ),
+      ARRAY_A
+    );
 
     if (!is_array($results)) {
       throw InvalidStateException::create();
@@ -114,7 +120,12 @@ class AutomationRunLogStorage {
   }
 
   public function truncate(): void {
-    $wpdb = $this->wpdb;
-    $wpdb->query((string)$wpdb->prepare("TRUNCATE %i", $this->table));
+    global $wpdb;
+    $wpdb->query($wpdb->prepare('TRUNCATE %i', $this->table));
+  }
+
+  private function throwDatabaseError(): void {
+    global $wpdb;
+    throw Exceptions::databaseError($wpdb->last_error); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   }
 }
