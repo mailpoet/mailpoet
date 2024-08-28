@@ -135,7 +135,7 @@ class DisplayFormInWPContent {
       if (!empty($formMarkup)) {
         $this->assetsController->setupFrontEndDependencies();
         // We are in control of the template and the data can be considered safe at this point
-        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo $formMarkup;
       }
     }

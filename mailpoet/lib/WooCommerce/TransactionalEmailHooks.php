@@ -51,20 +51,20 @@ class TransactionalEmailHooks {
         if ($newsletterEntity) {
           $this->renderer->render($newsletterEntity, $emailHeading);
           // The HTML is generated from a $newsletter entity and can be considered safe
-          // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+          // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
           echo $this->renderer->getHTMLBeforeContent();
         }
       });
       $this->wp->addAction('woocommerce_email_footer', function() {
         // The HTML is generated from a $newsletter entity and can be considered safe
-        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo $this->renderer->getHTMLAfterContent();
         // Woo uses output buffer to collect the rendered email content. We read it ourselves modify it and push it back to the buffer.
         $newsletterEntity = $this->getNewsletter();
         $renderedEmail = ob_get_clean();
         if ($newsletterEntity && $renderedEmail) {
           ob_start();
-          // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+          // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
           echo $this->renderer->updateRenderedContent($newsletterEntity, $renderedEmail);
         }
       });

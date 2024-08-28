@@ -59,7 +59,7 @@ class Registration {
     $form = (string)$this->wp->applyFilters('mailpoet_register_form_extend', $form);
 
     // We control the template and $form can be considered safe.
-    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     print $form;
   }
 

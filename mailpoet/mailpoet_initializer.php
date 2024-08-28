@@ -45,7 +45,7 @@ if (WP_DEBUG && PHP_VERSION_ID >= 70100 && file_exists($tracyPath)) {
       $tracyScriptHtml .= "<script>window.TracyMaxAjaxRows = $maxAjaxRows;</script>\n";
 
       // just minor adjustments to Debugger::renderLoader() output
-      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
       echo $tracyScriptHtml;
     }
 
