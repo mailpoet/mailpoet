@@ -62,7 +62,9 @@ class Statement implements StatementInterface {
     $values = $visitor->getValues();
 
     global $wpdb;
-    $query = count($values) > 0 ? $wpdb->prepare($sql, $values) : $sql; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The prepare method is used here to escape the values
+    $query = count($values) > 0
+      ? $wpdb->prepare($sql, $values) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+      : $sql;
     return $this->connection->query($query);
   }
 }

@@ -109,7 +109,7 @@ class Connection implements ServerInfoAwareConnection {
   private function runQuery(string $sql) {
     global $wpdb;
     try {
-      $value = $wpdb->query($sql); // phpcs:ignore WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQL.NotPrepared -- The variable is prepared but the sniff recognize only a string
+      $value = $wpdb->query($sql); // phpcs:ignore WordPressDotOrg.sniffs.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQL.NotPrepared
     } catch (Throwable $e) {
       if ($e instanceof PDOException) {
         throw new QueryException($e->getMessage(), $e->errorInfo[0] ?? null, $e->errorInfo[1] ?? 0);
