@@ -34,19 +34,12 @@ parameters:
     - '/(Method|Property|Function) (?!MailPoet\\Automation\\).*has no (return )?type specified/'
     - '/(Method|Function) (?!MailPoet\\Automation\\).*has parameter (\$[_A-Z]{1}[_a-z]+)? with no type (specified)?/i'
 
-    # exclude specific warning about $wpdb
-    - '/Parameter #1 \$query of method wpdb::prepare\(\) expects literal-string, non-falsy-string given./'
-
     - # Primary keys ScheduledTaskSubscriberEntity of are foreign keys and foreign keys may be null because of missing related record
       message: '#Property MailPoet\\Entities\\[a-zA-Z]+::\$[a-z]+ type mapping mismatch: property can contain MailPoet\\Entities\\[a-zA-Z]+\|null but database expects MailPoet\\Entities\\[a-zA-Z]+.#'
       path: ../../lib/Entities/ScheduledTaskSubscriberEntity.php
       count: 2
     - '/Parameter #1 \$cssOrXPath of method AcceptanceTester::moveMouseOver\(\) expects string\|null, array<string, string> given./'
     - '/Call to method getName\(\) on an unknown class _generated\\([a-zA-Z])*Cookie/' # codeception generate incorrect return type in ../../tests/_support/_generated
-    -
-      message: "#^Cannot cast string|void to string\\.$#"
-      count: 4
-      path: ../../lib/Automation/Engine/Storage/AutomationRunLogStorage.php
     -
       message: '/^Call to static method get_orders_table_name\(\) on an unknown class Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\OrdersTableDataStore\.$/'
       count: 1
@@ -73,26 +66,6 @@ parameters:
     - message: '/Return type \(array\) of method MailPoet\\Logging\\PluginVersionProcessor::__invoke\(\) should be compatible with return type \(MailPoetVendor\\Monolog\\Processor\\Record\) of method MailPoetVendor\\Monolog\\Processor\\ProcessorInterface::__invoke\(\)/'
       count: 1
       path: ../../lib/Logging/PluginVersionProcessor.php
-    -
-      message: '/^Parameter #1 $query of method wpdb::get_var() expects string|null, string|void given\.$/'
-      count: 1
-      path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerOrderFieldsFactory.php
-    -
-      message: "#^Cannot cast string|void to string\\.$#"
-      count: 6
-      path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerOrderFieldsFactory.php
-    -
-      message: '/^Parameter #1 $query of method wpdb::get_var() expects string|null, string|void given\.$/'
-      count: 1
-      path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerReviewFieldsFactory.php
-    -
-      message: "#^Cannot cast string|void to string\\.$#"
-      count: 1
-      path: ../../lib/Automation/Integrations/WooCommerce/Fields/CustomerReviewFieldsFactory.php
-    -
-      message: "#^Cannot cast string|void to string\\.$#"
-      count: 1
-      path: ../../lib/Automation/Integrations/WooCommerce/Fields/TermParentsLoader.php
     -
       # WP annotates parameter as callable, but passes empty string as a default.
       message: '/function add_(sub)?menu_page expects callable\(\): mixed, ''''\|\(callable\(\): mixed\) given/'

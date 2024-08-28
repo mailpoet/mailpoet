@@ -2,39 +2,29 @@
 
 namespace MailPoet\Automation\Integrations\WooCommerce\Fields;
 
-use MailPoet\Automation\Engine\WordPress;
-
 class TermParentsLoader {
-  /** @var WordPress */
-  private $wordPress;
-
-  public function __construct(
-    WordPress $wordPress
-  ) {
-    $this->wordPress = $wordPress;
-  }
-
   /**
    * @param int[] $termIds
    * @return int[]
    */
   public function getParentIds(array $termIds): array {
+    global $wpdb;
     if (count($termIds) === 0) {
       return [];
     }
-    $idsPlaceholder = implode(',', array_fill(0, count($termIds), '%s'));
 
-    $wpdb = $this->wordPress->getWpdb();
-    /** @var literal-string $query - PHPStan expects literal-string */
-    $query = "
-      SELECT DISTINCT tt.parent
-      FROM {$wpdb->term_taxonomy} AS tt
-      WHERE tt.parent != 0
-      AND tt.term_id IN ($idsPlaceholder)
-    ";
-
-    // // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The value is prepared with the placeholder
-    $parentIds = array_map('intval', $wpdb->get_col((string)$wpdb->prepare($query, $termIds)));
+    $result = $wpdb->get_col(
+      $wpdb->prepare(
+        "
+          SELECT DISTINCT tt.parent
+          FROM {$wpdb->term_taxonomy} AS tt
+          WHERE tt.parent != 0
+          AND tt.term_id IN (" . implode(',', array_fill(0, count($termIds), '%s')) . ")
+        ",
+        $termIds
+      )
+    );
+    $parentIds = array_map('intval', $result);
     if (count($parentIds) === 0) {
       return [];
     }
