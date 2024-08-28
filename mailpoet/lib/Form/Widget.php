@@ -97,7 +97,7 @@ class Widget extends \WP_Widget {
 
     try {
       // We control the template and the data is sanitized
-      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
       echo $this->renderer->render('form/iframe.html', $data);
     } catch (\Exception $e) {
       echo esc_html($e->getMessage());
@@ -271,7 +271,7 @@ class Widget extends \WP_Widget {
     if ($formType === 'widget') {
       /** @var string $output */
       // We control the template and the data is sanitized
-      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
       echo $output;
     } else {
       return $output;

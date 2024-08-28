@@ -15,7 +15,7 @@ if ($installedGuzzleHttpVersion === false) {
 }
 
 if (version_compare($installedGuzzleHttpVersion, '7.0') === 1) {
-  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
   die("Patching Guzzlehttp is not needed since version $installedGuzzleHttpVersion is installed" . PHP_EOL);
 }
 

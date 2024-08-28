@@ -102,7 +102,7 @@ class Subscription {
       $labelString
     );
     // The template has been sanitized above and can be considered safe.
-    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     echo $template;
     if ($template) {
       $field = $this->getSubscriptionPresenceCheckField();

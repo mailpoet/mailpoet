@@ -27,7 +27,7 @@ class WooSystemInfoController {
     ]);
 
     // We are in control of the template and the data can be considered safe at this point
-    echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+    echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
   }
 
   public function addFields($response) {

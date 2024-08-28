@@ -234,7 +234,7 @@ class PageRenderer {
       $this->wp->doAction('mailpoet_styles_admin_after');
 
       // We are in control of the template and the data can be considered safe at this point
-      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPressDotOrg.sniffs.OutputEscaping.UnescapedOutputParameter
+      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
       echo $this->renderer->render($template, $data + $defaults);
     } catch (\Exception $e) {
       $notice = new WPNotice(WPNotice::TYPE_ERROR, $e->getMessage());
