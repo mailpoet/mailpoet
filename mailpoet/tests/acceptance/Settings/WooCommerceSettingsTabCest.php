@@ -52,9 +52,9 @@ class WooCommerceSettingsTabCest {
     $i->waitForText('Settings saved');
     $i->addProductToCart($this->product);
     $i->goToBlockCheckout();
-    $i->see('I want to opt-in with the custom message.');
+    $i->waitForText('I want to opt-in with the custom message.');
     $i->goToShortcodeCheckout();
-    $i->see('I want to opt-in with the custom message.');
+    $i->waitForText('I want to opt-in with the custom message.');
   }
 
   public function checkWooCommerceAdditionalLists(\AcceptanceTester $i) {
