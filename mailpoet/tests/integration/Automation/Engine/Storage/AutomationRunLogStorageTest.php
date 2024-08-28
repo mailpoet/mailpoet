@@ -77,7 +77,7 @@ class AutomationRunLogStorageTest extends \MailPoetTest {
             "($automationId, 2,         '2020-01-02 00:00:00', 'status', 'trigger_key')," . // Automation Run Id 3 different version
             "($automationId, 2,         '2020-01-02 00:00:01', 'status', 'trigger_key')," . // Automation Run Id 4 outside of timeframe
             "(2,             1,         '2020-01-01 00:00:00', 'status', 'trigger_key')"; // Automation Run Id 5 wrong automation id
-    $this->assertNotFalse($wpdb->query($sql));
+    $this->assertNotFalse($wpdb->query($sql)); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
     $sql = "insert into " . $wpdb->prefix .
             "mailpoet_automation_run_logs " .
              "(automation_run_id,  step_id,  `status`) values" .
@@ -88,7 +88,7 @@ class AutomationRunLogStorageTest extends \MailPoetTest {
              "(3,                  'step-2', 'failed')," . // Wrong status
              "(4,                  'step-1', '$status')," . // Outside of timeframe.
              "(5,                  'step-2', '$status')"; // Wrong automation id
-    $this->assertNotFalse($wpdb->query($sql));
+    $this->assertNotFalse($wpdb->query($sql)); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
     $result = $this->storage->getAutomationRunStatisticsForAutomationInTimeFrame(1, $status, $timeFrame['after'], $timeFrame['before']);
     $this->assertEquals(count($expected), count($result));
     $this->assertEquals($expected, $result);

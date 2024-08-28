@@ -101,8 +101,7 @@ class DefaultsExtension extends Extension {
     // mark all WC cron actions complete
     update_option('wc_pending_batch_processes', []);
     $tableName = !empty($wpdb->actionscheduler_actions) ? $wpdb->actionscheduler_actions : $wpdb->prefix . 'actionscheduler_actions';// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    $sql = "UPDATE {$tableName} SET status = 'complete'";
-    $wpdb->query($sql);
+    $wpdb->query($wpdb->prepare("UPDATE %i SET status = 'complete'", $tableName));
   }
 
   private function createPage($name, $tile, $content) {

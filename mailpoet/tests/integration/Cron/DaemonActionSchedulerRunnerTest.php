@@ -64,6 +64,6 @@ class DaemonActionSchedulerRunnerTest extends \MailPoetTest {
   private function cleanup(): void {
     global $wpdb;
     $actionsTable = $wpdb->prefix . 'actionscheduler_actions';
-    $wpdb->query('TRUNCATE ' . $actionsTable);
+    $wpdb->query($wpdb->prepare('TRUNCATE %s', $actionsTable));
   }
 }
