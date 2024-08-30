@@ -2,6 +2,7 @@
 
 namespace MailPoet\Migrations\App;
 
+use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Entities\StatisticsWooCommercePurchaseEntity;
 use MailPoet\Migrations\Db\Migration_20230824_054259_Db;
 use MailPoet\Migrator\AppMigration;
@@ -16,6 +17,12 @@ class Migration_20230825_093531_App extends AppMigration {
 
     // If Woo is not active and the table doesn't exist, we can skip this migration
     if (!$wooCommerceHelper->isWooCommerceActive() && !$this->tableExists()) {
+      return;
+    }
+
+    // Temporarily skip the queries in WP Playground.
+    // The SQLite integration doesn't seem to support them yet.
+    if (Connection::isSQLite()) {
       return;
     }
 
