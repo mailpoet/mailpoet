@@ -65,6 +65,9 @@ class PermanentNotices {
   /** @var SenderDomainAuthenticationNotices */
   private $senderDomainAuthenticationNotices;
 
+  /** @var WordPressPlaygroundNotice */
+  private $wordPressPlaygroundNotice;
+
   /** @var DatabaseEngineNotice */
   private $databaseEngineNotice;
   
@@ -96,6 +99,7 @@ class PermanentNotices {
     $this->woocommerceVersionWarning = new WooCommerceVersionWarning($wp);
     $this->premiumFeaturesAvailableNotice = new PremiumFeaturesAvailableNotice($subscribersFeature, $serviceChecker, $wp);
     $this->databaseEngineNotice = new DatabaseEngineNotice($wp, $entityManager);
+    $this->wordPressPlaygroundNotice = new WordPressPlaygroundNotice();
     $this->senderDomainAuthenticationNotices = $senderDomainAuthenticationNotices;
   }
 
@@ -157,6 +161,9 @@ class PermanentNotices {
       Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $this->databaseEngineNotice->init(
+      Menu::isOnMailPoetAdminPage($excludeSetupWizard)
+    );
+    $this->wordPressPlaygroundNotice->init(
       Menu::isOnMailPoetAdminPage($excludeSetupWizard)
     );
     $excludeDomainAuthenticationNotices = [
