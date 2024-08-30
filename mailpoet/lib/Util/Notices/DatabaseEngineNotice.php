@@ -3,6 +3,7 @@
 namespace MailPoet\Util\Notices;
 
 use MailPoet\Config\Env;
+use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;
@@ -27,7 +28,7 @@ class DatabaseEngineNotice {
   }
 
   public function init($shouldDisplay): ?Notice {
-    if (!$shouldDisplay || $this->wp->getTransient(self::OPTION_NAME)) {
+    if (!$shouldDisplay || Connection::isSQLite() || $this->wp->getTransient(self::OPTION_NAME)) {
       return null;
     }
 
