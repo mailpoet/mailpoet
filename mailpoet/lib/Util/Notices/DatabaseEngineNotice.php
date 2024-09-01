@@ -94,7 +94,7 @@ class DatabaseEngineNotice {
     sort($tablesWithIncorrectEngine);
 
     $tables = array_map(
-      fn($table) => "“${table}”",
+      fn($table) => "“{$table}”",
       array_slice($tablesWithIncorrectEngine, 0, self::MAX_TABLES_TO_DISPLAY)
     );
 
