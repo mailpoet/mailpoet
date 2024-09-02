@@ -5,7 +5,7 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  append-description:
+  add-wp-playground-link:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -20,8 +20,8 @@ jobs:
           BRANCH_NAME="${{ github.head_ref }}"
           DESCRIPTION="$(gh pr view $PR_NUMBER --json body -q .body)"
           HEADING="## Preview"
-          CONTENT="$(printf "\n\n${HEADING}\n\n[Preview in WordPress Playground](https://account.mailpoet.com/playground/new/branch:${BRANCH_NAME})\n\n_The latest successful build from \`${BRANCH_NAME}\` will be used. If none is available, the link won't work._")"
+          CONTENT="$(printf "${HEADING}\n\n[Preview in WordPress Playground](https://account.mailpoet.com/playground/new/branch:${BRANCH_NAME})\n\n_The latest successful build from \`${BRANCH_NAME}\` will be used. If none is available, the link won't work._")"
 
           if [[ "$DESCRIPTION" != *"$HEADING"* ]]; then
-            gh pr edit $PR_NUMBER --body "${DESCRIPTION}\n\n${CONTENT}"
+            gh pr edit $PR_NUMBER --body "$(printf "${DESCRIPTION}\n\n${CONTENT}")"
           fi
