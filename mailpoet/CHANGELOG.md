@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.1.0 - 2024-09-02 =
+
+- Improved: form validation messages;
+- Fixed: using ${var} in strings is deprecated, use {$var} instead.
+
 = 5.0.2 - 2024-08-26 =
 
 - Added: Ukrainian translations;
