@@ -216,11 +216,11 @@ class Populator {
   }
 
   private function createDefaultSettings() {
-    $settingsDbVersion = $this->settings->fetch('db_version');
+    $settingsDbVersion = $this->settings->get('db_version');
     $currentUser = $this->wp->wpGetCurrentUser();
 
     // set cron trigger option to default method
-    if (!$this->settings->fetch(CronTrigger::SETTING_NAME)) {
+    if (!$this->settings->get(CronTrigger::SETTING_NAME)) {
       $this->settings->set(CronTrigger::SETTING_NAME, [
         'method' => CronTrigger::DEFAULT_METHOD,
       ]);
@@ -237,7 +237,7 @@ class Populator {
       'name' => $senderName,
       'address' => $senderAddress ?: '',
     ];
-    $savedSender = $this->settings->fetch('sender', []);
+    $savedSender = $this->settings->get('sender', []);
 
     /**
      * Set default from name & address
@@ -249,20 +249,20 @@ class Populator {
     }
 
     // enable signup confirmation by default
-    if (!$this->settings->fetch('signup_confirmation')) {
+    if (!$this->settings->get('signup_confirmation')) {
       $this->settings->set('signup_confirmation', [
         'enabled' => true,
       ]);
     }
 
     // set installation date
-    if (!$this->settings->fetch('installed_at')) {
+    if (!$this->settings->get('installed_at')) {
       $this->settings->set('installed_at', date("Y-m-d H:i:s"));
     }
 
     // set captcha settings
-    $captcha = $this->settings->fetch('captcha');
-    $reCaptcha = $this->settings->fetch('re_captcha');
+    $captcha = $this->settings->get('captcha');
+    $reCaptcha = $this->settings->get('re_captcha');
     if (empty($captcha)) {
       $captchaType = CaptchaConstants::TYPE_DISABLED;
       if (!empty($reCaptcha['enabled'])) {
@@ -277,9 +277,9 @@ class Populator {
       ]);
     }
 
-    $subscriberEmailNotification = $this->settings->fetch(NewSubscriberNotificationMailer::SETTINGS_KEY);
+    $subscriberEmailNotification = $this->settings->get(NewSubscriberNotificationMailer::SETTINGS_KEY);
     if (empty($subscriberEmailNotification)) {
-      $sender = $this->settings->fetch('sender', []);
+      $sender = $this->settings->get('sender', []);
       $this->settings->set('subscriber_email_notification', [
         'enabled' => true,
         'automated' => true,
@@ -287,16 +287,16 @@ class Populator {
       ]);
     }
 
-    $statsNotifications = $this->settings->fetch(Worker::SETTINGS_KEY);
+    $statsNotifications = $this->settings->get(Worker::SETTINGS_KEY);
     if (empty($statsNotifications)) {
-      $sender = $this->settings->fetch('sender', []);
+      $sender = $this->settings->get('sender', []);
       $this->settings->set(Worker::SETTINGS_KEY, [
         'enabled' => true,
         'address' => isset($sender['address']) ? $sender['address'] : null,
       ]);
     }
 
-    $woocommerceOptinOnCheckout = $this->settings->fetch('woocommerce.optin_on_checkout');
+    $woocommerceOptinOnCheckout = $this->settings->get('woocommerce.optin_on_checkout');
     $legacyLabelText = _x('Yes, I would like to be added to your mailing list', "default email opt-in message displayed on checkout page for ecommerce websites", 'mailpoet');
     $currentLabelText = _x('I would like to receive exclusive emails with discounts and product information', "default email opt-in message displayed on checkout page for ecommerce websites", 'mailpoet');
     if (empty($woocommerceOptinOnCheckout)) {
@@ -313,7 +313,7 @@ class Populator {
   }
 
   private function createDefaultUsersFlags() {
-    $lastAnnouncementSeen = $this->settings->fetch('last_announcement_seen');
+    $lastAnnouncementSeen = $this->settings->get('last_announcement_seen');
     if (!empty($lastAnnouncementSeen)) {
       foreach ($lastAnnouncementSeen as $userId => $value) {
         $this->createOrUpdateUserFlag($userId, 'last_announcement_seen', $value);
