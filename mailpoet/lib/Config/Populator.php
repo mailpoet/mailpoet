@@ -16,6 +16,7 @@ use MailPoet\Cron\Workers\UnsubscribeTokens;
 use MailPoet\Doctrine\WPDB\Connection;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\NewsletterOptionFieldEntity;
+use MailPoet\Entities\NewsletterTemplateEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Entities\StatisticsFormEntity;
@@ -79,7 +80,6 @@ class Populator {
     $this->prefix = Env::$dbPrefix;
     $this->models = [
       'newsletter_option_fields',
-      'newsletter_templates',
     ];
     $this->templates = [
       'WelcomeBlank1Column',
@@ -169,6 +169,7 @@ class Populator {
     $localizer->forceLoadWebsiteLocaleText();
 
     array_map([$this, 'populate'], $this->models);
+    $this->populateNewsletterTemplates();
 
     $this->createDefaultSegment();
     $this->createDefaultSettings();
@@ -518,20 +519,87 @@ class Populator {
     ];
   }
 
-  protected function newsletterTemplates() {
+  private function populateNewsletterTemplates(): void {
+    // 1. Load templates from the file system.
     $templates = [];
     foreach ($this->templates as $template) {
       $template = self::TEMPLATES_NAMESPACE . $template;
       $template = new $template(Env::$assetsUrl);
       $templates[] = $template->get();
     }
-    return [
-      'rows' => $templates,
-      'identification_columns' => [
-        'name',
-      ],
-      'remove_duplicates' => true,
-    ];
+
+    // 2. Load existing corresponding (readonly) templates from the database.
+    $tableName = $this->entityManager->getClassMetadata(NewsletterTemplateEntity::class)->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $existingTemplates = $connection->createQueryBuilder()
+      ->select('t.name, t.categories, t.readonly, t.thumbnail, t.body')
+      ->from($tableName, 't')
+      ->where('t.readonly = 1')
+      ->executeQuery()
+      ->fetchAllAssociativeIndexed();
+
+    // 3. Compare the existing and file system templates.
+    $inserts = [];
+    $updates = [];
+    foreach ($templates as $template) {
+      $existing = $existingTemplates[$template['name']] ?? null;
+      if (
+        $existing
+        && $existing['categories'] === $template['categories']
+        && $existing['body'] === $template['body']
+        && $existing['thumbnail'] === $template['thumbnail']
+      ) {
+        continue;
+      }
+
+      if ($existing) {
+        $updates[] = $template;
+      } else {
+        $inserts[] = $template;
+      }
+    }
+
+    // 4. Update existing templates.
+    foreach ($updates as $template) {
+      $connection->update($tableName, $template, ['name' => $template['name']]);
+    }
+
+    // 5. Insert new templates using a single query (good for first installs).
+    if ($inserts) {
+      $placeholders = implode(',', array_fill(0, count($inserts), '(?, ?, ?, ?, ?)'));
+      $connection->executeStatement(
+        "INSERT INTO $tableName (name, categories, readonly, thumbnail, body) VALUES $placeholders",
+        array_merge(
+          ...array_map(
+            fn($t) => [$t['name'], $t['categories'], $t['readonly'], $t['thumbnail'], $t['body']],
+            $inserts
+          )
+        )
+      );
+    }
+
+    // 6. Remove duplicates.
+    // SQLite doesn't support JOIN in DELETE queries, we need to use a subquery.
+    // MySQL doesn't support DELETE with subqueries reading from the same table.
+    if (Connection::isSQLite()) {
+      $connection->executeStatement("
+        DELETE FROM $tableName WHERE id IN (
+          SELECT t1.id
+          FROM $tableName t1
+          JOIN $tableName t2 ON t1.id < t2.id AND t1.name = t2.name
+          WHERE t1.readonly = 1
+          AND t2.readonly = 1
+       )
+      ");
+    } else {
+      $connection->executeStatement("
+        DELETE t1
+        FROM $tableName t1, $tableName t2
+        WHERE t1.id < t2.id AND t1.name = t2.name
+        AND t1.readonly = 1
+        AND t2.readonly = 1
+      ");
+    }
   }
 
   protected function populate($model) {
@@ -543,8 +611,6 @@ class Populator {
       $dataDescriptor['identification_columns'],
       ''
     );
-    $removeDuplicates =
-      isset($dataDescriptor['remove_duplicates']) && $dataDescriptor['remove_duplicates'];
 
     foreach ($rows as $row) {
       $existenceComparisonFields = array_intersect_key(
@@ -555,9 +621,6 @@ class Populator {
       if (!$this->rowExists($table, $existenceComparisonFields)) {
         $this->insertRow($table, $row);
       } else {
-        if ($removeDuplicates) {
-          $this->removeDuplicates($table, $row, $existenceComparisonFields);
-        }
         $this->updateRow($table, $row, $existenceComparisonFields);
       }
     }
@@ -597,45 +660,6 @@ class Populator {
       $table,
       $row,
       $where
-    );
-  }
-
-  private function removeDuplicates($table, $row, $where) {
-    $qb = $this->entityManager->getConnection()->createQueryBuilder();
-    $conditions = $qb->expr()->and(
-      $qb->expr()->eq(1, 1),
-      ...array_map(
-        function ($field) use ($qb) {
-          return $qb->expr()->eq('t1.' . $field, 't2.' . $field);
-        },
-        array_keys($where)
-      ),
-      ...array_map(
-        function ($field, $value) use ($qb) {
-          return $qb->expr()->eq('t1.' . $field, $qb->createNamedParameter($value));
-        },
-        array_keys($where),
-        $where
-      )
-    );
-
-    // SQLite doesn't support JOIN in DELETE queries, we need to use a subquery.
-    if (Connection::isSQLite()) {
-      $subquery = $qb->select('t1.id')
-        ->from($table, 't1')
-        ->join('t1', $table, 't2', 't1.id < t2.id')
-        ->where($conditions);
-
-      $qb = $this->entityManager->getConnection()->createQueryBuilder();
-      return $qb->delete($table)
-        ->where($qb->expr()->in('id', $subquery->getSQL()))
-        ->setParameters($subquery->getParameters())
-        ->executeStatement();
-    }
-
-    return $this->entityManager->getConnection()->executeStatement(
-      "DELETE t1 FROM `$table` t1, `$table` t2 WHERE t1.id < t2.id AND $conditions",
-      $qb->getParameters()
     );
   }
 
