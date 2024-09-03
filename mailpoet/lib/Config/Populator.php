@@ -35,14 +35,12 @@ use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Subscription\Captcha\CaptchaRenderer;
-use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Populator {
   public $prefix;
-  public $models;
   public $templates;
   /** @var SettingsController */
   private $settings;
@@ -78,7 +76,6 @@ class Populator {
     $this->wpSegment = $wpSegment;
     $this->referralDetector = $referralDetector;
     $this->prefix = Env::$dbPrefix;
-    $this->models = [];
     $this->templates = [
       'WelcomeBlank1Column',
       'WelcomeBlank12Column',
@@ -166,7 +163,6 @@ class Populator {
     $localizer = new Localizer();
     $localizer->forceLoadWebsiteLocaleText();
 
-    array_map([$this, 'populate'], $this->models);
     $this->populateNewsletterOptionFields();
     $this->populateNewsletterTemplates();
 
@@ -619,67 +615,6 @@ class Populator {
         AND t2.readonly = 1
       ");
     }
-  }
-
-  protected function populate($model) {
-    $modelMethod = Helpers::underscoreToCamelCase($model);
-    $table = $this->prefix . $model;
-    $dataDescriptor = $this->$modelMethod();
-    $rows = $dataDescriptor['rows'];
-    $identificationColumns = array_fill_keys(
-      $dataDescriptor['identification_columns'],
-      ''
-    );
-
-    foreach ($rows as $row) {
-      $existenceComparisonFields = array_intersect_key(
-        $row,
-        $identificationColumns
-      );
-
-      if (!$this->rowExists($table, $existenceComparisonFields)) {
-        $this->insertRow($table, $row);
-      } else {
-        $this->updateRow($table, $row, $existenceComparisonFields);
-      }
-    }
-  }
-
-  private function rowExists(string $tableName, array $columns): bool {
-    $qb = $this->entityManager->getConnection()->createQueryBuilder();
-    $qb->select('COUNT(*)')
-      ->from($tableName, 't')
-      ->where(
-        $qb->expr()->and(
-          ...array_map(
-            function ($column, $value) use ($qb) {
-              return $qb->expr()->eq('t.' . $column, $qb->createNamedParameter($value));
-            },
-            array_keys($columns),
-            $columns
-          )
-        )
-      );
-    return $qb->executeQuery()->fetchOne() > 0;
-  }
-
-  private function insertRow($table, $row) {
-    global $wpdb;
-
-    return $wpdb->insert(
-      $table,
-      $row
-    );
-  }
-
-  private function updateRow($table, $row, $where) {
-    global $wpdb;
-
-    return $wpdb->update(
-      $table,
-      $row,
-      $where
-    );
   }
 
   private function createSourceForSubscribers() {
