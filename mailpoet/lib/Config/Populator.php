@@ -78,9 +78,7 @@ class Populator {
     $this->wpSegment = $wpSegment;
     $this->referralDetector = $referralDetector;
     $this->prefix = Env::$dbPrefix;
-    $this->models = [
-      'newsletter_option_fields',
-    ];
+    $this->models = [];
     $this->templates = [
       'WelcomeBlank1Column',
       'WelcomeBlank12Column',
@@ -169,6 +167,7 @@ class Populator {
     $localizer->forceLoadWebsiteLocaleText();
 
     array_map([$this, 'populate'], $this->models);
+    $this->populateNewsletterOptionFields();
     $this->populateNewsletterTemplates();
 
     $this->createDefaultSegment();
@@ -382,7 +381,7 @@ class Populator {
     return $defaultSegment;
   }
 
-  protected function newsletterOptionFields() {
+  private function populateNewsletterOptionFields() {
     $optionFields = [
       [
         'name' => 'isScheduled',
@@ -510,13 +509,33 @@ class Populator {
       ],
     ];
 
-    return [
-      'rows' => $optionFields,
-      'identification_columns' => [
-        'name',
-        'newsletter_type',
-      ],
-    ];
+    // 1. Load all existing option fields from the database.
+    $tableName = $this->entityManager->getClassMetadata(NewsletterOptionFieldEntity::class)->getTableName();
+    $connection = $this->entityManager->getConnection();
+    $existingOptionFields = $connection->createQueryBuilder()
+      ->select('of.name, of.newsletter_type')
+      ->from($tableName, 'of')
+      ->executeQuery()
+      ->fetchAllAssociative();
+
+    // 2. Insert new option fields using a single query (good for first installs).
+    $inserts = array_udiff(
+      $optionFields,
+      $existingOptionFields,
+      fn($a, $b) => [$a['name'], $a['newsletter_type']] <=> [$b['name'], $b['newsletter_type']]
+    );
+    if ($inserts) {
+      $placeholders = implode(',', array_fill(0, count($inserts), '(?, ?)'));
+      $connection->executeStatement(
+        "INSERT INTO $tableName (name, newsletter_type) VALUES $placeholders",
+        array_merge(
+          ...array_map(
+            fn($of) => [$of['name'], $of['newsletter_type']],
+            $inserts
+          )
+        )
+      );
+    }
   }
 
   private function populateNewsletterTemplates(): void {

@@ -3,12 +3,47 @@
 namespace MailPoet\Test\Config;
 
 use MailPoet\Config\Populator;
+use MailPoet\Entities\NewsletterOptionFieldEntity;
 use MailPoet\Entities\NewsletterTemplateEntity;
 use MailPoetTest;
 use MailPoetVendor\Doctrine\ORM\Query;
 
 class PopulatorTest extends MailPoetTest {
+  private const OPTION_FIELD_COUNT = 31;
   private const TEMPLATE_COUNT = 76;
+
+  public function testItInsertsOptionFields(): void {
+    $populator = $this->diContainer->get(Populator::class);
+
+    // no option fields
+    $this->entityManager->createQueryBuilder()
+      ->delete(NewsletterOptionFieldEntity::class, 'f')
+      ->getQuery()
+      ->execute();
+    $optionFields = $this->getAllOptionFields();
+    $this->assertSame(0, count($optionFields));
+
+    // insert all option fields
+    $populator->up();
+    $optionFields = $this->getAllOptionFields();
+    $this->assertSame(self::OPTION_FIELD_COUNT, count($optionFields));
+
+    // delete only some fields
+    $this->entityManager->createQueryBuilder()
+      ->delete(NewsletterOptionFieldEntity::class, 'f')
+      ->where('f.id IN (:ids)')
+      ->setParameter('ids', array_map(fn($field) => $field->getId(), array_slice($optionFields, 0, 10)))
+      ->getQuery()
+      ->execute();
+
+    $optionFields = $this->getAllOptionFields();
+    $this->assertSame(self::OPTION_FIELD_COUNT - 10, count($optionFields));
+
+    // insert new option fields
+    $populator->up();
+    $optionFields = $this->getAllOptionFields();
+    $this->assertSame(self::OPTION_FIELD_COUNT, count($optionFields));
+  }
 
   public function testItInsertsTemplates(): void {
     $populator = $this->diContainer->get(Populator::class);
@@ -84,6 +119,15 @@ class PopulatorTest extends MailPoetTest {
     $populator->up();
     $templates = $this->getAllTemplates();
     $this->assertSame(self::TEMPLATE_COUNT, count($templates));
+  }
+
+  private function getAllOptionFields(): array {
+    return (array)$this->entityManager->createQueryBuilder()
+      ->select('f')
+      ->from(NewsletterOptionFieldEntity::class, 'f')
+      ->getQuery()
+      ->setHint(Query::HINT_REFRESH, true)
+      ->getResult();
   }
 
   private function getAllTemplates(): array {
