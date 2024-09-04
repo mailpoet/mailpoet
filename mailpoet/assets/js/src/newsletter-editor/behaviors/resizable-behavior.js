@@ -5,7 +5,7 @@
  */
 import Marionette from 'backbone.marionette';
 import { BehaviorsLookup } from 'newsletter-editor/behaviors/behaviors-lookup';
-import interact from 'interactjs';
+import interact from 'interact';
 
 var BL = BehaviorsLookup;
 
