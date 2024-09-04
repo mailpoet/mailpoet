@@ -45,6 +45,7 @@ export function usePreviewTemplates(): TemplatePreview[][] {
         ),
     };
   }, []);
+
   if (!templates || !patterns.length) {
     return [[]];
   }
