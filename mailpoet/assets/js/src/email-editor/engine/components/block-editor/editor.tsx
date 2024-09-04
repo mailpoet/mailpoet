@@ -6,8 +6,7 @@ import { useSelect } from '@wordpress/data';
 import {
   ErrorBoundary,
   PostLockedModal,
-  // @ts-expect-error No types for this exist yet.
-  privateApis as editorPrivateApis,
+  EditorProvider,
 } from '@wordpress/editor';
 import { useMemo } from '@wordpress/element';
 import { SlotFillProvider, Spinner } from '@wordpress/components';
@@ -18,10 +17,7 @@ import { storeName } from '../../store';
  * Internal dependencies
  */
 import { Layout } from './layout';
-import { unlock } from '../../../lock-unlock';
 import { useNavigateToEntityRecord } from '../../hooks/use-navigate-to-entity-record';
-
-const { ExperimentalEditorProvider } = unlock(editorPrivateApis);
 
 export function InnerEditor({
   postId: initialPostId,
@@ -86,11 +82,12 @@ export function InnerEditor({
 
   return (
     <SlotFillProvider>
-      <ExperimentalEditorProvider
+      <EditorProvider
         settings={editorSettings}
         post={post}
         initialEdits={initialEdits}
         useSubRegistry={false}
+        // @ts-expect-error
         __unstableTemplate={template}
         {...props}
       >
@@ -99,7 +96,7 @@ export function InnerEditor({
           <Layout />
           <PostLockedModal />
         </ErrorBoundary>
-      </ExperimentalEditorProvider>
+      </EditorProvider>
     </SlotFillProvider>
   );
 }

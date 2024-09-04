@@ -4,12 +4,7 @@ import {
   BlockSelectionClearer,
 } from '@wordpress/block-editor';
 
-import {
-  UnsavedChangesWarning,
-  // @ts-expect-error No types for this exist yet.
-  privateApis as editorPrivateApis,
-  store as editorStore,
-} from '@wordpress/editor';
+import { UnsavedChangesWarning, store as editorStore } from '@wordpress/editor';
 import { uploadMedia } from '@wordpress/media-utils';
 import classnames from 'classnames';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -30,10 +25,10 @@ import { ListviewSidebar } from '../listview-sidebar/listview-sidebar';
 import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 import { EditorNotices, SentEmailNotice } from '../notices';
 import { StylesSidebar } from '../styles-sidebar';
-import { unlock } from '../../../lock-unlock';
-import { TemplateSelection } from '../template-select';
+import { VisualEditor } from './visual-editor/visual-editor';
+import { useRef } from '@wordpress/element';
 
-const { EditorCanvas } = unlock(editorPrivateApis);
+import { TemplateSelection } from '../template-select';
 
 export function Layout() {
   const {
@@ -72,6 +67,8 @@ export function Layout() {
   const className = classnames('edit-post-layout', {
     'is-sidebar-opened': isSidebarOpened,
   });
+
+  const contentRef = useRef(null);
 
   const contentWrapperStyles = useResizeCanvas(previewDeviceType);
 
@@ -127,12 +124,12 @@ export function Layout() {
                 })}
                 style={contentWrapperStyles}
               >
-                <EditorCanvas
+                <VisualEditor
                   disableIframe={false}
                   styles={[...settings.styles, ...emailCss]}
-                  autoFocus
                   className="has-global-padding"
-                  renderAppender={false} // With false the appender is rendered in the template mode
+                  contentRef={contentRef}
+                  iframeProps={{}}
                 />
               </div>
             </BlockSelectionClearer>
