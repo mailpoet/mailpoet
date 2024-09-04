@@ -10,7 +10,7 @@ import Marionette from 'backbone.marionette';
 import _ from 'underscore';
 import jQuery from 'jquery';
 import { BehaviorsLookup } from 'newsletter-editor/behaviors/behaviors-lookup';
-import interact from 'interactjs';
+import interact from 'interact';
 
 BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
   defaults: {
