@@ -71,8 +71,18 @@ class SegmentsRepository extends Repository {
   }
 
   public function getWPUsersSegment(): SegmentEntity {
-    $segment = $this->findOneBy(['type' => SegmentEntity::TYPE_WP_USERS]);
+    $cached = current(
+      array_filter(
+        $this->getAllFromIdentityMap(),
+        fn(SegmentEntity $segment) => $segment->getType() === SegmentEntity::TYPE_WP_USERS
+      )
+    );
 
+    if ($cached) {
+      return $cached;
+    }
+
+    $segment = $this->findOneBy(['type' => SegmentEntity::TYPE_WP_USERS]);
     if (!$segment) {
       // create the wp users segment
       $segment = new SegmentEntity(
@@ -80,15 +90,24 @@ class SegmentsRepository extends Repository {
         SegmentEntity::TYPE_WP_USERS,
         __('This list contains all of your WordPress users.', 'mailpoet')
       );
-
       $this->entityManager->persist($segment);
       $this->entityManager->flush();
     }
-
     return $segment;
   }
 
   public function getWooCommerceSegment(): SegmentEntity {
+    $cached = current(
+      array_filter(
+        $this->getAllFromIdentityMap(),
+        fn(SegmentEntity $segment) => $segment->getType() === SegmentEntity::TYPE_WC_USERS
+      )
+    );
+
+    if ($cached) {
+      return $cached;
+    }
+
     $segment = $this->findOneBy(['type' => SegmentEntity::TYPE_WC_USERS]);
     if (!$segment) {
       // create the WooCommerce customers segment
