@@ -67,8 +67,8 @@ BehaviorsLookup.ContainerDropZoneBehavior = Marionette.Behavior.extend({
         //     display position visualization there,
         //     remove other visualizations from this container
         var dropPosition = that.getDropPosition(
-          event.dragEvent.pageX,
-          event.dragEvent.pageY,
+          event.dragmove.pageX,
+          event.dragmove.pageY,
           view.$el,
           view.model.get('orientation'),
           view.model.get('blocks').length,
