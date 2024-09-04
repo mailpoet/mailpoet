@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.5
 Tested up to: 6.6
-Stable tag: 5.1.0
+Stable tag: 5.1.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -230,8 +230,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.1.0 - 2024-09-02 =
-* Improved: form validation messages;
-* Fixed: using ${var} in strings is deprecated, use {$var} instead.
+= 5.1.1 - 2024-09-04 =
+* Fixed: broken email rendering when ALC, Products, or WC content blocks are manually dragged into a column block (since 4.56.0). If you experience this issue, please readd these blocks or drag and drop the existing ones which should fix the issue.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)
