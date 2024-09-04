@@ -34,7 +34,7 @@ class SetupTest extends \MailPoetTest {
     $captchaRenderer = $this->diContainer->get(CaptchaRenderer::class);
     $migrator = $this->diContainer->get(Migrator::class);
     $cronActionScheduler = $this->diContainer->get(ActionScheduler::class);
-    $router = new Setup($wpStub, new Activator($this->connection, $settings, $populator, $wpStub, $migrator, $cronActionScheduler));
+    $router = new Setup($wpStub, new Activator($this->connection, $settings, $populator, $wpStub, $migrator, $cronActionScheduler), $settings);
     $response = $router->reset();
     verify($response->status)->equals(APIResponse::STATUS_OK);
 
