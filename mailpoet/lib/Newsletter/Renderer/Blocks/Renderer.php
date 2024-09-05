@@ -4,6 +4,8 @@ namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
+use MailPoet\Newsletter\Renderer\Columns\Renderer as ColumnsRenderer;
+use MailPoet\Newsletter\Renderer\Preprocessor;
 use MailPoet\Newsletter\Renderer\StylesHelper;
 
 class Renderer {
@@ -40,6 +42,9 @@ class Renderer {
   /** @var Coupon */
   private $coupon;
 
+  private Preprocessor $preprocessor;
+  private ColumnsRenderer $columnsRenderer;
+
   public function __construct(
     AutomatedLatestContentBlock $ALC,
     Button $button,
@@ -51,6 +56,8 @@ class Renderer {
     Spacer $spacer,
     Text $text,
     Placeholder $placeholder,
+    Preprocessor $preprocessor,
+    ColumnsRenderer $columnsRenderer,
     Coupon $coupon
   ) {
     $this->ALC = $ALC;
@@ -64,6 +71,8 @@ class Renderer {
     $this->text = $text;
     $this->placeholder = $placeholder;
     $this->coupon = $coupon;
+    $this->columnsRenderer = $columnsRenderer;
+    $this->preprocessor = $preprocessor;
   }
 
   public function render(NewsletterEntity $newsletter, $data) {
@@ -102,6 +111,15 @@ class Renderer {
   }
 
   public function createElementFromBlockType(NewsletterEntity $newsletter, $block, $columnBaseWidth) {
+    if (
+      $block['type'] === 'automatedLatestContentLayout'
+      || $block['type'] === 'woocommerceHeading'
+      || $block['type'] === 'woocommerceContent'
+    ) {
+      $preprocessed = $this->preprocessor->processBlock($newsletter, $block, $columnBaseWidth);
+      return $this->renderContentBlocks($newsletter, $preprocessed);
+    }
+
     if ($block['type'] === 'automatedLatestContent') {
       return $this->processAutomatedLatestContent($newsletter, $block, $columnBaseWidth);
     }
@@ -137,5 +155,18 @@ class Renderer {
     ];
     $transformedPosts = StylesHelper::applyTextAlignment($transformedPosts);
     return $this->renderBlocksInColumn($newsletter, $transformedPosts, $columnBaseWidth);
+  }
+
+  private function renderContentBlocks(NewsletterEntity $newsletter, $contentBlocks) {
+    $renderedContent = [];
+    foreach ($contentBlocks as $contentBlock) {
+      $columnsData = $this->render($newsletter, $contentBlock);
+
+      $renderedContent[] = $this->columnsRenderer->render(
+        $contentBlock,
+        $columnsData
+      );
+    }
+    return implode('', $renderedContent);
   }
 }
