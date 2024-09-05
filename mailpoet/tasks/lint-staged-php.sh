@@ -2,7 +2,7 @@
 
 set -e
 
-. $PWD/.env
+. "$PWD/.env"
 
 if [ "$MP_GIT_HOOKS_ENABLE" != "true" ]; then
   echo "MP_GIT_HOOKS_ENABLE is not set to 'true'. Skipping lint-staged-php."
@@ -10,19 +10,19 @@ if [ "$MP_GIT_HOOKS_ENABLE" != "true" ]; then
 fi
 
 if [ "$MP_GIT_HOOKS_PHPLINT" = "true" ]; then
-  phplint $@
+  phplint "$@"
 else
   echo "MP_GIT_HOOKS_PHPLINT not set to 'true', skipping phplint"
 fi
 
 if [ "$MP_GIT_HOOKS_CODE_SNIFFER" = "true" ]; then
-  ./do qa:code-sniffer $@
+  ./do qa:code-sniffer "$@"
 else
   echo "MP_GIT_HOOKS_CODE_SNIFFER not set to 'true', skipping code sniffer"
 fi
 
 if [ "$MP_GIT_HOOKS_PHPSTAN" = "true" ]; then
-  bash -c './do qa:phpstan' $@
+  bash -c './do qa:phpstan' "$@"
 else
   echo "MP_GIT_HOOKS_PHPSTAN not set to 'true', skipping PHPStan"
 fi
