@@ -48,7 +48,6 @@ exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/SQLite3'
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/SQLSrv');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/SQLite');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Platforms/SQLServer');
-exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Schema');
 exec('rm -r ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Tools');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractDB2Driver.php');
 exec('rm ' . __DIR__ . '/../vendor-prefixed/doctrine/dbal/src/Driver/AbstractOracleDriver.php');
