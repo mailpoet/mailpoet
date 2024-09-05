@@ -111,7 +111,7 @@ class Renderer {
       $renderedBody = "";
       try {
         $content = $this->preprocessor->process($newsletter, $content, $preview, $sendingQueue);
-        $renderedBody = $this->bodyRenderer->renderBody($newsletter, $content);
+        $renderedBody = $this->bodyRenderer->renderBody($newsletter, $content, $preview, $sendingQueue);
       } catch (NewsletterProcessingException $e) {
         $this->loggerFactory->getLogger(LoggerFactory::TOPIC_COUPONS)->error(
           $e->getMessage(),

@@ -3,6 +3,7 @@
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Newsletter\Renderer\Columns\ColumnsHelper;
 use MailPoet\Newsletter\Renderer\Columns\Renderer as ColumnsRenderer;
 use MailPoet\Newsletter\Renderer\Preprocessor;
@@ -75,7 +76,7 @@ class Renderer {
     $this->preprocessor = $preprocessor;
   }
 
-  public function render(NewsletterEntity $newsletter, $data) {
+  public function render(NewsletterEntity $newsletter, $data, bool $preview, SendingQueueEntity $sendingQueue = null) {
     if (is_null($data['blocks']) && isset($data['type'])) {
       return null;
     }
@@ -85,20 +86,20 @@ class Renderer {
     $columnContent = [];
 
     foreach ($data['blocks'] as $index => $columnBlocks) {
-      $renderedBlockElement = $this->renderBlocksInColumn($newsletter, $columnBlocks, $columnWidths[$index]);
+      $renderedBlockElement = $this->renderBlocksInColumn($newsletter, $columnBlocks, $columnWidths[$index], $preview, $sendingQueue);
       $columnContent[] = $renderedBlockElement;
     }
 
     return $columnContent;
   }
 
-  private function renderBlocksInColumn(NewsletterEntity $newsletter, $block, $columnBaseWidth) {
+  private function renderBlocksInColumn(NewsletterEntity $newsletter, $block, $columnBaseWidth, bool $preview, ?SendingQueueEntity $sendingQueue = null) {
     $blockContent = '';
     $_this = $this;
-    array_map(function($block) use (&$blockContent, $columnBaseWidth, $newsletter, $_this) {
-      $renderedBlockElement = $_this->createElementFromBlockType($newsletter, $block, $columnBaseWidth);
+    array_map(function($block) use (&$blockContent, $columnBaseWidth, $newsletter, $preview, $sendingQueue, $_this) {
+      $renderedBlockElement = $_this->createElementFromBlockType($newsletter, $block, $columnBaseWidth, $preview, $sendingQueue);
       if (isset($block['blocks'])) {
-        $renderedBlockElement = $_this->renderBlocksInColumn($newsletter, $block, $columnBaseWidth);
+        $renderedBlockElement = $_this->renderBlocksInColumn($newsletter, $block, $columnBaseWidth, $preview, $sendingQueue);
         // nested vertical column container is rendered as an array
         if (is_array($renderedBlockElement)) {
           $renderedBlockElement = implode('', $renderedBlockElement);
@@ -110,18 +111,19 @@ class Renderer {
     return $blockContent;
   }
 
-  public function createElementFromBlockType(NewsletterEntity $newsletter, $block, $columnBaseWidth) {
+  public function createElementFromBlockType(NewsletterEntity $newsletter, $block, $columnBaseWidth, bool $preview, ?SendingQueueEntity $sendingQueue) {
     if (
       $block['type'] === 'automatedLatestContentLayout'
       || $block['type'] === 'woocommerceHeading'
       || $block['type'] === 'woocommerceContent'
+      || $block['type'] === 'abandonedCartContent'
     ) {
-      $preprocessed = $this->preprocessor->processBlock($newsletter, $block, $columnBaseWidth);
-      return $this->renderContentBlocks($newsletter, $preprocessed);
+      $preprocessed = $this->preprocessor->processBlock($newsletter, $block, $preview, $sendingQueue);
+      return $this->renderContentBlocks($newsletter, $preprocessed, $preview, $sendingQueue);
     }
 
     if ($block['type'] === 'automatedLatestContent') {
-      return $this->processAutomatedLatestContent($newsletter, $block, $columnBaseWidth);
+      return $this->processAutomatedLatestContent($newsletter, $block, $columnBaseWidth, $preview, $sendingQueue);
     }
     $block = StylesHelper::applyTextAlignment($block);
     switch ($block['type']) {
@@ -149,18 +151,18 @@ class Renderer {
     return "<!-- Skipped unsupported block type: {$block['type']} -->";
   }
 
-  public function processAutomatedLatestContent(NewsletterEntity $newsletter, $args, $columnBaseWidth) {
+  public function processAutomatedLatestContent(NewsletterEntity $newsletter, $args, $columnBaseWidth, bool $preview, ?SendingQueueEntity $sendingQueue) {
     $transformedPosts = [
       'blocks' => $this->ALC->render($newsletter, $args),
     ];
     $transformedPosts = StylesHelper::applyTextAlignment($transformedPosts);
-    return $this->renderBlocksInColumn($newsletter, $transformedPosts, $columnBaseWidth);
+    return $this->renderBlocksInColumn($newsletter, $transformedPosts, $columnBaseWidth, $preview, $sendingQueue);
   }
 
-  private function renderContentBlocks(NewsletterEntity $newsletter, $contentBlocks) {
+  private function renderContentBlocks(NewsletterEntity $newsletter, $contentBlocks, bool $preview, ?SendingQueueEntity $sendingQueue) {
     $renderedContent = [];
     foreach ($contentBlocks as $contentBlock) {
-      $columnsData = $this->render($newsletter, $contentBlock);
+      $columnsData = $this->render($newsletter, $contentBlock, $preview, $sendingQueue);
 
       $renderedContent[] = $this->columnsRenderer->render(
         $contentBlock,
