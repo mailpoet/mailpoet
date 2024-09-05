@@ -21,12 +21,6 @@ else
   echo "MP_GIT_HOOKS_CODE_SNIFFER not set to 'true', skipping code sniffer"
 fi
 
-if [ "$MP_GIT_HOOKS_MINIMAL_PLUGIN_STANDARDS" = "true" ]; then
-  ./do qa:minimal-plugin-standard $@
-else
-  echo "MP_GIT_HOOKS_MINIMAL_PLUGIN_STANDARDS not set to 'true', skipping minimal plugin standards"
-fi
-
 if [ "$MP_GIT_HOOKS_PHPSTAN" = "true" ]; then
   bash -c './do qa:phpstan' $@
 else
