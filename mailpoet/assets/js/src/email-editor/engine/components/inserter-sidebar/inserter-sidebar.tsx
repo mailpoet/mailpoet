@@ -2,8 +2,9 @@ import {
   __experimentalLibrary as Library,
   store as blockEditorStore,
 } from '@wordpress/block-editor';
-import { useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
+import { storeName } from '../../store';
 
 export function InserterSidebar() {
   const { postContentId, isEditingEmailContent } = useSelect((select) => {
@@ -16,6 +17,8 @@ export function InserterSidebar() {
     };
   });
 
+  const { toggleInserterSidebar } = useDispatch(storeName);
+
   return (
     <div className="edit-post-editor__inserter-panel">
       <div className="edit-post-editor__inserter-panel-content">
@@ -24,6 +27,7 @@ export function InserterSidebar() {
           showInserterHelpPanel={false}
           // In the email content mode we insert primarily into the post content block.
           rootClientId={isEditingEmailContent ? postContentId : null}
+          onClose={toggleInserterSidebar}
         />
       </div>
     </div>
