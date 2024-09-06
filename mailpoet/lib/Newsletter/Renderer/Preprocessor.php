@@ -52,17 +52,26 @@ class Preprocessor {
     if (!array_key_exists('blocks', $content)) {
       return $content;
     }
-    $blocks = [];
     $contentBlocks = $content['blocks'];
     $contentBlocks = $this->couponPreProcessor->processCoupons($newsletter, $contentBlocks, $preview);
-    foreach ($contentBlocks as $block) {
-      $processedBlock = $this->processBlock($newsletter, $block, $preview, $sendingQueue);
-      if (!empty($processedBlock)) {
-        $blocks = array_merge($blocks, $processedBlock);
+    $content['blocks'] = $this->processContainer($newsletter, $contentBlocks, $preview, $sendingQueue);
+    return $content;
+  }
+
+  public function processContainer(NewsletterEntity $newsletter, $blocks, bool $preview, ?SendingQueueEntity $sendingQueue): array {
+    $containerBlocks = [];
+    foreach ($blocks as $block) {
+      if ($block['type'] === 'container' && isset($block['blocks'])) {
+        $block['blocks'] = $this->processContainer($newsletter, $block['blocks'], $preview, $sendingQueue);
+        $containerBlocks = array_merge($containerBlocks, [$block]);
+      } else {
+        $processedBlock = $this->processBlock($newsletter, $block, $preview, $sendingQueue);
+        if (!empty($processedBlock)) {
+          $containerBlocks = array_merge($containerBlocks, $processedBlock);
+        }
       }
     }
-    $content['blocks'] = $blocks;
-    return $content;
+    return $containerBlocks;
   }
 
   public function processBlock(NewsletterEntity $newsletter, array $block, bool $preview = false, SendingQueueEntity $sendingQueue = null): array {
