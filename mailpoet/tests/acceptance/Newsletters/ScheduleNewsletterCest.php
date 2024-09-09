@@ -33,6 +33,10 @@ class ScheduleNewsletterCest {
     $i->waitForText('The newsletter has been scheduled.');
     $i->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
     $i->waitForText('6:00 am');
+    $i->cli(['option', 'update', 'timezone_string', 'Etc/GMT+10']);
+    $i->reloadPage();
+    $i->waitForElement('[data-automation-id="newsletters_listing_tabs"]');
+    $i->waitForText('8:00 pm');
   }
 
   public function scheduleStandardNewsletterButtonCaption(\AcceptanceTester $i) {
