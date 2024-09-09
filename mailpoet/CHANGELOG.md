@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.2.0 - 2024-09-09 =
+
+- Fixed: emails with incorrectly nested ALC or WooCommerce placeholder blocks can't be sent.
+
 = 5.1.1 - 2024-09-04 =
 
 - Fixed: broken email rendering when ALC, Products, or WC content blocks are manually dragged into a column block (since 4.56.0). If you experience this issue, please readd these blocks or drag and drop the existing ones which should fix the issue.
