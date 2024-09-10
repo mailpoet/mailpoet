@@ -46,7 +46,8 @@ fi
 # Production libraries.
 echo '[BUILD] Fetching production libraries'
 mkdir vendor-prefixed
-./tools/vendor/composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
+# When we use COMPOSER_MIRROR_PATH_REPOS, packages from the monorepo will be copied instead of symlinked https://getcomposer.org/doc/03-cli.md#composer-mirror-path-repos
+COMPOSER_MIRROR_PATH_REPOS=1 ./tools/vendor/composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-scripts
 
 echo '[BUILD] Fetching prefixed production libraries'
 ./tools/vendor/composer.phar install --no-dev --prefer-dist --working-dir=./prefixer/
@@ -79,6 +80,7 @@ cp -Rf vendor-prefixed $plugin_name
 cp -Rf views $plugin_name
 rm -Rf $plugin_name/assets/css/src
 rm -Rf $plugin_name/assets/js/src
+
 
 # Remove generated PHP files after they were copied for release
 rm -Rf generated/*.php
