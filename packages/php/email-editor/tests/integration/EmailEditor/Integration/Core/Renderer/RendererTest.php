@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Integrations\Core\Renderer;
+namespace EmailEditor\Integration\Core\Renderer;
 
 use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Engine\Renderer\Renderer;

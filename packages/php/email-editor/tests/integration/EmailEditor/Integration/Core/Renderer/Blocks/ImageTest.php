@@ -1,9 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
+namespace EmailEditor\Integration\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Image;
 
 class ImageTest extends \MailPoetTest {
   /** @var Image */
