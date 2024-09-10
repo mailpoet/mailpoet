@@ -2,6 +2,7 @@
 
 namespace MailPoet\Util\Notices;
 
+use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
@@ -16,14 +17,19 @@ class DisabledWPCronNotice {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var CronHelper */
+  private $cronHelper;
+
   /** @var SettingsController */
   private $settings;
 
   public function __construct(
     WPFunctions $wp,
+    CronHelper $cronHelper,
     SettingsController $settings
   ) {
     $this->wp = $wp;
+    $this->cronHelper = $cronHelper;
     $this->settings = $settings;
   }
 
@@ -34,13 +40,21 @@ class DisabledWPCronNotice {
     $isDismissed = $this->wp->getTransient(self::OPTION_NAME);
     $currentMethod = $this->settings->get(CronTrigger::SETTING_CURRENT_METHOD);
     $isWPCronMethodActive = $currentMethod === CronTrigger::METHOD_ACTION_SCHEDULER;
-    if (!$isDismissed && $isWPCronMethodActive && $this->isWPCronDisabled()) {
+    $isCronFunctional = $this->isCronFunctional();
+    if (!$isDismissed && $isWPCronMethodActive && $this->isWPCronDisabled() && !$isCronFunctional) {
       return $this->display();
     }
   }
 
   public function isWPCronDisabled() {
     return defined('DISABLE_WP_CRON') && DISABLE_WP_CRON;
+  }
+
+  public function isCronFunctional(): bool {
+    // If a cron run was started/completed less than an hour ago, we consider it functional.
+    $lastRunThreshold = time() - HOUR_IN_SECONDS;
+    return ($this->cronHelper->getDaemon()['run_started_at'] ?? 0) > $lastRunThreshold
+      || ($this->cronHelper->getDaemon()['run_completed_at'] ?? 0) > $lastRunThreshold;
   }
 
   public function display() {

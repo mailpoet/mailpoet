@@ -3,6 +3,7 @@
 namespace MailPoet\Util\Notices;
 
 use Codeception\Util\Stub;
+use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
@@ -14,12 +15,20 @@ class DisabledWPCronNoticeTest extends \MailPoetTest {
   /** @var WPFunctions */
   private $wp;
 
+  /** @var CronHelper */
+  private $cronHelper;
+
   private $originalCronMethodSetting;
 
   public function _before() {
     parent::_before();
 
+    $now = time();
     $this->settings = SettingsController::getInstance();
+    $this->cronHelper = $this->make(
+      CronHelper::class,
+      ['getDaemon' => ['run_started_at' => $now, 'run_completed_at' => $now]],
+    );
     $this->originalCronMethodSetting = $this->settings->get(CronTrigger::SETTING_CURRENT_METHOD);
     $this->settings->set(CronTrigger::SETTING_CURRENT_METHOD, CronTrigger::METHOD_ACTION_SCHEDULER);
 
@@ -34,9 +43,14 @@ class DisabledWPCronNoticeTest extends \MailPoetTest {
   }
 
   public function testItPrintsWarningWhenWPCronIsDisabled() {
+    $lastRun = time() - DAY_IN_SECONDS;
+    $cronHelper = $this->make(
+      CronHelper::class,
+      ['getDaemon' => ['run_started_at' => $lastRun, 'run_completed_at' => $lastRun]],
+    );
     $disabledWPCronNotice = Stub::construct(
       DisabledWPCronNotice::class,
-      [$this->wp, $this->settings],
+      [$this->wp, $cronHelper, $this->settings],
       ['isWPCronDisabled' => true]
     );
     $notice = $disabledWPCronNotice->init(true);
@@ -47,7 +61,7 @@ class DisabledWPCronNoticeTest extends \MailPoetTest {
   public function testItPrintsNoWarningWhenWPCronIsNotDisabled() {
     $disabledWPCronNotice = Stub::construct(
       DisabledWPCronNotice::class,
-      [$this->wp, $this->settings],
+      [$this->wp, $this->cronHelper, $this->settings],
       ['isWPCronDisabled' => false]
     );
     $notice = $disabledWPCronNotice->init(true);
@@ -58,7 +72,7 @@ class DisabledWPCronNoticeTest extends \MailPoetTest {
     $this->settings->set(CronTrigger::SETTING_CURRENT_METHOD, CronTrigger::METHOD_WORDPRESS);
     $disabledWPCronNotice = Stub::construct(
       DisabledWPCronNotice::class,
-      [$this->wp, $this->settings],
+      [$this->wp, $this->cronHelper, $this->settings],
       ['isWPCronDisabled' => true]
     );
     $notice = $disabledWPCronNotice->init(true);
@@ -68,7 +82,7 @@ class DisabledWPCronNoticeTest extends \MailPoetTest {
   public function testItPrintsNoWarningWhenDisabled() {
     $disabledWPCronNotice = Stub::construct(
       DisabledWPCronNotice::class,
-      [$this->wp, $this->settings],
+      [$this->wp, $this->cronHelper, $this->settings],
       ['isWPCronDisabled' => true]
     );
     $warning = $disabledWPCronNotice->init(false);
@@ -78,7 +92,18 @@ class DisabledWPCronNoticeTest extends \MailPoetTest {
   public function testItPrintsNoWarningWhenDismissed() {
     $disabledWPCronNotice = Stub::construct(
       DisabledWPCronNotice::class,
-      [$this->wp, $this->settings],
+      [$this->wp, $this->cronHelper, $this->settings],
+      ['isWPCronDisabled' => true]
+    );
+    $disabledWPCronNotice->disable();
+    $warning = $disabledWPCronNotice->init(true);
+    verify($warning)->null();
+  }
+
+  public function testItPrintsNoWarningWhenCronFunctions() {
+    $disabledWPCronNotice = Stub::construct(
+      DisabledWPCronNotice::class,
+      [$this->wp, $this->cronHelper, $this->settings],
       ['isWPCronDisabled' => true]
     );
     $disabledWPCronNotice->disable();

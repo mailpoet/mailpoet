@@ -4,6 +4,7 @@ namespace MailPoet\Util\Notices;
 
 use MailPoet\Config\Menu;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\Cron\CronHelper;
 use MailPoet\Mailer\MailerFactory;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
@@ -73,6 +74,7 @@ class PermanentNotices {
   
   public function __construct(
     WPFunctions $wp,
+    CronHelper $cronHelper,
     EntityManager $entityManager,
     TrackingConfig $trackingConfig,
     SubscribersRepository $subscribersRepository,
@@ -94,7 +96,7 @@ class PermanentNotices {
     $this->changedTrackingNotice = new ChangedTrackingNotice($wp);
     $this->deprecatedFilterNotice = new DeprecatedFilterNotice($wp);
     $this->disabledMailFunctionNotice = new DisabledMailFunctionNotice($wp, $settings, $subscribersFeature, $mailerFactory);
-    $this->disabledWPCronNotice = new DisabledWPCronNotice($wp, $settings);
+    $this->disabledWPCronNotice = new DisabledWPCronNotice($wp, $cronHelper, $settings);
     $this->pendingApprovalNotice = new PendingApprovalNotice($settings);
     $this->woocommerceVersionWarning = new WooCommerceVersionWarning($wp);
     $this->premiumFeaturesAvailableNotice = new PremiumFeaturesAvailableNotice($subscribersFeature, $serviceChecker, $wp);
