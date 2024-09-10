@@ -1,7 +1,9 @@
 {
+  "minimum-stability": "dev",
   "require": {
     "php": ">=7.4",
     "dragonmantank/cron-expression": "^3.3",
+    "mailpoet/email-editor": "*",
     "mixpanel/mixpanel-php": "2.*",
     "woocommerce/action-scheduler": "^3.8.0"
   },
@@ -31,6 +33,12 @@
     "woocommerce/qit-cli": "^0.5.4",
     "wp-cli/wp-cli-bundle": "2.10.0"
   },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../packages/php/email-editor"
+    }
+  ],
   "autoload": {
     "classmap": [
       "lib-3rd-party",
