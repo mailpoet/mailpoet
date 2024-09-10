@@ -98,7 +98,6 @@ function renderMSSSection(data) {
 export function SystemStatus() {
   const systemStatusData = window.systemStatusData;
   const actionSchedulerData = window.actionSchedulerData;
-  const dataInconsistencies = window.dataInconsistencies;
 
   return (
     <>
@@ -116,7 +115,7 @@ export function SystemStatus() {
       {actionSchedulerData ? (
         <QueueStatus statusData={systemStatusData.queueStatus} />
       ) : null}
-      <DataInconsistencies dataInconsistencies={dataInconsistencies} />
+      <DataInconsistencies />
     </>
   );
 }

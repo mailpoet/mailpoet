@@ -1,6 +1,6 @@
 import { MailPoet } from 'mailpoet';
 import { Button } from '@wordpress/components';
-import { useState, useCallback, useMemo } from '@wordpress/element';
+import { useState, useCallback, useMemo, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { KeyValueTable } from 'common/key-value-table';
 
@@ -8,13 +8,27 @@ type DataInconsistencies = {
   [key: string]: number;
 };
 
-type Props = {
-  dataInconsistencies: DataInconsistencies;
-};
-
-export function DataInconsistencies({ dataInconsistencies }: Props) {
-  const [data, setData] = useState(dataInconsistencies);
+export function DataInconsistencies() {
+  const [data, setData] = useState({ total: 0 } as DataInconsistencies);
   const [cleaningKey, setCleaningKey] = useState('');
+
+  useEffect(() => {
+    MailPoet.Ajax.post({
+      api_version: window.mailpoet_api_version,
+      endpoint: 'help',
+      action: 'getInconsistentDataStatus',
+    })
+      .done((response) => {
+        setData((response.data as DataInconsistencies) || null);
+      })
+      .catch((e) => {
+        MailPoet.Notice.show({
+          type: 'error',
+          message: e.errors.map((error) => error.message).join(' '),
+          scroll: true,
+        });
+      });
+  }, []);
 
   const labelsMap = useMemo(
     () => ({

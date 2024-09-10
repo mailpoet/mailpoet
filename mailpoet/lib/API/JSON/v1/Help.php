@@ -63,6 +63,10 @@ class Help extends APIEndpoint {
     }
   }
 
+  public function getInconsistentDataStatus(): Response {
+    return $this->successResponse($this->dataInconsistencyController->getInconsistentDataStatus());
+  }
+
   public function fixInconsistentData($data): Response {
     try {
       $this->dataInconsistencyController->fixInconsistentData($data['inconsistency'] ?? '');
