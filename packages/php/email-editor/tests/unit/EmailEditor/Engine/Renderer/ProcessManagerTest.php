@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace unit\EmailEditor\Engine\Renderer;
+namespace EmailEditor\Engine\Renderer;
 
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\HighlightingPostprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\VariablesPostprocessor;

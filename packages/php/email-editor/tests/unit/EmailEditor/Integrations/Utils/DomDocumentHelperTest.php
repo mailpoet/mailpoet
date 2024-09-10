@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace unit\EmailEditor\Integrations\Utils;
+namespace EmailEditor\Integrations\Utils;
 
 use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 
