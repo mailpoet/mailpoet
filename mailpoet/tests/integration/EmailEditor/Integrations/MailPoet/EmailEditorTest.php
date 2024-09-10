@@ -12,7 +12,7 @@ class EmailEditorTest extends \MailPoetTest {
 
   /** @var FeatureFlagsController */
   private $featureFlagsController;
-  
+
   public function _before() {
     $this->emailEditor = $this->diContainer->get(EmailEditor::class);
     $this->featureFlagsController = $this->diContainer->get(FeatureFlagsController::class);

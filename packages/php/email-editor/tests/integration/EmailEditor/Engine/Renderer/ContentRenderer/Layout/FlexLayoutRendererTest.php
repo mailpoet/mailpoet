@@ -1,8 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout;
+namespace EmailEditor\Engine\Renderer\ContentRenderer\Layout;
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\DummyBlockRenderer;
+use EmailEditor\Engine\Renderer\ContentRenderer\DummyBlockRenderer;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout\FlexLayoutRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 require_once __DIR__ . '/../DummyBlockRenderer.php';

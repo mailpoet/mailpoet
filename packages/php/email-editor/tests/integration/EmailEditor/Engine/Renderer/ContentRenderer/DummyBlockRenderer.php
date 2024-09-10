@@ -1,7 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer;
+namespace EmailEditor\Engine\Renderer\ContentRenderer;
 
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;
 use MailPoet\EmailEditor\Engine\SettingsController;
 
 class DummyBlockRenderer implements BlockRenderer {
