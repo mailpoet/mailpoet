@@ -9,9 +9,12 @@ class StatsPageCest {
     $i->wantTo('Open stats page of a sent newsletter');
 
     $newsletterTitle = 'Stats Page Test';
+    $date = (new \DateTimeImmutable('2024-01-01 06:00:00'));
     (new Newsletter())->withSubject($newsletterTitle)
       ->withSentStatus()
-      ->withSendingQueue()
+      ->withSendingQueue(
+        ['created_at' => $date,
+        ])
       ->create();
 
     $i->login();
@@ -19,6 +22,11 @@ class StatsPageCest {
     $i->waitForText($newsletterTitle);
     $i->clickItemRowActionByItemName($newsletterTitle, 'Statistics');
     $i->waitForText($newsletterTitle);
+    $i->waitForText('6:00 am');
+    $i->cli(['option', 'update', 'timezone_string', 'Etc/GMT+10']);
+    $i->reloadPage();
+    $i->waitForText($newsletterTitle);
+    $i->waitForText('8:00 pm');
 
     if (!$i->checkPluginIsActive('mailpoet-premium/mailpoet-premium.php')) {
       // the premium plugin is not active
