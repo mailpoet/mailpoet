@@ -6,6 +6,7 @@ use Codeception\Util\Locator;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Subscriber;
+use MailPoetVendor\Carbon\Carbon;
 
 class ManageSubscribersCest {
 
@@ -38,6 +39,7 @@ class ManageSubscribersCest {
   private function generateSingleSubscriber($newSubscriberEmail, $subscriberFirstName, $subscriberLastName, $segment) {
     $subscriberFactory = new Subscriber();
     return $subscriberFactory
+      ->withCreatedAt(new Carbon('2024-09-01 06:00:00'))
       ->withEmail($newSubscriberEmail)
       ->withFirstName($subscriberFirstName)
       ->withLastName($subscriberLastName)
@@ -70,6 +72,21 @@ class ManageSubscribersCest {
     $i->searchFor('Alec Saunders');
     $i->waitForText('Alec Saunders');
     $i->seeNoJSErrors();
+
+    $i->wantTo('see subscribed date changed upon switching timezone');
+    $subscriberFirstName = 'John ';
+    $subscriberLastName = 'TimezoneCheck';
+    $subscriberEmail = 'timezonecheck@fakemail.fake';
+    $this->generateSingleSubscriber($subscriberEmail, $subscriberFirstName, $subscriberLastName, $this->segment);
+    $i->amOnMailPoetPage('Subscribers');
+    $i->waitForElementVisible('[data-automation-id="filters_subscribed"]');
+    $i->click('[data-automation-id="filters_subscribed"]');
+    $i->waitForText($subscriberFirstName . $subscriberLastName);
+    $i->waitForText('6:00 am');
+    $i->cli(['option', 'update', 'timezone_string', 'Etc/GMT+10']);
+    $i->reloadPage();
+    $i->waitForText($subscriberFirstName . $subscriberLastName);
+    $i->waitForText('8:00 pm');
   }
 
   public function addGlobalSubscriber(\AcceptanceTester $i) {
