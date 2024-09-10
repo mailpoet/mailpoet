@@ -12,9 +12,7 @@ class StatsPageCest {
     $date = (new \DateTimeImmutable('2024-01-01 06:00:00'));
     (new Newsletter())->withSubject($newsletterTitle)
       ->withSentStatus()
-      ->withSendingQueue(
-        ['created_at' => $date,
-        ])
+      ->withSendingQueue(['created_at' => $date])
       ->create();
 
     $i->login();
