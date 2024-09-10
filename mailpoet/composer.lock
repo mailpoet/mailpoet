@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "912203aca09527b95a709282d5f3740b",
+    "content-hash": "638009a742e6779566afb55f073071b4",
     "packages": [
         {
             "name": "dragonmantank/cron-expression",
@@ -66,6 +66,28 @@
                 }
             ],
             "time": "2023-08-10T19:36:49+00:00"
+        },
+        {
+            "name": "mailpoet/email-editor",
+            "version": "dev-email-editor/php-package",
+            "dist": {
+                "type": "path",
+                "url": "../packages/php/email-editor",
+                "reference": "7cebd6603d0799976eef38c32948bb927568695e"
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MailPoet\\EmailEditor\\": "src/"
+                }
+            },
+            "description": "Email editor based on WordPress Gutenberg package.",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "mixpanel/mixpanel-php",
@@ -11198,7 +11220,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,

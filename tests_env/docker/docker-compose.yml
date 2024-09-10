@@ -12,6 +12,7 @@ services:
       - ../../mailpoet:/wp-core/wp-content/plugins/mailpoet
       - ../../mailpoet-premium:/project/mailpoet-premium
       - ../../mailpoet-premium:/wp-core/wp-content/plugins/mailpoet-premium
+      - ../../packages:/wp-core/wp-content/plugins/packages
       - ./codeception/docker-entrypoint.sh:/docker-entrypoint.sh
       - ../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
       - ../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
@@ -40,6 +41,7 @@ services:
       - ../../mailpoet:/wp-core/wp-content/plugins/mailpoet
       - ../../mailpoet-premium:/project/mailpoet-premium
       - ../../mailpoet-premium:/wp-core/wp-content/plugins/mailpoet-premium
+      - ../../packages:/wp-core/wp-content/plugins/packages
       - ./codeception/docker-entrypoint.sh:/docker-entrypoint.sh
       - ../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
       - ../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
@@ -82,6 +84,7 @@ services:
       - wp-core:/var/www/html
       - ../../mailpoet:/project
       - ../../mailpoet:/var/www/html/wp-content/plugins/mailpoet
+      - ../../packages:/var/www/html/wp-content/plugins/packages
       - ../../mailpoet-premium:/project/mailpoet-premium
       - ../../mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium
     tmpfs:
