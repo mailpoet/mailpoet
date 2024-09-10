@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace unit\EmailEditor\Engine\Renderer\Preprocessors;
+namespace EmailEditor\Engine\Renderer\Preprocessors;
 
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\CleanupPreprocessor;
 

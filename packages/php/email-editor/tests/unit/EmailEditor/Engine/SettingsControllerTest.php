@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace unit\EmailEditor\Engine\Renderer;
+namespace EmailEditor\Engine;
 
 use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Engine\ThemeController;
