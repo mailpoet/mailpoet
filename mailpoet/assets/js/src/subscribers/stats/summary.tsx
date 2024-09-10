@@ -124,9 +124,10 @@ export function Summary({ stats, subscriber }: PropTypes): JSX.Element {
               <td>{MailPoet.I18n.t('statsNotClicked')}</td>
               {stats.periodic_stats.map(
                 (periodicStats: PeriodicStats): JSX.Element => {
-                  const notOpen =
-                    periodicStats.total_sent -
-                    (periodicStats.open + periodicStats.machine_open);
+                  const openedCount = MailPoet.trackingConfig.opensSeparated
+                    ? periodicStats.open + periodicStats.machine_open
+                    : periodicStats.open;
+                  const notOpen = periodicStats.total_sent - openedCount;
                   const displayPercentage = periodicStats.total_sent > 0;
                   let cell = notOpen.toLocaleString();
                   if (displayPercentage) {
