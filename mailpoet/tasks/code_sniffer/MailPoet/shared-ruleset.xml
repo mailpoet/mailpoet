@@ -195,6 +195,49 @@
   <rule ref="WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet"><severity>0</severity></rule>
   <rule ref="WordPress.WP.GlobalVariablesOverride.Prohibited"><severity>0</severity></rule>
 
+  <!-- WordPress VIP Go -->
+  <rule ref="WordPress-VIP-Go">
+    <exclude-pattern>./tasks/*</exclude-pattern>
+    <exclude-pattern>./tests/*</exclude-pattern>
+    <exclude-pattern>./tools/*</exclude-pattern>
+    <exclude-pattern>./prefixer/*</exclude-pattern>
+    <exclude-pattern>./RoboFile.php</exclude-pattern>
+  </rule>
+
+  <!--
+    Disabled WordPress VIP Go rules.
+    These rules are disabled because our current codebase does not comply with them.
+    We can gradually enable them and make this list shorter and shorter.
+  -->
+  <rule ref="WordPress.DB.DirectDatabaseQuery.DirectQuery"><severity>0</severity></rule>
+  <rule ref="WordPress.DB.DirectDatabaseQuery.NoCaching"><severity>0</severity></rule>
+  <rule ref="WordPress.DB.DirectDatabaseQuery.SchemaChange"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Files.IncludingNonPHPFile.IncludingNonPHPFile"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions.directory_mkdir"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_file_put_contents"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_fwrite"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_is_writable"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_symlink"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_unlink"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions.session_session_start"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Functions.StripTags.StripTagsOneParameter"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Functions.StripTags.StripTagsTwoParameters"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsRemoteFile"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Security.ExitAfterRedirect.NoExit"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Security.ProperEscapingFunction.hrefSrcEscUrl"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Security.ProperEscapingFunction.notAttrEscAttr"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Security.Underscorejs.OutputNotation"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___SERVER__HTTP_USER_AGENT__"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___SERVER__REMOTE_ADDR__"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Variables.RestrictedVariables.user_meta__wpdb__users"><severity>0</severity></rule>
+  <rule ref="WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders"><severity>0</severity></rule>
+
   <!-- Files -->
   <rule ref="Generic.Files.ByteOrderMark"/> <!-- Disallow usage of BOMs -->
   <rule ref="Generic.Files.LineEndings"> <!-- Use Unix newlines -->
