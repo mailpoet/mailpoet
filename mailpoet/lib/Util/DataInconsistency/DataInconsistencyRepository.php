@@ -36,15 +36,19 @@ class DataInconsistencyRepository {
   }
 
   public function getOrphanedScheduledTasksSubscribersCount(): int {
+    $this->createOrphanedScheduledTaskSubscribersTemporaryTables();
+    $count = $this->getOrphanedScheduledTasksSubscribersCountFromTemplateTables();
+    $this->dropOrphanedScheduledTaskSubscribersTemporaryTables();
+    return $count;
+  }
+
+  private function getOrphanedScheduledTasksSubscribersCountFromTemplateTables(): int {
     $connection = $this->entityManager->getConnection();
     $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
-
-    $this->createOrphanedScheduledTaskSubscribersTemporaryTables();
     /** @var string $count */
     $count = $connection->executeQuery("
       SELECT COUNT(*) FROM $stsTable sts WHERE sts.task_id IN (SELECT task_id FROM orphaned_task_ids)
     ")->fetchOne();
-    $this->dropOrphanedScheduledTaskSubscribersTemporaryTables();
     return intval($count);
   }
 
@@ -144,8 +148,6 @@ class DataInconsistencyRepository {
   }
 
   public function cleanupOrphanedScheduledTaskSubscribers(): int {
-    $connection = $this->entityManager->getConnection();
-    $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
     $deletedCount = 0;
 
@@ -164,7 +166,7 @@ class DataInconsistencyRepository {
         ['limit' => self::DELETE_ROWS_LIMIT],
         ['limit' => ParameterType::INTEGER]
       );
-    } while ($this->getOrphanedScheduledTasksSubscribersCount() > 0);
+    } while ($this->getOrphanedScheduledTasksSubscribersCountFromTemplateTables() > 0);
     $this->dropOrphanedScheduledTaskSubscribersTemporaryTables();
     return $deletedCount;
   }
