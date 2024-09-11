@@ -9,3 +9,4 @@ npm-debug.log
 mailpoet-premium
 tsconfig.tsbuildinfo
 /wordpress
+packages/php/*/vendor

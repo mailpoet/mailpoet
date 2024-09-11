@@ -1,0 +1,13 @@
+{
+  "name": "mailpoet/email-editor",
+  "description": "Email editor based on WordPress Gutenberg package.",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "MailPoet\\EmailEditor\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=7.4"
+  }
+}
