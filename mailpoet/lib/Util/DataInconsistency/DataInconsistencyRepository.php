@@ -36,26 +36,15 @@ class DataInconsistencyRepository {
   }
 
   public function getOrphanedScheduledTasksSubscribersCount(): int {
-    $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $connection = $this->entityManager->getConnection();
     $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+
+    $this->createOrphanedScheduledTaskSubscribersTemporaryTables();
     /** @var string $count */
-    $count = $this->entityManager->getConnection()->executeQuery("
-      SELECT COUNT(*)
-        FROM $stsTable sts
-        WHERE sts.task_id IN (
-          -- SELECT ... FROM (subquery) forces the subquery to materialize first.
-          -- We're using this twice here to get the reduced data set before JOIN.
-          SELECT oprhaned_task_ids.task_id FROM
-          (
-            SELECT task_ids.task_id
-            FROM (
-              SELECT DISTINCT task_id FROM $stsTable
-            ) AS task_ids
-            LEFT JOIN $stTable st ON st.id = task_ids.task_id
-            WHERE st.id IS NULL
-          ) AS oprhaned_task_ids
-        );
+    $count = $connection->executeQuery("
+      SELECT COUNT(*) FROM $stsTable sts WHERE sts.task_id IN (SELECT task_id FROM orphaned_task_ids)
     ")->fetchOne();
+    $this->dropOrphanedScheduledTaskSubscribersTemporaryTables();
     return intval($count);
   }
 
@@ -155,35 +144,28 @@ class DataInconsistencyRepository {
   }
 
   public function cleanupOrphanedScheduledTaskSubscribers(): int {
+    $connection = $this->entityManager->getConnection();
     $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
     $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
     $deletedCount = 0;
-    $missingTaskIds = $this->entityManager->getConnection()->executeQuery("
-      SELECT task_ids.task_id
-        -- SELECT ... FROM (subquery) forces the subquery to materialize first.
-        -- We're using this here to get the reduced data set before JOIN.
-        FROM (
-          SELECT DISTINCT task_id FROM $stsTable
-        ) AS task_ids
-        LEFT JOIN $stTable st ON st.id = task_ids.task_id
-      WHERE st.id IS NULL;")->fetchFirstColumn();
 
-    if (!$missingTaskIds) {
-      return 0;
-    }
-
+    $this->createOrphanedScheduledTaskSubscribersTemporaryTables();
     do {
       $deletedCount += (int)$this->entityManager->getConnection()->executeStatement(
-        "DELETE sts_top FROM $stsTable sts_top
-        JOIN (
-          SELECT sts.`task_id`, sts.`subscriber_id` FROM $stsTable sts
-          WHERE sts.`task_id` IN (:taskIds)
-          LIMIT :limit
-        ) as to_delete ON sts_top.`task_id` = to_delete.`task_id` AND sts_top.`subscriber_id` = to_delete.`subscriber_id`",
-        ['taskIds' => $missingTaskIds, 'limit' => self::DELETE_ROWS_LIMIT],
-        ['taskIds' => ArrayParameterType::INTEGER, 'limit' => ParameterType::INTEGER]
+        "
+          DELETE sts_top FROM $stsTable sts_top
+          JOIN (
+            SELECT task_id, subscriber_id
+            FROM $stsTable
+            WHERE task_id IN (SELECT task_id FROM orphaned_task_ids)
+            LIMIT :limit
+          ) AS to_delete ON sts_top.task_id = to_delete.task_id AND sts_top.subscriber_id = to_delete.subscriber_id
+        ",
+        ['limit' => self::DELETE_ROWS_LIMIT],
+        ['limit' => ParameterType::INTEGER]
       );
     } while ($this->getOrphanedScheduledTasksSubscribersCount() > 0);
+    $this->dropOrphanedScheduledTaskSubscribersTemporaryTables();
     return $deletedCount;
   }
 
@@ -242,5 +224,28 @@ class DataInconsistencyRepository {
       ->andWhere('st.type = :type')
       ->setParameter('type', SendingQueue::TASK_TYPE)
       ->getQuery();
+  }
+
+  private function createOrphanedScheduledTaskSubscribersTemporaryTables(): void {
+    $connection = $this->entityManager->getConnection();
+    $stTable = $this->entityManager->getClassMetadata(ScheduledTaskEntity::class)->getTableName();
+    $stsTable = $this->entityManager->getClassMetadata(ScheduledTaskSubscriberEntity::class)->getTableName();
+
+    // 1. Get the DISTINCT task IDs so that the subsequent JOIN is more efficient.
+    $connection->executeStatement("
+      CREATE TEMPORARY TABLE IF NOT EXISTS task_ids
+      SELECT DISTINCT task_id FROM $stsTable
+    ");
+
+    // 2. Get the orphaned task IDs.
+    $connection->executeStatement("
+      CREATE TEMPORARY TABLE IF NOT EXISTS orphaned_task_ids
+      SELECT task_id FROM task_ids LEFT JOIN $stTable st ON st.id = task_ids.task_id WHERE st.id IS NULL
+    ");
+  }
+
+  private function dropOrphanedScheduledTaskSubscribersTemporaryTables(): void {
+    $this->entityManager->getConnection()->executeStatement("DROP TEMPORARY TABLE IF EXISTS task_ids");
+    $this->entityManager->getConnection()->executeStatement("DROP TEMPORARY TABLE IF EXISTS orphaned_task_ids");
   }
 }
