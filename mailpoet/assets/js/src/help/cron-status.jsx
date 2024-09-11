@@ -45,7 +45,7 @@ function CronStatus(props) {
           },
           {
             key: MailPoet.I18n.t('lastRunStarted'),
-            value: status.run_accessed_at
+            value: status.run_started_at
               ? MailPoet.Date.full(status.run_started_at * 1000)
               : MailPoet.I18n.t('unknown'),
           },
