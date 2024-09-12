@@ -31,7 +31,7 @@ function OtherSettings(): JSX.Element {
     MailPoet.I18n.t('addFormWidgetHint'),
     /\[link](.*?)\[\/link]/g,
     (match) => (
-      <a key="addFormWidgetHintLink" href="widgets.php" target="_blank">
+      <a key="addFormWidgetHintLink" href="site-editor.php" target="_blank">
         {match}
       </a>
     ),
