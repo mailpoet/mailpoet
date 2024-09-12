@@ -4,7 +4,6 @@ namespace MailPoet\Cron;
 
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Util\Headers;
 use MailPoet\WP\Functions as WPFunctions;
 use Tracy\Debugger;
 
@@ -51,7 +50,6 @@ class DaemonHttpRunner {
     if (class_exists(Debugger::class) && $userAgent === 'MailPoet Cron') {
       Debugger::$showBar = false;
     }
-    Headers::setNoCacheHeaders();
     $this->terminateRequest(self::PING_SUCCESS_RESPONSE);
   }
 
@@ -60,7 +58,6 @@ class DaemonHttpRunner {
     if (strpos((string)@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
     }
-    Headers::setNoCacheHeaders();
     if (!$requestData) {
       $error = __('Invalid or missing request data.', 'mailpoet');
     } else {
