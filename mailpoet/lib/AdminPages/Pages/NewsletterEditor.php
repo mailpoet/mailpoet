@@ -23,45 +23,19 @@ use MailPoet\WP\Functions as WPFunctions;
 class NewsletterEditor {
   private const DATE_FORMAT = 'Y-m-d H:i:s';
 
-  /** @var PageRenderer */
-  private $pageRenderer;
-
-  /** @var SettingsController */
-  private $settings;
-
-  /** @var UserFlagsController */
-  private $userFlags;
-
-  /** @var WooCommerceHelper */
-  private $woocommerceHelper;
-
-  /** @var WPFunctions */
-  private $wp;
-
-  /** @var TransactionalEmails */
-  private $wcTransactionalEmails;
-
-  /** @var ShortcodesHelper */
-  private $shortcodesHelper;
-
-  /** @var SubscribersRepository */
-  private $subscribersRepository;
-
-  /** @var TransactionalEmailHooks */
-  private $wooEmailHooks;
-
-  /** @var WPPostListLoader */
-  private $wpPostListLoader;
-
-  /** @var CustomFonts  */
-  private $customFonts;
-
-  /*** @var AssetsController */
-  private $assetsController;
-
-  /** @var BrandStyles */
-  private $brandStyles;
-
+  private PageRenderer $pageRenderer;
+  private SettingsController $settings;
+  private UserFlagsController $userFlags;
+  private WooCommerceHelper $woocommerceHelper;
+  private WPFunctions $wp;
+  private TransactionalEmails $wcTransactionalEmails;
+  private ShortcodesHelper $shortcodesHelper;
+  private SubscribersRepository $subscribersRepository;
+  private TransactionalEmailHooks $wooEmailHooks;
+  private WPPostListLoader $wpPostListLoader;
+  private CustomFonts $customFonts;
+  private AssetsController $assetsController;
+  private BrandStyles $brandStyles;
   private WooTransactionalEmailTemplate $template;
 
   public function __construct(
