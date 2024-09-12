@@ -5,7 +5,6 @@ namespace MailPoet\Router\Endpoints;
 use MailPoet\Config\AccessControl;
 use MailPoet\Entities\StatisticsUnsubscribeEntity;
 use MailPoet\Subscription as UserSubscription;
-use MailPoet\Util\Headers;
 use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -86,7 +85,6 @@ class Subscription {
   }
 
   public function captchaRefresh($data): void {
-    Headers::setNoCacheHeaders();
     $captchaSessionId = $data['captcha_session_id'] ?? null;
     if (!$captchaSessionId) {
       return;
