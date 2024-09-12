@@ -987,4 +987,12 @@ class Functions {
   public function wpIsMaintenanceMode(): bool {
     return wp_is_maintenance_mode();
   }
+
+  public function headersSent(): bool {
+    return headers_sent();
+  }
+
+  public function nocacheHeaders(): void {
+    nocache_headers();
+  }
 }

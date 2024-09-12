@@ -4,6 +4,7 @@ namespace MailPoet\Cron;
 
 use MailPoet\Cron\Triggers\WordPress;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\Headers;
 use MailPoet\WP\Functions as WPFunctions;
 use Tracy\Debugger;
 
@@ -50,7 +51,7 @@ class DaemonHttpRunner {
     if (class_exists(Debugger::class) && $userAgent === 'MailPoet Cron') {
       Debugger::$showBar = false;
     }
-    $this->addCacheHeaders();
+    Headers::setNoCacheHeaders();
     $this->terminateRequest(self::PING_SUCCESS_RESPONSE);
   }
 
@@ -59,7 +60,7 @@ class DaemonHttpRunner {
     if (strpos((string)@ini_get('disable_functions'), 'set_time_limit') === false) {
       set_time_limit(0);
     }
-    $this->addCacheHeaders();
+    Headers::setNoCacheHeaders();
     if (!$requestData) {
       $error = __('Invalid or missing request data.', 'mailpoet');
     } else {
@@ -146,17 +147,5 @@ class DaemonHttpRunner {
     return !$settingsDaemonData ||
        $settingsDaemonData['token'] !== $this->token ||
        (isset($settingsDaemonData['status']) && $settingsDaemonData['status'] !== CronHelper::DAEMON_STATUS_ACTIVE);
-  }
-
-  private function addCacheHeaders() {
-    if (headers_sent()) {
-      return;
-    }
-    // Common Cache Control header. Should be respected by cache proxies and CDNs.
-    header('Cache-Control: no-cache');
-    // Mark as blacklisted for SG Optimizer for sites hosted on SiteGround.
-    header('X-Cache-Enabled: False');
-    // Set caching header for LiteSpeed server.
-    header('X-LiteSpeed-Cache-Control: no-cache');
   }
 }
