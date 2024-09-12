@@ -96,11 +96,11 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     ];
     $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
     $result = $result[0];
-    verify($result['innerBlocks'])->arrayCount(2);
-    verify($result['email_attrs'])->equals($expectedEmailAttrs);
-    verify($result['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs);
-    verify($result['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs);
-    verify($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs);
+    $this->assertCount(2, $result['innerBlocks']);
+    $this->assertEquals($expectedEmailAttrs, $result['email_attrs']);
+    $this->assertEquals($expectedEmailAttrs, $result['innerBlocks'][0]['email_attrs']);
+    $this->assertEquals($expectedEmailAttrs, $result['innerBlocks'][1]['email_attrs']);
+    $this->assertEquals($expectedEmailAttrs, $result['innerBlocks'][1]['innerBlocks'][0]['email_attrs']);
   }
 
   public function testItReplacesFontSizeSlugsWithValues(): void {
@@ -133,11 +133,11 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     ];
     $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
     $result = $result[0];
-    verify($result['innerBlocks'])->arrayCount(2);
-    verify($result['email_attrs'])->equals($expectedEmailAttrs);
-    verify($result['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs);
-    verify($result['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs);
-    verify($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs);
+    $this->assertCount(2, $result['innerBlocks']);
+    $this->assertEquals($expectedEmailAttrs, $result['email_attrs']);
+    $this->assertEquals($expectedEmailAttrs, $result['innerBlocks'][0]['email_attrs']);
+    $this->assertEquals($expectedEmailAttrs, $result['innerBlocks'][1]['email_attrs']);
+    $this->assertEquals($expectedEmailAttrs, $result['innerBlocks'][1]['innerBlocks'][0]['email_attrs']);
   }
 
   public function testItDoesNotCopyColumnsWidth(): void {
@@ -166,12 +166,12 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     ]];
     $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
     $result = $result[0];
-    verify($result['innerBlocks'])->arrayCount(2);
-    verify($result['email_attrs'])->equals(['width' => '640px', 'color' => '#000000', 'font-size' => '13px']);
+    $this->assertCount(2, $result['innerBlocks']);
+    $this->assertEquals(['width' => '640px', 'color' => '#000000', 'font-size' => '13px'], $result['email_attrs']);
     $defaultFontStyles = ['color' => '#000000', 'font-size' => '13px'];
-    verify($result['innerBlocks'][0]['email_attrs'])->equals($defaultFontStyles);
-    verify($result['innerBlocks'][1]['email_attrs'])->equals($defaultFontStyles);
-    verify($result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($defaultFontStyles);
+    $this->assertEquals($defaultFontStyles, $result['innerBlocks'][0]['email_attrs']);
+    $this->assertEquals($defaultFontStyles, $result['innerBlocks'][1]['email_attrs']);
+    $this->assertEquals($defaultFontStyles, $result['innerBlocks'][1]['innerBlocks'][0]['email_attrs']);
   }
 
   public function testItOverridesColumnsTypography(): void {
@@ -262,15 +262,15 @@ class TypographyPreprocessorTest extends \MailPoetUnitTest {
     $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
     $child1 = $result[0];
     $child2 = $result[1];
-    verify($child1['innerBlocks'])->arrayCount(2);
-    verify($child1['email_attrs'])->equals($expectedEmailAttrs1);
-    verify($child1['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
-    verify($child1['innerBlocks'][0]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
-    verify($child1['innerBlocks'][1]['email_attrs'])->equals($expectedEmailAttrs1);
-    verify($child1['innerBlocks'][1]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs1);
-    verify($child2['innerBlocks'])->arrayCount(1);
-    verify($child2['email_attrs'])->equals(['color' => '#000000', 'font-size' => '13px']);
-    verify($child2['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
-    verify($child2['innerBlocks'][0]['innerBlocks'][0]['email_attrs'])->equals($expectedEmailAttrs2);
+    $this->assertCount(2, $child1['innerBlocks']);
+    $this->assertEquals($expectedEmailAttrs1, $child1['email_attrs']);
+    $this->assertEquals($expectedEmailAttrs2, $child1['innerBlocks'][0]['email_attrs']);
+    $this->assertEquals($expectedEmailAttrs2, $child1['innerBlocks'][0]['innerBlocks'][0]['email_attrs']);
+    $this->assertEquals($expectedEmailAttrs1, $child1['innerBlocks'][1]['email_attrs']);
+    $this->assertEquals($expectedEmailAttrs1, $child1['innerBlocks'][1]['innerBlocks'][0]['email_attrs']);
+    $this->assertCount(1, $child2['innerBlocks']);
+    $this->assertEquals(['color' => '#000000', 'font-size' => '13px'], $child2['email_attrs']);
+    $this->assertEquals($expectedEmailAttrs2, $child2['innerBlocks'][0]['email_attrs']);
+    $this->assertEquals($expectedEmailAttrs2, $child2['innerBlocks'][0]['innerBlocks'][0]['email_attrs']);
   }
 }

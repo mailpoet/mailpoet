@@ -20,10 +20,10 @@ class HighlightingPostprocessorTest extends \MailPoetUnitTest {
       <a href="http://example.com">Some <mark style="font-weight:bold;">link</mark></a>
     ';
     $result = $this->postprocessor->postprocess($html);
-    verify($result)->equals('
+    $this->assertEquals( '
       <span>Some text</span>
       <p>Some <span style="color:red;">paragraph</span></p>
       <a href="http://example.com">Some <span style="font-weight:bold;">link</span></a>
-    ');
+    ', $result);
   }
 }

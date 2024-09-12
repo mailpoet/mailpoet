@@ -77,18 +77,18 @@ class SpacingPreprocessorTest extends \MailPoetUnitTest {
 
     $expectedEmailAttrs = ['margin-top' => '10px'];
     $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
-    verify($result)->arrayCount(2);
+    $this->assertCount(2, $result);
     $firstColumns = $result[0];
     $secondColumns = $result[1];
 
     // First elements should not have margin-top, but others should.
-    verify($firstColumns['email_attrs'])->arrayHasNotKey('margin-top');
-    verify($secondColumns['email_attrs'])->arrayHasKey('margin-top');
-    verify($secondColumns['email_attrs']['margin-top'])->equals('10px');
+    $this->assertArrayNotHasKey('margin-top', $firstColumns['email_attrs']);
+    $this->arrayHasKey('margin-top', $secondColumns['email_attrs']);
+    $this->assertEquals('10px', $secondColumns['email_attrs']['margin-top']);
 
     // First element children should have margin-top unless first child.
-    verify($firstColumns['innerBlocks'][0]['email_attrs'])->arrayHasNotKey('margin-top');
-    verify($firstColumns['innerBlocks'][1]['email_attrs'])->arrayHasKey('margin-top');
-    verify($firstColumns['innerBlocks'][1]['email_attrs']['margin-top'])->equals('10px');
+    $this->assertArrayNotHasKey('margin-top', $firstColumns['innerBlocks'][0]['email_attrs']);
+    $this->assertArrayHasKey('margin-top', $firstColumns['innerBlocks'][1]['email_attrs']);
+    $this->assertEquals('10px', $firstColumns['innerBlocks'][1]['email_attrs']['margin-top']);
   }
 }
