@@ -1,11 +1,16 @@
 .mailpoet_history_wrapper {
-  display: flex;
+  display: grid;
+  grid-gap: $grid-gap;
+  grid-template-columns: 26px 26px auto;
   padding: 12px 20px;
+
+  .mailpoet_reset_template {
+    justify-self: end;
+  }
 }
 
 .mailpoet_history_arrow {
   cursor: pointer;
-  margin-right: 20px;
 
   svg {
     display: inline-block;
