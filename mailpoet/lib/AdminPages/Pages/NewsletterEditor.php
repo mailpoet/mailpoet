@@ -16,6 +16,7 @@ use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WooCommerce\TransactionalEmailHooks;
 use MailPoet\WooCommerce\TransactionalEmails;
+use MailPoet\WooCommerce\TransactionalEmails\Template as WooTransactionalEmailTemplate;
 use MailPoet\WP\AutocompletePostListLoader as WPPostListLoader;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -61,6 +62,8 @@ class NewsletterEditor {
   /** @var BrandStyles */
   private $brandStyles;
 
+  private WooTransactionalEmailTemplate $template;
+
   public function __construct(
     PageRenderer $pageRenderer,
     SettingsController $settings,
@@ -74,6 +77,7 @@ class NewsletterEditor {
     WPPostListLoader $wpPostListLoader,
     CustomFonts $customFonts,
     AssetsController $assetsController,
+    WooTransactionalEmailTemplate $template,
     BrandStyles $brandStyles
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -88,6 +92,7 @@ class NewsletterEditor {
     $this->wpPostListLoader = $wpPostListLoader;
     $this->customFonts = $customFonts;
     $this->assetsController = $assetsController;
+    $this->template = $template;
     $this->brandStyles = $brandStyles;
   }
 
@@ -113,12 +118,15 @@ class NewsletterEditor {
     $subscriber = $this->subscribersRepository->getCurrentWPUser();
     $subscriberData = $subscriber ? $this->formatSubscriber($subscriber) : [];
     $woocommerceData = [];
+    $originalTemplateBody = null;
     if ($this->woocommerceHelper->isWooCommerceActive()) {
+      $wcEmailSettings = $this->wcTransactionalEmails->getWCEmailSettings();
+
       // Activate hooks for Woo emails styles so that we always load styles set in Woo email customizer
       if ($newsletterId === (int)$this->settings->get(TransactionalEmails::SETTING_EMAIL_ID)) {
         $this->wooEmailHooks->overrideStylesForWooEmails();
+        $originalTemplateBody = $this->template->create($wcEmailSettings);
       }
-      $wcEmailSettings = $this->wcTransactionalEmails->getWCEmailSettings();
       $discountTypes = $this->woocommerceHelper->wcGetCouponTypes();
       $discountType = (string)current(array_keys($discountTypes));
       $amountMax = strpos($discountType, 'percent') !== false ? 100 : null;
@@ -155,6 +163,7 @@ class NewsletterEditor {
       'is_wc_transactional_email' => $newsletterId === $woocommerceTemplateId,
       'is_confirmation_email_template' => $newsletterId === $confirmationEmailTemplateId,
       'is_confirmation_email_customizer_enabled' => (bool)$this->settings->get('signup_confirmation.use_mailpoet_editor', false),
+      'original_template_body' => $originalTemplateBody,
       'product_categories' => $this->wpPostListLoader->getWooCommerceCategories(),
       'products' => $this->wpPostListLoader->getProducts(),
       'brand_styles' => [
