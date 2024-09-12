@@ -1,7 +1,7 @@
 import { App } from 'newsletter-editor/app';
 import Marionette from 'backbone.marionette';
 import Mousetrap from 'mousetrap';
-import { _x } from '@wordpress/i18n';
+import { _x, __ } from '@wordpress/i18n';
 
 var Module = {};
 
@@ -11,11 +11,13 @@ Module.HistoryView = Marionette.View.extend({
   elements: {
     redo: null,
     undo: null,
+    resetTemplate: null,
   },
 
   events: {
     'click #mailpoet-history-arrow-undo': 'undo',
     'click #mailpoet-history-arrow-redo': 'redo',
+    'click #mailpoet-history-reset-template': 'resetTemplate',
   },
 
   model: {
@@ -25,6 +27,10 @@ Module.HistoryView = Marionette.View.extend({
 
   getTemplate: function getTemplate() {
     return window.templates.history;
+  },
+
+  getOriginalTemplate: function getOriginalTemplate() {
+    return window.mailpoet_original_template_body;
   },
 
   initialize: function initialize() {
@@ -44,6 +50,13 @@ Module.HistoryView = Marionette.View.extend({
   onAttach: function onRender() {
     this.elements.redo = document.getElementById('mailpoet-history-arrow-redo');
     this.elements.undo = document.getElementById('mailpoet-history-arrow-undo');
+    this.elements.resetTemplate = document.getElementById(
+      'mailpoet-history-reset-template',
+    );
+    // Show reset template button only if there is an original template
+    if (this.getOriginalTemplate()) {
+      this.elements.resetTemplate.classList.remove('mailpoet_hidden');
+    }
     this.addState(App.toJSON());
   },
 
@@ -100,6 +113,25 @@ Module.HistoryView = Marionette.View.extend({
     );
     this.updateArrowsUI();
     this.applyState(this.model.currentStateIndex);
+  },
+
+  resetTemplate: function resetTemplate() {
+    const templateBody = this.getOriginalTemplate();
+    // Usage of confirm is intentional and appropriate for this case
+    // eslint-disable-next-line no-alert
+    const confirmed = window.confirm(
+      __(
+        'Reset template will restore the original template as distributed with the plugin. You will loose all your edits.',
+      ),
+    );
+    if (!confirmed) {
+      return;
+    }
+    App.getChannel().trigger(
+      'historyUpdate',
+      this.getOriginalTemplate(templateBody),
+    );
+    App.getChannel().request('save');
   },
 
   updateArrowsUI: function updateArrowsUI() {
