@@ -46,7 +46,7 @@ class ProcessManagerTest extends \MailPoetUnitTest {
     $variables->expects($this->once())->method('postprocess')->willReturn('');
 
     $processManager = new ProcessManager($cleanup, $blocksWidth, $typography, $spacing, $highlighting, $variables);
-    verify($processManager->preprocess([], $layout, $styles))->equals([]);
-    verify($processManager->postprocess(''))->equals('');
+    $this->assertEquals([], $processManager->preprocess([], $layout, $styles));
+    $this->assertEmpty($processManager->postprocess(''));
   }
 }

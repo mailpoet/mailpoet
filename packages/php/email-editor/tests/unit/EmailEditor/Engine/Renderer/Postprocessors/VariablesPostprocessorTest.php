@@ -27,6 +27,6 @@ class VariablesPostprocessorTest extends \MailPoetUnitTest {
     $this->themeControllerMock->method('getVariablesValuesMap')->willReturn($variablesMap);
     $html = '<div style="padding:var(--wp--preset--spacing--10);margin:var(--wp--preset--spacing--20)"><p style="color:white;padding-left:var(--wp--preset--spacing--10);">Helloo I have padding var(--wp--preset--spacing--10); </p></div>';
     $result = $this->postprocessor->postprocess($html);
-    verify($result)->equals('<div style="padding:10px;margin:20px"><p style="color:white;padding-left:10px;">Helloo I have padding var(--wp--preset--spacing--10); </p></div>');
+    $this->assertEquals('<div style="padding:10px;margin:20px"><p style="color:white;padding-left:10px;">Helloo I have padding var(--wp--preset--spacing--10); </p></div>', $result);
   }
 }

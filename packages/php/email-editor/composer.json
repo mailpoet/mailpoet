@@ -4,10 +4,25 @@
   "type": "library",
   "autoload": {
     "psr-4": {
-      "MailPoet\\EmailEditor\\": "src/"
+      "MailPoet\\EmailEditor\\": "src/",
+      "EmailEditor\\": "tests/unit/"
     }
   },
   "require": {
     "php": ">=7.4"
+  },
+  "require-dev": {
+    "codeception/codeception": "^4.2",
+    "codeception/module-asserts": "^2.0",
+    "phpunit/phpunit": "^9.6"
+  },
+  "config": {
+    "platform": {
+      "php": "7.4.0"
+    },
+    "sort-packages": true
+  },
+  "scripts": {
+    "unit-test": "vendor/bin/codecept run unit"
   }
 }
