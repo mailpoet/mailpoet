@@ -673,6 +673,7 @@
     var currentUserEmail = '<%= current_wp_user.user_email %>';
     var mailpoet_product_categories = <%= json_encode(product_categories)  %>;
     var mailpoet_products = <%= json_encode(products) %>;
+    var mailpoet_original_template_body = <%= json_encode(original_template_body) %>;
 
     var config = {
       availableStyles: {
