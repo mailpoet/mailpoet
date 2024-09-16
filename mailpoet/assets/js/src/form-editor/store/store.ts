@@ -113,6 +113,10 @@ export const initStore = () => {
     user: {
       isAdministrator: window.mailpoet_is_administrator,
     },
+    theme: {
+      hasWidgets: window.mailpoet_theme_support_widgets,
+      hasFSE: window.mailpoet_theme_support_fse,
+    },
   } as const;
 
   const config = {
