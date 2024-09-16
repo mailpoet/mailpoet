@@ -219,10 +219,14 @@ mysql -u wordpress -pwordpress wordpress -h mysql -e "SELECT @@global.sql_mode"
 # print tables info
 mysql -u wordpress -pwordpress wordpress -h mysql -e "SELECT TABLE_NAME, ENGINE, TABLE_COLLATION FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'wordpress'"
 
-if [[ $WITH_PREMIUM == "1" ]]; then
-  cd /wp-core/wp-content/plugins/mailpoet-premium
+if [[ $PACKAGE_NAME == "email-editor" ]]; then
+  cd /wp-core/wp-content/plugins/packages/php/email-editor
 else
-  cd /wp-core/wp-content/plugins/mailpoet
+  if [[ $WITH_PREMIUM == "1" ]]; then
+    cd /wp-core/wp-content/plugins/mailpoet-premium
+  else
+    cd /wp-core/wp-content/plugins/mailpoet
+  fi
 fi
 
 /wp-core/wp-content/plugins/mailpoet/vendor/bin/codecept run $TEST_TYPE $@ -vvv
