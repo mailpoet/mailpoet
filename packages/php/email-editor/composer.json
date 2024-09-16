@@ -4,7 +4,11 @@
   "type": "library",
   "autoload": {
     "psr-4": {
-      "MailPoet\\EmailEditor\\": "src/",
+      "MailPoet\\EmailEditor\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
       "EmailEditor\\": "tests/unit/"
     }
   },
@@ -23,6 +27,7 @@
     "sort-packages": true
   },
   "scripts": {
-    "unit-test": "vendor/bin/codecept run unit"
+    "unit-test": "vendor/bin/codecept run unit",
+    "integration-test": "cd ../../../tests_env/docker && COMPOSE_HTTP_TIMEOUT=200 docker compose run -e SKIP_DEPS=1 -e SKIP_PLUGINS=1 -e PACKAGE_NAME=email-editor codeception_integration"
   }
 }
