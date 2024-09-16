@@ -1598,7 +1598,7 @@ class RoboFile extends \Robo\Tasks {
     }
     $annotationReaderProvider = new \MailPoet\Doctrine\Annotations\AnnotationReaderProvider();
     $configuration = (new \MailPoet\Doctrine\ConfigurationFactory($annotationReaderProvider, true))->createConfiguration();
-    $platformClass = \MailPoet\Doctrine\ConnectionFactory::PLATFORM_CLASS;
+    $platformClass = \MailPoetVendor\Doctrine\DBAL\Platforms\MySQLPlatform::class;
     return \MailPoetVendor\Doctrine\ORM\EntityManager::create([
       'driverClass' => \MailPoet\Doctrine\ConnectionFactory::DRIVER_CLASS,
       'platform' => new $platformClass,
