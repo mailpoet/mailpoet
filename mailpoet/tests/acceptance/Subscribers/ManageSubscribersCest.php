@@ -74,18 +74,18 @@ class ManageSubscribersCest {
     $i->seeNoJSErrors();
 
     $i->wantTo('see subscribed date changed upon switching timezone');
-    $subscriberFirstName = 'John ';
+    $subscriberFirstName = 'John';
     $subscriberLastName = 'TimezoneCheck';
     $subscriberEmail = 'timezonecheck@fakemail.fake';
     $this->generateSingleSubscriber($subscriberEmail, $subscriberFirstName, $subscriberLastName, $this->segment);
     $i->amOnMailPoetPage('Subscribers');
     $i->waitForElementVisible('[data-automation-id="filters_subscribed"]');
     $i->click('[data-automation-id="filters_subscribed"]');
-    $i->waitForText($subscriberFirstName . $subscriberLastName);
+    $i->waitForText($subscriberFirstName . ' ' . $subscriberLastName);
     $i->waitForText('6:00 am');
     $i->cli(['option', 'update', 'timezone_string', 'Etc/GMT+10']);
     $i->reloadPage();
-    $i->waitForText($subscriberFirstName . $subscriberLastName);
+    $i->waitForText($subscriberFirstName . ' ' . $subscriberLastName);
     $i->waitForText('8:00 pm');
   }
 
