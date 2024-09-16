@@ -5,6 +5,7 @@
 use MailPoet\Doctrine\Annotations\AnnotationReaderProvider;
 use MailPoet\Doctrine\ConfigurationFactory;
 use MailPoet\Doctrine\ConnectionFactory;
+use MailPoetVendor\Doctrine\DBAL\Platforms\MySQLPlatform;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 
@@ -29,8 +30,8 @@ $configuration->setMetadataDriverImpl(
     }
   }
 );
-$platformClass = ConnectionFactory::PLATFORM_CLASS;
+
 return EntityManager::create([
   'driverClass' => ConnectionFactory::DRIVER_CLASS,
-  'platform' => new $platformClass,
+  'platform' => new MySQLPlatform(),
 ], $configuration);
