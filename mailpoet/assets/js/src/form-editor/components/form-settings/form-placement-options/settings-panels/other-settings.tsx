@@ -26,16 +26,7 @@ function OtherSettings(): JSX.Element {
     [],
   );
   const { changeFormSettings } = useDispatch(storeName);
-
-  const addFormWidgetHint = ReactStringReplace(
-    MailPoet.I18n.t('addFormWidgetHint'),
-    /\[link](.*?)\[\/link]/g,
-    (match) => (
-      <a key="addFormWidgetHintLink" href="site-editor.php" target="_blank">
-        {match}
-      </a>
-    ),
-  );
+  const themeSupport = useSelect(storeName).getThemeSupport();
 
   const addFormShortcodeHint = ReactStringReplace(
     MailPoet.I18n.t('addFormShortcodeHint'),
@@ -89,13 +80,35 @@ function OtherSettings(): JSX.Element {
     );
   };
 
+  const getFormWidgetHint = ({ hasWidgets, hasFSE }) => {
+    if (!hasWidgets && !hasFSE) return null;
+
+    let conf: { href: string; i18nKey: string };
+    if (hasWidgets === true) {
+      conf = { href: 'widgets.php', i18nKey: 'addFormWidgetHint' };
+    } else if (hasFSE === true) {
+      conf = { href: 'site-editor.php', i18nKey: 'addFormFSEHint' };
+    }
+
+    const nodes = ReactStringReplace(
+      MailPoet.I18n.t(conf.i18nKey),
+      /\[link](.*?)\[\/link]/g,
+      (match) => (
+        <a key="addFormWidgetHintLink" href={conf.href} target="_blank">
+          {match}
+        </a>
+      ),
+    );
+    return <p>{nodes}</p>;
+  };
+
   if (!isFormSaved) {
     return <p>{MailPoet.I18n.t('saveFormFirst')}</p>;
   }
 
   return (
     <>
-      <p>{addFormWidgetHint}</p>
+      {getFormWidgetHint(themeSupport)}
       <p>{addFormShortcodeHint}</p>
       <p>{addFormPhpIframeHint}</p>
       {getCopyTextArea({})}
