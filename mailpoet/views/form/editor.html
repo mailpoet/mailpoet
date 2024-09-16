@@ -31,6 +31,8 @@
   var mailpoet_tutorial_url = '<%= cdn_url('form-editor/tutorial.mp4') %>';
   var mailpoet_is_administrator = <%= is_administrator ? 'true' : 'false' %>;
   var mailpoet_form_edit_url = "<%= admin_url('admin.php?page=mailpoet-form-editor&id=') %>";
+  var mailpoet_theme_support_widgets = <%= theme_support_widgets ? 'true' : 'false' %>;
+  var mailpoet_theme_support_fse = <%= theme_support_fse ? 'true' : 'false' %>;
   <% endautoescape %>
 </script>
 
@@ -103,9 +105,10 @@
   'formPlacementOtherLabel': _x('Shortcode & other', 'Label in the form placement section (Other form placements)'),
   'animationHeader': __('Show animation on display'),
   'animationNone': _x('No Animation', 'Value in a selectbox with a list of animations'),
-  'addFormWidgetHint': __('You can add this form to your site using the [link]site editor[/link] (new tab).'),
-  'addFormShortcodeHint': __('Or in any page or post as a block, or with this shortcode if you prefer [shortcode].'),
-  'addFormPhpIframeHint': __('Use [link]PHP[/link] or [link]iFrame[/link].'),
+  'addFormWidgetHint': __('You can add this form to a [link]widget area of your theme[/link] (new tab).'),
+  'addFormFSEHint': __('You can add this form to your site using the [link]site editor[/link] (new tab).'),
+  'addFormShortcodeHint': __('You can also use a block on any page or post, or this shortcode if you prefer [shortcode].'),
+  'addFormPhpIframeHint': __('When needed, use [link]PHP[/link] or an [link]iFrame[/link] HTML element.'),
   'settingsListLabel': __('This form adds the subscribers to these lists'),
   'settingsAfterSubmit': __('After submit…'),
   'settingsShowMessage': __('Show message'),

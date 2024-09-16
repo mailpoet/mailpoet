@@ -273,6 +273,8 @@ class FormEditor {
       'product_categories' => $this->wpPostListLoader->getWooCommerceCategories(),
       'product_tags' => $this->wpPostListLoader->getWooCommerceTags(),
       'is_administrator' => $this->wp->currentUserCan('administrator'),
+      'theme_support_widgets' => $this->wp->wpGetThemeSupport('widgets'),
+      'theme_support_fse' => $this->wp->wpGetTheme()->is_block_theme(),
     ];
     $this->wp->wpEnqueueMedia();
     $this->assetsController->setupFormEditorDependencies();
