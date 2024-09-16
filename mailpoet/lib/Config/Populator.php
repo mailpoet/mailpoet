@@ -509,8 +509,8 @@ class Populator {
     $tableName = $this->entityManager->getClassMetadata(NewsletterOptionFieldEntity::class)->getTableName();
     $connection = $this->entityManager->getConnection();
     $existingOptionFields = $connection->createQueryBuilder()
-      ->select('of.name, of.newsletter_type')
-      ->from($tableName, 'of')
+      ->select('f.name, f.newsletter_type')
+      ->from($tableName, 'f')
       ->executeQuery()
       ->fetchAllAssociative();
 
