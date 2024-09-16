@@ -10,8 +10,9 @@ import {
 } from '@wordpress/editor';
 import { useMemo } from '@wordpress/element';
 import { SlotFillProvider, Spinner } from '@wordpress/components';
-import { store as coreStore } from '@wordpress/core-data';
+import { Post, store as coreStore } from '@wordpress/core-data';
 import { storeName } from '../../store';
+import { unlock } from '../../../lock-unlock';
 
 /**
  * Internal dependencies
@@ -60,6 +61,24 @@ export function InnerEditor({
     [currentPost.postType, currentPost.postId],
   );
 
+  /*
+   * We need to fetch patterns ourselves. Automatic fetching of patterns is currently a private functionality
+   * that is not available in EditorProvider but only in the ExperimentalBlockEditorProvider which
+   * is not exported in the public components nor private components.
+   */
+  const blockPatterns = useSelect(
+    (select) => {
+      const { hasFinishedResolution, getBlockPatternsForPostType } = unlock(
+        select(coreStore),
+      );
+      const patterns = getBlockPatternsForPostType(
+        currentPost.postType,
+      ) as Post[];
+      return hasFinishedResolution('getBlockPatterns') ? patterns : undefined;
+    },
+    [currentPost.postType],
+  );
+
   const editorSettings = useMemo(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     () => ({
@@ -68,8 +87,14 @@ export function InnerEditor({
       onNavigateToPreviousEntityRecord,
       defaultRenderingMode: 'template-locked',
       supportsTemplateMode: true,
+      __experimentalBlockPatterns: blockPatterns,
     }),
-    [settings, onNavigateToEntityRecord, onNavigateToPreviousEntityRecord],
+    [
+      settings,
+      onNavigateToEntityRecord,
+      onNavigateToPreviousEntityRecord,
+      blockPatterns,
+    ],
   );
 
   if (!post || (currentPost.postType !== 'wp_template' && !template)) {
@@ -87,7 +112,7 @@ export function InnerEditor({
         post={post}
         initialEdits={initialEdits}
         useSubRegistry={false}
-        // @ts-expect-error
+        // @ts-expect-error __unstableTemplate is not in the EditorProvider props in the installed version of packages
         __unstableTemplate={template}
         {...props}
       >
