@@ -61,7 +61,7 @@ class Bridge {
   }
 
   /**
-   * @deprecated Use non static function isMailpoetSendingServiceEnabled instead
+   * @deprecated Use non-static function isMailpoetSendingServiceEnabled instead
    * @return bool
    */
   public static function isMPSendingServiceEnabled() {
@@ -74,6 +74,9 @@ class Bridge {
     }
   }
 
+  /**
+   * @return bool
+   */
   public function isMailpoetSendingServiceEnabled() {
     try {
       $mailerConfig = SettingsController::getInstance()->get(Mailer::MAILER_CONFIG_SETTING_NAME);
@@ -137,7 +140,8 @@ class Bridge {
     if ($data && $type === 'all') {
       return $data;
     }
-    return isset($data[$type]) ? $data[$type] : [];
+
+    return $data[$type] ?? [];
   }
 
   /**
