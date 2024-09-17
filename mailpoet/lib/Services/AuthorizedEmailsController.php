@@ -109,7 +109,7 @@ class AuthorizedEmailsController {
   }
 
   public function checkAuthorizedEmailAddresses() {
-    if (!Bridge::isMPSendingServiceEnabled()) {
+    if (!$this->bridge->isMailpoetSendingServiceEnabled()) {
       $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
       $this->updateMailerLog();
       return null;
