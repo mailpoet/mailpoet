@@ -1,6 +1,6 @@
 {
   "$schema": "https://schemas.wp.org/trunk/theme.json",
-  "version": 2,
+  "version": 3,
   "settings": {
     "color": {
       "customGradient": false,
@@ -65,6 +65,7 @@
       "dropCap": false,
       "fontWeight": true,
       "lineHeight": true,
+      "defaultFontSizes": true,
       "fontFamilies": [
         {
           "name": "Arial",
