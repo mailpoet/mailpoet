@@ -3,8 +3,8 @@
 function syntax {
   cat << EOF
   ./do setup                           Setup the dev environment.
-  ./do start                           Start the docker containers (docker-compose up -d).
-  ./do stop                            Stop the docker containers (docker-compose stop).
+  ./do start                           Start the docker containers (docker compose up -d).
+  ./do stop                            Stop the docker containers (docker compose stop).
   ./do ssh [--test]                    Run an interactive bash shell inside the plugin directory.
   ./do run [--test] <command>          Run a custom bash command in the wordpress container.
   ./do acceptance [--premium]          Run acceptance tests.
@@ -21,7 +21,7 @@ EOF
 function ssh_and_run {
   params=("$@")
   params=("${params[@]:1}")
-  docker-compose exec $1 bash -c "${params[@]}"
+  docker compose exec $1 bash -c "${params[@]}"
 }
 
 if [ "$1" = "" -o "$1" = "--help" ]; then
@@ -31,10 +31,10 @@ elif [ "$1" = "setup" ]; then
   ./dev/initial-setup.sh
 
 elif [ "$1" = "start" ]; then
-  docker-compose up -d
+  docker compose up -d
 
 elif [ "$1" = "stop" ]; then
-  docker-compose stop
+  docker compose stop
 
 elif [ "$1" = "run" ]; then
   params=("$@")
@@ -54,9 +54,9 @@ elif [ "$1" = "ssh" ]; then
   fi
 
   if [ "$2" = "--test" ] || [ "$3" = "--test" ]; then
-    docker-compose exec --workdir $dir test_wordpress bash
+    docker compose exec --workdir $dir test_wordpress bash
   else
-    docker-compose exec --workdir $dir wordpress bash
+    docker compose exec --workdir $dir wordpress bash
   fi
 
 elif [ "$1" = "acceptance" ]; then
@@ -65,7 +65,7 @@ elif [ "$1" = "acceptance" ]; then
   else
     cd mailpoet
   fi
-  COMPOSE_HTTP_TIMEOUT=200 docker-compose run codeception_acceptance -e KEEP_DEPS=1 --steps --debug -vvv
+  COMPOSE_HTTP_TIMEOUT=200 docker compose run codeception_acceptance -e KEEP_DEPS=1 --steps --debug -vvv
   cd ..
 
 elif [ "$1" = "build" ]; then
