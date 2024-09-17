@@ -24,8 +24,6 @@ class Bridge {
     self::WPCOM_BUNDLE_SUBSCRIPTION_TYPE,
   ];
 
-  const AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING_NAME = 'authorized_emails_addresses_check';
-
   const PREMIUM_KEY_SETTING_NAME = 'premium.premium_key';
   const PREMIUM_KEY_STATE_SETTING_NAME = 'premium.premium_key_state';
 
