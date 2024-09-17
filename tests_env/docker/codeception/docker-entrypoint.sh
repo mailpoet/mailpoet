@@ -57,7 +57,7 @@ wp core version
 
 # Load Composer dependencies
 # Set SKIP_DEPS environment flag to not download them. E.g. you have downloaded them yourself
-# Example: docker-compose run -e SKIP_DEPS=1 codeception ...
+# Example: docker compose run -e SKIP_DEPS=1 codeception ...
 if [[ -z "${SKIP_DEPS}" ]]; then
   cd /project
   ./tools/vendor/composer.phar install

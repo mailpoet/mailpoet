@@ -21,7 +21,7 @@ mkdir -p wordpress/wp-content/plugins/mailpoet-premium
 mkdir -p dev/data/mailhog
 
 for plugin in "mailpoet" "mailpoet-premium"; do
-  docker-compose run --rm wordpress /bin/sh -c "
+  docker compose run --rm wordpress /bin/sh -c "
     [ -d /var/www/html/wp-content/plugins/$plugin ] &&
     cd /var/www/html/wp-content/plugins/$plugin &&
     ./do install &&
@@ -29,7 +29,7 @@ for plugin in "mailpoet" "mailpoet-premium"; do
   "
 done
 
-docker-compose run --rm wordpress /bin/sh -c "
+docker compose run --rm wordpress /bin/sh -c "
   cd /var/www/templates &&
   mkdir assets classes exported
 "

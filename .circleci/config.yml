@@ -445,19 +445,19 @@ jobs:
       - run:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
-          command: i='0';while ! docker-compose -f ../tests_env/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
+          command: i='0';while ! docker compose -f ../tests_env/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
       - run:
           name: Create docker containers for test
           # We experienced some failures when creating containers so we do it explicitly with one retry
           command: |
             cd ../tests_env/docker
-            docker-compose create || docker-compose create
+            docker compose create || docker compose create
       - run:
           # Some tools we use may need different version based on PHP version used in docker
           name: Ensure correct versions of tools
           command: |
             cd ../tests_env/docker
-            docker-compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" codeception_acceptance
+            docker compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" codeception_acceptance
       - when:
           condition: ${WOOCOMMERCE_VERSION}
           steps:
@@ -465,7 +465,7 @@ jobs:
                 name: Download WooCommerce Core
                 command: |
                   cd ../tests_env/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip ${WOOCOMMERCE_VERSION}" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
+                  docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip ${WOOCOMMERCE_VERSION}" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
       - when:
           condition: << parameters.woo_subscriptions_version >>
           steps:
@@ -473,7 +473,7 @@ jobs:
                 name: Download WooCommerce Subscriptions
                 command: |
                   cd ../tests_env/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
+                  docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
       - when:
           condition: << parameters.woo_memberships_version >>
           steps:
@@ -481,7 +481,7 @@ jobs:
                 name: Download WooCommerce Memberships
                 command: |
                   cd ../tests_env/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-memberships-zip << parameters.woo_memberships_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
+                  docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-memberships-zip << parameters.woo_memberships_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
       - when:
           condition: << parameters.automate_woo_version >>
           steps:
@@ -489,7 +489,7 @@ jobs:
                 name: Download AutomateWoo
                 command: |
                   cd ../tests_env/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:automate-woo-zip << parameters.automate_woo_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
+                  docker compose run --rm -w /project --entrypoint "./do download:automate-woo-zip << parameters.automate_woo_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_acceptance
       - run:
           name: Group acceptance tests
           command: |
@@ -518,7 +518,7 @@ jobs:
               --xml
               -g circleci_split_group
             )
-            docker-compose run -e SKIP_DEPS=1 \
+            docker compose run -e SKIP_DEPS=1 \
             -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
             -e CIRCLE_JOB=${CIRCLE_JOB} \
             -e MULTISITE=<< parameters.multisite >> \
@@ -577,13 +577,13 @@ jobs:
       - run:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
-          command: i='0';while ! docker-compose -f tests/performance/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
+          command: i='0';while ! docker compose -f tests/performance/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
       - run:
           name: Create docker containers for test
           # We experienced some failures when creating containers so we do it explicitly with one retry
           command: |
             cd tests/performance
-            docker-compose create || docker-compose create
+            docker compose create || docker compose create
       - run:
           name: Run performance tests
           command: |
@@ -741,19 +741,19 @@ jobs:
       - run:
           name: 'Pull test docker images'
           # Pull docker images with 3 retries
-          command: i='0';while ! docker-compose -f ../tests_env/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
+          command: i='0';while ! docker compose -f ../tests_env/docker/docker-compose.yml pull && ((i < 3)); do sleep 3 && i=$[$i+1]; done
       - run:
           name: Create docker containers for test
           # We experienced some failures when creating containers so we do it explicitly with one retry
           command: |
             cd ../tests_env/docker
-            docker-compose create || docker-compose create
+            docker compose create || docker compose create
       - run:
           # Some tools we use may need different version based on PHP version used in docker
           name: Ensure correct versions of tools
           command: |
             cd ../tests_env/docker
-            docker-compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" codeception_integration
+            docker compose run --rm -w /project -e COMPOSER_DEV_MODE=1 --entrypoint "php tools/install.php" codeception_integration
       - when:
           condition: ${WOOCOMMERCE_VERSION}
           steps:
@@ -761,7 +761,7 @@ jobs:
                 name: Download WooCommerce Core
                 command: |
                   cd ../tests_env/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip ${WOOCOMMERCE_VERSION}" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
+                  docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-zip ${WOOCOMMERCE_VERSION}" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
       - when:
           condition: << parameters.woo_subscriptions_version >>
           steps:
@@ -769,7 +769,7 @@ jobs:
                 name: Download WooCommerce Subscriptions
                 command: |
                   cd ../tests_env/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
+                  docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-subscriptions-zip << parameters.woo_subscriptions_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
       - when:
           condition: << parameters.woo_memberships_version >>
           steps:
@@ -777,7 +777,7 @@ jobs:
                 name: Download WooCommerce Memberships
                 command: |
                   cd ../tests_env/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:woo-commerce-memberships-zip << parameters.woo_memberships_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
+                  docker compose run --rm -w /project --entrypoint "./do download:woo-commerce-memberships-zip << parameters.woo_memberships_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
       - when:
           condition: << parameters.automate_woo_version >>
           steps:
@@ -785,7 +785,7 @@ jobs:
                 name: Download AutomateWoo
                 command: |
                   cd ../tests_env/docker
-                  docker-compose run --rm -w /project --entrypoint "./do download:automate-woo-zip << parameters.automate_woo_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
+                  docker compose run --rm -w /project --entrypoint "./do download:automate-woo-zip << parameters.automate_woo_version >>" --no-deps -e WP_GITHUB_USERNAME=${WP_GITHUB_USERNAME} -e WP_GITHUB_TOKEN=${WP_GITHUB_TOKEN} codeception_integration
       - run:
           name: 'PHP Integration tests'
           command: |
@@ -804,7 +804,7 @@ jobs:
             if [[ -n '<< parameters.skip_group >>' ]]; then
               args+=(--skip-group << parameters.skip_group >>)
             fi
-            docker-compose run -e SKIP_DEPS=1 \
+            docker compose run -e SKIP_DEPS=1 \
               -e CIRCLE_BRANCH=${CIRCLE_BRANCH} \
               -e CIRCLE_JOB=${CIRCLE_JOB} \
               -e SKIP_PLUGINS=<< parameters.skip_plugins >> \

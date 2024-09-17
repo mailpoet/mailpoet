@@ -473,14 +473,14 @@ class RoboFile extends \Robo\Tasks {
 
     // import data & run WordPress setup
     $this->say('Importing data and running a WordPress setup...');
-    $this->taskExec('COMPOSE_HTTP_TIMEOUT=200 docker-compose run --rm -it setup')
+    $this->taskExec('COMPOSE_HTTP_TIMEOUT=200 docker compose run --rm -it setup')
       ->dir(__DIR__ . '/tests/performance')
       ->run();
     $this->say('Data imported, WordPress set up.');
   }
 
   public function testPerformanceClean() {
-    $this->taskExec('COMPOSE_HTTP_TIMEOUT=200 docker-compose down --remove-orphans -v')
+    $this->taskExec('COMPOSE_HTTP_TIMEOUT=200 docker compose down --remove-orphans -v')
       ->dir(__DIR__ . '/tests/performance')
       ->run();
   }
@@ -494,7 +494,7 @@ class RoboFile extends \Robo\Tasks {
    */
   public function deleteDocker() {
     return $this->taskExec(
-      'docker-compose down -v --remove-orphans --rmi all'
+      'docker compose down -v --remove-orphans --rmi all'
     )->dir(__DIR__ . '/../tests_env/docker')->run();
   }
 
@@ -504,7 +504,7 @@ class RoboFile extends \Robo\Tasks {
   public function resetTestDocker() {
     return $this
       ->taskExec(
-        'docker-compose down -v --remove-orphans'
+        'docker compose down -v --remove-orphans'
       )->dir(__DIR__ . '/../tests_env/docker')
       ->addCode([$this, 'cleanupCachedFiles'])
       ->run();
@@ -1609,7 +1609,7 @@ class RoboFile extends \Robo\Tasks {
     $testType = $opts['test_type'] ?? 'acceptance';
     $this->doctrineGenerateCache();
     return $this->taskExec(
-      'COMPOSE_HTTP_TIMEOUT=200 docker-compose run ' .
+      'COMPOSE_HTTP_TIMEOUT=200 docker compose run ' .
       (isset($opts['wordpress-version']) && $opts['wordpress-version'] ? '-e WORDPRESS_VERSION=' . $opts['wordpress-version'] . ' ' : '') .
       (isset($opts['skip-deps']) && $opts['skip-deps'] ? '-e SKIP_DEPS=1 ' : '') .
       (isset($opts['disable-hpos']) && $opts['disable-hpos'] ? '-e DISABLE_HPOS=1 ' : '') .

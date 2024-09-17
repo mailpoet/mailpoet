@@ -29,6 +29,6 @@ cat <<EOT
 NFS volume sharing is set up. Recreate your containers and volumes using:
     cp docker-compose.override.macos-sample.yml docker-compose.override.yml
 
-    docker-compose down -v --remove-orphans
-    docker-compose up -d
+    docker compose down -v --remove-orphans
+    docker compose up -d
 EOT

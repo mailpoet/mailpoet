@@ -103,8 +103,8 @@ Then create a Docker Compose override file with NFS settings and restart contain
 ```shell
 cp docker-compose.override.macos-sample.yml docker-compose.override.yml
 
-docker-compose down -v --remove-orphans
-docker-compose up -d
+docker compose down -v --remove-orphans
+docker compose up -d
 ```
 
 **NOTE:** If you are on MacOS Catalina or newer, make sure to put the repository
@@ -163,10 +163,10 @@ To switch the environment to a different PHP version:
        dockerfile: dev/{PHP_VERSION}/Dockerfile
    ```
 
-3. Run `docker-compose build wordpress`.
+3. Run `docker compose build wordpress`.
 4. Start the stack with `./do start`.
 
-To switch back to the default PHP version remove what was added in 2) and, run `docker-compose build wordpress` for application container and `docker-compose build test_wordpress` for tests container,
+To switch back to the default PHP version remove what was added in 2) and, run `docker compose build wordpress` for application container and `docker compose build test_wordpress` for tests container,
 and start the stack using `./do start`.
 
 ### Disabling the Tracy panel
