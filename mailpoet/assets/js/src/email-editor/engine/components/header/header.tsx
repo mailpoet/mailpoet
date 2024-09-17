@@ -90,9 +90,9 @@ export function Header() {
 
   return (
     <div className="editor-header edit-post-header">
-      <div className="editor-header__toolbar edit-post-header__toolbar">
+      <div className="editor-header__toolbar">
         <NavigableToolbar
-          className="editor-header__toolbar edit-post-header-toolbar is-unstyled editor-document-tools"
+          className="editor-document-tools edit-post-header-toolbar is-unstyled"
           aria-label={__('Email document tools', 'mailpoet')}
         >
           <div className="editor-document-tools__left">
@@ -152,7 +152,7 @@ export function Header() {
         {isFixedToolbarActive && isBlockSelected && (
           <>
             <div
-              className={classnames('selected-block-tools-wrapper', {
+              className={classnames('editor-collapsible-block-toolbar', {
                 'is-collapsed': isBlockToolsCollapsed,
               })}
             >
