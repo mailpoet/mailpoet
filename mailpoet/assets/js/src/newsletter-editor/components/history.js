@@ -2,6 +2,7 @@ import { App } from 'newsletter-editor/app';
 import Marionette from 'backbone.marionette';
 import Mousetrap from 'mousetrap';
 import { _x, __ } from '@wordpress/i18n';
+import { cloneDeep } from 'lodash';
 
 var Module = {};
 
@@ -30,7 +31,7 @@ Module.HistoryView = Marionette.View.extend({
   },
 
   getOriginalTemplate: function getOriginalTemplate() {
-    return window.mailpoet_original_template_body;
+    return cloneDeep(window.mailpoet_original_template_body);
   },
 
   initialize: function initialize() {
@@ -127,10 +128,7 @@ Module.HistoryView = Marionette.View.extend({
     if (!confirmed) {
       return;
     }
-    App.getChannel().trigger(
-      'historyUpdate',
-      this.getOriginalTemplate(templateBody),
-    );
+    App.getChannel().trigger('historyUpdate', templateBody);
     App.getChannel().request('save');
   },
 
