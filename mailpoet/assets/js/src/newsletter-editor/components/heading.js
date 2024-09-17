@@ -12,6 +12,9 @@ Module.HeadingView = Marionette.View.extend({
   getTemplate: function () {
     return window.templates.heading;
   },
+  initialize: function initialize() {
+    App.getChannel().on('historyUpdate', this.onHistoryUpdate, this);
+  },
   // eslint-disable-next-line func-names
   templateContext: function () {
     return {
@@ -37,6 +40,11 @@ Module.HeadingView = Marionette.View.extend({
   // eslint-disable-next-line func-names
   changeField: function (field, event) {
     this.model.set(field, jQuery(event.target).val());
+  },
+  onHistoryUpdate: function onHistoryUpdate() {
+    const type =
+      jQuery('#mailpoet_heading_email_type').val() || 'completed_order';
+    App.getChannel().trigger('changeWCEmailType', type);
   },
 });
 
