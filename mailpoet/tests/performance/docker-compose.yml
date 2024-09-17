@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   setup:
     image: wordpress:cli-2.7-php8.2
