@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.2.1 - 2024-09-17 =
+
+- Added: WooCommerce email template reset button;
+- Improved: plugin activation and update performance.
+
 = 5.2.0 - 2024-09-11 =
 
 - Fixed: incorrect value Last run started in Cron status at the help page;

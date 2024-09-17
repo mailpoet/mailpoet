@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.5
 Tested up to: 6.6
-Stable tag: 5.2.0
+Stable tag: 5.2.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -230,9 +230,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.2.0 - 2024-09-11 =
-* Fixed: incorrect value Last run started in Cron status at the help page;
-* Fixed: The help page loads slowly for sites with long sending history;
-* Fixed: emails with incorrectly nested ALC or WooCommerce placeholder blocks can't be sent.
+= 5.2.1 - 2024-09-17 =
+* Added: WooCommerce email template reset button;
+* Improved: plugin activation and update performance.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)
