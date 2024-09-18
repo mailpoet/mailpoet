@@ -1,7 +1,10 @@
 <?php declare(strict_types = 1);
 
-use MailPoet\EmailEditor\Container;
+namespace MailPoet\EmailEditor;
+
+use Exception;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class ContainerTest extends TestCase {
   public function testSetAndGetService(): void {
