@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace EmailEditor\Engine\Renderer\Preprocessors;
+namespace MailPoet\EmailEditor\Engine\Renderer\Preprocessors;
 
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\SpacingPreprocessor;
 

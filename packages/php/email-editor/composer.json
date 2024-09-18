@@ -9,7 +9,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "EmailEditor\\": "tests/unit/"
+      "MailPoet\\EmailEditor\\": "tests/unit/"
     }
   },
   "require": {

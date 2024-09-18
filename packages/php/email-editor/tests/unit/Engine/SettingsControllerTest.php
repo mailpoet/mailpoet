@@ -1,9 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace EmailEditor\Engine;
-
-use MailPoet\EmailEditor\Engine\SettingsController;
-use MailPoet\EmailEditor\Engine\ThemeController;
+namespace MailPoet\EmailEditor\Engine;
 
 class SettingsControllerTest extends \MailPoetUnitTest {
   public function testItGetsCorrectLayoutWidthWithoutPadding(): void {

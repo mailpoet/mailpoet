@@ -1,8 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace EmailEditor\Integrations\Utils;
-
-use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
+namespace MailPoet\EmailEditor\Integrations\Utils;
 
 class DomDocumentHelperTest extends \MailPoetUnitTest {
   public function testItFindsElement(): void {
