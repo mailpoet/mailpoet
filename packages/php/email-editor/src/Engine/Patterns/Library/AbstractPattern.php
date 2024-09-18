@@ -2,7 +2,7 @@
 
 namespace MailPoet\EmailEditor\Engine\Patterns\Library;
 
-use MailPoet\Util\CdnAssetUrl;
+use MailPoet\EmailEditor\Utils\CdnAssetUrl;
 
 abstract class AbstractPattern {
   protected $cdnAssetUrl;

@@ -2,7 +2,7 @@
 
 namespace MailPoet\EmailEditor\Engine\Patterns;
 
-use MailPoet\Util\CdnAssetUrl;
+use MailPoet\EmailEditor\Utils\CdnAssetUrl;
 
 class Patterns {
   private $namespace = 'mailpoet';

@@ -337,6 +337,9 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\CustomFields\ApiDataSanitizer::class);
     $container->autowire(\MailPoet\CustomFields\CustomFieldsRepository::class)->setPublic(true);
     // Email Editor
+    $container->autowire(\MailPoet\EmailEditor\Utils\CdnAssetUrl::class)
+      ->setPublic(true)
+      ->setFactory([__CLASS__, 'getEmailEditorCdnAssetsUrl']);
     $container->autowire(\MailPoet\EmailEditor\Engine\EmailEditor::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Engine\EmailApiController::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Engine\SettingsController::class)->setPublic(true);
@@ -684,5 +687,9 @@ class ContainerConfigurator implements IContainerConfigurator {
 
   public static function getCdnAssetsUrl(): \MailPoet\Util\CdnAssetUrl {
     return new \MailPoet\Util\CdnAssetUrl((string)Env::$baseUrl);
+  }
+
+  public static function getEmailEditorCdnAssetsUrl(): \MailPoet\EmailEditor\Utils\CdnAssetUrl {
+    return new \MailPoet\EmailEditor\Utils\CdnAssetUrl((string)Env::$baseUrl);
   }
 }
