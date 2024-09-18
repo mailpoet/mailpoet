@@ -5,7 +5,6 @@ namespace MailPoet\EmailEditor\Engine;
 use MailPoet\EmailEditor\Engine\Patterns\Patterns;
 use MailPoet\EmailEditor\Engine\Templates\TemplatePreview;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
-use MailPoet\Entities\NewsletterEntity;
 use WP_Post;
 use WP_Theme_JSON;
 
@@ -97,7 +96,7 @@ class EmailEditor {
   }
 
   private function registerEmailPostSendStatus(): void {
-    register_post_status(NewsletterEntity::STATUS_SENT, [
+    register_post_status('sent', [
         'public' => false,
         'exclude_from_search' => true,
         'internal' => true, // for now, we hide it, if we use the status in the listings we may flip this and following values
