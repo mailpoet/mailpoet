@@ -55,3 +55,4 @@ ij_php_space_after_for_semicolon = true
 ij_php_space_after_colon_in_return_type = true
 ij_php_space_before_else_keyword = true
 ij_php_for_statement_new_line_after_left_paren = true
+ij_php_class_brace_style = end_of_line
