@@ -3,7 +3,7 @@
 namespace MailPoet\EmailEditor\Engine\Templates;
 
 use MailPoet\EmailEditor\Engine\ThemeController;
-use MailPoet\Validator\Builder;
+use MailPoet\EmailEditor\Validator\Builder;
 use WP_Theme_JSON;
 
 class TemplatePreview {

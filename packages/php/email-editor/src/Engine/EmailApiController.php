@@ -2,7 +2,7 @@
 
 namespace MailPoet\EmailEditor\Engine;
 
-use MailPoet\Validator\Builder;
+use MailPoet\EmailEditor\Validator\Builder;
 
 class EmailApiController {
   /**
