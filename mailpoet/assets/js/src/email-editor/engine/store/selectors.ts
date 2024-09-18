@@ -240,6 +240,12 @@ export function getPreviewState(state: State): State['preview'] {
   return state.preview;
 }
 
+export const getDeviceType = createRegistrySelector(
+  (select) => () =>
+    // @ts-expect-error getDeviceType is missing in types.
+    select(editorStore).getDeviceType() as string,
+);
+
 export function getStyles(state: State): State['theme']['styles'] {
   return state.theme.styles;
 }

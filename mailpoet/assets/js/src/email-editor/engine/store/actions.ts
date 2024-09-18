@@ -3,6 +3,7 @@ import { store as interfaceStore } from '@wordpress/interface';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { store as noticesStore } from '@wordpress/notices';
+import { store as editorStore } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
 import { apiFetch } from '@wordpress/data-controls';
 import { storeName, mainSidebarEmailTab } from './constants';
@@ -25,12 +26,10 @@ export function toggleListviewSidebar() {
   } as const;
 }
 
-export function changePreviewDeviceType(deviceType: string) {
-  return {
-    type: 'CHANGE_PREVIEW_STATE',
-    state: { deviceType },
-  } as const;
-}
+export const changePreviewDeviceType =
+  (deviceType: string) =>
+  ({ registry }) =>
+    void registry.dispatch(editorStore).setDeviceType(deviceType);
 
 export function togglePreviewModal(isOpen: boolean) {
   return {

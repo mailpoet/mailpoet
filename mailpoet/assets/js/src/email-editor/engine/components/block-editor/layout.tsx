@@ -1,10 +1,5 @@
-import {
-  // @ts-expect-error No types for this exist yet.
-  __experimentalUseResizeCanvas as useResizeCanvas,
-  BlockSelectionClearer,
-} from '@wordpress/block-editor';
-
-import { UnsavedChangesWarning, store as editorStore } from '@wordpress/editor';
+import { BlockSelectionClearer } from '@wordpress/block-editor';
+import { UnsavedChangesWarning } from '@wordpress/editor';
 import { uploadMedia } from '@wordpress/media-utils';
 import classnames from 'classnames';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -13,6 +8,7 @@ import {
   FullscreenMode,
   InterfaceSkeleton,
 } from '@wordpress/interface';
+import { useRef } from '@wordpress/element';
 
 import './index.scss';
 import { store as coreStore } from '@wordpress/core-data';
@@ -26,7 +22,6 @@ import { InserterSidebar } from '../inserter-sidebar/inserter-sidebar';
 import { EditorNotices, SentEmailNotice } from '../notices';
 import { StylesSidebar } from '../styles-sidebar';
 import { VisualEditor } from './visual-editor/visual-editor';
-import { useRef } from '@wordpress/element';
 
 import { TemplateSelection } from '../template-select';
 
@@ -42,7 +37,6 @@ export function Layout() {
     hasFixedToolbar,
     focusMode,
     styles,
-    isEditingTemplate,
   } = useSelect(
     (select) => ({
       isFullscreenActive: select(storeName).isFeatureActive('fullscreenMode'),
@@ -50,13 +44,11 @@ export function Layout() {
       isInserterSidebarOpened: select(storeName).isInserterSidebarOpened(),
       isListviewSidebarOpened: select(storeName).isListviewSidebarOpened(),
       initialSettings: select(storeName).getInitialEditorSettings(),
-      previewDeviceType: select(storeName).getPreviewState().deviceType,
+      previewDeviceType: select(storeName).getDeviceType(),
       canUserEditMedia: select(coreStore).canUser('create', 'media'),
       hasFixedToolbar: select(storeName).isFeatureActive('fixedToolbar'),
       focusMode: select(storeName).isFeatureActive('focusMode'),
       styles: select(storeName).getStyles(),
-      isEditingTemplate:
-        select(editorStore).getCurrentPostType() === 'wp_template',
     }),
     [],
   );
@@ -69,12 +61,6 @@ export function Layout() {
   });
 
   const contentRef = useRef(null);
-
-  const contentWrapperStyles = useResizeCanvas(previewDeviceType);
-
-  if (isEditingTemplate) {
-    contentWrapperStyles.height = '100%';
-  }
 
   // Styles for the canvas. Based on template-canvas.php, this equates to the body element.
   const canvasStyles = {
@@ -117,13 +103,7 @@ export function Layout() {
                 }
               }}
             >
-              <div
-                className={classnames('visual-editor__email_content_wrapper', {
-                  'is-mobile-preview': previewDeviceType === 'Mobile',
-                  'is-desktop-preview': previewDeviceType === 'Desktop',
-                })}
-                style={contentWrapperStyles}
-              >
+              <div className="visual-editor__email_content_wrapper">
                 <VisualEditor
                   disableIframe={false}
                   styles={[...settings.styles, ...emailCss]}

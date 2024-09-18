@@ -18,10 +18,10 @@ export function PreviewDropdown() {
     'mailpoet_data',
   );
 
-  const previewDeviceType = useSelect((select) => {
-    const { deviceType } = select(storeName).getPreviewState();
-    return deviceType;
-  }, []);
+  const previewDeviceType = useSelect(
+    (select) => select(storeName).getDeviceType(),
+    [],
+  );
 
   const { changePreviewDeviceType, togglePreviewModal } =
     useDispatch(storeName);
