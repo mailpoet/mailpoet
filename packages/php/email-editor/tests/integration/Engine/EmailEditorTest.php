@@ -1,8 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace EmailEditor\Engine;
-
-use MailPoet\EmailEditor\Engine\EmailEditor;
+namespace MailPoet\EmailEditor\Engine;
 
 class EmailEditorTest extends \MailPoetTest {
   /** @var EmailEditor */

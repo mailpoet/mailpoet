@@ -1,8 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace EmailEditor\Engine;
-
-use MailPoet\EmailEditor\Engine\ThemeController;
+namespace MailPoet\EmailEditor\Engine;
 
 class ThemeControllerTest extends \MailPoetTest {
   private ThemeController $themeController;

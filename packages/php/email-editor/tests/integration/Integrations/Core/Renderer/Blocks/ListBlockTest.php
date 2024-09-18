@@ -1,10 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace EmailEditor\Integration\Core\Renderer\Blocks;
+namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\EmailEditor;
 use MailPoet\EmailEditor\Engine\SettingsController;
-use MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\ListBlock;
 
 class ListBlockTest extends \MailPoetTest {
   /** @var ListBlock */
