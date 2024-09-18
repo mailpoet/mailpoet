@@ -1,9 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace EmailEditor\Engine\Renderer\ContentRenderer;
+namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer;
 
 use MailPoet\EmailEditor\Engine\EmailEditor;
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\ContentRenderer;
 use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
 
 require_once __DIR__ . '/DummyBlockRenderer.php';
