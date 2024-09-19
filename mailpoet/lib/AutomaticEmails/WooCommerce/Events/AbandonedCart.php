@@ -120,9 +120,9 @@ class AbandonedCart {
       10
     );
 
-    // item quantity set to zero (it removes the item but does not fire remove event)
+    // item quantity set to zero
     $this->wp->addAction(
-      'woocommerce_before_cart_item_quantity_zero',
+      'woocommerce_remove_cart_item',
       [$this, 'handleCartChange'],
       10
     );
