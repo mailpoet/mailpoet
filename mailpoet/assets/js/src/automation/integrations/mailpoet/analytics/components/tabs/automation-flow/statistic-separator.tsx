@@ -57,12 +57,19 @@ export function StatisticSeparator({
   const completed = data.step_data?.completed || {};
   const failed = data.step_data?.failed || {};
   const waiting = data.step_data?.waiting || {};
+  const calculateTotals = (id) =>
+    (completed[id] ?? 0) + (failed[id] ?? 0) + (waiting[id] ?? 0);
   let totalEntered = 0;
   if (nextStep) {
-    totalEntered =
-      (completed[nextStep.id] ?? 0) +
-      (failed[nextStep.id] ?? 0) +
-      (waiting[nextStep.id] ?? 0);
+    totalEntered = calculateTotals(nextStep.id);
+  } else if (previousStep.next_steps.length === 2) {
+    // When there is no next step and the previous step has 2+ next steps we are
+    // in an empty if/else branch. To calculate the total we need to subtract
+    // totalEntered of the sibling step from totalEntered of previousStep
+    const siblingStep = previousStep.next_steps.find((step) => step.id);
+    const totalEnteredSibling = calculateTotals(siblingStep.id);
+    const totalEnteredPrevious = completed[previousStep.id] ?? 0;
+    totalEntered = totalEnteredPrevious - totalEnteredSibling;
   } else {
     totalEntered = completed[previousStep.id] ?? 0;
   }
