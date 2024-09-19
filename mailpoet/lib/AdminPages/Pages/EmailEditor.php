@@ -132,6 +132,6 @@ class EmailEditor {
     // Enqueue media library scripts
     $this->wp->wpEnqueueMedia();
 
-    echo '<div id="mailpoet-email-editor" class="block-editor"></div>';
+    echo '<div id="mailpoet-email-editor" class="block-editor block-editor__container hide-if-no-js"></div>';
   }
 }
