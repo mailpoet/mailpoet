@@ -226,12 +226,38 @@ class AnalyticsCest {
       ->withSubject(new Subject('mailpoet:subscriber', ['subscriber_id' => $subscriber->getId()]))
       ->create();
 
-    foreach ($this->automationStepSequence as $step) {
-      if ($step->getId() === $nextStep) {
-        break;
-      }
+    $runStepSequence = $this->getRunStepSequence($nextStep);
+    foreach ($runStepSequence as $step) {
       (new DataFactories\AutomationRunLog($run->getId(), $step))->create();
     }
+  }
+
+  private function getRunStepSequence($nextStepId = null): array {
+    $runStepSequence = [];
+    $lastStep = end($this->automationStepSequence);
+    if ($nextStepId) {
+      $filteredItems = array_filter($this->automationStepSequence, function ($step) use ($nextStepId) {
+        return $step->getId() == $nextStepId;
+      });
+      $lastStep = reset($filteredItems);
+    } else {
+      $runStepSequence[] = $lastStep;
+    }
+    // Backtrack from the end of automation or from the next step to the beginning
+    // This way, we correctly mark steps as completed when if/else branches are present
+    while ($lastStep) {
+      $filteredItems = array_filter($this->automationStepSequence, function($step) use ($lastStep) {
+        $nextSteps = $step->getNextSteps();
+        return !empty(array_filter($nextSteps, function ($nextStep) use ($lastStep) {
+          return $nextStep->getId() === $lastStep->getId();
+        }));
+      });
+      $lastStep = reset($filteredItems);
+      if ($lastStep) {
+        $runStepSequence[] = $lastStep;
+      }
+    }
+    return $runStepSequence;
   }
 
   private function createNewsletter($newsletterTitle) {
