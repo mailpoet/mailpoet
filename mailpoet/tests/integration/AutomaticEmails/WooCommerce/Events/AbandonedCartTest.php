@@ -138,7 +138,7 @@ class AbandonedCartTest extends \MailPoetTest {
     verify($registeredActions)->arrayContains('woocommerce_add_to_cart');
     verify($registeredActions)->arrayContains('woocommerce_cart_item_removed');
     verify($registeredActions)->arrayContains('woocommerce_after_cart_item_quantity_update');
-    verify($registeredActions)->arrayContains('woocommerce_before_cart_item_quantity_zero');
+    verify($registeredActions)->arrayContains('woocommerce_remove_cart_item');
     verify($registeredActions)->arrayContains('woocommerce_cart_emptied');
     verify($registeredActions)->arrayContains('woocommerce_cart_item_restored');
     verify($registeredActions)->arrayContains('woocommerce_load_cart_from_session');
