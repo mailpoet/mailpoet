@@ -37,8 +37,9 @@ export type RenderStepFooterType = JSX.Element | null;
 
 // mailpoet.automation.render_step_separator
 export type RenderStepSeparatorType = (
-  step: Step,
+  previousStep: Step,
   index: number,
+  nextStep?: Step,
 ) => JSX.Element;
 
 // mailpoet.automation.editor.create_store

@@ -8,11 +8,13 @@ import { Step } from '../../../../../../editor/components/automation/types';
 type Props = {
   previousStep: Step;
   index: number;
+  nextStep?: Step;
 };
 
 export function StatisticSeparator({
   previousStep,
   index,
+  nextStep,
 }: Props): JSX.Element | null {
   const { section, stepType } = useSelect(
     (s) => ({

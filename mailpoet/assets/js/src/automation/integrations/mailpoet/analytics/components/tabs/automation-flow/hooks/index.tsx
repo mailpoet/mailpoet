@@ -50,6 +50,7 @@ export function initHooks() {
       return function StatisticSeparatorWrapper(
         previousStepData: StepData,
         index: number,
+        nextStepData: StepData,
       ) {
         return (
           <>
@@ -62,7 +63,11 @@ export function initHooks() {
                 }
               />
             )}
-            <StatisticSeparator previousStep={previousStepData} index={index} />
+            <StatisticSeparator
+              previousStep={previousStepData}
+              nextStep={nextStepData}
+              index={index}
+            />
           </>
         );
       };
