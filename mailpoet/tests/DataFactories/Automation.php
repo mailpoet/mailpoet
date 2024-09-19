@@ -4,9 +4,13 @@ namespace MailPoet\Test\DataFactories;
 
 use Exception;
 use MailPoet\Automation\Engine\Data\Automation as AutomationData;
+use MailPoet\Automation\Engine\Data\Filter;
+use MailPoet\Automation\Engine\Data\FilterGroup;
+use MailPoet\Automation\Engine\Data\Filters;
 use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Storage\AutomationStorage;
+use MailPoet\Automation\Integrations\Core\Actions\IfElseAction;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use WP_User;
@@ -44,7 +48,10 @@ class Automation {
   public function withStep(Step $step): self {
     $lastStep = end($this->stepSeqeuence);
     if ($lastStep) {
-      $lastStep->setNextSteps([new NextStep($step->getId())]);
+      $nextSteps = $lastStep->getNextSteps();
+      // This is to preserve manually set else branch in if-else step
+      $nextSteps[0] = new NextStep($step->getId());
+      $lastStep->setNextSteps($nextSteps);
     }
     $this->stepSeqeuence[$step->getId()] = $step;
     return $this;
@@ -78,6 +85,45 @@ class Automation {
       []
     );
     return $this->withStep($step);
+  }
+
+  public function withIfElseStep(Step $elseStep = null): self {
+    $subscribedFilter = new Filter(
+      'f1',
+      'enum',
+      'mailpoet:subscriber:status',
+      'is-any-of',
+      ['value' => ['subscribed']]
+    );
+    $step = new Step(
+      uniqid(),
+      Step::TYPE_ACTION,
+      IfElseAction::KEY,
+      [],
+      [],
+      new Filters(
+        Filters::OPERATOR_AND,
+        [new FilterGroup('g1', FilterGroup::OPERATOR_AND, [$subscribedFilter])]
+      ),
+    );
+    $lastStep = end($this->stepSeqeuence);
+    if ($lastStep) {
+      $lastStep->setNextSteps([new NextStep($step->getId())]);
+    }
+    if ($elseStep) {
+      $step->setNextSteps([
+        new NextStep(null),
+        new NextStep($elseStep->getId()),
+      ]);
+      $this->stepSeqeuence[$elseStep->getId()] = $elseStep;
+    } else {
+      $step->setNextSteps([
+        new NextStep(null),
+        new NextStep(null),
+      ]);
+    }
+    $this->stepSeqeuence[$step->getId()] = $step;
+    return $this;
   }
 
   public function withSomeoneSubscribesTrigger(): self {
