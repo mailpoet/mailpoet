@@ -54,15 +54,25 @@ export function StatisticSeparator({
     );
   }
 
-  const completed = data.step_data?.completed;
-  const value = completed !== undefined ? completed[previousStep.id] ?? 0 : 0;
+  const completed = data.step_data?.completed || {};
+  const failed = data.step_data?.failed || {};
+  const waiting = data.step_data?.waiting || {};
+  let totalEntered = 0;
+  if (nextStep) {
+    totalEntered =
+      (completed[nextStep.id] ?? 0) +
+      (failed[nextStep.id] ?? 0) +
+      (waiting[nextStep.id] ?? 0);
+  } else {
+    totalEntered = completed[previousStep.id] ?? 0;
+  }
   const percent =
     data.step_data.total > 0
-      ? Math.round((value / data.step_data.total) * 100)
+      ? Math.round((totalEntered / data.step_data.total) * 100)
       : 0;
   const formattedValue = Intl.NumberFormat(locale.toString(), {
     notation: 'compact',
-  }).format(value);
+  }).format(totalEntered);
   const formattedPercent = Intl.NumberFormat(locale.toString(), {
     style: 'percent',
   }).format(percent / 100);
