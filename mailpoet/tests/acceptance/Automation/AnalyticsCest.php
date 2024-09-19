@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
+use MailPoet\Automation\Integrations\Core\Actions\IfElseAction;
 use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
 use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\DI\ContainerWrapper;
@@ -35,11 +36,14 @@ class AnalyticsCest {
     $this->newsletter1 = $this->createNewsletter("Email 1");
     $this->newsletter2 = $this->createNewsletter("Email 2");
     $createdAt = (new \DateTimeImmutable())->modify('-2 years');
+    $delayAction = new Step(uniqid(), Step::TYPE_ACTION, DelayAction::KEY, ['delay_type' => 'MINUTES', 'delay' => 1], []);
     $factory = (new DataFactories\Automation())
       ->withName('Someone Subscribed Automation')
       ->withSomeoneSubscribesTrigger()
       ->withSendEmailStep($this->newsletter1)
+      ->withIfElseStep($delayAction)
       ->withDelayAction()
+      ->withIfElseStep()
       ->withSendEmailStep($this->newsletter2)
       ->withStatusActive()
       ->withCreatedAt($createdAt);
@@ -178,6 +182,8 @@ class AnalyticsCest {
     $delayStep = null;
     $firstEmailStep = null;
     $secondEmailStep = null;
+    $firstIfElseStep = null;
+    $secondIfElseStep = null;
     foreach ($automationSteps as $step) {
       if ($step->getKey() === DelayAction::KEY) {
         $delayStep = $step->getId();
@@ -187,6 +193,13 @@ class AnalyticsCest {
       }
       if ($step->getKey() === SendEmailAction::KEY && $step->getArgs()['email_id'] === $this->newsletter2->getId()) {
         $secondEmailStep = $step->getId();
+      }
+      if ($step->getKey() === IfElseAction::KEY) {
+        if ($step->getNextStepIds()[1] !== null) {
+          $firstIfElseStep = $step->getId();
+        } else {
+          $secondIfElseStep = $step->getId();
+        }
       }
     }
     // 1 subscriber is waiting at core:delay
@@ -200,9 +213,19 @@ class AnalyticsCest {
     $i->see('0% (0) waiting', '#step-' . $firstEmailStep);
     $i->see('100% (3) completed', '.mailpoet-automation-analytics-separator-' . $firstEmailStep);
 
+    $i->scrollTo('.mailpoet-automation-analytics-separator-' . $firstIfElseStep);
+    $i->see('0% (0) waiting', '#step-' . $firstIfElseStep);
+    $i->see('100% (3) completed', '.mailpoet-automation-analytics-separator-' . $firstIfElseStep);
+    $i->see('0% (0) completed', '.mailpoet-automation-analytics-separator-' . $firstIfElseStep);
+
     $i->scrollTo('.mailpoet-automation-analytics-separator-' . $delayStep);
     $i->see('33% (1) waiting', '#step-' . $delayStep);
     $i->see('67% (2) completed', '.mailpoet-automation-analytics-separator-' . $delayStep);
+
+    $i->scrollTo('.mailpoet-automation-analytics-separator-' . $secondIfElseStep);
+    $i->see('0% (0) waiting', '#step-' . $secondIfElseStep);
+    $i->see('67% (2) completed', '.mailpoet-automation-analytics-separator-' . $secondIfElseStep);
+    $i->see('0% (0) completed', '.mailpoet-automation-analytics-separator-' . $secondIfElseStep);
 
     $i->scrollTo('.mailpoet-automation-editor-automation-end');
     $i->see('0% (0) waiting', '#step-' . $secondEmailStep);
