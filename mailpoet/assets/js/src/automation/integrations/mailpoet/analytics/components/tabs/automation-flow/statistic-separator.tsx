@@ -52,8 +52,8 @@ export function StatisticSeparator({
     );
   }
 
-  const flow = data.step_data?.flow;
-  const value = flow !== undefined ? flow[previousStep.id] ?? 0 : 0;
+  const completed = data.step_data?.completed;
+  const value = completed !== undefined ? completed[previousStep.id] ?? 0 : 0;
   const percent =
     data.step_data.total > 0
       ? Math.round((value / data.step_data.total) * 100)

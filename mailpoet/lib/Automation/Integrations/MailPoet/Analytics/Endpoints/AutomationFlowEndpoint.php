@@ -68,7 +68,7 @@ class AutomationFlowEndpoint extends Endpoint {
     $waitingData = $this->stepStatisticController->getWaitingStatistics($automation, $query);
     $failedData = $this->stepStatisticController->getFailedStatistics($automation, $query);
     try {
-      $flowData = $this->stepStatisticController->getFlowStatistics($automation, $query);
+      $completedData = $this->stepStatisticController->getCompletedStatistics($automation, $query);
     } catch (\Throwable $e) {
       return new Response([$e->getMessage()], 500);
     }
@@ -81,8 +81,8 @@ class AutomationFlowEndpoint extends Endpoint {
     if ($failedData) {
       $stepData['failed'] = $failedData;
     }
-    if ($flowData) {
-      $stepData['flow'] = $flowData;
+    if ($completedData) {
+      $stepData['completed'] = $completedData;
     }
 
     $data = [
