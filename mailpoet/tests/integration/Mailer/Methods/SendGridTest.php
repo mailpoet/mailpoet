@@ -7,6 +7,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
 use MailPoet\Mailer\Methods\SendGrid;
+use MailPoet\Util\Url;
 
 class SendGridTest extends \MailPoetTest {
   public $extraParams;
@@ -40,7 +41,8 @@ class SendGridTest extends \MailPoetTest {
       $this->settings['api_key'],
       $this->sender,
       $this->replyTo,
-      new SendGridMapper()
+      new SendGridMapper(),
+      $this->diContainer->get(Url::class)
     );
     $this->subscriber = 'Recipient <mailpoet@sink.sendgrid.net>';
     $this->newsletter = [

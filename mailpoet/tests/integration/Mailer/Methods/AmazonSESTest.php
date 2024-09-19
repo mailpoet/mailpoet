@@ -7,6 +7,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\AmazonSES;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
+use MailPoet\Util\Url;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AmazonSESTest extends \MailPoetTest {
@@ -53,7 +54,8 @@ class AmazonSESTest extends \MailPoetTest {
       $this->replyTo,
       $this->returnPath,
       new AmazonSESMapper(),
-      new WPFunctions()
+      new WPFunctions(),
+      $this->diContainer->get(Url::class)
     );
     $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
     $this->newsletter = [
@@ -91,7 +93,8 @@ class AmazonSESTest extends \MailPoetTest {
         $this->replyTo,
         $this->returnPath,
         new AmazonSESMapper(),
-        new WPFunctions()
+        new WPFunctions(),
+        $this->diContainer->get(Url::class)
       );
       $this->fail('Unsupported region exception was not thrown');
     } catch (\Exception $e) {
@@ -275,7 +278,8 @@ class AmazonSESTest extends \MailPoetTest {
       $this->replyTo,
       $this->returnPath,
       new AmazonSESMapper(),
-      $mockedWp
+      $mockedWp,
+      $this->diContainer->get(Url::class)
     );
     $result = $mailer->send(
       $this->newsletter,

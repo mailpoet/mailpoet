@@ -5,6 +5,7 @@ namespace MailPoet\Mailer\Methods;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\WordPress\PHPMailerLoader;
+use MailPoet\Util\Url;
 use PHPMailer\PHPMailer\PHPMailer;
 
 PHPMailerLoader::load();
@@ -20,6 +21,10 @@ abstract class PHPMailerMethod implements MailerMethod {
   public $mailer;
 
   protected $errorMapper;
+
+  /** @var Url */
+  protected $urlUtils;
+
   /** @var BlacklistCheck */
   protected $blacklist;
 
@@ -27,13 +32,15 @@ abstract class PHPMailerMethod implements MailerMethod {
     $sender,
     $replyTo,
     $returnPath,
-    $errorMapper
+    $errorMapper,
+    Url $urlUtils
   ) {
     $this->sender = $sender;
     $this->replyTo = $replyTo;
     $this->returnPath = $returnPath;
     $this->mailer = $this->buildMailer();
     $this->errorMapper = $errorMapper;
+    $this->urlUtils = $urlUtils;
     $this->blacklist = new BlacklistCheck();
   }
 
@@ -74,9 +81,17 @@ abstract class PHPMailerMethod implements MailerMethod {
       $mailer->AltBody = (!empty($newsletter['body']['text'])) ? $newsletter['body']['text'] : ''; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     }
     $mailer->Sender = $this->returnPath; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-    if (!empty($extraParams['unsubscribe_url'])) {
-      $this->mailer->addCustomHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
-      $this->mailer->addCustomHeader('List-Unsubscribe', '<' . $extraParams['unsubscribe_url'] . '>');
+
+    // unsubscribe header
+    $unsubscribeUrl = $extraParams['unsubscribe_url'] ?? null;
+    $oneClickUnsubscribeUrl = $extraParams['one_click_unsubscribe'] ?? null;
+    if ($unsubscribeUrl) {
+      $isHttps = $this->urlUtils->isUsingHttps($unsubscribeUrl);
+      $url = $isHttps && $oneClickUnsubscribeUrl ? $oneClickUnsubscribeUrl : $unsubscribeUrl;
+      if ($isHttps) {
+        $mailer->addCustomHeader('List-Unsubscribe-Post', 'List-Unsubscribe=One-Click');
+      }
+      $mailer->addCustomHeader('List-Unsubscribe', '<' . $url . '>');
     }
 
     // Enforce base64 encoding when lines are too long, otherwise quoted-printable encoding

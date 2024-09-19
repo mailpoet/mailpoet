@@ -5,6 +5,7 @@ namespace MailPoet\Mailer\Methods;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\SendGridMapper;
+use MailPoet\Util\Url;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SendGrid implements MailerMethod {
@@ -16,6 +17,9 @@ class SendGrid implements MailerMethod {
   /** @var SendGridMapper */
   private $errorMapper;
 
+  /** @var Url */
+  private $urlUtils;
+
   /** @var BlacklistCheck */
   private $blacklist;
 
@@ -25,12 +29,14 @@ class SendGrid implements MailerMethod {
     $apiKey,
     $sender,
     $replyTo,
-    SendGridMapper $errorMapper
+    SendGridMapper $errorMapper,
+    Url $urlUtils
   ) {
     $this->apiKey = $apiKey;
     $this->sender = $sender;
     $this->replyTo = $replyTo;
     $this->errorMapper = $errorMapper;
+    $this->urlUtils = $urlUtils;
     $this->wp = new WPFunctions();
     $this->blacklist = new BlacklistCheck();
   }
@@ -65,8 +71,17 @@ class SendGrid implements MailerMethod {
       'subject' => $newsletter['subject'],
     ];
     $headers = [];
-    if (!empty($extraParams['unsubscribe_url'])) {
-      $headers['List-Unsubscribe'] = '<' . $extraParams['unsubscribe_url'] . '>';
+
+    // unsubscribe header
+    $unsubscribeUrl = $extraParams['unsubscribe_url'] ?? null;
+    $oneClickUnsubscribeUrl = $extraParams['one_click_unsubscribe'] ?? null;
+    if ($unsubscribeUrl) {
+      $isHttps = $this->urlUtils->isUsingHttps($unsubscribeUrl);
+      $url = $isHttps && $oneClickUnsubscribeUrl ? $oneClickUnsubscribeUrl : $unsubscribeUrl;
+      if ($isHttps) {
+        $headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
+      }
+      $headers['List-Unsubscribe'] = '<' . $url . '>';
     }
     if ($headers) {
       $body['headers'] = json_encode($headers);
