@@ -6,6 +6,9 @@ use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Subject;
+use MailPoet\Automation\Integrations\Core\Actions\DelayAction;
+use MailPoet\Automation\Integrations\MailPoet\Actions\SendEmailAction;
+use MailPoet\Automation\Integrations\MailPoet\Subjects\SubscriberSubject;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\StatisticsClickEntity;
@@ -176,13 +179,13 @@ class AnalyticsCest {
     $firstEmailStep = null;
     $secondEmailStep = null;
     foreach ($automationSteps as $step) {
-      if ($step->getKey() === 'core:delay') {
+      if ($step->getKey() === DelayAction::KEY) {
         $delayStep = $step->getId();
       }
-      if ($step->getKey() === 'mailpoet:send-email' && $step->getArgs()['email_id'] === $this->newsletter1->getId()) {
+      if ($step->getKey() === SendEmailAction::KEY && $step->getArgs()['email_id'] === $this->newsletter1->getId()) {
         $firstEmailStep = $step->getId();
       }
-      if ($step->getKey() === 'mailpoet:send-email' && $step->getArgs()['email_id'] === $this->newsletter2->getId()) {
+      if ($step->getKey() === SendEmailAction::KEY && $step->getArgs()['email_id'] === $this->newsletter2->getId()) {
         $secondEmailStep = $step->getId();
       }
     }
@@ -223,7 +226,7 @@ class AnalyticsCest {
       ->withAutomation($this->automation)
       ->withStatus($nextStep ? $status : AutomationRun::STATUS_COMPLETE)
       ->withNextStep($nextStep)
-      ->withSubject(new Subject('mailpoet:subscriber', ['subscriber_id' => $subscriber->getId()]))
+      ->withSubject(new Subject(SubscriberSubject::KEY, ['subscriber_id' => $subscriber->getId()]))
       ->create();
 
     $runStepSequence = $this->getRunStepSequence($nextStep);
