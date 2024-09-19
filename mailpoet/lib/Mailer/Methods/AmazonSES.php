@@ -5,6 +5,7 @@ namespace MailPoet\Mailer\Methods;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\AmazonSESMapper;
+use MailPoet\Util\Url;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -74,7 +75,8 @@ class AmazonSES extends PHPMailerMethod {
     $replyTo,
     $returnPath,
     AmazonSESMapper $errorMapper,
-    WPFunctions $wp
+    WPFunctions $wp,
+    Url $urlUtils
   ) {
     $this->awsAccessKey = $accessKey;
     $this->awsSecretKey = $secretKey;
@@ -95,6 +97,7 @@ class AmazonSES extends PHPMailerMethod {
     $this->dateWithoutTime = gmdate('Ymd');
     $this->errorMapper = $errorMapper;
     $this->wp = $wp;
+    $this->urlUtils = $urlUtils;
     $this->blacklist = new BlacklistCheck();
     $this->mailer = $this->buildMailer();
   }

@@ -7,6 +7,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\PHPMailMapper;
 use MailPoet\Mailer\Methods\PHPMail;
+use MailPoet\Util\Url;
 use PHPMailer\PHPMailer\PHPMailer;
 
 class PHPMailTest extends \MailPoetTest {
@@ -36,7 +37,8 @@ class PHPMailTest extends \MailPoetTest {
       $this->sender,
       $this->replyTo,
       $this->returnPath,
-      new PHPMailMapper()
+      new PHPMailMapper(),
+      $this->diContainer->get(Url::class)
     );
     $this->subscriber = 'Recipient <blackhole@mailpoet.com>';
     $this->newsletter = [

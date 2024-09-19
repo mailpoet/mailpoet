@@ -7,6 +7,7 @@ use MailPoet\Mailer\MailerError;
 use MailPoet\Mailer\Methods\Common\BlacklistCheck;
 use MailPoet\Mailer\Methods\ErrorMappers\SMTPMapper;
 use MailPoet\Mailer\Methods\SMTP;
+use MailPoet\Util\Url;
 use MailPoet\WP\Functions as WPFunctions;
 
 //phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -59,6 +60,7 @@ class SMTPTest extends \MailPoetTest {
       $this->replyTo,
       $this->returnPath,
       new SMTPMapper(),
+      $this->diContainer->get(Url::class),
       $this->settings['login'],
       $this->settings['password']
     );
