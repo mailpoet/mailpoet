@@ -6,8 +6,9 @@ import { Step as StepData } from './types';
 import { RenderStepSeparatorType } from '../../../types/filters';
 
 type Props = {
-  stepData: StepData;
+  previousStepData: StepData;
   index: number;
+  nextStepData?: StepData;
 };
 
 export function FlowSeparator(props: Props): JSX.Element {
@@ -35,5 +36,9 @@ export function FlowSeparator(props: Props): JSX.Element {
       ),
     [context],
   );
-  return renderSeparator(props.stepData, props.index);
+  return renderSeparator(
+    props.previousStepData,
+    props.index,
+    props.nextStepData,
+  );
 }

@@ -40,13 +40,24 @@ export function Flow({ stepData, row }: Props): JSX.Element {
 
           return nextStepData ? (
             <div key={id}>
-              {row > 0 && <FlowSeparator stepData={stepData} index={i} />}
+              {row > 0 && (
+                <FlowSeparator
+                  previousStepData={stepData}
+                  index={i}
+                  nextStepData={nextStepData}
+                />
+              )}
               <FlowStep stepData={nextStepData} index={i} />
               <Flow stepData={nextStepData} row={row + 1} />
             </div>
           ) : (
-            // eslint-disable-next-line react/no-array-index-key
-            <FlowEnding key={i} stepData={stepData} index={i} />
+            <FlowEnding
+              // eslint-disable-next-line react/no-array-index-key
+              key={i}
+              previousStepData={stepData}
+              index={i}
+              nextStepData={nextStepData}
+            />
           );
         })}
       </div>
