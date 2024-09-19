@@ -20,8 +20,8 @@ export function InserterSidebar() {
   const { toggleInserterSidebar } = useDispatch(storeName);
 
   return (
-    <div className="edit-post-editor__inserter-panel">
-      <div className="edit-post-editor__inserter-panel-content">
+    <div className="editor-inserter-sidebar">
+      <div className="editor-inserter-sidebar__content">
         <Library
           showMostUsedBlocks
           showInserterHelpPanel={false}
