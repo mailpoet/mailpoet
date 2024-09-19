@@ -94,7 +94,12 @@ function OtherSettings(): JSX.Element {
       MailPoet.I18n.t(conf.i18nKey),
       /\[link](.*?)\[\/link]/g,
       (match) => (
-        <a key="addFormWidgetHintLink" href={conf.href} target="_blank">
+        <a
+          key="addFormWidgetHintLink"
+          href={conf.href}
+          target="_blank"
+          rel="noreferrer"
+        >
           {match}
         </a>
       ),
