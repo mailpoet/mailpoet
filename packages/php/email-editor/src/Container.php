@@ -10,6 +10,11 @@ class Container {
     $this->services[$name] = $callable;
   }
 
+  /**
+   * @template T
+   * @param class-string<T> $name
+   * @return T
+   */
   public function get(string $name) {
     // Check if the service is already instantiated
     if (isset($this->instances[$name])) {
