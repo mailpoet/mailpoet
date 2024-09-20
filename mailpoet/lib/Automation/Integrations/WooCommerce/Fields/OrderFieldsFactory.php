@@ -303,6 +303,10 @@ class OrderFieldsFactory {
     $options = [];
     foreach ($statuses as $id => $name) {
       $options[] = [
+        // WooCommerce order statuses are internally saved with 'wc-' prefix:
+        // https://github.com/woocommerce/woocommerce/blob/9c58f198/plugins/woocommerce/includes/wc-order-functions.php#L98-L109
+        // However, when getting the status from the order object, it doesn't have the prefix.
+        // To make the status codes consistent, we remove the prefix here and only work with unprefixed statuses.
         'id' => substr($id, 0, 3) === 'wc-' ? substr($id, 3) : $id,
         'name' => $name,
       ];
