@@ -248,7 +248,7 @@ class SendEmailAction implements Action {
     }
 
     $wasSent = $scheduledTaskSubscriber->getProcessed() === ScheduledTaskSubscriberEntity::STATUS_PROCESSED;
-    $isLastRun = $args->getRunNumber() >= count(self::POLL_INTERVALS);
+    $isLastRun = $args->getRunNumber() >= 1 + count(self::POLL_INTERVALS);
 
     // email was never sent
     if (!$wasSent && $isLastRun) {

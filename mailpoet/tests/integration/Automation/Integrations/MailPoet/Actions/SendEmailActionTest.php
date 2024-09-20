@@ -207,8 +207,8 @@ class SendEmailActionTest extends \MailPoetTest {
     $this->assertSame('mailpoet/automation/step', $actions[0]->get_hook());
     $this->assertSame([['automation_run_id' => $run->getId(), 'step_id' => 'step-id', 'run_number' => 3]], $actions[0]->get_args());
 
-    // email was never sent (7th run is the last check after ~1 month)
-    $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 7);
+    // email was never sent (8th run is the last check after ~1 month)
+    $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 8);
     $this->assertThrowsExceptionWithMessage(
       'Email sending process timed out.',
       function() use ($args, $controller) {
