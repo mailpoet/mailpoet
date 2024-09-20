@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 
 /**
@@ -40,8 +40,6 @@ class IntegrationTester extends \Codeception\Actor
   }
 
   public function cleanup() {
-    $this->deleteWordPressTerms();
-    $this->deleteCreatedComments();
     $this->deletePosts();
   }
 
@@ -49,21 +47,5 @@ class IntegrationTester extends \Codeception\Actor
     foreach ($this->posts as $post) {
       wp_delete_post($post->ID, true);
     }
-  }
-
-  private function deleteWordPressTerms(): void {
-    foreach ($this->wpTermIds as $taxonomy => $termIds) {
-      foreach ($termIds as $termId) {
-        wp_delete_term($termId, $taxonomy);
-      }
-    }
-    $this->wpTermIds = [];
-  }
-
-  private function deleteCreatedComments() {
-    foreach ($this->createdCommentIds as $commentId) {
-      wp_delete_comment($commentId, true);
-    }
-    $this->createdCommentIds = [];
   }
 }
