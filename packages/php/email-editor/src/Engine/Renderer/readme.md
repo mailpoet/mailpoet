@@ -13,10 +13,10 @@ The renderer is WIP and so is the API for adding support email rendering for new
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Block_Renderer;use MailPoet\EmailEditor\Engine\Settings_Controller;
 
-class Heading implements BlockRenderer {
-  public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
+class Heading implements Block_Renderer {
+  public function render($blockContent, array $parsedBlock, Settings_Controller $settingsController): string {
     return 'HEADING_BLOCK'; // here comes your rendering logic;
   }
 }
@@ -27,11 +27,11 @@ class Heading implements BlockRenderer {
 ```php
 <?php
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlocksRegistry;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry;
 
 add_action('mailpoet_blocks_renderer_initialized', 'register_my_block_email_renderer');
 
-function register_my_block_email_renderer(BlocksRegistry $blocksRegistry): void {
+function register_my_block_email_renderer(Blocks_Registry $blocksRegistry): void {
   $blocksRegistry->addBlockRenderer('core/heading', new Renderer\Blocks\Heading());
 }
 ```
