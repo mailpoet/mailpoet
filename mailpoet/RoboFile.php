@@ -220,7 +220,7 @@ class RoboFile extends \Robo\Tasks {
 
     $compilationResult = $this->taskExecStack()
       ->exec('pnpm run stylelint-check -- "assets/css/src/**/*.scss"')
-      ->exec('pnpm run scss')
+      ->exec('pnpm run scss' . ($opts['env'] === 'production' ? ' --no-source-map' : ''))
       ->exec('pnpm run autoprefixer')
       ->run();
 
