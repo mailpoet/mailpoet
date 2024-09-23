@@ -29,8 +29,8 @@ class CreateAndSendEmailUsingGutenbergCest {
     $this->closeTemplateSelectionModal($i);
 
     $i->wantTo('Compose an email');
-    $i->waitForElement('.editor-canvas__iframe');
-    $i->switchToIFrame('.editor-canvas__iframe');
+    $i->waitForElement('[name="editor-canvas"]');
+    $i->switchToIFrame('[name="editor-canvas"]');
     $i->waitForElementVisible('.is-root-container', 20);
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label="Block: Heading"]');
@@ -100,8 +100,8 @@ class CreateAndSendEmailUsingGutenbergCest {
     $this->closeTemplateSelectionModal($i);
 
     $i->wantTo('Edit an email');
-    $i->waitForElement('.editor-canvas__iframe');
-    $i->switchToIFrame('.editor-canvas__iframe');
+    $i->waitForElement('[name="editor-canvas"]');
+    $i->switchToIFrame('[name="editor-canvas"]');
     $i->waitForElementVisible('.is-root-container', 20);
     $i->waitForElementVisible('[aria-label="Block: Image"]');
     $i->waitForElementVisible('[aria-label="Block: Heading"]');
@@ -136,8 +136,8 @@ class CreateAndSendEmailUsingGutenbergCest {
 
   private function checkRequiredWordpressVersion(\AcceptanceTester $i): bool {
     $wordPressVersion = $i->getWordPressVersion();
-    // New email editor is not compatible with WP versions below 6.5
-    if (version_compare($wordPressVersion, '6.5', '<') || version_compare($wordPressVersion, '6.6', '>=')) {
+    // New email editor is not compatible with WP versions below 6.6
+    if (version_compare($wordPressVersion, '6.6', '<')) {
       return false;
     }
     return true;
