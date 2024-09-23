@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.2.2 - 2024-09-23 =
+
+- Improved: when using FSE theme, link to Site Editor instead of Widgets in MailPoet Forms placement options;
+- Changed: replace deprecated woocommerce_before_cart_item_quantity_zero action with woocommerce_remove_cart_item;
+- Fixed: List-Unsubscribe URL no longer redirects when not using MailPoet Sending Service.
+
 = 5.2.1 - 2024-09-17 =
 
 - Added: WooCommerce email template reset button;
