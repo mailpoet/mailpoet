@@ -4,6 +4,26 @@
   line-height: $line-height;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+caption,
+figcaption {
+  // https://developer.chrome.com/docs/css-ui/css-text-wrap-balance
+  text-wrap: balance;
+}
+
+p,
+ul,
+ol,
+blockquote {
+  // https://developer.chrome.com/blog/css-text-wrap-pretty/
+  text-wrap: pretty;
+}
+
 .admin_page_mailpoet-form-editor #wpbody {
   color: inherit;
 }
