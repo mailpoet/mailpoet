@@ -8,17 +8,17 @@
  * Alignment rules are copied from the CSS generated from theme from class .wp-site-blocks
  */
 .block-editor-block-preview__content-iframe .aligncenter {
-  justify-content: center;
-  margin-left: auto;
-  margin-right: auto;
+	justify-content: center;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .block-editor-block-preview__content-iframe .alignleft {
-  float: left;
-  margin-right: 2em;
+	float: left;
+	margin-right: 2em;
 }
 
 .block-editor-block-preview__content-iframe .alignright {
-  float: right;
-  margin-left: 2em;
+	float: right;
+	margin-left: 2em;
 }

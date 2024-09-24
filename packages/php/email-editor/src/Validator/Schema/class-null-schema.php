@@ -6,7 +6,7 @@ use MailPoet\EmailEditor\Validator\Schema;
 
 // See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#primitive-types
 class Null_Schema extends Schema {
-  protected $schema = [
-    'type' => 'null',
-  ];
+	protected $schema = array(
+		'type' => 'null',
+	);
 }

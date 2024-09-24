@@ -3,5 +3,5 @@
 namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors;
 
 interface Postprocessor {
-  public function postprocess(string $html): string;
+	public function postprocess( string $html ): string;
 }
