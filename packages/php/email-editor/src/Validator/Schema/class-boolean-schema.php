@@ -6,7 +6,7 @@ use MailPoet\EmailEditor\Validator\Schema;
 
 // See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#primitive-types
 class Boolean_Schema extends Schema {
-  protected $schema = [
-    'type' => 'boolean',
-  ];
+	protected $schema = array(
+		'type' => 'boolean',
+	);
 }

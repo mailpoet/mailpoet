@@ -14,7 +14,7 @@ use MailPoet\EmailEditor\Engine\Settings_Controller;
  * We need to find a better abstraction/architecture for this.
  */
 class Fallback extends Abstract_Block_Renderer {
-  protected function renderContent($blockContent, array $parsedBlock, Settings_Controller $settingsController): string {
-    return $blockContent;
-  }
+	protected function renderContent( $blockContent, array $parsedBlock, Settings_Controller $settingsController ): string {
+		return $blockContent;
+	}
 }
