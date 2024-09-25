@@ -14,6 +14,11 @@ caption,
 figcaption {
   // https://developer.chrome.com/docs/css-ui/css-text-wrap-balance
   text-wrap: balance;
+
+  // Skip in email editor to preserve WYSIWYG functionality
+  .mailpoet_newsletter_wrapper & {
+    text-wrap: wrap;
+  }
 }
 
 p,
@@ -22,6 +27,11 @@ ol,
 blockquote {
   // https://developer.chrome.com/blog/css-text-wrap-pretty/
   text-wrap: pretty;
+
+  // Skip in email editor to preserve WYSIWYG functionality
+  .mailpoet_newsletter_wrapper & {
+    text-wrap: wrap;
+  }
 }
 
 .admin_page_mailpoet-form-editor #wpbody {
