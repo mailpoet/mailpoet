@@ -73,6 +73,7 @@ export function VisualEditor({
     deviceType,
     isFocusedEntity,
     isDesignPostType,
+    layout,
   } = useSelect((select) => {
     const {
       getCurrentPostId,
@@ -109,6 +110,9 @@ export function VisualEditor({
       // @ts-expect-error No types for this exist yet.
       // eslint-disable-next-line no-underscore-dangle
       isPreview: editorSettings.__unstableIsPreviewMode,
+      // @ts-expect-error There are no types for the experimental features settings.
+      // eslint-disable-next-line no-underscore-dangle
+      layout: editorSettings.__experimentalFeatures.layout,
     };
   }, []);
 
@@ -122,10 +126,9 @@ export function VisualEditor({
   }, []);
 
   const deviceStyles = useResizeCanvas(deviceType);
-  const fallbackLayout = { type: 'default' };
 
   const postContentLayoutClasses = useLayoutClasses(
-    undefined,
+    { layout, align: '' },
     'core/post-content',
   ) as string[];
 
@@ -136,9 +139,8 @@ export function VisualEditor({
     themeSupportsLayout && postContentLayoutClasses,
   );
 
-  // If there is a Post Content block we use its layout for the block list;
-  // if not, this must be a classic theme, in which case we use the fallback layout.
-  const blockListLayout = fallbackLayout;
+  // We want to use the same layout.
+  const blockListLayout = layout;
 
   const localRef = useRef();
   const typewriterRef = useTypewriter();
@@ -161,10 +163,12 @@ export function VisualEditor({
     () => [
       ...((styles as string[]) ?? []),
       {
-        css: `.is-root-container{display:flow-root;}`,
+        css: `.is-root-container{display:flow-root; width:${
+          layout.contentSize as string
+        }; margin: 0 auto;}`,
       },
     ],
-    [styles],
+    [styles, layout.contentSize],
   );
 
   return (

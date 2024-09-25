@@ -12,7 +12,9 @@
     },
     "layout": {
       "contentSize": "660px",
-      "wideSize": "660px"
+      "wideSize": "",
+      "allowEditing": false,
+      "allowCustomContentAndWideSize": false
     },
     "background": {
       "backgroundImage": true
