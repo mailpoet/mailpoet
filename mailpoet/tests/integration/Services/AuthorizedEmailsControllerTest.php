@@ -14,9 +14,12 @@ use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Test\DataFactories\Newsletter as NewsletterFactory;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class AuthorizedEmailsControllerTest extends \MailPoetTest {
+
+  const AUTHORIZED_EMAILS_TYPE_ALL = AuthorizedEmailsController::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL;
 
   /** @var SettingsController */
   private $settings;
@@ -510,6 +513,63 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     verify($result)->equals(false);
   }
 
+  public function testItReturnsAPIDataForGetAllAuthorizedEmailAddresses() {
+    $apiData = [
+      'pending' => ['pending@email.com'],
+      'authorized' => ['authorized@email.com'],
+      'main' => 'main@email.com',
+    ];
+
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => Expected::once($apiData),
+    ]);
+
+    // Should ignore cache, when API data is available
+    $wpMock = $this->make(WPFunctions::class, [
+      'setTransient' => true,
+      'getTransient' => [
+        'pending' => [],
+        'authorized' => [],
+        'main' => 'main@email.com',
+      ],
+    ]);
+
+    $mocks = [
+      'Bridge' => $bridgeMock,
+      'WPFunctions' => $wpMock,
+    ];
+
+    $controller = $this->getControllerWithCustomMocks($mocks);
+    $result = $controller->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAILS_TYPE_ALL);
+    verify($result)->equals($apiData);
+  }
+
+  public function testItReturnsCachedDataIfAPIIsDownForGetAllAuthorizedEmailAddresses() {
+    $bridgeMock = $this->make(Bridge::class, [
+      'getAuthorizedEmailAddresses' => Expected::once([]),
+    ]);
+
+    $cacheData = [
+      'pending' => ['pending@email.com'],
+      'authorized' => ['authorized@email.com'],
+      'main' => 'main@email.com',
+    ];
+
+    $wpMock = $this->make(WPFunctions::class, [
+      'getTransient' => $cacheData,
+      'setTransient' => true,
+    ]);
+
+    $mocks = [
+      'Bridge' => $bridgeMock,
+      'WPFunctions' => $wpMock,
+    ];
+
+    $controller = $this->getControllerWithCustomMocks($mocks);
+    $result = $controller->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAILS_TYPE_ALL);
+    verify($result)->equals($cacheData);
+  }
+
   private function setMailPoetSendingMethod() {
     $this->settings->set(
       Mailer::MAILER_CONFIG_SETTING_NAME,
@@ -538,7 +598,8 @@ class AuthorizedEmailsControllerTest extends \MailPoetTest {
     $bridgeMock = $data['Bridge'] ?? $this->diContainer->get(Bridge::class);
     $newslettersRepository = $data['NewslettersRepository'] ?? $this->diContainer->get(NewslettersRepository::class);
     $senderDomainController = $data['AuthorizedSenderDomainController'] ?? $this->diContainer->get(AuthorizedSenderDomainController::class);
+    $wp = $data['WPFunctions'] ?? $this->diContainer->get(WPFunctions::class);
 
-    return new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository, $senderDomainController);
+    return new AuthorizedEmailsController($this->settings, $bridgeMock, $newslettersRepository, $senderDomainController, $wp);
   }
 }
