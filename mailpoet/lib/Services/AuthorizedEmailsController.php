@@ -10,6 +10,7 @@ use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Services\Bridge\API;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Util\Helpers;
+use MailPoet\WP\Functions as WPFunctions;
 
 class AuthorizedEmailsController {
   const AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING = 'authorized_emails_addresses_check';
@@ -19,6 +20,8 @@ class AuthorizedEmailsController {
   const AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL = 'all';
   const AUTHORIZED_EMAIL_ERROR_ALREADY_AUTHORIZED = 'Email address is already authorized';
   const AUTHORIZED_EMAIL_ERROR_PENDING_CONFIRMATION = 'Email address is pending confirmation';
+
+  const AUTHORIZED_EMAILS_KEY = 'mailpoet_authorized_email_addresses';
 
   /** @var Bridge */
   private $bridge;
@@ -32,6 +35,9 @@ class AuthorizedEmailsController {
   /** @var AuthorizedSenderDomainController */
   private $senderDomainController;
 
+  /** @var WPFunctions */
+  private $wp;
+
   private $automaticEmailTypes = [
     NewsletterEntity::TYPE_WELCOME,
     NewsletterEntity::TYPE_NOTIFICATION,
@@ -42,12 +48,14 @@ class AuthorizedEmailsController {
     SettingsController $settingsController,
     Bridge $bridge,
     NewslettersRepository $newslettersRepository,
-    AuthorizedSenderDomainController $senderDomainController
+    AuthorizedSenderDomainController $senderDomainController,
+    WPFunctions $wp
   ) {
     $this->settings = $settingsController;
     $this->bridge = $bridge;
     $this->newslettersRepository = $newslettersRepository;
     $this->senderDomainController = $senderDomainController;
+    $this->wp = $wp;
   }
 
   public function setFromEmailAddress(string $address) {
@@ -76,6 +84,13 @@ class AuthorizedEmailsController {
 
   public function getAuthorizedEmailAddresses(string $type = 'authorized'): array {
     $data = $this->bridge->getAuthorizedEmailAddresses();
+    if (empty($data)) {
+      // API is potentially down, fallback to cache
+      $data = $this->wp->getTransient(self::AUTHORIZED_EMAILS_KEY);
+    } else {
+      $this->wp->setTransient(self::AUTHORIZED_EMAILS_KEY, $data, WEEK_IN_SECONDS);
+    }
+
     if ($data && $type === self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL) {
       return $data;
     }
