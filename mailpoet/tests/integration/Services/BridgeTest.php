@@ -262,19 +262,6 @@ class BridgeTest extends \MailPoetTest {
     $wp->removeFilter('mailpoet_bridge_api_request_timeout', $filter);
   }
 
-  public function testItReturnsOnlyAuthorizedEmails() {
-    $array = [
-      'pending' => ['pending@email.com'],
-      'authorized' => ['authorized@email.com'],
-      'main' => 'main@email.com',
-    ];
-    $api = Stub::make(new API(null), ['getAuthorizedEmailAddresses' => $array], $this);
-    $this->bridge->api = $api;
-
-    $result = $this->bridge->getAuthorizedEmailAddresses();
-    verify($result)->same(['authorized@email.com']);
-  }
-
   public function testItReturnsAllUserEmails() {
     $array = [
       'pending' => ['pending@email.com'],
@@ -284,7 +271,7 @@ class BridgeTest extends \MailPoetTest {
     $api = Stub::make(new API(null), ['getAuthorizedEmailAddresses' => $array], $this);
     $this->bridge->api = $api;
 
-    $result = $this->bridge->getAuthorizedEmailAddresses('all');
+    $result = $this->bridge->getAuthorizedEmailAddresses();
     verify($result)->same($array);
   }
 
@@ -292,20 +279,12 @@ class BridgeTest extends \MailPoetTest {
     $api = Stub::make(new API(null), ['getAuthorizedEmailAddresses' => []], $this);
     $this->bridge->api = $api;
 
-    $result = $this->bridge->getAuthorizedEmailAddresses('all');
+    $result = $this->bridge->getAuthorizedEmailAddresses();
     verify($result)->same([]);
   }
 
   public function testItReturnsAnEmptyArrayIfNoEmailForAuthorizedParam() {
     $api = Stub::make(new API(null), ['getAuthorizedEmailAddresses' => []], $this);
-    $this->bridge->api = $api;
-
-    $result = $this->bridge->getAuthorizedEmailAddresses();
-    verify($result)->same([]);
-  }
-
-  public function testItReturnsAnEmptyArrayIfNoNullForAuthorizedParam() {
-    $api = Stub::make(new API(null), ['getAuthorizedEmailAddresses' => null], $this);
     $this->bridge->api = $api;
 
     $result = $this->bridge->getAuthorizedEmailAddresses();
