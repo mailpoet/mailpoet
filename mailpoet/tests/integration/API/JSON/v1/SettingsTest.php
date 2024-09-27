@@ -30,6 +30,7 @@ use MailPoet\Statistics\StatisticsOpensRepository;
 use MailPoet\Subscribers\ConfirmationEmailCustomizer;
 use MailPoet\Subscribers\SubscribersCountsController;
 use MailPoet\WooCommerce\TransactionalEmails;
+use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 
@@ -133,10 +134,11 @@ class SettingsTest extends \MailPoetTest {
   public function testItSetsAuthorizedFromAddressAndResumesSending() {
     $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized' => ['authorized@email.com']])]);
     $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
+    $wp = $this->diContainer->get(WPFunctions::class);
     $this->endpoint = new Settings(
       $this->settings,
       $bridgeMock,
-      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class), $senderDomainController),
+      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class), $senderDomainController, $wp),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
       $this->diContainer->get(EntityManager::class),
@@ -164,10 +166,11 @@ class SettingsTest extends \MailPoetTest {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized' => ['authorized@email.com']])]);
     $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
+    $wp = $this->diContainer->get(WPFunctions::class);
     $this->endpoint = new Settings(
       $this->settings,
       $bridgeMock,
-      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class), $senderDomainController),
+      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class), $senderDomainController, $wp),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
       $this->diContainer->get(EntityManager::class),
@@ -197,10 +200,11 @@ class SettingsTest extends \MailPoetTest {
   public function testItRejectsUnauthorizedFromAddress() {
     $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized' => ['authorized@email.com']])]);
     $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
+    $wp = $this->diContainer->get(WPFunctions::class);
     $this->endpoint = new Settings(
       $this->settings,
       $bridgeMock,
-      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class), $senderDomainController),
+      new AuthorizedEmailsController($this->settings, $bridgeMock, $this->diContainer->get(NewslettersRepository::class), $senderDomainController, $wp),
       $this->diContainer->get(AuthorizedSenderDomainController::class),
       $this->make(TransactionalEmails::class),
       $this->diContainer->get(EntityManager::class),

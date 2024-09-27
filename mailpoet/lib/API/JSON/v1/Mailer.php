@@ -92,7 +92,7 @@ class Mailer extends APIEndpoint {
   }
 
   public function getAuthorizedEmailAddresses() {
-    $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses();
+    $authorizedEmails = $this->authorizedEmailsController->getAuthorizedEmailAddresses();
     return $this->successResponse($authorizedEmails);
   }
 
