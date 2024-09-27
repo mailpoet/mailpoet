@@ -12,6 +12,7 @@ use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\Mailer;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\CongratulatoryMssEmailController;
@@ -460,7 +461,7 @@ class ServicesTest extends \MailPoetTest {
   public function testCongratulatoryEmailIsSent() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'authorized@email.com');
-    $bridge = $this->make(Bridge::class, [
+    $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
       'getAuthorizedEmailAddresses' => ['authorized@email.com'],
     ]);
 
@@ -469,7 +470,7 @@ class ServicesTest extends \MailPoetTest {
     ]);
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks([
-      'bridge' => $bridge,
+      'authorizedEmailsController' => $authorizedEmailsController,
       'congratulatoryEmailController' => $congratulatoryEmailController,
     ]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
@@ -488,11 +489,11 @@ class ServicesTest extends \MailPoetTest {
   public function testCongratulatoryEmailRespondsWithErrorWhenNoEmailAuthorized() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'unauthorized@email.com');
-    $bridge = $this->make(Bridge::class, [
+    $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
       'getAuthorizedEmailAddresses' => [],
     ]);
 
-    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['authorizedEmailsController' => $authorizedEmailsController]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
     verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     verify($response->errors[0]['message'])->equals('No FROM email addresses are authorized.');
@@ -500,7 +501,7 @@ class ServicesTest extends \MailPoetTest {
 
   public function testCongratulatoryEmailRespondsWithDifferentErrorWhenNoEmailAuthorizedButDomainIsVerified() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
-    $bridge = $this->make(Bridge::class, [
+    $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
       'getAuthorizedEmailAddresses' => [],
     ]);
 
@@ -510,7 +511,7 @@ class ServicesTest extends \MailPoetTest {
     ]);
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks([
-      'bridge' => $bridge,
+      'authorizedEmailsController' => $authorizedEmailsController,
       'senderDomain' => $senderDomainMock,
     ]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
@@ -523,11 +524,11 @@ class ServicesTest extends \MailPoetTest {
   public function testCongratulatoryEmailRespondsWithErrorWhenNoSenderSet() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', null);
-    $bridge = $this->make(Bridge::class, [
+    $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
       'getAuthorizedEmailAddresses' => ['authorized@email.com'],
     ]);
 
-    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['authorizedEmailsController' => $authorizedEmailsController]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
     verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     verify($response->errors[0]['message'])->equals('Sender email address is not set.');
@@ -536,11 +537,11 @@ class ServicesTest extends \MailPoetTest {
   public function testCongratulatoryEmailRespondsWithErrorWhenSenderNotAuthorized() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'unauthorized@email.com');
-    $bridge = $this->make(Bridge::class, [
+    $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
       'getAuthorizedEmailAddresses' => ['authorized@email.com'],
     ]);
 
-    $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
+    $servicesEndpoint = $this->createServicesEndpointWithMocks(['authorizedEmailsController' => $authorizedEmailsController]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
     verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     verify($response->errors[0]['message'])->equals("Sender email address 'unauthorized@email.com' is not authorized.");
@@ -549,7 +550,7 @@ class ServicesTest extends \MailPoetTest {
   public function testCongratulatoryEmailRespondsWithSuccessWhenSenderNotAuthorizedButDomainIsVerified() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'unauthorized@email.com');
-    $bridge = $this->make(Bridge::class, [
+    $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
       'getAuthorizedEmailAddresses' => ['authorized@email.com'],
     ]);
 
@@ -563,7 +564,7 @@ class ServicesTest extends \MailPoetTest {
     ]);
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks([
-      'bridge' => $bridge,
+      'authorizedEmailsController' => $authorizedEmailsController,
       'congratulatoryEmailController' => $congratulatoryEmailController,
       'senderDomain' => $senderDomainMock,
     ]);
@@ -576,7 +577,7 @@ class ServicesTest extends \MailPoetTest {
   public function testCongratulatoryEmailRespondsWithErrorWhenSendingFails() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
     $this->settings->set('sender.address', 'authorized@email.com');
-    $bridge = $this->make(Bridge::class, [
+    $authorizedEmailsController = $this->make(AuthorizedEmailsController::class, [
       'getAuthorizedEmailAddresses' => ['authorized@email.com'],
     ]);
 
@@ -587,7 +588,7 @@ class ServicesTest extends \MailPoetTest {
     ]);
 
     $servicesEndpoint = $this->createServicesEndpointWithMocks([
-      'bridge' => $bridge,
+      'authorizedEmailsController' => $authorizedEmailsController,
       'congratulatoryEmailController' => $congratulatoryEmailController,
     ]);
     $response = $servicesEndpoint->sendCongratulatoryMssEmail();
@@ -674,7 +675,8 @@ class ServicesTest extends \MailPoetTest {
       $this->diContainer->get(SubscribersCountReporter::class),
       $mocks['congratulatoryEmailController'] ?? $this->diContainer->get(CongratulatoryMssEmailController::class),
       $this->diContainer->get(WPFunctions::class),
-      $mocks['senderDomain'] ?? $this->diContainer->get(AuthorizedSenderDomainController::class)
+      $mocks['senderDomain'] ?? $this->diContainer->get(AuthorizedSenderDomainController::class),
+      $mocks['authorizedEmailsController'] ?? $this->diContainer->get(AuthorizedEmailsController::class)
     );
   }
 }

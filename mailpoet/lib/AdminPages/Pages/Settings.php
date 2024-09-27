@@ -7,6 +7,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Segments\SegmentsSimpleListRepository;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
@@ -41,6 +42,9 @@ class Settings {
   /** @var AuthorizedSenderDomainController */
   private $senderDomainController;
 
+  /** @var AuthorizedEmailsController */
+  private $authorizedEmailsController;
+
   /** @var AssetsController */
   private $assetsController;
 
@@ -53,7 +57,8 @@ class Settings {
     CaptchaRenderer $captchaRenderer,
     SegmentsSimpleListRepository $segmentsListRepository,
     Bridge $bridge,
-    AuthorizedSenderDomainController $senderDomainController
+    AuthorizedSenderDomainController $senderDomainController,
+    AuthorizedEmailsController $authorizedEmailsController
   ) {
     $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
@@ -64,6 +69,7 @@ class Settings {
     $this->segmentsListRepository = $segmentsListRepository;
     $this->bridge = $bridge;
     $this->senderDomainController = $senderDomainController;
+    $this->authorizedEmailsController = $authorizedEmailsController;
   }
 
   public function render() {
@@ -100,7 +106,7 @@ class Settings {
     $data['sender_restrictions'] = [];
 
     if ($this->bridge->isMailpoetSendingServiceEnabled()) {
-      $data['authorized_emails'] = $this->bridge->getAuthorizedEmailAddresses();
+      $data['authorized_emails'] = $this->authorizedEmailsController->getAuthorizedEmailAddresses();
       $data['verified_sender_domains'] = $this->senderDomainController->getFullyVerifiedSenderDomains(true);
       $data['partially_verified_sender_domains'] = $this->senderDomainController->getPartiallyVerifiedSenderDomains(true);
       $data['all_sender_domains'] = $this->senderDomainController->getAllSenderDomains();

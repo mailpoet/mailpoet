@@ -12,6 +12,7 @@ use MailPoet\Config\ServicesChecker;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
 use MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck;
 use MailPoet\Mailer\MailerLog;
+use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Services\AuthorizedSenderDomainController;
 use MailPoet\Services\Bridge;
 use MailPoet\Services\CongratulatoryMssEmailController;
@@ -52,6 +53,9 @@ class Services extends APIEndpoint {
   /** @var AuthorizedSenderDomainController */
   private $senderDomainController;
 
+  /** @var AuthorizedEmailsController */
+  private $authorizedEmailsController;
+
   /** @var SubscribersCountReporter */
   private $subscribersCountReporter;
 
@@ -70,7 +74,8 @@ class Services extends APIEndpoint {
     SubscribersCountReporter $subscribersCountReporter,
     CongratulatoryMssEmailController $congratulatoryMssEmailController,
     WPFunctions $wp,
-    AuthorizedSenderDomainController $senderDomainController
+    AuthorizedSenderDomainController $senderDomainController,
+    AuthorizedEmailsController $authorizedEmailsController
   ) {
     $this->bridge = $bridge;
     $this->settings = $settings;
@@ -83,6 +88,7 @@ class Services extends APIEndpoint {
     $this->congratulatoryMssEmailController = $congratulatoryMssEmailController;
     $this->wp = $wp;
     $this->senderDomainController = $senderDomainController;
+    $this->authorizedEmailsController = $authorizedEmailsController;
   }
 
   public function checkMSSKey($data = []) {
@@ -266,7 +272,7 @@ class Services extends APIEndpoint {
     $emailDomain = Helpers::extractEmailDomain($fromEmail);
 
     if (!$this->isItemInArray($emailDomain, $verifiedDomains)) {
-      $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses();
+      $authorizedEmails = $this->authorizedEmailsController->getAuthorizedEmailAddresses();
 
       if (!$authorizedEmails) {
         return $this->createBadRequest(__('No FROM email addresses are authorized.', 'mailpoet'));
