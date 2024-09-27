@@ -133,15 +133,10 @@ class Bridge {
     return $this->initApi($key);
   }
 
-  public function getAuthorizedEmailAddresses($type = 'authorized'): array {
-    $data = $this
+  public function getAuthorizedEmailAddresses(): ?array {
+    return $this
       ->getApi($this->settings->get(self::API_KEY_SETTING_NAME))
       ->getAuthorizedEmailAddresses();
-    if ($data && $type === 'all') {
-      return $data;
-    }
-
-    return $data[$type] ?? [];
   }
 
   /**

@@ -131,7 +131,7 @@ class SettingsTest extends \MailPoetTest {
   }
 
   public function testItSetsAuthorizedFromAddressAndResumesSending() {
-    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized@email.com'])]);
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized' => ['authorized@email.com']])]);
     $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
     $this->endpoint = new Settings(
       $this->settings,
@@ -162,7 +162,7 @@ class SettingsTest extends \MailPoetTest {
 
   public function testItSaveUnauthorizedAddressAndReturnsMeta() {
     $this->settings->set(Mailer::MAILER_CONFIG_SETTING_NAME, ['method' => Mailer::METHOD_MAILPOET]);
-    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized@email.com'])]);
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized' => ['authorized@email.com']])]);
     $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
     $this->endpoint = new Settings(
       $this->settings,
@@ -195,7 +195,7 @@ class SettingsTest extends \MailPoetTest {
   }
 
   public function testItRejectsUnauthorizedFromAddress() {
-    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized@email.com'])]);
+    $bridgeMock = $this->make(Bridge::class, ['getAuthorizedEmailAddresses' => Expected::once(['authorized' => ['authorized@email.com']])]);
     $senderDomainController = $this->diContainer->get(AuthorizedSenderDomainController::class);
     $this->endpoint = new Settings(
       $this->settings,

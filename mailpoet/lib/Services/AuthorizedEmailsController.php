@@ -51,7 +51,7 @@ class AuthorizedEmailsController {
   }
 
   public function setFromEmailAddress(string $address) {
-    $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses() ?: [];
+    $authorizedEmails = $this->getAuthorizedEmailAddresses() ?: [];
     $verifiedDomains = $this->senderDomainController->getVerifiedSenderDomainsIgnoringCache();
     $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $address);
 
@@ -74,12 +74,17 @@ class AuthorizedEmailsController {
     $this->settings->set(self::AUTHORIZED_EMAIL_ADDRESSES_ERROR_SETTING, null);
   }
 
-  public function getAllAuthorizedEmailAddress(): array {
-    return $this->bridge->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL);
+  public function getAuthorizedEmailAddresses(string $type = 'authorized'): array {
+    $data = $this->bridge->getAuthorizedEmailAddresses();
+    if ($data && $type === self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL) {
+      return $data;
+    }
+
+    return $data[$type] ?? [];
   }
 
   public function createAuthorizedEmailAddress(string $email): array {
-    $allEmails = $this->getAllAuthorizedEmailAddress();
+    $allEmails = $this->getAuthorizedEmailAddresses(self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_ALL);
 
     $authorizedEmails = isset($allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED]) ? $allEmails[self::AUTHORIZED_EMAIL_ADDRESSES_API_TYPE_AUTHORIZED] : [];
     $isAuthorized = $this->validateAuthorizedEmail($authorizedEmails, $email);
@@ -104,7 +109,7 @@ class AuthorizedEmailsController {
   }
 
   public function isEmailAddressAuthorized(string $email): bool {
-    $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses() ?: [];
+    $authorizedEmails = $this->getAuthorizedEmailAddresses() ?: [];
     return $this->validateAuthorizedEmail($authorizedEmails, $email);
   }
 
@@ -115,7 +120,7 @@ class AuthorizedEmailsController {
       return null;
     }
 
-    $authorizedEmails = $this->bridge->getAuthorizedEmailAddresses();
+    $authorizedEmails = $this->getAuthorizedEmailAddresses();
     // Keep previous check result for an invalid response from API
     if (!$authorizedEmails) {
       return null;
