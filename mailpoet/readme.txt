@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.5
 Tested up to: 6.6
-Stable tag: 5.2.2
+Stable tag: 5.2.3
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -230,9 +230,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.2.2 - 2024-09-23 =
-* Improved: when using FSE theme, link to Site Editor instead of Widgets in MailPoet Forms placement options;
-* Changed: replace deprecated woocommerce_before_cart_item_quantity_zero action with woocommerce_remove_cart_item;
-* Fixed: List-Unsubscribe URL no longer redirects when not using MailPoet Sending Service.
+= 5.2.3 - 2024-10-01 =
+* Fixed: Compatibility with WooCommerce 9.4;
+* Fixed: Percentage in Analytics did not work correctly in if/else condtion.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)
