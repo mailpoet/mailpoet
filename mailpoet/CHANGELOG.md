@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.2.3 - 2024-10-01 =
+
+- Fixed: Compatibility with WooCommerce 9.4;
+- Fixed: Percentage in Analytics did not work correctly in if/else condtion.
+
 = 5.2.2 - 2024-09-23 =
 
 - Improved: when using FSE theme, link to Site Editor instead of Widgets in MailPoet Forms placement options;
