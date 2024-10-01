@@ -203,7 +203,9 @@ export const getEmailTemplates = createRegistrySelector(
       ?.filter(
         (template) =>
           // @ts-expect-error Missing property in type
-          template.theme === 'mailpoet/mailpoet',
+          template.theme === 'mailpoet/mailpoet' ||
+          // @ts-expect-error Missing property in type
+          template.plugin === 'templates-demo',
       ),
 );
 

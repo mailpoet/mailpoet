@@ -58,6 +58,7 @@ services:
       - './mailpoet-premium:/var/www/html/wp-content/plugins/mailpoet-premium'
       - './packages:/var/www/html/wp-content/plugins/packages'
       - './templates:/var/www/templates'
+      - './templates-demo:/var/www/html/wp-content/plugins/templates-demo'
 
   test_wordpress:
     container_name: mp-test-wp
