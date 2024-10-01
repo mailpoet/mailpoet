@@ -21,7 +21,7 @@ $replacements = [
   [
     'file' => __DIR__ . '/../vendor-prefixed/soundasleep/html2text/src/Html2Text.php',
     'find' => [
-      '$html = mb_convert_encoding($html, "HTML-ENTITIES", "UTF-8");',
+      '$html = \mb_convert_encoding($html, "HTML-ENTITIES", "UTF-8");',
     ],
     'replace' => [
       '// HTML-ENTITIES mbstring encoder is deprecated since PHP 8.2,' . PHP_EOL .
