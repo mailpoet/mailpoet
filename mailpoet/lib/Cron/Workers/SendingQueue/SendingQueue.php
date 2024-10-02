@@ -320,7 +320,7 @@ class SendingQueue {
         );
         if (!$newsletter->isTransactional()) {
           $this->entityManager->wrapInTransaction(function() use ($foundSubscribersIds) {
-            $now = Carbon::createFromTimestamp((int)current_time('timestamp'));
+            $now = Carbon::now()->millisecond(0);
             $this->subscribersRepository->bulkUpdateLastSendingAt($foundSubscribersIds, $now);
             // We're nullifying this value so these subscribers' engagement score will be recalculated the next time the cron runs
             $this->subscribersRepository->bulkUpdateEngagementScoreUpdatedAt($foundSubscribersIds, null);
@@ -577,9 +577,9 @@ class SendingQueue {
     $bounceTasks = $this->scheduledTasksRepository->findFutureScheduledByType(Bounce::TASK_TYPE);
     if (count($bounceTasks)) {
       $bounceTask = reset($bounceTasks);
-      if (Carbon::createFromTimestamp((int)current_time('timestamp'))->addHours(42)->lessThan($bounceTask->getScheduledAt())) {
+      if (Carbon::now()->millisecond(0)->addHours(42)->lessThan($bounceTask->getScheduledAt())) {
         $randomOffset = rand(-6 * 60 * 60, 6 * 60 * 60);
-        $bounceTask->setScheduledAt(Carbon::createFromTimestamp((int)current_time('timestamp'))->addSeconds((36 * 60 * 60) + $randomOffset));
+        $bounceTask->setScheduledAt(Carbon::now()->millisecond(0)->addSeconds((36 * 60 * 60) + $randomOffset));
         $this->scheduledTasksRepository->persist($bounceTask);
         $this->scheduledTasksRepository->flush();
       }
