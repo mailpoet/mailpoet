@@ -109,7 +109,7 @@ class AbandonedCartTrigger implements Trigger {
     $abandonedCartPayload = $args->getSinglePayloadByClass(AbandonedCartPayload::class);
     $lastActivityAt = $abandonedCartPayload->getLastActivityAt();
 
-    $compareDate = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'))->subMinutes($args->getStep()->getArgs()['wait']);
+    $compareDate = Carbon::now()->millisecond(0)->subMinutes($args->getStep()->getArgs()['wait']);
     if ($lastActivityAt > $compareDate) {
       return false;
     }

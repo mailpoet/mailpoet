@@ -100,11 +100,11 @@ class AbandonedCartHandler {
     }
 
     $wait = $trigger->getArgs()['wait'] * 60;
-    $scheduledAt = Carbon::createFromTimestamp((int)$this->wp->currentTime('timestamp') + $wait);
+    $scheduledAt = Carbon::now()->millisecond(0)->addSeconds($wait);
     $task = new ScheduledTaskEntity();
     $task->setType(AbandonedCartWorker::TASK_TYPE);
 
-    $lastActivity = Carbon::createFromTimestamp($this->wp->currentTime('timestamp'));
+    $lastActivity = Carbon::now()->millisecond(0);
     $task->setCreatedAt($lastActivity);
     $task->setPriority(ScheduledTaskEntity::PRIORITY_MEDIUM);
     $task->setMeta([
