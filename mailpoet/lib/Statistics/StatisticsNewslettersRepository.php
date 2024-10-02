@@ -30,7 +30,7 @@ class StatisticsNewslettersRepository extends Repository {
           continue;
         }
 
-        $sentAt = Carbon::createFromTimestamp((int)current_time('timestamp'));
+        $sentAt = Carbon::now()->millisecond(0);
         $entity = new StatisticsNewsletterEntity($newsletter, $queue, $subscriber, $sentAt);
 
         $this->entityManager->persist($entity);
