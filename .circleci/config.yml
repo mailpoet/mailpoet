@@ -934,40 +934,28 @@ workflows:
           name: acceptance_tests_base_and_woo
           enable_hpos: 1
           requires:
-            - unit_tests
-            - static_analysis_php8
-            - qa_js
-            - qa_php
+            - build
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_tests_woo_hpos_sync_on
           group: woo
           enable_hpos_sync: 1
           requires:
-            - unit_tests
-            - static_analysis_php8
-            - qa_js
-            - qa_php
+            - build
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_tests_woo_hpos_off
           group: woo
           disable_hpos: 1
           requires:
-            - unit_tests
-            - static_analysis_php8
-            - qa_js
-            - qa_php
+            - build
       - acceptance_tests:
           <<: *slack-fail-post-step
           name: acceptance_tests_blockbased_theme
           group: frontend
           blockbased_theme: 1
           requires:
-            - unit_tests
-            - static_analysis_php8
-            - qa_js
-            - qa_php
+            - build
       - js_tests:
           <<: *slack-fail-post-step
           requires:
@@ -978,40 +966,28 @@ workflows:
           enable_hpos_sync: 1
           name: integration_test_woo_hpos_sync_on
           requires:
-            - unit_tests
-            - static_analysis_php8
-            - qa_js
-            - qa_php
+            - build
       - integration_tests:
           <<: *slack-fail-post-step
           group: woo
           name: integration_test_woo_hpos_on
           enable_hpos: 1
           requires:
-            - unit_tests
-            - static_analysis_php8
-            - qa_js
-            - qa_php
+            - build
       - integration_tests:
           <<: *slack-fail-post-step
           group: woo
           disable_hpos: 1
           name: integration_test_woo_hpos_off
           requires:
-            - unit_tests
-            - static_analysis_php8
-            - qa_js
-            - qa_php
+            - build
       - integration_tests:
           <<: *slack-fail-post-step
           skip_group: woo
           skip_plugins: 1
           name: integration_test_base
           requires:
-            - unit_tests
-            - static_analysis_php8
-            - qa_js
-            - qa_php
+            - build
       - acceptance_tests:
           <<: *slack-fail-post-step
           <<: *multisite_acceptance_config
@@ -1022,11 +998,7 @@ workflows:
           multisite: 1
           name: integration_tests_multisite
           requires:
-            - unit_tests
-            - static_analysis_php7
-            - static_analysis_php8
-            - qa_js
-            - qa_php
+            - build
       - acceptance_tests:
           <<: *slack-fail-post-step
           <<: *only_release
