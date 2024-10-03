@@ -992,6 +992,8 @@ workflows:
           <<: *slack-fail-post-step
           <<: *multisite_acceptance_config
           name: acceptance_tests_multisite
+          requires:
+            - build
       - integration_tests:
           <<: *slack-fail-post-step
           <<: *only_trunk_and_release
@@ -1027,9 +1029,18 @@ workflows:
             - integration_test_woo_hpos_on
             - integration_test_woo_hpos_off
             - integration_test_woo_hpos_sync_on
+            - integration_with_premium_latest
             - acceptance_tests_woo_hpos_sync_on
             - acceptance_tests_woo_hpos_off
             - acceptance_tests_blockbased_theme
+            - static_analysis_php8
+            - static_analysis_php7
+            - unit_tests
+            - qa_js
+            - qa_php
+            - qa_php_oldest
+            - security_analysis
+            - qa_php_max_wporg
       - qit_security_scan:
           <<: *slack-fail-post-step
           requires:
