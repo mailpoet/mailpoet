@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.3.0 - 2024-10-03 =
+
+- Fixed: abandoned cart automation trigger doesn't work in some cases.
+
 = 5.2.3 - 2024-10-01 =
 
 - Fixed: Compatibility with WooCommerce 9.4;
