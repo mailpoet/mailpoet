@@ -63,7 +63,7 @@ class Image {
     if ($params['href']) {
       $img = $this->wrapToLink($params, $img);
     }
-    $caption = $params['caption'] ? "<figcaption>{$this->htmlSanitizer->sanitize($params['caption'])}</figcaption>" : '';
+    $caption = isset($params['caption']) && $params['caption'] ? "<figcaption>{$this->htmlSanitizer->sanitize($params['caption'])}</figcaption>" : '';
     $figure = '<figure class="' . $this->wp->escAttr(implode(' ', $figureClasses)) . '">' . $img . $caption . '</figure>';
     // Main wrapper
     $divClasses = ['mailpoet_form_image'];
