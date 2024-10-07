@@ -554,15 +554,6 @@ class TakeAHike {
                       ],
                       3 => [
                         'type' => 'socialIcon',
-                        'iconType' => 'google-plus',
-                        'link' => 'http://plus.google.com',
-                        'image' => $this->social_icon_url . '/03-circles/Google-Plus.png',
-                        'height' => '32px',
-                        'width' => '32px',
-                        'text' => 'Google Plus',
-                      ],
-                      4 => [
-                        'type' => 'socialIcon',
                         'iconType' => 'youtube',
                         'link' => 'http://www.youtube.com',
                         'image' => $this->social_icon_url . '/03-circles/Youtube.png',
