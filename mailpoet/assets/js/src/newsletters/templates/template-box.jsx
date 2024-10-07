@@ -56,7 +56,8 @@ class TemplateBox extends Component {
   onPreview() {
     MailPoet.Modal.popup({
       title: this.props.name,
-      template: '<img src="{{ thumbnail }}" />',
+      template:
+        '<img class="mailpoet-template-preview-image" src="{{ thumbnail }}" />',
       data: this.props,
     });
   }
