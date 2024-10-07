@@ -40,10 +40,11 @@ export function Scheduling({
       <Grid.CenteredRow className="mailpoet-re-engagement-scheduling">
         <p>{__('After no activity for', 'mailpoet')}</p>
         <Input
-          type="text"
+          type="number"
           placeholder={__('count', 'mailpoet')}
           value={afterTimeNumber}
           onChange={onChange(updateAfterTimeNumber)}
+          required
         />
         <Select value={afterTimeType} onChange={onChange(updateAfterTimeType)}>
           <option value="weeks">weeks</option>
