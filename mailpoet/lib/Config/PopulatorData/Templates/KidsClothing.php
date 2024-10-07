@@ -271,16 +271,6 @@ class KidsClothing {
                                       0 =>
                                          [
                                           'type' => 'socialIcon',
-                                          'iconType' => 'google-plus',
-                                          'link' => 'http://plus.google.com',
-                                          'image' => $this->social_icon_url . '/03-circles/Google-Plus.png',
-                                          'height' => '32px',
-                                          'width' => '32px',
-                                          'text' => 'Google Plus',
-                                        ],
-                                      1 =>
-                                         [
-                                          'type' => 'socialIcon',
                                           'iconType' => 'instagram',
                                           'link' => 'http://instagram.com',
                                           'image' => $this->social_icon_url . '/03-circles/Instagram.png',
