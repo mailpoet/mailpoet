@@ -559,10 +559,10 @@ class RendererTest extends \MailPoetTest {
     // image source/link href/alt should be  properly set
     verify($DOM('tr > td', 0)->html())->notEmpty();
     verify($DOM('a', 0)->attr('href'))->equals('http://example.com');
-    verify($DOM('td > a:nth-of-type(10) > img')->attr('src'))->stringContainsString('custom.png');
-    verify($DOM('td > a:nth-of-type(10) > img')->attr('alt'))->equals('custom');
-    // there should be 10 icons
-    verify(count($DOM('a > img')))->equals(10);
+    verify($DOM('td > a:nth-of-type(9) > img')->attr('src'))->stringContainsString('custom.png');
+    verify($DOM('td > a:nth-of-type(9) > img')->attr('alt'))->equals('custom');
+    // there should be 9 icons
+    verify(count($DOM('a > img')))->equals(9);
   }
 
   public function testItDoesNotRenderSocialIconsWithoutImageSrc() {
