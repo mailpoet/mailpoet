@@ -210,7 +210,7 @@ class BlockRendererHelper {
       // Some screen readers don't read placeholders, so we need to add aria-label
       // but to prevent reading it twice, they need to be the same (including *)
       $html .= ' placeholder="' . $label . '"';
-      $html .= ' aria-label="' . $label . '"';
+      $html .= ' aria-label="' . $label . '" ';
     }
     return $html;
   }
