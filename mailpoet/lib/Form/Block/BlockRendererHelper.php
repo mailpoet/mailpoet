@@ -57,7 +57,7 @@ class BlockRendererHelper {
       $rules['required-message'] = __('Please select a list.', 'mailpoet');
     }
 
-    if (!empty($block['params']['required'])) {
+    if (static::getFieldIsRequired($block)) {
       $rules['required'] = true;
       $rules['required-message'] = __('This field is required.', 'mailpoet');
     }
@@ -143,7 +143,7 @@ class BlockRendererHelper {
         . '>';
       $html .= static::getFieldLabel($block);
 
-      if (isset($block['params']['required']) && $block['params']['required']) {
+      if (static::getFieldIsRequired($block)) {
         $html .= ' <span class="mailpoet_required">*</span>';
       }
 
@@ -174,7 +174,7 @@ class BlockRendererHelper {
         . '>';
       $html .= static::getFieldLabel($block);
 
-      if (isset($block['params']['required']) && $block['params']['required']) {
+      if (static::getFieldIsRequired($block)) {
         $html .= ' <span class="mailpoet_required">*</span>';
       }
 
@@ -206,7 +206,7 @@ class BlockRendererHelper {
       $html .= ' placeholder="';
       $html .= static::getFieldLabel($block);
       // add an asterisk if it's a required field
-      if (isset($block['params']['required']) && $block['params']['required']) {
+      if (static::getFieldIsRequired($block)) {
         $html .= ' *';
       }
       $html .= '" ';
