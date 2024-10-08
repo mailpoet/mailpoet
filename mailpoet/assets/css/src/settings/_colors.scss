@@ -31,6 +31,7 @@ $color-tertiary-hover: darken($color-tertiary, 10%);
 $color-tertiary-light: #dcdcde;
 $color-grey-0: #f6f7f7;
 $color-tertiary-light-hover: darken($color-tertiary-light, 10%);
+$color-tertiary-light-focus: #777;
 $color-tertiary-light-background: rgba($color-tertiary-light, 0.3);
 $color-destructive: #b52727;
 $color-destructive-hover: #a02222;
@@ -46,6 +47,7 @@ $color-text-dark: #2c3338;
 // Form colors
 $color-input-background: #fdfdff;
 $color-input-border: $color-tertiary-light-hover;
+$color-input-border-focus: $color-tertiary-light-focus;
 $color-input-error: #f00;
 $color-input-success: #7ed321;
 
