@@ -93,6 +93,9 @@ class BlockRendererHelper {
         $validation[] = 'data-parsley-' . $rule . '=\'' . $this->wp->wpKsesPost($value) . '\''; // The value has been escaped above.
       } else {
         $validation[] = 'data-parsley-' . $this->wp->escAttr($rule) . '="' . $this->wp->escAttr($this->wp->wpKsesPost($value)) . '"';
+        if ($rule === 'required') {
+          $validation[] = 'required aria-required="true"';
+        }
       }
     }
     return join(' ', $validation);
