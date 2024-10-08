@@ -21,7 +21,7 @@
 
     &:focus {
       ~ .mailpoet-form-checkbox-control {
-        border: 2px solid $color-input-border;
+        border-color: $color-input-border-focus;
       }
     }
   }

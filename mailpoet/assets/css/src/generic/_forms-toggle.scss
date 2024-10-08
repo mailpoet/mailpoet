@@ -12,6 +12,12 @@
     opacity: 0;
     position: absolute;
     width: 1px;
+
+    &:focus {
+      ~ .mailpoet-form-toggle-control {
+        border-color: $color-input-border-focus;
+      }
+    }
   }
 }
 
