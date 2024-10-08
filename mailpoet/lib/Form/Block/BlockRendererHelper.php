@@ -91,6 +91,9 @@ class BlockRendererHelper {
           $validation[] = 'data-parsley-' . $rule . '=\'' . $value . '\'';
         } else {
           $validation[] = 'data-parsley-' . $rule . '="' . $value . '"';
+          if ($rule === 'required') {
+            $validation[] = 'required aria-required="true"';
+          }
         }
       }
     }
