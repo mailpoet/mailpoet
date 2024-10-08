@@ -108,6 +108,15 @@ class BlockRendererHelper {
       return $html;
     }
 
+    // If the label is displayed within the field,
+    // we'll use aria-label instead of a label element
+    if (
+      isset($block['params']['label_within'])
+      && $block['params']['label_within']
+    ) {
+      return $html;
+    }
+
     $automationId = null;
     if (in_array($block['id'], ['email', 'last_name', 'first_name'], true)) {
       $automationId = 'data-automation-id="form_' . $block['id'] . '_label" ';
@@ -123,13 +132,6 @@ class BlockRendererHelper {
     ) {
       $labelClass = 'class="mailpoet_' . $block['type'] . '_label" ';
 
-      if (
-        isset($block['params']['label_within'])
-        && $block['params']['label_within']
-      ) {
-        $labelClass = 'class="mailpoet-screen-reader-text" ';
-      }
-
       $html .= '<label '
         . $forId
         . $labelClass
@@ -139,7 +141,7 @@ class BlockRendererHelper {
       $html .= static::getFieldLabel($block);
 
       if (static::getFieldIsRequired($block)) {
-        $html .= ' <span class="mailpoet_required">*</span>';
+        $html .= ' <span class="mailpoet_required" aria-hidden="true">*</span>';
       }
 
       $html .= '</label>';
@@ -170,7 +172,7 @@ class BlockRendererHelper {
       $html .= static::getFieldLabel($block);
 
       if (static::getFieldIsRequired($block)) {
-        $html .= ' <span class="mailpoet_required">*</span>';
+        $html .= ' <span class="mailpoet_required" aria-hidden="true">*</span>';
       }
 
       $html .= '</legend>';
@@ -197,14 +199,14 @@ class BlockRendererHelper {
       isset($block['params']['label_within'])
       && $block['params']['label_within']
     ) {
-      // display only label
-      $html .= ' placeholder="';
-      $html .= static::getFieldLabel($block);
-      // add an asterisk if it's a required field
+      $label = static::getFieldLabel($block);
       if (static::getFieldIsRequired($block)) {
-        $html .= ' *';
+        $label .= ' *';
       }
-      $html .= '" ';
+      // Some screen readers don't read placeholders, so we need to add aria-label
+      // but to prevent reading it twice, they need to be the same (including *)
+      $html .= ' placeholder="' . $label . '"';
+      $html .= ' aria-label="' . $label . '"';
     }
     return $html;
   }
