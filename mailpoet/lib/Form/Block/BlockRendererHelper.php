@@ -72,11 +72,7 @@ class BlockRendererHelper {
       }
     }
 
-    if (in_array($block['type'], ['radio', 'checkbox'])) {
-      $rules['group'] = 'custom_field_' . $blockId;
-    }
-
-    if ($block['type'] === 'date') {
+    if (in_array($block['type'], ['radio', 'checkbox', 'date'])) {
       $rules['group'] = 'custom_field_' . $blockId;
     }
 
