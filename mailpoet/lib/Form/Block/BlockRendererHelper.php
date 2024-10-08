@@ -141,7 +141,7 @@ class BlockRendererHelper {
         . $this->renderFontStyle($formSettings, $block['styles'] ?? [])
         . ($automationId ? " $automationId" : '')
         . '>';
-      $html .= htmlspecialchars($block['params']['label']);
+      $html .= static::getFieldLabel($block);
 
       if (isset($block['params']['required']) && $block['params']['required']) {
         $html .= ' <span class="mailpoet_required">*</span>';
@@ -172,7 +172,7 @@ class BlockRendererHelper {
         . $labelClass
         . $this->renderFontStyle($formSettings, $block['styles'] ?? [])
         . '>';
-      $html .= htmlspecialchars($block['params']['label']);
+      $html .= static::getFieldLabel($block);
 
       if (isset($block['params']['required']) && $block['params']['required']) {
         $html .= ' <span class="mailpoet_required">*</span>';
