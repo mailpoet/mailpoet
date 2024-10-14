@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.5
 Tested up to: 6.6
-Stable tag: 5.3.0
+Stable tag: 5.3.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -230,7 +230,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.3.0 - 2024-10-03 =
-* Fixed: abandoned cart automation trigger doesn't work in some cases.
+= 5.3.1 - 2024-10-14 =
+* Improved: when the email authentication service is unavailable, use the old authentication status and continue sending.
+* Fixed: deprecation warning from mb_convert_encoding.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)

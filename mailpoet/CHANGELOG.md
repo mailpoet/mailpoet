@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.3.1 - 2024-10-14 =
+
+- Improved: when the email authentication service is unavailable, use the old authentication status and continue sending.
+- Fixed: deprecation warning from mb_convert_encoding.
+
 = 5.3.0 - 2024-10-03 =
 
 - Fixed: abandoned cart automation trigger doesn't work in some cases.
