@@ -45,8 +45,8 @@ export async function subscribersFiltering() {
     await page.locator('[data-automation-id="filters_subscribed"]').click();
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
-      describe('subscribers-filtering: should be able to see Lists Filter 1st time', () => {
-        expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
+      describe('subscribers-filtering: should be able to see Lists Filter 1st time', async () => {
+        expect(await page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });
     });
@@ -64,8 +64,8 @@ export async function subscribersFiltering() {
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
-      describe('subscribers-filtering: should be able to see Lists Filter 2nd time', () => {
-        expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
+      describe('subscribers-filtering: should be able to see Lists Filter 2nd time', async () => {
+        expect(await page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });
     });
@@ -81,8 +81,8 @@ export async function subscribersFiltering() {
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
-      describe('subscribers-filtering: should be able to see Lists Filter 3rd time', () => {
-        expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
+      describe('subscribers-filtering: should be able to see Lists Filter 3rd time', async () => {
+        expect(await page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });
     });
@@ -94,7 +94,7 @@ export async function subscribersFiltering() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

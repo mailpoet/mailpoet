@@ -47,8 +47,8 @@ export async function newsletterSearching() {
     await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
     await page.waitForLoadState('networkidle');
     describe(emailsPageTitle, () => {
-      describe('newsletter-searching: should be able to search for Newsletter 1st', () => {
-        expect(page.locator('.mailpoet-listing-title').innerText()).to.contain(
+      describe('newsletter-searching: should be able to search for Newsletter 1st', async () => {
+        expect(await page.locator('.mailpoet-listing-title').innerText()).to.contain(
           'Newsletter 1st',
         );
       });
@@ -62,8 +62,8 @@ export async function newsletterSearching() {
     await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
     await page.waitForLoadState('networkidle');
     describe(emailsPageTitle, () => {
-      describe('newsletter-searching: should be able to see Lists Filter', () => {
-        expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
+      describe('newsletter-searching: should be able to see Lists Filter', async () => {
+        expect(await page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });
     });
@@ -74,7 +74,7 @@ export async function newsletterSearching() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

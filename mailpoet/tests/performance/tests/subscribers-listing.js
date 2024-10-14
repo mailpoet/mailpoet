@@ -44,8 +44,8 @@ export async function subscribersListing() {
     // Verify filter, tag and listing are loaded and visible
     await page.waitForLoadState('networkidle');
     describe(subscribersPageTitle, () => {
-      describe('subscribers-listing: should be able to see Tags Filter', () => {
-        expect(page.locator('[data-automation-id="listing_filter_tag"]')).to
+      describe('subscribers-listing: should be able to see Tags Filter', async () => {
+        expect(await page.locator('[data-automation-id="listing_filter_tag"]')).to
           .exist;
       });
     });
@@ -56,7 +56,7 @@ export async function subscribersListing() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

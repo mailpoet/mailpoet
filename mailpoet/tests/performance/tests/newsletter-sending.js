@@ -21,7 +21,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login, selectInSelect2 } from '../utils/helpers.js';
+import { login, selectInSelect2, clickFirstSelector } from '../utils/helpers.js';
 /* global Promise */
 
 export async function newsletterSending() {
@@ -65,7 +65,7 @@ export async function newsletterSending() {
     });
 
     // Click to proceed to the next step (the last one)
-    await page.$$('input[value="Next"]')[0].click();
+    await clickFirstSelector(page, 'input[value="Next"]')
     await page.waitForNavigation();
     await page.waitForSelector(
       '[data-automation-id="newsletter_send_heading"]',
@@ -90,8 +90,8 @@ export async function newsletterSending() {
       "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]";
     await page.waitForSelector('#mailpoet_notices');
     describe(emailsPageTitle, () => {
-      describe('newsletter-sending: should be able to see Newsletter Sent message', () => {
-        expect(page.locator(locator)).to.exist;
+      describe('newsletter-sending: should be able to see Newsletter Sent message', async () => {
+        expect(await page.locator(locator)).to.exist;
       });
     });
 
@@ -102,7 +102,7 @@ export async function newsletterSending() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

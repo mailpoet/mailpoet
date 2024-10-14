@@ -52,8 +52,8 @@ export async function settingsBasic() {
     const locator =
       "//div[@class='notice-success'].//p[starts-with(text(),'Settings saved')]";
     describe(settingsPageTitle, () => {
-      describe('settings-basic: should be able to see Settings Saved message', () => {
-        expect(page.locator(locator)).to.exist;
+      describe('settings-basic: should be able to see Settings Saved message', async () => {
+        expect(await page.locator(locator)).to.exist;
       });
     });
 
@@ -63,7 +63,7 @@ export async function settingsBasic() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

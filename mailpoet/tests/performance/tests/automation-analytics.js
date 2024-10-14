@@ -57,8 +57,8 @@ export async function automationAnalytics() {
       'In this time period, the automation structure did change and therefore some numbers in the flow chart might not be accurate.';
     const locator = `//div[@class='components-notice__content'].//p[starts-with(text(),${message})]`;
     describe(automationsPageTitle, () => {
-      describe('settings-basic: should be able to see inaccurate data message', () => {
-        expect(page.locator(locator)).to.exist;
+      describe('settings-basic: should be able to see inaccurate data message', async () => {
+        expect(await page.locator(locator)).to.exist;
       });
     });
 
@@ -73,8 +73,8 @@ export async function automationAnalytics() {
     });
 
     describe(automationsPageTitle, () => {
-      describe('automation-analytics: should be able to see Emails tab loaded', () => {
-        expect(page.$$('.mailpoet-automation-analytics-email-name')).to.exist;
+      describe('automation-analytics: should be able to see Emails tab loaded', async () => {
+        expect(await page.$$('.mailpoet-automation-analytics-email-name')).to.exist;
       });
     });
 
@@ -84,8 +84,8 @@ export async function automationAnalytics() {
     await page.waitForLoadState('networkidle');
 
     describe(automationsPageTitle, () => {
-      describe('automation-analytics: should be able to see Orders tab loaded', () => {
-        expect(page.$$('.mailpoet-analytics-filter-controls')).to.exist;
+      describe('automation-analytics: should be able to see Orders tab loaded', async () => {
+        expect(await page.$$('.mailpoet-analytics-filter-controls')).to.exist;
       });
     });
 
@@ -98,8 +98,8 @@ export async function automationAnalytics() {
     await page.waitForLoadState('networkidle');
 
     describe(automationsPageTitle, () => {
-      describe('automation-analytics: should be able to see Subscribers items loaded', () => {
-        expect(page.$$('.woocommerce-table__item')[0]).to.exist;
+      describe('automation-analytics: should be able to see Subscribers items loaded', async () => {
+        expect(await page.$$('.woocommerce-table__item')[0]).to.exist;
       });
     });
 
@@ -109,7 +109,7 @@ export async function automationAnalytics() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

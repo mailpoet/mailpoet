@@ -157,3 +157,20 @@ export async function designEmailInWorkflow(page) {
   ]);
   await page.waitForLoadState('networkidle');
 }
+
+// Wait and click first selector
+export async function clickFirstSelector(page, selector) {
+  // Wait for the selector to be available
+  await page.waitForSelector(selector);
+
+  // Get all selectors
+  const selectors = await page.$$(selector);
+
+  // Ensure that the first selector exists before trying to click
+  if (selectors.length > 0) {
+    await selectors[0].focus();
+    await selectors[0].click();
+  } else {
+    throw new Error("No selector found on the page.");
+  }
+}

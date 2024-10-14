@@ -62,9 +62,9 @@ export async function segmentsCreateCustom() {
     await selectInReact(page, '#react-select-4-input', defaultListName);
     await page.waitForSelector('.mailpoet-form-notice-message');
     describe(segmentsPageTitle, () => {
-      describe('segments-create-custom: should be able to see calculating message 1st time', () => {
+      describe('segments-create-custom: should be able to see calculating message 1st time', async () => {
         expect(
-          page.locator('.mailpoet-form-notice-message').innerText(),
+          await page.locator('.mailpoet-form-notice-message').innerText(),
         ).to.contain('Calculating segment size…');
       });
     });
@@ -84,9 +84,9 @@ export async function segmentsCreateCustom() {
     await selectInReact(page, '#react-select-5-input', 'subscribed date');
     await page.waitForSelector('.mailpoet-form-notice-message');
     describe(segmentsPageTitle, () => {
-      describe('segments-create-custom: should be able to see calculating message 2nd time', () => {
+      describe('segments-create-custom: should be able to see calculating message 2nd time', async () => {
         expect(
-          page.locator('.mailpoet-form-notice-message').innerText(),
+          await page.locator('.mailpoet-form-notice-message').innerText(),
         ).to.contain('Calculating segment size…');
       });
     });
@@ -107,9 +107,9 @@ export async function segmentsCreateCustom() {
     await page.waitForSelector('.mailpoet-form-notice-message');
     await page.waitForLoadState('networkidle');
     describe(segmentsPageTitle, () => {
-      describe('segments-create-custom: should be able to see Calculating message 3rd time', () => {
+      describe('segments-create-custom: should be able to see Calculating message 3rd time', async () => {
         expect(
-          page.locator('.mailpoet-form-notice-message').innerText(),
+          await page.locator('.mailpoet-form-notice-message').innerText(),
         ).to.contain('Calculating segment size…');
       });
     });
@@ -137,8 +137,8 @@ export async function segmentsCreateCustom() {
     const segmentAddedMessage =
       "//div[@class='notice-success'].//p[starts-with(text(),'Segment successfully added!')]";
     describe(segmentsPageTitle, () => {
-      describe('segments-create-custom: should be able to see Segment Added message', () => {
-        expect(page.locator(segmentAddedMessage)).to.exist;
+      describe('segments-create-custom: should be able to see Segment Added message', async () => {
+        expect(await page.locator(segmentAddedMessage)).to.exist;
       });
     });
 
@@ -149,7 +149,7 @@ export async function segmentsCreateCustom() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

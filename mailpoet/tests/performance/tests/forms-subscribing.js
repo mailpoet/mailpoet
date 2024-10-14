@@ -57,9 +57,9 @@ export async function formsSubscribing() {
       .click();
     await waitForSelectorToBeVisible(page, '.mailpoet_validate_success');
     describe(formsPageTitle, () => {
-      describe('forms-subscribing: should be able to see successfully subscribed message', () => {
+      describe('forms-subscribing: should be able to see successfully subscribed message', async () => {
         expect(
-          page.locator('.mailpoet_validate_success').innerText(),
+          await page.locator('.mailpoet_validate_success').innerText(),
         ).to.contain('Successfully subscribed!');
       });
     });
@@ -81,8 +81,8 @@ export async function formsSubscribing() {
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     await page.waitForLoadState('networkidle');
     describe(formsPageTitle, () => {
-      describe('forms-subscribing: should be able to search for a new subscriber', () => {
-        expect(page.locator('.mailpoet-listing-title').innerText()).to.contain(
+      describe('forms-subscribing: should be able to search for a new subscriber', async () => {
+        expect(await page.locator('.mailpoet-listing-title').innerText()).to.contain(
           subscriberEmail,
         );
       });
@@ -94,7 +94,7 @@ export async function formsSubscribing() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

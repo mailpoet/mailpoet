@@ -68,9 +68,9 @@ export async function formsAdding() {
     await page.locator('[data-automation-id="form_save_button"]').click();
     await page.waitForSelector('.components-notice');
     describe(formsPageTitle, () => {
-      describe('forms-adding: should be able to see Forms Saved message', () => {
+      describe('forms-adding: should be able to see Forms Saved message', async () => {
         expect(
-          page.locator('.components-notice__content').innerText(),
+          await page.locator('.components-notice__content').innerText(),
         ).to.contain(
           'Form saved. Cookies reset — you will see all your dismissed popup forms again.',
         );
@@ -83,7 +83,7 @@ export async function formsAdding() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();
