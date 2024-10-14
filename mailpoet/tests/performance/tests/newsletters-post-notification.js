@@ -21,7 +21,7 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login, selectInSelect2 } from '../utils/helpers.js';
+import { login, selectInSelect2, clickFirstSelector } from '../utils/helpers.js';
 /* global Promise */
 
 export async function newsletterPostNotification() {
@@ -85,7 +85,7 @@ export async function newsletterPostNotification() {
     }
 
     // Click to proceed to the next step (the last one)
-    await page.$$('input[value="Next"]')[0].click();
+    await clickFirstSelector(page, 'input[value="Next"]')
     await page.waitForNavigation();
     await page.waitForSelector(
       '[data-automation-id="newsletter_send_heading"]',
@@ -110,9 +110,9 @@ export async function newsletterPostNotification() {
       // Wait for the success page and confirm it
       await page.waitForSelector('.mailpoet-wizard-step');
       describe(emailsPageTitle, () => {
-        describe('newsletter-post-notification: should be able to see confirmation page for the first time', () => {
+        describe('newsletter-post-notification: should be able to see confirmation page for the first time', async () => {
           expect(
-            page.locator('.mailpoet-congratulate > h1').innerText(),
+            await page.locator('.mailpoet-congratulate > h1').innerText(),
           ).to.contain('You are all set up and ready to go!');
         });
       });
@@ -130,8 +130,8 @@ export async function newsletterPostNotification() {
         "//div[@class='notice-success'].//p[starts-with(text(),'Your post notification is now active!')]";
       await page.waitForSelector('#mailpoet_notices');
       describe(emailsPageTitle, () => {
-        describe('newsletter-post-notification: should be able to see Post Notification is active message', () => {
-          expect(page.locator(locator)).to.exist;
+        describe('newsletter-post-notification: should be able to see Post Notification is active message', async () => {
+          expect(await page.locator(locator)).to.exist;
         });
       });
     }
@@ -143,7 +143,7 @@ export async function newsletterPostNotification() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

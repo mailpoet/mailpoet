@@ -43,8 +43,8 @@ export async function subscribersTrashingRestoring() {
     // Check the subscribers filter is present
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
-      describe('subscribers-trashing-restoring: should be able to see Lists Filter', () => {
-        expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
+      describe('subscribers-trashing-restoring: should be able to see Lists Filter', async () => {
+        expect(await page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });
     });
@@ -60,8 +60,8 @@ export async function subscribersTrashingRestoring() {
     await page.waitForSelector('.notice-success');
     await page.waitForSelector('.colspanchange');
     describe(subscribersPageTitle, () => {
-      describe('subscribers-trashing-restoring: should be able to see the message', () => {
-        expect(page.locator('.colspanchange').innerText()).to.contain(
+      describe('subscribers-trashing-restoring: should be able to see the message', async () => {
+        expect(await page.locator('.colspanchange').innerText()).to.contain(
           'No items found.',
         );
       });
@@ -75,7 +75,7 @@ export async function subscribersTrashingRestoring() {
     // Restore from trash all the trashed subscribers
     await page.locator('[data-automation-id="filters_trash"]').click();
     await page.waitForSelector('[data-automation-id="empty_trash"]');
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
     await page.locator('[data-automation-id="select_all"]').click();
     await page.waitForSelector('.mailpoet-listing-select-all');
     await page.locator('.mailpoet-listing-select-all > a').click();
@@ -94,7 +94,7 @@ export async function subscribersTrashingRestoring() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

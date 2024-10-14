@@ -59,8 +59,8 @@ export async function listsViewSubscribers() {
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(listsPageTitle, () => {
-      describe('lists-view-subscribers: should be able to see Lists Filter', () => {
-        expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
+      describe('lists-view-subscribers: should be able to see Lists Filter', async () => {
+        expect(await page.locator('[data-automation-id="listing_filter_segment"]')).to
           .exist;
       });
     });
@@ -72,7 +72,7 @@ export async function listsViewSubscribers() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

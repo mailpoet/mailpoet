@@ -24,6 +24,7 @@ import {
   login,
   focusAndClick,
   waitForSelectorToBeClickable,
+  clickFirstSelector,
 } from '../utils/helpers.js';
 
 export async function segmentsSelectTemplate() {
@@ -48,12 +49,8 @@ export async function segmentsSelectTemplate() {
     });
 
     // Select any segment's template on page
-    await Promise.all([
-      page.$$('.mailpoet-templates-card')[0].click(), // this will randomly pick
-      page.waitForNavigation(),
-      page.waitForSelector('[data-automation-id="select-segment-action"]'),
-      page.waitForLoadState('networkidle'),
-    ]);
+    await clickFirstSelector(page, '.mailpoet-templates-card');
+    await page.waitForSelector('[data-automation-id="select-segment-action"]');
 
     await page.screenshot({
       path: screenshotPath + 'Segments_Select_Template_02.png',
@@ -71,8 +68,8 @@ export async function segmentsSelectTemplate() {
     const segmentUpdatedMessage =
       "//div[@class='notice-success'].//p[starts-with(text(),'Segment successfully updated!')]";
     describe(segmentsPageTitle, () => {
-      describe('segments-select-template: should be able to see Segment Updated message', () => {
-        expect(page.locator(segmentUpdatedMessage)).to.exist;
+      describe('segments-select-template: should be able to see Segment Updated message', async () => {
+        expect(await page.locator(segmentUpdatedMessage)).to.exist;
       });
     });
 
@@ -83,7 +80,7 @@ export async function segmentsSelectTemplate() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

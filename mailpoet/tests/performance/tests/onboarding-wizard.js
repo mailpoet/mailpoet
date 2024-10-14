@@ -64,7 +64,7 @@ export async function onboardingWizard() {
       .click();
     await page.locator('button[type="submit"]').click();
 
-    sleep(1);
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 
     await page.waitForSelector('span.mailpoet-form-yesno-yes');
     await page.locator('span.mailpoet-form-yesno-yes').click();
@@ -72,7 +72,7 @@ export async function onboardingWizard() {
 
     await page.locator('.mailpoet-wizard-step-content > p > a').click();
 
-    sleep(2);
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 
     await page.screenshot({
       path: screenshotPath + 'Onboarding_Wizard_02.png',
@@ -93,9 +93,9 @@ export async function onboardingWizard() {
 
     // Check if you see Send With tab at the end
     describe(settingsPageTitle, () => {
-      describe('onboarding-wizard: should be able to see Send With tab present', () => {
+      describe('onboarding-wizard: should be able to see Send With tab present', async () => {
         expect(
-          page
+          await page
             .locator('[data-automation-id="send_with_settings_tab"]')
             .innerText(),
         ).to.contain('Send With...');
@@ -108,7 +108,7 @@ export async function onboardingWizard() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

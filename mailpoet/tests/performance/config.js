@@ -17,7 +17,7 @@ export const firstName = 'John';
 export const lastName = 'Doe';
 export const defaultListName = 'Newsletter mailing list';
 
-export const thinkTimeMin = '1';
+export const thinkTimeMin = '2';
 export const thinkTimeMax = '3';
 
 export const emailsPageTitle = 'Emails Page';

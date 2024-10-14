@@ -67,8 +67,8 @@ export async function automationCreateWooCommerce() {
     await page.waitForLoadState('networkidle');
 
     describe(automationsPageTitle, () => {
-      describe('automation-create-woocommerce: should be able to see items in the workflow', () => {
-        expect(page.locator('.mailpoet-automation-editor-automation-row')).to
+      describe('automation-create-woocommerce: should be able to see items in the workflow', async () => {
+        expect(await page.locator('.mailpoet-automation-editor-automation-row')).to
           .exist;
       });
     });
@@ -93,9 +93,9 @@ export async function automationCreateWooCommerce() {
     await activateWorkflow(page);
 
     describe(automationsPageTitle, () => {
-      describe('automation-create-woocommerce: should be able to see Automation added message', () => {
+      describe('automation-create-woocommerce: should be able to see Automation added message', async () => {
         expect(
-          page.locator('.components-snackbar__content').innerText(),
+          await page.locator('.components-snackbar__content').innerText(),
         ).to.contain('Well done! Automation is now activated!');
       });
     });
@@ -106,7 +106,7 @@ export async function automationCreateWooCommerce() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

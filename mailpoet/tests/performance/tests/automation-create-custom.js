@@ -65,8 +65,8 @@ export async function automationCreateCustom() {
     await page.waitForLoadState('networkidle');
 
     describe(automationsPageTitle, () => {
-      describe('automation-create-custom: should be able to see Add Trigger button', () => {
-        expect(page.locator(triggerbutton)).to.exist;
+      describe('automation-create-custom: should be able to see Add Trigger button', async () => {
+        expect(await page.locator(triggerbutton)).to.exist;
       });
     });
 
@@ -113,9 +113,9 @@ export async function automationCreateCustom() {
     await activateWorkflow(page);
 
     describe(automationsPageTitle, () => {
-      describe('automation-create-custom: should be able to see Automation added message', () => {
+      describe('automation-create-custom: should be able to see Automation added message', async () => {
         expect(
-          page.locator('.components-snackbar__content').innerText(),
+          await page.locator('.components-snackbar__content').innerText(),
         ).to.contain('Well done! Automation is now activated!');
       });
     });
@@ -126,12 +126,13 @@ export async function automationCreateCustom() {
     });
 
     // Go to Automations listing to measure performance from workflow to listing
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
     await page.locator('.is-secondary').click();
     await waitForSelectorToBeVisible(page, '.wp-heading-inline');
     await page.waitForLoadState('networkidle');
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

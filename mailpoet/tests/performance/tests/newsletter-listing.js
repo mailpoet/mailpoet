@@ -45,8 +45,8 @@ export async function newsletterListing() {
     await page.waitForSelector('[data-automation-id="filters_all"]');
     await page.waitForLoadState('networkidle');
     describe(emailsPageTitle, () => {
-      describe('newsletter-listing: should be able to see All Filter', () => {
-        expect(page.locator('[data-automation-id="filters_all"]')).to.exist;
+      describe('newsletter-listing: should be able to see All Filter', async () => {
+        expect(await page.locator('[data-automation-id="filters_all"]')).to.exist;
       });
     });
 
@@ -56,7 +56,7 @@ export async function newsletterListing() {
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();

@@ -59,8 +59,8 @@ export async function automationTriggerWorkflow() {
     const locator =
       "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]";
     describe(automationsPageTitle, () => {
-      describe('automation-trigger-workflow: should be able to see success notice for adding subscriber', () => {
-        expect(page.locator(locator)).to.exist;
+      describe('automation-trigger-workflow: should be able to see success notice for adding subscriber', async () => {
+        expect(await page.locator(locator)).to.exist;
       });
     });
 
@@ -119,15 +119,15 @@ export async function automationTriggerWorkflow() {
     });
 
     describe(automationsPageTitle, () => {
-      describe('automation-trigger-workflow: should be able to see subscriber in the results', () => {
+      describe('automation-trigger-workflow: should be able to see subscriber in the results', async () => {
         expect(
-          page.locator('.mailpoet-analytics-orders__customer').innerText(),
+          await page.locator('.mailpoet-analytics-orders__customer').innerText(),
         ).to.contain(subscriberEmail);
       });
     });
 
     // Thinking time and closing
-    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
   } finally {
     await page.close();
     await browser.context().close();
