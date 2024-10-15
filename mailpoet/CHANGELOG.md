@@ -1,5 +1,15 @@
 == Changelog ==
 
+= 5.3.1 - 2024-10-15 =
+
+- Improved: add validation for re-engagement emails period;
+- Improved: more balanced text wrapping to improve readability;
+- Improved: when the email authentication service is unavailable, use the old authentication status and continue sending.
+- Fixed: some email template previews are too wide;
+- Fixed: remove Google+ icon from email templates;
+- Fixed: Removed a warning when caption is not present on image;
+- Fixed: deprecation warning from mb_convert_encoding.
+
 = 5.3.0 - 2024-10-03 =
 
 - Fixed: abandoned cart automation trigger doesn't work in some cases.
