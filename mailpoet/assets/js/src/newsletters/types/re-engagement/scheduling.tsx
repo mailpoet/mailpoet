@@ -49,8 +49,8 @@ export function Scheduling({
           required
         />
         <Select value={afterTimeType} onChange={onChange(updateAfterTimeType)}>
-          <option value="weeks">weeks</option>
-          <option value="months">months</option>
+          <option value="weeks">{__('weeks', 'mailpoet')}</option>
+          <option value="months">{__('months', 'mailpoet')}</option>
         </Select>
       </Grid.CenteredRow>
       <div className="mailpoet-gap" />
