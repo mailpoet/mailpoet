@@ -38,7 +38,9 @@ export function Scheduling({
         {__('When to send this re-engagement email?', 'mailpoet')}
       </Heading>
       <Grid.CenteredRow className="mailpoet-re-engagement-scheduling">
-        <p>{__('After no activity for', 'mailpoet')}</p>
+        <div className="mailpoet-re-engagement-scheduling-period">
+          {__('After no activity for', 'mailpoet')}
+        </div>
         <Input
           type="number"
           placeholder={__('count', 'mailpoet')}
@@ -51,6 +53,7 @@ export function Scheduling({
           <option value="months">months</option>
         </Select>
       </Grid.CenteredRow>
+      <div className="mailpoet-gap" />
       {!!inactiveSubscribersPeriod && inactivePeriod <= daysSelected && (
         <p className="mailpoet-re-engagement-scheduling-note">
           {ReactStringReplace(
