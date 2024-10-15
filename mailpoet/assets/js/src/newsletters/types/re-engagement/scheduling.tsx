@@ -45,6 +45,7 @@ export function Scheduling({
           type="number"
           placeholder={__('count', 'mailpoet')}
           value={afterTimeNumber}
+          min={1}
           onChange={onChange(updateAfterTimeNumber)}
           required
         />
