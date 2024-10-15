@@ -28,7 +28,6 @@ use MailPoet\Services\AuthorizedEmailsController;
 use MailPoet\Settings\SettingsController;
 use MailPoet\UnexpectedValueException;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
-use MailPoet\Util\Security;
 use MailPoet\WP\Emoji;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
@@ -328,10 +327,6 @@ class Newsletters extends APIEndpoint {
     $newsletter->setBody(
       json_decode($this->emoji->encodeForUTF8Column($newslettersTableName, 'body', $data['body']), true)
     );
-    // ensure newsletter has hash
-    if (!$newsletter->getHash()) {
-      $newsletter->setHash(Security::generateHash());
-    }
     $this->newslettersRepository->flush();
 
     $response = $this->newslettersResponseBuilder->build($newsletter);
