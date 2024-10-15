@@ -90,12 +90,21 @@
   width: max-content;
 }
 
+.mailpoet-re-engagement-scheduling {
+  display: grid;
+  grid-template-columns: 5fr 2fr 3fr;
+
+  .mailpoet-form-input {
+    width: auto;
+  }
+}
+
 .mailpoet-re-engagement-scheduling-note {
   color: $color-input-error;
 }
 
-.mailpoet-re-engagement-scheduling .mailpoet-form-input-small {
-  width: 150px;
+.mailpoet-re-engagement-scheduling-period {
+  white-space: normal;
 }
 
 [data-type='re_engagement'] .mailpoet-newsletter-type-image {
