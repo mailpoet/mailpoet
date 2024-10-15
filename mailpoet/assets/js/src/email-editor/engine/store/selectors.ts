@@ -196,15 +196,10 @@ export const getCurrentTemplate = createRegistrySelector((select) => () => {
  */
 export const getEmailTemplates = createRegistrySelector(
   (select) => () =>
-    select(coreDataStore)
-      .getEntityRecords('postType', 'wp_template', {
-        per_page: -1,
-      })
-      ?.filter(
-        (template) =>
-          // @ts-expect-error Missing property in type
-          template.theme === 'mailpoet/mailpoet',
-      ),
+    select(coreDataStore).getEntityRecords('postType', 'wp_template', {
+      per_page: -1,
+      post_type: 'mailpoet_email',
+    }),
 );
 
 export function getEmailPostId(state: State): number {
