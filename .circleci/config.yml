@@ -415,7 +415,7 @@ jobs:
           name: Check for Latest WordPress Beta Version
           command: |
             if [ "<< parameters.use_wordpress_beta >>" == "true" ]; then
-              LATEST_WP_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
+              LATEST_WP_BETA=$(../.circleci/check_wordpress_beta.sh | grep 'LATEST_BETA' | sed 's/^.*--version=\(.*\)$/\1/')
               if [ -z "$LATEST_WP_BETA" ]; then
                 echo "No latest beta version found. Ending job early."
                 circleci-agent step halt
@@ -430,7 +430,7 @@ jobs:
           name: Check for Latest WooCommerce Beta Version
           command: |
             if [ "<< parameters.use_woocommerce_beta >>" == "true" ]; then
-              LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | cut -d'=' -f2)
+              LATEST_WC_BETA=$(../.circleci/check_woocommerce_beta.sh | grep 'LATEST_BETA' | sed 's/^.*--version=\(.*\)$/\1/')
               if [ -z "$LATEST_WC_BETA" ]; then
                 echo "No WooCommerce Beta version found. Ending job early."
                 circleci-agent step halt
