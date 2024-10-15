@@ -93,7 +93,7 @@ Included in the `tests` folder is a set of test scripts which includes all scena
 
 Another aspect that affects the traffic pattern of the tests is the amount of “Think Time” in between requests. In real world usage of an application users will spend some amount of time before doing some action. For some situations there will be a need to simulate this as part of the test traffic and it is common to have this as part of load tests.
 
-To do this a sleep step is included between each request ``sleep(randomIntBetween(`${think_time_min}`, `${think_time_max}`))``.
+To do this a sleep step is included between each request `` sleep(randomIntBetween(`${think_time_min}`, `${think_time_max}`)) ``.
 The amount of think time can be controlled from `config.js`.
 
 > **_Note for Protocol-level tests: It’s important to note to be very careful when adding load to a scenario. By accident a dangerous amount of load could be ran aginst the test environment that could effectively be like a denial-of-service attack on the test environment. Also important to consider any other consequences of running large load such as triggering of emails._**
