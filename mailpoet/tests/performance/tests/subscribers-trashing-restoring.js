@@ -44,8 +44,9 @@ export async function subscribersTrashingRestoring() {
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
       describe('subscribers-trashing-restoring: should be able to see Lists Filter', async () => {
-        expect(await page.locator('[data-automation-id="listing_filter_segment"]')).to
-          .exist;
+        expect(
+          await page.locator('[data-automation-id="listing_filter_segment"]'),
+        ).to.exist;
       });
     });
 

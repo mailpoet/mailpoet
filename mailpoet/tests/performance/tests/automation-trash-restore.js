@@ -20,7 +20,11 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login, waitForSelectorToBeVisible, clickFirstSelector } from '../utils/helpers.js';
+import {
+  login,
+  waitForSelectorToBeVisible,
+  clickFirstSelector,
+} from '../utils/helpers.js';
 
 export async function automationTrashRestore() {
   const page = await browser.newPage();
@@ -41,7 +45,7 @@ export async function automationTrashRestore() {
     });
 
     // Move to trash one of the existing automation listing
-    await clickFirstSelector(page, '[aria-label="More"]')
+    await clickFirstSelector(page, '[aria-label="More"]');
     await page.locator('.components-popover__content').click(); // click Trash
     await page.waitForLoadState('networkidle');
     await page.locator('div.components-flex > button.is-primary').focus();

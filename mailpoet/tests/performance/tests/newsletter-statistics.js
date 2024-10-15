@@ -72,8 +72,8 @@ export async function newsletterStatistics() {
     await page.waitForLoadState('networkidle');
     describe(emailsPageTitle, () => {
       describe('newsletter-statistics: should be able to see Link Clicked filter', async () => {
-        expect(await page.locator('[data-automation-id="filters_all_engaged"]')).to
-          .exist;
+        expect(await page.locator('[data-automation-id="filters_all_engaged"]'))
+          .to.exist;
       });
     });
 

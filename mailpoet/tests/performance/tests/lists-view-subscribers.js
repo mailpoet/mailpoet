@@ -60,8 +60,9 @@ export async function listsViewSubscribers() {
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(listsPageTitle, () => {
       describe('lists-view-subscribers: should be able to see Lists Filter', async () => {
-        expect(await page.locator('[data-automation-id="listing_filter_segment"]')).to
-          .exist;
+        expect(
+          await page.locator('[data-automation-id="listing_filter_segment"]'),
+        ).to.exist;
       });
     });
     await page.waitForLoadState('networkidle');

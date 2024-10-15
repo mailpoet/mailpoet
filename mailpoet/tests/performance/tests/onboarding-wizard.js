@@ -64,7 +64,8 @@ export async function onboardingWizard() {
       .click();
     await page.locator('button[type="submit"]').click();
 
-    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    await sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
+    sleep(randomIntBetween(thinkTimeMin, thinkTimeMax));
 
     await page.waitForSelector('span.mailpoet-form-yesno-yes');
     await page.locator('span.mailpoet-form-yesno-yes').click();

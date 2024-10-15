@@ -68,8 +68,8 @@ export async function automationCreateWelcome() {
 
     describe(automationsPageTitle, () => {
       describe('automation-create-welcome: should be able to see items in the workflow', async () => {
-        expect(await page.locator('.mailpoet-automation-editor-automation-row')).to
-          .exist;
+        expect(await page.locator('.mailpoet-automation-editor-automation-row'))
+          .to.exist;
       });
     });
 
