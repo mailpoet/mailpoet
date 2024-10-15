@@ -82,9 +82,9 @@ export async function formsSubscribing() {
     await page.waitForLoadState('networkidle');
     describe(formsPageTitle, () => {
       describe('forms-subscribing: should be able to search for a new subscriber', async () => {
-        expect(await page.locator('.mailpoet-listing-title').innerText()).to.contain(
-          subscriberEmail,
-        );
+        expect(
+          await page.locator('.mailpoet-listing-title').innerText(),
+        ).to.contain(subscriberEmail);
       });
     });
 

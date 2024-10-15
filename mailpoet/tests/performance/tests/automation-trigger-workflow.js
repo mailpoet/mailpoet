@@ -121,7 +121,9 @@ export async function automationTriggerWorkflow() {
     describe(automationsPageTitle, () => {
       describe('automation-trigger-workflow: should be able to see subscriber in the results', async () => {
         expect(
-          await page.locator('.mailpoet-analytics-orders__customer').innerText(),
+          await page
+            .locator('.mailpoet-analytics-orders__customer')
+            .innerText(),
         ).to.contain(subscriberEmail);
       });
     });

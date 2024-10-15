@@ -171,6 +171,6 @@ export async function clickFirstSelector(page, selector) {
     await selectors[0].focus();
     await selectors[0].click();
   } else {
-    throw new Error("No selector found on the page.");
+    throw new Error('No selector found on the page.');
   }
 }

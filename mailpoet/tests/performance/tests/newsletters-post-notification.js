@@ -21,7 +21,11 @@ import {
   fullPageSet,
   screenshotPath,
 } from '../config.js';
-import { login, selectInSelect2, clickFirstSelector } from '../utils/helpers.js';
+import {
+  login,
+  selectInSelect2,
+  clickFirstSelector,
+} from '../utils/helpers.js';
 /* global Promise */
 
 export async function newsletterPostNotification() {
@@ -85,7 +89,7 @@ export async function newsletterPostNotification() {
     }
 
     // Click to proceed to the next step (the last one)
-    await clickFirstSelector(page, 'input[value="Next"]')
+    await clickFirstSelector(page, 'input[value="Next"]');
     await page.waitForNavigation();
     await page.waitForSelector(
       '[data-automation-id="newsletter_send_heading"]',

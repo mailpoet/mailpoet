@@ -74,7 +74,8 @@ export async function automationAnalytics() {
 
     describe(automationsPageTitle, () => {
       describe('automation-analytics: should be able to see Emails tab loaded', async () => {
-        expect(await page.$$('.mailpoet-automation-analytics-email-name')).to.exist;
+        expect(await page.$$('.mailpoet-automation-analytics-email-name')).to
+          .exist;
       });
     });
 

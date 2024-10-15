@@ -48,9 +48,9 @@ export async function newsletterSearching() {
     await page.waitForLoadState('networkidle');
     describe(emailsPageTitle, () => {
       describe('newsletter-searching: should be able to search for Newsletter 1st', async () => {
-        expect(await page.locator('.mailpoet-listing-title').innerText()).to.contain(
-          'Newsletter 1st',
-        );
+        expect(
+          await page.locator('.mailpoet-listing-title').innerText(),
+        ).to.contain('Newsletter 1st');
       });
     });
 
@@ -63,8 +63,9 @@ export async function newsletterSearching() {
     await page.waitForLoadState('networkidle');
     describe(emailsPageTitle, () => {
       describe('newsletter-searching: should be able to see Lists Filter', async () => {
-        expect(await page.locator('[data-automation-id="listing_filter_segment"]')).to
-          .exist;
+        expect(
+          await page.locator('[data-automation-id="listing_filter_segment"]'),
+        ).to.exist;
       });
     });
 

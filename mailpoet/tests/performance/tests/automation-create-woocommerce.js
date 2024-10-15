@@ -68,8 +68,8 @@ export async function automationCreateWooCommerce() {
 
     describe(automationsPageTitle, () => {
       describe('automation-create-woocommerce: should be able to see items in the workflow', async () => {
-        expect(await page.locator('.mailpoet-automation-editor-automation-row')).to
-          .exist;
+        expect(await page.locator('.mailpoet-automation-editor-automation-row'))
+          .to.exist;
       });
     });
 

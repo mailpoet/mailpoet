@@ -46,7 +46,8 @@ export async function newsletterListing() {
     await page.waitForLoadState('networkidle');
     describe(emailsPageTitle, () => {
       describe('newsletter-listing: should be able to see All Filter', async () => {
-        expect(await page.locator('[data-automation-id="filters_all"]')).to.exist;
+        expect(await page.locator('[data-automation-id="filters_all"]')).to
+          .exist;
       });
     });
 

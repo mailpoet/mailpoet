@@ -71,8 +71,9 @@ export async function subscribersAdding() {
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
       describe('subscribers-adding: should be able to see Lists Filter', async () => {
-        expect(await page.locator('[data-automation-id="listing_filter_segment"]')).to
-          .exist;
+        expect(
+          await page.locator('[data-automation-id="listing_filter_segment"]'),
+        ).to.exist;
       });
     });
     await page.waitForLoadState('networkidle');
@@ -89,9 +90,9 @@ export async function subscribersAdding() {
     await page.waitForLoadState('networkidle');
     describe(subscribersPageTitle, () => {
       describe('subscribers-adding: should be able to search for Newly Added Subscriber', async () => {
-        expect(await page.locator('.mailpoet-listing-title').innerText()).to.contain(
-          subscriberEmail,
-        );
+        expect(
+          await page.locator('.mailpoet-listing-title').innerText(),
+        ).to.contain(subscriberEmail);
       });
     });
 

@@ -45,8 +45,8 @@ export async function subscribersListing() {
     await page.waitForLoadState('networkidle');
     describe(subscribersPageTitle, () => {
       describe('subscribers-listing: should be able to see Tags Filter', async () => {
-        expect(await page.locator('[data-automation-id="listing_filter_tag"]')).to
-          .exist;
+        expect(await page.locator('[data-automation-id="listing_filter_tag"]'))
+          .to.exist;
       });
     });
 
