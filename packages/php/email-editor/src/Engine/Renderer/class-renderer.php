@@ -45,9 +45,9 @@ class Renderer {
 		// Set the theme for the template. This is merged with base theme.json and core json before rendering.
 		self::$theme = new WP_Theme_JSON( $theme, 'default' );
 
-		$emailStyles  = $this->themeController->getStyles( $post, $template );
+		$emailStyles  = $this->themeController->get_styles( $post, $template );
 		$templateHtml = $this->contentRenderer->render( $post, $template );
-		$layout       = $this->themeController->getLayoutSettings();
+		$layout       = $this->themeController->get_layout_settings();
 
 		ob_start();
 		include self::TEMPLATE_FILE;

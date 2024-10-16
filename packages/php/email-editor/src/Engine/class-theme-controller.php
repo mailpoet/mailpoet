@@ -1,8 +1,17 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine;
 
 use MailPoet\EmailEditor\Engine\Renderer\Renderer;
+use MailPoet\EmailEditor\Utils\Filesystem;
+use WP_Block_Template;
+use WP_Post;
 use WP_Theme_JSON;
 use WP_Theme_JSON_Resolver;
 
@@ -11,12 +20,26 @@ use WP_Theme_JSON_Resolver;
  * This class is responsible for accessing data defined by the theme.json.
  */
 class Theme_Controller {
-	private WP_Theme_JSON $coreTheme;
-	private WP_Theme_JSON $baseTheme;
+	/**
+	 * Core theme loaded from the WordPress core.
+	 *
+	 * @var WP_Theme_JSON
+	 */
+	private WP_Theme_JSON $core_theme;
 
+	/**
+	 * Base theme loaded from a file in the package directory.
+	 *
+	 * @var WP_Theme_JSON
+	 */
+	private WP_Theme_JSON $base_theme;
+
+	/**
+	 * Theme_Controller constructor.
+	 */
 	public function __construct() {
-		$this->coreTheme = WP_Theme_JSON_Resolver::get_core_data();
-		$this->baseTheme = new WP_Theme_JSON( (array) json_decode( (string) file_get_contents( __DIR__ . '/theme.json' ), true ), 'default' );
+		$this->core_theme = WP_Theme_JSON_Resolver::get_core_data();
+		$this->base_theme = new WP_Theme_JSON( (array) json_decode( (string) file_get_contents( __DIR__ . '/theme.json' ), true ), 'default' );
 	}
 
 	/**
@@ -24,10 +47,10 @@ class Theme_Controller {
 	 *
 	 * @return WP_Theme_JSON
 	 */
-	public function getTheme(): WP_Theme_JSON {
+	public function get_theme(): WP_Theme_JSON {
 		$theme = new WP_Theme_JSON();
-		$theme->merge( $this->coreTheme );
-		$theme->merge( $this->baseTheme );
+		$theme->merge( $this->core_theme );
+		$theme->merge( $this->base_theme );
 
 		if ( Renderer::getTheme() !== null ) {
 			$theme->merge( Renderer::getTheme() );
@@ -36,10 +59,17 @@ class Theme_Controller {
 		return apply_filters( 'mailpoet_email_editor_theme_json', $theme );
 	}
 
-	private function recursiveReplacePresets( $values, $presets ) {
+	/**
+	 * Replace preset variables with their values.
+	 *
+	 * @param array $values Styles array.
+	 * @param array $presets Presets array.
+	 * @return array
+	 */
+	private function recursive_replace_presets( $values, $presets ) {
 		foreach ( $values as $key => $value ) {
 			if ( is_array( $value ) ) {
-				$values[ $key ] = $this->recursiveReplacePresets( $value, $presets );
+				$values[ $key ] = $this->recursive_replace_presets( $value, $presets );
 			} elseif ( is_string( $value ) ) {
 				$values[ $key ] = preg_replace( array_keys( $presets ), array_values( $presets ), $value );
 			} else {
@@ -49,14 +79,20 @@ class Theme_Controller {
 		return $values;
 	}
 
-	private function recursiveExtractPresetVariables( $styles ) {
-		foreach ( $styles as $key => $styleValue ) {
-			if ( is_array( $styleValue ) ) {
-				$styles[ $key ] = $this->recursiveExtractPresetVariables( $styleValue );
-			} elseif ( strpos( $styleValue, 'var:preset|' ) === 0 ) {
-				$styles[ $key ] = 'var(--wp--' . str_replace( '|', '--', str_replace( 'var:', '', $styleValue ) ) . ')';
+	/**
+	 * Replace preset variables with their values.
+	 *
+	 * @param array $styles Styles array.
+	 * @return array
+	 */
+	private function recursive_extract_preset_variables( $styles ) {
+		foreach ( $styles as $key => $style_value ) {
+			if ( is_array( $style_value ) ) {
+				$styles[ $key ] = $this->recursive_extract_preset_variables( $style_value );
+			} elseif ( strpos( $style_value, 'var:preset|' ) === 0 ) {
+				$styles[ $key ] = 'var(--wp--' . str_replace( '|', '--', str_replace( 'var:', '', $style_value ) ) . ')';
 			} else {
-				$styles[ $key ] = $styleValue;
+				$styles[ $key ] = $style_value;
 			}
 		}
 		return $styles;
@@ -67,7 +103,6 @@ class Theme_Controller {
 	 *
 	 * @param \WP_Post|null           $post Post object.
 	 * @param \WP_Block_Template|null $template Template object.
-	 * @param bool                    $convertPresets Convert presets to valid CSS values.
 	 * @return array{
 	 *   spacing: array{
 	 *     blockGap: string,
@@ -81,105 +116,129 @@ class Theme_Controller {
 	 *   }
 	 * }
 	 */
-	public function getStyles( $post = null, $template = null ): array {
-		$themeStyles = $this->getTheme()->get_data()['styles'];
+	public function get_styles( $post = null, $template = null ): array {
+		$theme_styles = $this->get_theme()->get_data()['styles'];
 
 		// Replace template styles.
-		if ( $template && $template->wp_id ) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-			$templateTheme  = (array) get_post_meta( $template->wp_id, 'mailpoet_email_theme', true ); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-			$templateStyles = (array) ( $templateTheme['styles'] ?? array() );
-			$themeStyles    = array_replace_recursive( $themeStyles, $templateStyles );
+		if ( $template && $template->wp_id ) {
+			$template_theme  = (array) get_post_meta( $template->wp_id, 'mailpoet_email_theme', true );
+			$template_styles = (array) ( $template_theme['styles'] ?? array() );
+			$theme_styles    = array_replace_recursive( $theme_styles, $template_styles );
 		}
 
-		// Extract preset variables
-		$themeStyles = $this->recursiveExtractPresetVariables( $themeStyles );
+		// Extract preset variables.
+		$theme_styles = $this->recursive_extract_preset_variables( $theme_styles );
 
 		// Replace preset values.
-		$variables = $this->getVariablesValuesMap();
+		$variables = $this->get_variables_values_map();
 		$presets   = array();
 
-		foreach ( $variables as $varName => $varValue ) {
-			$varPattern             = '/var\(' . preg_quote( $varName, '/' ) . '\)/i';
-			$presets[ $varPattern ] = $varValue;
+		foreach ( $variables as $name => $value ) {
+			$pattern             = '/var\(' . preg_quote( $name, '/' ) . '\)/i';
+			$presets[ $pattern ] = $value;
 		}
 
-		$themeStyles = $this->recursiveReplacePresets( $themeStyles, $presets );
+		$theme_styles = $this->recursive_replace_presets( $theme_styles, $presets );
 
-		return $themeStyles;
+		return $theme_styles;
 	}
 
-	public function getSettings(): array {
-		$emailEditorThemeSettings                              = $this->getTheme()->get_settings();
-		$siteThemeSettings                                     = WP_Theme_JSON_Resolver::get_theme_data()->get_settings();
-		$emailEditorThemeSettings['color']['palette']['theme'] = array();
-		if ( isset( $siteThemeSettings['color']['palette']['theme'] ) ) {
-			$emailEditorThemeSettings['color']['palette']['theme'] = $siteThemeSettings['color']['palette']['theme'];
+	/**
+	 * Get settings from the theme.
+	 *
+	 * @return array
+	 */
+	public function get_settings(): array {
+		$email_editor_theme_settings                              = $this->get_theme()->get_settings();
+		$site_theme_settings                                      = WP_Theme_JSON_Resolver::get_theme_data()->get_settings();
+		$email_editor_theme_settings['color']['palette']['theme'] = array();
+		if ( isset( $site_theme_settings['color']['palette']['theme'] ) ) {
+			$email_editor_theme_settings['color']['palette']['theme'] = $site_theme_settings['color']['palette']['theme'];
 		}
-		return $emailEditorThemeSettings;
+		return $email_editor_theme_settings;
 	}
 
-	public function getLayoutSettings(): array {
-		return $this->getTheme()->get_settings()['layout'];
+	/**
+	 * Get layout settings from the theme.
+	 *
+	 * @return array
+	 */
+	public function get_layout_settings(): array {
+		return $this->get_theme()->get_settings()['layout'];
 	}
 
-	public function getStylesheetFromContext( $context, $options = array() ): string {
+	/**
+	 * Get stylesheet from context.
+	 *
+	 * @param array $context Context.
+	 * @param array $options Options.
+	 * @return string
+	 */
+	public function get_stylesheet_from_context( $context, $options = array() ): string {
 		return function_exists( 'gutenberg_style_engine_get_stylesheet_from_context' ) ? gutenberg_style_engine_get_stylesheet_from_context( $context, $options ) : wp_style_engine_get_stylesheet_from_context( $context, $options );
 	}
 
-	public function getStylesheetForRendering( $post = null, $template = null ): string {
-		$emailThemeSettings = $this->getSettings();
+	/**
+	 * Get stylesheet for rendering.
+	 *
+	 * @param WP_Post|null           $post Post object.
+	 * @param WP_Block_Template|null $template Template object.
+	 * @return string
+	 */
+	public function get_stylesheet_for_rendering( ?WP_Post $post = null, $template = null ): string {
+		$email_theme_settings = $this->get_settings();
 
-		$cssPresets = '';
-		// Font family classes
-		foreach ( $emailThemeSettings['typography']['fontFamilies']['default'] as $fontFamily ) {
-			$cssPresets .= ".has-{$fontFamily['slug']}-font-family { font-family: {$fontFamily['fontFamily']}; } \n";
+		$css_presets = '';
+		// Font family classes.
+		foreach ( $email_theme_settings['typography']['fontFamilies']['default'] as $font_family ) {
+			$css_presets .= ".has-{$font_family['slug']}-font-family { font-family: {$font_family['fontFamily']}; } \n";
 		}
-		// Font size classes
-		foreach ( $emailThemeSettings['typography']['fontSizes']['default'] as $fontSize ) {
-			$cssPresets .= ".has-{$fontSize['slug']}-font-size { font-size: {$fontSize['size']}; } \n";
+		// Font size classes.
+		foreach ( $email_theme_settings['typography']['fontSizes']['default'] as $font_size ) {
+			$css_presets .= ".has-{$font_size['slug']}-font-size { font-size: {$font_size['size']}; } \n";
 		}
-		// Color palette classes
-		$colorDefinitions = array_merge( $emailThemeSettings['color']['palette']['theme'], $emailThemeSettings['color']['palette']['default'] );
-		foreach ( $colorDefinitions as $color ) {
-			$cssPresets .= ".has-{$color['slug']}-color { color: {$color['color']}; } \n";
-			$cssPresets .= ".has-{$color['slug']}-background-color { background-color: {$color['color']}; } \n";
-			$cssPresets .= ".has-{$color['slug']}-border-color { border-color: {$color['color']}; } \n";
-		}
-
-		// Block specific styles
-		$cssBlocks = '';
-		$blocks    = $this->getTheme()->get_styles_block_nodes();
-		foreach ( $blocks as $blockMetadata ) {
-			$cssBlocks .= $this->getTheme()->get_styles_for_block( $blockMetadata );
+		// Color palette classes.
+		$color_definitions = array_merge( $email_theme_settings['color']['palette']['theme'], $email_theme_settings['color']['palette']['default'] );
+		foreach ( $color_definitions as $color ) {
+			$css_presets .= ".has-{$color['slug']}-color { color: {$color['color']}; } \n";
+			$css_presets .= ".has-{$color['slug']}-background-color { background-color: {$color['color']}; } \n";
+			$css_presets .= ".has-{$color['slug']}-border-color { border-color: {$color['color']}; } \n";
 		}
 
-		// Element specific styles
-		$elementsStyles = $this->getTheme()->get_raw_data()['styles']['elements'] ?? array();
+		// Block specific styles.
+		$css_blocks = '';
+		$blocks     = $this->get_theme()->get_styles_block_nodes();
+		foreach ( $blocks as $block_metadata ) {
+			$css_blocks .= $this->get_theme()->get_styles_for_block( $block_metadata );
+		}
 
-		// Because the section styles is not a part of the output the `get_styles_block_nodes` method, we need to get it separately
-		if ( $template && $template->wp_id ) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-			$templateTheme    = (array) get_post_meta( $template->wp_id, 'mailpoet_email_theme', true ); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-			$templateStyles   = (array) ( $templateTheme['styles'] ?? array() );
-			$templateElements = $templateStyles['elements'] ?? array();
-			$elementsStyles   = array_replace_recursive( (array) $elementsStyles, (array) $templateElements );
+		// Element specific styles.
+		$elements_styles = $this->get_theme()->get_raw_data()['styles']['elements'] ?? array();
+
+		// Because the section styles is not a part of the output the `get_styles_block_nodes` method, we need to get it separately.
+		if ( $template && $template->wp_id ) {
+			$template_theme    = (array) get_post_meta( $template->wp_id, 'mailpoet_email_theme', true );
+			$template_styles   = (array) ( $template_theme['styles'] ?? array() );
+			$template_elements = $template_styles['elements'] ?? array();
+			$elements_styles   = array_replace_recursive( (array) $elements_styles, (array) $template_elements );
 		}
 
 		if ( $post ) {
-			$postTheme      = (array) get_post_meta( $post->ID, 'mailpoet_email_theme', true );
-			$postStyles     = (array) ( $postTheme['styles'] ?? array() );
-			$postElements   = $postStyles['elements'] ?? array();
-			$elementsStyles = array_replace_recursive( (array) $elementsStyles, (array) $postElements );
+			$post_theme      = (array) get_post_meta( $post->ID, 'mailpoet_email_theme', true );
+			$post_styles     = (array) ( $post_theme['styles'] ?? array() );
+			$post_elements   = $post_styles['elements'] ?? array();
+			$elements_styles = array_replace_recursive( (array) $elements_styles, (array) $post_elements );
 		}
 
-		$cssElements = '';
-		foreach ( $elementsStyles as $key => $elementsStyle ) {
+		$css_elements = '';
+		foreach ( $elements_styles as $key => $elements_style ) {
 			$selector = $key;
 
-			if ( $key === 'button' ) {
-				$selector     = '.wp-block-button';
-				$cssElements .= wp_style_engine_get_styles( $elementsStyle, array( 'selector' => '.wp-block-button' ) )['css'];
+			if ( 'button' === $key ) {
+				$selector      = '.wp-block-button';
+				$css_elements .= wp_style_engine_get_styles( $elements_style, array( 'selector' => '.wp-block-button' ) )['css'];
 				// Add color to link element.
-				$cssElements .= wp_style_engine_get_styles( array( 'color' => array( 'text' => $elementsStyle['color']['text'] ?? '' ) ), array( 'selector' => '.wp-block-button a' ) )['css'];
+				$css_elements .= wp_style_engine_get_styles( array( 'color' => array( 'text' => $elements_style['color']['text'] ?? '' ) ), array( 'selector' => '.wp-block-button a' ) )['css'];
 				continue;
 			}
 
@@ -192,48 +251,65 @@ class Theme_Controller {
 					break;
 			}
 
-			$cssElements .= wp_style_engine_get_styles( $elementsStyle, array( 'selector' => $selector ) )['css'];
+			$css_elements .= wp_style_engine_get_styles( $elements_style, array( 'selector' => $selector ) )['css'];
 		}
 
-		$result = $cssPresets . $cssBlocks . $cssElements;
+		$result = $css_presets . $css_blocks . $css_elements;
 		// Because font-size can by defined by the clamp() function that is not supported in the e-mail clients, we need to replace it to the value.
-		// Regular expression to match clamp() function and capture its max value
+		// Regular expression to match clamp() function and capture its max value.
 		$pattern = '/clamp\([^,]+,\s*[^,]+,\s*([^)]+)\)/';
-		// Replace clamp() with its maximum value
+		// Replace clamp() with its maximum value.
 		$result = (string) preg_replace( $pattern, '$1', $result );
 		return $result;
 	}
 
-	public function translateSlugToFontSize( string $fontSize ): string {
-		$settings = $this->getSettings();
-		foreach ( $settings['typography']['fontSizes']['default'] as $fontSizeDefinition ) {
-			if ( $fontSizeDefinition['slug'] === $fontSize ) {
-				return $fontSizeDefinition['size'];
+	/**
+	 * Translate font family slug to font family name.
+	 *
+	 * @param string $font_size Font size slug.
+	 * @return string
+	 */
+	public function translate_slug_to_font_size( string $font_size ): string {
+		$settings = $this->get_settings();
+		foreach ( $settings['typography']['fontSizes']['default'] as $font_size_definition ) {
+			if ( $font_size_definition['slug'] === $font_size ) {
+				return $font_size_definition['size'];
 			}
 		}
-		return $fontSize;
+		return $font_size;
 	}
 
-	public function translateSlugToColor( string $colorSlug ): string {
-		$settings         = $this->getSettings();
-		$colorDefinitions = array_merge( $settings['color']['palette']['theme'], $settings['color']['palette']['default'] );
-		foreach ( $colorDefinitions as $colorDefinition ) {
-			if ( $colorDefinition['slug'] === $colorSlug ) {
-				return strtolower( $colorDefinition['color'] );
+	/**
+	 * Translate color slug to color.
+	 *
+	 * @param string $color_slug Color slug.
+	 * @return string
+	 */
+	public function translate_slug_to_color( string $color_slug ): string {
+		$settings          = $this->get_settings();
+		$color_definitions = array_merge( $settings['color']['palette']['theme'], $settings['color']['palette']['default'] );
+		foreach ( $color_definitions as $color_definition ) {
+			if ( $color_definition['slug'] === $color_slug ) {
+				return strtolower( $color_definition['color'] );
 			}
 		}
-		return $colorSlug;
+		return $color_slug;
 	}
 
-	public function getVariablesValuesMap(): array {
-		$variablesCss = $this->getTheme()->get_stylesheet( array( 'variables' ) );
-		$map          = array();
-		// Regular expression to match CSS variable definitions
+	/**
+	 * Returns the map of CSS variables and their values from the theme.
+	 *
+	 * @return array
+	 */
+	public function get_variables_values_map(): array {
+		$variables_css = $this->get_theme()->get_stylesheet( array( 'variables' ) );
+		$map           = array();
+		// Regular expression to match CSS variable definitions.
 		$pattern = '/--(.*?):\s*(.*?);/';
 
-		if ( preg_match_all( $pattern, $variablesCss, $matches, PREG_SET_ORDER ) ) {
+		if ( preg_match_all( $pattern, $variables_css, $matches, PREG_SET_ORDER ) ) {
 			foreach ( $matches as $match ) {
-				// '--' . $match[1] is the variable name, $match[2] is the variable value
+				// '--' . $match[1] is the variable name, $match[2] is the variable value.
 				$map[ '--' . $match[1] ] = $match[2];
 			}
 		}
