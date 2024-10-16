@@ -38,8 +38,8 @@ class Renderer_Test extends \MailPoetTest {
     $settingsControllerMock = $this->createMock(Settings_Controller::class);
     $settingsControllerMock->method('getEmailStyles')->willReturn($styles);
     $themeControllerMock = $this->createMock(Theme_Controller::class);
-    $themeControllerMock->method('getTheme')->willReturn($themeJsonMock);
-    $themeControllerMock->method('getStyles')->willReturn($styles);
+    $themeControllerMock->method('get_theme')->willReturn($themeJsonMock);
+    $themeControllerMock->method('get_styles')->willReturn($styles);
 
     $this->renderer = $this->getServiceWithOverrides(Renderer::class, [
       'settingsController' => $settingsControllerMock,

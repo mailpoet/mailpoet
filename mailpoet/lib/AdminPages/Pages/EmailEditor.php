@@ -90,7 +90,7 @@ class EmailEditor {
         'current_wp_user_email' => esc_js($currentUserEmail),
         'editor_settings' => $this->settingsController->getSettings(),
         'editor_layout' => $this->settingsController->getLayout(),
-        'editor_theme' => $this->themeController->getTheme()->get_raw_data(),
+        'editor_theme' => $this->themeController->get_theme()->get_raw_data(),
         'urls' => [
           'listings' => admin_url('admin.php?page=mailpoet-newsletters'),
         ],

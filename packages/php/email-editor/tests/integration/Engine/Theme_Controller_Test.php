@@ -11,7 +11,7 @@ class Theme_Controller_Test extends \MailPoetTest {
   }
 
   public function testItGeneratesCssStylesForRenderer() {
-    $css = $this->themeController->getStylesheetForRendering();
+    $css = $this->themeController->get_stylesheet_for_rendering();
     // Font families
     verify($css)->stringContainsString('.has-arial-font-family');
     verify($css)->stringContainsString('.has-comic-sans-ms-font-family');
@@ -65,34 +65,34 @@ class Theme_Controller_Test extends \MailPoetTest {
   }
 
   public function testItCanTranslateFontSizeSlug() {
-    verify($this->themeController->translateSlugToFontSize('small'))->equals('13px');
-    verify($this->themeController->translateSlugToFontSize('medium'))->equals('16px');
-    verify($this->themeController->translateSlugToFontSize('large'))->equals('28px');
-    verify($this->themeController->translateSlugToFontSize('x-large'))->equals('42px');
-    verify($this->themeController->translateSlugToFontSize('unknown'))->equals('unknown');
+    verify($this->themeController->translate_slug_to_font_size('small'))->equals('13px');
+    verify($this->themeController->translate_slug_to_font_size('medium'))->equals('16px');
+    verify($this->themeController->translate_slug_to_font_size('large'))->equals('28px');
+    verify($this->themeController->translate_slug_to_font_size('x-large'))->equals('42px');
+    verify($this->themeController->translate_slug_to_font_size('unknown'))->equals('unknown');
   }
 
   public function testItCanTranslateColorSlug() {
-    verify($this->themeController->translateSlugToColor('black'))->equals('#000000');
-    verify($this->themeController->translateSlugToColor('white'))->equals('#ffffff');
-    verify($this->themeController->translateSlugToColor('cyan-bluish-gray'))->equals('#abb8c3');
-    verify($this->themeController->translateSlugToColor('pale-pink'))->equals('#f78da7');
+    verify($this->themeController->translate_slug_to_color('black'))->equals('#000000');
+    verify($this->themeController->translate_slug_to_color('white'))->equals('#ffffff');
+    verify($this->themeController->translate_slug_to_color('cyan-bluish-gray'))->equals('#abb8c3');
+    verify($this->themeController->translate_slug_to_color('pale-pink'))->equals('#f78da7');
     $this->checkCorrectThemeConfiguration();
     if (wp_get_theme()->get('Name') === 'Twenty Twenty-One') {
-      verify($this->themeController->translateSlugToColor('yellow'))->equals('#eeeadd');
+      verify($this->themeController->translate_slug_to_color('yellow'))->equals('#eeeadd');
     }
   }
 
   public function testItLoadsColorPaletteFromSiteTheme() {
     $this->checkCorrectThemeConfiguration();
-    $settings = $this->themeController->getSettings();
+    $settings = $this->themeController->get_settings();
     if (wp_get_theme()->get('Name') === 'Twenty Twenty-One') {
       verify($settings['color']['palette']['theme'])->notEmpty();
     }
   }
 
   public function testItReturnsCorrectPresetVariablesMap() {
-    $variableMap = $this->themeController->getVariablesValuesMap();
+    $variableMap = $this->themeController->get_variables_values_map();
     verify($variableMap['--wp--preset--color--black'])->equals('#000000');
     verify($variableMap['--wp--preset--spacing--20'])->equals('20px');
   }

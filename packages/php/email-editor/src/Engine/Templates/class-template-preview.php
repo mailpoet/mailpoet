@@ -35,7 +35,7 @@ class Template_Preview {
 	 * They are applied in the preview BLockPreview in template selection
 	 */
 	public function getEmailThemePreviewCss( $template ): string {
-		$editorTheme   = clone $this->themeController->getTheme();
+		$editorTheme   = clone $this->themeController->get_theme();
 		$templateTheme = $this->templates->getBlockTemplateTheme( $template['id'], $template['wp_id'] );
 		if ( is_array( $templateTheme ) ) {
 			$editorTheme->merge( new WP_Theme_JSON( $templateTheme, 'custom' ) );

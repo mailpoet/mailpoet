@@ -54,7 +54,7 @@ class Content_Renderer {
 	}
 
 	public function preprocessParsedBlocks( array $parsedBlocks ): array {
-		return $this->processManager->preprocess( $parsedBlocks, $this->settingsController->getLayout(), $this->themeController->getStyles( $this->post, $this->template ) );
+		return $this->processManager->preprocess( $parsedBlocks, $this->settingsController->getLayout(), $this->themeController->get_styles( $this->post, $this->template ) );
 	}
 
 	public function renderBlock( $blockContent, $parsedBlock ) {
@@ -87,7 +87,7 @@ class Content_Renderer {
 	 * @param string $html
 	 * @return string
 	 */
-	private function inlineStyles( $html, WP_Post $post, $template = null ) {
+	private function inlineStyles( $html, WP_Post $post, ?WP_Block_Template $template = null ) {
 		$styles = (string) file_get_contents( __DIR__ . '/' . self::CONTENT_STYLES_FILE );
 
 		// Apply default contentWidth to constrained blocks.
@@ -110,8 +110,8 @@ class Content_Renderer {
 		);
 
 		// Get styles from theme.
-		$styles            .= $this->themeController->getStylesheetForRendering( $post, $template );
-		$blockSupportStyles = $this->themeController->getStylesheetFromContext( 'block-supports', array() );
+		$styles            .= $this->themeController->get_stylesheet_for_rendering( $post, $template );
+		$blockSupportStyles = $this->themeController->get_stylesheet_from_context( 'block-supports', array() );
 		// Get styles from block-supports stylesheet. This includes rules such as layout (contentWidth) that some blocks use.
 		// @see https://github.com/WordPress/WordPress/blob/3c5da9c74344aaf5bf8097f2e2c6a1a781600e03/wp-includes/script-loader.php#L3134
 		// @internal :where is not supported by emogrifier, so we need to replace it with *.

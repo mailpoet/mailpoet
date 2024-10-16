@@ -50,7 +50,7 @@ class Settings_Controller {
 
 	public function getSettings(): array {
 		$coreDefaultSettings = \get_default_block_editor_settings();
-		$themeSettings       = $this->themeController->getSettings();
+		$themeSettings       = $this->themeController->get_settings();
 
 		$settings                      = array_merge( $coreDefaultSettings, self::DEFAULT_SETTINGS );
 		$settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
@@ -81,7 +81,7 @@ class Settings_Controller {
 	 * @return array{contentSize: string, wideSize: string, layout: string}
 	 */
 	public function getLayout(): array {
-		$themeSettings = $this->themeController->getSettings();
+		$themeSettings = $this->themeController->get_settings();
 		return array(
 			'contentSize' => $themeSettings['layout']['contentSize'],
 			'wideSize'    => $themeSettings['layout']['wideSize'],
@@ -134,14 +134,14 @@ class Settings_Controller {
 	}
 
 	public function getTheme(): \WP_Theme_JSON {
-		return $this->themeController->getTheme();
+		return $this->themeController->get_theme();
 	}
 
 	public function translateSlugToFontSize( string $fontSize ): string {
-		return $this->themeController->translateSlugToFontSize( $fontSize );
+		return $this->themeController->translate_slug_to_font_size( $fontSize );
 	}
 
 	public function translateSlugToColor( string $colorSlug ): string {
-		return $this->themeController->translateSlugToColor( $colorSlug );
+		return $this->themeController->translate_slug_to_color( $colorSlug );
 	}
 }

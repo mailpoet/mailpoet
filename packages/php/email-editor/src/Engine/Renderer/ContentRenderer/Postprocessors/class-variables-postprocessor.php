@@ -19,7 +19,7 @@ class Variables_Postprocessor implements Postprocessor {
 	}
 
 	public function postprocess( string $html ): string {
-		$variables    = $this->themeController->getVariablesValuesMap();
+		$variables    = $this->themeController->get_variables_values_map();
 		$replacements = array();
 
 		foreach ( $variables as $varName => $varValue ) {
