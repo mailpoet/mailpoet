@@ -122,7 +122,7 @@ class Email_Editor {
 	}
 
 	public function getEmailThemeDataSchema(): array {
-		return ( new Email_Styles_Schema() )->getSchema();
+		return ( new Email_Styles_Schema() )->get_schema();
 	}
 
 	public function extendEmailThemeStyles( WP_Theme_JSON $theme, WP_Post $post ): WP_Theme_JSON {

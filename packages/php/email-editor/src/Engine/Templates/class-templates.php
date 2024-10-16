@@ -195,7 +195,7 @@ class Templates {
 			self::MAILPOET_EMAIL_META_THEME_TYPE,
 			array(
 				'show_in_rest' => array(
-					'schema' => ( new Email_Styles_Schema() )->getSchema(),
+					'schema' => ( new Email_Styles_Schema() )->get_schema(),
 				),
 				'single'       => true,
 				'type'         => 'object',
@@ -212,7 +212,7 @@ class Templates {
 				'update_callback' => function ( $value, $template ) {
 					return update_post_meta( $template->wp_id, self::MAILPOET_EMAIL_META_THEME_TYPE, $value );
 				},
-				'schema'          => ( new Email_Styles_Schema() )->getSchema(),
+				'schema'          => ( new Email_Styles_Schema() )->get_schema(),
 			)
 		);
 	}

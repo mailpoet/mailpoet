@@ -1,12 +1,26 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine;
 
 use MailPoet\EmailEditor\Validator\Builder;
 
+/**
+ * Class for email styles schema.
+ */
 class Email_Styles_Schema {
-	public function getSchema(): array {
-		$typographyProps = Builder::object(
+	/**
+	 * Returns the schema for email styles.
+	 *
+	 * @return array
+	 */
+	public function get_schema(): array {
+		$typography_props = Builder::object(
 			array(
 				'fontFamily'     => Builder::string()->nullable(),
 				'fontSize'       => Builder::string()->nullable(),
@@ -42,52 +56,52 @@ class Email_Styles_Schema {
 								'text'       => Builder::string()->nullable(),
 							)
 						)->nullable(),
-						'typography' => $typographyProps,
+						'typography' => $typography_props,
 						'elements'   => Builder::object(
 							array(
 								'heading' => Builder::object(
 									array(
-										'typography' => $typographyProps,
+										'typography' => $typography_props,
 									)
 								)->nullable(),
 								'button'  => Builder::object(
 									array(
-										'typography' => $typographyProps,
+										'typography' => $typography_props,
 									)
 								)->nullable(),
 								'link'    => Builder::object(
 									array(
-										'typography' => $typographyProps,
+										'typography' => $typography_props,
 									)
 								)->nullable(),
 								'h1'      => Builder::object(
 									array(
-										'typography' => $typographyProps,
+										'typography' => $typography_props,
 									)
 								)->nullable(),
 								'h2'      => Builder::object(
 									array(
-										'typography' => $typographyProps,
+										'typography' => $typography_props,
 									)
 								)->nullable(),
 								'h3'      => Builder::object(
 									array(
-										'typography' => $typographyProps,
+										'typography' => $typography_props,
 									)
 								)->nullable(),
 								'h4'      => Builder::object(
 									array(
-										'typography' => $typographyProps,
+										'typography' => $typography_props,
 									)
 								)->nullable(),
 								'h5'      => Builder::object(
 									array(
-										'typography' => $typographyProps,
+										'typography' => $typography_props,
 									)
 								)->nullable(),
 								'h6'      => Builder::object(
 									array(
-										'typography' => $typographyProps,
+										'typography' => $typography_props,
 									)
 								)->nullable(),
 							)
