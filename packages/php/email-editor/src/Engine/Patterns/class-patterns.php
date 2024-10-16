@@ -1,25 +1,59 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Patterns;
 
 use MailPoet\EmailEditor\Utils\Cdn_Asset_Url;
 
+/**
+ * Register block patterns.
+ */
 class Patterns {
+	/**
+	 * Namespace for block patterns.
+	 *
+	 * @var string $namespace
+	 */
 	private $namespace = 'mailpoet';
-	protected $cdnAssetUrl;
+	/**
+	 * Cdn_Asset_Url instance.
+	 *
+	 * @var Cdn_Asset_Url $cdn_asset_url
+	 */
+	protected $cdn_asset_url;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param Cdn_Asset_Url $cdn_asset_url Cdn_Asset_Url instance.
+	 */
 	public function __construct(
-		Cdn_Asset_Url $cdnAssetUrl
+		Cdn_Asset_Url $cdn_asset_url
 	) {
-		$this->cdnAssetUrl = $cdnAssetUrl;
+		$this->cdn_asset_url = $cdn_asset_url;
 	}
 
+	/**
+	 * Initialize block patterns.
+	 *
+	 * @return void
+	 */
 	public function initialize(): void {
-		$this->registerBlockPatternCategory();
-		$this->registerPatterns();
+		$this->register_block_pattern_category();
+		$this->register_patterns();
 	}
 
-	private function registerBlockPatternCategory() {
+	/**
+	 * Register block pattern category.
+	 *
+	 * @return void
+	 */
+	private function register_block_pattern_category(): void {
 		register_block_pattern_category(
 			'mailpoet',
 			array(
@@ -29,12 +63,23 @@ class Patterns {
 		);
 	}
 
-	private function registerPatterns() {
-		$this->registerPattern( 'default', new Library\Default_Content( $this->cdnAssetUrl ) );
-		$this->registerPattern( 'default-full', new Library\Default_Content_Full( $this->cdnAssetUrl ) );
+	/**
+	 * Register block patterns.
+	 *
+	 * @return void
+	 */
+	private function register_patterns() {
+		$this->register_pattern( 'default', new Library\Default_Content( $this->cdn_asset_url ) );
+		$this->register_pattern( 'default-full', new Library\Default_Content_Full( $this->cdn_asset_url ) );
 	}
 
-	private function registerPattern( $name, $pattern ) {
-		register_block_pattern( $this->namespace . '/' . $name, $pattern->getProperties() );
+	/**
+	 * Register block pattern.
+	 *
+	 * @param string                   $name Name of the pattern.
+	 * @param Library\Abstract_Pattern $pattern Pattern to register.
+	 */
+	private function register_pattern( $name, $pattern ) {
+		register_block_pattern( $this->namespace . '/' . $name, $pattern->get_properties() );
 	}
 }
