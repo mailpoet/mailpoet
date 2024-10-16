@@ -47,9 +47,9 @@ class Typography_Preprocessor_Test extends \MailPoetUnitTest {
         ],
       ],
     ]);
-    $settingsMock->method('getTheme')->willReturn($themeMock);
+    $settingsMock->method('get_theme')->willReturn($themeMock);
     // This slug translate mock expect slugs in format slug-10px and will return 10px
-    $settingsMock->method('translateSlugToFontSize')->willReturnCallback(function($slug) {
+    $settingsMock->method('translate_slug_to_font_size')->willReturnCallback(function($slug) {
       return str_replace('slug-', '', $slug);
     });
     $this->preprocessor = new Typography_Preprocessor($settingsMock);

@@ -37,7 +37,7 @@ class Column extends Abstract_Block_Renderer {
 			$parsedBlock['attrs'] ?? array(),
 			array(
 				'verticalAlignment' => 'stretch',
-				'width'             => $settingsController->getLayoutWidthWithoutPadding(),
+				'width'             => $settingsController->get_layout_width_without_padding(),
 				'style'             => array(),
 			)
 		);

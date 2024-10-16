@@ -114,15 +114,15 @@ class Image extends Abstract_Block_Renderer {
 		if ( $html->next_tag( array( 'tag_name' => 'img' ) ) ) {
 			// Getting height from styles and if it's set, we set the height attribute
 			$styles = $html->get_attribute( 'style' ) ?? '';
-			$styles = $settingsController->parseStylesToArray( $styles );
+			$styles = $settingsController->parse_styles_to_array( $styles );
 			$height = $styles['height'] ?? null;
-			if ( $height && $height !== 'auto' && is_numeric( $settingsController->parseNumberFromStringWithPixels( $height ) ) ) {
-				$height = $settingsController->parseNumberFromStringWithPixels( $height );
+			if ( $height && $height !== 'auto' && is_numeric( $settingsController->parse_number_from_string_with_pixels( $height ) ) ) {
+				$height = $settingsController->parse_number_from_string_with_pixels( $height );
 				$html->set_attribute( 'height', esc_attr( $height ) );
 			}
 
 			if ( isset( $parsedBlock['attrs']['width'] ) ) {
-				$width = $settingsController->parseNumberFromStringWithPixels( $parsedBlock['attrs']['width'] );
+				$width = $settingsController->parse_number_from_string_with_pixels( $parsedBlock['attrs']['width'] );
 				$html->set_attribute( 'width', esc_attr( $width ) );
 			}
 			$blockContent = $html->get_updated_html();
@@ -136,7 +136,7 @@ class Image extends Abstract_Block_Renderer {
 	 * We try to use font-size passed down from the parent element $parsedBlock['email_attrs']['font-size'], but if it's not set, we use the default font-size from the email theme.
 	 */
 	private function getCaptionStyles( Settings_Controller $settingsController, array $parsedBlock ): string {
-		$themeData = $settingsController->getTheme()->get_data();
+		$themeData = $settingsController->get_theme()->get_data();
 
 		$styles = array(
 			'text-align' => isset( $parsedBlock['attrs']['align'] ) ? 'center' : 'left',

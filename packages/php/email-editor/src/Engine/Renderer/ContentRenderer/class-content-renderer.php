@@ -92,7 +92,7 @@ class Content_Renderer {
 		$styles .= (string) file_get_contents( __DIR__ . '/../../content-shared.css' );
 
 		// Apply default contentWidth to constrained blocks.
-		$layout  = $this->themeController->getLayoutSettings();
+		$layout  = $this->themeController->get_layout_settings();
 		$styles .= sprintf(
 			'
       .is-layout-constrained > *:not(.alignleft):not(.alignright):not(.alignfull) {
