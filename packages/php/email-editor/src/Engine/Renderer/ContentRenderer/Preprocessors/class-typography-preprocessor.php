@@ -57,7 +57,7 @@ class Typography_Preprocessor implements Preprocessor {
 		// In case the fontSize is set via a slug (small, medium, large, etc.) we translate it to a number
 		// The font size slug is set in $block['attrs']['fontSize'] and value in $block['attrs']['style']['typography']['fontSize']
 		if ( isset( $block['attrs']['fontSize'] ) ) {
-			$block['attrs']['style']['typography']['fontSize'] = $this->settingsController->translateSlugToFontSize( $block['attrs']['fontSize'] );
+			$block['attrs']['style']['typography']['fontSize'] = $this->settingsController->translate_slug_to_font_size( $block['attrs']['fontSize'] );
 		}
 		// Pass font size to email_attrs
 		if ( isset( $block['attrs']['style']['typography']['fontSize'] ) ) {
@@ -75,7 +75,7 @@ class Typography_Preprocessor implements Preprocessor {
 	}
 
 	private function setDefaultsFromTheme( array $block ): array {
-		$themeData = $this->settingsController->getTheme()->get_data();
+		$themeData = $this->settingsController->get_theme()->get_data();
 		if ( ! ( $block['email_attrs']['color'] ?? '' ) ) {
 			$block['email_attrs']['color'] = $themeData['styles']['color']['text'] ?? null;
 		}

@@ -77,8 +77,8 @@ class Button extends Abstract_Block_Renderer {
 			array(
 				'color' => array_filter(
 					array(
-						'background' => $blockAttributes['backgroundColor'] ? $settingsController->translateSlugToColor( $blockAttributes['backgroundColor'] ) : null,
-						'text'       => $blockAttributes['textColor'] ? $settingsController->translateSlugToColor( $blockAttributes['textColor'] ) : null,
+						'background' => $blockAttributes['backgroundColor'] ? $settingsController->translate_slug_to_color( $blockAttributes['backgroundColor'] ) : null,
+						'text'       => $blockAttributes['textColor'] ? $settingsController->translate_slug_to_color( $blockAttributes['textColor'] ) : null,
 					)
 				),
 			),

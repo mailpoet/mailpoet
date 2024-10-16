@@ -54,7 +54,7 @@ class Content_Renderer {
 	}
 
 	public function preprocessParsedBlocks( array $parsedBlocks ): array {
-		return $this->processManager->preprocess( $parsedBlocks, $this->settingsController->getLayout(), $this->themeController->get_styles( $this->post, $this->template ) );
+		return $this->processManager->preprocess( $parsedBlocks, $this->settingsController->get_layout(), $this->themeController->get_styles( $this->post, $this->template ) );
 	}
 
 	public function renderBlock( $blockContent, $parsedBlock ) {
@@ -91,7 +91,7 @@ class Content_Renderer {
 		$styles = (string) file_get_contents( __DIR__ . '/' . self::CONTENT_STYLES_FILE );
 
 		// Apply default contentWidth to constrained blocks.
-		$layout  = $this->settingsController->getLayout();
+		$layout  = $this->settingsController->get_layout();
 		$styles .= sprintf(
 			'
       .is-layout-constrained > *:not(.alignleft):not(.alignright):not(.alignfull) {

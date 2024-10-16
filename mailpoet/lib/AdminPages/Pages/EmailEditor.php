@@ -88,8 +88,8 @@ class EmailEditor {
         'cdn_url' => esc_js($this->cdnAssetUrl->generateCdnUrl("")),
         'is_premium_plugin_active' => (bool)$this->servicesChecker->isPremiumPluginActive(),
         'current_wp_user_email' => esc_js($currentUserEmail),
-        'editor_settings' => $this->settingsController->getSettings(),
-        'editor_layout' => $this->settingsController->getLayout(),
+        'editor_settings' => $this->settingsController->get_settings(),
+        'editor_layout' => $this->settingsController->get_layout(),
         'editor_theme' => $this->themeController->get_theme()->get_raw_data(),
         'urls' => [
           'listings' => admin_url('admin.php?page=mailpoet-newsletters'),

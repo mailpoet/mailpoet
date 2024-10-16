@@ -9,9 +9,9 @@ use MailPoet\EmailEditor\Engine\Settings_Controller;
  */
 class Flex_Layout_Renderer {
 	public function renderInnerBlocksInLayout( array $parsedBlock, Settings_Controller $settingsController ): string {
-		$themeStyles   = $settingsController->getEmailStyles();
+		$themeStyles   = $settingsController->get_email_styles();
 		$flexGap       = $themeStyles['spacing']['blockGap'] ?? '0px';
-		$flexGapNumber = $settingsController->parseNumberFromStringWithPixels( $flexGap );
+		$flexGapNumber = $settingsController->parse_number_from_string_with_pixels( $flexGap );
 
 		$marginTop = $parsedBlock['email_attrs']['margin-top'] ?? '0px';
 		$justify   = $parsedBlock['attrs']['layout']['justifyContent'] ?? 'left';
@@ -48,7 +48,7 @@ class Flex_Layout_Renderer {
 	private function computeWidthsForFlexLayout( array $parsedBlock, Settings_Controller $settingsController, float $flexGap ): array {
 		$blocksCount    = count( $parsedBlock['innerBlocks'] );
 		$totalUsedWidth = 0; // Total width assuming items without set width would consume proportional width
-		$parentWidth    = $settingsController->parseNumberFromStringWithPixels( $parsedBlock['email_attrs']['width'] ?? Settings_Controller::EMAIL_WIDTH );
+		$parentWidth    = $settingsController->parse_number_from_string_with_pixels( $parsedBlock['email_attrs']['width'] ?? Settings_Controller::EMAIL_WIDTH );
 		$innerBlocks    = $parsedBlock['innerBlocks'] ?? array();
 
 		foreach ( $innerBlocks as $key => $block ) {
@@ -71,7 +71,7 @@ class Flex_Layout_Renderer {
 
 		foreach ( $innerBlocks as $key => $block ) {
 			$proportionalSpaceOverflow   = $parentWidth / $totalUsedWidth;
-			$blockWidth                  = $block['email_attrs']['layout_width'] ? $settingsController->parseNumberFromStringWithPixels( $block['email_attrs']['layout_width'] ) : 0;
+			$blockWidth                  = $block['email_attrs']['layout_width'] ? $settingsController->parse_number_from_string_with_pixels( $block['email_attrs']['layout_width'] ) : 0;
 			$blockProportionalWidth      = $blockWidth * $proportionalSpaceOverflow;
 			$blockProportionalPercentage = ( $blockProportionalWidth / $parentWidth ) * 100;
 			$innerBlocks[ $key ]['email_attrs']['layout_width'] = $blockWidth ? $this->getWidthWithoutGap( $blockProportionalWidth, $flexGap, $blockProportionalPercentage ) . 'px' : null;

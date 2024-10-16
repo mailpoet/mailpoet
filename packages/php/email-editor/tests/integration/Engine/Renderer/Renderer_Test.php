@@ -36,7 +36,7 @@ class Renderer_Test extends \MailPoetTest {
       'styles' => $styles,
     ]);
     $settingsControllerMock = $this->createMock(Settings_Controller::class);
-    $settingsControllerMock->method('getEmailStyles')->willReturn($styles);
+    $settingsControllerMock->method('get_email_styles')->willReturn($styles);
     $themeControllerMock = $this->createMock(Theme_Controller::class);
     $themeControllerMock->method('get_theme')->willReturn($themeJsonMock);
     $themeControllerMock->method('get_styles')->willReturn($styles);

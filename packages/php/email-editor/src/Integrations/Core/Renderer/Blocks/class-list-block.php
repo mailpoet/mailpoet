@@ -11,14 +11,14 @@ class List_Block extends Abstract_Block_Renderer {
 		$tagName = ( $parsedBlock['attrs']['ordered'] ?? false ) ? 'ol' : 'ul';
 		if ( $html->next_tag( array( 'tag_name' => $tagName ) ) ) {
 			$styles = $html->get_attribute( 'style' ) ?? '';
-			$styles = $settingsController->parseStylesToArray( $styles );
+			$styles = $settingsController->parse_styles_to_array( $styles );
 
 			// Font size
 			if ( isset( $parsedBlock['email_attrs']['font-size'] ) ) {
 				$styles['font-size'] = $parsedBlock['email_attrs']['font-size'];
 			} else {
 				// Use font-size from email theme when those properties are not set
-				$themeData           = $settingsController->getTheme()->get_data();
+				$themeData           = $settingsController->get_theme()->get_data();
 				$styles['font-size'] = $themeData['styles']['typography']['fontSize'];
 			}
 
