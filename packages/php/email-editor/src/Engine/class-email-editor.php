@@ -114,9 +114,9 @@ class Email_Editor {
 			$emailPostTypes,
 			'email_data',
 			array(
-				'get_callback'    => array( $this->emailApiController, 'getEmailData' ),
-				'update_callback' => array( $this->emailApiController, 'saveEmailData' ),
-				'schema'          => $this->emailApiController->getEmailDataSchema(),
+				'get_callback'    => array( $this->emailApiController, 'get_email_data'),
+				'update_callback' => array( $this->emailApiController, 'save_email_data'),
+				'schema'          => $this->emailApiController->get_email_data_schema(),
 			)
 		);
 	}
