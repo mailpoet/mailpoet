@@ -90,7 +90,7 @@ services:
     tmpfs:
       - /var/www/html/wp-content/uploads/mailpoet/
     ports:
-      - 8888:80
+      - 8889:80
     environment:
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_USER: wordpress
