@@ -1,20 +1,28 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Templates;
 
 use WP_Block_Template;
 use WP_Error;
 
-// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+/**
+ * Utils class.
+ */
 class Utils {
 	/**
 	 * Gets the prefix and slug from the template ID.
 	 *
-	 * @param string $templateId Id of the template in prefix//slug format.
+	 * @param string $template_id Id of the template in prefix//slug format.
 	 * @return array Associative array with keys 'prefix' and 'slug'.
 	 */
-	public function getTemplateIdParts( $templateId ) {
-		$template_name_parts = explode( '//', $templateId );
+	public function get_template_id_parts( string $template_id ): array {
+		$template_name_parts = explode( '//', $template_id );
 
 		if ( count( $template_name_parts ) < 2 ) {
 			return array(
@@ -29,11 +37,23 @@ class Utils {
 		);
 	}
 
-	public static function getBlockTemplateSlugFromPath( $path ) {
+	/**
+	 * Gets the block template slug from the path.
+	 *
+	 * @param string $path Path to the block template.
+	 * @return string
+	 */
+	public static function get_block_template_slug_from_path( $path ) {
 		return basename( $path, '.html' );
 	}
 
-	public function buildBlockTemplateFromPost( $post ) {
+	/**
+	 * Build a block template from a post.
+	 *
+	 * @param object $post Post object.
+	 * @return WP_Block_Template|WP_Error
+	 */
+	public function build_block_template_from_post( $post ) {
 		$terms = get_the_terms( $post, 'wp_theme' );
 
 		if ( is_wp_error( $terms ) ) {
@@ -44,16 +64,16 @@ class Utils {
 			return new WP_Error( 'template_missing_theme', 'No theme is defined for this template.' );
 		}
 
-		$templatePrefix = $terms[0]->name;
-		$templateSlug   = $post->post_name;
-		$templateId     = $templatePrefix . '//' . $templateSlug;
+		$template_prefix = $terms[0]->name;
+		$template_slug   = $post->post_name;
+		$template_id     = $template_prefix . '//' . $template_slug;
 
 		$template                 = new WP_Block_Template();
 		$template->wp_id          = $post->ID;
-		$template->id             = $templateId;
-		$template->theme          = $templatePrefix;
+		$template->id             = $template_id;
+		$template->theme          = $template_prefix;
 		$template->content        = $post->post_content ? $post->post_content : '<p>empty</p>';
-		$template->slug           = $templateSlug;
+		$template->slug           = $template_slug;
 		$template->source         = 'custom';
 		$template->type           = $post->post_type;
 		$template->description    = $post->post_excerpt;
@@ -74,19 +94,25 @@ class Utils {
 		return $template;
 	}
 
-	public function buildBlockTemplateFromFile( $templateObject ): WP_Block_Template {
+	/**
+	 * Build a block template from a file.
+	 *
+	 * @param object $template_object Template object.
+	 * @return WP_Block_Template
+	 */
+	public function build_block_template_from_file( $template_object ): WP_Block_Template {
 		$template                 = new WP_Block_Template();
-		$template->id             = $templateObject->id;
-		$template->theme          = $templateObject->theme;
-		$template->content        = (string) file_get_contents( $templateObject->path );
-		$template->source         = $templateObject->source;
-		$template->slug           = $templateObject->slug;
-		$template->type           = $templateObject->type;
-		$template->title          = $templateObject->title;
-		$template->description    = $templateObject->description;
+		$template->id             = $template_object->id;
+		$template->theme          = $template_object->theme;
+		$template->content        = (string) file_get_contents( $template_object->path );
+		$template->source         = $template_object->source;
+		$template->slug           = $template_object->slug;
+		$template->type           = $template_object->type;
+		$template->title          = $template_object->title;
+		$template->description    = $template_object->description;
 		$template->status         = 'publish';
 		$template->has_theme_file = false;
-		$template->post_types     = $templateObject->post_types;
+		$template->post_types     = $template_object->post_types;
 		$template->is_custom      = false; // Templates are only custom if they are loaded from the DB.
 		$template->area           = 'uncategorized';
 		return $template;
