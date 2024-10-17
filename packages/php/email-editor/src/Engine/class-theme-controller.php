@@ -37,8 +37,10 @@ class Theme_Controller {
 	 * Theme_Controller constructor.
 	 */
 	public function __construct() {
+		global $wp_filesystem;
+
 		$this->core_theme = WP_Theme_JSON_Resolver::get_core_data();
-		$this->base_theme = new WP_Theme_JSON( (array) json_decode( (string) wp_remote_get( __DIR__ . '/theme.json' ), true ), 'default' );
+		$this->base_theme = new WP_Theme_JSON( (array) json_decode( (string) $wp_filesystem->get_contents( __DIR__ . '/theme.json' ), true ), 'default' );
 	}
 
 	/**
