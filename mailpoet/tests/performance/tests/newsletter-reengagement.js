@@ -51,7 +51,7 @@ export async function newsletterReEngagement() {
     });
 
     // Click to add a new re-engagement email and set frequency
-    await waitAndType(page, 'input[type="text"]', '99');
+    await waitAndType(page, '.mailpoet-form-input > input', '99');
     await page.locator('.mailpoet-button.mailpoet-full-width').click();
     await page.waitForSelector('.mailpoet_loading');
     await page.waitForSelector(
