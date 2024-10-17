@@ -58,7 +58,7 @@ class Templates {
 		}
 
 		// If there is no user edited theme, look for default template themes in files.
-		['prefix' => $templatePrefix, 'slug' => $templateSlug] = $this->utils->getTemplateIdParts( $templateId );
+		['prefix' => $templatePrefix, 'slug' => $templateSlug] = $this->utils->get_template_id_parts( $templateId );
 
 		if ( $this->pluginSlug !== $templatePrefix ) {
 			return self::MAILPOET_TEMPLATE_EMPTY_THEME;
@@ -76,7 +76,7 @@ class Templates {
 	}
 
 	public function getBlockFileTemplate( $return, $templateId, $template_type ) {
-		['prefix' => $templatePrefix, 'slug' => $templateSlug] = $this->utils->getTemplateIdParts( $templateId );
+		['prefix' => $templatePrefix, 'slug' => $templateSlug] = $this->utils->get_template_id_parts( $templateId );
 
 		if ( $this->pluginSlug !== $templatePrefix ) {
 			return $return;
@@ -247,7 +247,7 @@ class Templates {
 	}
 
 	private function getBlockTemplateFromFile( string $template ) {
-		$template_slug  = $this->utils->getBlockTemplateSlugFromPath( $template );
+		$template_slug  = $this->utils->get_block_template_slug_from_path( $template );
 		$templateObject = (object) array(
 			'slug'        => $template_slug,
 			'id'          => $this->pluginSlug . '//' . $template_slug,
@@ -261,7 +261,7 @@ class Templates {
 				$this->postType,
 			),
 		);
-		return $this->utils->buildBlockTemplateFromFile( $templateObject );
+		return $this->utils->build_block_template_from_file( $templateObject );
 	}
 
 	private function getCustomTemplates( $slugs = array(), $template_type = 'wp_template' ) {
@@ -287,7 +287,7 @@ class Templates {
 
 		return array_map(
 			function ( $custom_template ) {
-				return $this->utils->buildBlockTemplateFromPost( $custom_template );
+				return $this->utils->build_block_template_from_post( $custom_template );
 			},
 			$custom_templates
 		);
