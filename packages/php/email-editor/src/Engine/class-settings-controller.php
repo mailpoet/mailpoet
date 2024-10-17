@@ -82,6 +82,8 @@ class Settings_Controller {
 	 * @return array
 	 */
 	public function get_settings(): array {
+		global $wp_filesystem;
+
 		$core_default_settings = \get_default_block_editor_settings();
 		$theme_settings        = $this->theme_controller->get_settings();
 
@@ -98,7 +100,7 @@ class Settings_Controller {
 		$content_variables       .= 'padding-bottom: var(--wp--style--root--padding-bottom);';
 		$content_variables       .= 'padding-top: var(--wp--style--root--padding-top);';
 		$content_variables       .= '}';
-		$flex_email_layout_styles = wp_remote_get( __DIR__ . '/flex-email-layout.css' );
+		$flex_email_layout_styles = $wp_filesystem->get_contents( __DIR__ . '/flex-email-layout.css' );
 		$settings['styles']       = array(
 			array( 'css' => $content_variables ),
 			array( 'css' => $flex_email_layout_styles ),
