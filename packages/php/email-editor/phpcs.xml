@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<ruleset name="WordPressFileNameCheck">
+  <rule ref="WordPress">
+    <!-- Exclude tess files because we need to match Codeception autoload -->
+    <exclude-pattern>tests/*</exclude-pattern>
+  </rule>
+</ruleset>
