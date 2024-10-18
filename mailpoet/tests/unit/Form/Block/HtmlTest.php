@@ -4,10 +4,10 @@ namespace MailPoet\Test\Form\Block;
 
 use MailPoet\Form\Block\BlockRendererHelper;
 use MailPoet\Form\Block\Html;
+use MailPoet\WP\Functions as WPFunctions;
 
 class HtmlTest extends \MailPoetUnitTest {
-  /** @var Html */
-  private $html;
+  private Html $html;
 
   private $block = [
     'type' => 'html',
@@ -24,7 +24,12 @@ class HtmlTest extends \MailPoetUnitTest {
 
   public function _before() {
     parent::_before();
-    $this->html = new Html($this->createMock(BlockRendererHelper::class));
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('wpKsesPost')->willReturnArgument(0);
+    $this->html = new Html(
+      $this->createMock(BlockRendererHelper::class),
+      $wpMock
+    );
   }
 
   public function testItShouldRenderCustomHtml() {
