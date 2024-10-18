@@ -58,10 +58,10 @@ class ContentRenderer {
   }
 
   public function renderBlock($blockContent, $parsedBlock) {
-    if (!$this->blocksRegistry->hasBlockRenderer($parsedBlock['blockName'])) {
-      return $blockContent;
-    }
     $renderer = $this->blocksRegistry->getBlockRenderer($parsedBlock['blockName']);
+    if (!$renderer) {
+      $renderer = $this->blocksRegistry->getFallbackRenderer();
+    }
     return $renderer ? $renderer->render($blockContent, $parsedBlock, $this->settingsController) : $blockContent;
   }
 
