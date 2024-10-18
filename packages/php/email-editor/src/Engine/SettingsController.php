@@ -77,14 +77,13 @@ class SettingsController {
   }
 
   /**
-   * @return array{contentSize: string, wideSize: string, layout: string}
+   * @return array{contentSize: string, wideSize: string}
    */
   public function getLayout(): array {
-    $themeSettings = $this->themeController->getSettings();
+    $layoutSettings = $this->themeController->getLayoutSettings();
     return [
-      'contentSize' => $themeSettings['layout']['contentSize'],
-      'wideSize' => $themeSettings['layout']['wideSize'],
-      'layout' => 'constrained',
+      'contentSize' => $layoutSettings['contentSize'],
+      'wideSize' => $layoutSettings['wideSize'],
     ];
   }
 
