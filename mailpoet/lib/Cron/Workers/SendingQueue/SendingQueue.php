@@ -175,6 +175,8 @@ class SendingQueue {
     $queue = $task->getSendingQueue();
     $newsletter = $this->newsletterTask->getNewsletterFromQueue($task);
     if (!$queue || !$newsletter) {
+      $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      $this->scheduledTasksRepository->flush();
       return;
     }
 
@@ -184,6 +186,8 @@ class SendingQueue {
     // During pre-processing we may find that the newsletter can't be sent and we delete it including all associated entities
     // E.g. post notification history newsletter when there are no posts to send
     if (!$newsletter) {
+      $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+      $this->scheduledTasksRepository->flush();
       return;
     }
 

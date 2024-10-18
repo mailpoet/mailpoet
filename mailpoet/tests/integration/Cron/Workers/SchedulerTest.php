@@ -597,12 +597,17 @@ class SchedulerTest extends \MailPoetTest {
 
   public function testItDoesNotProcessScheduledJobsWhenNewsletterIsNotActive() {
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_DRAFT);
-    $this->createTaskWithQueue($newsletter);
+    $task = $this->createTaskWithQueue($newsletter);
     $scheduler = $this->getSchedulerMock([
       'processScheduledStandardNewsletter' => Expected::never(),
     ]);
-    // scheduled job is not processed
+    
     $scheduler->process();
+
+    $refetchedTask = $this->scheduledTasksRepository->findOneById($task->getId());
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $refetchedTask);
+    verify($refetchedTask->getId())->equals($task->getId());
+    verify($refetchedTask->getStatus())->equals(ScheduledTaskEntity::STATUS_PAUSED);
   }
 
   public function testItProcessesScheduledJobsWhenNewsletterIsActive() {
