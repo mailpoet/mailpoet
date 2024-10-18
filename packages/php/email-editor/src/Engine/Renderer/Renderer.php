@@ -47,6 +47,7 @@ class Renderer {
 
     $emailStyles = $this->themeController->getStyles($post, $template, true);
     $templateHtml = $this->contentRenderer->render($post, $template);
+    $layout = $this->themeController->getLayoutSettings();
 
     ob_start();
     include self::TEMPLATE_FILE;

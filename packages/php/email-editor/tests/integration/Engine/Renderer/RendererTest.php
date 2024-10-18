@@ -40,6 +40,7 @@ class RendererTest extends \MailPoetTest {
     $themeControllerMock = $this->createMock(ThemeController::class);
     $themeControllerMock->method('getTheme')->willReturn($themeJsonMock);
     $themeControllerMock->method('getStyles')->willReturn($styles);
+    $themeControllerMock->method('getLayoutSettings')->willReturn(['contentSize' => '660px']);
 
     $this->renderer = $this->getServiceWithOverrides(Renderer::class, [
       'settingsController' => $settingsControllerMock,

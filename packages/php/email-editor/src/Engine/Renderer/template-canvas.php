@@ -4,6 +4,13 @@
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 /**
  * Template file to render the current 'wp_template', specifcally for emails.
+ *
+ * Variables passed to this template:
+ * @var $subject string
+ * @var $preHeader string
+ * @var $templateHtml string
+ * @var $metaRobots string
+ * @var $layout array{contentSize: string}
  */
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -18,7 +25,7 @@
   <!-- Forced Styles -->
 </head>
 <body>
-    <div class="email_layout_wrapper">
+    <div class="email_layout_wrapper" style="max-width: <?php echo esc_attr($layout['contentSize']); ?>">
         <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
           <tbody>
             <tr>
