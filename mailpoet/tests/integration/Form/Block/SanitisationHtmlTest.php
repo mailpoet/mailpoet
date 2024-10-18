@@ -36,4 +36,12 @@ class SanitisationHtmlTest extends \MailPoetTest {
     $html = $this->html->render($block, []);
     verify($html)->equals("<div class=\"mailpoet_paragraph\" ><p class=\"my-p\">Hello</p><img src=\"x\"></div>");
   }
+
+  public function testItSanitisesClassName(): void {
+    $block = $this->block;
+    $block['params']['class_name'] = 'my_clas"s1 class2';
+    $block['params']['text'] = 'line1';
+    $html = $this->html->render($block, []);
+    verify($html)->equals("<div class=\"mailpoet_paragraph my_clas&quot;s1 class2\" >line1</div>");
+  }
 }
