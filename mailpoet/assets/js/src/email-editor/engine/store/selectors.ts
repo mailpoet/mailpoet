@@ -253,10 +253,6 @@ export function getStyles(state: State): State['theme']['styles'] {
   return state.theme.styles;
 }
 
-export function getLayout(state: State): State['layout'] {
-  return state.layout;
-}
-
 export function getAutosaveInterval(state: State): State['autosaveInterval'] {
   return state.autosaveInterval;
 }
