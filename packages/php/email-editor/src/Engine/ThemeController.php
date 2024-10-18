@@ -36,35 +36,30 @@ class ThemeController {
     return apply_filters('mailpoet_email_editor_theme_json', $theme);
   }
 
-  /**
-   * Convert compressed format presets to valid CSS values.
-   *
-   * @param string $value Value to convert.
-   * @param array $presets List of variable presets from theme.json
-   * @return mixed Converted or original value.
-   */
-  private function maybeConvertPreset($value, $presets) {
-    if (!is_string($value)) {
-      return $value;
-    }
-
-    if (strstr($value, 'var:preset|color|')) {
-        $value = str_replace('var:preset|color|', '', $value);
-        $value = sprintf('var(--wp--preset--color--%s)', $value);
-    }
-
-    return preg_replace(array_keys($presets), array_values($presets), $value);
-  }
-
   private function recursiveReplacePresets($values, $presets) {
     foreach ($values as $key => $value) {
       if (is_array($value)) {
         $values[$key] = $this->recursiveReplacePresets($value, $presets);
+      } elseif (is_string($value)) {
+        $values[$key] = preg_replace(array_keys($presets), array_values($presets), $value);
       } else {
-        $values[$key] = self::maybeConvertPreset($value, $presets);
+        $values[$key] = $value;
       }
     }
     return $values;
+  }
+
+  private function recursiveExtractPresetVariables($styles) {
+    foreach ($styles as $key => $styleValue) {
+      if (is_array($styleValue)) {
+        $styles[$key] = $this->recursiveExtractPresetVariables($styleValue);
+      } elseif (strpos($styleValue, 'var:preset|') === 0) {
+        $styles[$key] = 'var(--wp--' . str_replace('|', '--', str_replace('var:', '', $styleValue)) . ')';
+      } else {
+        $styles[$key] = $styleValue;
+      }
+    }
+    return $styles;
   }
 
   /**
@@ -95,6 +90,9 @@ class ThemeController {
       $templateStyles = (array)($templateTheme['styles'] ?? []);
       $themeStyles = array_replace_recursive($themeStyles, $templateStyles);
     }
+
+    // Extract preset variables
+    $themeStyles = $this->recursiveExtractPresetVariables($themeStyles);
 
     // Replace preset values.
     if ($convertPresets) {
