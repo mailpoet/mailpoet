@@ -2,14 +2,20 @@
 
 namespace MailPoet\Form\Block;
 
+use MailPoet\WP\Functions as WPFunctions;
+
 class Html {
   /** @var BlockRendererHelper */
   private $rendererHelper;
 
+  private WPFunctions $wp;
+
   public function __construct(
-    BlockRendererHelper $rendererHelper
+    BlockRendererHelper $rendererHelper,
+    WPFunctions $wp
   ) {
     $this->rendererHelper = $rendererHelper;
+    $this->wp = $wp;
   }
 
   public function render(array $block, array $formSettings): string {
@@ -26,7 +32,7 @@ class Html {
 
     $classes = isset($block['params']['class_name']) ? " " . $block['params']['class_name'] : '';
     $html .= '<div class="mailpoet_paragraph' . $classes . '" ' . $this->rendererHelper->renderFontStyle($formSettings) . '>';
-    $html .= $text;
+    $html .= $this->wp->wpKsesPost($text);
     $html .= '</div>';
 
     return $html;
