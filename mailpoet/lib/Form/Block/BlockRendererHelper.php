@@ -216,10 +216,11 @@ class BlockRendererHelper {
 
   // return field name depending on block data
   public function getFieldName(array $block = []): string {
-    if ((int)$block['id'] > 0) {
-      return 'cf_' . $block['id'];
+    $blockId = $this->wp->escAttr($block['id']);
+    if ((int)$blockId > 0) {
+      return 'cf_' . $blockId;
     } elseif (isset($block['params']['obfuscate']) && !$block['params']['obfuscate']) {
-      return $block['id'];
+      return $blockId;
     } else {
       return $this->fieldNameObfuscator->obfuscate($block['id']);//obfuscate field name for spambots
     }

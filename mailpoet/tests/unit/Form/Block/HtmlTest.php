@@ -26,6 +26,7 @@ class HtmlTest extends \MailPoetUnitTest {
     parent::_before();
     $wpMock = $this->createMock(WPFunctions::class);
     $wpMock->method('wpKsesPost')->willReturnArgument(0);
+    $wpMock->method('escAttr')->willReturnArgument(0);
     $this->html = new Html(
       $this->createMock(BlockRendererHelper::class),
       $wpMock

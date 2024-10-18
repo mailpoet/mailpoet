@@ -31,7 +31,7 @@ class Html {
     }
 
     $classes = isset($block['params']['class_name']) ? " " . $block['params']['class_name'] : '';
-    $html .= '<div class="mailpoet_paragraph' . $classes . '" ' . $this->rendererHelper->renderFontStyle($formSettings) . '>';
+    $html .= '<div class="mailpoet_paragraph' . $this->wp->escAttr($classes) . '" ' . $this->rendererHelper->renderFontStyle($formSettings) . '>';
     $html .= $this->wp->wpKsesPost($text);
     $html .= '</div>';
 
