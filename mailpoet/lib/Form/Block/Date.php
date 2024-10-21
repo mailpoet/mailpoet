@@ -66,27 +66,27 @@ class Date {
         $html .= '<select class="mailpoet_date_day" ';
         $html .= ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
-          'required-message' => __('Please select a day', 'mailpoet'),
+          'required-message' => $this->wp->escAttr(__('Please select a day', 'mailpoet')),
         ], $formId);
-        $html .= 'name="' . $fieldName . '[day]" placeholder="' . __('Day', 'mailpoet') . '">';
+        $html .= 'name="' . $fieldName . '[day]" placeholder="' . $this->wp->escAttr(__('Day', 'mailpoet')) . '">';
         $html .= $this->getDays($block);
         $html .= '</select>';
       } else if ($dateSelector === 'MM') {
         $html .= '<select class="mailpoet_select mailpoet_date_month" data-automation-id="form_date_month" ';
         $html .= ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
-          'required-message' => __('Please select a month', 'mailpoet'),
+          'required-message' => $this->wp->escAttr(__('Please select a month', 'mailpoet')),
         ], $formId);
-        $html .= 'name="' . $fieldName . '[month]" placeholder="' . __('Month', 'mailpoet') . '">';
+        $html .= 'name="' . $fieldName . '[month]" placeholder="' . $this->wp->escAttr(__('Month', 'mailpoet')) . '">';
         $html .= $this->getMonths($block);
         $html .= '</select>';
       } else if ($dateSelector === 'YYYY') {
         $html .= '<select class="mailpoet_date_year" data-automation-id="form_date_year" ';
         $html .= ' style="' . $this->wp->escAttr($this->blockStylesRenderer->renderForSelect([], $formSettings)) . '"';
         $html .= $this->rendererHelper->getInputValidation($block, [
-          'required-message' => __('Please select a year', 'mailpoet'),
+          'required-message' => $this->wp->escAttr(__('Please select a year', 'mailpoet')),
         ], $formId);
-        $html .= 'name="' . $fieldName . '[year]" placeholder="' . __('Year', 'mailpoet') . '">';
+        $html .= 'name="' . $fieldName . '[year]" placeholder="' . $this->wp->escAttr(__('Year', 'mailpoet')) . '">';
         $html .= $this->getYears($block);
         $html .= '</select>';
       }
@@ -99,10 +99,10 @@ class Date {
 
   public function getDateTypes(): array {
     return [
-      'year_month_day' => __('Year, month, day', 'mailpoet'),
-      'year_month' => __('Year, month', 'mailpoet'),
-      'month' => __('Month (January, February,...)', 'mailpoet'),
-      'year' => __('Year', 'mailpoet'),
+      'year_month_day' => $this->wp->escHtml(__('Year, month, day', 'mailpoet')),
+      'year_month' => $this->wp->escHtml(__('Year, month', 'mailpoet')),
+      'month' => $this->wp->escHtml(__('Month (January, February,...)', 'mailpoet')),
+      'year' => $this->wp->escHtml(__('Year', 'mailpoet')),
     ];
   }
 
@@ -116,9 +116,19 @@ class Date {
   }
 
   public function getMonthNames(): array {
-    return [__('January', 'mailpoet'), __('February', 'mailpoet'), __('March', 'mailpoet'), __('April', 'mailpoet'),
-      __('May', 'mailpoet'), __('June', 'mailpoet'), __('July', 'mailpoet'), __('August', 'mailpoet'), __('September', 'mailpoet'),
-      __('October', 'mailpoet'), __('November', 'mailpoet'), __('December', 'mailpoet'),
+    return [
+      $this->wp->escHtml(__('January', 'mailpoet')),
+      $this->wp->escHtml(__('February', 'mailpoet')),
+      $this->wp->escHtml(__('March', 'mailpoet')),
+      $this->wp->escHtml(__('April', 'mailpoet')),
+      $this->wp->escHtml(__('May', 'mailpoet')),
+      $this->wp->escHtml(__('June', 'mailpoet')),
+      $this->wp->escHtml(__('July', 'mailpoet')),
+      $this->wp->escHtml(__('August', 'mailpoet')),
+      $this->wp->escHtml(__('September', 'mailpoet')),
+      $this->wp->escHtml(__('October', 'mailpoet')),
+      $this->wp->escHtml(__('November', 'mailpoet')),
+      $this->wp->escHtml(__('December', 'mailpoet')),
     ];
   }
 
@@ -144,7 +154,7 @@ class Date {
     $html = '';
 
     // empty value label
-    $html .= '<option value="">' . __('Month', 'mailpoet') . '</option>';
+    $html .= '<option value="">' . $this->wp->escHtml(__('Month', 'mailpoet')) . '</option>';
 
     for ($i = 1; $i < 13; $i++) {
       $isSelected = ($i === $block['selected']) ? 'selected="selected"' : '';
@@ -179,7 +189,7 @@ class Date {
     $html = '';
 
     // empty value label
-    $html .= '<option value="">' . __('Year', 'mailpoet') . '</option>';
+    $html .= '<option value="">' . $this->wp->escHtml(__('Year', 'mailpoet')) . '</option>';
 
     // return years as an array
     for ($i = (int)$block['to']; $i > (int)($block['from'] - 1); $i--) {
@@ -210,7 +220,7 @@ class Date {
     $html = '';
 
     // empty value label
-    $html .= '<option value="">' . __('Day', 'mailpoet') . '</option>';
+    $html .= '<option value="">' . $this->wp->escHtml(__('Day', 'mailpoet')) . '</option>';
 
     // return days as an array
     for ($i = 1; $i < 32; $i++) {
