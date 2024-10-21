@@ -45,7 +45,7 @@ class BlockRendererHelper {
         __('Addresses in names are not permitted, please add your name instead.', 'mailpoet'),
       ];
       $rules['names'] = '[' . implode(',', array_map(function (string $errorMessage): string {
-        return htmlspecialchars((string)json_encode($errorMessage), ENT_QUOTES);
+        return '"' . $this->wp->escAttr($errorMessage) . '"';
       }, $errorMessages)) . ']';
     }
 
@@ -93,9 +93,9 @@ class BlockRendererHelper {
         }
         // We need to use single quotes because we need to pass array of strings as a parameter for custom validation
         if ($rule === 'names') {
-          $validation[] = 'data-parsley-' . $rule . '=\'' . $value . '\'';
+          $validation[] = 'data-parsley-' . $rule . '=\'' . $value . '\''; // The value has been escaped above.
         } else {
-          $validation[] = 'data-parsley-' . $rule . '="' . $value . '"';
+          $validation[] = 'data-parsley-' . $this->wp->escAttr($rule) . '="' . $this->wp->escAttr($value) . '"';
         }
       }
     }
