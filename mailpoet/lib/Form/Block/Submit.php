@@ -37,7 +37,7 @@ class Submit {
 
     $html .= '<input type="submit" class="mailpoet_submit" ';
 
-    $html .= 'value="' . $this->rendererHelper->getFieldLabel($block) . '" ';
+    $html .= 'value="' . $this->wp->escAttr($this->rendererHelper->getFieldLabel($block)) . '" ';
 
     $html .= 'data-automation-id="subscribe-submit-button" ';
 
