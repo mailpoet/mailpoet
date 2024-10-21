@@ -171,6 +171,7 @@
 }
 
 .editor-styles-wrapper {
+  // Use box sizing border box for columns that have defined a width (they have flex-basis set).
   .wp-block-columns:not(.is-not-stacked-on-mobile)
     > .wp-block-column[style*='flex-basis'] {
     box-sizing: border-box;
