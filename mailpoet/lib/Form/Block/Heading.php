@@ -77,7 +77,7 @@ class Heading {
 
   private function renderAnchor(array $block): string {
     return 'id="'
-      . $block['params']['anchor']
+      . $this->wp->escAttr($block['params']['anchor'])
       . '"';
   }
 
