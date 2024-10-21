@@ -54,6 +54,7 @@ class DateTest extends \MailPoetUnitTest {
     $this->wrapperMock->method('render')->will($this->returnArgument(1));
     $wpMock = $this->createMock(WPFunctions::class);
     $wpMock->method('escAttr')->will($this->returnArgument(0));
+    $wpMock->method('escHtml')->will($this->returnArgument(0));
     $this->date = new Date($this->baseMock, $this->blockStylesRenderer, $this->wrapperMock, $wpMock);
     $this->htmlParser = new HtmlParser();
   }
