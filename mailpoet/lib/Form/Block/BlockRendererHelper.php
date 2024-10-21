@@ -81,22 +81,23 @@ class BlockRendererHelper {
       $rules['group'] = 'custom_field_' . $blockId;
     }
 
-    $validation = [];
-
     $rules = array_merge($rules, $extraRules);
 
-    if (!empty($rules)) {
-      $rules = array_unique($rules);
-      foreach ($rules as $rule => $value) {
-        if (is_bool($value)) {
-          $value = ($value) ? 'true' : 'false';
-        }
-        // We need to use single quotes because we need to pass array of strings as a parameter for custom validation
-        if ($rule === 'names') {
-          $validation[] = 'data-parsley-' . $rule . '=\'' . $value . '\''; // The value has been escaped above.
-        } else {
-          $validation[] = 'data-parsley-' . $this->wp->escAttr($rule) . '="' . $this->wp->escAttr($value) . '"';
-        }
+    if (empty($rules)) {
+      return '';
+    }
+
+    $validation = [];
+    $rules = array_unique($rules);
+    foreach ($rules as $rule => $value) {
+      if (is_bool($value)) {
+        $value = ($value) ? 'true' : 'false';
+      }
+      // We need to use single quotes because we need to pass array of strings as a parameter for custom validation
+      if ($rule === 'names') {
+        $validation[] = 'data-parsley-' . $rule . '=\'' . $value . '\''; // The value has been escaped above.
+      } else {
+        $validation[] = 'data-parsley-' . $this->wp->escAttr($rule) . '="' . $this->wp->escAttr($value) . '"';
       }
     }
     return join(' ', $validation);
