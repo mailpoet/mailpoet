@@ -4,7 +4,6 @@
 import classnames from 'classnames';
 import {
   BlockList,
-  store as blockEditorStore,
   // @ts-expect-error No types for this exist yet.
   __unstableUseTypewriter as useTypewriter,
   // @ts-expect-error No types for this exist yet.
@@ -31,11 +30,9 @@ export const TEMPLATE_PART_POST_TYPE = 'wp_template_part';
 export const PATTERN_POST_TYPE = 'wp_block';
 export const NAVIGATION_POST_TYPE = 'wp_navigation';
 
-const {
-  useLayoutClasses,
-  ExperimentalBlockCanvas: BlockCanvas,
-  useFlashEditableBlocks,
-} = unlock(blockEditorPrivateApis);
+const { ExperimentalBlockCanvas: BlockCanvas, useFlashEditableBlocks } = unlock(
+  blockEditorPrivateApis,
+);
 
 /**
  * These post types have a special editor where they don't allow you to fill the title
@@ -59,7 +56,7 @@ const DESIGN_POST_TYPES = [
  *  @todo Need to fix layout so that we support Align settings properly
  */
 export function VisualEditor({
-  // Ideally as we unify post and site editors, we won't need these propss
+  // Ideally as we unify post and site editors, we won't need these props
   styles,
   disableIframe = false,
   iframeProps,
@@ -72,7 +69,6 @@ export function VisualEditor({
     wrapperUniqueId,
     deviceType,
     isFocusedEntity,
-    isDesignPostType,
     layout,
   } = useSelect((select) => {
     const {
@@ -116,28 +112,7 @@ export function VisualEditor({
     };
   }, []);
 
-  const { themeSupportsLayout } = useSelect((select) => {
-    const { getSettings } = select(blockEditorStore);
-    const checkSettings = getSettings();
-    return {
-      // @ts-expect-error No types for this exist yet.
-      themeSupportsLayout: checkSettings.supportsLayout,
-    };
-  }, []);
-
   const deviceStyles = useResizeCanvas(deviceType);
-
-  const postContentLayoutClasses = useLayoutClasses(
-    { layout, align: '' },
-    'core/post-content',
-  ) as string[];
-
-  const blockListLayoutClass = classnames(
-    {
-      'is-layout-flow': !themeSupportsLayout,
-    },
-    themeSupportsLayout && postContentLayoutClasses,
-  );
 
   // We want to use the same layout.
   const blockListLayout = layout;
@@ -204,9 +179,7 @@ export function VisualEditor({
           <BlockList
             className={classnames(
               `is-${deviceType.toLowerCase()}-preview`,
-              renderingMode !== 'post-only' || isDesignPostType
-                ? 'wp-site-blocks'
-                : `${blockListLayoutClass} wp-block-post-content`, // Ensure root level blocks receive default/flow blockGap styling rules.
+              'wp-site-blocks',
             )}
             // @ts-expect-error No types for this exist yet.
             layout={blockListLayout}
