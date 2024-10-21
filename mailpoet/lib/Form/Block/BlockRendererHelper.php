@@ -45,7 +45,7 @@ class BlockRendererHelper {
         __('Addresses in names are not permitted, please add your name instead.', 'mailpoet'),
       ];
       $rules['names'] = '[' . implode(',', array_map(function (string $errorMessage): string {
-        return '"' . $this->wp->escAttr($errorMessage) . '"';
+        return $this->wp->escAttr('"' . $errorMessage . '"');
       }, $errorMessages)) . ']';
     }
 
