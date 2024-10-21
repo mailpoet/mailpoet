@@ -204,7 +204,7 @@ class BlockRendererHelper {
     ) {
       // display only label
       $html .= ' placeholder="';
-      $html .= static::getFieldLabel($block);
+      $html .= $this->wp->escAttr(static::getFieldLabel($block));
       // add an asterisk if it's a required field
       if (isset($block['params']['required']) && $block['params']['required']) {
         $html .= ' *';
