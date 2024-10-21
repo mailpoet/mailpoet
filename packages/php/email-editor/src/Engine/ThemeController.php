@@ -81,7 +81,7 @@ class ThemeController {
    *   }
    * }
    */
-  public function getStyles($post = null, $template = null, $convertPresets = false): array {
+  public function getStyles($post = null, $template = null): array {
     $themeStyles = $this->getTheme()->get_data()['styles'];
 
     // Replace template styles.
@@ -95,17 +95,15 @@ class ThemeController {
     $themeStyles = $this->recursiveExtractPresetVariables($themeStyles);
 
     // Replace preset values.
-    if ($convertPresets) {
-      $variables = $this->getVariablesValuesMap();
-      $presets = [];
+    $variables = $this->getVariablesValuesMap();
+    $presets = [];
 
-      foreach ($variables as $varName => $varValue) {
-        $varPattern = '/var\(' . preg_quote($varName, '/') . '\)/i';
-        $presets[$varPattern] = $varValue;
-      }
-
-      $themeStyles = $this->recursiveReplacePresets($themeStyles, $presets);
+    foreach ($variables as $varName => $varValue) {
+      $varPattern = '/var\(' . preg_quote($varName, '/') . '\)/i';
+      $presets[$varPattern] = $varValue;
     }
+
+    $themeStyles = $this->recursiveReplacePresets($themeStyles, $presets);
 
     return $themeStyles;
   }
