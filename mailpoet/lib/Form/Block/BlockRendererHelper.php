@@ -95,9 +95,9 @@ class BlockRendererHelper {
       }
       // We need to use single quotes because we need to pass array of strings as a parameter for custom validation
       if ($rule === 'names') {
-        $validation[] = 'data-parsley-' . $rule . '=\'' . $value . '\''; // The value has been escaped above.
+        $validation[] = 'data-parsley-' . $rule . '=\'' . $this->wp->wpKsesPost($value) . '\''; // The value has been escaped above.
       } else {
-        $validation[] = 'data-parsley-' . $this->wp->escAttr($rule) . '="' . $this->wp->escAttr($value) . '"';
+        $validation[] = 'data-parsley-' . $this->wp->escAttr($rule) . '="' . $this->wp->escAttr($this->wp->wpKsesPost($value)) . '"';
       }
     }
     return join(' ', $validation);
