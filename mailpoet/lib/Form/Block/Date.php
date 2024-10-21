@@ -116,19 +116,9 @@ class Date {
   }
 
   public function getMonthNames(): array {
-    return [
-      $this->wp->escHtml(__('January', 'mailpoet')),
-      $this->wp->escHtml(__('February', 'mailpoet')),
-      $this->wp->escHtml(__('March', 'mailpoet')),
-      $this->wp->escHtml(__('April', 'mailpoet')),
-      $this->wp->escHtml(__('May', 'mailpoet')),
-      $this->wp->escHtml(__('June', 'mailpoet')),
-      $this->wp->escHtml(__('July', 'mailpoet')),
-      $this->wp->escHtml(__('August', 'mailpoet')),
-      $this->wp->escHtml(__('September', 'mailpoet')),
-      $this->wp->escHtml(__('October', 'mailpoet')),
-      $this->wp->escHtml(__('November', 'mailpoet')),
-      $this->wp->escHtml(__('December', 'mailpoet')),
+    return [__('January', 'mailpoet'), __('February', 'mailpoet'), __('March', 'mailpoet'), __('April', 'mailpoet'),
+      __('May', 'mailpoet'), __('June', 'mailpoet'), __('July', 'mailpoet'), __('August', 'mailpoet'), __('September', 'mailpoet'),
+      __('October', 'mailpoet'), __('November', 'mailpoet'), __('December', 'mailpoet'),
     ];
   }
 
@@ -159,7 +149,7 @@ class Date {
     for ($i = 1; $i < 13; $i++) {
       $isSelected = ($i === $block['selected']) ? 'selected="selected"' : '';
       $html .= '<option value="' . $i . '" ' . $isSelected . '>';
-      $html .= $monthNames[$i - 1];
+      $html .= $this->wp->escHtml($monthNames[$i - 1]);
       $html .= '</option>';
     }
 
