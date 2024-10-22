@@ -8,7 +8,10 @@ import {
 import { enhancePostContentBlock } from './core/post-content';
 import { disableGroupVariations } from './core/group';
 import { disableImageFilter, hideExpandOnClick } from './core/image';
-import { disableCertainRichTextFormats } from './core/rich-text';
+import {
+  disableCertainRichTextFormats,
+  extendRichTextFormats,
+} from './core/rich-text';
 import { enhanceButtonBlock } from './core/button';
 import { enhanceButtonsBlock } from './core/buttons';
 import { alterSupportConfiguration } from './core/general-block-support';
@@ -27,4 +30,5 @@ export function initBlocks() {
   enhancePostContentBlock();
   alterSupportConfiguration();
   registerCoreBlocks();
+  extendRichTextFormats();
 }
