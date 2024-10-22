@@ -55,17 +55,8 @@ class SettingsController {
     $settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
     // Assets for iframe editor (component styles, scripts, etc.)
     $settings['__unstableResolvedAssets'] = $this->iframeAssets;
-
-    // Custom editor content styles
-    // body selector is later transformed to .editor-styles-wrapper
-    // setting padding for bottom and top is needed because \WP_Theme_JSON::get_stylesheet() set them only for .wp-site-blocks selector
-    $contentVariables = 'body {';
-    $contentVariables .= 'padding-bottom: var(--wp--style--root--padding-bottom);';
-    $contentVariables .= 'padding-top: var(--wp--style--root--padding-top);';
-    $contentVariables .= '}';
     $flexEmailLayoutStyles = file_get_contents(__DIR__ . '/flex-email-layout.css');
     $settings['styles'] = [
-      ['css' => $contentVariables],
       ['css' => $flexEmailLayoutStyles],
     ];
 
