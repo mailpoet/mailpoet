@@ -59,7 +59,9 @@ export function Scheduling({
           </Select>
         </div>
       </Grid.TwoColumns>
-      <div className="mailpoet-gap" />
+      {(!inactiveSubscribersPeriod || inactivePeriod > daysSelected) && (
+        <div className="mailpoet-gap" />
+      )}
       {!!inactiveSubscribersPeriod && inactivePeriod <= daysSelected && (
         <p className="mailpoet-re-engagement-scheduling-note">
           {ReactStringReplace(
