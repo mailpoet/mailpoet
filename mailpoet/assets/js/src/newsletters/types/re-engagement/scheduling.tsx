@@ -37,23 +37,28 @@ export function Scheduling({
       <Heading level={4}>
         {__('When to send this re-engagement email?', 'mailpoet')}
       </Heading>
-      <Grid.CenteredRow className="mailpoet-re-engagement-scheduling">
-        <div className="mailpoet-re-engagement-scheduling-period">
-          {__('After no activity for', 'mailpoet')}
+      <p>{__('After no activity for', 'mailpoet')}</p>
+      <Grid.TwoColumns>
+        <div>
+          <Input
+            type="number"
+            placeholder={__('count', 'mailpoet')}
+            value={afterTimeNumber}
+            min={1}
+            onChange={onChange(updateAfterTimeNumber)}
+            required
+          />
         </div>
-        <Input
-          type="number"
-          placeholder={__('count', 'mailpoet')}
-          value={afterTimeNumber}
-          min={1}
-          onChange={onChange(updateAfterTimeNumber)}
-          required
-        />
-        <Select value={afterTimeType} onChange={onChange(updateAfterTimeType)}>
-          <option value="weeks">{__('weeks', 'mailpoet')}</option>
-          <option value="months">{__('months', 'mailpoet')}</option>
-        </Select>
-      </Grid.CenteredRow>
+        <div>
+          <Select
+            value={afterTimeType}
+            onChange={onChange(updateAfterTimeType)}
+          >
+            <option value="weeks">{__('weeks', 'mailpoet')}</option>
+            <option value="months">{__('months', 'mailpoet')}</option>
+          </Select>
+        </div>
+      </Grid.TwoColumns>
       <div className="mailpoet-gap" />
       {!!inactiveSubscribersPeriod && inactivePeriod <= daysSelected && (
         <p className="mailpoet-re-engagement-scheduling-note">
