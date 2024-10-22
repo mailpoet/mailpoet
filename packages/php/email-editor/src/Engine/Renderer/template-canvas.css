@@ -55,6 +55,11 @@ a {
     width: 100% !important;
   }
 
+  /* We set width to some tables e.g. for wrappers of horizontally aligned images and we force width 100% on mobile */
+  .email-table-with-width {
+    width: 100% !important;
+  }
+
   /* Flex Layout */
   .layout-flex-wrapper,
   .layout-flex-wrapper tbody,

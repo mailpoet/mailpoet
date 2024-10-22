@@ -148,6 +148,7 @@ class Image extends AbstractBlockRenderer {
           <td align="' . esc_attr($align) . '">
             <table
               role="presentation"
+              class="email-table-with-width"
               border="0"
               cellpadding="0"
               cellspacing="0"
