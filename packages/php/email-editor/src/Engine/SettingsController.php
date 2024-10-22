@@ -55,9 +55,9 @@ class SettingsController {
     $settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
     // Assets for iframe editor (component styles, scripts, etc.)
     $settings['__unstableResolvedAssets'] = $this->iframeAssets;
-    $flexEmailLayoutStyles = file_get_contents(__DIR__ . '/flex-email-layout.css');
+    $editorContentStyles = file_get_contents(__DIR__ . '/editor-content.css');
     $settings['styles'] = [
-      ['css' => $flexEmailLayoutStyles],
+      ['css' => $editorContentStyles],
     ];
 
     $settings['__experimentalFeatures'] = $themeSettings;
