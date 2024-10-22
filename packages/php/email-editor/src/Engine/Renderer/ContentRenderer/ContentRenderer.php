@@ -89,6 +89,7 @@ class ContentRenderer {
    */
   private function inlineStyles($html, WP_Post $post, $template = null) {
     $styles = (string)file_get_contents(dirname(__FILE__) . '/' . self::CONTENT_STYLES_FILE);
+    $styles .= (string)file_get_contents(dirname(__FILE__) . '/../../content-shared.css');
 
     // Apply default contentWidth to constrained blocks.
     $layout = $this->themeController->getLayoutSettings();

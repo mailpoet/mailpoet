@@ -56,8 +56,10 @@ class SettingsController {
     // Assets for iframe editor (component styles, scripts, etc.)
     $settings['__unstableResolvedAssets'] = $this->iframeAssets;
     $editorContentStyles = file_get_contents(__DIR__ . '/content-editor.css');
+    $sharesContentStyles = file_get_contents(__DIR__ . '/content-shared.css');
     $settings['styles'] = [
       ['css' => $editorContentStyles],
+      ['css' => $sharesContentStyles],
     ];
 
     $settings['__experimentalFeatures'] = $themeSettings;
