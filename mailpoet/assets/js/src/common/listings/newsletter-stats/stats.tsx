@@ -10,7 +10,7 @@ type StatsBadgeProps = {
   isInverted?: boolean;
 };
 
-const stats = {
+const getStats = () => ({
   opened: {
     badgeRanges: [30, 10, 0],
     badgeTypes: ['excellent', 'good', 'critical'],
@@ -59,10 +59,10 @@ const stats = {
       critical: __('above 0.7%', 'mailpoet'),
     },
   },
-};
+});
 
 export const getBadgeType = (statName, rate) => {
-  const stat = stats[statName] || null;
+  const stat = getStats()[statName] || null;
   if (!stat) {
     return null;
   }
@@ -103,7 +103,7 @@ function StatsBadge(props: StatsBadgeProps) {
     return null;
   }
 
-  const stat = stats[props.stat] || null;
+  const stat = getStats()[props.stat] || null;
   if (!stat) {
     return null;
   }
