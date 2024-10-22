@@ -5,9 +5,12 @@ import {
   Route,
   Routes,
   useParams,
+  useNavigate,
+  useLocation,
 } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
+import { TabPanel } from '@wordpress/components';
 
 import { MailPoet } from 'mailpoet';
 import { NewsletterTypes } from 'newsletters/types';
@@ -25,8 +28,7 @@ import { SendingStatus } from 'newsletters/sending-status.jsx';
 import { GlobalContext, useGlobalContextValue } from 'context';
 import { GlobalNotices } from 'notices/global-notices';
 import { Notices } from 'notices/notices.jsx';
-import { RoutedTabs } from 'common/tabs/routed-tabs';
-import { ErrorBoundary, registerTranslations, Tab, withBoundary } from 'common';
+import { ErrorBoundary, registerTranslations, withBoundary } from 'common';
 import { withNpsPoll } from 'nps-poll.jsx';
 import { ListingHeading } from 'newsletters/listings/heading.jsx';
 import { ListingHeadingDisplay } from 'newsletters/listings/heading-display.jsx';
@@ -43,6 +45,36 @@ const trackTabSwitch = (tabKey) =>
 
 const Tabs = withNpsPoll(() => {
   const { parentId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const tabs = [
+    {
+      name: 'standard',
+      title: __('Newsletters', 'mailpoet'),
+      content: <NewsletterListStandard />,
+      automationId: `tab-${__('Newsletters', 'mailpoet')}`,
+    },
+    {
+      name: 'notification',
+      title: __('Post Notifications', 'mailpoet'),
+      content: parentId ? (
+        <NewsletterListNotificationHistory parentId={parentId} />
+      ) : (
+        <NewsletterListNotification />
+      ),
+      automationId: `tab-${__('Post Notifications', 'mailpoet')}`,
+    },
+    {
+      name: 're_engagement',
+      title: __('Re-engagement Emails', 'mailpoet'),
+      content: <NewsletterListReEngagement />,
+      automationId: `tab-${__('Re-engagement Emails', 'mailpoet')}`,
+    },
+  ];
+
+  const currentTab = location.hash.replace('#/', '') || 'standard';
+
   return (
     <>
       <ListingHeadingDisplay>
@@ -55,41 +87,20 @@ const Tabs = withNpsPoll(() => {
       {MailPoet.corrupt_newsletters.length > 0 && (
         <CorruptEmailNotice newsletters={MailPoet.corrupt_newsletters} />
       )}
-      <RoutedTabs
-        activeKey="standard"
-        routerType="switch-only"
-        onSwitch={(tabKey) => trackTabSwitch(tabKey)}
-        automationId="newsletters_listing_tabs"
-      >
-        <Tab
-          key="standard"
-          route="standard/*"
-          title={__('Newsletters', 'mailpoet')}
-          automationId={`tab-${__('Newsletters', 'mailpoet')}`}
+      <div data-automation-id="newsletters_listing_tabs">
+        <TabPanel
+          tabs={tabs}
+          initialTabName={currentTab}
+          onSelect={(tabName) => {
+            trackTabSwitch(tabName);
+            navigate(`#/${tabName}`);
+          }}
         >
-          <NewsletterListStandard />
-        </Tab>
-        <Tab
-          key="notification"
-          route="notification/*"
-          title={__('Post Notifications', 'mailpoet')}
-          automationId={`tab-${__('Post Notifications', 'mailpoet')}`}
-        >
-          {parentId ? (
-            <NewsletterListNotificationHistory parentId={parentId} />
-          ) : (
-            <NewsletterListNotification />
+          {(tab) => (
+            <div data-automation-id={tab.automationId}>{tab.content}</div>
           )}
-        </Tab>
-        <Tab
-          key="re_engagement"
-          route="re_engagement/*"
-          title={__('Re-engagement Emails', 'mailpoet')}
-          automationId={`tab-${__('Re-engagement Emails', 'mailpoet')}`}
-        >
-          <NewsletterListReEngagement />
-        </Tab>
-      </RoutedTabs>
+        </TabPanel>
+      </div>
     </>
   );
 });
