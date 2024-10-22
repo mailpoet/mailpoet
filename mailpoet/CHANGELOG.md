@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.3.3 - 2024-10-22 =
+
+- Fixed: error on email statistics page.
+
 = 5.3.2 - 2024-10-22 =
 
 - Improved: form error messages now use rem instead of px to improve accessibility;
