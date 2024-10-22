@@ -55,7 +55,7 @@ class SettingsController {
     $settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
     // Assets for iframe editor (component styles, scripts, etc.)
     $settings['__unstableResolvedAssets'] = $this->iframeAssets;
-    $editorContentStyles = file_get_contents(__DIR__ . '/editor-content.css');
+    $editorContentStyles = file_get_contents(__DIR__ . '/content-editor.css');
     $settings['styles'] = [
       ['css' => $editorContentStyles],
     ];
