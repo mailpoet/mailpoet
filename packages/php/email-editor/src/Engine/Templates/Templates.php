@@ -175,6 +175,10 @@ class Templates {
       'title' => __('General Email', 'mailpoet'),
       'description' => __('A general template for emails.', 'mailpoet'),
     ];
+    $this->templates['simple-light'] = [
+      'title' => __('Simple Light', 'mailpoet'),
+      'description' => __('A basic template with header and footer.', 'mailpoet'),
+    ];
     $this->templates['awesome-one'] = [
       'title' => __('Awesome Template One', 'mailpoet'),
       'description' => __('A template used in testing.', 'mailpoet'),
