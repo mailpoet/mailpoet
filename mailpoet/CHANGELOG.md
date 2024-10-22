@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.3.2 - 2024-10-22 =
+
+- Improved: form error messages now use rem instead of px to improve accessibility;
+- Improved: toggle and yes/no controls are focusable;
+- Fixed: Preview of the Sign Up Confirmation email is not working.
+
 = 5.3.1 - 2024-10-15 =
 
 - Improved: add validation for re-engagement emails period;
