@@ -2,19 +2,23 @@
 
 namespace MailPoet\EmailEditor\Engine\Templates;
 
+use MailPoet\EmailEditor\Engine\SettingsController;
 use MailPoet\EmailEditor\Engine\ThemeController;
 use MailPoet\EmailEditor\Validator\Builder;
 use WP_Theme_JSON;
 
 class TemplatePreview {
   private ThemeController $themeController;
+  private SettingsController $settingsController;
   private Templates $templates;
 
   public function __construct(
     ThemeController $themeController,
+    SettingsController $settingsController,
     Templates $templates
   ) {
     $this->themeController = $themeController;
+    $this->settingsController = $settingsController;
     $this->templates = $templates;
   }
 
@@ -40,7 +44,11 @@ class TemplatePreview {
     if (is_array($templateTheme)) {
       $editorTheme->merge(new WP_Theme_JSON($templateTheme, 'custom'));
     }
-    $additionalCSS = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'preview.css');
+    $editorSettings = $this->settingsController->getSettings();
+    $additionalCSS = '';
+    foreach ($editorSettings['styles'] as $style) {
+      $additionalCSS .= $style['css'];
+    }
     // Set proper content width for previews
     $layoutSettings = $this->themeController->getLayoutSettings();
     $additionalCSS .= ".is-root-container { width: {$layoutSettings['contentSize']}; margin: 0 auto; }";
