@@ -70,7 +70,7 @@ class ReceivePostNotificationCest {
 
     // confirm newsletter has been sent
     $i->amOnMailpoetPage('Emails');
-    $i->click('[data-automation-id="tab-Post Notifications"]');
+    $i->click('.data-automation-tab-post-notifications');
     $i->waitForText($newsletterSubject, 90);
 
     $i->waitForText('View history', 90);
