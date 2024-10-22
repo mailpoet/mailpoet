@@ -150,7 +150,7 @@
 }
 
 // Resetting the margin for images in the editor to avoid unexpected spacing
-.editor-styles-wrapper .is-layout-constrained .wp-block-image {
+.editor-styles-wrapper .wp-block-image {
   figcaption {
     margin: 0;
   }
@@ -175,6 +175,14 @@
   .wp-block-columns:not(.is-not-stacked-on-mobile)
     > .wp-block-column[style*='flex-basis'] {
     box-sizing: border-box;
+  }
+
+  .is-mobile-preview {
+    // Ensure image resizes to fit the mobile preview
+    figure > div {
+      height: auto !important;
+      width: auto !important;
+    }
   }
 }
 

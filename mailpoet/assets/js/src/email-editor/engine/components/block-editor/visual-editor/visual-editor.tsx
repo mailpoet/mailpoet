@@ -13,7 +13,7 @@ import {
   // @ts-expect-error No types for this exist yet.
   __experimentalUseResizeCanvas as useResizeCanvas,
 } from '@wordpress/block-editor';
-import { useRef, useMemo } from '@wordpress/element';
+import { useRef } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { useMergeRefs } from '@wordpress/compose';
 import { store as editorStore } from '@wordpress/editor';
@@ -133,18 +133,15 @@ export function VisualEditor({
 
   const shouldIframe =
     !disableIframe || ['Tablet', 'Mobile'].includes(deviceType);
+  const containerWidth =
+    deviceType === 'Desktop' ? (layout.contentSize as string) : '100%';
 
-  const iframeStyles = useMemo(
-    () => [
-      ...((styles as string[]) ?? []),
-      {
-        css: `.is-root-container{display:flow-root; width:${
-          layout.contentSize as string
-        }; margin: 0 auto;box-sizing: border-box;}`,
-      },
-    ],
-    [styles, layout.contentSize],
-  );
+  const iframeStyles = [
+    ...((styles as string[]) ?? []),
+    {
+      css: `.is-root-container{display:flow-root; width:${containerWidth}; margin: 0 auto;box-sizing: border-box;}`,
+    },
+  ];
 
   return (
     <div
