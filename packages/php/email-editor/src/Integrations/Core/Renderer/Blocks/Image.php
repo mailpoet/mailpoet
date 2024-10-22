@@ -7,7 +7,7 @@ use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 
 class Image extends AbstractBlockRenderer {
   protected function renderContent($blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    $parsedHtml = $this->parseBlockContent($blockContent);
+    $parsedHtml = $this->parseBlockContent($this->cleanupContent($blockContent));
 
     if (!$parsedHtml) {
       return '';
@@ -235,5 +235,14 @@ class Image extends AbstractBlockRenderer {
       'image' => $imageHtml,
       'caption' => $figcaptionHtml ?: '',
     ];
+  }
+
+  private function cleanupContent(string $contentHtml): string {
+    $html = new \WP_HTML_Tag_Processor($contentHtml);
+    if ($html->next_tag(['tag_name' => 'img'])) {
+      $html->remove_attribute('srcset');
+      $html->remove_attribute('class');
+    }
+    return $html->get_updated_html();
   }
 }

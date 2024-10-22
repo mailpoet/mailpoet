@@ -11,7 +11,7 @@ class ImageTest extends \MailPoetTest {
 
   private $imageContent = '
     <figure class="wp-block-image alignleft size-full is-style-default">
-        <img src="https://test.com/wp-content/uploads/2023/05/image.jpg" alt="" style=""/>
+        <img src="https://test.com/wp-content/uploads/2023/05/image.jpg" alt="" style="" srcset="https://test.com/wp-content/uploads/2023/05/image.jpg 1000w"/>
     </figure>
   ';
 
@@ -50,6 +50,7 @@ class ImageTest extends \MailPoetTest {
     $this->assertStringNotContainsString('<figcaption', $rendered);
     $this->assertStringNotContainsString('</figure>', $rendered);
     $this->assertStringNotContainsString('</figcaption>', $rendered);
+    $this->assertStringNotContainsString('srcset', $rendered);
     $this->assertStringContainsString('width="640"', $rendered);
     $this->assertStringContainsString('width:640px;', $rendered);
     $this->assertStringContainsString('<img ', $rendered);
