@@ -41,6 +41,9 @@ class TemplatePreview {
       $editorTheme->merge(new WP_Theme_JSON($templateTheme, 'custom'));
     }
     $additionalCSS = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'preview.css');
+    // Set proper content width for previews
+    $layoutSettings = $this->themeController->getLayoutSettings();
+    $additionalCSS .= ".is-root-container { width: {$layoutSettings['contentSize']}; margin: 0 auto; }";
     return $editorTheme->get_stylesheet() . $additionalCSS;
   }
 }
