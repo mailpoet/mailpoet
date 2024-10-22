@@ -2,7 +2,7 @@
 
 /*
  * Plugin Name: MailPoet
- * Version: 5.3.2
+ * Version: 5.3.3
  * Plugin URI: https://www.mailpoet.com
  * Description: Create and send newsletters, post notifications and welcome emails from your WordPress.
  * Author: MailPoet
@@ -20,7 +20,7 @@
  */
 
 $mailpoetPlugin = [
-  'version' => '5.3.2',
+  'version' => '5.3.3',
   'filename' => __FILE__,
   'path' => dirname(__FILE__),
   'autoloader' => dirname(__FILE__) . '/vendor/autoload.php',
