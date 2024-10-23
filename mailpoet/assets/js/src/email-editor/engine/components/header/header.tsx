@@ -172,14 +172,12 @@ export function Header() {
             />
           </>
         )}
-        {(!isFixedToolbarActive ||
-          !isBlockSelected ||
-          isBlockToolsCollapsed) && (
-          <div className="editor-header__center edit-post-header__center">
-            {hasDocumentNavigationHistory ? <DocumentBar /> : <CampaignName />}
-          </div>
-        )}
       </div>
+      {(!isFixedToolbarActive || !isBlockSelected || isBlockToolsCollapsed) && (
+        <div className="editor-header__center edit-post-header__center">
+          {hasDocumentNavigationHistory ? <DocumentBar /> : <CampaignName />}
+        </div>
+      )}
       <div className="editor-header__settings edit-post-header__settings">
         <SaveButton />
         <PreviewDropdown />

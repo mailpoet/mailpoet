@@ -5,3 +5,8 @@
   justify-content: center;
   width: 100%;
 }
+
+// Fix editor width. We don't use resizable editor wrapper so we need to set the width manually here
+.editor-visual-editor > div {
+  width: 100%;
+}
