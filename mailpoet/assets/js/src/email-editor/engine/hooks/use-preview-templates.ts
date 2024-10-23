@@ -50,10 +50,16 @@ export function usePreviewTemplates(): TemplatePreview[][] {
     return [[]];
   }
 
-  // Pick first pattern that comes from mailpoet
+  // Pick first pattern that comes from mailpoet and is for general email template
+  const contentPatternBlocksGeneral = patterns.find((pattern) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    pattern?.templateTypes?.includes('email-general-template'),
+  )?.blocks as BlockInstance[];
+
+  // Pick first pattern that comes from mailpoet and is for template with header and footer content separated
   const contentPatternBlocks = patterns.find((pattern) =>
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    pattern?.name?.startsWith('mailpoet'),
+    pattern?.templateTypes?.includes('email-template'),
   )?.blocks as BlockInstance[];
 
   return [
@@ -61,14 +67,19 @@ export function usePreviewTemplates(): TemplatePreview[][] {
       let parsedTemplate = parse(template.content?.raw);
       parsedTemplate = setPostContentInnerBlocks(
         parsedTemplate,
-        contentPatternBlocks,
+        template.slug === 'email-general'
+          ? contentPatternBlocksGeneral
+          : contentPatternBlocks,
       );
 
       return {
         slug: template.slug,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         contentParsed: parsedTemplate,
-        patternParsed: contentPatternBlocks,
+        patternParsed:
+          template.slug === 'email-general'
+            ? contentPatternBlocksGeneral
+            : contentPatternBlocks,
         template,
       };
     }),

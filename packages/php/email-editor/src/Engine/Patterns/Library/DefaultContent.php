@@ -7,6 +7,10 @@ class DefaultContent extends AbstractPattern {
     'core/post-content',
   ];
 
+  protected $templateTypes = [
+    'email-template',
+  ];
+
   protected function getContent(): string {
     return '
     <!-- wp:columns {"backgroundColor":"white","style":{"spacing":{"padding":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
