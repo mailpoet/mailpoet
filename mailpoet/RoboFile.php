@@ -404,7 +404,7 @@ class RoboFile extends \Robo\Tasks {
     return $this->testIntegration($opts);
   }
 
-  public function testAcceptance($opts = ['file' => null, 'skip-deps' => false, 'group' => null, 'timeout' => null, 'disable-hpos' => false, 'enable-hpos-sync' => false, 'enable-hpos' => false, 'wordpress-version' => null]) {
+  public function testAcceptance($opts = ['file' => null, 'skip-deps' => false, 'group' => null, 'timeout' => null, 'disable-hpos' => false, 'enable-hpos-sync' => false, 'enable-hpos' => false, 'wordpress-version' => null, 'skip-plugins' => false]) {
     return $this->runTestsInContainer($opts);
   }
 
