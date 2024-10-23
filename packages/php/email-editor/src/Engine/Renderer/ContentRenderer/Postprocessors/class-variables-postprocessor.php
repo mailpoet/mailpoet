@@ -1,5 +1,11 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors;
 
 use MailPoet\EmailEditor\Engine\Theme_Controller;
@@ -10,36 +16,52 @@ use MailPoet\EmailEditor\Engine\Theme_Controller;
  * This postprocessor uses variables from theme.json and replaces the CSS variables with their values in final email HTML.
  */
 class Variables_Postprocessor implements Postprocessor {
-	private Theme_Controller $themeController;
+	/**
+	 * Instance of Theme_Controller.
+	 *
+	 * @var Theme_Controller Theme controller.
+	 */
+	private Theme_Controller $theme_controller;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param Theme_Controller $theme_controller Theme controller.
+	 */
 	public function __construct(
-		Theme_Controller $themeController
+		Theme_Controller $theme_controller
 	) {
-		$this->themeController = $themeController;
+		$this->theme_controller = $theme_controller;
 	}
 
+	/**
+	 * Postprocess the HTML.
+	 *
+	 * @param string $html HTML to postprocess.
+	 * @return string
+	 */
 	public function postprocess( string $html ): string {
-		$variables    = $this->themeController->get_variables_values_map();
+		$variables    = $this->theme_controller->get_variables_values_map();
 		$replacements = array();
 
-		foreach ( $variables as $varName => $varValue ) {
-			$varPattern                  = '/' . preg_quote( 'var(' . $varName . ')', '/' ) . '/i';
-			$replacements[ $varPattern ] = $varValue;
+		foreach ( $variables as $name => $value ) {
+			$var_pattern                  = '/' . preg_quote( 'var(' . $name . ')', '/' ) . '/i';
+			$replacements[ $var_pattern ] = $value;
 		}
 
 		// Pattern to match style attributes and their values.
 		$callback = function ( $matches ) use ( $replacements ) {
-			// For each match, replace CSS variables with their values
+			// For each match, replace CSS variables with their values.
 			$style = $matches[1];
 			$style = preg_replace( array_keys( $replacements ), array_values( $replacements ), $style );
 			return 'style="' . esc_attr( $style ) . '"';
 		};
 
 		// We want to replace the CSS variables only in the style attributes to avoid replacing the actual content.
-		$stylePattern    = '/style="(.*?)"/i';
-		$stylePatternAlt = "/style='(.*?)'/i";
-		$html            = (string) preg_replace_callback( $stylePattern, $callback, $html );
-		$html            = (string) preg_replace_callback( $stylePatternAlt, $callback, $html );
+		$style_pattern     = '/style="(.*?)"/i';
+		$style_pattern_alt = "/style='(.*?)'/i";
+		$html              = (string) preg_replace_callback( $style_pattern, $callback, $html );
+		$html              = (string) preg_replace_callback( $style_pattern_alt, $callback, $html );
 
 		return $html;
 	}
