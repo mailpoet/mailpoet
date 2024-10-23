@@ -187,7 +187,6 @@ class Shortcodes {
           false :
           $customShortcode;
       }
-
     }
     return $processedShortcodes;
   }
@@ -204,6 +203,14 @@ class Shortcodes {
       $shortcodes,
       ($contentSource) ? $contentSource : $content
     );
+    if (is_array($content)) {
+      foreach ($content as $key => $item) {
+        $content[$key] = $this->replaceBit($item);
+      }
+    } else {
+      $content = $this->replaceBit($content);
+    }
+
     return str_replace($shortcodes, $processedShortcodes, $content);
   }
 
@@ -220,5 +227,55 @@ class Shortcodes {
       return $this->siteCategory;
     }
     return null;
+  }
+
+  private function replaceBit(string $content): string {
+    $content = str_replace('&lt;//wp-bit:mailpoet/firstname&gt;', '<//wp-bit:mailpoet/firstname>', $content);
+    $content = str_replace('&lt;//wp-bit:mailpoet/lastname&gt;', '<//wp-bit:mailpoet/lastname>', $content);
+    $processor = new class($content) extends \WP_HTML_Tag_Processor {
+      private $deferred_updates = []; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+      public function replace_token($new_content) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps,PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+        // @phpstan-ignore-next-line
+        $this->set_bookmark('here');
+        // @phpstan-ignore-next-line
+        $here = $this->bookmarks['here'];
+        $this->deferred_updates[] = new \WP_HTML_Text_Replacement( // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          $here->start,
+          $here->length,
+          $new_content
+        );
+      }
+
+      public function flush_updates() { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps,PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+        foreach ($this->deferred_updates as $update) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+          // @phpstan-ignore-next-line
+          $this->lexical_updates[] = $update; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+        }
+      }
+    };
+
+    // @phpstan-ignore-next-line
+    while ($processor->next_token()) {
+      // @phpstan-ignore-next-line
+      switch ($processor->get_token_type()) {
+        case '#funky-comment':
+          // @phpstan-ignore-next-line
+          if ($processor->get_modifiable_text() === '/wp-bit:mailpoet/firstname') {
+            $value = $this->subscriber ? $this->subscriber->getFirstName() : '';
+            $processor->replace_token($value);
+          }
+          // @phpstan-ignore-next-line
+          if ($processor->get_modifiable_text() === '/wp-bit:mailpoet/lastname') {
+            $value = $this->subscriber ? $this->subscriber->getLastName() : '';
+            $processor->replace_token($value);
+          }
+          break;
+      }
+    }
+    $processor->flush_updates();
+    $content = $processor->get_updated_html();
+
+    return $content;
   }
 }

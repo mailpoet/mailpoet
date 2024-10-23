@@ -14,4 +14,22 @@
     box-shadow: none;
     outline: none;
   }
+
+  .mailpoet-settings-panel__placeholder-shortcodes-dropdown {
+    .components-button {
+      height: 14px;
+      line-height: 14px;
+      padding: 0 5px;
+    }
+  }
+  .mailpoet-settings-panel__insert-bit-button {
+    height: 14px;
+    line-height: 14px;
+    padding: 0 5px;
+
+    svg {
+      height: 16px;
+      width: 16px;
+    }
+  }
 }
