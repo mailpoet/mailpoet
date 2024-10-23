@@ -21,12 +21,6 @@ class SettingsController {
     'enableCustomUnits' => ['px', '%'],
   ];
 
-  /**
-   * Width of the email in pixels.
-   * @var string
-   */
-  const EMAIL_WIDTH = '660px';
-
   private ThemeController $themeController;
 
   private array $iframeAssets = [];
