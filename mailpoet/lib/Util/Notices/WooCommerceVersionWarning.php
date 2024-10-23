@@ -24,7 +24,7 @@ class WooCommerceVersionWarning {
     if (!is_plugin_active('woocommerce/woocommerce.php')) {
       return;
     }
-    $woocommerceVersion = $this->wp->getPluginData(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php')['Version'];
+    $woocommerceVersion = $this->getWoocommerceVersion();
     $requiredWooCommerceVersion = $this->getRequiredWooCommerceVersion();
     if ($shouldDisplay && $this->isOutdatedWooCommerceVersion($woocommerceVersion, $requiredWooCommerceVersion)) {
       $this->display($requiredWooCommerceVersion);
@@ -53,8 +53,12 @@ class WooCommerceVersionWarning {
   }
 
   private function getTransientKey() {
-    $woocommerceVersion = $this->wp->getPluginData(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php')['Version'];
+    $woocommerceVersion = $this->getWoocommerceVersion();
     return self::OPTION_NAME . '_' . $this->getRequiredWooCommerceVersion() . '_' . $woocommerceVersion;
+  }
+
+  private function getWoocommerceVersion(): string {
+    return $this->wp->getPluginData(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', false, false)['Version'];
   }
 
   private function getRequiredWooCommerceVersion(): string {
