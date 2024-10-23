@@ -140,7 +140,7 @@ export function VisualEditor({
       {
         css: `.is-root-container{display:flow-root; width:${
           layout.contentSize as string
-        }; margin: 0 auto;}`,
+        }; margin: 0 auto;box-sizing: border-box;}`,
       },
     ],
     [styles, layout.contentSize],
@@ -180,6 +180,7 @@ export function VisualEditor({
             className={classnames(
               `is-${deviceType.toLowerCase()}-preview`,
               'wp-site-blocks',
+              'has-global-padding', // Ensures that padding is applied at the top level
             )}
             // @ts-expect-error No types for this exist yet.
             layout={blockListLayout}
