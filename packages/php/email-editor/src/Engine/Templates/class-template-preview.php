@@ -76,7 +76,7 @@ class Template_Preview {
 	 */
 	public function get_email_theme_preview_css( $template ): string {
 		$editor_theme   = clone $this->theme_controller->get_theme();
-		$template_theme = $this->templates->getBlockTemplateTheme( $template['id'], $template['wp_id'] );
+		$template_theme = $this->templates->get_block_template_theme( $template['id'], $template['wp_id'] );
 		if ( is_array( $template_theme ) ) {
 			$editor_theme->merge( new WP_Theme_JSON( $template_theme, 'custom' ) );
 		}
