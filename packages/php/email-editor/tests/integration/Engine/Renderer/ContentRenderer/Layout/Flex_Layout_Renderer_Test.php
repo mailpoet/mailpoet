@@ -37,7 +37,7 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
       ],
       'email_attrs' => [],
     ];
-    $output = $this->renderer->renderInnerBlocksInLayout($parsedBlock, $this->settingsController);
+    $output = $this->renderer->render_inner_blocks_in_layout($parsedBlock, $this->settingsController);
     verify($output)->stringContainsString('Dummy 1');
     verify($output)->stringContainsString('Dummy 2');
   }
@@ -53,17 +53,17 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
       'email_attrs' => [],
     ];
     // Default justification is left
-    $output = $this->renderer->renderInnerBlocksInLayout($parsedBlock, $this->settingsController);
+    $output = $this->renderer->render_inner_blocks_in_layout($parsedBlock, $this->settingsController);
     verify($output)->stringContainsString('text-align: left');
     verify($output)->stringContainsString('align="left"');
     // Right justification
     $parsedBlock['attrs']['layout']['justifyContent'] = 'right';
-    $output = $this->renderer->renderInnerBlocksInLayout($parsedBlock, $this->settingsController);
+    $output = $this->renderer->render_inner_blocks_in_layout($parsedBlock, $this->settingsController);
     verify($output)->stringContainsString('text-align: right');
     verify($output)->stringContainsString('align="right"');
     // Center justification
     $parsedBlock['attrs']['layout']['justifyContent'] = 'center';
-    $output = $this->renderer->renderInnerBlocksInLayout($parsedBlock, $this->settingsController);
+    $output = $this->renderer->render_inner_blocks_in_layout($parsedBlock, $this->settingsController);
     verify($output)->stringContainsString('text-align: center');
     verify($output)->stringContainsString('align="center"');
   }
@@ -79,7 +79,7 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
       'email_attrs' => [],
     ];
     $parsedBlock['attrs']['layout']['justifyContent'] = '"> <script>alert("XSS")</script><div style="text-align: right';
-    $output = $this->renderer->renderInnerBlocksInLayout($parsedBlock, $this->settingsController);
+    $output = $this->renderer->render_inner_blocks_in_layout($parsedBlock, $this->settingsController);
     verify($output)->stringNotContainsString('<script>alert("XSS")</script>');
   }
 
@@ -104,7 +104,7 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
         'attrs' => ['width' => '25'],
       ],
     ];
-    $output = $this->renderer->renderInnerBlocksInLayout($parsedBlock, $this->settingsController);
+    $output = $this->renderer->render_inner_blocks_in_layout($parsedBlock, $this->settingsController);
     $flexItems = $this->getFlexItemsFromOutput($output);
     verify($flexItems[0])->stringContainsString('width:312px;');
     verify($flexItems[1])->stringContainsString('width:148px;');
@@ -127,7 +127,7 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
         'attrs' => [],
       ],
     ];
-    $output = $this->renderer->renderInnerBlocksInLayout($parsedBlock, $this->settingsController);
+    $output = $this->renderer->render_inner_blocks_in_layout($parsedBlock, $this->settingsController);
     $flexItems = $this->getFlexItemsFromOutput($output);
     verify($flexItems[0])->stringContainsString('width:148px;');
     verify($flexItems[1])->stringContainsString('width:148px;');
@@ -146,7 +146,7 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
         'attrs' => ['width' => '50'],
       ],
     ];
-    $output = $this->renderer->renderInnerBlocksInLayout($parsedBlock, $this->settingsController);
+    $output = $this->renderer->render_inner_blocks_in_layout($parsedBlock, $this->settingsController);
     $flexItems = $this->getFlexItemsFromOutput($output);
     verify($flexItems[0])->stringContainsString('width:312px;');
     verify($flexItems[1])->stringContainsString('width:312px;');
@@ -173,7 +173,7 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
         'attrs' => ['width' => '25'],
       ],
     ];
-    $output = $this->renderer->renderInnerBlocksInLayout($parsedBlock, $this->settingsController);
+    $output = $this->renderer->render_inner_blocks_in_layout($parsedBlock, $this->settingsController);
     $flexItems = $this->getFlexItemsFromOutput($output);
     verify($flexItems[0])->stringContainsString('width:508px;');
     verify($flexItems[1])->stringContainsString('width:105px;');
@@ -191,7 +191,7 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
         'attrs' => ['width' => '100'],
       ],
     ];
-    $output = $this->renderer->renderInnerBlocksInLayout($parsedBlock, $this->settingsController);
+    $output = $this->renderer->render_inner_blocks_in_layout($parsedBlock, $this->settingsController);
     $flexItems = $this->getFlexItemsFromOutput($output);
     verify($flexItems[0])->stringContainsString('width:312px;');
     verify($flexItems[1])->stringContainsString('width:312px;');
@@ -210,7 +210,7 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
         'attrs' => [],
       ],
     ];
-    $output = $this->renderer->renderInnerBlocksInLayout($parsedBlock, $this->settingsController);
+    $output = $this->renderer->render_inner_blocks_in_layout($parsedBlock, $this->settingsController);
     $flexItems = $this->getFlexItemsFromOutput($output);
     verify($flexItems[0])->stringContainsString('width:508px;');
     verify($flexItems[1])->stringNotContainsString('width:');

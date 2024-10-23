@@ -22,6 +22,6 @@ class Buttons extends Abstract_Block_Renderer {
 		if ( isset( $parsedBlock['attrs']['style']['typography']['fontSize'] ) ) {
 			unset( $parsedBlock['attrs']['style']['typography']['fontSize'] );
 		}
-		return $this->flexLayoutRenderer->renderInnerBlocksInLayout( $parsedBlock, $settingsController );
+		return $this->flexLayoutRenderer->render_inner_blocks_in_layout( $parsedBlock, $settingsController );
 	}
 }
