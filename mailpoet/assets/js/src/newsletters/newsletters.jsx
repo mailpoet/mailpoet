@@ -87,7 +87,7 @@ const Tabs = withNpsPoll(() => {
       {MailPoet.corrupt_newsletters.length > 0 && (
         <CorruptEmailNotice newsletters={MailPoet.corrupt_newsletters} />
       )}
-      <div data-automation-id="newsletters_listing_tabs">
+      <div key="emails" data-automation-id="newsletters_listing_tabs">
         <TabPanel
           tabs={tabs}
           initialTabName={currentTab}
@@ -97,7 +97,9 @@ const Tabs = withNpsPoll(() => {
           }}
         >
           {(tab) => (
-            <div data-automation-id={tab.automationId}>{tab.content}</div>
+            <div key={tab.name} data-automation-id={tab.automationId}>
+              {tab.content}
+            </div>
           )}
         </TabPanel>
       </div>
