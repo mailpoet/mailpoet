@@ -179,18 +179,6 @@ class Templates {
       'title' => __('Simple Light', 'mailpoet'),
       'description' => __('A basic template with header and footer.', 'mailpoet'),
     ];
-    $this->templates['awesome-one'] = [
-      'title' => __('Awesome Template One', 'mailpoet'),
-      'description' => __('A template used in testing.', 'mailpoet'),
-    ];
-    $this->templates['awesome-two'] = [
-      'title' => __('Awesome Template Two', 'mailpoet'),
-      'description' => __('A template used in testing.', 'mailpoet'),
-    ];
-    $this->templates['email-computing-mag'] = [
-      'title' => __('Retro Computing Mag', 'mailpoet'),
-      'description' => __('A retro themed template.', 'mailpoet'),
-    ];
   }
 
   private function initializeApi(): void {
