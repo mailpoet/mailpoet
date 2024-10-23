@@ -174,6 +174,11 @@ export const getEditedPostTemplate = createRegistrySelector(
   },
 );
 
+export const getTemplateContent = () => {
+  const template = getEditedPostTemplate();
+  return template?.content || '';
+};
+
 export const getCurrentTemplate = createRegistrySelector((select) => () => {
   const isEditingTemplate =
     select(editorStore).getCurrentPostType() === 'wp_template';

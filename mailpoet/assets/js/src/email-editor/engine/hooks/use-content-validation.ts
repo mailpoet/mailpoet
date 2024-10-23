@@ -43,15 +43,19 @@ const rules = [
 export const useContentValidation = (): ContentValidationData => {
   const { addValidationNotice, hasValidationNotice, removeValidationNotice } =
     useValidationNotices();
-  const editedContent = useSelect((mapSelect) =>
-    mapSelect(emailEditorStore).getEditedEmailContent(),
-  );
+  const { editedContent, editedTemplateContent } = useSelect((mapSelect) => ({
+    editedContent: mapSelect(emailEditorStore).getEditedEmailContent(),
+    editedTemplateContent: mapSelect(emailEditorStore).getTemplateContent(),
+  }));
+
   const content = useShallowEqual(editedContent);
+  const templateContent = useShallowEqual(editedTemplateContent);
 
   const validateContent = useCallback((): boolean => {
     let isValid = true;
     rules.forEach(({ id, test, message, actions }) => {
-      if (test(content)) {
+      // Check both content and template content for the rule.
+      if (test(content + templateContent)) {
         addValidationNotice(id, message, actions);
         isValid = false;
       } else if (hasValidationNotice(id)) {
@@ -61,6 +65,7 @@ export const useContentValidation = (): ContentValidationData => {
     return isValid;
   }, [
     content,
+    templateContent,
     addValidationNotice,
     removeValidationNotice,
     hasValidationNotice,
