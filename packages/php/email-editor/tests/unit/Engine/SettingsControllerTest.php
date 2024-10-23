@@ -17,11 +17,9 @@ class SettingsControllerTest extends \MailPoetUnitTest {
     ]);
     $themeController = $this->createMock(ThemeController::class);
     $themeController->method('getTheme')->willReturn($themeJsonMock);
-    $themeController->method('getSettings')->willReturn([
-      "layout" => [
-        "contentSize" => "660px",
-        "wideSize" => "660px",
-      ],
+    $themeController->method('getLayoutSettings')->willReturn([
+      "contentSize" => "660px",
+      "wideSize" => null,
     ]);
     $settingsController = new SettingsController($themeController);
     $layoutWidth = $settingsController->getLayoutWidthWithoutPadding();

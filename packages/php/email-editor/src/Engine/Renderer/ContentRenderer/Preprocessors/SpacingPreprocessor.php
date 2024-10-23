@@ -15,7 +15,8 @@ class SpacingPreprocessor implements Preprocessor {
   private function addBlockGaps(array $parsedBlocks, string $gap = '', $parentBlock = null): array {
     foreach ($parsedBlocks as $key => $block) {
       $parentBlockName = $parentBlock['blockName'] ?? '';
-
+      // Ensure that email_attrs are set
+      $block['email_attrs'] = $block['email_attrs'] ?? [];
       /**
        * Do not add a gap to:
        * - the top level blocks - they are post-content, and header and footer wrappers and we don't want a gap between those
