@@ -176,7 +176,6 @@ export function VisualEditor({
           <BlockList
             className={classnames(
               `is-${deviceType.toLowerCase()}-preview`,
-              'wp-site-blocks',
               'has-global-padding', // Ensures that padding is applied at the top level
             )}
             // @ts-expect-error No types for this exist yet.
