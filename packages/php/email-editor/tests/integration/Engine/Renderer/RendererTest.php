@@ -107,6 +107,9 @@ class RendererTest extends \MailPoetTest {
     verify($style)->stringContainsString('font-family: Test Font Family;');
     verify($style)->stringContainsString('padding-top: 3px;');
     verify($style)->stringContainsString('padding-bottom: 4px;');
+    verify($style)->stringContainsString('padding-left: 2px;');
+    verify($style)->stringContainsString('padding-right: 1px;');
+    verify($style)->stringContainsString('max-width: 660px;');
   }
 
   private function getStylesValueForTag(string $html, array $query): ?string {
