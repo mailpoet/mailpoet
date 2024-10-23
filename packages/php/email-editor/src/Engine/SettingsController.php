@@ -70,9 +70,9 @@ class SettingsController {
     ];
 
     $settings['__experimentalFeatures'] = $themeSettings;
-
-    // Enabling alignWide allows full width for specific blocks such as columns, heading, image, etc.
-    $settings['alignWide'] = true;
+    // Controls which alignment options are available for blocks
+    $settings['supportsLayout'] = true; // Allow using default layouts
+    $settings['__unstableIsBlockBasedTheme'] = true; // For default setting this to true disables wide and full alignments
     return $settings;
   }
 
