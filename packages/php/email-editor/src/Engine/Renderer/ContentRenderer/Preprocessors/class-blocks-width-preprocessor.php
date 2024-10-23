@@ -1,5 +1,11 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors;
 
 /**
@@ -7,95 +13,123 @@ namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors;
  * The final width in pixels is stored in the email_attrs array because we would like to avoid changing the original attributes.
  */
 class Blocks_Width_Preprocessor implements Preprocessor {
-	public function preprocess( array $parsedBlocks, array $layout, array $styles ): array {
-		foreach ( $parsedBlocks as $key => $block ) {
-			// Layout width is recalculated for each block because full-width blocks don't exclude padding
-			$layoutWidth = $this->parseNumberFromStringWithPixels( $layout['contentSize'] );
-			$alignment   = $block['attrs']['align'] ?? null;
-			// Subtract padding from the block width if it's not full-width
-			if ( $alignment !== 'full' ) {
-				$layoutWidth -= $this->parseNumberFromStringWithPixels( $styles['spacing']['padding']['left'] ?? '0px' );
-				$layoutWidth -= $this->parseNumberFromStringWithPixels( $styles['spacing']['padding']['right'] ?? '0px' );
+	/**
+	 * Method to preprocess the content before rendering
+	 *
+	 * @param array                                                                                                             $parsed_blocks Parsed blocks of the email.
+	 * @param array{contentSize: string}                                                                                        $layout Layout of the email.
+	 * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
+	 * @return array
+	 */
+	public function preprocess( array $parsed_blocks, array $layout, array $styles ): array {
+		foreach ( $parsed_blocks as $key => $block ) {
+			// Layout width is recalculated for each block because full-width blocks don't exclude padding.
+			$layout_width = $this->parse_number_from_string_with_pixels( $layout['contentSize'] );
+			$alignment    = $block['attrs']['align'] ?? null;
+			// Subtract padding from the block width if it's not full-width.
+			if ( 'full' !== $alignment ) {
+				$layout_width -= $this->parse_number_from_string_with_pixels( $styles['spacing']['padding']['left'] ?? '0px' );
+				$layout_width -= $this->parse_number_from_string_with_pixels( $styles['spacing']['padding']['right'] ?? '0px' );
 			}
 
-			$widthInput = $block['attrs']['width'] ?? '100%';
+			$width_input = $block['attrs']['width'] ?? '100%';
 			// Currently we support only % and px units in case only the number is provided we assume it's %
 			// because editor saves percent values as a number.
-			$widthInput = is_numeric( $widthInput ) ? "$widthInput%" : $widthInput;
-			$width      = $this->convertWidthToPixels( $widthInput, $layoutWidth );
+			$width_input = is_numeric( $width_input ) ? "$width_input%" : $width_input;
+			$width       = $this->convert_width_to_pixels( $width_input, $layout_width );
 
-			if ( $block['blockName'] === 'core/columns' ) {
-				// Calculate width of the columns based on the layout width and padding
-				$columnsWidth         = $layoutWidth;
-				$columnsWidth        -= $this->parseNumberFromStringWithPixels( $block['attrs']['style']['spacing']['padding']['left'] ?? '0px' );
-				$columnsWidth        -= $this->parseNumberFromStringWithPixels( $block['attrs']['style']['spacing']['padding']['right'] ?? '0px' );
-				$borderWidth          = $block['attrs']['style']['border']['width'] ?? '0px';
-				$columnsWidth        -= $this->parseNumberFromStringWithPixels( $block['attrs']['style']['border']['left']['width'] ?? $borderWidth );
-				$columnsWidth        -= $this->parseNumberFromStringWithPixels( $block['attrs']['style']['border']['right']['width'] ?? $borderWidth );
-				$block['innerBlocks'] = $this->addMissingColumnWidths( $block['innerBlocks'], $columnsWidth );
+			if ( 'core/columns' === $block['blockName'] ) {
+				// Calculate width of the columns based on the layout width and padding.
+				$columns_width        = $layout_width;
+				$columns_width       -= $this->parse_number_from_string_with_pixels( $block['attrs']['style']['spacing']['padding']['left'] ?? '0px' );
+				$columns_width       -= $this->parse_number_from_string_with_pixels( $block['attrs']['style']['spacing']['padding']['right'] ?? '0px' );
+				$border_width         = $block['attrs']['style']['border']['width'] ?? '0px';
+				$columns_width       -= $this->parse_number_from_string_with_pixels( $block['attrs']['style']['border']['left']['width'] ?? $border_width );
+				$columns_width       -= $this->parse_number_from_string_with_pixels( $block['attrs']['style']['border']['right']['width'] ?? $border_width );
+				$block['innerBlocks'] = $this->add_missing_column_widths( $block['innerBlocks'], $columns_width );
 			}
 
-			// Copy layout styles and update width and padding
-			$modifiedLayout                                = $layout;
-			$modifiedLayout['contentSize']                 = "{$width}px";
-			$modifiedStyles                                = $styles;
-			$modifiedStyles['spacing']['padding']['left']  = $block['attrs']['style']['spacing']['padding']['left'] ?? '0px';
-			$modifiedStyles['spacing']['padding']['right'] = $block['attrs']['style']['spacing']['padding']['right'] ?? '0px';
+			// Copy layout styles and update width and padding.
+			$modified_layout                                = $layout;
+			$modified_layout['contentSize']                 = "{$width}px";
+			$modified_styles                                = $styles;
+			$modified_styles['spacing']['padding']['left']  = $block['attrs']['style']['spacing']['padding']['left'] ?? '0px';
+			$modified_styles['spacing']['padding']['right'] = $block['attrs']['style']['spacing']['padding']['right'] ?? '0px';
 
 			$block['email_attrs']['width'] = "{$width}px";
-			$block['innerBlocks']          = $this->preprocess( $block['innerBlocks'], $modifiedLayout, $modifiedStyles );
-			$parsedBlocks[ $key ]          = $block;
+			$block['innerBlocks']          = $this->preprocess( $block['innerBlocks'], $modified_layout, $modified_styles );
+			$parsed_blocks[ $key ]         = $block;
 		}
-		return $parsedBlocks;
+		return $parsed_blocks;
 	}
 
 	// TODO: We could add support for other units like em, rem, etc.
-	private function convertWidthToPixels( string $currentWidth, float $layoutWidth ): float {
-		$width = $layoutWidth;
-		if ( strpos( $currentWidth, '%' ) !== false ) {
-			$width = (float) str_replace( '%', '', $currentWidth );
-			$width = round( $width / 100 * $layoutWidth );
-		} elseif ( strpos( $currentWidth, 'px' ) !== false ) {
-			$width = $this->parseNumberFromStringWithPixels( $currentWidth );
+	/**
+	 * Convert width to pixels
+	 *
+	 * @param string $current_width Current width.
+	 * @param float  $layout_width Layout width.
+	 * @return float
+	 */
+	private function convert_width_to_pixels( string $current_width, float $layout_width ): float {
+		$width = $layout_width;
+		if ( strpos( $current_width, '%' ) !== false ) {
+			$width = (float) str_replace( '%', '', $current_width );
+			$width = round( $width / 100 * $layout_width );
+		} elseif ( strpos( $current_width, 'px' ) !== false ) {
+			$width = $this->parse_number_from_string_with_pixels( $current_width );
 		}
 
 		return $width;
 	}
 
-	private function parseNumberFromStringWithPixels( string $string ): float {
-		return (float) str_replace( 'px', '', $string );
+	/**
+	 * Parse number from string with pixels
+	 *
+	 * @param string $value Value with pixels.
+	 * @return float
+	 */
+	private function parse_number_from_string_with_pixels( string $value ): float {
+		return (float) str_replace( 'px', '', $value );
 	}
 
-	private function addMissingColumnWidths( array $columns, float $columnsWidth ): array {
-		$columnsCountWithDefinedWidth = 0;
-		$definedColumnWidth           = 0;
-		$columnsCount                 = count( $columns );
+	/**
+	 * Add missing column widths
+	 *
+	 * @param array $columns Columns.
+	 * @param float $columns_width Columns width.
+	 * @return array
+	 */
+	private function add_missing_column_widths( array $columns, float $columns_width ): array {
+		$columns_count_with_defined_width = 0;
+		$defined_column_width             = 0;
+		$columns_count                    = count( $columns );
 		foreach ( $columns as $column ) {
 			if ( isset( $column['attrs']['width'] ) && ! empty( $column['attrs']['width'] ) ) {
-				++$columnsCountWithDefinedWidth;
-				$definedColumnWidth += $this->convertWidthToPixels( $column['attrs']['width'], $columnsWidth );
+				++$columns_count_with_defined_width;
+				$defined_column_width += $this->convert_width_to_pixels( $column['attrs']['width'], $columns_width );
 			} else {
-				// When width is not set we need to add padding to the defined column width for better ratio accuracy
-				$definedColumnWidth += $this->parseNumberFromStringWithPixels( $column['attrs']['style']['spacing']['padding']['left'] ?? '0px' );
-				$definedColumnWidth += $this->parseNumberFromStringWithPixels( $column['attrs']['style']['spacing']['padding']['right'] ?? '0px' );
-				$borderWidth         = $column['attrs']['style']['border']['width'] ?? '0px';
-				$definedColumnWidth += $this->parseNumberFromStringWithPixels( $column['attrs']['style']['border']['left']['width'] ?? $borderWidth );
-				$definedColumnWidth += $this->parseNumberFromStringWithPixels( $column['attrs']['style']['border']['right']['width'] ?? $borderWidth );
+				// When width is not set we need to add padding to the defined column width for better ratio accuracy.
+				$defined_column_width += $this->parse_number_from_string_with_pixels( $column['attrs']['style']['spacing']['padding']['left'] ?? '0px' );
+				$defined_column_width += $this->parse_number_from_string_with_pixels( $column['attrs']['style']['spacing']['padding']['right'] ?? '0px' );
+				$border_width          = $column['attrs']['style']['border']['width'] ?? '0px';
+				$defined_column_width += $this->parse_number_from_string_with_pixels( $column['attrs']['style']['border']['left']['width'] ?? $border_width );
+				$defined_column_width += $this->parse_number_from_string_with_pixels( $column['attrs']['style']['border']['right']['width'] ?? $border_width );
 			}
 		}
 
-		if ( $columnsCount - $columnsCountWithDefinedWidth > 0 ) {
-			$defaultColumnsWidth = round( ( $columnsWidth - $definedColumnWidth ) / ( $columnsCount - $columnsCountWithDefinedWidth ), 2 );
+		if ( $columns_count - $columns_count_with_defined_width > 0 ) {
+			$default_columns_width = round( ( $columns_width - $defined_column_width ) / ( $columns_count - $columns_count_with_defined_width ), 2 );
 			foreach ( $columns as $key => $column ) {
 				if ( ! isset( $column['attrs']['width'] ) || empty( $column['attrs']['width'] ) ) {
-					// Add padding to the specific column width because it's not included in the default width
-					$columnWidth                       = $defaultColumnsWidth;
-					$columnWidth                      += $this->parseNumberFromStringWithPixels( $column['attrs']['style']['spacing']['padding']['left'] ?? '0px' );
-					$columnWidth                      += $this->parseNumberFromStringWithPixels( $column['attrs']['style']['spacing']['padding']['right'] ?? '0px' );
-					$borderWidth                       = $column['attrs']['style']['border']['width'] ?? '0px';
-					$columnWidth                      += $this->parseNumberFromStringWithPixels( $column['attrs']['style']['border']['left']['width'] ?? $borderWidth );
-					$columnWidth                      += $this->parseNumberFromStringWithPixels( $column['attrs']['style']['border']['right']['width'] ?? $borderWidth );
-					$columns[ $key ]['attrs']['width'] = "{$columnWidth}px";
+					// Add padding to the specific column width because it's not included in the default width.
+					$column_width                      = $default_columns_width;
+					$column_width                     += $this->parse_number_from_string_with_pixels( $column['attrs']['style']['spacing']['padding']['left'] ?? '0px' );
+					$column_width                     += $this->parse_number_from_string_with_pixels( $column['attrs']['style']['spacing']['padding']['right'] ?? '0px' );
+					$border_width                      = $column['attrs']['style']['border']['width'] ?? '0px';
+					$column_width                     += $this->parse_number_from_string_with_pixels( $column['attrs']['style']['border']['left']['width'] ?? $border_width );
+					$column_width                     += $this->parse_number_from_string_with_pixels( $column['attrs']['style']['border']['right']['width'] ?? $border_width );
+					$columns[ $key ]['attrs']['width'] = "{$column_width}px";
 				}
 			}
 		}

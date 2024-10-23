@@ -1,11 +1,24 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors;
 
+/**
+ * Interface Preprocessor
+ */
 interface Preprocessor {
 	/**
-	 * @param array{contentSize: string}                                                                                        $layout
-	 * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles
+	 * Method to preprocess the content before rendering
+	 *
+	 * @param array                                                                                                             $parsed_blocks Parsed blocks of the email.
+	 * @param array{contentSize: string}                                                                                        $layout Layout of the email.
+	 * @param array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles Styles of the email.
+	 * @return array
 	 */
-	public function preprocess( array $parsedBlocks, array $layout, array $styles ): array;
+	public function preprocess( array $parsed_blocks, array $layout, array $styles ): array;
 }
