@@ -175,17 +175,9 @@ class Templates {
       'title' => __('General Email', 'mailpoet'),
       'description' => __('A general template for emails.', 'mailpoet'),
     ];
-    $this->templates['awesome-one'] = [
-      'title' => __('Awesome Template One', 'mailpoet'),
-      'description' => __('A template used in testing.', 'mailpoet'),
-    ];
-    $this->templates['awesome-two'] = [
-      'title' => __('Awesome Template Two', 'mailpoet'),
-      'description' => __('A template used in testing.', 'mailpoet'),
-    ];
-    $this->templates['email-computing-mag'] = [
-      'title' => __('Retro Computing Mag', 'mailpoet'),
-      'description' => __('A retro themed template.', 'mailpoet'),
+    $this->templates['simple-light'] = [
+      'title' => __('Simple Light', 'mailpoet'),
+      'description' => __('A basic template with header and footer.', 'mailpoet'),
     ];
   }
 

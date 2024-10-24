@@ -17,16 +17,14 @@ class SettingsControllerTest extends \MailPoetUnitTest {
     ]);
     $themeController = $this->createMock(ThemeController::class);
     $themeController->method('getTheme')->willReturn($themeJsonMock);
-    $themeController->method('getSettings')->willReturn([
-      "layout" => [
-        "contentSize" => "660px",
-        "wideSize" => "660px",
-      ],
+    $themeController->method('getLayoutSettings')->willReturn([
+      "contentSize" => "660px",
+      "wideSize" => null,
     ]);
     $settingsController = new SettingsController($themeController);
     $layoutWidth = $settingsController->getLayoutWidthWithoutPadding();
     // default width is 660px and if we subtract padding from left and right we must get the correct value
-    $expectedWidth = (int)SettingsController::EMAIL_WIDTH - 10 * 2;
+    $expectedWidth = 660 - 10 * 2;
     $this->assertEquals($expectedWidth . 'px', $layoutWidth);
   }
 }

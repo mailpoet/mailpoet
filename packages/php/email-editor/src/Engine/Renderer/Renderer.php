@@ -45,8 +45,9 @@ class Renderer {
     // Set the theme for the template. This is merged with base theme.json and core json before rendering.
     self::$theme = new WP_Theme_JSON($theme, 'default');
 
-    $emailStyles = $this->themeController->getStyles($post, $template, true);
+    $emailStyles = $this->themeController->getStyles($post, $template);
     $templateHtml = $this->contentRenderer->render($post, $template);
+    $layout = $this->themeController->getLayoutSettings();
 
     ob_start();
     include self::TEMPLATE_FILE;
@@ -59,12 +60,15 @@ class Renderer {
             'color' => $emailStyles['color']['text'] ?? 'inherit',
             'padding-top' => $emailStyles['spacing']['padding']['top'] ?? '0px',
             'padding-bottom' => $emailStyles['spacing']['padding']['bottom'] ?? '0px',
+            'padding-left' => $emailStyles['spacing']['padding']['left'] ?? '0px',
+            'padding-right' => $emailStyles['spacing']['padding']['right'] ?? '0px',
             'font-family' => $emailStyles['typography']['fontFamily'] ?? 'inherit',
             'line-height' => $emailStyles['typography']['lineHeight'] ?? '1.5',
             'font-size' => $emailStyles['typography']['fontSize'] ?? 'inherit',
           ],
       'body, .email_layout_wrapper'
     );
+    $templateStyles .= '.email_layout_wrapper { box-sizing: border-box;}';
     $templateStyles .= file_get_contents(dirname(__FILE__) . '/' . self::TEMPLATE_STYLES_FILE);
     $templateStyles = '<style>' . wp_strip_all_tags((string)apply_filters('mailpoet_email_renderer_styles', $templateStyles, $post)) . '</style>';
     $renderedTemplate = $this->inlineCSSStyles($templateStyles . $renderedTemplate);

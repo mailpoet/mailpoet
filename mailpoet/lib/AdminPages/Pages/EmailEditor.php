@@ -89,7 +89,6 @@ class EmailEditor {
         'is_premium_plugin_active' => (bool)$this->servicesChecker->isPremiumPluginActive(),
         'current_wp_user_email' => esc_js($currentUserEmail),
         'editor_settings' => $this->settingsController->getSettings(),
-        'editor_layout' => $this->settingsController->getLayout(),
         'editor_theme' => $this->themeController->getTheme()->get_raw_data(),
         'urls' => [
           'listings' => admin_url('admin.php?page=mailpoet-newsletters'),

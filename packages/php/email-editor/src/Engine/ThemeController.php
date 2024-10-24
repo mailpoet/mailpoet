@@ -36,35 +36,30 @@ class ThemeController {
     return apply_filters('mailpoet_email_editor_theme_json', $theme);
   }
 
-  /**
-   * Convert compressed format presets to valid CSS values.
-   *
-   * @param string $value Value to convert.
-   * @param array $presets List of variable presets from theme.json
-   * @return mixed Converted or original value.
-   */
-  private function maybeConvertPreset($value, $presets) {
-    if (!is_string($value)) {
-      return $value;
-    }
-
-    if (strstr($value, 'var:preset|color|')) {
-        $value = str_replace('var:preset|color|', '', $value);
-        $value = sprintf('var(--wp--preset--color--%s)', $value);
-    }
-
-    return preg_replace(array_keys($presets), array_values($presets), $value);
-  }
-
   private function recursiveReplacePresets($values, $presets) {
     foreach ($values as $key => $value) {
       if (is_array($value)) {
         $values[$key] = $this->recursiveReplacePresets($value, $presets);
+      } elseif (is_string($value)) {
+        $values[$key] = preg_replace(array_keys($presets), array_values($presets), $value);
       } else {
-        $values[$key] = self::maybeConvertPreset($value, $presets);
+        $values[$key] = $value;
       }
     }
     return $values;
+  }
+
+  private function recursiveExtractPresetVariables($styles) {
+    foreach ($styles as $key => $styleValue) {
+      if (is_array($styleValue)) {
+        $styles[$key] = $this->recursiveExtractPresetVariables($styleValue);
+      } elseif (strpos($styleValue, 'var:preset|') === 0) {
+        $styles[$key] = 'var(--wp--' . str_replace('|', '--', str_replace('var:', '', $styleValue)) . ')';
+      } else {
+        $styles[$key] = $styleValue;
+      }
+    }
+    return $styles;
   }
 
   /**
@@ -86,7 +81,7 @@ class ThemeController {
    *   }
    * }
    */
-  public function getStyles($post = null, $template = null, $convertPresets = false): array {
+  public function getStyles($post = null, $template = null): array {
     $themeStyles = $this->getTheme()->get_data()['styles'];
 
     // Replace template styles.
@@ -96,18 +91,19 @@ class ThemeController {
       $themeStyles = array_replace_recursive($themeStyles, $templateStyles);
     }
 
+    // Extract preset variables
+    $themeStyles = $this->recursiveExtractPresetVariables($themeStyles);
+
     // Replace preset values.
-    if ($convertPresets) {
-      $variables = $this->getVariablesValuesMap();
-      $presets = [];
+    $variables = $this->getVariablesValuesMap();
+    $presets = [];
 
-      foreach ($variables as $varName => $varValue) {
-        $varPattern = '/var\(' . preg_quote($varName, '/') . '\)/i';
-        $presets[$varPattern] = $varValue;
-      }
-
-      $themeStyles = $this->recursiveReplacePresets($themeStyles, $presets);
+    foreach ($variables as $varName => $varValue) {
+      $varPattern = '/var\(' . preg_quote($varName, '/') . '\)/i';
+      $presets[$varPattern] = $varValue;
     }
+
+    $themeStyles = $this->recursiveReplacePresets($themeStyles, $presets);
 
     return $themeStyles;
   }
@@ -120,6 +116,10 @@ class ThemeController {
       $emailEditorThemeSettings['color']['palette']['theme'] = $siteThemeSettings['color']['palette']['theme'];
     }
     return $emailEditorThemeSettings;
+  }
+
+  public function getLayoutSettings(): array {
+    return $this->getTheme()->get_settings()['layout'];
   }
 
   public function getStylesheetFromContext($context, $options = []): string {

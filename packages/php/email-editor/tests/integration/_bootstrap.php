@@ -109,6 +109,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
     $container->set(TemplatePreview::class, function ($container) {
       return new TemplatePreview(
         $container->get(ThemeController::class),
+        $container->get(SettingsController::class),
         $container->get(Templates::class),
       );
     });
