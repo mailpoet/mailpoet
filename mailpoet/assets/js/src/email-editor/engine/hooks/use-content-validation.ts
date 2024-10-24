@@ -15,35 +15,6 @@ export type ContentValidationData = {
 
 let contentBlockId;
 
-const rules = [
-  {
-    id: 'missing-unsubscribe-link',
-    test: (content) => !content.includes('[link:subscription_unsubscribe_url]'),
-    message: __('All emails must include an "Unsubscribe" link.', 'mailpoet'),
-    actions: [
-      {
-        label: __('Insert link', 'mailpoet'),
-        onClick: () => {
-          void dispatch(blockEditorStore).insertBlock(
-            createBlock('core/paragraph', {
-              className: 'has-small-font-size',
-              content: `<a href="[link:subscription_unsubscribe_url]">${__(
-                'Unsubscribe',
-                'mailpoet',
-              )}</a> | <a href="[link:subscription_manage_url]">${__(
-                'Manage subscription',
-                'mailpoet',
-              )}</a>`,
-            }),
-            undefined,
-            contentBlockId,
-          );
-        },
-      },
-    ],
-  },
-];
-
 export const useContentValidation = (): ContentValidationData => {
   contentBlockId = useSelect((select) => {
     // @ts-expect-error getBlocksByName is not defined in types
@@ -58,6 +29,36 @@ export const useContentValidation = (): ContentValidationData => {
 
   const content = useShallowEqual(editedContent);
   const templateContent = useShallowEqual(editedTemplateContent);
+
+  const rules = [
+    {
+      id: 'missing-unsubscribe-link',
+      test: (content) =>
+        !content.includes('[link:subscription_unsubscribe_url]'),
+      message: __('All emails must include an "Unsubscribe" link.', 'mailpoet'),
+      actions: [
+        {
+          label: __('Insert link', 'mailpoet'),
+          onClick: () => {
+            void dispatch(blockEditorStore).insertBlock(
+              createBlock('core/paragraph', {
+                className: 'has-small-font-size',
+                content: `<a href="[link:subscription_unsubscribe_url]">${__(
+                  'Unsubscribe',
+                  'mailpoet',
+                )}</a> | <a href="[link:subscription_manage_url]">${__(
+                  'Manage subscription',
+                  'mailpoet',
+                )}</a>`,
+              }),
+              undefined,
+              contentBlockId,
+            );
+          },
+        },
+      ],
+    },
+  ];
 
   const validateContent = useCallback((): boolean => {
     let isValid = true;
