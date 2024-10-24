@@ -52,8 +52,8 @@ class Theme_Controller {
 		$theme->merge( $this->core_theme );
 		$theme->merge( $this->base_theme );
 
-		if ( Renderer::getTheme() !== null ) {
-			$theme->merge( Renderer::getTheme() );
+		if ( Renderer::get_theme() !== null ) {
+			$theme->merge( Renderer::get_theme() );
 		}
 
 		return apply_filters( 'mailpoet_email_editor_theme_json', $theme );

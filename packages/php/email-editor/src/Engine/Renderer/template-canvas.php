@@ -1,4 +1,11 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
+
+declare(strict_types = 1);
 
 // phpcs:disable Generic.Files.InlineHTML.Found
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -8,9 +15,9 @@
  * Variables passed to this template:
  *
  * @var $subject string
- * @var $preHeader string
- * @var $templateHtml string
- * @var $metaRobots string
+ * @var $pre_header string
+ * @var $template_html string
+ * @var $meta_robots string
  * @var $layout array{contentSize: string}
  */
 ?><!DOCTYPE html>
@@ -22,7 +29,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta name="format-detection" content="telephone=no" />
-	<?php echo $metaRobots; // HTML defined by MailPoet--do not escape ?>
+	<?php echo $meta_robots; // HTML defined by MailPoet--do not escape. ?>
 	<!-- Forced Styles -->
 </head>
 <body>
@@ -32,12 +39,12 @@
 			<tbody>
 			<tr>
 				<td class="email_preheader" height="1">
-				<?php echo esc_html( wp_strip_all_tags( $preHeader ) ); ?>
+				<?php echo esc_html( wp_strip_all_tags( $pre_header ) ); ?>
 				</td>
 			</tr>
 			<tr>
 				<td class="email_content_wrapper">
-				<?php echo $templateHtml; ?>
+				<?php echo $template_html; ?>
 				</td>
 			</tr>
 			</tbody>
