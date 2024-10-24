@@ -23,7 +23,7 @@
       "units": ["px"],
       "blockGap": false,
       "padding": true,
-      "margin": true,
+      "margin": false,
       "spacingSizes": [
         {
           "name": "1",
