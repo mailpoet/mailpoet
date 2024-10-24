@@ -13,6 +13,8 @@ export type ContentValidationData = {
   validateContent: () => boolean;
 };
 
+let contentBlockId;
+
 const rules = [
   {
     id: 'missing-unsubscribe-link',
@@ -33,6 +35,8 @@ const rules = [
                 'mailpoet',
               )}</a>`,
             }),
+            undefined,
+            contentBlockId,
           );
         },
       },
@@ -41,6 +45,10 @@ const rules = [
 ];
 
 export const useContentValidation = (): ContentValidationData => {
+  contentBlockId = useSelect((select) => {
+    // @ts-expect-error getBlocksByName is not defined in types
+    return select(blockEditorStore).getBlocksByName('core/post-content')?.[0];
+  });
   const { addValidationNotice, hasValidationNotice, removeValidationNotice } =
     useValidationNotices();
   const { editedContent, editedTemplateContent } = useSelect((mapSelect) => ({
