@@ -16,18 +16,18 @@ class Initializer {
 	 * Register core blocks email renderers when the blocks renderer is initialized.
 	 */
 	public function registerCoreBlocksRenderers( Blocks_Registry $blocksRegistry ): void {
-		$blocksRegistry->addBlockRenderer( 'core/paragraph', new Renderer\Blocks\Text() );
-		$blocksRegistry->addBlockRenderer( 'core/heading', new Renderer\Blocks\Text() );
-		$blocksRegistry->addBlockRenderer( 'core/column', new Renderer\Blocks\Column() );
-		$blocksRegistry->addBlockRenderer( 'core/columns', new Renderer\Blocks\Columns() );
-		$blocksRegistry->addBlockRenderer( 'core/list', new Renderer\Blocks\List_Block() );
-		$blocksRegistry->addBlockRenderer( 'core/list-item', new Renderer\Blocks\List_Item() );
-		$blocksRegistry->addBlockRenderer( 'core/image', new Renderer\Blocks\Image() );
-		$blocksRegistry->addBlockRenderer( 'core/buttons', new Renderer\Blocks\Buttons( new Flex_Layout_Renderer() ) );
-		$blocksRegistry->addBlockRenderer( 'core/button', new Renderer\Blocks\Button() );
-		$blocksRegistry->addBlockRenderer( 'core/group', new Renderer\Blocks\Group() );
+		$blocksRegistry->add_block_renderer( 'core/paragraph', new Renderer\Blocks\Text() );
+		$blocksRegistry->add_block_renderer( 'core/heading', new Renderer\Blocks\Text() );
+		$blocksRegistry->add_block_renderer( 'core/column', new Renderer\Blocks\Column() );
+		$blocksRegistry->add_block_renderer( 'core/columns', new Renderer\Blocks\Columns() );
+		$blocksRegistry->add_block_renderer( 'core/list', new Renderer\Blocks\List_Block() );
+		$blocksRegistry->add_block_renderer( 'core/list-item', new Renderer\Blocks\List_Item() );
+		$blocksRegistry->add_block_renderer( 'core/image', new Renderer\Blocks\Image() );
+		$blocksRegistry->add_block_renderer( 'core/buttons', new Renderer\Blocks\Buttons( new Flex_Layout_Renderer() ) );
+		$blocksRegistry->add_block_renderer( 'core/button', new Renderer\Blocks\Button() );
+		$blocksRegistry->add_block_renderer( 'core/group', new Renderer\Blocks\Group() );
 		// Render used for all other blocks
-		$blocksRegistry->addFallbackRenderer( new Renderer\Blocks\Fallback() );
+		$blocksRegistry->add_fallback_renderer( new Renderer\Blocks\Fallback() );
 	}
 
 	/**

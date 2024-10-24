@@ -1,41 +1,93 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer;
 
+/**
+ * Class Blocks_Registry
+ */
 class Blocks_Registry {
+	/**
+	 * Fallback renderer.
+	 *
+	 * @var $fallback_renderer Block_Renderer
+	 */
+	private $fallback_renderer = null;
+	/**
+	 * Array of block renderers.
+	 *
+	 * @var $block_renderers_map Block_Renderer[]
+	 */
+	private array $block_renderers_map = array();
 
-	/** @var Block_Renderer[] */
-	private $blockRenderersMap = array();
-	/** @var BlockRenderer */
-	private $fallbackRenderer = null;
-
-	public function addBlockRenderer( string $blockName, Block_Renderer $renderer ): void {
-		$this->blockRenderersMap[ $blockName ] = $renderer;
+	/**
+	 * Adds block renderer to the registry.
+	 *
+	 * @param string         $block_name Block name.
+	 * @param Block_Renderer $renderer Block renderer.
+	 */
+	public function add_block_renderer( string $block_name, Block_Renderer $renderer ): void {
+		$this->block_renderers_map[ $block_name ] = $renderer;
 	}
 
-	public function addFallbackRenderer( BlockRenderer $renderer ): void {
-		$this->fallbackRenderer = $renderer;
+	/**
+	 * Adds fallback renderer to the registry.
+	 *
+	 * @param Block_Renderer $renderer Fallback renderer.
+	 */
+	public function add_fallback_renderer( Block_Renderer $renderer ): void {
+		$this->fallback_renderer = $renderer;
 	}
 
-	public function hasBlockRenderer( string $blockName ): bool {
-		return isset( $this->blockRenderersMap[ $blockName ] );
+	/**
+	 * Checks if block renderer is registered.
+	 *
+	 * @param string $block_name Block name.
+	 * @return bool
+	 */
+	public function has_block_renderer( string $block_name ): bool {
+		return isset( $this->block_renderers_map[ $block_name ] );
 	}
 
-	public function getBlockRenderer( string $blockName ): ?Block_Renderer {
-		return $this->blockRenderersMap[ $blockName ] ?? null;
+	/**
+	 * Returns block renderer by block name.
+	 *
+	 * @param string $block_name Block name.
+	 * @return Block_Renderer|null
+	 */
+	public function get_block_renderer( string $block_name ): ?Block_Renderer {
+		return $this->block_renderers_map[ $block_name ] ?? null;
 	}
 
-	public function getFallbackRenderer(): ?BlockRenderer {
-		return $this->fallbackRenderer;
+	/**
+	 * Returns fallback renderer.
+	 *
+	 * @return Block_Renderer|null
+	 */
+	public function get_fallback_renderer(): ?Block_Renderer {
+		return $this->fallback_renderer;
 	}
 
-	public function removeAllBlockRenderers(): void {
-		foreach ( array_keys( $this->blockRenderersMap ) as $blockName ) {
-			$this->removeBlockRenderer( $blockName );
+	/**
+	 * Removes all block renderers from the registry.
+	 */
+	public function remove_all_block_renderers(): void {
+		foreach ( array_keys( $this->block_renderers_map ) as $block_name ) {
+			$this->remove_block_renderer( $block_name );
 		}
 	}
 
-	private function removeBlockRenderer( string $blockName ): void {
-		unset( $this->blockRenderersMap[ $blockName ] );
+	/**
+	 * Removes block renderer from the registry.
+	 *
+	 * @param string $block_name Block name.
+	 */
+	private function remove_block_renderer( string $block_name ): void {
+		unset( $this->block_renderers_map[ $block_name ] );
 	}
 }

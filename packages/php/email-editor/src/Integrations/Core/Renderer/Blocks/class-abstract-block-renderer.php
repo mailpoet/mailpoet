@@ -57,10 +57,10 @@ abstract class Abstract_Block_Renderer implements Block_Renderer {
 		);
 	}
 
-	public function render( string $blockContent, array $parsedBlock, Settings_Controller $settingsController ): string {
+	public function render(string $block_content, array $parsed_block, Settings_Controller $settings_controller ): string {
 		return $this->addSpacer(
-			$this->renderContent( $blockContent, $parsedBlock, $settingsController ),
-			$parsedBlock['email_attrs'] ?? array()
+			$this->renderContent( $block_content, $parsed_block, $settings_controller ),
+			$parsed_block['email_attrs'] ?? array()
 		);
 	}
 

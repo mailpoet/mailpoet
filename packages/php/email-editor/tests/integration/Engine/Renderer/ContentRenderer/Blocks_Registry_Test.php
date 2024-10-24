@@ -17,21 +17,21 @@ class Blocks_Registry_Test extends \MailPoetTest {
   }
 
   public function testItReturnsNullForUnknownRenderer() {
-    $storedRenderer = $this->registry->getBlockRenderer('test');
+    $storedRenderer = $this->registry->get_block_renderer('test');
     verify($storedRenderer)->null();
   }
 
   public function testItStoresAddedRenderer() {
     $renderer = new Text();
-    $this->registry->addBlockRenderer('test', $renderer);
-    $storedRenderer = $this->registry->getBlockRenderer('test');
+    $this->registry->add_block_renderer('test', $renderer);
+    $storedRenderer = $this->registry->get_block_renderer('test');
     verify($storedRenderer)->equals($renderer);
   }
 
   public function testItReportsWhichRenderersAreRegistered() {
     $renderer = new Text();
-    $this->registry->addBlockRenderer('test', $renderer);
-    verify($this->registry->hasBlockRenderer('test'))->true();
-    verify($this->registry->hasBlockRenderer('unknown'))->false();
+    $this->registry->add_block_renderer('test', $renderer);
+    verify($this->registry->has_block_renderer('test'))->true();
+    verify($this->registry->has_block_renderer('unknown'))->false();
   }
 }

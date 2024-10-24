@@ -58,21 +58,21 @@ class Flex_Layout_Renderer {
 		return $output_html;
 	}
 
-  /**
-   * Compute widths for blocks in flex layout.
-   *
-   * @param array               $parsed_block Parsed block.
-   * @param Settings_Controller $settings_controller Settings controller.
-   * @param float               $flex_gap Flex gap.
-   * @return array
-   */
-  private function compute_widths_for_flex_layout( array $parsed_block, Settings_Controller $settings_controller, float $flex_gap ): array {
-		// When there is no parent width we can't compute widths so auto width will be used
+	/**
+	 * Compute widths for blocks in flex layout.
+	 *
+	 * @param array               $parsed_block Parsed block.
+	 * @param Settings_Controller $settings_controller Settings controller.
+	 * @param float               $flex_gap Flex gap.
+	 * @return array
+	 */
+	private function compute_widths_for_flex_layout( array $parsed_block, Settings_Controller $settings_controller, float $flex_gap ): array {
+		// When there is no parent width we can't compute widths so auto width will be used.
 		if ( ! isset( $parsed_block['email_attrs']['width'] ) ) {
 			return $parsed_block['innerBlocks'] ?? array();
 		}
 		$blocks_count     = count( $parsed_block['innerBlocks'] );
-		$total_used_width = 0; // Total width assuming items without set width would consume proportional width
+		$total_used_width = 0; // Total width assuming items without set width would consume proportional width.
 		$parent_width     = $settings_controller->parse_number_from_string_with_pixels( $parsed_block['email_attrs']['width'] );
 		$inner_blocks     = $parsed_block['innerBlocks'] ?? array();
 

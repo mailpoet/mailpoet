@@ -42,8 +42,8 @@ class Button extends Abstract_Block_Renderer {
 		);
 	}
 
-	public function render( string $blockContent, array $parsedBlock, Settings_Controller $settingsController ): string {
-		return $this->renderContent( $blockContent, $parsedBlock, $settingsController );
+	public function render(string $block_content, array $parsed_block, Settings_Controller $settings_controller ): string {
+		return $this->renderContent( $block_content, $parsed_block, $settings_controller );
 	}
 
 	protected function renderContent( $blockContent, array $parsedBlock, Settings_Controller $settingsController ): string {
