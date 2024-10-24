@@ -58,7 +58,7 @@ if (!function_exists('is_plugin_active')) {
   require_once ABSPATH . 'wp-admin/includes/plugin.php';
 }
 if (is_plugin_active('woocommerce/woocommerce.php')) {
-  $woocommerceVersion = get_plugin_data(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php')['Version'];
+  $woocommerceVersion = get_plugin_data(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', false, false)['Version'];
   if (version_compare($woocommerceVersion, MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION, '<')) {
     add_action('admin_notices', 'mailpoet_woocommerce_version_notice');
     // deactivate the plugin

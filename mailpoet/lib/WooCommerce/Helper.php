@@ -22,7 +22,7 @@ class Helper {
   }
 
   public function getWooCommerceVersion() {
-    return $this->isWooCommerceActive() ? get_plugin_data(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php')['Version'] : null;
+    return $this->isWooCommerceActive() ? get_plugin_data(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', false, false)['Version'] : null;
   }
 
   public function getPurchaseStates(): array {
