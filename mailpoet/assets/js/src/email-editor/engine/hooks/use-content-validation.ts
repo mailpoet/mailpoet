@@ -3,7 +3,6 @@ import { useCallback, useMemo } from '@wordpress/element';
 import { dispatch, useSelect, subscribe } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { createBlock } from '@wordpress/blocks';
-import { useDebounce } from '@wordpress/compose';
 import { storeName as emailEditorStore } from 'email-editor/engine/store';
 import { useShallowEqual } from './use-shallow-equal';
 import { useValidationNotices } from './use-validation-notices';
@@ -89,14 +88,12 @@ export const useContentValidation = (): ContentValidationData => {
     rules,
   ]);
 
-  const debouncedValidateContent = useDebounce(validateContent, 500);
-
   // Subscribe to updates so notices can be dismissed once resolved.
   subscribe(() => {
     if (!hasValidationNotice()) {
       return;
     }
-    debouncedValidateContent();
+    validateContent();
   }, emailEditorStore);
 
   return {
