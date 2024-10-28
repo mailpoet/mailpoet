@@ -62,7 +62,7 @@ class Registry {
     ]);
   }
 
-  public function setupTemplateCategories () {
+  public function setupTemplateCategories(): void {
     $this->templateCategories = [
       'welcome' => new AutomationTemplateCategory('welcome', __('Welcome', 'mailpoet')),
       'abandoned-cart' => new AutomationTemplateCategory('abandoned-cart', __('Abandoned Cart', 'mailpoet')),
