@@ -42,6 +42,13 @@ class TransactionalEmails {
     $this->template = $template;
     $this->woocommerceHelper = $woocommerceHelper;
     $this->newslettersRepository = $newslettersRepository;
+    $this->wp->addAction('init', [
+      $this,
+      'setupEmailHeadings',
+    ]);
+  }
+
+  public function setupEmailHeadings() {
     $this->emailHeadings = [
       'new_account' => [
         'option_name' => 'woocommerce_new_order_settings',

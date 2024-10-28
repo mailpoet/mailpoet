@@ -7,15 +7,11 @@ use MailPoet\HttpAwareException;
 
 class ErrorHandler {
   /** @var string[] */
-  private $defaultErrors;
-
-  public function __construct() {
-    $this->defaultErrors = [
-      Error::UNKNOWN => __('An unknown error occurred.', 'mailpoet'),
-    ];
-  }
+  private $defaultErrors = [];
 
   public function convertToResponse(\Throwable $e): ErrorResponse {
+    $this->defaultErrors[Error::UNKNOWN] = __('An unknown error occurred.', 'mailpoet');
+
     if ($e instanceof Exception) {
       $errors = $e->getErrors() ?: $this->defaultErrors;
       $statusCode = $e instanceof HttpAwareException ? $e->getHttpStatusCode() : Response::STATUS_UNKNOWN;

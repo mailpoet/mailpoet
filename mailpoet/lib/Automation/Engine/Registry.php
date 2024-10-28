@@ -56,6 +56,13 @@ class Registry {
     $this->wordPress = $wordPress;
     $this->steps[$rootStep->getKey()] = $rootStep;
 
+    $this->wordPress->addAction('init', [
+      $this,
+      'setupTemplateCategories',
+    ]);
+  }
+
+  public function setupTemplateCategories () {
     $this->templateCategories = [
       'welcome' => new AutomationTemplateCategory('welcome', __('Welcome', 'mailpoet')),
       'abandoned-cart' => new AutomationTemplateCategory('abandoned-cart', __('Abandoned Cart', 'mailpoet')),
