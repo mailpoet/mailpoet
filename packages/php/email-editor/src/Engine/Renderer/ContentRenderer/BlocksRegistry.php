@@ -6,9 +6,15 @@ class BlocksRegistry {
 
   /** @var BlockRenderer[] */
   private $blockRenderersMap = [];
+  /** @var BlockRenderer */
+  private $fallbackRenderer = null;
 
   public function addBlockRenderer(string $blockName, BlockRenderer $renderer): void {
     $this->blockRenderersMap[$blockName] = $renderer;
+  }
+
+  public function addFallbackRenderer(BlockRenderer $renderer): void {
+    $this->fallbackRenderer = $renderer;
   }
 
   public function hasBlockRenderer(string $blockName): bool {
@@ -17,6 +23,10 @@ class BlocksRegistry {
 
   public function getBlockRenderer(string $blockName): ?BlockRenderer {
     return $this->blockRenderersMap[$blockName] ?? null;
+  }
+
+  public function getFallbackRenderer(): ?BlockRenderer {
+    return $this->fallbackRenderer;
   }
 
   public function removeAllBlockRenderers(): void {

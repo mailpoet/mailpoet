@@ -7,7 +7,7 @@ use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 
 class Image extends AbstractBlockRenderer {
   protected function renderContent($blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    $parsedHtml = $this->parseBlockContent($blockContent);
+    $parsedHtml = $this->parseBlockContent($this->cleanupContent($blockContent));
 
     if (!$parsedHtml) {
       return '';
@@ -45,20 +45,26 @@ class Image extends AbstractBlockRenderer {
    * When the width is not set, it's important to get it for the image to be displayed correctly
    */
   private function addImageSizeWhenMissing(array $parsedBlock, string $imageUrl, SettingsController $settingsController): array {
-    if (!isset($parsedBlock['attrs']['width'])) {
-      $maxWidth = $settingsController->parseNumberFromStringWithPixels($parsedBlock['email_attrs']['width'] ?? SettingsController::EMAIL_WIDTH);
-      $imageSize = wp_getimagesize($imageUrl);
-      $imageSize = $imageSize ? $imageSize[0] : $maxWidth;
-      // Because width is primarily used for the max-width property, we need to add the left and right border width to it
-      $borderWidth = $parsedBlock['attrs']['style']['border']['width'] ?? '0px';
-      $borderLeftWidth = $parsedBlock['attrs']['style']['border']['left']['width'] ?? $borderWidth;
-      $borderRightWidth = $parsedBlock['attrs']['style']['border']['right']['width'] ?? $borderWidth;
-      $width = min($imageSize, $maxWidth);
-      $width += $settingsController->parseNumberFromStringWithPixels($borderLeftWidth ?? '0px');
-      $width += $settingsController->parseNumberFromStringWithPixels($borderRightWidth ?? '0px');
-      $parsedBlock['attrs']['width'] = "{$width}px";
+    if (isset($parsedBlock['attrs']['width'])) {
+      return $parsedBlock;
     }
+    // Can't determine any width let's go with 100%
+    if (!isset($parsedBlock['email_attrs']['width'])) {
+      $parsedBlock['attrs']['width'] = '100%';
+    }
+    $maxWidth = $settingsController->parseNumberFromStringWithPixels($parsedBlock['email_attrs']['width']);
+    $imageSize = wp_getimagesize($imageUrl);
+    $imageSize = $imageSize ? $imageSize[0] : $maxWidth;
+    // Because width is primarily used for the max-width property, we need to add the left and right border width to it
+    $borderWidth = $parsedBlock['attrs']['style']['border']['width'] ?? '0px';
+    $borderLeftWidth = $parsedBlock['attrs']['style']['border']['left']['width'] ?? $borderWidth;
+    $borderRightWidth = $parsedBlock['attrs']['style']['border']['right']['width'] ?? $borderWidth;
+    $width = min($imageSize, $maxWidth);
+    $width += $settingsController->parseNumberFromStringWithPixels($borderLeftWidth ?? '0px');
+    $width += $settingsController->parseNumberFromStringWithPixels($borderRightWidth ?? '0px');
+    $parsedBlock['attrs']['width'] = "{$width}px";
     return $parsedBlock;
+
   }
 
   private function applyImageBorderStyle(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
@@ -148,6 +154,7 @@ class Image extends AbstractBlockRenderer {
           <td align="' . esc_attr($align) . '">
             <table
               role="presentation"
+              class="email-table-with-width"
               border="0"
               cellpadding="0"
               cellspacing="0"
@@ -234,5 +241,14 @@ class Image extends AbstractBlockRenderer {
       'image' => $imageHtml,
       'caption' => $figcaptionHtml ?: '',
     ];
+  }
+
+  private function cleanupContent(string $contentHtml): string {
+    $html = new \WP_HTML_Tag_Processor($contentHtml);
+    if ($html->next_tag(['tag_name' => 'img'])) {
+      $html->remove_attribute('srcset');
+      $html->remove_attribute('class');
+    }
+    return $html->get_updated_html();
   }
 }

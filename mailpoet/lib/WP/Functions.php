@@ -1003,4 +1003,8 @@ class Functions {
   public function nocacheHeaders(): void {
     nocache_headers();
   }
+
+  public function wpUniqueId($prefix = ''): string {
+    return wp_unique_id($prefix);
+  }
 }

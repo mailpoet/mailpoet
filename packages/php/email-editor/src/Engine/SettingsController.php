@@ -21,12 +21,6 @@ class SettingsController {
     'enableCustomUnits' => ['px', '%'],
   ];
 
-  /**
-   * Width of the email in pixels.
-   * @var string
-   */
-  const EMAIL_WIDTH = '660px';
-
   private ThemeController $themeController;
 
   private array $iframeAssets = [];
@@ -55,36 +49,28 @@ class SettingsController {
     $settings['allowedBlockTypes'] = self::ALLOWED_BLOCK_TYPES;
     // Assets for iframe editor (component styles, scripts, etc.)
     $settings['__unstableResolvedAssets'] = $this->iframeAssets;
-
-    // Custom editor content styles
-    // body selector is later transformed to .editor-styles-wrapper
-    // setting padding for bottom and top is needed because \WP_Theme_JSON::get_stylesheet() set them only for .wp-site-blocks selector
-    $contentVariables = 'body {';
-    $contentVariables .= 'padding-bottom: var(--wp--style--root--padding-bottom);';
-    $contentVariables .= 'padding-top: var(--wp--style--root--padding-top);';
-    $contentVariables .= '}';
-    $flexEmailLayoutStyles = file_get_contents(__DIR__ . '/flex-email-layout.css');
+    $editorContentStyles = file_get_contents(__DIR__ . '/content-editor.css');
+    $sharesContentStyles = file_get_contents(__DIR__ . '/content-shared.css');
     $settings['styles'] = [
-      ['css' => $contentVariables],
-      ['css' => $flexEmailLayoutStyles],
+      ['css' => $editorContentStyles],
+      ['css' => $sharesContentStyles],
     ];
 
     $settings['__experimentalFeatures'] = $themeSettings;
-
-    // Enabling alignWide allows full width for specific blocks such as columns, heading, image, etc.
-    $settings['alignWide'] = true;
+    // Controls which alignment options are available for blocks
+    $settings['supportsLayout'] = true; // Allow using default layouts
+    $settings['__unstableIsBlockBasedTheme'] = true; // For default setting this to true disables wide and full alignments
     return $settings;
   }
 
   /**
-   * @return array{contentSize: string, wideSize: string, layout: string}
+   * @return array{contentSize: string, wideSize: string}
    */
   public function getLayout(): array {
-    $themeSettings = $this->themeController->getSettings();
+    $layoutSettings = $this->themeController->getLayoutSettings();
     return [
-      'contentSize' => $themeSettings['layout']['contentSize'],
-      'wideSize' => $themeSettings['layout']['wideSize'],
-      'layout' => 'constrained',
+      'contentSize' => $layoutSettings['contentSize'],
+      'wideSize' => $layoutSettings['wideSize'],
     ];
   }
 

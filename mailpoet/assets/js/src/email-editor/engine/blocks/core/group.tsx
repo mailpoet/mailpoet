@@ -15,6 +15,10 @@ function disableGroupVariations() {
           variations: settings.variations.filter(
             (variation) => variation.name === 'group',
           ),
+          supports: {
+            ...settings.supports,
+            layout: false,
+          },
         };
       }
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return

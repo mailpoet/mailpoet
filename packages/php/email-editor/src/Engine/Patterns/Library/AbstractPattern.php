@@ -7,6 +7,7 @@ use MailPoet\EmailEditor\Utils\CdnAssetUrl;
 abstract class AbstractPattern {
   protected $cdnAssetUrl;
   protected $blockTypes = [];
+  protected $templateTypes = [];
   protected $inserter = true;
   protected $source = 'plugin';
   protected $categories = ['mailpoet'];
@@ -26,6 +27,7 @@ abstract class AbstractPattern {
       'categories' => $this->categories,
       'inserter' => $this->inserter,
       'blockTypes' => $this->blockTypes,
+      'templateTypes' => $this->templateTypes,
       'source' => $this->source,
       'viewportWidth' => $this->viewportWidth,
     ];

@@ -4,7 +4,6 @@
 import classnames from 'classnames';
 import {
   BlockList,
-  store as blockEditorStore,
   // @ts-expect-error No types for this exist yet.
   __unstableUseTypewriter as useTypewriter,
   // @ts-expect-error No types for this exist yet.
@@ -14,7 +13,7 @@ import {
   // @ts-expect-error No types for this exist yet.
   __experimentalUseResizeCanvas as useResizeCanvas,
 } from '@wordpress/block-editor';
-import { useRef, useMemo } from '@wordpress/element';
+import { useRef } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { useMergeRefs } from '@wordpress/compose';
 import { store as editorStore } from '@wordpress/editor';
@@ -31,11 +30,9 @@ export const TEMPLATE_PART_POST_TYPE = 'wp_template_part';
 export const PATTERN_POST_TYPE = 'wp_block';
 export const NAVIGATION_POST_TYPE = 'wp_navigation';
 
-const {
-  useLayoutClasses,
-  ExperimentalBlockCanvas: BlockCanvas,
-  useFlashEditableBlocks,
-} = unlock(blockEditorPrivateApis);
+const { ExperimentalBlockCanvas: BlockCanvas, useFlashEditableBlocks } = unlock(
+  blockEditorPrivateApis,
+);
 
 /**
  * These post types have a special editor where they don't allow you to fill the title
@@ -59,7 +56,7 @@ const DESIGN_POST_TYPES = [
  *  @todo Need to fix layout so that we support Align settings properly
  */
 export function VisualEditor({
-  // Ideally as we unify post and site editors, we won't need these propss
+  // Ideally as we unify post and site editors, we won't need these props
   styles,
   disableIframe = false,
   iframeProps,
@@ -72,7 +69,7 @@ export function VisualEditor({
     wrapperUniqueId,
     deviceType,
     isFocusedEntity,
-    isDesignPostType,
+    layout,
   } = useSelect((select) => {
     const {
       getCurrentPostId,
@@ -109,36 +106,16 @@ export function VisualEditor({
       // @ts-expect-error No types for this exist yet.
       // eslint-disable-next-line no-underscore-dangle
       isPreview: editorSettings.__unstableIsPreviewMode,
-    };
-  }, []);
-
-  const { themeSupportsLayout } = useSelect((select) => {
-    const { getSettings } = select(blockEditorStore);
-    const checkSettings = getSettings();
-    return {
-      // @ts-expect-error No types for this exist yet.
-      themeSupportsLayout: checkSettings.supportsLayout,
+      // @ts-expect-error There are no types for the experimental features settings.
+      // eslint-disable-next-line no-underscore-dangle
+      layout: editorSettings.__experimentalFeatures.layout,
     };
   }, []);
 
   const deviceStyles = useResizeCanvas(deviceType);
-  const fallbackLayout = { type: 'default' };
 
-  const postContentLayoutClasses = useLayoutClasses(
-    undefined,
-    'core/post-content',
-  ) as string[];
-
-  const blockListLayoutClass = classnames(
-    {
-      'is-layout-flow': !themeSupportsLayout,
-    },
-    themeSupportsLayout && postContentLayoutClasses,
-  );
-
-  // If there is a Post Content block we use its layout for the block list;
-  // if not, this must be a classic theme, in which case we use the fallback layout.
-  const blockListLayout = fallbackLayout;
+  // We want to use the same layout.
+  const blockListLayout = layout;
 
   const localRef = useRef();
   const typewriterRef = useTypewriter();
@@ -156,16 +133,15 @@ export function VisualEditor({
 
   const shouldIframe =
     !disableIframe || ['Tablet', 'Mobile'].includes(deviceType);
+  const containerWidth =
+    deviceType === 'Desktop' ? (layout.contentSize as string) : '100%';
 
-  const iframeStyles = useMemo(
-    () => [
-      ...((styles as string[]) ?? []),
-      {
-        css: `.is-root-container{display:flow-root;}`,
-      },
-    ],
-    [styles],
-  );
+  const iframeStyles = [
+    ...((styles as string[]) ?? []),
+    {
+      css: `.is-root-container{display:flow-root; width:${containerWidth}; margin: 0 auto;box-sizing: border-box;}`,
+    },
+  ];
 
   return (
     <div
@@ -200,9 +176,7 @@ export function VisualEditor({
           <BlockList
             className={classnames(
               `is-${deviceType.toLowerCase()}-preview`,
-              renderingMode !== 'post-only' || isDesignPostType
-                ? 'wp-site-blocks'
-                : `${blockListLayoutClass} wp-block-post-content`, // Ensure root level blocks receive default/flow blockGap styling rules.
+              'has-global-padding', // Ensures that padding is applied at the top level
             )}
             // @ts-expect-error No types for this exist yet.
             layout={blockListLayout}

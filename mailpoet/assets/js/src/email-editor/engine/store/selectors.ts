@@ -174,6 +174,11 @@ export const getEditedPostTemplate = createRegistrySelector(
   },
 );
 
+export const getTemplateContent = () => {
+  const template = getEditedPostTemplate();
+  return template?.content || '';
+};
+
 export const getCurrentTemplate = createRegistrySelector((select) => () => {
   const isEditingTemplate =
     select(editorStore).getCurrentPostType() === 'wp_template';
@@ -251,10 +256,6 @@ export const getDeviceType = createRegistrySelector(
 
 export function getStyles(state: State): State['theme']['styles'] {
   return state.theme.styles;
-}
-
-export function getLayout(state: State): State['layout'] {
-  return state.layout;
 }
 
 export function getAutosaveInterval(state: State): State['autosaveInterval'] {

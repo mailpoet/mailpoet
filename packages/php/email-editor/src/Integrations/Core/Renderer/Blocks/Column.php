@@ -8,6 +8,14 @@ use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 use WP_Style_Engine;
 
 class Column extends AbstractBlockRenderer {
+  /**
+   * Override this method to disable spacing (block gap) for columns.
+   * Spacing is applied on wrapping columns block. Columns are rendered side by side so no spacer is needed.
+   */
+  protected function addSpacer($content, $emailAttrs): string {
+    return $content;
+  }
+
   protected function renderContent(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
     $content = '';
     foreach ($parsedBlock['innerBlocks'] ?? [] as $block) {

@@ -284,6 +284,30 @@ class NewslettersTest extends \MailPoetTest {
       ->equals('This email does not exist.');
   }
 
+  public function testItActivatesTasksWhenStatusIsSetBackToActive() {
+    $scheduledTask1 = (new ScheduledTaskFactory())
+      ->create(
+        SendingQueueWorker::TASK_TYPE,
+        ScheduledTaskEntity::STATUS_PAUSED,
+      );
+    (new SendingQueueFactory())->create($scheduledTask1, $this->postNotification);
+    $segment = $this->segmentRepository->createOrUpdate('Segment 1');
+    $this->createNewsletterSegment($this->postNotification, $segment);
+
+    $this->entityManager->clear();
+
+    $this->endpoint->setStatus(
+      [
+        'id' => $this->postNotification->getId(),
+        'status' => NewsletterEntity::STATUS_ACTIVE,
+      ]
+    );
+    $tasks = $this->scheduledTasksRepository->findAll();
+
+    verify($tasks)->arrayCount(1);
+    verify($tasks[0]->getStatus())->equals(ScheduledTaskEntity::STATUS_SCHEDULED);
+  }
+
   public function testItReschedulesPastDuePostNotificationsWhenStatusIsSetBackToActive() {
     $schedule = sprintf('0 %d * * *', Carbon::now()->millisecond(0)->hour); // every day at current hour
     $randomFutureDate = Carbon::now()->millisecond(0)->addDays(10); // 10 days from now

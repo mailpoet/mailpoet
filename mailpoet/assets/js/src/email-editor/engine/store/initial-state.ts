@@ -1,7 +1,6 @@
 import { mainSidebarEmailTab } from './constants';
 import { State } from './types';
 import {
-  getEditorLayout,
   getEditorSettings,
   getCdnUrl,
   isPremiumPluginActive,
@@ -24,7 +23,6 @@ export function getInitialState(): State {
     },
     postId,
     editorSettings: getEditorSettings(),
-    layout: getEditorLayout(),
     theme: getEditorTheme(),
     autosaveInterval: 60,
     cdnUrl: getCdnUrl(),

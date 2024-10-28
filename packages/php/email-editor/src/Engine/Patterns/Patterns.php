@@ -31,6 +31,7 @@ class Patterns {
 
   private function registerPatterns() {
     $this->registerPattern('default', new Library\DefaultContent($this->cdnAssetUrl));
+    $this->registerPattern('default-full', new Library\DefaultContentFull($this->cdnAssetUrl));
   }
 
   private function registerPattern($name, $pattern) {

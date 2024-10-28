@@ -20,9 +20,13 @@ class Text extends AbstractBlockRenderer {
       'style' => [],
     ]);
     $html = new \WP_HTML_Tag_Processor($blockContent);
-    $classes = '';
+    $classes = 'email-text-block';
     if ($html->next_tag()) {
-      $classes = $html->get_attribute('class') ?? '';
+      $blockClasses = $html->get_attribute('class') ?? '';
+      $classes .= ' ' . $blockClasses;
+      // remove has-background to prevent double padding applied for wrapper and inner element
+      $html->set_attribute('class', str_replace('has-background', '', $blockClasses));
+      $blockContent = $html->get_updated_html();
     }
 
     $blockStyles = $this->getStylesFromBlock([

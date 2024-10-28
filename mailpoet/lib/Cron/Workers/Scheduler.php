@@ -123,6 +123,8 @@ class Scheduler {
         if (!$newsletter instanceof NewsletterEntity || $newsletter->getDeletedAt() !== null) {
           $this->deleteByTask($task);
         } elseif ($newsletter->getStatus() !== NewsletterEntity::STATUS_ACTIVE && $newsletter->getStatus() !== NewsletterEntity::STATUS_SCHEDULED) {
+          $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+          $this->scheduledTasksRepository->flush();
           continue;
         } elseif ($newsletter->getType() === NewsletterEntity::TYPE_WELCOME) {
           $this->processWelcomeNewsletter($newsletter, $task);

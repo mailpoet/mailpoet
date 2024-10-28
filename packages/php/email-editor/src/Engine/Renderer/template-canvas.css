@@ -16,7 +16,6 @@ a {
 
 .email_layout_wrapper {
   margin: 0 auto;
-  padding: 20px 0;
   width: 100%;
 }
 
@@ -53,6 +52,11 @@ a {
   }
   .block {
     display: block;
+    width: 100% !important;
+  }
+
+  /* We set width to some tables e.g. for wrappers of horizontally aligned images and we force width 100% on mobile */
+  .email-table-with-width {
     width: 100% !important;
   }
 

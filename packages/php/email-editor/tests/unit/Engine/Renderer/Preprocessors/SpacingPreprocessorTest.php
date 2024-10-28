@@ -44,22 +44,6 @@ class SpacingPreprocessorTest extends \MailPoetUnitTest {
               ],
             ],
           ],
-          [
-            'blockName' => 'core/column',
-            'attrs' => [],
-            'innerBlocks' => [
-              [
-                'blockName' => 'core/heading',
-                'attrs' => [],
-                'innerBlocks' => [],
-              ],
-              [
-                'blockName' => 'core/paragraph',
-                'attrs' => [],
-                'innerBlocks' => [],
-              ],
-            ],
-          ],
         ],
       ],
       [
@@ -75,20 +59,20 @@ class SpacingPreprocessorTest extends \MailPoetUnitTest {
       ],
     ];
 
-    $expectedEmailAttrs = ['margin-top' => '10px'];
     $result = $this->preprocessor->preprocess($blocks, $this->layout, $this->styles);
     $this->assertCount(2, $result);
     $firstColumns = $result[0];
     $secondColumns = $result[1];
+    $nestedColumn = $firstColumns['innerBlocks'][0];
+    $nestedColumnFirstItem = $nestedColumn['innerBlocks'][0];
+    $nestedColumnSecondItem = $nestedColumn['innerBlocks'][1];
 
     // First elements should not have margin-top, but others should.
     $this->assertArrayNotHasKey('margin-top', $firstColumns['email_attrs']);
-    $this->arrayHasKey('margin-top', $secondColumns['email_attrs']);
-    $this->assertEquals('10px', $secondColumns['email_attrs']['margin-top']);
-
-    // First element children should have margin-top unless first child.
-    $this->assertArrayNotHasKey('margin-top', $firstColumns['innerBlocks'][0]['email_attrs']);
-    $this->assertArrayHasKey('margin-top', $firstColumns['innerBlocks'][1]['email_attrs']);
-    $this->assertEquals('10px', $firstColumns['innerBlocks'][1]['email_attrs']['margin-top']);
+    $this->assertArrayNotHasKey('margin-top', $secondColumns['email_attrs']);
+    $this->assertArrayNotHasKey('margin-top', $nestedColumn['email_attrs']);
+    $this->assertArrayNotHasKey('margin-top', $nestedColumnFirstItem['email_attrs']);
+    $this->assertArrayHasKey('margin-top', $nestedColumnSecondItem['email_attrs']);
+    $this->assertEquals('10px', $nestedColumnSecondItem['email_attrs']['margin-top']);
   }
 }

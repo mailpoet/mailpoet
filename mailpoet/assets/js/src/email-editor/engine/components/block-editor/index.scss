@@ -101,33 +101,6 @@
     width: 100%;
   }
 
-  // Set default padding-left to have consistent default look in editor and in email
-  // This also overrides the default values in browsers for padding-inline-start
-  ul,
-  ol,
-  ul.has-background,
-  ol.has-background {
-    padding-left: 40px;
-  }
-
-  // Override default button border radius which is set in core to 9999px
-  .wp-block-button__link {
-    border-radius: 0;
-  }
-
-  .is-mobile-preview {
-    .wp-block-columns {
-      display: flex;
-      flex-direction: column;
-
-      .wp-block-column {
-        box-sizing: border-box;
-        // override flex-basis set in style attribute to fix the height of the column in mobile preview. Blocks overriding is as a part of style.css in blocks-library
-        flex-basis: auto !important;
-      }
-    }
-  }
-
   // Fix for mobile preview height
   &.is-mobile-preview {
     > div {
@@ -136,40 +109,6 @@
     .editor-styles-wrapper {
       height: auto !important;
     }
-  }
-}
-
-.has-global-padding .wp-block-post-content > .alignfull {
-  margin-left: -20px;
-  margin-right: -20px;
-}
-
-// For the WYSIWYG experience we don't want to display any margins between blocks in the editor
-.wp-block {
-  clear: both; // for ensuring that floated elements (images) are cleared
-}
-
-// Resetting the margin for images in the editor to avoid unexpected spacing
-.editor-styles-wrapper .is-layout-constrained .wp-block-image {
-  figcaption {
-    margin: 0;
-  }
-
-  &.alignleft,
-  &.alignright {
-    margin-inline: 0 0;
-    text-align: center;
-  }
-  &.aligncenter {
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-.editor-styles-wrapper {
-  .wp-block-columns:not(.is-not-stacked-on-mobile)
-    > .wp-block-column[style*='flex-basis'] {
-    box-sizing: border-box;
   }
 }
 

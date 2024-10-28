@@ -177,7 +177,6 @@ export type State = {
   };
   postId: number;
   editorSettings: EmailEditorSettings;
-  layout: EmailEditorLayout;
   theme: EmailTheme;
   autosaveInterval: number;
   cdnUrl: string;
