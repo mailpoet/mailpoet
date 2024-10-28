@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.5
 Tested up to: 6.6
-Stable tag: 5.3.3
+Stable tag: 5.3.4
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -230,7 +230,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.3.3 - 2024-10-22 =
-* Fixed: error on email statistics page.
+= 5.3.4 - 2024-10-28 =
+* Improved: mark required fields in public forms also in screen readers for improved accessibility;
+* Improved: properly connect inputs and labels in public forms for improved accessibility;
+* Changed: when pausing a post notification newsletter, scheduled task is now also paused. This prevents the sending queue from becoming stalled.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)

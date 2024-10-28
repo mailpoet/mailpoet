@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.3.4 - 2024-10-28 =
+
+- Improved: mark required fields in public forms also in screen readers for improved accessibility;
+- Improved: properly connect inputs and labels in public forms for improved accessibility;
+- Changed: when pausing a post notification newsletter, scheduled task is now also paused. This prevents the sending queue from becoming stalled.
+
 = 5.3.3 - 2024-10-22 =
 
 - Fixed: error on email statistics page.
