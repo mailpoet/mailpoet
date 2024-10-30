@@ -32,9 +32,6 @@ class TransactionalEmailsUnitTest extends \MailPoetUnitTest {
         verify($url)->equals('http://test.loc');
         return 'test.loc';
       },
-      'addAction' => function($tag, $functionToAdd) {
-         call_user_func_array($functionToAdd, func_get_args());
-      },
     ]);
     $settings = Stub::make(SettingsController::class);
     $template = Stub::make(Template::class);
