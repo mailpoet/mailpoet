@@ -169,6 +169,36 @@ class AutomatedLatestContentBlockTest extends \MailPoetTest {
     verify($encodedResult)->stringNotContainsString('POST 1');
   }
 
+  public function testItRendersOnlyPostsNewerThanLastSentAndTakesTimezoneCorrectlyIntoAccount() {
+    //get current WP timezone
+    $timezone = $this->wp->getOption('timezone_string');
+    $gmtOffset = $this->wp->getOption('gmt_offset');
+    //set timezone to UTC-7
+    $this->wp->updateOption('timezone_string', 'America/Los_Angeles');
+    $this->wp->updateOption('gmt_offset', '-7');
+
+    $postIdSent = $this->createPost('POST 5', '2024-03-30 00:00:00');
+    $this->createPost('POST 6', '2024-03-30 07:00:00');
+    $this->createPost('POST 7', '2024-03-30 14:00:00');
+
+    $notification = $this->createNewsletter('Newsletter', NewsletterEntity::TYPE_NOTIFICATION);
+    $notificationHistory = $this->createNewsletter('Newsletter', NewsletterEntity::TYPE_NOTIFICATION_HISTORY, $notification);
+    $newsletterPost = new NewsletterPostEntity($notification, $postIdSent);
+    $this->newsletterPostRepository->persist($newsletterPost);
+    $this->newsletterPostRepository->flush();
+    $newsletterPost->setCreatedAt(new \DateTime('2024-03-30 13:59:59'));
+    $this->newsletterPostRepository->flush();
+    $result = $this->block->render($notificationHistory, $this->alcBlock);
+
+    $this->wp->updateOption('timezone_string', $timezone);
+    $this->wp->updateOption('gmt_offset', $gmtOffset);
+
+    $encodedResult = json_encode($result);
+    verify($encodedResult)->stringNotContainsString('POST 5');
+    verify($encodedResult)->stringContainsString('POST 6');
+    verify($encodedResult)->stringContainsString('POST 7');
+  }
+
   private function createPost(string $title, string $publishDate, string $type = 'post') {
     return $this->wp->wpInsertPost([
       'post_title' => $title,
