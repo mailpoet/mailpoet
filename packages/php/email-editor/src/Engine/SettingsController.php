@@ -15,6 +15,7 @@ class SettingsController {
     'core/list',
     'core/list-item',
     'core/group',
+    'core/spacer'
   ];
 
   const DEFAULT_SETTINGS = [
