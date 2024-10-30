@@ -2,7 +2,7 @@
 
 set -e
 
-source $PWD/.env
+. $PWD/.env
 
 if [ "$MP_GIT_HOOKS_ENABLE" != "true" ]; then
   echo "MP_GIT_HOOKS_ENABLE is not set to 'true', skipping lint-staged-js"
