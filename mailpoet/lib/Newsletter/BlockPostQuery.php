@@ -29,7 +29,7 @@ class BlockPostQuery {
   public $newsletterId = false;
 
   /***
-   * Translates to \WP_Query::date_query => array{'column': 'post_date', 'after': date string}
+   * Translates to \WP_Query::date_query => array{'column': 'post_date_gmt', 'after': date string}
    *
    * @var bool|DateTimeInterface|null
    */
@@ -168,10 +168,13 @@ class BlockPostQuery {
     $parameters['suppress_filters'] = false;
 
     if ($this->newerThanTimestamp instanceof DateTimeInterface) {
+      //Ensure UTC timezone
+      $after = new \DateTime('now', new \DateTimeZone('UTC'));
+      $after->setTimestamp($this->newerThanTimestamp->getTimestamp());
       $parameters['date_query'] = [
         [
-          'column' => 'post_date',
-          'after' => $this->newerThanTimestamp->format('Y-m-d H:i:s'),
+          'column' => 'post_date_gmt',
+          'after' => $after->format('Y-m-d H:i:s'),
         ],
       ];
     }
