@@ -4,6 +4,7 @@ import { dispatch, useSelect, subscribe } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { createBlock } from '@wordpress/blocks';
 import { storeName as emailEditorStore } from 'email-editor/engine/store';
+import { store as coreDataStore } from '@wordpress/core-data';
 import { useShallowEqual } from './use-shallow-equal';
 import { useValidationNotices } from './use-validation-notices';
 
@@ -13,26 +14,53 @@ export type ContentValidationData = {
 };
 
 export const useContentValidation = (): ContentValidationData => {
-  const contentBlockId = useSelect((select) => {
+  const { contentBlockId, hasFooter } = useSelect((select) => {
+    const allBlocks = select(blockEditorStore).getBlocks();
+    const noBodyBlocks = allBlocks.filter(
+      (block) =>
+        block.name !== 'mailpoet/powered-by-mailpoet' &&
+        block.name !== 'core/post-content',
+    );
     // @ts-expect-error getBlocksByName is not defined in types
     const blocks = select(blockEditorStore).getBlocksByName(
       'core/post-content',
     ) as string[] | undefined;
-    return blocks?.[0];
+    return {
+      contentBlockId: blocks?.[0],
+      hasFooter: noBodyBlocks.length > 0,
+    };
   });
 
   const { addValidationNotice, hasValidationNotice, removeValidationNotice } =
     useValidationNotices();
-  const { editedContent, editedTemplateContent } = useSelect((mapSelect) => ({
-    editedContent: mapSelect(emailEditorStore).getEditedEmailContent(),
-    editedTemplateContent: mapSelect(emailEditorStore).getTemplateContent(),
-  }));
+  const { editedContent, editedTemplateContent, defaultTemplateId } = useSelect(
+    (mapSelect) => ({
+      editedContent: mapSelect(emailEditorStore).getEditedEmailContent(),
+      editedTemplateContent: mapSelect(emailEditorStore).getTemplateContent(),
+      defaultTemplateId: mapSelect(coreDataStore).getDefaultTemplateId({
+        slug: 'email-general',
+      }),
+    }),
+  );
 
   const content = useShallowEqual(editedContent);
   const templateContent = useShallowEqual(editedTemplateContent);
 
-  const rules = useMemo(
-    () => [
+  const contentLink = `<a href='[link:subscription_unsubscribe_url]'>${__(
+    'Unsubscribe',
+    'mailpoet',
+  )}</a> | <a href='[link:subscription_manage_url]'>${__(
+    'Manage subscription',
+    'mailpoet',
+  )}</a>`;
+
+  const rules = useMemo(() => {
+    const linksParagraphBlock = createBlock('core/paragraph', {
+      className: 'has-small-font-size',
+      content: contentLink,
+    });
+
+    return [
       {
         id: 'missing-unsubscribe-link',
         test: (emailContent) =>
@@ -45,27 +73,39 @@ export const useContentValidation = (): ContentValidationData => {
           {
             label: __('Insert link', 'mailpoet'),
             onClick: () => {
-              void dispatch(blockEditorStore).insertBlock(
-                createBlock('core/paragraph', {
-                  className: 'has-small-font-size',
-                  content: `<a href="[link:subscription_unsubscribe_url]">${__(
-                    'Unsubscribe',
-                    'mailpoet',
-                  )}</a> | <a href="[link:subscription_manage_url]">${__(
-                    'Manage subscription',
-                    'mailpoet',
-                  )}</a>`,
-                }),
-                undefined,
-                contentBlockId,
-              );
+              if (!hasFooter) {
+                void dispatch(blockEditorStore).insertBlock(
+                  linksParagraphBlock,
+                  undefined,
+                  contentBlockId,
+                );
+              } else {
+                void dispatch(coreDataStore).editEntityRecord(
+                  'postType',
+                  'wp_template',
+                  defaultTemplateId,
+                  {
+                    content: `
+                      ${editedTemplateContent}
+                      <!-- wp:paragraph -->
+                      ${contentLink}
+                      <!-- /wp:paragraph -->
+                    `,
+                  },
+                );
+              }
             },
           },
         ],
       },
-    ],
-    [contentBlockId],
-  );
+    ];
+  }, [
+    contentBlockId,
+    hasFooter,
+    contentLink,
+    defaultTemplateId,
+    editedTemplateContent,
+  ]);
 
   const validateContent = useCallback((): boolean => {
     let isValid = true;
