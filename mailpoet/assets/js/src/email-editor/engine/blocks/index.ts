@@ -12,7 +12,6 @@ import { disableCertainRichTextFormats } from './core/rich-text';
 import { enhanceButtonBlock } from './core/button';
 import { enhanceButtonsBlock } from './core/buttons';
 import { alterSupportConfiguration } from './core/general-block-support';
-import { enhanceSpacerBlock } from './core/spacer';
 
 export function initBlocks() {
   deactivateStackOnMobile();
@@ -27,6 +26,5 @@ export function initBlocks() {
   enhanceColumnsBlock();
   enhancePostContentBlock();
   alterSupportConfiguration();
-  enhanceSpacerBlock();
   registerCoreBlocks();
 }
