@@ -29,6 +29,7 @@
   <rule ref="Generic.WhiteSpace.ArbitraryParenthesesSpacing.SpaceAfterOpen"><severity>0</severity></rule>
   <rule ref="Generic.WhiteSpace.ArbitraryParenthesesSpacing.SpaceBeforeClose"><severity>0</severity></rule>
   <rule ref="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed"><severity>0</severity></rule>
+  <rule ref="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsedHeredocCloser"><severity>0</severity></rule>
   <rule ref="Generic.WhiteSpace.IncrementDecrementSpacing.SpaceAfterIncrement"><severity>0</severity></rule>
   <rule ref="Modernize.FunctionCalls.Dirname.FileConstant"><severity>0</severity></rule>
   <rule ref="NormalizedArrays.Arrays.ArrayBraceSpacing.EmptyArraySpacing"><severity>0</severity></rule>
