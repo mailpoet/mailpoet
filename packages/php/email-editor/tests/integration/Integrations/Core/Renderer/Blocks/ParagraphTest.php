@@ -62,6 +62,36 @@ class ParagraphTest extends \MailPoetTest {
     $this->assertStringContainsString('Lorem Ipsum', $rendered);
   }
 
+  public function testItRendersBorders(): void {
+    $parsedParagraph = $this->parsedParagraph;
+    $parsedParagraph['attrs']['style']['border']['width'] = '10px';
+    $parsedParagraph['attrs']['style']['border']['color'] = '#000001';
+    $parsedParagraph['attrs']['style']['border']['radius'] = '20px';
+
+    $content = '<p class="has-border-color test-class has-red-border-color">Lorem Ipsum</p>';
+    $parsedParagraph['innerHTML'] = $content;
+    $parsedParagraph['innerContent'] = [$content];
+
+    $rendered = $this->paragraphRenderer->render($content, $parsedParagraph, $this->settingsController);
+    $html = new \WP_HTML_Tag_Processor($rendered);
+    $html->next_tag(['tag_name' => 'table']);
+    $tableStyle = $html->get_attribute('style');
+    // Table needs to have border-collapse: separate to make border-radius work
+    $this->assertStringContainsString('border-collapse: separate', $tableStyle);
+    $html->next_tag(['tag_name' => 'td']);
+    $tableCellStyle = $html->get_attribute('style');
+    // Border styles are applied to the table cell
+    $this->assertStringContainsString('border-color:#000001', $tableCellStyle);
+    $this->assertStringContainsString('border-radius:20px', $tableCellStyle);
+    $this->assertStringContainsString('border-width:10px', $tableCellStyle);
+    $tableCellClasses = $html->get_attribute('class');
+    $this->assertStringContainsString('has-border-color test-class has-red-border-color', $tableCellClasses);
+    $html->next_tag(['tag_name' => 'p']);
+    // There are no border styles on the paragraph
+    $paragraphStyle = $html->get_attribute('style');
+    $this->assertStringNotContainsString('border', $paragraphStyle);
+  }
+
   public function testItConvertsBlockTypography(): void {
     $parsedParagraph = $this->parsedParagraph;
     $parsedParagraph['attrs']['style']['typography'] = [

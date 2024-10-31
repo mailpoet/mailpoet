@@ -25,7 +25,10 @@ class Text extends AbstractBlockRenderer {
       $blockClasses = $html->get_attribute('class') ?? '';
       $classes .= ' ' . $blockClasses;
       // remove has-background to prevent double padding applied for wrapper and inner element
-      $html->set_attribute('class', str_replace('has-background', '', $blockClasses));
+      $blockClasses = str_replace('has-background', '', $blockClasses);
+      // remove border related classes because we handle border on wrapping table cell
+      $blockClasses = preg_replace('/[a-z-]+-border-[a-z-]+/', '', $blockClasses);
+      $html->set_attribute('class', trim($blockClasses));
       $blockContent = $html->get_updated_html();
     }
 
@@ -33,6 +36,7 @@ class Text extends AbstractBlockRenderer {
       'color' => $blockAttributes['style']['color'] ?? [],
       'spacing' => $blockAttributes['style']['spacing'] ?? [],
       'typography' => $blockAttributes['style']['typography'] ?? [],
+      'border' => $blockAttributes['style']['border'] ?? [],
     ]);
 
     $styles = [
@@ -47,6 +51,7 @@ class Text extends AbstractBlockRenderer {
     }
 
     $compiledStyles = $this->compileCss($blockStyles['declarations'], $styles);
+    $tableStyles = 'border-collapse: separate;'; // Needed because of border radius
 
     return sprintf(
       '<table
@@ -55,11 +60,13 @@ class Text extends AbstractBlockRenderer {
             cellpadding="0"
             cellspacing="0"
             width="100%%"
+            style="%1$s"
           >
             <tr>
-              <td class="%1$s" style="%2$s" align="%3$s">%4$s</td>
+              <td class="%2$s" style="%3$s" align="%4$s">%5$s</td>
             </tr>
           </table>',
+      esc_attr($tableStyles),
       esc_attr($classes),
       esc_attr($compiledStyles),
       esc_attr($styles['text-align'] ?? 'left'),
@@ -80,6 +87,9 @@ class Text extends AbstractBlockRenderer {
       $elementStyle = $html->get_attribute('style') ?? '';
       // Padding may contain value like 10px or variable like var(--spacing-10)
       $elementStyle = preg_replace('/padding[^:]*:.?[0-9a-z-()]+;?/', '', $elementStyle);
+
+      // Remove border styles. We apply border styles on the wrapping table cell
+      $elementStyle = preg_replace('/border[^:]*:.?[0-9a-z-()#]+;?/', '', $elementStyle);
 
       // We define the font-size on the wrapper element, but we need to keep font-size definition here
       // to prevent CSS Inliner from adding a default value and overriding the value set by user, which is on the wrapper element.
