@@ -44,7 +44,7 @@ class Default_Content extends Abstract_Pattern {
     <h2 class="wp-block-heading has-medium-font-size" style="padding-top:var(--wp--preset--spacing--10);padding-bottom:var(--wp--preset--spacing--10)">' . __( 'One column layout', 'mailpoet' ) . '</h2>
     <!-- /wp:heading -->
     <!-- wp:image {"width":"620px","sizeSlug":"large"} -->
-    <figure class="wp-block-image"><img src="' . esc_url( $this->cdn_asset_url->generateCdnUrl( 'newsletter/congratulation-page-illustration-transparent-LQ.20181121-1440.png' ) ) . '" alt="Banner Image"/></figure>
+    <figure class="wp-block-image"><img src="' . esc_url( $this->cdn_asset_url->generate_cdn_url( 'newsletter/congratulation-page-illustration-transparent-LQ.20181121-1440.png' ) ) . '" alt="Banner Image"/></figure>
     <!-- /wp:image -->
     <!-- wp:paragraph -->
     <p>' . esc_html__( 'A one-column layout is great for simplified and concise content, like announcements or newsletters with brief updates. Drag blocks to add content and customize your styles from the styles panel on the top right.', 'mailpoet' ) . '</p>
