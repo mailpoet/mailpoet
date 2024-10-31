@@ -26,7 +26,6 @@ class Initializer {
     $blocksRegistry->addBlockRenderer('core/buttons', new Renderer\Blocks\Buttons(new FlexLayoutRenderer()));
     $blocksRegistry->addBlockRenderer('core/button', new Renderer\Blocks\Button());
     $blocksRegistry->addBlockRenderer('core/group', new Renderer\Blocks\Group());
-    $blocksRegistry->addBlockRenderer('core/spacer', new Renderer\Blocks\Spacer());
     // Render used for all other blocks
     $blocksRegistry->addFallbackRenderer(new Renderer\Blocks\Fallback());
   }
