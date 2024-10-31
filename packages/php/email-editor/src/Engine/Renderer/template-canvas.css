@@ -55,6 +55,11 @@ a {
     width: 100% !important;
   }
 
+  /* Ensure proper width of columns on mobile when we set 100% and a border is set */
+  .email-block-column {
+    box-sizing: border-box;
+  }
+
   /* We set width to some tables e.g. for wrappers of horizontally aligned images and we force width 100% on mobile */
   .email-table-with-width {
     width: 100% !important;
