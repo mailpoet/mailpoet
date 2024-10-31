@@ -167,6 +167,7 @@ interface Window {
   mailpoet_urls: Record<string, string>;
   recaptcha?: unknown;
   grecaptcha?: any;
+  onInvisibleReCaptchaSubmit?: () => void;
   MailPoetForm?: {
     ajax_url: string;
     ajax_common_error_message: string;

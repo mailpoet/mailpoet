@@ -10,3 +10,10 @@
     }
   }
 }
+
+// WP registration form
+form#registerform .g-recaptcha:not([data-size='invisible']) {
+  scale: 0.9;
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+}

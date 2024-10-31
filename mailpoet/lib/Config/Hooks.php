@@ -70,6 +70,9 @@ class Hooks {
   /** @var HooksWooCommerce */
   private $hooksWooCommerce;
 
+  /** @var HooksReCaptcha */
+  private $reCaptcha;
+
   /** @var SubscriberChangesNotifier */
   private $subscriberChangesNotifier;
 
@@ -96,6 +99,7 @@ class Hooks {
     WordpressMailerReplacer $wordpressMailerReplacer,
     DisplayFormInWPContent $displayFormInWPContent,
     HooksWooCommerce $hooksWooCommerce,
+    HooksReCaptcha $reCaptcha,
     SubscriberHandler $subscriberHandler,
     SubscriberChangesNotifier $subscriberChangesNotifier,
     WP $wpSegment,
@@ -116,6 +120,7 @@ class Hooks {
     $this->wpSegment = $wpSegment;
     $this->subscriberHandler = $subscriberHandler;
     $this->hooksWooCommerce = $hooksWooCommerce;
+    $this->reCaptcha = $reCaptcha;
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
     $this->dotcomLicenseProvisioner = $dotcomLicenseProvisioner;
     $this->automateWooHooks = $automateWooHooks;
@@ -148,7 +153,6 @@ class Hooks {
   }
 
   public function setupSubscriptionEvents() {
-
     $subscribe = $this->settings->get('subscribe', []);
     // Subscribe in comments
     if (
@@ -224,6 +228,26 @@ class Hooks {
         'woocommerce_registration_errors',
         [$this->hooksWooCommerce, 'onRegister'],
         60,
+        3
+      );
+    }
+
+    // reCAPTCHA on WP registration form
+    if ($this->reCaptcha->isEnabled()) {
+      $this->wp->addAction(
+        'login_enqueue_scripts',
+        [$this->reCaptcha, 'enqueueScripts']
+      );
+
+      $this->wp->addAction(
+        'register_form',
+        [$this->reCaptcha, 'render']
+      );
+
+      $this->wp->addFilter(
+        'registration_errors',
+        [$this->reCaptcha, 'validate'],
+        10,
         3
       );
     }
@@ -529,7 +553,6 @@ class Hooks {
   }
 
   public function setFooter(): string {
-
     if (Menu::isOnMailPoetAutomationPage()) {
       return '';
     }
@@ -593,7 +616,7 @@ class Hooks {
    * The cron will be reactivated automatically later in Initializer::initialize -> setupCronTrigger()
    *
    * @param bool|\WP_Error $response The installation response before the installation has started.
-   * @param array         $plugin   Plugin package arguments.
+   * @param array $plugin Plugin package arguments.
    * @return bool|\WP_Error The original `$response` parameter or WP_Error.
    */
   public function deactivateCronActions($response, array $plugin) {
