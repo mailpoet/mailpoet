@@ -1,25 +1,26 @@
 # MailPoet Email Renderer
 
-The renderer is WIP and so is the API for adding support email rendering for new blocks.
+**The renderer is Work In Progress (WIP) and so is the API for adding support email rendering for new blocks**.
 
 ## Adding support for a core block
 
-1. Add block into `ALLOWED_BLOCK_TYPES` in `mailpoet/lib/EmailEditor/Engine/Renderer/SettingsController.php`.
+1. Add block into `ALLOWED_BLOCK_TYPES` in `packages/php/email-editor/src/Engine/SettingsController.php`.
 2. Make sure the block is registered in the editor. Currently all core blocks are registered in the editor.
-3. Add BlockRender class (e.g. Heading) into `mailpoet/lib/EmailEditor/Integration/Core/Renderer/Blocks` folder. <br />
+3. If necessary, add BlockRender class (e.g. Heading) into `packages/php/email-editor/src/Integrations/Core/Renderer/Blocks/` folder. <br />
 
 ```php
 <?php declare(strict_types = 1);
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlockRenderer;use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Engine\SettingsController;
 
-class Heading implements BlockRenderer {
-  public function render($blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    return 'HEADING_BLOCK'; // here comes your rendering logic;
+class Heading extends AbstractBlockRenderer {
+  protected function renderContent($blockContent, array $parsedBlock, SettingsController $settingsController): string {
+    return $blockContent;
   }
 }
+
 ```
 
 4. Register the renderer
@@ -36,7 +37,7 @@ function register_my_block_email_renderer(BlocksRegistry $blocksRegistry): void 
 }
 ```
 
-Note: For core blocks this is currently done in `MailPoet\EmailEditor\Integrations\Core\Initializer`.
+Note: For core blocks this is currently done in `packages/php/email-editor/src/Integrations/Core/Initializer.php`.
 
 5. Implement the rendering logic in the renderer class.
 
@@ -48,6 +49,5 @@ Note: For core blocks this is currently done in `MailPoet\EmailEditor\Integratio
 
 ## TODO
 
-- add universal/fallback renderer for rendering blocks that are not covered by specialized renderers
 - add support for all core blocks
 - move the renderer to separate package
