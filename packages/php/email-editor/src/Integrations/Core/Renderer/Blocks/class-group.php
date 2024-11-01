@@ -1,32 +1,55 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare( strict_types = 1 );
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Settings_Controller;
-use MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer;
 use MailPoet\EmailEditor\Integrations\Utils\Dom_Document_Helper;
 use WP_Style_Engine;
 
+/**
+ * Renders a group block.
+ */
 class Group extends Abstract_Block_Renderer {
-	protected function renderContent( string $blockContent, array $parsedBlock, Settings_Controller $settingsController ): string {
-		$content     = '';
-		$innerBlocks = $parsedBlock['innerBlocks'] ?? array();
+	/**
+	 * Renders the block content.
+	 *
+	 * @param string              $block_content Block content.
+	 * @param array               $parsed_block Parsed block.
+	 * @param Settings_Controller $settings_controller Settings controller.
+	 * @return string
+	 */
+	protected function render_content( string $block_content, array $parsed_block, Settings_Controller $settings_controller ): string {
+		$content      = '';
+		$inner_blocks = $parsed_block['innerBlocks'] ?? array();
 
-		foreach ( $innerBlocks as $block ) {
+		foreach ( $inner_blocks as $block ) {
 			$content .= render_block( $block );
 		}
 
 		return str_replace(
 			'{group_content}',
 			$content,
-			$this->getBlockWrapper( $blockContent, $parsedBlock, $settingsController )
+			$this->get_block_wrapper( $block_content, $parsed_block, $settings_controller )
 		);
 	}
 
-	private function getBlockWrapper( string $blockContent, array $parsedBlock, Settings_Controller $settingsController ): string {
-		$originalClassname = ( new Dom_Document_Helper( $blockContent ) )->getAttributeValueByTagName( 'div', 'class' ) ?? '';
-		$blockAttributes   = wp_parse_args(
-			$parsedBlock['attrs'] ?? array(),
+	/**
+	 * Returns the block wrapper.
+	 *
+	 * @param string              $block_content Block content.
+	 * @param array               $parsed_block Parsed block.
+	 * @param Settings_Controller $settings_controller Settings controller.
+	 */
+	private function get_block_wrapper( string $block_content, array $parsed_block, Settings_Controller $settings_controller ): string {
+		$original_classname = ( new Dom_Document_Helper( $block_content ) )->getAttributeValueByTagName( 'div', 'class' ) ?? '';
+		$block_attributes   = wp_parse_args(
+			$parsed_block['attrs'] ?? array(),
 			array(
 				'style'           => array(),
 				'backgroundColor' => '',
@@ -37,32 +60,33 @@ class Group extends Abstract_Block_Renderer {
 		);
 
 		// Layout, background, borders need to be on the outer table element.
-		$tableStyles                    = $this->getStylesFromBlock(
+		$table_styles = $this->get_styles_from_block(
 			array(
 				'color'      => array_filter(
 					array(
-						'background' => $blockAttributes['backgroundColor'] ? $settingsController->translate_slug_to_color( $blockAttributes['backgroundColor'] ) : null,
-						'text'       => $blockAttributes['textColor'] ? $settingsController->translate_slug_to_color( $blockAttributes['textColor'] ) : null,
-						'border'     => $blockAttributes['borderColor'] ? $settingsController->translate_slug_to_color( $blockAttributes['borderColor'] ) : null,
+						'background' => $block_attributes['backgroundColor'] ? $settings_controller->translate_slug_to_color( $block_attributes['backgroundColor'] ) : null,
+						'text'       => $block_attributes['textColor'] ? $settings_controller->translate_slug_to_color( $block_attributes['textColor'] ) : null,
+						'border'     => $block_attributes['borderColor'] ? $settings_controller->translate_slug_to_color( $block_attributes['borderColor'] ) : null,
 					)
 				),
-				'background' => $blockAttributes['style']['background'] ?? array(),
-				'border'     => $blockAttributes['style']['border'] ?? array(),
-				'spacing'    => array( 'padding' => $blockAttributes['style']['spacing']['margin'] ?? array() ),
+				'background' => $block_attributes['style']['background'] ?? array(),
+				'border'     => $block_attributes['style']['border'] ?? array(),
+				'spacing'    => array( 'padding' => $block_attributes['style']['spacing']['margin'] ?? array() ),
 			)
 		)['declarations'];
-		$tableStyles['border-collapse'] = 'separate'; // Needed for the border radius to work.
+
+		$table_styles['border-collapse'] = 'separate'; // Needed for the border radius to work.
 
 		// Padding properties need to be added to the table cell.
-		$cellStyles = $this->getStylesFromBlock(
+		$cell_styles = $this->get_styles_from_block(
 			array(
-				'spacing' => array( 'padding' => $blockAttributes['style']['spacing']['padding'] ?? array() ),
+				'spacing' => array( 'padding' => $block_attributes['style']['spacing']['padding'] ?? array() ),
 			)
 		)['declarations'];
 
-		$tableStyles['background-size'] = empty( $tableStyles['background-size'] ) ? 'cover' : $tableStyles['background-size'];
-		$justifyContent                 = $blockAttributes['layout']['justifyContent'] ?? 'center';
-		$width                          = $parsedBlock['email_attrs']['width'] ?? '100%';
+		$table_styles['background-size'] = empty( $table_styles['background-size'] ) ? 'cover' : $table_styles['background-size'];
+		$justify_content                 = $block_attributes['layout']['justifyContent'] ?? 'center';
+		$width                           = $parsed_block['email_attrs']['width'] ?? '100%';
 
 		return sprintf(
 			'<table class="email-block-group %3$s" style="%1$s" width="100%%" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
@@ -74,10 +98,10 @@ class Group extends Abstract_Block_Renderer {
           </tr>
         </tbody>
       </table>',
-			esc_attr( WP_Style_Engine::compile_css( $tableStyles, '' ) ),
-			esc_attr( WP_Style_Engine::compile_css( $cellStyles, '' ) ),
-			esc_attr( $originalClassname ),
-			esc_attr( $justifyContent ),
+			esc_attr( WP_Style_Engine::compile_css( $table_styles, '' ) ),
+			esc_attr( WP_Style_Engine::compile_css( $cell_styles, '' ) ),
+			esc_attr( $original_classname ),
+			esc_attr( $justify_content ),
 			esc_attr( $width ),
 		);
 	}

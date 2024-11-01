@@ -1,41 +1,61 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare( strict_types = 1 );
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Settings_Controller;
-use MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks\Abstract_Block_Renderer;
 use MailPoet\EmailEditor\Integrations\Utils\Dom_Document_Helper;
 use WP_Style_Engine;
 
+/**
+ * Renders a columns block.
+ */
 class Columns extends Abstract_Block_Renderer {
-	protected function renderContent( string $blockContent, array $parsedBlock, Settings_Controller $settingsController ): string {
+	/**
+	 * Override this method to disable spacing (block gap) for columns.
+	 * Spacing is applied on wrapping columns block. Columns are rendered side by side so no spacer is needed.
+	 *
+	 * @param string              $block_content Block content.
+	 * @param array               $parsed_block Parsed block.
+	 * @param Settings_Controller $settings_controller Settings controller.
+	 */
+	protected function render_content( string $block_content, array $parsed_block, Settings_Controller $settings_controller ): string {
 		$content = '';
-		foreach ( $parsedBlock['innerBlocks'] ?? array() as $block ) {
+		foreach ( $parsed_block['innerBlocks'] ?? array() as $block ) {
 			$content .= render_block( $block );
 		}
 
 		return str_replace(
 			'{columns_content}',
 			$content,
-			$this->getBlockWrapper( $blockContent, $parsedBlock, $settingsController )
+			$this->getBlockWrapper( $block_content, $parsed_block, $settings_controller )
 		);
 	}
 
 	/**
 	 * Based on MJML <mj-section>
+	 *
+	 * @param string              $block_content Block content.
+	 * @param array               $parsed_block Parsed block.
+	 * @param Settings_Controller $settings_controller Settings controller.
 	 */
-	private function getBlockWrapper( string $blockContent, array $parsedBlock, Settings_Controller $settingsController ): string {
-		$originalWrapperClassname = ( new Dom_Document_Helper( $blockContent ) )->getAttributeValueByTagName( 'div', 'class' ) ?? '';
-		$block_attributes         = wp_parse_args(
-			$parsedBlock['attrs'] ?? array(),
+	private function getBlockWrapper( string $block_content, array $parsed_block, Settings_Controller $settings_controller ): string {
+		$original_wrapper_classname = ( new Dom_Document_Helper( $block_content ) )->getAttributeValueByTagName( 'div', 'class' ) ?? '';
+		$block_attributes           = wp_parse_args(
+			$parsed_block['attrs'] ?? array(),
 			array(
 				'align' => null,
-				'width' => $settingsController->get_layout_width_without_padding(),
+				'width' => $settings_controller->get_layout_width_without_padding(),
 				'style' => array(),
 			)
 		);
 
-		$columnsStyles = $this->getStylesFromBlock(
+		$columns_styles = $this->get_styles_from_block(
 			array(
 				'spacing'    => array( 'padding' => $block_attributes['style']['spacing']['padding'] ?? array() ),
 				'color'      => $block_attributes['style']['color'] ?? array(),
@@ -43,17 +63,17 @@ class Columns extends Abstract_Block_Renderer {
 			)
 		)['declarations'];
 
-		$borderStyles = $this->getStylesFromBlock( array( 'border' => $block_attributes['style']['border'] ?? array() ) )['declarations'];
+		$border_styles = $this->get_styles_from_block( array( 'border' => $block_attributes['style']['border'] ?? array() ) )['declarations'];
 
-		if ( ! empty( $borderStyles ) ) {
-			$columnsStyles = array_merge( $columnsStyles, array( 'border-style' => 'solid' ), $borderStyles );
+		if ( ! empty( $border_styles ) ) {
+			$columns_styles = array_merge( $columns_styles, array( 'border-style' => 'solid' ), $border_styles );
 		}
 
-		if ( empty( $columnsStyles['background-size'] ) ) {
-			$columnsStyles['background-size'] = 'cover';
+		if ( empty( $columns_styles['background-size'] ) ) {
+			$columns_styles['background-size'] = 'cover';
 		}
 
-		$renderedColumns = '<table class="' . esc_attr( 'email-block-columns ' . $originalWrapperClassname ) . '" style="width:100%;border-collapse:separate;text-align:left;' . esc_attr( WP_Style_Engine::compile_css( $columnsStyles, '' ) ) . '" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
+		$rendered_columns = '<table class="' . esc_attr( 'email-block-columns ' . $original_wrapper_classname ) . '" style="width:100%;border-collapse:separate;text-align:left;' . esc_attr( WP_Style_Engine::compile_css( $columns_styles, '' ) ) . '" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
       <tbody>
         <tr>{columns_content}</tr>
       </tbody>
@@ -63,20 +83,20 @@ class Columns extends Abstract_Block_Renderer {
 		$margins = $block_attributes['style']['spacing']['margin'] ?? array();
 
 		if ( ! empty( $margins ) ) {
-			$marginToPaddingStyles = $this->getStylesFromBlock(
+			$margin_to_padding_styles = $this->get_styles_from_block(
 				array(
 					'spacing' => array( 'margin' => $margins ),
 				)
 			)['css'];
-			$renderedColumns       = '<table class="email-block-columns-wrapper" style="width:100%;border-collapse:separate;text-align:left;' . esc_attr( $marginToPaddingStyles ) . '" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
+			$rendered_columns         = '<table class="email-block-columns-wrapper" style="width:100%;border-collapse:separate;text-align:left;' . esc_attr( $margin_to_padding_styles ) . '" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
         <tbody>
           <tr>
-            <td>' . $renderedColumns . '</td>
+            <td>' . $rendered_columns . '</td>
           </tr>
         </tbody>
       </table>';
 		}
 
-		return $renderedColumns;
+		return $rendered_columns;
 	}
 }

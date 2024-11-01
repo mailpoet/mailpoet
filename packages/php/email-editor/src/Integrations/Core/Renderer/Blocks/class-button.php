@@ -1,5 +1,11 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare( strict_types = 1 );
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Settings_Controller;
@@ -12,11 +18,17 @@ use MailPoet\EmailEditor\Integrations\Utils\Dom_Document_Helper;
  * @see https://documentation.mjml.io/#mj-button
  */
 class Button extends Abstract_Block_Renderer {
-	private function getWrapperStyles( array $blockStyles ) {
+	/**
+	 * Get styles for the wrapper element.
+	 *
+	 * @param array $block_styles Block styles.
+	 * @return object
+	 */
+	private function get_wrapper_styles( array $block_styles ) {
 		$properties = array( 'border', 'color', 'typography', 'spacing' );
-		$styles     = $this->getStylesFromBlock( array_intersect_key( $blockStyles, array_flip( $properties ) ) );
+		$styles     = $this->get_styles_from_block( array_intersect_key( $block_styles, array_flip( $properties ) ) );
 		return (object) array(
-			'css'       => $this->compileCss(
+			'css'       => $this->compile_css(
 				$styles['declarations'],
 				array(
 					'word-break' => 'break-word',
@@ -27,43 +39,65 @@ class Button extends Abstract_Block_Renderer {
 		);
 	}
 
-	private function getLinkStyles( array $blockStyles ) {
-		$styles = $this->getStylesFromBlock(
+	/**
+	 * Get styles for the link element.
+	 *
+	 * @param array $block_styles Block styles.
+	 * @return object
+	 */
+	private function get_link_styles( array $block_styles ) {
+		$styles = $this->get_styles_from_block(
 			array(
 				'color'      => array(
-					'text' => $blockStyles['color']['text'] ?? '',
+					'text' => $block_styles['color']['text'] ?? '',
 				),
-				'typography' => $blockStyles['typography'] ?? array(),
+				'typography' => $block_styles['typography'] ?? array(),
 			)
 		);
 		return (object) array(
-			'css'       => $this->compileCss( $styles['declarations'], array( 'display' => 'block' ) ),
+			'css'       => $this->compile_css( $styles['declarations'], array( 'display' => 'block' ) ),
 			'classname' => $styles['classnames'],
 		);
 	}
 
-	public function render(string $block_content, array $parsed_block, Settings_Controller $settings_controller ): string {
-		return $this->renderContent( $block_content, $parsed_block, $settings_controller );
+	/**
+	 * Renders the block.
+	 *
+	 * @param string              $block_content Block content.
+	 * @param array               $parsed_block Parsed block.
+	 * @param Settings_Controller $settings_controller Settings controller.
+	 * @return string
+	 */
+	public function render( string $block_content, array $parsed_block, Settings_Controller $settings_controller ): string {
+		return $this->render_content( $block_content, $parsed_block, $settings_controller );
 	}
 
-	protected function renderContent( $blockContent, array $parsedBlock, Settings_Controller $settingsController ): string {
-		if ( empty( $parsedBlock['innerHTML'] ) ) {
+	/**
+	 * Renders the block content.
+	 *
+	 * @param string              $block_content Block content.
+	 * @param array               $parsed_block Parsed block.
+	 * @param Settings_Controller $settings_controller Settings controller.
+	 * @return string
+	 */
+	protected function render_content( $block_content, array $parsed_block, Settings_Controller $settings_controller ): string {
+		if ( empty( $parsed_block['innerHTML'] ) ) {
 			return '';
 		}
 
-		$domHelper      = new Dom_Document_Helper( $parsedBlock['innerHTML'] );
-		$blockClassname = $domHelper->getAttributeValueByTagName( 'div', 'class' ) ?? '';
-		$buttonLink     = $domHelper->findElement( 'a' );
+		$dom_helper      = new Dom_Document_Helper( $parsed_block['innerHTML'] );
+		$block_classname = $dom_helper->getAttributeValueByTagName( 'div', 'class' ) ?? '';
+		$button_link     = $dom_helper->findElement( 'a' );
 
-		if ( ! $buttonLink ) {
+		if ( ! $button_link ) {
 			return '';
 		}
 
-		$buttonText = $domHelper->getElementInnerHTML( $buttonLink ) ?: '';
-		$buttonUrl  = $buttonLink->getAttribute( 'href' ) ?: '#';
+		$button_text = $dom_helper->getElementInnerHTML( $button_link ) ? $dom_helper->getElementInnerHTML( $button_link ) : '';
+		$button_url  = $button_link->getAttribute( 'href' ) ? $button_link->getAttribute( 'href' ) : '#';
 
-		$blockAttributes = wp_parse_args(
-			$parsedBlock['attrs'] ?? array(),
+		$block_attributes = wp_parse_args(
+			$parsed_block['attrs'] ?? array(),
 			array(
 				'width'           => '',
 				'style'           => array(),
@@ -73,24 +107,24 @@ class Button extends Abstract_Block_Renderer {
 			)
 		);
 
-		$blockStyles = array_replace_recursive(
+		$block_styles = array_replace_recursive(
 			array(
 				'color' => array_filter(
 					array(
-						'background' => $blockAttributes['backgroundColor'] ? $settingsController->translate_slug_to_color( $blockAttributes['backgroundColor'] ) : null,
-						'text'       => $blockAttributes['textColor'] ? $settingsController->translate_slug_to_color( $blockAttributes['textColor'] ) : null,
+						'background' => $block_attributes['backgroundColor'] ? $settings_controller->translate_slug_to_color( $block_attributes['backgroundColor'] ) : null,
+						'text'       => $block_attributes['textColor'] ? $settings_controller->translate_slug_to_color( $block_attributes['textColor'] ) : null,
 					)
 				),
 			),
-			$blockAttributes['style'] ?? array()
+			$block_attributes['style'] ?? array()
 		);
 
-		if ( ! empty( $blockStyles['border'] ) && empty( $blockStyles['border']['style'] ) ) {
-			$blockStyles['border']['style'] = 'solid';
+		if ( ! empty( $block_styles['border'] ) && empty( $block_styles['border']['style'] ) ) {
+			$block_styles['border']['style'] = 'solid';
 		}
 
-		$wrapperStyles = $this->getWrapperStyles( $blockStyles );
-		$linkStyles    = $this->getLinkStyles( $blockStyles );
+		$wrapper_styles = $this->get_wrapper_styles( $block_styles );
+		$link_styles    = $this->get_link_styles( $block_styles );
 
 		return sprintf(
 			'<table border="0" cellspacing="0" cellpadding="0" role="presentation" style="width:%1$s;">
@@ -100,14 +134,14 @@ class Button extends Abstract_Block_Renderer {
           </td>
         </tr>
       </table>',
-			esc_attr( $blockAttributes['width'] ? '100%' : 'auto' ),
-			esc_attr( $blockAttributes['textAlign'] ),
-			esc_attr( $wrapperStyles->classname . ' ' . $blockClassname ),
-			esc_attr( $wrapperStyles->css ),
-			esc_attr( $linkStyles->classname ),
-			esc_attr( $linkStyles->css ),
-			esc_url( $buttonUrl ),
-			$buttonText,
+			esc_attr( $block_attributes['width'] ? '100%' : 'auto' ),
+			esc_attr( $block_attributes['textAlign'] ),
+			esc_attr( $wrapper_styles->classname . ' ' . $block_classname ),
+			esc_attr( $wrapper_styles->css ),
+			esc_attr( $link_styles->classname ),
+			esc_attr( $link_styles->css ),
+			esc_url( $button_url ),
+			$button_text,
 		);
 	}
 }

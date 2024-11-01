@@ -1,5 +1,11 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare( strict_types = 1 );
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Settings_Controller;
@@ -14,7 +20,15 @@ use MailPoet\EmailEditor\Engine\Settings_Controller;
  * We need to find a better abstraction/architecture for this.
  */
 class Fallback extends Abstract_Block_Renderer {
-	protected function renderContent( $blockContent, array $parsedBlock, Settings_Controller $settingsController ): string {
-		return $blockContent;
+	/**
+	 * Renders the block content.
+	 *
+	 * @param string              $block_content Block content.
+	 * @param array               $parsed_block Parsed block.
+	 * @param Settings_Controller $settings_controller Settings controller.
+	 * @return string
+	 */
+	protected function render_content( $block_content, array $parsed_block, Settings_Controller $settings_controller ): string {
+		return $block_content;
 	}
 }
