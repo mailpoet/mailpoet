@@ -16,7 +16,10 @@ class UserAgentsRepository extends Repository {
   public function findOrCreate(string $userAgent): UserAgentEntity {
     $hash = (string)crc32($userAgent);
     $userAgentEntity = $this->findOneBy(['hash' => $hash]);
-    if ($userAgentEntity) return $userAgentEntity;
+    return $userAgentEntity ?? $this->create($userAgent);
+  }
+
+  public function create(string $userAgent): UserAgentEntity {
     $userAgentEntity = new UserAgentEntity($userAgent);
     $this->persist($userAgentEntity);
     return $userAgentEntity;
