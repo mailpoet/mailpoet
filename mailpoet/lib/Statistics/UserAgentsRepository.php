@@ -22,6 +22,7 @@ class UserAgentsRepository extends Repository {
   public function create(string $userAgent): UserAgentEntity {
     $userAgentEntity = new UserAgentEntity($userAgent);
     $this->persist($userAgentEntity);
+    $this->flush();
     return $userAgentEntity;
   }
 }
