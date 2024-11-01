@@ -44,6 +44,7 @@ class Group extends AbstractBlockRenderer {
       'border' => $blockAttributes['style']['border'] ?? [],
       'spacing' => [ 'padding' => $blockAttributes['style']['spacing']['margin'] ?? [] ],
     ])['declarations'];
+    $tableStyles['border-collapse'] = 'separate'; // Needed for the border radius to work.
 
     // Padding properties need to be added to the table cell.
     $cellStyles = $this->getStylesFromBlock([
