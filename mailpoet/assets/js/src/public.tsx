@@ -528,18 +528,29 @@ jQuery(($) => {
       $('.mailpoet-manage-subscription .mailpoet-submit-success').hide();
     });
 
-    // reCAPTCHA on WP registration form
+    // reCAPTCHA on WP & WC registration form
     if ($('.g-recaptcha[data-size="invisible"]').length) {
       const wpRegisterForm: JQuery<HTMLFormElement> = $('form#registerform');
+      const wcRegisterForm: JQuery<HTMLFormElement> = $(
+        'form.woocommerce-form-register',
+      );
+
+      let registerForm: JQuery<HTMLFormElement>;
       if (wpRegisterForm.length) {
-        wpRegisterForm.parsley().on('form:submit', () => {
+        registerForm = wpRegisterForm;
+      } else if (wcRegisterForm.length) {
+        registerForm = wcRegisterForm;
+      }
+
+      if (registerForm) {
+        registerForm.parsley().on('form:submit', () => {
           void grecaptcha.execute();
           return false; // disable submission
         });
 
         // Triggered by invisible reCAPTCHA
         window.onInvisibleReCaptchaSubmit = () => {
-          wpRegisterForm[0].submit();
+          registerForm[0].submit();
         };
       }
     }

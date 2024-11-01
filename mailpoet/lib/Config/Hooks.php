@@ -250,6 +250,24 @@ class Hooks {
         10,
         3
       );
+
+      // reCAPTCHA on WC registration form
+      if (class_exists('WooCommerce')) {
+        $this->wp->addAction(
+          'woocommerce_before_customer_login_form',
+          [$this->reCaptcha, 'enqueueScripts']
+        );
+
+        $this->wp->addAction(
+          'woocommerce_register_form',
+          [$this->reCaptcha, 'render']
+        );
+
+        $this->wp->addAction(
+          'woocommerce_process_registration_errors',
+          [$this->reCaptcha, 'validate']
+        );
+      }
     }
 
     // Manage subscription
