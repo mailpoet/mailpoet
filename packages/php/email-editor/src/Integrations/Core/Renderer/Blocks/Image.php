@@ -23,7 +23,7 @@ class Image extends AbstractBlockRenderer {
     $imageWithWrapper = str_replace(
       ['{image_content}', '{caption_content}'],
       [$image, $caption],
-      $this->getBlockWrapper($parsedBlock, $settingsController)
+      $this->getBlockWrapper($parsedBlock, $settingsController, $caption)
     );
 
     $imageWithWrapper = $this->applyRoundedStyle($imageWithWrapper, $parsedBlock);
@@ -131,7 +131,7 @@ class Image extends AbstractBlockRenderer {
   /**
    * Based on MJML <mj-image> but because MJML doesn't support captions, our solution is a bit different
    */
-  private function getBlockWrapper(array $parsedBlock, SettingsController $settingsController): string {
+  private function getBlockWrapper(array $parsedBlock, SettingsController $settingsController, ?string $caption): string {
     $styles = [
       'border-collapse' => 'collapse',
       'border-spacing' => '0px',
@@ -146,11 +146,28 @@ class Image extends AbstractBlockRenderer {
     $wrapperStyles['width'] = $wrapperWidth;
     $wrapperStyles['border-collapse'] = 'separate'; // Needed because of border radius
 
-    // When the image is not aligned, the wrapper is set to 100% width due to caption that can be longer than the image
-    $captionWidth = isset($parsedBlock['attrs']['align']) ? ($parsedBlock['attrs']['width'] ?? '100%') : '100%';
-    $captionWrapperStyles = $styles;
-    $captionWrapperStyles['width'] = $captionWidth;
-    $captionStyles = $this->getCaptionStyles($settingsController, $parsedBlock);
+    $captionHtml = '';
+    if ($caption) {
+      // When the image is not aligned, the wrapper is set to 100% width due to caption that can be longer than the image
+      $captionWidth = isset($parsedBlock['attrs']['align']) ? ($parsedBlock['attrs']['width'] ?? '100%') : '100%';
+      $captionWrapperStyles = $styles;
+      $captionWrapperStyles['width'] = $captionWidth;
+      $captionStyles = $this->getCaptionStyles($settingsController, $parsedBlock);
+      $captionHtml = '
+      <table
+        role="presentation"
+        class="email-table-with-width"
+        border="0"
+        cellpadding="0"
+        cellspacing="0"
+        style="' . esc_attr(\WP_Style_Engine::compile_css($captionWrapperStyles, '')) . '"
+        width="' . esc_attr($captionWidth) . '"
+          >
+        <tr>
+            <td style="' . esc_attr($captionStyles) . '">{caption_content}</td>
+         </tr>
+      </table>';
+    }
 
     $styles['width'] = '100%';
     $align = $parsedBlock['attrs']['align'] ?? 'left';
@@ -178,20 +195,7 @@ class Image extends AbstractBlockRenderer {
               <tr>
                 <td class="email-image-cell">{image_content}</td>
               </tr>
-            </table>
-            <table
-              role="presentation"
-              class="email-table-with-width"
-              border="0"
-              cellpadding="0"
-              cellspacing="0"
-              style="' . esc_attr(\WP_Style_Engine::compile_css($captionWrapperStyles, '')) . '"
-              width="' . esc_attr($captionWidth) . '"
-            >
-              <tr>
-                  <td style="' . esc_attr($captionStyles) . '">{caption_content}</td>
-               </tr>
-            </table>
+            </table>' . $captionHtml . '
           </td>
         </tr>
       </table>
