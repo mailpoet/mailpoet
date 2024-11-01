@@ -86,14 +86,14 @@ class Button extends Abstract_Block_Renderer {
 		}
 
 		$dom_helper      = new Dom_Document_Helper( $parsed_block['innerHTML'] );
-		$block_classname = $dom_helper->getAttributeValueByTagName( 'div', 'class' ) ?? '';
-		$button_link     = $dom_helper->findElement( 'a' );
+		$block_classname = $dom_helper->get_attribute_value_by_tag_name( 'div', 'class' ) ?? '';
+		$button_link     = $dom_helper->find_element( 'a' );
 
 		if ( ! $button_link ) {
 			return '';
 		}
 
-		$button_text = $dom_helper->getElementInnerHTML( $button_link ) ? $dom_helper->getElementInnerHTML( $button_link ) : '';
+		$button_text = $dom_helper->get_element_inner_html( $button_link ) ? $dom_helper->get_element_inner_html( $button_link ) : '';
 		$button_url  = $button_link->getAttribute( 'href' ) ? $button_link->getAttribute( 'href' ) : '#';
 
 		$block_attributes = wp_parse_args(

@@ -45,7 +45,7 @@ class Columns extends Abstract_Block_Renderer {
 	 * @param Settings_Controller $settings_controller Settings controller.
 	 */
 	private function getBlockWrapper( string $block_content, array $parsed_block, Settings_Controller $settings_controller ): string {
-		$original_wrapper_classname = ( new Dom_Document_Helper( $block_content ) )->getAttributeValueByTagName( 'div', 'class' ) ?? '';
+		$original_wrapper_classname = ( new Dom_Document_Helper( $block_content ) )->get_attribute_value_by_tag_name( 'div', 'class' ) ?? '';
 		$block_attributes           = wp_parse_args(
 			$parsed_block['attrs'] ?? array(),
 			array(

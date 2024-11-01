@@ -320,21 +320,21 @@ class Image extends Abstract_Block_Renderer {
 
 		$dom_helper = new Dom_Document_Helper( $block_content );
 
-		$figure_tag = $dom_helper->findElement( 'figure' );
+		$figure_tag = $dom_helper->find_element( 'figure' );
 		if ( ! $figure_tag ) {
 			return null;
 		}
 
-		$img_tag = $dom_helper->findElement( 'img' );
+		$img_tag = $dom_helper->find_element( 'img' );
 		if ( ! $img_tag ) {
 			return null;
 		}
 
-		$image_src       = $dom_helper->getAttributeValue( $img_tag, 'src' );
-		$image_class     = $dom_helper->getAttributeValue( $img_tag, 'class' );
-		$image_html      = $dom_helper->getOuterHtml( $img_tag );
-		$figcaption      = $dom_helper->findElement( 'figcaption' );
-		$figcaption_html = $figcaption ? $dom_helper->getOuterHtml( $figcaption ) : '';
+		$image_src       = $dom_helper->get_attribute_value( $img_tag, 'src' );
+		$image_class     = $dom_helper->get_attribute_value( $img_tag, 'class' );
+		$image_html      = $dom_helper->get_outer_html( $img_tag );
+		$figcaption      = $dom_helper->find_element( 'figcaption' );
+		$figcaption_html = $figcaption ? $dom_helper->get_outer_html( $figcaption ) : '';
 		$figcaption_html = str_replace( array( '<figcaption', '</figcaption>' ), array( '<span', '</span>' ), $figcaption_html );
 
 		return array(
