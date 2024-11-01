@@ -21,8 +21,17 @@ class UserAgentsRepository extends Repository {
 
   public function create(string $userAgent): UserAgentEntity {
     $userAgentEntity = new UserAgentEntity($userAgent);
-    $this->persist($userAgentEntity);
-    $this->flush();
+
+    $this->entityManager->getConnection()->executeStatement(
+      'INSERT INTO ' . $this->getTableName() . ' (user_agent, hash) VALUES (:user_agent, :hash) ON DUPLICATE KEY UPDATE id = id',
+      [
+        'user_agent' => $userAgentEntity->getUserAgent(),
+        'hash' => $userAgentEntity->getHash(),
+      ]
+    );
+
+    /** @var UserAgentEntity $userAgentEntity */
+    $userAgentEntity = $this->findOneBy(['hash' => $userAgentEntity->getHash()]);
     return $userAgentEntity;
   }
 }
