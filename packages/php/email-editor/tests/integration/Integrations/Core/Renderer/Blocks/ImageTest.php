@@ -96,4 +96,45 @@ class ImageTest extends \MailPoetTest {
     $this->assertStringContainsString('height:300px;', $rendered);
     $this->assertStringContainsString('width:400px;', $rendered);
   }
+
+  public function testItRendersBorders(): void {
+    $imageContent = $this->imageContent;
+    $parsedImage = $this->parsedImage;
+    $parsedImage['attrs']['style']['border'] = [
+      'width' => '10px',
+      'color' => '#000001',
+      'radius' => '20px',
+    ];
+
+    $rendered = $this->imageRenderer->render($imageContent, $parsedImage, $this->settingsController);
+    $html = new \WP_HTML_Tag_Processor($rendered);
+    // Border is rendered on the wrapping table cell
+    $html->next_tag(['tag_name' => 'td', 'class_name' => 'email-image-cell']);
+    $tableCellStyle = $html->get_attribute('style');
+    $this->assertStringContainsString('border-color:#000001', $tableCellStyle);
+    $this->assertStringContainsString('border-radius:20px', $tableCellStyle);
+    $this->assertStringContainsString('border-style:solid;', $tableCellStyle);
+    $html->next_tag(['tag_name' => 'img']);
+    $imgStyle = $html->get_attribute('style');
+    $this->assertStringNotContainsString('border', $imgStyle);
+  }
+
+  public function testItMovesBorderRelatedClasses(): void {
+    $imageContent = str_replace('<img', '<img class="custom-class has-border-color has-border-red-color"',$this->imageContent);
+    $parsedImage = $this->parsedImage;
+    $parsedImage['attrs']['style']['border'] = [
+      'width' => '10px',
+      'color' => '#000001',
+      'radius' => '20px',
+    ];
+
+    $rendered = $this->imageRenderer->render($imageContent, $parsedImage, $this->settingsController);
+    $html = new \WP_HTML_Tag_Processor($rendered);
+    // Border is rendered on the wrapping table cell and the border classes are moved to the wrapping table cell
+    $html->next_tag(['tag_name' => 'td', 'class_name' => 'email-image-cell']);
+    $tableCellClass = $html->get_attribute('class');
+    $this->assertStringContainsString('has-border-red-color', $tableCellClass);
+    $this->assertStringContainsString('has-border-color', $tableCellClass);
+    $this->assertStringNotContainsString('custom-class', $tableCellClass);
+  }
 }

@@ -7,7 +7,7 @@ use MailPoet\EmailEditor\Integrations\Utils\DomDocumentHelper;
 
 class Image extends AbstractBlockRenderer {
   protected function renderContent($blockContent, array $parsedBlock, SettingsController $settingsController): string {
-    $parsedHtml = $this->parseBlockContent($this->cleanupContent($blockContent));
+    $parsedHtml = $this->parseBlockContent($blockContent);
 
     if (!$parsedHtml) {
       return '';
@@ -16,28 +16,31 @@ class Image extends AbstractBlockRenderer {
     $imageUrl = $parsedHtml['imageUrl'];
     $image = $parsedHtml['image'];
     $caption = $parsedHtml['caption'];
-
+    $class = $parsedHtml['class'];
     $parsedBlock = $this->addImageSizeWhenMissing($parsedBlock, $imageUrl, $settingsController);
     $image = $this->addImageDimensions($image, $parsedBlock, $settingsController);
-    $image = $this->applyImageBorderStyle($image, $parsedBlock, $settingsController);
-    $image = $this->applyRoundedStyle($image, $parsedBlock);
 
-    return str_replace(
+    $imageWithWrapper = str_replace(
       ['{image_content}', '{caption_content}'],
       [$image, $caption],
       $this->getBlockWrapper($parsedBlock, $settingsController)
     );
+
+    $imageWithWrapper = $this->applyRoundedStyle($imageWithWrapper, $parsedBlock);
+    $imageWithWrapper = $this->applyImageBorderStyle($imageWithWrapper, $parsedBlock, $class);
+    return $imageWithWrapper;
   }
 
   private function applyRoundedStyle(string $blockContent, array $parsedBlock): string {
     // Because the isn't an attribute for definition of rounded style, we have to check the class name
     if (isset($parsedBlock['attrs']['className']) && strpos($parsedBlock['attrs']['className'], 'is-style-rounded') !== false) {
       // If the image should be in a circle, we need to set the border-radius to 9999px to make it the same as is in the editor
-      // This style cannot be applied on the wrapper, and we need to set it directly on the image
+      // This style is applied to both wrapper and the image
+      $blockContent = $this->removeStyleAttributeFromElement($blockContent, ['tag_name' => 'td', 'class_name' => 'email-image-cell'], 'border-radius');
+      $blockContent = $this->addStyleToElement($blockContent, ['tag_name' => 'td', 'class_name' => 'email-image-cell'], 'border-radius: 9999px;');
       $blockContent = $this->removeStyleAttributeFromElement($blockContent, ['tag_name' => 'img'], 'border-radius');
       $blockContent = $this->addStyleToElement($blockContent, ['tag_name' => 'img'], 'border-radius: 9999px;');
     }
-
     return $blockContent;
   }
 
@@ -55,19 +58,14 @@ class Image extends AbstractBlockRenderer {
     $maxWidth = $settingsController->parseNumberFromStringWithPixels($parsedBlock['email_attrs']['width']);
     $imageSize = wp_getimagesize($imageUrl);
     $imageSize = $imageSize ? $imageSize[0] : $maxWidth;
-    // Because width is primarily used for the max-width property, we need to add the left and right border width to it
-    $borderWidth = $parsedBlock['attrs']['style']['border']['width'] ?? '0px';
-    $borderLeftWidth = $parsedBlock['attrs']['style']['border']['left']['width'] ?? $borderWidth;
-    $borderRightWidth = $parsedBlock['attrs']['style']['border']['right']['width'] ?? $borderWidth;
     $width = min($imageSize, $maxWidth);
-    $width += $settingsController->parseNumberFromStringWithPixels($borderLeftWidth ?? '0px');
-    $width += $settingsController->parseNumberFromStringWithPixels($borderRightWidth ?? '0px');
     $parsedBlock['attrs']['width'] = "{$width}px";
     return $parsedBlock;
 
   }
 
-  private function applyImageBorderStyle(string $blockContent, array $parsedBlock, SettingsController $settingsController): string {
+  private function applyImageBorderStyle(string $blockContent, array $parsedBlock, string $class): string {
+
     // Getting individual border properties
     $borderStyles = wp_style_engine_get_styles(['border' => $parsedBlock['attrs']['style']['border'] ?? []]);
     $borderStyles = $borderStyles['declarations'] ?? [];
@@ -75,8 +73,19 @@ class Image extends AbstractBlockRenderer {
       $borderStyles['border-style'] = 'solid';
       $borderStyles['box-sizing'] = 'border-box';
     }
-
-    return $this->addStyleToElement($blockContent, ['tag_name' => 'img'], \WP_Style_Engine::compile_css($borderStyles, ''));
+    $borderElementTag = ['tag_name' => 'td', 'class_name' => 'email-image-cell'];
+    $contentWithBorderStyles = $this->addStyleToElement($blockContent, $borderElementTag, \WP_Style_Engine::compile_css($borderStyles, ''));
+    // Add Border related classes to proper element. This is required for inlined border-color styles when defined via class
+    $borderClasses = array_filter(explode(' ', $class), function($className) {
+      return strpos($className, 'border') !== false;
+    });
+    $html = new \WP_HTML_Tag_Processor($contentWithBorderStyles);
+    if ($html->next_tag($borderElementTag)) {
+      $class = $html->get_attribute('class') ?? '';
+      $borderClasses[] = $class;
+      $html->set_attribute('class', implode(' ', $borderClasses));
+    }
+    return $html->get_updated_html();
   }
 
   /**
@@ -112,7 +121,7 @@ class Image extends AbstractBlockRenderer {
     $themeData = $settingsController->getTheme()->get_data();
 
     $styles = [
-      'text-align' => 'center',
+      'text-align' => isset($parsedBlock['attrs']['align']) ? 'center' : 'left',
     ];
 
     $styles['font-size'] = $parsedBlock['email_attrs']['font-size'] ?? $themeData['styles']['typography']['fontSize'];
@@ -131,11 +140,16 @@ class Image extends AbstractBlockRenderer {
       'width' => '100%',
     ];
 
-    // When the image is not aligned, the wrapper is set to 100% width due to caption that can be longer than the image
-    $wrapperWidth = isset($parsedBlock['attrs']['align']) ? ($parsedBlock['attrs']['width'] ?? '100%') : '100%';
+    $width = $parsedBlock['attrs']['width'] ?? '100%';
+    $wrapperWidth = ($width && $width !== '100%') ? $width : 'auto';
     $wrapperStyles = $styles;
     $wrapperStyles['width'] = $wrapperWidth;
+    $wrapperStyles['border-collapse'] = 'separate'; // Needed because of border radius
 
+    // When the image is not aligned, the wrapper is set to 100% width due to caption that can be longer than the image
+    $captionWidth = isset($parsedBlock['attrs']['align']) ? ($parsedBlock['attrs']['width'] ?? '100%') : '100%';
+    $captionWrapperStyles = $styles;
+    $captionWrapperStyles['width'] = $captionWidth;
     $captionStyles = $this->getCaptionStyles($settingsController, $parsedBlock);
 
     $styles['width'] = '100%';
@@ -162,11 +176,21 @@ class Image extends AbstractBlockRenderer {
               width="' . esc_attr($wrapperWidth) . '"
             >
               <tr>
-                <td>{image_content}</td>
+                <td class="email-image-cell">{image_content}</td>
               </tr>
+            </table>
+            <table
+              role="presentation"
+              class="email-table-with-width"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              style="' . esc_attr(\WP_Style_Engine::compile_css($captionWrapperStyles, '')) . '"
+              width="' . esc_attr($captionWidth) . '"
+            >
               <tr>
-                <td style="' . esc_attr($captionStyles) . '">{caption_content}</td>
-              </tr>
+                  <td style="' . esc_attr($captionStyles) . '">{caption_content}</td>
+               </tr>
             </table>
           </td>
         </tr>
@@ -229,21 +253,21 @@ class Image extends AbstractBlockRenderer {
     }
 
     $imageSrc = $domHelper->getAttributeValue($imgTag, 'src');
+    $imageClass = $domHelper->getAttributeValue($imgTag, 'class');
     $imageHtml = $domHelper->getOuterHtml($imgTag);
-
     $figcaption = $domHelper->findElement('figcaption');
     $figcaptionHtml = $figcaption ? $domHelper->getOuterHtml($figcaption) : '';
     $figcaptionHtml = str_replace(['<figcaption', '</figcaption>'], ['<span', '</span>'], $figcaptionHtml);
 
-
     return [
       'imageUrl' => $imageSrc ?: '',
-      'image' => $imageHtml,
+      'image' => $this->cleanupImageHtml($imageHtml),
       'caption' => $figcaptionHtml ?: '',
+      'class' => $imageClass ?: '',
     ];
   }
 
-  private function cleanupContent(string $contentHtml): string {
+  private function cleanupImageHtml(string $contentHtml): string {
     $html = new \WP_HTML_Tag_Processor($contentHtml);
     if ($html->next_tag(['tag_name' => 'img'])) {
       $html->remove_attribute('srcset');
