@@ -536,10 +536,13 @@ jQuery(($) => {
       );
 
       let registerForm: JQuery<HTMLFormElement>;
+      let submitInput: object;
       if (wpRegisterForm.length) {
         registerForm = wpRegisterForm;
+        submitInput = { type: 'hidden', name: 'wp-submit', value: 'Register' };
       } else if (wcRegisterForm.length) {
         registerForm = wcRegisterForm;
+        submitInput = { type: 'hidden', name: 'register', value: 'Register' };
       }
 
       if (registerForm) {
@@ -550,6 +553,11 @@ jQuery(($) => {
 
         // Triggered by invisible reCAPTCHA
         window.onInvisibleReCaptchaSubmit = () => {
+          // A workaround to include the submit button's field in form data.
+          // This field is included when the form is submitted by the user.
+          // Yet, it is omitted when the form is submitted programmatically.
+          $('<input>').attr(submitInput).appendTo(registerForm);
+
           registerForm[0].submit();
         };
       }
