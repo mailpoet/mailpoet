@@ -10,19 +10,19 @@ use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class BuiltInCaptchaValidator implements CaptchaValidator {
-  /** @var SubscriptionUrlFactory  */
+  /** @var SubscriptionUrlFactory */
   private $subscriptionUrlFactory;
 
-  /** @var CaptchaPhrase  */
+  /** @var CaptchaPhrase */
   private $captchaPhrase;
 
-  /** @var WPFunctions  */
+  /** @var WPFunctions */
   private $wp;
 
-  /** @var SubscriberIPsRepository  */
+  /** @var SubscriberIPsRepository */
   private $subscriberIPsRepository;
 
-  /** @var SubscribersRepository  */
+  /** @var SubscribersRepository */
   private $subscribersRepository;
 
   public function __construct(
@@ -81,7 +81,6 @@ class BuiltInCaptchaValidator implements CaptchaValidator {
     }
 
     return true;
-
   }
 
   public function isRequired($subscriberEmail = null) {

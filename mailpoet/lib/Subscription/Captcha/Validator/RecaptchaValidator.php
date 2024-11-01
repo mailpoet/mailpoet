@@ -8,11 +8,10 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class RecaptchaValidator implements CaptchaValidator {
 
-
-  /** @var SettingsController  */
+  /** @var SettingsController */
   private $settings;
 
-  /** @var WPFunctions  */
+  /** @var WPFunctions */
   private $wp;
 
   private const ENDPOINT = 'https://www.google.com/recaptcha/api/siteverify';
@@ -26,7 +25,6 @@ class RecaptchaValidator implements CaptchaValidator {
   }
 
   public function validate(array $data): bool {
-
     $captchaSettings = $this->settings->get('captcha');
     if (empty($data['recaptchaResponseToken'])) {
       throw new ValidationError(__('Please check the CAPTCHA.', 'mailpoet'));

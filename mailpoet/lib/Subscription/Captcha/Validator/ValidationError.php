@@ -4,7 +4,6 @@ namespace MailPoet\Subscription\Captcha\Validator;
 
 class ValidationError extends \RuntimeException {
 
-
   private $meta = [];
 
   public function __construct(

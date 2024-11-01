@@ -86,7 +86,7 @@ class Manage {
       $this->urlHelper->redirectBack();
     }
 
-    $sanitize = function($value) {
+    $sanitize = function ($value) {
       if (is_array($value)) {
         foreach ($value as $k => $v) {
           $value[sanitize_text_field($k)] = sanitize_text_field($v);

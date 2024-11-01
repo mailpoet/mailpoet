@@ -491,7 +491,7 @@ class Pages {
 
     // get label or display default label
     $text = (
-      isset($params['text'])
+    isset($params['text'])
       ? htmlspecialchars($params['text'])
       : __('Manage your subscription', 'mailpoet')
     );

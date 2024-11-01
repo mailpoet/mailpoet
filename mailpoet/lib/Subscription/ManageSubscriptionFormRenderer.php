@@ -124,7 +124,7 @@ class ManageSubscriptionFormRenderer {
 
       $customFieldValues[$customField->getId()] = $subscriberCustomField->getValue();
     }
-    return array_map(function(CustomFieldEntity $customFieldEntity) use($customFieldValues) {
+    return array_map(function (CustomFieldEntity $customFieldEntity) use ($customFieldValues) {
       $customField = [
         'id' => 'cf_' . $customFieldEntity->getId(),
         'name' => $customFieldEntity->getName(),
@@ -226,7 +226,7 @@ class ManageSubscriptionFormRenderer {
       'type' => SegmentEntity::TYPE_DEFAULT,
       'deletedAt' => null,
       'displayInManageSubscriptionPage' => true,
-      ];
+    ];
     $segments = $this->segmentsRepository->findBy($criteria, ['name' => Criteria::ASC]);
 
     $subscribedSegmentIds = [];
@@ -239,7 +239,7 @@ class ManageSubscriptionFormRenderer {
       }
     }
 
-    $segments = array_map(function(SegmentEntity $segment) use($subscribedSegmentIds) {
+    $segments = array_map(function (SegmentEntity $segment) use ($subscribedSegmentIds) {
       return [
         'id' => $segment->getId(),
         'name' => $segment->getName(),
