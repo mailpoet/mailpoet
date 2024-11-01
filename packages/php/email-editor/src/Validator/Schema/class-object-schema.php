@@ -1,56 +1,92 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare( strict_types = 1 );
 namespace MailPoet\EmailEditor\Validator\Schema;
 
 use MailPoet\EmailEditor\Validator\Schema;
 
-// See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#objects
+/**
+ * Represents a schema for an object.
+ * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#objects
+ */
 class Object_Schema extends Schema {
+	/**
+	 * Schema definition.
+	 *
+	 * @var array
+	 */
 	protected $schema = array(
 		'type' => 'object',
 	);
 
-	/** @param array<string, Schema> $properties */
+	/**
+	 * Set the required properties of the object.
+	 *
+	 * @param array<string, Schema> $properties Required properties.
+	 */
 	public function properties( array $properties ): self {
-		return $this->updateSchemaProperty(
+		return $this->update_schema_property(
 			'properties',
 			array_map(
 				function ( Schema $property ) {
-					return $property->toArray();
+					return $property->to_array();
 				},
 				$properties
 			)
 		);
 	}
 
+	/**
+	 * Set the required properties of the object.
+	 *
+	 * @param Schema $schema Schema of the additional properties.
+	 */
 	public function additionalProperties( Schema $schema ): self {
-		return $this->updateSchemaProperty( 'additionalProperties', $schema->toArray() );
+		return $this->update_schema_property( 'additionalProperties', $schema->to_array() );
 	}
 
+	/**
+	 * Disables additional properties.
+	 */
 	public function disableAdditionalProperties(): self {
-		return $this->updateSchemaProperty( 'additionalProperties', false );
+		return $this->update_schema_property( 'additionalProperties', false );
 	}
 
 	/**
 	 * Keys of $properties are regular expressions without leading/trailing delimiters.
 	 * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#patternproperties
 	 *
-	 * @param array<string, Schema> $properties
+	 * @param array<string, Schema> $properties Regular expressions and their schemas.
 	 */
 	public function patternProperties( array $properties ): self {
-		$patternProperties = array();
+		$pattern_properties = array();
 		foreach ( $properties as $key => $value ) {
-			$this->validatePattern( $key );
-			$patternProperties[ $key ] = $value->toArray();
+			$this->validate_pattern( $key );
+			$pattern_properties[ $key ] = $value->to_array();
 		}
-		return $this->updateSchemaProperty( 'patternProperties', $patternProperties );
+		return $this->update_schema_property( 'patternProperties', $pattern_properties );
 	}
 
+	/**
+	 * Sets the minimum number of properties in the object.
+	 *
+	 * @param int $value Minimum number of properties in the object.
+	 */
 	public function minProperties( int $value ): self {
-		return $this->updateSchemaProperty( 'minProperties', $value );
+		return $this->update_schema_property( 'minProperties', $value );
 	}
 
+	/**
+	 * Sets the maximum number of properties in the object.
+	 *
+	 * @param int $value Maximum number of properties in the object.
+	 */
 	public function maxProperties( int $value ): self {
-		return $this->updateSchemaProperty( 'maxProperties', $value );
+		return $this->update_schema_property( 'maxProperties', $value );
 	}
 }

@@ -1,5 +1,11 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare( strict_types = 1 );
 namespace MailPoet\EmailEditor\Validator;
 
 use JsonSerializable;
@@ -7,39 +13,37 @@ use MailPoet\WP\Functions as WPFunctions;
 use stdClass;
 use WP_Error;
 
+/**
+ * Validates and sanitizes values based on a schema.
+ */
 class Validator {
-	/** @var WPFunctions */
-	private $wp;
-
-	public function __construct(
-		WPFunctions $wp
-	) {
-		$this->wp = $wp;
+	/**
+	 * Strict validation & sanitization implementation.
+	 * It only coerces int to float (e.g. 5 to 5.0).
+	 *
+	 * @param Schema $schema The schema to validate against.
+	 * @param mixed  $value The value to validate.
+	 * @param string $param_name The parameter name.
+	 * @return mixed
+	 */
+	public function validate( Schema $schema, $value, string $param_name = 'value' ) {
+		return $this->validate_schema_array( $schema->to_array(), $value, $param_name );
 	}
 
 	/**
 	 * Strict validation & sanitization implementation.
 	 * It only coerces int to float (e.g. 5 to 5.0).
 	 *
-	 * @param mixed $value
+	 * @param array  $schema The array must follow the format, which is returned from Schema::toArray().
+	 * @param mixed  $value The value to validate.
+	 * @param string $param_name The parameter name.
 	 * @return mixed
+	 * @throws Validation_Exception If the value does not match the schema.
 	 */
-	public function validate( Schema $schema, $value, string $paramName = 'value' ) {
-		return $this->validateSchemaArray( $schema->toArray(), $value, $paramName );
-	}
-
-	/**
-	 * Strict validation & sanitization implementation.
-	 * It only coerces int to float (e.g. 5 to 5.0).
-	 *
-	 * @param array $schema. The array must follow the format, which is returned from Schema::toArray().
-	 * @param mixed $value
-	 * @return mixed
-	 */
-	public function validateSchemaArray( array $schema, $value, string $paramName = 'value' ) {
-		$result = $this->validateAndSanitizeValueFromSchema( $value, $schema, $paramName );
+	public function validate_schema_array( array $schema, $value, string $param_name = 'value' ) {
+		$result = $this->validate_and_sanitize_value_from_schema( $value, $schema, $param_name );
 		if ( $result instanceof WP_Error ) {
-			throw Validation_Exception::createFromWpError( $result );
+			throw Validation_Exception::create_from_wp_error( $result ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 		return $result;
 	}
@@ -47,51 +51,51 @@ class Validator {
 	/**
 	 * Mirrors rest_validate_value_from_schema() and rest_sanitize_value_from_schema().
 	 *
-	 * @param mixed  $value
-	 * @param array  $schema
-	 * @param string $paramName
+	 * @param mixed  $value The value to validate.
+	 * @param array  $schema The schema to validate against.
+	 * @param string $param_name The parameter name.
 	 * @return mixed|WP_Error
 	 */
-	private function validateAndSanitizeValueFromSchema( $value, array $schema, string $paramName ) {
-		// nullable
-		$fullType = $schema['type'] ?? null;
-		if ( is_array( $fullType ) && in_array( 'null', $fullType, true ) && $value === null ) {
+	private function validate_and_sanitize_value_from_schema( $value, array $schema, string $param_name ) {
+		// nullable.
+		$full_type = $schema['type'] ?? null;
+		if ( is_array( $full_type ) && in_array( 'null', $full_type, true ) && null === $value ) {
 			return null;
 		}
 
-		// anyOf, oneOf
+		// anyOf, oneOf.
 		if ( isset( $schema['anyOf'] ) ) {
-			return $this->validateAndSanitizeAnyOf( $value, $schema, $paramName );
+			return $this->validate_and_sanitize_any_of( $value, $schema, $param_name );
 		} elseif ( isset( $schema['oneOf'] ) ) {
-			return $this->validateAndSanitizeOneOf( $value, $schema, $paramName );
+			return $this->validate_and_sanitize_one_of( $value, $schema, $param_name );
 		}
 
-		// make types strict
-		$type = is_array( $fullType ) ? $fullType[0] : $fullType;
+		// make types strict.
+		$type = is_array( $full_type ) ? $full_type[0] : $full_type;
 		switch ( $type ) {
 			case 'number':
 				if ( ! is_float( $value ) && ! is_int( $value ) ) {
-					return $this->getTypeError( $paramName, $fullType );
+					return $this->get_type_error( $param_name, $full_type );
 				}
 				break;
 			case 'integer':
 				if ( ! is_int( $value ) ) {
-					return $this->getTypeError( $paramName, $fullType );
+					return $this->get_type_error( $param_name, $full_type );
 				}
 				break;
 			case 'boolean':
 				if ( ! is_bool( $value ) ) {
-					return $this->getTypeError( $paramName, $fullType );
+					return $this->get_type_error( $param_name, $full_type );
 				}
 				break;
 			case 'array':
 				if ( ! is_array( $value ) ) {
-					return $this->getTypeError( $paramName, $fullType );
+					return $this->get_type_error( $param_name, $full_type );
 				}
 
 				if ( isset( $schema['items'] ) ) {
 					foreach ( $value as $i => $v ) {
-						$result = $this->validateAndSanitizeValueFromSchema( $v, $schema['items'], $paramName . '[' . $i . ']' );
+						$result = $this->validate_and_sanitize_value_from_schema( $v, $schema['items'], $param_name . '[' . $i . ']' );
 						if ( $this->wp->isWpError( $result ) ) {
 								return $result;
 						}
@@ -100,28 +104,28 @@ class Validator {
 				break;
 			case 'object':
 				if ( ! is_array( $value ) && ! $value instanceof stdClass && ! $value instanceof JsonSerializable ) {
-					return $this->getTypeError( $paramName, $fullType );
+					return $this->get_type_error( $param_name, $full_type );
 				}
 
-				// ensure string keys
+				// ensure string keys.
 				$value = (array) ( $value instanceof JsonSerializable ? $value->jsonSerialize() : $value );
 				if ( count( array_filter( array_keys( $value ), 'is_string' ) ) !== count( $value ) ) {
-					return $this->getTypeError( $paramName, $fullType );
+					return $this->get_type_error( $param_name, $full_type );
 				}
 
-				// validate object properties
+				// validate object properties.
 				foreach ( $value as $k => $v ) {
 					if ( isset( $schema['properties'][ $k ] ) ) {
-						$result = $this->validateAndSanitizeValueFromSchema( $v, $schema['properties'][ $k ], $paramName . '[' . $k . ']' );
+						$result = $this->validate_and_sanitize_value_from_schema( $v, $schema['properties'][ $k ], $param_name . '[' . $k . ']' );
 						if ( $this->wp->isWpError( $result ) ) {
 								return $result;
 						}
 						continue;
 					}
 
-					$patternPropertySchema = $this->wp->restFindMatchingPatternPropertySchema( $k, $schema );
-					if ( $patternPropertySchema ) {
-						$result = $this->validateAndSanitizeValueFromSchema( $v, $patternPropertySchema, $paramName . '[' . $k . ']' );
+					$pattern_property_schema = rest_find_matching_pattern_property_schema( $k, $schema );
+					if ( $pattern_property_schema ) {
+						$result = $this->validate_and_sanitize_value_from_schema( $v, $pattern_property_schema, $param_name . '[' . $k . ']' );
 						if ( $this->wp->isWpError( $result ) ) {
 							return $result;
 						}
@@ -129,7 +133,7 @@ class Validator {
 					}
 
 					if ( isset( $schema['additionalProperties'] ) && is_array( $schema['additionalProperties'] ) ) {
-						$result = $this->validateAndSanitizeValueFromSchema( $v, $schema['additionalProperties'], $paramName . '[' . $k . ']' );
+						$result = $this->validate_and_sanitize_value_from_schema( $v, $schema['additionalProperties'], $param_name . '[' . $k . ']' );
 						if ( $this->wp->isWpError( $result ) ) {
 							return $result;
 						}
@@ -138,23 +142,25 @@ class Validator {
 				break;
 		}
 
-		$result = $this->wp->restValidateValueFromSchema( $value, $schema, $paramName );
-		if ( $this->wp->isWpError( $result ) ) {
+		$result = rest_validate_value_from_schema( $value, $schema, $param_name );
+		if ( is_wp_error( $result ) ) {
 			return $result;
 		}
-		return $this->wp->restSanitizeValueFromSchema( $value, $schema, $paramName );
+		return rest_sanitize_value_from_schema( $value, $schema, $param_name );
 	}
 
 	/**
 	 * Mirrors rest_find_any_matching_schema().
 	 *
-	 * @param mixed $value
+	 * @param mixed  $value The value to validate.
+	 * @param array  $any_of_schema The schema to validate against.
+	 * @param string $param_name The parameter name.
 	 * @return mixed|WP_Error
 	 */
-	private function validateAndSanitizeAnyOf( $value, array $anyOfSchema, string $paramName ) {
+	private function validate_and_sanitize_any_of( $value, array $any_of_schema, string $param_name ) {
 		$errors = array();
-		foreach ( $anyOfSchema['anyOf'] as $index => $schema ) {
-			$result = $this->validateAndSanitizeValueFromSchema( $value, $schema, $paramName );
+		foreach ( $any_of_schema['anyOf'] as $index => $schema ) {
+			$result = $this->validate_and_sanitize_value_from_schema( $value, $schema, $param_name );
 			if ( ! $this->wp->isWpError( $result ) ) {
 				return $result;
 			}
@@ -164,21 +170,23 @@ class Validator {
 				'index'        => $index,
 			);
 		}
-		return $this->wp->restGetCombiningOperationError( $value, $paramName, $errors );
+		return rest_get_combining_operation_error( $value, $param_name, $errors );
 	}
 
 	/**
 	 * Mirrors rest_find_one_matching_schema().
 	 *
-	 * @param mixed $value
+	 * @param mixed  $value The value to validate.
+	 * @param array  $one_of_schema The schema to validate against.
+	 * @param string $param_name The parameter name.
 	 * @return mixed|WP_Error
 	 */
-	private function validateAndSanitizeOneOf( $value, array $oneOfSchema, string $paramName ) {
-		$matchingSchemas = array();
-		$errors          = array();
-		$data            = null;
-		foreach ( $oneOfSchema['oneOf'] as $index => $schema ) {
-			$result = $this->validateAndSanitizeValueFromSchema( $value, $schema, $paramName );
+	private function validate_and_sanitize_one_of( $value, array $one_of_schema, string $param_name ) {
+		$matching_schemas = array();
+		$errors           = array();
+		$data             = null;
+		foreach ( $one_of_schema['oneOf'] as $index => $schema ) {
+			$result = $this->validate_and_sanitize_value_from_schema( $value, $schema, $param_name );
 			if ( $this->wp->isWpError( $result ) ) {
 				$errors[] = array(
 					'error_object' => $result,
@@ -186,26 +194,31 @@ class Validator {
 					'index'        => $index,
 				);
 			} else {
-				$data                      = $result;
-				$matchingSchemas[ $index ] = $schema;
+				$data                       = $result;
+				$matching_schemas[ $index ] = $schema;
 			}
 		}
 
-		if ( ! $matchingSchemas ) {
-			return $this->wp->restGetCombiningOperationError( $value, $paramName, $errors );
+		if ( ! $matching_schemas ) {
+			return $this->wp->restGetCombiningOperationError( $value, $param_name, $errors );
 		}
 
-		if ( count( $matchingSchemas ) > 1 ) {
-			// reuse WP method to generate detailed error
-			$invalidSchema = array( 'type' => array() );
-			$oneOf         = array_replace( array_fill( 0, count( $oneOfSchema['oneOf'] ), $invalidSchema ), $matchingSchemas );
-			return $this->wp->restFindOneMatchingSchema( $value, array( 'oneOf' => $oneOf ), $paramName );
+		if ( count( $matching_schemas ) > 1 ) {
+			// reuse WP method to generate detailed error.
+			$invalid_schema = array( 'type' => array() );
+			$one_of         = array_replace( array_fill( 0, count( $one_of_schema['oneOf'] ), $invalid_schema ), $matching_schemas );
+			return rest_find_one_matching_schema( $value, array( 'oneOf' => $one_of ), $param_name );
 		}
 		return $data;
 	}
 
-	/** @param string|string[] $type */
-	private function getTypeError( string $param, $type ): WP_Error {
+	/**
+	 * Returns a WP_Error for a type mismatch.
+	 *
+	 * @param string          $param The parameter name.
+	 * @param string|string[] $type The expected type.
+	 */
+	private function get_type_error( string $param, $type ): WP_Error {
 		$type = is_array( $type ) ? $type : array( $type );
 		return new WP_Error(
 			'rest_invalid_type',

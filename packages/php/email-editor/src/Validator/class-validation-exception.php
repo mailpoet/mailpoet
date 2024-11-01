@@ -1,22 +1,43 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare( strict_types = 1 );
 namespace MailPoet\EmailEditor\Validator;
 
 use MailPoet\UnexpectedValueException;
 use WP_Error;
 
+/**
+ * Exception thrown when validation fails.
+ */
 class Validation_Exception extends UnexpectedValueException {
-	/** @var WP_Error */
-	protected $wpError;
+	/**
+	 * WP_Error instance.
+	 *
+	 * @var WP_Error
+	 */
+	protected $wp_error;
 
-	public static function createFromWpError( WP_Error $wpError ): self {
-		$exception          = self::create()
-		->withMessage( $wpError->get_error_message() );
-		$exception->wpError = $wpError;
+	/**
+	 * Creates a new instance of the exception.
+	 *
+	 * @param WP_Error $wp_error WP_Error instance.
+	 */
+	public static function create_from_wp_error( WP_Error $wp_error ): self {
+		$exception           = self::create()
+		->withMessage( $wp_error->get_error_message() );
+		$exception->wp_error = $wp_error;
 		return $exception;
 	}
 
-	public function getWpError(): WP_Error {
-		return $this->wpError;
+	/**
+	 * Returns the WP_Error instance.
+	 */
+	public function get_wp_error(): WP_Error {
+		return $this->wp_error;
 	}
 }

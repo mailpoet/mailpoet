@@ -63,7 +63,7 @@ class Template_Preview {
 			array(
 				'get_callback'    => array( $this, 'get_email_theme_preview_css' ),
 				'update_callback' => null,
-				'schema'          => Builder::string()->toArray(),
+				'schema'          => Builder::string()->to_array(),
 			)
 		);
 	}

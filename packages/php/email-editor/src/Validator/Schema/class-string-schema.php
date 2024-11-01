@@ -1,53 +1,97 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare( strict_types = 1 );
 namespace MailPoet\EmailEditor\Validator\Schema;
 
 use MailPoet\EmailEditor\Validator\Schema;
 
-// See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#strings
+/**
+ * Represents a schema for a string.
+ * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#strings
+ */
 class String_Schema extends Schema {
+	/**
+	 * Schema definition.
+	 *
+	 * @var array
+	 */
 	protected $schema = array(
 		'type' => 'string',
 	);
 
+	/**
+	 * Set minimum length of the string.
+	 *
+	 * @param int $value Minimum length.
+	 */
 	public function minLength( int $value ): self {
-		return $this->updateSchemaProperty( 'minLength', $value );
+		return $this->update_schema_property( 'minLength', $value );
 	}
 
+	/**
+	 * Set maximum length of the string.
+	 *
+	 * @param int $value Maximum length.
+	 */
 	public function maxLength( int $value ): self {
-		return $this->updateSchemaProperty( 'maxLength', $value );
+		return $this->update_schema_property( 'maxLength', $value );
 	}
 
 	/**
 	 * Parameter $pattern is a regular expression without leading/trailing delimiters.
 	 * See: https://developer.wordpress.org/rest-api/extending-the-rest-api/schema/#pattern
+	 *
+	 * @param string $pattern Regular expression pattern.
 	 */
 	public function pattern( string $pattern ): self {
-		$this->validatePattern( $pattern );
-		return $this->updateSchemaProperty( 'pattern', $pattern );
+		$this->validate_pattern( $pattern );
+		return $this->update_schema_property( 'pattern', $pattern );
 	}
 
+	/**
+	 * Set the format of the string according to DateTime.
+	 */
 	public function formatDateTime(): self {
-		return $this->updateSchemaProperty( 'format', 'date-time' );
+		return $this->update_schema_property( 'format', 'date-time' );
 	}
 
+	/**
+	 * Set the format of the string according to email.
+	 */
 	public function formatEmail(): self {
-		return $this->updateSchemaProperty( 'format', 'email' );
+		return $this->update_schema_property( 'format', 'email' );
 	}
 
+	/**
+	 * Set the format of the string according to Hex color.
+	 */
 	public function formatHexColor(): self {
-		return $this->updateSchemaProperty( 'format', 'hex-color' );
+		return $this->update_schema_property( 'format', 'hex-color' );
 	}
 
+	/**
+	 * Set the format of the string according to IP address.
+	 */
 	public function formatIp(): self {
-		return $this->updateSchemaProperty( 'format', 'ip' );
+		return $this->update_schema_property( 'format', 'ip' );
 	}
 
+	/**
+	 * Set the format of the string according to uri.
+	 */
 	public function formatUri(): self {
-		return $this->updateSchemaProperty( 'format', 'uri' );
+		return $this->update_schema_property( 'format', 'uri' );
 	}
 
+	/**
+	 * Set the format of the string according to uuid.
+	 */
 	public function formatUuid(): self {
-		return $this->updateSchemaProperty( 'format', 'uuid' );
+		return $this->update_schema_property( 'format', 'uuid' );
 	}
 }

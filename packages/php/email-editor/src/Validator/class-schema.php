@@ -1,96 +1,177 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare( strict_types = 1 );
 namespace MailPoet\EmailEditor\Validator;
 
-use function json_encode;
+use function wp_json_encode;
 use function rest_get_allowed_schema_keywords;
 
+/**
+ * Represents abastract schema.
+ */
 abstract class Schema {
+	/**
+	 * Schema definition.
+	 *
+	 * @var array
+	 */
 	protected $schema = array();
 
-	/** @return static */
+	/**
+	 * Sets the schema as nullable.
+	 *
+	 * @return static
+	 */
 	public function nullable() {
 		$type = $this->schema['type'] ?? array( 'null' );
-		return $this->updateSchemaProperty( 'type', is_array( $type ) ? $type : array( $type, 'null' ) );
+		return $this->update_schema_property( 'type', is_array( $type ) ? $type : array( $type, 'null' ) );
 	}
 
-	/** @return static */
-	public function nonNullable() {
+	/**
+	 * Sets the schema as non-nullable.
+	 *
+	 * @return static
+	 */
+	public function non_nullable() {
 		$type = $this->schema['type'] ?? null;
-		return $type === null
-		? $this->unsetSchemaProperty( 'type' )
-		: $this->updateSchemaProperty( 'type', is_array( $type ) ? $type[0] : $type );
+		return null === $type
+		? $this->unset_schema_property( 'type' )
+		: $this->update_schema_property( 'type', is_array( $type ) ? $type[0] : $type );
 	}
 
-	/** @return static */
+	/**
+	 * Sets the schema as required.
+	 *
+	 * @return static
+	 */
 	public function required() {
-		return $this->updateSchemaProperty( 'required', true );
+		return $this->update_schema_property( 'required', true );
 	}
 
-	/** @return static */
+	/**
+	 * Unsets the required property.
+	 *
+	 * @return static
+	 */
 	public function optional() {
-		return $this->unsetSchemaProperty( 'required' );
+		return $this->unset_schema_property( 'required' );
 	}
 
-	/** @return static */
+	/**
+	 * Set the title of the schema.
+	 *
+	 * @param string $title Title.
+	 * @return static
+	 */
 	public function title( string $title ) {
-		return $this->updateSchemaProperty( 'title', $title );
+		return $this->update_schema_property( 'title', $title );
 	}
 
-	/** @return static */
+	/**
+	 * Set the description of the schema.
+	 *
+	 * @param string $description Description.
+	 * @return static
+	 */
 	public function description( string $description ) {
-		return $this->updateSchemaProperty( 'description', $description );
+		return $this->update_schema_property( 'description', $description );
 	}
 
-	/** @return static */
-	public function default( $default ) {
-		return $this->updateSchemaProperty( 'default', $default );
+	/**
+	 * Set the default value.
+	 *
+	 * @param mixed $default_value Default value.
+	 * @return static
+	 */
+	public function default( $default_value ) {
+		return $this->update_schema_property( 'default', $default_value );
 	}
 
-	/** @return static */
+	/**
+	 * Set the field name and value.
+	 *
+	 * @param string $name Name of the field.
+	 * @param mixed  $value Value of the field.
+	 * @return static
+	 * @throws \Exception When the field name is reserved.
+	 */
 	public function field( string $name, $value ) {
-		if ( in_array( $name, $this->getReservedKeywords(), true ) ) {
-			throw new \Exception( "Field name '$name' is reserved" );
+		if ( in_array( $name, $this->get_reserved_keywords(), true ) ) {
+			throw new \Exception( \esc_html( "Field name '$name' is reserved" ) );
 		}
-		return $this->updateSchemaProperty( $name, $value );
+		return $this->update_schema_property( $name, $value );
 	}
 
-	public function toArray(): array {
+	/**
+	 * Returns the schema as an array.
+	 */
+	public function to_array(): array {
 		return $this->schema;
 	}
 
-	public function toString(): string {
-		$json  = json_encode( $this->schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION );
+	/**
+	 * Returns the schema as a JSON string.
+	 *
+	 * @throws \Exception When the schema cannot be converted to JSON.
+	 */
+	public function to_string(): string {
+		$json  = wp_json_encode( $this->schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION );
 		$error = json_last_error();
-		if ( $error || $json === false ) {
-			throw new \Exception( json_last_error_msg(), (string) $error );
+		if ( $error || false === $json ) {
+			throw new \Exception( \esc_html( json_last_error_msg() ), \esc_html( (string) $error ) );
 		}
 		return $json;
 	}
 
-	/** @return static */
-	protected function updateSchemaProperty( string $name, $value ) {
+	/**
+	 * Updates the schema property.
+	 *
+	 * @param string $name Property name.
+	 * @param mixed  $value Property value.
+	 * @return static
+	 */
+	protected function update_schema_property( string $name, $value ) {
 		$clone                  = clone $this;
 		$clone->schema[ $name ] = $value;
 		return $clone;
 	}
 
-	/** @return static */
-	protected function unsetSchemaProperty( string $name ) {
+	/**
+	 * Unsets the schema property.
+	 *
+	 * @param string $name Property name.
+	 */
+	protected function unset_schema_property( string $name ) {
 		$clone = clone $this;
 		unset( $clone->schema[ $name ] );
 		return $clone;
 	}
 
-	protected function getReservedKeywords(): array {
+	/**
+	 * Returns reserved keywords.
+	 *
+	 * @return string[]
+	 */
+	protected function get_reserved_keywords(): array {
 		return rest_get_allowed_schema_keywords();
 	}
 
-	protected function validatePattern( string $pattern ): void {
+	/**
+	 * Validates the regular expression pattern.
+	 *
+	 * @param string $pattern Regular expression pattern.
+	 * @throws \Exception When the pattern is invalid.
+	 */
+	protected function validate_pattern( string $pattern ): void {
 		$escaped = str_replace( '#', '\\#', $pattern );
 		$regex   = "#$escaped#u";
-		if ( @preg_match( $regex, '' ) === false ) {
-			throw new \Exception( "Invalid regular expression '$regex'" );
+		if ( @preg_match( $regex, '' ) === false ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			throw new \Exception( \esc_html( "Invalid regular expression '$regex'" ) );
 		}
 	}
 }

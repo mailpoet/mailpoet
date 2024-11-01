@@ -109,6 +109,6 @@ class Email_Styles_Schema {
 					)
 				)->nullable(),
 			)
-		)->toArray();
+		)->to_array();
 	}
 }

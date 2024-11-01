@@ -41,6 +41,6 @@ class Email_Api_Controller {
 	 * @return array
 	 */
 	public function get_email_data_schema(): array {
-		return Builder::object()->toArray();
+		return Builder::object()->to_array();
 	}
 }
