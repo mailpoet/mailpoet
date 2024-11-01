@@ -1,54 +1,76 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare( strict_types = 1 );
 namespace MailPoet\EmailEditor\Integrations\Core;
 
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout\Flex_Layout_Renderer;
 
+/**
+ * Initializes the core blocks renderers.
+ */
 class Initializer {
+	/**
+	 * Initializes the core blocks renderers.
+	 */
 	public function initialize(): void {
-		add_action( 'mailpoet_blocks_renderer_initialized', array( $this, 'registerCoreBlocksRenderers' ), 10, 1 );
-		add_filter( 'mailpoet_email_editor_theme_json', array( $this, 'adjustThemeJson' ), 10, 1 );
-		add_filter( 'safe_style_css', array( $this, 'allowStyles' ) );
+		add_action( 'mailpoet_blocks_renderer_initialized', array( $this, 'register_core_blocks_renderers' ), 10, 1 );
+		add_filter( 'mailpoet_email_editor_theme_json', array( $this, 'adjust_theme_json' ), 10, 1 );
+		add_filter( 'safe_style_css', array( $this, 'allow_styles' ) );
 	}
 
 	/**
 	 * Register core blocks email renderers when the blocks renderer is initialized.
+	 *
+	 * @param Blocks_Registry $blocks_registry Blocks registry.
 	 */
-	public function registerCoreBlocksRenderers( Blocks_Registry $blocksRegistry ): void {
-		$blocksRegistry->add_block_renderer( 'core/paragraph', new Renderer\Blocks\Text() );
-		$blocksRegistry->add_block_renderer( 'core/heading', new Renderer\Blocks\Text() );
-		$blocksRegistry->add_block_renderer( 'core/column', new Renderer\Blocks\Column() );
-		$blocksRegistry->add_block_renderer( 'core/columns', new Renderer\Blocks\Columns() );
-		$blocksRegistry->add_block_renderer( 'core/list', new Renderer\Blocks\List_Block() );
-		$blocksRegistry->add_block_renderer( 'core/list-item', new Renderer\Blocks\List_Item() );
-		$blocksRegistry->add_block_renderer( 'core/image', new Renderer\Blocks\Image() );
-		$blocksRegistry->add_block_renderer( 'core/buttons', new Renderer\Blocks\Buttons( new Flex_Layout_Renderer() ) );
-		$blocksRegistry->add_block_renderer( 'core/button', new Renderer\Blocks\Button() );
-		$blocksRegistry->add_block_renderer( 'core/group', new Renderer\Blocks\Group() );
-		// Render used for all other blocks
-		$blocksRegistry->add_fallback_renderer( new Renderer\Blocks\Fallback() );
+	public function register_core_blocks_renderers( Blocks_Registry $blocks_registry ): void {
+		$blocks_registry->add_block_renderer( 'core/paragraph', new Renderer\Blocks\Text() );
+		$blocks_registry->add_block_renderer( 'core/heading', new Renderer\Blocks\Text() );
+		$blocks_registry->add_block_renderer( 'core/column', new Renderer\Blocks\Column() );
+		$blocks_registry->add_block_renderer( 'core/columns', new Renderer\Blocks\Columns() );
+		$blocks_registry->add_block_renderer( 'core/list', new Renderer\Blocks\List_Block() );
+		$blocks_registry->add_block_renderer( 'core/list-item', new Renderer\Blocks\List_Item() );
+		$blocks_registry->add_block_renderer( 'core/image', new Renderer\Blocks\Image() );
+		$blocks_registry->add_block_renderer( 'core/buttons', new Renderer\Blocks\Buttons( new Flex_Layout_Renderer() ) );
+		$blocks_registry->add_block_renderer( 'core/button', new Renderer\Blocks\Button() );
+		$blocks_registry->add_block_renderer( 'core/group', new Renderer\Blocks\Group() );
+		// Render used for all other blocks.
+		$blocks_registry->add_fallback_renderer( new Renderer\Blocks\Fallback() );
 	}
 
 	/**
 	 * Adjusts the editor's theme to add blocks specific settings for core blocks.
+	 *
+	 * @param \WP_Theme_JSON $editor_theme_json Editor theme JSON.
 	 */
-	public function adjustThemeJson( \WP_Theme_JSON $editorThemeJson ): \WP_Theme_JSON {
-		$themeJson = (string) file_get_contents( __DIR__ . '/theme.json' );
-		$themeJson = json_decode( $themeJson, true );
-		/** @var array $themeJson */
-		$editorThemeJson->merge( new \WP_Theme_JSON( $themeJson, 'default' ) );
-		return $editorThemeJson;
+	public function adjust_theme_json( \WP_Theme_JSON $editor_theme_json ): \WP_Theme_JSON {
+		$theme_json = (string) file_get_contents( __DIR__ . '/theme.json' );
+		$theme_json = json_decode( $theme_json, true );
+		/**
+		 * Loaded theme json.
+		 *
+		 * @var array $theme_json
+		 */
+		$editor_theme_json->merge( new \WP_Theme_JSON( $theme_json, 'default' ) );
+		return $editor_theme_json;
 	}
 
 	/**
 	 * Allow styles for the email editor.
+	 *
+	 * @param array $allowed_styles Allowed styles.
 	 */
-	public function allowStyles( array $allowedStyles ): array {
-		$allowedStyles[] = 'display';
-		$allowedStyles[] = 'mso-padding-alt';
-		$allowedStyles[] = 'mso-font-width';
-		$allowedStyles[] = 'mso-text-raise';
-		return $allowedStyles;
+	public function allow_styles( array $allowed_styles ): array {
+		$allowed_styles[] = 'display';
+		$allowed_styles[] = 'mso-padding-alt';
+		$allowed_styles[] = 'mso-font-width';
+		$allowed_styles[] = 'mso-text-raise';
+		return $allowed_styles;
 	}
 }
