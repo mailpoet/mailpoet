@@ -39,7 +39,7 @@ class Spacing_Preprocessor_Test extends \MailPoetUnitTest {
 	/**
 	 * Set up the test
 	 */
-	public function _before() { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
+	public function _before() {
 		parent::_before();
 		$this->preprocessor = new Spacing_Preprocessor();
 		$this->layout       = array( 'contentSize' => '660px' );

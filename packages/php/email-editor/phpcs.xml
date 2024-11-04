@@ -16,6 +16,12 @@
 		<exclude-pattern>tests/unit/_bootstrap.php</exclude-pattern>
 	</rule>
 
+	<!-- Exclude test files from the PSR2.Methods.MethodDeclaration.Underscore rule due to methods _after() and _before() -->
+	<rule ref="PSR2.Methods.MethodDeclaration.Underscore">
+		<exclude-pattern>tests/integration</exclude-pattern>
+		<exclude-pattern>tests/unit</exclude-pattern>
+	</rule>
+
 	<!-- Skip the vendor directory -->
 	<exclude-pattern>vendor/*</exclude-pattern>
 </ruleset>

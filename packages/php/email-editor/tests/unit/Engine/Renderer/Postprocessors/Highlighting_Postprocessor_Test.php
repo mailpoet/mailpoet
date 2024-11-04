@@ -24,7 +24,7 @@ class Highlighting_Postprocessor_Test extends \MailPoetUnitTest {
 	/**
 	 * Set up the test.
 	 */
-	public function _before() { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
+	public function _before() {
 		parent::_before();
 		$this->postprocessor = new Highlighting_Postprocessor();
 	}

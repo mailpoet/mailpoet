@@ -33,7 +33,7 @@ class Variables_Postprocessor_Test extends \MailPoetUnitTest {
 	/**
 	 * Set up the test
 	 */
-	public function _before() { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
+	public function _before() {
 		parent::_before();
 		$this->theme_controller_mock = $this->createMock( Theme_Controller::class );
 		$this->postprocessor         = new Variables_Postprocessor( $this->theme_controller_mock );

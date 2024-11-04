@@ -40,7 +40,7 @@ class Typography_Preprocessor_Test extends \MailPoetUnitTest {
 	/**
 	 * Set up the test
 	 */
-	public function _before() { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
+	public function _before() {
 		parent::_before();
 		$settings_mock = $this->createMock( Settings_Controller::class );
 		$theme_mock    = $this->createMock( \WP_Theme_JSON::class );
