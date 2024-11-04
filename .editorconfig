@@ -10,6 +10,9 @@ indent_size = 2
 ij_smart_tabs = false
 max_line_length = off
 
+[packages/php/email-editor/**]
+indent_style = tab
+
 [*.php]
 ij_php_align_key_value_pairs = false
 ij_php_align_multiline_chained_methods = false
