@@ -4,6 +4,7 @@ use _generated\UnitTesterActions;
 
 /**
  * Inherited Methods
+ *
  * @method void wantToTest($text)
  * @method void wantTo($text)
  * @method void execute($callable)
@@ -16,12 +17,12 @@ use _generated\UnitTesterActions;
  * @method void pause()
  *
  * @SuppressWarnings(PHPMD)
-*/
-class UnitTester extends \Codeception\Actor
-{
-    use UnitTesterActions;
+ */
+class UnitTester extends \Codeception\Actor {
 
-    /**
-     * Define custom actions here
-     */
+	use UnitTesterActions;
+
+	/**
+	 * Define custom actions here
+	 */
 }

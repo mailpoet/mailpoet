@@ -3,6 +3,7 @@
 
 /**
  * Inherited Methods
+ *
  * @method void wantToTest($text)
  * @method void wantTo($text)
  * @method void execute($callable)
@@ -15,37 +16,37 @@
  * @method void pause()
  *
  * @SuppressWarnings(PHPMD)
-*/
-class IntegrationTester extends \Codeception\Actor
-{
-  use _generated\IntegrationTesterActions;
+ */
+class IntegrationTester extends \Codeception\Actor {
 
-  private $wpTermIds = [];
+	use _generated\IntegrationTesterActions;
 
-  private $createdCommentIds = [];
+	private $wpTermIds = array();
 
-  private $posts = [];
+	private $createdCommentIds = array();
 
-  public function createPost(array $params): \WP_Post {
-    $postId = wp_insert_post($params);
-    if ($postId instanceof WP_Error) {
-      throw new \Exception('Failed to create post');
-    }
-    $post = get_post($postId);
-    if (!$post instanceof WP_Post) {
-      throw new \Exception('Failed to fetch the post');
-    }
-    $this->posts[] = $post;
-    return $post;
-  }
+	private $posts = array();
 
-  public function cleanup() {
-    $this->deletePosts();
-  }
+	public function createPost( array $params ): \WP_Post {
+		$postId = wp_insert_post( $params );
+		if ( $postId instanceof WP_Error ) {
+			throw new \Exception( 'Failed to create post' );
+		}
+		$post = get_post( $postId );
+		if ( ! $post instanceof WP_Post ) {
+			throw new \Exception( 'Failed to fetch the post' );
+		}
+		$this->posts[] = $post;
+		return $post;
+	}
 
-  private function deletePosts() {
-    foreach ($this->posts as $post) {
-      wp_delete_post($post->ID, true);
-    }
-  }
+	public function cleanup() {
+		$this->deletePosts();
+	}
+
+	private function deletePosts() {
+		foreach ( $this->posts as $post ) {
+			wp_delete_post( $post->ID, true );
+		}
+	}
 }
