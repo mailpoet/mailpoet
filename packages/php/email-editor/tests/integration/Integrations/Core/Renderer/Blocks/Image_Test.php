@@ -1,22 +1,44 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Email_Editor;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
 
+/**
+ * Integration test for Image class
+ */
 class Image_Test extends \MailPoetTest {
-	/** @var Image */
-	private $imageRenderer;
+	/**
+	 * Image renderer instance
+	 *
+	 * @var Image
+	 */
+	private $image_renderer;
 
-	private $imageContent = '
+	/**
+	 * Content of the image block
+	 *
+	 * @var string
+	 */
+	private $image_content = '
     <figure class="wp-block-image alignleft size-full is-style-default">
         <img src="https://test.com/wp-content/uploads/2023/05/image.jpg" alt="" style="" srcset="https://test.com/wp-content/uploads/2023/05/image.jpg 1000w"/>
     </figure>
   ';
 
-	/** @var array */
-	private $parsedImage = array(
+	/**
+	 * Parse image block configuration
+	 *
+	 * @var array
+	 */
+	private $parsed_image = array(
 		'blockName'    => 'core/image',
 		'attrs'        => array(
 			'align'           => 'left',
@@ -31,21 +53,30 @@ class Image_Test extends \MailPoetTest {
 		'innerHTML'    => '',
 		'innerContent' => array(),
 	);
+	/**
+	 * Settings controller instance
+	 *
+	 * @var Settings_Controller
+	 */
+	private $settings_controller;
 
-	/** @var Settings_Controller */
-	private $settingsController;
-
+	/**
+	 * Set up before each test
+	 */
 	public function _before() {
 		$this->di_container->get( Email_Editor::class )->initialize();
-		$this->imageRenderer      = new Image();
-		$this->settingsController = $this->di_container->get( Settings_Controller::class );
+		$this->image_renderer      = new Image();
+		$this->settings_controller = $this->di_container->get( Settings_Controller::class );
 	}
 
+	/**
+	 * Test it renders mandatory image styles
+	 */
 	public function testItRendersMandatoryImageStyles(): void {
-		$parsedImage              = $this->parsedImage;
-		$parsedImage['innerHTML'] = $this->imageContent; // To avoid repetition of the image content in the test we need to add it to the parsed block
+		$parsed_image              = $this->parsed_image;
+		$parsed_image['innerHTML'] = $this->image_content; // To avoid repetition of the image content in the test we need to add it to the parsed block.
 
-		$rendered = $this->imageRenderer->render( $this->imageContent, $parsedImage, $this->settingsController );
+		$rendered = $this->image_renderer->render( $this->image_content, $parsed_image, $this->settings_controller );
 		$this->assertStringNotContainsString( '<figure', $rendered );
 		$this->assertStringNotContainsString( '<figcaption', $rendered );
 		$this->assertStringNotContainsString( '</figure>', $rendered );
@@ -56,12 +87,15 @@ class Image_Test extends \MailPoetTest {
 		$this->assertStringContainsString( '<img ', $rendered );
 	}
 
+	/**
+	 * Test it renders border radius style
+	 */
 	public function testItRendersBorderRadiusStyle(): void {
-		$parsedImage                       = $this->parsedImage;
-		$parsedImage['attrs']['className'] = 'is-style-rounded';
-		$parsedImage['innerHTML']          = $this->imageContent; // To avoid repetition of the image content in the test we need to add it to the parsed block
+		$parsed_image                       = $this->parsed_image;
+		$parsed_image['attrs']['className'] = 'is-style-rounded';
+		$parsed_image['innerHTML']          = $this->image_content; // To avoid repetition of the image content in the test we need to add it to the parsed block.
 
-		$rendered = $this->imageRenderer->render( $this->imageContent, $parsedImage, $this->settingsController );
+		$rendered = $this->image_renderer->render( $this->image_content, $parsed_image, $this->settings_controller );
 		$this->assertStringNotContainsString( '<figure', $rendered );
 		$this->assertStringNotContainsString( '<figcaption', $rendered );
 		$this->assertStringNotContainsString( '</figure>', $rendered );
@@ -72,24 +106,30 @@ class Image_Test extends \MailPoetTest {
 		$this->assertStringContainsString( 'border-radius: 9999px;', $rendered );
 	}
 
+	/**
+	 * Test it renders caption
+	 */
 	public function testItRendersCaption(): void {
-		$imageContent             = str_replace( '</figure>', '<figcaption class="wp-element-caption">Caption</figcaption></figure>', $this->imageContent );
-		$parsedImage              = $this->parsedImage;
-		$parsedImage['innerHTML'] = $imageContent; // To avoid repetition of the image content in the test we need to add it to the parsed block
+		$image_content             = str_replace( '</figure>', '<figcaption class="wp-element-caption">Caption</figcaption></figure>', $this->image_content );
+		$parsed_image              = $this->parsed_image;
+		$parsed_image['innerHTML'] = $image_content; // To avoid repetition of the image content in the test we need to add it to the parsed block.
 
-		$rendered = $this->imageRenderer->render( $imageContent, $parsedImage, $this->settingsController );
+		$rendered = $this->image_renderer->render( $image_content, $parsed_image, $this->settings_controller );
 		$this->assertStringContainsString( '>Caption</span>', $rendered );
 		$this->assertStringContainsString( 'text-align:center;', $rendered );
 	}
 
+	/**
+	 * Test it renders image alignment
+	 */
 	public function testItRendersImageAlignment(): void {
-		$imageContent                  = str_replace( 'style=""', 'style="width:400px;height:300px;"', $this->imageContent );
-		$parsedImage                   = $this->parsedImage;
-		$parsedImage['attrs']['align'] = 'center';
-		$parsedImage['attrs']['width'] = '400px';
-		$parsedImage['innerHTML']      = $imageContent; // To avoid repetition of the image content in the test we need to add it to the parsed block
+		$image_content                  = str_replace( 'style=""', 'style="width:400px;height:300px;"', $this->image_content );
+		$parsed_image                   = $this->parsed_image;
+		$parsed_image['attrs']['align'] = 'center';
+		$parsed_image['attrs']['width'] = '400px';
+		$parsed_image['innerHTML']      = $image_content; // To avoid repetition of the image content in the test we need to add it to the parsed block.
 
-		$rendered = $this->imageRenderer->render( $imageContent, $parsedImage, $this->settingsController );
+		$rendered = $this->image_renderer->render( $image_content, $parsed_image, $this->settings_controller );
 		$this->assertStringContainsString( 'align="center"', $rendered );
 		$this->assertStringContainsString( 'width="400"', $rendered );
 		$this->assertStringContainsString( 'height="300"', $rendered );
@@ -97,54 +137,60 @@ class Image_Test extends \MailPoetTest {
 		$this->assertStringContainsString( 'width:400px;', $rendered );
 	}
 
+	/**
+	 * Test it renders image with borders
+	 */
 	public function testItRendersBorders(): void {
-		$imageContent                            = $this->imageContent;
-		$parsedImage                             = $this->parsedImage;
-		$parsedImage['attrs']['style']['border'] = array(
+		$image_content                            = $this->image_content;
+		$parsed_image                             = $this->parsed_image;
+		$parsed_image['attrs']['style']['border'] = array(
 			'width'  => '10px',
 			'color'  => '#000001',
 			'radius' => '20px',
 		);
 
-		$rendered = $this->imageRenderer->render( $imageContent, $parsedImage, $this->settingsController );
+		$rendered = $this->image_renderer->render( $image_content, $parsed_image, $this->settings_controller );
 		$html     = new \WP_HTML_Tag_Processor( $rendered );
-		// Border is rendered on the wrapping table cell
+		// Border is rendered on the wrapping table cell.
 		$html->next_tag(
 			array(
 				'tag_name'   => 'td',
 				'class_name' => 'email-image-cell',
 			)
 		);
-		$tableCellStyle = $html->get_attribute( 'style' );
-		$this->assertStringContainsString( 'border-color:#000001', $tableCellStyle );
-		$this->assertStringContainsString( 'border-radius:20px', $tableCellStyle );
-		$this->assertStringContainsString( 'border-style:solid;', $tableCellStyle );
+		$table_cell_style = $html->get_attribute( 'style' );
+		$this->assertStringContainsString( 'border-color:#000001', $table_cell_style );
+		$this->assertStringContainsString( 'border-radius:20px', $table_cell_style );
+		$this->assertStringContainsString( 'border-style:solid;', $table_cell_style );
 		$html->next_tag( array( 'tag_name' => 'img' ) );
-		$imgStyle = $html->get_attribute( 'style' );
-		$this->assertStringNotContainsString( 'border', $imgStyle );
+		$img_style = $html->get_attribute( 'style' );
+		$this->assertStringNotContainsString( 'border', $img_style );
 	}
 
+	/**
+	 * Test it moves border related classes
+	 */
 	public function testItMovesBorderRelatedClasses(): void {
-		$imageContent                            = str_replace( '<img', '<img class="custom-class has-border-color has-border-red-color"', $this->imageContent );
-		$parsedImage                             = $this->parsedImage;
-		$parsedImage['attrs']['style']['border'] = array(
+		$image_content                            = str_replace( '<img', '<img class="custom-class has-border-color has-border-red-color"', $this->image_content );
+		$parsed_image                             = $this->parsed_image;
+		$parsed_image['attrs']['style']['border'] = array(
 			'width'  => '10px',
 			'color'  => '#000001',
 			'radius' => '20px',
 		);
 
-		$rendered = $this->imageRenderer->render( $imageContent, $parsedImage, $this->settingsController );
+		$rendered = $this->image_renderer->render( $image_content, $parsed_image, $this->settings_controller );
 		$html     = new \WP_HTML_Tag_Processor( $rendered );
-		// Border is rendered on the wrapping table cell and the border classes are moved to the wrapping table cell
+		// Border is rendered on the wrapping table cell and the border classes are moved to the wrapping table cell.
 		$html->next_tag(
 			array(
 				'tag_name'   => 'td',
 				'class_name' => 'email-image-cell',
 			)
 		);
-		$tableCellClass = $html->get_attribute( 'class' );
-		$this->assertStringContainsString( 'has-border-red-color', $tableCellClass );
-		$this->assertStringContainsString( 'has-border-color', $tableCellClass );
-		$this->assertStringNotContainsString( 'custom-class', $tableCellClass );
+		$table_cell_class = $html->get_attribute( 'class' );
+		$this->assertStringContainsString( 'has-border-red-color', $table_cell_class );
+		$this->assertStringContainsString( 'has-border-color', $table_cell_class );
+		$this->assertStringNotContainsString( 'custom-class', $table_cell_class );
 	}
 }

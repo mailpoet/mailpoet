@@ -1,16 +1,33 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Email_Editor;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
 
+/**
+ * Integration test for Paragraph class
+ */
 class Paragraph_Test extends \MailPoetTest {
-	/** @var Text */
-	private $paragraphRenderer;
+	/**
+	 * Paragraph renderer instance
+	 *
+	 * @var Text
+	 */
+	private $paragraph_renderer;
 
-	/** @var array */
-	private $parsedParagraph = array(
+	/**
+	 * Paragraph block configuration
+	 *
+	 * @var array
+	 */
+	private $parsed_paragraph = array(
 		'blockName'    => 'core/paragraph',
 		'attrs'        => array(
 			'style' => array(
@@ -26,33 +43,46 @@ class Paragraph_Test extends \MailPoetTest {
 		),
 	);
 
-	/** @var Settings_Controller */
-	private $settingsController;
+	/**
+	 * Settings controller instance
+	 *
+	 * @var Settings_Controller
+	 */
+	private $settings_controller;
 
+	/**
+	 * Set up the test
+	 */
 	public function _before() {
 		$this->di_container->get( Email_Editor::class )->initialize();
-		$this->paragraphRenderer  = new Text();
-		$this->settingsController = $this->di_container->get( Settings_Controller::class );
+		$this->paragraph_renderer  = new Text();
+		$this->settings_controller = $this->di_container->get( Settings_Controller::class );
 	}
 
+	/**
+	 * Test it renders content
+	 */
 	public function testItRendersContent(): void {
-		$rendered = $this->paragraphRenderer->render( '<p>Lorem Ipsum</p>', $this->parsedParagraph, $this->settingsController );
+		$rendered = $this->paragraph_renderer->render( '<p>Lorem Ipsum</p>', $this->parsed_paragraph, $this->settings_controller );
 		$this->assertStringContainsString( 'width:100%', $rendered );
 		$this->assertStringContainsString( 'Lorem Ipsum', $rendered );
 		$this->assertStringContainsString( 'font-size:16px;', $rendered );
-		$this->assertStringContainsString( 'text-align:left;', $rendered ); // Check the default text-align
-		$this->assertStringContainsString( 'align="left"', $rendered ); // Check the default align
+		$this->assertStringContainsString( 'text-align:left;', $rendered ); // Check the default text-align.
+		$this->assertStringContainsString( 'align="left"', $rendered ); // Check the default align.
 	}
 
+	/**
+	 * Test it renders content with padding
+	 */
 	public function testItRendersContentWithPadding(): void {
-		$parsedParagraph = $this->parsedParagraph;
-		$parsedParagraph['attrs']['style']['spacing']['padding']['top']    = '10px';
-		$parsedParagraph['attrs']['style']['spacing']['padding']['right']  = '20px';
-		$parsedParagraph['attrs']['style']['spacing']['padding']['bottom'] = '30px';
-		$parsedParagraph['attrs']['style']['spacing']['padding']['left']   = '40px';
-		$parsedParagraph['attrs']['align']                                 = 'center';
+		$parsed_paragraph = $this->parsed_paragraph;
+		$parsed_paragraph['attrs']['style']['spacing']['padding']['top']    = '10px';
+		$parsed_paragraph['attrs']['style']['spacing']['padding']['right']  = '20px';
+		$parsed_paragraph['attrs']['style']['spacing']['padding']['bottom'] = '30px';
+		$parsed_paragraph['attrs']['style']['spacing']['padding']['left']   = '40px';
+		$parsed_paragraph['attrs']['align']                                 = 'center';
 
-		$rendered = $this->paragraphRenderer->render( '<p>Lorem Ipsum</p>', $parsedParagraph, $this->settingsController );
+		$rendered = $this->paragraph_renderer->render( '<p>Lorem Ipsum</p>', $parsed_paragraph, $this->settings_controller );
 		$this->assertStringContainsString( 'padding-top:10px;', $rendered );
 		$this->assertStringContainsString( 'padding-right:20px;', $rendered );
 		$this->assertStringContainsString( 'padding-bottom:30px;', $rendered );
@@ -62,39 +92,45 @@ class Paragraph_Test extends \MailPoetTest {
 		$this->assertStringContainsString( 'Lorem Ipsum', $rendered );
 	}
 
+	/**
+	 * Test in renders paragraph borders
+	 */
 	public function testItRendersBorders(): void {
-		$parsedParagraph                                       = $this->parsedParagraph;
-		$parsedParagraph['attrs']['style']['border']['width']  = '10px';
-		$parsedParagraph['attrs']['style']['border']['color']  = '#000001';
-		$parsedParagraph['attrs']['style']['border']['radius'] = '20px';
+		$parsed_paragraph                                       = $this->parsed_paragraph;
+		$parsed_paragraph['attrs']['style']['border']['width']  = '10px';
+		$parsed_paragraph['attrs']['style']['border']['color']  = '#000001';
+		$parsed_paragraph['attrs']['style']['border']['radius'] = '20px';
 
-		$content                         = '<p class="has-border-color test-class has-red-border-color">Lorem Ipsum</p>';
-		$parsedParagraph['innerHTML']    = $content;
-		$parsedParagraph['innerContent'] = array( $content );
+		$content                          = '<p class="has-border-color test-class has-red-border-color">Lorem Ipsum</p>';
+		$parsed_paragraph['innerHTML']    = $content;
+		$parsed_paragraph['innerContent'] = array( $content );
 
-		$rendered = $this->paragraphRenderer->render( $content, $parsedParagraph, $this->settingsController );
+		$rendered = $this->paragraph_renderer->render( $content, $parsed_paragraph, $this->settings_controller );
 		$html     = new \WP_HTML_Tag_Processor( $rendered );
 		$html->next_tag( array( 'tag_name' => 'table' ) );
-		$tableStyle = $html->get_attribute( 'style' );
-		// Table needs to have border-collapse: separate to make border-radius work
-		$this->assertStringContainsString( 'border-collapse: separate', $tableStyle );
+		$table_style = $html->get_attribute( 'style' );
+		// Table needs to have border-collapse: separate to make border-radius work.
+		$this->assertStringContainsString( 'border-collapse: separate', $table_style );
 		$html->next_tag( array( 'tag_name' => 'td' ) );
-		$tableCellStyle = $html->get_attribute( 'style' );
-		// Border styles are applied to the table cell
-		$this->assertStringContainsString( 'border-color:#000001', $tableCellStyle );
-		$this->assertStringContainsString( 'border-radius:20px', $tableCellStyle );
-		$this->assertStringContainsString( 'border-width:10px', $tableCellStyle );
-		$tableCellClasses = $html->get_attribute( 'class' );
-		$this->assertStringContainsString( 'has-border-color test-class has-red-border-color', $tableCellClasses );
+		$table_cell_style = $html->get_attribute( 'style' );
+		// Border styles are applied to the table cell.
+		$this->assertStringContainsString( 'border-color:#000001', $table_cell_style );
+		$this->assertStringContainsString( 'border-radius:20px', $table_cell_style );
+		$this->assertStringContainsString( 'border-width:10px', $table_cell_style );
+		$table_cell_classes = $html->get_attribute( 'class' );
+		$this->assertStringContainsString( 'has-border-color test-class has-red-border-color', $table_cell_classes );
 		$html->next_tag( array( 'tag_name' => 'p' ) );
-		// There are no border styles on the paragraph
-		$paragraphStyle = $html->get_attribute( 'style' );
-		$this->assertStringNotContainsString( 'border', $paragraphStyle );
+		// There are no border styles on the paragraph.
+		$paragraph_style = $html->get_attribute( 'style' );
+		$this->assertStringNotContainsString( 'border', $paragraph_style );
 	}
 
+	/**
+	 * Test it converts block typography
+	 */
 	public function testItConvertsBlockTypography(): void {
-		$parsedParagraph                                 = $this->parsedParagraph;
-		$parsedParagraph['attrs']['style']['typography'] = array(
+		$parsed_paragraph                                 = $this->parsed_paragraph;
+		$parsed_paragraph['attrs']['style']['typography'] = array(
 			'textTransform'  => 'uppercase',
 			'letterSpacing'  => '1px',
 			'textDecoration' => 'underline',
@@ -103,7 +139,7 @@ class Paragraph_Test extends \MailPoetTest {
 			'fontSize'       => '20px',
 		);
 
-		$rendered = $this->paragraphRenderer->render( '<p>Lorem Ipsum</p>', $parsedParagraph, $this->settingsController );
+		$rendered = $this->paragraph_renderer->render( '<p>Lorem Ipsum</p>', $parsed_paragraph, $this->settings_controller );
 		$this->assertStringContainsString( 'text-transform:uppercase;', $rendered );
 		$this->assertStringContainsString( 'letter-spacing:1px;', $rendered );
 		$this->assertStringContainsString( 'text-decoration:underline;', $rendered );

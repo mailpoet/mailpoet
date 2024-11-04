@@ -1,16 +1,33 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Email_Editor;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
 
+/**
+ * Integration test for Button class
+ */
 class Button_Test extends \MailPoetTest {
-	/** @var Button */
-	private $buttonRenderer;
+	/**
+	 * Instance of Button class
+	 *
+	 * @var Button
+	 */
+	private $button_renderer;
 
-	/** @var array */
-	private $parsedButton = array(
+	/**
+	 * Configuration for parsed button block
+	 *
+	 * @var array
+	 */
+	private $parsed_button = array(
 		'blockName'    => 'core/button',
 		'attrs'        => array(
 			'width' => 50,
@@ -38,58 +55,80 @@ class Button_Test extends \MailPoetTest {
 		),
 	);
 
-	/** @var Settings_Controller */
-	private $settingsController;
+	/**
+	 * Instance of Settings_Controller class
+	 *
+	 * @var Settings_Controller
+	 */
+	private $settings_controller;
 
+	/**
+	 * Set up before each test
+	 */
 	public function _before(): void {
 		$this->di_container->get( Email_Editor::class )->initialize();
-		$this->buttonRenderer     = new Button();
-		$this->settingsController = $this->di_container->get( Settings_Controller::class );
+		$this->button_renderer     = new Button();
+		$this->settings_controller = $this->di_container->get( Settings_Controller::class );
 	}
 
+	/**
+	 * Test in renders link
+	 */
 	public function testItRendersLink(): void {
-		$output = $this->buttonRenderer->render( $this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController );
+		$output = $this->button_renderer->render( $this->parsed_button['innerHTML'], $this->parsed_button, $this->settings_controller );
 		verify( $output )->stringContainsString( 'href="http://example.com"' );
 		verify( $output )->stringContainsString( 'Button Text' );
 	}
 
+	/**
+	 * Test it renders padding based on attributes value
+	 */
 	public function testItRendersPaddingBasedOnAttributesValue(): void {
-		$this->parsedButton['attrs']['style']['spacing']['padding'] = array(
+		$this->parsed_button['attrs']['style']['spacing']['padding'] = array(
 			'left'   => '10px',
 			'right'  => '20px',
 			'top'    => '30px',
 			'bottom' => '40px',
 		);
-		$output = $this->buttonRenderer->render( $this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController );
+		$output = $this->button_renderer->render( $this->parsed_button['innerHTML'], $this->parsed_button, $this->settings_controller );
 		verify( $output )->stringContainsString( 'padding-left:10px;' );
 		verify( $output )->stringContainsString( 'padding-right:20px;' );
 		verify( $output )->stringContainsString( 'padding-top:30px;' );
 		verify( $output )->stringContainsString( 'padding-bottom:40px;' );
 	}
 
+	/**
+	 * Test it renders colors
+	 */
 	public function testItRendersColors(): void {
-		$this->parsedButton['attrs']['style']['color'] = array(
+		$this->parsed_button['attrs']['style']['color'] = array(
 			'background' => '#000000',
 			'text'       => '#111111',
 		);
-		$output                                        = $this->buttonRenderer->render( $this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController );
+		$output = $this->button_renderer->render( $this->parsed_button['innerHTML'], $this->parsed_button, $this->settings_controller );
 		verify( $output )->stringContainsString( 'background-color:#000000;' );
 		verify( $output )->stringContainsString( 'color:#111111;' );
 	}
 
+	/**
+	 * Test it renders border
+	 */
 	public function testItRendersBorder(): void {
-		$this->parsedButton['attrs']['style']['border'] = array(
+		$this->parsed_button['attrs']['style']['border'] = array(
 			'width' => '10px',
 			'color' => '#111111',
 		);
-		$output = $this->buttonRenderer->render( $this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController );
+		$output = $this->button_renderer->render( $this->parsed_button['innerHTML'], $this->parsed_button, $this->settings_controller );
 		verify( $output )->stringContainsString( 'border-color:#111111;' );
 		verify( $output )->stringContainsString( 'border-width:10px;' );
 		verify( $output )->stringContainsString( 'border-style:solid;' );
 	}
 
+	/**
+	 * Test it renders each side specific border
+	 */
 	public function testItRendersEachSideSpecificBorder(): void {
-		$this->parsedButton['attrs']['style']['border'] = array(
+		$this->parsed_button['attrs']['style']['border'] = array(
 			'top'    => array(
 				'width' => '1px',
 				'color' => '#111111',
@@ -107,7 +146,7 @@ class Button_Test extends \MailPoetTest {
 				'color' => '#444444',
 			),
 		);
-		$output = $this->buttonRenderer->render( $this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController );
+		$output = $this->button_renderer->render( $this->parsed_button['innerHTML'], $this->parsed_button, $this->settings_controller );
 		verify( $output )->stringContainsString( 'border-top-width:1px;' );
 		verify( $output )->stringContainsString( 'border-top-color:#111111;' );
 
@@ -123,51 +162,66 @@ class Button_Test extends \MailPoetTest {
 		verify( $output )->stringContainsString( 'border-style:solid;' );
 	}
 
+	/**
+	 * Test it renders border radius
+	 */
 	public function testItRendersBorderRadius(): void {
-		$this->parsedButton['attrs']['style']['border'] = array(
+		$this->parsed_button['attrs']['style']['border'] = array(
 			'radius' => '10px',
 		);
-		$output = $this->buttonRenderer->render( $this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController );
+		$output = $this->button_renderer->render( $this->parsed_button['innerHTML'], $this->parsed_button, $this->settings_controller );
 		verify( $output )->stringContainsString( 'border-radius:10px;' );
 	}
 
+	/**
+	 * Test it renders font size
+	 */
 	public function testItRendersFontSize(): void {
-		$this->parsedButton['attrs']['style']['typography']['fontSize'] = '10px';
-		$output = $this->buttonRenderer->render( $this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController );
+		$this->parsed_button['attrs']['style']['typography']['fontSize'] = '10px';
+		$output = $this->button_renderer->render( $this->parsed_button['innerHTML'], $this->parsed_button, $this->settings_controller );
 		verify( $output )->stringContainsString( 'font-size:10px;' );
 	}
 
+	/**
+	 * Test in renders corner specific border radius
+	 */
 	public function testItRendersCornerSpecificBorderRadius(): void {
-		$this->parsedButton['attrs']['style']['border']['radius'] = array(
+		$this->parsed_button['attrs']['style']['border']['radius'] = array(
 			'topLeft'     => '1px',
 			'topRight'    => '2px',
 			'bottomLeft'  => '3px',
 			'bottomRight' => '4px',
 		);
-		$output = $this->buttonRenderer->render( $this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController );
+		$output = $this->button_renderer->render( $this->parsed_button['innerHTML'], $this->parsed_button, $this->settings_controller );
 		verify( $output )->stringContainsString( 'border-top-left-radius:1px;' );
 		verify( $output )->stringContainsString( 'border-top-right-radius:2px;' );
 		verify( $output )->stringContainsString( 'border-bottom-left-radius:3px;' );
 		verify( $output )->stringContainsString( 'border-bottom-right-radius:4px;' );
 	}
 
+	/**
+	 * Test it renders background color set by slug
+	 */
 	public function testItRendersBackgroundColorSetBySlug(): void {
-		unset( $this->parsedButton['attrs']['style']['color'] );
-		unset( $this->parsedButton['attrs']['style']['spacing']['padding'] );
-		$this->parsedButton['attrs']['backgroundColor'] = 'black';
-		$output = $this->buttonRenderer->render( $this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController );
+		unset( $this->parsed_button['attrs']['style']['color'] );
+		unset( $this->parsed_button['attrs']['style']['spacing']['padding'] );
+		$this->parsed_button['attrs']['backgroundColor'] = 'black';
+		$output = $this->button_renderer->render( $this->parsed_button['innerHTML'], $this->parsed_button, $this->settings_controller );
 		// For other blocks this is handled by CSS-inliner, but for button we need to handle it manually
-		// because of special email HTML markup
+		// because of special email HTML markup.
 		verify( $output )->stringContainsString( 'background-color:#000000;' );
 	}
 
+	/**
+	 * Test if it renders font color set by slug
+	 */
 	public function testItRendersFontColorSetBySlug(): void {
-		unset( $this->parsedButton['attrs']['style']['color'] );
-		unset( $this->parsedButton['attrs']['style']['spacing']['padding'] );
-		$this->parsedButton['attrs']['textColor'] = 'white';
-		$output                                   = $this->buttonRenderer->render( $this->parsedButton['innerHTML'], $this->parsedButton, $this->settingsController );
+		unset( $this->parsed_button['attrs']['style']['color'] );
+		unset( $this->parsed_button['attrs']['style']['spacing']['padding'] );
+		$this->parsed_button['attrs']['textColor'] = 'white';
+		$output                                    = $this->button_renderer->render( $this->parsed_button['innerHTML'], $this->parsed_button, $this->settings_controller );
 		// For other blocks this is handled by CSS-inliner, but for button we need to handle it manually
-		// because of special email HTML markup
+		// because of special email HTML markup.
 		verify( $output )->stringContainsString( 'color:#fff' );
 	}
 }

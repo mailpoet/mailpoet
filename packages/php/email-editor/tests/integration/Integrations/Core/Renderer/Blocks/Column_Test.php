@@ -1,16 +1,32 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
 use MailPoet\EmailEditor\Engine\Email_Editor;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
 
+/**
+ * Integration test for Column class
+ */
 class Column_Test extends \MailPoetTest {
-	/** @var Column */
-	private $columnRenderer;
-
-	/** @var array */
-	private $parsedColumn = array(
+	/**
+	 * Column renderer instance
+	 *
+	 * @var Column
+	 */
+	private $column_renderer;
+	/**
+	 * Parsed column block
+	 *
+	 * @var array
+	 */
+	private $parsed_column = array(
 		'blockName'    => 'core/column',
 		'email_attrs'  => array(
 			'width' => '300px',
@@ -34,25 +50,37 @@ class Column_Test extends \MailPoetTest {
 			2 => '</div>',
 		),
 	);
+	/**
+	 * Instance of Settings_Controller class
+	 *
+	 * @var Settings_Controller
+	 */
+	private $settings_controller;
 
-	/** @var Settings_Controller */
-	private $settingsController;
-
+	/**
+	 * Set up before each test
+	 */
 	public function _before() {
 		$this->di_container->get( Email_Editor::class )->initialize();
-		$this->columnRenderer     = new Column();
-		$this->settingsController = $this->di_container->get( Settings_Controller::class );
+		$this->column_renderer     = new Column();
+		$this->settings_controller = $this->di_container->get( Settings_Controller::class );
 	}
 
+	/**
+	 * Test it renders column content
+	 */
 	public function testItRendersColumnContent() {
-		$rendered = $this->columnRenderer->render( '', $this->parsedColumn, $this->settingsController );
+		$rendered = $this->column_renderer->render( '', $this->parsed_column, $this->settings_controller );
 		$this->checkValidHTML( $rendered );
 		$this->assertStringContainsString( 'Column content', $rendered );
 	}
 
+	/**
+	 * Test it contains columns styles
+	 */
 	public function testItContainsColumnsStyles(): void {
-		$parsedColumn          = $this->parsedColumn;
-		$parsedColumn['attrs'] = array(
+		$parsed_column          = $this->parsed_column;
+		$parsed_column['attrs'] = array(
 			'style' => array(
 				'border'  => array(
 					'bottom' => array(
@@ -91,7 +119,7 @@ class Column_Test extends \MailPoetTest {
 				),
 			),
 		);
-		$rendered              = $this->columnRenderer->render( '', $parsedColumn, $this->settingsController );
+		$rendered               = $this->column_renderer->render( '', $parsed_column, $this->settings_controller );
 		$this->checkValidHTML( $rendered );
 		$this->assertStringContainsString( 'background-color:#abcdef;', $rendered );
 		$this->assertStringContainsString( 'border-bottom-left-radius:5px;', $rendered );
@@ -111,32 +139,41 @@ class Column_Test extends \MailPoetTest {
 		$this->assertStringContainsString( 'padding-left:15px;', $rendered );
 		$this->assertStringContainsString( 'padding-right:20px;', $rendered );
 		$this->assertStringContainsString( 'padding-top:10px;', $rendered );
-		$this->assertStringContainsString( 'vertical-align:top;', $rendered ); // Check for the default value of vertical alignment
+		$this->assertStringContainsString( 'vertical-align:top;', $rendered ); // Check for the default value of vertical alignment.
 	}
 
+	/**
+	 * Test it contains expected vertical alignment
+	 */
 	public function testItContainsExpectedVerticalAlignment(): void {
-		$parsedColumn                               = $this->parsedColumn;
-		$parsedColumn['attrs']['verticalAlignment'] = 'bottom';
-		$rendered                                   = $this->columnRenderer->render( '', $parsedColumn, $this->settingsController );
+		$parsed_column                               = $this->parsed_column;
+		$parsed_column['attrs']['verticalAlignment'] = 'bottom';
+		$rendered                                    = $this->column_renderer->render( '', $parsed_column, $this->settings_controller );
 		$this->checkValidHTML( $rendered );
 		$this->assertStringContainsString( 'vertical-align:bottom;', $rendered );
 	}
 
+	/**
+	 * Test it sets custom color and background
+	 */
 	public function testItSetsCustomColorAndBackground(): void {
-		$parsedColumn                                    = $this->parsedColumn;
-		$parsedColumn['attrs']['style']['color']['text'] = '#123456';
-		$parsedColumn['attrs']['style']['color']['background'] = '#654321';
-		$rendered = $this->columnRenderer->render( '', $parsedColumn, $this->settingsController );
+		$parsed_column                                    = $this->parsed_column;
+		$parsed_column['attrs']['style']['color']['text'] = '#123456';
+		$parsed_column['attrs']['style']['color']['background'] = '#654321';
+		$rendered = $this->column_renderer->render( '', $parsed_column, $this->settings_controller );
 		$this->checkValidHTML( $rendered );
 		$this->assertStringContainsString( 'color:#123456;', $rendered );
 		$this->assertStringContainsString( 'background-color:#654321;', $rendered );
 	}
 
+	/**
+	 * Test it preserves classes set by editor
+	 */
 	public function testItPreservesClassesSetByEditor(): void {
-		$parsedColumn = $this->parsedColumn;
-		$content      = '<div class="wp-block-column editor-class-1 another-class"></div>';
-		$parsedColumn['attrs']['style']['color']['background'] = '#654321';
-		$rendered = $this->columnRenderer->render( $content, $parsedColumn, $this->settingsController );
+		$parsed_column = $this->parsed_column;
+		$content       = '<div class="wp-block-column editor-class-1 another-class"></div>';
+		$parsed_column['attrs']['style']['color']['background'] = '#654321';
+		$rendered = $this->column_renderer->render( $content, $parsed_column, $this->settings_controller );
 		$this->checkValidHTML( $rendered );
 		$this->assertStringContainsString( 'wp-block-column editor-class-1 another-class', $rendered );
 	}

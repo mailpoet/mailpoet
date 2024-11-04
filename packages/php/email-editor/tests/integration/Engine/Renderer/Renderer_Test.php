@@ -68,8 +68,8 @@ class Renderer_Test extends \MailPoetTest {
 		$this->renderer   = $this->getServiceWithOverrides(
 			Renderer::class,
 			array(
-				'settingsController' => $settings_controller_mock,
-				'themeController'    => $theme_controller_mock,
+				'settings_controller' => $settings_controller_mock,
+				'theme_controller'    => $theme_controller_mock,
 			)
 		);
 		$this->email_post = $this->tester->create_post(
