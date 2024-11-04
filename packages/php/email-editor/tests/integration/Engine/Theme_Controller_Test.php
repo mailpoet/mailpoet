@@ -1,18 +1,38 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine;
 
+/**
+ * Integration test for Theme_Controller class
+ */
 class Theme_Controller_Test extends \MailPoetTest {
-	private Theme_Controller $themeController;
+	/**
+	 * Theme controller instance
+	 *
+	 * @var Theme_Controller
+	 */
+	private Theme_Controller $theme_controller;
 
+	/**
+	 * Set up before each test
+	 */
 	public function _before() {
 		parent::_before();
-		$this->themeController = $this->di_container->get( Theme_Controller::class );
+		$this->theme_controller = $this->di_container->get( Theme_Controller::class );
 	}
 
+	/**
+	 * Test it generates css styles for renderer
+	 */
 	public function testItGeneratesCssStylesForRenderer() {
-		$css = $this->themeController->get_stylesheet_for_rendering();
-		// Font families
+		$css = $this->theme_controller->get_stylesheet_for_rendering();
+		// Font families.
 		verify( $css )->stringContainsString( '.has-arial-font-family' );
 		verify( $css )->stringContainsString( '.has-comic-sans-ms-font-family' );
 		verify( $css )->stringContainsString( '.has-courier-new-font-family' );
@@ -41,13 +61,13 @@ class Theme_Controller_Test extends \MailPoetTest {
 		verify( $css )->stringContainsString( '.has-large-font-size' );
 		verify( $css )->stringContainsString( '.has-x-large-font-size' );
 
-		// Font sizes
+		// Font sizes.
 		verify( $css )->stringContainsString( '.has-small-font-size' );
 		verify( $css )->stringContainsString( '.has-medium-font-size' );
 		verify( $css )->stringContainsString( '.has-large-font-size' );
 		verify( $css )->stringContainsString( '.has-x-large-font-size' );
 
-		// Colors
+		// Colors.
 		verify( $css )->stringContainsString( '.has-black-color' );
 		verify( $css )->stringContainsString( '.has-black-background-color' );
 		verify( $css )->stringContainsString( '.has-black-border-color' );
@@ -64,37 +84,49 @@ class Theme_Controller_Test extends \MailPoetTest {
 		}
 	}
 
+	/**
+	 * Test if the theme controller translates font size slug to font size value
+	 */
 	public function testItCanTranslateFontSizeSlug() {
-		verify( $this->themeController->translate_slug_to_font_size( 'small' ) )->equals( '13px' );
-		verify( $this->themeController->translate_slug_to_font_size( 'medium' ) )->equals( '16px' );
-		verify( $this->themeController->translate_slug_to_font_size( 'large' ) )->equals( '28px' );
-		verify( $this->themeController->translate_slug_to_font_size( 'x-large' ) )->equals( '42px' );
-		verify( $this->themeController->translate_slug_to_font_size( 'unknown' ) )->equals( 'unknown' );
+		verify( $this->theme_controller->translate_slug_to_font_size( 'small' ) )->equals( '13px' );
+		verify( $this->theme_controller->translate_slug_to_font_size( 'medium' ) )->equals( '16px' );
+		verify( $this->theme_controller->translate_slug_to_font_size( 'large' ) )->equals( '28px' );
+		verify( $this->theme_controller->translate_slug_to_font_size( 'x-large' ) )->equals( '42px' );
+		verify( $this->theme_controller->translate_slug_to_font_size( 'unknown' ) )->equals( 'unknown' );
 	}
 
+	/**
+	 * Test if the theme controller translates font family slug to font family name
+	 */
 	public function testItCanTranslateColorSlug() {
-		verify( $this->themeController->translate_slug_to_color( 'black' ) )->equals( '#000000' );
-		verify( $this->themeController->translate_slug_to_color( 'white' ) )->equals( '#ffffff' );
-		verify( $this->themeController->translate_slug_to_color( 'cyan-bluish-gray' ) )->equals( '#abb8c3' );
-		verify( $this->themeController->translate_slug_to_color( 'pale-pink' ) )->equals( '#f78da7' );
+		verify( $this->theme_controller->translate_slug_to_color( 'black' ) )->equals( '#000000' );
+		verify( $this->theme_controller->translate_slug_to_color( 'white' ) )->equals( '#ffffff' );
+		verify( $this->theme_controller->translate_slug_to_color( 'cyan-bluish-gray' ) )->equals( '#abb8c3' );
+		verify( $this->theme_controller->translate_slug_to_color( 'pale-pink' ) )->equals( '#f78da7' );
 		$this->checkCorrectThemeConfiguration();
 		if ( wp_get_theme()->get( 'Name' ) === 'Twenty Twenty-One' ) {
-			verify( $this->themeController->translate_slug_to_color( 'yellow' ) )->equals( '#eeeadd' );
+			verify( $this->theme_controller->translate_slug_to_color( 'yellow' ) )->equals( '#eeeadd' );
 		}
 	}
 
+	/**
+	 * Test if the theme controller returns correct color palette
+	 */
 	public function testItLoadsColorPaletteFromSiteTheme() {
 		$this->checkCorrectThemeConfiguration();
-		$settings = $this->themeController->get_settings();
+		$settings = $this->theme_controller->get_settings();
 		if ( wp_get_theme()->get( 'Name' ) === 'Twenty Twenty-One' ) {
 			verify( $settings['color']['palette']['theme'] )->notEmpty();
 		}
 	}
 
+	/**
+	 * Test if the theme controller returns correct preset variables map
+	 */
 	public function testItReturnsCorrectPresetVariablesMap() {
-		$variableMap = $this->themeController->get_variables_values_map();
-		verify( $variableMap['--wp--preset--color--black'] )->equals( '#000000' );
-		verify( $variableMap['--wp--preset--spacing--20'] )->equals( '20px' );
+		$variable_map = $this->theme_controller->get_variables_values_map();
+		verify( $variable_map['--wp--preset--color--black'] )->equals( '#000000' );
+		verify( $variable_map['--wp--preset--spacing--20'] )->equals( '20px' );
 	}
 
 	/**
@@ -103,8 +135,8 @@ class Theme_Controller_Test extends \MailPoetTest {
 	 * to prevent silent failures in case we change theme configuration in the test environment.
 	 */
 	private function checkCorrectThemeConfiguration() {
-		$expectedThemes = array( 'Twenty Twenty-One' );
-		if ( ! in_array( wp_get_theme()->get( 'Name' ), $expectedThemes ) ) {
+		$expected_themes = array( 'Twenty Twenty-One' );
+		if ( ! in_array( wp_get_theme()->get( 'Name' ), $expected_themes, true ) ) {
 			$this->fail( 'Test depends on using Twenty Twenty-One or Twenty Nineteen theme. If you changed the theme, please update the test.' );
 		}
 	}

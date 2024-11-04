@@ -1,5 +1,11 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Layout;
 
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Dummy_Block_Renderer;
@@ -7,14 +13,28 @@ use MailPoet\EmailEditor\Engine\Settings_Controller;
 
 require_once __DIR__ . '/../Dummy_Block_Renderer.php';
 
+/**
+ * Integration test for Flex_Layout_Renderer
+ */
 class Flex_Layout_Renderer_Test extends \MailPoetTest {
 
-	/** @var Flex_Layout_Renderer */
+	/**
+	 * Instance of the renderer.
+	 *
+	 * @var Flex_Layout_Renderer
+	 */
 	private $renderer;
 
-	/** @var Settings_Controller */
-	private $settingsController;
+	/**
+	 * Instance of the settings controller.
+	 *
+	 * @var Settings_Controller
+	 */
+	private $settings_controller;
 
+	/**
+	 * Set up before each test.
+	 */
 	public function _before(): void {
 		parent::_before();
 		$this->settings_controller = $this->di_container->get( Settings_Controller::class );
@@ -23,8 +43,11 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
 		add_filter( 'render_block', array( $this, 'renderDummyBlock' ), 10, 2 );
 	}
 
+	/**
+	 * Test it renders inner blocks.
+	 */
 	public function testItRendersInnerBlocks(): void {
-		$parsedBlock = array(
+		$parsed_block = array(
 			'innerBlocks' => array(
 				array(
 					'blockName' => 'dummy/block',
@@ -37,13 +60,16 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
 			),
 			'email_attrs' => array(),
 		);
-		$output      = $this->renderer->render_inner_blocks_in_layout( $parsedBlock, $this->settingsController );
+		$output       = $this->renderer->render_inner_blocks_in_layout( $parsed_block, $this->settings_controller );
 		verify( $output )->stringContainsString( 'Dummy 1' );
 		verify( $output )->stringContainsString( 'Dummy 2' );
 	}
 
+	/**
+	 * Test it handles justifying the content.
+	 */
 	public function testItHandlesJustification(): void {
-		$parsedBlock = array(
+		$parsed_block = array(
 			'innerBlocks' => array(
 				array(
 					'blockName' => 'dummy/block',
@@ -52,24 +78,27 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
 			),
 			'email_attrs' => array(),
 		);
-		// Default justification is left
-		$output = $this->renderer->render_inner_blocks_in_layout( $parsedBlock, $this->settingsController );
+		// Default justification is left.
+		$output = $this->renderer->render_inner_blocks_in_layout( $parsed_block, $this->settings_controller );
 		verify( $output )->stringContainsString( 'text-align: left' );
 		verify( $output )->stringContainsString( 'align="left"' );
-		// Right justification
-		$parsedBlock['attrs']['layout']['justifyContent'] = 'right';
-		$output = $this->renderer->render_inner_blocks_in_layout( $parsedBlock, $this->settingsController );
+		// Right justification.
+		$parsed_block['attrs']['layout']['justifyContent'] = 'right';
+		$output = $this->renderer->render_inner_blocks_in_layout( $parsed_block, $this->settings_controller );
 		verify( $output )->stringContainsString( 'text-align: right' );
 		verify( $output )->stringContainsString( 'align="right"' );
-		// Center justification
-		$parsedBlock['attrs']['layout']['justifyContent'] = 'center';
-		$output = $this->renderer->render_inner_blocks_in_layout( $parsedBlock, $this->settingsController );
+		// Center justification.
+		$parsed_block['attrs']['layout']['justifyContent'] = 'center';
+		$output = $this->renderer->render_inner_blocks_in_layout( $parsed_block, $this->settings_controller );
 		verify( $output )->stringContainsString( 'text-align: center' );
 		verify( $output )->stringContainsString( 'align="center"' );
 	}
 
+	/**
+	 * Test it escapes attributes.
+	 */
 	public function testItEscapesAttributes(): void {
-		$parsedBlock                                      = array(
+		$parsed_block                                      = array(
 			'innerBlocks' => array(
 				array(
 					'blockName' => 'dummy/block',
@@ -78,13 +107,16 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
 			),
 			'email_attrs' => array(),
 		);
-		$parsedBlock['attrs']['layout']['justifyContent'] = '"> <script>alert("XSS")</script><div style="text-align: right';
-		$output = $this->renderer->render_inner_blocks_in_layout( $parsedBlock, $this->settingsController );
+		$parsed_block['attrs']['layout']['justifyContent'] = '"> <script>alert("XSS")</script><div style="text-align: right';
+		$output = $this->renderer->render_inner_blocks_in_layout( $parsed_block, $this->settings_controller );
 		verify( $output )->stringNotContainsString( '<script>alert("XSS")</script>' );
 	}
 
+	/**
+	 * Test that the renderer computes proper widths for reasonable settings.
+	 */
 	public function testInComputesProperWidthsForReasonableSettings(): void {
-		$parsedBlock = array(
+		$parsed_block = array(
 			'innerBlocks' => array(),
 			'email_attrs' => array(
 				'width' => '640px',
@@ -92,7 +124,7 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
 		);
 
 		// 50% and 25%
-		$parsedBlock['innerBlocks'] = array(
+		$parsed_block['innerBlocks'] = array(
 			array(
 				'blockName' => 'dummy/block',
 				'innerHtml' => 'Dummy 1',
@@ -104,13 +136,13 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
 				'attrs'     => array( 'width' => '25' ),
 			),
 		);
-		$output                     = $this->renderer->render_inner_blocks_in_layout( $parsedBlock, $this->settingsController );
-		$flexItems                  = $this->getFlexItemsFromOutput( $output );
-		verify( $flexItems[0] )->stringContainsString( 'width:312px;' );
-		verify( $flexItems[1] )->stringContainsString( 'width:148px;' );
+		$output                      = $this->renderer->render_inner_blocks_in_layout( $parsed_block, $this->settings_controller );
+		$flex_items                  = $this->getFlexItemsFromOutput( $output );
+		verify( $flex_items[0] )->stringContainsString( 'width:312px;' );
+		verify( $flex_items[1] )->stringContainsString( 'width:148px;' );
 
 		// 25% and 25% and auto
-		$parsedBlock['innerBlocks'] = array(
+		$parsed_block['innerBlocks'] = array(
 			array(
 				'blockName' => 'dummy/block',
 				'innerHtml' => 'Dummy 1',
@@ -127,14 +159,14 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
 				'attrs'     => array(),
 			),
 		);
-		$output                     = $this->renderer->render_inner_blocks_in_layout( $parsedBlock, $this->settingsController );
-		$flexItems                  = $this->getFlexItemsFromOutput( $output );
-		verify( $flexItems[0] )->stringContainsString( 'width:148px;' );
-		verify( $flexItems[1] )->stringContainsString( 'width:148px;' );
-		verify( $flexItems[2] )->stringNotContainsString( 'width:' );
+		$output                      = $this->renderer->render_inner_blocks_in_layout( $parsed_block, $this->settings_controller );
+		$flex_items                  = $this->getFlexItemsFromOutput( $output );
+		verify( $flex_items[0] )->stringContainsString( 'width:148px;' );
+		verify( $flex_items[1] )->stringContainsString( 'width:148px;' );
+		verify( $flex_items[2] )->stringNotContainsString( 'width:' );
 
 		// 50% and 50%
-		$parsedBlock['innerBlocks'] = array(
+		$parsed_block['innerBlocks'] = array(
 			array(
 				'blockName' => 'dummy/block',
 				'innerHtml' => 'Dummy 1',
@@ -146,14 +178,17 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
 				'attrs'     => array( 'width' => '50' ),
 			),
 		);
-		$output                     = $this->renderer->render_inner_blocks_in_layout( $parsedBlock, $this->settingsController );
-		$flexItems                  = $this->getFlexItemsFromOutput( $output );
-		verify( $flexItems[0] )->stringContainsString( 'width:312px;' );
-		verify( $flexItems[1] )->stringContainsString( 'width:312px;' );
+		$output                      = $this->renderer->render_inner_blocks_in_layout( $parsed_block, $this->settings_controller );
+		$flex_items                  = $this->getFlexItemsFromOutput( $output );
+		verify( $flex_items[0] )->stringContainsString( 'width:312px;' );
+		verify( $flex_items[1] )->stringContainsString( 'width:312px;' );
 	}
 
+	/**
+	 * Test that the renderer computes proper widths for strange settings values.
+	 */
 	public function testInComputesWidthsForStrangeSettingsValues(): void {
-		$parsedBlock = array(
+		$parsed_block = array(
 			'innerBlocks' => array(),
 			'email_attrs' => array(
 				'width' => '640px',
@@ -161,7 +196,7 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
 		);
 
 		// 100% and 25%
-		$parsedBlock['innerBlocks'] = array(
+		$parsed_block['innerBlocks'] = array(
 			array(
 				'blockName' => 'dummy/block',
 				'innerHtml' => 'Dummy 1',
@@ -173,13 +208,13 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
 				'attrs'     => array( 'width' => '25' ),
 			),
 		);
-		$output                     = $this->renderer->render_inner_blocks_in_layout( $parsedBlock, $this->settingsController );
-		$flexItems                  = $this->getFlexItemsFromOutput( $output );
-		verify( $flexItems[0] )->stringContainsString( 'width:508px;' );
-		verify( $flexItems[1] )->stringContainsString( 'width:105px;' );
+		$output                      = $this->renderer->render_inner_blocks_in_layout( $parsed_block, $this->settings_controller );
+		$flex_items                  = $this->getFlexItemsFromOutput( $output );
+		verify( $flex_items[0] )->stringContainsString( 'width:508px;' );
+		verify( $flex_items[1] )->stringContainsString( 'width:105px;' );
 
 		// 100% and 100%
-		$parsedBlock['innerBlocks'] = array(
+		$parsed_block['innerBlocks'] = array(
 			array(
 				'blockName' => 'dummy/block',
 				'innerHtml' => 'Dummy 1',
@@ -191,13 +226,13 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
 				'attrs'     => array( 'width' => '100' ),
 			),
 		);
-		$output                     = $this->renderer->render_inner_blocks_in_layout( $parsedBlock, $this->settingsController );
-		$flexItems                  = $this->getFlexItemsFromOutput( $output );
-		verify( $flexItems[0] )->stringContainsString( 'width:312px;' );
-		verify( $flexItems[1] )->stringContainsString( 'width:312px;' );
+		$output                      = $this->renderer->render_inner_blocks_in_layout( $parsed_block, $this->settings_controller );
+		$flex_items                  = $this->getFlexItemsFromOutput( $output );
+		verify( $flex_items[0] )->stringContainsString( 'width:312px;' );
+		verify( $flex_items[1] )->stringContainsString( 'width:312px;' );
 
 		// 100% and auto
-		$parsedBlock['innerBlocks'] = array(
+		$parsed_block['innerBlocks'] = array(
 			array(
 				'blockName' => 'dummy/block',
 				'innerHtml' => 'Dummy 1',
@@ -209,23 +244,38 @@ class Flex_Layout_Renderer_Test extends \MailPoetTest {
 				'attrs'     => array(),
 			),
 		);
-		$output                     = $this->renderer->render_inner_blocks_in_layout( $parsedBlock, $this->settingsController );
-		$flexItems                  = $this->getFlexItemsFromOutput( $output );
-		verify( $flexItems[0] )->stringContainsString( 'width:508px;' );
-		verify( $flexItems[1] )->stringNotContainsString( 'width:' );
+		$output                      = $this->renderer->render_inner_blocks_in_layout( $parsed_block, $this->settings_controller );
+		$flex_items                  = $this->getFlexItemsFromOutput( $output );
+		verify( $flex_items[0] )->stringContainsString( 'width:508px;' );
+		verify( $flex_items[1] )->stringNotContainsString( 'width:' );
 	}
 
+	/**
+	 * Get flex items from the output.
+	 *
+	 * @param string $output Output.
+	 */
 	private function getFlexItemsFromOutput( string $output ): array {
 		$matches = array();
 		preg_match_all( '/<td class="layout-flex-item" style="(.*)">/', $output, $matches );
 		return explode( '><', $matches[0][0] ?? array() );
 	}
 
-	public function renderDummyBlock( $blockContent, $parsedBlock ): string {
-		$dummyRenderer = new Dummy_Block_Renderer();
-		return $dummyRenderer->render( $blockContent, $parsedBlock, $this->settingsController );
+	/**
+	 * Render a dummy block.
+	 *
+	 * @param string $block_content Block content.
+	 * @param array  $parsed_block Parsed block data.
+	 * @return string
+	 */
+	public function renderDummyBlock( $block_content, $parsed_block ): string {
+		$dummy_renderer = new Dummy_Block_Renderer();
+		return $dummy_renderer->render( $block_content, $parsed_block, $this->settings_controller );
 	}
 
+	/**
+	 * Clean up after each test.
+	 */
 	public function _after(): void {
 		parent::_after();
 		unregister_block_type( 'dummy/block' );
