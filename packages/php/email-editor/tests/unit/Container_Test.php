@@ -1,12 +1,24 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
+/**
+ * Unit test for Container class.
+ */
 class Container_Test extends TestCase {
+	/**
+	 * Test if sets and gets service.
+	 */
 	public function testSetAndGetService(): void {
 		$container = new Container();
 
@@ -22,6 +34,9 @@ class Container_Test extends TestCase {
 		$this->assertInstanceOf( stdClass::class, $service );
 	}
 
+	/**
+	 * Test if sets and gets service with dependencies.
+	 */
 	public function testGetReturnsSameInstance(): void {
 		$container = new Container();
 
@@ -32,19 +47,22 @@ class Container_Test extends TestCase {
 			}
 		);
 
-		// Retrieve the service twice
+		// Retrieve the service twice.
 		$service1 = $container->get( 'singleton_service' );
 		$service2 = $container->get( 'singleton_service' );
 
-		// Check that both instances are the same
+		// Check that both instances are the same.
 		$this->assertSame( $service1, $service2 );
 	}
 
+	/**
+	 * Test if it throws exception for non-existing service.
+	 */
 	public function testExceptionForNonExistingService(): void {
-		// Create the container instance
+		// Create the container instance.
 		$container = new Container();
 
-		// Attempt to get a non-existing service should throw an exception
+		// Attempt to get a non-existing service should throw an exception.
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Service not found: non_existing_service' );
 

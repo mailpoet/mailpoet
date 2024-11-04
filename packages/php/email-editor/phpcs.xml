@@ -11,6 +11,11 @@
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
+	<!-- Exclude bootstrap from the SeparateFunctionsFromOO.Mixed rule -->
+	<rule ref="Universal.Files.SeparateFunctionsFromOO.Mixed">
+		<exclude-pattern>tests/unit/_bootstrap.php</exclude-pattern>
+	</rule>
+
 	<!-- Skip the vendor directory -->
 	<exclude-pattern>vendor/*</exclude-pattern>
 </ruleset>
