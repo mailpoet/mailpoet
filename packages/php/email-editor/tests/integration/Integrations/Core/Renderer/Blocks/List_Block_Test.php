@@ -45,9 +45,9 @@ class List_Block_Test extends \MailPoetTest {
 	private $settingsController;
 
 	public function _before() {
-		$this->diContainer->get( Email_Editor::class )->initialize();
+		$this->di_container->get( Email_Editor::class )->initialize();
 		$this->listRenderer       = new List_Block();
-		$this->settingsController = $this->diContainer->get( Settings_Controller::class );
+		$this->settingsController = $this->di_container->get( Settings_Controller::class );
 	}
 
 	public function testItRendersListContent(): void {

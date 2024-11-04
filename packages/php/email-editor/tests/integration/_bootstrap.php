@@ -1,4 +1,11 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
+
+declare(strict_types = 1);
 
 use Codeception\Stub;
 use MailPoet\EmailEditor\Container;
@@ -25,11 +32,11 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
 use MailPoet\EmailEditor\Utils\Cdn_Asset_Url;
 
 if ( (bool) getenv( 'MULTISITE' ) === true ) {
-	// REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated
+	// REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated.
 	$_SERVER['REQUEST_URI'] = '/' . getenv( 'WP_TEST_MULTISITE_SLUG' );
-	$wpLoadFile             = getenv( 'WP_ROOT_MULTISITE' ) . '/wp-load.php';
+	$wp_load_file           = getenv( 'WP_ROOT_MULTISITE' ) . '/wp-load.php';
 } else {
-	$wpLoadFile = getenv( 'WP_ROOT' ) . '/wp-load.php';
+	$wp_load_file = getenv( 'WP_ROOT' ) . '/wp-load.php';
 }
 
 /**
@@ -38,46 +45,91 @@ if ( (bool) getenv( 'MULTISITE' ) === true ) {
  * WP_ROOT, WP_ROOT_MULTISITE, WP_TEST_MULTISITE_SLUG
  */
 $console = new \Codeception\Lib\Console\Output( array() );
-$console->writeln( 'Loading WP core... (' . $wpLoadFile . ')' );
-require_once $wpLoadFile;
+$console->writeln( 'Loading WP core... (' . $wp_load_file . ')' );
+require_once $wp_load_file;
 
 /**
+ * Base class for MailPoet tests.
+ *
  * @property IntegrationTester $tester
  */
 abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
+	/**
+	 * The DI container.
+	 *
+	 * @var Container
+	 */
+	public Container $di_container;
 
-	public Container $diContainer;
-
-	protected $backupGlobals            = false;
-	protected $backupStaticAttributes   = false;
+	// phpcs:disable WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	/**
+	 * Disable the backup of $GLOBALS and $_SERVER.
+	 *
+	 * @var bool
+	 */
+	protected $backupGlobals = false;
+	/**
+	 * Disable the backup of static attributes.
+	 *
+	 * @var bool
+	 */
+	protected $backupStaticAttributes = false;
+	/**
+	 * Disable the use of traits.
+	 *
+	 * @var bool
+	 */
 	protected $runTestInSeparateProcess = false;
-	protected $preserveGlobalState      = false;
+	/**
+	 * Disable the preservation of global state between tests.
+	 *
+	 * @var bool
+	 */
+	protected $preserveGlobalState = false;
+	// phpcs:enable WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
+	/**
+	 * Set up before each test.
+	 */
 	public function setUp(): void {
 		$this->initContainer();
 		parent::setUp();
 	}
 
+	/**
+	 * Check if the HTML is valid.
+	 *
+	 * @param string $html The HTML to check.
+	 */
 	protected function checkValidHTML( string $html ): void {
 		$dom = new \DOMDocument();
 		libxml_use_internal_errors( true );
 		$dom->loadHTML( $html );
 
-		// Check for errors during parsing
+		// Check for errors during parsing.
 		$errors = libxml_get_errors();
 		libxml_clear_errors();
 
 		$this->assertEmpty( $errors, 'HTML is not valid: ' . $html );
 	}
 
+	/**
+	 * Get a service from the DI container.
+	 *
+	 * @param string $id The service ID.
+	 * @param array  $overrides The properties to override.
+	 */
 	public function getServiceWithOverrides( string $id, array $overrides ) {
-		$instance = $this->diContainer->get( $id );
+		$instance = $this->di_container->get( $id );
 		return Stub::copy( $instance, $overrides );
 	}
 
+	/**
+	 * Initialize the DI container.
+	 */
 	protected function initContainer(): void {
 		$container = new Container();
-		// Start: MailPoet plugin dependencies
+		// Start: MailPoet plugin dependencies.
 		$container->set(
 			Initializer::class,
 			function () {
@@ -102,7 +154,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 				return $this->createMock( BlockTypesController::class );
 			}
 		);
-		// End: MailPoet plugin dependencies
+		// End: MailPoet plugin dependencies.
 		$container->set(
 			Utils::class,
 			function () {
@@ -240,6 +292,6 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 			}
 		);
 
-		$this->diContainer = $container;
+		$this->di_container = $container;
 	}
 }

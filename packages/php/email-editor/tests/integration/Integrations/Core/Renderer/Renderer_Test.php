@@ -12,9 +12,9 @@ class Renderer_Test extends \MailPoetTest {
 
 	public function _before() {
 		parent::_before();
-		$this->renderer = $this->diContainer->get( Renderer::class );
-		$this->diContainer->get( Email_Editor::class )->initialize();
-		$this->diContainer->get( Initializer::class )->initialize();
+		$this->renderer = $this->di_container->get( Renderer::class );
+		$this->di_container->get( Email_Editor::class )->initialize();
+		$this->di_container->get( Initializer::class )->initialize();
 	}
 
 	public function testItInlinesButtonDefaultStyles() {

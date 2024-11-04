@@ -42,9 +42,9 @@ class Button_Test extends \MailPoetTest {
 	private $settingsController;
 
 	public function _before(): void {
-		$this->diContainer->get( Email_Editor::class )->initialize();
+		$this->di_container->get( Email_Editor::class )->initialize();
 		$this->buttonRenderer     = new Button();
-		$this->settingsController = $this->diContainer->get( Settings_Controller::class );
+		$this->settingsController = $this->di_container->get( Settings_Controller::class );
 	}
 
 	public function testItRendersLink(): void {

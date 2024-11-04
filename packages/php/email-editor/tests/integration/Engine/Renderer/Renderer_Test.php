@@ -13,8 +13,8 @@ class Renderer_Test extends \MailPoetTest {
 
 	public function _before(): void {
 		parent::_before();
-		$this->diContainer->get( Email_Editor::class )->initialize();
-		$this->renderer = $this->diContainer->get( Renderer::class );
+		$this->di_container->get( Email_Editor::class )->initialize();
+		$this->renderer = $this->di_container->get( Renderer::class );
 		$styles         = array(
 			'spacing'    => array(
 				'padding' => array(

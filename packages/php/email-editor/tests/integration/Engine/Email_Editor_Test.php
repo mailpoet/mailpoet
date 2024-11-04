@@ -11,7 +11,7 @@ class Email_Editor_Test extends \MailPoetTest {
 
 	public function _before() {
 		parent::_before();
-		$this->emailEditor          = $this->diContainer->get( Email_Editor::class );
+		$this->emailEditor          = $this->di_container->get( Email_Editor::class );
 		$this->postRegisterCallback = function ( $postTypes ) {
 			$postTypes[] = array(
 				'name' => 'custom_email_type',

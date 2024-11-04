@@ -46,9 +46,9 @@ class Columns_Test extends \MailPoetTest {
 	private $settingsController;
 
 	public function _before() {
-		$this->diContainer->get( Email_Editor::class )->initialize();
+		$this->di_container->get( Email_Editor::class )->initialize();
 		$this->columnsRenderer    = new Columns();
-		$this->settingsController = $this->diContainer->get( Settings_Controller::class );
+		$this->settingsController = $this->di_container->get( Settings_Controller::class );
 	}
 
 	public function testItRendersInnerColumn() {

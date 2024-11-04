@@ -7,7 +7,7 @@ class Theme_Controller_Test extends \MailPoetTest {
 
 	public function _before() {
 		parent::_before();
-		$this->themeController = $this->diContainer->get( Theme_Controller::class );
+		$this->themeController = $this->di_container->get( Theme_Controller::class );
 	}
 
 	public function testItGeneratesCssStylesForRenderer() {
