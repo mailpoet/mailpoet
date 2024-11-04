@@ -39,3 +39,6 @@ e66c76133ec3ef667e382203426d91a4b4aa5174
 
 # Prettier autoformatting
 ab27eaee2df740c0add4331a7f8c115a87ecfa2b
+
+# Move email editor to JS packages folder
+d0447265c206d74fb696631eb8e0e5445fd00192
