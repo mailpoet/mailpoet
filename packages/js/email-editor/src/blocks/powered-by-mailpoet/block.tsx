@@ -4,7 +4,7 @@ import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, RadioControl, Icon } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import metadata from './block.json';
-import { storeName } from '../../engine/store/constants';
+import { storeName } from '../../../engine/store/constants';
 import MailPoetIcon from './mailpoet-icon';
 
 function LogoImage({
