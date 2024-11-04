@@ -1,7 +1,7 @@
 import '@wordpress/format-library'; // Enables text formatting capabilities
 import { useSelect } from '@wordpress/data';
 import { StrictMode, createRoot } from '@wordpress/element';
-import { withNpsPoll } from '../../nps-poll';
+// import { withNpsPoll } from '../../nps-poll'; // TODO: need to fix this import. custom component from core MP plugin
 import { initBlocks } from './blocks';
 import { initializeLayout } from './layouts/flex-email';
 import { InnerEditor } from './components/block-editor/editor';
@@ -32,8 +32,6 @@ function Editor() {
   );
 }
 
-const EditorWithPool = withNpsPoll(Editor);
-
 export function initialize(elementId: string) {
   const container = document.getElementById(elementId);
   if (!container) {
@@ -44,5 +42,5 @@ export function initialize(elementId: string) {
   initBlocks();
   initHooks();
   const root = createRoot(container);
-  root.render(<EditorWithPool />);
+  root.render(<Editor />);
 }

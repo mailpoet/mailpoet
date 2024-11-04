@@ -458,7 +458,7 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
   name: 'email-editor-blocks',
   entry: {
     'powered-by-mailpoet-block':
-      '/assets/js/src/email-editor/blocks/powered-by-mailpoet/block.tsx',
+      '../packages/js/email-editor/src/blocks/powered-by-mailpoet/block.tsx',
   },
   output: {
     filename: '[name].js',
@@ -500,7 +500,7 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
 const emailEditorCustom = Object.assign({}, wpScriptConfig, {
   name: 'email_editor',
   entry: {
-    email_editor: 'email-editor/index.ts',
+    email_editor: '../packages/js/email-editor/src/index.ts',
   },
   output: {
     filename: '[name].js',
@@ -508,7 +508,11 @@ const emailEditorCustom = Object.assign({}, wpScriptConfig, {
   },
   resolve: {
     ...wpScriptConfig.resolve,
-    modules: ['node_modules', 'assets/js/src'],
+    // modules: ['node_modules', '../packages/js/email-editor'],
+    modules: ['node_modules'],
+    alias: {
+      'email-editor': path.resolve(__dirname, '../packages/js/email-editor/'),
+    },
   },
   plugins: PRODUCTION_ENV
     ? wpScriptConfig.plugins
