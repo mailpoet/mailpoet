@@ -17,7 +17,7 @@ class Content_Renderer_Test extends \MailPoetTest {
 		$this->diContainer->get( Email_Editor::class )->initialize();
 		$this->diContainer->get( BlockTypesController::class )->initialize();
 		$this->renderer  = $this->diContainer->get( Content_Renderer::class );
-		$this->emailPost = $this->tester->createPost(
+		$this->emailPost = $this->tester->create_post(
 			array(
 				'post_content' => '<!-- wp:paragraph --><p>Hello!</p><!-- /wp:paragraph -->',
 			)

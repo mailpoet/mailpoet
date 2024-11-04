@@ -51,7 +51,7 @@ class Renderer_Test extends \MailPoetTest {
 				'themeController'    => $themeControllerMock,
 			)
 		);
-		$this->emailPost = $this->tester->createPost(
+		$this->emailPost = $this->tester->create_post(
 			array(
 				'post_content' => '<!-- wp:paragraph --><p>Hello!</p><!-- /wp:paragraph -->',
 			)

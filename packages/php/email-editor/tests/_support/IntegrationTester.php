@@ -1,5 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+/**
+ * This file is part of the MailPoet plugin tests.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types=1);
 
 /**
  * Inherited Methods
@@ -21,18 +27,40 @@ class IntegrationTester extends \Codeception\Actor {
 
 	use _generated\IntegrationTesterActions;
 
-	private $wpTermIds = array();
+	/**
+	 * WP term ids.
+	 *
+	 * @var array
+	 */
+	private $wp_term_ids = array();
 
-	private $createdCommentIds = array();
+	/**
+	 * List of created comment ids.
+	 *
+	 * @var array
+	 */
+	private $created_comment_ids = array();
 
+	/**
+	 * List of created posts.
+	 *
+	 * @var array
+	 */
 	private $posts = array();
 
-	public function createPost( array $params ): \WP_Post {
-		$postId = wp_insert_post( $params );
-		if ( $postId instanceof WP_Error ) {
+	/**
+	 * Method for creating a post.
+	 *
+	 * @param array $params - Post parameters.
+	 * @return \WP_Post
+	 * @throws \Exception - If the post creation fails.
+	 */
+	public function create_post( array $params ): \WP_Post {
+		$post_id = wp_insert_post( $params );
+		if ( $post_id instanceof WP_Error ) {
 			throw new \Exception( 'Failed to create post' );
 		}
-		$post = get_post( $postId );
+		$post = get_post( $post_id );
 		if ( ! $post instanceof WP_Post ) {
 			throw new \Exception( 'Failed to fetch the post' );
 		}
@@ -40,11 +68,17 @@ class IntegrationTester extends \Codeception\Actor {
 		return $post;
 	}
 
-	public function cleanup() {
-		$this->deletePosts();
+	/**
+	 * Method for cleaning up after the test.
+	 */
+	public function cleanup(): void {
+		$this->delete_posts();
 	}
 
-	private function deletePosts() {
+	/**
+	 * Delete created posts.
+	 */
+	private function delete_posts(): void {
 		foreach ( $this->posts as $post ) {
 			wp_delete_post( $post->ID, true );
 		}

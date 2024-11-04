@@ -18,7 +18,7 @@ class Renderer_Test extends \MailPoetTest {
 	}
 
 	public function testItInlinesButtonDefaultStyles() {
-		$emailPost  = $this->tester->createPost(
+		$emailPost  = $this->tester->create_post(
 			array(
 				'post_content' => '<!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link has-background wp-element-button">Button</a></div><!-- /wp:button -->',
 			)
@@ -34,7 +34,7 @@ class Renderer_Test extends \MailPoetTest {
 	}
 
 	public function testButtonDefaultStylesDontOverwriteUserSetStyles() {
-		$emailPost  = $this->tester->createPost(
+		$emailPost  = $this->tester->create_post(
 			array(
 				'post_content' => '<!-- wp:button {"backgroundColor":"white","textColor":"vivid-cyan-blue"} --><div class="wp-block-button"><a class="wp-block-button__link has-background wp-element-button">Button</a></div><!-- /wp:button -->',
 			)
@@ -46,7 +46,7 @@ class Renderer_Test extends \MailPoetTest {
 	}
 
 	public function testItInlinesHeadingFontSize() {
-		$emailPost   = $this->tester->createPost(
+		$emailPost   = $this->tester->create_post(
 			array(
 				'post_content' => '<!-- wp:heading {"level":1,"style":{"typography":{"fontSize":"large"}}} --><h1 class="wp-block-heading">Hello</h1><!-- /wp:heading -->',
 			)
@@ -57,7 +57,7 @@ class Renderer_Test extends \MailPoetTest {
 	}
 
 	public function testItInlinesHeadingColors() {
-		$emailPost           = $this->tester->createPost(
+		$emailPost           = $this->tester->create_post(
 			array(
 				'post_content' => '<!-- wp:heading {"level":1, "backgroundColor":"black", "textColor":"luminous-vivid-orange"} --><h1 class="wp-block-heading has-luminous-vivid-orange-color has-black-background-color">Hello</h1><!-- /wp:heading -->',
 			)
@@ -69,7 +69,7 @@ class Renderer_Test extends \MailPoetTest {
 	}
 
 	public function testItInlinesParagraphColors() {
-		$emailPost             = $this->tester->createPost(
+		$emailPost             = $this->tester->create_post(
 			array(
 				'post_content' => '<!-- wp:paragraph {style":{"color":{"background":"black", "text":"luminous-vivid-orange"}}} --><p class="has-luminous-vivid-orange-color has-black-background-color">Hello</p><!-- /wp:paragraph -->',
 			)
@@ -81,7 +81,7 @@ class Renderer_Test extends \MailPoetTest {
 	}
 
 	public function testItInlinesListColors() {
-		$emailPost = $this->tester->createPost(
+		$emailPost = $this->tester->create_post(
 			array(
 				'post_content' => '<!-- wp:list {"backgroundColor":"black","textColor":"luminous-vivid-orange","style":{"elements":{"link":{"color":{"text":"var:preset|color|vivid-red"}}}}} -->
         <ul class="has-black-background-color has-luminous-vivid-orange-color has-text-color has-background has-link-color"><!-- wp:list-item -->
@@ -101,7 +101,7 @@ class Renderer_Test extends \MailPoetTest {
 	}
 
 	public function testItInlinesColumnsColors() {
-		$emailPost = $this->tester->createPost(
+		$emailPost = $this->tester->create_post(
 			array(
 				'post_content' => '<!-- wp:columns {"backgroundColor":"vivid-green-cyan", "textColor":"black"} -->
         <div class="wp-block-columns has-black-background-color has-luminous-vivid-orange-color"><!-- wp:column --><!-- /wp:column --></div>
@@ -115,7 +115,7 @@ class Renderer_Test extends \MailPoetTest {
 	}
 
 	public function testItInlinesColumnColors() {
-		$emailPost = $this->tester->createPost(
+		$emailPost = $this->tester->create_post(
 			array(
 				'post_content' => '
       <!-- wp:column {"verticalAlignment":"stretch","backgroundColor":"black","textColor":"luminous-vivid-orange"} -->

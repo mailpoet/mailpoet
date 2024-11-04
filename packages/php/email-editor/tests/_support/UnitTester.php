@@ -1,4 +1,9 @@
 <?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
 use _generated\UnitTesterActions;
 
