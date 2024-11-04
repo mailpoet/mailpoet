@@ -1,9 +1,18 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer\Preprocessors;
 
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Cleanup_Preprocessor;
 
+/**
+ * Unit test for Cleanup_Preprocessor
+ */
 class Cleanup_Preprocessor_Test extends \MailPoetUnitTest {
 
 	private const PARAGRAPH_BLOCK = array(
@@ -24,16 +33,31 @@ class Cleanup_Preprocessor_Test extends \MailPoetUnitTest {
 		),
 	);
 
-	/** @var Cleanup_Preprocessor */
+	/**
+	 * Instance of Cleanup_Preprocessor
+	 *
+	 * @var Cleanup_Preprocessor
+	 */
 	private $preprocessor;
 
-	/** @var array{contentSize: string} */
+	/**
+	 * Layout settings
+	 *
+	 * @var array{contentSize: string}
+	 */
 	private array $layout;
 
-	/** @var array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles */
+	/**
+	 * Styles settings
+	 *
+	 * @var array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles
+	 */
 	private array $styles;
 
-	public function _before() {
+	/**
+	 * Set up the test
+	 */
+	public function _before() { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
 		parent::_before();
 		$this->preprocessor = new Cleanup_Preprocessor();
 		$this->layout       = array( 'contentSize' => '660px' );
@@ -50,6 +74,9 @@ class Cleanup_Preprocessor_Test extends \MailPoetUnitTest {
 		);
 	}
 
+	/**
+	 * Test it removes unwanted blocks
+	 */
 	public function testItRemovesUnwantedBlocks(): void {
 		$blocks = array(
 			self::COLUMNS_BLOCK,
@@ -66,6 +93,9 @@ class Cleanup_Preprocessor_Test extends \MailPoetUnitTest {
 		$this->assertEquals( self::PARAGRAPH_BLOCK, $result[1] );
 	}
 
+	/**
+	 * Test it preserves all relevant blocks
+	 */
 	public function testItPreservesAllRelevantBlocks(): void {
 		$blocks = array(
 			self::COLUMNS_BLOCK,

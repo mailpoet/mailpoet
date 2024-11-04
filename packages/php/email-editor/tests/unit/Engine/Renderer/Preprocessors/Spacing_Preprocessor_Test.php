@@ -1,21 +1,45 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer\Preprocessors;
 
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Spacing_Preprocessor;
 
+/**
+ * Unit test for Spacing_Preprocessor
+ */
 class Spacing_Preprocessor_Test extends \MailPoetUnitTest {
 
-	/** @var Spacing_Preprocessor */
+	/**
+	 * Spacing_Preprocessor instance
+	 *
+	 * @var Spacing_Preprocessor
+	 */
 	private $preprocessor;
 
-	/** @var array{contentSize: string} */
+	/**
+	 * Layout settings
+	 *
+	 * @var array{contentSize: string}
+	 */
 	private array $layout;
 
-	/** @var array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles */
+	/**
+	 * Styles settings
+	 *
+	 * @var array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles
+	 */
 	private array $styles;
 
-	public function _before() {
+	/**
+	 * Set up the test
+	 */
+	public function _before() { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
 		parent::_before();
 		$this->preprocessor = new Spacing_Preprocessor();
 		$this->layout       = array( 'contentSize' => '660px' );
@@ -32,6 +56,9 @@ class Spacing_Preprocessor_Test extends \MailPoetUnitTest {
 		);
 	}
 
+	/**
+	 * Test it adds default horizontal spacing
+	 */
 	public function testItAddsDefaultVerticalSpacing(): void {
 		$blocks = array(
 			array(
@@ -71,18 +98,18 @@ class Spacing_Preprocessor_Test extends \MailPoetUnitTest {
 
 		$result = $this->preprocessor->preprocess( $blocks, $this->layout, $this->styles );
 		$this->assertCount( 2, $result );
-		$firstColumns           = $result[0];
-		$secondColumns          = $result[1];
-		$nestedColumn           = $firstColumns['innerBlocks'][0];
-		$nestedColumnFirstItem  = $nestedColumn['innerBlocks'][0];
-		$nestedColumnSecondItem = $nestedColumn['innerBlocks'][1];
+		$first_columns             = $result[0];
+		$second_columns            = $result[1];
+		$nested_column             = $first_columns['innerBlocks'][0];
+		$nested_column_first_item  = $nested_column['innerBlocks'][0];
+		$nested_column_second_item = $nested_column['innerBlocks'][1];
 
 		// First elements should not have margin-top, but others should.
-		$this->assertArrayNotHasKey( 'margin-top', $firstColumns['email_attrs'] );
-		$this->assertArrayNotHasKey( 'margin-top', $secondColumns['email_attrs'] );
-		$this->assertArrayNotHasKey( 'margin-top', $nestedColumn['email_attrs'] );
-		$this->assertArrayNotHasKey( 'margin-top', $nestedColumnFirstItem['email_attrs'] );
-		$this->assertArrayHasKey( 'margin-top', $nestedColumnSecondItem['email_attrs'] );
-		$this->assertEquals( '10px', $nestedColumnSecondItem['email_attrs']['margin-top'] );
+		$this->assertArrayNotHasKey( 'margin-top', $first_columns['email_attrs'] );
+		$this->assertArrayNotHasKey( 'margin-top', $second_columns['email_attrs'] );
+		$this->assertArrayNotHasKey( 'margin-top', $nested_column['email_attrs'] );
+		$this->assertArrayNotHasKey( 'margin-top', $nested_column_first_item['email_attrs'] );
+		$this->assertArrayHasKey( 'margin-top', $nested_column_second_item['email_attrs'] );
+		$this->assertEquals( '10px', $nested_column_second_item['email_attrs']['margin-top'] );
 	}
 }

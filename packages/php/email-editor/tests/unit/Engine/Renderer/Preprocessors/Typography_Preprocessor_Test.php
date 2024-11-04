@@ -1,26 +1,50 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer\Preprocessors;
 
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Typography_Preprocessor;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
 
+/**
+ * Unit test for Typography_Preprocessor
+ */
 class Typography_Preprocessor_Test extends \MailPoetUnitTest {
 
-	/** @var Typography_Preprocessor */
+	/**
+	 * Instance of Typography_Preprocessor
+	 *
+	 * @var Typography_Preprocessor
+	 */
 	private $preprocessor;
 
-	/** @var array{contentSize: string} */
+	/**
+	 * Layout settings
+	 *
+	 * @var array{contentSize: string}
+	 */
 	private array $layout;
 
-	/** @var array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles */
+	/**
+	 * Styles settings
+	 *
+	 * @var array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles
+	 */
 	private array $styles;
 
-	public function _before() {
+	/**
+	 * Set up the test
+	 */
+	public function _before() { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
 		parent::_before();
-		$settingsMock = $this->createMock( Settings_Controller::class );
-		$themeMock    = $this->createMock( \WP_Theme_JSON::class );
-		$themeMock->method( 'get_data' )->willReturn(
+		$settings_mock = $this->createMock( Settings_Controller::class );
+		$theme_mock    = $this->createMock( \WP_Theme_JSON::class );
+		$theme_mock->method( 'get_data' )->willReturn(
 			array(
 				'styles'   => array(
 					'color'      => array(
@@ -49,14 +73,14 @@ class Typography_Preprocessor_Test extends \MailPoetUnitTest {
 				),
 			)
 		);
-		$settingsMock->method( 'get_theme' )->willReturn( $themeMock );
-		// This slug translate mock expect slugs in format slug-10px and will return 10px
-		$settingsMock->method( 'translate_slug_to_font_size' )->willReturnCallback(
+		$settings_mock->method( 'get_theme' )->willReturn( $theme_mock );
+		// This slug translate mock expect slugs in format slug-10px and will return 10px.
+		$settings_mock->method( 'translate_slug_to_font_size' )->willReturnCallback(
 			function ( $slug ) {
 				return str_replace( 'slug-', '', $slug );
 			}
 		);
-		$this->preprocessor = new Typography_Preprocessor( $settingsMock );
+		$this->preprocessor = new Typography_Preprocessor( $settings_mock );
 		$this->layout       = array( 'contentSize' => '660px' );
 		$this->styles       = array(
 			'spacing' => array(
@@ -71,8 +95,11 @@ class Typography_Preprocessor_Test extends \MailPoetUnitTest {
 		);
 	}
 
+	/**
+	 * Test it copies columns typography
+	 */
 	public function testItCopiesColumnsTypography(): void {
-		$blocks             = array(
+		$blocks               = array(
 			array(
 				'blockName'   => 'core/columns',
 				'attrs'       => array(
@@ -105,22 +132,25 @@ class Typography_Preprocessor_Test extends \MailPoetUnitTest {
 				),
 			),
 		);
-		$expectedEmailAttrs = array(
+		$expected_email_attrs = array(
 			'color'           => '#aa00dd',
 			'font-size'       => '12px',
 			'text-decoration' => 'underline',
 		);
-		$result             = $this->preprocessor->preprocess( $blocks, $this->layout, $this->styles );
-		$result             = $result[0];
+		$result               = $this->preprocessor->preprocess( $blocks, $this->layout, $this->styles );
+		$result               = $result[0];
 		$this->assertCount( 2, $result['innerBlocks'] );
-		$this->assertEquals( $expectedEmailAttrs, $result['email_attrs'] );
-		$this->assertEquals( $expectedEmailAttrs, $result['innerBlocks'][0]['email_attrs'] );
-		$this->assertEquals( $expectedEmailAttrs, $result['innerBlocks'][1]['email_attrs'] );
-		$this->assertEquals( $expectedEmailAttrs, $result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs, $result['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs, $result['innerBlocks'][0]['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs, $result['innerBlocks'][1]['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs, $result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'] );
 	}
 
+	/**
+	 * Test it replaces font family slugs with values
+	 */
 	public function testItReplacesFontSizeSlugsWithValues(): void {
-		$blocks             = array(
+		$blocks               = array(
 			array(
 				'blockName'   => 'core/columns',
 				'attrs'       => array(
@@ -145,19 +175,22 @@ class Typography_Preprocessor_Test extends \MailPoetUnitTest {
 				),
 			),
 		);
-		$expectedEmailAttrs = array(
+		$expected_email_attrs = array(
 			'color'     => '#000000',
 			'font-size' => '20px',
 		);
-		$result             = $this->preprocessor->preprocess( $blocks, $this->layout, $this->styles );
-		$result             = $result[0];
+		$result               = $this->preprocessor->preprocess( $blocks, $this->layout, $this->styles );
+		$result               = $result[0];
 		$this->assertCount( 2, $result['innerBlocks'] );
-		$this->assertEquals( $expectedEmailAttrs, $result['email_attrs'] );
-		$this->assertEquals( $expectedEmailAttrs, $result['innerBlocks'][0]['email_attrs'] );
-		$this->assertEquals( $expectedEmailAttrs, $result['innerBlocks'][1]['email_attrs'] );
-		$this->assertEquals( $expectedEmailAttrs, $result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs, $result['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs, $result['innerBlocks'][0]['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs, $result['innerBlocks'][1]['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs, $result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'] );
 	}
 
+	/**
+	 * Test it does not copy columns width
+	 */
 	public function testItDoesNotCopyColumnsWidth(): void {
 		$blocks = array(
 			array(
@@ -195,17 +228,20 @@ class Typography_Preprocessor_Test extends \MailPoetUnitTest {
 			),
 			$result['email_attrs']
 		);
-		$defaultFontStyles = array(
+		$default_font_styles = array(
 			'color'     => '#000000',
 			'font-size' => '13px',
 		);
-		$this->assertEquals( $defaultFontStyles, $result['innerBlocks'][0]['email_attrs'] );
-		$this->assertEquals( $defaultFontStyles, $result['innerBlocks'][1]['email_attrs'] );
-		$this->assertEquals( $defaultFontStyles, $result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'] );
+		$this->assertEquals( $default_font_styles, $result['innerBlocks'][0]['email_attrs'] );
+		$this->assertEquals( $default_font_styles, $result['innerBlocks'][1]['email_attrs'] );
+		$this->assertEquals( $default_font_styles, $result['innerBlocks'][1]['innerBlocks'][0]['email_attrs'] );
 	}
 
+	/**
+	 * Test it overrides columns typography
+	 */
 	public function testItOverridesColumnsTypography(): void {
-		$blocks              = array(
+		$blocks                = array(
 			array(
 				'blockName'   => 'core/columns',
 				'attrs'       => array(
@@ -281,23 +317,23 @@ class Typography_Preprocessor_Test extends \MailPoetUnitTest {
 				),
 			),
 		);
-		$expectedEmailAttrs1 = array(
+		$expected_email_attrs1 = array(
 			'color'     => '#aa00dd',
 			'font-size' => '12px',
 		);
-		$expectedEmailAttrs2 = array(
+		$expected_email_attrs2 = array(
 			'color'     => '#cc22aa',
 			'font-size' => '18px',
 		);
-		$result              = $this->preprocessor->preprocess( $blocks, $this->layout, $this->styles );
-		$child1              = $result[0];
-		$child2              = $result[1];
+		$result                = $this->preprocessor->preprocess( $blocks, $this->layout, $this->styles );
+		$child1                = $result[0];
+		$child2                = $result[1];
 		$this->assertCount( 2, $child1['innerBlocks'] );
-		$this->assertEquals( $expectedEmailAttrs1, $child1['email_attrs'] );
-		$this->assertEquals( $expectedEmailAttrs2, $child1['innerBlocks'][0]['email_attrs'] );
-		$this->assertEquals( $expectedEmailAttrs2, $child1['innerBlocks'][0]['innerBlocks'][0]['email_attrs'] );
-		$this->assertEquals( $expectedEmailAttrs1, $child1['innerBlocks'][1]['email_attrs'] );
-		$this->assertEquals( $expectedEmailAttrs1, $child1['innerBlocks'][1]['innerBlocks'][0]['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs1, $child1['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs2, $child1['innerBlocks'][0]['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs2, $child1['innerBlocks'][0]['innerBlocks'][0]['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs1, $child1['innerBlocks'][1]['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs1, $child1['innerBlocks'][1]['innerBlocks'][0]['email_attrs'] );
 		$this->assertCount( 1, $child2['innerBlocks'] );
 		$this->assertEquals(
 			array(
@@ -306,7 +342,7 @@ class Typography_Preprocessor_Test extends \MailPoetUnitTest {
 			),
 			$child2['email_attrs']
 		);
-		$this->assertEquals( $expectedEmailAttrs2, $child2['innerBlocks'][0]['email_attrs'] );
-		$this->assertEquals( $expectedEmailAttrs2, $child2['innerBlocks'][0]['innerBlocks'][0]['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs2, $child2['innerBlocks'][0]['email_attrs'] );
+		$this->assertEquals( $expected_email_attrs2, $child2['innerBlocks'][0]['innerBlocks'][0]['email_attrs'] );
 	}
 }

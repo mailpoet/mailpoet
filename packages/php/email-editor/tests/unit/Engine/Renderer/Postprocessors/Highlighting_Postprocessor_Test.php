@@ -1,18 +1,37 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer\Postprocessors;
 
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Highlighting_Postprocessor;
 
+/**
+ * Unit test class for Highlighting_Postprocessor.
+ */
 class Highlighting_Postprocessor_Test extends \MailPoetUnitTest {
-	/** @var Highlighting_Postprocessor */
+	/**
+	 * Instance of Highlighting_Postprocessor.
+	 *
+	 * @var Highlighting_Postprocessor
+	 */
 	private $postprocessor;
 
-	public function _before() {
+	/**
+	 * Set up the test.
+	 */
+	public function _before() { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
 		parent::_before();
 		$this->postprocessor = new Highlighting_Postprocessor();
 	}
 
+	/**
+	 * Test it replaces HTML elements.
+	 */
 	public function testItReplacesHtmlElements(): void {
 		$html   = '
       <mark>Some text</mark>

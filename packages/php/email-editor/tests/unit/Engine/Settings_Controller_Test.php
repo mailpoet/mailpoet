@@ -1,11 +1,23 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine;
 
+/**
+ * Unit test class for Settings_Controller.
+ */
 class Settings_Controller_Test extends \MailPoetUnitTest {
+	/**
+	 * Test it gets correct layout width without padding.
+	 */
 	public function testItGetsCorrectLayoutWidthWithoutPadding(): void {
-		$themeJsonMock = $this->createMock( \WP_Theme_JSON::class );
-		$themeJsonMock->method( 'get_data' )->willReturn(
+		$theme_json_mock = $this->createMock( \WP_Theme_JSON::class );
+		$theme_json_mock->method( 'get_data' )->willReturn(
 			array(
 				'styles' => array(
 					'spacing' => array(
@@ -17,18 +29,18 @@ class Settings_Controller_Test extends \MailPoetUnitTest {
 				),
 			)
 		);
-		$themeController = $this->createMock( Theme_Controller::class );
-		$themeController->method( 'get_theme' )->willReturn( $themeJsonMock );
-		$themeController->method( 'get_layout_settings' )->willReturn(
+		$theme_controller = $this->createMock( Theme_Controller::class );
+		$theme_controller->method( 'get_theme' )->willReturn( $theme_json_mock );
+		$theme_controller->method( 'get_layout_settings' )->willReturn(
 			array(
 				'contentSize' => '660px',
 				'wideSize'    => null,
 			)
 		);
-		$settingsController = new Settings_Controller( $themeController );
-		$layoutWidth        = $settingsController->get_layout_width_without_padding();
-		// default width is 660px and if we subtract padding from left and right we must get the correct value
-		$expectedWidth = 660 - 10 * 2;
-		$this->assertEquals( $expectedWidth . 'px', $layoutWidth );
+		$settings_controller = new Settings_Controller( $theme_controller );
+		$layout_width        = $settings_controller->get_layout_width_without_padding();
+		// default width is 660px and if we subtract padding from left and right we must get the correct value.
+		$expected_width = 660 - 10 * 2;
+		$this->assertEquals( $expected_width . 'px', $layout_width );
 	}
 }

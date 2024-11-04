@@ -1,21 +1,45 @@
-<?php declare(strict_types = 1);
+<?php
+/**
+ * This file is part of the MailPoet plugin.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
+declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer\Preprocessors;
 
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Blocks_Width_Preprocessor;
 
+/**
+ * Unit test for Blocks_Width_Preprocessor
+ */
 class Blocks_Width_Preprocessor_Test extends \MailPoetUnitTest {
 
-	/** @var Blocks_Width_Preprocessor */
+	/**
+	 * Instance of Blocks_Width_Preprocessor
+	 *
+	 * @var Blocks_Width_Preprocessor
+	 */
 	private $preprocessor;
 
-	/** @var array{contentSize: string} */
+	/**
+	 * Layout configuration
+	 *
+	 * @var array{contentSize: string}
+	 */
 	private array $layout;
 
-	/** @var array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles */
+	/**
+	 * Styles configuration
+	 *
+	 * @var array{spacing: array{padding: array{bottom: string, left: string, right: string, top: string}, blockGap: string}} $styles
+	 */
 	private array $styles;
 
-	public function _before() {
+	/**
+	 * Set up the test
+	 */
+	public function _before() { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
 		parent::_before();
 		$this->preprocessor = new Blocks_Width_Preprocessor();
 		$this->layout       = array( 'contentSize' => '660px' );
@@ -32,6 +56,9 @@ class Blocks_Width_Preprocessor_Test extends \MailPoetUnitTest {
 		);
 	}
 
+	/**
+	 * Test it calculates width without padding
+	 */
 	public function testItCalculatesWidthWithoutPadding(): void {
 		$blocks                       = array(
 			array(
@@ -78,6 +105,9 @@ class Blocks_Width_Preprocessor_Test extends \MailPoetUnitTest {
 		$this->assertEquals( '100px', $result['innerBlocks'][2]['email_attrs']['width'] );
 	}
 
+	/**
+	 * Test it calculates width for column with layout padding
+	 */
 	public function testItCalculatesWidthWithLayoutPadding(): void {
 		$blocks = array(
 			array(
@@ -116,8 +146,11 @@ class Blocks_Width_Preprocessor_Test extends \MailPoetUnitTest {
 		$this->assertEquals( '128px', $result['innerBlocks'][2]['email_attrs']['width'] ); // (660 - 10 - 10) * 0.2
 	}
 
+	/**
+	 * Test it calculates width of block in column
+	 */
 	public function testItCalculatesWidthOfBlockInColumn(): void {
-		$blocks      = array(
+		$blocks       = array(
 			array(
 				'blockName'   => 'core/columns',
 				'attrs'       => array(),
@@ -167,18 +200,21 @@ class Blocks_Width_Preprocessor_Test extends \MailPoetUnitTest {
 				),
 			),
 		);
-		$result      = $this->preprocessor->preprocess( $blocks, $this->layout, $this->styles );
-		$innerBlocks = $result[0]['innerBlocks'];
+		$result       = $this->preprocessor->preprocess( $blocks, $this->layout, $this->styles );
+		$inner_blocks = $result[0]['innerBlocks'];
 
-		$this->assertCount( 2, $innerBlocks );
-		$this->assertEquals( '256px', $innerBlocks[0]['email_attrs']['width'] ); // (660 - 10 - 10) * 0.4
-		$this->assertEquals( '236px', $innerBlocks[0]['innerBlocks'][0]['email_attrs']['width'] ); // 256 - 10 - 10
-		$this->assertEquals( '384px', $innerBlocks[1]['email_attrs']['width'] ); // (660 - 10 - 10) * 0.6
-		$this->assertEquals( '344px', $innerBlocks[1]['innerBlocks'][0]['email_attrs']['width'] ); // 384 - 25 - 15
+		$this->assertCount( 2, $inner_blocks );
+		$this->assertEquals( '256px', $inner_blocks[0]['email_attrs']['width'] ); // (660 - 10 - 10) * 0.4
+		$this->assertEquals( '236px', $inner_blocks[0]['innerBlocks'][0]['email_attrs']['width'] ); // 256 - 10 - 10
+		$this->assertEquals( '384px', $inner_blocks[1]['email_attrs']['width'] ); // (660 - 10 - 10) * 0.6
+		$this->assertEquals( '344px', $inner_blocks[1]['innerBlocks'][0]['email_attrs']['width'] ); // 384 - 25 - 15
 	}
 
+	/**
+	 * Test it calculates width for column with padding
+	 */
 	public function testItAddsMissingColumnWidth(): void {
-		$blocks      = array(
+		$blocks       = array(
 			array(
 				'blockName'   => 'core/columns',
 				'attrs'       => array(),
@@ -219,20 +255,23 @@ class Blocks_Width_Preprocessor_Test extends \MailPoetUnitTest {
 				),
 			),
 		);
-		$result      = $this->preprocessor->preprocess( $blocks, array( 'contentSize' => '620px' ), $this->styles );
-		$innerBlocks = $result[0]['innerBlocks'];
+		$result       = $this->preprocessor->preprocess( $blocks, array( 'contentSize' => '620px' ), $this->styles );
+		$inner_blocks = $result[0]['innerBlocks'];
 
-		$this->assertCount( 3, $innerBlocks );
-		$this->assertEquals( '200px', $innerBlocks[0]['email_attrs']['width'] ); // (660 - 10 - 10) * 0.33
-		$this->assertEquals( '200px', $innerBlocks[0]['innerBlocks'][0]['email_attrs']['width'] );
-		$this->assertEquals( '200px', $innerBlocks[1]['email_attrs']['width'] ); // (660 - 10 - 10) * 0.33
-		$this->assertEquals( '200px', $innerBlocks[1]['innerBlocks'][0]['email_attrs']['width'] );
-		$this->assertEquals( '200px', $innerBlocks[2]['email_attrs']['width'] ); // (660 - 10 - 10) * 0.33
-		$this->assertEquals( '200px', $innerBlocks[2]['innerBlocks'][0]['email_attrs']['width'] );
+		$this->assertCount( 3, $inner_blocks );
+		$this->assertEquals( '200px', $inner_blocks[0]['email_attrs']['width'] ); // (660 - 10 - 10) * 0.33
+		$this->assertEquals( '200px', $inner_blocks[0]['innerBlocks'][0]['email_attrs']['width'] );
+		$this->assertEquals( '200px', $inner_blocks[1]['email_attrs']['width'] ); // (660 - 10 - 10) * 0.33
+		$this->assertEquals( '200px', $inner_blocks[1]['innerBlocks'][0]['email_attrs']['width'] );
+		$this->assertEquals( '200px', $inner_blocks[2]['email_attrs']['width'] ); // (660 - 10 - 10) * 0.33
+		$this->assertEquals( '200px', $inner_blocks[2]['innerBlocks'][0]['email_attrs']['width'] );
 	}
 
+	/**
+	 * Test it calculates width for column with padding
+	 */
 	public function testItCalculatesMissingColumnWidth(): void {
-		$blocks      = array(
+		$blocks       = array(
 			array(
 				'blockName'   => 'core/columns',
 				'attrs'       => array(
@@ -268,15 +307,18 @@ class Blocks_Width_Preprocessor_Test extends \MailPoetUnitTest {
 				),
 			),
 		);
-		$result      = $this->preprocessor->preprocess( $blocks, $this->layout, $this->styles );
-		$innerBlocks = $result[0]['innerBlocks'];
+		$result       = $this->preprocessor->preprocess( $blocks, $this->layout, $this->styles );
+		$inner_blocks = $result[0]['innerBlocks'];
 
-		$this->assertCount( 3, $innerBlocks );
-		$this->assertEquals( '200px', $innerBlocks[0]['email_attrs']['width'] ); // (620 - 10 - 10) * 0.3333
-		$this->assertEquals( '200px', $innerBlocks[1]['email_attrs']['width'] ); // already defined
-		$this->assertEquals( '200px', $innerBlocks[2]['email_attrs']['width'] ); // 600 -200 - 200
+		$this->assertCount( 3, $inner_blocks );
+		$this->assertEquals( '200px', $inner_blocks[0]['email_attrs']['width'] ); // (620 - 10 - 10) * 0.3333
+		$this->assertEquals( '200px', $inner_blocks[1]['email_attrs']['width'] ); // already defined.
+		$this->assertEquals( '200px', $inner_blocks[2]['email_attrs']['width'] ); // 600 -200 - 200
 	}
 
+	/**
+	 * Test it calculates width for column with padding
+	 */
 	public function testItDoesNotSubtractPaddingForFullWidthBlocks(): void {
 		$blocks = array(
 			array(
@@ -295,10 +337,13 @@ class Blocks_Width_Preprocessor_Test extends \MailPoetUnitTest {
 		$result = $this->preprocessor->preprocess( $blocks, $this->layout, $this->styles );
 
 		$this->assertCount( 2, $result );
-		$this->assertEquals( '660px', $result[0]['email_attrs']['width'] ); // full width
+		$this->assertEquals( '660px', $result[0]['email_attrs']['width'] ); // full width.
 		$this->assertEquals( '640px', $result[1]['email_attrs']['width'] ); // 660 - 10 - 10
 	}
 
+	/**
+	 * Test it calculates width for column with padding
+	 */
 	public function testItCalculatesWidthForColumnWithoutDefinition(): void {
 		$blocks = array(
 			array(
@@ -402,6 +447,9 @@ class Blocks_Width_Preprocessor_Test extends \MailPoetUnitTest {
 		$this->assertEquals( '500px', $result[0]['innerBlocks'][1]['email_attrs']['width'] );
 	}
 
+	/**
+	 * Test it calculates width for column with border
+	 */
 	public function testItCalculatesWidthForColumnWithBorder(): void {
 		$blocks = array(
 			array(
@@ -486,9 +534,9 @@ class Blocks_Width_Preprocessor_Test extends \MailPoetUnitTest {
 		$this->assertEquals( '140px', $result[0]['innerBlocks'][0]['email_attrs']['width'] );
 		$this->assertEquals( '185px', $result[0]['innerBlocks'][1]['email_attrs']['width'] );
 		$this->assertEquals( '255px', $result[0]['innerBlocks'][2]['email_attrs']['width'] );
-		$imageBlock = $result[0]['innerBlocks'][1]['innerBlocks'][0];
-		$this->assertEquals( '185px', $imageBlock['email_attrs']['width'] );
-		$imageBlock = $result[0]['innerBlocks'][2]['innerBlocks'][0];
-		$this->assertEquals( '215px', $imageBlock['email_attrs']['width'] );
+		$image_block = $result[0]['innerBlocks'][1]['innerBlocks'][0];
+		$this->assertEquals( '185px', $image_block['email_attrs']['width'] );
+		$image_block = $result[0]['innerBlocks'][2]['innerBlocks'][0];
+		$this->assertEquals( '215px', $image_block['email_attrs']['width'] );
 	}
 }
