@@ -67,7 +67,9 @@ export function StatisticSeparator({
     // in an empty if/else branch. To calculate the total we need to subtract
     // totalEntered of the sibling step from totalEntered of previousStep
     const siblingStep = previousStep.next_steps.find((step) => step.id);
-    const totalEnteredSibling = calculateTotals(siblingStep.id);
+    const totalEnteredSibling = siblingStep
+      ? calculateTotals(siblingStep.id)
+      : 0;
     const totalEnteredPrevious = completed[previousStep.id] ?? 0;
     totalEntered = totalEnteredPrevious - totalEnteredSibling;
   } else {
