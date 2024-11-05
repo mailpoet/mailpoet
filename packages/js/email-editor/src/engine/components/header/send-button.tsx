@@ -6,9 +6,9 @@ import {
   useEntitiesSavedStatesIsDirty,
 } from '@wordpress/editor';
 import { useEntityProp } from '@wordpress/core-data';
-import { MailPoetEmailData, storeName } from 'email-editor/engine/store';
+import { MailPoetEmailData, storeName } from '../../store';
 import { useSelect } from '@wordpress/data';
-import { useContentValidation } from 'email-editor/engine/hooks';
+import { useContentValidation } from '../../hooks';
 
 export function SendButton() {
   const [mailpoetEmail] = useEntityProp(

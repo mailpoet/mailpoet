@@ -3,9 +3,6 @@
   "include": ["src/**/*", "src/**/*.json"],
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "build-types",
-    "paths": {
-      "email-editor/*": ["./src/*"]
-    }
+    "noEmit": true
   }
 }

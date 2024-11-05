@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { Notice, Button } from '@wordpress/components';
-import { useValidationNotices } from 'email-editor/engine/hooks';
+import { useValidationNotices } from '../../hooks';
 
 export function ValidationNotices() {
   const { notices } = useValidationNotices();

@@ -3,7 +3,7 @@ import { useCallback, useMemo } from '@wordpress/element';
 import { dispatch, useSelect, subscribe } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { createBlock } from '@wordpress/blocks';
-import { storeName as emailEditorStore } from 'email-editor/engine/store';
+import { storeName as emailEditorStore } from '../store';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { useShallowEqual } from './use-shallow-equal';
 import { useValidationNotices } from './use-validation-notices';

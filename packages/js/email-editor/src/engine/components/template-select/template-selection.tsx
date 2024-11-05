@@ -1,6 +1,6 @@
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
-import { storeName } from 'email-editor/engine/store';
+import { storeName } from '../../store';
 import { SelectTemplateModal } from './select-modal';
 
 export function TemplateSelection() {
