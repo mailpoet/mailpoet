@@ -9,7 +9,7 @@ import apiFetch from '@wordpress/api-fetch';
 import {
 	parse,
 	// @ts-expect-error No types available for this yet.
-	__unstableSerializeAndClean,
+	__unstableSerializeAndClean,  // eslint-disable-line
 	BlockInstance,
 } from '@wordpress/blocks';
 import { addQueryArgs } from '@wordpress/url';

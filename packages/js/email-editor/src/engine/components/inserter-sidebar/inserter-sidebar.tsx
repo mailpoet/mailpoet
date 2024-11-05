@@ -1,5 +1,5 @@
 import {
-	__experimentalLibrary as Library,
+	__experimentalLibrary as Library,  // eslint-disable-line
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
 import { useDispatch, useSelect } from '@wordpress/data';

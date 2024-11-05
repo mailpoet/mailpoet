@@ -1,13 +1,13 @@
 import {
 	// We can remove the ts-expect-error comments once the types are available.
 	// @ts-expect-error TS7016: Could not find a declaration file for module '@wordpress/block-editor'.
-	__experimentalSpacingSizesControl as SpacingSizesControl,
+	__experimentalSpacingSizesControl as SpacingSizesControl, // eslint-disable-line
 	useSettings,
 } from '@wordpress/block-editor';
 import {
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
-	__experimentalUseCustomUnits as useCustomUnits,
+	__experimentalToolsPanel as ToolsPanel,  // eslint-disable-line
+	__experimentalToolsPanelItem as ToolsPanelItem,  // eslint-disable-line
+	__experimentalUseCustomUnits as useCustomUnits,  // eslint-disable-line
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { isEqual } from 'lodash';

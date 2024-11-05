@@ -1,9 +1,9 @@
 import { __, _x } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import {
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
-	__experimentalSpacer as Spacer,
+	__experimentalToggleGroupControl as ToggleGroupControl,   // eslint-disable-line
+	__experimentalToggleGroupControlOption as ToggleGroupControlOption, // eslint-disable-line
+	__experimentalSpacer as Spacer,   // eslint-disable-line
 } from '@wordpress/components';
 import TypographyElementPanel, {
 	DEFAULT_CONTROLS,

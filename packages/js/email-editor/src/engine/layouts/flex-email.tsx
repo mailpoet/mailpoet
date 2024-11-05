@@ -22,8 +22,8 @@ import {
 	Flex,
 	FlexItem,
 	PanelBody,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,
+	__experimentalToggleGroupControl as ToggleGroupControl,   // eslint-disable-line
+	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,   // eslint-disable-line
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 

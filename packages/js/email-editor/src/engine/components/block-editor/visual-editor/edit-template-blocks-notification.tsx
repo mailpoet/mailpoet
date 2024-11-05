@@ -6,7 +6,7 @@ import { useEffect, useState } from '@wordpress/element';
 import { store as editorStore } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
 // eslint-disable-next-line
-import { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/components';
+import { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/components'; // eslint-disable-line
 
 /**
  * Component that:

@@ -88,7 +88,7 @@ export function InnerEditor( {
 			onNavigateToPreviousEntityRecord,
 			defaultRenderingMode: 'template-locked',
 			supportsTemplateMode: true,
-			__experimentalBlockPatterns: blockPatterns,
+			__experimentalBlockPatterns: blockPatterns, // eslint-disable-line
 		} ),
 		[
 			settings,

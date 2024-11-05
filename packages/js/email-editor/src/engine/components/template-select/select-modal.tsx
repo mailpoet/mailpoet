@@ -4,7 +4,7 @@ import { store as editorStore } from '@wordpress/editor';
 import { dispatch } from '@wordpress/data';
 import {
 	Modal,
-	__experimentalHStack as HStack,
+	__experimentalHStack as HStack,   // eslint-disable-line
 	Button,
 } from '@wordpress/components';
 import { Async } from './async';

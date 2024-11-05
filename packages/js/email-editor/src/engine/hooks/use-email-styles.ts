@@ -37,7 +37,6 @@ interface EmailStylesData {
  * new object. Treats nullish initial values as empty objects. Clones any
  * nested objects. Supports arrays, too.
  *
- * @param {Object}              object    Object to set a value in.
  * @param                       setObject
  * @param {number|string|Array} setPath   Path in the object to modify.
  * @param {*}                   value     New value to set.

@@ -1,12 +1,12 @@
 import {
-	__experimentalVStack as VStack,
+	__experimentalVStack as VStack,   // eslint-disable-line
 	Card,
 	CardBody,
 	CardMedia,
-	__experimentalItemGroup as ItemGroup,
-	__experimentalItem as Item,
-	__experimentalHStack as HStack,
-	__experimentalNavigatorButton as NavigatorButton,
+	__experimentalItemGroup as ItemGroup,   // eslint-disable-line
+	__experimentalItem as Item,     // eslint-disable-line
+	__experimentalHStack as HStack, // eslint-disable-line
+	__experimentalNavigatorButton as NavigatorButton, // eslint-disable-line
 	Icon,
 	FlexItem,
 } from '@wordpress/components';
