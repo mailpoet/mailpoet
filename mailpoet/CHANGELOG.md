@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.3.6 - 2024-11-05 =
+
+- Improved: minor changes and fixes.
+
 = 5.3.5 - 2024-10-30 =
 
 - Fixed: Post notifications now correctly select new posts by ensuring consistent UTC date comparison, preventing posts published within certain time zones from being skipped after a notification is sent.
