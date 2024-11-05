@@ -508,12 +508,23 @@ const emailEditorCustom = Object.assign({}, wpScriptConfig, {
   },
   resolve: {
     ...wpScriptConfig.resolve,
-    // modules: ['node_modules', '../packages/js/email-editor'],
-    modules: ['node_modules'],
-    alias: {
-      'email-editor': path.resolve(__dirname, '../packages/js/email-editor/'),
-    },
+    modules: ['node_modules', '../packages/js/email-editor'],
   },
+  module: Object.assign({}, wpScriptConfig.module, {
+    rules: [
+      ...wpScriptConfig.module.rules,
+      {
+        test: /\.(t|j)sx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader?cacheDirectory',
+          options: {
+            presets: ['@wordpress/babel-preset-default'],
+          },
+        },
+      },
+    ],
+  }),
   plugins: PRODUCTION_ENV
     ? wpScriptConfig.plugins
     : [...wpScriptConfig.plugins, new ForkTsCheckerWebpackPlugin()],
