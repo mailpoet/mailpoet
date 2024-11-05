@@ -683,11 +683,21 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function qaLintJavascript() {
-    return $this->_exec('pnpm run check-types && pnpm run lint');
+    $collection = $this->collectionBuilder();
+    return $collection->taskExecStack()
+      ->stopOnFail()
+      ->exec('pnpm run check-types && pnpm run lint')
+      ->exec('cd .. && cd packages/js/email-editor && pnpm run lint:js')
+      ->run();
   }
 
   public function qaLintCss() {
-    return $this->_exec('pnpm run stylelint-check -- "assets/css/src/**/*.scss"');
+    $collection = $this->collectionBuilder();
+    return $collection->taskExecStack()
+      ->stopOnFail()
+      ->exec('pnpm run stylelint-check -- "assets/css/src/**/*.scss"')
+      ->exec('cd .. && cd packages/js/email-editor && pnpm run lint:css')
+      ->run();
   }
 
   public function qaCodeSniffer(array $filesToCheck, $opts = ['severity' => 'all']) {
