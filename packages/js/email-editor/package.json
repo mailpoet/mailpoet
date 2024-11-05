@@ -8,7 +8,11 @@
   "version": "0.1.0",
   "scripts": {
     "build": "wp-scripts build",
-    "start": "wp-scripts start"
+    "start": "wp-scripts start",
+    "lint:css": "wp-scripts lint-style",
+    "lint:css-fix": "wp-scripts lint-style --fix",
+    "lint:js": "wp-scripts lint-js ./src/**",
+    "lint:js-fix": "wp-scripts lint-js ./src/** --fix"
   },
   "dependencies": {
     "@wordpress/api-fetch": "^7.0.0",
@@ -47,6 +51,7 @@
   },
   "devDependencies": {
     "@mailpoet/eslint-config": "workspace:^",
+    "@wordpress/scripts": "27.9.0",
     "@types/history": "^4.7.11",
     "@types/js-cookie": "^3.0.2",
     "@types/lodash": "^4.14.180",
@@ -60,6 +65,7 @@
     "@types/wordpress__editor": "^13.6.8",
     "@types/wordpress__media-utils": "^4.14.4",
     "core-js": "^3.37.1",
+    "eslint-plugin-check-file": "^2.8.0",
     "wp-types": "^3.65.0"
   },
   "volta": {
