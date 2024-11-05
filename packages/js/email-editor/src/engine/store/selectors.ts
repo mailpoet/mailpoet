@@ -8,94 +8,104 @@ import { storeName } from './constants';
 import { State, Feature, EmailTemplate } from './types';
 
 export const isFeatureActive = createRegistrySelector(
-  (select) =>
-    (_, feature: Feature): boolean =>
-      !!select(preferencesStore).get(storeName, feature),
+	( select ) =>
+		( _, feature: Feature ): boolean =>
+			!! select( preferencesStore ).get( storeName, feature ),
 );
 
 export const isSidebarOpened = createRegistrySelector(
-  (select) => (): boolean =>
-    !!select(interfaceStore).getActiveComplementaryArea(storeName),
+	( select ) => (): boolean =>
+		!! select( interfaceStore ).getActiveComplementaryArea( storeName ),
 );
 
-export const hasEdits = createRegistrySelector((select) => (): boolean => {
-  const postId = select(storeName).getEmailPostId();
-  return !!select(coreDataStore).hasEditsForEntityRecord(
-    'postType',
-    'mailpoet_email',
-    postId,
-  );
-});
+export const hasEdits = createRegistrySelector( ( select ) => (): boolean => {
+	const postId = select( storeName ).getEmailPostId();
+	return !! select( coreDataStore ).hasEditsForEntityRecord(
+		'postType',
+		'mailpoet_email',
+		postId,
+	);
+} );
 
-export const isEmailLoaded = createRegistrySelector((select) => (): boolean => {
-  const postId = select(storeName).getEmailPostId();
-  return !!select(coreDataStore).getEntityRecord(
-    'postType',
-    'mailpoet_email',
-    postId,
-  );
-});
+export const isEmailLoaded = createRegistrySelector(
+	( select ) => (): boolean => {
+		const postId = select( storeName ).getEmailPostId();
+		return !! select( coreDataStore ).getEntityRecord(
+			'postType',
+			'mailpoet_email',
+			postId,
+		);
+	},
+);
 
-export const isSaving = createRegistrySelector((select) => (): boolean => {
-  const postId = select(storeName).getEmailPostId();
-  return !!select(coreDataStore).isSavingEntityRecord(
-    'postType',
-    'mailpoet_email',
-    postId,
-  );
-});
+export const isSaving = createRegistrySelector( ( select ) => (): boolean => {
+	const postId = select( storeName ).getEmailPostId();
+	return !! select( coreDataStore ).isSavingEntityRecord(
+		'postType',
+		'mailpoet_email',
+		postId,
+	);
+} );
 
-export const isEmpty = createRegistrySelector((select) => (): boolean => {
-  const postId = select(storeName).getEmailPostId();
+export const isEmpty = createRegistrySelector( ( select ) => (): boolean => {
+	const postId = select( storeName ).getEmailPostId();
 
-  const post = select(coreDataStore).getEntityRecord(
-    'postType',
-    'mailpoet_email',
-    postId,
-  );
-  if (!post) return true;
+	const post = select( coreDataStore ).getEntityRecord(
+		'postType',
+		'mailpoet_email',
+		postId,
+	);
+	if ( ! post ) {
+		return true;
+	}
 
-  // @ts-expect-error Missing property in type
-  const { content, mailpoet_data: mailpoetData, title } = post;
-  return (
-    !content.raw &&
-    !mailpoetData.subject &&
-    !mailpoetData.preheader &&
-    !title.raw
-  );
-});
+	// @ts-expect-error Missing property in type
+	const { content, mailpoet_data: mailpoetData, title } = post;
+	return (
+		! content.raw &&
+		! mailpoetData.subject &&
+		! mailpoetData.preheader &&
+		! title.raw
+	);
+} );
 
 export const hasEmptyContent = createRegistrySelector(
-  (select) => (): boolean => {
-    const postId = select(storeName).getEmailPostId();
+	( select ) => (): boolean => {
+		const postId = select( storeName ).getEmailPostId();
 
-    const post = select(coreDataStore).getEntityRecord(
-      'postType',
-      'mailpoet_email',
-      postId,
-    );
-    if (!post) return true;
+		const post = select( coreDataStore ).getEntityRecord(
+			'postType',
+			'mailpoet_email',
+			postId,
+		);
+		if ( ! post ) {
+			return true;
+		}
 
-    // @ts-expect-error Missing property in type
-    const { content } = post;
-    return !content.raw;
-  },
+		// @ts-expect-error Missing property in type
+		const { content } = post;
+		return ! content.raw;
+	},
 );
 
-export const isEmailSent = createRegistrySelector((select) => (): boolean => {
-  const postId = select(storeName).getEmailPostId();
+export const isEmailSent = createRegistrySelector(
+	( select ) => (): boolean => {
+		const postId = select( storeName ).getEmailPostId();
 
-  const post = select(coreDataStore).getEntityRecord(
-    'postType',
-    'mailpoet_email',
-    postId,
-  );
-  if (!post) return false;
+		const post = select( coreDataStore ).getEntityRecord(
+			'postType',
+			'mailpoet_email',
+			postId,
+		);
+		if ( ! post ) {
+			return false;
+		}
 
-  // @ts-expect-error Missing property in type
-  const status = post.status;
-  return status === 'sent';
-});
+		// @ts-expect-error Missing property in type
+		const status = post.status;
+		return status === 'sent';
+	},
+);
 
 /**
  * Returns the content of the email being edited.
@@ -104,29 +114,29 @@ export const isEmailSent = createRegistrySelector((select) => (): boolean => {
  * @return {string} Post content.
  */
 export const getEditedEmailContent = createRegistrySelector(
-  (select) => (): string => {
-    const postId = select(storeName).getEmailPostId();
-    const record = select(coreDataStore).getEditedEntityRecord(
-      'postType',
-      'mailpoet_email',
-      postId,
-    ) as unknown as
-      | { content: string | unknown; blocks: BlockInstance[] }
-      | undefined;
+	( select ) => (): string => {
+		const postId = select( storeName ).getEmailPostId();
+		const record = select( coreDataStore ).getEditedEntityRecord(
+			'postType',
+			'mailpoet_email',
+			postId,
+		) as unknown as
+			| { content: string | unknown; blocks: BlockInstance[] }
+			| undefined;
 
-    if (record) {
-      if (record?.content && typeof record.content === 'function') {
-        return record.content(record) as string;
-      }
-      if (record?.blocks) {
-        return serialize(record.blocks);
-      }
-      if (record?.content) {
-        return record.content as string;
-      }
-    }
-    return '';
-  },
+		if ( record ) {
+			if ( record?.content && typeof record.content === 'function' ) {
+				return record.content( record ) as string;
+			}
+			if ( record?.blocks ) {
+				return serialize( record.blocks );
+			}
+			if ( record?.content ) {
+				return record.content as string;
+			}
+		}
+		return '';
+	},
 );
 
 /**
@@ -136,144 +146,148 @@ export const getEditedEmailContent = createRegistrySelector(
  * @return {Object?} Post Template.
  */
 export const getEditedPostTemplate = createRegistrySelector(
-  (select) => (): EmailTemplate => {
-    const currentTemplate =
-      // @ts-expect-error Expected 0 arguments, but got 1.
-      select(editorStore).getEditedPostAttribute('template');
+	( select ) => (): EmailTemplate => {
+		const currentTemplate =
+			// @ts-expect-error Expected 0 arguments, but got 1.
+			select( editorStore ).getEditedPostAttribute( 'template' );
 
-    if (currentTemplate) {
-      const templateWithSameSlug = select(coreDataStore)
-        .getEntityRecords('postType', 'wp_template', { per_page: -1 })
-        // @ts-expect-error Missing property in type
-        ?.find((template) => template.slug === currentTemplate);
+		if ( currentTemplate ) {
+			const templateWithSameSlug = select( coreDataStore )
+				.getEntityRecords( 'postType', 'wp_template', { per_page: -1 } )
+				// @ts-expect-error Missing property in type
+				?.find( ( template ) => template.slug === currentTemplate );
 
-      if (!templateWithSameSlug) {
-        return templateWithSameSlug as EmailTemplate;
-      }
+			if ( ! templateWithSameSlug ) {
+				return templateWithSameSlug as EmailTemplate;
+			}
 
-      return select(coreDataStore).getEditedEntityRecord(
-        'postType',
-        'wp_template',
+			return select( coreDataStore ).getEditedEntityRecord(
+				'postType',
+				'wp_template',
 
-        // @ts-expect-error getEditedPostAttribute
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        templateWithSameSlug.id,
-      ) as unknown as EmailTemplate;
-    }
+				// @ts-expect-error getEditedPostAttribute
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				templateWithSameSlug.id,
+			) as unknown as EmailTemplate;
+		}
 
-    const defaultTemplateId = select(coreDataStore).getDefaultTemplateId({
-      slug: 'email-general',
-    });
+		const defaultTemplateId = select( coreDataStore ).getDefaultTemplateId(
+			{
+				slug: 'email-general',
+			},
+		);
 
-    return select(coreDataStore).getEditedEntityRecord(
-      'postType',
-      'wp_template',
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      defaultTemplateId,
-    ) as unknown as EmailTemplate;
-  },
+		return select( coreDataStore ).getEditedEntityRecord(
+			'postType',
+			'wp_template',
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			defaultTemplateId,
+		) as unknown as EmailTemplate;
+	},
 );
 
 export const getTemplateContent = () => {
-  const template = getEditedPostTemplate();
-  return template?.content || '';
+	const template = getEditedPostTemplate();
+	return template?.content || '';
 };
 
-export const getCurrentTemplate = createRegistrySelector((select) => () => {
-  const isEditingTemplate =
-    select(editorStore).getCurrentPostType() === 'wp_template';
+export const getCurrentTemplate = createRegistrySelector( ( select ) => () => {
+	const isEditingTemplate =
+		select( editorStore ).getCurrentPostType() === 'wp_template';
 
-  if (isEditingTemplate) {
-    const templateId = select(editorStore).getCurrentPostId();
+	if ( isEditingTemplate ) {
+		const templateId = select( editorStore ).getCurrentPostId();
 
-    return select(coreDataStore).getEditedEntityRecord(
-      'postType',
-      'wp_template',
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      templateId,
-    );
-  }
-  return getEditedPostTemplate();
-});
+		return select( coreDataStore ).getEditedEntityRecord(
+			'postType',
+			'wp_template',
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			templateId,
+		);
+	}
+	return getEditedPostTemplate();
+} );
 
 /**
  * Retrieves the email templates.
  */
 export const getEmailTemplates = createRegistrySelector(
-  (select) => () =>
-    select(coreDataStore)
-      .getEntityRecords('postType', 'wp_template', {
-        per_page: -1,
-        post_type: 'mailpoet_email',
-      })
-      // We still need to filter the templates because, in some cases, the API also returns custom templates
-      // ignoring the post_type filter in the query
-      ?.filter(
-        (template) =>
-          // @ts-expect-error Missing property in type
-          template.theme === 'mailpoet/mailpoet',
-      ),
+	( select ) => () =>
+		select( coreDataStore )
+			.getEntityRecords( 'postType', 'wp_template', {
+				per_page: -1,
+				post_type: 'mailpoet_email',
+			} )
+			// We still need to filter the templates because, in some cases, the API also returns custom templates
+			// ignoring the post_type filter in the query
+			?.filter(
+				( template ) =>
+					// @ts-expect-error Missing property in type
+					template.theme === 'mailpoet/mailpoet',
+			),
 );
 
-export function getEmailPostId(state: State): number {
-  return state.postId;
+export function getEmailPostId( state: State ): number {
+	return state.postId;
 }
 
-export function isInserterSidebarOpened(state: State): boolean {
-  return state.inserterSidebar.isOpened;
+export function isInserterSidebarOpened( state: State ): boolean {
+	return state.inserterSidebar.isOpened;
 }
 
-export function isListviewSidebarOpened(state: State): boolean {
-  return state.listviewSidebar.isOpened;
+export function isListviewSidebarOpened( state: State ): boolean {
+	return state.listviewSidebar.isOpened;
 }
 
-export function getSettingsSidebarActiveTab(state: State): string {
-  return state.settingsSidebar.activeTab;
+export function getSettingsSidebarActiveTab( state: State ): string {
+	return state.settingsSidebar.activeTab;
 }
 
 export function getInitialEditorSettings(
-  state: State,
-): State['editorSettings'] {
-  return state.editorSettings;
+	state: State,
+): State[ 'editorSettings' ] {
+	return state.editorSettings;
 }
 
 export function getPaletteColors(
-  state: State,
-): State['editorSettings']['__experimentalFeatures']['color']['palette'] {
-  // eslint-disable-next-line no-underscore-dangle
-  return state.editorSettings.__experimentalFeatures.color.palette;
+	state: State,
+): State[ 'editorSettings' ][ '__experimentalFeatures' ][ 'color' ][ 'palette' ] {
+	// eslint-disable-next-line no-underscore-dangle
+	return state.editorSettings.__experimentalFeatures.color.palette;
 }
 
-export function getPreviewState(state: State): State['preview'] {
-  return state.preview;
+export function getPreviewState( state: State ): State[ 'preview' ] {
+	return state.preview;
 }
 
 export const getDeviceType = createRegistrySelector(
-  (select) => () =>
-    // @ts-expect-error getDeviceType is missing in types.
-    select(editorStore).getDeviceType() as string,
+	( select ) => () =>
+		// @ts-expect-error getDeviceType is missing in types.
+		select( editorStore ).getDeviceType() as string,
 );
 
-export function getStyles(state: State): State['theme']['styles'] {
-  return state.theme.styles;
+export function getStyles( state: State ): State[ 'theme' ][ 'styles' ] {
+	return state.theme.styles;
 }
 
-export function getAutosaveInterval(state: State): State['autosaveInterval'] {
-  return state.autosaveInterval;
+export function getAutosaveInterval(
+	state: State,
+): State[ 'autosaveInterval' ] {
+	return state.autosaveInterval;
 }
 
-export function getCdnUrl(state: State): State['cdnUrl'] {
-  return state.cdnUrl;
+export function getCdnUrl( state: State ): State[ 'cdnUrl' ] {
+	return state.cdnUrl;
 }
 
-export function isPremiumPluginActive(state: State): boolean {
-  return state.isPremiumPluginActive;
+export function isPremiumPluginActive( state: State ): boolean {
+	return state.isPremiumPluginActive;
 }
 
-export function getTheme(state: State): State['theme'] {
-  return state.theme;
+export function getTheme( state: State ): State[ 'theme' ] {
+	return state.theme;
 }
 
-export function getUrls(state: State): State['urls'] {
-  return state.urls;
+export function getUrls( state: State ): State[ 'urls' ] {
+	return state.urls;
 }

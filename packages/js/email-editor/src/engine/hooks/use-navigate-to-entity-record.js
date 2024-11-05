@@ -21,59 +21,62 @@ import { store as editorStore } from '@wordpress/editor';
  *                 `onNavigateToEntityRecord` and `onNavigateToPreviousEntityRecord` functions.
  */
 export function useNavigateToEntityRecord(
-  initialPostId,
-  initialPostType,
-  defaultRenderingMode,
+	initialPostId,
+	initialPostType,
+	defaultRenderingMode,
 ) {
-  const [postHistory, dispatch] = useReducer(
-    (historyState, { type, post, previousRenderingMode }) => {
-      if (type === 'push') {
-        return [...historyState, { post, previousRenderingMode }];
-      }
-      if (type === 'pop') {
-        // Try to leave one item in the history.
-        if (historyState.length > 1) {
-          return historyState.slice(0, -1);
-        }
-      }
-      return historyState;
-    },
-    [
-      {
-        post: { postId: initialPostId, postType: initialPostType },
-      },
-    ],
-  );
+	const [ postHistory, dispatch ] = useReducer(
+		( historyState, { type, post, previousRenderingMode } ) => {
+			if ( type === 'push' ) {
+				return [ ...historyState, { post, previousRenderingMode } ];
+			}
+			if ( type === 'pop' ) {
+				// Try to leave one item in the history.
+				if ( historyState.length > 1 ) {
+					return historyState.slice( 0, -1 );
+				}
+			}
+			return historyState;
+		},
+		[
+			{
+				post: { postId: initialPostId, postType: initialPostType },
+			},
+		],
+	);
 
-  const { post, previousRenderingMode } = postHistory[postHistory.length - 1];
+	const { post, previousRenderingMode } =
+		postHistory[ postHistory.length - 1 ];
 
-  const { getRenderingMode } = useSelect(editorStore);
-  const { setRenderingMode } = useDispatch(editorStore);
+	const { getRenderingMode } = useSelect( editorStore );
+	const { setRenderingMode } = useDispatch( editorStore );
 
-  const onNavigateToEntityRecord = useCallback(
-    (params) => {
-      dispatch({
-        type: 'push',
-        post: { postId: params.postId, postType: params.postType },
-        // Save the current rendering mode so we can restore it when navigating back.
-        previousRenderingMode: getRenderingMode(),
-      });
-      setRenderingMode(defaultRenderingMode);
-    },
-    [getRenderingMode, setRenderingMode, defaultRenderingMode],
-  );
+	const onNavigateToEntityRecord = useCallback(
+		( params ) => {
+			dispatch( {
+				type: 'push',
+				post: { postId: params.postId, postType: params.postType },
+				// Save the current rendering mode so we can restore it when navigating back.
+				previousRenderingMode: getRenderingMode(),
+			} );
+			setRenderingMode( defaultRenderingMode );
+		},
+		[ getRenderingMode, setRenderingMode, defaultRenderingMode ],
+	);
 
-  const onNavigateToPreviousEntityRecord = useCallback(() => {
-    dispatch({ type: 'pop' });
-    if (previousRenderingMode) {
-      setRenderingMode(previousRenderingMode);
-    }
-  }, [setRenderingMode, previousRenderingMode]);
+	const onNavigateToPreviousEntityRecord = useCallback( () => {
+		dispatch( { type: 'pop' } );
+		if ( previousRenderingMode ) {
+			setRenderingMode( previousRenderingMode );
+		}
+	}, [ setRenderingMode, previousRenderingMode ] );
 
-  return {
-    currentPost: post,
-    onNavigateToEntityRecord,
-    onNavigateToPreviousEntityRecord:
-      postHistory.length > 1 ? onNavigateToPreviousEntityRecord : undefined,
-  };
+	return {
+		currentPost: post,
+		onNavigateToEntityRecord,
+		onNavigateToPreviousEntityRecord:
+			postHistory.length > 1
+				? onNavigateToPreviousEntityRecord
+				: undefined,
+	};
 }

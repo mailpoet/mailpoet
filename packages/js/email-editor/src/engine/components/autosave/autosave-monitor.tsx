@@ -9,31 +9,31 @@ import { storeName } from '../../store';
  * We could use the action `setEditedPost` from the editor package, but it is only in a newer version of the editor package.
  */
 export function AutosaveMonitor() {
-  const { hasEdits, autosaveInterval } = useSelect(
-    (select) => ({
-      hasEdits: select(storeName).hasEdits(),
-      autosaveInterval: select(storeName).getAutosaveInterval(),
-    }),
-    [],
-  );
+	const { hasEdits, autosaveInterval } = useSelect(
+		( select ) => ( {
+			hasEdits: select( storeName ).hasEdits(),
+			autosaveInterval: select( storeName ).getAutosaveInterval(),
+		} ),
+		[],
+	);
 
-  const { saveEditedEmail } = useDispatch(storeName);
+	const { saveEditedEmail } = useDispatch( storeName );
 
-  useEffect(() => {
-    let autosaveTimer: NodeJS.Timeout | undefined;
+	useEffect( () => {
+		let autosaveTimer: NodeJS.Timeout | undefined;
 
-    if (hasEdits && autosaveInterval > 0) {
-      autosaveTimer = setTimeout(() => {
-        void saveEditedEmail();
-      }, autosaveInterval * 1000);
-    }
+		if ( hasEdits && autosaveInterval > 0 ) {
+			autosaveTimer = setTimeout( () => {
+				void saveEditedEmail();
+			}, autosaveInterval * 1000 );
+		}
 
-    return () => {
-      if (autosaveTimer) {
-        clearTimeout(autosaveTimer);
-      }
-    };
-  }, [hasEdits, autosaveInterval, saveEditedEmail]);
+		return () => {
+			if ( autosaveTimer ) {
+				clearTimeout( autosaveTimer );
+			}
+		};
+	}, [ hasEdits, autosaveInterval, saveEditedEmail ] );
 
-  return null;
+	return null;
 }

@@ -1,7 +1,7 @@
 import { addFilter } from '@wordpress/hooks';
 import {
-  Block as WPBlock,
-  BlockSupports as WPBlockSupports,
+	Block as WPBlock,
+	BlockSupports as WPBlockSupports,
 } from '@wordpress/blocks';
 
 // Extend the BlockSupports type to include shadow
@@ -15,19 +15,19 @@ type Block = WPBlock & { supports?: BlockSupports };
  * Currently we are not able to read these styles in renderer
  */
 function alterSupportConfiguration() {
-  addFilter(
-    'blocks.registerBlockType',
-    'mailpoet-email-editor/block-support',
-    (settings: Block) => {
-      if (settings.supports?.shadow) {
-        return {
-          ...settings,
-          supports: { ...settings.supports, shadow: false },
-        };
-      }
-      return settings;
-    },
-  );
+	addFilter(
+		'blocks.registerBlockType',
+		'mailpoet-email-editor/block-support',
+		( settings: Block ) => {
+			if ( settings.supports?.shadow ) {
+				return {
+					...settings,
+					supports: { ...settings.supports, shadow: false },
+				};
+			}
+			return settings;
+		},
+	);
 }
 
 export { alterSupportConfiguration };
