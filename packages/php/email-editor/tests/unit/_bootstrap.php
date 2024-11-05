@@ -20,6 +20,17 @@ if ( ! function_exists( 'esc_attr' ) ) {
 	}
 }
 
+if ( ! function_exists( 'esc_html' ) ) {
+	/**
+	 * Mock esc_html function.
+	 *
+	 * @param string $text Text to escape.
+	 */
+	function esc_html( $text ) {
+		return $text;
+	}
+}
+
 /**
  * Base class for unit tests.
  */
