@@ -26,3 +26,4 @@ vendor-prefixed
 /mailpoet-premium
 /wordpress
 /packages/php/email-editor
+/packages/js/email-editor

@@ -42,3 +42,6 @@ ab27eaee2df740c0add4331a7f8c115a87ecfa2b
 
 # Move email editor to JS packages folder
 fc4360abe4d9bd31a90f2131faa0a7709585f2f4
+
+# Switch email editor js packages to WP coding style
+891fc39c26e705c8008e71934bf31eb1d07b5e95
