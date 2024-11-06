@@ -34,6 +34,19 @@ $replacements = [
       '$stopRunningJobs = Closure::fromCallable(self::class.\'::stopRunningJobs\');',
     ],
   ],
+  [
+    'file' => __DIR__ . '/../vendor/consolidation/robo/src/Config/Config.php',
+    'find' => [
+      "const DECORATED = 'options.decorated';
+
+    /**",
+    ],
+    'replace' => [
+      "const DECORATED = 'options.decorated';
+       private \$defaults = [];
+    /**",
+    ],
+  ],
 ];
 
 // Apply replacements
