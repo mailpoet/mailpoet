@@ -1,6 +1,6 @@
 import {
 	__experimentalNavigatorProvider as NavigatorProvider, // eslint-disable-line
-	__experimentalNavigatorScreen as NavigatorScreen,  // eslint-disable-line
+	__experimentalNavigatorScreen as NavigatorScreen, // eslint-disable-line
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { ComplementaryArea } from '@wordpress/interface';

@@ -35,13 +35,13 @@ export function SendPreviewEmail() {
 	const [ mailpoetEmailData ] = useEntityProp(
 		'postType',
 		'mailpoet_email',
-		'mailpoet_data',
+		'mailpoet_data'
 	) as [ MailPoetEmailData, unknown, unknown ];
 
 	const handleSendPreviewEmail = () => {
 		void requestSendingNewsletterPreview(
 			mailpoetEmailData.id,
-			previewToEmail,
+			previewToEmail
 		);
 	};
 
@@ -69,14 +69,14 @@ export function SendPreviewEmail() {
 				<div className="mailpoet-send-preview-modal-notice-error">
 					{ __(
 						'Sorry, we were unable to send this email.',
-						'mailpoet',
+						'mailpoet'
 					) }
 					<ul>
 						<li>
 							{ createInterpolateElement(
 								__(
 									'Please check your <link>sending method configuration</link> with your hosting provider.',
-									'mailpoet',
+									'mailpoet'
 								),
 								{
 									link: (
@@ -87,14 +87,14 @@ export function SendPreviewEmail() {
 											rel="noopener noreferrer"
 										/>
 									),
-								},
+								}
 							) }
 						</li>
 						<li>
 							{ createInterpolateElement(
 								__(
 									'Or, sign up for MailPoet Sending Service to easily send emails. <link>Sign up for free</link>',
-									'mailpoet',
+									'mailpoet'
 								),
 								{
 									link: (
@@ -102,14 +102,14 @@ export function SendPreviewEmail() {
 										<a
 											href={ new URL(
 												'free-plan',
-												'https://www.mailpoet.com/',
+												'https://www.mailpoet.com/'
 											).toString() }
 											key="sign-up-for-free"
 											target="_blank"
 											rel="noopener noreferrer"
 										/>
 									),
-								},
+								}
 							) }
 						</li>
 					</ul>
@@ -119,7 +119,7 @@ export function SendPreviewEmail() {
 				{ createInterpolateElement(
 					__(
 						'Send yourself a test email to test how your email would look like in different email apps. You can also test your spam score by sending a test email to <link1>{$serviceName}</link1>. <link2>Learn more</link2>.',
-						'mailpoet',
+						'mailpoet'
 					).replace( '{$serviceName}', 'Mail Tester' ),
 					{
 						link1: (
@@ -138,7 +138,7 @@ export function SendPreviewEmail() {
 								rel="noopener noreferrer"
 							/>
 						),
-					},
+					}
 				) }
 			</p>
 			<TextControl

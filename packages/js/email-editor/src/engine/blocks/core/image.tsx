@@ -23,7 +23,7 @@ const imageEditCallback = createHigherOrderComponent(
 				</>
 			);
 		},
-	'imageEditCallback',
+	'imageEditCallback'
 );
 
 /**
@@ -46,7 +46,7 @@ function disableImageFilter() {
 				};
 			}
 			return settings;
-		},
+		}
 	);
 }
 
@@ -54,7 +54,7 @@ function hideExpandOnClick() {
 	addFilter(
 		'editor.BlockEdit',
 		'mailpoet-email-editor/hide-expand-on-click',
-		imageEditCallback,
+		imageEditCallback
 	);
 }
 

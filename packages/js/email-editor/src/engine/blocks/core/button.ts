@@ -14,7 +14,7 @@ function enhanceButtonBlock() {
 				return { ...settings, styles: [] };
 			}
 			return settings;
-		},
+		}
 	);
 }
 

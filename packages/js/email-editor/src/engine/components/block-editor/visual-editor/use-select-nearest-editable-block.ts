@@ -26,7 +26,7 @@ export default function useSelectNearestEditableBlock( {
 	isEnabled = true,
 } = {} ) {
 	const { getEnabledClientIdsTree, getBlockName, getBlockOrder } = unlock(
-		useSelect( blockEditorStore ),
+		useSelect( blockEditorStore )
 	);
 	const { selectBlock } = useDispatch( blockEditorStore );
 
@@ -56,10 +56,10 @@ export default function useSelectNearestEditableBlock( {
 				const nearestClientIdData = editableBlockClientIds.reduce(
 					(
 						acc: { clientId: string; distance: number },
-						clientId: string,
+						clientId: string
 					) => {
 						const block = element.querySelector(
-							`[data-block="${ clientId }"]`,
+							`[data-block="${ clientId }"]`
 						);
 						if ( ! block ) {
 							return acc;
@@ -68,7 +68,7 @@ export default function useSelectNearestEditableBlock( {
 						const distance = distanceFromRect(
 							Number( x ),
 							Number( y ),
-							rect,
+							rect
 						);
 
 						if (
@@ -79,7 +79,7 @@ export default function useSelectNearestEditableBlock( {
 						}
 						return acc;
 					},
-					{ clientId: null, distance: Number.POSITIVE_INFINITY },
+					{ clientId: null, distance: Number.POSITIVE_INFINITY }
 				);
 
 				const nearestClientId = nearestClientIdData?.clientId || '';
@@ -100,6 +100,6 @@ export default function useSelectNearestEditableBlock( {
 			element.addEventListener( 'click', handleClick );
 			return () => element.removeEventListener( 'click', handleClick );
 		},
-		[ isEnabled ],
+		[ isEnabled ]
 	);
 }

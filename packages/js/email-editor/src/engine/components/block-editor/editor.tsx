@@ -36,7 +36,7 @@ export function InnerEditor( {
 		initialPostId,
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		initialPostType,
-		'post-only',
+		'post-only'
 	);
 
 	const { post, template } = useSelect(
@@ -48,7 +48,7 @@ export function InnerEditor( {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				currentPost.postType,
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-				currentPost.postId,
+				currentPost.postId
 			);
 			return {
 				template:
@@ -58,7 +58,7 @@ export function InnerEditor( {
 				post: postObject,
 			};
 		},
-		[ currentPost.postType, currentPost.postId ],
+		[ currentPost.postType, currentPost.postId ]
 	);
 
 	/*
@@ -71,13 +71,13 @@ export function InnerEditor( {
 			const { hasFinishedResolution, getBlockPatternsForPostType } =
 				unlock( select( coreStore ) );
 			const patterns = getBlockPatternsForPostType(
-				currentPost.postType,
+				currentPost.postType
 			) as Post[];
 			return hasFinishedResolution( 'getBlockPatterns' )
 				? patterns
 				: undefined;
 		},
-		[ currentPost.postType ],
+		[ currentPost.postType ]
 	);
 
 	const editorSettings = useMemo(
@@ -95,7 +95,7 @@ export function InnerEditor( {
 			onNavigateToEntityRecord,
 			onNavigateToPreviousEntityRecord,
 			blockPatterns,
-		],
+		]
 	);
 
 	if ( ! post || ( currentPost.postType !== 'wp_template' && ! template ) ) {

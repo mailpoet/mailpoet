@@ -21,13 +21,13 @@ export function CampaignName() {
 				select( storeName ).isFeatureActive( 'showIconLabels' ),
 			postId: select( storeName ).getEmailPostId(),
 		} ),
-		[],
+		[]
 	);
 
 	const [ emailTitle = '', setTitle ] = useEntityProp(
 		'postType',
 		'mailpoet_email',
-		'title',
+		'title'
 	);
 
 	const titleRef = useRef( null );
@@ -75,7 +75,7 @@ export function CampaignName() {
 							name="campaign_name"
 							help={ __(
 								`Name your email campaign to indicate its purpose. This would only be visible to you and not shown to your subscribers.`,
-								'mailpoet',
+								'mailpoet'
 							) }
 						/>
 					</div>

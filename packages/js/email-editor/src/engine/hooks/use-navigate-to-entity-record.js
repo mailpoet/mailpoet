@@ -23,7 +23,7 @@ import { store as editorStore } from '@wordpress/editor';
 export function useNavigateToEntityRecord(
 	initialPostId,
 	initialPostType,
-	defaultRenderingMode,
+	defaultRenderingMode
 ) {
 	const [ postHistory, dispatch ] = useReducer(
 		( historyState, { type, post, previousRenderingMode } ) => {
@@ -42,7 +42,7 @@ export function useNavigateToEntityRecord(
 			{
 				post: { postId: initialPostId, postType: initialPostType },
 			},
-		],
+		]
 	);
 
 	const { post, previousRenderingMode } =
@@ -61,7 +61,7 @@ export function useNavigateToEntityRecord(
 			} );
 			setRenderingMode( defaultRenderingMode );
 		},
-		[ getRenderingMode, setRenderingMode, defaultRenderingMode ],
+		[ getRenderingMode, setRenderingMode, defaultRenderingMode ]
 	);
 
 	const onNavigateToPreviousEntityRecord = useCallback( () => {

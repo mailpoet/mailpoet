@@ -6,7 +6,7 @@ import { __ } from '@wordpress/i18n';
 export const hasBackgroundImageSupport = ( nameOrType: string ) => {
 	const backgroundSupport = getBlockSupport(
 		nameOrType, // @ts-expect-error not yet supported in the types
-		'background',
+		'background'
 	) as Record< string, boolean >;
 
 	return backgroundSupport && backgroundSupport?.backgroundImage !== false;
@@ -16,7 +16,7 @@ export function BlockCompatibilityWarnings(): JSX.Element {
 	// Select the currently selected block
 	const selectedBlock = useSelect(
 		( sel ) => sel( 'core/block-editor' ).getSelectedBlock(),
-		[],
+		[]
 	);
 
 	// Check if the selected block has enabled border configuration
@@ -24,7 +24,7 @@ export function BlockCompatibilityWarnings(): JSX.Element {
 		selectedBlock?.name,
 		// @ts-expect-error Border is not yet supported in the types
 		'__experimentalBorder',
-		false,
+		false
 	);
 
 	return (
@@ -38,7 +38,7 @@ export function BlockCompatibilityWarnings(): JSX.Element {
 					>
 						{ __(
 							'Border display may vary or be unsupported in some email clients.',
-							'mailpoet',
+							'mailpoet'
 						) }
 					</Notice>
 				</Fill>
@@ -52,7 +52,7 @@ export function BlockCompatibilityWarnings(): JSX.Element {
 					>
 						{ __(
 							'Select a background color for email clients that do not support background images.',
-							'mailpoet',
+							'mailpoet'
 						) }
 					</Notice>
 				</Fill>

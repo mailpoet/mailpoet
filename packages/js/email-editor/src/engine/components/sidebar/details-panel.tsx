@@ -18,14 +18,14 @@ export function DetailsPanel() {
 	const [ mailpoetEmailData ] = useEntityProp(
 		'postType',
 		'mailpoet_email',
-		'mailpoet_data',
+		'mailpoet_data'
 	);
 
 	const { updateEmailMailPoetProperty } = useDispatch( storeName );
 	const subjectHelp = createInterpolateElement(
 		__(
 			'Use shortcodes to personalize your email, or learn more about <bestPracticeLink>best practices</bestPracticeLink> and using <emojiLink>emoji in subject lines</emojiLink>.',
-			'mailpoet',
+			'mailpoet'
 		),
 		{
 			bestPracticeLink: (
@@ -44,7 +44,7 @@ export function DetailsPanel() {
 					rel="noopener noreferrer"
 				/>
 			),
-		},
+		}
 	);
 
 	const subjectLabel = (
@@ -69,7 +69,7 @@ export function DetailsPanel() {
 							previewTextLength > previewTextRecommendedLength,
 						'mailpoet-settings-panel__preview-text-length-error':
 							previewTextLength > previewTextMaxLength,
-					},
+					}
 				) }
 			>
 				{ previewTextLength }/{ previewTextMaxLength }
@@ -101,7 +101,7 @@ export function DetailsPanel() {
 				label={ preheaderLabel }
 				placeholder={ __(
 					"Add a preview text to capture subscribers' attention and increase open rates.",
-					'mailpoet',
+					'mailpoet'
 				) }
 				value={ mailpoetEmailData?.preheader ?? '' }
 				onChange={ ( value ) =>
@@ -114,7 +114,7 @@ export function DetailsPanel() {
 					{ createInterpolateElement(
 						__(
 							'<link>This text</link> will appear in the inbox, underneath the subject line.',
-							'mailpoet',
+							'mailpoet'
 						),
 						{
 							link: (
@@ -122,14 +122,14 @@ export function DetailsPanel() {
 								<a
 									href={ new URL(
 										'article/418-preview-text',
-										'https://kb.mailpoet.com/',
+										'https://kb.mailpoet.com/'
 									).toString() }
 									key="preview-text-kb"
 									target="_blank"
 									rel="noopener noreferrer"
 								/>
 							),
-						},
+						}
 					) }
 				</Text>
 			</div>

@@ -32,7 +32,7 @@ function SidebarContent( props: Props ) {
 			isEditingTemplate:
 				select( editorStore ).getCurrentPostType() === 'wp_template',
 		} ),
-		[],
+		[]
 	);
 
 	const tabListRef = useRef( null );
@@ -79,7 +79,7 @@ export function Sidebar( props: Props ) {
 			selectedBlockId:
 				select( blockEditorStore ).getSelectedBlockClientId(),
 		} ),
-		[],
+		[]
 	);
 
 	// Switch tab based on selected block.

@@ -10,12 +10,12 @@ import { State, Feature, EmailTemplate } from './types';
 export const isFeatureActive = createRegistrySelector(
 	( select ) =>
 		( _, feature: Feature ): boolean =>
-			!! select( preferencesStore ).get( storeName, feature ),
+			!! select( preferencesStore ).get( storeName, feature )
 );
 
 export const isSidebarOpened = createRegistrySelector(
 	( select ) => (): boolean =>
-		!! select( interfaceStore ).getActiveComplementaryArea( storeName ),
+		!! select( interfaceStore ).getActiveComplementaryArea( storeName )
 );
 
 export const hasEdits = createRegistrySelector( ( select ) => (): boolean => {
@@ -23,7 +23,7 @@ export const hasEdits = createRegistrySelector( ( select ) => (): boolean => {
 	return !! select( coreDataStore ).hasEditsForEntityRecord(
 		'postType',
 		'mailpoet_email',
-		postId,
+		postId
 	);
 } );
 
@@ -33,9 +33,9 @@ export const isEmailLoaded = createRegistrySelector(
 		return !! select( coreDataStore ).getEntityRecord(
 			'postType',
 			'mailpoet_email',
-			postId,
+			postId
 		);
-	},
+	}
 );
 
 export const isSaving = createRegistrySelector( ( select ) => (): boolean => {
@@ -43,7 +43,7 @@ export const isSaving = createRegistrySelector( ( select ) => (): boolean => {
 	return !! select( coreDataStore ).isSavingEntityRecord(
 		'postType',
 		'mailpoet_email',
-		postId,
+		postId
 	);
 } );
 
@@ -53,7 +53,7 @@ export const isEmpty = createRegistrySelector( ( select ) => (): boolean => {
 	const post = select( coreDataStore ).getEntityRecord(
 		'postType',
 		'mailpoet_email',
-		postId,
+		postId
 	);
 	if ( ! post ) {
 		return true;
@@ -76,7 +76,7 @@ export const hasEmptyContent = createRegistrySelector(
 		const post = select( coreDataStore ).getEntityRecord(
 			'postType',
 			'mailpoet_email',
-			postId,
+			postId
 		);
 		if ( ! post ) {
 			return true;
@@ -85,7 +85,7 @@ export const hasEmptyContent = createRegistrySelector(
 		// @ts-expect-error Missing property in type
 		const { content } = post;
 		return ! content.raw;
-	},
+	}
 );
 
 export const isEmailSent = createRegistrySelector(
@@ -95,7 +95,7 @@ export const isEmailSent = createRegistrySelector(
 		const post = select( coreDataStore ).getEntityRecord(
 			'postType',
 			'mailpoet_email',
-			postId,
+			postId
 		);
 		if ( ! post ) {
 			return false;
@@ -104,7 +104,7 @@ export const isEmailSent = createRegistrySelector(
 		// @ts-expect-error Missing property in type
 		const status = post.status;
 		return status === 'sent';
-	},
+	}
 );
 
 /**
@@ -119,7 +119,7 @@ export const getEditedEmailContent = createRegistrySelector(
 		const record = select( coreDataStore ).getEditedEntityRecord(
 			'postType',
 			'mailpoet_email',
-			postId,
+			postId
 		) as unknown as
 			| { content: string | unknown; blocks: BlockInstance[] }
 			| undefined;
@@ -136,7 +136,7 @@ export const getEditedEmailContent = createRegistrySelector(
 			}
 		}
 		return '';
-	},
+	}
 );
 
 /**
@@ -167,23 +167,23 @@ export const getEditedPostTemplate = createRegistrySelector(
 
 				// @ts-expect-error getEditedPostAttribute
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-				templateWithSameSlug.id,
+				templateWithSameSlug.id
 			) as unknown as EmailTemplate;
 		}
 
 		const defaultTemplateId = select( coreDataStore ).getDefaultTemplateId(
 			{
 				slug: 'email-general',
-			},
+			}
 		);
 
 		return select( coreDataStore ).getEditedEntityRecord(
 			'postType',
 			'wp_template',
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			defaultTemplateId,
+			defaultTemplateId
 		) as unknown as EmailTemplate;
-	},
+	}
 );
 
 export const getTemplateContent = () => {
@@ -202,7 +202,7 @@ export const getCurrentTemplate = createRegistrySelector( ( select ) => () => {
 			'postType',
 			'wp_template',
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			templateId,
+			templateId
 		);
 	}
 	return getEditedPostTemplate();
@@ -223,8 +223,8 @@ export const getEmailTemplates = createRegistrySelector(
 			?.filter(
 				( template ) =>
 					// @ts-expect-error Missing property in type
-					template.theme === 'mailpoet/mailpoet',
-			),
+					template.theme === 'mailpoet/mailpoet'
+			)
 );
 
 export function getEmailPostId( state: State ): number {
@@ -244,13 +244,13 @@ export function getSettingsSidebarActiveTab( state: State ): string {
 }
 
 export function getInitialEditorSettings(
-	state: State,
+	state: State
 ): State[ 'editorSettings' ] {
 	return state.editorSettings;
 }
 
 export function getPaletteColors(
-	state: State,
+	state: State
 ): State[ 'editorSettings' ][ '__experimentalFeatures' ][ 'color' ][ 'palette' ] {
 	// eslint-disable-next-line no-underscore-dangle
 	return state.editorSettings.__experimentalFeatures.color.palette;
@@ -263,7 +263,7 @@ export function getPreviewState( state: State ): State[ 'preview' ] {
 export const getDeviceType = createRegistrySelector(
 	( select ) => () =>
 		// @ts-expect-error getDeviceType is missing in types.
-		select( editorStore ).getDeviceType() as string,
+		select( editorStore ).getDeviceType() as string
 );
 
 export function getStyles( state: State ): State[ 'theme' ][ 'styles' ] {
@@ -271,7 +271,7 @@ export function getStyles( state: State ): State[ 'theme' ][ 'styles' ] {
 }
 
 export function getAutosaveInterval(
-	state: State,
+	state: State
 ): State[ 'autosaveInterval' ] {
 	return state.autosaveInterval;
 }

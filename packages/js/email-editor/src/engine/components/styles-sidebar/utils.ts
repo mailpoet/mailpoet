@@ -19,7 +19,7 @@ const defaultStyleObject = {
 export const getHeadingElementStyles = (
 	styles: StyleProperties,
 	headingLevel = 'heading',
-	merge = false,
+	merge = false
 ): StyleProperties =>
 	merge
 		? ( deepmerge.all( [
@@ -37,7 +37,7 @@ export const getElementStyles = (
 	styles: StyleProperties,
 	element: string,
 	headingLevel = 'heading',
-	merge = false,
+	merge = false
 ): StyleProperties => {
 	switch ( element ) {
 		case 'text':
@@ -49,7 +49,7 @@ export const getElementStyles = (
 			return getHeadingElementStyles(
 				styles,
 				headingLevel ?? 'heading',
-				merge,
+				merge
 			);
 		default:
 			return ( styles.elements[ element ] ||

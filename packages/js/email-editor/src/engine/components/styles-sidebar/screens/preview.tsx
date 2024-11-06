@@ -1,7 +1,7 @@
 import {
-	__experimentalHStack as HStack,   // eslint-disable-line
-	__experimentalVStack as VStack,   // eslint-disable-line
-	__unstableMotion as motion,       // eslint-disable-line
+	__experimentalHStack as HStack, // eslint-disable-line
+	__experimentalVStack as VStack, // eslint-disable-line
+	__unstableMotion as motion, // eslint-disable-line
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
@@ -65,7 +65,7 @@ export function Preview( {
 			styles: select( storeName ).getStyles(),
 			colors: select( storeName ).getPaletteColors(),
 		} ),
-		[],
+		[]
 	);
 
 	const backgroundColor = styles?.color?.background || '#ffffff';
@@ -82,7 +82,7 @@ export function Preview( {
 		.filter(
 			( { color } ) =>
 				color.toLowerCase() !== backgroundColor.toLowerCase() &&
-				color.toLowerCase() !== headingColor.toLowerCase(),
+				color.toLowerCase() !== headingColor.toLowerCase()
 		)
 		.slice( 0, 2 );
 
@@ -165,7 +165,7 @@ export function Preview( {
 											delay: index === 1 ? 0.2 : 0.1,
 										} }
 									/>
-								),
+								)
 							) }
 						</VStack>
 					</HStack>

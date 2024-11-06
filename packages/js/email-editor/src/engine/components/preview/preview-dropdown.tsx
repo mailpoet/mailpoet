@@ -15,12 +15,12 @@ export function PreviewDropdown() {
 	const [ mailpoetEmailData ] = useEntityProp(
 		'postType',
 		'mailpoet_email',
-		'mailpoet_data',
+		'mailpoet_data'
 	);
 
 	const previewDeviceType = useSelect(
 		( select ) => select( storeName ).getDeviceType(),
-		[],
+		[]
 	);
 
 	const { changePreviewDeviceType, togglePreviewModal } =
@@ -85,13 +85,13 @@ export function PreviewDropdown() {
 										className="edit-post-header-preview__button-external components-menu-item__button"
 										onClick={ () => {
 											openInNewTab(
-												newsletterPreviewUrl,
+												newsletterPreviewUrl
 											);
 										} }
 									>
 										{ __(
 											'Preview in new tab',
-											'mailpoet',
+											'mailpoet'
 										) }
 										<Icon icon={ external } />
 									</Button>

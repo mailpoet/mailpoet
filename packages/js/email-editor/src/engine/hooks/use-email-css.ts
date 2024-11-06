@@ -17,7 +17,7 @@ export function useEmailCss() {
 		( select ) => ( {
 			editorTheme: select( storeName ).getTheme(),
 		} ),
-		[],
+		[]
 	);
 
 	const mergedConfig = useMemo(
@@ -27,7 +27,7 @@ export function useEmailCss() {
 				editorTheme || {},
 				templateTheme || {},
 			] ) as EmailStyles,
-		[ editorTheme, templateTheme ],
+		[ editorTheme, templateTheme ]
 	);
 
 	const [ styles ] = useGlobalStylesOutputWithConfig( mergedConfig );

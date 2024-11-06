@@ -20,12 +20,12 @@ export function MoreMenu(): JSX.Element {
 			urls: select( storeName ).getUrls(),
 			postId: select( storeName ).getEmailPostId(),
 		} ),
-		[],
+		[]
 	);
 	const [ status, setStatus ] = useEntityProp(
 		'postType',
 		'mailpoet_email',
-		'status',
+		'status'
 	);
 	const { saveEditedEmail, updateEmailMailPoetProperty } =
 		useDispatch( storeName );
@@ -52,15 +52,15 @@ export function MoreMenu(): JSX.Element {
 								label={ __( 'Top toolbar', 'mailpoet' ) }
 								info={ __(
 									'Access all block and document tools in a single place',
-									'mailpoet',
+									'mailpoet'
 								) }
 								messageActivated={ __(
 									'Top toolbar activated',
-									'mailpoet',
+									'mailpoet'
 								) }
 								messageDeactivated={ __(
 									'Top toolbar deactivated',
-									'mailpoet',
+									'mailpoet'
 								) }
 							/>
 							<PreferenceToggleMenuItem
@@ -69,15 +69,15 @@ export function MoreMenu(): JSX.Element {
 								label={ __( 'Spotlight mode', 'mailpoet' ) }
 								info={ __(
 									'Focus at one block at a time',
-									'mailpoet',
+									'mailpoet'
 								) }
 								messageActivated={ __(
 									'Spotlight mode activated',
-									'mailpoet',
+									'mailpoet'
 								) }
 								messageDeactivated={ __(
 									'Spotlight mode deactivated',
-									'mailpoet',
+									'mailpoet'
 								) }
 							/>
 							<PreferenceToggleMenuItem
@@ -86,15 +86,15 @@ export function MoreMenu(): JSX.Element {
 								label={ __( 'Fullscreen mode', 'mailpoet' ) }
 								info={ __(
 									'Work without distraction',
-									'mailpoet',
+									'mailpoet'
 								) }
 								messageActivated={ __(
 									'Fullscreen mode activated',
-									'mailpoet',
+									'mailpoet'
 								) }
 								messageDeactivated={ __(
 									'Fullscreen mode deactivated',
-									'mailpoet',
+									'mailpoet'
 								) }
 								shortcut={ displayShortcut.secondary( 'f' ) }
 							/>
@@ -106,7 +106,7 @@ export function MoreMenu(): JSX.Element {
 										await setStatus( 'draft' );
 										await updateEmailMailPoetProperty(
 											'deleted_at',
-											'',
+											''
 										);
 										await saveEditedEmail();
 									} }

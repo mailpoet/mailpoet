@@ -5,9 +5,9 @@ import {
 	useSettings,
 } from '@wordpress/block-editor';
 import {
-	__experimentalToolsPanel as ToolsPanel,  // eslint-disable-line
-	__experimentalToolsPanelItem as ToolsPanelItem,  // eslint-disable-line
-	__experimentalUseCustomUnits as useCustomUnits,  // eslint-disable-line
+	__experimentalToolsPanel as ToolsPanel, // eslint-disable-line
+	__experimentalToolsPanelItem as ToolsPanelItem, // eslint-disable-line
+	__experimentalUseCustomUnits as useCustomUnits, // eslint-disable-line
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { isEqual } from 'lodash';
@@ -32,14 +32,14 @@ export function DimensionsPanel() {
 				hasValue={ () =>
 					! isEqual(
 						styles.spacing.padding,
-						defaultStyles.spacing.padding,
+						defaultStyles.spacing.padding
 					)
 				}
 				label={ __( 'Padding', 'mailpoet' ) }
 				onDeselect={ () =>
 					updateStyleProp(
 						[ 'spacing', 'padding' ],
-						defaultStyles.spacing.padding,
+						defaultStyles.spacing.padding
 					)
 				}
 				className="tools-panel-item-spacing"
@@ -71,7 +71,7 @@ export function DimensionsPanel() {
 				onDeselect={ () =>
 					updateStyleProp(
 						[ 'spacing', 'blockGap' ],
-						defaultStyles.spacing.blockGap,
+						defaultStyles.spacing.blockGap
 					)
 				}
 				className="tools-panel-item-spacing"

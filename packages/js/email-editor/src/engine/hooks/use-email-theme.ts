@@ -21,7 +21,7 @@ export function useEmailTheme() {
 			templateThemeData =
 				// @ts-expect-error Expected 0 arguments, but got 1.
 				select( editorStore ).getCurrentPostAttribute(
-					'mailpoet_email_theme',
+					'mailpoet_email_theme'
 				) || {};
 		}
 		return {
@@ -42,10 +42,10 @@ export function useEmailTheme() {
 				templateId as string,
 				{
 					mailpoet_email_theme: newTheme,
-				},
+				}
 			);
 		},
-		[ templateId ],
+		[ templateId ]
 	);
 
 	return {

@@ -1,9 +1,9 @@
 import { __, _x } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import {
-	__experimentalToggleGroupControl as ToggleGroupControl,   // eslint-disable-line
+	__experimentalToggleGroupControl as ToggleGroupControl, // eslint-disable-line
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption, // eslint-disable-line
-	__experimentalSpacer as Spacer,   // eslint-disable-line
+	__experimentalSpacer as Spacer, // eslint-disable-line
 } from '@wordpress/components';
 import TypographyElementPanel, {
 	DEFAULT_CONTROLS,
@@ -22,7 +22,7 @@ export function ScreenTypographyElement( {
 			title: __( 'Text', 'mailpoet' ),
 			description: __(
 				'Manage the fonts and typography used on text.',
-				'mailpoet',
+				'mailpoet'
 			),
 			defaultControls: DEFAULT_CONTROLS,
 		},
@@ -30,7 +30,7 @@ export function ScreenTypographyElement( {
 			title: __( 'Links', 'mailpoet' ),
 			description: __(
 				'Manage the fonts and typography used on links.',
-				'mailpoet',
+				'mailpoet'
 			),
 			defaultControls: {
 				...DEFAULT_CONTROLS,
@@ -41,7 +41,7 @@ export function ScreenTypographyElement( {
 			title: __( 'Headings', 'mailpoet' ),
 			description: __(
 				'Manage the fonts and typography used on headings.',
-				'mailpoet',
+				'mailpoet'
 			),
 			defaultControls: {
 				...DEFAULT_CONTROLS,
@@ -52,7 +52,7 @@ export function ScreenTypographyElement( {
 			title: __( 'Buttons', 'mailpoet' ),
 			description: __(
 				'Manage the fonts and typography used on buttons.',
-				'mailpoet',
+				'mailpoet'
 			),
 			defaultControls: DEFAULT_CONTROLS,
 		},

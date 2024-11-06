@@ -9,7 +9,7 @@ export function ScreenTypography(): JSX.Element {
 				title={ __( 'Typography', 'mailpoet' ) }
 				description={ __(
 					'Manage the typography settings for different elements.',
-					'mailpoet',
+					'mailpoet'
 				) }
 			/>
 			<TypographyPanel />

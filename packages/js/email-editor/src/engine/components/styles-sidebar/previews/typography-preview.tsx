@@ -13,7 +13,7 @@ export default function TypographyPreview( {
 		styles,
 		element,
 		headingLevel,
-		true,
+		true
 	);
 
 	const {

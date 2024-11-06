@@ -9,6 +9,6 @@ export const initHooks = (): void => {
 	addFilter(
 		'editor.MediaUpload',
 		'mailpoet/email-editor/replace-media-upload',
-		replaceMediaUpload,
+		replaceMediaUpload
 	);
 };

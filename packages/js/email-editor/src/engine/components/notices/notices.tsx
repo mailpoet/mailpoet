@@ -11,17 +11,17 @@ export function EditorNotices() {
 		( select ) => ( {
 			notices: select( noticesStore ).getNotices( 'email-editor' ),
 		} ),
-		[],
+		[]
 	);
 
 	const { removeNotice } = useDispatch( noticesStore );
 
 	const dismissibleNotices = notices.filter(
-		( { isDismissible, type } ) => isDismissible && type === 'default',
+		( { isDismissible, type } ) => isDismissible && type === 'default'
 	);
 
 	const nonDismissibleNotices = notices.filter(
-		( { isDismissible, type } ) => ! isDismissible && type === 'default',
+		( { isDismissible, type } ) => ! isDismissible && type === 'default'
 	);
 
 	return (

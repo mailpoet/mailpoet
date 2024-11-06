@@ -48,7 +48,7 @@ export function TypographyElementPanel( {
 } ) {
 	const [ fontSizes, blockLevelFontFamilies ] = useSettings(
 		'typography.fontSizes',
-		'typography.fontFamilies',
+		'typography.fontFamilies'
 	);
 
 	// Ref: https://github.com/WordPress/gutenberg/issues/59778
@@ -58,7 +58,7 @@ export function TypographyElementPanel( {
 	const defaultElementStyles = getElementStyles(
 		defaultStyles,
 		element,
-		headingLevel,
+		headingLevel
 	);
 	const {
 		fontFamily,
@@ -98,7 +98,7 @@ export function TypographyElementPanel( {
 			if ( element === 'heading' ) {
 				updateStyleProp(
 					[ 'elements', headingLevel, ...path ],
-					newValue,
+					newValue
 				);
 			} else if ( element === 'text' ) {
 				updateStyleProp( [ ...path ], newValue );
@@ -106,7 +106,7 @@ export function TypographyElementPanel( {
 				updateStyleProp( [ 'elements', element, ...path ], newValue );
 			}
 		},
-		[ element, updateStyleProp, headingLevel ],
+		[ element, updateStyleProp, headingLevel ]
 	);
 
 	const setLetterSpacing = ( newValue ) => {
@@ -144,7 +144,7 @@ export function TypographyElementPanel( {
 	const resetAll = () => {
 		updateElementStyleProp(
 			[ 'typography' ],
-			defaultElementStyles.typography,
+			defaultElementStyles.typography
 		);
 	};
 

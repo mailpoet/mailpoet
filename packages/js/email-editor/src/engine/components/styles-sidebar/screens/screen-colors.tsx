@@ -20,7 +20,7 @@ export function ScreenColors(): JSX.Element {
 				title={ __( 'Colors', 'mailpoet' ) }
 				description={ __(
 					'Manage palettes and the default color of different global elements.',
-					'mailpoet',
+					'mailpoet'
 				) }
 			/>
 			<StylesColorPanel

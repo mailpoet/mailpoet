@@ -14,7 +14,7 @@ export function SendButton() {
 	const [ mailpoetEmail ] = useEntityProp(
 		'postType',
 		'mailpoet_email',
-		'mailpoet_data',
+		'mailpoet_data'
 	);
 
 	const { isDirty } = useEntitiesSavedStatesIsDirty();
@@ -27,7 +27,7 @@ export function SendButton() {
 			isEditingTemplate:
 				select( editorStore ).getCurrentPostType() === 'wp_template',
 		} ),
-		[],
+		[]
 	);
 
 	const isDisabled =

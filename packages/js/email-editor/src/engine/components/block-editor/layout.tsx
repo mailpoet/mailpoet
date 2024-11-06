@@ -54,7 +54,7 @@ export function Layout() {
 			focusMode: select( storeName ).isFeatureActive( 'focusMode' ),
 			styles: select( storeName ).getStyles(),
 		} ),
-		[],
+		[]
 	);
 
 	const { toggleInserterSidebar } = useDispatch( storeName );

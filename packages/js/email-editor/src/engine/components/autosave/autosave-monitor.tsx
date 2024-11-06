@@ -14,7 +14,7 @@ export function AutosaveMonitor() {
 			hasEdits: select( storeName ).hasEdits(),
 			autosaveInterval: select( storeName ).getAutosaveInterval(),
 		} ),
-		[],
+		[]
 	);
 
 	const { saveEditedEmail } = useDispatch( storeName );

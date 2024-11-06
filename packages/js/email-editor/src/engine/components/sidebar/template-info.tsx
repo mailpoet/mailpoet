@@ -7,7 +7,7 @@ import { storeName } from '../../store';
 export function TemplateInfo() {
 	const template = useSelect(
 		( select ) => select( storeName ).getCurrentTemplate(),
-		[],
+		[]
 	);
 
 	return (

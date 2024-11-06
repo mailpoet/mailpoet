@@ -22,8 +22,8 @@ import {
 	Flex,
 	FlexItem,
 	PanelBody,
-	__experimentalToggleGroupControl as ToggleGroupControl,   // eslint-disable-line
-	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,   // eslint-disable-line
+	__experimentalToggleGroupControl as ToggleGroupControl, // eslint-disable-line
+	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon, // eslint-disable-line
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
@@ -59,7 +59,7 @@ function JustificationControls( {
 
 	if ( isToolbar ) {
 		const allowedValues = justificationOptions.map(
-			( option ) => option.value,
+			( option ) => option.value
 		);
 		return (
 			<JustifyContentControl
@@ -99,7 +99,7 @@ function LayoutControls( { setAttributes, attributes, name: blockName } ) {
 		blockName,
 		// @ts-expect-error No types for this exist yet.
 		layoutBlockSupportKey,
-		{},
+		{}
 	);
 
 	if ( ! layoutBlockSupport ) {
@@ -183,7 +183,7 @@ export const withLayoutControls = createHigherOrderComponent(
 			<BlockEdit key="edit" { ...props } />,
 		];
 	},
-	'withLayoutControls',
+	'withLayoutControls'
 );
 
 function BlockWithLayoutStyles( { block: BlockListBlock, props } ) {
@@ -209,7 +209,7 @@ export const withLayoutStyles = createHigherOrderComponent(
 	( BlockListBlock ) =>
 		function maybeWrapWithLayoutStyles( props ) {
 			const blockSupportsLayout = hasLayoutBlockSupport(
-				props.name as string,
+				props.name as string
 			);
 			if ( ! blockSupportsLayout ) {
 				return <BlockListBlock { ...props } />;
@@ -222,23 +222,23 @@ export const withLayoutStyles = createHigherOrderComponent(
 				/>
 			);
 		},
-	'withLayoutStyles',
+	'withLayoutStyles'
 );
 
 export function initializeLayout() {
 	addFilter(
 		'blocks.registerBlockType',
 		'mailpoet-email-editor/layout/addAttribute',
-		addAttribute,
+		addAttribute
 	);
 	addFilter(
 		'editor.BlockListBlock',
 		'mailpoet-email-editor/with-layout-styles',
-		withLayoutStyles,
+		withLayoutStyles
 	);
 	addFilter(
 		'editor.BlockEdit',
 		'mailpoet-email-editor/with-inspector-controls',
-		withLayoutControls,
+		withLayoutControls
 	);
 }

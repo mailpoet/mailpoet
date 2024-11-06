@@ -4,7 +4,7 @@ import { store as editorStore } from '@wordpress/editor';
 import { dispatch } from '@wordpress/data';
 import {
 	Modal,
-	__experimentalHStack as HStack,   // eslint-disable-line
+	__experimentalHStack as HStack, // eslint-disable-line
 	Button,
 } from '@wordpress/components';
 import { Async } from './async';
@@ -18,18 +18,18 @@ export function SelectTemplateModal( { onSelectCallback } ) {
 
 	const handleTemplateSelection = ( template: TemplatePreview ) => {
 		void dispatch( editorStore ).resetEditorBlocks(
-			template.patternParsed,
+			template.patternParsed
 		);
 		void dispatch( storeName ).setTemplateToPost(
 			template.slug,
-			template.template.mailpoet_email_theme ?? {},
+			template.template.mailpoet_email_theme ?? {}
 		);
 		onSelectCallback();
 	};
 
 	const handleCloseWithoutSelection = () => {
 		const blankTemplate = templates.find(
-			( template ) => template.slug === BLANK_TEMPLATE,
+			( template ) => template.slug === BLANK_TEMPLATE
 		) as unknown as TemplatePreview;
 		if ( ! blankTemplate ) {
 			return;

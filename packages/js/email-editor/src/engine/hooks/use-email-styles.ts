@@ -87,7 +87,7 @@ export const useEmailStyles = (): EmailStylesData => {
 			};
 			updateTemplateTheme( newTheme );
 		},
-		[ updateTemplateTheme, templateTheme ],
+		[ updateTemplateTheme, templateTheme ]
 	);
 
 	// Update an email style prop.
@@ -96,11 +96,11 @@ export const useEmailStyles = (): EmailStylesData => {
 			const newTheme = setImmutably(
 				templateTheme,
 				[ 'styles', ...path ],
-				newValue,
+				newValue
 			);
 			updateTemplateTheme( newTheme );
 		},
-		[ updateTemplateTheme, templateTheme ],
+		[ updateTemplateTheme, templateTheme ]
 	);
 
 	return {

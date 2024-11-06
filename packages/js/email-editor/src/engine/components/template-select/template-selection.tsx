@@ -10,7 +10,7 @@ export function TemplateSelection() {
 			emailContentIsEmpty: select( storeName ).hasEmptyContent(),
 			emailHasEdits: select( storeName ).hasEdits(),
 		} ),
-		[],
+		[]
 	);
 	if ( ! emailContentIsEmpty || emailHasEdits || templateSelected ) {
 		return null;

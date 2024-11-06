@@ -74,7 +74,7 @@ export function* saveEditedEmail() {
 		'postType',
 		'mailpoet_email',
 		postId,
-		{ throwOnError: true },
+		{ throwOnError: true }
 	);
 
 	result.then( () => {
@@ -84,7 +84,7 @@ export function* saveEditedEmail() {
 				type: 'snackbar',
 				isDismissible: true,
 				context: 'email-editor',
-			},
+			}
 		);
 	} );
 
@@ -92,13 +92,13 @@ export function* saveEditedEmail() {
 		void dispatch( noticesStore ).createErrorNotice(
 			__(
 				'The email could not be saved. Please, clear browser cache and reload the page. If the problem persists, duplicate the email and try again.',
-				'mailpoet',
+				'mailpoet'
 			),
 			{
 				type: 'default',
 				isDismissible: true,
 				context: 'email-editor',
-			},
+			}
 		);
 	} );
 }
@@ -109,7 +109,7 @@ export function* updateEmailMailPoetProperty( name: string, value: string ) {
 	const editedPost = select( coreDataStore ).getEditedEntityRecord(
 		'postType',
 		'mailpoet_email',
-		postId,
+		postId
 	);
 	// @ts-expect-error Property 'mailpoet_data' does not exist on type 'Updatable<Attachment<any>>'.
 	const mailpoetData = editedPost?.mailpoet_data || {};
@@ -122,7 +122,7 @@ export function* updateEmailMailPoetProperty( name: string, value: string ) {
 				...mailpoetData,
 				[ name ]: value,
 			},
-		},
+		}
 	);
 }
 
@@ -142,7 +142,7 @@ export const setTemplateToPost =
 
 export function* requestSendingNewsletterPreview(
 	newsletterId: number,
-	email: string,
+	email: string
 ) {
 	// If preview is already sending do nothing
 	const previewState = select( storeName ).getPreviewState();

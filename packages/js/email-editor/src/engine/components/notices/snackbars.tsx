@@ -9,13 +9,13 @@ export function EditorSnackbars( { context = 'email-editor' } ) {
 		( select ) => ( {
 			notices: select( noticesStore ).getNotices( context ),
 		} ),
-		[],
+		[]
 	);
 
 	const { removeNotice } = useDispatch( noticesStore );
 
 	const snackbarNotices = notices.filter(
-		( { type } ) => type === 'snackbar',
+		( { type } ) => type === 'snackbar'
 	);
 
 	return (

@@ -25,7 +25,7 @@ export type ValidationNoticesData = {
 	addValidationNotice: (
 		noticeId: string,
 		message: string,
-		actions?: NoticeAction[],
+		actions?: NoticeAction[]
 	) => void;
 	removeValidationNotice: ( noticeId: string ) => void;
 };
@@ -33,7 +33,7 @@ export type ValidationNoticesData = {
 export const useValidationNotices = (): ValidationNoticesData => {
 	const context = 'email-validation';
 	const notices = useSelect( ( mapSelect ) =>
-		mapSelect( noticesStore ).getNotices( context ),
+		mapSelect( noticesStore ).getNotices( context )
 	);
 
 	return {
@@ -49,7 +49,7 @@ export const useValidationNotices = (): ValidationNoticesData => {
 					undefined
 				);
 			},
-			[ notices ],
+			[ notices ]
 		),
 		addValidationNotice: useCallback(
 			( noticeId: string, message: string, actions = [] ): void => {
@@ -60,13 +60,13 @@ export const useValidationNotices = (): ValidationNoticesData => {
 					context,
 				} );
 			},
-			[ context ],
+			[ context ]
 		),
 		removeValidationNotice: useCallback(
 			( noticeId: string ): void => {
 				void dispatch( noticesStore ).removeNotice( noticeId, context );
 			},
-			[ context ],
+			[ context ]
 		),
 	};
 };

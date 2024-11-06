@@ -10,7 +10,7 @@ export function SentEmailNotice() {
 		( select ) => ( {
 			isEmailSent: select( storeName ).isEmailSent(),
 		} ),
-		[],
+		[]
 	);
 
 	useEffect( () => {
@@ -19,13 +19,13 @@ export function SentEmailNotice() {
 				'warning',
 				__(
 					'This email has already been sent. It can be edited, but not sent again. Duplicate this email if you want to send it again.',
-					'mailpoet',
+					'mailpoet'
 				),
 				{
 					id: 'email-sent',
 					isDismissible: false,
 					context: 'email-editor',
-				},
+				}
 			);
 		}
 	}, [ isEmailSent ] );

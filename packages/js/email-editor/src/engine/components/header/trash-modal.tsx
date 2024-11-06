@@ -25,7 +25,7 @@ export function TrashModal( {
 			'mailpoet_email',
 			postId as unknown as string,
 			{},
-			{ throwOnError: false },
+			{ throwOnError: false }
 		);
 		if ( success ) {
 			onRemove();
@@ -33,7 +33,7 @@ export function TrashModal( {
 			const lastError = getLastEntityDeleteError(
 				'postType',
 				'mailpoet_email',
-				postId,
+				postId
 			);
 			// Already deleted.
 			if ( lastError?.code === 410 ) {
@@ -43,7 +43,7 @@ export function TrashModal( {
 					? ( lastError.message as string )
 					: __(
 							'An error occurred while moving the email to the trash.',
-							'mailpoet',
+							'mailpoet'
 					  );
 				await createErrorNotice( errorMessage, {
 					type: 'snackbar',
@@ -63,7 +63,7 @@ export function TrashModal( {
 			<p>
 				{ __(
 					'Are you sure you want to move this email to trash?',
-					'mailpoet',
+					'mailpoet'
 				) }
 			</p>
 			<div className="mailpoet-send-preview-modal-footer">

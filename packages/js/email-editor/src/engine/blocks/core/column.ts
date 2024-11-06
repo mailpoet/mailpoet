@@ -18,7 +18,7 @@ function enhanceColumnBlock() {
 				};
 			}
 			return settings;
-		},
+		}
 	);
 }
 

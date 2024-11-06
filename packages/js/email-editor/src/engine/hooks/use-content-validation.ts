@@ -19,11 +19,11 @@ export const useContentValidation = (): ContentValidationData => {
 		const noBodyBlocks = allBlocks.filter(
 			( block ) =>
 				block.name !== 'mailpoet/powered-by-mailpoet' &&
-				block.name !== 'core/post-content',
+				block.name !== 'core/post-content'
 		);
 		// @ts-expect-error getBlocksByName is not defined in types
 		const blocks = select( blockEditorStore ).getBlocksByName(
-			'core/post-content',
+			'core/post-content'
 		) as string[] | undefined;
 		return {
 			contentBlockId: blocks?.[ 0 ],
@@ -42,7 +42,7 @@ export const useContentValidation = (): ContentValidationData => {
 			defaultTemplateId: mapSelect( coreDataStore ).getDefaultTemplateId(
 				{
 					slug: 'email-general',
-				},
+				}
 			),
 		} ) );
 
@@ -51,10 +51,10 @@ export const useContentValidation = (): ContentValidationData => {
 
 	const contentLink = `<a href='[link:subscription_unsubscribe_url]'>${ __(
 		'Unsubscribe',
-		'mailpoet',
+		'mailpoet'
 	) }</a> | <a href='[link:subscription_manage_url]'>${ __(
 		'Manage subscription',
-		'mailpoet',
+		'mailpoet'
 	) }</a>`;
 
 	const rules = useMemo( () => {
@@ -68,11 +68,11 @@ export const useContentValidation = (): ContentValidationData => {
 				id: 'missing-unsubscribe-link',
 				test: ( emailContent ) =>
 					! emailContent.includes(
-						'[link:subscription_unsubscribe_url]',
+						'[link:subscription_unsubscribe_url]'
 					),
 				message: __(
 					'All emails must include an "Unsubscribe" link.',
-					'mailpoet',
+					'mailpoet'
 				),
 				actions: [
 					{
@@ -82,7 +82,7 @@ export const useContentValidation = (): ContentValidationData => {
 								void dispatch( blockEditorStore ).insertBlock(
 									linksParagraphBlock,
 									undefined,
-									contentBlockId,
+									contentBlockId
 								);
 							} else {
 								void dispatch( coreDataStore ).editEntityRecord(
@@ -96,7 +96,7 @@ export const useContentValidation = (): ContentValidationData => {
                       ${ contentLink }
                       <!-- /wp:paragraph -->
                     `,
-									},
+									}
 								);
 							}
 						},

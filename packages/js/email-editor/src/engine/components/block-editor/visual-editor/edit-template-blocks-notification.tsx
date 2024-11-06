@@ -68,7 +68,7 @@ export default function EditTemplateBlocksNotification( { contentRef } ) {
 		>
 			{ __(
 				'You’ve tried to select a block that is part of a template, which may be used on other emails. Would you like to edit the template?',
-				'mailpoet',
+				'mailpoet'
 			) }
 		</ConfirmDialog>
 	);

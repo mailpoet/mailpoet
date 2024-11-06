@@ -22,13 +22,13 @@ export function SaveButton() {
 			isEmpty: select( storeName ).isEmpty(),
 			isSaving: select( storeName ).isSaving(),
 		} ),
-		[],
+		[]
 	);
 
 	const buttonRef = useRef( null );
 
 	const hasNonEmailEdits = dirtyEntityRecords.some(
-		( entity ) => entity.name !== 'mailpoet_email',
+		( entity ) => entity.name !== 'mailpoet_email'
 	);
 
 	const isSaved = ! isEmpty && ! isSaving && ! hasEdits;

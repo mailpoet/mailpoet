@@ -1,9 +1,9 @@
 import {
-	__experimentalHStack as HStack,   // eslint-disable-line
-	__experimentalVStack as VStack,   // eslint-disable-line
-	__experimentalSpacer as Spacer,   // eslint-disable-line
+	__experimentalHStack as HStack, // eslint-disable-line
+	__experimentalVStack as VStack, // eslint-disable-line
+	__experimentalSpacer as Spacer, // eslint-disable-line
 	__experimentalHeading as Heading, // eslint-disable-line
-	__experimentalView as View,       // eslint-disable-line
+	__experimentalView as View, // eslint-disable-line
 	__experimentalNavigatorToParentButton as NavigatorToParentButton, // eslint-disable-line
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -35,7 +35,7 @@ export function ScreenHeader( { title, description, onBack }: Props ) {
 							size="small"
 							aria-label={ __(
 								'Navigate to the previous view',
-								'mailpoet',
+								'mailpoet'
 							) }
 							onClick={ onBack }
 						/>

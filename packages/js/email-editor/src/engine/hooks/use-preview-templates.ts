@@ -10,7 +10,7 @@ import { storeName, EmailTemplatePreview, TemplatePreview } from '../store';
  */
 function setPostContentInnerBlocks(
 	templateBlocks: BlockInstance[],
-	innerBlocks: BlockInstance[],
+	innerBlocks: BlockInstance[]
 ): BlockInstance[] {
 	return templateBlocks.map( ( block: BlockInstance ) => {
 		if ( block.name === 'core/post-content' ) {
@@ -25,7 +25,7 @@ function setPostContentInnerBlocks(
 				...block,
 				innerBlocks: setPostContentInnerBlocks(
 					block.innerBlocks,
-					innerBlocks,
+					innerBlocks
 				),
 			};
 		}
@@ -38,7 +38,7 @@ export function usePreviewTemplates(): TemplatePreview[][] {
 		const contentBlockId =
 			// @ts-expect-error getBlocksByName is not defined in types
 			select( blockEditorStore ).getBlocksByName(
-				'core/post-content',
+				'core/post-content'
 			)?.[ 0 ];
 		return {
 			templates: select( storeName ).getEmailTemplates(),
@@ -46,7 +46,7 @@ export function usePreviewTemplates(): TemplatePreview[][] {
 				// @ts-expect-error getPatternsByBlockTypes is not defined in types
 				select( blockEditorStore ).getPatternsByBlockTypes(
 					[ 'core/post-content' ],
-					contentBlockId,
+					contentBlockId
 				),
 		};
 	}, [] );
@@ -59,14 +59,14 @@ export function usePreviewTemplates(): TemplatePreview[][] {
 	const contentPatternBlocksGeneral = patterns.find(
 		( pattern ) =>
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			pattern?.templateTypes?.includes( 'email-general-template' ),
+			pattern?.templateTypes?.includes( 'email-general-template' )
 	)?.blocks as BlockInstance[];
 
 	// Pick first pattern that comes from mailpoet and is for template with header and footer content separated
 	const contentPatternBlocks = patterns.find(
 		( pattern ) =>
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			pattern?.templateTypes?.includes( 'email-template' ),
+			pattern?.templateTypes?.includes( 'email-template' )
 	)?.blocks as BlockInstance[];
 
 	return [
@@ -76,7 +76,7 @@ export function usePreviewTemplates(): TemplatePreview[][] {
 				parsedTemplate,
 				template.slug === 'email-general'
 					? contentPatternBlocksGeneral
-					: contentPatternBlocks,
+					: contentPatternBlocks
 			);
 
 			return {

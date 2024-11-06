@@ -31,7 +31,7 @@ export const PATTERN_POST_TYPE = 'wp_block';
 export const NAVIGATION_POST_TYPE = 'wp_navigation';
 
 const { ExperimentalBlockCanvas: BlockCanvas, useFlashEditableBlocks } = unlock(
-	blockEditorPrivateApis,
+	blockEditorPrivateApis
 );
 
 /**
@@ -159,7 +159,7 @@ export function VisualEditor( {
 				{
 					'has-padding': isFocusedEntity,
 					'is-iframed': shouldIframe,
-				},
+				}
 			) }
 		>
 			<BlockCanvas
@@ -182,7 +182,7 @@ export function VisualEditor( {
 					<BlockList
 						className={ classnames(
 							`is-${ deviceType.toLowerCase() }-preview`,
-							'has-global-padding', // Ensures that padding is applied at the top level
+							'has-global-padding' // Ensures that padding is applied at the top level
 						) }
 						// @ts-expect-error No types for this exist yet.
 						layout={ blockListLayout }

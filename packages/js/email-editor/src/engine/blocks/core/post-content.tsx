@@ -11,7 +11,7 @@ function Placeholder( { layoutClassNames } ) {
 			<p>
 				{ __(
 					'It will display all the blocks in the email content, which might be only simple text paragraphs. You can enrich your message with images, incorporate data through tables, explore different layout designs with columns, or use any other block type.',
-					'mailpoet',
+					'mailpoet'
 				) }
 			</p>
 		</div>
@@ -54,7 +54,7 @@ function enhancePostContentBlock() {
 				};
 			}
 			return settings;
-		},
+		}
 	);
 }
 

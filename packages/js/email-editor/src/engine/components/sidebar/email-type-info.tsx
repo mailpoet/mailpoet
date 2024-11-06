@@ -15,7 +15,7 @@ export function EmailTypeInfo() {
 						<span>
 							{ __(
 								'Send or schedule a newsletter to connect with your subscribers.',
-								'mailpoet',
+								'mailpoet'
 							) }
 						</span>
 					</div>

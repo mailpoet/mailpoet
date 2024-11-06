@@ -16,7 +16,7 @@ function Editor() {
 			postId: select( storeName ).getEmailPostId(),
 			settings: select( storeName ).getInitialEditorSettings(),
 		} ),
-		[],
+		[]
 	);
 
 	return (

@@ -3,12 +3,12 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 import {
-	__experimentalItemGroup as ItemGroup,  // eslint-disable-line
-	__experimentalItem as Item,       // eslint-disable-line
-	__experimentalVStack as VStack,   // eslint-disable-line
-	__experimentalHStack as HStack,   // eslint-disable-line
+	__experimentalItemGroup as ItemGroup, // eslint-disable-line
+	__experimentalItem as Item, // eslint-disable-line
+	__experimentalVStack as VStack, // eslint-disable-line
+	__experimentalHStack as HStack, // eslint-disable-line
 	__experimentalHeading as Heading, // eslint-disable-line
-	__experimentalNavigatorButton as NavigatorButton,   // eslint-disable-line
+	__experimentalNavigatorButton as NavigatorButton, // eslint-disable-line
 	FlexItem,
 	Card,
 	CardBody,
@@ -34,7 +34,7 @@ function ElementItem( { element, label }: { element: string; label: string } ) {
 	const navigationButtonLabel = sprintf(
 		// translators: %s: is a subset of Typography, e.g., 'text' or 'links'.
 		__( 'Typography %s styles', 'mailpoet' ),
-		label,
+		label
 	);
 
 	return (

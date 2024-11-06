@@ -62,7 +62,7 @@ export function Header() {
 	} = useSelect( ( select ) => {
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const { getEditorSettings: _getEditorSettings } = unlock(
-			select( editorStore ),
+			select( editorStore )
 		);
 		const editorSettings = _getEditorSettings();
 
@@ -73,7 +73,7 @@ export function Header() {
 				select( storeName ).isListviewSidebarOpened(),
 			isFixedToolbarActive: select( preferencesStore ).get(
 				'core',
-				'fixedToolbar',
+				'fixedToolbar'
 			),
 			isBlockSelected:
 				!! select( blockEditorStore ).getBlockSelectionStart(),
@@ -160,7 +160,7 @@ export function Header() {
 								'editor-collapsible-block-toolbar',
 								{
 									'is-collapsed': isBlockToolsCollapsed,
-								},
+								}
 							) }
 						>
 							<BlockToolbar hideDragHandle />
@@ -170,7 +170,7 @@ export function Header() {
 							icon={ isBlockToolsCollapsed ? next : previous }
 							onClick={ () => {
 								setIsBlockToolsCollapsed(
-									( collapsed ) => ! collapsed,
+									( collapsed ) => ! collapsed
 								);
 							} }
 							label={

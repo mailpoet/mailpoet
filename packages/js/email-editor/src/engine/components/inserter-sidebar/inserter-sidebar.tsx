@@ -1,5 +1,5 @@
 import {
-	__experimentalLibrary as Library,  // eslint-disable-line
+	__experimentalLibrary as Library, // eslint-disable-line
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
 import { useDispatch, useSelect } from '@wordpress/data';
@@ -11,7 +11,7 @@ export function InserterSidebar() {
 		const blocks = select( blockEditorStore ).getBlocks();
 		return {
 			postContentId: blocks.find(
-				( block ) => block.name === 'core/post-content',
+				( block ) => block.name === 'core/post-content'
 			)?.clientId,
 			isEditingEmailContent:
 				select( editorStore ).getCurrentPostType() !== 'wp_template',

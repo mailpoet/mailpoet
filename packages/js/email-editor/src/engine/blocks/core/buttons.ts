@@ -22,7 +22,7 @@ function enhanceButtonsBlock() {
 				};
 			}
 			return settings;
-		},
+		}
 	);
 }
 

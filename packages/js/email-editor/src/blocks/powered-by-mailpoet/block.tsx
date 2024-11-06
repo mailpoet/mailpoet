@@ -37,7 +37,7 @@ function Edit( {
 			cdnUrl: select( storeName ).getCdnUrl(),
 			isPremiumPluginActive: select( storeName ).isPremiumPluginActive(),
 		} ),
-		[],
+		[]
 	);
 	if ( isPremiumPluginActive ) {
 		return null;

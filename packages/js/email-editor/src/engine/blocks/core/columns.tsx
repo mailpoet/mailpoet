@@ -26,14 +26,14 @@ const columnsEditCallback = createHigherOrderComponent(
 				</>
 			);
 		},
-	'columnsEditCallback',
+	'columnsEditCallback'
 );
 
 function deactivateStackOnMobile() {
 	addFilter(
 		'editor.BlockEdit',
 		'mailpoet-email-editor/deactivate-stack-on-mobile',
-		columnsEditCallback,
+		columnsEditCallback
 	);
 }
 
@@ -59,7 +59,7 @@ function disableColumnsLayout() {
 
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			return settings;
-		},
+		}
 	);
 }
 
@@ -80,7 +80,7 @@ function enhanceColumnsBlock() {
 				};
 			}
 			return settings;
-		},
+		}
 	);
 }
 
