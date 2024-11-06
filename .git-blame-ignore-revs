@@ -45,3 +45,6 @@ ab27eaee2df740c0add4331a7f8c115a87ecfa2b
 
 # Switch email editor js packages to WP coding style
 d8ba1af97864e373b81dd08bd884055a138e1306
+
+# Email editor Prettier autoformatting
+cdf89c46599e68648a4522d968a0d1948895060a
