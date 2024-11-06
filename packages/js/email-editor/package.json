@@ -12,8 +12,9 @@
 		"lint:css": "wp-scripts lint-style",
 		"lint:css-fix": "wp-scripts lint-style --fix",
 		"lint:js": "wp-scripts lint-js ./src/**",
-		"lint:js-fix": "wp-scripts lint-js ./src/** --fix"
-	},
+		"lint:js-fix": "wp-scripts lint-js ./src/** --fix",
+    "check-types": "NODE_OPTIONS=--max_old_space_size=2048 tsc --noEmit"
+  },
 	"lint-staged": {
 		"*.{scss,css}": "wp-scripts lint-style",
 		"*.{js,jsx,ts,tsx}": "wp-scripts lint-js ./src/**"
