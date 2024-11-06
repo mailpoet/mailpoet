@@ -13,14 +13,17 @@
 		"lint:css-fix": "wp-scripts lint-style --fix",
 		"lint:js": "wp-scripts lint-js ./src/**",
 		"lint:js-fix": "wp-scripts lint-js ./src/** --fix",
-    "check-types": "NODE_OPTIONS=--max_old_space_size=2048 tsc --noEmit"
-  },
+		"check-types": "NODE_OPTIONS=--max_old_space_size=2048 tsc --noEmit",
+		"format": "./node_modules/.bin/prettier --config .prettierrc.js --write 'src/**/*.{js,jsx,json,ts,tsx,yml,yaml}'"
+	},
 	"lint-staged": {
-		"*.{scss,css}": "wp-scripts lint-style",
-		"*.{js,jsx,ts,tsx}": "wp-scripts lint-js ./src/**"
+		"*.{js,jsx,json,ts,tsx,yml,yaml}": "npm run format",
+		"*.{scss,css}": "npm run lint:css",
+		"*.{js,jsx,ts,tsx}": "npm run lint:js"
 	},
 	"dependencies": {
 		"@wordpress/api-fetch": "^7.0.0",
+		"@wordpress/base-styles": "^5.0.0",
 		"@wordpress/block-editor": "^13.0.0",
 		"@wordpress/block-library": "^9.0.0",
 		"@wordpress/blocks": "^13.0.0",
@@ -38,6 +41,7 @@
 		"@wordpress/i18n": "^5.0.0",
 		"@wordpress/icons": "^10.0.0",
 		"@wordpress/interface": "^6.0.0",
+		"@wordpress/is-shallow-equal": "^5.0.0",
 		"@wordpress/keyboard-shortcuts": "^5.0.0",
 		"@wordpress/keycodes": "^4.0.0",
 		"@wordpress/media-utils": "^5.0.0",
@@ -46,17 +50,13 @@
 		"@wordpress/private-apis": "^1.0.0",
 		"@wordpress/rich-text": "^7.0.0",
 		"@wordpress/url": "^4.0.0",
-		"@wordpress/is-shallow-equal": "^5.0.0",
-		"@wordpress/base-styles": "^5.0.0",
 		"classnames": "^2.5.1",
 		"deepmerge": "^4.3.1",
+		"lodash": "^4.17.21",
 		"react": "18.3.1",
-		"react-dom": "18.3.1",
-		"lodash": "^4.17.21"
+		"react-dom": "18.3.1"
 	},
 	"devDependencies": {
-		"@mailpoet/eslint-config": "workspace:^",
-		"@wordpress/scripts": "27.9.0",
 		"@types/history": "^4.7.11",
 		"@types/js-cookie": "^3.0.2",
 		"@types/lodash": "^4.14.180",
@@ -69,8 +69,10 @@
 		"@types/wordpress__edit-post": "^7.5.7",
 		"@types/wordpress__editor": "^13.6.8",
 		"@types/wordpress__media-utils": "^4.14.4",
+		"@wordpress/prettier-config": "^4.11.0",
+		"@wordpress/scripts": "27.9.0",
 		"core-js": "^3.37.1",
-		"eslint-plugin-check-file": "^2.8.0",
+		"prettier": "npm:wp-prettier@^3.0.3",
 		"wp-types": "^3.65.0"
 	},
 	"volta": {
