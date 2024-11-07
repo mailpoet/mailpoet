@@ -25,3 +25,4 @@ vendor-prefixed
 /mailpoet/views
 /mailpoet-premium
 /wordpress
+/packages/php/email-editor
