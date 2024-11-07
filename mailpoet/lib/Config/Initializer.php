@@ -11,7 +11,7 @@ use MailPoet\Automation\Integrations\MailPoet\MailPoetIntegration;
 use MailPoet\Automation\Integrations\WooCommerce\WooCommerceIntegration;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\DaemonActionSchedulerRunner;
-use MailPoet\EmailEditor\Engine\EmailEditor;
+use MailPoet\EmailEditor\Engine\Email_Editor;
 use MailPoet\EmailEditor\Integrations\Core\Initializer as CoreEmailEditorIntegration;
 use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEditorIntegration;
@@ -120,7 +120,7 @@ class Initializer {
   /** @var DaemonActionSchedulerRunner */
   private $actionSchedulerRunner;
 
-  /** @var EmailEditor */
+  /** @var Email_Editor */
   private $emailEditor;
 
   /** @var MailpoetEmailEditorIntegration */
@@ -171,7 +171,7 @@ class Initializer {
     WooCommerceIntegration $woocommerceIntegration,
     PersonalDataExporters $personalDataExporters,
     DaemonActionSchedulerRunner $actionSchedulerRunner,
-    EmailEditor $emailEditor,
+    Email_Editor $emailEditor,
     BlockTypesController $blockTypesController,
     MailpoetEmailEditorIntegration $mailpoetEmailEditorIntegration,
     CoreEmailEditorIntegration $coreEmailEditorIntegration,

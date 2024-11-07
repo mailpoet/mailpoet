@@ -3,14 +3,14 @@
   "description": "Email editor based on WordPress Gutenberg package.",
   "type": "library",
   "autoload": {
-    "psr-4": {
-      "MailPoet\\EmailEditor\\": "src/"
-    }
+    "classmap": [
+      "src/"
+    ]
   },
   "autoload-dev": {
-    "psr-4": {
-      "MailPoet\\EmailEditor\\": "tests/unit/"
-    }
+    "classmap": [
+      "tests/unit/"
+    ]
   },
   "require": {
     "php": ">=7.4"
@@ -28,6 +28,7 @@
   },
   "scripts": {
     "unit-test": "vendor/bin/codecept run unit",
-    "integration-test": "cd ../../../tests_env/docker && COMPOSE_HTTP_TIMEOUT=200 docker compose run -e SKIP_DEPS=1 -e SKIP_PLUGINS=1 -e PACKAGE_NAME=email-editor codeception_integration"
+    "integration-test": "cd ../../../tests_env/docker && COMPOSE_HTTP_TIMEOUT=200 docker compose run -e SKIP_DEPS=1 -e SKIP_PLUGINS=1 -e PACKAGE_NAME=email-editor codeception_integration",
+    "code-style": "../../../mailpoet/tasks/code_sniffer/vendor/bin/phpcs -ps --standard=WordPress src/"
   }
 }

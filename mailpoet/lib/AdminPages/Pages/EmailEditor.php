@@ -6,8 +6,8 @@ use MailPoet\API\JSON\API;
 use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
-use MailPoet\EmailEditor\Engine\SettingsController;
-use MailPoet\EmailEditor\Engine\ThemeController;
+use MailPoet\EmailEditor\Engine\Settings_Controller;
+use MailPoet\EmailEditor\Engine\Theme_Controller;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController as MailPoetSettings;
@@ -18,9 +18,9 @@ use MailPoet\WP\Functions as WPFunctions;
 class EmailEditor {
   private WPFunctions $wp;
 
-  private SettingsController $settingsController;
+  private Settings_Controller $settingsController;
 
-  private ThemeController $themeController;
+  private Theme_Controller $themeController;
 
   private CdnAssetUrl $cdnAssetUrl;
 
@@ -34,11 +34,11 @@ class EmailEditor {
 
   public function __construct(
     WPFunctions $wp,
-    SettingsController $settingsController,
+    Settings_Controller $settingsController,
     CdnAssetUrl $cdnAssetUrl,
     ServicesChecker $servicesChecker,
     SubscribersFeature $subscribersFeature,
-    ThemeController $themeController,
+    Theme_Controller $themeController,
     MailPoetSettings $mailpoetSettings,
     NewslettersRepository $newslettersRepository
   ) {

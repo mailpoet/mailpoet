@@ -42,7 +42,8 @@
   "autoload": {
     "classmap": [
       "lib-3rd-party",
-      "vendor-prefixed"
+      "vendor-prefixed",
+      "vendor/mailpoet/email-editor/src"
     ],
     "files": [
       "lib/exceptions.php",

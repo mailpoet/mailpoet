@@ -13,10 +13,10 @@
 
 namespace MailPoet\EmailEditor\Integrations\Core\Renderer\Blocks;
 
-use MailPoet\EmailEditor\Engine\SettingsController;
+use MailPoet\EmailEditor\Engine\Settings_Controller;
 
 class Heading extends AbstractBlockRenderer {
-  protected function renderContent($blockContent, array $parsedBlock, SettingsController $settingsController): string {
+  protected function renderContent($blockContent, array $parsedBlock, Settings_Controller $settingsController): string {
     return $blockContent;
   }
 }
@@ -28,11 +28,11 @@ class Heading extends AbstractBlockRenderer {
 ```php
 <?php
 
-use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\BlocksRegistry;
+use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry;
 
 add_action('mailpoet_blocks_renderer_initialized', 'register_my_block_email_renderer');
 
-function register_my_block_email_renderer(BlocksRegistry $blocksRegistry): void {
+function register_my_block_email_renderer(Blocks_Registry $blocksRegistry): void {
   $blocksRegistry->addBlockRenderer('core/heading', new Renderer\Blocks\Heading());
 }
 ```
