@@ -215,7 +215,7 @@ class Newsletters extends APIEndpoint {
 
     // if there are paused tasks unpause them
     if ($newsletter->getStatus() === NewsletterEntity::STATUS_ACTIVE) {
-      $queues = $newsletter->getQueues();
+      $queues = $newsletter->getUnfinishedQueues();
       foreach ($queues as $queue) {
         $task = $queue->getTask();
         if ($task && $task->getStatus() === ScheduledTaskEntity::STATUS_PAUSED) {

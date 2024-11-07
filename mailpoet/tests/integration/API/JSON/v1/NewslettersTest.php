@@ -290,7 +290,8 @@ class NewslettersTest extends \MailPoetTest {
         SendingQueueWorker::TASK_TYPE,
         ScheduledTaskEntity::STATUS_PAUSED,
       );
-    (new SendingQueueFactory())->create($scheduledTask1, $this->postNotification);
+    $queue = (new SendingQueueFactory())->create($scheduledTask1, $this->postNotification);
+    $queue->setCountToProcess(1);
     $segment = $this->segmentRepository->createOrUpdate('Segment 1');
     $this->createNewsletterSegment($this->postNotification, $segment);
 

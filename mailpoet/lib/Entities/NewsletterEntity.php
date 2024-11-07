@@ -537,7 +537,7 @@ class NewsletterEntity {
   /**
    * @return Collection<int, SendingQueueEntity>
    */
-  private function getUnfinishedQueues(): Collection {
+  public function getUnfinishedQueues(): Collection {
     $criteria = new Criteria();
     $expr = Criteria::expr();
     $criteria->where($expr->neq('countToProcess', 0));
