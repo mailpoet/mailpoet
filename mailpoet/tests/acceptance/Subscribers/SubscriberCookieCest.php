@@ -165,6 +165,7 @@ class SubscriberCookieCest {
   private function checkSubscriberCookie(AcceptanceTester $i, string $email): void {
     $subscribersTableName = ContainerWrapper::getInstance()->get(SubscribersRepository::class)->getTableName();
     $subscriberId = $i->grabFromDatabase($subscribersTableName, 'id', ['email' => $email]);
+    $subscriberId = is_int($subscriberId) ? (string)$subscriberId : $subscriberId;
     Assert::assertIsString($subscriberId);
     $i->canSeeCookie(self::SUBSCRIBER_COOKIE_NAME);
     $cookie = $i->grabCookie(self::SUBSCRIBER_COOKIE_NAME);
