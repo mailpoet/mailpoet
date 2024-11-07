@@ -77,3 +77,29 @@ jobs:
       - name: Run email-editor package integration tests
         run: ../../../mailpoet/tools/vendor/composer.phar integration-test
         working-directory: packages/php/email-editor
+
+  code-style:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install tools
+        run: |
+          COMPOSER_DEV_MODE=1 php tools/install.php
+          touch .env
+        working-directory: mailpoet
+
+      - name: Install composer dependencies
+        run: ../../tools/vendor/composer.phar install
+        working-directory: mailpoet/tasks/code_sniffer
+
+      - name: Run code style check
+        run: ../../../mailpoet/tools/vendor/composer.phar code-style
+        working-directory: packages/php/email-editor
