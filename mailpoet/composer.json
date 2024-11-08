@@ -31,7 +31,8 @@
     "totten/lurkerlite": "^1.3",
     "vlucas/phpdotenv": "v5.6.0",
     "woocommerce/qit-cli": "^0.5.4",
-    "wp-cli/wp-cli-bundle": "2.10.0"
+    "wp-cli/wp-cli-bundle": "2.10.0",
+    "symfony/process": "5.4.46"
   },
   "repositories": [
     {
