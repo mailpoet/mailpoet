@@ -13,6 +13,7 @@ use MailPoet\Subscription\Comment;
 use MailPoet\Subscription\Form;
 use MailPoet\Subscription\Manage;
 use MailPoet\Subscription\Registration;
+use MailPoet\WooCommerce\Helper as WooHelper;
 use MailPoet\WooCommerce\Integrations\AutomateWooHooks;
 use MailPoet\WooCommerce\Subscription;
 use MailPoet\WooCommerce\WooSystemInfoController;
@@ -88,6 +89,9 @@ class Hooks {
   /** @var CronTrigger */
   private $cronTrigger;
 
+  /** @var WooHelper */
+  private $wooHelper;
+
   public function __construct(
     Form $subscriptionForm,
     Comment $subscriptionComment,
@@ -106,7 +110,8 @@ class Hooks {
     DotcomLicenseProvisioner $dotcomLicenseProvisioner,
     AutomateWooHooks $automateWooHooks,
     WooSystemInfoController $wooSystemInfoController,
-    CronTrigger $cronTrigger
+    CronTrigger $cronTrigger,
+    WooHelper $wooHelper
   ) {
     $this->subscriptionForm = $subscriptionForm;
     $this->subscriptionComment = $subscriptionComment;
@@ -126,6 +131,7 @@ class Hooks {
     $this->automateWooHooks = $automateWooHooks;
     $this->wooSystemInfoController = $wooSystemInfoController;
     $this->cronTrigger = $cronTrigger;
+    $this->wooHelper = $wooHelper;
   }
 
   public function init() {
@@ -252,7 +258,7 @@ class Hooks {
       );
 
       // reCAPTCHA on WC registration form
-      if (class_exists('WooCommerce')) {
+      if ($this->wooHelper->isWooCommerceActive()) {
         $this->wp->addAction(
           'woocommerce_before_customer_login_form',
           [$this->reCaptcha, 'enqueueScripts']
