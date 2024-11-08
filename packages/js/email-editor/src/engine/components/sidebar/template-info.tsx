@@ -18,8 +18,8 @@ export function TemplateInfo() {
 						<Icon icon={ layout } />
 					</span>
 					<div className="mailpoet-email-type-info__content">
-						{ /* @ts-expect-error Todo template type is not defined */ }
 						<h2>
+							{ /* @ts-expect-error Todo template type is not defined */ }
 							{ template?.title || __( 'Template', 'mailpoet' ) }
 						</h2>
 						{ /* @ts-expect-error Todo template type is not defined */ }

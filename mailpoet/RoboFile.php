@@ -687,7 +687,7 @@ class RoboFile extends \Robo\Tasks {
     return $collection->taskExecStack()
       ->stopOnFail()
       ->exec('pnpm run check-types && pnpm run lint')
-      ->exec('cd .. && cd packages/js/email-editor && pnpm run lint:js')
+      ->exec('cd .. && cd packages/js/email-editor && pnpm run check-types && pnpm run lint:js')
       ->run();
   }
 

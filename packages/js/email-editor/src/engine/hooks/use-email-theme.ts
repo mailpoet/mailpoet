@@ -19,8 +19,8 @@ export function useEmailTheme() {
 		} else {
 			// @ts-expect-error TS2322: Type 'string' has no properties in common with type 'EmailTheme'.
 			templateThemeData =
-				// @ts-expect-error Expected 0 arguments, but got 1.
 				select( editorStore ).getCurrentPostAttribute(
+					// @ts-expect-error Expected 0 arguments, but got 1.
 					'mailpoet_email_theme'
 				) || {};
 		}

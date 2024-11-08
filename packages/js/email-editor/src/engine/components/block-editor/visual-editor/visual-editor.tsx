@@ -189,9 +189,8 @@ export function VisualEditor( {
 						dropZoneElement={
 							// When iframed, pass in the html element of the iframe to
 							// ensure the drop zone extends to the edges of the iframe.
-							// @ts-expect-error No types for this exist yet.
 							disableIframe
-								? localRef.current
+								? localRef.current // @ts-expect-error No types for this exist yet.
 								: localRef.current?.parentNode
 						}
 						__unstableDisableDropZone={
