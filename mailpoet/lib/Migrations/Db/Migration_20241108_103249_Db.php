@@ -16,11 +16,15 @@ class Migration_20241108_103249_Db extends DbMigration {
     global $wpdb;
     $automationVersionsTable = esc_sql($wpdb->prefix . 'mailpoet_automation_versions');
 
-    $wooSubscriptionAutomations = $wpdb->get_results($wpdb->prepare("
-      SELECT `id`, `steps`
-      FROM %i
-      WHERE `steps` LIKE %s
-    ", $automationVersionsTable, '%woocommerce-subscriptions:subscription:status%'), ARRAY_A);
+    $wooSubscriptionAutomations = $wpdb->get_results(
+      $wpdb->prepare(
+        "SELECT `id`, `steps` FROM %i WHERE `steps` LIKE %s OR `steps` LIKE %s",
+        $automationVersionsTable,
+        '%woocommerce-subscriptions:subscription:status%',
+        '%woocommerce-subscriptions:subscription:billing-period%'
+      ),
+      ARRAY_A
+    );
 
     foreach ($wooSubscriptionAutomations as $automation) {
       // Parse JSON encoded automation steps
@@ -43,7 +47,7 @@ class Migration_20241108_103249_Db extends DbMigration {
             continue;
           }
           foreach ($group['filters'] as &$filter_item) {
-            $this->fixWooSubscriptionStatusFilter($filter_item);
+            $this->fixWooSubscriptionFilters($filter_item);
           }
         }
       }
@@ -52,12 +56,14 @@ class Migration_20241108_103249_Db extends DbMigration {
     }
   }
 
-  private function fixWooSubscriptionStatusFilter(&$filter_item): void {
-    // Only fix WooCommerce Subscriptions status filters
-    if (
-      !isset($filter_item['field_key'])
-      || $filter_item['field_key'] !== 'woocommerce-subscriptions:subscription:status'
-    ) {
+  private function fixWooSubscriptionFilters(&$filter_item): void {
+    // Only fix WooCommerce Subscriptions status and billing period filters
+    if (!isset($filter_item['field_key'])) {
+      return;
+    }
+    $isStatusField = $filter_item['field_key'] === 'woocommerce-subscriptions:subscription:status';
+    $isBillingPeriodField = $filter_item['field_key'] === 'woocommerce-subscriptions:subscription:billing-period';
+    if (!$isStatusField && !$isBillingPeriodField) {
       return;
     }
 
@@ -76,7 +82,10 @@ class Migration_20241108_103249_Db extends DbMigration {
       $filter_item['condition'] = $conditionMap[$filter_item['condition']] ?? $filter_item['condition'];
     }
 
-    // Strip "wc-" prefix from values
+    // Strip "wc-" prefix from values but only in status field
+    if (!$isStatusField) {
+      return;
+    }
     if (isset($filter_item['args']['value']) && is_array($filter_item['args']['value'])) {
       $filter_item['args']['value'] = array_map(function($value) {
         return preg_replace('/^wc-/', '', $value);
