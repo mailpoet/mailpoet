@@ -3,7 +3,7 @@
 	<!-- Set the base standard to WordPress -->
 	<rule ref="WordPress"/>
 
-	<!-- Define files and folders to scan -->te
+	<!-- Define files and folders to scan -->
 	<file>.</file>
 
 	<!-- Exclude test files from FileName rules because we need to match Codeception autoload -->
