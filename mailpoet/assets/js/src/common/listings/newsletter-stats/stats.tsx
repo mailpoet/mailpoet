@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { PlacesType } from 'react-tooltip';
 import { Badge } from './badge';
 
@@ -15,48 +15,48 @@ const getStats = () => ({
     badgeRanges: [30, 10, 0],
     badgeTypes: ['excellent', 'good', 'critical'],
     tooltipText: {
-      // translators: Excellent open rate
-      excellent: __('above 30%', 'mailpoet'),
-      // translators: Good open rate
-      good: __('between 10 and 30%', 'mailpoet'),
-      // translators: Critical open rate
-      critical: __('under 10%', 'mailpoet'),
+      // translators: Shows a percentage range, "above 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
+      excellent: sprintf(__('above %s%%', 'mailpoet'), 30),
+      // translators: Shows a percentage range, "between 10% and 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
+      good: sprintf(__('between %s%% and %s%%', 'mailpoet'), 10, 30),
+      // translators: Shows a percentage range, "below 10%". Used in contexts like open, click, bounce, or unsubscribe rates.
+      critical: sprintf(__('below %s%%', 'mailpoet'), 10),
     },
   },
   clicked: {
     badgeRanges: [3, 1, 0],
     badgeTypes: ['excellent', 'good', 'critical'],
     tooltipText: {
-      // translators: Excellent click rate
-      excellent: __('above 3%', 'mailpoet'),
-      // translators: Good click rate
-      good: __('between 1 and 3%', 'mailpoet'),
-      // translators: Critical click rate
-      critical: __('under 1%', 'mailpoet'),
+      // translators: Shows a percentage range, "above 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
+      excellent: sprintf(__('above %s%%', 'mailpoet'), 3),
+      // translators: Shows a percentage range, "between 10% and 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
+      good: sprintf(__('between %s%% and %s%%', 'mailpoet'), 1, 3),
+      // translators: Shows a percentage range, "below 10%". Used in contexts like open, click, bounce, or unsubscribe rates.
+      critical: sprintf(__('below %s%%', 'mailpoet'), 1),
     },
   },
   bounced: {
     badgeRanges: [1.5, 0.5, 0],
     badgeTypes: ['critical', 'good', 'excellent'],
     tooltipText: {
-      // translators: Excellent bounce rate
-      excellent: __('below 0.5%', 'mailpoet'),
-      // translators: Good bounce rate
-      good: __('between 0.5% and 1.5%', 'mailpoet'),
-      // translators: Critical bounce rate
-      critical: __('above 1.5%', 'mailpoet'),
+      // translators: Shows a percentage range, "below 10%". Used in contexts like open, click, bounce, or unsubscribe rates.
+      excellent: sprintf(__('below %s%%', 'mailpoet'), 0.5),
+      // translators: Shows a percentage range, "between 10% and 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
+      good: sprintf(__('between %s%% and %s%%', 'mailpoet'), 0.5, 1.5),
+      // translators: Shows a percentage range, "above 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
+      critical: sprintf(__('above %s%%', 'mailpoet'), 1.5),
     },
   },
   unsubscribed: {
     badgeRanges: [0.7, 0.3, 0],
     badgeTypes: ['critical', 'good', 'excellent'],
     tooltipText: {
-      // translators: Excellent unsubscribe rate
-      excellent: __('Below 0.3%', 'mailpoet'),
-      // translators: Good unsubscribe rate
-      good: __('between 0.3% and 0.7%', 'mailpoet'),
-      // translators: Critical unsubscribe rate
-      critical: __('above 0.7%', 'mailpoet'),
+      // translators: Shows a percentage range, "below 10%". Used in contexts like open, click, bounce, or unsubscribe rates.
+      excellent: sprintf(__('below %s%%', 'mailpoet'), 0.3),
+      // translators: Shows a percentage range, "between 10% and 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
+      good: sprintf(__('between %s%% and %s%%', 'mailpoet'), 0.3, 0.7),
+      // translators: Shows a percentage range, "above 30%". Used in contexts like open, click, bounce, or unsubscribe rates.
+      critical: sprintf(__('above %s%%', 'mailpoet'), 0.7),
     },
   },
 });
