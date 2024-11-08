@@ -28,35 +28,43 @@ class ReCaptchaRendererTest extends \MailPoetUnitTest {
     $this->renderer = new ReCaptchaRenderer($this->settingsMock, new WPFunctions());
   }
 
-  public function testRenderingCheckbox() {
-    $expectedSiteToken = 'expected_value';
+  public function testItRendersCheckbox() {
+    $siteToken = 'expected_value';
     $this->settingsMock
       ->method('get')
       ->with('captcha')
       ->willReturn([
         'type' => CaptchaConstants::TYPE_RECAPTCHA,
-        'recaptcha_site_token' => $expectedSiteToken,
+        'recaptcha_site_token' => $siteToken,
         'recaptcha_invisible_site_token' => 'unexpected_value',
       ]);
 
     $html = $this->renderer->render();
-    $this->htmlParser->findByXpath($html, "//div[@class='g-recaptcha' and not(@data-size)]");
-    $this->htmlParser->findByXpath($html, "//div[@class='g-recaptcha' and @data-sitekey='$expectedSiteToken']");
+    $matches = $this->htmlParser->findByXpath(
+      $html,
+      "//div[@class='g-recaptcha' and not(@data-size) and @data-sitekey='$siteToken']"
+    );
+
+    verify($matches->length)->equals(1);
   }
 
-  public function testRenderingInvisible() {
-    $expectedSiteToken = 'expected_value';
+  public function testItRendersInvisible() {
+    $siteToken = 'expected_value';
     $this->settingsMock
       ->method('get')
       ->with('captcha')
       ->willReturn([
         'type' => CaptchaConstants::TYPE_RECAPTCHA_INVISIBLE,
         'recaptcha_site_token' => 'unexpected_value',
-        'recaptcha_invisible_site_token' => $expectedSiteToken,
+        'recaptcha_invisible_site_token' => $siteToken,
       ]);
 
     $html = $this->renderer->render();
-    $this->htmlParser->findByXpath($html, "//div[@class='g-recaptcha' and @data-size='invisible']");
-    $this->htmlParser->findByXpath($html, "//div[@class='g-recaptcha' and @data-sitekey='$expectedSiteToken']");
+    $matches = $this->htmlParser->findByXpath(
+      $html,
+      "//div[@class='g-recaptcha' and @data-size='invisible' and @data-sitekey='$siteToken']"
+    );
+
+    verify($matches->length)->equals(1);
   }
 }
