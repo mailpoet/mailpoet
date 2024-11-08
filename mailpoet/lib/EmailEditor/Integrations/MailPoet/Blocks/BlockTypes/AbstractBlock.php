@@ -50,7 +50,7 @@ abstract class AbstractBlock {
     if (\WP_Block_Type_Registry::get_instance()->is_registered($this->getBlockType())) {
       return;
     }
-    $metadata_path = Env::$assetsPath . '/js/src/email-editor/blocks/' . $this->blockName . '/block.json';
+    $metadata_path = Env::$assetsPath . '/js/src/mailpoet-custom-email-editor-blocks/' . $this->blockName . '/block.json';
     $block_settings = [
         'render_callback' => [$this, 'render'],
         'editor_script' => $this->getEditorScript('handle'),

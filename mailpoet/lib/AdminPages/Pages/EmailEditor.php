@@ -98,6 +98,7 @@ class EmailEditor {
 
     // Renders additional script data that some components require e.g. PremiumModal. This is done here instead of using
     // PageRenderer since that introduces other dependencies we want to avoid. Used by getUpgradeInfo.
+    // some of these values are used by the powered by mailpoet block: mailpoet/assets/js/src/mailpoet-custom-email-editor-blocks/powered-by-mailpoet/
     $installer = new Installer(Installer::PREMIUM_PLUGIN_SLUG);
     $inline_script_data = [
       'mailpoet_premium_plugin_installed' => Installer::isPluginInstalled(Installer::PREMIUM_PLUGIN_SLUG),
@@ -117,6 +118,7 @@ class EmailEditor {
       'mailpoet_display_nps_poll' => true,
       'mailpoet_current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
       'mailpoet_current_wp_user_firstname' => $this->wp->wpGetCurrentUser()->user_firstname,
+      'mailpoet_cdn_url' => $this->cdnAssetUrl->generateCdnUrl(""),
       'mailpoet_site_url' => $this->wp->siteUrl(),
     ];
     $this->wp->wpAddInlineScript('mailpoet_email_editor', implode('', array_map(function ($key) use ($inline_script_data) {

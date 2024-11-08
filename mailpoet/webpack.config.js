@@ -458,7 +458,7 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
   name: 'email-editor-blocks',
   entry: {
     'powered-by-mailpoet-block':
-      '../packages/js/email-editor/src/blocks/powered-by-mailpoet/block.tsx',
+      '/assets/js/src/mailpoet-custom-email-editor-blocks/powered-by-mailpoet/block.tsx',
   },
   output: {
     filename: '[name].js',
