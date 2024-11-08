@@ -490,11 +490,9 @@ class Pages {
     if (!$subscriber instanceof SubscriberEntity) return __('Link to subscription management page is only available to mailing lists subscribers.', 'mailpoet');
 
     // get label or display default label
-    $text = (
-    isset($params['text'])
+    $text = isset($params['text'])
       ? htmlspecialchars($params['text'])
-      : __('Manage your subscription', 'mailpoet')
-    );
+      : __('Manage your subscription', 'mailpoet');
 
     return '<a href="' . $this->subscriptionUrlFactory->getManageUrl($subscriber) . '">' . $text . '</a>';
   }
