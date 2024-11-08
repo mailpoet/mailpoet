@@ -28,7 +28,7 @@
     "symfony/polyfill-php80": "1.29.0",
     "symfony/polyfill-php81": "1.29.0",
     "symfony/validator": "5.4.*",
-    "twig/twig": "3.11.1"
+    "twig/twig": "3.11.2"
   },
   "scripts": {
     "post-update-cmd": "@process",
