@@ -50,7 +50,9 @@ class ReCaptchaValidator {
 
     /** @var \stdClass $response */
     $response = json_decode($this->wp->wpRemoteRetrieveBody($response));
-    if (empty($response->success)) {
+    if ($response === null) { // invalid JSON
+      throw new \Exception(__('Error while validating the CAPTCHA.', 'mailpoet'));
+    } else if (empty($response->success)) { // missing or false
       throw new \Exception(__('Invalid CAPTCHA. Try again.', 'mailpoet'));
     }
   }

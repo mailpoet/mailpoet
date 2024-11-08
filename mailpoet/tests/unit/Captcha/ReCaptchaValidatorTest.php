@@ -164,6 +164,48 @@ class ReCaptchaValidatorTest extends \MailPoetUnitTest {
     }
   }
 
+  public function testItFailsOnJsonError() {
+    $captchaSettings = [
+      'type' => CaptchaConstants::TYPE_RECAPTCHA,
+      'recaptcha_secret_token' => 'recaptcha_secret_token',
+    ];
+
+    $response = 'invalidJson';
+    $settings = Stub::make(
+      SettingsController::class,
+      [
+        'get' => function ($key) use ($captchaSettings) {
+          if ($key === 'captcha') {
+            return $captchaSettings;
+          }
+        },
+      ],
+      $this
+    );
+
+    $wp = Stub::make(
+      WPFunctions::class,
+      [
+        'isWpError' => false,
+        'wpRemotePost' => function () use ($response) {
+          return $response;
+        },
+        'wpRemoteRetrieveBody' => function () use ($response) {
+          return $response;
+        },
+      ],
+      $this
+    );
+
+    $testee = new RecaptchaValidator($wp, $settings);
+    try {
+      $testee->validate('anyValue');
+    } catch (\Exception $error) {
+      verify($error)->instanceOf(\Exception::class);
+      verify($error->getMessage())->equals('Error while validating the CAPTCHA.');
+    }
+  }
+
   public function testItFailsOnHttpError() {
     $captchaSettings = [
       'type' => CaptchaConstants::TYPE_RECAPTCHA,
