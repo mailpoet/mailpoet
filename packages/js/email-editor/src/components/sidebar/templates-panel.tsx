@@ -14,7 +14,7 @@ import {
 } from '@wordpress/blocks';
 import { addQueryArgs } from '@wordpress/url';
 import { storeName } from '../../store';
-import { unlock } from '../../../lock-unlock';
+import { unlock } from '../../lock-unlock';
 
 // Todo: This is not available yet. Replace when possible.
 async function revertTemplate( template ) {

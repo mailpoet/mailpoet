@@ -11,8 +11,8 @@
 		"start": "wp-scripts start",
 		"lint:css": "wp-scripts lint-style",
 		"lint:css-fix": "wp-scripts lint-style --fix",
-		"lint:js": "wp-scripts lint-js ./src/**",
-		"lint:js-fix": "wp-scripts lint-js ./src/** --fix",
+		"lint:js": "wp-scripts lint-js './src/**/*.{js,jsx,json,ts,tsx,yml,yaml}'",
+		"lint:js-fix": "wp-scripts lint-js './src/**/*.{js,jsx,json,ts,tsx}' --fix",
 		"check-types": "NODE_OPTIONS=--max_old_space_size=2048 tsc --noEmit",
 		"format": "./node_modules/.bin/prettier --config .prettierrc.js --write 'src/**/*.{js,jsx,json,ts,tsx,yml,yaml}'"
 	},

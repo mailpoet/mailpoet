@@ -18,7 +18,7 @@ import {
 import { Header } from './header';
 import { EmailSettings } from './email-settings';
 import { TemplateSettings } from './template-settings';
-import { unlock } from '../../../lock-unlock';
+import { unlock } from '../../lock-unlock';
 
 import './index.scss';
 

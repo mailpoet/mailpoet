@@ -5,7 +5,7 @@ import {
 	// @ts-expect-error No types for this exist yet.
 	privateApis as blockEditorPrivateApi,
 } from '@wordpress/block-editor';
-import { unlock } from '../../lock-unlock';
+import { unlock } from '../lock-unlock';
 import { EmailStyles, storeName } from '../store';
 import { useEmailTheme } from './use-email-theme';
 

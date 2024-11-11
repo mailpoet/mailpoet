@@ -21,7 +21,7 @@ import { SaveButton } from './save-button';
 import { CampaignName } from './campaign-name';
 import { SendButton } from './send-button';
 
-import { unlock } from '../../../lock-unlock';
+import { unlock } from '../../lock-unlock';
 
 // Build type for ToolbarItem contains only "as" and "children" properties but it takes all props from
 // component passed to "as" property (in this case Button). So as fix for TS errors we need to pass all props from Button to ToolbarItem.

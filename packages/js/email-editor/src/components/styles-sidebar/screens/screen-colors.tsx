@@ -5,7 +5,7 @@ import {
 	privateApis as blockEditorPrivateApis,
 } from '@wordpress/block-editor';
 import ScreenHeader from './screen-header';
-import { unlock } from '../../../../lock-unlock';
+import { unlock } from '../../../lock-unlock';
 import { useEmailStyles } from '../../../hooks';
 import { storeName } from '../../../store';
 

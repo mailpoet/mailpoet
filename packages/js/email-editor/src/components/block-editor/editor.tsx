@@ -12,7 +12,7 @@ import { useMemo } from '@wordpress/element';
 import { SlotFillProvider, Spinner } from '@wordpress/components';
 import { Post, store as coreStore } from '@wordpress/core-data';
 import { storeName } from '../../store';
-import { unlock } from '../../../lock-unlock';
+import { unlock } from '../../lock-unlock';
 
 /**
  * Internal dependencies

@@ -23,7 +23,7 @@ import { store as editorStore } from '@wordpress/editor';
  */
 import EditTemplateBlocksNotification from './edit-template-blocks-notification';
 import useSelectNearestEditableBlock from './use-select-nearest-editable-block';
-import { unlock } from '../../../../lock-unlock';
+import { unlock } from '../../../lock-unlock';
 
 export const TEMPLATE_POST_TYPE = 'wp_template';
 export const TEMPLATE_PART_POST_TYPE = 'wp_template_part';

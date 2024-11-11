@@ -2,7 +2,7 @@ import { __ } from '@wordpress/i18n';
 import * as React from '@wordpress/element';
 import { privateApis as componentsPrivateApis } from '@wordpress/components';
 import { mainSidebarEmailTab, mainSidebarBlockTab } from '../../store';
-import { unlock } from '../../../lock-unlock';
+import { unlock } from '../../lock-unlock';
 
 const { Tabs } = unlock( componentsPrivateApis );
 
