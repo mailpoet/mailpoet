@@ -99,7 +99,7 @@ executors:
   wpcli_php_max_wporg:
     <<: *default_job_config
     docker:
-      - image: mailpoet/wordpress:8.2_20231016.1
+      - image: mailpoet/wordpress:8.1_20230307.1 # We need to use 8.1 to emulate the WP.org environment
 
   wpcli_php_latest:
     <<: *default_job_config
