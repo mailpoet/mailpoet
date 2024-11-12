@@ -231,9 +231,11 @@ export function getEmailPostId( state: State ): number {
 	return state.postId;
 }
 
-export function isInserterSidebarOpened( state: State ): boolean {
-	return state.inserterSidebar.isOpened;
-}
+export const isInserterSidebarOpened = createRegistrySelector(
+	( select ) => () =>
+		// @ts-expect-error isInserterOpened is missing in types.
+		select( editorStore ).isInserterOpened() as boolean
+);
 
 export function isListviewSidebarOpened( state: State ): boolean {
 	return state.listviewSidebar.isOpened;

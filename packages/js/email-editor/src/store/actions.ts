@@ -14,11 +14,12 @@ export const toggleFeature =
 	( { registry } ): unknown =>
 		registry.dispatch( preferencesStore ).toggle( storeName, feature );
 
-export function toggleInserterSidebar() {
-	return {
-		type: 'TOGGLE_INSERTER_SIDEBAR',
-	} as const;
-}
+export const toggleInserterSidebar =
+	() =>
+	( { registry } ) => {
+		const status = registry.select( editorStore ).isInserterOpened();
+		void registry.dispatch( editorStore ).setIsInserterOpened( ! status );
+	};
 
 export function toggleListviewSidebar() {
 	return {
