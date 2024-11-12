@@ -37,6 +37,16 @@ class CaptchaUrlFactory {
     );
   }
 
+  public function getCaptchaAudioUrl(string $sessionId) {
+    return $this->getUrl(
+      CaptchaEndpoint::ACTION_AUDIO,
+      [
+        'cacheBust' => time(),
+        'captcha_session_id' => $sessionId,
+      ]
+    );
+  }
+
   private function getUrl(string $action, array $data) {
     $post = $this->wp->getPost($this->settings->get('subscription.pages.captcha'));
     $url = $this->wp->getPermalink($post);

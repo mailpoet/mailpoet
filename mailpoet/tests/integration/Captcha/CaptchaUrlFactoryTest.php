@@ -42,4 +42,15 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
     verify($url)->stringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT);
     verify($url)->stringContainsString('data=');
   }
+
+  public function testItReturnsCaptchaAudioUrl() {
+    $url = $this->urlFactory->getCaptchaAudioUrl('abc');
+
+    verify($url)->notNull();
+    verify($url)->stringContainsString(Router::NAME);
+    verify($url)->stringContainsString('mailpoet_page=' . SettingPages::MP_POST_NAME);
+    verify($url)->stringContainsString('action=' . CaptchaEndpoint::ACTION_AUDIO);
+    verify($url)->stringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT);
+    verify($url)->stringContainsString('data=');
+  }
 }

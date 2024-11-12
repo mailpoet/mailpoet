@@ -7,7 +7,6 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util\Styles;
-use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Url as UrlHelper;
 
 class CaptchaFormRenderer {
@@ -19,9 +18,6 @@ class CaptchaFormRenderer {
 
   /** @var CaptchaPhrase */
   private $captchaPhrase;
-
-  /** @var SubscriptionUrlFactory */
-  private $subscriptionUrlFactory;
 
   /** @var CaptchaUrlFactory */
   private $urlFactory;
@@ -39,7 +35,6 @@ class CaptchaFormRenderer {
     UrlHelper $urlHelper,
     CaptchaSession $captchaSession,
     CaptchaPhrase $captchaPhrase,
-    SubscriptionUrlFactory $subscriptionUrlFactory,
     CaptchaUrlFactory $urlFactory,
     FormsRepository $formsRepository,
     FormRenderer $formRenderer,
@@ -48,7 +43,6 @@ class CaptchaFormRenderer {
     $this->urlHelper = $urlHelper;
     $this->captchaSession = $captchaSession;
     $this->captchaPhrase = $captchaPhrase;
-    $this->subscriptionUrlFactory = $subscriptionUrlFactory;
     $this->urlFactory = $urlFactory;
     $this->formRenderer = $formRenderer;
     $this->formsRepository = $formsRepository;
@@ -122,7 +116,7 @@ class CaptchaFormRenderer {
     $width = 220;
     $height = 60;
     $captchaUrl = $this->urlFactory->getCaptchaImageUrl($width, $height, $sessionId);
-    $mp3CaptchaUrl = $this->subscriptionUrlFactory->getCaptchaAudioUrl($sessionId);
+    $mp3CaptchaUrl = $this->urlFactory->getCaptchaAudioUrl($sessionId);
 
     $reloadIcon = Env::$assetsUrl . '/img/icons/image-rotate.svg';
     $playIcon = Env::$assetsUrl . '/img/icons/controls-volumeon.svg';
