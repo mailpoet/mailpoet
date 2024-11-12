@@ -35,16 +35,6 @@ class SubscriptionUrlFactory {
     $this->linkTokens = $linkTokens;
   }
 
-  public function getCaptchaImageUrl($width, $height, $sessionId) {
-    $post = $this->getPost($this->settings->get('subscription.pages.captcha'));
-    return $this->getSubscriptionUrl(
-      $post,
-      'captchaImage',
-      null,
-      ['width' => $width, 'height' => $height, 'captcha_session_id' => $sessionId]
-    );
-  }
-
   public function getCaptchaAudioUrl($sessionId) {
     $post = $this->getPost($this->settings->get('subscription.pages.captcha'));
     $url = $this->getSubscriptionUrl(

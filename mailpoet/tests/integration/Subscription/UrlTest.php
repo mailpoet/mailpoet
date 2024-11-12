@@ -36,13 +36,6 @@ class UrlTest extends \MailPoetTest {
     verify($url)->stringContainsString('endpoint=subscription');
   }
 
-  public function testItReturnsTheCaptchaImageUrl() {
-    $url = $this->url->getCaptchaImageUrl(250, 100, 'abc');
-    verify($url)->notNull();
-    verify($url)->stringContainsString('action=captchaImage');
-    verify($url)->stringContainsString('endpoint=subscription');
-  }
-
   public function testItReturnsTheConfirmationUrl() {
     // preview
     $url = $this->url->getConfirmationUrl(null);
