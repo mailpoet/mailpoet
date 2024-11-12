@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.3.7 - 2024-11-12 =
+
+- Fixed: detecting table index existence in DB migrations for MySQL 5;
+- Fixed: re-activation of welcome emails with long history may take long time or fail.
+
 = 5.3.6 - 2024-11-05 =
 
 - Fixed: race condition in links tracking;
