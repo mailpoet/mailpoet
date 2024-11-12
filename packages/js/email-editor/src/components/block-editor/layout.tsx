@@ -1,5 +1,5 @@
 import { BlockSelectionClearer } from '@wordpress/block-editor';
-import { UnsavedChangesWarning } from '@wordpress/editor';
+import { store as editorStore, UnsavedChangesWarning } from '@wordpress/editor';
 import { uploadMedia } from '@wordpress/media-utils';
 import classnames from 'classnames';
 import { useSelect, useDispatch } from '@wordpress/data';
@@ -42,10 +42,10 @@ export function Layout() {
 			isFullscreenActive:
 				select( storeName ).isFeatureActive( 'fullscreenMode' ),
 			isSidebarOpened: select( storeName ).isSidebarOpened(),
-			isInserterSidebarOpened:
-				select( storeName ).isInserterSidebarOpened(),
-			isListviewSidebarOpened:
-				select( storeName ).isListviewSidebarOpened(),
+			// @ts-expect-error isInserterOpened is missing in types.
+			isInserterSidebarOpened: select( editorStore ).isInserterOpened(),
+			// @ts-expect-error isListViewOpened is missing in types.
+			isListviewSidebarOpened: select( editorStore ).isListViewOpened(),
 			initialSettings: select( storeName ).getInitialEditorSettings(),
 			previewDeviceType: select( storeName ).getDeviceType(),
 			canUserEditMedia: select( coreStore ).canUser( 'create', 'media' ),
@@ -57,7 +57,8 @@ export function Layout() {
 		[]
 	);
 
-	const { toggleInserterSidebar } = useDispatch( storeName );
+	// @ts-expect-error isInserterOpened is missing in types.
+	const { setIsInserterOpened } = useDispatch( editorStore );
 
 	const [ emailCss ] = useEmailCss();
 	const className = classnames( 'edit-post-layout', {
@@ -105,7 +106,7 @@ export function Layout() {
 							onClick={ () => {
 								// Clear inserter sidebar when canvas is clicked.
 								if ( isInserterSidebarOpened ) {
-									void toggleInserterSidebar();
+									void setIsInserterOpened( false );
 								}
 							} }
 						>

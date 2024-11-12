@@ -14,20 +14,6 @@ export const toggleFeature =
 	( { registry } ): unknown =>
 		registry.dispatch( preferencesStore ).toggle( storeName, feature );
 
-export const toggleInserterSidebar =
-	() =>
-	( { registry } ) => {
-		const status = registry.select( editorStore ).isInserterOpened();
-		void registry.dispatch( editorStore ).setIsInserterOpened( ! status );
-	};
-
-export const toggleListviewSidebar =
-	() =>
-	( { registry } ) => {
-		const status = registry.select( editorStore ).isListViewOpened();
-		void registry.dispatch( editorStore ).setIsListViewOpened( ! status );
-	};
-
 export const changePreviewDeviceType =
 	( deviceType: string ) =>
 	( { registry } ) =>

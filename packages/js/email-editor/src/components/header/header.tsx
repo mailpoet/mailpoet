@@ -48,9 +48,10 @@ export function Header() {
 	const [ isBlockToolsCollapsed, setIsBlockToolsCollapsed ] =
 		useState( false );
 
-	const { toggleInserterSidebar, toggleListviewSidebar } =
-		useDispatch( storeName );
 	const { undo: undoAction, redo: redoAction } = useDispatch( coreDataStore );
+	// @ts-expect-error missing types.
+	const { setIsInserterOpened, setIsListViewOpened } =
+		useDispatch( editorStore );
 	const {
 		isInserterSidebarOpened,
 		isListviewSidebarOpened,
@@ -67,10 +68,10 @@ export function Header() {
 		const editorSettings = _getEditorSettings();
 
 		return {
-			isInserterSidebarOpened:
-				select( storeName ).isInserterSidebarOpened(),
-			isListviewSidebarOpened:
-				select( storeName ).isListviewSidebarOpened(),
+			// @ts-expect-error missing types.
+			isInserterSidebarOpened: select( editorStore ).isInserterOpened(),
+			// @ts-expect-error missing types.
+			isListviewSidebarOpened: select( editorStore ).isListViewOpened(),
 			isFixedToolbarActive: select( preferencesStore ).get(
 				'core',
 				'fixedToolbar'
@@ -86,6 +87,20 @@ export function Header() {
 
 	const preventDefault = ( event ) => {
 		event.preventDefault();
+	};
+
+	const toggleTheInserterSidebar = () => {
+		if ( isInserterSidebarOpened ) {
+			return setIsInserterOpened( false );
+		}
+		return setIsInserterOpened( true );
+	};
+
+	const toggleTheListviewSidebar = () => {
+		if ( isListviewSidebarOpened ) {
+			return setIsListViewOpened( false );
+		}
+		return setIsListViewOpened( true );
 	};
 
 	const shortLabelInserter = ! isInserterSidebarOpened
@@ -107,7 +122,7 @@ export function Header() {
 							variant="primary"
 							isPressed={ isInserterSidebarOpened }
 							onMouseDown={ preventDefault }
-							onClick={ toggleInserterSidebar }
+							onClick={ toggleTheInserterSidebar }
 							disabled={ false }
 							icon={ plus }
 							label={ shortLabelInserter }
@@ -144,7 +159,7 @@ export function Header() {
 							className="editor-header-toolbar__document-overview-toggle edit-post-header-toolbar__document-overview-toggle"
 							isPressed={ isListviewSidebarOpened }
 							onMouseDown={ preventDefault }
-							onClick={ toggleListviewSidebar }
+							onClick={ toggleTheListviewSidebar }
 							disabled={ false }
 							icon={ listView }
 							label={ __( 'List view', 'mailpoet' ) }

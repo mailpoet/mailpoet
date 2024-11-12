@@ -4,7 +4,6 @@ import {
 } from '@wordpress/block-editor';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
-import { storeName } from '../../store';
 
 export function InserterSidebar() {
 	const { postContentId, isEditingEmailContent } = useSelect( ( select ) => {
@@ -18,7 +17,8 @@ export function InserterSidebar() {
 		};
 	} );
 
-	const { toggleInserterSidebar } = useDispatch( storeName );
+	// @ts-expect-error missing types.
+	const { setIsInserterOpened } = useDispatch( editorStore );
 
 	return (
 		<div className="editor-inserter-sidebar">
@@ -30,7 +30,7 @@ export function InserterSidebar() {
 					rootClientId={
 						isEditingEmailContent ? postContentId : null
 					}
-					onClose={ toggleInserterSidebar }
+					onClose={ () => setIsInserterOpened( false ) }
 				/>
 			</div>
 		</div>
