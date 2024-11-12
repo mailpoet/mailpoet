@@ -9,8 +9,8 @@ use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
-class BuiltInCaptchaValidator implements CaptchaValidator {
-  /** @var SubscriptionUrlFactory */
+class CaptchaValidator {
+  /** @var SubscriptionUrlFactory  */
   private $subscriptionUrlFactory;
 
   /** @var CaptchaPhrase */

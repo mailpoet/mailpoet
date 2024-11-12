@@ -13,7 +13,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsFormsRepository;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Subscription\Captcha\CaptchaSession;
-use MailPoet\Subscription\Captcha\Validator\BuiltInCaptchaValidator;
+use MailPoet\Subscription\Captcha\Validator\CaptchaValidator;
 use MailPoet\Subscription\Captcha\Validator\RecaptchaValidator;
 use MailPoet\Subscription\Captcha\Validator\ValidationError;
 use MailPoet\Subscription\Throttling;
@@ -40,7 +40,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $form = Stub::makeEmpty(FormEntity::class);
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
-    $builtInCaptchaValidator = Stub::makeEmpty(BuiltInCaptchaValidator::class);
+    $builtInCaptchaValidator = Stub::makeEmpty(CaptchaValidator::class);
     $recaptchaValidator = Stub::makeEmpty(RecaptchaValidator::class);
 
     $formsRepository = Stub::makeEmpty(
@@ -152,7 +152,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
-    $builtInCaptchaValidator = Stub::makeEmpty(BuiltInCaptchaValidator::class);
+    $builtInCaptchaValidator = Stub::makeEmpty(CaptchaValidator::class);
     $recaptchaValidator = Stub::makeEmpty(RecaptchaValidator::class);
 
     $testee = new SubscriberSubscribeController(
@@ -237,7 +237,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     );
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
-    $builtInCaptchaValidator = Stub::makeEmpty(BuiltInCaptchaValidator::class);
+    $builtInCaptchaValidator = Stub::makeEmpty(CaptchaValidator::class);
     $recaptchaValidator = Stub::makeEmpty(RecaptchaValidator::class);
 
     $testee = new SubscriberSubscribeController(
@@ -346,7 +346,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
     $builtInCaptchaValidator = Stub::make(
-      BuiltInCaptchaValidator::class,
+      CaptchaValidator::class,
       [
         'validate' => Expected::once(function() use ($expectedRedirectLink) {
           throw new ValidationError('Please fill in the CAPTCHA.', ['redirect_url' => $expectedRedirectLink]);
@@ -477,7 +477,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
     $builtInCaptchaValidator = Stub::make(
-      BuiltInCaptchaValidator::class,
+      CaptchaValidator::class,
       [
         'validate' => Expected::never(),
       ],
@@ -566,7 +566,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(TagRepository::class),
       Stub::makeEmpty(SubscriberTagRepository::class),
       Stub::makeEmpty(WPFunctions::class),
-      Stub::makeEmpty(BuiltInCaptchaValidator::class),
+      Stub::makeEmpty(CaptchaValidator::class),
       Stub::makeEmpty(RecaptchaValidator::class)
     );
 
@@ -619,7 +619,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
       Stub::makeEmpty(TagRepository::class),
       Stub::makeEmpty(SubscriberTagRepository::class),
       Stub::makeEmpty(WPFunctions::class),
-      Stub::makeEmpty(BuiltInCaptchaValidator::class),
+      Stub::makeEmpty(CaptchaValidator::class),
       Stub::makeEmpty(RecaptchaValidator::class)
     );
 
@@ -728,7 +728,7 @@ class SubscriberSubscribeControllerUnitTest extends \MailPoetUnitTest {
     $tagRepository = Stub::makeEmpty(TagRepository::class);
     $subscriberTagRepository = Stub::makeEmpty(SubscriberTagRepository::class);
     $builtInCaptchaValidator = Stub::make(
-      BuiltInCaptchaValidator::class,
+      CaptchaValidator::class,
       [
         'validate' => function($data) use ($captcha) {
           verify($data['captcha'])->equals($captcha);

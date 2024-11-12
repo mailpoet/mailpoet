@@ -13,7 +13,7 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Statistics\StatisticsFormsRepository;
 use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Subscription\Captcha\CaptchaSession;
-use MailPoet\Subscription\Captcha\Validator\BuiltInCaptchaValidator;
+use MailPoet\Subscription\Captcha\Validator\CaptchaValidator;
 use MailPoet\Subscription\Captcha\Validator\RecaptchaValidator;
 use MailPoet\Subscription\Captcha\Validator\ValidationError;
 use MailPoet\Subscription\Throttling as SubscriptionThrottling;
@@ -57,7 +57,7 @@ class SubscriberSubscribeController {
 
   /** @var SubscriberTagRepository */
   private $subscriberTagRepository;
-  /** @var BuiltInCaptchaValidator  */
+  /** @var CaptchaValidator  */
   private $builtInCaptchaValidator;
 
   /** @var RecaptchaValidator  */
@@ -76,7 +76,7 @@ class SubscriberSubscribeController {
     TagRepository $tagRepository,
     SubscriberTagRepository $subscriberTagRepository,
     WPFunctions $wp,
-    BuiltInCaptchaValidator $builtInCaptchaValidator,
+    CaptchaValidator $builtInCaptchaValidator,
     RecaptchaValidator $recaptchaValidator
   ) {
     $this->formsRepository = $formsRepository;

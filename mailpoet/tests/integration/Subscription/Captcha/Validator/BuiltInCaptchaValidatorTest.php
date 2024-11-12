@@ -4,18 +4,18 @@ namespace Mailpoet\Test\Subscription\Captcha\Validator;
 
 use MailPoet\Entities\SubscriberIPEntity;
 use MailPoet\Subscription\Captcha\CaptchaSession;
-use MailPoet\Subscription\Captcha\Validator\BuiltInCaptchaValidator;
+use MailPoet\Subscription\Captcha\Validator\CaptchaValidator;
 use MailPoet\Subscription\Captcha\Validator\ValidationError;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
 class BuiltInCaptchaValidatorTest extends \MailPoetTest {
-  private BuiltInCaptchaValidator $testee;
+  private CaptchaValidator $testee;
   private CaptchaSession $session;
 
   public function _before() {
-    $this->testee = $this->diContainer->get(BuiltInCaptchaValidator::class);
+    $this->testee = $this->diContainer->get(CaptchaValidator::class);
     $this->session = $this->diContainer->get(CaptchaSession::class);
   }
 
