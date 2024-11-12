@@ -2,10 +2,10 @@
 
 namespace MailPoet\Form;
 
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Config\Env;
 use MailPoet\Config\Renderer as BasicRenderer;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\WP\Functions as WPFunctions;
 
 class AssetsController {

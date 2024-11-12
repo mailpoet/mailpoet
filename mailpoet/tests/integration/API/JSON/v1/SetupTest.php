@@ -6,14 +6,14 @@ use Codeception\Stub;
 use Helper\WordPressHooks as WPHooksHelper;
 use MailPoet\API\JSON\Response as APIResponse;
 use MailPoet\API\JSON\v1\Setup;
+use MailPoet\Captcha\CaptchaConstants;
+use MailPoet\Captcha\CaptchaRenderer;
 use MailPoet\Config\Activator;
 use MailPoet\Config\Populator;
 use MailPoet\Cron\ActionScheduler\ActionScheduler;
 use MailPoet\Migrator\Migrator;
 use MailPoet\Referrals\ReferralDetector;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha\CaptchaConstants;
-use MailPoet\Subscription\Captcha\CaptchaRenderer;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SetupTest extends \MailPoetTest {

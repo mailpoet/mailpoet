@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Subscription\Captcha\Validator;
+namespace MailPoet\Captcha\Validator;
 
 use Codeception\Stub;
 use MailPoet\Captcha\ReCaptchaValidator as Validator;

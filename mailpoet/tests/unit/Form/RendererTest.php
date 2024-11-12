@@ -3,12 +3,12 @@
 namespace MailPoet\Test\Form;
 
 use Codeception\Util\Fixtures;
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Form\BlocksRenderer;
 use MailPoet\Form\Renderer;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha\CaptchaConstants;
 use PHPUnit\Framework\MockObject\MockObject;
 
 require_once __DIR__ . '/HtmlParser.php';

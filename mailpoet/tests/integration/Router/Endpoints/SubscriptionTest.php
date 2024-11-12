@@ -4,9 +4,9 @@ namespace MailPoet\Test\Router\Endpoints;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
+use MailPoet\Captcha\CaptchaRenderer;
+use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Router\Endpoints\Subscription;
-use MailPoet\Subscription\Captcha\CaptchaRenderer;
-use MailPoet\Subscription\Captcha\CaptchaSession;
 use MailPoet\Subscription\Pages;
 use MailPoet\Util\Request;
 use MailPoet\WP\Functions as WPFunctions;

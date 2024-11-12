@@ -3,8 +3,8 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Entities\CustomFieldEntity;
-use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\CustomField;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;

@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace Mailpoet\Test\Subscription\Captcha\Validator;
+namespace Mailpoet\Test\Captcha\Validator;
 
+use MailPoet\Captcha\CaptchaSession;
+use MailPoet\Captcha\Validator\CaptchaValidator;
+use MailPoet\Captcha\Validator\ValidationError;
 use MailPoet\Entities\SubscriberIPEntity;
-use MailPoet\Subscription\Captcha\CaptchaSession;
-use MailPoet\Subscription\Captcha\Validator\CaptchaValidator;
-use MailPoet\Subscription\Captcha\Validator\ValidationError;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;

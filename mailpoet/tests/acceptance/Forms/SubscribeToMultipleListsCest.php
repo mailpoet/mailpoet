@@ -3,9 +3,9 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Form\FormMessageController;
-use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
@@ -50,7 +50,7 @@ class SubscribeToMultipleListsCest {
       ',
       'post_status' => 'publish',
     ]);
-  
+
     $i->wantTo('Subscribe to the form with multiple lists attached');
     $i->amOnPage('/form-test');
     $i->waitForElement('[data-automation-id="form_email"]');

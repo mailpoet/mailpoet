@@ -3,7 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
-use MailPoet\Subscription\Captcha\CaptchaConstants;
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 

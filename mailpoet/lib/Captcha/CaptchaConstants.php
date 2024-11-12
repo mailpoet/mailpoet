@@ -1,6 +1,6 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
-namespace MailPoet\Subscription\Captcha;
+namespace MailPoet\Captcha;
 
 class CaptchaConstants {
   const TYPE_BUILTIN = 'built-in';

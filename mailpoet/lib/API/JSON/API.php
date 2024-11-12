@@ -2,11 +2,11 @@
 
 namespace MailPoet\API\JSON;
 
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Config\AccessControl;
 use MailPoet\Exception;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Tracy\ApiPanel\ApiPanel;
 use MailPoet\Tracy\DIPanel\DIPanel;
 use MailPoet\Util\Helpers;

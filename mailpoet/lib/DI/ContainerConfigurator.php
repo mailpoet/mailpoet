@@ -546,12 +546,12 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Settings\UserFlagsController::class);
     $container->autowire(\MailPoet\Settings\UserFlagsRepository::class)->setPublic(true);
     // Subscription
-    $container->autowire(\MailPoet\Subscription\Captcha\CaptchaConstants::class)->setPublic(true);
-    $container->autowire(\MailPoet\Subscription\Captcha\CaptchaSession::class)->setPublic(true);
-    $container->autowire(\MailPoet\Subscription\Captcha\CaptchaRenderer::class)->setPublic(true);
-    $container->autowire(\MailPoet\Subscription\Captcha\CaptchaPhrase::class);
-    $container->autowire(\MailPoet\Subscription\Captcha\Validator\CaptchaValidator::class)->setPublic(true);
-    $container->autowire(\MailPoet\Subscription\Captcha\Validator\RecaptchaValidator::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\CaptchaConstants::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\CaptchaSession::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\CaptchaRenderer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\CaptchaPhrase::class);
+    $container->autowire(\MailPoet\Captcha\Validator\CaptchaValidator::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\Validator\RecaptchaValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Comment::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Form::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Manage::class)->setPublic(true);

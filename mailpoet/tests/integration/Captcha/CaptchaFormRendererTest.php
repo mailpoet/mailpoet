@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Test\Subscription;
+namespace MailPoet\Test\Captcha;
 
 use MailPoet\Captcha\CaptchaFormRenderer;
+use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
-use MailPoet\Subscription\Captcha\CaptchaSession;
 
 class CaptchaFormRendererTest extends \MailPoetTest {
   public function testCaptchaSubmitTextIsConfigurable() {

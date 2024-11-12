@@ -2,6 +2,8 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Captcha\CaptchaConstants;
+use MailPoet\Captcha\CaptchaRenderer;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\BackfillEngagementData;
@@ -32,8 +34,6 @@ use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\UserFlagsRepository;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\Source;
-use MailPoet\Subscription\Captcha\CaptchaConstants;
-use MailPoet\Subscription\Captcha\CaptchaRenderer;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 use MailPoetVendor\Doctrine\ORM\EntityManager;

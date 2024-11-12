@@ -1,9 +1,9 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Test\Subscription\Captcha;
+namespace MailPoet\Test\Captcha;
 
-use MailPoet\Subscription\Captcha\CaptchaRenderer;
-use MailPoet\Subscription\Captcha\CaptchaSession;
+use MailPoet\Captcha\CaptchaRenderer;
+use MailPoet\Captcha\CaptchaSession;
 
 class CaptchaRendererTest extends \MailPoetTest {
   private CaptchaRenderer $testee;

@@ -7,8 +7,6 @@ use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
 use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util\Styles;
-use MailPoet\Subscription\Captcha\CaptchaPhrase;
-use MailPoet\Subscription\Captcha\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Url as UrlHelper;
 

@@ -42,7 +42,7 @@ class Subscription {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var UserSubscription\Captcha\CaptchaRenderer */
+  /** @var \MailPoet\Captcha\CaptchaRenderer */
   private $captchaRenderer;
 
   /*** @var Request */
@@ -51,7 +51,7 @@ class Subscription {
   public function __construct(
     UserSubscription\Pages $subscriptionPages,
     WPFunctions $wp,
-    UserSubscription\Captcha\CaptchaRenderer $captchaRenderer,
+    \MailPoet\Captcha\CaptchaRenderer $captchaRenderer,
     Request $request
   ) {
     $this->subscriptionPages = $subscriptionPages;

@@ -2,7 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Subscription\Captcha\CaptchaConstants;
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Form;
 use MailPoet\Test\DataFactories\Settings;
 use MailPoet\Test\DataFactories\Subscriber;

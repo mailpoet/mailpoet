@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Subscription\Captcha\Validator;
+namespace MailPoet\Captcha\Validator;
 
 use Codeception\Stub;
+use MailPoet\Captcha\CaptchaPhrase;
+use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Subscribers\SubscriberIPsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Subscription\Captcha\CaptchaPhrase;
-use MailPoet\Subscription\Captcha\CaptchaSession;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
 

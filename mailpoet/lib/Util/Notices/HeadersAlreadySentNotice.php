@@ -2,9 +2,9 @@
 
 namespace MailPoet\Util\Notices;
 
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Settings\TrackingConfig;
-use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice;

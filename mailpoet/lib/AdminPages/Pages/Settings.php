@@ -4,6 +4,7 @@ namespace MailPoet\AdminPages\Pages;
 
 use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
+use MailPoet\Captcha\CaptchaRenderer;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Segments\SegmentsSimpleListRepository;
@@ -13,7 +14,6 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\Hosts;
 use MailPoet\Settings\Pages;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha\CaptchaRenderer;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoet\WP\Notice as WPNotice;
 

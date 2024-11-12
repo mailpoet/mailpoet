@@ -1,10 +1,10 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
-namespace MailPoet\Subscription\Captcha\Validator;
+namespace MailPoet\Captcha\Validator;
 
+use MailPoet\Captcha\CaptchaPhrase;
 use MailPoet\Subscribers\SubscriberIPsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Subscription\Captcha\CaptchaPhrase;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;

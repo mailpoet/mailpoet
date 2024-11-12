@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Subscription\Captcha;
+namespace MailPoet\Captcha;
 
 use MailPoet\Config\Env;
 use MailPoet\Util\Headers;

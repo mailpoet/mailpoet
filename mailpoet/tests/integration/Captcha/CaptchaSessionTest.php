@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Test\Subscription\Captcha;
+namespace MailPoet\Test\Captcha;
 
-use MailPoet\Subscription\Captcha\CaptchaSession;
+use MailPoet\Captcha\CaptchaSession;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaSessionTest extends \MailPoetTest {
