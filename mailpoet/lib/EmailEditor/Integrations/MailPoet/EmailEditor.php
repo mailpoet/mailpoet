@@ -60,7 +60,19 @@ class EmailEditor {
   }
 
   public function isEditorPage(bool $isEditorPage): bool {
-    return $isEditorPage || (isset($_GET['page']) && $_GET['page'] === Menu::EMAIL_EDITOR_V2_PAGE_SLUG);
+    if ($isEditorPage) {
+      return $isEditorPage;
+    }
+    if ($this->wp->isAdmin()) {
+      // Check on for post editor page
+      if (isset($_GET['post']) && isset($_GET['action']) && $_GET['action'] === 'edit') {
+        $post = $this->wp->getPost((int)$_GET['post']);
+        return $post && $post->post_type === self::MAILPOET_EMAIL_POST_TYPE; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      }
+      // Check for custom mailpoet email editor page
+      return (isset($_GET['page']) && $_GET['page'] === Menu::EMAIL_EDITOR_V2_PAGE_SLUG);
+    }
+    return false;
   }
 
   public function extendEmailPostApi() {
