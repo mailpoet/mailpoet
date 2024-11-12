@@ -73,6 +73,60 @@ class Content_Renderer_Test extends \MailPoetTest {
 	}
 
 	/**
+	 * Test It Renders Block With Fallback Renderer
+	 */
+	public function testItRendersBlockWithFallbackRenderer(): void {
+		$fallback_renderer = $this->createMock( Block_Renderer::class );
+		$fallback_renderer->expects( $this->once() )->method( 'render' );
+		$blocks_registry = $this->createMock( Blocks_Registry::class );
+		$blocks_registry->expects( $this->once() )->method( 'get_block_renderer' )->willReturn( null );
+		$blocks_registry->expects( $this->once() )->method( 'get_fallback_renderer' )->willReturn( $fallback_renderer );
+		$renderer = $this->getServiceWithOverrides(
+			Content_Renderer::class,
+			array(
+				'blocks_registry' => $blocks_registry,
+			)
+		);
+
+		$renderer->render_block( 'content', array( 'blockName' => 'block' ) );
+	}
+
+	/**
+	 * Test It Renders Block With Block Renderer
+	 */
+	public function testItRendersBlockWithBlockRenderer(): void {
+		$renderer        = $this->createMock( Block_Renderer::class );
+		$blocks_registry = $this->createMock( Blocks_Registry::class );
+		$blocks_registry->expects( $this->once() )->method( 'get_block_renderer' )->willReturn( $renderer );
+		$blocks_registry->expects( $this->never() )->method( 'get_fallback_renderer' )->willReturn( null );
+		$renderer = $this->getServiceWithOverrides(
+			Content_Renderer::class,
+			array(
+				'blocks_registry' => $blocks_registry,
+			)
+		);
+
+		$renderer->render_block( 'content', array( 'blockName' => 'block' ) );
+	}
+
+	/**
+	 * Test It Renders Block When no Renderer available
+	 */
+	public function testItReturnsContentIfNoRendererAvailable(): void {
+		$blocks_registry = $this->createMock( Blocks_Registry::class );
+		$blocks_registry->expects( $this->once() )->method( 'get_block_renderer' )->willReturn( null );
+		$blocks_registry->expects( $this->once() )->method( 'get_fallback_renderer' )->willReturn( null );
+		$renderer = $this->getServiceWithOverrides(
+			Content_Renderer::class,
+			array(
+				'blocks_registry' => $blocks_registry,
+			)
+		);
+
+		verify( $renderer->render_block( 'content', array( 'blockName' => 'block' ) ) )->equals( 'content' );
+	}
+
+	/**
 	 * Get the value of the style attribute for a given tag in the HTML.
 	 *
 	 * @param string $html HTML content.
