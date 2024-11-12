@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Subscription;
 
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Settings\Pages as SettingPages;
 use MailPoet\Settings\SettingsController;
 use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
@@ -22,17 +23,20 @@ class SubscriptionUrlFactoryTest extends \MailPoetTest {
   }
 
   public function testGetReEngagementUrlReturnsDefaultUrl() {
-    $expectedUrl = '/?mailpoet_page=subscriptions&mailpoet_router&endpoint=subscription&action=re_engagement&data=';
+    SettingPages::createMailPoetPage();
+    $expectedUrl = get_permalink(SettingPages::getDefaultMailPoetPage());
+
+    $this->assertIsString($expectedUrl, "Permalink is a valid string");
     $this->assertStringContainsString($expectedUrl, $this->subscriptionUrlFactory->getReEngagementUrl($this->subscriber));
   }
 
   public function testGetReEngagementUrlReturnsUrlToUserSelectedPage() {
-
     $settings = $this->diContainer->get(SettingsController::class);
     $postId = wp_insert_post([
       'post_title' => 'testGetReEngagementUrlReturnsUrlToUserSelectedPage',
       'post_status' => 'publish',
     ]);
+
     $settings->set('reEngagement', ['page' => $postId]);
     $expectedUrl = get_permalink($postId);
 

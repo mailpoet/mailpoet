@@ -47,7 +47,7 @@ class Populator {
   private $wp;
   /** @var CaptchaRenderer */
   private $captchaRenderer;
-  /** @var ReferralDetector  */
+  /** @var ReferralDetector */
   private $referralDetector;
   const TEMPLATES_NAMESPACE = '\MailPoet\Config\PopulatorData\Templates\\';
   /** @var WP */
@@ -187,6 +187,14 @@ class Populator {
     if ($page === null) {
       $mailpoetPageId = Pages::createMailPoetPage();
     } else {
+      // Used to be 'subscriptions,' we renamed it to 'template'
+      if ($page->post_name !== 'template') { // phpcs:ignore
+        $this->wp->wpUpdatePost([
+          'ID' => $page->ID,
+          'post_name' => 'template',
+        ]);
+      }
+
       $mailpoetPageId = (int)$page->ID;
     }
 

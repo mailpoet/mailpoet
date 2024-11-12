@@ -38,7 +38,7 @@ class Pages {
       'post_author' => 1,
       'post_content' => '[mailpoet_page]',
       'post_title' => __('MailPoet Page', 'mailpoet'),
-      'post_name' => 'subscriptions',
+      'post_name' => 'template',
     ]);
 
     return ((int)$id > 0) ? (int)$id : false;
