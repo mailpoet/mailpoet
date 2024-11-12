@@ -60,15 +60,6 @@ class Subscription {
     $this->request = $request;
   }
 
-  public function captchaAudio($data): void {
-    $sessionId = $data['captcha_session_id'] ?? null;
-    if (!$sessionId) {
-      return;
-    }
-    $this->captchaRenderer->renderAudio($sessionId);
-    exit;
-  }
-
   public function captchaRefresh($data): void {
     $captchaSessionId = $data['captcha_session_id'] ?? null;
     if (!$captchaSessionId) {
