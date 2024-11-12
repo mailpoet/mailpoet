@@ -10,6 +10,7 @@ class Captcha {
   const ENDPOINT = 'captcha';
   const ACTION_RENDER = 'render';
   const ACTION_IMAGE = 'image';
+  const ACTION_AUDIO = 'audio';
 
   private PageRenderer $pageRenderer;
   private CaptchaRenderer $captchaRenderer;
@@ -17,6 +18,7 @@ class Captcha {
   public $allowedActions = [
     self::ACTION_RENDER,
     self::ACTION_IMAGE,
+    self::ACTION_AUDIO,
   ];
 
   public $permissions = [
@@ -44,6 +46,16 @@ class Captcha {
     }
 
     $this->captchaRenderer->renderImage($sessionId, $width, $height);
+    exit;
+  }
+
+  public function audio($data) {
+    $sessionId = $data['captcha_session_id'] ?? null;
+    if (!$sessionId) {
+      return;
+    }
+
+    $this->captchaRenderer->renderAudio($sessionId);
     exit;
   }
 }
