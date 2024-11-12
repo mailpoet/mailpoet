@@ -30,21 +30,9 @@ class UrlTest extends \MailPoetTest {
   public function testItReturnsTheDefaultPageUrlIfNoPageIsSetInSettings() {
     $this->settings->delete('subscription');
 
-    $url = $this->url->getCaptchaUrl('abc');
-    verify($url)->notNull();
-    verify($url)->stringContainsString('action=captcha');
-    verify($url)->stringContainsString('endpoint=subscription');
-
     $url = $this->url->getUnsubscribeUrl(null);
     verify($url)->notNull();
     verify($url)->stringContainsString('action=unsubscribe');
-    verify($url)->stringContainsString('endpoint=subscription');
-  }
-
-  public function testItReturnsTheCaptchaUrl() {
-    $url = $this->url->getCaptchaUrl('abc');
-    verify($url)->notNull();
-    verify($url)->stringContainsString('action=captcha');
     verify($url)->stringContainsString('endpoint=subscription');
   }
 

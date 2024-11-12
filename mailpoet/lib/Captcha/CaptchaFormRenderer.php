@@ -50,10 +50,6 @@ class CaptchaFormRenderer {
     $this->styles = $styles;
   }
 
-  public function getCaptchaPageTitle() {
-    return __("Confirm you’re not a robot", 'mailpoet');
-  }
-
   public function getCaptchaPageContent(string $sessionId) {
     $this->captchaPhrase->createPhrase($sessionId);
     $captchaSessionForm = $this->captchaSession->getFormData($sessionId);

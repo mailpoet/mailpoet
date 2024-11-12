@@ -65,7 +65,10 @@ class PageRenderer {
   public function setPageContent($pageContent) {
     $this->assetsController->setupFrontEndDependencies();
 
-    $sessionId = $this->data['captcha_session_id'] ?? null;
+    $sessionId = (isset($this->data['captcha_session_id']) && is_string($this->data['captcha_session_id']))
+      ? $this->data['captcha_session_id']
+      : null;
+
     if (!$sessionId) {
       return false;
     }

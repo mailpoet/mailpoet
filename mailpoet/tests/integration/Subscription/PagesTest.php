@@ -3,7 +3,6 @@
 namespace MailPoet\Test\Subscription;
 
 use Codeception\Stub;
-use MailPoet\Captcha\CaptchaFormRenderer;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
@@ -303,7 +302,6 @@ class PagesTest extends \MailPoetTest {
     return new Pages(
       $newSubscriberNotificationsMock ?? $container->get(NewSubscriberNotificationMailer::class),
       $container->get(WPFunctions::class),
-      $container->get(CaptchaFormRenderer::class),
       $container->get(WelcomeScheduler::class),
       $container->get(LinkTokens::class),
       $container->get(SubscriptionUrlFactory::class),

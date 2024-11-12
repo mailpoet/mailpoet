@@ -60,10 +60,6 @@ class Subscription {
     $this->request = $request;
   }
 
-  public function captcha($data) {
-    $this->initSubscriptionPage(UserSubscription\Pages::ACTION_CAPTCHA, $data);
-  }
-
   public function captchaImage($data): void {
     $width = !empty($data['width']) ? (int)$data['width'] : null;
     $height = !empty($data['height']) ? (int)$data['height'] : null;

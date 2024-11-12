@@ -2,7 +2,6 @@
 
 namespace MailPoet\Subscription;
 
-use MailPoet\Captcha\CaptchaFormRenderer;
 use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\Entities\NewsletterLinkEntity;
@@ -28,7 +27,6 @@ use MailPoetVendor\Doctrine\ORM\EntityManager;
 
 class Pages {
   const DEMO_EMAIL = 'demo@mailpoet.com';
-  const ACTION_CAPTCHA = 'captcha';
   const ACTION_CONFIRM = 'confirm';
   const ACTION_CONFIRM_UNSUBSCRIBE = 'confirm_unsubscribe';
   const ACTION_MANAGE = 'manage';
@@ -44,9 +42,6 @@ class Pages {
 
   /** @var WPFunctions */
   private $wp;
-
-  /** @var CaptchaFormRenderer */
-  private $captchaRenderer;
 
   /** @var WelcomeScheduler */
   private $welcomeScheduler;
@@ -99,7 +94,6 @@ class Pages {
   public function __construct(
     NewSubscriberNotificationMailer $newSubscriberNotificationSender,
     WPFunctions $wp,
-    CaptchaFormRenderer $captchaRenderer,
     WelcomeScheduler $welcomeScheduler,
     LinkTokens $linkTokens,
     SubscriptionUrlFactory $subscriptionUrlFactory,
@@ -119,7 +113,6 @@ class Pages {
   ) {
     $this->wp = $wp;
     $this->newSubscriberNotificationSender = $newSubscriberNotificationSender;
-    $this->captchaRenderer = $captchaRenderer;
     $this->welcomeScheduler = $welcomeScheduler;
     $this->linkTokens = $linkTokens;
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
@@ -290,14 +283,11 @@ class Pages {
     ) {
       // when it's a custom page, just return the original page title
       return $pageTitle;
-    } elseif ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === null) {
+    } elseif ($this->isPreview() === false && $this->subscriber === null) {
       return __("Hmmm... we don't have a record of you.", 'mailpoet');
     } else {
       // when it's our own page, generate page title based on requested action
       switch ($this->action) {
-        case self::ACTION_CAPTCHA:
-          return $this->captchaRenderer->getCaptchaPageTitle();
-
         case self::ACTION_CONFIRM:
           return $this->getConfirmTitle();
 
@@ -317,8 +307,7 @@ class Pages {
   }
 
   public function setPageContent($pageContent = '[mailpoet_page]') {
-    // if we're not in preview mode or captcha page and the subscriber does not exist
-    if ($this->action !== self::ACTION_CAPTCHA && $this->isPreview() === false && $this->subscriber === null) {
+    if ($this->isPreview() === false && $this->subscriber === null) {
       return __("Your email address doesn't appear in our lists anymore. Sign up again or contact us if this appears to be a mistake.", 'mailpoet');
     }
 
@@ -328,16 +317,6 @@ class Pages {
       $content = '';
 
       switch ($this->action) {
-        case self::ACTION_CAPTCHA:
-          $captchaSessionId =
-            (isset($this->data['captcha_session_id']) && is_string($this->data['captcha_session_id']))
-            ? $this->data['captcha_session_id']
-            : null;
-          if (!$captchaSessionId) {
-            return false;
-          }
-          $content = $this->captchaRenderer->getCaptchaPageContent($captchaSessionId);
-          break;
         case self::ACTION_CONFIRM:
           $content = $this->getConfirmContent();
           break;
