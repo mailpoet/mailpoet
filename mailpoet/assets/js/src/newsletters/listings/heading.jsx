@@ -1,22 +1,22 @@
-import { Link } from 'react-router-dom';
 import { __ } from '@wordpress/i18n';
 import { MailPoet } from 'mailpoet';
-import { TopBarWithBeamer } from 'common/top-bar/top-bar';
+import { Button } from '@wordpress/components';
 import { plusIcon } from 'common/button/icon/plus';
+import { PageHeader } from '../../common/page-header';
 
 export function ListingHeading() {
   return (
-    <TopBarWithBeamer>
-      <Link
-        id="mailpoet-new-email"
-        className="mailpoet-button button-secondary"
-        to="/new"
-        onClick={() => MailPoet.trackEvent('Emails > Add New')}
+    <PageHeader heading={__('Emails', 'mailpoet')}>
+      <Button
+        href="#/new"
+        onClick={() => MailPoet.trackEvent('Emails clicked on New email')}
+        icon={plusIcon}
+        variant="primary"
         data-automation-id="new_email"
+        className="mailpoet-button button-secondary"
       >
-        {plusIcon}
-        <span>{__('New email', 'mailpoet')}</span>
-      </Link>
-    </TopBarWithBeamer>
+        {__('New email', 'mailpoet')}
+      </Button>
+    </PageHeader>
   );
 }

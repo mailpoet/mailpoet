@@ -81,7 +81,7 @@ const Tabs = withNpsPoll(() => {
   return (
     <>
       <ListingHeadingDisplay>
-        <ListingHeading />
+        <TopBarWithBeamer />
       </ListingHeadingDisplay>
       {window.mailpoet_legacy_automatic_emails_count > 0 &&
         !window.mailpoet_legacy_automatic_emails_notice_dismissed && (
@@ -90,6 +90,9 @@ const Tabs = withNpsPoll(() => {
       {MailPoet.corrupt_newsletters.length > 0 && (
         <CorruptEmailNotice newsletters={MailPoet.corrupt_newsletters} />
       )}
+
+      <ListingHeading />
+
       <div key="emails" data-automation-id="newsletters_listing_tabs">
         <TabPanel
           tabs={tabs}
