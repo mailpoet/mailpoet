@@ -5,9 +5,9 @@ namespace MailPoet\Captcha\Validator;
 use Codeception\Stub;
 use MailPoet\Captcha\CaptchaPhrase;
 use MailPoet\Captcha\CaptchaSession;
+use MailPoet\Captcha\CaptchaUrlFactory;
 use MailPoet\Subscribers\SubscriberIPsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\WP\Functions as WPFunctions;
 
 class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
@@ -34,9 +34,8 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
   }
 
   public function testHashIsValid() {
-
     $phrase = 'abc';
-    $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
+    $urlFactory = Stub::makeEmpty(CaptchaUrlFactory::class);
     $captchaPhrase = Stub::make(
       CaptchaPhrase::class,
       [
@@ -44,10 +43,11 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       ],
       $this
     );
+
     $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
     $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
     $testee = new CaptchaValidator(
-      $subscriptionUrlFactory,
+      $urlFactory,
       $captchaPhrase,
       $this->wp,
       $subscriberIpRepository,
@@ -58,8 +58,8 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       'captcha' => $phrase,
       'captcha_session_id' => '123',
     ];
-    verify($testee->validate($data))->true();
 
+    verify($testee->validate($data))->true();
   }
 
   /**
@@ -67,7 +67,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
    */
   public function testSomeRolesCanBypassCaptcha($wp) {
     $phrase = 'abc';
-    $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
+    $urlFactory = Stub::makeEmpty(CaptchaUrlFactory::class);
     $captchaPhrase = Stub::make(
       CaptchaPhrase::class,
       [
@@ -79,7 +79,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
     $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
     $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
     $testee = new CaptchaValidator(
-      $subscriptionUrlFactory,
+      $urlFactory,
       $captchaPhrase,
       $wp,
       $subscriberIpRepository,
@@ -90,6 +90,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       'captcha' => $phrase,
       'captcha_session_id' => '123',
     ];
+
     verify($testee->validate($data))->true();
   }
 
@@ -154,17 +155,19 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
 
   public function testEditorsBypassCaptcha() {
     $phrase = 'abc';
-    $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
+    $urlFactory = Stub::makeEmpty(CaptchaUrlFactory::class);
     $captchaPhrase = Stub::make(
       CaptchaPhrase::class,
       [
-      'getPhrase' => 'something.else.' . $phrase,
+        'getPhrase' => 'something.else.' . $phrase,
       ],
       $this
     );
+
     $currentUser = (object)[
-    'roles' => ['editor'],
+      'roles' => ['editor'],
     ];
+
     $captchaSession = Stub::makeEmpty(CaptchaSession::class);
     $wp = Stub::make(
       WPFunctions::class,
@@ -179,10 +182,11 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       ],
       $this
     );
+
     $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
     $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
     $testee = new CaptchaValidator(
-      $subscriptionUrlFactory,
+      $urlFactory,
       $captchaPhrase,
       $wp,
       $subscriberIpRepository,
@@ -193,21 +197,21 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       'captcha' => $phrase,
       'captcha_session_id' => '123',
     ];
-    verify($testee->validate($data))->true();
 
+    verify($testee->validate($data))->true();
   }
 
   public function testNoCaptchaFound() {
-
     $phrase = 'abc';
     $newUrl = 'https://example.com';
-    $subscriptionUrlFactory = Stub::make(
-      SubscriptionUrlFactory::class,
+    $captchaController = Stub::make(
+      CaptchaUrlFactory::class,
       [
         'getCaptchaUrl' => $newUrl,
       ],
       $this
     );
+
     $captchaPhrase = Stub::make(
       CaptchaPhrase::class,
       [
@@ -215,11 +219,12 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       ],
       $this
     );
+
     $captchaSession = Stub::makeEmpty(CaptchaSession::class);
     $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
     $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
     $testee = new CaptchaValidator(
-      $subscriptionUrlFactory,
+      $captchaController,
       $captchaPhrase,
       $this->wp,
       $subscriberIpRepository,
@@ -230,6 +235,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       'captcha' => $phrase,
       'captcha_session_id' => '123',
     ];
+
     $error = null;
     try {
       $testee->validate($data);
@@ -237,13 +243,13 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       verify($error->getMessage())->equals('Please regenerate the CAPTCHA.');
       verify($error->getMeta()['redirect_url'])->equals($newUrl);
     }
+
     verify($error)->instanceOf(ValidationError::class);
   }
 
   public function testCaptchaMissmatch() {
-
     $phrase = 'abc';
-    $subscriptionUrlFactory = Stub::makeEmpty(SubscriptionUrlFactory::class);
+    $urlFactory = Stub::makeEmpty(CaptchaUrlFactory::class);
     $captchaPhrase = Stub::make(
       CaptchaPhrase::class,
       [
@@ -252,10 +258,11 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       ],
       $this
     );
+
     $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
     $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
     $testee = new CaptchaValidator(
-      $subscriptionUrlFactory,
+      $urlFactory,
       $captchaPhrase,
       $this->wp,
       $subscriberIpRepository,
@@ -266,6 +273,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       'captcha' => $phrase,
       'captcha_session_id' => '123',
     ];
+
     $error = null;
     try {
       $testee->validate($data);
@@ -273,20 +281,21 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       verify($error->getMessage())->equals('The characters entered do not match with the previous CAPTCHA.');
       verify($error->getMeta()['refresh_captcha'])->true();
     }
+
     verify($error)->instanceOf(ValidationError::class);
   }
 
   public function testNoCaptchaIsSend() {
-
     $phrase = 'abc';
     $newUrl = 'https://example.com';
-    $subscriptionUrlFactory = Stub::make(
-      SubscriptionUrlFactory::class,
+    $captchaController = Stub::make(
+      CaptchaUrlFactory::class,
       [
         'getCaptchaUrl' => $newUrl,
       ],
       $this
     );
+
     $captchaPhrase = Stub::make(
       CaptchaPhrase::class,
       [
@@ -294,10 +303,11 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       ],
       $this
     );
+
     $subscriberIpRepository = Stub::makeEmpty(SubscriberIPsRepository::class);
     $subscriberRepository = Stub::makeEmpty(SubscribersRepository::class);
     $testee = new CaptchaValidator(
-      $subscriptionUrlFactory,
+      $captchaController,
       $captchaPhrase,
       $this->wp,
       $subscriberIpRepository,
@@ -308,6 +318,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       'captcha' => '',
       'captcha_session_id' => '123',
     ];
+
     $error = null;
     try {
       $testee->validate($data);
@@ -315,6 +326,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
       verify($error->getMessage())->equals('Please fill in the CAPTCHA.');
       verify($error->getMeta()['redirect_url'])->equals($newUrl);
     }
+
     verify($error)->instanceOf(ValidationError::class);
   }
 }

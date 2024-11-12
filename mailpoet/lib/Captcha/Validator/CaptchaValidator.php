@@ -3,15 +3,15 @@
 namespace MailPoet\Captcha\Validator;
 
 use MailPoet\Captcha\CaptchaPhrase;
+use MailPoet\Captcha\CaptchaUrlFactory;
 use MailPoet\Subscribers\SubscriberIPsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Helpers;
 use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaValidator {
-  /** @var SubscriptionUrlFactory  */
-  private $subscriptionUrlFactory;
+  /** @var CaptchaUrlFactory  */
+  private $urlFactory;
 
   /** @var CaptchaPhrase */
   private $captchaPhrase;
@@ -26,13 +26,13 @@ class CaptchaValidator {
   private $subscribersRepository;
 
   public function __construct(
-    SubscriptionUrlFactory $subscriptionUrlFactory,
+    CaptchaUrlFactory $urlFactory,
     CaptchaPhrase $captchaPhrase,
     WPFunctions $wp,
     SubscriberIPsRepository $subscriberIPsRepository,
     SubscribersRepository $subscribersRepository
   ) {
-    $this->subscriptionUrlFactory = $subscriptionUrlFactory;
+    $this->urlFactory = $urlFactory;
     $this->captchaPhrase = $captchaPhrase;
     $this->wp = $wp;
     $this->subscriberIPsRepository = $subscriberIPsRepository;
@@ -55,7 +55,7 @@ class CaptchaValidator {
       throw new ValidationError(
         __('Please fill in the CAPTCHA.', 'mailpoet'),
         [
-          'redirect_url' => $this->subscriptionUrlFactory->getCaptchaUrl($sessionId),
+          'redirect_url' => $this->urlFactory->getCaptchaUrl($sessionId),
         ]
       );
     }
@@ -65,7 +65,7 @@ class CaptchaValidator {
       throw new ValidationError(
         __('Please regenerate the CAPTCHA.', 'mailpoet'),
         [
-          'redirect_url' => $this->subscriptionUrlFactory->getCaptchaUrl($sessionId),
+          'redirect_url' => $this->urlFactory->getCaptchaUrl($sessionId),
         ]
       );
     }

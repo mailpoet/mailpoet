@@ -658,6 +658,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannelController::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannelDataController::class)->setPublic(true);
     // CAPTCHA
+    $container->autowire(\MailPoet\Captcha\CaptchaUrlFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Captcha\CaptchaFormRenderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Captcha\PageRenderer::class)->setPublic(true);
 
