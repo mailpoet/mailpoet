@@ -2,29 +2,48 @@
 
 namespace MailPoet\Router\Endpoints;
 
+use MailPoet\Captcha\CaptchaRenderer;
 use MailPoet\Captcha\PageRenderer;
 use MailPoet\Config\AccessControl;
 
 class Captcha {
   const ENDPOINT = 'captcha';
   const ACTION_RENDER = 'render';
+  const ACTION_IMAGE = 'image';
 
-  private PageRenderer $renderer;
+  private PageRenderer $pageRenderer;
+  private CaptchaRenderer $captchaRenderer;
 
   public $allowedActions = [
     self::ACTION_RENDER,
+    self::ACTION_IMAGE,
   ];
 
   public $permissions = [
     'global' => AccessControl::NO_ACCESS_RESTRICTION,
   ];
 
-  // phpcs:ignore
-  public function __construct(PageRenderer $renderer) {
-    $this->renderer = $renderer;
+  public function __construct(
+    PageRenderer $renderer,
+    CaptchaRenderer $captchaRenderer
+  ) {
+    $this->pageRenderer = $renderer;
+    $this->captchaRenderer = $captchaRenderer;
   }
 
   public function render($data) {
-    $this->renderer->render($data);
+    $this->pageRenderer->render($data);
+  }
+
+  public function image($data) {
+    $width = !empty($data['width']) ? (int)$data['width'] : null;
+    $height = !empty($data['height']) ? (int)$data['height'] : null;
+    $sessionId = $data['captcha_session_id'] ?? null;
+    if (!$sessionId) {
+      return;
+    }
+
+    $this->captchaRenderer->renderImage($sessionId, $width, $height);
+    exit;
   }
 }
