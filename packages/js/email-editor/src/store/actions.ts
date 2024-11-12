@@ -21,11 +21,12 @@ export const toggleInserterSidebar =
 		void registry.dispatch( editorStore ).setIsInserterOpened( ! status );
 	};
 
-export function toggleListviewSidebar() {
-	return {
-		type: 'TOGGLE_LISTVIEW_SIDEBAR',
-	} as const;
-}
+export const toggleListviewSidebar =
+	() =>
+	( { registry } ) => {
+		const status = registry.select( editorStore ).isListViewOpened();
+		void registry.dispatch( editorStore ).setIsListViewOpened( ! status );
+	};
 
 export const changePreviewDeviceType =
 	( deviceType: string ) =>

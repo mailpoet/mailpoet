@@ -237,9 +237,11 @@ export const isInserterSidebarOpened = createRegistrySelector(
 		select( editorStore ).isInserterOpened() as boolean
 );
 
-export function isListviewSidebarOpened( state: State ): boolean {
-	return state.listviewSidebar.isOpened;
-}
+export const isListviewSidebarOpened = createRegistrySelector(
+	( select ) => () =>
+		// @ts-expect-error isListViewOpened is missing in types.
+		select( editorStore ).isListViewOpened() as boolean
+);
 
 export function getSettingsSidebarActiveTab( state: State ): string {
 	return state.settingsSidebar.activeTab;

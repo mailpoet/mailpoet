@@ -2,18 +2,6 @@ import { State } from './types';
 
 export function reducer( state: State, action ): State {
 	switch ( action.type ) {
-		case 'TOGGLE_LISTVIEW_SIDEBAR':
-			return {
-				...state,
-				inserterSidebar: {
-					...state.inserterSidebar,
-					isOpened: false,
-				},
-				listviewSidebar: {
-					...state.listviewSidebar,
-					isOpened: ! state.listviewSidebar.isOpened,
-				},
-			};
 		case 'CHANGE_PREVIEW_STATE':
 			return {
 				...state,
