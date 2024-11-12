@@ -1,6 +1,6 @@
 <?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
 
-namespace MailPoet\Subscription;
+namespace MailPoet\Captcha;
 
 use MailPoet\Config\Env;
 use MailPoet\Entities\FormEntity;
@@ -9,6 +9,7 @@ use MailPoet\Form\Renderer as FormRenderer;
 use MailPoet\Form\Util\Styles;
 use MailPoet\Subscription\Captcha\CaptchaPhrase;
 use MailPoet\Subscription\Captcha\CaptchaSession;
+use MailPoet\Subscription\SubscriptionUrlFactory;
 use MailPoet\Util\Url as UrlHelper;
 
 class CaptchaFormRenderer {

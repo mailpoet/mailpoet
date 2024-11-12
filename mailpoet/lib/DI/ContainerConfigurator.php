@@ -427,6 +427,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Router\Endpoints\ViewInBrowser::class)->setPublic(true);
     $container->autowire(\MailPoet\Router\Endpoints\TemplateImage::class)->setPublic(true);
     $container->autowire(\MailPoet\Router\Endpoints\Track::class)->setPublic(true);
+    $container->autowire(\MailPoet\Router\Endpoints\Captcha::class)->setPublic(true);
     // Statistics
     $container->autowire(\MailPoet\Statistics\Track\Clicks::class);
     $container->autowire(\MailPoet\Statistics\Track\Opens::class)->setPublic(true);
@@ -546,7 +547,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Settings\UserFlagsRepository::class)->setPublic(true);
     // Subscription
     $container->autowire(\MailPoet\Subscription\Captcha\CaptchaConstants::class)->setPublic(true);
-    $container->autowire(\MailPoet\Subscription\CaptchaFormRenderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Captcha\CaptchaSession::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Captcha\CaptchaRenderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Captcha\CaptchaPhrase::class);
@@ -657,6 +657,9 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\WooCommerce\WooSystemInfoController::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannelController::class)->setPublic(true);
     $container->autowire(\MailPoet\WooCommerce\MultichannelMarketing\MPMarketingChannelDataController::class)->setPublic(true);
+    // CAPTCHA
+    $container->autowire(\MailPoet\Captcha\CaptchaFormRenderer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\PageRenderer::class)->setPublic(true);
 
     // WooCommerce Subscriptions
     $container->autowire(\MailPoet\WooCommerce\WooCommerceSubscriptions\Helper::class)->setPublic(true);

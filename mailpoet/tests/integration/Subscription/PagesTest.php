@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Subscription;
 
 use Codeception\Stub;
+use MailPoet\Captcha\CaptchaFormRenderer;
 use MailPoet\Config\Renderer;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Links;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
@@ -30,7 +31,6 @@ use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 use MailPoet\Subscribers\SubscriberSaveController;
 use MailPoet\Subscribers\SubscriberSegmentRepository;
 use MailPoet\Subscribers\SubscribersRepository;
-use MailPoet\Subscription\CaptchaFormRenderer;
 use MailPoet\Subscription\ManageSubscriptionFormRenderer;
 use MailPoet\Subscription\Pages;
 use MailPoet\Subscription\SubscriptionUrlFactory;

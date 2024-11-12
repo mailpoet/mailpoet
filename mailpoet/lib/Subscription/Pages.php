@@ -2,6 +2,7 @@
 
 namespace MailPoet\Subscription;
 
+use MailPoet\Captcha\CaptchaFormRenderer;
 use MailPoet\Config\Renderer as TemplateRenderer;
 use MailPoet\Cron\Workers\StatsNotifications\NewsletterLinkRepository;
 use MailPoet\Entities\NewsletterLinkEntity;
