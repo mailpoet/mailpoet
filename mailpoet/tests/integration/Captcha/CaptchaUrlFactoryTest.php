@@ -6,6 +6,7 @@ use MailPoet\Captcha\CaptchaUrlFactory;
 use MailPoet\Config\Populator;
 use MailPoet\Router\Endpoints\Captcha as CaptchaEndpoint;
 use MailPoet\Router\Router;
+use MailPoet\Settings\Pages as SettingPages;
 
 class CaptchaUrlFactoryTest extends \MailPoetTest {
 
@@ -20,13 +21,24 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
     $populator->up();
   }
 
-  public function testItReturnsTheCaptchaUrl() {
+  public function testItReturnsCaptchaRenderUrl() {
     $url = $this->urlFactory->getCaptchaUrl('abc');
 
     verify($url)->notNull();
     verify($url)->stringContainsString(Router::NAME);
-    verify($url)->stringContainsString('mailpoet_page=' . 'template');
+    verify($url)->stringContainsString('mailpoet_page=' . SettingPages::MP_POST_NAME);
     verify($url)->stringContainsString('action=' . CaptchaEndpoint::ACTION_RENDER);
+    verify($url)->stringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT);
+    verify($url)->stringContainsString('data=');
+  }
+
+  public function testItReturnsCaptchaImageUrl() {
+    $url = $this->urlFactory->getCaptchaImageUrl(100, 200, 'abc');
+
+    verify($url)->notNull();
+    verify($url)->stringContainsString(Router::NAME);
+    verify($url)->stringContainsString('mailpoet_page=' . SettingPages::MP_POST_NAME);
+    verify($url)->stringContainsString('action=' . CaptchaEndpoint::ACTION_IMAGE);
     verify($url)->stringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT);
     verify($url)->stringContainsString('data=');
   }

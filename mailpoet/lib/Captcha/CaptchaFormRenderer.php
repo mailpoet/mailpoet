@@ -23,6 +23,9 @@ class CaptchaFormRenderer {
   /** @var SubscriptionUrlFactory */
   private $subscriptionUrlFactory;
 
+  /** @var CaptchaUrlFactory */
+  private $urlFactory;
+
   /** @var FormRenderer */
   private $formRenderer;
 
@@ -37,6 +40,7 @@ class CaptchaFormRenderer {
     CaptchaSession $captchaSession,
     CaptchaPhrase $captchaPhrase,
     SubscriptionUrlFactory $subscriptionUrlFactory,
+    CaptchaUrlFactory $urlFactory,
     FormsRepository $formsRepository,
     FormRenderer $formRenderer,
     Styles $styles
@@ -45,6 +49,7 @@ class CaptchaFormRenderer {
     $this->captchaSession = $captchaSession;
     $this->captchaPhrase = $captchaPhrase;
     $this->subscriptionUrlFactory = $subscriptionUrlFactory;
+    $this->urlFactory = $urlFactory;
     $this->formRenderer = $formRenderer;
     $this->formsRepository = $formsRepository;
     $this->styles = $styles;
@@ -116,7 +121,7 @@ class CaptchaFormRenderer {
 
     $width = 220;
     $height = 60;
-    $captchaUrl = $this->subscriptionUrlFactory->getCaptchaImageUrl($width, $height, $sessionId);
+    $captchaUrl = $this->urlFactory->getCaptchaImageUrl($width, $height, $sessionId);
     $mp3CaptchaUrl = $this->subscriptionUrlFactory->getCaptchaAudioUrl($sessionId);
 
     $reloadIcon = Env::$assetsUrl . '/img/icons/image-rotate.svg';

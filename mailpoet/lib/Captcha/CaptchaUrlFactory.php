@@ -20,14 +20,32 @@ class CaptchaUrlFactory {
   }
 
   public function getCaptchaUrl(string $sessionId) {
+    return $this->getUrl(
+      CaptchaEndpoint::ACTION_RENDER,
+      ['captcha_session_id' => $sessionId]
+    );
+  }
+
+  public function getCaptchaImageUrl(int $width, int $height, string $sessionId) {
+    return $this->getUrl(
+      CaptchaEndpoint::ACTION_IMAGE,
+      [
+        'width' => $width,
+        'height' => $height,
+        'captcha_session_id' => $sessionId,
+      ]
+    );
+  }
+
+  private function getUrl(string $action, array $data) {
     $post = $this->wp->getPost($this->settings->get('subscription.pages.captcha'));
     $url = $this->wp->getPermalink($post);
 
     $params = [
       Router::NAME,
       'endpoint=' . CaptchaEndpoint::ENDPOINT,
-      'action=' . CaptchaEndpoint::ACTION_RENDER,
-      'data=' . Router::encodeRequestData(['captcha_session_id' => $sessionId]),
+      'action=' . $action,
+      'data=' . Router::encodeRequestData($data),
     ];
 
     $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
