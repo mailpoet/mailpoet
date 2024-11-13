@@ -4,8 +4,6 @@ namespace MailPoet\Test\Router\Endpoints;
 
 use Codeception\Stub;
 use Codeception\Stub\Expected;
-use MailPoet\Captcha\CaptchaRenderer;
-use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Router\Endpoints\Subscription;
 use MailPoet\Subscription\Pages;
 use MailPoet\Util\Request;
@@ -17,9 +15,6 @@ class SubscriptionTest extends \MailPoetTest {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var CaptchaRenderer */
-  private $captchaRenderer;
-
   /*** @var Request */
   private $request;
 
@@ -27,7 +22,6 @@ class SubscriptionTest extends \MailPoetTest {
     $this->data = [];
     $this->wp = WPFunctions::get();
     $this->request = $this->diContainer->get(Request::class);
-    $this->captchaRenderer = $this->diContainer->get(CaptchaRenderer::class);
   }
 
   public function testItDisplaysConfirmPage() {
@@ -35,7 +29,7 @@ class SubscriptionTest extends \MailPoetTest {
       'wp' => $this->wp,
       'confirm' => Expected::exactly(1),
     ], $this);
-    $subscription = new Subscription($pages, $this->wp, $this->captchaRenderer, $this->request);
+    $subscription = new Subscription($pages, $this->wp, $this->request);
     $subscription->confirm($this->data);
   }
 
@@ -45,7 +39,7 @@ class SubscriptionTest extends \MailPoetTest {
       'getManageLink' => Expected::exactly(1),
       'getManageContent' => Expected::exactly(1),
     ], $this);
-    $subscription = new Subscription($pages, $this->wp, $this->captchaRenderer, $this->request);
+    $subscription = new Subscription($pages, $this->wp, $this->request);
     $subscription->manage($this->data);
     do_shortcode('[mailpoet_manage]');
     do_shortcode('[mailpoet_manage_subscription]');
@@ -56,16 +50,7 @@ class SubscriptionTest extends \MailPoetTest {
       'wp' => new WPFunctions,
       'unsubscribe' => Expected::exactly(1),
     ], $this);
-    $subscription = new Subscription($pages, $this->wp, $this->captchaRenderer, $this->request);
+    $subscription = new Subscription($pages, $this->wp, $this->request);
     $subscription->unsubscribe($this->data);
-  }
-
-  public function testItRefreshesCaptcha(): void {
-    $captchaSession = $this->diContainer->get(CaptchaSession::class);
-    $captchaSession->setCaptchaHash('123', ['phrase' => 'abc']);
-
-    $subscription = new Subscription($this->make(Pages::class), $this->wp, $this->captchaRenderer, $this->request);
-    $subscription->captchaRefresh(['captcha_session_id' => '123']);
-    $this->assertNotEquals('abc', $captchaSession->getCaptchaHash('123')['phrase']);
   }
 }

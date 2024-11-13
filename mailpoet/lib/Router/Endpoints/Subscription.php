@@ -42,30 +42,17 @@ class Subscription {
   /** @var WPFunctions */
   private $wp;
 
-  /** @var \MailPoet\Captcha\CaptchaRenderer */
-  private $captchaRenderer;
-
   /*** @var Request */
   private $request;
 
   public function __construct(
     UserSubscription\Pages $subscriptionPages,
     WPFunctions $wp,
-    \MailPoet\Captcha\CaptchaRenderer $captchaRenderer,
     Request $request
   ) {
     $this->subscriptionPages = $subscriptionPages;
     $this->wp = $wp;
-    $this->captchaRenderer = $captchaRenderer;
     $this->request = $request;
-  }
-
-  public function captchaRefresh($data): void {
-    $captchaSessionId = $data['captcha_session_id'] ?? null;
-    if (!$captchaSessionId) {
-      return;
-    }
-    $this->captchaRenderer->refreshPhrase($captchaSessionId);
   }
 
   public function confirm($data) {
