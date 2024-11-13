@@ -87,11 +87,12 @@ jQuery(($) => {
     const cachebust = `${new Date().getTime()}`;
 
     // regenerate captcha phrase
+    // TODO fix hard-coded URL. Refactor to pass it as a parameter
     const url = new URL(window.location.href.split('?')[0]);
     url.searchParams.set('mailpoet_router', '');
-    url.searchParams.set('mailpoet_page', 'subscriptions');
-    url.searchParams.set('endpoint', 'subscription');
-    url.searchParams.set('action', 'captchaRefresh');
+    url.searchParams.set('mailpoet_page', 'template');
+    url.searchParams.set('endpoint', 'captcha');
+    url.searchParams.set('action', 'refresh');
     url.searchParams.set(
       'data',
       btoa(JSON.stringify({ captcha_session_id: captchaSessionId })),
