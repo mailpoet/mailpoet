@@ -36,7 +36,7 @@ class Send_Preview_Email {
 
 		$post = $this->fetchPost($postId);
 
-		$subject = $post->post_title;
+		$subject = $post->post_title ?: __('Email Preview', 'mailpoet');
 		$language = get_bloginfo('language');
 
 		$renderedData = $this->renderer->render(
@@ -48,7 +48,22 @@ class Send_Preview_Email {
 
 		$emailHtmlContent = $renderedData['html'];
 
-		return true;
+		return $this->sendEmail($email, $subject, $emailHtmlContent);
+	}
+
+	public function sendEmail($to, $subject, $body) {
+		add_filter( 'wp_mail_content_type', [$this, 'set_mail_content_type'] );
+
+		$result = wp_mail( $to, $subject, $body );
+
+		// Reset content-type to avoid conflicts
+		remove_filter( 'wp_mail_content_type', [$this, 'set_mail_content_type'] );
+
+		return $result;
+	}
+
+	public function set_mail_content_type( $content_type ): string {
+		return 'text/html';
 	}
 
 	private function validateData( array $data ) {
