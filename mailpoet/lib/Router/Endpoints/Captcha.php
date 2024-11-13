@@ -11,6 +11,7 @@ class Captcha {
   const ACTION_RENDER = 'render';
   const ACTION_IMAGE = 'image';
   const ACTION_AUDIO = 'audio';
+  const ACTION_REFRESH = 'refresh';
 
   private PageRenderer $pageRenderer;
   private CaptchaRenderer $captchaRenderer;
@@ -19,6 +20,7 @@ class Captcha {
     self::ACTION_RENDER,
     self::ACTION_IMAGE,
     self::ACTION_AUDIO,
+    self::ACTION_REFRESH,
   ];
 
   public $permissions = [
@@ -56,6 +58,16 @@ class Captcha {
     }
 
     $this->captchaRenderer->renderAudio($sessionId);
+    exit;
+  }
+
+  public function refresh($data) {
+    $sessionId = $data['captcha_session_id'] ?? null;
+    if (!$sessionId) {
+      return;
+    }
+
+    $this->captchaRenderer->refreshPhrase($sessionId);
     exit;
   }
 }
