@@ -29,9 +29,9 @@ export function EditorSelectModal({
       },
     })
       .done((response) => {
-        window.location.href = `admin.php?page=mailpoet-email-editor&postId=${
+        window.location.href = `post.php?post=${
           response.data.wp_post_id as number
-        }`;
+        }&action=edit`;
       })
       .fail((response) => {
         setIsLoading(false);

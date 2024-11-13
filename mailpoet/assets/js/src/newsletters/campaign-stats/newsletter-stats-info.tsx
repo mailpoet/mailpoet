@@ -38,9 +38,8 @@ const getEditorLink = (newsletter: NewsletterType) => {
     MailPoet.FeaturesController.isSupported('gutenberg_email_editor') &&
     newsletter.wp_post_id
   ) {
-    editorHref = `admin.php?page=mailpoet-email-editor&postId=${newsletter.wp_post_id}`;
+    editorHref = `post.php?post=${newsletter.wp_post_id}&action=edit`;
   }
-
   return editorHref;
 };
 
