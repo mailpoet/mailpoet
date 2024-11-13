@@ -10,10 +10,6 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class Subscription {
   const ENDPOINT = 'subscription';
-  const ACTION_CAPTCHA = 'captcha';
-  const ACTION_CAPTCHA_IMAGE = 'captchaImage';
-  const ACTION_CAPTCHA_AUDIO = 'captchaAudio';
-  const ACTION_CAPTCHA_REFRESH = 'captchaRefresh';
   const ACTION_CONFIRM = 'confirm';
   const ACTION_MANAGE = 'manage';
   const ACTION_UNSUBSCRIBE = 'unsubscribe';
@@ -21,10 +17,6 @@ class Subscription {
   const ACTION_RE_ENGAGEMENT = 'reEngagement';
 
   public $allowedActions = [
-    self::ACTION_CAPTCHA,
-    self::ACTION_CAPTCHA_IMAGE,
-    self::ACTION_CAPTCHA_AUDIO,
-    self::ACTION_CAPTCHA_REFRESH,
     self::ACTION_CONFIRM,
     self::ACTION_MANAGE,
     self::ACTION_UNSUBSCRIBE,
