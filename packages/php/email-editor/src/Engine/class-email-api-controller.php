@@ -10,6 +10,8 @@ namespace MailPoet\EmailEditor\Engine;
 
 use MailPoet\EmailEditor\Validator\Builder;
 use WP_Post;
+use WP_REST_Request;
+use WP_REST_Response;
 
 /**
  * Class for email API controller.
@@ -33,6 +35,11 @@ class Email_Api_Controller {
 	 */
 	public function save_email_data( array $data, WP_Post $email_post ): void {
 		// Here comes code saving of Email specific data that will be passed on 'email_data' attribute.
+	}
+
+	public function send_preview_email_data( WP_REST_Request $request ): WP_REST_Response {
+		$data = $request->get_params();
+		return new WP_REST_Response(['success' => true, 'data' => $data], 200);
 	}
 
 	/**

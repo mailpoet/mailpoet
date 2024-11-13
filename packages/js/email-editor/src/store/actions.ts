@@ -146,21 +146,16 @@ export function* requestSendingNewsletterPreview(
 		} as Partial< State[ 'preview' ] >,
 	} as const;
 	try {
-		const url = window.MailPoetEmailEditor.json_api_root;
-		const token = window.MailPoetEmailEditor.api_token;
-		const method = 'POST';
-		const body = new FormData();
-		body.append( 'token', token );
-		body.append( 'action', 'mailpoet' );
-		body.append( 'api_version', window.MailPoetEmailEditor.api_version );
-		body.append( 'endpoint', 'newsletters' );
-		body.append( 'method', 'sendPreview' );
-		body.append( 'data[subscriber]', email );
-		body.append( 'data[id]', newsletterId.toString() );
+		const postId = select( storeName ).getEmailPostId();
+
 		yield apiFetch( {
-			url,
-			method,
-			body,
+			path: '/mailpoet-email-editor/v1/send_preview_email',
+			method: 'POST',
+			data: {
+				newsletterId,
+				email,
+				postId,
+			},
 		} );
 
 		yield {
