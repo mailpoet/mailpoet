@@ -94,7 +94,7 @@ class Email_Editor {
 			$this->extend_email_post_api();
 			$this->settings_controller->init();
 		}
-		add_action( 'rest_api_init', [ $this, 'register_email_editor_api_routes' ] );
+		add_action( 'rest_api_init', array( $this, 'register_email_editor_api_routes' ) );
 	}
 
 	/**
@@ -199,14 +199,23 @@ class Email_Editor {
 		);
 	}
 
+	/**
+	 * Registers the API route endpoint for the email editor
+	 *
+	 * @return void
+	 */
 	public function register_email_editor_api_routes() {
-		register_rest_route('mailpoet-email-editor/v1', '/send_preview_email', [
-			'methods' => 'POST',
-			'callback' => array( $this->email_api_controller, 'send_preview_email_data' ),
-			'permission_callback' => function() {
-				return current_user_can('edit_posts');
-			}
-		]);
+		register_rest_route(
+			'mailpoet-email-editor/v1',
+			'/send_preview_email',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this->email_api_controller, 'send_preview_email_data' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
+			)
+		);
 	}
 
 	/**

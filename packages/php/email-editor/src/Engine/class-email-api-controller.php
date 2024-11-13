@@ -24,15 +24,17 @@ class Email_Api_Controller {
 	 *
 	 * @var Send_Preview_Email Send Preview controller.
 	 */
-	private Send_Preview_Email $send_Preview_Email;
+	private Send_Preview_Email $send_preview_email;
 
 	/**
 	 * Email_Api_Controller constructor.
+	 *
+	 * @param Send_Preview_Email $send_preview_email send_preview_email.
 	 */
 	public function __construct(
-		Send_Preview_Email $send_Preview_Email
+		Send_Preview_Email $send_preview_email
 	) {
-		$this->send_Preview_Email = $send_Preview_Email;
+		$this->send_preview_email = $send_preview_email;
 	}
 
 	/**
@@ -55,13 +57,25 @@ class Email_Api_Controller {
 		// Here comes code saving of Email specific data that will be passed on 'email_data' attribute.
 	}
 
+	/**
+	 * Sends preview email
+	 *
+	 * @param WP_REST_Request $request route request.
+	 * @return WP_REST_Response
+	 */
 	public function send_preview_email_data( WP_REST_Request $request ): WP_REST_Response {
 		$data = $request->get_params();
 		try {
-			$result = $this->send_Preview_Email->sendPreviewEmail($data);
-			return new WP_REST_Response(['success' => true, 'result' => $result], 200);
+			$result = $this->send_preview_email->send_preview_email( $data );
+			return new WP_REST_Response(
+				array(
+					'success' => true,
+					'result'  => $result,
+				),
+				200
+			);
 		} catch ( \Exception $exception ) {
-			return new WP_REST_Response(['error' => $exception->getMessage()], 400);
+			return new WP_REST_Response( array( 'error' => $exception->getMessage() ), 400 );
 		}
 	}
 
