@@ -26,6 +26,7 @@ use MailPoet\AdminPages\Pages\Upgrade;
 use MailPoet\AdminPages\Pages\WelcomeWizard;
 use MailPoet\AdminPages\Pages\WooCommerceSetup;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Form\Util\CustomFonts;
 use MailPoet\Util\License\Features\CapabilitiesManager;
 use MailPoet\WP\Functions as WPFunctions;
@@ -83,6 +84,9 @@ class Menu {
   /** @var CustomFonts  */
   private $customFonts;
 
+  /** @var EmailEditor  */
+  private $emailEditor;
+
   private CapabilitiesManager $capabilitiesManager;
 
   public function __construct(
@@ -92,7 +96,8 @@ class Menu {
     ContainerWrapper $container,
     Router $router,
     CustomFonts $customFonts,
-    CapabilitiesManager $capabilitiesManager
+    CapabilitiesManager $capabilitiesManager,
+    EmailEditor $emailEditor
   ) {
     $this->accessControl = $accessControl;
     $this->wp = $wp;
@@ -101,6 +106,7 @@ class Menu {
     $this->router = $router;
     $this->customFonts = $customFonts;
     $this->capabilitiesManager = $capabilitiesManager;
+    $this->emailEditor = $emailEditor;
   }
 
   public function init() {
@@ -683,6 +689,13 @@ class Menu {
     if ($page) {
       $plugin_page = $page;
       return $parentFile;
+    }
+
+    // In case we are on the email editor page, we want to highlight the Emails menu item
+    if ($this->emailEditor->isEditorPage(false)) {
+      $plugin_page = self::EMAILS_PAGE_SLUG;
+      $submenu_file = self::EMAILS_PAGE_SLUG;
+      return self::EMAILS_PAGE_SLUG;
     }
 
     if ($parentFile === self::MAIN_PAGE_SLUG || !self::isOnMailPoetAdminPage()) {
