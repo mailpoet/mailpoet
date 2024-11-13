@@ -10,9 +10,7 @@ import {
 
 export function getInitialState(): State {
 	const searchParams = new URLSearchParams( window.location.search );
-	const postId = parseInt( searchParams.get( 'post' ), 10 )
-		? parseInt( searchParams.get( 'post' ), 10 )
-		: parseInt( searchParams.get( 'postId' ), 10 );
+	const postId = parseInt( searchParams.get( 'post' ), 10 );
 	return {
 		inserterSidebar: {
 			isOpened: false,
