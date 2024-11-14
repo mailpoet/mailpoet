@@ -46,11 +46,12 @@ export async function newsletterSearching() {
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
     await page.waitForLoadState('networkidle');
+    const listingTitleElement = await page
+      .locator('.mailpoet-listing-title')
+      .innerText();
     describe(emailsPageTitle, () => {
       describe('newsletter-searching: should be able to search for Newsletter 1st', async () => {
-        expect(
-          await page.locator('.mailpoet-listing-title').innerText(),
-        ).to.contain('Newsletter 1st');
+        expect(listingTitleElement).to.contain('Newsletter 1st');
       });
     });
 
@@ -61,11 +62,12 @@ export async function newsletterSearching() {
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="listing_filter_segment"]');
     await page.waitForLoadState('networkidle');
+    const listingFilterElement = await page.locator(
+      '[data-automation-id="listing_filter_segment"]',
+    );
     describe(emailsPageTitle, () => {
       describe('newsletter-searching: should be able to see Lists Filter', async () => {
-        expect(
-          await page.locator('[data-automation-id="listing_filter_segment"]'),
-        ).to.exist;
+        expect(listingFilterElement).to.exist;
       });
     });
 

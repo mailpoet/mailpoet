@@ -44,10 +44,12 @@ export async function newsletterListing() {
     // Check if there is element present and visible
     await page.waitForSelector('[data-automation-id="filters_all"]');
     await page.waitForLoadState('networkidle');
+    const allFilterElement = await page.locator(
+      '[data-automation-id="filters_all"]',
+    );
     describe(emailsPageTitle, () => {
       describe('newsletter-listing: should be able to see All Filter', async () => {
-        expect(await page.locator('[data-automation-id="filters_all"]')).to
-          .exist;
+        expect(allFilterElement).to.exist;
       });
     });
 

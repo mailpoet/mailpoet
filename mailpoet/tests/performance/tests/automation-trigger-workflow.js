@@ -58,9 +58,10 @@ export async function automationTriggerWorkflow() {
     // Verify you see the success message and the filter is visible
     const locator =
       "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]";
+    const noticeElement = await page.locator(locator);
     describe(automationsPageTitle, () => {
       describe('automation-trigger-workflow: should be able to see success notice for adding subscriber', async () => {
-        expect(await page.locator(locator)).to.exist;
+        expect(noticeElement).to.exist;
       });
     });
 
@@ -118,13 +119,12 @@ export async function automationTriggerWorkflow() {
       fullPage: fullPageSet,
     });
 
+    const customerOrdersElement = await page
+      .locator('.mailpoet-analytics-orders__customer')
+      .innerText();
     describe(automationsPageTitle, () => {
       describe('automation-trigger-workflow: should be able to see subscriber in the results', async () => {
-        expect(
-          await page
-            .locator('.mailpoet-analytics-orders__customer')
-            .innerText(),
-        ).to.contain(subscriberEmail);
+        expect(customerOrdersElement).to.contain(subscriberEmail);
       });
     });
 

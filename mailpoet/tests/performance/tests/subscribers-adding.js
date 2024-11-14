@@ -62,18 +62,20 @@ export async function subscribersAdding() {
     // Verify you see the success message and the filter is visible
     const locator =
       "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]";
+    const noticeElement = await page.locator(locator);
     describe(subscribersPageTitle, () => {
       describe('subscribers-adding: should be able to see Subscriber Added message', async () => {
-        expect(await page.locator(locator)).to.exist;
+        expect(noticeElement).to.exist;
       });
     });
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
+    const listingFilterElement = await page.locator(
+      '[data-automation-id="listing_filter_segment"]',
+    );
     describe(subscribersPageTitle, () => {
       describe('subscribers-adding: should be able to see Lists Filter', async () => {
-        expect(
-          await page.locator('[data-automation-id="listing_filter_segment"]'),
-        ).to.exist;
+        expect(listingFilterElement).to.exist;
       });
     });
     await page.waitForLoadState('networkidle');
@@ -88,11 +90,12 @@ export async function subscribersAdding() {
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     await page.waitForLoadState('networkidle');
+    const listingTitleElement = await page
+      .locator('.mailpoet-listing-title')
+      .innerText();
     describe(subscribersPageTitle, () => {
       describe('subscribers-adding: should be able to search for Newly Added Subscriber', async () => {
-        expect(
-          await page.locator('.mailpoet-listing-title').innerText(),
-        ).to.contain(subscriberEmail);
+        expect(listingTitleElement).to.contain(subscriberEmail);
       });
     });
 

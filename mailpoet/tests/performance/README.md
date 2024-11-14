@@ -148,10 +148,25 @@ To make assertions, we are using `k6chai.js` library, here is an example how you
 
 ```js
 describe(subscribersPageTitle, () => {
-    describe('should be able to see Lists Filter', () => {
-      expect(page.locator('[data-automation-id="listing_filter_segment"]')).to
-        .exist;
-    });
+  describe('should be able to see Lists Filter', async () => {
+    expect(await page.locator('[data-automation-id="listing_filter_segment"]'))
+      .to.exist;
+  });
+});
+```
+
+However, if you have k6 0.53+ version installed, there is confirmed issue between `chaijs` and `k6` where it is impossible to see output results properly printed like the above code wanted to show a single check inside 2 describe blocks (or even 1 if you'd like).
+To avoid that, we have alternative option to add `const` before the describe block and just link it like this:
+
+```js
+const element = await page.locator(
+  '[data-automation-id="listing_filter_segment"]',
+);
+describe(subscribersPageTitle, () => {
+  describe('should be able to see Lists Filter', async () => {
+    expect(element).to.exist;
+  });
+});
 ```
 
 In order to keep the output results in a clear view, we use `describe` to group them.
@@ -193,5 +208,5 @@ If you find less than this in our CI runs over to Grafana streaming, that means 
 
 ## Other Resources
 
-[k6 documention](https://k6.io/docs/) is a very useful resource for test creation and execution.
-[using k6 browser doc](https://k6.io/docs/using-k6-browser/overview/) is a very useful resource for test creation and execution.
+[k6 documention](https://grafana.com/docs/k6/latest/) is a very useful resource for test creation and execution.
+[using k6 browser doc](https://grafana.com/docs/k6/latest/using-k6-browser/) is a very useful resource for test creation and execution.

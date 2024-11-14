@@ -51,9 +51,10 @@ export async function settingsBasic() {
     // Check if there's notice about saved settings
     const locator =
       "//div[@class='notice-success'].//p[starts-with(text(),'Settings saved')]";
+    const noticeElement = await page.locator(locator);
     describe(settingsPageTitle, () => {
       describe('settings-basic: should be able to see Settings Saved message', async () => {
-        expect(await page.locator(locator)).to.exist;
+        expect(noticeElement).to.exist;
       });
     });
 

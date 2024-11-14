@@ -64,9 +64,10 @@ export async function automationCreateCustom() {
     );
     await page.waitForLoadState('networkidle');
 
+    const triggerButtonElement = await page.locator(triggerbutton);
     describe(automationsPageTitle, () => {
       describe('automation-create-custom: should be able to see Add Trigger button', async () => {
-        expect(await page.locator(triggerbutton)).to.exist;
+        expect(triggerButtonElement).to.exist;
       });
     });
 
@@ -112,11 +113,14 @@ export async function automationCreateCustom() {
     // Activate the automation workflow
     await activateWorkflow(page);
 
+    const noticeElement = await page
+      .locator('.components-snackbar__content')
+      .innerText();
     describe(automationsPageTitle, () => {
       describe('automation-create-custom: should be able to see Automation added message', async () => {
-        expect(
-          await page.locator('.components-snackbar__content').innerText(),
-        ).to.contain('Well done! Automation is now activated!');
+        expect(noticeElement).to.contain(
+          'Well done! Automation is now activated!',
+        );
       });
     });
 

@@ -42,11 +42,12 @@ export async function subscribersTrashingRestoring() {
 
     // Check the subscribers filter is present
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
+    const listingFilterElement = await page.locator(
+      '[data-automation-id="listing_filter_segment"]',
+    );
     describe(subscribersPageTitle, () => {
       describe('subscribers-trashing-restoring: should be able to see Lists Filter', async () => {
-        expect(
-          await page.locator('[data-automation-id="listing_filter_segment"]'),
-        ).to.exist;
+        expect(listingFilterElement).to.exist;
       });
     });
 
@@ -60,11 +61,10 @@ export async function subscribersTrashingRestoring() {
     await page.locator('[data-automation-id="action-trash"]').click();
     await page.waitForSelector('.notice-success');
     await page.waitForSelector('.colspanchange');
+    const noticeElement = await page.locator('.colspanchange').innerText();
     describe(subscribersPageTitle, () => {
       describe('subscribers-trashing-restoring: should be able to see the message', async () => {
-        expect(await page.locator('.colspanchange').innerText()).to.contain(
-          'No items found.',
-        );
+        expect(noticeElement).to.contain('No items found.');
       });
     });
 

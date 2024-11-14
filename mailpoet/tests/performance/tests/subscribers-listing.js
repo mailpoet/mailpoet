@@ -43,10 +43,12 @@ export async function subscribersListing() {
 
     // Verify filter, tag and listing are loaded and visible
     await page.waitForLoadState('networkidle');
+    const tagsFilterElement = await page.locator(
+      '[data-automation-id="listing_filter_tag"]',
+    );
     describe(subscribersPageTitle, () => {
       describe('subscribers-listing: should be able to see Tags Filter', async () => {
-        expect(await page.locator('[data-automation-id="listing_filter_tag"]'))
-          .to.exist;
+        expect(tagsFilterElement).to.exist;
       });
     });
 

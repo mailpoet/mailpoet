@@ -55,9 +55,10 @@ export async function automationTrashRestore() {
     // Wait for the success notice message and confirm it
     const movedToTrashNotice =
       "//div[@class='notice-success'].//p[contains(text(),'was moved to the trash')]";
+    const noticeElement = await page.locator(movedToTrashNotice);
     describe(automationsPageTitle, () => {
       describe('automation-trash-restore: should be able to see moved to trash notice', async () => {
-        expect(await page.locator(movedToTrashNotice)).to.exist;
+        expect(noticeElement).to.exist;
       });
     });
 
@@ -80,9 +81,10 @@ export async function automationTrashRestore() {
     // Wait for the success notice message and confirm it
     const restoredFromTrashNotice =
       "//div[@class='notice-success'].//p[contains(text(),'was restored from the trash')]";
+    const noticeElementTwo = await page.locator(restoredFromTrashNotice);
     describe(automationsPageTitle, () => {
       describe('automation-trash-restore: should be able to see restored from trash notice', async () => {
-        expect(await page.locator(restoredFromTrashNotice)).to.exist;
+        expect(noticeElementTwo).to.exist;
       });
     });
 

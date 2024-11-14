@@ -56,9 +56,10 @@ export async function automationAnalytics() {
     const message =
       'In this time period, the automation structure did change and therefore some numbers in the flow chart might not be accurate.';
     const locator = `//div[@class='components-notice__content'].//p[starts-with(text(),${message})]`;
+    const noticeElement = await page.locator(locator);
     describe(automationsPageTitle, () => {
       describe('settings-basic: should be able to see inaccurate data message', async () => {
-        expect(await page.locator(locator)).to.exist;
+        expect(noticeElement).to.exist;
       });
     });
 
@@ -72,10 +73,12 @@ export async function automationAnalytics() {
       fullPage: fullPageSet,
     });
 
+    const emailNameElement = await page.$$(
+      '.mailpoet-automation-analytics-email-name',
+    );
     describe(automationsPageTitle, () => {
       describe('automation-analytics: should be able to see Emails tab loaded', async () => {
-        expect(await page.$$('.mailpoet-automation-analytics-email-name')).to
-          .exist;
+        expect(emailNameElement).to.exist;
       });
     });
 
@@ -84,9 +87,12 @@ export async function automationAnalytics() {
     await page.waitForSelector('.mailpoet-analytics-filter-controls');
     await page.waitForLoadState('networkidle');
 
+    const filtersControlElement = await page.$$(
+      '.mailpoet-analytics-filter-controls',
+    );
     describe(automationsPageTitle, () => {
       describe('automation-analytics: should be able to see Orders tab loaded', async () => {
-        expect(await page.$$('.mailpoet-analytics-filter-controls')).to.exist;
+        expect(filtersControlElement).to.exist;
       });
     });
 
@@ -98,9 +104,13 @@ export async function automationAnalytics() {
     await page.locator('.components-text-control__input').click();
     await page.waitForLoadState('networkidle');
 
+    await page.waitForSelector('.mailpoet-analytics-orders__customer');
+    const customerOrderElement = await page.locator(
+      '.mailpoet-analytics-orders__customer',
+    );
     describe(automationsPageTitle, () => {
       describe('automation-analytics: should be able to see Subscribers items loaded', async () => {
-        expect(await page.$$('.woocommerce-table__item')[0]).to.exist;
+        expect(customerOrderElement).to.exist;
       });
     });
 

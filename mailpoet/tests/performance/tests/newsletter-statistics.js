@@ -56,13 +56,12 @@ export async function newsletterStatistics() {
       page,
       '[data-acceptance-id="purchased-product-Simple Product"]',
     );
+    const soldProductElement = await page.locator(
+      '[data-acceptance-id="purchased-product-Simple Product"]',
+    );
     describe(emailsPageTitle, () => {
       describe('newsletter-statistics: should be able to see the product as sold', async () => {
-        expect(
-          await page.locator(
-            '[data-acceptance-id="purchased-product-Simple Product"]',
-          ),
-        ).to.exist;
+        expect(soldProductElement).to.exist;
       });
     });
 
@@ -70,10 +69,12 @@ export async function newsletterStatistics() {
     await page.locator('[data-automation-id="engagement-tab"]').click();
     await page.waitForSelector('[data-automation-id="filters_all_engaged"]');
     await page.waitForLoadState('networkidle');
+    const filtersEngagedElement = await page.locator(
+      '[data-automation-id="filters_all_engaged"]',
+    );
     describe(emailsPageTitle, () => {
       describe('newsletter-statistics: should be able to see Link Clicked filter', async () => {
-        expect(await page.locator('[data-automation-id="filters_all_engaged"]'))
-          .to.exist;
+        expect(filtersEngagedElement).to.exist;
       });
     });
 

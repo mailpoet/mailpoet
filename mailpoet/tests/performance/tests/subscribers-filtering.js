@@ -25,6 +25,9 @@ import { login } from '../utils/helpers.js';
 
 export async function subscribersFiltering() {
   const page = await browser.newPage();
+  const listingFilterElement = await page.locator(
+    '[data-automation-id="listing_filter_segment"]',
+  );
 
   try {
     // Log in to WP Admin
@@ -46,9 +49,7 @@ export async function subscribersFiltering() {
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
       describe('subscribers-filtering: should be able to see Lists Filter 1st time', async () => {
-        expect(
-          await page.locator('[data-automation-id="listing_filter_segment"]'),
-        ).to.exist;
+        expect(listingFilterElement).to.exist;
       });
     });
 
@@ -66,9 +67,7 @@ export async function subscribersFiltering() {
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
       describe('subscribers-filtering: should be able to see Lists Filter 2nd time', async () => {
-        expect(
-          await page.locator('[data-automation-id="listing_filter_segment"]'),
-        ).to.exist;
+        expect(listingFilterElement).to.exist;
       });
     });
 
@@ -84,9 +83,7 @@ export async function subscribersFiltering() {
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     describe(subscribersPageTitle, () => {
       describe('subscribers-filtering: should be able to see Lists Filter 3rd time', async () => {
-        expect(
-          await page.locator('[data-automation-id="listing_filter_segment"]'),
-        ).to.exist;
+        expect(listingFilterElement).to.exist;
       });
     });
 

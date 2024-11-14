@@ -108,9 +108,10 @@ export async function newsletterReEngagement() {
     const locator =
       "//div[@class='notice-success'].//p[starts-with(text(),'Your Re-engagement Email is now activated!')]";
     await page.waitForSelector('#mailpoet_notices');
+    const noticeElement = await page.locator(locator);
     describe(emailsPageTitle, () => {
       describe('newsletter-re-engagement: should be able to see Re-engagement is active message', async () => {
-        expect(await page.locator(locator)).to.exist;
+        expect(noticeElement).to.exist;
       });
     });
 

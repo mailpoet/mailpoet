@@ -93,13 +93,12 @@ export async function onboardingWizard() {
     });
 
     // Check if you see Send With tab at the end
+    const sendWithTabElement = await page
+      .locator('[data-automation-id="send_with_settings_tab"]')
+      .innerText();
     describe(settingsPageTitle, () => {
       describe('onboarding-wizard: should be able to see Send With tab present', async () => {
-        expect(
-          await page
-            .locator('[data-automation-id="send_with_settings_tab"]')
-            .innerText(),
-        ).to.contain('Send With...');
+        expect(sendWithTabElement).to.contain('Send With...');
       });
     });
 

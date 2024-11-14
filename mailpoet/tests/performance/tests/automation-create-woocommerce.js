@@ -66,10 +66,12 @@ export async function automationCreateWooCommerce() {
     ]);
     await page.waitForLoadState('networkidle');
 
+    const automationEditorRowElement = await page.locator(
+      '.mailpoet-automation-editor-automation-row',
+    );
     describe(automationsPageTitle, () => {
       describe('automation-create-woocommerce: should be able to see items in the workflow', async () => {
-        expect(await page.locator('.mailpoet-automation-editor-automation-row'))
-          .to.exist;
+        expect(automationEditorRowElement).to.exist;
       });
     });
 
@@ -92,11 +94,14 @@ export async function automationCreateWooCommerce() {
     // Activate the automation workflow
     await activateWorkflow(page);
 
+    const automationSnackbarElement = await page
+      .locator('.components-snackbar__content')
+      .innerText();
     describe(automationsPageTitle, () => {
       describe('automation-create-woocommerce: should be able to see Automation added message', async () => {
-        expect(
-          await page.locator('.components-snackbar__content').innerText(),
-        ).to.contain('Well done! Automation is now activated!');
+        expect(automationSnackbarElement).to.contain(
+          'Well done! Automation is now activated!',
+        );
       });
     });
 

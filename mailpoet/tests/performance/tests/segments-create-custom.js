@@ -61,11 +61,12 @@ export async function segmentsCreateCustom() {
     await selectInReact(page, '#react-select-2-input', 'subscribed to list');
     await selectInReact(page, '#react-select-4-input', defaultListName);
     await page.waitForSelector('.mailpoet-form-notice-message');
+    const noticeElement = await page
+      .locator('.mailpoet-form-notice-message')
+      .innerText();
     describe(segmentsPageTitle, () => {
       describe('segments-create-custom: should be able to see calculating message 1st time', async () => {
-        expect(
-          await page.locator('.mailpoet-form-notice-message').innerText(),
-        ).to.contain('Calculating segment size…');
+        expect(noticeElement).to.contain('Calculating segment size…');
       });
     });
     await page.waitForLoadState('networkidle');
@@ -85,9 +86,7 @@ export async function segmentsCreateCustom() {
     await page.waitForSelector('.mailpoet-form-notice-message');
     describe(segmentsPageTitle, () => {
       describe('segments-create-custom: should be able to see calculating message 2nd time', async () => {
-        expect(
-          await page.locator('.mailpoet-form-notice-message').innerText(),
-        ).to.contain('Calculating segment size…');
+        expect(noticeElement).to.contain('Calculating segment size…');
       });
     });
 
@@ -108,9 +107,7 @@ export async function segmentsCreateCustom() {
     await page.waitForLoadState('networkidle');
     describe(segmentsPageTitle, () => {
       describe('segments-create-custom: should be able to see Calculating message 3rd time', async () => {
-        expect(
-          await page.locator('.mailpoet-form-notice-message').innerText(),
-        ).to.contain('Calculating segment size…');
+        expect(noticeElement).to.contain('Calculating segment size…');
       });
     });
     await page
@@ -136,9 +133,10 @@ export async function segmentsCreateCustom() {
     await page.waitForLoadState('networkidle');
     const segmentAddedMessage =
       "//div[@class='notice-success'].//p[starts-with(text(),'Segment successfully added!')]";
+    const segmentNoticeMessage = await page.locator(segmentAddedMessage);
     describe(segmentsPageTitle, () => {
       describe('segments-create-custom: should be able to see Segment Added message', async () => {
-        expect(await page.locator(segmentAddedMessage)).to.exist;
+        expect(segmentNoticeMessage).to.exist;
       });
     });
 

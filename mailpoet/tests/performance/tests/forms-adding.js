@@ -67,11 +67,12 @@ export async function formsAdding() {
     await page.waitForSelector('[data-automation-id="form_save_button"]');
     await page.locator('[data-automation-id="form_save_button"]').click();
     await page.waitForSelector('.components-notice');
+    const noticeElement = await page
+      .locator('.components-notice__content')
+      .innerText();
     describe(formsPageTitle, () => {
       describe('forms-adding: should be able to see Forms Saved message', async () => {
-        expect(
-          await page.locator('.components-notice__content').innerText(),
-        ).to.contain(
+        expect(noticeElement).to.contain(
           'Form saved. Cookies reset — you will see all your dismissed popup forms again.',
         );
       });

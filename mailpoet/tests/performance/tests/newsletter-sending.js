@@ -93,9 +93,10 @@ export async function newsletterSending() {
     const locator =
       "//div[@class='notice-success'].//p[starts-with(text(),'Subscriber was added successfully!')]";
     await page.waitForSelector('#mailpoet_notices');
+    const noticeElement = await page.locator(locator);
     describe(emailsPageTitle, () => {
       describe('newsletter-sending: should be able to see Newsletter Sent message', async () => {
-        expect(await page.locator(locator)).to.exist;
+        expect(noticeElement).to.exist;
       });
     });
 

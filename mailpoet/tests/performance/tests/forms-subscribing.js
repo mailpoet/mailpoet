@@ -56,11 +56,12 @@ export async function formsSubscribing() {
       .locator('[data-automation-id="subscribe-submit-button"]')
       .click();
     await waitForSelectorToBeVisible(page, '.mailpoet_validate_success');
+    const successMessageElement = await page
+      .locator('.mailpoet_validate_success')
+      .innerText();
     describe(formsPageTitle, () => {
       describe('forms-subscribing: should be able to see successfully subscribed message', async () => {
-        expect(
-          await page.locator('.mailpoet_validate_success').innerText(),
-        ).to.contain('Successfully subscribed!');
+        expect(successMessageElement).to.contain('Successfully subscribed!');
       });
     });
 
@@ -80,11 +81,12 @@ export async function formsSubscribing() {
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
     await page.waitForLoadState('networkidle');
+    const listingTitleElement = await page
+      .locator('.mailpoet-listing-title')
+      .innerText();
     describe(formsPageTitle, () => {
       describe('forms-subscribing: should be able to search for a new subscriber', async () => {
-        expect(
-          await page.locator('.mailpoet-listing-title').innerText(),
-        ).to.contain(subscriberEmail);
+        expect(listingTitleElement).to.contain(subscriberEmail);
       });
     });
 

@@ -113,11 +113,14 @@ export async function newsletterPostNotification() {
     if (page.url().includes('localhost')) {
       // Wait for the success page and confirm it
       await page.waitForSelector('.mailpoet-wizard-step');
+      const headingElement = await page
+        .locator('.mailpoet-congratulate > h1')
+        .innerText();
       describe(emailsPageTitle, () => {
         describe('newsletter-post-notification: should be able to see confirmation page for the first time', async () => {
-          expect(
-            await page.locator('.mailpoet-congratulate > h1').innerText(),
-          ).to.contain('You are all set up and ready to go!');
+          expect(headingElement).to.contain(
+            'You are all set up and ready to go!',
+          );
         });
       });
 
@@ -133,9 +136,10 @@ export async function newsletterPostNotification() {
       const locator =
         "//div[@class='notice-success'].//p[starts-with(text(),'Your post notification is now active!')]";
       await page.waitForSelector('#mailpoet_notices');
+      const noticeElement = await page.locator(locator);
       describe(emailsPageTitle, () => {
         describe('newsletter-post-notification: should be able to see Post Notification is active message', async () => {
-          expect(await page.locator(locator)).to.exist;
+          expect(noticeElement).to.exist;
         });
       });
     }

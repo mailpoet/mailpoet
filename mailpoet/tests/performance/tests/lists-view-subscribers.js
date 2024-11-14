@@ -58,11 +58,12 @@ export async function listsViewSubscribers() {
     // Wait for the page to load
     await page.waitForSelector('.mailpoet-listing-no-items');
     await page.waitForSelector('[data-automation-id="filters_subscribed"]');
+    const listingFilterElement = await page.locator(
+      '[data-automation-id="listing_filter_segment"]',
+    );
     describe(listsPageTitle, () => {
       describe('lists-view-subscribers: should be able to see Lists Filter', async () => {
-        expect(
-          await page.locator('[data-automation-id="listing_filter_segment"]'),
-        ).to.exist;
+        expect(listingFilterElement).to.exist;
       });
     });
     await page.waitForLoadState('networkidle');

@@ -67,9 +67,10 @@ export async function segmentsSelectTemplate() {
     await page.waitForSelector('[data-automation-id="select_all"]');
     const segmentUpdatedMessage =
       "//div[@class='notice-success'].//p[starts-with(text(),'Segment successfully updated!')]";
+    const noticeElement = await page.locator(segmentUpdatedMessage);
     describe(segmentsPageTitle, () => {
       describe('segments-select-template: should be able to see Segment Updated message', async () => {
-        expect(await page.locator(segmentUpdatedMessage)).to.exist;
+        expect(noticeElement).to.exist;
       });
     });
 
