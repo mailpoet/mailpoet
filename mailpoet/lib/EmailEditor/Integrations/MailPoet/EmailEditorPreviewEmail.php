@@ -46,10 +46,10 @@ class EmailEditorPreviewEmail {
 
   /**
    * @param array $postData
-   * @return NewsletterEntity|null
+   * @return NewsletterEntity
    * @throws \Exception
    */
-  private function fetchNewsletter($postData): ?NewsletterEntity {
+  private function fetchNewsletter($postData): NewsletterEntity {
     $newsletter = $this->newslettersRepository->findOneById((int)$postData['newsletterId']);
 
     if (!$newsletter) {

@@ -350,6 +350,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Spacing_Preprocessor::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Typography_Preprocessor::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Engine\Renderer\Renderer::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\Utils\Send_Preview_Email::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Engine\Templates\Templates::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Engine\Templates\Utils::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Engine\Templates\Template_Preview::class)->setPublic(true);
@@ -365,7 +366,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailEditorPreviewEmail::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypes\PoweredByMailpoet::class)->setPublic(true);
-    $container->autowire(\MailPoet\EmailEditor\Integrations\Utils\Send_Preview_Email::class)->setPublic(true);
     // Features
     $container->autowire(\MailPoet\Features\FeaturesController::class)->setPublic(true);
     $container->autowire(\MailPoet\Features\FeatureFlagsController::class)->setPublic(true);
