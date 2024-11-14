@@ -37,16 +37,24 @@ class Send_Preview_Email {
 		Renderer $renderer
 	) {
 		$this->renderer = $renderer;
+
+		add_filter( 'mailpoet_email_editor_send_preview_email', array( $this, 'send_preview_email' ), 11 ); // allow for other filter methods to take precedent.
 	}
 
 	/**
 	 * Sends a preview email.
 	 *
 	 * @param array $data The data required to send the preview email.
-	 * @return bool Returns true if the preview email was sent successfully, false otherwise.
+	 * @return array|bool Returns true if the preview email was sent successfully, false otherwise.
 	 * @throws \Exception If the data is invalid.
 	 */
-	public function send_preview_email( array $data ): bool {
+	public function send_preview_email( $data ): bool {
+
+		if ( is_bool( $data ) ) {
+			// preview mail already sent. Do not process again.
+			return $data;
+		}
+
 		$this->validate_data( $data );
 
 		$email   = $data['email'];
@@ -54,7 +62,7 @@ class Send_Preview_Email {
 
 		$post = $this->fetch_post( $post_id );
 
-		$subject  = isset( $post->post_title ) ? $post->post_title : __( 'Email Preview', 'mailpoet' );
+		$subject  = $post->post_title ?? __( 'Email Preview', 'mailpoet' );
 		$language = get_bloginfo( 'language' );
 
 		$rendered_data = $this->renderer->render(

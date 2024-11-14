@@ -8,7 +8,6 @@
 declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine;
 
-use MailPoet\EmailEditor\Integrations\Utils\Send_Preview_Email;
 use MailPoet\EmailEditor\Validator\Builder;
 use WP_Post;
 use WP_REST_Request;
@@ -18,24 +17,6 @@ use WP_REST_Response;
  * Class for email API controller.
  */
 class Email_Api_Controller {
-
-	/**
-	 * Property for the send preview email controller.
-	 *
-	 * @var Send_Preview_Email Send Preview controller.
-	 */
-	private Send_Preview_Email $send_preview_email;
-
-	/**
-	 * Email_Api_Controller constructor.
-	 *
-	 * @param Send_Preview_Email $send_preview_email send_preview_email.
-	 */
-	public function __construct(
-		Send_Preview_Email $send_preview_email
-	) {
-		$this->send_preview_email = $send_preview_email;
-	}
 
 	/**
 	 * Returns email specific data.
@@ -66,13 +47,13 @@ class Email_Api_Controller {
 	public function send_preview_email_data( WP_REST_Request $request ): WP_REST_Response {
 		$data = $request->get_params();
 		try {
-			$result = $this->send_preview_email->send_preview_email( $data );
+			$result = apply_filters( 'mailpoet_email_editor_send_preview_email', $data );
 			return new WP_REST_Response(
 				array(
-					'success' => true,
+					'success' => (bool) $result,
 					'result'  => $result,
 				),
-				200
+				$result ? 200 : 400
 			);
 		} catch ( \Exception $exception ) {
 			return new WP_REST_Response( array( 'error' => $exception->getMessage() ), 400 );
