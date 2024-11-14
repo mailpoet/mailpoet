@@ -41,7 +41,7 @@ class Templates {
 	 *
 	 * @var string $template_directory
 	 */
-	private string $template_directory;
+	private string $template_directory = __DIR__ . DIRECTORY_SEPARATOR;
 	/**
 	 * The templates.
 	 *
@@ -63,8 +63,7 @@ class Templates {
 	public function __construct(
 		Utils $utils
 	) {
-		$this->utils              = $utils;
-		$this->template_directory = __DIR__ . DIRECTORY_SEPARATOR;
+		$this->utils = $utils;
 	}
 
 	/**
