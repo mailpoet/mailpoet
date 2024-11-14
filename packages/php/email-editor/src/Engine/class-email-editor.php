@@ -11,6 +11,7 @@ namespace MailPoet\EmailEditor\Engine;
 use MailPoet\EmailEditor\Engine\Patterns\Patterns;
 use MailPoet\EmailEditor\Engine\Templates\Template_Preview;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
+use MailPoet\EmailEditor\Integrations\Utils\Send_Preview_Email;
 use WP_Post;
 use WP_Theme_JSON;
 
@@ -55,6 +56,13 @@ class Email_Editor {
 	private Settings_Controller $settings_controller;
 
 	/**
+	 * Property for the send preview email controller.
+	 *
+	 * @var Send_Preview_Email Send Preview controller.
+	 */
+	private Send_Preview_Email $send_preview_email;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Email_Api_Controller $email_api_controller Email API controller.
@@ -62,19 +70,22 @@ class Email_Editor {
 	 * @param Template_Preview     $template_preview Template preview.
 	 * @param Patterns             $patterns Patterns.
 	 * @param Settings_Controller  $settings_controller Settings controller.
+	 * @param Send_Preview_Email   $send_preview_email Preview email controller.
 	 */
 	public function __construct(
 		Email_Api_Controller $email_api_controller,
 		Templates $templates,
 		Template_Preview $template_preview,
 		Patterns $patterns,
-		Settings_Controller $settings_controller
+		Settings_Controller $settings_controller,
+		Send_Preview_Email $send_preview_email
 	) {
 		$this->email_api_controller = $email_api_controller;
 		$this->templates            = $templates;
 		$this->template_preview     = $template_preview;
 		$this->patterns             = $patterns;
 		$this->settings_controller  = $settings_controller;
+		$this->send_preview_email   = $send_preview_email;
 	}
 
 	/**
@@ -95,6 +106,7 @@ class Email_Editor {
 			$this->settings_controller->init();
 		}
 		add_action( 'rest_api_init', array( $this, 'register_email_editor_api_routes' ) );
+		add_filter( 'mailpoet_email_editor_send_preview_email', array( $this->send_preview_email, 'send_preview_email' ), 11, 1 ); // allow for other filter methods to take precedent.
 	}
 
 	/**

@@ -37,8 +37,6 @@ class Send_Preview_Email {
 		Renderer $renderer
 	) {
 		$this->renderer = $renderer;
-
-		add_filter( 'mailpoet_email_editor_send_preview_email', array( $this, 'send_preview_email' ), 11 ); // allow for other filter methods to take precedent.
 	}
 
 	/**
