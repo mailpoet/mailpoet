@@ -1,12 +1,7 @@
-.spinner-container {
-  align-items: center;
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  width: 100%;
-}
-
-// Fix editor width. We don't use resizable editor wrapper so we need to set the width manually here
-.editor-visual-editor > div {
-  width: 100%;
-}
+@import "./components/block-editor/index.scss";
+@import "./components/header/index.scss";
+@import "./components/notices/index.scss";
+@import "./components/preview/index.scss";
+@import "./components/sidebar/index.scss";
+@import "./components/styles-sidebar/index.scss";
+@import "./components/template-select/index.scss";
