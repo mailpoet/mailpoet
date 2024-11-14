@@ -30,7 +30,6 @@ use MailPoet\EmailEditor\Engine\Theme_Controller;
 use MailPoet\EmailEditor\Integrations\Core\Initializer;
 use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
 use MailPoet\EmailEditor\Engine\Send_Preview_Email;
-use MailPoet\EmailEditor\Utils\Cdn_Asset_Url;
 
 if ( (bool) getenv( 'MULTISITE' ) === true ) {
 	// REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated.
@@ -138,12 +137,6 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 			}
 		);
 		$container->set(
-			Cdn_Asset_Url::class,
-			function () {
-				return new Cdn_Asset_Url( 'http://localhost' );
-			}
-		);
-		$container->set(
 			Email_Api_Controller::class,
 			function () {
 				return new Email_Api_Controller();
@@ -198,10 +191,8 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 		);
 		$container->set(
 			Patterns::class,
-			function ( $container ) {
-				return new Patterns(
-					$container->get( Cdn_Asset_Url::class ),
-				);
+			function () {
+				return new Patterns();
 			}
 		);
 		$container->set(
