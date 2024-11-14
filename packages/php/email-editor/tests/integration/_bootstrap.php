@@ -29,6 +29,7 @@ use MailPoet\EmailEditor\Engine\Templates\Utils;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
 use MailPoet\EmailEditor\Integrations\Core\Initializer;
 use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
+use MailPoet\EmailEditor\Integrations\Utils\Send_Preview_Email;
 use MailPoet\EmailEditor\Utils\Cdn_Asset_Url;
 
 if ( (bool) getenv( 'MULTISITE' ) === true ) {
@@ -280,6 +281,14 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 			}
 		);
 		$container->set(
+			Send_Preview_Email::class,
+			function ( $container ) {
+				return new Send_Preview_Email(
+					$container->get( Renderer::class ),
+				);
+			}
+		);
+		$container->set(
 			Email_Editor::class,
 			function ( $container ) {
 				return new Email_Editor(
@@ -288,6 +297,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 					$container->get( Template_Preview::class ),
 					$container->get( Patterns::class ),
 					$container->get( Settings_Controller::class ),
+					$container->get( Send_Preview_Email::class ),
 				);
 			}
 		);
