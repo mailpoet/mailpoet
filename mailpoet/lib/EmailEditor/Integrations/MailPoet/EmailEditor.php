@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController;
 use MailPoet\Features\FeaturesController;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -16,6 +17,8 @@ class EmailEditor {
 
   private EditorPageRenderer $editorPageRenderer;
 
+  private PatternsController $patternsController;
+
   private Cli $cli;
 
   private EmailEditorPreviewEmail $emailEditorPreviewEmail;
@@ -25,13 +28,15 @@ class EmailEditor {
     FeaturesController $featuresController,
     EmailApiController $emailApiController,
     EditorPageRenderer $editorPageRenderer,
-    Cli $cli,
-    EmailEditorPreviewEmail $emailEditorPreviewEmail
+    EmailEditorPreviewEmail $emailEditorPreviewEmail,
+    PatternsController $patternsController,
+    Cli $cli
   ) {
     $this->wp = $wp;
     $this->featuresController = $featuresController;
     $this->emailApiController = $emailApiController;
     $this->editorPageRenderer = $editorPageRenderer;
+    $this->patternsController = $patternsController;
     $this->cli = $cli;
     $this->emailEditorPreviewEmail = $emailEditorPreviewEmail;
   }
@@ -41,6 +46,7 @@ class EmailEditor {
       return;
     }
     $this->cli->initialize();
+    $this->patternsController->initialize();
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
     $this->wp->addAction('rest_delete_mailpoet_email', [$this->emailApiController, 'trashEmail'], 10, 1);
     $this->wp->addFilter('mailpoet_is_email_editor_page', [$this, 'isEditorPage'], 10, 1);
