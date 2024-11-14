@@ -22,7 +22,7 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
   }
 
   public function testItReturnsCaptchaRenderUrl() {
-    $url = $this->urlFactory->getCaptchaUrl('abc');
+    $url = $this->urlFactory->getCaptchaUrlForMPForm('abc');
 
     verify($url)->notNull();
     verify($url)->stringContainsString(Router::NAME);

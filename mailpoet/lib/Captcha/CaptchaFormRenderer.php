@@ -49,8 +49,23 @@ class CaptchaFormRenderer {
     $this->styles = $styles;
   }
 
-  public function getCaptchaPageContent(string $sessionId) {
-    $this->captchaPhrase->createPhrase($sessionId);
+  public function render(array $data) {
+    $sessionId = (isset($data['captcha_session_id']) && is_string($data['captcha_session_id']))
+      ? $data['captcha_session_id']
+      : null;
+
+    if (!$sessionId) {
+      return false;
+    }
+
+    if ($data['referrer_form'] == CaptchaUrlFactory::REFERER_MP_FORM) {
+      return $this->renderFormInSubscriptionForm($sessionId);
+    }
+
+    return false;
+  }
+
+  private function renderFormInSubscriptionForm($sessionId) {
     $captchaSessionForm = $this->captchaSession->getFormData($sessionId);
     $showSuccessMessage = !empty($_GET['mailpoet_success']);
     $showErrorMessage = !empty($_GET['mailpoet_error']);
@@ -72,6 +87,32 @@ class CaptchaFormRenderer {
       return $this->renderFormMessages($formModel, true);
     }
 
+    $redirectUrl = htmlspecialchars($this->urlHelper->getCurrentUrl(), ENT_QUOTES);
+    $hiddenFields = '<input type="hidden" name="data[form_id]" value="' . $formId . '" />';
+    $hiddenFields .= '<input type="hidden" name="data[captcha_session_id]" value="' . htmlspecialchars($sessionId) . '" />';
+    $hiddenFields .= '<input type="hidden" name="api_version" value="v1" />';
+    $hiddenFields .= '<input type="hidden" name="endpoint" value="subscribers" />';
+    $hiddenFields .= '<input type="hidden" name="mailpoet_method" value="subscribe" />';
+    $hiddenFields .= '<input type="hidden" name="mailpoet_redirect" value="' . $redirectUrl . '" />';
+
+    $actionUrl = admin_url('admin-post.php?action=mailpoet_subscription_form');
+
+    $submitBlocks = $formModel->getBlocksByTypes(['submit']);
+    $submitLabel = count($submitBlocks) && $submitBlocks[0]['params']['label']
+      ? $submitBlocks[0]['params']['label']
+      : __('Subscribe', 'mailpoet');
+
+    $afterSubmitElement = $this->renderFormMessages($formModel, false, $showErrorMessage);
+
+    $styles = $this->styles->renderFormMessageStyles($formModel, '#mailpoet_captcha_form');
+    $styles = '<style>' . $styles . '</style>';
+
+    return $this->renderForm($sessionId, $hiddenFields, $actionUrl, $submitLabel, $afterSubmitElement, $styles);
+  }
+
+  private function renderForm($sessionId, $hiddenFields, $actionUrl, $submitLabel, $afterSubmitElement, $styles) {
+    $this->captchaPhrase->createPhrase($sessionId);
+
     $fields = [
       [
         'id' => 'captcha',
@@ -84,8 +125,6 @@ class CaptchaFormRenderer {
       ],
     ];
 
-    $submitBlocks = $formModel->getBlocksByTypes(['submit']);
-    $submitLabel = count($submitBlocks) && $submitBlocks[0]['params']['label'] ? $submitBlocks[0]['params']['label'] : __('Subscribe', 'mailpoet');
     $form = array_merge(
       $fields,
       [
@@ -96,18 +135,19 @@ class CaptchaFormRenderer {
             'label' => $submitLabel,
           ],
         ],
-      ]
+      ],
     );
 
-    $redirectUrl = htmlspecialchars($this->urlHelper->getCurrentUrl(), ENT_QUOTES);
-    $admin_url = admin_url('admin-post.php?action=mailpoet_subscription_form');
-    $formHtml = '<form method="POST" action="' . $admin_url . '" class="mailpoet_form mailpoet_captcha_form" id="mailpoet_captcha_form" novalidate>';
-    $formHtml .= '<input type="hidden" name="data[form_id]" value="' . $formId . '" />';
-    $formHtml .= '<input type="hidden" name="data[captcha_session_id]" value="' . htmlspecialchars($sessionId) . '" />';
-    $formHtml .= '<input type="hidden" name="api_version" value="v1" />';
-    $formHtml .= '<input type="hidden" name="endpoint" value="subscribers" />';
-    $formHtml .= '<input type="hidden" name="mailpoet_method" value="subscribe" />';
-    $formHtml .= '<input type="hidden" name="mailpoet_redirect" value="' . $redirectUrl . '" />';
+    if ($afterSubmitElement) {
+      // The 'mailpoet_form' class alter the form's submission behavior
+      // Refer to mailpoet/assets/js/src/public.tsx
+      $classes = 'mailpoet_form mailpoet_captcha_form';
+    } else {
+      $classes = 'mailpoet_captcha_form';
+    }
+
+    $formHtml = '<form method="POST" action="' . $actionUrl . '" class="' . $classes . '" id="mailpoet_captcha_form" novalidate>';
+    $formHtml .= $hiddenFields;
 
     $width = 220;
     $height = 60;
@@ -128,10 +168,16 @@ class CaptchaFormRenderer {
 
     $formHtml .= $this->formRenderer->renderBlocks($form, [], null, $honeypot = false);
     $formHtml .= '</div>';
-    $formHtml .= $this->renderFormMessages($formModel, false, $showErrorMessage);
+
+    if ($afterSubmitElement) {
+      $formHtml .= $afterSubmitElement;
+    }
+
     $formHtml .= '</form>';
-    $styles = $this->styles->renderFormMessageStyles($formModel, '#mailpoet_captcha_form');
-    $formHtml .= '<style>' . $styles . '</style>';
+
+    if ($styles) {
+      $formHtml .= $styles;
+    }
 
     return $formHtml;
   }
