@@ -18,18 +18,22 @@ class EmailEditor {
 
   private Cli $cli;
 
+  private EmailEditorPreviewEmail $emailEditorPreviewEmail;
+
   public function __construct(
     WPFunctions $wp,
     FeaturesController $featuresController,
     EmailApiController $emailApiController,
     EditorPageRenderer $editorPageRenderer,
-    Cli $cli
+    Cli $cli,
+    EmailEditorPreviewEmail $emailEditorPreviewEmail
   ) {
     $this->wp = $wp;
     $this->featuresController = $featuresController;
     $this->emailApiController = $emailApiController;
     $this->editorPageRenderer = $editorPageRenderer;
     $this->cli = $cli;
+    $this->emailEditorPreviewEmail = $emailEditorPreviewEmail;
   }
 
   public function initialize(): void {
@@ -41,6 +45,7 @@ class EmailEditor {
     $this->wp->addAction('rest_delete_mailpoet_email', [$this->emailApiController, 'trashEmail'], 10, 1);
     $this->wp->addFilter('mailpoet_is_email_editor_page', [$this, 'isEditorPage'], 10, 1);
     $this->wp->addFilter('replace_editor', [$this, 'replaceEditor'], 10, 2);
+    $this->wp->addFilter('mailpoet_email_editor_send_preview_email', [$this->emailEditorPreviewEmail, 'sendPreviewEmail'], 10, 1);
     $this->extendEmailPostApi();
   }
 
