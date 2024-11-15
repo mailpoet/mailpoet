@@ -28,6 +28,7 @@ class API {
   private $availableApiVersions = [
       'v1',
   ];
+
   /** @var ContainerInterface */
   private $container;
 
@@ -71,7 +72,7 @@ class API {
   }
 
   public function init() {
-     // admin security token and API version
+    // admin security token and API version
     WPFunctions::get()->addAction(
       'admin_head',
       [$this, 'setTokenAndAPIVersion']
@@ -106,10 +107,12 @@ class API {
     }
 
     $ignoreToken = (
-      $this->settings->get('captcha.type') != CaptchaConstants::TYPE_DISABLED &&
-      $this->requestEndpoint === 'subscribers' &&
-      $this->requestMethod === 'subscribe'
-    );
+        $this->settings->get('captcha.type') != CaptchaConstants::TYPE_DISABLED &&
+        $this->requestEndpoint === 'subscribers' &&
+        $this->requestMethod === 'subscribe'
+      ) || (
+        $this->requestEndpoint === 'captcha'
+      );
 
     if (!$ignoreToken && $this->wp->wpVerifyNonce($this->requestToken, 'mailpoet_token') === false) {
       $errorMessage = __("Sorry, but we couldn't connect to the MailPoet server. Please refresh the web page and try again.", 'mailpoet');
