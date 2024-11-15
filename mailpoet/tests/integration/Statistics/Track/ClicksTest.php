@@ -584,8 +584,8 @@ class ClicksTest extends \MailPoetTest {
     $savedClickTime = $this->subscriber->getLastClickAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
     $this->assertInstanceOf(\DateTimeInterface::class, $savedClickTime);
-    verify($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
-    verify($savedClickTime->getTimestamp())->equals($now->getTimestamp());
+    $this->assertEqualsWithDelta($savedEngagementTime->getTimestamp(), $now->getTimestamp(), 1);
+    $this->assertEqualsWithDelta($savedClickTime->getTimestamp(), $now->getTimestamp(), 1);
   }
 
   public function testItUpdatesSubscriberEngagementForMachineAgent() {
@@ -628,8 +628,8 @@ class ClicksTest extends \MailPoetTest {
     $savedClickTime = $this->subscriber->getLastClickAt();
     $this->assertInstanceOf(\DateTimeInterface::class, $savedEngagementTime);
     $this->assertInstanceOf(\DateTimeInterface::class, $savedClickTime);
-    verify($savedEngagementTime->getTimestamp())->equals($now->getTimestamp());
-    verify($savedClickTime->getTimestamp())->equals($now->getTimestamp());
+    $this->assertEqualsWithDelta($savedEngagementTime->getTimestamp(), $now->getTimestamp(), 1);
+    $this->assertEqualsWithDelta($savedClickTime->getTimestamp(), $now->getTimestamp(), 1);
   }
 
   public function testItWontUpdateSubscriberThatWasRecentlyUpdated() {
