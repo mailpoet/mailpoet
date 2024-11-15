@@ -641,6 +641,13 @@ class Hooks {
         'register_form',
         [$this->captchaHooks, 'render']
       );
+
+      $this->wp->addAction(
+        'registration_errors',
+        [$this->captchaHooks, 'validate'],
+        10,
+        3
+      );
     }
   }
 

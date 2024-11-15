@@ -2,16 +2,21 @@
 
 namespace MailPoet\Captcha;
 
+use MailPoet\Captcha\Validator\CaptchaValidator;
+use MailPoet\Captcha\Validator\ValidationError;
 use MailPoet\Settings\SettingsController;
 
 class CaptchaHooks {
 
   private SettingsController $settings;
+  private CaptchaValidator $captchaValidator;
 
   public function __construct(
-    SettingsController $settings
+    SettingsController $settings,
+    CaptchaValidator $captchaValidator
   ) {
     $this->settings = $settings;
+    $this->captchaValidator = $captchaValidator;
   }
 
   public function isEnabled(): bool {
@@ -54,5 +59,16 @@ class CaptchaHooks {
         });
       </script>
     HTML;
+  }
+
+  public function validate(\WP_Error $errors) {
+    try {
+      // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+      $this->captchaValidator->validate($_POST['data'] ?? []);
+    } catch (ValidationError $e) {
+      $errors->add('captcha_failed', $e->getMessage());
+    }
+
+    return $errors;
   }
 }
