@@ -29,9 +29,9 @@ export function EditorSelectModal({
       },
     })
       .done((response) => {
-        window.location.href = `post.php?post=${
-          response.data.wp_post_id as number
-        }&action=edit`;
+        window.location.href = MailPoet.getBlockEmailEditorUrl(
+          response.data.wp_post_id as string,
+        );
       })
       .fail((response) => {
         setIsLoading(false);

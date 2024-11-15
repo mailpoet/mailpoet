@@ -14,6 +14,9 @@ import { MailPoetNum } from './num';
 import { MailPoetHelpTooltip } from './help-tooltip-helper';
 import { MailPoetIframe } from './iframe';
 
+const getBlockEmailEditorUrl = (postId: string | number): string =>
+  `post.php?post=${postId}&action=edit`;
+
 // A placeholder for MailPoet object
 export const MailPoet = {
   FeaturesController: FeaturesController(window.mailpoet_feature_flags),
@@ -89,6 +92,7 @@ export const MailPoet = {
   adminPluginsUrl: window.mailpoet_admin_plugins_url,
   isDotcom: window.mailpoet_is_dotcom,
   cronTriggerMethod: window.mailpoet_cron_trigger_method,
+  getBlockEmailEditorUrl,
 } as const;
 
 declare global {

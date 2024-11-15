@@ -874,9 +874,7 @@ class NewsletterSendComponent extends Component<
                     MailPoet.FeaturesController.isSupported(
                       'gutenberg_email_editor',
                     ) && wpPostId
-                      ? `admin.php?page=mailpoet-email-editor&postId=${Number(
-                          wpPostId,
-                        )}`
+                      ? MailPoet.getBlockEmailEditorUrl(wpPostId)
                       : `?page=mailpoet-newsletter-editor&id=${Number(
                           this.props.params.id,
                         )}`
