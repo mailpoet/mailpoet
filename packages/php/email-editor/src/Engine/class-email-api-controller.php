@@ -45,6 +45,14 @@ class Email_Api_Controller {
 	 * @return WP_REST_Response
 	 */
 	public function send_preview_email_data( WP_REST_Request $request ): WP_REST_Response {
+		/**
+		 * $data - Post Data
+		 * format
+		 * [_locale] => user
+		 * [newsletterId] => NEWSLETTER_ID
+		 * [email] => Provided email address
+		 * [postId] => POST_ID
+		 */
 		$data = $request->get_params();
 		try {
 			$result = apply_filters( 'mailpoet_email_editor_send_preview_email', $data );

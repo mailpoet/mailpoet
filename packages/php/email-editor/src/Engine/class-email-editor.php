@@ -11,7 +11,6 @@ namespace MailPoet\EmailEditor\Engine;
 use MailPoet\EmailEditor\Engine\Patterns\Patterns;
 use MailPoet\EmailEditor\Engine\Templates\Template_Preview;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
-use MailPoet\EmailEditor\Integrations\Utils\Send_Preview_Email;
 use WP_Post;
 use WP_Theme_JSON;
 

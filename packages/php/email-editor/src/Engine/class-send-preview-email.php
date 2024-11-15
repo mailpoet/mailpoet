@@ -7,7 +7,7 @@
 
 declare( strict_types = 1 );
 
-namespace MailPoet\EmailEditor\Integrations\Utils;
+namespace MailPoet\EmailEditor\Engine;
 
 use MailPoet\EmailEditor\Engine\Renderer\Renderer;
 

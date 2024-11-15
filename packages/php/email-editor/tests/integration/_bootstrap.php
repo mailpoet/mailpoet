@@ -29,7 +29,7 @@ use MailPoet\EmailEditor\Engine\Templates\Utils;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
 use MailPoet\EmailEditor\Integrations\Core\Initializer;
 use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
-use MailPoet\EmailEditor\Integrations\Utils\Send_Preview_Email;
+use MailPoet\EmailEditor\Engine\Send_Preview_Email;
 use MailPoet\EmailEditor\Utils\Cdn_Asset_Url;
 
 if ( (bool) getenv( 'MULTISITE' ) === true ) {

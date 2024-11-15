@@ -6,9 +6,11 @@
  */
 
 declare(strict_types = 1);
-namespace MailPoet\EmailEditor\Integrations\Utils;
+namespace MailPoet\EmailEditor\Engine;
 
+use Codeception\Stub\Expected;
 use MailPoet\EmailEditor\Engine\Renderer\Renderer;
+use MailPoet\WP\Functions as WPFunctions;
 
 /**
  * Unit test for Send_Preview_Email_Test class.
@@ -23,13 +25,20 @@ class Send_Preview_Email_Test extends \MailPoetTest {
 	private $send_preview_email;
 
 	/**
+	 * Instance of Renderer
+	 *
+	 * @var Renderer
+	 */
+	private $renderer_mock;
+
+	/**
 	 * Set up before each test
 	 */
 	public function _before() {
 		parent::_before();
 
-		$renderer_mock = $this->createMock( Renderer::class );
-		$renderer_mock->method( 'render' )->willReturn(
+		$this->renderer_mock = $this->createMock( Renderer::class );
+		$this->renderer_mock->method( 'render' )->willReturn(
 			array(
 				'html' => 'test html',
 				'text' => 'test text',
@@ -39,7 +48,7 @@ class Send_Preview_Email_Test extends \MailPoetTest {
 		$this->send_preview_email = $this->getServiceWithOverrides(
 			Send_Preview_Email::class,
 			array(
-				'renderer' => $renderer_mock,
+				'renderer' => $this->renderer_mock,
 			)
 		);
 	}
@@ -48,9 +57,13 @@ class Send_Preview_Email_Test extends \MailPoetTest {
 	 * Test it sends preview email.
 	 */
 	public function testItSendsPreviewEmail(): void {
-		$this->send_preview_email->send_email = function () {
-			return true;
-		};
+		$spe = $this->make(
+			Send_Preview_Email::class,
+			array(
+				'renderer'   => $this->renderer_mock,
+				'send_email' => Expected::once( true ),
+			)
+		);
 
 		$email_post = $this->tester->create_post(
 			array(
@@ -64,9 +77,40 @@ class Send_Preview_Email_Test extends \MailPoetTest {
 			'postId'       => $email_post->ID,
 		);
 
-		$result = $this->send_preview_email->send_preview_email( $post_data );
+		$result = $spe->send_preview_email( $post_data );
 
 		verify( $result )->equals( true );
+	}
+
+	/**
+	 * Test it returns the status of send_mail.
+	 */
+	public function testItReturnsTheStatusOfSendMail(): void {
+		$mailing_status = false;
+
+		$spe = $this->make(
+			Send_Preview_Email::class,
+			array(
+				'renderer'   => $this->renderer_mock,
+				'send_email' => Expected::once( $mailing_status ),
+			)
+		);
+
+		$email_post = $this->tester->create_post(
+			array(
+				'post_content' => '<!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link has-background wp-element-button">Button</a></div><!-- /wp:button -->',
+			)
+		);
+
+		$post_data = array(
+			'newsletterId' => 2,
+			'email'        => 'hello@example.com',
+			'postId'       => $email_post->ID,
+		);
+
+		$result = $spe->send_preview_email( $post_data );
+
+		verify( $result )->equals( $mailing_status );
 	}
 
 	/**
