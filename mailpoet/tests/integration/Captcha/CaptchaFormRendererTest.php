@@ -95,11 +95,13 @@ class CaptchaFormRendererTest extends \MailPoetTest {
 
     $sessionId = '123';
     $expectedLabel = 'Register';
+    $expectedActionUrl = '/wp-login.php?action=register';
     $userLogin = 'example';
     $userEmail = 'example@domain.com';
     $data = [
       'captcha_session_id' => $sessionId,
       'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      'referrer_form_url' => $expectedActionUrl,
       // WP form specific data
       'wp-submit' => $expectedLabel,
       'user_login' => $userLogin,
@@ -109,6 +111,9 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $testee = $this->diContainer->get(CaptchaFormRenderer::class);
     $result = $testee->render($data);
 
+    // Action URL
+    $this->assertStringContainsString('<form method="POST" action="' . $expectedActionUrl . '"', $result);
+
     // Submit button
     $this->assertStringContainsString('type="submit" class="mailpoet_submit" value="' . $expectedLabel . '"', $result);
 
@@ -116,6 +121,54 @@ class CaptchaFormRendererTest extends \MailPoetTest {
     $this->assertStringContainsString('name="data[captcha_session_id]" value="' . $sessionId . '"', $result);
     $this->assertStringContainsString('name="user_login" value="' . $userLogin . '"', $result);
     $this->assertStringContainsString('name="user_email" value="' . $userEmail . '"', $result);
+  }
+
+  public function testItRendersInWCRegisterForm() {
+    $formRepository = $this->diContainer->get(FormsRepository::class);
+    $form = new FormEntity('captcha-render-test-form');
+
+    $form->setBody([
+      [
+        'id' => 'email',
+        'type' => 'text',
+      ],
+      [
+        'type' => 'submit',
+      ],
+    ]);
+
+    $form->setId(1);
+    $formRepository->persist($form);
+    $formRepository->flush();
+
+    $sessionId = '123';
+    $expectedLabel = 'Register';
+    $expectedActionUrl = 'https://example.com/?page_id=11';
+    $userLogin = 'example';
+    $userEmail = 'example@domain.com';
+    $data = [
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WC_FORM,
+      'referrer_form_url' => $expectedActionUrl,
+      // WC form specific data
+      'register' => $expectedLabel,
+      'email' => $userLogin,
+      'password' => $userEmail,
+    ];
+
+    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
+    $result = $testee->render($data);
+
+    // Action URL
+    $this->assertStringContainsString('<form method="POST" action="' . $expectedActionUrl . '"', $result);
+
+    // Submit button
+    $this->assertStringContainsString('type="submit" class="mailpoet_submit" value="' . $expectedLabel . '"', $result);
+
+    // Hidden fields
+    $this->assertStringContainsString('name="data[captcha_session_id]" value="' . $sessionId . '"', $result);
+    $this->assertStringContainsString('name="email" value="' . $userLogin . '"', $result);
+    $this->assertStringContainsString('name="password" value="' . $userEmail . '"', $result);
   }
 
   public function testItHandlesMissingFormLabel() {

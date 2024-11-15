@@ -13,6 +13,7 @@ class CaptchaUrlFactory {
 
   const REFERER_MP_FORM = 'mp_form';
   const REFERER_WP_FORM = 'wp_register_form';
+  const REFERER_WC_FORM = 'wc_register_form';
 
   public function __construct(
     WPFunctions $wp,

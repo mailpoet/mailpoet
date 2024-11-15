@@ -61,7 +61,9 @@ class CaptchaFormRenderer {
     if ($data['referrer_form'] == CaptchaUrlFactory::REFERER_MP_FORM) {
       return $this->renderFormInSubscriptionForm($sessionId);
     } elseif ($data['referrer_form'] == CaptchaUrlFactory::REFERER_WP_FORM) {
-      return $this->renderFormInWPRegisterForm($data);
+      return $this->renderFormInWPRegisterForm($data, 'wp-submit');
+    } elseif ($data['referrer_form'] == CaptchaUrlFactory::REFERER_WC_FORM) {
+      return $this->renderFormInWPRegisterForm($data, 'register');
     }
 
     return false;
@@ -112,20 +114,22 @@ class CaptchaFormRenderer {
     return $this->renderForm($sessionId, $hiddenFields, $actionUrl, $submitLabel, $afterSubmitElement, $styles);
   }
 
-  private function renderFormInWPRegisterForm(array $data) {
+  private function renderFormInWPRegisterForm(array $data, string $submitLabelKey) {
     $sessionId = $data['captcha_session_id'];
 
     unset($data['captcha_session_id']);
-    // The input 'name' is required in this format for the refresh button to work
+    // The 'name' attr is required in this format for the refresh button to work
     $hiddenFields = '<input type="hidden" name="data[captcha_session_id]" value="' . htmlspecialchars($sessionId) . '" />';
+
+    $actionUrl = $data['referrer_form_url'];
+    unset($data['referrer_form_url']);
 
     unset($data['referrer_form']);
     foreach ($data as $key => $value) {
       $hiddenFields .= '<input type="hidden" name="' . $key . '" value="' . htmlspecialchars($value) . '" />';
     }
 
-    $actionUrl = '/wp-login.php?action=register';
-    $submitLabel = $data['wp-submit'] ?? esc_attr_e('Register'); // phpcs:ignore WordPress.WP.I18n.MissingArgDomain
+    $submitLabel = $data[$submitLabelKey] ?? esc_attr_e('Register'); // phpcs:ignore WordPress.WP.I18n.MissingArgDomain
 
     return $this->renderForm($sessionId, $hiddenFields, $actionUrl, $submitLabel);
   }

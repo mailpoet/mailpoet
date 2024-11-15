@@ -639,7 +639,7 @@ class Hooks {
     if ($this->captchaHooks->isEnabled()) {
       $this->wp->addAction(
         'register_form',
-        [$this->captchaHooks, 'render']
+        [$this->captchaHooks, 'renderInWPRegisterForm']
       );
 
       $this->wp->addAction(
@@ -648,6 +648,20 @@ class Hooks {
         10,
         3
       );
+
+      if ($this->wooHelper->isWooCommerceActive()) {
+        $this->wp->addAction(
+          'woocommerce_register_form',
+          [$this->captchaHooks, 'renderInWCRegisterForm']
+        );
+
+        $this->wp->addFilter(
+          'woocommerce_process_registration_errors',
+          [$this->captchaHooks, 'validate'],
+          10,
+          3
+        );
+      }
     }
   }
 
