@@ -20,8 +20,8 @@ class PatternsController {
   }
 
   public function initialize(): void {
-    $this->wp->addFilter('mailpoet_block_pattern_categories', [$this, 'registerCategories']);
-    $this->wp->addFilter('mailpoet_block_patterns', [$this, 'registerPatterns']);
+    $this->wp->addFilter('mailpoet_email_editor_block_pattern_categories', [$this, 'registerCategories']);
+    $this->wp->addFilter('mailpoet_email_editor_block_patterns', [$this, 'registerPatterns']);
   }
 
   public function registerCategories(array $categories): array {
