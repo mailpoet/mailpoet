@@ -60,6 +60,18 @@ jobs:
         run: ../../../mailpoet/tools/vendor/composer.phar install
         working-directory: packages/php/email-editor
 
+      # Dump Email Editor autoload
+      # This is needed to refresh classmap autoload when the composer cache is hit
+      - name: Dump email-editor autoload
+        run: ../../../mailpoet/tools/vendor/composer.phar dump-autoload
+        working-directory: packages/php/email-editor
+
+      # Dump MailPoet autoload
+      # This is needed to refresh classmap autoload when the composer cache is hit
+      - name: Dump MailPoet autoload
+        run: ./tools/vendor/composer.phar dump-autoload
+        working-directory: mailpoet
+
       # Run Email Editor unit tests
       - name: Run email-editor package unit tests
         run: ./vendor/bin/codecept build && ../../../mailpoet/tools/vendor/composer.phar unit-test
