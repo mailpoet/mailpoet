@@ -80,8 +80,7 @@ class EmailEditor {
 
   public function replaceEditor($replace, $post) {
     $currentScreen = get_current_screen();
-    if (use_block_editor_for_post($post) && $post->post_type === self::MAILPOET_EMAIL_POST_TYPE && $currentScreen) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-
+    if ($post->post_type === self::MAILPOET_EMAIL_POST_TYPE && $currentScreen) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       $this->editorPageRenderer->render();
       return true;
     }
