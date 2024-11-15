@@ -8,7 +8,6 @@ import {
   useLocation,
   useParams,
 } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
 import { TabPanel } from '@wordpress/components';
 
@@ -116,7 +115,7 @@ const Tabs = withNpsPoll(() => {
 });
 Tabs.displayName = 'NewsletterTabs';
 
-function NewNewsletter({ history }) {
+function NewNewsletter() {
   return (
     <ErrorBoundary>
       <TopBarWithBeamer />
@@ -131,17 +130,11 @@ function NewNewsletter({ history }) {
             />
           }
         />
-        <NewsletterTypes history={history} />
+        <NewsletterTypes />
       </div>
     </ErrorBoundary>
   );
 }
-
-NewNewsletter.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
 
 NewNewsletter.displayName = 'NewNewsletter';
 
