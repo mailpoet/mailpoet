@@ -30,6 +30,9 @@ class Patterns {
 	private function register_block_pattern_categories(): void {
 		$categories = apply_filters( 'mailpoet_email_editor_block_pattern_categories', array() );
 		foreach ( $categories as $category ) {
+			if ( ! is_array( $category ) || ! isset( $category['name'], $category['label'] ) ) {
+				continue;
+			}
 			register_block_pattern_category(
 				$category['name'],
 				array(
@@ -48,6 +51,9 @@ class Patterns {
 	private function register_patterns() {
 		$patterns = apply_filters( 'mailpoet_email_editor_block_patterns', array() );
 		foreach ( $patterns as $pattern ) {
+			if ( ! $pattern instanceof Abstract_Pattern ) {
+				continue;
+			}
 			register_block_pattern( $pattern->get_namespace() . '/' . $pattern->get_name(), $pattern->get_properties() );
 		}
 	}
