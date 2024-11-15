@@ -4,19 +4,28 @@ namespace MailPoet\Test\Captcha;
 
 use MailPoet\Captcha\CaptchaFormRenderer;
 use MailPoet\Captcha\CaptchaSession;
+use MailPoet\Captcha\CaptchaUrlFactory;
+use MailPoet\Config\Populator;
 use MailPoet\Entities\FormEntity;
 use MailPoet\Form\FormsRepository;
 
 class CaptchaFormRendererTest extends \MailPoetTest {
-  public function testCaptchaSubmitTextIsConfigurable() {
-    $expectedLabel = 'EXPECTED_LABEL';
-    $formRepository = $this->diContainer->get(FormsRepository::class);
+  public function _before() {
+    $populator = $this->diContainer->get(Populator::class);
+    $populator->up();
 
+    parent::_before();
+  }
+
+  public function testItRendersInSubscriptionForm() {
+    $formRepository = $this->diContainer->get(FormsRepository::class);
     $form = new FormEntity('captcha-render-test-form');
+
+    $expectedLabel = 'EXPECTED_LABEL';
     $form->setBody([
       [
-        'type' => 'text',
         'id' => 'email',
+        'type' => 'text',
       ],
       [
         'type' => 'submit',
@@ -26,8 +35,12 @@ class CaptchaFormRendererTest extends \MailPoetTest {
       ],
     ]);
 
+    $successColor = '#00ff00';
+    $errorColor = '#ff0000';
     $form->setSettings([
       'success_message' => 'tada!',
+      'success_validation_color' => $successColor,
+      'error_validation_color' => $errorColor,
     ]);
 
     $form->setId(1);
@@ -40,15 +53,72 @@ class CaptchaFormRendererTest extends \MailPoetTest {
 
     $data = [
       'captcha_session_id' => $sessionId,
-      'referrer_form' => 'mp_subscription_form',
+      'referrer_form' => CaptchaUrlFactory::REFERER_MP_FORM,
     ];
 
     $testee = $this->diContainer->get(CaptchaFormRenderer::class);
     $result = $testee->render($data);
-    $this->assertStringContainsString('value="' . $expectedLabel . '"', $result);
+
+    $this->assertStringContainsString('type="submit" class="mailpoet_submit" value="' . $expectedLabel . '"', $result);
+
+    // Distinctive hidden fields
+    $this->assertStringContainsString('name="data[captcha_session_id]" value="' . $sessionId . '"', $result);
+    $this->assertStringContainsString('name="data[form_id]" value="' . $form->getId(), $result);
+
+    // After submit elements
+    $this->assertStringContainsString('class="mailpoet_validate_success"', $result);
+    $this->assertStringContainsString('class="mailpoet_validate_error"', $result);
+
+    // Form style elements
+    $this->assertStringContainsString('<style>', $result);
+    $this->assertStringContainsString('.mailpoet_validate_success {color: ' . $successColor . '}', $result);
+    $this->assertStringContainsString('.mailpoet_validate_error {color: ' . $errorColor . '}', $result);
   }
 
-  public function testCaptchaSubmitTextHasDefault() {
+  public function testItRendersInWPRegisterForm() {
+    $formRepository = $this->diContainer->get(FormsRepository::class);
+    $form = new FormEntity('captcha-render-test-form');
+
+    $form->setBody([
+      [
+        'id' => 'email',
+        'type' => 'text',
+      ],
+      [
+        'type' => 'submit',
+      ],
+    ]);
+
+    $form->setId(1);
+    $formRepository->persist($form);
+    $formRepository->flush();
+
+    $sessionId = '123';
+    $expectedLabel = 'Register';
+    $userLogin = 'example';
+    $userEmail = 'example@domain.com';
+    $data = [
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => CaptchaUrlFactory::REFERER_WP_FORM,
+      // WP form specific data
+      'wp-submit' => $expectedLabel,
+      'user_login' => $userLogin,
+      'user_email' => $userEmail,
+    ];
+
+    $testee = $this->diContainer->get(CaptchaFormRenderer::class);
+    $result = $testee->render($data);
+
+    // Submit button
+    $this->assertStringContainsString('type="submit" class="mailpoet_submit" value="' . $expectedLabel . '"', $result);
+
+    // Hidden fields
+    $this->assertStringContainsString('name="data[captcha_session_id]" value="' . $sessionId . '"', $result);
+    $this->assertStringContainsString('name="user_login" value="' . $userLogin . '"', $result);
+    $this->assertStringContainsString('name="user_email" value="' . $userEmail . '"', $result);
+  }
+
+  public function testItHandlesMissingFormLabel() {
     $formRepository = $this->diContainer->get(FormsRepository::class);
 
     $form = new FormEntity('captcha-render-test-form');
@@ -60,7 +130,7 @@ class CaptchaFormRendererTest extends \MailPoetTest {
       [
         'type' => 'submit',
         'params' => [
-          'label' => '',
+          'label' => '', // empty label
         ],
       ],
     ]);
@@ -79,15 +149,11 @@ class CaptchaFormRendererTest extends \MailPoetTest {
 
     $data = [
       'captcha_session_id' => $sessionId,
-      'referrer_form' => 'mp_subscription_form',
+      'referrer_form' => CaptchaUrlFactory::REFERER_MP_FORM,
     ];
 
     $testee = $this->diContainer->get(CaptchaFormRenderer::class);
     $result = $testee->render($data);
     $this->assertStringContainsString('value="Subscribe"', $result);
-  }
-
-  public function _before() {
-    parent::_before();
   }
 }

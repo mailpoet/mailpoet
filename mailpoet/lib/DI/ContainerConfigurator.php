@@ -26,8 +26,8 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->register(ContainerWrapper::class)
       ->setPublic(true)
       ->setFactory([
-      ContainerWrapper::class,
-      'getInstance',
+        ContainerWrapper::class,
+        'getInstance',
       ]);
     // AdminPages
     $container->autowire(\MailPoet\AdminPages\AssetsController::class)->setPublic(true);
@@ -547,12 +547,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Settings\UserFlagsController::class);
     $container->autowire(\MailPoet\Settings\UserFlagsRepository::class)->setPublic(true);
     // Subscription
-    $container->autowire(\MailPoet\Captcha\CaptchaConstants::class)->setPublic(true);
-    $container->autowire(\MailPoet\Captcha\CaptchaSession::class)->setPublic(true);
-    $container->autowire(\MailPoet\Captcha\CaptchaRenderer::class)->setPublic(true);
-    $container->autowire(\MailPoet\Captcha\CaptchaPhrase::class);
-    $container->autowire(\MailPoet\Captcha\Validator\CaptchaValidator::class)->setPublic(true);
-    $container->autowire(\MailPoet\Captcha\Validator\RecaptchaValidator::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Comment::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Form::class)->setPublic(true);
     $container->autowire(\MailPoet\Subscription\Manage::class)->setPublic(true);
@@ -662,6 +656,13 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\Captcha\CaptchaUrlFactory::class)->setPublic(true);
     $container->autowire(\MailPoet\Captcha\CaptchaFormRenderer::class)->setPublic(true);
     $container->autowire(\MailPoet\Captcha\PageRenderer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\CaptchaConstants::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\CaptchaSession::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\CaptchaRenderer::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\CaptchaHooks::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\CaptchaPhrase::class);
+    $container->autowire(\MailPoet\Captcha\Validator\CaptchaValidator::class)->setPublic(true);
+    $container->autowire(\MailPoet\Captcha\Validator\RecaptchaValidator::class)->setPublic(true);
 
     // WooCommerce Subscriptions
     $container->autowire(\MailPoet\WooCommerce\WooCommerceSubscriptions\Helper::class)->setPublic(true);

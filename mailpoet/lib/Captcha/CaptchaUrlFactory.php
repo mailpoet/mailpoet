@@ -12,6 +12,7 @@ class CaptchaUrlFactory {
   private SettingsController $settings;
 
   const REFERER_MP_FORM = 'mp_form';
+  const REFERER_WP_FORM = 'wp_register_form';
 
   public function __construct(
     WPFunctions $wp,
@@ -21,8 +22,17 @@ class CaptchaUrlFactory {
     $this->settings = $settings;
   }
 
+  public function getCaptchaUrl(array $data) {
+    return $this->getUrl(CaptchaEndpoint::ACTION_RENDER, $data);
+  }
+
   public function getCaptchaUrlForMPForm(string $sessionId) {
-    return $this->getCaptchaUrl($sessionId, self::REFERER_MP_FORM);
+    $data = [
+      'captcha_session_id' => $sessionId,
+      'referrer_form' => self::REFERER_MP_FORM,
+    ];
+
+    return $this->getCaptchaUrl($data);
   }
 
   public function getCaptchaImageUrl(int $width, int $height, string $sessionId) {
@@ -59,15 +69,5 @@ class CaptchaUrlFactory {
 
     $url .= (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . join('&', $params);
     return $url;
-  }
-
-  private function getCaptchaUrl(string $sessionId, string $referer) {
-    return $this->getUrl(
-      CaptchaEndpoint::ACTION_RENDER,
-      [
-        'captcha_session_id' => $sessionId,
-        'referrer_form' => $referer,
-      ]
-    );
   }
 }

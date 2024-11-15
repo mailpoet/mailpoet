@@ -2,6 +2,7 @@
 
 namespace MailPoet\Config;
 
+use MailPoet\Captcha\CaptchaHooks;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
@@ -83,6 +84,9 @@ class Hooks {
   /** @var AutomateWooHooks */
   private $automateWooHooks;
 
+  /** @var CaptchaHooks */
+  private $captchaHooks;
+
   /** @var WooSystemInfoController */
   private $wooSystemInfoController;
 
@@ -103,6 +107,7 @@ class Hooks {
     WordpressMailerReplacer $wordpressMailerReplacer,
     DisplayFormInWPContent $displayFormInWPContent,
     HooksWooCommerce $hooksWooCommerce,
+    CaptchaHooks $captchaHooks,
     HooksReCaptcha $reCaptcha,
     SubscriberHandler $subscriberHandler,
     SubscriberChangesNotifier $subscriberChangesNotifier,
@@ -125,6 +130,7 @@ class Hooks {
     $this->wpSegment = $wpSegment;
     $this->subscriberHandler = $subscriberHandler;
     $this->hooksWooCommerce = $hooksWooCommerce;
+    $this->captchaHooks = $captchaHooks;
     $this->reCaptcha = $reCaptcha;
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
     $this->dotcomLicenseProvisioner = $dotcomLicenseProvisioner;
@@ -151,6 +157,7 @@ class Hooks {
     $this->setupSettingsLinkInPluginPage();
     $this->setupChangeNotifications();
     $this->setupLicenseProvisioning();
+    $this->setupCaptchaOnRegisterForm();
     $this->deactivateMailPoetCronBeforePluginUpgrade();
   }
 
@@ -626,6 +633,15 @@ class Hooks {
       10,
       3
     );
+  }
+
+  public function setupCaptchaOnRegisterForm(): void {
+    if ($this->captchaHooks->isEnabled()) {
+      $this->wp->addAction(
+        'register_form',
+        [$this->captchaHooks, 'render']
+      );
+    }
   }
 
   public function deactivateMailPoetCronBeforePluginUpgrade(): void {
