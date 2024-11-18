@@ -212,7 +212,7 @@ class WooCheckoutBlocksCest {
     // Close welcome in block editor dialog
     try {
       $i->waitForText('Choose a pattern', 5);
-      $i->click('button[aria-label="Close"]');
+      $this->closeDialog($i);
     } catch (\Exception $e) {
       $i->wantTo('Choose a pattern was not present, skipping action.');
     }
