@@ -2,9 +2,9 @@
 
 namespace unit\Captcha;
 
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\ReCaptchaRenderer;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\Test\Form\HtmlParser;
 use MailPoet\WP\Functions as WPFunctions;
 use PHPUnit\Framework\MockObject\MockObject;

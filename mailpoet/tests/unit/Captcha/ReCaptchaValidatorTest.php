@@ -3,9 +3,9 @@
 namespace unit\Captcha;
 
 use Codeception\Stub;
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\ReCaptchaValidator;
 use MailPoet\Settings\SettingsController;
-use MailPoet\Subscription\Captcha\CaptchaConstants;
 use MailPoet\WP\Functions as WPFunctions;
 
 class ReCaptchaValidatorTest extends \MailPoetUnitTest {
