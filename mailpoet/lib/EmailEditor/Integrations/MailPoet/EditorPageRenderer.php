@@ -107,6 +107,8 @@ class EditorPageRenderer {
       ]
     );
 
+    $installedAtDiff = (new \DateTime($this->mailpoetSettings->get('installed_at')))->diff(new \DateTime());
+
     // Renders additional script data that some components require e.g. PremiumModal. This is done here instead of using
     // PageRenderer since that introduces other dependencies we want to avoid. Used by getUpgradeInfo.
     // some of these values are used by the powered by mailpoet block: mailpoet/assets/js/src/mailpoet-custom-email-editor-blocks/powered-by-mailpoet/
@@ -131,6 +133,8 @@ class EditorPageRenderer {
       'mailpoet_current_wp_user_firstname' => $this->wp->wpGetCurrentUser()->user_firstname,
       'mailpoet_cdn_url' => $this->cdnAssetUrl->generateCdnUrl(""),
       'mailpoet_site_url' => $this->wp->siteUrl(),
+      'mailpoet_review_request_illustration_url' => $this->cdnAssetUrl->generateCdnUrl('review-request/review-request-illustration.20190815-1427.svg'),
+      'mailpoet_installed_days_ago' => (int)$installedAtDiff->format('%a'),
     ];
     $this->wp->wpAddInlineScript('mailpoet_email_editor', implode('', array_map(function ($key) use ($inline_script_data) {
       return sprintf("var %s=%s;", $key, json_encode($inline_script_data[$key]));
