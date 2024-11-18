@@ -11,6 +11,23 @@ Anything **MailPoet** specific is in the `integrations/MailPoet` folder.
 
 For the core stuff that goes to the engine folder, avoid using other MailPoet-specific services and modules. The code in the Engine folder should work only with WP code or other stuff from the engine.
 
+## Workflow Commands
+We use `composer` run scripts to run the commands. You can run them using `composer run <command>`.
+If you don't have `composer` installed globally, you can use the `composer.phar` file in `../mailpoet/tools/vendor`.
+
+```bash
+composer run unit-test                             # runs all the unit tests
+composer run unit-test -- [path_to_tests]          # runs a single unit test or a directory of tests
+composer run integration-test                      # runs all the integrations tests
+composer run integration-test -- [path_to_tests]   # run a single integration test or a directory of tests
+composer code-style                                # checks the code style
+```
+Example:
+```bash
+# To run test cases defined in tests/integration/Engine/Theme_Controller_Test.php run
+composer run integration-test -- tests/integration/Engine/Theme_Controller_Test.php
+```
+
 ## Known rendering issues
 
 - In some (not all) Outlook versions the width of columns is not respected. The columns will be rendered with the full width.
