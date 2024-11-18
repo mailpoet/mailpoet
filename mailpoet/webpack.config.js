@@ -530,6 +530,24 @@ const emailEditorCustom = Object.assign({}, wpScriptConfig, {
     : [...wpScriptConfig.plugins, new ForkTsCheckerWebpackPlugin()],
 });
 
+const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
+  name: 'email_editor_integration',
+  entry: {
+    email_editor_integration: 'mailpoet-email-editor-integration/index.ts',
+  },
+  output: {
+    filename: '[name].js',
+    path: path.join(__dirname, 'assets/dist/js/email_editor_integration'),
+  },
+  resolve: {
+    ...wpScriptConfig.resolve,
+    modules: ['node_modules', 'assets/js/src'],
+  },
+  plugins: PRODUCTION_ENV
+    ? wpScriptConfig.plugins
+    : [...wpScriptConfig.plugins, new ForkTsCheckerWebpackPlugin()],
+});
+
 const configs = [
   publicConfig,
   adminConfig,
@@ -538,6 +556,7 @@ const configs = [
   postEditorBlock,
   marketingOptinBlock,
   emailEditorBlocks,
+  emailEditorIntegration,
 ];
 
 module.exports = (env) => {
@@ -555,7 +574,8 @@ module.exports = (env) => {
     const config = Object.assign({}, conf);
     if (
       config.name === 'marketing_optin_block' ||
-      config.name === 'email_editor'
+      config.name === 'email_editor' ||
+      config.name === 'email_editor_integration'
     ) {
       return config;
     }

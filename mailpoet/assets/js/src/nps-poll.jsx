@@ -71,7 +71,10 @@ const useNpsPoll = () => {
       });
     };
 
-    if (window.mailpoet_display_nps_poll && MailPoet.libs3rdPartyEnabled) {
+    if (
+      window.mailpoet_display_nps_poll &&
+      window.mailpoet_3rd_party_libs_enabled
+    ) {
       getTrackingData().then(({ data }) => callSatismeter(data));
     }
   }, []);

@@ -59,6 +59,16 @@ class EditorPageRenderer {
       return;
     }
 
+    // load mailpoet email editor JS integrations
+    $editorIntegrationAssetsParams = require Env::$assetsPath . '/dist/js/email_editor_integration/email_editor_integration.asset.php';
+    $this->wp->wpEnqueueScript(
+      'email_editor_integration',
+      Env::$assetsUrl . '/dist/js/email_editor_integration/email_editor_integration.js',
+      $editorIntegrationAssetsParams['dependencies'],
+      $editorIntegrationAssetsParams['version'],
+      true
+    );
+
     $assetsParams = require Env::$assetsPath . '/dist/js/email-editor/email_editor.asset.php';
 
     $this->wp->wpEnqueueScript(
