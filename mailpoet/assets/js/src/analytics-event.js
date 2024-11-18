@@ -104,11 +104,30 @@ function cacheEvent(forced, name, data, options, callback) {
 }
 
 export function initializeMixpanelWhenLoaded() {
-  if (typeof window.mixpanel === 'object') {
+  const MAX_RETRY = 5;
+  let intervalId;
+  let retryCount = 0;
+
+  const setupMixpanel = () => {
     exportMixpanel();
     trackCachedEvents();
+  };
+
+  if (typeof window.mixpanel === 'object') {
+    setupMixpanel();
   } else {
-    setTimeout(initializeMixpanelWhenLoaded, 100);
+    intervalId = setInterval(() => {
+      if (typeof window.mixpanel === 'object') {
+        clearInterval(intervalId);
+        setupMixpanel();
+      } else {
+        retryCount += 1;
+      }
+
+      if (retryCount > MAX_RETRY) {
+        clearInterval(intervalId);
+      }
+    }, 100);
   }
 }
 
