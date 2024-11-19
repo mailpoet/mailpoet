@@ -4,6 +4,7 @@
 
 import { addFilter } from '@wordpress/hooks';
 import { withNpsPoll } from '../nps-poll';
+import './index.scss';
 
 addFilter('mailpoet_email_editor_the_editor_component', 'mailpoet', (editor) =>
   withNpsPoll(editor),

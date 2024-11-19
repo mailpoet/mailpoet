@@ -68,6 +68,12 @@ class EditorPageRenderer {
       $editorIntegrationAssetsParams['version'],
       true
     );
+    $this->wp->wpEnqueueStyle(
+      'email_editor_integration',
+      Env::$assetsUrl . '/dist/js/email_editor_integration/email_editor_integration.css',
+      [],
+      $editorIntegrationAssetsParams['version']
+    );
 
     $assetsParams = require Env::$assetsPath . '/dist/js/email-editor/email_editor.asset.php';
 

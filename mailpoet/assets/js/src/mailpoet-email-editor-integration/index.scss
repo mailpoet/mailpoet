@@ -1,0 +1,25 @@
+// Core MailPoet styles. We need this here because the email editor does not register
+// under the mailpoet namespace and does not have access to the MailPoet plugin styles
+
+// Settings
+// Global variables, config switches. Not producing any CSS.
+@import '../../../css/src/settings/breakpoints';
+@import '../../../css/src/settings/grid';
+@import '../../../css/src/settings/colors';
+@import '../../../css/src/settings/form';
+@import '../../../css/src/settings/legacy-modal';
+@import '../../../css/src/settings/modal';
+@import '../../../css/src/settings/newsletter';
+@import '../../../css/src/settings/progress';
+@import '../../../css/src/settings/typography';
+
+// Tools
+// Default mixins and functions. Still not producing any CSS.
+@import '../../../css/src/mixins/breakpoints';
+@import '../../../css/src/mixins/clearfix';
+@import '../../../css/src/mixins/full-width-background';
+
+// Components
+// Actual UI components.
+@import '../../../css/src/components-plugin/legacy-modal';
+@import '../../../css/src/components-plugin/review-request.scss';
