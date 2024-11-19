@@ -245,7 +245,7 @@ const bulkActions = [
         name: 'remove_from_segment',
         endpoint: 'segments',
         filter: function filter(segment) {
-          return !!(segment.type === 'default');
+          return segment.type === 'default';
         },
       };
 
@@ -442,12 +442,9 @@ const itemActions = [
   },
 ];
 
-const isItemDeletable = (subscriber) => {
-  const isDeletable =
-    Number(subscriber.wp_user_id) === 0 &&
-    Number(subscriber.is_woocommerce_user) === 0;
-  return isDeletable;
-};
+const isItemDeletable = (subscriber) =>
+  Number(subscriber.wp_user_id) === 0 &&
+  Number(subscriber.is_woocommerce_user) === 0;
 
 const getSegmentFromId = (segmentId): Segment => {
   let result: Segment | null = null;
@@ -513,7 +510,7 @@ function SubscriberList() {
     }
 
     return (
-      <div>
+      <>
         <td className={rowClasses}>
           <Link
             className="mailpoet-listing-title"
@@ -584,7 +581,7 @@ function SubscriberList() {
             </>
           ) : null}
         </td>
-      </div>
+      </>
     );
   };
 
