@@ -62,11 +62,11 @@ class SubscribersListingCest {
   public function sendConfirmationEmail(\AcceptanceTester $i) {
     $i->wantTo('Send confirmation email');
 
-    $disallowedEmail = 'disallowed@example.com';
+    $maxConfirmationsEmail = 'disallowed@example.com';
     $allowedEmail = 'allowed@example.com';
 
     $subscriberResendDisallowed = (new Subscriber())
-      ->withEmail($disallowedEmail)
+      ->withEmail($maxConfirmationsEmail)
       ->withStatus('unconfirmed')
       ->withCountConfirmations(ConfirmationEmailMailer::MAX_CONFIRMATION_EMAILS)
       ->create();
@@ -80,9 +80,10 @@ class SubscribersListingCest {
     $i->login();
     $i->amOnMailpoetPage('Subscribers');
 
-    $i->waitForText($disallowedEmail);
-    $i->moveMouseOver(['xpath' => '//*[text()="' . $disallowedEmail . '"]//ancestor::tr']);
-    $i->dontSee('Resend confirmation email', '//*[text()="' . $disallowedEmail . '"]//ancestor::tr');
+    $i->waitForText($maxConfirmationsEmail);
+    $i->moveMouseOver(['xpath' => '//*[text()="' . $maxConfirmationsEmail . '"]//ancestor::tr']);
+    // Admins can resend confirmation emails even when the subscriber reached the limit
+    $i->see('Resend confirmation email', '//*[text()="' . $maxConfirmationsEmail . '"]//ancestor::tr');
 
     $i->clickItemRowActionByItemName($allowedEmail, 'Resend confirmation email');
     $i->waitForText('1 confirmation email has been sent.');
