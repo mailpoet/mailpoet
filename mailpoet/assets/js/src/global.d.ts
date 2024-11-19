@@ -281,7 +281,6 @@ interface Window {
   mailpoet_brand_styles?: {
     available: boolean;
   };
-  mailpoet_max_confirmation_emails: number;
   mailpoet_segments: Array<{
     id: string;
     name: string;

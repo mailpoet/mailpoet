@@ -419,10 +419,7 @@ const itemActions = [
     className: 'mailpoet-hide-on-mobile',
     label: MailPoet.I18n.t('resendConfirmationEmail'),
     display: function display(subscriber: Subscriber) {
-      return (
-        subscriber.status === 'unconfirmed' &&
-        subscriber.count_confirmations < window.mailpoet_max_confirmation_emails
-      );
+      return subscriber.status === 'unconfirmed';
     },
     onClick: function onClick(subscriber) {
       return MailPoet.Ajax.post({
