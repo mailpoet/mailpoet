@@ -1,5 +1,6 @@
 /* eslint-disable func-names */
 import jQuery from 'jquery';
+import Handlebars from 'handlebars';
 
 var closeModalImage =
   '<svg viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">' +
@@ -132,7 +133,7 @@ export const MailPoetModal = {
         return template;
       };
     }
-    return window.Handlebars.compile(template);
+    return Handlebars.compile(template);
   },
   init: function (options) {
     var modal;
