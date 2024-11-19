@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\Acceptance;
 
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Test\DataFactories\Settings;
 
@@ -19,8 +20,9 @@ class WooMyAccountRegistrationCest {
   public function _before(\AcceptanceTester $i) {
     $i->activateWooCommerce();
     $this->settingsFactory = new Settings();
-    $this->settingsFactory->withWooCommerceListImportPageDisplayed(true);
-    $this->settingsFactory->withCookieRevenueTrackingDisabled();
+    $this->settingsFactory->withWooCommerceListImportPageDisplayed(true)
+      ->withCookieRevenueTrackingDisabled()
+      ->withCaptchaType(CaptchaConstants::TYPE_DISABLED);
   }
 
   public function registerOptInDisabled(\AcceptanceTester $i) {

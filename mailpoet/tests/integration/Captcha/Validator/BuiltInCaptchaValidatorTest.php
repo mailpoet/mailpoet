@@ -5,6 +5,7 @@ namespace Mailpoet\Test\Captcha\Validator;
 use MailPoet\Captcha\CaptchaSession;
 use MailPoet\Captcha\Validator\CaptchaValidator;
 use MailPoet\Captcha\Validator\ValidationError;
+use MailPoet\Config\Populator;
 use MailPoet\Entities\SubscriberIPEntity;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
@@ -29,6 +30,8 @@ class BuiltInCaptchaValidatorTest extends \MailPoetTest {
   }
 
   public function testEmptyCaptchaThrowsError() {
+    $this->diContainer->get(Populator::class)->up();
+
     try {
       $this->testee->validate(['captcha_session_id' => '123']);
     } catch (ValidationError $error) {
@@ -50,6 +53,8 @@ class BuiltInCaptchaValidatorTest extends \MailPoetTest {
   }
 
   public function testThrowsErrorWhenCaptchaHasTimedOut() {
+    $this->diContainer->get(Populator::class)->up();
+
     $sessionId = '123';
     $this->session->setCaptchaHash($sessionId, ['phrase' => null]);
     try {
@@ -81,7 +86,7 @@ class BuiltInCaptchaValidatorTest extends \MailPoetTest {
   public function testItTakesFilterIntoAccountToDisableCaptcha() {
     $wp = new WPFunctions;
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-    $filter = function() {
+    $filter = function () {
       return 1;
     };
     $wp->addFilter('mailpoet_subscription_captcha_recipient_limit', $filter);

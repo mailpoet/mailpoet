@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Test\DataFactories\Settings;
 
 /**
@@ -31,6 +32,8 @@ class CreateNewWordPressUserCest {
     $i->selectOptionInReactSelect($secondListName, '[data-automation-id="subscribe-on_register-segments-selection"]');
     $i->click('[data-automation-id="settings-submit-button"]'); //save settings
     $i->waitForElementNotVisible('#mailpoet_loading');
+
+    $this->settings->withCaptchaType(CaptchaConstants::TYPE_DISABLED);
 
     // create a wp user via registration
     // Note: Xpath used to avoid flakyness and to pass multisite testing where we have different registration page designs

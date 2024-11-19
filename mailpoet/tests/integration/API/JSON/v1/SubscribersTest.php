@@ -11,6 +11,7 @@ use MailPoet\API\JSON\SuccessResponse;
 use MailPoet\API\JSON\v1\Subscribers;
 use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\Captcha\CaptchaSession;
+use MailPoet\Config\Populator;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\CustomFieldEntity;
 use MailPoet\Entities\FormEntity;
@@ -740,17 +741,21 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   public function testItCannotSubscribeWithoutBuiltInCaptchaWhenEnabled() {
+    $this->diContainer->get(Populator::class)->up();
+
     $this->settings->set('captcha', ['type' => CaptchaConstants::TYPE_BUILTIN]);
     $email = 'toto@mailpoet.com';
     (new SubscriberFactory())
       ->withEmail($email)
       ->withCountConfirmations(1)
       ->create();
+
     $response = $this->endpoint->subscribe([
       $this->obfuscatedEmail => $email,
       'form_id' => $this->form->getId(),
       $this->obfuscatedSegments => [$this->segment1->getId(), $this->segment2->getId()],
     ]);
+
     verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
     verify($response->errors[0]['message'])->equals('Please fill in the CAPTCHA.');
     $this->settings->set('captcha', []);
@@ -888,13 +893,12 @@ class SubscribersTest extends \MailPoetTest {
   }
 
   public function testThirdPartiesCanInterruptSubscriptionProcess() {
-
     $expectedErrorMessage = 'ErrorMessage';
 
     \MailPoet\WP\add_action(
       'mailpoet_subscription_before_subscribe',
-      function($data) use ($expectedErrorMessage) {
-            throw new UnexpectedValueException($expectedErrorMessage);
+      function ($data) use ($expectedErrorMessage) {
+        throw new UnexpectedValueException($expectedErrorMessage);
       }
     );
 

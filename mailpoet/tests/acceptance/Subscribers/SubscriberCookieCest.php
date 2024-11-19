@@ -4,6 +4,7 @@ namespace MailPoet\Test\Acceptance;
 
 use AcceptanceTester;
 use Codeception\Util\Locator;
+use MailPoet\Captcha\CaptchaConstants;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Newsletter;
@@ -25,6 +26,7 @@ class SubscriberCookieCest {
 
     (new Settings())
       ->withSubscribeOnRegisterEnabled()
+      ->withCaptchaType(CaptchaConstants::TYPE_DISABLED)
       ->withTransactionEmailsViaMailPoet();
 
     $email = 'test-user@example.com';
@@ -67,7 +69,6 @@ class SubscriberCookieCest {
       $i->fillField('Password', $password);
       $i->click('Log In');
       $i->waitForText('Dashboard');
-
     }
     // subscriber cookie should be set right after signup
     $this->checkSubscriberCookie($i, $email);
