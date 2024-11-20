@@ -62,6 +62,13 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 	 */
 	public Container $di_container;
 
+	/**
+	 * The tester.
+	 *
+	 * @var IntegrationTester
+	 */
+	public $tester;
+
 	// phpcs:disable WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 	/**
 	 * Disable the backup of $GLOBALS and $_SERVER.

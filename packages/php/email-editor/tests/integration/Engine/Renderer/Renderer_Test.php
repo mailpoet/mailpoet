@@ -60,8 +60,6 @@ class Renderer_Test extends \MailPoetTest {
 				'styles' => $styles,
 			)
 		);
-		$settings_controller_mock = $this->createMock( Settings_Controller::class );
-		$settings_controller_mock->method( 'get_email_styles' )->willReturn( $styles );
 		$theme_controller_mock = $this->createMock( Theme_Controller::class );
 		$theme_controller_mock->method( 'get_theme' )->willReturn( $theme_json_mock );
 		$theme_controller_mock->method( 'get_styles' )->willReturn( $styles );
@@ -97,9 +95,8 @@ class Renderer_Test extends \MailPoetTest {
 		$this->renderer   = $this->getServiceWithOverrides(
 			Renderer::class,
 			array(
-				'settings_controller' => $settings_controller_mock,
-				'theme_controller'    => $theme_controller_mock,
-				'templates'           => $templates_mock,
+				'theme_controller' => $theme_controller_mock,
+				'templates'        => $templates_mock,
 			)
 		);
 		$this->email_post = $this->tester->create_post(
