@@ -168,6 +168,7 @@ wp config set WP_DEBUG_LOG true --raw
 wp config set COOKIE_DOMAIN \$_SERVER[\'HTTP_HOST\'] --raw
 wp config set DISABLE_WP_CRON true --raw
 wp config set MAILPOET_USE_CDN false --raw
+wp config set FS_METHOD \'direct\' --raw
 
 # activate theme
 wp theme install twentytwentyone --activate
