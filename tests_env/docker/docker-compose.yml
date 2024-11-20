@@ -13,6 +13,7 @@ services:
       - ../../mailpoet-premium:/project/mailpoet-premium
       - ../../mailpoet-premium:/wp-core/wp-content/plugins/mailpoet-premium
       - ../../packages:/wp-core/wp-content/plugins/packages
+      - ../vendor:/tests_env/vendor
       - ./codeception/docker-entrypoint.sh:/docker-entrypoint.sh
       - ../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
       - ../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
@@ -42,6 +43,7 @@ services:
       - ../../mailpoet-premium:/project/mailpoet-premium
       - ../../mailpoet-premium:/wp-core/wp-content/plugins/mailpoet-premium
       - ../../packages:/wp-core/wp-content/plugins/packages
+      - ../vendor:/tests_env/vendor
       - ./codeception/docker-entrypoint.sh:/docker-entrypoint.sh
       - ../../dev/php.ini:/usr/local/etc/php/conf.d/php_user.ini
       - ../../dev/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini

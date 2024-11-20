@@ -230,7 +230,7 @@ else
   fi
 fi
 
-/wp-core/wp-content/plugins/mailpoet/vendor/bin/codecept run $TEST_TYPE $@ -vvv
+/tests_env/vendor/bin/codecept run $TEST_TYPE $@ -vvv
 exitcode=$?
 
 exit $exitcode
