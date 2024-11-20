@@ -1,0 +1,25 @@
+parameters:
+  level: 9
+  tmpDir: ../../temp/phpstan
+  bootstrapFiles:
+    - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+  inferPrivatePropertyTypeFromConstructor: true
+  checkGenericClassInNonGenericObjectType: false
+  parallel:
+    processTimeout: 300.0
+    maximumNumberOfProcesses: 3 # Static analysis is running on Circle CI medium+ that has 3 CPUs
+  reportUnmatchedIgnoredErrors: true
+  dynamicConstantNames:
+    - MAILPOET_PREMIUM_INITIALIZED
+    - MAILPOET_PREMIUM_VERSION
+
+  # exclude level 6 errors
+  checkMissingIterableValueType: false
+  treatPhpDocTypesAsCertain: false # We have some incorrect phpdoc types, but I want to address them later
+  excludePaths:
+    analyseAndScan:
+      - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php # does not yet offer support for PHP 8.1
+includes:
+  - extensions/CodeceptionExtension/extension.neon
+  - vendor/phpstan/phpstan-phpunit/extension.neon
+  - vendor/szepeviktor/phpstan-wordpress/extension.neon

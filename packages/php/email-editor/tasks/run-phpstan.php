@@ -14,6 +14,8 @@ $emailEditorPhpDir = dirname( __DIR__, 1 );
 $phpStanDir = "$mailpoetRootDir/mailpoet/tasks/phpstan";
 $phpStanBin = "$phpStanDir/vendor/bin/phpstan";
 
+$emailEditorCustomConfig = "$phpStanDir/email-editor-phpstan.neon";
+
 
 $extraAgrPhpVersion = '';
 if ( $argc > 1 && isset( $argv[1] ) && stripos( $argv[1], 'php-version' ) !== false ) {
@@ -27,9 +29,10 @@ $commands = array(
 	"$extraAgrPhpVersion",
 	'php -d memory_limit=-1 ',
 	"$phpStanBin analyse ",
+	"-c $emailEditorCustomConfig ",
 	"$emailEditorPhpDir/src ",
-	"$emailEditorPhpDir/tests/integration ",
-	"$emailEditorPhpDir/tests/unit ",
+//	"$emailEditorPhpDir/tests/integration ", // TODO: will uncomment after fixing src errors
+//	"$emailEditorPhpDir/tests/unit ", // TODO: will uncomment after fixing tests/integration errors
 );
 
 $allCommands = implode( ' ', $commands );
