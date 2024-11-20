@@ -31,9 +31,9 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   }
 
   public function testItGetsCustomersThatPlacedTwoOrdersInTheLastDay(): void {
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3 = $this->tester->createCustomer('customer3@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3 = $this->tester->createCustomer('customer3@example.com');
 
     $this->createOrder($customerId1, Carbon::now()->subDays(3));
     $this->createOrder($customerId2, Carbon::now());
@@ -45,9 +45,9 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   }
 
   public function testItGetsCustomersThatPlacedZeroOrdersInTheLastDay(): void {
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3 = $this->tester->createCustomer('customer3@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3 = $this->tester->createCustomer('customer3@example.com');
 
     $this->createOrder($customerId1, Carbon::now()->subDays(3));
     $this->createOrder($customerId2, Carbon::now());
@@ -59,9 +59,9 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   }
 
   public function testItGetsCustomersThatDidNotPlaceTwoOrdersInTheLastWeek(): void {
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3 = $this->tester->createCustomer('customer3@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3 = $this->tester->createCustomer('customer3@example.com');
 
     $this->createOrder($customerId1, Carbon::now()->subDays(3));
     $this->createOrder($customerId2, Carbon::now());
@@ -73,9 +73,9 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   }
 
   public function testItGetsCustomersThatPlacedAtLeastOneOrderInTheLastWeek(): void {
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3 = $this->tester->createCustomer('customer3@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3 = $this->tester->createCustomer('customer3@example.com');
 
     $this->createOrder($customerId1, Carbon::now()->subDays(3));
     $this->createOrder($customerId2, Carbon::now());
@@ -87,9 +87,9 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   }
 
   public function testItGetsNoneCustomerSubscriberInLastDays() {
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3 = $this->tester->createCustomer('customer3@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3 = $this->tester->createCustomer('customer3@example.com');
 
     $this->createOrder($customerId1, Carbon::now()->subDays(3));
     $this->createOrder($customerId2, Carbon::now());
@@ -105,9 +105,9 @@ class WooCommerceNumberOfOrdersTest extends \MailPoetTest {
   }
 
   public function testItWorksWithAllTimeTimeframe(): void {
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3 = $this->tester->createCustomer('customer3@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3 = $this->tester->createCustomer('customer3@example.com');
 
     $this->createOrder($customerId1, Carbon::now()->subDays(3));
     $this->createOrder($customerId2, Carbon::now());
