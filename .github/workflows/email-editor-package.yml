@@ -29,6 +29,13 @@ jobs:
           path: mailpoet/vendor-prefixed
           key: ${{ runner.os }}-vendor-prefixed-${{ matrix.php-version }}-${{ hashFiles('mailpoet/prefixer/composer.lock') }}-${{ hashFiles('mailpoet/composer.json') }}
 
+      - name: Cache Composer vendor for test environment
+        id: composer-tests-env-cache
+        uses: actions/cache@v4
+        with:
+          path: tests_env/vendor
+          key: ${{ runner.os }}-composer-mailpoet-${{ matrix.php-version }}-${{ hashFiles('tests_env/composer.lock') }}-${{ hashFiles('tests_env/composer.json') }}
+
       - name: Cache Composer dependencies for Email Editor
         id: composer-email-editor-cache
         uses: actions/cache@v4
@@ -47,6 +54,12 @@ jobs:
           COMPOSER_DEV_MODE=1 php tools/install.php
           touch .env
         working-directory: mailpoet
+
+      # Install Test Environment dependencies only if the cache was not hit
+      - name: Install test environment dependencies
+        if: steps.composer-tests-env-cache.outputs.cache-hit != 'true'
+        run: ../mailpoet/tools/vendor/composer.phar install
+        working-directory: tests_env
 
       # Install MailPoet dependencies only if the cache was not hit
       - name: Install mailpoet dependencies
@@ -74,7 +87,7 @@ jobs:
 
       # Run Email Editor unit tests
       - name: Run email-editor package unit tests
-        run: ./vendor/bin/codecept build && ../../../mailpoet/tools/vendor/composer.phar unit-test
+        run: ../../../tests_env/vendor/bin/codecept build && ../../../mailpoet/tools/vendor/composer.phar unit-test
         working-directory: packages/php/email-editor
 
       - name: Run email-editor package integration tests
