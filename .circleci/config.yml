@@ -142,6 +142,8 @@ jobs:
       - restore_cache:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
       - restore_cache:
+          key: composer-{{ checksum "../tests_env/composer.json" }}-{{ checksum "../tests_env/composer.lock" }}
+      - restore_cache:
           key: composer-prefixed-{{ checksum "prefixer-checksum" }}
       - restore_cache:
           keys:
@@ -157,7 +159,7 @@ jobs:
             ./do install
             ./do compile:all --env production --skip-tests
             ./do doctrine:generate-cache
-            vendor/bin/codecept build
+            ../tests_env/vendor/bin/codecept build
             ./do twig:generate-cache
       - run:
           name: 'Check Prettier formatting'
@@ -178,6 +180,10 @@ jobs:
           key: composer-{{ checksum "composer.json" }}-{{ checksum "composer.lock" }}
           paths:
             - vendor
+      - save_cache:
+          key: composer-{{ checksum "../tests_env/composer.json" }}-{{ checksum "../tests_env/composer.lock" }}
+          paths:
+            - ../tests_env/vendor
       - save_cache:
           key: composer-prefixed-{{ checksum "prefixer-checksum" }}
           paths:
