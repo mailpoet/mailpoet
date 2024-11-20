@@ -119,3 +119,40 @@ jobs:
       - name: Run code style check
         run: ../../../mailpoet/tools/vendor/composer.phar code-style
         working-directory: packages/php/email-editor
+
+  phpstan-static-analysis:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: ['7.4', '8.2']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: gd
+
+      - name: Install tools
+        run: |
+          COMPOSER_DEV_MODE=1 php tools/install.php
+          touch .env
+        working-directory: mailpoet
+
+      - name: Install composer dependencies
+        run: ../../tools/vendor/composer.phar install
+        working-directory: mailpoet/tasks/phpstan
+
+      - name: Run code phpstan 7.4
+        if: ${{ matrix.php-version == '7.4' }}
+        run: ../../../mailpoet/tools/vendor/composer.phar phpstan -- --php-version=70400
+        working-directory: packages/php/email-editor
+
+      - name: Run code phpstan 8.2
+        if: ${{ matrix.php-version == '8.2' }}
+        run: ../../../mailpoet/tools/vendor/composer.phar phpstan -- --php-version=80200
+        working-directory: packages/php/email-editor
