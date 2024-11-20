@@ -54,8 +54,8 @@ class SubscribersTest extends \MailPoetTest {
     return $this->getServiceWithOverrides(
       Subscribers::class,
       [
-        'confirmationEmailMailer' => Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmail']),
-        'newSubscriberNotificationMailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+        'confirmationEmailMailer' => Stub::makeEmpty(ConfirmationEmailMailer::class, ['sendConfirmationEmail' => true]),
+        'newSubscriberNotificationMailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => true]),
         'welcomeScheduler' => Stub::makeEmpty(WelcomeScheduler::class),
       ]
     );
@@ -591,7 +591,7 @@ class SubscribersTest extends \MailPoetTest {
       Subscribers::class,
       [
         '_scheduleWelcomeNotification' => Expected::once(),
-        'newSubscriberNotificationMailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send']),
+        'newSubscriberNotificationMailer' => Stub::makeEmpty(NewSubscriberNotificationMailer::class, ['send' => true]),
         'confirmationEmailMailer' => Stub::makeEmpty(ConfirmationEmailMailer::class),
         'segmentsRepository' => $this->diContainer->get(SegmentsRepository::class),
         'subscribersRepository' => $this->diContainer->get(SubscribersRepository::class),
@@ -599,7 +599,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscriberSaveController' => $this->diContainer->get(SubscriberSaveController::class),
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => $settings,
-        'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate' => true]),
       ],
       $this
     );
@@ -660,7 +660,7 @@ class SubscribersTest extends \MailPoetTest {
       'addSubscriber',
       [
         'subscribers' => $subscribers,
-        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate' => true]),
       ],
       $this
     );
@@ -690,7 +690,7 @@ class SubscribersTest extends \MailPoetTest {
       'addSubscriber',
       [
         'subscribers' => $subscribers,
-        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate' => true]),
       ],
       $this
     );
@@ -712,7 +712,7 @@ class SubscribersTest extends \MailPoetTest {
         'subscriberSaveController' => $this->diContainer->get(SubscriberSaveController::class),
         'subscribersResponseBuilder' => $this->diContainer->get(SubscribersResponseBuilder::class),
         'settings' => $this->diContainer->get(SettingsController::class),
-        'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'requiredCustomFieldsValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate' => true]),
         'subscribeToLists' => Expected::once(function ($subscriberId, $segmentsIds, $options) {
           verify($options)->arrayHasKey('send_confirmation_email');
           verify($options['send_confirmation_email'])->equals(1);
@@ -775,7 +775,7 @@ class SubscribersTest extends \MailPoetTest {
       'addSubscriber',
       [
         'subscribers' => $subscribers,
-        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate']),
+        'requiredCustomFieldValidator' => Stub::makeEmpty(RequiredCustomFieldValidator::class, ['validate' => true]),
       ],
       $this
     );
