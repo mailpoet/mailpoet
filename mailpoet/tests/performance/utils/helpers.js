@@ -1,4 +1,9 @@
 /**
+ * External dependencies
+ */
+import { sleep } from 'k6';
+
+/**
  * Internal dependencies
  */
 import {
@@ -28,6 +33,7 @@ export async function login(page) {
     page.waitForNavigation(),
     page.locator('input[name="wp-submit"]').click(),
   ]);
+  await page.waitForLoadState('networkidle');
 }
 
 // Select a segment or a list from a select2 search field
