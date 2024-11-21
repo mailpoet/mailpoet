@@ -1,9 +1,4 @@
 /**
- * External dependencies
- */
-import { sleep } from 'k6';
-
-/**
  * Internal dependencies
  */
 import {
