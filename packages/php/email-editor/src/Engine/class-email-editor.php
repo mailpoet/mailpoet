@@ -9,6 +9,7 @@ declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine;
 
 use MailPoet\EmailEditor\Engine\Patterns\Patterns;
+use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 use MailPoet\EmailEditor\Engine\Templates\Template_Preview;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
 use WP_Post;
@@ -62,14 +63,22 @@ class Email_Editor {
 	private Send_Preview_Email $send_preview_email;
 
 	/**
+	 * Property for Personalization_Tags_Controller instance.
+	 *
+	 * @var Personalization_Tags_Registry Personalization tags controller.
+	 */
+	private Personalization_Tags_Registry $personalization_tags_registry;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Email_Api_Controller $email_api_controller Email API controller.
-	 * @param Templates            $templates Templates.
-	 * @param Template_Preview     $template_preview Template preview.
-	 * @param Patterns             $patterns Patterns.
-	 * @param Settings_Controller  $settings_controller Settings controller.
-	 * @param Send_Preview_Email   $send_preview_email Preview email controller.
+	 * @param Email_Api_Controller          $email_api_controller Email API controller.
+	 * @param Templates                     $templates Templates.
+	 * @param Template_Preview              $template_preview Template preview.
+	 * @param Patterns                      $patterns Patterns.
+	 * @param Settings_Controller           $settings_controller Settings controller.
+	 * @param Send_Preview_Email            $send_preview_email Preview email controller.
+	 * @param Personalization_Tags_Registry $personalization_tags_controller Preview email controller.
 	 */
 	public function __construct(
 		Email_Api_Controller $email_api_controller,
@@ -77,14 +86,16 @@ class Email_Editor {
 		Template_Preview $template_preview,
 		Patterns $patterns,
 		Settings_Controller $settings_controller,
-		Send_Preview_Email $send_preview_email
+		Send_Preview_Email $send_preview_email,
+		Personalization_Tags_Registry $personalization_tags_controller
 	) {
-		$this->email_api_controller = $email_api_controller;
-		$this->templates            = $templates;
-		$this->template_preview     = $template_preview;
-		$this->patterns             = $patterns;
-		$this->settings_controller  = $settings_controller;
-		$this->send_preview_email   = $send_preview_email;
+		$this->email_api_controller          = $email_api_controller;
+		$this->templates                     = $templates;
+		$this->template_preview              = $template_preview;
+		$this->patterns                      = $patterns;
+		$this->settings_controller           = $settings_controller;
+		$this->send_preview_email            = $send_preview_email;
+		$this->personalization_tags_registry = $personalization_tags_controller;
 	}
 
 	/**
@@ -99,6 +110,7 @@ class Email_Editor {
 		$this->register_block_patterns();
 		$this->register_wmail_post_types();
 		$this->register_email_post_send_status();
+		$this->register_personalization_tags();
 		$is_editor_page = apply_filters( 'mailpoet_is_email_editor_page', false );
 		if ( $is_editor_page ) {
 			$this->extend_email_post_api();
@@ -143,6 +155,16 @@ class Email_Editor {
 				array_merge( $this->get_default_email_post_args(), $post_type['args'] )
 			);
 		}
+	}
+
+	/**
+	 * Register all personalization tags registered via
+	 * the mailpoet_email_editor_register_personalization_tags filter.
+	 *
+	 * @return void
+	 */
+	private function register_personalization_tags(): void {
+		$this->personalization_tags_registry->initialize();
 	}
 
 	/**

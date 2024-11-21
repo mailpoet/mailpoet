@@ -33,6 +33,40 @@ if ( ! function_exists( 'esc_html' ) ) {
 	}
 }
 
+if ( ! function_exists( 'add_filter' ) ) {
+	/**
+	 * Mock add_filter function.
+	 *
+	 * @param string   $tag Tag to add filter for.
+	 * @param callable $callback Callback to call.
+	 */
+	function add_filter( $tag, $callback ) {
+		global $wp_filters;
+		if ( ! isset( $wp_filters ) ) {
+			$wp_filters = array();
+		}
+		$wp_filters[ $tag ][] = $callback;
+	}
+}
+
+if ( ! function_exists( 'apply_filters' ) ) {
+	/**
+	 * Mock apply_filters function.
+	 *
+	 * @param string $tag Tag to apply filters for.
+	 * @param mixed  $value Value to filter.
+	 */
+	function apply_filters( $tag, $value ) {
+		global $wp_filters;
+		if ( isset( $wp_filters[ $tag ] ) ) {
+			foreach ( $wp_filters[ $tag ] as $callback ) {
+				$value = call_user_func( $callback, $value );
+			}
+		}
+		return $value;
+	}
+}
+
 /**
  * Base class for unit tests.
  */
