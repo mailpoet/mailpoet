@@ -40,13 +40,7 @@ class StatsPageCest {
     $i->waitForText($gaCampaignSlug);
     $i->waitForText('100.0%');
     $i->waitForText('200.0%');
-    $i->cli(['option', 'update', 'timezone_string', 'Etc/GMT+10']);
-    $i->reloadPage();
-    $i->waitForText($newsletterTitle);
-    $i->waitForText('8:00 pm');
-    $i->waitForText($gaCampaignSlug);
-    $i->waitForText('100.0%');
-    $i->waitForText('200.0%');
+    $i->waitForText('Sent to: 1');
 
     if (!$i->checkPluginIsActive('mailpoet-premium/mailpoet-premium.php')) {
       // the premium plugin is not active
@@ -57,6 +51,29 @@ class StatsPageCest {
       $href = $i->grabAttributeFrom('//a[text()="Learn more"]', 'href');
       verify($href)->stringEndsWith('page=mailpoet-upgrade');
     }
+
+    $i->wantTo('Change the timezone and reverify the updated time and details');
+    $i->cli(['option', 'update', 'timezone_string', 'Etc/GMT+10']);
+    $i->reloadPage();
+    $i->waitForText($newsletterTitle);
+    $i->waitForText('8:00 pm');
+    $i->waitForText($gaCampaignSlug);
+    $i->waitForText('100.0%');
+    $i->waitForText('200.0%');
+    $i->waitForText('Sent to: 1');
+
+    $showMore = '.components-button-group > .components-button.is-primary > svg';
+
+    $i->wantTo('Duplicate newsletter from the stats page');
+    $i->click($showMore);
+    $i->waitForText('Duplicate');
+    $i->click('Duplicate');
+    $i->waitForText('Email "' . $newsletterTitle . '" has been duplicated. New email: Copy of ' . $newsletterTitle);
+
+    $i->wantTo('Move newsletter to the trash from the stats page');
+    $i->waitForText('Move to Trash');
+    $i->click('Move to Trash');
+    $i->waitForText('Copy of ' . $newsletterTitle);
   }
 
   private function createClickInNewsletter($newsletter) {
