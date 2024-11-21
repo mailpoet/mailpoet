@@ -163,14 +163,15 @@ class Email_Editor {
 	 */
 	private function get_default_email_post_args(): array {
 		return array(
-			'public'            => false,
-			'hierarchical'      => false,
-			'show_ui'           => true,
-			'show_in_menu'      => false,
-			'show_in_nav_menus' => false,
-			'supports'          => array( 'editor', 'title', 'custom-fields' ), // 'custom-fields' is required for loading meta fields via API.
-			'has_archive'       => true,
-			'show_in_rest'      => true, // Important to enable Gutenberg editor.
+			'public'                 => false,
+			'hierarchical'           => false,
+			'show_ui'                => true,
+			'show_in_menu'           => false,
+			'show_in_nav_menus'      => false,
+			'supports'               => array( 'editor', 'title', 'custom-fields' ), // 'custom-fields' is required for loading meta fields via API.
+			'has_archive'            => true,
+			'show_in_rest'           => true, // Important to enable Gutenberg editor.
+			'default_rendering_mode' => 'template-locked',
 		);
 	}
 
