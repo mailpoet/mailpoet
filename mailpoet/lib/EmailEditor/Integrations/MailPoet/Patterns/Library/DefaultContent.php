@@ -8,6 +8,7 @@ class DefaultContent extends Pattern {
   protected $name = 'default-content';
   protected $block_types = ['core/post-content']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   protected $template_types = ['email-template']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  protected $categories = ['email-contents'];
 
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     return '

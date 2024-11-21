@@ -53,7 +53,7 @@ abstract class Abstract_Pattern {
 	 *
 	 * @var array $categories
 	 */
-	protected $categories = array( 'mailpoet' );
+	protected $categories = array();
 	/**
 	 * Viewport width.
 	 *

@@ -30,6 +30,18 @@ class Patterns_Test extends \MailPoetTest {
 	}
 
 	/**
+	 * Test that the pattern categories are registered in WP_Block_Patterns_Registry
+	 */
+	public function testItRegistersPatternCategories() {
+		$this->patterns->initialize();
+		$categories = \WP_Block_Pattern_Categories_Registry::get_instance()->get_all_registered();
+		$category   = array_pop( $categories );
+		$this->assertEquals( 'email-contents', $category['name'] );
+		$this->assertEquals( 'Email Contents', $category['label'] );
+		$this->assertEquals( 'A collection of email content layouts.', $category['description'] );
+	}
+
+	/**
 	 * Test that the patterns added via filter are registered in WP_Block_Patterns_Registry
 	 */
 	public function testItRegistersPatterns() {
@@ -47,30 +59,6 @@ class Patterns_Test extends \MailPoetTest {
 		$this->assertEquals( 'dummy/dummy-test-pattern', $block_pattern['name'] );
 		$this->assertEquals( $pattern->get_content(), $block_pattern['content'] );
 		$this->assertEquals( $pattern->get_title(), $block_pattern['title'] );
-	}
-
-	/**
-	 * Test that the pattern categories added via filter are registered in WP_Block_Patterns_Registry
-	 */
-	public function testItRegistersPatternCategories() {
-		add_filter(
-			'mailpoet_email_editor_block_pattern_categories',
-			function ( $categories ) {
-				$pattern_category = array(
-					'name'        => 'mailpoet-test',
-					'label'       => 'MailPoet',
-					'description' => 'A collection of email template layouts.',
-				);
-				$categories[]     = $pattern_category;
-				return $categories;
-			}
-		);
-		$this->patterns->initialize();
-		$categories = \WP_Block_Pattern_Categories_Registry::get_instance()->get_all_registered();
-		$category   = array_pop( $categories );
-		$this->assertEquals( 'mailpoet-test', $category['name'] );
-		$this->assertEquals( 'MailPoet', $category['label'] );
-		$this->assertEquals( 'A collection of email template layouts.', $category['description'] );
 	}
 
 	/**

@@ -28,11 +28,14 @@ class Patterns {
 	 * @return void
 	 */
 	private function register_block_pattern_categories(): void {
-		$categories = apply_filters( 'mailpoet_email_editor_block_pattern_categories', array() );
+		$categories = array(
+			array(
+				'name'        => 'email-contents',
+				'label'       => _x( 'Email Contents', 'Block pattern category', 'mailpoet' ),
+				'description' => __( 'A collection of email content layouts.', 'mailpoet' ),
+			),
+		);
 		foreach ( $categories as $category ) {
-			if ( ! is_array( $category ) || ! isset( $category['name'], $category['label'] ) ) {
-				continue;
-			}
 			register_block_pattern_category(
 				$category['name'],
 				array(
@@ -42,7 +45,6 @@ class Patterns {
 			);
 		}
 	}
-
 	/**
 	 * Register block patterns.
 	 *

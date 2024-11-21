@@ -20,17 +20,7 @@ class PatternsController {
   }
 
   public function initialize(): void {
-    $this->wp->addFilter('mailpoet_email_editor_block_pattern_categories', [$this, 'registerCategories']);
     $this->wp->addFilter('mailpoet_email_editor_block_patterns', [$this, 'registerPatterns']);
-  }
-
-  public function registerCategories(array $categories): array {
-    $categories[] = [
-      'name' => 'mailpoet',
-      'label' => _x('MailPoet', 'Block pattern category', 'mailpoet'),
-      'description' => __('A collection of email template layouts.', 'mailpoet'),
-    ];
-    return $categories;
   }
 
   public function registerPatterns($patterns): array {
