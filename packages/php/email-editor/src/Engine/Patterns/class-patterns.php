@@ -19,7 +19,6 @@ class Patterns {
 	 */
 	public function initialize(): void {
 		$this->register_block_pattern_categories();
-		$this->register_patterns();
 	}
 
 	/**
@@ -43,20 +42,6 @@ class Patterns {
 					'description' => $category['description'] ?? '',
 				)
 			);
-		}
-	}
-	/**
-	 * Register block patterns.
-	 *
-	 * @return void
-	 */
-	private function register_patterns() {
-		$patterns = apply_filters( 'mailpoet_email_editor_block_patterns', array() );
-		foreach ( $patterns as $pattern ) {
-			if ( ! $pattern instanceof Abstract_Pattern ) {
-				continue;
-			}
-			register_block_pattern( $pattern->get_namespace() . '/' . $pattern->get_name(), $pattern->get_properties() );
 		}
 	}
 }

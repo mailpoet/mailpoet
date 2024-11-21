@@ -5,27 +5,22 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\Patterns;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\DefaultContent;
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Library\DefaultContentFull;
 use MailPoet\Util\CdnAssetUrl;
-use MailPoet\WP\Functions as WPFunctions;
 
 class PatternsController {
   private CdnAssetUrl $cdnAssetUrl;
-  private WPFunctions $wp;
 
   public function __construct(
-    CdnAssetUrl $cdnAssetUrl,
-    WPFunctions $wpFunctions
+    CdnAssetUrl $cdnAssetUrl
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
-    $this->wp = $wpFunctions;
   }
 
-  public function initialize(): void {
-    $this->wp->addFilter('mailpoet_email_editor_block_patterns', [$this, 'registerPatterns']);
-  }
-
-  public function registerPatterns($patterns): array {
+  public function registerPatterns(): void {
+    $patterns = [];
     $patterns[] = new DefaultContentFull($this->cdnAssetUrl);
     $patterns[] = new DefaultContent($this->cdnAssetUrl);
-    return $patterns;
+    foreach ($patterns as $pattern) {
+      register_block_pattern($pattern->get_namespace() . '/' . $pattern->get_name(), $pattern->get_properties());
+    }
   }
 }

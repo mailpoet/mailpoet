@@ -46,12 +46,12 @@ class EmailEditor {
       return;
     }
     $this->cli->initialize();
-    $this->patternsController->initialize();
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
     $this->wp->addAction('rest_delete_mailpoet_email', [$this->emailApiController, 'trashEmail'], 10, 1);
     $this->wp->addFilter('mailpoet_is_email_editor_page', [$this, 'isEditorPage'], 10, 1);
     $this->wp->addFilter('replace_editor', [$this, 'replaceEditor'], 10, 2);
     $this->wp->addFilter('mailpoet_email_editor_send_preview_email', [$this->emailEditorPreviewEmail, 'sendPreviewEmail'], 10, 1);
+    $this->patternsController->registerPatterns();
     $this->extendEmailPostApi();
   }
 

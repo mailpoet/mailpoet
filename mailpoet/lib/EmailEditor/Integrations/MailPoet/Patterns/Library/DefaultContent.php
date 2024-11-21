@@ -32,6 +32,6 @@ class DefaultContent extends Pattern {
   }
 
   protected function get_title(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
-    return __('Default Email Content with Header and Footer', 'mailpoet');
+    return __('Default Email Content', 'mailpoet');
   }
 }
