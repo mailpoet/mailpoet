@@ -30,7 +30,7 @@ export const TEMPLATE_PART_POST_TYPE = 'wp_template_part';
 export const PATTERN_POST_TYPE = 'wp_block';
 export const NAVIGATION_POST_TYPE = 'wp_navigation';
 
-const { ExperimentalBlockCanvas: BlockCanvas, useFlashEditableBlocks } = unlock(
+const { ExperimentalBlockCanvas: BlockCanvas } = unlock(
 	blockEditorPrivateApis
 );
 
@@ -129,9 +129,6 @@ export function VisualEditor( {
 		localRef,
 		contentRef,
 		renderingMode === 'post-only' ? typewriterRef : null,
-		useFlashEditableBlocks( {
-			isEnabled: renderingMode === 'template-locked',
-		} ),
 		useSelectNearestEditableBlock( {
 			isEnabled: renderingMode === 'template-locked',
 		} ),
