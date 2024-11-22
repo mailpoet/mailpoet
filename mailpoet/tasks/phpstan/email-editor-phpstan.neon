@@ -8,6 +8,8 @@ parameters:
     - ../../vendor/codeception/verify/src/Codeception/Verify/Verify.php
   scanDirectories:
       - ../../../packages/php/email-editor/tests/_support
+      - ../../../packages/php/email-editor/tests/integration
+      - ../../../packages/php/email-editor/tests/unit
   inferPrivatePropertyTypeFromConstructor: true
   checkGenericClassInNonGenericObjectType: false
   parallel:
@@ -33,6 +35,9 @@ parameters:
      path: ../../../packages/php/email-editor/tests/integration/*
     -
      message: '#Renderer\) does not accept mixed.#'
+     path: ../../../packages/php/email-editor/tests/integration/*
+    -
+     message: '#Access to an undefined property MailPoet\\EmailEditor\\.*Test::\$tester.#'
      path: ../../../packages/php/email-editor/tests/integration/*
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
