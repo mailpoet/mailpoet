@@ -16,6 +16,7 @@ if ( ! function_exists( 'esc_attr' ) ) {
 	 * Mock esc_attr function.
 	 *
 	 * @param string $attr Attribute to escape.
+	 * @return string
 	 */
 	function esc_attr( $attr ) {
 		return $attr;
@@ -27,6 +28,7 @@ if ( ! function_exists( 'esc_html' ) ) {
 	 * Mock esc_html function.
 	 *
 	 * @param string $text Text to escape.
+	 * @return string
 	 */
 	function esc_html( $text ) {
 		return $text;

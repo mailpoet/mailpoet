@@ -43,7 +43,7 @@ class Container {
 	 * Method for getting a registered service
 	 *
 	 * @template T
-	 * @param class-string<T> $name The name of the service.
+	 * @param string|class-string<T> $name The name of the service.
 	 * @return T
 	 * @throws \Exception If the service is not found.
 	 */

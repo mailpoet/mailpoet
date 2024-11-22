@@ -143,7 +143,7 @@ class Renderer {
 	 * @return string
 	 */
 	private function inline_css_styles( $template ) {
-		return CssInliner::fromHtml( $template )->inlineCss()->render();  // @phpstan-ignore-line TODO: Install CssInliner
+		return CssInliner::fromHtml( $template )->inlineCss()->render();  // TODO: Install CssInliner.
 	}
 
 	/**
@@ -154,7 +154,7 @@ class Renderer {
 	 */
 	private function render_text_version( $template ) {
 		$template = ( mb_detect_encoding( $template, 'UTF-8', true ) ) ? $template : mb_convert_encoding( $template, 'UTF-8', mb_list_encodings() );
-		$result   = Html2Text::convert( $template );  // @phpstan-ignore-line TODO: Install Html2Text
+		$result   = Html2Text::convert( $template );  // TODO: Install Html2Text.
 		if ( false === $result ) {
 			return '';
 		}

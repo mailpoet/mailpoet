@@ -2,12 +2,19 @@ parameters:
   level: 9
   tmpDir: ../../temp/phpstan
   bootstrapFiles:
+    - ../../vendor/autoload.php
     - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+    - ../../vendor/codeception/codeception/autoload.php
+    - ../../vendor/codeception/verify/src/Codeception/Verify/Verify.php
+
   inferPrivatePropertyTypeFromConstructor: true
   checkGenericClassInNonGenericObjectType: false
   parallel:
     processTimeout: 300.0
     maximumNumberOfProcesses: 3 # Static analysis is running on Circle CI medium+ that has 3 CPUs
+  ignoreErrors:
+    - '#_before\(\) has no return type specified#' # skip integration test before errors
+    - '#Container::get\(\) is not referenced in a parameter.#'
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED
@@ -19,6 +26,7 @@ parameters:
   excludePaths:
     analyseAndScan:
       - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php # does not yet offer support for PHP 8.1
+      - ../../../packages/php/email-editor/tests/unit/_stubs.php
 includes:
   - extensions/CodeceptionExtension/extension.neon
   - vendor/phpstan/phpstan-phpunit/extension.neon
