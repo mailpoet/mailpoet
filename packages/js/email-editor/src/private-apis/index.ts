@@ -50,9 +50,15 @@ const unlockGetEnabledClientIdsTree = ( selectHook ) => {
 	return getEnabledClientIdsTree;
 };
 
+/**
+ * We use the ColorPanel component from the block editor to render the color panel in the style settings sidebar.
+ */
+const { ColorPanel: StylesColorPanel } = unlock( blockEditorPrivateApis );
+
 export {
 	BlockCanvas,
 	Tabs,
+	StylesColorPanel,
 	unlockPatternsRelatedSelectorsFromCoreStore,
 	unlockGetEnabledClientIdsTree,
 };
