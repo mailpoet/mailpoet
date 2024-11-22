@@ -1,6 +1,8 @@
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { useContext, useRef, useEffect } from '@wordpress/element';
-import { privateApis as componentsPrivateApis } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import {
 	BlockInspector,
@@ -9,6 +11,15 @@ import {
 import { ComplementaryArea } from '@wordpress/interface';
 import { drawerRight } from '@wordpress/icons';
 import { store as editorStore } from '@wordpress/editor';
+
+/**
+ * WordPress private dependencies
+ */
+import { Tabs } from '../../private-apis';
+
+/**
+ * Internal dependencies
+ */
 import {
 	storeName,
 	mainSidebarEmailTab,
@@ -18,11 +29,8 @@ import {
 import { Header } from './header';
 import { EmailSettings } from './email-settings';
 import { TemplateSettings } from './template-settings';
-import { unlock } from '../../lock-unlock';
 
 import './index.scss';
-
-const { Tabs } = unlock( componentsPrivateApis );
 
 type Props = React.ComponentProps< typeof ComplementaryArea >;
 

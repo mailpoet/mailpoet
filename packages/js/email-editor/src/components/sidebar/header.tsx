@@ -1,10 +1,18 @@
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import * as React from '@wordpress/element';
-import { privateApis as componentsPrivateApis } from '@wordpress/components';
-import { mainSidebarEmailTab, mainSidebarBlockTab } from '../../store';
-import { unlock } from '../../lock-unlock';
 
-const { Tabs } = unlock( componentsPrivateApis );
+/**
+ * WordPress private dependencies
+ */
+import { Tabs } from '../../private-apis';
+
+/**
+ * Internal dependencies
+ */
+import { mainSidebarEmailTab, mainSidebarBlockTab } from '../../store';
 
 export function HeaderTabs( _, ref ) {
 	return (
