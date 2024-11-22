@@ -2,6 +2,7 @@
  * WordPress dependencies
  */
 import {
+	privateApis as blockEditorPrivateApi,
 	// @ts-expect-error No types for this exist yet.
 	privateApis as blockEditorPrivateApis,
 } from '@wordpress/block-editor';
@@ -55,10 +56,16 @@ const unlockGetEnabledClientIdsTree = ( selectHook ) => {
  */
 const { ColorPanel: StylesColorPanel } = unlock( blockEditorPrivateApis );
 
+/**
+ * The useGlobalStylesOutputWithConfig is used to generate the CSS for the email editor content from the style settings.
+ */
+const { useGlobalStylesOutputWithConfig } = unlock( blockEditorPrivateApi );
+
 export {
 	BlockCanvas,
 	Tabs,
 	StylesColorPanel,
 	unlockPatternsRelatedSelectorsFromCoreStore,
 	unlockGetEnabledClientIdsTree,
+	useGlobalStylesOutputWithConfig,
 };
