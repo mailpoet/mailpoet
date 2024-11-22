@@ -1,22 +1,24 @@
 /**
  * WordPress dependencies
  */
+import { __dangerousOptInToUnstableAPIsOnlyForCoreModules } from '@wordpress/private-apis';
 import {
+	// @ts-expect-error No types for privateApis.
 	privateApis as blockEditorPrivateApi,
-	// @ts-expect-error No types for this exist yet.
+	// @ts-expect-error No types for privateApis.
 	privateApis as blockEditorPrivateApis,
 } from '@wordpress/block-editor';
 import { privateApis as componentsPrivateApis } from '@wordpress/components';
 import { store as coreStore } from '@wordpress/core-data';
 
-/**
- * Internal dependencies
- */
-import { unlock } from './lock-unlock';
+const { unlock } = __dangerousOptInToUnstableAPIsOnlyForCoreModules(
+	'I acknowledge private features are not for use in themes or plugins and doing so will break in the next version of WordPress.',
+	'@wordpress/edit-post' // The module name must be in the list of allowed, so for now I used the package name of the post editor
+);
 
 /**
  * We use the experimental block canvas to render the block editor's canvas.
- * Currently this is needed because we use contentRef property which is not available in the stable BlockCanvas
+ * Currently, this is needed because we use contentRef property which is not available in the stable BlockCanvas
  * The property is used for handling clicks for selecting block to edit and to display modal for switching between email and template.
  */
 const { ExperimentalBlockCanvas: BlockCanvas } = unlock(
@@ -25,7 +27,7 @@ const { ExperimentalBlockCanvas: BlockCanvas } = unlock(
 
 /**
  * Tabs are used in the right sidebar header to switch between Email and Block settings.
- * Tabs should be close to stablization https://github.com/WordPress/gutenberg/pull/61072
+ * Tabs should be close to stabilization https://github.com/WordPress/gutenberg/pull/61072
  */
 const { Tabs } = unlock( componentsPrivateApis );
 
