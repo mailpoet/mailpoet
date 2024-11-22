@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -50,7 +50,7 @@ class Utils {
 	/**
 	 * Build a block template from a post.
 	 *
-	 * @param object $post Post object.
+	 * @param \WP_Post $post Post object.
 	 * @return WP_Block_Template|WP_Error
 	 */
 	public function build_block_template_from_post( $post ) {
@@ -94,13 +94,25 @@ class Utils {
 		return $template;
 	}
 
+	// phpcs:disable
 	/**
 	 * Build a block template from a file.
 	 *
-	 * @param object $template_object Template object.
+	 * @param object{
+	 *      slug: string,
+	 *      id: string,
+	 *      title: string,
+	 *      description: string,
+	 *      path: string,
+	 *      type: string,
+	 *      theme: string,
+	 *      source: string,
+	 *      post_types: array<string>
+	 *  } $template_object Template object.
 	 * @return WP_Block_Template
 	 */
 	public function build_block_template_from_file( $template_object ): WP_Block_Template {
+		// phpcs:enable
 		$template                 = new WP_Block_Template();
 		$template->id             = $template_object->id;
 		$template->theme          = $template_object->theme;

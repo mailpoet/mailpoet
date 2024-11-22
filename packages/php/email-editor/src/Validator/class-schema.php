@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -123,7 +123,7 @@ abstract class Schema {
 		$json  = wp_json_encode( $this->schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION );
 		$error = json_last_error();
 		if ( $error || false === $json ) {
-			throw new \Exception( \esc_html( json_last_error_msg() ), \esc_html( (string) $error ) );
+			throw new \Exception( \esc_html( json_last_error_msg() ), 0 );
 		}
 		return $json;
 	}
@@ -145,6 +145,7 @@ abstract class Schema {
 	 * Unsets the schema property.
 	 *
 	 * @param string $name Property name.
+	 * @return static
 	 */
 	protected function unset_schema_property( string $name ) {
 		$clone = clone $this;

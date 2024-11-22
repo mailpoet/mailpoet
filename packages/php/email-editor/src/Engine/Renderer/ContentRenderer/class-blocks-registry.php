@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -15,13 +15,13 @@ class Blocks_Registry {
 	/**
 	 * Fallback renderer.
 	 *
-	 * @var $fallback_renderer Block_Renderer
+	 * @var ?Block_Renderer $fallback_renderer
 	 */
 	private $fallback_renderer = null;
 	/**
 	 * Array of block renderers.
 	 *
-	 * @var $block_renderers_map Block_Renderer[]
+	 * @var Block_Renderer[] $block_renderers_map
 	 */
 	private array $block_renderers_map = array();
 

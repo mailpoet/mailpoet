@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -209,6 +209,7 @@ class Templates {
 	 * When you refresh if the post is blank, the issue is present.
 	 *
 	 * @param \stdClass $changes The changes to the post object.
+	 * @return \stdClass
 	 */
 	public function force_post_content( $changes ) {
 		if ( empty( $changes->post_content ) && ! empty( $changes->ID ) ) {
@@ -370,6 +371,7 @@ class Templates {
 
 		return array_map(
 			function ( $custom_template ) {
+				/** @var \WP_Post $custom_template */ // phpcs:ignore
 				return $this->utils->build_block_template_from_post( $custom_template );
 			},
 			$custom_templates

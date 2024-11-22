@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -38,12 +38,14 @@ class Text extends Abstract_Block_Renderer {
 		$html             = new \WP_HTML_Tag_Processor( $block_content );
 		$classes          = 'email-text-block';
 		if ( $html->next_tag() ) {
+			/** @var string $block_classes */ // phpcs:ignore
 			$block_classes = $html->get_attribute( 'class' ) ?? '';
 			$classes      .= ' ' . $block_classes;
 			// remove has-background to prevent double padding applied for wrapper and inner element.
 			$block_classes = str_replace( 'has-background', '', $block_classes );
 			// remove border related classes because we handle border on wrapping table cell.
 			$block_classes = preg_replace( '/[a-z-]+-border-[a-z-]+/', '', $block_classes );
+			/** @var string $block_classes */ // phpcs:ignore
 			$html->set_attribute( 'class', trim( $block_classes ) );
 			$block_content = $html->get_updated_html();
 		}
@@ -62,7 +64,7 @@ class Text extends Abstract_Block_Renderer {
 		);
 
 		$styles['text-align'] = 'left';
-		if ( isset( $parsed_block['attrs']['textAlign'] ) ) {
+		if ( ! empty( $parsed_block['attrs']['textAlign'] ) ) { // in this case, textAlign needs to be one of 'left', 'center', 'right'.
 			$styles['text-align'] = $parsed_block['attrs']['textAlign'];
 		} elseif ( in_array( $parsed_block['attrs']['align'] ?? null, array( 'left', 'center', 'right' ), true ) ) {
 			$styles['text-align'] = $parsed_block['attrs']['align'];
@@ -87,7 +89,7 @@ class Text extends Abstract_Block_Renderer {
 			esc_attr( $table_styles ),
 			esc_attr( $classes ),
 			esc_attr( $compiled_styles ),
-			esc_attr( $styles['text-align'] ?? 'left' ),
+			esc_attr( $styles['text-align'] ),
 			$block_content
 		);
 	}
@@ -104,17 +106,19 @@ class Text extends Abstract_Block_Renderer {
 		$html = new \WP_HTML_Tag_Processor( $block_content );
 
 		if ( $html->next_tag() ) {
-			$element_style = $html->get_attribute( 'style' ) ?? '';
+			$element_style_value = $html->get_attribute( 'style' );
+			$element_style       = isset( $element_style_value ) ? strval( $element_style_value ) : '';
 			// Padding may contain value like 10px or variable like var(--spacing-10).
 			$element_style = preg_replace( '/padding[^:]*:.?[0-9a-z-()]+;?/', '', $element_style );
 
 			// Remove border styles. We apply border styles on the wrapping table cell.
-			$element_style = preg_replace( '/border[^:]*:.?[0-9a-z-()#]+;?/', '', $element_style );
+			$element_style = preg_replace( '/border[^:]*:.?[0-9a-z-()#]+;?/', '', strval( $element_style ) );
 
 			// We define the font-size on the wrapper element, but we need to keep font-size definition here
 			// to prevent CSS Inliner from adding a default value and overriding the value set by user, which is on the wrapper element.
 			// The value provided by WP uses clamp() function which is not supported in many email clients.
-			$element_style = preg_replace( '/font-size:[^;]+;?/', 'font-size: inherit;', $element_style );
+			$element_style = preg_replace( '/font-size:[^;]+;?/', 'font-size: inherit;', strval( $element_style ) );
+			/** @var string $element_style */ // phpcs:ignore
 			$html->set_attribute( 'style', esc_attr( $element_style ) );
 			$block_content = $html->get_updated_html();
 		}

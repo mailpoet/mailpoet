@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -25,7 +25,7 @@ class Blocks_Parser extends WP_Block_Parser {
 	 * Parse the blocks from the document
 	 *
 	 * @param string $document Document to parse.
-	 * @return \WP_Block_Parser_Block[]
+	 * @return array[]
 	 */
 	public function parse( $document ) {
 		parent::parse( $document );

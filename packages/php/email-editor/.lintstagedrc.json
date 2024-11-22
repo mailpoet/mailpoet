@@ -1,0 +1,4 @@
+{
+	"*": "../../../mailpoet/tools/vendor/composer.phar code-style",
+	"*.{php}": "../../../mailpoet/tools/vendor/composer.phar phpstan"
+}

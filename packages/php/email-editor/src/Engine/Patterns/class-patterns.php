@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet Email Editor.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */

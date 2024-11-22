@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -153,16 +153,19 @@ class Image extends Abstract_Block_Renderer {
 		$html = new \WP_HTML_Tag_Processor( $block_content );
 		if ( $html->next_tag( array( 'tag_name' => 'img' ) ) ) {
 			// Getting height from styles and if it's set, we set the height attribute.
+			/** @var string $styles */ // phpcs:ignore
 			$styles = $html->get_attribute( 'style' ) ?? '';
 			$styles = $settings_controller->parse_styles_to_array( $styles );
 			$height = $styles['height'] ?? null;
 			if ( $height && 'auto' !== $height && is_numeric( $settings_controller->parse_number_from_string_with_pixels( $height ) ) ) {
 				$height = $settings_controller->parse_number_from_string_with_pixels( $height );
+				/* @phpstan-ignore-next-line Wrong annotation for parameter in WP. */
 				$html->set_attribute( 'height', esc_attr( $height ) );
 			}
 
 			if ( isset( $parsed_block['attrs']['width'] ) ) {
 				$width = $settings_controller->parse_number_from_string_with_pixels( $parsed_block['attrs']['width'] );
+				/* @phpstan-ignore-next-line Wrong annotation for parameter in WP. */
 				$html->set_attribute( 'width', esc_attr( $width ) );
 			}
 			$block_content = $html->get_updated_html();
@@ -277,6 +280,7 @@ class Image extends Abstract_Block_Renderer {
 	private function add_style_to_element( $block_content, array $tag, string $style ): string {
 		$html = new \WP_HTML_Tag_Processor( $block_content );
 		if ( $html->next_tag( $tag ) ) {
+			/** @var string $element_style */ // phpcs:ignore
 			$element_style  = $html->get_attribute( 'style' ) ?? '';
 			$element_style  = ! empty( $element_style ) ? ( rtrim( $element_style, ';' ) . ';' ) : ''; // Adding semicolon if it's missing.
 			$element_style .= $style;
@@ -297,9 +301,10 @@ class Image extends Abstract_Block_Renderer {
 	private function remove_style_attribute_from_element( $block_content, array $tag, string $style_name ): string {
 		$html = new \WP_HTML_Tag_Processor( $block_content );
 		if ( $html->next_tag( $tag ) ) {
+			/** @var string $element_style */ // phpcs:ignore
 			$element_style = $html->get_attribute( 'style' ) ?? '';
 			$element_style = preg_replace( '/' . $style_name . ':(.?[0-9]+px)+;?/', '', $element_style );
-			$html->set_attribute( 'style', esc_attr( $element_style ) );
+			$html->set_attribute( 'style', esc_attr( strval( $element_style ) ) );
 			$block_content = $html->get_updated_html();
 		}
 
@@ -310,7 +315,7 @@ class Image extends Abstract_Block_Renderer {
 	 * Parse block content to get image URL, image HTML and caption HTML.
 	 *
 	 * @param string $block_content Block content.
-	 * @return array{imageUrl: string, image: string, caption: string}|null
+	 * @return array{imageUrl: string, image: string, caption: string, class: string}|null
 	 */
 	private function parse_block_content( string $block_content ): ?array {
 		// If block's image is not set, we don't need to parse the content.

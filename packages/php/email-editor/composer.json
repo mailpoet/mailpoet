@@ -5,7 +5,10 @@
   "autoload": {
     "classmap": [
       "src/"
-    ]
+    ],
+		"files": [
+			"src/exceptions.php"
+		]
   },
   "autoload-dev": {
     "classmap": [

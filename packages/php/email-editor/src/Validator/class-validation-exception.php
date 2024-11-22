@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -8,7 +8,7 @@
 declare( strict_types = 1 );
 namespace MailPoet\EmailEditor\Validator;
 
-use MailPoet\UnexpectedValueException;
+use MailPoet\EmailEditor\UnexpectedValueException;
 use WP_Error;
 
 /**

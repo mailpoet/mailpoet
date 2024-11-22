@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -43,7 +43,7 @@ class Send_Preview_Email {
 	 * Sends a preview email.
 	 *
 	 * @param array $data The data required to send the preview email.
-	 * @return array|bool Returns true if the preview email was sent successfully, false otherwise.
+	 * @return bool Returns true if the preview email was sent successfully, false otherwise.
 	 * @throws \Exception If the data is invalid.
 	 */
 	public function send_preview_email( $data ): bool {
@@ -60,7 +60,7 @@ class Send_Preview_Email {
 
 		$post = $this->fetch_post( $post_id );
 
-		$subject  = $post->post_title ?? __( 'Email Preview', 'mailpoet' );
+		$subject  = $post->post_title;
 		$language = get_bloginfo( 'language' );
 
 		$rendered_data = $this->renderer->render(

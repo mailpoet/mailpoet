@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 namespace MailPoet\EmailEditor\Validator;
 
 use JsonSerializable;
-use MailPoet\WP\Functions as WPFunctions;
 use stdClass;
 use WP_Error;
 
@@ -96,7 +95,7 @@ class Validator {
 				if ( isset( $schema['items'] ) ) {
 					foreach ( $value as $i => $v ) {
 						$result = $this->validate_and_sanitize_value_from_schema( $v, $schema['items'], $param_name . '[' . $i . ']' );
-						if ( $this->wp->isWpError( $result ) ) {
+						if ( is_wp_error( $result ) ) {
 								return $result;
 						}
 					}
@@ -117,7 +116,7 @@ class Validator {
 				foreach ( $value as $k => $v ) {
 					if ( isset( $schema['properties'][ $k ] ) ) {
 						$result = $this->validate_and_sanitize_value_from_schema( $v, $schema['properties'][ $k ], $param_name . '[' . $k . ']' );
-						if ( $this->wp->isWpError( $result ) ) {
+						if ( is_wp_error( $result ) ) {
 								return $result;
 						}
 						continue;
@@ -126,7 +125,7 @@ class Validator {
 					$pattern_property_schema = rest_find_matching_pattern_property_schema( $k, $schema );
 					if ( $pattern_property_schema ) {
 						$result = $this->validate_and_sanitize_value_from_schema( $v, $pattern_property_schema, $param_name . '[' . $k . ']' );
-						if ( $this->wp->isWpError( $result ) ) {
+						if ( is_wp_error( $result ) ) {
 							return $result;
 						}
 						continue;
@@ -134,7 +133,7 @@ class Validator {
 
 					if ( isset( $schema['additionalProperties'] ) && is_array( $schema['additionalProperties'] ) ) {
 						$result = $this->validate_and_sanitize_value_from_schema( $v, $schema['additionalProperties'], $param_name . '[' . $k . ']' );
-						if ( $this->wp->isWpError( $result ) ) {
+						if ( is_wp_error( $result ) ) {
 							return $result;
 						}
 					}
@@ -161,7 +160,7 @@ class Validator {
 		$errors = array();
 		foreach ( $any_of_schema['anyOf'] as $index => $schema ) {
 			$result = $this->validate_and_sanitize_value_from_schema( $value, $schema, $param_name );
-			if ( ! $this->wp->isWpError( $result ) ) {
+			if ( ! is_wp_error( $result ) ) {
 				return $result;
 			}
 			$errors[] = array(
@@ -170,6 +169,7 @@ class Validator {
 				'index'        => $index,
 			);
 		}
+		/* @phpstan-ignore-next-line Wrong annotation for parameter in WP. */
 		return rest_get_combining_operation_error( $value, $param_name, $errors );
 	}
 
@@ -187,7 +187,7 @@ class Validator {
 		$data             = null;
 		foreach ( $one_of_schema['oneOf'] as $index => $schema ) {
 			$result = $this->validate_and_sanitize_value_from_schema( $value, $schema, $param_name );
-			if ( $this->wp->isWpError( $result ) ) {
+			if ( is_wp_error( $result ) ) {
 				$errors[] = array(
 					'error_object' => $result,
 					'schema'       => $schema,
@@ -200,7 +200,8 @@ class Validator {
 		}
 
 		if ( ! $matching_schemas ) {
-			return $this->wp->restGetCombiningOperationError( $value, $param_name, $errors );
+			/* @phpstan-ignore-next-line Wrong annotation for parameter in WP. */
+			return rest_get_combining_operation_error( $value, $param_name, $errors );
 		}
 
 		if ( count( $matching_schemas ) > 1 ) {

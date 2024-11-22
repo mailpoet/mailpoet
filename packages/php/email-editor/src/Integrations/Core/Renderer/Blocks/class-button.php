@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -22,7 +22,7 @@ class Button extends Abstract_Block_Renderer {
 	 * Get styles for the wrapper element.
 	 *
 	 * @param array $block_styles Block styles.
-	 * @return object
+	 * @return object{css: string, classname: string}
 	 */
 	private function get_wrapper_styles( array $block_styles ) {
 		$properties = array( 'border', 'color', 'typography', 'spacing' );
@@ -43,7 +43,7 @@ class Button extends Abstract_Block_Renderer {
 	 * Get styles for the link element.
 	 *
 	 * @param array $block_styles Block styles.
-	 * @return object
+	 * @return object{css: string, classname: string}
 	 */
 	private function get_link_styles( array $block_styles ) {
 		$styles = $this->get_styles_from_block(

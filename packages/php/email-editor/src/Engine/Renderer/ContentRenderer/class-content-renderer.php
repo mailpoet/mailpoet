@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -84,6 +84,8 @@ class Content_Renderer {
 
 	/**
 	 * Initialize the content renderer
+	 *
+	 * @return void
 	 */
 	private function initialize() {
 		add_filter( 'render_block', array( $this, 'render_block' ), 10, 2 );
@@ -151,6 +153,7 @@ class Content_Renderer {
 	 *
 	 * @param WP_Post           $post Post object.
 	 * @param WP_Block_Template $template Block template.
+	 * @return void
 	 */
 	private function set_template_globals( WP_Post $post, WP_Block_Template $template ) {
 		global $_wp_current_template_content, $_wp_current_template_id;
@@ -236,6 +239,6 @@ class Content_Renderer {
 
 		$styles = '<style>' . wp_strip_all_tags( (string) apply_filters( 'mailpoet_email_content_renderer_styles', $styles, $post ) ) . '</style>';
 
-		return CssInliner::fromHtml( $styles . $html )->inlineCss()->render();
+		return CssInliner::fromHtml( $styles . $html )->inlineCss()->render();  // @phpstan-ignore-line TODO: Install CssInliner
 	}
 }

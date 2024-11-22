@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -9,7 +9,6 @@ declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine;
 
 use MailPoet\EmailEditor\Engine\Renderer\Renderer;
-use MailPoet\EmailEditor\Utils\Filesystem;
 use WP_Block_Template;
 use WP_Post;
 use WP_Theme_JSON;
@@ -90,6 +89,7 @@ class Theme_Controller {
 			if ( is_array( $style_value ) ) {
 				$styles[ $key ] = $this->recursive_extract_preset_variables( $style_value );
 			} elseif ( strpos( $style_value, 'var:preset|' ) === 0 ) {
+				/** @var string $style_value */ // phpcs:ignore
 				$styles[ $key ] = 'var(--wp--' . str_replace( '|', '--', str_replace( 'var:', '', $style_value ) ) . ')';
 			} else {
 				$styles[ $key ] = $style_value;
@@ -138,9 +138,8 @@ class Theme_Controller {
 			$presets[ $pattern ] = $value;
 		}
 
-		$theme_styles = $this->recursive_replace_presets( $theme_styles, $presets );
-
-		return $theme_styles;
+		/* @phpstan-ignore-next-line Return type defined above. */
+		return $this->recursive_replace_presets( $theme_styles, $presets );
 	}
 
 	/**
@@ -161,7 +160,7 @@ class Theme_Controller {
 	/**
 	 * Get layout settings from the theme.
 	 *
-	 * @return array
+	 * @return array{contentSize: string, wideSize: string, allowEditing: bool, allowCustomContentAndWideSize: bool}
 	 */
 	public function get_layout_settings(): array {
 		return $this->get_theme()->get_settings()['layout'];
@@ -170,8 +169,8 @@ class Theme_Controller {
 	/**
 	 * Get stylesheet from context.
 	 *
-	 * @param array $context Context.
-	 * @param array $options Options.
+	 * @param string $context Context.
+	 * @param array  $options Options.
 	 * @return string
 	 */
 	public function get_stylesheet_from_context( $context, $options = array() ): string {
