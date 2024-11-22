@@ -21,8 +21,6 @@ import { SaveButton } from './save-button';
 import { CampaignName } from './campaign-name';
 import { SendButton } from './send-button';
 
-import { unlock } from '../../lock-unlock';
-
 // Build type for ToolbarItem contains only "as" and "children" properties but it takes all props from
 // component passed to "as" property (in this case Button). So as fix for TS errors we need to pass all props from Button to ToolbarItem.
 // We should be able to remove this fix when ToolbarItem will be fixed in Gutenberg.
@@ -61,11 +59,8 @@ export function Header() {
 		hasRedo,
 		hasDocumentNavigationHistory,
 	} = useSelect( ( select ) => {
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		const { getEditorSettings: _getEditorSettings } = unlock(
-			select( editorStore )
-		);
-		const editorSettings = _getEditorSettings();
+		const { getEditorSettings } = select( editorStore );
+		const editorSettings = getEditorSettings();
 
 		return {
 			// @ts-expect-error missing types.
@@ -80,7 +75,9 @@ export function Header() {
 				!! select( blockEditorStore ).getBlockSelectionStart(),
 			hasUndo: select( coreDataStore ).hasUndo(),
 			hasRedo: select( coreDataStore ).hasRedo(),
+
 			hasDocumentNavigationHistory:
+				// @ts-expect-error No types for this exist yet.
 				!! editorSettings.onNavigateToPreviousEntityRecord,
 		};
 	}, [] );

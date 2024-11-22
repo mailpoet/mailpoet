@@ -14,7 +14,6 @@ import {
 } from '@wordpress/blocks';
 import { addQueryArgs } from '@wordpress/url';
 import { storeName } from '../../store';
-import { unlock } from '../../lock-unlock';
 
 // Todo: This is not available yet. Replace when possible.
 async function revertTemplate( template ) {
@@ -56,13 +55,13 @@ export function TemplatesPanel() {
 	const { onNavigateToEntityRecord, template, hasHistory } = useSelect(
 		( sel ) => {
 			// eslint-disable-next-line @typescript-eslint/naming-convention
-			const { getEditorSettings: _getEditorSettings } = unlock(
-				sel( editorStore )
-			);
-			const editorSettings = _getEditorSettings();
+			const { getEditorSettings } = sel( editorStore );
+			const editorSettings = getEditorSettings();
 			return {
 				onNavigateToEntityRecord:
+					// @ts-expect-error onNavigateToEntityRecord type is not defined
 					editorSettings.onNavigateToEntityRecord,
+				// @ts-expect-error onNavigateToPreviousEntityRecord type is not defined
 				hasHistory: !! editorSettings.onNavigateToPreviousEntityRecord,
 				template: sel( storeName ).getEditedPostTemplate(),
 			};
