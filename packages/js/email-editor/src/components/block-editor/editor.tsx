@@ -11,12 +11,16 @@ import {
 import { useMemo } from '@wordpress/element';
 import { SlotFillProvider, Spinner } from '@wordpress/components';
 import { Post, store as coreStore } from '@wordpress/core-data';
-import { storeName } from '../../store';
-import { unlock } from '../../lock-unlock';
+
+/**
+ * WordPress private dependencies
+ */
+import { unlockPatternsRelatedSelectorsFromCoreStore } from '../../private-apis';
 
 /**
  * Internal dependencies
  */
+import { storeName } from '../../store';
 import { Layout } from './layout';
 import { useNavigateToEntityRecord } from '../../hooks/use-navigate-to-entity-record';
 
@@ -69,7 +73,7 @@ export function InnerEditor( {
 	const blockPatterns = useSelect(
 		( select ) => {
 			const { hasFinishedResolution, getBlockPatternsForPostType } =
-				unlock( select( coreStore ) );
+				unlockPatternsRelatedSelectorsFromCoreStore( select );
 			const patterns = getBlockPatternsForPostType(
 				currentPost.postType
 			) as Post[];

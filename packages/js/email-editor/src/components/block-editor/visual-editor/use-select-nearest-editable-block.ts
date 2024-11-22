@@ -8,7 +8,7 @@ import { store as blockEditorStore } from '@wordpress/block-editor';
 /**
  * Internal dependencies
  */
-import { unlock } from '../../../lock-unlock';
+import { unlockGetEnabledClientIdsTree } from '../../../private-apis';
 
 const DISTANCE_THRESHOLD = 500;
 
@@ -25,9 +25,11 @@ function distanceFromRect( x: number, y: number, rect ) {
 export default function useSelectNearestEditableBlock( {
 	isEnabled = true,
 } = {} ) {
-	const { getEnabledClientIdsTree, getBlockName, getBlockOrder } = unlock(
+	const getEnabledClientIdsTree = unlockGetEnabledClientIdsTree(
 		useSelect( blockEditorStore )
 	);
+	const { getBlockName, getBlockOrder } = useSelect( blockEditorStore );
+
 	const { selectBlock } = useDispatch( blockEditorStore );
 
 	return useRefEffect(
@@ -39,11 +41,13 @@ export default function useSelectNearestEditableBlock( {
 			const selectNearestEditableBlock = ( x, y ) => {
 				const editableBlockClientIds =
 					getEnabledClientIdsTree().flatMap( ( { clientId } ) => {
+						// @ts-expect-error getBlockName is not typed
 						const blockName = getBlockName( clientId );
 						if ( blockName === 'core/template-part' ) {
 							return [];
 						}
 						if ( blockName === 'core/post-content' ) {
+							// @ts-expect-error getBlockOrder is not typed
 							const innerBlocks = getBlockOrder( clientId );
 							if ( innerBlocks.length ) {
 								return innerBlocks as string[];

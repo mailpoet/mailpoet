@@ -1,9 +1,17 @@
-import { unlock } from './lock-unlock';
+/**
+ * WordPress dependencies
+ */
 import {
 	// @ts-expect-error No types for this exist yet.
 	privateApis as blockEditorPrivateApis,
 } from '@wordpress/block-editor';
 import { privateApis as componentsPrivateApis } from '@wordpress/components';
+import { store as coreStore } from '@wordpress/core-data';
+
+/**
+ * Internal dependencies
+ */
+import { unlock } from './lock-unlock';
 
 /**
  * We use the experimental block canvas to render the block editor's canvas.
@@ -20,4 +28,31 @@ const { ExperimentalBlockCanvas: BlockCanvas } = unlock(
  */
 const { Tabs } = unlock( componentsPrivateApis );
 
-export { BlockCanvas, Tabs };
+/**
+ * We need the following selectors from core store to fetch block patterns for the email post type.
+ * @param select - select function from the core store.
+ */
+const unlockPatternsRelatedSelectorsFromCoreStore = ( select ) => {
+	const { hasFinishedResolution, getBlockPatternsForPostType } = unlock(
+		select( coreStore )
+	);
+	return { hasFinishedResolution, getBlockPatternsForPostType };
+};
+
+/**
+ * Selector getEnabledClientIdsTree for block-editor store is used to find nearest editable block to select on click in
+ * useSelectNearestEditableBlock
+ * We copied useSelectNearestEditableBlock from Gutenberg.
+ * @param selectHook - useSelect call from the block editor store `useSelect( blockEditorStore ).
+ */
+const unlockGetEnabledClientIdsTree = ( selectHook ) => {
+	const { getEnabledClientIdsTree } = unlock( selectHook );
+	return getEnabledClientIdsTree;
+};
+
+export {
+	BlockCanvas,
+	Tabs,
+	unlockPatternsRelatedSelectorsFromCoreStore,
+	unlockGetEnabledClientIdsTree,
+};
