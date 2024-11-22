@@ -6,6 +6,6 @@ import { addFilter } from '@wordpress/hooks';
 import { withNpsPoll } from '../nps-poll';
 import './index.scss';
 
-addFilter('mailpoet_email_editor_the_editor_component', 'mailpoet', (editor) =>
+addFilter('mailpoet_email_editor_wrap_editor_component', 'mailpoet', (editor) =>
   withNpsPoll(editor),
 );
