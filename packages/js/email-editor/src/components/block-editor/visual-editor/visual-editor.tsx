@@ -9,8 +9,6 @@ import {
 	// @ts-expect-error No types for this exist yet.
 	RecursionProvider,
 	// @ts-expect-error No types for this exist yet.
-	privateApis as blockEditorPrivateApis,
-	// @ts-expect-error No types for this exist yet.
 	__experimentalUseResizeCanvas as useResizeCanvas, // eslint-disable-line
 } from '@wordpress/block-editor';
 import { useRef } from '@wordpress/element';
@@ -19,20 +17,20 @@ import { useMergeRefs } from '@wordpress/compose';
 import { store as editorStore } from '@wordpress/editor';
 
 /**
+ * WordPress private dependencies
+ */
+import { BlockCanvas } from '../../../private-apis';
+
+/**
  * Internal dependencies
  */
 import EditTemplateBlocksNotification from './edit-template-blocks-notification';
 import useSelectNearestEditableBlock from './use-select-nearest-editable-block';
-import { unlock } from '../../../lock-unlock';
 
 export const TEMPLATE_POST_TYPE = 'wp_template';
 export const TEMPLATE_PART_POST_TYPE = 'wp_template_part';
 export const PATTERN_POST_TYPE = 'wp_block';
 export const NAVIGATION_POST_TYPE = 'wp_navigation';
-
-const { ExperimentalBlockCanvas: BlockCanvas } = unlock(
-	blockEditorPrivateApis
-);
 
 /**
  * These post types have a special editor where they don't allow you to fill the title
