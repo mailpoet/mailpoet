@@ -31,7 +31,7 @@ $commands = array(
 	"$phpStanBin analyse ",
 	"-c $emailEditorCustomConfig ",
 	"$emailEditorPhpDir/src ",
-	// "$emailEditorPhpDir/tests/integration ", // TODO: will uncomment after fixing src errors
+	"$emailEditorPhpDir/tests/integration ",
 	"$emailEditorPhpDir/tests/unit ",
 );
 

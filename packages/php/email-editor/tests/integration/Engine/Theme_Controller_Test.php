@@ -24,7 +24,7 @@ class Theme_Controller_Test extends \MailPoetTest {
 	 */
 	public function _before() {
 		parent::_before();
-		$this->theme_controller = $this->di_container->get( Theme_Controller::class );
+		$this->theme_controller = $this->di_container->get( Theme_Controller::class ); // @phpstan-ignore-line
 	}
 
 	/**

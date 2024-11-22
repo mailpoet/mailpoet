@@ -134,8 +134,8 @@ class Content_Renderer_Test extends \MailPoetTest {
 	 */
 	private function getStylesValueForTag( $html, $tag ): ?string {
 		$html = new \WP_HTML_Tag_Processor( $html );
-		if ( $html->next_tag( $tag ) ) {
-			return $html->get_attribute( 'style' );
+		if ( $html->next_tag( $tag ) ) { // @phpstan-ignore-line
+			return $html->get_attribute( 'style' ); // @phpstan-ignore-line
 		}
 		return null;
 	}

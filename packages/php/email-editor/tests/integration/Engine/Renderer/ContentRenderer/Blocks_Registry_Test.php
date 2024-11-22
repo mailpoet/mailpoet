@@ -29,7 +29,7 @@ class Blocks_Registry_Test extends \MailPoetTest {
 	 */
 	public function _before() {
 		parent::_before();
-		$this->registry = $this->di_container->get( Blocks_Registry::class );
+		$this->registry = $this->di_container->get( Blocks_Registry::class ); // @phpstan-ignore-line
 	}
 
 	/**

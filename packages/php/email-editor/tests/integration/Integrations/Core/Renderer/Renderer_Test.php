@@ -28,9 +28,9 @@ class Renderer_Test extends \MailPoetTest {
 	 */
 	public function _before() {
 		parent::_before();
-		$this->renderer = $this->di_container->get( Renderer::class );
-		$this->di_container->get( Email_Editor::class )->initialize();
-		$this->di_container->get( Initializer::class )->initialize();
+		$this->renderer = $this->di_container->get( Renderer::class );  // @phpstan-ignore-line
+		$this->di_container->get( Email_Editor::class )->initialize();  // @phpstan-ignore-line
+		$this->di_container->get( Initializer::class )->initialize();  // @phpstan-ignore-line
 	}
 
 	/**

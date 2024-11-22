@@ -23,7 +23,7 @@ class Patterns_Test extends \MailPoetTest {
 	 */
 	public function _before() {
 		parent::_before();
-		$this->patterns = $this->di_container->get( Patterns::class );
+		$this->patterns = $this->di_container->get( Patterns::class ); // @phpstan-ignore-line
 		$this->cleanup_patterns();
 	}
 
@@ -33,7 +33,8 @@ class Patterns_Test extends \MailPoetTest {
 	public function testItRegistersPatternCategories() {
 		$this->patterns->initialize();
 		$categories = \WP_Block_Pattern_Categories_Registry::get_instance()->get_all_registered();
-		$category   = array_pop( $categories );
+		/** @var array{name: string, label: string, description: string} $category */ // phpcs:ignore
+		$category = array_pop( $categories );
 		$this->assertEquals( 'email-contents', $category['name'] );
 		$this->assertEquals( 'Email Contents', $category['label'] );
 		$this->assertEquals( 'A collection of email content layouts.', $category['description'] );

@@ -128,6 +128,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 	 * @param array  $overrides The properties to override.
 	 */
 	public function getServiceWithOverrides( string $id, array $overrides ) {
+		// @phpstan-ignore-line
 		$instance = $this->di_container->get( $id );
 		return Stub::copy( $instance, $overrides );
 	}
