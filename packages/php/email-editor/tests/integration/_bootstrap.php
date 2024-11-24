@@ -12,6 +12,7 @@ use MailPoet\EmailEditor\Container;
 use MailPoet\EmailEditor\Engine\Email_Api_Controller;
 use MailPoet\EmailEditor\Engine\Email_Editor;
 use MailPoet\EmailEditor\Engine\Patterns\Patterns;
+use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Highlighting_Postprocessor;
@@ -287,6 +288,12 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 			}
 		);
 		$container->set(
+			Personalization_Tags_Registry::class,
+			function () {
+				return new Personalization_Tags_Registry();
+			}
+		);
+		$container->set(
 			Email_Editor::class,
 			function ( $container ) {
 				return new Email_Editor(
@@ -296,6 +303,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 					$container->get( Patterns::class ),
 					$container->get( Settings_Controller::class ),
 					$container->get( Send_Preview_Email::class ),
+					$container->get( Personalization_Tags_Registry::class ),
 				);
 			}
 		);
