@@ -108,6 +108,7 @@ export async function pullRequests() {
 // Run those tests against trunk in a nightly build
 // Note: there are 41 checks in total
 export async function nightly() {
+  await settingsBasic();
   await newsletterListing();
   await newsletterStatistics();
   await newsletterSearching();
@@ -127,7 +128,6 @@ export async function nightly() {
   await listsViewSubscribers();
   await segmentsCreateCustom();
   await segmentsSelectTemplate();
-  await settingsBasic();
   await formsAdding();
   await formsSubscribing();
 }
