@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.4.1 - 2024-11-25 =
+
+- Improved: minor changes and fixes.
+
 = 5.4.0 - 2024-11-18 =
 
 - Improved: tested with WooCommerce 9.4;
