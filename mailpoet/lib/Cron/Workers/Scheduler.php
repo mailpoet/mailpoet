@@ -240,9 +240,8 @@ class Scheduler {
     if ($newsletter->getOptionValue('sendTo') === 'segment') {
       $segment = $this->segmentsRepository->findOneById($newsletter->getOptionValue('segment'));
       if ($segment instanceof SegmentEntity) {
-        $result = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [(int)$segment->getId()]);
-
-        if (empty($result)) {
+        $this->subscribersFinder->addSubscribersToTaskFromSegments($task, [(int)$segment->getId()]);
+        if (!$task->getSubscribers()->count()) {
           $this->deleteByTask($task);
           return false;
         }

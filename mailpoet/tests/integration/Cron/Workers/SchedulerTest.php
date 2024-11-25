@@ -768,6 +768,40 @@ class SchedulerTest extends \MailPoetTest {
     $this->assertSame($subscriber, $subscribers[0]->getSubscriber());
   }
 
+  public function testItProcessesScheduledAutomaticEmailWhenSendingToSegmentAndSubscriberIsPrefilled() {
+    $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_AUTOMATIC, NewsletterEntity::STATUS_SCHEDULED);
+    $segment = $this->_createSegment();
+    $subscriber = $this->_createSubscriber();
+    $this->_createSubscriberSegment($subscriber->getId(), $segment->getId());
+    $this->newsletterOptionFactory->createMultipleOptions(
+      $newsletter,
+      [
+        'sendTo' => 'segment',
+        'segment' => $segment->getId(),
+      ]
+    );
+
+    $task = $this->createTaskWithQueue($newsletter);
+    // Prefill scheduled task subscriber
+    $scheduledTaskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
+    $this->entityManager->persist($scheduledTaskSubscriber);
+    $task->getSubscribers()->add($scheduledTaskSubscriber);
+    $this->entityManager->flush();
+
+    // task should have its status set to null (i.e., sending)
+    $scheduler = $this->getScheduler($this->subscribersFinder);
+    $scheduler->process();
+
+    $task = $this->scheduledTasksRepository->findOneByNewsletter($newsletter);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+    verify($task->getStatus())->null();
+    // task should have 1 subscriber added from segment
+    $subscribers = $task->getSubscribers();
+    $this->assertCount(1, $subscribers);
+    $this->assertInstanceOf(ScheduledTaskSubscriberEntity::class, $subscribers[0]);
+    $this->assertSame($subscriber, $subscribers[0]->getSubscriber());
+  }
+
   public function testItProcessesScheduledAutomationEmail() {
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_ACTIVE);
     $subscriber = $this->_createSubscriber();
