@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.4.0 - 2024-11-18 =
+
+- Improved: tested with WooCommerce 9.4;
+- Improved: tested with WordPress 6.7;
+- Improved: tested with PHP 8.2.
+
 = 5.3.7 - 2024-11-12 =
 
 - Fixed: detecting table index existence in DB migrations for MySQL 5;

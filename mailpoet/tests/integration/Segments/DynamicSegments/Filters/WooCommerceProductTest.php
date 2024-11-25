@@ -29,10 +29,10 @@ class WooCommerceProductTest extends \MailPoetTest {
 
     $this->cleanUp();
 
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerIdOnHold = $this->tester->createCustomer('customer-on-hold@example.com', 'customer');
-    $customerIdPendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerIdOnHold = $this->tester->createCustomer('customer-on-hold@example.com');
+    $customerIdPendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com');
 
     $this->createSubscriber('a1@example.com');
     $this->createSubscriber('a2@example.com');

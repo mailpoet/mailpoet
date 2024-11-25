@@ -330,7 +330,7 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testUnit(array $opts = ['file' => null, 'xml' => false, 'multisite' => false, 'debug' => false]) {
-    $command = 'vendor/bin/codecept run unit';
+    $command = '../tests_env/vendor/bin/codecept run unit';
 
     if ($opts['file']) {
       $command .= ' -f ' . $opts['file'];
@@ -511,13 +511,13 @@ class RoboFile extends \Robo\Tasks {
   }
 
   public function testFailedUnit() {
-    $this->_exec('vendor/bin/codecept build');
-    return $this->_exec('vendor/bin/codecept run unit -g failed');
+    $this->_exec('../tests_env/vendor/bin/codecept build');
+    return $this->_exec('../tests_env/vendor/bin/codecept run unit -g failed');
   }
 
   public function testFailedIntegration() {
-    $this->_exec('vendor/bin/codecept build');
-    return $this->_exec('vendor/bin/codecept run integration -g failed');
+    $this->_exec('../tests_env/vendor/bin/codecept build');
+    return $this->_exec('../tests_env/vendor/bin/codecept run integration -g failed');
   }
 
   public function containerDump() {
@@ -784,7 +784,7 @@ class RoboFile extends \Robo\Tasks {
     }
 
     // make sure Codeception support files are present to avoid invalid errors when running PHPStan
-    $this->_exec('vendor/bin/codecept build');
+    $this->_exec('../tests_env/vendor/bin/codecept build');
 
     // PHPStan must be run out of main plugin directory to avoid its autoloading
     // from vendor/autoload.php where some dev dependencies cause conflicts.

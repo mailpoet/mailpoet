@@ -6,20 +6,24 @@
  */
 
 declare(strict_types = 1);
-namespace MailPoet\EmailEditor\Engine\Patterns\Library;
-
-use MailPoet\EmailEditor\Utils\Cdn_Asset_Url;
+namespace MailPoet\EmailEditor\Engine\Patterns;
 
 /**
  * Abstract class for block patterns.
  */
 abstract class Abstract_Pattern {
 	/**
-	 * Cdn_Asset_Url instance.
+	 * Name of the pattern.
 	 *
-	 * @var Cdn_Asset_Url $cdn_asset_url
+	 * @var string $name
 	 */
-	protected $cdn_asset_url;
+	protected $name = '';
+	/**
+	 * Namespace of the pattern.
+	 *
+	 * @var string $namespace
+	 */
+	protected $namespace = '';
 	/**
 	 * List of block types.
 	 *
@@ -49,7 +53,7 @@ abstract class Abstract_Pattern {
 	 *
 	 * @var array $categories
 	 */
-	protected $categories = array( 'mailpoet' );
+	protected $categories = array();
 	/**
 	 * Viewport width.
 	 *
@@ -58,14 +62,21 @@ abstract class Abstract_Pattern {
 	protected $viewport_width = 620;
 
 	/**
-	 * Constructor.
+	 * Get name of the pattern.
 	 *
-	 * @param Cdn_Asset_Url $cdn_asset_url Cdn_Asset_Url instance.
+	 * @return string
 	 */
-	public function __construct(
-		Cdn_Asset_Url $cdn_asset_url
-	) {
-		$this->cdn_asset_url = $cdn_asset_url;
+	public function get_name(): string {
+		return $this->name;
+	}
+
+	/**
+	 * Get namespace of the pattern.
+	 *
+	 * @return string
+	 */
+	public function get_namespace(): string {
+		return $this->namespace;
 	}
 
 	/**

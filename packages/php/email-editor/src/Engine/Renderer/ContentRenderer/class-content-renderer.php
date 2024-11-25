@@ -131,13 +131,14 @@ class Content_Renderer {
 	}
 
 	/**
-	 * Render block
+	 * Renders block
+	 * Translates block's HTML to HTML suitable for email clients. The method is intended as a callback for 'render_block' filter.
 	 *
 	 * @param string $block_content Block content.
 	 * @param array  $parsed_block Parsed block.
 	 * @return string
 	 */
-	public function render_block( $block_content, $parsed_block ) {
+	public function render_block( string $block_content, array $parsed_block ): string {
 		$renderer = $this->blocks_registry->get_block_renderer( $parsed_block['blockName'] );
 		if ( ! $renderer ) {
 			$renderer = $this->blocks_registry->get_fallback_renderer();
@@ -213,7 +214,7 @@ class Content_Renderer {
 		);
 
 		/*
-		 *Layout CSS assumes the top level block will have a single DIV wrapper with children. Since our blocks use tables,
+		 * Layout CSS assumes the top level block will have a single DIV wrapper with children. Since our blocks use tables,
 		 * we need to adjust this to look for children in the TD element. This may requires more advanced replacement but
 		 * this works in the current version of Gutenberg.
 		 * Example rule we're targetting: .wp-container-core-group-is-layout-1.wp-container-core-group-is-layout-1 > *

@@ -14,6 +14,8 @@ use MailPoetVendor\Doctrine\DBAL\Connection;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoetVendor\Doctrine\Persistence\Mapping\ClassMetadata;
 
+// Load Composer autoload - we need to load it explicitly because we run the tests from the root of the project via /tests_env/vendor/bin/codecept
+require_once(__DIR__ . '/../../vendor/autoload.php');
 if ((boolean)getenv('MULTISITE') === true) {
   // REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated
   $_SERVER['REQUEST_URI'] = '/' . getenv('WP_TEST_MULTISITE_SLUG');
@@ -28,7 +30,7 @@ require_once($wpLoadFile);
  * Note that the following are override in the docker-compose file
  * WP_ROOT, WP_ROOT_MULTISITE, WP_TEST_MULTISITE_SLUG
  */
-$dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . '/../..');
+$dotenv = \Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . '/../..');
 $dotenv->load();
 
 $console = new \Codeception\Lib\Console\Output([]);

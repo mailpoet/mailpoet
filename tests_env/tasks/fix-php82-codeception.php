@@ -1,4 +1,4 @@
-<?php // phpcs:ignore SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing
+<?php
 
 // throw exception if anything fails
 set_error_handler(function ($severity, $message, $file, $line) {

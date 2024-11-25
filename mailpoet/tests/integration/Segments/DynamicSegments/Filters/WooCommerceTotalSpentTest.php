@@ -24,9 +24,9 @@ class WooCommerceTotalSpentTest extends \MailPoetTest {
     $this->wp = $this->diContainer->get(WPFunctions::class);
     $this->cleanUp();
 
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3 = $this->tester->createCustomer('customer3@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3 = $this->tester->createCustomer('customer3@example.com');
 
     $this->orders[] = $this->createOrder($customerId1, Carbon::now()->subDays(3), 10);
     $this->orders[] = $this->createOrder($customerId1, Carbon::now(), 5);

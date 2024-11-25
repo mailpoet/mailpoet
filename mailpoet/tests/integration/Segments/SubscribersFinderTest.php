@@ -70,7 +70,7 @@ class SubscribersFinderTest extends \MailPoetTest {
 
   public function testFindSubscribersInSegmentUsingFinder() {
     /** @var SegmentSubscribersRepository & MockObject $mock */
-    $mock = Stub::makeEmpty(SegmentSubscribersRepository::class, ['findSubscribersIdsInSegment']);
+    $mock = Stub::makeEmpty(SegmentSubscribersRepository::class);
     $mock
       ->expects($this->once())
       ->method('findSubscribersIdsInSegment')
@@ -84,7 +84,7 @@ class SubscribersFinderTest extends \MailPoetTest {
 
   public function testFindSubscribersInSegmentUsingFinderMakesResultUnique() {
     /** @var SegmentSubscribersRepository & MockObject $mock */
-    $mock = Stub::makeEmpty(SegmentSubscribersRepository::class, ['findSubscribersIdsInSegment']);
+    $mock = Stub::makeEmpty(SegmentSubscribersRepository::class);
     $mock
       ->expects($this->exactly(2))
       ->method('findSubscribersIdsInSegment')
@@ -121,7 +121,7 @@ class SubscribersFinderTest extends \MailPoetTest {
 
   public function testItAddsSubscribersToTaskFromDynamicSegments() {
     /** @var SegmentSubscribersRepository & MockObject $mock */
-    $mock = Stub::makeEmpty(SegmentSubscribersRepository::class, ['getSubscriberIdsInSegment']);
+    $mock = Stub::makeEmpty(SegmentSubscribersRepository::class);
     $mock
       ->expects($this->once())
       ->method('getSubscriberIdsInSegment')
@@ -142,7 +142,7 @@ class SubscribersFinderTest extends \MailPoetTest {
 
   public function testItAddsSubscribersToTaskFromStaticAndDynamicSegments() {
     /** @var SegmentSubscribersRepository & MockObject $mock */
-    $mock = Stub::makeEmpty(SegmentSubscribersRepository::class, ['getSubscriberIdsInSegment']);
+    $mock = Stub::makeEmpty(SegmentSubscribersRepository::class);
     $mock
       ->expects($this->once())
       ->method('getSubscriberIdsInSegment')

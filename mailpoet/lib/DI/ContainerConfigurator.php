@@ -336,9 +336,6 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\CustomFields\ApiDataSanitizer::class);
     $container->autowire(\MailPoet\CustomFields\CustomFieldsRepository::class)->setPublic(true);
     // Email Editor
-    $container->autowire(\MailPoet\EmailEditor\Utils\Cdn_Asset_Url::class)
-      ->setPublic(true)
-      ->setFactory([__CLASS__, 'getEmailEditorCdnAssetsUrl']);
     $container->autowire(\MailPoet\EmailEditor\Engine\Email_Editor::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Engine\Email_Api_Controller::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Engine\Settings_Controller::class)->setPublic(true);
@@ -366,6 +363,7 @@ class ContainerConfigurator implements IContainerConfigurator {
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\EmailEditorPreviewEmail::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController::class)->setPublic(true);
     $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypes\PoweredByMailpoet::class)->setPublic(true);
+    $container->autowire(\MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController::class)->setPublic(true);
     // Features
     $container->autowire(\MailPoet\Features\FeaturesController::class)->setPublic(true);
     $container->autowire(\MailPoet\Features\FeatureFlagsController::class)->setPublic(true);
@@ -693,9 +691,5 @@ class ContainerConfigurator implements IContainerConfigurator {
 
   public static function getCdnAssetsUrl(): \MailPoet\Util\CdnAssetUrl {
     return new \MailPoet\Util\CdnAssetUrl((string)Env::$baseUrl);
-  }
-
-  public static function getEmailEditorCdnAssetsUrl(): \MailPoet\EmailEditor\Utils\Cdn_Asset_Url {
-    return new \MailPoet\EmailEditor\Utils\Cdn_Asset_Url((string)Env::$baseUrl);
   }
 }

@@ -10,3 +10,4 @@ mailpoet-premium
 tsconfig.tsbuildinfo
 /wordpress
 packages/php/*/vendor
+tests_env/vendor

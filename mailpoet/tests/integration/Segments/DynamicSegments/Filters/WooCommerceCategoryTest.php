@@ -36,10 +36,10 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersThatPurchasedProductsInAnyCategory(): void {
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com', 'customer');
-    $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com');
+    $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com');
     $customerId5 = $this->tester->createCustomer('customer5@example.com');
 
     $this->createSubscriber('a1@example.com');
@@ -71,10 +71,10 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersThatDidNotPurchaseProducts(): void {
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com', 'customer');
-    $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com');
+    $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com');
     $customerId5 = $this->tester->createCustomer('customer5@example.com');
 
     $this->createSubscriber('a1@example.com');
@@ -111,10 +111,10 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersThatPurchasedAllProducts(): void {
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com', 'customer');
-    $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com');
+    $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com');
     $customerId5 = $this->tester->createCustomer('customer5@example.com');
 
     $this->createSubscriber('a1@example.com');
@@ -149,10 +149,10 @@ class WooCommerceCategoryTest extends \MailPoetTest {
   }
 
   public function testItGetsSubscribersThatPurchasesAllProductsInMultipleOrders(): void {
-    $customerId1 = $this->tester->createCustomer('customer1@example.com', 'customer');
-    $customerId2 = $this->tester->createCustomer('customer2@example.com', 'customer');
-    $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com', 'customer');
-    $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com', 'customer');
+    $customerId1 = $this->tester->createCustomer('customer1@example.com');
+    $customerId2 = $this->tester->createCustomer('customer2@example.com');
+    $customerId3OnHold = $this->tester->createCustomer('customer-on-hold@example.com');
+    $customerId4PendingPayment = $this->tester->createCustomer('customer-pending-payment@example.com');
     $customerId5 = $this->tester->createCustomer('customer5@example.com');
 
     $this->createSubscriber('a1@example.com');

@@ -115,8 +115,13 @@ class IntegrationTester extends \Codeception\Actor {
     return $this->createWordPressTerm($name, 'product_tag');
   }
 
-  public function createCustomer(string $email, string $role = 'customer'): int {
-    return $this->createWordPressUser($email, $role);
+  public function createCustomer(string $email): int {
+    $id = wc_create_new_customer($email, $email, '12123154');
+    if ($id instanceof WP_Error) {
+      throw new \Exception('Failed to create customer:' . $id->get_error_message());
+    }
+    $this->createdUsers[] = $email;
+    return $id;
   }
 
   public function deleteCreatedUsers() {
