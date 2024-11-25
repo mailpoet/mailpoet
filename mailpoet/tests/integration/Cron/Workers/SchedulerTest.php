@@ -523,6 +523,31 @@ class SchedulerTest extends \MailPoetTest {
     verify($updatedNotificationHistory->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 
+  public function testItCanProcessPostNotificationNewsletterWithPrefilledScheduledTaskSubscribers() {
+    $newsletter = $this->_createNewsletter();
+    $task = $this->createTaskWithQueue($newsletter);
+    $segment = $this->_createSegment();
+    $this->_createNewsletterSegment($newsletter->getId(), $segment->getId());
+    $subscriber = $this->_createSubscriber();
+    $this->_createSubscriberSegment($subscriber->getId(), $segment->getId());
+    $this->assertIsInt($segment->getId());
+    $this->newsletterOptionFactory->create($newsletter, 'segment', $segment->getId());
+    $scheduler = $this->getScheduler($this->subscribersFinder);
+    $this->entityManager->refresh($newsletter);
+
+    // Prefill scheduled task subscriber
+    $scheduledTaskSubscriber = new ScheduledTaskSubscriberEntity($task, $subscriber);
+    $this->entityManager->persist($scheduledTaskSubscriber);
+    $task->getSubscribers()->add($scheduledTaskSubscriber);
+    $this->entityManager->flush();
+
+    // return true
+    verify($scheduler->processPostNotificationNewsletter($newsletter, $task))->true();
+    // create notification history
+    $notificationHistory = $this->newslettersRepository->findOneBy(['parent' => $newsletter->getId()]);
+    $this->assertInstanceOf(NewsletterEntity::class, $notificationHistory);
+  }
+
   public function testItDeletesQueueDuringProcessingWhenNewsletterNotFound() {
     $subscriber = $this->_createSubscriber();
     $newsletter = $this->_createNewsletter(NewsletterEntity::TYPE_STANDARD);
@@ -601,7 +626,7 @@ class SchedulerTest extends \MailPoetTest {
     $scheduler = $this->getSchedulerMock([
       'processScheduledStandardNewsletter' => Expected::never(),
     ]);
-    
+
     $scheduler->process();
 
     $refetchedTask = $this->scheduledTasksRepository->findOneById($task->getId());

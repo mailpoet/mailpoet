@@ -193,7 +193,8 @@ class Scheduler {
     }
 
     // ensure that subscribers are in segments
-    $subscribersCount = $this->subscribersFinder->addSubscribersToTaskFromSegments($task, $segments, $newsletter->getFilterSegmentId());
+    $this->subscribersFinder->addSubscribersToTaskFromSegments($task, $segments, $newsletter->getFilterSegmentId());
+    $subscribersCount = $task->getSubscribers()->count();
     if (empty($subscribersCount)) {
       $this->loggerFactory->getLogger(LoggerFactory::TOPIC_POST_NOTIFICATIONS)->info(
         'post notification no subscribers',
