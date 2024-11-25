@@ -1,6 +1,6 @@
 import { InspectorControls } from '@wordpress/block-editor';
 import { createHigherOrderComponent } from '@wordpress/compose';
-import { Block } from '@wordpress/blocks';
+import { Block } from '@wordpress/blocks/index';
 import { addFilter } from '@wordpress/hooks';
 
 const columnsEditCallback = createHigherOrderComponent(

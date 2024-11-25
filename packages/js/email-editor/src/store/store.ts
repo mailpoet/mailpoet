@@ -28,8 +28,8 @@ export const createStore = () => {
 };
 
 export interface EmailEditorStore {
-	getActions(): EditorStoreConfig[ 'actions' ];
-	getSelectors(): EditorStoreConfig[ 'selectors' ];
+	getActions: () => EditorStoreConfig[ 'actions' ];
+	getSelectors: () => EditorStoreConfig[ 'selectors' ];
 }
 
 declare module '@wordpress/data' {

@@ -1,5 +1,5 @@
 import { addFilter } from '@wordpress/hooks';
-import { Block } from '@wordpress/blocks';
+import { Block } from '@wordpress/blocks/index';
 
 /**
  * Switch layout to reduced flex email layout

@@ -1,5 +1,5 @@
-import { EditorSettings, EditorColor } from '@wordpress/block-editor';
-import { BlockInstance } from '@wordpress/blocks';
+import { EditorSettings, EditorColor } from '@wordpress/block-editor/index';
+import { BlockInstance } from '@wordpress/blocks/index';
 
 export enum SendingPreviewStatus {
 	SUCCESS = 'success',

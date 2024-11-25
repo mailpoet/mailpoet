@@ -2,7 +2,7 @@ import { addFilter } from '@wordpress/hooks';
 import {
 	Block as WPBlock,
 	BlockSupports as WPBlockSupports,
-} from '@wordpress/blocks';
+} from '@wordpress/blocks/index';
 
 // Extend the BlockSupports type to include shadow
 // The shadow is not included in WP6.4 but it is in WP6.5

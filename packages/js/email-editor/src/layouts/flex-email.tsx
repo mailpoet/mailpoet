@@ -8,7 +8,8 @@ import classnames from 'classnames';
  */
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';
-import { Block, getBlockSupport, hasBlockSupport } from '@wordpress/blocks';
+import { getBlockSupport, hasBlockSupport } from '@wordpress/blocks';
+import { Block } from '@wordpress/blocks/index';
 
 import {
 	BlockControls,

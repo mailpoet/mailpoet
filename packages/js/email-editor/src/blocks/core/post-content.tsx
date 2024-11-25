@@ -1,5 +1,5 @@
 import { addFilter } from '@wordpress/hooks';
-import { Block } from '@wordpress/blocks';
+import { Block } from '@wordpress/blocks/index';
 import { __ } from '@wordpress/i18n';
 import { useBlockProps } from '@wordpress/block-editor';
 

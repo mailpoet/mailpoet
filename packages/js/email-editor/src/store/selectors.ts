@@ -3,7 +3,8 @@ import { store as coreDataStore } from '@wordpress/core-data';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as editorStore } from '@wordpress/editor';
 import { store as preferencesStore } from '@wordpress/preferences';
-import { serialize, BlockInstance } from '@wordpress/blocks';
+import { serialize } from '@wordpress/blocks';
+import { BlockInstance } from '@wordpress/blocks/index';
 import { storeName } from './constants';
 import { State, Feature, EmailTemplate } from './types';
 

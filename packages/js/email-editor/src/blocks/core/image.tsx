@@ -1,7 +1,7 @@
 import { InspectorControls } from '@wordpress/block-editor';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';
-import { Block } from '@wordpress/blocks';
+import { Block } from '@wordpress/blocks/index';
 
 const imageEditCallback = createHigherOrderComponent(
 	( BlockEdit ) =>

@@ -10,8 +10,8 @@ import {
 	parse,
 	// @ts-expect-error No types available for this yet.
 	__unstableSerializeAndClean, // eslint-disable-line
-	BlockInstance,
 } from '@wordpress/blocks';
+import { BlockInstance } from '@wordpress/blocks/index';
 import { addQueryArgs } from '@wordpress/url';
 import { storeName } from '../../store';
 

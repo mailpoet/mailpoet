@@ -1,4 +1,5 @@
-import { BlockInstance, parse } from '@wordpress/blocks';
+import { parse } from '@wordpress/blocks';
+import { BlockInstance } from '@wordpress/blocks/index';
 import { useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { storeName, EmailTemplatePreview, TemplatePreview } from '../store';

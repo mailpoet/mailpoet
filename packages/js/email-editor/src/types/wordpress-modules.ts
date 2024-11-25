@@ -119,14 +119,14 @@ declare module '@wordpress/notices' {
 			) => void;
 		};
 		selectors: {
-			getNotices( state: unknown, context?: string ): Notice[];
-			removeNotice( id: string, context?: string ): void;
+			getNotices: ( state: unknown, context?: string ) => Notice[];
+			removeNotice: ( id: string, context?: string ) => void;
 		};
 	} >;
 }
 
 declare module '@wordpress/core-data' {
-	import { BlockInstance } from '@wordpress/blocks';
+	import { BlockInstance } from '@wordpress/blocks/index';
 
 	export function useEntityBlockEditor(
 		kind: string,
