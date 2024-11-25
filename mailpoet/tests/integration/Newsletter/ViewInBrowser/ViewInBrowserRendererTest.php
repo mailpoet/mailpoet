@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub\Expected;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
+use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalizer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -170,7 +171,8 @@ class ViewInBrowserRendererTest extends \MailPoetTest {
       $this->diContainer->get(TrackingConfig::class),
       $this->diContainer->get(Shortcodes::class),
       $this->diContainer->get(Renderer::class),
-      $this->diContainer->get(Links::class)
+      $this->diContainer->get(Links::class),
+      $this->diContainer->get(Personalizer::class)
     );
     $renderedBody = $viewInBrowser->render(
       $preview = false,

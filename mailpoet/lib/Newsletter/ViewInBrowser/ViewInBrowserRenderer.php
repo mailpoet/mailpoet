@@ -2,6 +2,7 @@
 
 namespace MailPoet\Newsletter\ViewInBrowser;
 
+use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalizer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;
@@ -27,18 +28,22 @@ class ViewInBrowserRenderer {
   /** @var Links */
   private $links;
 
+  private Personalizer $personalizer;
+
   public function __construct(
     Emoji $emoji,
     TrackingConfig $trackingConfig,
     Shortcodes $shortcodes,
     Renderer $renderer,
-    Links $links
+    Links $links,
+    Personalizer $personalizer
   ) {
     $this->emoji = $emoji;
     $this->trackingConfig = $trackingConfig;
     $this->renderer = $renderer;
     $this->shortcodes = $shortcodes;
     $this->links = $links;
+    $this->personalizer = $personalizer;
   }
 
   public function render(
@@ -91,6 +96,10 @@ class ViewInBrowserRenderer {
         $queue->getId(),
         $renderedNewsletter
       );
+    }
+    if ($newsletter->getWpPostId() !== null) {
+      $this->personalizer->set_context(['recipient_email' => $subscriber ? $subscriber->getEmail() : null]);
+      $renderedNewsletter = $this->personalizer->personalize_content($renderedNewsletter);
     }
     return $renderedNewsletter;
   }
