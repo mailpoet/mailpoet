@@ -38,7 +38,7 @@ function Content() {
                 'Powerful email marketing, trusted by %s websites',
                 'mailpoet',
               ),
-              '700,000+',
+              '600,000+',
             )
           }
         </Heading>
