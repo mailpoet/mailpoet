@@ -65,6 +65,11 @@ class Personalizer {
 
 				$value = call_user_func( $tag['callback'], ...array_merge( array( $this->context ), array( 'args' => $token ['arguments'] ) ) );
 				$content_processor->replace_token( $value );
+
+			} elseif ( $content_processor->get_token_type() === '#tag' && $content_processor->get_tag() === 'TITLE' ) {
+				// The title tag contains the subject of the email which should be personalized. HTML_Tag_Processor does parse the header tags.
+				$title = $this->personalize_content( $content_processor->get_modifiable_text() );
+				$content_processor->set_modifiable_text( $title );
 			}
 		}
 

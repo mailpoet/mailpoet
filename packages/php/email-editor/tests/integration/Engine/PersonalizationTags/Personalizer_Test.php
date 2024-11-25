@@ -129,4 +129,41 @@ class PersonalizerIntegrationTest extends \MailPoetTest {
 		$html_content = '<p>Hello, <!--user/firstname default="Guest"-->!</p>';
 		$this->assertSame( '<p>Hello, Guest!</p>', $this->personalizer->personalize_content( $html_content ) );
 	}
+
+	/**
+	 * Test a callback arguments.
+	 */
+	public function testPersonalizationInTitle(): void {
+		$this->tags_registry->register(
+			'default_name',
+			'user/firstname',
+			'Subscriber Info',
+			function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The $args parameter is not used in this test.
+				return $context['user_name'] ?? 'Default Name';
+			}
+		);
+
+		$html_content = '
+			<html>
+				<head>
+					<title>Welcome, <!--user/firstname default="Guest"-->!</title>
+			</head>
+			<body>
+				<p>Hello, <!--user/firstname default="Guest"-->!</p>
+			</html>
+		';
+		$this->personalizer->set_context( array( 'user_name' => 'John' ) );
+		$this->assertSame(
+			'
+			<html>
+				<head>
+					<title>Welcome, John!</title>
+			</head>
+			<body>
+				<p>Hello, John!</p>
+			</html>
+		',
+			$this->personalizer->personalize_content( $html_content )
+		);
+	}
 }
