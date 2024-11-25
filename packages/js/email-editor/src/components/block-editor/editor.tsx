@@ -10,7 +10,8 @@ import {
 } from '@wordpress/editor';
 import { useMemo } from '@wordpress/element';
 import { SlotFillProvider, Spinner } from '@wordpress/components';
-import { Post, store as coreStore } from '@wordpress/core-data';
+import { store as coreStore } from '@wordpress/core-data';
+import { Post } from '@wordpress/core-data/build-types/entity-types/post';
 
 /**
  * WordPress private dependencies

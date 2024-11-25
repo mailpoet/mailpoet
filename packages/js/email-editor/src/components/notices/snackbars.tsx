@@ -9,7 +9,7 @@ export function EditorSnackbars( { context = 'email-editor' } ) {
 		( select ) => ( {
 			notices: select( noticesStore ).getNotices( context ),
 		} ),
-		[]
+		[ context ]
 	);
 
 	const { removeNotice } = useDispatch( noticesStore );
