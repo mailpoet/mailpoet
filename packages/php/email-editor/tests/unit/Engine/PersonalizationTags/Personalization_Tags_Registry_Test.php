@@ -7,6 +7,7 @@
 
 declare(strict_types = 1);
 
+use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tag;
 use PHPUnit\Framework\TestCase;
 use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 
@@ -32,61 +33,63 @@ class PersonalizationTagsRegistryTest extends TestCase {
 	 * Register tag and retrieve it.
 	 */
 	public function testRegisterAndGetTag(): void {
-		$callback = function () {
+		$callback = function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Callback parameters are required.
 			return 'Personalized Value';
 		};
 
 		// Register a tag.
 		$this->registry->register(
-			'first_name_tag',
-			'first_name',
-			'Subscriber Info',
-			$callback,
-			array( 'description' => 'First name of the subscriber' )
+			new Personalization_Tag(
+				'first_name_tag',
+				'first_name',
+				'Subscriber Info',
+				$callback,
+				array( 'description' => 'First name of the subscriber' )
+			)
 		);
 
 		// Retrieve the tag.
-		$tag_data = $this->registry->get_by_tag( 'first_name' );
+		$tag = $this->registry->get_by_token( 'first_name' );
 
 		// Assert that the tag is registered correctly.
-		$this->assertNotNull( $tag_data );
-		$this->assertSame( 'first_name', $tag_data['tag'] );
-		$this->assertSame( 'first_name_tag', $tag_data['name'] );
-		$this->assertSame( 'Subscriber Info', $tag_data['category'] );
-		$this->assertSame( $callback, $tag_data['callback'] );
-		$this->assertSame( 'First name of the subscriber', $tag_data['attributes']['description'] );
+		$this->assertNotNull( $tag );
+		$this->assertSame( 'first_name_tag', $tag->get_name() );
+		$this->assertSame( 'first_name', $tag->get_token() );
+		$this->assertSame( 'Subscriber Info', $tag->get_category() );
+		$this->assertSame( 'Personalized Value', $tag->execute_callback( array(), array() ) );
+		$this->assertSame( array( 'description' => 'First name of the subscriber' ), $tag->get_attributes() );
 	}
 
 	/**
 	 * Try to retrieve a tag that hasn't been registered.
 	 */
 	public function testRetrieveNonexistentTag(): void {
-		$this->assertNull( $this->registry->get_by_tag( 'nonexistent' ) );
+		$this->assertNull( $this->registry->get_by_token( 'nonexistent' ) );
 	}
 
 	/**
 	 * Register multiple tags and retrieve them.
 	 */
 	public function testRegisterDuplicateTag(): void {
-		$callback1 = function () {
+		$callback1 = function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Callback parameters are required.
 			return 'Value 1';
 		};
 
-		$callback2 = function () {
+		$callback2 = function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Callback parameters are required.
 			return 'Value 2';
 		};
 
 		// Register a tag.
-		$this->registry->register( 'tag1', 'tag-1', 'Category 1', $callback1 );
+		$this->registry->register( new Personalization_Tag( 'tag1', 'tag-1', 'Category 1', $callback1 ) );
 
 		// Attempt to register the same tag again.
-		$this->registry->register( 'tag2', 'tag-2', 'Category 2', $callback2 );
+		$this->registry->register( new Personalization_Tag( 'tag2', 'tag-2', 'Category 2', $callback2 ) );
 
 		// Retrieve the tag and ensure the first registration is preserved.
-		$tag_data = $this->registry->get_by_tag( 'tag-1' );
-		$this->assertSame( 'tag1', $tag_data['name'] );
-		$this->assertSame( 'Category 1', $tag_data['category'] );
-		$this->assertSame( $callback1, $tag_data['callback'] );
+		$tag = $this->registry->get_by_token( 'tag-1' );
+		$this->assertSame( 'tag1', $tag->get_name() );
+		$this->assertSame( 'Category 1', $tag->get_category() );
+		$this->assertSame( 'Value 1', $tag->execute_callback( array(), array() ) );
 	}
 
 	/**
@@ -98,8 +101,8 @@ class PersonalizationTagsRegistryTest extends TestCase {
 		};
 
 		// Register multiple tags.
-		$this->registry->register( 'tag1', 'tag-1', 'Category 1', $callback );
-		$this->registry->register( 'tag2', 'tag-2', 'Category 2', $callback );
+		$this->registry->register( new Personalization_Tag( 'tag1', 'tag-1', 'Category 1', $callback ) );
+		$this->registry->register( new Personalization_Tag( 'tag2', 'tag-2', 'Category 2', $callback ) );
 
 		// Retrieve all tags.
 		$all_tags = $this->registry->get_all();

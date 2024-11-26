@@ -17,7 +17,7 @@ class Personalization_Tags_Registry {
 	/**
 	 * List of registered personalization tags.
 	 *
-	 * @var array
+	 * @var Personalization_Tag[]
 	 */
 	private $tags = array();
 
@@ -33,35 +33,25 @@ class Personalization_Tags_Registry {
 	/**
 	 * Register a new personalization tag.
 	 *
-	 * @param string   $name        Unique identifier for the callback.
-	 * @param string   $tag         The tag to be used in the email content.
-	 * @param string   $category    The category of the personalization tag.
-	 * @param callable $callback    The callable function/method.
-	 * @param array    $attributes  Additional data or settings for the callback (optional).
+	 * @param Personalization_Tag $tag The personalization tag to register.
 	 * @return void
 	 */
-	public function register( string $name, string $tag, string $category, callable $callback, array $attributes = array() ): void {
-		if ( isset( $this->tags[ $tag ] ) ) {
+	public function register( Personalization_Tag $tag ): void {
+		if ( isset( $this->tags[ $tag->get_token() ] ) ) {
 			return;
 		}
 
-		$this->tags[ $tag ] = array(
-			'tag'        => $tag,
-			'name'       => $name,
-			'category'   => $category,
-			'callback'   => $callback,
-			'attributes' => $attributes,
-		);
+		$this->tags[ $tag->get_token() ] = $tag;
 	}
 
 	/**
 	 * Retrieve a personalization tag by its tag.
 	 *
-	 * @param string $tag The tag of the personalization tag.
-	 * @return array|null The array data or null if not found.
+	 * @param string $token The token of the personalization tag.
+	 * @return Personalization_Tag|null The array data or null if not found.
 	 */
-	public function get_by_tag( string $tag ): ?array {
-		return $this->tags[ $tag ] ?? null;
+	public function get_by_token( string $token ): ?Personalization_Tag {
+		return $this->tags[ $token ] ?? null;
 	}
 
 	/**

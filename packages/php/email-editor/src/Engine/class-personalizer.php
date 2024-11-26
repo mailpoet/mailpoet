@@ -61,12 +61,12 @@ class Personalizer {
 		while ( $content_processor->next_token() ) {
 			if ( $content_processor->get_token_type() === '#comment' ) {
 				$token = $this->parse_token( $content_processor->get_modifiable_text() );
-				$tag   = $this->tags_registry->get_by_tag( $token['tag'] );
-				if ( ! $tag || ! isset( $tag['callback'] ) ) {
+				$tag   = $this->tags_registry->get_by_token( $token['tag'] );
+				if ( ! $tag ) {
 					continue;
 				}
 
-				$value = call_user_func( $tag['callback'], ...array_merge( array( $this->context ), array( 'args' => $token ['arguments'] ) ) );
+				$value = $tag->execute_callback( $this->context, $token['arguments'] );
 				$content_processor->replace_token( $value );
 
 			} elseif ( $content_processor->get_token_type() === '#tag' && $content_processor->get_tag() === 'TITLE' ) {

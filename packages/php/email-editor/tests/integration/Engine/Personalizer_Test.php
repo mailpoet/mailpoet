@@ -8,6 +8,7 @@
 declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine;
 
+use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tag;
 use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 
 /**
@@ -43,12 +44,14 @@ class Personalizer_Test extends \MailPoetTest {
 	public function testPersonalizeContentWithSingleTag(): void {
 		// Register a tag in the registry.
 		$this->tags_registry->register(
-			'first_name',
-			'user-firstname',
-			'User',
-			function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The $args parameter is not used in this test.
-				return $context['subscriber_name'] ?? 'Default Name';
-			}
+			new Personalization_Tag(
+				'first_name',
+				'user-firstname',
+				'User',
+				function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The $args parameter is not used in this test.
+					return $context['subscriber_name'] ?? 'Default Name';
+				}
+			)
 		);
 
 		$this->personalizer->set_context( array( 'subscriber_name' => 'John' ) );
@@ -62,21 +65,25 @@ class Personalizer_Test extends \MailPoetTest {
 	public function testPersonalizeContentWithMultipleTags(): void {
 		// Register multiple tags in the registry.
 		$this->tags_registry->register(
-			'first_name',
-			'user/firstname',
-			'Subscriber Info',
-			function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The $args parameter is not used in this test.
-				return $context['subscriber_name'] ?? 'Default Name';
-			}
+			new Personalization_Tag(
+				'first_name',
+				'user/firstname',
+				'Subscriber Info',
+				function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The $args parameter is not used in this test.
+					return $context['subscriber_name'] ?? 'Default Name';
+				}
+			)
 		);
 
 		$this->tags_registry->register(
-			'email',
-			'user/email',
-			'Subscriber Info',
-			function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The $args parameter is not used in this test.
-				return $context['subscriber_email'] ?? 'unknown@example.com';
-			}
+			new Personalization_Tag(
+				'email',
+				'user/email',
+				'Subscriber Info',
+				function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The $args parameter is not used in this test.
+					return $context['subscriber_email'] ?? 'unknown@example.com';
+				}
+			)
 		);
 
 		// Set the context for personalization.
@@ -120,12 +127,14 @@ class Personalizer_Test extends \MailPoetTest {
 	 */
 	public function testTagWithArguments(): void {
 		$this->tags_registry->register(
-			'default_name',
-			'user/firstname',
-			'Subscriber Info',
-			function ( $context, $args ) {
-				return $args['default'] ?? 'Default Name';
-			}
+			new Personalization_Tag(
+				'default_name',
+				'user/firstname',
+				'Subscriber Info',
+				function ( $context, $args ) {
+					return $args['default'] ?? 'Default Name';
+				}
+			)
 		);
 
 		$html_content = '<p>Hello, <!--user/firstname default="Guest"-->!</p>';
@@ -137,12 +146,14 @@ class Personalizer_Test extends \MailPoetTest {
 	 */
 	public function testPersonalizationInTitle(): void {
 		$this->tags_registry->register(
-			'default_name',
-			'user/firstname',
-			'Subscriber Info',
-			function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The $args parameter is not used in this test.
-				return $context['user_name'] ?? 'Default Name';
-			}
+			new Personalization_Tag(
+				'default_name',
+				'user/firstname',
+				'Subscriber Info',
+				function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The $args parameter is not used in this test.
+					return $context['user_name'] ?? 'Default Name';
+				}
+			)
 		);
 
 		$html_content = '
