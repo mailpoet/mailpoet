@@ -371,7 +371,7 @@ class Templates {
 
 		return array_map(
 			function ( $custom_template ) {
-				/** @var \WP_Post $custom_template */ // phpcs:ignore
+				/** @var \WP_Post $custom_template */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort -- used for phpstan
 				return $this->utils->build_block_template_from_post( $custom_template );
 			},
 			$custom_templates

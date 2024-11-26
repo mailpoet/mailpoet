@@ -153,7 +153,7 @@ class Image extends Abstract_Block_Renderer {
 		$html = new \WP_HTML_Tag_Processor( $block_content );
 		if ( $html->next_tag( array( 'tag_name' => 'img' ) ) ) {
 			// Getting height from styles and if it's set, we set the height attribute.
-			/** @var string $styles */ // phpcs:ignore
+			/** @var string $styles */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort -- used for phpstan
 			$styles = $html->get_attribute( 'style' ) ?? '';
 			$styles = $settings_controller->parse_styles_to_array( $styles );
 			$height = $styles['height'] ?? null;
@@ -280,7 +280,7 @@ class Image extends Abstract_Block_Renderer {
 	private function add_style_to_element( $block_content, array $tag, string $style ): string {
 		$html = new \WP_HTML_Tag_Processor( $block_content );
 		if ( $html->next_tag( $tag ) ) {
-			/** @var string $element_style */ // phpcs:ignore
+			/** @var string $element_style */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort -- used for phpstan
 			$element_style  = $html->get_attribute( 'style' ) ?? '';
 			$element_style  = ! empty( $element_style ) ? ( rtrim( $element_style, ';' ) . ';' ) : ''; // Adding semicolon if it's missing.
 			$element_style .= $style;
@@ -301,7 +301,7 @@ class Image extends Abstract_Block_Renderer {
 	private function remove_style_attribute_from_element( $block_content, array $tag, string $style_name ): string {
 		$html = new \WP_HTML_Tag_Processor( $block_content );
 		if ( $html->next_tag( $tag ) ) {
-			/** @var string $element_style */ // phpcs:ignore
+			/** @var string $element_style */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort -- used for phpstan
 			$element_style = $html->get_attribute( 'style' ) ?? '';
 			$element_style = preg_replace( '/' . $style_name . ':(.?[0-9]+px)+;?/', '', $element_style );
 			$html->set_attribute( 'style', esc_attr( strval( $element_style ) ) );

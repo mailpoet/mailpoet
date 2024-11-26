@@ -1,42 +1,50 @@
-<?php // phpcs:ignoreFile
+<?php
+/**
+ * This file is part of the MailPoet Email Editor package.
+ *
+ * @package MailPoet\EmailEditor
+ */
 
-// throw exception if anything fails.
-set_error_handler(
+declare(strict_types = 1);
+/**
+ * Throw exception if anything fails.
+ */
+set_error_handler( // phpcs:ignore -- This file is not used within WordPress environment.
 	function ( $severity, $message, $file, $line ) {
-		throw new ErrorException( $message, 0, $severity, $file, $line );
+		throw new ErrorException( $message, 0, $severity, $file, $line ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 	}
 );
 
-$mailpoetRootDir = dirname( __DIR__, 4 );
+$mailpoet_root_dir = dirname( __DIR__, 4 );
 
-$emailEditorPhpDir = dirname( __DIR__, 1 );
+$email_editor_php_dir = dirname( __DIR__, 1 );
 
-$phpStanDir = "$mailpoetRootDir/mailpoet/tasks/phpstan";
-$phpStanBin = "$phpStanDir/vendor/bin/phpstan";
+$php_stan_dir = "$mailpoet_root_dir/mailpoet/tasks/phpstan";
+$php_stan_bin = "$php_stan_dir/vendor/bin/phpstan";
 
-$emailEditorCustomConfig = "$phpStanDir/email-editor-phpstan.neon";
+$email_editor_custom_config = "$php_stan_dir/email-editor-phpstan.neon";
 
 
-$extraAgrPhpVersion = '';
+$extra_agr_php_version = '';
 if ( $argc > 1 && isset( $argv[1] ) && stripos( $argv[1], 'php-version' ) !== false ) {
-	$rawArgv            = explode( '=', escapeshellcmd( $argv[1] ) );
-	$value              = $rawArgv[1];
-	$extraAgrPhpVersion = "ANALYSIS_PHP_VERSION=$value ";
+	$raw_argv              = explode( '=', escapeshellcmd( $argv[1] ) );
+	$value                 = $raw_argv[1];
+	$extra_agr_php_version = "ANALYSIS_PHP_VERSION=$value ";
 }
 
 $commands = array(
-	"cd $phpStanDir && ", // we run commands from the PHPStan dir because we save MailPoet-specific configuration in it
-	"$extraAgrPhpVersion",
+	"cd $php_stan_dir && ", // we run commands from the PHPStan dir because we save MailPoet-specific configuration in it.
+	"$extra_agr_php_version",
 	'php -d memory_limit=-1 ',
-	"$phpStanBin analyse ",
-	"-c $emailEditorCustomConfig ",
-	"$emailEditorPhpDir/src ",
-	"$emailEditorPhpDir/tests/integration ",
-	"$emailEditorPhpDir/tests/unit ",
+	"$php_stan_bin analyse ",
+	"-c $email_editor_custom_config ",
+	"$email_editor_php_dir/src ",
+	"$email_editor_php_dir/tests/integration ",
+	"$email_editor_php_dir/tests/unit ",
 );
 
-$allCommands = implode( ' ', $commands );
+$all_commands = implode( ' ', $commands );
 
-echo "[run-phpstan] Running command: $allCommands \n";
+echo "[run-phpstan] Running command: $all_commands \n";  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This file is not used within WordPress environment.
 
-passthru( $allCommands );
+passthru( $all_commands );  // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_passthru -- This file is not used within WordPress environment.

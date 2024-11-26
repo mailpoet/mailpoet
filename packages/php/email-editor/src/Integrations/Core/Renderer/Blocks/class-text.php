@@ -38,14 +38,14 @@ class Text extends Abstract_Block_Renderer {
 		$html             = new \WP_HTML_Tag_Processor( $block_content );
 		$classes          = 'email-text-block';
 		if ( $html->next_tag() ) {
-			/** @var string $block_classes */ // phpcs:ignore
+			/** @var string $block_classes */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort -- used for phpstan
 			$block_classes = $html->get_attribute( 'class' ) ?? '';
 			$classes      .= ' ' . $block_classes;
 			// remove has-background to prevent double padding applied for wrapper and inner element.
 			$block_classes = str_replace( 'has-background', '', $block_classes );
 			// remove border related classes because we handle border on wrapping table cell.
 			$block_classes = preg_replace( '/[a-z-]+-border-[a-z-]+/', '', $block_classes );
-			/** @var string $block_classes */ // phpcs:ignore
+			/** @var string $block_classes */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort -- used for phpstan
 			$html->set_attribute( 'class', trim( $block_classes ) );
 			$block_content = $html->get_updated_html();
 		}
@@ -118,7 +118,7 @@ class Text extends Abstract_Block_Renderer {
 			// to prevent CSS Inliner from adding a default value and overriding the value set by user, which is on the wrapper element.
 			// The value provided by WP uses clamp() function which is not supported in many email clients.
 			$element_style = preg_replace( '/font-size:[^;]+;?/', 'font-size: inherit;', strval( $element_style ) );
-			/** @var string $element_style */ // phpcs:ignore
+			/** @var string $element_style */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort -- used for phpstan
 			$html->set_attribute( 'style', esc_attr( $element_style ) );
 			$block_content = $html->get_updated_html();
 		}

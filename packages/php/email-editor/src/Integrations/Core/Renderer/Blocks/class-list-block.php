@@ -27,7 +27,7 @@ class List_Block extends Abstract_Block_Renderer {
 		$html     = new \WP_HTML_Tag_Processor( $block_content );
 		$tag_name = ( $parsed_block['attrs']['ordered'] ?? false ) ? 'ol' : 'ul';
 		if ( $html->next_tag( array( 'tag_name' => $tag_name ) ) ) {
-			/** @var string $styles */ // phpcs:ignore
+			/** @var string $styles */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort -- used for phpstan
 			$styles = $html->get_attribute( 'style' ) ?? '';
 			$styles = $settings_controller->parse_styles_to_array( $styles );
 

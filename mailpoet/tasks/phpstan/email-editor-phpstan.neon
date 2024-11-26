@@ -14,17 +14,17 @@ parameters:
   checkGenericClassInNonGenericObjectType: false
   parallel:
     processTimeout: 300.0
-    maximumNumberOfProcesses: 3 # Static analysis is running on Circle CI medium+ that has 3 CPUs
+    maximumNumberOfProcesses: 4 # Using 4 CPUs for Static analysis on Github actions
   ignoreErrors:
     - '#_before\(\) has no return type specified#' # skip integration test before errors
     -
-      message: '#has no return type specified.#'
+      message: '#has no return type specified.#'  # ignore has no return type specified for integration test files
       path: ../../../packages/php/email-editor/tests/integration/*
     -
-      message: '#assertStringContainsString\(\) expects string#'
+      message: '#assertStringContainsString\(\) expects string#'  # ignore expects string, string|true|null given in integration test files. The test will fail if an invalid value is provided
       path: ../../../packages/php/email-editor/tests/integration/*
     -
-      message: '#assertStringNotContainsString\(\) expects string#'
+      message: '#assertStringNotContainsString\(\) expects string#'  # ignore expects string, string|true|null given in integration test files. The test will fail if an invalid value is provided
       path: ../../../packages/php/email-editor/tests/integration/*
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:

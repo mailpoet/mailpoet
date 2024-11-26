@@ -89,7 +89,7 @@ class Renderer {
 	 */
 	public function render( \WP_Post $post, string $subject, string $pre_header, string $language, $meta_robots = '' ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$template_id = 'mailpoet/mailpoet//' . ( get_page_template_slug( $post ) ? get_page_template_slug( $post ) : 'email-general' );
-		/** @var \WP_Block_Template $template */  // phpcs:ignore
+		/** @var \WP_Block_Template $template */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort -- used for phpstan
 		$template = $this->templates->get_block_template( $template_id );
 		$theme    = $this->templates->get_block_template_theme( $template_id, $template->wp_id );
 
