@@ -70,6 +70,7 @@ class Pages {
   public static function getMailPoetPages() {
     return WPFunctions::get()->getPosts([
       'post_type' => 'mailpoet_page',
+      'post_name__in' => [self::PAGE_SUBSCRIPTIONS],
     ]);
   }
 
