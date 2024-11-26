@@ -68,6 +68,5 @@ class Captcha {
     }
 
     $this->captchaRenderer->refreshPhrase($sessionId);
-    exit;
   }
 }
