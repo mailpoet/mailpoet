@@ -420,7 +420,7 @@ class RoboFile extends \Robo\Tasks {
       ->option('env', 'US=' . $opts['us'])
       ->option('env', 'PW=' . $opts['pw'])
       ->option('env', 'K6_BROWSER_HEADLESS=' . ($opts['head'] ? 'false' : 'true'))
-      ->option('env', 'K6_BROWSER_TIMEOUT=120s')
+      ->option('env', 'K6_BROWSER_TIMEOUT=' . getenv('K6_BROWSER_TIMEOUT'))
       ->option('env', 'SCENARIO=' . $opts['scenario'])
       ->arg($path ?? "$dir/tests/performance/scenarios.js")
       ->dir($dir)->run();
@@ -437,6 +437,7 @@ class RoboFile extends \Robo\Tasks {
       ->option('env', 'SCENARIO=' . $opts['scenario'])
       ->option('env', 'K6_CLOUD_TOKEN=' . getenv('K6_CLOUD_TOKEN'))
       ->option('env', 'K6_CLOUD_ID=' . getenv('K6_CLOUD_ID'))
+      ->option('env', 'K6_BROWSER_TIMEOUT=' . getenv('K6_BROWSER_TIMEOUT'))
       ->option('env', 'K6_PROJECT_NAME=' . $opts['scenario'])
       ->option('out', 'cloud')
       ->arg($path ?? "$dir/tests/performance/scenarios.js")
