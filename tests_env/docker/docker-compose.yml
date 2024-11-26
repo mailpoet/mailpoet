@@ -1,6 +1,6 @@
 services:
   codeception_acceptance:
-    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.2-cli_20231016.1}
+    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.2-cli_20241126.1}
     depends_on:
       - smtp
       - wordpress
@@ -31,7 +31,7 @@ services:
       PHP_IDE_CONFIG: 'serverName=MailPoetTest'
 
   codeception_integration:
-    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.2-cli_20231016.1}
+    image: mailpoet/wordpress:${CODECEPTION_IMAGE_VERSION:-8.2-cli_20241126.1}
     depends_on:
       - smtp
       - wordpress
