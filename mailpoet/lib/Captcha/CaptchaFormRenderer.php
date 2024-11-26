@@ -20,7 +20,7 @@ class CaptchaFormRenderer {
   private $captchaPhrase;
 
   /** @var CaptchaUrlFactory */
-  private $urlFactory;
+  private $captchaUrlFactory;
 
   /** @var FormRenderer */
   private $formRenderer;
@@ -43,7 +43,7 @@ class CaptchaFormRenderer {
     $this->urlHelper = $urlHelper;
     $this->captchaSession = $captchaSession;
     $this->captchaPhrase = $captchaPhrase;
-    $this->urlFactory = $urlFactory;
+    $this->captchaUrlFactory = $urlFactory;
     $this->formRenderer = $formRenderer;
     $this->formsRepository = $formsRepository;
     $this->styles = $styles;
@@ -182,8 +182,8 @@ class CaptchaFormRenderer {
 
     $width = 220;
     $height = 60;
-    $captchaUrl = $this->urlFactory->getCaptchaImageUrl($width, $height, $sessionId);
-    $mp3CaptchaUrl = $this->urlFactory->getCaptchaAudioUrl($sessionId);
+    $captchaUrl = $this->captchaUrlFactory->getCaptchaImageUrl($width, $height, $sessionId);
+    $mp3CaptchaUrl = $this->captchaUrlFactory->getCaptchaAudioUrl($sessionId);
     $reloadIcon = Env::$assetsUrl . '/img/icons/image-rotate.svg';
     $playIcon = Env::$assetsUrl . '/img/icons/controls-volumeon.svg';
 

@@ -11,7 +11,7 @@ use MailPoet\WP\Functions as WPFunctions;
 
 class CaptchaValidator {
   /** @var CaptchaUrlFactory */
-  private $urlFactory;
+  private $captchaUrlFactory;
 
   /** @var CaptchaPhrase */
   private $captchaPhrase;
@@ -32,7 +32,7 @@ class CaptchaValidator {
     SubscriberIPsRepository $subscriberIPsRepository,
     SubscribersRepository $subscribersRepository
   ) {
-    $this->urlFactory = $urlFactory;
+    $this->captchaUrlFactory = $urlFactory;
     $this->captchaPhrase = $captchaPhrase;
     $this->wp = $wp;
     $this->subscriberIPsRepository = $subscriberIPsRepository;
@@ -55,7 +55,7 @@ class CaptchaValidator {
       throw new ValidationError(
         __('Please fill in the CAPTCHA.', 'mailpoet'),
         [
-          'redirect_url' => $this->urlFactory->getCaptchaUrlForMPForm($sessionId),
+          'redirect_url' => $this->captchaUrlFactory->getCaptchaUrlForMPForm($sessionId),
         ]
       );
     }
@@ -65,7 +65,7 @@ class CaptchaValidator {
       throw new ValidationError(
         __('Please regenerate the CAPTCHA.', 'mailpoet'),
         [
-          'redirect_url' => $this->urlFactory->getCaptchaUrlForMPForm($sessionId),
+          'redirect_url' => $this->captchaUrlFactory->getCaptchaUrlForMPForm($sessionId),
         ]
       );
     }
