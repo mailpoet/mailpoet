@@ -6,7 +6,7 @@ use MailPoet\Cron\Workers\SendingQueue\Tasks\Links as LinksTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Posts as PostsTask;
 use MailPoet\Cron\Workers\SendingQueue\Tasks\Shortcodes as ShortcodesTask;
 use MailPoet\DI\ContainerWrapper;
-use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalizer;
+use MailPoet\EmailEditor\Engine\Personalizer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SegmentEntity;

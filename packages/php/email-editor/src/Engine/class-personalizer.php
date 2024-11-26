@@ -7,7 +7,10 @@
 
 declare(strict_types = 1);
 
-namespace MailPoet\EmailEditor\Engine\PersonalizationTags;
+namespace MailPoet\EmailEditor\Engine;
+
+use MailPoet\EmailEditor\Engine\PersonalizationTags\HTML_Tag_Processor;
+use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 
 /**
  * Class for replacing personalization tags with their values in the email content.

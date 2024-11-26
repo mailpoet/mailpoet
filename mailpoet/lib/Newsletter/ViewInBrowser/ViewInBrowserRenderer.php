@@ -2,7 +2,7 @@
 
 namespace MailPoet\Newsletter\ViewInBrowser;
 
-use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalizer;
+use MailPoet\EmailEditor\Engine\Personalizer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Entities\SubscriberEntity;

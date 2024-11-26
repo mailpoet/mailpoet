@@ -6,13 +6,15 @@
  */
 
 declare(strict_types = 1);
-namespace MailPoet\EmailEditor\Engine\PersonalizationTags;
+namespace MailPoet\EmailEditor\Engine;
+
+use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 
 /**
  * Integration test for Personalizer class which validate the functionality
  * of Personalizer using Personalization_Tags_Registry.
  */
-class PersonalizerIntegrationTest extends \MailPoetTest {
+class Personalizer_Test extends \MailPoetTest {
 	/**
 	 * Instance of Personalizer created before each test.
 	 *
