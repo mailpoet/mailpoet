@@ -6,6 +6,8 @@ use MailPoet\Subscription;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Pages {
+  const PAGE_SUBSCRIPTIONS = 'subscriptions';
+
   public function __construct() {
   }
 
@@ -38,7 +40,7 @@ class Pages {
       'post_author' => 1,
       'post_content' => '[mailpoet_page]',
       'post_title' => __('MailPoet Page', 'mailpoet'),
-      'post_name' => 'subscriptions',
+      'post_name' => self::PAGE_SUBSCRIPTIONS,
     ]);
 
     return ((int)$id > 0) ? (int)$id : false;

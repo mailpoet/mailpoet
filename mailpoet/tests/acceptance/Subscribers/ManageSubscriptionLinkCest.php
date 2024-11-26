@@ -3,6 +3,7 @@
 namespace MailPoet\Test\Acceptance;
 
 use Codeception\Util\Locator;
+use MailPoet\Settings\Pages;
 use MailPoet\Test\DataFactories\Segment;
 use MailPoet\Test\DataFactories\Settings;
 use PHPUnit\Framework\Assert;
@@ -48,7 +49,7 @@ class ManageSubscriptionLinkCest {
     $i->waitForElementChange(
       \Codeception\Util\Locator::contains('a', 'Manage your subscription'),
       function ($el) {
-            return $el->getAttribute('target') === "_blank";
+        return $el->getAttribute('target') === "_blank";
       },
       100
     );
@@ -110,7 +111,9 @@ class ManageSubscriptionLinkCest {
     $i->selectOption('[data-automation-id="subscriber-status"]', 'Subscribed');
     $i->click('Save');
     $i->waitForText('Subscriber was updated successfully!');
-    $i->amOnUrl(\AcceptanceTester::WP_URL . '/?mailpoet_page=subscriptions&mailpoet_router&endpoint=subscription&action=unsubscribe&data=');
+
+    $pageName = Pages::PAGE_SUBSCRIPTIONS;
+    $i->amOnUrl(\AcceptanceTester::WP_URL . '/?mailpoet_page=' . $pageName . '&mailpoet_router&endpoint=subscription&action=unsubscribe&data=');
     $i->waitForElementVisible('.mailpoet_page-template-default');
     // we will verify only a portion of the full sentence
     // since there is a microscopic difference between blockbased and non-block theme
@@ -151,7 +154,7 @@ class ManageSubscriptionLinkCest {
     $i->waitForElementChange(
       \Codeception\Util\Locator::contains('a', 'Unsubscribe'),
       function ($el) {
-            return $el->getAttribute('target') === "_blank";
+        return $el->getAttribute('target') === "_blank";
       },
       100
     );
