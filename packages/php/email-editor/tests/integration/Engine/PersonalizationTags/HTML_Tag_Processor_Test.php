@@ -13,90 +13,60 @@ use WP_HTML_Text_Replacement;
 /**
  * Integration test for HTML_Tag_Processor class which tests the token replacement.
  */
-class HTMLTagProcessorTest extends \MailPoetTest {
+class HTML_Tag_Processor_Test extends \MailPoetTest {
 
 	/**
-	 * Test replacing a token and deferring updates.
+	 * Test replacing a token in the HTML content.
 	 */
 	public function testReplaceToken(): void {
 		// Example HTML content to process.
-		$html_content = '<div>Hello!</div>';
+		$html_content = '<div><!--greetings--></div>';
 
 		// Instantiate the HTML_Tag_Processor with the HTML content.
 		$processor = new HTML_Tag_Processor( $html_content );
-		$processor->next_token();
-		// Replace the token.
-		$processor->replace_token( 'John!' );
+		while ( $processor->next_token() ) {
+			if ( $processor->get_token_type() === '#comment' && $processor->get_modifiable_text() === 'greetings' ) {
+				$processor->replace_token( 'Hello there!' );
+			}
+		}
+		$processor->flush_updates();
+		$updated_html = $processor->get_updated_html();
 
-		// Verify deferred updates.
-		$deferred_updates = $this->getPrivateProperty( $processor, 'deferred_updates' );
-
-		$this->assertCount( 1, $deferred_updates );
-		$this->assertInstanceOf( WP_HTML_Text_Replacement::class, $deferred_updates[0] );
-		$this->assertSame( 0, $deferred_updates[0]->start );
-		$this->assertSame( 5, $deferred_updates[0]->length );
-		$this->assertSame( 'John!', $deferred_updates[0]->text );
+		$this->assertSame( '<div>Hello there!</div>', $updated_html );
 	}
 
 	/**
 	 * Test flushing updates.
 	 */
-	public function testFlushUpdates(): void {
+	public function testReplaceMultipleTokens(): void {
 		// Example HTML content to process.
-		$html_content = '<div>Hello!</div>';
+		$html_content = '
+			<div>
+				<h1><!--replace_heading--></h1>
+				<p><!--replace_paragraph--></p>
+			</div>
+			';
 
-		// Instantiate the HTML_Tag_Processor with the HTML content.
 		$processor = new HTML_Tag_Processor( $html_content );
-
-		// Mock deferred updates.
-		$this->setPrivateProperty(
-			$processor,
-			'deferred_updates',
-			array(
-				new WP_HTML_Text_Replacement( 0, 3, 'Hi!' ),
-			)
-		);
-
-		// Flush the updates.
+		while ( $processor->next_token() ) {
+			if ( $processor->get_token_type() === '#comment' && $processor->get_modifiable_text() === 'replace_heading' ) {
+				$processor->replace_token( 'Hello John!' );
+			}
+			if ( $processor->get_token_type() === '#comment' && $processor->get_modifiable_text() === 'replace_paragraph' ) {
+				$processor->replace_token( 'This is a paragraph.' );
+			}
+		}
 		$processor->flush_updates();
+		$updated_html = $processor->get_updated_html();
 
-		// Verify lexical updates.
-		$lexical_updates = $this->getPrivateProperty( $processor, 'lexical_updates' );
-
-		$this->assertCount( 1, $lexical_updates );
-		$this->assertSame( 'Hi!', $lexical_updates[0]->text );
-
-		// Verify deferred updates are cleared.
-		$deferred_updates = $this->getPrivateProperty( $processor, 'deferred_updates' );
-		$this->assertEmpty( $deferred_updates );
-	}
-
-	/**
-	 * Helper method to access private properties via reflection.
-	 *
-	 * @param object $instance The object instance.
-	 * @param string $property The property name.
-	 * @return mixed The property value.
-	 */
-	private function getPrivateProperty( object $instance, string $property ) {
-		$reflection = new \ReflectionClass( $instance );
-		$prop       = $reflection->getProperty( $property );
-		$prop->setAccessible( true );
-		return $prop->getValue( $instance );
-	}
-
-	/**
-	 * Helper method to set private properties via reflection.
-	 *
-	 * @param object $instance The object instance.
-	 * @param string $property The property name.
-	 * @param mixed  $value The value to set.
-	 * @return void
-	 */
-	private function setPrivateProperty( object $instance, string $property, $value ): void {
-		$reflection = new \ReflectionClass( $instance );
-		$prop       = $reflection->getProperty( $property );
-		$prop->setAccessible( true );
-		$prop->setValue( $instance, $value );
+		$this->assertEquals(
+			'
+			<div>
+				<h1>Hello John!</h1>
+				<p>This is a paragraph.</p>
+			</div>
+			',
+			$updated_html
+		);
 	}
 }
