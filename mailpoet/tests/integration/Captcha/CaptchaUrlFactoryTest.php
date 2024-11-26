@@ -6,7 +6,6 @@ use MailPoet\Captcha\CaptchaUrlFactory;
 use MailPoet\Config\Populator;
 use MailPoet\Router\Endpoints\Captcha as CaptchaEndpoint;
 use MailPoet\Router\Router;
-use MailPoet\Settings\Pages as SettingPages;
 
 class CaptchaUrlFactoryTest extends \MailPoetTest {
 
@@ -26,7 +25,7 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
 
     verify($url)->notNull();
     verify($url)->stringContainsString(Router::NAME);
-    verify($url)->stringContainsString('mailpoet_page=' . SettingPages::MP_POST_NAME);
+    verify($url)->stringContainsString('mailpoet_page=subscriptions');
     verify($url)->stringContainsString('action=' . CaptchaEndpoint::ACTION_RENDER);
     verify($url)->stringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT);
     verify($url)->stringContainsString('data=');
@@ -37,7 +36,7 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
 
     verify($url)->notNull();
     verify($url)->stringContainsString(Router::NAME);
-    verify($url)->stringContainsString('mailpoet_page=' . SettingPages::MP_POST_NAME);
+    verify($url)->stringContainsString('mailpoet_page=subscriptions');
     verify($url)->stringContainsString('action=' . CaptchaEndpoint::ACTION_IMAGE);
     verify($url)->stringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT);
     verify($url)->stringContainsString('data=');
@@ -48,7 +47,7 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
 
     verify($url)->notNull();
     verify($url)->stringContainsString(Router::NAME);
-    verify($url)->stringContainsString('mailpoet_page=' . SettingPages::MP_POST_NAME);
+    verify($url)->stringContainsString('mailpoet_page=subscriptions');
     verify($url)->stringContainsString('action=' . CaptchaEndpoint::ACTION_AUDIO);
     verify($url)->stringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT);
     verify($url)->stringContainsString('data=');

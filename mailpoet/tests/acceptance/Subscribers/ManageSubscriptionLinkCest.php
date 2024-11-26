@@ -110,7 +110,7 @@ class ManageSubscriptionLinkCest {
     $i->selectOption('[data-automation-id="subscriber-status"]', 'Subscribed');
     $i->click('Save');
     $i->waitForText('Subscriber was updated successfully!');
-    $i->amOnUrl(\AcceptanceTester::WP_URL . '/?mailpoet_page=template&mailpoet_router&endpoint=subscription&action=unsubscribe&data=');
+    $i->amOnUrl(\AcceptanceTester::WP_URL . '/?mailpoet_page=subscriptions&mailpoet_router&endpoint=subscription&action=unsubscribe&data=');
     $i->waitForElementVisible('.mailpoet_page-template-default');
     // we will verify only a portion of the full sentence
     // since there is a microscopic difference between blockbased and non-block theme

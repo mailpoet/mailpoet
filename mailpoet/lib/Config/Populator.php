@@ -187,14 +187,6 @@ class Populator {
     if ($page === null) {
       $mailpoetPageId = Pages::createMailPoetPage();
     } else {
-      // Used to be 'subscriptions,' we renamed it to 'template'
-      if ($page->post_name !== 'template') { // phpcs:ignore
-        $this->wp->wpUpdatePost([
-          'ID' => $page->ID,
-          'post_name' => 'template',
-        ]);
-      }
-
       $mailpoetPageId = (int)$page->ID;
     }
 
