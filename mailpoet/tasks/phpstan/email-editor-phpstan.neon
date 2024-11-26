@@ -17,10 +17,6 @@ parameters:
     maximumNumberOfProcesses: 3 # Static analysis is running on Circle CI medium+ that has 3 CPUs
   ignoreErrors:
     - '#_before\(\) has no return type specified#' # skip integration test before errors
-    - '#Container::get\(\) is not referenced in a parameter.#'
-    -
-      message: '#Cannot call method initialize\(\) on mixed#'
-      path: ../../../packages/php/email-editor/tests/integration/*
     -
       message: '#has no return type specified.#'
       path: ../../../packages/php/email-editor/tests/integration/*
@@ -30,15 +26,6 @@ parameters:
     -
       message: '#assertStringNotContainsString\(\) expects string#'
       path: ../../../packages/php/email-editor/tests/integration/*
-    -
-     message: '#settings_controller \(MailPoet\\EmailEditor\\Engine\\Settings_Controller\) does not accept mixed#'
-     path: ../../../packages/php/email-editor/tests/integration/*
-    -
-     message: '#Renderer\) does not accept mixed.#'
-     path: ../../../packages/php/email-editor/tests/integration/*
-    -
-     message: '#Access to an undefined property MailPoet\\EmailEditor\\.*Test::\$tester.#'
-     path: ../../../packages/php/email-editor/tests/integration/*
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED

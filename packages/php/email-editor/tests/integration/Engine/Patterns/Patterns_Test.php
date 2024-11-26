@@ -23,7 +23,7 @@ class Patterns_Test extends \MailPoetTest {
 	 */
 	public function _before() {
 		parent::_before();
-		$this->patterns = $this->di_container->get( Patterns::class ); // @phpstan-ignore-line
+		$this->patterns = $this->di_container->get( Patterns::class );
 		$this->cleanup_patterns();
 	}
 

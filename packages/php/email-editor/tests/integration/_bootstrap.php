@@ -124,10 +124,11 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 	/**
 	 * Get a service from the DI container.
 	 *
-	 * @param string $id The service ID.
-	 * @param array  $overrides The properties to override.
+	 * @template T
+	 * @param class-string<T> $id The service ID.
+	 * @param array           $overrides The properties to override.
 	 */
-	public function getServiceWithOverrides( string $id, array $overrides ) {
+	public function getServiceWithOverrides( $id, array $overrides ) {
 		$instance = $this->di_container->get( $id );
 		return Stub::copy( $instance, $overrides );
 	}

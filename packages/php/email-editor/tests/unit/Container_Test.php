@@ -10,12 +10,16 @@ namespace MailPoet\EmailEditor;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
-use stdClass;
+
+class Simple_Service {} // phpcs:ignore
+
+class Singleton_Service {} // phpcs:ignore
 
 /**
  * Unit test for Container class.
+ * Ignoring Only one object structure is allowed in a file.
  */
-class Container_Test extends TestCase {
+class Container_Test extends TestCase { // phpcs:ignore
 	/**
 	 * Test if sets and gets service.
 	 */
@@ -23,15 +27,15 @@ class Container_Test extends TestCase {
 		$container = new Container();
 
 		$container->set(
-			'simple_service',
+			Simple_Service::class,
 			function () {
-				return new stdClass();
+				return new Simple_Service();
 			}
 		);
 
-		$service = $container->get( 'simple_service' );
+		$service = $container->get( Simple_Service::class );
 
-		$this->assertInstanceOf( stdClass::class, $service );
+		$this->assertInstanceOf( Simple_Service::class, $service );
 	}
 
 	/**
@@ -41,15 +45,15 @@ class Container_Test extends TestCase {
 		$container = new Container();
 
 		$container->set(
-			'singleton_service',
+			Singleton_Service::class,
 			function () {
-				return new stdClass();
+				return new Singleton_Service();
 			}
 		);
 
 		// Retrieve the service twice.
-		$service1 = $container->get( 'singleton_service' );
-		$service2 = $container->get( 'singleton_service' );
+		$service1 = $container->get( Singleton_Service::class );
+		$service2 = $container->get( Singleton_Service::class );
 
 		// Check that both instances are the same.
 		$this->assertSame( $service1, $service2 );
@@ -66,6 +70,6 @@ class Container_Test extends TestCase {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'Service not found: non_existing_service' );
 
-		$container->get( 'non_existing_service' );
+		$container->get( 'non_existing_service' );  // @phpstan-ignore-line
 	}
 }

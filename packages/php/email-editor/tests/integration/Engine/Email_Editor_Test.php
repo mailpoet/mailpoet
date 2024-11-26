@@ -31,7 +31,7 @@ class Email_Editor_Test extends \MailPoetTest {
 	 */
 	public function _before() {
 		parent::_before();
-		$this->email_editor           = $this->di_container->get( Email_Editor::class ); // @phpstan-ignore-line
+		$this->email_editor           = $this->di_container->get( Email_Editor::class );
 		$this->post_register_callback = function ( $post_types ) {
 			$post_types[] = array(
 				'name' => 'custom_email_type',
