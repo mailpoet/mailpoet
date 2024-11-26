@@ -23,8 +23,8 @@ class SubscriptionUrlFactoryTest extends \MailPoetTest {
   }
 
   public function testGetReEngagementUrlReturnsDefaultUrl() {
-    SettingPages::createMailPoetPage();
-    $expectedUrl = get_permalink(SettingPages::getDefaultMailPoetPage());
+    SettingPages::createMailPoetPage(SettingPages::PAGE_SUBSCRIPTIONS);
+    $expectedUrl = get_permalink(SettingPages::getMailPoetPage(SettingPages::PAGE_SUBSCRIPTIONS));
 
     $this->assertIsString($expectedUrl, "Permalink is a valid string");
     $this->assertStringContainsString($expectedUrl, $this->subscriptionUrlFactory->getReEngagementUrl($this->subscriber));

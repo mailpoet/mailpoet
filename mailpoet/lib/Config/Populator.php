@@ -183,9 +183,9 @@ class Populator {
   }
 
   private function createMailPoetPage() {
-    $page = Pages::getDefaultMailPoetPage();
+    $page = Pages::getMailPoetPage(Pages::PAGE_SUBSCRIPTIONS);
     if ($page === null) {
-      $mailpoetPageId = Pages::createMailPoetPage();
+      $mailpoetPageId = Pages::createMailPoetPage(Pages::PAGE_SUBSCRIPTIONS);
     } else {
       $mailpoetPageId = (int)$page->ID;
     }
@@ -196,21 +196,26 @@ class Populator {
         'unsubscribe' => $mailpoetPageId,
         'manage' => $mailpoetPageId,
         'confirmation' => $mailpoetPageId,
-        'captcha' => $mailpoetPageId,
         'confirm_unsubscribe' => $mailpoetPageId,
       ]);
     } else {
       // For existing installations
-      $captchaPageSetting = (empty($subscription['captcha']) || $subscription['captcha'] !== $mailpoetPageId)
-        ? $mailpoetPageId : $subscription['captcha'];
       $confirmUnsubPageSetting = empty($subscription['confirm_unsubscribe'])
         ? $mailpoetPageId : $subscription['confirm_unsubscribe'];
 
       $this->settings->set('subscription.pages', array_merge($subscription, [
-        'captcha' => $captchaPageSetting,
         'confirm_unsubscribe' => $confirmUnsubPageSetting,
       ]));
     }
+
+    $captchaPage = Pages::getMailPoetPage(Pages::PAGE_CAPTCHA);
+    if ($captchaPage === null) {
+      $captchaPageId = Pages::createMailPoetPage(Pages::PAGE_CAPTCHA);
+    } else {
+      $captchaPageId = $captchaPage->ID;
+    }
+
+    $this->settings->set('subscription.pages.captcha', $captchaPageId);
   }
 
   private function createDefaultSettings() {

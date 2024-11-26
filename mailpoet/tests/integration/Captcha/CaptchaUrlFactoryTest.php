@@ -26,7 +26,7 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
 
     verify($url)->notNull();
     verify($url)->stringContainsString(Router::NAME);
-    verify($url)->stringContainsString('mailpoet_page=' . Pages::PAGE_SUBSCRIPTIONS);
+    verify($url)->stringContainsString('mailpoet_page=' . Pages::PAGE_CAPTCHA);
     verify($url)->stringContainsString('action=' . CaptchaEndpoint::ACTION_RENDER);
     verify($url)->stringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT);
     verify($url)->stringContainsString('data=');
@@ -37,7 +37,7 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
 
     verify($url)->notNull();
     verify($url)->stringContainsString(Router::NAME);
-    verify($url)->stringContainsString('mailpoet_page=' . Pages::PAGE_SUBSCRIPTIONS);
+    verify($url)->stringContainsString('mailpoet_page=' . Pages::PAGE_CAPTCHA);
     verify($url)->stringContainsString('action=' . CaptchaEndpoint::ACTION_IMAGE);
     verify($url)->stringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT);
     verify($url)->stringContainsString('data=');
@@ -48,7 +48,7 @@ class CaptchaUrlFactoryTest extends \MailPoetTest {
 
     verify($url)->notNull();
     verify($url)->stringContainsString(Router::NAME);
-    verify($url)->stringContainsString('mailpoet_page=' . Pages::PAGE_SUBSCRIPTIONS);
+    verify($url)->stringContainsString('mailpoet_page=' . Pages::PAGE_CAPTCHA);
     verify($url)->stringContainsString('action=' . CaptchaEndpoint::ACTION_AUDIO);
     verify($url)->stringContainsString('endpoint=' . CaptchaEndpoint::ENDPOINT);
     verify($url)->stringContainsString('data=');
