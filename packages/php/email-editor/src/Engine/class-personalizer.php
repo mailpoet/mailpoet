@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -25,9 +25,19 @@ class Personalizer {
 	private Personalization_Tags_Registry $tags_registry;
 
 	/**
-	 * Context for the personalization tags.
+	 * Context for personalization tags.
 	 *
-	 * @var array
+	 * The `context` is an associative array containing recipient-specific or
+	 * campaign-specific data. This data is used to resolve personalization tags
+	 * and provide input for tag callbacks during email content processing.
+	 *
+	 * Example context:
+	 * array(
+	 *     'recipient_email' => 'john@example.com', // Recipient's email
+	 *     'custom_field'    => 'Special Value',    // Custom campaign-specific data
+	 * )
+	 *
+	 * @var array<string, mixed>
 	 */
 	private array $context;
 
@@ -42,9 +52,17 @@ class Personalizer {
 	}
 
 	/**
-	 * Set the context for the personalization.
+	 * Set the context for personalization.
 	 *
-	 * @param array $context The context to set.
+	 * The `context` provides data required for resolving personalization tags
+	 * during content processing. This method allows the context to be set or updated.
+	 *
+	 * Example usage:
+	 * $personalizer->set_context(array(
+	 *     'recipient_email' => 'john@example.com',
+	 * ));
+	 *
+	 * @param array<string, mixed> $context Associative array containing personalization data.
 	 */
 	public function set_context( array $context ) {
 		$this->context = $context;
@@ -61,7 +79,7 @@ class Personalizer {
 		while ( $content_processor->next_token() ) {
 			if ( $content_processor->get_token_type() === '#comment' ) {
 				$token = $this->parse_token( $content_processor->get_modifiable_text() );
-				$tag   = $this->tags_registry->get_by_token( $token['tag'] );
+				$tag   = $this->tags_registry->get_by_token( $token['token'] );
 				if ( ! $tag ) {
 					continue;
 				}
@@ -81,20 +99,20 @@ class Personalizer {
 	}
 
 	/**
-	 * Parse a personalization tag token.
+	 * Parse a personalization tag to the token and attributes.
 	 *
 	 * @param string $token The token to parse.
-	 * @return array{tag: string, attributes: array} The parsed token.
+	 * @return array{token: string, attributes: array} The parsed token.
 	 */
 	private function parse_token( string $token ): array {
 		$result = array(
-			'tag'       => '',
+			'token'     => '',
 			'arguments' => array(),
 		);
 
 		// Step 1: Separate the tag and attributes.
 		if ( preg_match( '/^([a-zA-Z0-9\-\/]+)\s*(.*)$/', trim( $token ), $matches ) ) {
-			$result['tag']     = $matches[1]; // The tag part (e.g., "mailpoet/subscriber-firstname").
+			$result['token']   = $matches[1]; // The tag part (e.g., "mailpoet/subscriber-firstname").
 			$attributes_string = $matches[2]; // The attributes part (e.g., 'default="subscriber"').
 
 			// Step 2: Extract attributes from the attribute string.

@@ -63,9 +63,9 @@ class Email_Editor {
 	private Send_Preview_Email $send_preview_email;
 
 	/**
-	 * Property for Personalization_Tags_Controller instance.
+	 * Property for Personalization_Tags_Controller that allows initializing personalization tags.
 	 *
-	 * @var Personalization_Tags_Registry Personalization tags controller.
+	 * @var Personalization_Tags_Registry Personalization tags registry.
 	 */
 	private Personalization_Tags_Registry $personalization_tags_registry;
 
@@ -78,7 +78,7 @@ class Email_Editor {
 	 * @param Patterns                      $patterns Patterns.
 	 * @param Settings_Controller           $settings_controller Settings controller.
 	 * @param Send_Preview_Email            $send_preview_email Preview email controller.
-	 * @param Personalization_Tags_Registry $personalization_tags_controller Preview email controller.
+	 * @param Personalization_Tags_Registry $personalization_tags_controller Personalization tags registry that allows initializing personalization tags.
 	 */
 	public function __construct(
 		Email_Api_Controller $email_api_controller,

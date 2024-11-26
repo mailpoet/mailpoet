@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -23,6 +23,7 @@ class Personalization_Tags_Registry {
 
 	/**
 	 * Initialize the personalization tags registry.
+	 * This method should be called only once.
 	 *
 	 * @return void
 	 */
@@ -31,7 +32,7 @@ class Personalization_Tags_Registry {
 	}
 
 	/**
-	 * Register a new personalization tag.
+	 * Register a new personalization instance in the registry.
 	 *
 	 * @param Personalization_Tag $tag The personalization tag to register.
 	 * @return void
@@ -45,7 +46,8 @@ class Personalization_Tags_Registry {
 	}
 
 	/**
-	 * Retrieve a personalization tag by its tag.
+	 * Retrieve a personalization tag by its token.
+	 * Example: get_by_token( 'user:first_name' ) will return the instance of Personalization_Tag with identical token.
 	 *
 	 * @param string $token The token of the personalization tag.
 	 * @return Personalization_Tag|null The array data or null if not found.
