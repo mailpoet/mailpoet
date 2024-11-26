@@ -4,8 +4,6 @@
 import { __dangerousOptInToUnstableAPIsOnlyForCoreModules } from '@wordpress/private-apis';
 import {
 	// @ts-expect-error No types for privateApis.
-	privateApis as blockEditorPrivateApi,
-	// @ts-expect-error No types for privateApis.
 	privateApis as blockEditorPrivateApis,
 } from '@wordpress/block-editor';
 import { privateApis as componentsPrivateApis } from '@wordpress/components';
@@ -61,7 +59,7 @@ const { ColorPanel: StylesColorPanel } = unlock( blockEditorPrivateApis );
 /**
  * The useGlobalStylesOutputWithConfig is used to generate the CSS for the email editor content from the style settings.
  */
-const { useGlobalStylesOutputWithConfig } = unlock( blockEditorPrivateApi );
+const { useGlobalStylesOutputWithConfig } = unlock( blockEditorPrivateApis );
 
 export {
 	BlockCanvas,
