@@ -10,7 +10,7 @@ use MailPoet\Subscribers\SubscriberIPsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\WP\Functions as WPFunctions;
 
-class BuiltInCaptchaValidatorTest extends \MailPoetUnitTest {
+class CaptchaValidatorTest extends \MailPoetUnitTest {
 
 
   /**

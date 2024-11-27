@@ -11,7 +11,7 @@ use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
 use MailPoet\WP\Functions as WPFunctions;
 use MailPoetVendor\Carbon\Carbon;
 
-class BuiltInCaptchaValidatorTest extends \MailPoetTest {
+class CaptchaValidatorTest extends \MailPoetTest {
   private CaptchaValidator $testee;
   private CaptchaSession $session;
 

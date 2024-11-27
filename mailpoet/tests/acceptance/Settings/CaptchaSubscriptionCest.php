@@ -10,7 +10,7 @@ use MailPoet\Test\DataFactories\Subscriber;
 /**
  * @group frontend
  */
-class BuiltInCaptchaSubscriptionCest {
+class CaptchaSubscriptionCest {
 
   /** @var Settings */
   private $settingsFactory;
