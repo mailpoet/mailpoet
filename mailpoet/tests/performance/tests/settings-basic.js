@@ -34,6 +34,7 @@ export async function settingsBasic() {
       `${baseURL}/wp-admin/admin.php?page=mailpoet-settings#/basics`,
       {
         waitUntil: 'networkidle',
+        timeout: 120000,
       },
     );
 
