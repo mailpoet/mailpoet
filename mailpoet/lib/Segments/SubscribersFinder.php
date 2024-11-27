@@ -68,15 +68,15 @@ class SubscribersFinder {
    * @param ScheduledTaskEntity $task
    * @param array<int>    $segmentIds
    *
-   * @return float|int
+   * @return void
    */
-  public function addSubscribersToTaskFromSegments(ScheduledTaskEntity $task, array $segmentIds, ?int $filterSegmentId = null) {
+  public function addSubscribersToTaskFromSegments(ScheduledTaskEntity $task, array $segmentIds, ?int $filterSegmentId = null): void {
     // Prepare subscribers on the DB side for performance reasons
     if (is_int($filterSegmentId)) {
       try {
         $this->segmentsRepository->verifyDynamicSegmentExists($filterSegmentId);
       } catch (InvalidStateException $exception) {
-        return 0;
+        return;
       }
     }
     $staticSegmentIds = [];
@@ -101,7 +101,6 @@ class SubscribersFinder {
     if ($count > 0) {
       $this->entityManager->refresh($task);
     }
-    return $count;
   }
 
   /**
