@@ -328,7 +328,10 @@ class Pages {
 
       switch ($this->action) {
         case self::ACTION_CAPTCHA:
-          $captchaSessionId = $this->data['captcha_session_id'] ?? null;
+          $captchaSessionId =
+            (isset($this->data['captcha_session_id']) && is_string($this->data['captcha_session_id']))
+            ? $this->data['captcha_session_id']
+            : null;
           if (!$captchaSessionId) {
             return false;
           }
