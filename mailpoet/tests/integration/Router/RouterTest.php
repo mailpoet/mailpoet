@@ -83,9 +83,57 @@ class RouterTest extends \MailPoetTest {
     );
   }
 
+  public function testItTerminatesRequestForIncorrectEndpointDataType() {
+    $routerData = $this->routerData;
+    $routerData['endpoint'] = ['invalid_endpoint'];
+    $router = Stub::construct(
+      '\MailPoet\Router\Router',
+      [$this->accessControl, $this->container, $routerData],
+      [
+        'terminateRequest' => function($code, $error) {
+          return [
+            $code,
+            $error,
+          ];
+        },
+      ]
+    );
+    $result = $router->init();
+    verify($result)->equals(
+      [
+        404,
+        'Invalid router endpoint',
+      ]
+    );
+  }
+
   public function testItTerminatesRequestWhenEndpointActionNotFound() {
     $routerData = $this->routerData;
     $routerData['action'] = 'invalid_action';
+    $router = Stub::construct(
+      '\MailPoet\Router\Router',
+      [$this->accessControl, $this->container, $routerData],
+      [
+        'terminateRequest' => function($code, $error) {
+          return [
+            $code,
+            $error,
+          ];
+        },
+      ]
+    );
+    $result = $router->init();
+    verify($result)->equals(
+      [
+        404,
+        'Invalid router endpoint action',
+      ]
+    );
+  }
+
+  public function testItTerminatesRequestForIncorrectActionDataType() {
+    $routerData = $this->routerData;
+    $routerData['action'] = ['invalid_action'];
     $router = Stub::construct(
       '\MailPoet\Router\Router',
       [$this->accessControl, $this->container, $routerData],

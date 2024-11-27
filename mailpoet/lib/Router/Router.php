@@ -28,10 +28,10 @@ class Router {
   ) {
     $apiData = ($apiData) ? $apiData : $_GET;
     $this->apiRequest = is_array($apiData) && array_key_exists(self::NAME, $apiData);
-    $this->endpoint = isset($apiData['endpoint']) ?
+    $this->endpoint = (isset($apiData['endpoint']) && is_string($apiData['endpoint'])) ?
       Helpers::underscoreToCamelCase($apiData['endpoint']) :
       false;
-    $this->endpointAction = isset($apiData['action']) ?
+    $this->endpointAction = (isset($apiData['action']) && is_string($apiData['action'])) ?
       Helpers::underscoreToCamelCase($apiData['action']) :
       false;
     $this->data = isset($apiData['data']) ?
