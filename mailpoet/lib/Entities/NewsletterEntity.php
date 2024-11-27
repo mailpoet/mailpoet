@@ -300,7 +300,7 @@ class NewsletterEntity {
 
     // activate/deactivate unfinished tasks
     $newTaskStatus = null;
-    $typesWithActivation = [self::TYPE_NOTIFICATION, self::TYPE_WELCOME, self::TYPE_AUTOMATIC];
+    $typesWithActivation = [self::TYPE_NOTIFICATION, self::TYPE_WELCOME, self::TYPE_AUTOMATIC, self::TYPE_AUTOMATION];
 
     if (($status === self::STATUS_DRAFT) && in_array($this->type, $typesWithActivation)) {
       $newTaskStatus = ScheduledTaskEntity::STATUS_PAUSED;
