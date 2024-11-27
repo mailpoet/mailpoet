@@ -122,6 +122,37 @@ class APITest extends \MailPoetTest {
     verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
   }
 
+  public function testItReturns400ErrorWhenInvalidDataTypeInEndpoint() {
+    $data = [
+      'endpoint' => ['a_p_i_test_namespaced_endpoint_stub_v1'],
+      'method' => 'test',
+    ];
+
+    $response = $this->api->setRequestData($data, Endpoint::TYPE_POST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+  }
+
+  public function testItReturns400ErrorWhenInvalidDataTypeInMethod() {
+    $data = [
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
+      'method' => ['test'],
+    ];
+
+    $response = $this->api->setRequestData($data, Endpoint::TYPE_POST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+  }
+
+  public function testItReturns400ErrorWhenInvalidDataTypeInToken() {
+    $data = [
+      'endpoint' => 'a_p_i_test_namespaced_endpoint_stub_v1',
+      'method' => 'test',
+      'token' => ['test'],
+    ];
+
+    $response = $this->api->setRequestData($data, Endpoint::TYPE_POST);
+    verify($response->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+  }
+
   public function testItAcceptsAndProcessesAPIVersion() {
     $namespace = [
       'name' => 'MailPoet\API\JSON\v2',

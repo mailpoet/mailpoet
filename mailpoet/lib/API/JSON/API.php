@@ -122,20 +122,20 @@ class API {
   }
 
   public function setRequestData($data, $requestType) {
-    $this->requestApiVersion = !empty($data['api_version']) ? $data['api_version'] : false;
+    $this->requestApiVersion = (!empty($data['api_version']) && is_string($data['api_version'])) ? $data['api_version'] : false;
 
-    $this->requestEndpoint = isset($data['endpoint'])
+    $this->requestEndpoint = (isset($data['endpoint']) && is_string($data['endpoint']))
       ? Helpers::underscoreToCamelCase(trim($data['endpoint']))
       : null;
 
     // JS part of /wp-admin/customize.php does not like a 'method' field in a form widget
     $methodParamName = isset($data['mailpoet_method']) ? 'mailpoet_method' : 'method';
-    $this->requestMethod = isset($data[$methodParamName])
+    $this->requestMethod = (isset($data[$methodParamName]) && is_string($data[$methodParamName]))
       ? Helpers::underscoreToCamelCase(trim($data[$methodParamName]))
       : null;
     $this->requestType = $requestType;
 
-    $this->requestToken = isset($data['token'])
+    $this->requestToken = (isset($data['token']) && is_string($data['token']))
       ? trim($data['token'])
       : null;
 
