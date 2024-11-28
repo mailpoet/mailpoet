@@ -65,6 +65,16 @@ class NewsletterEntity {
   // automatic newsletters status
   const STATUS_ACTIVE = 'active';
 
+  /**
+   * Newsletters that use status "active"
+   */
+  const ACTIVABLE_EMAILS = [
+    NewsletterEntity::TYPE_NOTIFICATION,
+    NewsletterEntity::TYPE_WELCOME,
+    NewsletterEntity::TYPE_AUTOMATIC,
+    NewsletterEntity::TYPE_AUTOMATION,
+  ];
+
   use AutoincrementedIdTrait;
   use CreatedAtTrait;
   use UpdatedAtTrait;
@@ -300,12 +310,10 @@ class NewsletterEntity {
 
     // activate/deactivate unfinished tasks
     $newTaskStatus = null;
-    $typesWithActivation = [self::TYPE_NOTIFICATION, self::TYPE_WELCOME, self::TYPE_AUTOMATIC, self::TYPE_AUTOMATION];
-
-    if (($status === self::STATUS_DRAFT) && in_array($this->type, $typesWithActivation)) {
+    if (($status === self::STATUS_DRAFT) && $this->canBeSetActive()) {
       $newTaskStatus = ScheduledTaskEntity::STATUS_PAUSED;
     }
-    if (($status === self::STATUS_ACTIVE) && in_array($this->type, $typesWithActivation)) {
+    if (($status === self::STATUS_ACTIVE) && $this->canBeSetActive()) {
       $newTaskStatus = ScheduledTaskEntity::STATUS_SCHEDULED;
     }
 
@@ -585,6 +593,10 @@ class NewsletterEntity {
    */
   public function canBeSetSent(): bool {
     return in_array($this->getType(), [self::TYPE_NOTIFICATION_HISTORY, self::TYPE_STANDARD], true);
+  }
+
+  public function canBeSetActive(): bool {
+    return in_array($this->getType(), self::ACTIVABLE_EMAILS, true);
   }
 
   public function getWpPost(): ?WpPostEntity {
