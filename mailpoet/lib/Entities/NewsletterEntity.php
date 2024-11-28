@@ -73,6 +73,7 @@ class NewsletterEntity {
     NewsletterEntity::TYPE_WELCOME,
     NewsletterEntity::TYPE_AUTOMATIC,
     NewsletterEntity::TYPE_AUTOMATION,
+    NewsletterEntity::TYPE_RE_ENGAGEMENT,
   ];
 
   use AutoincrementedIdTrait;
