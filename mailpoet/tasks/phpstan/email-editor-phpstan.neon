@@ -4,8 +4,8 @@ parameters:
   bootstrapFiles:
     - ../../vendor/autoload.php
     - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
-    - ../../vendor/codeception/codeception/autoload.php
-    - ../../vendor/codeception/verify/src/Codeception/Verify/Verify.php
+    - ../../../tests_env/vendor/codeception/codeception/autoload.php
+    - ../../../tests_env/vendor/codeception/verify/src/Codeception/Verify/Verify.php
   scanDirectories:
       - ../../../packages/php/email-editor/tests/_support
       - ../../../packages/php/email-editor/tests/integration

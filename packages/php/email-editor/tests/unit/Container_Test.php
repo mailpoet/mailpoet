@@ -11,9 +11,9 @@ namespace MailPoet\EmailEditor;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
-class Simple_Service {} // phpcs:ignore
+class Simple_Service {} // phpcs:ignore -- Ignore Only one object structure is allowed in a file.
 
-class Singleton_Service {} // phpcs:ignore
+class Singleton_Service {} // phpcs:ignore -- Ignore Only one object structure is allowed in a file.
 
 /**
  * Unit test for Container class.
@@ -68,8 +68,8 @@ class Container_Test extends TestCase { // phpcs:ignore
 
 		// Attempt to get a non-existing service should throw an exception.
 		$this->expectException( Exception::class );
-		$this->expectExceptionMessage( 'Service not found: non_existing_service' );
+		$this->expectExceptionMessage( 'Service not found: MailPoet\EmailEditor\Simple_Service' );
 
-		$container->get( 'non_existing_service' );  // @phpstan-ignore-line
+		$container->get( Simple_Service::class );
 	}
 }

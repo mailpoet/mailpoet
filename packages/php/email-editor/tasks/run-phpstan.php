@@ -47,4 +47,6 @@ $all_commands = implode( ' ', $commands );
 
 echo "[run-phpstan] Running command: $all_commands \n";  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This file is not used within WordPress environment.
 
-passthru( $all_commands );  // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_passthru -- This file is not used within WordPress environment.
+$result_code = 0;
+passthru( $all_commands, $result_code );  // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_passthru -- This file is not used within WordPress environment.
+exit( (int) $result_code );
