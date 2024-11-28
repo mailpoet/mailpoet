@@ -244,4 +244,32 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
     verify($failedSubscriberTask->getProcessed())->equals(0);
     verify($failedSubscriberTask->getFailed())->equals(0);
   }
+
+  public function testItPreventResendingInactiveAutomationEmail() {
+    $newsletter = (new NewsletterFactory())->withSubject('My Automatic Newsletter')
+      ->withType(NewsletterEntity::TYPE_AUTOMATION)
+      ->withStatus(NewsletterEntity::STATUS_DRAFT)
+      ->withBody(Fixtures::get('newsletter_body_template'))
+      ->withSendingQueue()
+      ->create();
+
+    $queue = $newsletter->getLatestQueue();
+    $task = $queue->getTask();
+
+    $failedSubscriber = $this->subscriberFactory
+      ->withEmail('failed2@example.com')
+      ->withFirstName('Failed')
+      ->withLastName('Test')
+      ->create();
+    $this->taskSubscriberFactory->createFailed($task, $failedSubscriber, 'Something went wrong!');
+
+    $res = $this->endpoint->resend([
+      'taskId' => $task->getId(),
+      'subscriberId' => $failedSubscriber->getId(),
+    ]);
+
+    verify($res->status)->equals(APIResponse::STATUS_BAD_REQUEST);
+    verify($res->errors[0]['message'])
+      ->equals('Failed to resend! The email is not active. Please activate it first.');
+  }
 }
