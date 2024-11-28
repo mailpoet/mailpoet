@@ -327,7 +327,7 @@ class NewsletterSaveController {
     }
 
     if ($newsletter->getStatus() === NewsletterEntity::STATUS_CORRUPT) {
-      $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+      $newsletter->setStatus($newsletter->canBeSetActive() ? NewsletterEntity::STATUS_ACTIVE : NewsletterEntity::STATUS_SENDING);
     }
   }
 

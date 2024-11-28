@@ -411,6 +411,18 @@ class NewsletterSaveControllerTest extends \MailPoetTest {
     verify($newsletter->getReplyToAddress())->same('reply@test.com');
   }
 
+  public function testItResetCorruptedState(): void {
+    $newsletter = $this->createNewsletter(NewsletterEntity::TYPE_STANDARD, NewsletterEntity::STATUS_CORRUPT);
+    $data = ['subject' => 'My First Newsletter', 'id' => $newsletter->getId()];
+    $newsletter = $this->saveController->save($data);
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
+
+    $activableNewsletter = $this->createNewsletter(NewsletterEntity::TYPE_AUTOMATION, NewsletterEntity::STATUS_CORRUPT);
+    $data = ['subject' => 'My Automation Newsletter', 'id' => $activableNewsletter->getId()];
+    $activableNewsletter = $this->saveController->save($data);
+    verify($activableNewsletter->getStatus())->equals(NewsletterEntity::STATUS_ACTIVE);
+  }
+
   private function createNewsletter(string $type, string $status = NewsletterEntity::STATUS_DRAFT): NewsletterEntity {
     $newsletter = new NewsletterEntity();
     $newsletter->setType($type);

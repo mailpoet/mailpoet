@@ -91,6 +91,25 @@ class SendingQueuesRepositoryTest extends \MailPoetTest {
     verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
 
+  public function testItResumesSendingOfActivableNewsletter() {
+    $task = $this->createTask();
+    $task->setStatus(ScheduledTaskEntity::STATUS_PAUSED);
+    $queue = $this->createQueue($task);
+    $newsletter = $queue->getNewsletter();
+    $this->assertInstanceOf(NewsletterEntity::class, $newsletter);
+    $newsletter->setType(NewsletterEntity::TYPE_AUTOMATION);
+    $newsletter->setStatus(NewsletterEntity::STATUS_ACTIVE);
+    $queue->setCountTotal(1);
+    $queue->setCountProcessed(2);
+    $this->entityManager->flush();
+
+    $this->repository->resume($queue);
+    $this->entityManager->refresh($task);
+
+    verify($task->getStatus())->null();
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_ACTIVE);
+  }
+
   public function testItReturnsCountOfQueuesByNewsletter() {
     $taskStatus = ScheduledTaskEntity::STATUS_PAUSED;
 
