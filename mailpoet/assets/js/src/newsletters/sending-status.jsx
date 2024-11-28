@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { __, _x } from '@wordpress/i18n';
 
@@ -45,6 +45,8 @@ function SendingStatus() {
     sent: false,
   });
 
+  const refreshRef = useRef(null);
+
   useEffect(() => {
     MailPoet.Ajax.post({
       api_version: window.mailpoet_api_version,
@@ -74,7 +76,11 @@ function SendingStatus() {
         )}
       </h1>
       <StatsLink newsletter={newsletter} />
-      <SendingStatusListing location={location} params={params} />
+      <SendingStatusListing
+        location={location}
+        params={params}
+        refreshRef={refreshRef}
+      />
     </>
   );
 }
@@ -85,27 +91,28 @@ const compareProps = (prev, next) =>
   prev.location.pathname === next.location.pathname &&
   prev.params.id === next.params.id;
 
-const onRenderItem = (item) => (
+const onRenderItem = (item, refreshRef) => (
   <div>
-    <ListingItem {...item} />
+    <ListingItem {...item} refreshRef={refreshRef} />
   </div>
 );
 
 const SendingStatusListing = memo(
-  ({ location, params }) => (
+  ({ location, params, refreshRef }) => (
     <Listing
       limit={window.mailpoet_listing_per_page}
       location={location}
       params={params}
       endpoint="sending_task_subscribers"
       base_url="sending-status/:id"
-      onRenderItem={onRenderItem}
+      onRenderItem={(item) => onRenderItem(item, refreshRef)}
       getListingItemKey={(item) => `${item.taskId}-${item.subscriberId}`}
       columns={columns}
       messages={messages}
       auto_refresh
       sort_by="failed"
       sort_order="desc"
+      refreshRef={refreshRef}
       afterGetItems={(state) => {
         checkMailerStatus(state);
         checkCronStatus(state);
@@ -121,6 +128,7 @@ SendingStatusListing.propTypes = {
   params: PropTypes.shape({
     id: PropTypes.string.isRequired,
   }).isRequired,
+  refreshRef: PropTypes.shape({ current: PropTypes.func }),
 };
 
 function StatsLink({
@@ -154,6 +162,7 @@ function ListingItem({
   subscriberId,
   lastName,
   firstName,
+  refreshRef = null,
   error = '',
 }) {
   const resend = () => {
@@ -163,7 +172,7 @@ function ListingItem({
       action: 'resend',
       data: { taskId, subscriberId },
     })
-      .done(() => window.mailpoet_listing.forceUpdate())
+      .done(() => refreshRef?.current && refreshRef.current())
       .fail((res) => MailPoet.Notice.showApiErrorNotice(res));
   };
 
@@ -250,6 +259,7 @@ ListingItem.propTypes = {
   firstName: PropTypes.string.isRequired,
   processed: PropTypes.number.isRequired,
   subscriberId: PropTypes.number.isRequired,
+  refreshRef: PropTypes.shape({ current: PropTypes.func }),
 };
 ListingItem.displayName = 'ListingItem';
 SendingStatus.displayName = 'SendingStatus';
