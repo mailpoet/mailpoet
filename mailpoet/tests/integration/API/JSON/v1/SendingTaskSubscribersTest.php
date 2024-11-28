@@ -210,4 +210,38 @@ class SendingTaskSubscribersTest extends \MailPoetTest {
     $this->entityManager->refresh($this->newsletter);
     verify($this->newsletter->getStatus())->equals(NewsletterEntity::STATUS_SENDING);
   }
+
+  public function testItCanResendAutomationEmail() {
+    $newsletter = (new NewsletterFactory())->withSubject('My Automatic Newsletter')
+      ->withType(NewsletterEntity::TYPE_AUTOMATION)
+      ->withStatus(NewsletterEntity::STATUS_ACTIVE)
+      ->withBody(Fixtures::get('newsletter_body_template'))
+      ->withSendingQueue()
+      ->create();
+
+    $queue = $newsletter->getLatestQueue();
+    $task = $queue->getTask();
+
+    $failedSubscriber = $this->subscriberFactory
+      ->withEmail('failed2@example.com')
+      ->withFirstName('Failed')
+      ->withLastName('Test')
+      ->create();
+    $failedSubscriberTask = $this->taskSubscriberFactory->createFailed($task, $failedSubscriber, 'Something went wrong!');
+
+    $res = $this->endpoint->resend([
+      'taskId' => $task->getId(),
+      'subscriberId' => $failedSubscriber->getId(),
+    ]);
+
+    verify($res->status)->equals(APIResponse::STATUS_OK);
+    $this->entityManager->refresh($newsletter);
+    $this->entityManager->refresh($task);
+    $this->entityManager->refresh($failedSubscriberTask);
+
+    verify($newsletter->getStatus())->equals(NewsletterEntity::STATUS_ACTIVE);
+    verify($task->getStatus())->equals(null);
+    verify($failedSubscriberTask->getProcessed())->equals(0);
+    verify($failedSubscriberTask->getFailed())->equals(0);
+  }
 }

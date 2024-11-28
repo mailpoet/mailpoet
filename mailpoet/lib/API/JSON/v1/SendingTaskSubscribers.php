@@ -127,7 +127,10 @@ class SendingTaskSubscribers extends APIEndpoint {
 
     $taskSubscriber->resetToUnprocessed();
     $taskSubscriber->getTask()->setStatus(null);
-    $newsletter->setStatus(NewsletterEntity::STATUS_SENDING);
+    $newsletter->setStatus(
+      $newsletter->canBeSetActive() ? NewsletterEntity::STATUS_ACTIVE : NewsletterEntity::STATUS_SENDING
+    );
+
     // Each repository flushes all changes
     $this->scheduledTaskSubscribersRepository->flush();
     return $this->successResponse([]);
