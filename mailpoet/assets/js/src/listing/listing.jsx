@@ -23,8 +23,11 @@ class ListingComponent extends Component {
   }
 
   componentDidMount() {
-    const { params: propsParams, auto_refresh: autoRefresh = false } =
-      this.props;
+    const {
+      params: propsParams,
+      auto_refresh: autoRefresh = false,
+      refreshRef = null,
+    } = this.props;
     this.isComponentMounted = true;
     const params = propsParams || {};
     this.initWithParams(params);
@@ -33,6 +36,10 @@ class ListingComponent extends Component {
       jQuery(document).on('heartbeat-tick.mailpoet', () => {
         this.getItems();
       });
+    }
+
+    if (refreshRef) {
+      refreshRef.current = () => this.getItems();
     }
   }
 
@@ -751,6 +758,7 @@ ListingComponent.propTypes = {
   isItemDeletable: PropTypes.func,
   isItemToggleable: PropTypes.func,
   className: PropTypes.string,
+  refreshRef: PropTypes.shape({ current: PropTypes.func }),
 };
 
 ListingComponent.displayName = 'Listing';
