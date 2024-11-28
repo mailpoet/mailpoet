@@ -28,6 +28,19 @@ class Theme_Controller_Test extends \MailPoetTest {
 	}
 
 	/**
+	 * Test it get the theme json
+	 *
+	 * @return void
+	 */
+	public function testItGetThemeJson(): void {
+		$theme_json     = $this->theme_controller->get_theme();
+		$theme_settings = $theme_json->get_settings();
+		verify( $theme_settings['layout']['contentSize'] )->equals( '660px' ); // from email editor theme.json file.
+		verify( $theme_settings['spacing']['margin'] )->false();
+		verify( $theme_settings['typography']['dropCap'] )->false();
+	}
+
+	/**
 	 * Test it generates css styles for renderer
 	 */
 	public function testItGeneratesCssStylesForRenderer() {
