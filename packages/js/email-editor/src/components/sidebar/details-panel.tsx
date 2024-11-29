@@ -1,4 +1,9 @@
-import { BaseControl, ExternalLink, PanelBody } from '@wordpress/components';
+import {
+	BaseControl,
+	Button,
+	ExternalLink,
+	PanelBody,
+} from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
@@ -9,6 +14,17 @@ import { RichText } from '@wordpress/block-editor';
 
 const previewTextMaxLength = 150;
 const previewTextRecommendedLength = 80;
+
+function PersonalizationTagsButton() {
+	return (
+		<Button
+			className="mailpoet-settings-panel__personalization-tags-button"
+			icon="shortcode"
+			title={ __( 'Personalization Tags', 'mailpoet' ) }
+			onClick={ () => {} }
+		/>
+	);
+}
 
 export function DetailsPanel() {
 	const [ mailpoetEmailData ] = useEntityProp(
@@ -46,6 +62,7 @@ export function DetailsPanel() {
 	const subjectLabel = (
 		<>
 			<span>{ __( 'Subject', 'mailpoet' ) }</span>
+			<PersonalizationTagsButton />
 			<ExternalLink href="https://kb.mailpoet.com/article/215-personalize-newsletter-with-shortcodes#list">
 				{ __( 'Shortcode guide', 'mailpoet' ) }
 			</ExternalLink>
@@ -77,6 +94,7 @@ export function DetailsPanel() {
 	const preheaderLabel = (
 		<>
 			<span>{ __( 'Preview text', 'mailpoet' ) }</span>
+			<PersonalizationTagsButton />
 			<span
 				className={ classnames(
 					'mailpoet-settings-panel__preview-text-length',
