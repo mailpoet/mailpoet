@@ -22,12 +22,6 @@ parameters:
     -
       message: '#has no return type specified.#'  # ignore has no return type specified for integration test files
       path: ../../../packages/php/email-editor/tests/integration/*
-    -
-      message: '#assertStringContainsString\(\) expects string#'  # ignore expects string, string|true|null given in integration test files. The test will fail if an invalid value is provided
-      path: ../../../packages/php/email-editor/tests/integration/*
-    -
-      message: '#assertStringNotContainsString\(\) expects string#'  # ignore expects string, string|true|null given in integration test files. The test will fail if an invalid value is provided
-      path: ../../../packages/php/email-editor/tests/integration/*
   reportUnmatchedIgnoredErrors: true
   dynamicConstantNames:
     - MAILPOET_PREMIUM_INITIALIZED

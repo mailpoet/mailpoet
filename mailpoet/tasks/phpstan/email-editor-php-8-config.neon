@@ -1,6 +1,0 @@
-parameters:
-	ignoreErrors:
-
-		-
-			message: '#Access to an undefined property MailPoet\\EmailEditor\\.*Test::\$tester.#'
-			path: ../../../packages/php/email-editor/tests/integration/*
