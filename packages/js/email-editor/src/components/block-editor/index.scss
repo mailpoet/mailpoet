@@ -66,6 +66,16 @@
 }
 
 .mailpoet-email-editor__settings-panel {
+  .mailpoet-settings-panel__richtext {
+    border: 1px solid var(--wp-components-color-gray-600, #949494);
+    border-radius: 2px;
+    box-shadow: transparent 0 0 0;
+    display: block;
+    min-height: 80px;
+    padding: 9px 11px;
+    width: 100%;
+  }
+
   .mailpoet-settings-panel__subject .components-base-control__label {
     width: 100%;
 

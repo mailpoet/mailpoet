@@ -1,15 +1,11 @@
-import {
-	__experimentalText as Text, // eslint-disable-line
-	ExternalLink,
-	PanelBody,
-	TextareaControl,
-} from '@wordpress/components';
+import { BaseControl, ExternalLink, PanelBody } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
 import classnames from 'classnames';
 import { storeName } from '../../store';
+import { RichText } from '@wordpress/block-editor';
 
 const previewTextMaxLength = 150;
 const previewTextRecommendedLength = 80;
@@ -58,6 +54,26 @@ export function DetailsPanel() {
 
 	const previewTextLength = mailpoetEmailData?.preheader?.length ?? 0;
 
+	const preheaderHelp = createInterpolateElement(
+		__(
+			'<link>This text</link> will appear in the inbox, underneath the subject line.',
+			'mailpoet'
+		),
+		{
+			link: (
+				// eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+				<a
+					href={ new URL(
+						'article/418-preview-text',
+						'https://kb.mailpoet.com/'
+					).toString() }
+					key="preview-text-kb"
+					target="_blank"
+					rel="noopener noreferrer"
+				/>
+			),
+		}
+	);
 	const preheaderLabel = (
 		<>
 			<span>{ __( 'Preview text', 'mailpoet' ) }</span>
@@ -82,57 +98,45 @@ export function DetailsPanel() {
 			title={ __( 'Details', 'mailpoet' ) }
 			className="mailpoet-email-editor__settings-panel"
 		>
-			<TextareaControl
-				className="mailpoet-settings-panel__subject"
+			<BaseControl
+				id="mailpoet-settings-panel__subject"
 				label={ subjectLabel }
-				placeholder={ __( 'Eg. The summer sale is here!', 'mailpoet' ) }
-				value={ mailpoetEmailData?.subject ?? '' }
-				onChange={ ( value ) =>
-					updateEmailMailPoetProperty( 'subject', value )
-				}
-				data-automation-id="email_subject"
-			/>
-			<div className="mailpoet-settings-panel__help">
-				<Text>{ subjectHelp }</Text>
-			</div>
-
-			<TextareaControl
-				className="mailpoet-settings-panel__preview-text"
-				label={ preheaderLabel }
-				placeholder={ __(
-					"Add a preview text to capture subscribers' attention and increase open rates.",
-					'mailpoet'
-				) }
-				value={ mailpoetEmailData?.preheader ?? '' }
-				onChange={ ( value ) =>
-					updateEmailMailPoetProperty( 'preheader', value )
-				}
-				data-automation-id="email_preview_text"
-			/>
-			<div className="mailpoet-settings-panel__help">
-				<Text>
-					{ createInterpolateElement(
-						__(
-							'<link>This text</link> will appear in the inbox, underneath the subject line.',
-							'mailpoet'
-						),
-						{
-							link: (
-								// eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
-								<a
-									href={ new URL(
-										'article/418-preview-text',
-										'https://kb.mailpoet.com/'
-									).toString() }
-									key="preview-text-kb"
-									target="_blank"
-									rel="noopener noreferrer"
-								/>
-							),
-						}
+				className="mailpoet-settings-panel__subject"
+				help={ subjectHelp }
+			>
+				<RichText
+					className="mailpoet-settings-panel__richtext"
+					placeholder={ __(
+						'Eg. The summer sale is here!',
+						'mailpoet'
 					) }
-				</Text>
-			</div>
+					onChange={ ( value ) =>
+						updateEmailMailPoetProperty( 'subject', value )
+					}
+					value={ mailpoetEmailData?.subject ?? '' }
+					data-automation-id="email_subject"
+				/>
+			</BaseControl>
+
+			<BaseControl
+				id="mailpoet-settings-panel__richtext"
+				label={ preheaderLabel }
+				className="mailpoet-settings-panel__preview-text"
+				help={ preheaderHelp }
+			>
+				<RichText
+					className="mailpoet-settings-panel__richtext"
+					placeholder={ __(
+						"Add a preview text to capture subscribers' attention and increase open rates.",
+						'mailpoet'
+					) }
+					onChange={ ( value ) =>
+						updateEmailMailPoetProperty( 'preheader', value )
+					}
+					value={ mailpoetEmailData?.preheader ?? '' }
+					data-automation-id="email_preview_text"
+				/>
+			</BaseControl>
 		</PanelBody>
 	);
 }
