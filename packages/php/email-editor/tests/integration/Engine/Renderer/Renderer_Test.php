@@ -211,7 +211,7 @@ class Renderer_Test extends \MailPoetTest {
 	private function getStylesValueForTag( string $html, array $query ): ?string {
 		$html = new \WP_HTML_Tag_Processor( $html );
 		if ( $html->next_tag( $query ) ) {
-			return $html->get_attribute( 'style' ); // @phpstan-ignore-line
+			return $html->get_attribute( 'style' );
 		}
 		return null;
 	}

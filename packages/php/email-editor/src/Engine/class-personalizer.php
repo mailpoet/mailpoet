@@ -63,6 +63,7 @@ class Personalizer {
 	 * ));
 	 *
 	 * @param array<string, mixed> $context Associative array containing personalization data.
+	 * @return void
 	 */
 	public function set_context( array $context ) {
 		$this->context = $context;
@@ -102,7 +103,7 @@ class Personalizer {
 	 * Parse a personalization tag to the token and attributes.
 	 *
 	 * @param string $token The token to parse.
-	 * @return array{token: string, attributes: array} The parsed token.
+	 * @return array{token: string, arguments: array} The parsed token.
 	 */
 	private function parse_token( string $token ): array {
 		$result = array(

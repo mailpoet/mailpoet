@@ -10,6 +10,8 @@ parameters:
       - ../../../packages/php/email-editor/tests/_support
       - ../../../packages/php/email-editor/tests/integration
       - ../../../packages/php/email-editor/tests/unit
+  scanFiles:
+    - custom-stubs.php
   inferPrivatePropertyTypeFromConstructor: true
   checkGenericClassInNonGenericObjectType: false
   parallel:

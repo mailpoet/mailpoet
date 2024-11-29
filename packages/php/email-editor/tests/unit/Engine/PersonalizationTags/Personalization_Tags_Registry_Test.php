@@ -86,6 +86,7 @@ class PersonalizationTagsRegistryTest extends TestCase {
 		$this->registry->register( new Personalization_Tag( 'tag2', 'tag-2', 'Category 2', $callback2 ) );
 
 		// Retrieve the tag and ensure the first registration is preserved.
+		/** @var Personalization_Tag $tag */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort -- used for phpstan
 		$tag = $this->registry->get_by_token( 'tag-1' );
 		$this->assertSame( 'tag1', $tag->get_name() );
 		$this->assertSame( 'Category 1', $tag->get_category() );

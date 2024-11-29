@@ -41,13 +41,21 @@ if ( ! function_exists( 'add_filter' ) ) {
 	 *
 	 * @param string   $tag Tag to add filter for.
 	 * @param callable $callback Callback to call.
+	 * @param int      $priority Optional. Used to specify the order in which the functions
+	 *                                      associated with a particular filter are executed.
+	 *                                      Lower numbers correspond with earlier execution,
+	 *                                      and functions with the same priority are executed
+	 *                                      in the order in which they were added to the filter. Default 10.
+	 * @param int      $accepted_args Optional. The number of arguments the function accepts. Default 1.
+	 * @return bool Always returns true.
 	 */
-	function add_filter( $tag, $callback ) {
+	function add_filter( $tag, $callback, $priority = 10, $accepted_args = 1 ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		global $wp_filters;
 		if ( ! isset( $wp_filters ) ) {
 			$wp_filters = array();
 		}
 		$wp_filters[ $tag ][] = $callback;
+		return true;
 	}
 }
 
@@ -57,8 +65,10 @@ if ( ! function_exists( 'apply_filters' ) ) {
 	 *
 	 * @param string $tag Tag to apply filters for.
 	 * @param mixed  $value Value to filter.
+	 * @param mixed  ...$args   Optional. Additional parameters to pass to the callback functions.
+	 * @return mixed The filtered value after all hooked functions are applied to it.
 	 */
-	function apply_filters( $tag, $value ) {
+	function apply_filters( $tag, $value, ...$args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		global $wp_filters;
 		if ( isset( $wp_filters[ $tag ] ) ) {
 			foreach ( $wp_filters[ $tag ] as $callback ) {

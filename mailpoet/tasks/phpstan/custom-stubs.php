@@ -66,6 +66,19 @@ namespace {
 
   if (!class_exists(\WP_HTML_Tag_Processor::class)) {
     class WP_HTML_Tag_Processor {
+
+      /** @var int */
+      const MAX_BOOKMARKS = 10;
+
+      /** @var string */
+      protected $html;
+
+      /** @var WP_HTML_Span[] */
+      protected $bookmarks = array();
+
+      /** @var WP_HTML_Text_Replacement[]  */
+      protected $lexical_updates = array();
+
       public function __construct($content) {
       }
 
@@ -80,6 +93,36 @@ namespace {
 
       public function set_attribute($attribute, $value) {
       }
+
+      public function next_token() {}
+
+      public function get_modifiable_text() {}
+
+      public function get_token_type() {}
+
+      public function remove_attribute($name) {}
+
+      public function get_tag() {}
+
+      public function set_modifiable_text($plaintext_content ) {}
+
+      public function set_bookmark($name) {}
+    }
+  }
+
+  if (!class_exists(\WP_HTML_Span::class)) {
+    class WP_HTML_Span {
+      /** @var int */
+      public $start;
+
+      /** @var int */
+      public $length;
+
+      /**
+       * @param int $start  Byte offset into document where replacement span begins.
+       * @param int $length Byte length of span.
+       */
+      public function __construct( int $start, int $length ) {}
     }
   }
 
