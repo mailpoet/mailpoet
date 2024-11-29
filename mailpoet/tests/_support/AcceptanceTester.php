@@ -471,6 +471,19 @@ class AcceptanceTester extends \Codeception\Actor {
     $i->cli(['plugin', 'deactivate', self::AUTOMATE_WOO_PLUGIN]);
   }
 
+  public function deactivateMailpoetFreeFromPluginPage(): void {
+    $i = $this;
+    $i->amOnPluginsPage();
+    if ($i->checkPluginIsActive('mailpoet-premium/mailpoet-premium.php')) {
+      $i->click('#deactivate-mailpoet-premium');
+      $i->waitForElementClickable('#deactivate-mailpoet');
+    }
+    $i->click('#deactivate-mailpoet');
+    $i->wantTo('Close the poll about MailPoet deactivation.');
+    $i->pressKey('body', WebDriverKeys::ESCAPE);
+    $i->waitForText('Plugin deactivated.');
+  }
+
   public function checkPluginIsActive(string $plugin): bool {
     $i = $this;
     $activePlugins = $i->grabOptionFromDatabase('active_plugins', true);
