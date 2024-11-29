@@ -38,5 +38,8 @@ export function getInitialState(): State {
 			isSendingPreviewEmail: false,
 			sendingPreviewStatus: null,
 		},
+		personalizationTags: {
+			isModalOpened: false,
+		},
 	};
 }

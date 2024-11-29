@@ -193,6 +193,9 @@ export type State = {
 		isSendingPreviewEmail: boolean;
 		sendingPreviewStatus: SendingPreviewStatus | null;
 	};
+	personalizationTags: {
+		isModalOpened: boolean;
+	};
 };
 
 export type MailPoetEmailData = {

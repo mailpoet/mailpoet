@@ -38,6 +38,15 @@ export function togglePreviewModal( isOpen: boolean ) {
 	} as const;
 }
 
+export function togglePersonalizationTagsModal( isOpen: boolean ) {
+	return {
+		type: 'CHANGE_PERSONALIZATION_TAGS_STATE',
+		state: { isModalOpened: isOpen } as Partial<
+			State[ 'personalizationTags' ]
+		>,
+	} as const;
+}
+
 export function updateSendPreviewEmail( toEmail: string ) {
 	return {
 		type: 'CHANGE_PREVIEW_STATE',

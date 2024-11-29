@@ -7,6 +7,14 @@ export function reducer( state: State, action ): State {
 				...state,
 				preview: { ...state.preview, ...action.state },
 			};
+		case 'CHANGE_PERSONALIZATION_TAGS_STATE':
+			return {
+				...state,
+				personalizationTags: {
+					...state.personalizationTags,
+					...action.state,
+				},
+			};
 		case 'TOGGLE_SETTINGS_SIDEBAR_ACTIVE_TAB':
 			return {
 				...state,

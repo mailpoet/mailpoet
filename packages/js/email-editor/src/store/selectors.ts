@@ -280,6 +280,12 @@ export function getPreviewState( state: State ): State[ 'preview' ] {
 	return state.preview;
 }
 
+export function getPersonalizationTagsState(
+	state: State
+): State[ 'personalizationTags' ] {
+	return state.personalizationTags;
+}
+
 export const getDeviceType = createRegistrySelector(
 	( select ) => () =>
 		// @ts-expect-error getDeviceType is missing in types.
