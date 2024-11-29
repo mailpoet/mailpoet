@@ -138,8 +138,8 @@ class CreateAndSendEmailUsingGutenbergCest {
 
   private function checkRequiredWordpressVersion(\AcceptanceTester $i): bool {
     $wordPressVersion = $i->getWordPressVersion();
-    // New email editor is not compatible with WP versions below 6.6
-    if (version_compare($wordPressVersion, '6.6', '<')) {
+    // New email editor is not compatible with WP versions below 6.7
+    if (version_compare($wordPressVersion, '6.7', '<')) {
       return false;
     }
     return true;
