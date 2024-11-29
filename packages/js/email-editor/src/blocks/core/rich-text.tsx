@@ -2,6 +2,8 @@ import { registerFormatType, unregisterFormatType } from '@wordpress/rich-text';
 import { __ } from '@wordpress/i18n';
 import { BlockControls } from '@wordpress/block-editor';
 import { ToolbarButton, ToolbarGroup } from '@wordpress/components';
+import { storeName } from '../../store';
+import { useDispatch } from '@wordpress/data';
 
 /**
  * Disable Rich text formats we currently cannot support
@@ -22,13 +24,17 @@ function disableCertainRichTextFormats() {
  * A button to the rich text editor to open modal with registered personalization tags.
  */
 function PersonalizationTagsButton() {
+	const { togglePersonalizationTagsModal } = useDispatch( storeName );
+
 	return (
 		<BlockControls>
 			<ToolbarGroup>
 				<ToolbarButton
 					icon="shortcode"
 					title={ __( 'Personalization Tags', 'mailpoet' ) }
-					onClick={ () => {} }
+					onClick={ () => {
+						togglePersonalizationTagsModal( true );
+					} }
 				/>
 			</ToolbarGroup>
 		</BlockControls>

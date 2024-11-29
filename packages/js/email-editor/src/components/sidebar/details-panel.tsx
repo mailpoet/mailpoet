@@ -15,13 +15,13 @@ import { RichText } from '@wordpress/block-editor';
 const previewTextMaxLength = 150;
 const previewTextRecommendedLength = 80;
 
-function PersonalizationTagsButton() {
+function PersonalizationTagsButton( { onClick } ) {
 	return (
 		<Button
 			className="mailpoet-settings-panel__personalization-tags-button"
 			icon="shortcode"
 			title={ __( 'Personalization Tags', 'mailpoet' ) }
-			onClick={ () => {} }
+			onClick={ () => onClick() }
 		/>
 	);
 }
@@ -33,7 +33,9 @@ export function DetailsPanel() {
 		'mailpoet_data'
 	);
 
-	const { updateEmailMailPoetProperty } = useDispatch( storeName );
+	const { togglePersonalizationTagsModal, updateEmailMailPoetProperty } =
+		useDispatch( storeName );
+
 	const subjectHelp = createInterpolateElement(
 		__(
 			'Use shortcodes to personalize your email, or learn more about <bestPracticeLink>best practices</bestPracticeLink> and using <emojiLink>emoji in subject lines</emojiLink>.',
@@ -62,7 +64,9 @@ export function DetailsPanel() {
 	const subjectLabel = (
 		<>
 			<span>{ __( 'Subject', 'mailpoet' ) }</span>
-			<PersonalizationTagsButton />
+			<PersonalizationTagsButton
+				onClick={ () => togglePersonalizationTagsModal( true ) }
+			/>
 			<ExternalLink href="https://kb.mailpoet.com/article/215-personalize-newsletter-with-shortcodes#list">
 				{ __( 'Shortcode guide', 'mailpoet' ) }
 			</ExternalLink>
@@ -94,7 +98,9 @@ export function DetailsPanel() {
 	const preheaderLabel = (
 		<>
 			<span>{ __( 'Preview text', 'mailpoet' ) }</span>
-			<PersonalizationTagsButton />
+			<PersonalizationTagsButton
+				onClick={ () => togglePersonalizationTagsModal( true ) }
+			/>
 			<span
 				className={ classnames(
 					'mailpoet-settings-panel__preview-text-length',

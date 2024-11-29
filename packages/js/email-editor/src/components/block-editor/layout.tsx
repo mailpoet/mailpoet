@@ -24,6 +24,7 @@ import { StylesSidebar } from '../styles-sidebar';
 import { VisualEditor } from './visual-editor/visual-editor';
 
 import { TemplateSelection } from '../template-select';
+import { PersonalizationTagsModal } from '../personalization-tags/personalization-tags-modal';
 
 export function Layout() {
 	const {
@@ -92,6 +93,7 @@ export function Layout() {
 			<SentEmailNotice />
 			<Sidebar />
 			<StylesSidebar />
+			<PersonalizationTagsModal />
 			<TemplateSelection />
 			<InterfaceSkeleton
 				className={ className }
