@@ -205,12 +205,6 @@ jobs:
         run: ./tools/vendor/composer.phar dump-autoload
         working-directory: mailpoet
 
-      - name: Run code phpstan 7.4
-        if: ${{ matrix.php-version == '7.4' }}
-        run: ../../../mailpoet/tools/vendor/composer.phar phpstan -- --php-version=70400
-        working-directory: packages/php/email-editor
-
-      - name: Run code phpstan 8.2
-        if: ${{ matrix.php-version == '8.2' }}
-        run: ../../../mailpoet/tools/vendor/composer.phar phpstan -- --php-version=80200
+      - name: Run code phpstan
+        run: ../../../mailpoet/tools/vendor/composer.phar phpstan -- --php-version=${{ matrix.php-version == '7.4' && '70400' || '80200' }}
         working-directory: packages/php/email-editor

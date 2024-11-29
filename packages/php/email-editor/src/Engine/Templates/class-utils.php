@@ -13,6 +13,18 @@ use WP_Error;
 
 /**
  * Utils class.
+ *
+ * @phpstan-type TemplateObject object{
+ *  slug: string,
+ *  id: string,
+ *  title: string,
+ *  description: string,
+ *  path: string,
+ *  type: string,
+ *  theme: string,
+ *  source: string,
+ *  post_types: array<string>
+ *  }
  */
 class Utils {
 	/**
@@ -97,18 +109,6 @@ class Utils {
 	/**
 	 * Build a block template from a file.
 	 *
-	 * @template TemplateObject
-	 * @phpstan-type TemplateObject object{
-	 * slug: string,
-	 * id: string,
-	 * title: string,
-	 * description: string,
-	 * path: string,
-	 * type: string,
-	 * theme: string,
-	 * source: string,
-	 * post_types: array<string>
-	 * }
 	 * @param TemplateObject $template_object Template object.
 	 * @return WP_Block_Template
 	 */
