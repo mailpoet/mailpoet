@@ -31,6 +31,7 @@ use MailPoet\Newsletter\Sending\ScheduledTasksRepository;
 use MailPoet\Segments\SegmentsRepository;
 use MailPoet\Subscribers\SubscribersRepository;
 use MailPoet\Test\DataFactories\Automation as AutomationFactory;
+use MailPoet\Test\DataFactories\AutomationRun as AutomationRunFactory;
 use MailPoet\Test\DataFactories\Newsletter;
 use MailPoet\Test\DataFactories\ScheduledTask;
 use MailPoet\Test\DataFactories\ScheduledTaskSubscriber;
@@ -354,6 +355,94 @@ class SendEmailActionTest extends \MailPoetTest {
       $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
       verify($scheduled)->arrayCount(0);
     }
+  }
+
+  public function testRerunForOptinWithDelivery(): void {
+    // Build a newsletter with 1 unconfirmed subscriber.
+    $segment = (new Segment())->create();
+    $subscriber = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withSegments([$segment])
+      ->create();
+    $newsletter = (new Newsletter())->withAutomationType()->create();
+    $subjects = $this->getSubjectData($subscriber, $segment);
+
+    // Build an automation.
+    $steps = [
+      new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep('trigger')]),
+      new Step('trigger', Step::TYPE_TRIGGER, 'test-trigger', [], [new NextStep('emailstep')]),
+      new Step('emailstep', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $newsletter->getId()], []),
+    ];
+    $automation = (new AutomationFactory())->withSteps($steps)->create();
+    $run = (new AutomationRunFactory())
+      ->withAutomation($automation)
+      ->withTriggerKey('trigger-key')
+      ->create();
+
+    // Prepare action run.
+    $args = new StepRunArgs($automation, $run, end($steps), $this->getSubjectEntries($subjects), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+
+    // First run: with no opt-in => schedule a retry
+    $actionScheduler = $this->diContainer->get(ActionScheduler::class);
+    $this->assertCount(0, $actionScheduler->getScheduledActions());
+    $this->action->run($args, $controller);
+    $this->assertCount(1, $actionScheduler->getScheduledActions());
+
+    // Second run: opt-in happened, so 1 email should be scheduled.
+    $subscriber->setStatus(SubscriberEntity::STATUS_SUBSCRIBED);
+    $this->subscribersRepository->persist($subscriber);
+    $args = new StepRunArgs($automation, $run, end($steps), $this->getSubjectEntries($subjects), 2);
+    $this->action->run($args, $controller);
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($newsletter, (int)$subscriber->getId());
+    verify($scheduled)->arrayCount(1);
+    $this->assertSame([
+      'automation' => ['id' => $automation->getId(), 'run_id' => $run->getId(), 'step_id' => 'emailstep', 'run_number' => 2],
+    ], $scheduled[0]->getMeta());
+  }
+
+  public function testRerunForOptinWithNoRetriesLeft(): void {
+    // Build a newsletter with 1 unconfirmed subscriber.
+    $segment = (new Segment())->create();
+    $subscriber = (new Subscriber())
+      ->withStatus(SubscriberEntity::STATUS_UNCONFIRMED)
+      ->withSegments([$segment])
+      ->create();
+    $newsletter = (new Newsletter())->withAutomationType()->create();
+    $subjects = $this->getSubjectData($subscriber, $segment);
+
+    // Build an automation.
+    $steps = [
+      new Step('root', Step::TYPE_ROOT, 'root', [], [new NextStep('trigger')]),
+      new Step('trigger', Step::TYPE_TRIGGER, 'test-trigger', [], [new NextStep('emailstep')]),
+      new Step('emailstep', Step::TYPE_ACTION, SendEmailAction::KEY, ['email_id' => $newsletter->getId()], []),
+    ];
+    $automation = (new AutomationFactory())->withSteps($steps)->create();
+    $run = (new AutomationRunFactory())
+      ->withAutomation($automation)
+      ->withTriggerKey('trigger-key')
+      ->create();
+
+    // Prepare action run.
+    $args = new StepRunArgs($automation, $run, end($steps), $this->getSubjectEntries($subjects), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+
+    // First run: with no opt-in => schedule a retry
+    $actionScheduler = $this->diContainer->get(ActionScheduler::class);
+    $this->assertCount(0, $actionScheduler->getScheduledActions());
+    $this->action->run($args, $controller);
+    $this->assertCount(1, $actionScheduler->getScheduledActions());
+
+    // Nth run: after 6 re-runs without opt-in, we've exhausted retries
+    $args = new StepRunArgs($automation, $run, end($steps), $this->getSubjectEntries($subjects), 7);
+    $this->assertThrowsExceptionWithMessage(
+      "Cannot send the email because the subscriber's status is 'unconfirmed'.",
+      function() use ($args, $controller) {
+        $this->action->run($args, $controller);
+      }
+    );
+    $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($newsletter, (int)$subscriber->getId());
+    verify($scheduled)->arrayCount(0);
   }
 
   public function testNothingScheduledIfSubscriberNotSubscribedToSegment(): void {

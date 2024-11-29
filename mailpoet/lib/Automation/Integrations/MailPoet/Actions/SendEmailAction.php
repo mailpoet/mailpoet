@@ -6,12 +6,14 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\Automation\Engine\Control\AutomationController;
 use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Data\Automation;
+use MailPoet\Automation\Engine\Data\AutomationRunLog;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\ValidationException;
+use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\AbandonedCartPayload;
@@ -47,6 +49,19 @@ class SendEmailAction implements Action {
     4 * DAY_IN_SECONDS, // ~5 days
     25 * DAY_IN_SECONDS, // ~1 month
   ];
+
+  // Retry intervals for sending. These are used when the email address
+  // is not confirmed, and we need send non-transactional emails.
+  private const OPTIN_RETRY_INTERVALS = [
+    1 * MINUTE_IN_SECONDS, // ~1 minute
+    5 * MINUTE_IN_SECONDS, // ~5 minutes
+    20 * MINUTE_IN_SECONDS, // ~20 minutes
+    1 * HOUR_IN_SECONDS, // ~1 hour
+    12 * HOUR_IN_SECONDS, // ~12 hours
+    1 * DAY_IN_SECONDS, // ~1 day
+  ];
+  private const WAIT_OPTIN = 'wait_optin';
+  private const OPTIN_RETRIES = 'optin_retries';
 
   private const TRANSACTIONAL_TRIGGERS = [
     'woocommerce:order-status-changed',
@@ -171,38 +186,113 @@ class SendEmailAction implements Action {
     $subscriber = $this->getSubscriber($args);
 
     if ($args->isFirstRun()) {
-      // run #1: schedule email sending
       $subscriberStatus = $subscriber->getStatus();
-      if ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL && $subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED) {
-        // translators: %s is the subscriber's status.
-        throw InvalidStateException::create()->withMessage(sprintf(__("Cannot send the email because the subscriber's status is '%s'.", 'mailpoet'), $subscriberStatus));
-      }
-
       if ($subscriberStatus === SubscriberEntity::STATUS_BOUNCED) {
         // translators: %s is the subscriber's status.
         throw InvalidStateException::create()->withMessage(sprintf(__("Cannot send the email because the subscriber's status is '%s'.", 'mailpoet'), $subscriberStatus));
       }
 
-      $meta = $this->getNewsletterMeta($args);
-      try {
-        $this->automationEmailScheduler->createSendingTask($newsletter, $subscriber, $meta);
-      } catch (Throwable $e) {
-        throw InvalidStateException::create()->withMessage(__('Could not create sending task.', 'mailpoet'));
+      if ($this->isOptInRequired($newsletter, $subscriber)) {
+        $this->updateRunLogData($args, self::WAIT_OPTIN, 1);
+        $this->rerunLater($args, $controller, $newsletter, $subscriber);
+        return;
       }
 
+      $this->scheduleEmail($args, $newsletter, $subscriber);
     } else {
-      // run #N: check/sync sending status with the automation step
+      // Re-running for opt-in?
+      $state = $this->getRunLogData($args);
+      if (array_key_exists(self::WAIT_OPTIN, $state) && $state[self::WAIT_OPTIN] === 1) {
+        if ($this->isOptInRequired($newsletter, $subscriber)) {
+          $this->rerunLater($args, $controller, $newsletter, $subscriber);
+          return;
+        }
+
+        // Subscriber is now confirmed, so we can schedule an email.
+        $this->updateRunLogData($args, self::WAIT_OPTIN, 0);
+        $this->updateRunLogData($args, self::OPTIN_RETRIES, $args->getRunNumber());
+        $this->scheduleEmail($args, $newsletter, $subscriber);
+      }
+
+      // Check/sync sending status with the automation step
       $success = $this->checkSendingStatus($args, $newsletter, $subscriber);
       if ($success) {
         return;
       }
     }
 
-    // Schedule a progress run to sync the email sending status to the automation step.
-    // Normally, a progress run is executed immediately after sending; we're scheduling
-    // these runs to poll for the status if sync fails or email never sends (timeout).
-    $nextInterval = self::POLL_INTERVALS[$args->getRunNumber() - 1] ?? 0;
+    // TODO: /!\ `rerunLater` uses `runNumber` to re-schedule the run at different intervals.
+    //           Retries due to opt-in issues can increment the runNumber, and mess with regular
+    //           sending retries.
+    //           => Store number of opt-in retries in the runlog & subtract from runNumber?
+    $this->rerunLater($args, $controller, $newsletter, $subscriber);
+  }
+
+  private function scheduleEmail(StepRunArgs $args, NewsletterEntity $newsletter, SubscriberEntity $subscriber): void {
+    $meta = $this->getNewsletterMeta($args);
+    try {
+      $this->automationEmailScheduler->createSendingTask($newsletter, $subscriber, $meta);
+    } catch (Throwable $e) {
+      throw InvalidStateException::create()->withMessage(__('Could not create sending task.', 'mailpoet'));
+    }
+  }
+
+  private function updateRunLogData(StepRunArgs $args, string $key, mixed $value): void {
+    $run = $args->getAutomationRun();
+    $step = $args->getStep();
+    $storage = new AutomationRunLogStorage();
+
+    $runLog = $storage->getAutomationRunLogByRunAndStepId($run->getId(), $step->getId());
+    if ($runLog === null) {
+      $runLog = new AutomationRunLog($run->getId(), $step->getId(), $step->getType());
+    }
+    $runLog->setData($key, $value);
+
+    if ($runLog->getId() !== null) {
+      $storage->updateAutomationRunLog($runLog);
+    } else {
+      $storage->createAutomationRunLog($runLog);
+    }
+  }
+
+  private function getRunLogData(StepRunArgs $args): array {
+    $run = $args->getAutomationRun();
+    $step = $args->getStep();
+    $storage = new AutomationRunLogStorage();
+    $runLog = $storage->getAutomationRunLogByRunAndStepId($run->getId(), $step->getId());
+
+    if ($runLog === null) {
+      return [];
+    }
+    return $runLog->getData();
+  }
+
+  /**
+   * Schedule a progress run to sync the email sending status to the automation step.
+   * Normally, a progress run is executed immediately after sending; we're scheduling
+   * these runs to poll for the status if sync fails or email never sends (timeout),
+   * or if we need to wait for subscriber opt-in.
+   */
+  private function rerunLater(StepRunArgs $args, StepRunController $controller, NewsletterEntity $newsletter, SubscriberEntity $subscriber): void {
+    $runNumber = $args->getRunNumber();
+    $nextInterval = self::POLL_INTERVALS[$runNumber - 1] ?? 0;
+
+    // Use different intervals when retrying for opt-in.
+    if ($this->isOptInRequired($newsletter, $subscriber) === true) {
+      if ($runNumber > count(self::OPTIN_RETRY_INTERVALS)) {
+        $subscriberStatus = $subscriber->getStatus();
+        // translators: %s is the subscriber's status.
+        throw InvalidStateException::create()->withMessage(sprintf(__("Cannot send the email because the subscriber's status is '%s'.", 'mailpoet'), $subscriberStatus));
+      }
+      $nextInterval = self::OPTIN_RETRY_INTERVALS[$runNumber - 1];
+    }
+
     $controller->scheduleProgress(time() + $nextInterval);
+  }
+
+  private function isOptInRequired(NewsletterEntity $newsletter, SubscriberEntity $subscriber): bool {
+    $subscriberStatus = $subscriber->getStatus();
+    return ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL && $subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED);
   }
 
   /** @param mixed $data */
