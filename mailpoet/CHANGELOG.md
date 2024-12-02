@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.4.2 - 2024-12-02 =
+
+- Improved: stability of post notification scheduling;
+- Changed: minimum required WordPress version to 6.6 and WooCommerce to 9.3.
+
 = 5.4.1 - 2024-11-25 =
 
 - Improved: minor changes and fixes.
