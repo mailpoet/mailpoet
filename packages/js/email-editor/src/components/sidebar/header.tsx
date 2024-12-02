@@ -13,12 +13,16 @@ import { Tabs } from '../../private-apis';
  * Internal dependencies
  */
 import { mainSidebarDocumentTab, mainSidebarBlockTab } from '../../store';
+import { useEditorMode } from '../../hooks';
 
 export function HeaderTabs( _, ref ) {
+	const [ editorMode ] = useEditorMode();
 	return (
 		<Tabs.TabList ref={ ref }>
 			<Tabs.Tab tabId={ mainSidebarDocumentTab }>
-				{ __( 'Email', 'mailpoet' ) }
+				{ editorMode === 'template'
+					? __( 'Template', 'mailpoet' )
+					: __( 'Email', 'mailpoet' ) }
 			</Tabs.Tab>
 			<Tabs.Tab tabId={ mainSidebarBlockTab }>{ __( 'Block' ) }</Tabs.Tab>
 		</Tabs.TabList>
