@@ -6,7 +6,11 @@ import {
 	Modal,
 	__experimentalHStack as HStack, // eslint-disable-line
 	Button,
+	Flex,
+	FlexItem,
 } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
+
 import { Async } from './async';
 import { usePreviewTemplates } from '../../hooks';
 import { storeName, TemplatePreview } from '../../store';
@@ -113,6 +117,17 @@ export function SelectTemplateModal( { onSelectCallback } ) {
 							</div>
 						) ) }
 					</div>
+
+					<Flex justify="flex-end">
+						<FlexItem>
+							<Button
+								variant="tertiary"
+								onClick={ () => handleCloseWithoutSelection() }
+							>
+								{ __( 'Start from scratch', 'mailpoet' ) }
+							</Button>
+						</FlexItem>
+					</Flex>
 				</div>
 			</div>
 		</Modal>
