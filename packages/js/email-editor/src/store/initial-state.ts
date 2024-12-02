@@ -1,4 +1,4 @@
-import { mainSidebarEmailTab } from './constants';
+import { mainSidebarDocumentTab } from './constants';
 import { State } from './types';
 import {
 	getEditorSettings,
@@ -19,7 +19,7 @@ export function getInitialState(): State {
 			isOpened: false,
 		},
 		settingsSidebar: {
-			activeTab: mainSidebarEmailTab,
+			activeTab: mainSidebarDocumentTab,
 		},
 		postId,
 		editorSettings: getEditorSettings(),

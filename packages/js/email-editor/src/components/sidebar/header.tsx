@@ -12,12 +12,12 @@ import { Tabs } from '../../private-apis';
 /**
  * Internal dependencies
  */
-import { mainSidebarEmailTab, mainSidebarBlockTab } from '../../store';
+import { mainSidebarDocumentTab, mainSidebarBlockTab } from '../../store';
 
 export function HeaderTabs( _, ref ) {
 	return (
 		<Tabs.TabList ref={ ref }>
-			<Tabs.Tab tabId={ mainSidebarEmailTab }>
+			<Tabs.Tab tabId={ mainSidebarDocumentTab }>
 				{ __( 'Email', 'mailpoet' ) }
 			</Tabs.Tab>
 			<Tabs.Tab tabId={ mainSidebarBlockTab }>{ __( 'Block' ) }</Tabs.Tab>

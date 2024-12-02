@@ -21,7 +21,7 @@ import { Tabs } from '../../private-apis';
  */
 import {
 	storeName,
-	mainSidebarEmailTab,
+	mainSidebarDocumentTab,
 	mainSidebarBlockTab,
 	mainSidebarId,
 } from '../../store';
@@ -58,7 +58,7 @@ function SidebarContent( props: Props ) {
 			{ ...props }
 		>
 			<Tabs.Context.Provider value={ tabsContextValue }>
-				<Tabs.TabPanel tabId={ mainSidebarEmailTab }>
+				<Tabs.TabPanel tabId={ mainSidebarDocumentTab }>
 					{ editorMode === 'template' ? (
 						<TemplateSettings />
 					) : (
@@ -89,13 +89,13 @@ export function Sidebar( props: Props ) {
 		if ( selectedBlockId ) {
 			void toggleSettingsSidebarActiveTab( mainSidebarBlockTab );
 		} else {
-			void toggleSettingsSidebarActiveTab( mainSidebarEmailTab );
+			void toggleSettingsSidebarActiveTab( mainSidebarDocumentTab );
 		}
 	}, [ selectedBlockId, toggleSettingsSidebarActiveTab ] );
 
 	return (
 		<Tabs
-			selectedTabId={ activeTab || mainSidebarEmailTab }
+			selectedTabId={ activeTab || mainSidebarDocumentTab }
 			onSelect={ ( key ) =>
 				toggleSettingsSidebarActiveTab( key as string )
 			}

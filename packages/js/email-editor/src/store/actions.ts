@@ -6,7 +6,7 @@ import { store as noticesStore } from '@wordpress/notices';
 import { store as editorStore } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
 import { apiFetch } from '@wordpress/data-controls';
-import { storeName, mainSidebarEmailTab } from './constants';
+import { storeName, mainSidebarDocumentTab } from './constants';
 import { SendingPreviewStatus, State, Feature, EmailTheme } from './types';
 
 export const toggleFeature =
@@ -34,7 +34,7 @@ export function updateSendPreviewEmail( toEmail: string ) {
 }
 
 export const openSidebar =
-	( key = mainSidebarEmailTab ) =>
+	( key = mainSidebarDocumentTab ) =>
 	( { registry } ): unknown =>
 		registry
 			.dispatch( interfaceStore )
