@@ -122,6 +122,13 @@ if [[ $SKIP_PLUGINS != "1" ]]; then
     unzip -q -o "$AUTOMATEWOO_ZIP" -d /wp-core/wp-content/plugins/
   fi
 
+  # Install MU plugin that disables blocks patterns caching – it's needed for acceptance tests
+  # caching is dependent on the path, however it differs for the test run and wp-cli so it produces notices and tests fail
+  if [[ ! -f "/wp-core/wp-content/mu-plugins/woo-cache-disable.php" ]]; then
+    mkdir -p /wp-core/wp-content/mu-plugins
+    echo "<?php add_filter('site_transient_woocommerce_blocks_patterns', '__return_false');" > "/wp-core/wp-content/mu-plugins/woo-cache-disable.php"
+  fi
+
   ACTIVATION_CONTEXT=$HTTP_HOST
   # For integration tests in multisite environment we need to activate the plugin for correct site that is loaded in tests
   # The acceptance tests activate/deactivate plugins using a helper.
