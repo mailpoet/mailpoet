@@ -1,0 +1,3 @@
+export const ACTION_TYPES = {
+	SET_NEWSLETTER_DATA: 'SET_NEWSLETTER_DATA',
+} as const;

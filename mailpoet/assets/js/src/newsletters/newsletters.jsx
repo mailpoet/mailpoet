@@ -38,6 +38,9 @@ import { CorruptEmailNotice } from '../notices/corrupt-email-notice';
 import { LegacyAutomaticEmailsNotice } from '../notices/legacy-automatic-emails-notice';
 import { TopBarWithBeamer } from '../common/top-bar/top-bar';
 import { BackButton, PageHeader } from '../common/page-header';
+import { createStore, newsletterStoreName } from './store';
+import { useDispatch } from '@wordpress/data';
+import { useEffect } from 'react';
 
 const trackTabSwitch = (tabKey) =>
   MailPoet.trackEvent(`Tab Emails > ${tabKey} clicked`);
@@ -201,6 +204,13 @@ const routes = [
 ];
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(newsletterStoreName).setNewsletterData("newsletters");
+  }
+  , []);
+
   return (
     <GlobalContext.Provider value={useGlobalContextValue(window)}>
       <HashRouter>
@@ -248,6 +258,7 @@ function App() {
 const container = document.getElementById('newsletters_container');
 if (container) {
   registerTranslations();
+  createStore();
   const root = createRoot(container);
   root.render(<App />);
 }
