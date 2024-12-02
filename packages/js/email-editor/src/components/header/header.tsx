@@ -1,3 +1,6 @@
+/**
+ * WordPress dependencies
+ */
 import { useRef, useState } from '@wordpress/element';
 import { PinnedItems } from '@wordpress/interface';
 import { Button, ToolbarItem as WpToolbarItem } from '@wordpress/components';
@@ -13,6 +16,10 @@ import { DocumentBar, store as editorStore } from '@wordpress/editor';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { __ } from '@wordpress/i18n';
 import { plus, listView, undo, redo, next, previous } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 import classnames from 'classnames';
 import { storeName } from '../../store';
 import { MoreMenu } from './more-menu';
@@ -20,6 +27,7 @@ import { PreviewDropdown } from '../preview';
 import { SaveButton } from './save-button';
 import { CampaignName } from './campaign-name';
 import { SendButton } from './send-button';
+import { useEditorMode } from '../../hooks';
 
 // Build type for ToolbarItem contains only "as" and "children" properties but it takes all props from
 // component passed to "as" property (in this case Button). So as fix for TS errors we need to pass all props from Button to ToolbarItem.
@@ -57,11 +65,7 @@ export function Header() {
 		isBlockSelected,
 		hasUndo,
 		hasRedo,
-		hasDocumentNavigationHistory,
 	} = useSelect( ( select ) => {
-		const { getEditorSettings } = select( editorStore );
-		const editorSettings = getEditorSettings();
-
 		return {
 			// @ts-expect-error missing types.
 			isInserterSidebarOpened: select( editorStore ).isInserterOpened(),
@@ -75,12 +79,10 @@ export function Header() {
 				!! select( blockEditorStore ).getBlockSelectionStart(),
 			hasUndo: select( coreDataStore ).hasUndo(),
 			hasRedo: select( coreDataStore ).hasRedo(),
-
-			hasDocumentNavigationHistory:
-				// @ts-expect-error No types for this exist yet.
-				!! editorSettings.onNavigateToPreviousEntityRecord,
 		};
 	}, [] );
+
+	const [ editorMode ] = useEditorMode();
 
 	const preventDefault = ( event ) => {
 		event.preventDefault();
@@ -198,7 +200,7 @@ export function Header() {
 				! isBlockSelected ||
 				isBlockToolsCollapsed ) && (
 				<div className="editor-header__center edit-post-header__center">
-					{ hasDocumentNavigationHistory ? (
+					{ editorMode === 'template' ? (
 						<DocumentBar />
 					) : (
 						<CampaignName />

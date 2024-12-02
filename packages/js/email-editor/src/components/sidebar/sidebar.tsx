@@ -10,7 +10,6 @@ import {
 } from '@wordpress/block-editor';
 import { ComplementaryArea } from '@wordpress/interface';
 import { drawerRight } from '@wordpress/icons';
-import { store as editorStore } from '@wordpress/editor';
 
 /**
  * WordPress private dependencies
@@ -29,19 +28,14 @@ import {
 import { Header } from './header';
 import { EmailSettings } from './email-settings';
 import { TemplateSettings } from './template-settings';
+import { useEditorMode } from '../../hooks';
 
 import './index.scss';
 
 type Props = React.ComponentProps< typeof ComplementaryArea >;
 
 function SidebarContent( props: Props ) {
-	const { isEditingTemplate } = useSelect(
-		( select ) => ( {
-			isEditingTemplate:
-				select( editorStore ).getCurrentPostType() === 'wp_template',
-		} ),
-		[]
-	);
+	const [ editorMode ] = useEditorMode();
 
 	const tabListRef = useRef( null );
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -65,7 +59,7 @@ function SidebarContent( props: Props ) {
 		>
 			<Tabs.Context.Provider value={ tabsContextValue }>
 				<Tabs.TabPanel tabId={ mainSidebarEmailTab }>
-					{ isEditingTemplate ? (
+					{ editorMode === 'template' ? (
 						<TemplateSettings />
 					) : (
 						<EmailSettings />

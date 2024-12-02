@@ -1,14 +1,13 @@
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import {
-	store as editorStore,
 	// @ts-expect-error No types available for useEntitiesSavedStatesIsDirty
 	useEntitiesSavedStatesIsDirty,
 } from '@wordpress/editor';
 import { useEntityProp } from '@wordpress/core-data';
 import { MailPoetEmailData, storeName } from '../../store';
 import { useSelect } from '@wordpress/data';
-import { useContentValidation } from '../../hooks';
+import { useContentValidation, useEditorMode } from '../../hooks';
 
 export function SendButton() {
 	const [ mailpoetEmail ] = useEntityProp(
@@ -20,18 +19,18 @@ export function SendButton() {
 	const { isDirty } = useEntitiesSavedStatesIsDirty();
 
 	const { validateContent, isValid } = useContentValidation();
-	const { hasEmptyContent, isEmailSent, isEditingTemplate } = useSelect(
+	const { hasEmptyContent, isEmailSent } = useSelect(
 		( select ) => ( {
 			hasEmptyContent: select( storeName ).hasEmptyContent(),
 			isEmailSent: select( storeName ).isEmailSent(),
-			isEditingTemplate:
-				select( editorStore ).getCurrentPostType() === 'wp_template',
 		} ),
 		[]
 	);
 
+	const [ editorMode ] = useEditorMode();
+
 	const isDisabled =
-		isEditingTemplate ||
+		editorMode === 'template' ||
 		hasEmptyContent ||
 		isEmailSent ||
 		isValid ||

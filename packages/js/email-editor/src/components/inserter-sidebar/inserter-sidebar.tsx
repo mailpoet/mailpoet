@@ -1,3 +1,6 @@
+/**
+ * WordPress dependencies
+ */
 import {
 	__experimentalLibrary as Library, // eslint-disable-line
 	store as blockEditorStore,
@@ -5,17 +8,22 @@ import {
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';
 
+/**
+ * Internal dependencies
+ */
+import { useEditorMode } from '../../hooks';
+
 export function InserterSidebar() {
-	const { postContentId, isEditingEmailContent } = useSelect( ( select ) => {
+	const { postContentId } = useSelect( ( select ) => {
 		const blocks = select( blockEditorStore ).getBlocks();
 		return {
 			postContentId: blocks.find(
 				( block ) => block.name === 'core/post-content'
 			)?.clientId,
-			isEditingEmailContent:
-				select( editorStore ).getCurrentPostType() !== 'wp_template',
 		};
 	} );
+
+	const [ editorMode ] = useEditorMode();
 
 	// @ts-expect-error missing types.
 	const { setIsInserterOpened } = useDispatch( editorStore );
@@ -28,7 +36,7 @@ export function InserterSidebar() {
 					showInserterHelpPanel={ false }
 					// In the email content mode we insert primarily into the post content block.
 					rootClientId={
-						isEditingEmailContent ? postContentId : null
+						editorMode === 'email' ? postContentId : null
 					}
 					onClose={ () => setIsInserterOpened( false ) }
 				/>
