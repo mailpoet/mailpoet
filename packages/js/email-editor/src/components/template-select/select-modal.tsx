@@ -20,6 +20,8 @@ const BLANK_TEMPLATE = 'email-general';
 export function SelectTemplateModal( { onSelectCallback } ) {
 	const [ templates ] = usePreviewTemplates();
 
+	const hasTemplates = templates?.length > 0;
+
 	const handleTemplateSelection = ( template: TemplatePreview ) => {
 		void dispatch( editorStore ).resetEditorBlocks(
 			template.patternParsed
@@ -118,10 +120,12 @@ export function SelectTemplateModal( { onSelectCallback } ) {
 						) ) }
 					</div>
 
-					<Flex justify="flex-end">
+					<Flex justify={ hasTemplates ? 'flex-end' : 'center' }>
 						<FlexItem>
 							<Button
-								variant="tertiary"
+								variant={
+									hasTemplates ? 'tertiary' : 'primary'
+								}
 								onClick={ () => handleCloseWithoutSelection() }
 							>
 								{ __( 'Start from scratch', 'mailpoet' ) }
