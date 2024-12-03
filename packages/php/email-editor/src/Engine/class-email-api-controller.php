@@ -8,6 +8,8 @@
 declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine;
 
+use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tag;
+use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
 use MailPoet\EmailEditor\Validator\Builder;
 use WP_Post;
 use WP_REST_Request;
@@ -17,6 +19,21 @@ use WP_REST_Response;
  * Class for email API controller.
  */
 class Email_Api_Controller {
+	/**
+	 * Personalization tags registry to get all personalization tags.
+	 *
+	 * @var Personalization_Tags_Registry
+	 */
+	private Personalization_Tags_Registry $personalization_tags_registry;
+
+	/**
+	 * Email_Api_Controller constructor with all dependencies.
+	 *
+	 * @param Personalization_Tags_Registry $personalization_tags_registry Personalization tags registry.
+	 */
+	public function __construct( Personalization_Tags_Registry $personalization_tags_registry ) {
+		$this->personalization_tags_registry = $personalization_tags_registry;
+	}
 
 	/**
 	 * Returns email specific data.
@@ -66,6 +83,34 @@ class Email_Api_Controller {
 		} catch ( \Exception $exception ) {
 			return new WP_REST_Response( array( 'error' => $exception->getMessage() ), 400 );
 		}
+	}
+
+	/**
+	 * Returns all registered personalization tags.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function get_personalization_tags(): WP_REST_Response {
+		$tags = $this->personalization_tags_registry->get_all();
+		return new WP_REST_Response(
+			array(
+				'success' => true,
+				'result'  => array_values(
+					array_map(
+						function ( Personalization_Tag $tag ) {
+							return array(
+								'name'       => $tag->get_name(),
+								'token'      => $tag->get_token(),
+								'category'   => $tag->get_category(),
+								'attributes' => $tag->get_attributes(),
+							);
+						},
+						$tags
+					),
+				),
+			),
+			200
+		);
 	}
 
 	/**

@@ -154,12 +154,6 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 			}
 		);
 		$container->set(
-			Email_Api_Controller::class,
-			function () {
-				return new Email_Api_Controller();
-			}
-		);
-		$container->set(
 			BlockTypesController::class,
 			function () {
 				return $this->createMock( BlockTypesController::class );
@@ -296,6 +290,14 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 			Personalization_Tags_Registry::class,
 			function () {
 				return new Personalization_Tags_Registry();
+			}
+		);
+		$container->set(
+			Email_Api_Controller::class,
+			function ( $container ) {
+				return new Email_Api_Controller(
+					$container->get( Personalization_Tags_Registry::class ),
+				);
 			}
 		);
 		$container->set(
