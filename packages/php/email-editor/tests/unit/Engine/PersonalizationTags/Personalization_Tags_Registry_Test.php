@@ -49,15 +49,44 @@ class PersonalizationTagsRegistryTest extends TestCase {
 		);
 
 		// Retrieve the tag.
-		$tag = $this->registry->get_by_token( 'first_name' );
+		$tag = $this->registry->get_by_token( '[first_name]' );
 
 		// Assert that the tag is registered correctly.
 		$this->assertNotNull( $tag );
 		$this->assertSame( 'first_name_tag', $tag->get_name() );
-		$this->assertSame( 'first_name', $tag->get_token() );
+		$this->assertSame( '[first_name]', $tag->get_token() );
 		$this->assertSame( 'Subscriber Info', $tag->get_category() );
 		$this->assertSame( 'Personalized Value', $tag->execute_callback( array(), array() ) );
 		$this->assertSame( array( 'description' => 'First name of the subscriber' ), $tag->get_attributes() );
+	}
+
+	/**
+	 * Register tag and retrieve it.
+	 */
+	public function testRegisterAndGetTagWithBrackets(): void {
+		$callback = function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Callback parameters are required.
+			return 'Personalized Value';
+		};
+
+		// Register a tag.
+		$this->registry->register(
+			new Personalization_Tag(
+				'Last Name',
+				'[last_name]',
+				'Subscriber Info',
+				$callback
+			)
+		);
+
+		// Retrieve the tag.
+		$tag = $this->registry->get_by_token( '[last_name]' );
+
+		// Assert that the tag is registered correctly.
+		$this->assertNotNull( $tag );
+		$this->assertSame( 'Last Name', $tag->get_name() );
+		$this->assertSame( '[last_name]', $tag->get_token() );
+		$this->assertSame( 'Subscriber Info', $tag->get_category() );
+		$this->assertSame( 'Personalized Value', $tag->execute_callback( array(), array() ) );
 	}
 
 	/**
@@ -80,14 +109,14 @@ class PersonalizationTagsRegistryTest extends TestCase {
 		};
 
 		// Register a tag.
-		$this->registry->register( new Personalization_Tag( 'tag1', 'tag-1', 'Category 1', $callback1 ) );
+		$this->registry->register( new Personalization_Tag( 'tag1', '[tag-1]', 'Category 1', $callback1 ) );
 
 		// Attempt to register the same tag again.
-		$this->registry->register( new Personalization_Tag( 'tag2', 'tag-2', 'Category 2', $callback2 ) );
+		$this->registry->register( new Personalization_Tag( 'tag2', '[tag-2]', 'Category 2', $callback2 ) );
 
 		// Retrieve the tag and ensure the first registration is preserved.
 		/** @var Personalization_Tag $tag */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort -- used for phpstan
-		$tag = $this->registry->get_by_token( 'tag-1' );
+		$tag = $this->registry->get_by_token( '[tag-1]' );
 		$this->assertSame( 'tag1', $tag->get_name() );
 		$this->assertSame( 'Category 1', $tag->get_category() );
 		$this->assertSame( 'Value 1', $tag->execute_callback( array(), array() ) );
@@ -102,16 +131,16 @@ class PersonalizationTagsRegistryTest extends TestCase {
 		};
 
 		// Register multiple tags.
-		$this->registry->register( new Personalization_Tag( 'tag1', 'tag-1', 'Category 1', $callback ) );
-		$this->registry->register( new Personalization_Tag( 'tag2', 'tag-2', 'Category 2', $callback ) );
+		$this->registry->register( new Personalization_Tag( 'tag1', '[tag-1]', 'Category 1', $callback ) );
+		$this->registry->register( new Personalization_Tag( 'tag2', '[tag-2]', 'Category 2', $callback ) );
 
 		// Retrieve all tags.
 		$all_tags = $this->registry->get_all();
 
 		// Assert the number of registered tags.
 		$this->assertCount( 2, $all_tags );
-		$this->assertArrayHasKey( 'tag-1', $all_tags );
-		$this->assertArrayHasKey( 'tag-2', $all_tags );
+		$this->assertArrayHasKey( '[tag-1]', $all_tags );
+		$this->assertArrayHasKey( '[tag-2]', $all_tags );
 	}
 
 	/**

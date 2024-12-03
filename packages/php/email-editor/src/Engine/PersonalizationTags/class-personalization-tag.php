@@ -72,8 +72,9 @@ class Personalization_Tag {
 		callable $callback,
 		array $attributes = array()
 	) {
-		$this->name       = $name;
-		$this->token      = $token;
+		$this->name = $name;
+		// Because Gutenberg does not wrap the token with square brackets, we need to add them here.
+		$this->token      = strpos( $token, '[' ) === 0 ? $token : "[$token]";
 		$this->category   = $category;
 		$this->callback   = $callback;
 		$this->attributes = $attributes;

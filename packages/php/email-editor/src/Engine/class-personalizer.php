@@ -112,8 +112,8 @@ class Personalizer {
 		);
 
 		// Step 1: Separate the tag and attributes.
-		if ( preg_match( '/^([a-zA-Z0-9\-\/]+)\s*(.*)$/', trim( $token ), $matches ) ) {
-			$result['token']   = $matches[1]; // The tag part (e.g., "mailpoet/subscriber-firstname").
+		if ( preg_match( '/^\[([a-zA-Z0-9\-\/]+)\s*(.*?)\]$/', trim( $token ), $matches ) ) {
+			$result['token']   = "[{$matches[1]}]"; // The tag part (e.g., "[mailpoet/subscriber-firstname]").
 			$attributes_string = $matches[2]; // The attributes part (e.g., 'default="subscriber"').
 
 			// Step 2: Extract attributes from the attribute string.

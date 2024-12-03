@@ -55,7 +55,7 @@ class Personalizer_Test extends \MailPoetTest {
 		);
 
 		$this->personalizer->set_context( array( 'subscriber_name' => 'John' ) );
-		$html_content = '<p>Hello, <!--user-firstname-->!</p>';
+		$html_content = '<p>Hello, <!--[user-firstname]-->!</p>';
 		$this->assertSame( '<p>Hello, John!</p>', $this->personalizer->personalize_content( $html_content ) );
 	}
 
@@ -67,7 +67,7 @@ class Personalizer_Test extends \MailPoetTest {
 		$this->tags_registry->register(
 			new Personalization_Tag(
 				'first_name',
-				'user/firstname',
+				'[user/firstname]',
 				'Subscriber Info',
 				function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The $args parameter is not used in this test.
 					return $context['subscriber_name'] ?? 'Default Name';
@@ -96,8 +96,8 @@ class Personalizer_Test extends \MailPoetTest {
 
 		$html_content = '
 			<div>
-				<h1>Hello, <!--user/firstname-->!</h1>
-				<p>Your email is <!--user/email-->.</p>
+				<h1>Hello, <!--[user/firstname]-->!</h1>
+				<p>Your email is <!--[user/email]-->.</p>
 			</div>
 		';
 
@@ -117,9 +117,9 @@ class Personalizer_Test extends \MailPoetTest {
 	 * Test a missing tag in the registry.
 	 */
 	public function testMissingTagInRegistry(): void {
-		$html_content         = '<p>Hello, <!--mailpoet/unknown-tag-->!</p>';
+		$html_content         = '<p>Hello, <!--[mailpoet/unknown-tag]-->!</p>';
 		$personalized_content = $this->personalizer->personalize_content( $html_content );
-		$this->assertSame( '<p>Hello, <!--mailpoet/unknown-tag-->!</p>', $personalized_content );
+		$this->assertSame( '<p>Hello, <!--[mailpoet/unknown-tag]-->!</p>', $personalized_content );
 	}
 
 	/**
@@ -129,7 +129,7 @@ class Personalizer_Test extends \MailPoetTest {
 		$this->tags_registry->register(
 			new Personalization_Tag(
 				'default_name',
-				'user/firstname',
+				'[user/firstname]',
 				'Subscriber Info',
 				function ( $context, $args ) {
 					return $args['default'] ?? 'Default Name';
@@ -137,7 +137,7 @@ class Personalizer_Test extends \MailPoetTest {
 			)
 		);
 
-		$html_content = '<p>Hello, <!--user/firstname default="Guest"-->!</p>';
+		$html_content = '<p>Hello, <!--[user/firstname default="Guest"]-->!</p>';
 		$this->assertSame( '<p>Hello, Guest!</p>', $this->personalizer->personalize_content( $html_content ) );
 	}
 
@@ -148,7 +148,7 @@ class Personalizer_Test extends \MailPoetTest {
 		$this->tags_registry->register(
 			new Personalization_Tag(
 				'default_name',
-				'user/firstname',
+				'[user/firstname]',
 				'Subscriber Info',
 				function ( $context, $args ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The $args parameter is not used in this test.
 					return $context['user_name'] ?? 'Default Name';
@@ -159,10 +159,10 @@ class Personalizer_Test extends \MailPoetTest {
 		$html_content = '
 			<html>
 				<head>
-					<title>Welcome, <!--user/firstname default="Guest"-->!</title>
+					<title>Welcome, <!--[user/firstname default="Guest"]-->!</title>
 			</head>
 			<body>
-				<p>Hello, <!--user/firstname default="Guest"-->!</p>
+				<p>Hello, <!--[user/firstname default="Guest"]-->!</p>
 			</html>
 		';
 		$this->personalizer->set_context( array( 'user_name' => 'John' ) );
