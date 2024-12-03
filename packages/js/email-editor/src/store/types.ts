@@ -166,6 +166,13 @@ export type EmailEditorUrls = {
 	listings: string;
 };
 
+export type PersonalizationTag = {
+	name: string;
+	token: string;
+	category: string;
+	attributes: string[];
+};
+
 export type State = {
 	inserterSidebar: {
 		isOpened: boolean;
@@ -195,12 +202,7 @@ export type State = {
 	};
 	personalizationTags: {
 		isModalOpened: boolean;
-		list: {
-			name: string;
-			token: string;
-			category: string;
-			attributes: string[];
-		}[];
+		list: PersonalizationTag[];
 	};
 };
 
