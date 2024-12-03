@@ -228,6 +228,13 @@ export function MailerError({
     );
   }
 
+  let checkSettingsNotice = null;
+  if (mtaMethod === 'PHPMail') {
+    checkSettingsNotice = <PHPMailerCheckSettingsNotice />;
+  } else if (mtaMethod !== 'MailPoet') {
+    checkSettingsNotice = <MailerCheckSettingsNotice />;
+  }
+
   return (
     <div className={className}>
       <p>
@@ -242,11 +249,7 @@ export function MailerError({
             )}
         : <i>{message}</i>
       </p>
-      {mtaMethod === 'PHPMail' ? (
-        <PHPMailerCheckSettingsNotice />
-      ) : (
-        <MailerCheckSettingsNotice />
-      )}
+      {checkSettingsNotice}
       <p>
         <a
           href="#"
