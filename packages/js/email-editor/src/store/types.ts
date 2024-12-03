@@ -228,7 +228,10 @@ export type TemplatePreview = {
 	previewContentParsed: BlockInstance[];
 	emailParsed: BlockInstance[];
 	template: EmailTemplatePreview;
+	category?: TemplateCategory;
 };
+
+export type TemplateCategory = 'recent' | 'basic';
 
 export type Feature =
 	| 'fullscreenMode'

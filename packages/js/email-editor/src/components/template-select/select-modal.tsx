@@ -1,4 +1,4 @@
-
+import { useState } from '@wordpress/element';
 import { store as editorStore } from '@wordpress/editor';
 import { dispatch } from '@wordpress/data';
 import {
@@ -15,12 +15,39 @@ import { TemplateCategoriesListSidebar } from './template-categories-list-sideba
 
 const BLANK_TEMPLATE = 'email-general';
 
-export function SelectTemplateModal( {
-	onSelectCallback,
-	closeCallback = null,
-	previewContent = '',
+function SelectTemplateBody( {
+	initialCategory,
+	templateCategories,
+	templates,
+	handleTemplateSelection,
 } ) {
-	const [ templates ] = usePreviewTemplates( previewContent );
+	const [ selectedCategory, setSelectedCategory ] = useState(
+		initialCategory?.name
+	);
+
+	return (
+		<div className="block-editor-block-patterns-explorer">
+			<TemplateCategoriesListSidebar
+				templateCategories={ templateCategories }
+				selectedCategory={ selectedCategory }
+				onClickCategory={ setSelectedCategory }
+			/>
+
+			<TemplateList
+				templates={ templates }
+				onTemplateSelection={ handleTemplateSelection }
+				selectedCategory={ selectedCategory }
+			/>
+		</div>
+	);
+}
+
+export function SelectTemplateModal( {
+                                       onSelectCallback,
+                                       closeCallback = null,
+                                       previewContent = '',
+                                     } ) {
+  const [ templates ] = usePreviewTemplates( previewContent );
 
 	const hasTemplates = templates?.length > 0;
 
@@ -49,44 +76,43 @@ export function SelectTemplateModal( {
 		handleTemplateSelection( blankTemplate );
 	};
 
-  const dummyTemplateCategories = [
-    {
-      name: 'recent',
-      label: 'Recent'
-    },
-    {
-      name: 'basic',
-      label: 'Basic'
-    }
-  ];
-
-  const onClickCategory = () => {}
+	const dummyTemplateCategories = [
+		{
+			name: 'recent',
+			label: 'Recent',
+		},
+		{
+			name: 'basic',
+			label: 'Basic',
+		},
+	];
 
 	return (
 		<Modal
-			title="Select a template"
-			onRequestClose={ () =>
-				closeCallback ? closeCallback() : handleCloseWithoutSelection()
-			}
+			title={ __( 'Select a template', 'mailpoet' ) }
+      onRequestClose={ () =>
+        closeCallback ? closeCallback() : handleCloseWithoutSelection()
+      }
 			isFullScreen
 		>
-			<div className="block-editor-block-patterns-explorer">
-        <TemplateCategoriesListSidebar templateCategories={dummyTemplateCategories} selectedCategory={dummyTemplateCategories[0].name} onClickCategory={onClickCategory} />
+			<SelectTemplateBody
+				initialCategory={ dummyTemplateCategories[ 0 ] }
+				templateCategories={ dummyTemplateCategories }
+				templates={ templates }
+				handleTemplateSelection={ handleTemplateSelection }
+			/>
 
-        <TemplateList templates={templates} onTemplateSelection={ handleTemplateSelection} />
-
-        <Flex justify="flex-end">
-          <FlexItem>
-            <Button
-              variant="tertiary"
-              onClick={ () => handleCloseWithoutSelection() }
-              isBusy={ ! hasTemplates }
-            >
-              { __( 'Start from scratch', 'mailpoet' ) }
-            </Button>
-          </FlexItem>
-        </Flex>
-			</div>
+      <Flex justify="flex-end">
+        <FlexItem>
+          <Button
+            variant="tertiary"
+            onClick={ () => handleCloseWithoutSelection() }
+            isBusy={ ! hasTemplates }
+          >
+            { __( 'Start from scratch', 'mailpoet' ) }
+          </Button>
+        </FlexItem>
+      </Flex>
 		</Modal>
 	);
 }

@@ -103,6 +103,7 @@ export function usePreviewTemplates(
 						? contentPatternBlocksGeneral
 						: contentPatternBlocks,
 				template,
+				category: 'basic', // TODO: This will be updated once template category is implemented
 			};
 		} ),
 	];
