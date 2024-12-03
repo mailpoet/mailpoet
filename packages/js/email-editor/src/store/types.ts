@@ -195,6 +195,12 @@ export type State = {
 	};
 	personalizationTags: {
 		isModalOpened: boolean;
+		list: {
+			name: string;
+			token: string;
+			category: string;
+			attributes: string[];
+		}[];
 	};
 };
 

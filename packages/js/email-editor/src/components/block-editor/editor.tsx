@@ -1,8 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { useSelect } from '@wordpress/data';
-
+import { useDispatch, useSelect } from '@wordpress/data';
 import {
 	ErrorBoundary,
 	PostLockedModal,
@@ -24,6 +23,7 @@ import { unlockPatternsRelatedSelectorsFromCoreStore } from '../../private-apis'
 import { storeName } from '../../store';
 import { Layout } from './layout';
 import { useNavigateToEntityRecord } from '../../hooks/use-navigate-to-entity-record';
+import { useEffect } from 'react';
 
 export function InnerEditor( {
 	postId: initialPostId,
@@ -32,6 +32,12 @@ export function InnerEditor( {
 	initialEdits,
 	...props
 } ) {
+	const { loadPersonalizationTags } = useDispatch( storeName );
+
+	useEffect( () => {
+		void loadPersonalizationTags();
+	}, [ loadPersonalizationTags ] );
+
 	const {
 		currentPost,
 		onNavigateToEntityRecord,

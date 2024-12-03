@@ -23,6 +23,14 @@ export function reducer( state: State, action ): State {
 					activeTab: action.state.activeTab,
 				},
 			};
+		case 'SET_PERSONALIZATION_TAGS':
+			return {
+				...state,
+				personalizationTags: {
+					...state.personalizationTags,
+					list: action.personalizationTags,
+				},
+			};
 		default:
 			return state;
 	}

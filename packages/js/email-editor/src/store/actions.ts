@@ -266,4 +266,15 @@ export function revertAndSaveTemplate( template ) {
 				);
 		}
 	};
+
+export function* loadPersonalizationTags() {
+	const data = yield apiFetch( {
+		path: `/mailpoet-email-editor/v1/get_personalization_tags`,
+		method: 'GET',
+	} );
+
+	return {
+		type: 'SET_PERSONALIZATION_TAGS',
+		personalizationTags: data.result,
+	} as const;
 }

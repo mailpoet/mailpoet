@@ -40,6 +40,7 @@ export function getInitialState(): State {
 		},
 		personalizationTags: {
 			isModalOpened: false,
+			list: [],
 		},
 	};
 }
