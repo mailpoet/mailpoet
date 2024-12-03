@@ -41,18 +41,6 @@ pnpm run format                             # runs prettier on files. This uses 
 * **.sccs files** – we don’t write much CSS. We load styles for the post editor (this is done in page controller) but sometimes we need some adjustments of have a custom ui
 * **Custom blocks** - MailPoet custom blocks should be built in [mailpoet-custom-email-editor-blocks folder](https://github.com/mailpoet/mailpoet/tree/13bf305aeb29bbadd0695ee02a3735e62cc4f21f/mailpoet/assets/js/src/mailpoet-custom-email-editor-blocks)
 
-### Theme
-Basically theme.json and ThemeController. We don’t use theme.json from the site’s theme. Not every site is using a block theme.
-Our current approach is that for email, we have our own theme and we want to handpick settings from the site’s theme to achieve a similar design as the site. Currently, we pick only the color palette.
-
-### Templates
-There is no official API for plugins to add templates (there will be in WP6.7). For now, we use low level hooks to add email templates, so they can be available for consumption in the email editor (via Rest API) and for the renderer.
-This is done in Templates.php.
-
-### Patterns
-Similar to templates but for patterns. Currently, we have one email pattern with initial email content.
-
-
 ## Email clients
 
 ### WEB CLIENTS
