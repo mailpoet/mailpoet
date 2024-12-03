@@ -1,19 +1,17 @@
-// @ts-expect-error No types available for this component
-import { BlockPreview } from '@wordpress/block-editor';
+
 import { store as editorStore } from '@wordpress/editor';
 import { dispatch } from '@wordpress/data';
 import {
 	Modal,
-	__experimentalHStack as HStack, // eslint-disable-line
 	Button,
 	Flex,
 	FlexItem,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-
-import { Async } from './async';
 import { usePreviewTemplates } from '../../hooks';
 import { storeName, TemplatePreview } from '../../store';
+import { TemplateList } from './template-list';
+import { TemplateCategoriesListSidebar } from './template-categories-list-sidebar';
 
 const BLANK_TEMPLATE = 'email-general';
 
@@ -51,6 +49,19 @@ export function SelectTemplateModal( {
 		handleTemplateSelection( blankTemplate );
 	};
 
+  const dummyTemplateCategories = [
+    {
+      name: 'recent',
+      label: 'Recent'
+    },
+    {
+      name: 'basic',
+      label: 'Basic'
+    }
+  ];
+
+  const onClickCategory = () => {}
+
 	return (
 		<Modal
 			title="Select a template"
@@ -60,90 +71,21 @@ export function SelectTemplateModal( {
 			isFullScreen
 		>
 			<div className="block-editor-block-patterns-explorer">
-				<div className="block-editor-block-patterns-explorer__sidebar">
-					<div className="block-editor-block-patterns-explorer__sidebar__categories-list">
-						<Button
-							key="category"
-							label="Category"
-							className="block-editor-block-patterns-explorer__sidebar__categories-list__item"
-							isPressed
-							onClick={ () => {} }
-						>
-							Dummy Category
-						</Button>
-					</div>
-				</div>
-				<div className="block-editor-block-patterns-explorer__list">
-					<div
-						className="block-editor-block-patterns-list"
-						role="listbox"
-					>
-						{ templates.map( ( template ) => (
-							<div
-								key={ template.slug }
-								className="block-editor-block-patterns-list__list-item"
-							>
-								<div
-									className="block-editor-block-patterns-list__item"
-									role="button"
-									tabIndex={ 0 }
-									onClick={ () => {
-										handleTemplateSelection( template );
-									} }
-									onKeyPress={ ( event ) => {
-										if (
-											event.key === 'Enter' ||
-											event.key === ' '
-										) {
-											handleTemplateSelection( template );
-										}
-									} }
-								>
-									<Async
-										placeholder={
-											<p>rendering template</p>
-										}
-									>
-										<BlockPreview
-											blocks={
-												template.previewContentParsed
-											}
-											viewportWidth={ 900 }
-											minHeight={ 300 }
-											additionalStyles={ [
-												{
-													css: template.template
-														.email_theme_css,
-												},
-											] }
-										/>
+        <TemplateCategoriesListSidebar templateCategories={dummyTemplateCategories} selectedCategory={dummyTemplateCategories[0].name} onClickCategory={onClickCategory} />
 
-										<HStack className="block-editor-patterns__pattern-details">
-											<div className="block-editor-block-patterns-list__item-title">
-												{
-													template.template.title
-														.rendered
-												}
-											</div>
-										</HStack>
-									</Async>
-								</div>
-							</div>
-						) ) }
-					</div>
+        <TemplateList templates={templates} onTemplateSelection={ handleTemplateSelection} />
 
-					<Flex justify="flex-end">
-						<FlexItem>
-							<Button
-								variant="tertiary"
-								onClick={ () => handleCloseWithoutSelection() }
-								isBusy={ ! hasTemplates }
-							>
-								{ __( 'Start from scratch', 'mailpoet' ) }
-							</Button>
-						</FlexItem>
-					</Flex>
-				</div>
+        <Flex justify="flex-end">
+          <FlexItem>
+            <Button
+              variant="tertiary"
+              onClick={ () => handleCloseWithoutSelection() }
+              isBusy={ ! hasTemplates }
+            >
+              { __( 'Start from scratch', 'mailpoet' ) }
+            </Button>
+          </FlexItem>
+        </Flex>
 			</div>
 		</Modal>
 	);
