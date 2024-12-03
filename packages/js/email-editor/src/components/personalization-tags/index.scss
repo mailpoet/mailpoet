@@ -1,3 +1,5 @@
+@import '~@wordpress/base-styles/colors';
+
 .mailpoet-personalization-tags-modal {
   p:first-child {
     margin-top: 0;
@@ -17,7 +19,7 @@
 
     .mailpoet-personalization-tags-modal__category-group-item {
       align-items: stretch;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid var(--wp-components-color-gray-300, #ddd);
       display: flex;
       padding: 16px 0;
 
@@ -37,6 +39,35 @@
         height: auto;
         line-height: 2;
       }
+    }
+  }
+
+  .mailpoet-personalization-tags-modal__menu {
+    div[role="group"] {
+      display: flex;
+    }
+
+    .mailpoet-personalization-tags-modal__menu-item-active {
+      color: black;
+      font-weight: bold;
+    }
+
+    button {
+      align-items: center;
+      color: #0a7aff;
+      display: flex;
+      gap: 8px;
+      padding: 6px;
+      width: auto;
+      span  {
+        min-width: auto;
+      }
+    }
+    .mailpoet-personalization-tags-modal__menu-separator {
+      background-color: var(--wp-components-color-gray-700, #757575);
+      height: 16px;
+      margin: 10px 4px;
+      width: 1px;
     }
   }
 }
