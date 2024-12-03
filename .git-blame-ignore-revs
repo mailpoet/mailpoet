@@ -41,10 +41,13 @@ e66c76133ec3ef667e382203426d91a4b4aa5174
 ab27eaee2df740c0add4331a7f8c115a87ecfa2b
 
 # Move email editor to JS packages folder
-374a79c49b6051a2cb2dc7b5cee5c6e69de16aba
+912282f57ccc839491ff951ec5cf7aa10c14f429
 
 # Switch email editor js packages to WP coding style
-d8ba1af97864e373b81dd08bd884055a138e1306
+b2fb96f8793b63db629d5237010d87332330c51e
 
 # Email editor Prettier autoformatting
-cdf89c46599e68648a4522d968a0d1948895060a
+8c604453b1d82e3a2c731241e1c96ea8b32ec716
+
+# Move email editor components out of the engine folder
+1c3ea9cd0a5fc8848a64d840e2fa16a6c7d8c1fe

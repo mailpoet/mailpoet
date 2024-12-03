@@ -38,6 +38,7 @@ class Templates_Test extends \MailPoetTest {
 		$template_id = 'mailpoet/mailpoet//email-general';
 		$template    = $this->templates->get_block_template( $template_id );
 
+		self::assertInstanceOf( \WP_Block_Template::class, $template );
 		verify( $template->slug )->equals( 'email-general' );
 		verify( $template->id )->equals( 'mailpoet/mailpoet//email-general' );
 		verify( $template->title )->equals( 'General Email' );
