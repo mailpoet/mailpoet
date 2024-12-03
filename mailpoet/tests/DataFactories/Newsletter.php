@@ -507,6 +507,9 @@ class Newsletter {
       if ($queue['processed_at'] ?? null) {
         $scheduledTask->setProcessedAt($queue['processed_at']);
       }
+      if ($queue['scheduled_at'] ?? null) {
+        $scheduledTask->setScheduledAt($queue['scheduled_at']);
+      }
       if (isset($queue['meta'])) {
         $sendingQueue->setMeta($queue['meta']);
       }
