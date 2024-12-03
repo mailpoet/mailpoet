@@ -1,5 +1,11 @@
 import * as React from '@wordpress/element';
-import { Modal, Button, MenuGroup, MenuItem } from '@wordpress/components';
+import {
+	Modal,
+	Button,
+	MenuGroup,
+	MenuItem,
+	SearchControl,
+} from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { PersonalizationTag, storeName } from '../../store';
 import { useDispatch, useSelect } from '@wordpress/data';
@@ -9,6 +15,7 @@ import { useState } from '@wordpress/element';
 
 const PersonalizationTagsModal = () => {
 	const [ activeCategory, setActiveCategory ] = useState( null );
+	const [ searchQuery, setSearchQuery ] = useState( '' );
 
 	const { togglePersonalizationTagsModal } = useDispatch( storeName );
 
@@ -23,11 +30,18 @@ const PersonalizationTagsModal = () => {
 
 	const groupedTags: Record< string, PersonalizationTag[] > = list.reduce(
 		( groups, item ) => {
-			const { category } = item;
-			if ( ! groups[ category ] ) {
-				groups[ category ] = [];
+			const { category, name, token } = item;
+
+			if (
+				! searchQuery ||
+				name.toLowerCase().includes( searchQuery.toLowerCase() ) ||
+				token.toLowerCase().includes( searchQuery.toLowerCase() )
+			) {
+				if ( ! groups[ category ] ) {
+					groups[ category ] = [];
+				}
+				groups[ category ].push( item );
 			}
-			groups[ category ].push( item );
 			return groups;
 		},
 		{} as Record< string, PersonalizationTag[] >
@@ -46,10 +60,13 @@ const PersonalizationTagsModal = () => {
 			className="mailpoet-personalization-tags-modal"
 		>
 			<p>
-				Insert shortcodes to dynamically fill in information and
-				personalize your emails. Learn more{ ' ' }
+				{ __(
+					'Insert shortcodes to dynamically fill in information and personalize your emails. Learn more',
+					'mailpoet'
+				) }{ ' ' }
 				<Icon icon={ external } size={ 16 } />
 			</p>
+			<SearchControl onChange={ setSearchQuery } value={ searchQuery } />
 			<MenuGroup className="mailpoet-personalization-tags-modal__menu">
 				<MenuItem
 					onClick={ () => setActiveCategory( null ) }
