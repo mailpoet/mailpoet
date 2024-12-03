@@ -218,7 +218,7 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(newsletterStoreName).setNewsletterData("newsletters");
+    dispatch(newsletterStoreName).loadNewsletters();
   }
   , []);
 

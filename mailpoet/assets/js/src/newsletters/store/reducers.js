@@ -5,15 +5,18 @@ import { EMPTY_NEWSLETTER_ERRORS } from './constants';
 const reducer = ( state = defaultNewsletterState, action ) => {
     console.log('reducer', state, action);
 	switch ( action.type ) {
-		case types.SET_NEWSLETTER_DATA:
+		case types.RECEIVE_NEWSLETTERS:
 			if ( action.response ) {
 				return {
                     ...state,
-                    list: [...state.list, ...action.response],
+                    newsletterListing: action.response,
                     isFetching: false,
                 };
 			}
-			break;}
+			break;
+		default:
+			break;
+		}
 	return state;
 };
 
