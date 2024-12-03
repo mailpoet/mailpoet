@@ -38,6 +38,7 @@ import { CorruptEmailNotice } from '../notices/corrupt-email-notice';
 import { LegacyAutomaticEmailsNotice } from '../notices/legacy-automatic-emails-notice';
 import { TopBarWithBeamer } from '../common/top-bar/top-bar';
 import { BackButton, PageHeader } from '../common/page-header';
+import { ListingTabContent } from './list/listing-tab-content.jsx';
 import { ExampleApp } from './test-app';
 import { createStore, newsletterStoreName } from './store';
 import { useDispatch } from '@wordpress/data';
@@ -56,13 +57,15 @@ const Tabs = withNpsPoll(() => {
       name: 'example',
       title: __('Newsletters', 'mailpoet'),
       className: 'data-automation-tab-newsletters',
-      content: <ExampleApp />,
+  //    content: <ExampleApp />,
+      content: <ListingTabContent />,
       automationId: 'tab-example',
     },
     {
       name: 'standard',
       title: __('Newsletters', 'mailpoet'),
       className: 'data-automation-tab-newsletters',
+  //    content: <ListingTabContent />,
       content: <NewsletterListStandard />,
       automationId: 'tab-Newsletter',
     },
@@ -159,6 +162,7 @@ const routes = [
     path: '/standard/*',
     children: withBoundary(Tabs),
   },
+  {
     path: '/example/*',
     children: withBoundary(Tabs),
   },
