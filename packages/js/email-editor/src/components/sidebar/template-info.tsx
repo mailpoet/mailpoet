@@ -1,7 +1,13 @@
-import { Panel, PanelBody, PanelRow } from '@wordpress/components';
+import {
+	Panel,
+	PanelBody,
+	PanelRow,
+	DropdownMenu,
+	MenuItem,
+} from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
-import { Icon, layout } from '@wordpress/icons';
+import { Icon, layout, moreVertical } from '@wordpress/icons';
 import { storeName } from '../../store';
 
 export function TemplateInfo() {
@@ -20,10 +26,31 @@ export function TemplateInfo() {
 						<Icon icon={ layout } />
 					</span>
 					<div className="mailpoet-email-type-info__content">
-						<h2>
-							{ /* @ts-expect-error Todo template type is not defined */ }
-							{ template?.title || __( 'Template', 'mailpoet' ) }
-						</h2>
+						<div className="mailpoet-email-type-info__content_heading">
+							<h2>
+								{ /* @ts-expect-error Todo template type is not defined */ }
+								{ template?.title ||
+									__( 'Template', 'mailpoet' ) }
+							</h2>
+							<DropdownMenu
+								icon={ moreVertical }
+								label={ __( 'Template actions', 'mailpoet' ) }
+							>
+								{ ( { onClose } ) => (
+									<MenuItem
+										onClick={ () => {
+											onClose();
+										} }
+										info={ __(
+											'Reset to default to clear all customizations',
+											'mailpoet'
+										) }
+									>
+										{ __( 'Reset', 'mailpoet' ) }
+									</MenuItem>
+								) }
+							</DropdownMenu>
+						</div>
 						{ description && <p>{ description || '' }</p> }
 						<p>
 							{ __(
