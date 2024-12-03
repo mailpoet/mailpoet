@@ -80,7 +80,7 @@ class MailPoetMapperTest extends \MailPoetUnitTest {
     verify($error)->instanceOf(MailerError::class);
     verify($error->getOperation())->equals(MailerError::OPERATION_SEND);
     verify($error->getLevel())->equals(MailerError::LEVEL_HARD);
-    verify($error->getMessage())->stringContainsString('MailPoet Sending Service has been temporarily suspended for your site due to');
+    verify($error->getMessage())->stringContainsString('The MailPoet Sending Service has been temporarily suspended for your site due to');
   }
 
   public function testGetErrorInsufficientPrivileges(): void {

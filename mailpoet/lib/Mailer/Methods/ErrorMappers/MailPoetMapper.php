@@ -160,7 +160,7 @@ class MailPoetMapper {
   }
 
   private function getAccountBannedMessage(): string {
-    $message = __('MailPoet Sending Service has been temporarily suspended for your site due to [link1]degraded email deliverability[/link1]. Please [link2]contact our support team[/link2] to resolve the issue.', 'mailpoet');
+    $message = __('The MailPoet Sending Service has been temporarily suspended for your site due to a high number of [link1]undeliverable emails or emails marked as unwanted by recipients[/link1]. Please [link2]contact our support team[/link2] to resolve the issue.', 'mailpoet');
     $message = Helpers::replaceLinkTags(
       $message,
       'https://kb.mailpoet.com/article/231-sending-does-not-work#suspended',
