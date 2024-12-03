@@ -1,55 +1,9 @@
 import { PanelBody, Button } from '@wordpress/components';
-import { useSelect, useDispatch, dispatch, select } from '@wordpress/data';
-import { __, sprintf } from '@wordpress/i18n';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 import { store as editorStore } from '@wordpress/editor';
-import { decodeEntities } from '@wordpress/html-entities';
-import { store as coreStore } from '@wordpress/core-data';
-import { store as noticesStore } from '@wordpress/notices';
-import apiFetch from '@wordpress/api-fetch';
-import {
-	parse,
-	// @ts-expect-error No types available for this yet.
-	__unstableSerializeAndClean, // eslint-disable-line
-} from '@wordpress/blocks';
-import { BlockInstance } from '@wordpress/blocks/index';
-import { addQueryArgs } from '@wordpress/url';
+
 import { storeName } from '../../store';
-
-// Todo: This is not available yet. Replace when possible.
-async function revertTemplate( template ) {
-	const templateEntityConfig = select( coreStore ).getEntityConfig(
-		'postType',
-		template.type as string
-	);
-
-	const fileTemplatePath = addQueryArgs(
-		`${ templateEntityConfig.baseURL as string }/${
-			template.id as string
-		}`,
-		{ context: 'edit', source: 'theme' }
-	);
-
-	const fileTemplate = await apiFetch( { path: fileTemplatePath } );
-
-	const serializeBlocks = ( { blocks: blocksForSerialization = [] } ) =>
-		__unstableSerializeAndClean(
-			blocksForSerialization
-		) as BlockInstance[];
-
-	// @ts-expect-error template type is not defined
-	const blocks = parse( fileTemplate?.content?.raw as string );
-	void dispatch( coreStore ).editEntityRecord(
-		'postType',
-		template.type as string,
-		// @ts-expect-error template type is not defined
-		fileTemplate.id as string,
-		{
-			content: serializeBlocks,
-			blocks,
-			source: 'theme',
-		}
-	);
-}
 
 export function TemplatesPanel() {
 	const { onNavigateToEntityRecord, template, hasHistory } = useSelect(
@@ -69,41 +23,7 @@ export function TemplatesPanel() {
 		[]
 	);
 
-	const { saveEditedEntityRecord } = useDispatch( coreStore );
-	const { createSuccessNotice, createErrorNotice } =
-		useDispatch( noticesStore );
-	async function revertAndSaveTemplate() {
-		try {
-			await revertTemplate( template );
-			await saveEditedEntityRecord(
-				'postType',
-				template.type,
-				template.id,
-				{}
-			);
-			void createSuccessNotice(
-				sprintf(
-					/* translators: The template/part's name. */
-					__( '"%s" reset.', 'mailpoet' ),
-					decodeEntities( template.title )
-				),
-				{
-					type: 'snackbar',
-					id: 'edit-site-template-reverted',
-				}
-			);
-		} catch ( error ) {
-			void createErrorNotice(
-				__(
-					'An error occurred while reverting the template.',
-					'mailpoet'
-				),
-				{
-					type: 'snackbar',
-				}
-			);
-		}
-	}
+	const { revertAndSaveTemplate } = useDispatch( storeName );
 
 	return (
 		<PanelBody
@@ -136,7 +56,7 @@ export function TemplatesPanel() {
 			<Button
 				variant="primary"
 				onClick={ () => {
-					void revertAndSaveTemplate();
+					void revertAndSaveTemplate( template );
 				} }
 			>
 				{ __( 'Revert customizations', 'mailpoet' ) }
