@@ -9,6 +9,8 @@ export function TemplateInfo() {
 		( select ) => select( storeName ).getCurrentTemplate(),
 		[]
 	);
+	// @ts-expect-error Todo template type is not defined
+	const description = template?.description || '';
 
 	return (
 		<Panel className="mailpoet-email-sidebar__email-type-info">
@@ -22,8 +24,13 @@ export function TemplateInfo() {
 							{ /* @ts-expect-error Todo template type is not defined */ }
 							{ template?.title || __( 'Template', 'mailpoet' ) }
 						</h2>
-						{ /* @ts-expect-error Todo template type is not defined */ }
-						<span>{ template?.description || '' }</span>
+						{ description && <p>{ description || '' }</p> }
+						<p>
+							{ __(
+								'Edit this template to be used across multiple emails.',
+								'mailpoet'
+							) }
+						</p>
 					</div>
 				</PanelRow>
 			</PanelBody>
