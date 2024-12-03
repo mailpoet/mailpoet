@@ -4,16 +4,13 @@ import {
 	PanelRow,
 	DropdownMenu,
 	MenuItem,
-	Modal,
-	Button,
-	Flex,
-	FlexItem,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { Icon, layout, moreVertical } from '@wordpress/icons';
 import { useState } from '@wordpress/element';
 import { storeName } from '../../store';
+import { TemplateRevertModal } from './template-revert-modal';
 
 export function TemplateInfo() {
 	const template = useSelect(
@@ -21,11 +18,9 @@ export function TemplateInfo() {
 		[]
 	);
 	const [ isResetConfirmOpen, setResetConfirmOpen ] = useState( false );
-	const { revertAndSaveTemplate } = useDispatch( storeName );
 
 	// @ts-expect-error Todo template type is not defined
 	const description = template?.description || '';
-	const closeResetConfirm = () => setResetConfirmOpen( false );
 
 	return (
 		<>
@@ -38,7 +33,6 @@ export function TemplateInfo() {
 						<div className="mailpoet-email-type-info__content">
 							<div className="mailpoet-email-type-info__content_heading">
 								<h2>
-									{ /* @ts-expect-error Todo template type is not defined */ }
 									{ template?.title ||
 										__( 'Template', 'mailpoet' ) }
 								</h2>
@@ -77,40 +71,11 @@ export function TemplateInfo() {
 				</PanelBody>
 			</Panel>
 			{ isResetConfirmOpen && (
-				<Modal
-					title={ __( 'Reset template to default', 'mailpoet' ) }
-					size="medium"
-					onRequestClose={ closeResetConfirm }
-					__experimentalHideHeader
-				>
-					<p>
-						{ __(
-							'Reset to default and clear all customization?',
-							'mailpoet'
-						) }
-					</p>
-					<Flex justify={ 'end' }>
-						<FlexItem>
-							<Button
-								variant="tertiary"
-								onClick={ closeResetConfirm }
-							>
-								{ __( 'Cancel', 'mailpoet' ) }
-							</Button>
-						</FlexItem>
-						<FlexItem>
-							<Button
-								variant="primary"
-								onClick={ async () => {
-									await revertAndSaveTemplate( template );
-									closeResetConfirm();
-								} }
-							>
-								{ __( 'Reset', 'mailpoet' ) }
-							</Button>
-						</FlexItem>
-					</Flex>
-				</Modal>
+				<TemplateRevertModal
+					close={ () => {
+						setResetConfirmOpen( false );
+					} }
+				/>
 			) }
 		</>
 	);
