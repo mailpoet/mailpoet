@@ -22,16 +22,6 @@ export function receiveError( error ) {
   };
 }
 
-/**
- * An action creator that dispatches the plain action responsible for setting the fetching state in the store.
- */
-export function setIsFetching(isFetching) {
-  return {
-    type: types.SET_IS_FETCHING,
-    isFetching,
-  };
-}
-
 export function fetchNewslettersRequest() {
   return {
     type: types.FETCH_NEWSLETTERS_REQUEST,
