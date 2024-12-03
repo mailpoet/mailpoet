@@ -6,8 +6,15 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { Async } from './async';
+import { TemplateCategory, TemplatePreview } from '../../store';
 
-function TemplateListBox( { templates, onTemplateSelection } ) {
+type Props = {
+	templates: TemplatePreview[];
+	onTemplateSelection: ( template: TemplatePreview ) => void;
+	selectedCategory?: TemplateCategory;
+};
+
+function TemplateListBox( { templates, onTemplateSelection }: Props ) {
 	return (
 		<div className="block-editor-block-patterns-list" role="listbox">
 			{ templates.map( ( template ) => (
@@ -63,7 +70,7 @@ export function TemplateList( {
 	templates,
 	onTemplateSelection,
 	selectedCategory,
-} ) {
+}: Props ) {
 	const filteredTemplates = useMemo(
 		() =>
 			templates.filter(
