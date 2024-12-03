@@ -204,7 +204,7 @@ export const getCurrentTemplate = createRegistrySelector( ( select ) => () => {
 			'wp_template',
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			templateId
-		);
+		) as unknown as EmailTemplate;
 	}
 	return getEditedPostTemplate();
 } );
