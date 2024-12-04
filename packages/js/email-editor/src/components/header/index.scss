@@ -39,3 +39,8 @@
     min-width: 280px;
   }
 }
+
+// We currently don't support command palette so we hide the shortcut
+.editor-document-bar__shortcut {
+  display: none !important;
+}
