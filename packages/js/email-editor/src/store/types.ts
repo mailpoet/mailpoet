@@ -225,8 +225,8 @@ export type EmailTemplatePreview = Omit<
 
 export type TemplatePreview = {
 	slug: string;
-	contentParsed: BlockInstance[];
-	patternParsed: BlockInstance[];
+	previewContentParsed: BlockInstance[];
+	emailParsed: BlockInstance[];
 	template: EmailTemplatePreview;
 };
 

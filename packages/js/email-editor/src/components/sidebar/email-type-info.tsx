@@ -23,8 +23,11 @@ import { EditTemplateModal } from './edit-template-modal';
 import { SelectTemplateModal } from '../template-select';
 
 export function EmailTypeInfo() {
-	const template = useSelect(
-		( select ) => select( storeName ).getCurrentTemplate(),
+	const { template, currentEmailContent } = useSelect(
+		( select ) => ( {
+			template: select( storeName ).getCurrentTemplate(),
+			currentEmailContent: select( storeName ).getEditedEmailContent(),
+		} ),
 		[]
 	);
 	const [ isEditTemplateModalOpen, setEditTemplateModalOpen ] =
@@ -113,6 +116,7 @@ export function EmailTypeInfo() {
 						setSelectTemplateModalOpen( false )
 					}
 					closeCallback={ () => setSelectTemplateModalOpen( false ) }
+					previewContent={ currentEmailContent }
 				/>
 			) }
 		</>

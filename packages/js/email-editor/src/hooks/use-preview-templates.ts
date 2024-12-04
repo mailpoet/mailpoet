@@ -34,7 +34,9 @@ function setPostContentInnerBlocks(
 	} );
 }
 
-export function usePreviewTemplates(): TemplatePreview[][] {
+export function usePreviewTemplates(
+	customEmailContent = ''
+): TemplatePreview[][] {
 	const { templates, patterns } = useSelect( ( select ) => {
 		const contentBlockId =
 			// @ts-expect-error getBlocksByName is not defined in types
@@ -52,23 +54,35 @@ export function usePreviewTemplates(): TemplatePreview[][] {
 		};
 	}, [] );
 
-	if ( ! templates || ! patterns.length ) {
+	if ( ! templates || ( ! patterns.length && ! customEmailContent ) ) {
 		return [ [] ];
 	}
 
-	// Pick first pattern that comes from mailpoet and is for general email template
-	const contentPatternBlocksGeneral = patterns.find(
-		( pattern ) =>
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			pattern?.templateTypes?.includes( 'email-general-template' )
-	)?.blocks as BlockInstance[];
+	let contentPatternBlocksGeneral = null;
+	let contentPatternBlocks = null;
+	const parsedCustomEmailContent =
+		customEmailContent && parse( customEmailContent );
 
-	// Pick first pattern that comes from mailpoet and is for template with header and footer content separated
-	const contentPatternBlocks = patterns.find(
-		( pattern ) =>
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-			pattern?.templateTypes?.includes( 'email-template' )
-	)?.blocks as BlockInstance[];
+	// If there is a custom email content passed from outside we use it as email content for preview
+	// otherwise we pick first suitable from patterns
+	if ( parsedCustomEmailContent ) {
+		contentPatternBlocksGeneral = parsedCustomEmailContent;
+		contentPatternBlocks = parsedCustomEmailContent;
+	} else {
+		// Pick first pattern that comes from mailpoet and is for general email template
+		contentPatternBlocksGeneral = patterns.find(
+			( pattern ) =>
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				pattern?.templateTypes?.includes( 'email-general-template' )
+		)?.blocks as BlockInstance[];
+
+		// Pick first pattern that comes from mailpoet and is for template with header and footer content separated
+		contentPatternBlocks = patterns.find(
+			( pattern ) =>
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				pattern?.templateTypes?.includes( 'email-template' )
+		)?.blocks as BlockInstance[];
+	}
 
 	return [
 		templates.map( ( template: EmailTemplatePreview ): TemplatePreview => {
@@ -83,8 +97,8 @@ export function usePreviewTemplates(): TemplatePreview[][] {
 			return {
 				slug: template.slug,
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-				contentParsed: parsedTemplate,
-				patternParsed:
+				previewContentParsed: parsedTemplate,
+				emailParsed:
 					template.slug === 'email-general'
 						? contentPatternBlocksGeneral
 						: contentPatternBlocks,

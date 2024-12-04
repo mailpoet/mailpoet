@@ -20,15 +20,20 @@ const BLANK_TEMPLATE = 'email-general';
 export function SelectTemplateModal( {
 	onSelectCallback,
 	closeCallback = null,
+	previewContent = '',
 } ) {
-	const [ templates ] = usePreviewTemplates();
+	const [ templates ] = usePreviewTemplates( previewContent );
 
 	const hasTemplates = templates?.length > 0;
 
 	const handleTemplateSelection = ( template: TemplatePreview ) => {
-		void dispatch( editorStore ).resetEditorBlocks(
-			template.patternParsed
-		);
+		// When we provide previewContent, we don't want to reset the blocks
+		if ( ! previewContent ) {
+			void dispatch( editorStore ).resetEditorBlocks(
+				template.emailParsed
+			);
+		}
+
 		void dispatch( storeName ).setTemplateToPost(
 			template.slug,
 			template.template.mailpoet_email_theme ?? {}
@@ -100,7 +105,9 @@ export function SelectTemplateModal( {
 										}
 									>
 										<BlockPreview
-											blocks={ template.contentParsed }
+											blocks={
+												template.previewContentParsed
+											}
 											viewportWidth={ 900 }
 											minHeight={ 300 }
 											additionalStyles={ [
