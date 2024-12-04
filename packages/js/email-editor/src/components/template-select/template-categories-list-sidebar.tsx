@@ -1,6 +1,4 @@
 import { Button } from '@wordpress/components';
-import { info } from '@wordpress/icons';
-import { __ } from '@wordpress/i18n';
 import { TemplateCategory } from '../../store';
 
 type Props = {
@@ -19,7 +17,6 @@ export function TemplateCategoriesListSidebar( {
 		<div className={ baseClassName }>
 			<div className={ `${ baseClassName }__categories-list` }>
 				{ templateCategories.map( ( { name, label } ) => {
-					const isRecentButton = name === 'recent';
 					return (
 						<Button
 							key={ name }
@@ -29,19 +26,6 @@ export function TemplateCategoriesListSidebar( {
 							onClick={ () => {
 								onClickCategory( name );
 							} }
-							showTooltip={ isRecentButton }
-							tooltipPosition="top"
-							aria-label="This is some content"
-							icon={ isRecentButton ? info : null }
-							iconPosition="right"
-							describedBy={
-								isRecentButton
-									? __(
-											'Templates created on the legacy editor will not appear here',
-											'mailpoet'
-									  )
-									: null
-							}
 						>
 							{ label }
 						</Button>

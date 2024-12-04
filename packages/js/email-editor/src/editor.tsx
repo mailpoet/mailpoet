@@ -35,7 +35,7 @@ function Editor() {
 const WrappedEditor = applyFilters(
 	'mailpoet_email_editor_wrap_editor_component',
 	Editor
-);
+) as typeof Editor;
 
 export function initialize( elementId: string ) {
 	const container = document.getElementById( elementId );
@@ -47,6 +47,5 @@ export function initialize( elementId: string ) {
 	initBlocks();
 	initHooks();
 	const root = createRoot( container );
-	// @ts-ignore We don't have a type for WrappedEditor.
 	root.render( <WrappedEditor /> );
 }

@@ -1,9 +1,11 @@
-import { useMemo } from '@wordpress/element';
+import { useMemo, memo } from '@wordpress/element';
 // @ts-expect-error No types available for this component
 import { BlockPreview } from '@wordpress/block-editor';
 import {
 	__experimentalHStack as HStack, // eslint-disable-line
+	Notice,
 } from '@wordpress/components';
+import { Icon, info, blockDefault } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { Async } from './async';
 import { TemplateCategory, TemplatePreview } from '../../store';
@@ -14,7 +16,32 @@ type Props = {
 	selectedCategory?: TemplateCategory;
 };
 
-function TemplateListBox( { templates, onTemplateSelection }: Props ) {
+function TemplateNoResults() {
+	return (
+		<div className="block-editor-inserter__no-results">
+			<Icon
+				className="block-editor-inserter__no-results-icon"
+				icon={ blockDefault }
+			/>
+			<p>{ __( 'No recent templates.' ) }</p>
+			<p>
+				{ __(
+					'Your recent creations will appear here as soon as you begin.'
+				) }
+			</p>
+		</div>
+	);
+}
+
+function TemplateListBox( {
+	templates,
+	onTemplateSelection,
+	selectedCategory,
+}: Props ) {
+	if ( selectedCategory === 'recent' && templates.length === 0 ) {
+		return <TemplateNoResults />;
+	}
+
 	return (
 		<div className="block-editor-block-patterns-list" role="listbox">
 			{ templates.map( ( template ) => (
@@ -66,6 +93,12 @@ function TemplateListBox( { templates, onTemplateSelection }: Props ) {
 	);
 }
 
+const compareProps = ( prev, next ) =>
+	prev.templates.length === next.templates.length &&
+	prev.selectedCategory === next.selectedCategory;
+
+const MemorizedTemplateListBox = memo( TemplateListBox, compareProps );
+
 export function TemplateList( {
 	templates,
 	onTemplateSelection,
@@ -81,9 +114,24 @@ export function TemplateList( {
 
 	return (
 		<div className="block-editor-block-patterns-explorer__list">
-			<TemplateListBox
+			{ selectedCategory === 'recent' && (
+				<Notice isDismissible={ false }>
+					<HStack spacing={ 1 } expanded={ false } justify="start">
+						<Icon icon={ info } />
+						<p>
+							{ __(
+								'Templates created on the legacy editor will not appear here.',
+								'mailpoet'
+							) }
+						</p>
+					</HStack>
+				</Notice>
+			) }
+
+			<MemorizedTemplateListBox
 				templates={ filteredTemplates }
 				onTemplateSelection={ onTemplateSelection }
+				selectedCategory={ selectedCategory }
 			/>
 		</div>
 	);
