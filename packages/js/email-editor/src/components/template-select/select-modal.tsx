@@ -120,13 +120,12 @@ export function SelectTemplateModal( { onSelectCallback } ) {
 						) ) }
 					</div>
 
-					<Flex justify={ hasTemplates ? 'flex-end' : 'center' }>
+					<Flex justify="flex-end">
 						<FlexItem>
 							<Button
-								variant={
-									hasTemplates ? 'tertiary' : 'primary'
-								}
+								variant="tertiary"
 								onClick={ () => handleCloseWithoutSelection() }
+								isBusy={ ! hasTemplates }
 							>
 								{ __( 'Start from scratch', 'mailpoet' ) }
 							</Button>
