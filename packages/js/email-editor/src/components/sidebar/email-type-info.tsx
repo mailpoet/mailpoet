@@ -63,6 +63,7 @@ export function EmailTypeInfo() {
 									<DropdownMenu
 										icon={ null }
 										text={ template?.title }
+										toggleProps={ { variant: 'tertiary' } }
 										label={ __(
 											'Template actions',
 											'mailpoet'
