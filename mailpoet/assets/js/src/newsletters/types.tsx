@@ -161,7 +161,7 @@ export function NewsletterTypes({
             variant="tertiary"
             onClick={() => setIsSelectEditorModalOpen(true)}
           >
-            {__('Create using new editor (Beta)', 'mailpoet')}
+            {__('Create using the new email editor (Alpha)', 'mailpoet')}
           </MenuItem>
         )}
       />
