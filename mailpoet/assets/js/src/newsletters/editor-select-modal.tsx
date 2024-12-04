@@ -47,21 +47,27 @@ export function EditorSelectModal({
   }
   return (
     <Modal
-      title={__('New editor', 'mailpoet')}
+      title={__('Try the new email editor', 'mailpoet')}
       onRequestClose={onClose}
       className="mailpoet-new-editor-modal"
     >
       <div className="mailpoet-new-editor-modal-image">
         <span className="mailpoet-new-editor-modal-image__beta_label">
-          {__('Beta version', 'mailpoet')}
+          {__('Alpha version', 'mailpoet')}
         </span>
         <img
           src={`${MailPoet.cdnUrl}email-editor/new-editor-modal-header.png`}
-          alt={__('New editor', 'mailpoet')}
+          alt={__('Try the new email editor', 'mailpoet')}
           width="324"
           height="130"
         />
       </div>
+      <p>
+        {__(
+          'Get a sneak peek of an early version of the upcoming email design experience and help shape development.',
+          'mailpoet',
+        )}
+      </p>
       <p>
         {__(
           'Create modern, beautiful emails that embody your brand with advanced customization and editing capabilities.',
