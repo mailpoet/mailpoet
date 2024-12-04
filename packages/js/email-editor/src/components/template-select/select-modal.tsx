@@ -38,11 +38,11 @@ function SelectTemplateBody( {
 }
 
 export function SelectTemplateModal( {
-                                       onSelectCallback,
-                                       closeCallback = null,
-                                       previewContent = '',
-                                     } ) {
-  const [ templates ] = usePreviewTemplates( previewContent );
+	onSelectCallback,
+	closeCallback = null,
+	previewContent = '',
+} ) {
+	const [ templates ] = usePreviewTemplates( previewContent );
 
 	const hasTemplates = templates?.length > 0;
 
@@ -85,9 +85,9 @@ export function SelectTemplateModal( {
 	return (
 		<Modal
 			title={ __( 'Select a template', 'mailpoet' ) }
-      onRequestClose={ () =>
-        closeCallback ? closeCallback() : handleCloseWithoutSelection()
-      }
+			onRequestClose={ () =>
+				closeCallback ? closeCallback() : handleCloseWithoutSelection()
+			}
 			isFullScreen
 		>
 			<SelectTemplateBody
@@ -97,17 +97,18 @@ export function SelectTemplateModal( {
 				handleTemplateSelection={ handleTemplateSelection }
 			/>
 
-      <Flex justify="flex-end">
-        <FlexItem>
-          <Button
-            variant="tertiary"
-            onClick={ () => handleCloseWithoutSelection() }
-            isBusy={ ! hasTemplates }
-          >
-            { __( 'Start from scratch', 'mailpoet' ) }
-          </Button>
-        </FlexItem>
-      </Flex>
+			<Flex justify="flex-end">
+				<FlexItem>
+					<Button
+						variant="tertiary"
+						className="email-editor-start_from_scratch_button"
+						onClick={ () => handleCloseWithoutSelection() }
+						isBusy={ ! hasTemplates }
+					>
+						{ __( 'Start from scratch', 'mailpoet' ) }
+					</Button>
+				</FlexItem>
+			</Flex>
 		</Modal>
 	);
 }
