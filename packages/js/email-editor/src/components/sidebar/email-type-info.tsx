@@ -20,6 +20,7 @@ import { useState } from '@wordpress/element';
  */
 import { storeName } from '../../store';
 import { EditTemplateModal } from './edit-template-modal';
+import { SelectTemplateModal } from '../template-select';
 
 export function EmailTypeInfo() {
 	const template = useSelect(
@@ -27,6 +28,8 @@ export function EmailTypeInfo() {
 		[]
 	);
 	const [ isEditTemplateModalOpen, setEditTemplateModalOpen ] =
+		useState( false );
+	const [ isSelectTemplateModalOpen, setSelectTemplateModalOpen ] =
 		useState( false );
 
 	return (
@@ -79,6 +82,9 @@ export function EmailTypeInfo() {
 												</MenuItem>
 												<MenuItem
 													onClick={ () => {
+														setSelectTemplateModalOpen(
+															true
+														);
 														onClose();
 													} }
 												>
@@ -99,6 +105,14 @@ export function EmailTypeInfo() {
 			{ isEditTemplateModalOpen && (
 				<EditTemplateModal
 					close={ () => setEditTemplateModalOpen( false ) }
+				/>
+			) }
+			{ isSelectTemplateModalOpen && (
+				<SelectTemplateModal
+					onSelectCallback={ () =>
+						setSelectTemplateModalOpen( false )
+					}
+					closeCallback={ () => setSelectTemplateModalOpen( false ) }
 				/>
 			) }
 		</>

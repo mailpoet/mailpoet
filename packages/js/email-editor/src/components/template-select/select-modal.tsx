@@ -17,7 +17,10 @@ import { storeName, TemplatePreview } from '../../store';
 
 const BLANK_TEMPLATE = 'email-general';
 
-export function SelectTemplateModal( { onSelectCallback } ) {
+export function SelectTemplateModal( {
+	onSelectCallback,
+	closeCallback = null,
+} ) {
 	const [ templates ] = usePreviewTemplates();
 
 	const hasTemplates = templates?.length > 0;
@@ -46,7 +49,9 @@ export function SelectTemplateModal( { onSelectCallback } ) {
 	return (
 		<Modal
 			title="Select a template"
-			onRequestClose={ () => handleCloseWithoutSelection() }
+			onRequestClose={ () =>
+				closeCallback ? closeCallback() : handleCloseWithoutSelection()
+			}
 			isFullScreen
 		>
 			<div className="block-editor-block-patterns-explorer">
