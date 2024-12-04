@@ -1,12 +1,7 @@
 import { useState } from '@wordpress/element';
 import { store as editorStore } from '@wordpress/editor';
 import { dispatch } from '@wordpress/data';
-import {
-	Modal,
-	Button,
-	Flex,
-	FlexItem,
-} from '@wordpress/components';
+import { Modal, Button, Flex, FlexItem } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { usePreviewTemplates } from '../../hooks';
 import { storeName, TemplatePreview } from '../../store';
