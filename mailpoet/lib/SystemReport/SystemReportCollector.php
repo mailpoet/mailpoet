@@ -81,10 +81,18 @@ class SystemReportCollector {
       'Database version' => $dbVersion,
       'Web server' => (!empty($_SERVER["SERVER_SOFTWARE"])) ? sanitize_text_field(wp_unslash($_SERVER["SERVER_SOFTWARE"])) : 'N/A',
       'Server OS' => (function_exists('php_uname')) ? php_uname() : 'N/A',
-      'WP info' => 'WP_MEMORY_LIMIT: ' . WP_MEMORY_LIMIT . ' - WP_MAX_MEMORY_LIMIT: ' . WP_MAX_MEMORY_LIMIT . ' - WP_DEBUG: ' . WP_DEBUG .
-        ' - WordPress language: ' . $this->wp->getLocale() . ' - WordPress timezone: ' . $this->wp->wpTimezoneString(),
-      'PHP info' => 'PHP max_execution_time: ' . ini_get('max_execution_time') . ' - PHP memory_limit: ' . ini_get('memory_limit') .
-        ' - PHP upload_max_filesize: ' . ini_get('upload_max_filesize') . ' - PHP post_max_size: ' . ini_get('post_max_size'),
+      'WP info' => $this->formatCompositeField([
+        'WP_MEMORY_LIMIT' => WP_MEMORY_LIMIT,
+        'WP_MAX_MEMORY_LIMIT' => WP_MAX_MEMORY_LIMIT, 'WP_DEBUG' => WP_DEBUG,
+        'WordPress language' => $this->wp->getLocale(),
+        'WordPress timezone' => $this->wp->wpTimezoneString(),
+      ]),
+      'PHP info' => $this->formatCompositeField([
+        'PHP max_execution_time' => ini_get('max_execution_time'),
+        'PHP memory_limit' => ini_get('memory_limit'),
+        'PHP upload_max_filesize' => ini_get('upload_max_filesize'),
+        'PHP post_max_size' => ini_get('post_max_size'),
+      ]),
       'Multisite environment?' => (is_multisite() ? 'Yes' : 'No'),
       'Current Theme' => $currentTheme->get('Name') .
         ' (version ' . $currentTheme->get('Version') . ')',
@@ -95,13 +103,24 @@ class SystemReportCollector {
         $mta['frequency']['emails'],
         $mta['frequency']['interval']
       ),
-      'MailPoet sending info' => "Send all site's emails with: " . ($this->settings->get('send_transactional_emails') ? 'current sending method' : 'default WordPress sending method') .
-        ' - Task Scheduler method: ' . $this->settings->get('cron_trigger.method') . ' - Cron ping URL: ' . $cronPingUrl . ' - Default FROM address: ' . $this->settings->get('sender.address') .
-        ' - Default Reply-To address: ' . $this->settings->get('reply_to.address') . ' - Bounce Email Address: ' . $this->settings->get('bounce.address'),
+      'MailPoet sending info' => $this->formatCompositeField([
+        "Send all site's emails with" => ($this->settings->get('send_transactional_emails') ? 'current sending method' : 'default WordPress sending method'),
+        'Task Scheduler method' => $this->settings->get('cron_trigger.method'),
+        'Cron ping URL' => $cronPingUrl,
+        'Default FROM address' => $this->settings->get('sender.address'),
+        'Default Reply-To address' => $this->settings->get('reply_to.address'),
+        'Bounce Email Address' => $this->settings->get('bounce.address'),
+      ]),
       'Total number of subscribers' => $this->subscribersFeature->getSubscribersCount(),
       'Plugin installed at' => $this->settings->get('installed_at'),
       'Installed via WooCommerce onboarding wizard' => $this->wooCommerceHelper->wasMailPoetInstalledViaWooCommerceOnboardingWizard(),
     ];
+  }
+
+  private function formatCompositeField($fields) {
+    return implode(' - ', array_map(function ($key, $value) {
+      return $key . ': ' . $value;
+    }, array_keys($fields), array_values($fields)));
   }
 
   protected function maskApiKey($key) {
