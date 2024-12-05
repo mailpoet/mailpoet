@@ -1,5 +1,6 @@
 import { EditorSettings, EditorColor } from '@wordpress/block-editor/index';
 import { BlockInstance } from '@wordpress/blocks/index';
+import { Post } from '@wordpress/core-data/build-types/entity-types/post';
 
 export enum SendingPreviewStatus {
 	SUCCESS = 'success',
@@ -238,3 +239,16 @@ export type Feature =
 	| 'showIconLabels'
 	| 'fixedToolbar'
 	| 'focusMode';
+
+export type MailPoetEmailPostContentExtended = {
+	id?: string;
+	subject: string;
+	preheader: string;
+	preview_url: string;
+	deleted_at?: string;
+};
+
+export type EmailEditorPostType = Omit< Post, 'type' > & {
+	type: 'mailpoet_email';
+	mailpoet_data?: MailPoetEmailPostContentExtended;
+};

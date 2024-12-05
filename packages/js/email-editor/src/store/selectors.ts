@@ -6,7 +6,7 @@ import { store as preferencesStore } from '@wordpress/preferences';
 import { serialize } from '@wordpress/blocks';
 import { BlockInstance } from '@wordpress/blocks/index';
 import { storeName } from './constants';
-import { State, Feature, EmailTemplate } from './types';
+import { State, Feature, EmailTemplate, EmailEditorPostType } from './types';
 
 export const isFeatureActive = createRegistrySelector(
 	( select ) =>
@@ -51,7 +51,7 @@ export const isSaving = createRegistrySelector( ( select ) => (): boolean => {
 export const isEmpty = createRegistrySelector( ( select ) => (): boolean => {
 	const postId = select( storeName ).getEmailPostId();
 
-	const post = select( coreDataStore ).getEntityRecord(
+	const post: EmailEditorPostType = select( coreDataStore ).getEntityRecord(
 		'postType',
 		'mailpoet_email',
 		postId
@@ -60,7 +60,6 @@ export const isEmpty = createRegistrySelector( ( select ) => (): boolean => {
 		return true;
 	}
 
-	// @ts-expect-error Missing property in type
 	const { content, mailpoet_data: mailpoetData, title } = post;
 	return (
 		! content.raw &&
@@ -137,6 +136,19 @@ export const getEditedEmailContent = createRegistrySelector(
 			}
 		}
 		return '';
+	}
+);
+
+export const getSentEmailEditorPosts = createRegistrySelector(
+	( select ) => () => {
+		const posts: EmailEditorPostType[] = select(
+			coreDataStore
+		).getEntityRecords( 'postType', 'mailpoet_email', {
+			per_page: 30, // show a maximum of 30 for now
+			status: 'publish,sent', // show only sent emails
+		} );
+
+		return posts;
 	}
 );
 
