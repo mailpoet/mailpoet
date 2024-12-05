@@ -7,54 +7,22 @@ import { MailPoet } from 'mailpoet';
 import PropTypes from 'prop-types';
 import { useLocation, useParams } from 'react-router-dom';
 
-import { TableCard } from '@woocommerce/components';
+import { TableCard,TablePlaceholder } from '@woocommerce/components';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { storeName } from '../store/constants';
-
-
-const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
+import { storeName, NEWSLETTER_STANDARD_HEADERS } from '../store/constants';
 
 
 
-const columns = [
-    {
-        key: MailPoet.FeaturesController.isSupported('gutenberg_email_editor')
-        ? 'name'
-        : 'subject',
-      label: MailPoet.FeaturesController.isSupported('gutenberg_email_editor')
-        ? __('Name', 'mailpoet')
-        : __('Subject', 'mailpoet'),
-        isSortable: true,
-    },
-    {
-        key: 'status',
-      label: __('Status', 'mailpoet'),
-      isSortable: false
 
-    },
-    {
-        key: 'segments',
-      label: __('Lists', 'mailpoet'),
-      isSortable: false
-    },
-    {
-        key: 'statistics',
-      label: __('Clicked, Opened', 'mailpoet'),
-      display: mailpoetTrackingEnabled,
-      isSortable: false
-    },
-    {
-        key: 'sent_at',
-      label: __('Sent on', 'mailpoet'),
-      isSortable: true,
-    },
-  ];
+
+
 
 
   
 
 export function ListingTabContent() {
     const newsletterData = useSelect((select) => select(storeName).getNewsletterRows(), []);
+    const newsletterLoading = useSelect((select) => select(storeName).getNewsletterLoading(), []);
 
     const rowClasses = classnames(
         'manage-column',
@@ -66,10 +34,14 @@ export function ListingTabContent() {
       <div className={rowClasses}>
         <div>
           <pre> {JSON.stringify(newsletterData)} </pre>
+          <pre> {newsletterLoading ? "true" : "false"} </pre>
+
           <TableCard
             //title="Revenue last weeks"
+            className="mailpoet-listing-table"
+            isLoading={ newsletterLoading }
             rows={ newsletterData }
-            headers={ columns }
+            headers={ NEWSLETTER_STANDARD_HEADERS }
             query={ { page: 2 } }
             rowsPerPage={ 7 }
             totalRows={ 10 }

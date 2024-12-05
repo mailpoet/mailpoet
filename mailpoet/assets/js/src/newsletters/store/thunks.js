@@ -13,6 +13,9 @@ export const loadNewsletters = () => async ({ select, dispatch }) => {
       api_version: 'v1',
       endpoint: 'newsletters',
       action: 'listing',
+      data: {
+        params: { type: 'standard' },
+      },
     });
     const keys = Object.keys(response);
     if (keys.includes('data') && keys.includes('meta')) {
