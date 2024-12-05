@@ -64,7 +64,7 @@ export function EditorSelectModal({
       </div>
       <p>
         {__(
-          'Get a sneak peek of an early version of the upcoming email design experience and help shape development.',
+          'Get a sneak peek of an early version of the upcoming email design experience and help shape its development.',
           'mailpoet',
         )}
       </p>
