@@ -140,16 +140,15 @@ export const getEditedEmailContent = createRegistrySelector(
 );
 
 export const getSentEmailEditorPosts = createRegistrySelector(
-	( select ) => () => {
-		const posts: EmailEditorPostType[] = select(
-			coreDataStore
-		).getEntityRecords( 'postType', 'mailpoet_email', {
-			per_page: 30, // show a maximum of 30 for now
-			status: 'publish,sent', // show only sent emails
-		} );
-
-		return posts;
-	}
+	( select ) => () =>
+		select( coreDataStore )
+			.getEntityRecords( 'postType', 'mailpoet_email', {
+				per_page: 30, // show a maximum of 30 for now
+				status: 'publish,sent', // show only sent emails
+			} )
+			?.filter(
+				( post: EmailEditorPostType ) => post?.content?.raw !== '' // filter out empty content
+			)
 );
 
 /**
