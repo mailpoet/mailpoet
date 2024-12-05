@@ -4,7 +4,7 @@ import { dispatch } from '@wordpress/data';
 import { Modal, Button, Flex, FlexItem } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { usePreviewTemplates } from '../../hooks';
-import { storeName, TemplatePreview } from '../../store';
+import { EmailEditorPostType, storeName, TemplatePreview } from '../../store';
 import { TemplateList } from './template-list';
 import { TemplateCategoriesListSidebar } from './template-categories-list-sidebar';
 
@@ -47,6 +47,11 @@ export function SelectTemplateModal( {
 	const hasTemplates = templates?.length > 0;
 
 	const handleTemplateSelection = ( template: TemplatePreview ) => {
+		const templateIsPostContent =
+			template.template.type === 'mailpoet_email';
+
+		const postContent = template.template as unknown as EmailEditorPostType;
+
 		// When we provide previewContent, we don't want to reset the blocks
 		if ( ! previewContent ) {
 			void dispatch( editorStore ).resetEditorBlocks(
@@ -55,8 +60,10 @@ export function SelectTemplateModal( {
 		}
 
 		void dispatch( storeName ).setTemplateToPost(
-			template.slug,
-			template.template.mailpoet_email_theme ?? {}
+			templateIsPostContent ? postContent?.template : template.slug,
+			templateIsPostContent
+				? {}
+				: template.template.mailpoet_email_theme ?? {}
 		);
 		onSelectCallback();
 	};

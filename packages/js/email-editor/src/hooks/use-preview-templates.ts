@@ -117,9 +117,18 @@ export function usePreviewTemplates( customEmailContent = '' ) {
 				slug: post.slug,
 				previewContentParsed: parsedPostContent,
 				emailParsed: parsedPostContent,
-				template: post,
+				template: {
+					...post,
+					title: {
+						raw: post?.mailpoet_data?.subject || post.title.raw,
+						rendered:
+							post?.mailpoet_data?.subject || post.title.rendered, // use MailPoet subject as title
+					},
+					mailpoet_email_theme: null,
+					email_theme_css: '',
+				},
 				category: 'recent',
 			};
-		} ),
+		} ) as unknown as TemplatePreview[],
 	];
 }
