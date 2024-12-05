@@ -1,12 +1,38 @@
-import { receiveNewsletters, receiveError, fetchNewslettersRequest, fetchNewslettersSuccess, fetchNewslettersFailure } from './actions';
+import { startStandardRequest, receiveStandardNewsletters, receiveStandardSegments, finishStandardRequest, receiveError } from './actions';
+
+function extractStandardNewsletters(data) {
+  return data.filter((item) => item.type == 'standard').map((item) => {
+      return {
+          id: item.id,
+          subject: item.subject,
+          status: item.status,
+          segment_ids: item.segments.map((segment) => segment.id),
+          segment_names: item.segments.map((segment) => segment.name),
+          statistics_clicked: item.statistics.clicked,
+          statistics_opened: item.statistics.opened,
+          sent_at: item.sent_at,
+          preview_url: item.preview_url,
+      }
+  });
+}
+
+function extractStandardSegments(data){
+  let segments = [];
+  data.filter((item) => item.type == 'standard').map((item) => {
+      item.segments.map((segment) => {
+          if(!segments.some((s) => s.id === segment.id)){
+              segments.push(segment);
+          }
+      });
+  });
+  return segments;
+}
+
+
 
 export const loadNewsletters = () => async ({ select, dispatch }) => {
-  let data = {
-    data: [],
-    meta: { count: 0, groups: [], filters: { segment: [] } },
-  };
 
-  dispatch(fetchNewslettersRequest()); 
+  dispatch(startStandardRequest()); 
 
   try {
     const response = await MailPoet.Ajax.post({
@@ -19,15 +45,18 @@ export const loadNewsletters = () => async ({ select, dispatch }) => {
     });
     const keys = Object.keys(response);
     if (keys.includes('data') && keys.includes('meta')) {
-      data = response;
-      dispatch(receiveNewsletters(data));
-      dispatch(fetchNewslettersSuccess());
+      let standard_newsletters = extractStandardNewsletters(response.data);
+      dispatch(receiveStandardNewsletters(standard_newsletters));
+
+      let standard_segments = extractStandardSegments(response.data);
+      dispatch(receiveStandardSegments(standard_segments));
+
+      dispatch(finishStandardRequest()); 
     } else {
       dispatch(receiveError("Invalid response"));
     }
   } catch (res) {
     dispatch(receiveError(res.errors));
-    dispatch(fetchNewslettersFailure()); 
+    dispatch(finishStandardRequest()); 
   } 
-  return data;
 };

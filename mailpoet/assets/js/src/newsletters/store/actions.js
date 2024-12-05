@@ -5,16 +5,68 @@ export * from './thunks';
 /**
  * An action creator that dispatches the plain action responsible for setting the newsletter data in the store.
  */
-export function receiveNewsletters( newsletters ) {
+
+export function startStandardRequest() {
+	return {
+	  type: types.START_STANDARD_REQUEST,
+	};
+ }
+
+export function receiveStandardNewsletters( newsletters ) {
   return {
-    type: types.RECEIVE_NEWSLETTERS,
+    type: types.RECEIVE_STANDARD_NEWSLETTERS,
     response: newsletters,
   };
 }
 
-/**
- * An action creator that dispatches the plain action responsible for setting the error in the store.
- */
+export function receiveStandardSegments( segments ) {
+	return {
+	  type: types.RECEIVE_STANDARD_SEGMENTS,
+	  response: segments,
+	};
+  }
+  export function finishStandardRequest() {
+	return {
+	  type: types.FINISH_STANDARD_REQUEST,
+	};
+  }  
+
+ export function startPostNotificationRequest() {
+	return {
+	  type: types.START_POST_NOTIFICATION_REQUEST,
+	};
+ }
+export function receivePostNofifications( newsletters ) {
+	return {
+	  type: types.RECEIVE_POST_NOTIFICATIONS,
+	  response: newsletters,
+	};
+}
+export function finishPostNotificationsRequest() {
+	return {
+	  type: types.FINISH_POST_NOTIFICATION_REQUEST,
+	};
+  }  
+
+export function startReEngagementRequest() {
+	return {
+	  type: types.START_RE_ENGAGEMENT_REQUEST,
+	};
+}
+
+export function receiveReEngament( newsletters ) {
+	return {
+	  type: types.RECEIVE_RE_ENGAMENT,
+	  response: newsletters,
+	};
+}
+
+export function finishReEngagementRequest() {
+	return {
+	  type: types.FINISH_RE_ENGAGEMENT_REQUEST,
+	};
+}  
+
 export function receiveError( error ) { 
   return {
     type: types.RECEIVE_ERROR,
@@ -22,20 +74,5 @@ export function receiveError( error ) {
   };
 }
 
-export function fetchNewslettersRequest() {
-  return {
-    type: types.FETCH_NEWSLETTERS_REQUEST,
-  };
-}
 
-export function fetchNewslettersSuccess() {
-  return {
-    type: types.FETCH_NEWSLETTERS_SUCCESS,
-  };
-}
 
-export function fetchNewslettersFailure() {
-  return {
-    type: types.FETCH_NEWSLETTERS_FAILURE,
-  };
-}
