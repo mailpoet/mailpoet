@@ -3,7 +3,6 @@ import { useMemo, memo } from '@wordpress/element';
 import { BlockPreview } from '@wordpress/block-editor';
 import {
 	__experimentalHStack as HStack, // eslint-disable-line
-	Notice,
 } from '@wordpress/components';
 import { Icon, info, blockDefault } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
@@ -47,7 +46,7 @@ function TemplateListBox( {
 			{ templates.map( ( template ) => (
 				<div
 					key={ `${ template.slug }_${ template.id }` }
-					className="block-editor-block-patterns-list__list-item"
+					className="block-editor-block-patterns-list__list-item email-editor-pattern__list-item"
 				>
 					<div
 						className="block-editor-block-patterns-list__item"
@@ -81,9 +80,9 @@ function TemplateListBox( {
 							/>
 
 							<HStack className="block-editor-patterns__pattern-details">
-								<div className="block-editor-block-patterns-list__item-title">
+								<h4 className="block-editor-block-patterns-list__item-title">
 									{ template.template.title.rendered }
-								</div>
+								</h4>
 							</HStack>
 						</Async>
 					</div>
@@ -115,7 +114,7 @@ export function TemplateList( {
 	return (
 		<div className="block-editor-block-patterns-explorer__list">
 			{ selectedCategory === 'recent' && (
-				<Notice isDismissible={ false }>
+				<div className="email-editor-recent-templates-info">
 					<HStack spacing={ 1 } expanded={ false } justify="start">
 						<Icon icon={ info } />
 						<p>
@@ -125,7 +124,7 @@ export function TemplateList( {
 							) }
 						</p>
 					</HStack>
-				</Notice>
+				</div>
 			) }
 
 			<MemorizedTemplateListBox

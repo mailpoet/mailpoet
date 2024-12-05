@@ -11,3 +11,26 @@
 .block-editor-block-patterns-list__list-item {
   overflow: hidden;
 }
+
+.email-editor-recent-templates-info {
+  background-color: #F0F6FC;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem;
+
+  path { fill: #007CBA; }
+}
+
+.email-editor-pattern__list-item {
+  border: 1px solid #DDD;
+  border-radius: 4px;
+
+  .block-editor-block-preview__container:after {
+    outline: unset !important;
+    outline-offset: unset !important;
+  }
+
+  .block-editor-block-patterns-list__item-title {
+    font-size: unset !important;
+    padding-left: 1rem;
+  }
+}
