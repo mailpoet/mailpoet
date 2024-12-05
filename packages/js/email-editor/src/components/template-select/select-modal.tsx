@@ -42,7 +42,7 @@ export function SelectTemplateModal( {
 	closeCallback = null,
 	previewContent = '',
 } ) {
-	const [ templates ] = usePreviewTemplates( previewContent );
+	let [ templates, emailPosts ] = usePreviewTemplates( previewContent );
 
 	const hasTemplates = templates?.length > 0;
 
@@ -82,6 +82,12 @@ export function SelectTemplateModal( {
 		},
 	];
 
+	let initialCategory = dummyTemplateCategories[ 0 ]; // Show the “Recent” category by default
+	if ( ! emailPosts || emailPosts?.length === 0 ) {
+		emailPosts = [];
+		initialCategory = dummyTemplateCategories[ 1 ]; // user does not recent category, show basic category
+	}
+
 	return (
 		<Modal
 			title={ __( 'Select a template', 'mailpoet' ) }
@@ -91,9 +97,9 @@ export function SelectTemplateModal( {
 			isFullScreen
 		>
 			<SelectTemplateBody
-				initialCategory={ dummyTemplateCategories[ 0 ] }
+				initialCategory={ initialCategory }
 				templateCategories={ dummyTemplateCategories }
-				templates={ templates }
+				templates={ [ ...templates, ...emailPosts ] }
 				handleTemplateSelection={ handleTemplateSelection }
 			/>
 

@@ -1,8 +1,14 @@
+// import { useMemo } from '@wordpress/element';
 import { parse } from '@wordpress/blocks';
 import { BlockInstance } from '@wordpress/blocks/index';
 import { useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
-import { storeName, EmailTemplatePreview, TemplatePreview } from '../store';
+import {
+	storeName,
+	EmailTemplatePreview,
+	TemplatePreview,
+	EmailEditorPostType,
+} from '../store';
 
 /**
  * We need to merge pattern blocks and template blocks for BlockPreview component.
@@ -34,10 +40,8 @@ function setPostContentInnerBlocks(
 	} );
 }
 
-export function usePreviewTemplates(
-	customEmailContent = ''
-): TemplatePreview[][] {
-	const { templates, patterns } = useSelect( ( select ) => {
+export function usePreviewTemplates( customEmailContent = '' ) {
+	const { templates, patterns, emailPosts } = useSelect( ( select ) => {
 		const contentBlockId =
 			// @ts-expect-error getBlocksByName is not defined in types
 			select( blockEditorStore ).getBlocksByName(
@@ -51,6 +55,7 @@ export function usePreviewTemplates(
 					[ 'core/post-content' ],
 					contentBlockId
 				),
+			emailPosts: select( storeName ).getSentEmailEditorPosts(),
 		};
 	}, [] );
 
@@ -104,6 +109,16 @@ export function usePreviewTemplates(
 						: contentPatternBlocks,
 				template,
 				category: 'basic', // TODO: This will be updated once template category is implemented
+			};
+		} ),
+		emailPosts?.map( ( post: EmailEditorPostType ) => {
+			const parsedPostContent = parse( post.content?.raw );
+			return {
+				slug: post.slug,
+				previewContentParsed: parsedPostContent,
+				emailParsed: parsedPostContent,
+				template: post,
+				category: 'recent',
 			};
 		} ),
 	];

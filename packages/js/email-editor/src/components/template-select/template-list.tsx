@@ -75,7 +75,7 @@ function TemplateListBox( {
 								minHeight={ 300 }
 								additionalStyles={ [
 									{
-										css: template.template.email_theme_css,
+										css: template.template?.email_theme_css,
 									},
 								] }
 							/>
