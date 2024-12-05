@@ -1,29 +1,50 @@
-import { useState } from '@wordpress/element';
+import { useState, useEffect, memo } from '@wordpress/element';
 import { store as editorStore } from '@wordpress/editor';
 import { dispatch } from '@wordpress/data';
 import { Modal, Button, Flex, FlexItem } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { usePreviewTemplates } from '../../hooks';
-import { EmailEditorPostType, storeName, TemplatePreview } from '../../store';
+import {
+	EmailEditorPostType,
+	storeName,
+	TemplateCategory,
+	TemplatePreview,
+} from '../../store';
 import { TemplateList } from './template-list';
 import { TemplateCategoriesListSidebar } from './template-categories-list-sidebar';
 
 const BLANK_TEMPLATE = 'email-general';
 
+const TemplateCategories: Array< { name: TemplateCategory; label: string } > = [
+	{
+		name: 'recent',
+		label: 'Recent',
+	},
+	{
+		name: 'basic',
+		label: 'Basic',
+	},
+];
+
 function SelectTemplateBody( {
-	initialCategory,
-	templateCategories,
+	hasEmailPosts,
 	templates,
 	handleTemplateSelection,
 } ) {
 	const [ selectedCategory, setSelectedCategory ] = useState(
-		initialCategory?.name
+		TemplateCategories[ 0 ].name // Show the “Recent” category by default
 	);
+
+	useEffect( () => {
+		if ( ! hasEmailPosts ) {
+			setSelectedCategory( TemplateCategories[ 1 ].name );
+		}
+	}, [ hasEmailPosts ] );
 
 	return (
 		<div className="block-editor-block-patterns-explorer">
 			<TemplateCategoriesListSidebar
-				templateCategories={ templateCategories }
+				templateCategories={ TemplateCategories }
 				selectedCategory={ selectedCategory }
 				onClickCategory={ setSelectedCategory }
 			/>
@@ -37,12 +58,15 @@ function SelectTemplateBody( {
 	);
 }
 
+const MemorizedSelectTemplateBody = memo( SelectTemplateBody );
+
 export function SelectTemplateModal( {
 	onSelectCallback,
 	closeCallback = null,
 	previewContent = '',
 } ) {
-	let [ templates, emailPosts ] = usePreviewTemplates( previewContent );
+	const [ templates, emailPosts, hasEmailPosts ] =
+		usePreviewTemplates( previewContent );
 
 	const hasTemplates = templates?.length > 0;
 
@@ -77,23 +101,6 @@ export function SelectTemplateModal( {
 		handleTemplateSelection( blankTemplate );
 	};
 
-	const dummyTemplateCategories = [
-		{
-			name: 'recent',
-			label: 'Recent',
-		},
-		{
-			name: 'basic',
-			label: 'Basic',
-		},
-	];
-
-	let initialCategory = dummyTemplateCategories[ 0 ]; // Show the “Recent” category by default
-	if ( ! emailPosts || emailPosts?.length === 0 ) {
-		emailPosts = [];
-		initialCategory = dummyTemplateCategories[ 1 ]; // user does not recent category, show basic category
-	}
-
 	return (
 		<Modal
 			title={ __( 'Select a template', 'mailpoet' ) }
@@ -102,9 +109,8 @@ export function SelectTemplateModal( {
 			}
 			isFullScreen
 		>
-			<SelectTemplateBody
-				initialCategory={ initialCategory }
-				templateCategories={ dummyTemplateCategories }
+			<MemorizedSelectTemplateBody
+				hasEmailPosts={ hasEmailPosts }
 				templates={ [ ...templates, ...emailPosts ] }
 				handleTemplateSelection={ handleTemplateSelection }
 			/>
