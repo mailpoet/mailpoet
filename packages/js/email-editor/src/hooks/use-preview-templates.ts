@@ -100,6 +100,7 @@ export function usePreviewTemplates( customEmailContent = '' ) {
 			);
 
 			return {
+				id: template.id,
 				slug: template.slug,
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				previewContentParsed: parsedTemplate,
@@ -109,11 +110,13 @@ export function usePreviewTemplates( customEmailContent = '' ) {
 						: contentPatternBlocks,
 				template,
 				category: 'basic', // TODO: This will be updated once template category is implemented
+				type: template.type,
 			};
 		} ),
 		emailPosts?.map( ( post: EmailEditorPostType ) => {
 			const parsedPostContent = parse( post.content?.raw );
 			return {
+				id: post.id,
 				slug: post.slug,
 				previewContentParsed: parsedPostContent,
 				emailParsed: parsedPostContent,
@@ -128,6 +131,7 @@ export function usePreviewTemplates( customEmailContent = '' ) {
 					email_theme_css: '',
 				},
 				category: 'recent',
+				type: post.type,
 			};
 		} ) as unknown as TemplatePreview[],
 	];

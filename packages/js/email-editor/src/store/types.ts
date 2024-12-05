@@ -225,11 +225,13 @@ export type EmailTemplatePreview = Omit<
 };
 
 export type TemplatePreview = {
+	id: string;
 	slug: string;
 	previewContentParsed: BlockInstance[];
 	emailParsed: BlockInstance[];
 	template: EmailTemplatePreview;
 	category?: TemplateCategory;
+	type: string;
 };
 
 export type TemplateCategory = 'recent' | 'basic';
