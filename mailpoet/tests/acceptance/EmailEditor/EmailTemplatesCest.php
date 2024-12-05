@@ -46,8 +46,8 @@ class EmailTemplatesCest {
 
     $i->wantTo('Return to editor and save all');
     $i->click('Back', '.editor-document-bar');
-    $i->waitForText('Save email & template');
-    $i->click('Save email & template');
+    $i->waitForText('Save', 10, '.edit-post-header__settings');
+    $i->click('Save', '.edit-post-header__settings');
     $i->waitForText('Save', 10, '.entities-saved-states__panel');
     $i->click('Save', '.entities-saved-states__panel');
     $i->waitForText('Saved');
