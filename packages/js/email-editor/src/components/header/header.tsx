@@ -24,7 +24,7 @@ import classnames from 'classnames';
 import { storeName } from '../../store';
 import { MoreMenu } from './more-menu';
 import { PreviewDropdown } from '../preview';
-import { SaveButton } from './save-button';
+import { SaveEmailButton } from './save-email-button';
 import { CampaignName } from './campaign-name';
 import { SendButton } from './send-button';
 import { useEditorMode } from '../../hooks';
@@ -208,7 +208,7 @@ export function Header() {
 				</div>
 			) }
 			<div className="editor-header__settings edit-post-header__settings">
-				<SaveButton />
+				<SaveEmailButton />
 				<PreviewDropdown />
 				<SendButton />
 				<PinnedItems.Slot scope={ storeName } />

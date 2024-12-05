@@ -11,7 +11,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { check, cloud, Icon } from '@wordpress/icons';
 import { storeName } from '../../store';
 
-export function SaveButton() {
+export function SaveEmailButton() {
 	const { saveEditedEmail } = useDispatch( storeName );
 
 	const { dirtyEntityRecords } = useEntitiesSavedStatesIsDirty();
