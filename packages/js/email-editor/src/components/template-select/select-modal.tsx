@@ -59,9 +59,9 @@ export function SelectTemplateModal( {
 		}
 
 		void dispatch( storeName ).setTemplateToPost(
-			templateIsPostContent ? postContent?.template : template.slug,
+			templateIsPostContent ? postContent.template : template.slug,
 			templateIsPostContent
-				? {}
+				? template?.template?.mailpoet_email_theme || {}
 				: template.template.mailpoet_email_theme ?? {}
 		);
 		onSelectCallback();

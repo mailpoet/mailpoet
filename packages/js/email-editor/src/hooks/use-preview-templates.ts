@@ -40,7 +40,56 @@ function setPostContentInnerBlocks(
 	} );
 }
 
-export function usePreviewTemplates( customEmailContent = '' ) {
+const InternalCssThemeCache = {};
+
+/**
+ * We are reusing the template CSS and mailpoet theme by fetching the template from
+ * the list of email editor available templates.
+ * Note: This function may need an update when https://mailpoet.atlassian.net/browse/MAILPOET-6335 is merged
+ * @param post
+ * @param allTemplates
+ */
+function generateTemplateCssTheme(
+	post: EmailEditorPostType,
+	allTemplates: TemplatePreview[] = []
+) {
+	const contentTemplate = post.template;
+
+	const defaultReturnObject = {
+		mailpoet_email_theme: null,
+		email_theme_css: '',
+	};
+
+	if ( ! contentTemplate ) {
+		return defaultReturnObject;
+	}
+
+	if ( InternalCssThemeCache[ contentTemplate ] ) {
+		return InternalCssThemeCache[ contentTemplate ];
+	}
+
+	const postTemplate = allTemplates.find(
+		( template ) => template.slug === contentTemplate
+	);
+
+	if ( ! postTemplate ) {
+		return defaultReturnObject;
+	}
+
+	const cssTheme = {
+		mailpoet_email_theme:
+			postTemplate?.template?.mailpoet_email_theme || null,
+		email_theme_css: postTemplate?.template?.email_theme_css || '',
+	};
+
+	InternalCssThemeCache[ contentTemplate ] = cssTheme;
+
+	return cssTheme;
+}
+
+export function usePreviewTemplates(
+	customEmailContent = ''
+): TemplatePreview[][] {
 	const { templates, patterns, emailPosts } = useSelect( ( select ) => {
 		const contentBlockId =
 			// @ts-expect-error getBlocksByName is not defined in types
@@ -89,8 +138,8 @@ export function usePreviewTemplates( customEmailContent = '' ) {
 		)?.blocks as BlockInstance[];
 	}
 
-	return [
-		templates.map( ( template: EmailTemplatePreview ): TemplatePreview => {
+	const allTemplates = templates.map(
+		( template: EmailTemplatePreview ): TemplatePreview => {
 			let parsedTemplate = parse( template.content?.raw );
 			parsedTemplate = setPostContentInnerBlocks(
 				parsedTemplate,
@@ -112,9 +161,14 @@ export function usePreviewTemplates( customEmailContent = '' ) {
 				category: 'basic', // TODO: This will be updated once template category is implemented
 				type: template.type,
 			};
-		} ),
+		}
+	);
+
+	return [
+		allTemplates,
 		emailPosts?.map( ( post: EmailEditorPostType ) => {
 			const parsedPostContent = parse( post.content?.raw );
+			const cssThemeData = generateTemplateCssTheme( post, allTemplates );
 			return {
 				id: post.id,
 				slug: post.slug,
@@ -127,8 +181,7 @@ export function usePreviewTemplates( customEmailContent = '' ) {
 						rendered:
 							post?.mailpoet_data?.subject || post.title.rendered, // use MailPoet subject as title
 					},
-					mailpoet_email_theme: null,
-					email_theme_css: '',
+					...cssThemeData,
 				},
 				category: 'recent',
 				type: post.type,
