@@ -1,4 +1,4 @@
-import { useRef } from '@wordpress/element';
+import { useRef, useEffect } from '@wordpress/element';
 import { Button, Dropdown } from '@wordpress/components';
 import {
 	// @ts-expect-error Our current version of packages doesn't have EntitiesSavedStates export
@@ -7,6 +7,33 @@ import {
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { storeName } from '../../store';
+
+const SaveAllContent = ( { onToggle } ) => {
+	// Hacky way to change the text in the templates row of the save dropdown
+	useEffect( () => {
+		const panels = document.querySelectorAll(
+			'.mailpoet-email-editor-save-button__dropdown  .components-panel__body'
+		);
+		panels.forEach( ( panel ) => {
+			const titleButton = panel.querySelector(
+				'.components-panel__body-title button'
+			);
+			if (
+				titleButton &&
+				titleButton.textContent.trim() === __( 'Templates', 'mailpoet' )
+			) {
+				const rows = panel.querySelectorAll( '.components-panel__row' );
+				if ( rows.length ) {
+					rows[ 0 ].textContent = __(
+						'This change will affect emails that use this template.',
+						'mailpoet'
+					);
+				}
+			}
+		} );
+	}, [] );
+	return <EntitiesSavedStates close={ onToggle } />;
+};
 
 export function SaveAllButton() {
 	const { isSaving } = useSelect(
@@ -41,7 +68,7 @@ export function SaveAllButton() {
 					</Button>
 				) }
 				renderContent={ ( { onToggle } ) => (
-					<EntitiesSavedStates close={ onToggle } />
+					<SaveAllContent onToggle={ onToggle } />
 				) }
 			/>
 		</div>
