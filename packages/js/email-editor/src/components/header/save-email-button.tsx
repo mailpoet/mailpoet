@@ -1,11 +1,4 @@
-import { useRef } from '@wordpress/element';
-import { Button, Dropdown } from '@wordpress/components';
-import {
-	// @ts-expect-error No types available for useEntitiesSavedStatesIsDirty
-	useEntitiesSavedStatesIsDirty,
-	// @ts-expect-error Our current version of packages doesn't have EntitiesSavedStates export
-	EntitiesSavedStates,
-} from '@wordpress/editor';
+import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { check, cloud, Icon } from '@wordpress/icons';
@@ -14,8 +7,6 @@ import { storeName } from '../../store';
 export function SaveEmailButton() {
 	const { saveEditedEmail } = useDispatch( storeName );
 
-	const { dirtyEntityRecords } = useEntitiesSavedStatesIsDirty();
-
 	const { hasEdits, isEmpty, isSaving } = useSelect(
 		( select ) => ( {
 			hasEdits: select( storeName ).hasEdits(),
@@ -23,12 +14,6 @@ export function SaveEmailButton() {
 			isSaving: select( storeName ).isSaving(),
 		} ),
 		[]
-	);
-
-	const buttonRef = useRef( null );
-
-	const hasNonEmailEdits = dirtyEntityRecords.some(
-		( entity ) => entity.name !== 'mailpoet_email'
 	);
 
 	const isSaved = ! isEmpty && ! isSaving && ! hasEdits;
@@ -41,27 +26,7 @@ export function SaveEmailButton() {
 		label = __( 'Saving', 'mailpoet' );
 	}
 
-	return hasNonEmailEdits ? (
-		<div ref={ buttonRef }>
-			<Dropdown
-				popoverProps={ {
-					placement: 'bottom',
-					anchor: buttonRef.current,
-				} }
-				contentClassName="mailpoet-email-editor-save-button__dropdown"
-				renderToggle={ ( { onToggle } ) => (
-					<Button onClick={ onToggle } variant="tertiary">
-						{ hasEdits
-							? __( 'Save email & template', 'mailpoet' )
-							: __( 'Save template', 'mailpoet' ) }
-					</Button>
-				) }
-				renderContent={ ( { onToggle } ) => (
-					<EntitiesSavedStates close={ onToggle } />
-				) }
-			/>
-		</div>
-	) : (
+	return (
 		<Button
 			variant="tertiary"
 			disabled={ isDisabled }
