@@ -11,8 +11,13 @@ import {
 } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
-// @ts-expect-error DocumentBar types are not available
-import { DocumentBar, store as editorStore } from '@wordpress/editor';
+import {
+	// @ts-expect-error DocumentBar types are not available
+	DocumentBar,
+	store as editorStore,
+	// @ts-expect-error useEntitiesSavedStatesIsDirty types are not available
+	useEntitiesSavedStatesIsDirty,
+} from '@wordpress/editor';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { __ } from '@wordpress/i18n';
 import { plus, listView, undo, redo, next, previous } from '@wordpress/icons';
@@ -27,6 +32,7 @@ import { PreviewDropdown } from '../preview';
 import { SaveEmailButton } from './save-email-button';
 import { CampaignName } from './campaign-name';
 import { SendButton } from './send-button';
+import { SaveAllButton } from './save-all-button';
 import { useEditorMode } from '../../hooks';
 
 // Build type for ToolbarItem contains only "as" and "children" properties but it takes all props from
@@ -83,6 +89,11 @@ export function Header() {
 	}, [] );
 
 	const [ editorMode ] = useEditorMode();
+
+	const { dirtyEntityRecords } = useEntitiesSavedStatesIsDirty();
+	const hasNonEmailEdits = dirtyEntityRecords.some(
+		( entity ) => entity.name !== 'mailpoet_email'
+	);
 
 	const preventDefault = ( event ) => {
 		event.preventDefault();
@@ -210,7 +221,7 @@ export function Header() {
 			<div className="editor-header__settings edit-post-header__settings">
 				<SaveEmailButton />
 				<PreviewDropdown />
-				<SendButton />
+				{ hasNonEmailEdits ? <SaveAllButton /> : <SendButton /> }
 				<PinnedItems.Slot scope={ storeName } />
 				<MoreMenu />
 			</div>
