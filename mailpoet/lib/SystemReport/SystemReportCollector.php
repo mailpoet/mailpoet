@@ -4,6 +4,7 @@ namespace MailPoet\SystemReport;
 
 use MailPoet\Cron\CronHelper;
 use MailPoet\DI\ContainerWrapper;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -76,6 +77,9 @@ class SystemReportCollector {
       $cronPingResponse = __("Can't ping cron URL", 'mailpoet') . ' (' . $e->getMessage() . ')';
     }
 
+    $mailerLog = MailerLog::getMailerLog();
+    $mailerLog['sent'] = MailerLog::sentSince();
+
     // the HelpScout Beacon API has a limit of 20 attribute-value pairs (https://developer.helpscout.com/beacon-2/web/javascript-api/#beacon-session-data)
     return [
       'PHP version' => PHP_VERSION,
@@ -127,10 +131,23 @@ class SystemReportCollector {
       'Total number of subscribers' => $this->subscribersFeature->getSubscribersCount(),
       'Plugin installed at' => $this->settings->get('installed_at'),
       'Installed via WooCommerce onboarding wizard' => $this->wooCommerceHelper->wasMailPoetInstalledViaWooCommerceOnboardingWizard(),
+      'Sending queue status' => $this->formatCompositeField([
+        'Status' => $mailerLog['status'] ?? 'Unknown',
+        'Started at' => isset($mailerLog['started']) ? date('Y-m-d H:i:s', $mailerLog['started']) : 'Unknown',
+        'Emails sent' => $mailerLog['sent'],
+        'Retry attempts' => $mailerLog['retry_attempt'] ?? 0,
+        'Last seen error' => isset($mailerLog['error'])
+          ? $mailerLog['error']['error_message'] . ' (' . $mailerLog['error']['operation'] . ')'
+          : 'None',
+      ]),
     ];
   }
 
   private function formatCompositeField($fields) {
+    if (empty($fields)) {
+      return '';
+    }
+
     return implode(' - ', array_map(function ($key, $value) {
       return $key . ': ' . $value;
     }, array_keys($fields), array_values($fields)));

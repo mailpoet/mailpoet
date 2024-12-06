@@ -4,6 +4,7 @@ namespace MailPoet\Test\SystemReport;
 
 use MailPoet\Cron\CronHelper;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Mailer\MailerLog;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\SystemReport\SystemReportCollector;
@@ -213,5 +214,27 @@ class SystemReportCollectorTest extends \MailPoetTest {
     verify($subjectField)->stringContainsString('Last run start: Unknown');
     verify($subjectField)->stringContainsString('Last run end: Unknown');
     verify($subjectField)->stringContainsString('Last seen error: None');
+  }
+
+  public function testItReturnsSendingQueueStatus() {
+    $mailerLog = MailerLog::createMailerLog();
+    MailerLog::resumeSending();
+
+    try {
+      MailerLog::processError($operation = 'send', $error = 'email rejected');
+    } catch (\Exception $e) {
+      // ignore
+    }
+
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+    $subjectField = $systemInfoData['Sending queue status'];
+    verify($subjectField)->stringContainsString('Started at: ' . date('Y-m-d')); // ignoring time segment
+    verify($subjectField)->stringContainsString('Retry attempts: 1');
+    verify($subjectField)->stringContainsString("Last seen error: $error ($operation)"); // @phpstan-ignore-line
+
+    MailerLog::pauseSending($mailerLog);
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+    $subjectField = $systemInfoData['Sending queue status'];
+    verify($subjectField)->stringContainsString('Status: ' . MailerLog::STATUS_PAUSED);
   }
 }
