@@ -1,10 +1,10 @@
 const EMPTY_ARRAY = [];
 
 
-export const getNewsletterRows = (state) => {
-	  return state.newsletterStandardRows || EMPTY_ARRAY
+export const getStandardNewsletters = (state) => {
+	  return state.newsletters.standard || EMPTY_ARRAY
 }
 
-export const getNewsletterLoading = (state) => {
-	  return state.isLoading || false
+export const getStandardNewsletterLoading = (state) => {
+	  return state.isLoading.standard || false
 }
