@@ -103,7 +103,7 @@ export function SelectTemplateModal( {
 
 	return (
 		<Modal
-			title={ __( 'Select a template', 'mailpoet' ) }
+			title={ __( 'Start with an email preset', 'mailpoet' ) }
 			onRequestClose={ () =>
 				closeCallback ? closeCallback() : handleCloseWithoutSelection()
 			}
@@ -115,7 +115,7 @@ export function SelectTemplateModal( {
 				handleTemplateSelection={ handleTemplateSelection }
 			/>
 
-			<Flex justify="flex-end">
+			<Flex className="email-editor-modal-footer" justify="flex-end">
 				<FlexItem>
 					<Button
 						variant="tertiary"
