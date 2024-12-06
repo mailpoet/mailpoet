@@ -8,6 +8,7 @@ use MailPoet\Mailer\MailerLog;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
+use MailPoet\Util\DataInconsistency\DataInconsistencyController;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
@@ -25,16 +26,21 @@ class SystemReportCollector {
   /** @var WooCommerceHelper */
   private $wooCommerceHelper;
 
+  /** @var DataInconsistencyController */
+  private $dataInconsistencyController;
+
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     SubscribersFeature $subscribersFeature,
-    WooCommerceHelper $wooCommerceHelper
+    WooCommerceHelper $wooCommerceHelper,
+    DataInconsistencyController $dataInconsistencyController
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->subscribersFeature = $subscribersFeature;
     $this->wooCommerceHelper = $wooCommerceHelper;
+    $this->dataInconsistencyController = $dataInconsistencyController;
   }
 
   public function getData($maskApiKey = false) {
@@ -79,6 +85,9 @@ class SystemReportCollector {
 
     $mailerLog = MailerLog::getMailerLog();
     $mailerLog['sent'] = MailerLog::sentSince();
+
+    $inconsistencyStatus = $this->dataInconsistencyController->getInconsistentDataStatus();
+    unset($inconsistencyStatus['total']);
 
     // the HelpScout Beacon API has a limit of 20 attribute-value pairs (https://developer.helpscout.com/beacon-2/web/javascript-api/#beacon-session-data)
     return [
@@ -140,6 +149,7 @@ class SystemReportCollector {
           ? $mailerLog['error']['error_message'] . ' (' . $mailerLog['error']['operation'] . ')'
           : 'None',
       ]),
+      'Data inconsistency status' => $this->formatCompositeField($this->convertKeysToTitleCase($inconsistencyStatus)),
     ];
   }
 
@@ -151,6 +161,16 @@ class SystemReportCollector {
     return implode(' - ', array_map(function ($key, $value) {
       return $key . ': ' . $value;
     }, array_keys($fields), array_values($fields)));
+  }
+
+  private function convertKeysToTitleCase(array $array): array {
+    $result = [];
+    foreach ($array as $key => $value) {
+      $titleCaseKey = ucfirst(str_replace('_', ' ', $key));
+      $result[$titleCaseKey] = $value;
+    }
+
+    return $result;
   }
 
   protected function maskApiKey($key) {

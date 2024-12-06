@@ -237,4 +237,15 @@ class SystemReportCollectorTest extends \MailPoetTest {
     $subjectField = $systemInfoData['Sending queue status'];
     verify($subjectField)->stringContainsString('Status: ' . MailerLog::STATUS_PAUSED);
   }
+
+  public function testItReturnsDataInconsistencyStatus() {
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+    $subjectField = $systemInfoData['Data inconsistency status'];
+    verify($subjectField)->stringContainsString('Orphaned sending tasks: 0');
+    verify($subjectField)->stringContainsString('Orphaned sending task subscribers: 0');
+    verify($subjectField)->stringContainsString('Sending queue without newsletter: 0');
+    verify($subjectField)->stringContainsString('Orphaned subscriptions: 0');
+    verify($subjectField)->stringContainsString('Orphaned links: 0');
+    verify($subjectField)->stringContainsString('Orphaned newsletter posts: 0');
+  }
 }
