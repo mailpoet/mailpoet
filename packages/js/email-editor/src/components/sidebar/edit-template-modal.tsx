@@ -27,6 +27,16 @@ export function EditTemplateModal( { close } ) {
 			<Flex justify={ 'end' }>
 				<FlexItem>
 					<Button
+						variant="tertiary"
+						onClick={ () => {
+							close();
+						} }
+					>
+						{ __( 'Cancel', 'mailpoet' ) }
+					</Button>
+				</FlexItem>
+				<FlexItem>
+					<Button
 						variant="primary"
 						onClick={ () => {
 							onNavigateToEntityRecord( {
