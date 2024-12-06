@@ -40,7 +40,7 @@ class EmailEditorPreviewEmail {
     }
 
     if (!is_email($data['email'])) {
-      throw new \InvalidArgumentException(esc_html__('Invalid email', 'mailpoet'));
+      throw new \InvalidArgumentException(esc_html__('Invalid email address', 'mailpoet'));
     }
   }
 
