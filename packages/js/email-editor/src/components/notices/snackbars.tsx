@@ -1,4 +1,6 @@
+import { useMemo } from '@wordpress/element';
 import { SnackbarList } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
 
@@ -12,11 +14,33 @@ export function EditorSnackbars( { context = 'email-editor' } ) {
 		[ context ]
 	);
 
+	// Some global notices are not suitable for the email editor context
+	// This map allows us to change the content of the notice
+	const globalNoticeChangeMap = useMemo( () => {
+		return {
+			'site-editor-save-success': {
+				content: __( 'Template updated.', 'mailpoet' ),
+				removeActions: true,
+			},
+		};
+	}, [] );
+
 	const { removeNotice } = useDispatch( noticesStore );
 
-	const snackbarNotices = notices.filter(
-		( { type } ) => type === 'snackbar'
-	);
+	const snackbarNotices = notices
+		.filter( ( { type } ) => type === 'snackbar' )
+		.map( ( notice ) => {
+			if ( ! globalNoticeChangeMap[ notice.id ] ) {
+				return notice;
+			}
+			return {
+				...notice,
+				content: globalNoticeChangeMap[ notice.id ].content,
+				actions: globalNoticeChangeMap[ notice.id ].removeActions
+					? []
+					: notice.actions,
+			};
+		} );
 
 	return (
 		<SnackbarList
