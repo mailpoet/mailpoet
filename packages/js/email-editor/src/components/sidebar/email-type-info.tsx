@@ -57,7 +57,7 @@ export function EmailTypeInfo() {
 						<PanelRow>
 							<Flex justify={ 'start' }>
 								<FlexItem className="editor-post-panel__row-label">
-									Template
+									{ __( 'Template', 'mailpoet' ) }
 								</FlexItem>
 								<FlexItem>
 									<DropdownMenu
