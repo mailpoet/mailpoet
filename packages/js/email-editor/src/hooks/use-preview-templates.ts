@@ -8,6 +8,7 @@ import {
 	EmailTemplatePreview,
 	TemplatePreview,
 	EmailEditorPostType,
+	EmailTheme,
 } from '../store';
 
 /**
@@ -42,6 +43,11 @@ function setPostContentInnerBlocks(
 
 const InternalCssThemeCache = {};
 
+type GenerateTemplateCssThemeType = {
+	emailThemeCss: string;
+	mailpoetEmailTheme?: EmailTheme;
+	postTemplateContent?: EmailTemplatePreview;
+};
 /**
  * We are reusing the template CSS and mailpoet theme by fetching the template from
  * the list of email editor available templates.
@@ -52,12 +58,13 @@ const InternalCssThemeCache = {};
 function generateTemplateCssTheme(
 	post: EmailEditorPostType,
 	allTemplates: TemplatePreview[] = []
-) {
+): GenerateTemplateCssThemeType {
 	const contentTemplate = post.template;
 
 	const defaultReturnObject = {
-		mailpoet_email_theme: null,
-		email_theme_css: '',
+		mailpoetEmailTheme: null,
+		emailThemeCss: '',
+		postTemplateContent: null,
 	};
 
 	if ( ! contentTemplate ) {
@@ -77,9 +84,10 @@ function generateTemplateCssTheme(
 	}
 
 	const cssTheme = {
-		mailpoet_email_theme:
+		mailpoetEmailTheme:
 			postTemplate?.template?.mailpoet_email_theme || null,
-		email_theme_css: postTemplate?.template?.email_theme_css || '',
+		emailThemeCss: postTemplate?.template?.email_theme_css || '',
+		postTemplateContent: postTemplate?.template,
 	};
 
 	InternalCssThemeCache[ contentTemplate ] = cssTheme;
@@ -170,12 +178,23 @@ export function usePreviewTemplates(
 
 	const allEmailPosts = useMemo( () => {
 		return emailPosts?.map( ( post: EmailEditorPostType ) => {
+			const { mailpoetEmailTheme, emailThemeCss, postTemplateContent } =
+				generateTemplateCssTheme( post, allTemplates );
 			const parsedPostContent = parse( post.content?.raw );
-			const cssThemeData = generateTemplateCssTheme( post, allTemplates );
+
+			let parsedPostContentWithTemplate = parsedPostContent;
+
+			if ( postTemplateContent?.content?.raw ) {
+				parsedPostContentWithTemplate = setPostContentInnerBlocks(
+					parse( postTemplateContent?.content?.raw ),
+					parsedPostContent
+				);
+			}
+
 			return {
 				id: post.id,
 				slug: post.slug,
-				previewContentParsed: parsedPostContent,
+				previewContentParsed: parsedPostContentWithTemplate,
 				emailParsed: parsedPostContent,
 				template: {
 					...post,
@@ -184,7 +203,8 @@ export function usePreviewTemplates(
 						rendered:
 							post?.mailpoet_data?.subject || post.title.rendered, // use MailPoet subject as title
 					},
-					...cssThemeData,
+					mailpoet_email_theme: mailpoetEmailTheme,
+					email_theme_css: emailThemeCss,
 				},
 				category: 'recent',
 				type: post.type,
