@@ -63,12 +63,17 @@ class SystemReportCollector {
     }
 
     $cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
+    $cronDaemonStatus = $cronHelper->getDaemon() ?? [];
     try {
-      $cronPingUrl = $cronHelper->getCronUrl(
-        CronDaemon::ACTION_PING
-      );
+      $cronPingUrl = $cronHelper->getCronUrl(CronDaemon::ACTION_PING);
     } catch (\Exception $e) {
       $cronPingUrl = __('Can‘t generate cron URL.', 'mailpoet') . ' (' . $e->getMessage() . ')';
+    }
+
+    try {
+      $cronPingResponse = $cronHelper->pingDaemon();
+    } catch (\Exception $e) {
+      $cronPingResponse = __("Can't ping cron URL", 'mailpoet') . ' (' . $e->getMessage() . ')';
     }
 
     // the HelpScout Beacon API has a limit of 20 attribute-value pairs (https://developer.helpscout.com/beacon-2/web/javascript-api/#beacon-session-data)
@@ -106,10 +111,18 @@ class SystemReportCollector {
       'MailPoet sending info' => $this->formatCompositeField([
         "Send all site's emails with" => ($this->settings->get('send_transactional_emails') ? 'current sending method' : 'default WordPress sending method'),
         'Task Scheduler method' => $this->settings->get('cron_trigger.method'),
-        'Cron ping URL' => $cronPingUrl,
         'Default FROM address' => $this->settings->get('sender.address'),
         'Default Reply-To address' => $this->settings->get('reply_to.address'),
         'Bounce Email Address' => $this->settings->get('bounce.address'),
+      ]),
+      'MailPoet Cron / Action Scheduler' => $this->formatCompositeField([
+        'Status' => $cronDaemonStatus['status'] ?? 'Unknown',
+        'Is reachable' => $cronHelper->validatePingResponse($cronPingResponse) ? 'Yes' : 'No',
+        'Ping URL' => $cronPingUrl,
+        'Ping response' => $cronPingResponse,
+        'Last run start' => isset($cronDaemonStatus['run_started_at']) ? date('Y-m-d H:i:s', $cronDaemonStatus['run_started_at']) : 'Unknown',
+        'Last run end' => isset($cronDaemonStatus['run_completed_at']) ? date('Y-m-d H:i:s', $cronDaemonStatus['run_completed_at']) : 'Unknown',
+        'Last seen error' => $cronDaemonStatus['last_error'] ?? 'None',
       ]),
       'Total number of subscribers' => $this->subscribersFeature->getSubscribersCount(),
       'Plugin installed at' => $this->settings->get('installed_at'),

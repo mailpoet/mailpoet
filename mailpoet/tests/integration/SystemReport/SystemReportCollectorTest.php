@@ -2,6 +2,7 @@
 
 namespace MailPoet\Test\SystemReport;
 
+use MailPoet\Cron\CronHelper;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
@@ -147,15 +148,15 @@ class SystemReportCollectorTest extends \MailPoetTest {
   }
 
   public function testItReturnsCronPingUrl() {
-    verify($this->systemInfoData['MailPoet sending info'])->stringContainsString('&action=ping');
+    verify($this->systemInfoData['MailPoet Cron / Action Scheduler'])->stringContainsString('&action=ping');
     // cron ping URL should react to custom filters
-    $filter = function($url) {
+    $filter = function ($url) {
       return str_replace(home_url(), 'http://custom_url/', $url);
     };
     $wp = new WPFunctions;
     $wp->addFilter('mailpoet_cron_request_url', $filter);
     $systemInfoData = $this->systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
-    verify($systemInfoData['MailPoet sending info'])->stringMatchesRegExp('!http:\/\/custom_url\/!');
+    verify($systemInfoData['MailPoet Cron / Action Scheduler'])->stringMatchesRegExp('!http:\/\/custom_url\/!');
     $wp->removeFilter('mailpoet_cron_request_url', $filter);
   }
 
@@ -177,5 +178,40 @@ class SystemReportCollectorTest extends \MailPoetTest {
     $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData(true);
 
     $this->assertSame($expectedResult, $systemInfoData['MailPoet Premium/MSS key']);
+  }
+
+  public function testItReturnsCronStatusDetailsWhenDaemonIsActive() {
+    $cronSettings = [
+      'status' => CronHelper::DAEMON_STATUS_ACTIVE,
+      'run_started_at' => time(),
+      'run_completed_at' => time() + 10,
+      'last_error' => 'Some error',
+    ];
+
+    $this->settings->set('cron_daemon', $cronSettings);
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    $subjectField = $systemInfoData['MailPoet Cron / Action Scheduler'];
+    verify($subjectField)->stringContainsString('Status: ' . $cronSettings['status']);
+    verify($subjectField)->stringContainsString('Is reachable: Yes');
+    verify($subjectField)->stringContainsString('Ping response: pong');
+    verify($subjectField)->stringContainsString('Last run start: ' . date('Y-m-d H:i:s', $cronSettings['run_started_at']));
+    verify($subjectField)->stringContainsString('Last run end: ' . date('Y-m-d H:i:s', $cronSettings['run_completed_at']));
+    verify($subjectField)->stringContainsString('Last seen error: ' . $cronSettings['last_error']);
+  }
+
+  public function testItReturnsCronStatusDetailsWhenDaemonIsInactive() {
+    $cronSettings = [
+      'status' => CronHelper::DAEMON_STATUS_INACTIVE,
+    ];
+
+    $this->settings->set('cron_daemon', $cronSettings);
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+
+    $subjectField = $systemInfoData['MailPoet Cron / Action Scheduler'];
+    verify($subjectField)->stringContainsString('Status: ' . $cronSettings['status']);
+    verify($subjectField)->stringContainsString('Last run start: Unknown');
+    verify($subjectField)->stringContainsString('Last run end: Unknown');
+    verify($subjectField)->stringContainsString('Last seen error: None');
   }
 }
