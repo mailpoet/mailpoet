@@ -95,6 +95,8 @@ class EmailTemplatesCest {
 
   private function selectTemplate(\AcceptanceTester $i, string $template): void {
     $i->wantTo("Select template $template");
+    $i->waitForElementClickable('.email-editor-start_from_scratch_button');
+    $i->click('[aria-label="Basic"]');
     $i->waitForElement('.block-editor-block-patterns-list__item-title');
     $i->waitForText($template);
     $i->click("//div[@class='block-editor-block-patterns-list__item-title' and text()='$template']");
