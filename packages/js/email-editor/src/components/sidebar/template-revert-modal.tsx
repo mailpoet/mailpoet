@@ -14,7 +14,7 @@ export function TemplateRevertModal( { close } ) {
 		<Modal size="medium" onRequestClose={ close } __experimentalHideHeader>
 			<p>
 				{ __(
-					'Reset to default and clear all customization?',
+					'This will clear ANY and ALL template customization. All updates made to the template will be lost. Do you want to proceed?',
 					'mailpoet'
 				) }
 			</p>

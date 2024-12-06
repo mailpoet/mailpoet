@@ -78,7 +78,7 @@ class EmailTemplatesCest {
     $i->click('[aria-label="Template actions"]');
     $i->waitForText('Reset');
     $i->click('Reset');
-    $i->waitForText('Reset to default and clear all customization?');
+    $i->waitForText('This will clear ANY and ALL template customization. All updates made to the template will be lost. Do you want to proceed?');
     $i->click('Reset');
     $i->waitForText('"Simple Light" reset.');
     $this->checkTextIsNotInEmail($i, $textInTemplate);
