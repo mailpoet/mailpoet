@@ -38,12 +38,16 @@ export function togglePreviewModal( isOpen: boolean ) {
 	} as const;
 }
 
-export function togglePersonalizationTagsModal( isOpen: boolean ) {
+export function togglePersonalizationTagsModal(
+	isOpen: boolean,
+	payload: Partial< State[ 'personalizationTags' ] > = {}
+) {
 	return {
 		type: 'CHANGE_PERSONALIZATION_TAGS_STATE',
-		state: { isModalOpened: isOpen } as Partial<
-			State[ 'personalizationTags' ]
-		>,
+		state: {
+			isModalOpened: isOpen,
+			...payload,
+		} as Partial< State[ 'personalizationTags' ] >,
 	} as const;
 }
 
@@ -266,6 +270,7 @@ export function revertAndSaveTemplate( template ) {
 				);
 		}
 	};
+}
 
 export function* loadPersonalizationTags() {
 	const data = yield apiFetch( {

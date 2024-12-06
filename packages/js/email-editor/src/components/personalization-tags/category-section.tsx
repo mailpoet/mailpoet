@@ -1,6 +1,7 @@
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { PersonalizationTag } from '../../store';
+import { PersonalizationTag, storeName } from '../../store';
+import { useDispatch, useSelect } from '@wordpress/data';
 
 const CategorySection = ( {
 	groupedTags,
@@ -9,6 +10,13 @@ const CategorySection = ( {
 	groupedTags: Record< string, PersonalizationTag[] >;
 	activeCategory: string | null;
 } ) => {
+	const { togglePersonalizationTagsModal } = useDispatch( storeName );
+
+	const { onInsert } = useSelect(
+		( select ) => select( storeName ).getPersonalizationTagsState(),
+		[]
+	);
+
 	const categoriesToRender: [ string, PersonalizationTag[] ][] =
 		activeCategory === null
 			? Object.entries( groupedTags ) // Render all categories
@@ -32,7 +40,17 @@ const CategorySection = ( {
 										<strong>{ item.name }</strong>
 										{ item.token }
 									</div>
-									<Button variant="link">
+									<Button
+										variant="link"
+										onClick={ () => {
+											if ( onInsert ) {
+												onInsert( item.token );
+											}
+											togglePersonalizationTagsModal(
+												false
+											);
+										} }
+									>
 										{ __( 'Insert' ) }
 									</Button>
 								</div>

@@ -203,6 +203,7 @@ export type State = {
 	personalizationTags: {
 		isModalOpened: boolean;
 		list: PersonalizationTag[];
+		onInsert: ( ( value: string ) => void ) | null;
 	};
 };
 
