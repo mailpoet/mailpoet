@@ -8,3 +8,7 @@ export const getStandardNewsletters = (state) => {
 export const getStandardNewsletterLoading = (state) => {
 	  return state.isLoading.standard || false
 }
+
+export const getStandardSegments = (state) => {
+	  return state.newsletters.standardSegments || EMPTY_ARRAY
+}

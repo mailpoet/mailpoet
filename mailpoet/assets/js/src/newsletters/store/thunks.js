@@ -7,7 +7,6 @@ function extractStandardNewsletters(data) {
           subject: item.subject,
           status: item.status,
           segment_ids: item.segments.map((segment) => segment.id),
-          segment_names: item.segments.map((segment) => segment.name),
           statistics_clicked: item.statistics.clicked,
           statistics_opened: item.statistics.opened,
           sent_at: item.sent_at,

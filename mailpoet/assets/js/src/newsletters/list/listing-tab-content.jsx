@@ -45,23 +45,59 @@ export const NEWSLETTER_STANDARD_HEADERS = [
       ];
 
 
-function transformToTableCardRows(standard) {
+function renderSegments(segment_ids = [], segments = []) {
+  return (
+    <div className="mailpoet-tags">
+      {segment_ids.map(segmentId => {
+        const segment = segments.find(s => s.id === segmentId);
+        return (
+          <div key={segmentId}>
+            <a href={`admin.php?page=mailpoet-subscribers#/filter[segment=${segmentId}]`}>
+              <div className="mailpoet-tag mailpoet-tag-list mailpoet-tag-large">
+                {segment ? segment.name : ''}
+              </div>
+            </a>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+
+function renderOpenedClickedStats(clicked, opened) {
+  return (
+    <div className="mailpoet-listing-stats">
+      <div className="mailpoet-listing-stats-opened-clicked">
+        <div className="mailpoet-listing-stats-percentages">
+          {clicked.toFixed(1)}%<br />
+          <span className="mailpoet-listing-stats-percentages-opens">{opened.toFixed(1)}%</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+function transformToTableCardRows(standard, segments) {
   return standard.map(item => {
-    const totalStats = `${item.statistics_clicked}%, ${item.statistics_opened}%`;
     return [
       { display: item.subject, value: item.subject },
       { display: item.status, value: item.status },
-      { display: item.segment_names.join(', '), value: item.segment_names.join(', ') },
-      { display: totalStats.toString(), value: totalStats },
+      { display: renderSegments(item.segment_ids, segments), value: item.segment_ids },
+      { display: renderOpenedClickedStats(item.statistics_clicked, item.statistics_opened), value: [item.statistics_clicked, item.statistics_opened] },
       { display: item.sent_at ? item.sent_at : 'Not sent', value: item.sent_at || '' },
     ];
   });
 }
 
 
+
 export function ListingTabContent() {
     const newsletterStandardData = useSelect((select) => select(storeName).getStandardNewsletters(), []);
-    const newsletterStandardRows = transformToTableCardRows(newsletterStandardData);
+    const standardSegmentsData = useSelect((select) => select(storeName).getStandardSegments(), []);
+    const newsletterStandardRows = transformToTableCardRows(newsletterStandardData, standardSegmentsData);
+
     const newsletterStandardLoading = useSelect((select) => select(storeName).getStandardNewsletterLoading(), []);
 
     const rowClasses = classnames(
@@ -73,7 +109,6 @@ export function ListingTabContent() {
     return (
       <div className={rowClasses}>
         <div>
-          <pre> {JSON.stringify(newsletterStandardRows)} </pre>
           <pre> {newsletterStandardLoading ? "true" : "false"} </pre>
 
           <TableCard
