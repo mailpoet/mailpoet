@@ -10,8 +10,10 @@ import { useLocation, useParams } from 'react-router-dom';
 import { TableCard,TablePlaceholder } from '@woocommerce/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { storeName } from '../store/constants';
-import { QueueStatus } from '../listings/queue-status';
-import { Statistics } from '../listings/statistics.jsx';
+import { QueueStatus } from 'newsletters/listings/queue-status';
+import { Statistics } from 'newsletters/listings/statistics.jsx';
+import { ErrorBoundary, withBoundary } from '../../common';
+import { SegmentTags, FilterSegmentTag } from '../../common/tag/tags';
 
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
@@ -47,35 +49,29 @@ export const NEWSLETTER_STANDARD_HEADERS = [
       ];
 
 
-function renderSegments(segment_ids = [], segments = []) {
-  return (
-    <div className="mailpoet-tags">
-      {segment_ids.map(segmentId => {
-        const segment = segments.find(s => s.id === segmentId);
-        return (
-          <div key={segmentId}>
-            <a href={`admin.php?page=mailpoet-subscribers#/filter[segment=${segmentId}]`}>
-              <div className="mailpoet-tag mailpoet-tag-list mailpoet-tag-large">
-                {segment ? segment.name : ''}
-              </div>
-            </a>
-          </div>
-        );
-      })}
-    </div>
-  );
+
+const selectSegementsFromIds = (segment_ids, segments) => {
+  return segment_ids.map(segment_id => segments.find(segment => segment.id === segment_id));
 }
 
 
 // TODO receive meta from the store
 function transformToTableCardRows(standard, segments, meta = { mta_log: {}, current_time: '' }) {
-  return standard.map(item => {
+  return standard.map(newsletter => {
+
     return [
-      { display: item.subject, value: item.subject },
-      { display: <QueueStatus newsletter={item} mailerLog={meta.mta_log} />, value: item.status },
-      { display: renderSegments(item.segment_ids, segments), value: item.segment_ids },
-      { display: <Statistics newsletter={item} currentTime={meta.current_time} />, value: item.statistics },
-      { display: item.sent_at ? item.sent_at : 'Not sent', value: item.sent_at || '' },
+      { display: newsletter.subject, value: newsletter.subject },
+      { display: <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />, value: newsletter.status },
+      { display: <div
+          className="column mailpoet-hide-on-mobile"
+          data-colname={__('Lists', 'mailpoet')}>
+          <ErrorBoundary>
+            <SegmentTags segments={selectSegementsFromIds(newsletter.segment_ids, segments)} dimension="large" />
+            <FilterSegmentTag newsletter={newsletter} dimension="large" />
+          </ErrorBoundary>
+        </div>, value: newsletter.segment_ids },
+      { display: <Statistics newsletter={newsletter} currentTime={meta.current_time} />, value: newsletter.statistics },
+      { display: newsletter.sent_at ? newsletter.sent_at : 'Not sent', value: newsletter.sent_at || '' },
     ];
   });
 }
