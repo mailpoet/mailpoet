@@ -67,14 +67,14 @@ function renderSegments(segment_ids = [], segments = []) {
 }
 
 
-
-function transformToTableCardRows(standard, segments) {
+// TODO receive meta from the store
+function transformToTableCardRows(standard, segments, meta = { mta_log: {}, current_time: '' }) {
   return standard.map(item => {
     return [
       { display: item.subject, value: item.subject },
-      { display: item.status, value: item.status },
+      { display: <QueueStatus newsletter={item} mailerLog={meta.mta_log} />, value: item.status },
       { display: renderSegments(item.segment_ids, segments), value: item.segment_ids },
-      { display: <Statistics newsletter={item} />, value: item.statistics },
+      { display: <Statistics newsletter={item} currentTime={meta.current_time} />, value: item.statistics },
       { display: item.sent_at ? item.sent_at : 'Not sent', value: item.sent_at || '' },
     ];
   });
