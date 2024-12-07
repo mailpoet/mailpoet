@@ -10,6 +10,8 @@ import { useLocation, useParams } from 'react-router-dom';
 import { TableCard,TablePlaceholder } from '@woocommerce/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { storeName } from '../store/constants';
+import { QueueStatus } from '../listings/queue-status';
+import { Statistics } from '../listings/statistics.jsx';
 
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
@@ -65,19 +67,6 @@ function renderSegments(segment_ids = [], segments = []) {
 }
 
 
-function renderOpenedClickedStats(clicked, opened) {
-  return (
-    <div className="mailpoet-listing-stats">
-      <div className="mailpoet-listing-stats-opened-clicked">
-        <div className="mailpoet-listing-stats-percentages">
-          {clicked.toFixed(1)}%<br />
-          <span className="mailpoet-listing-stats-percentages-opens">{opened.toFixed(1)}%</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 
 function transformToTableCardRows(standard, segments) {
   return standard.map(item => {
@@ -85,7 +74,7 @@ function transformToTableCardRows(standard, segments) {
       { display: item.subject, value: item.subject },
       { display: item.status, value: item.status },
       { display: renderSegments(item.segment_ids, segments), value: item.segment_ids },
-      { display: renderOpenedClickedStats(item.statistics_clicked, item.statistics_opened), value: [item.statistics_clicked, item.statistics_opened] },
+      { display: <Statistics newsletter={item} />, value: item.statistics },
       { display: item.sent_at ? item.sent_at : 'Not sent', value: item.sent_at || '' },
     ];
   });

@@ -2,16 +2,11 @@ import { startStandardRequest, receiveStandardNewsletters, receiveStandardSegmen
 
 function extractStandardNewsletters(data) {
   return data.filter((item) => item.type == 'standard').map((item) => {
-      return {
-          id: item.id,
-          subject: item.subject,
-          status: item.status,
-          segment_ids: item.segments.map((segment) => segment.id),
-          statistics_clicked: item.statistics.clicked,
-          statistics_opened: item.statistics.opened,
-          sent_at: item.sent_at,
-          preview_url: item.preview_url,
-      }
+        return {
+        ...item,
+        segment_ids: item.segments.map((segment) => segment.id),
+        id: parseInt(item.id, 10)
+        }
   });
 }
 
