@@ -61,8 +61,8 @@ class Bridge {
   }
 
   /**
-   * @deprecated Use non-static function isMailpoetSendingServiceEnabled instead
    * @return bool
+   * @deprecated Use non-static function isMailpoetSendingServiceEnabled instead
    */
   public static function isMPSendingServiceEnabled() {
     try {
@@ -99,18 +99,24 @@ class Bridge {
     return !empty($key);
   }
 
+  /**
+   * @return array|\WP_Error
+   */
   public function pingBridge() {
     $params = [
       'blocking' => true,
       'timeout' => 10,
     ];
     $wp = new WPFunctions();
-    $result = $wp->wpRemoteGet(self::BRIDGE_URL, $params);
-    return $wp->wpRemoteRetrieveResponseCode($result);
+    return $wp->wpRemoteGet(self::BRIDGE_URL, $params);
   }
 
-  public function validateBridgePingResponse($responseCode) {
-    return $responseCode === 200;
+  /**
+   * @return bool
+   */
+  public function validateBridgePingResponse($response) {
+    $wp = new WPFunctions();
+    return $wp->wpRemoteRetrieveResponseCode($response) === 200;
   }
 
   /**

@@ -9,6 +9,9 @@ use MailPoet\Services\Bridge;
 use MailPoet\Settings\SettingsController;
 use MailPoet\SystemReport\SystemReportCollector;
 use MailPoet\Test\DataFactories\Subscriber as SubscriberFactory;
+use MailPoet\Util\DataInconsistency\DataInconsistencyController;
+use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
+use MailPoet\WooCommerce\Helper as WooCommerceHelper;
 use MailPoet\WP\Functions as WPFunctions;
 
 class SystemReportCollectorTest extends \MailPoetTest {
@@ -247,5 +250,33 @@ class SystemReportCollectorTest extends \MailPoetTest {
     verify($subjectField)->stringContainsString('Orphaned subscriptions: 0');
     verify($subjectField)->stringContainsString('Orphaned links: 0');
     verify($subjectField)->stringContainsString('Orphaned newsletter posts: 0');
+  }
+
+  public function testItReturnsBridgeStatusForSuccessfulConnection() {
+    if (getenv('WP_TEST_ENABLE_NETWORK_TESTS') !== 'true') $this->markTestSkipped();
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+    verify($systemInfoData['MailPoet Sending Service'])->stringContainsString('Is reachable: Yes');
+    verify($systemInfoData['MailPoet Sending Service'])->stringContainsString('Ping response: 200 HTTP status code');
+  }
+
+  public function testItReturnsBridgeStatusForUnsuccessfulConnection() {
+    $bridge = $this->createMock(Bridge::class);
+    $errorMessage = 'cURL error 6: Could not resolve host: local.test';
+    $bridge->method('pingBridge')->willReturn(new \WP_Error('error', $errorMessage));
+    $bridge->method('validateBridgePingResponse')->willReturn(false);
+
+    $systemReporter = $this->createSystemReporterWithMockedBridge($bridge);
+    $systemInfoData = $systemReporter->getData();
+    verify($systemInfoData['MailPoet Sending Service'])->stringContainsString("Is reachable: No");
+    verify($systemInfoData['MailPoet Sending Service'])->stringContainsString('Ping response: ' . $errorMessage);
+  }
+
+  private function createSystemReporterWithMockedBridge($bridge) {
+    $settings = $this->diContainer->get(SettingsController::class);
+    $wp = $this->diContainer->get(WPFunctions::class);
+    $subscribersFeature = $this->diContainer->get(SubscribersFeature::class);
+    $wooCommerceHelper = $this->diContainer->get(WooCommerceHelper::class);
+    $dataInconsistencyController = $this->diContainer->get(DataInconsistencyController::class);
+    return new SystemReportCollector($settings, $wp, $subscribersFeature, $wooCommerceHelper, $dataInconsistencyController, $bridge);
   }
 }

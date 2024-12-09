@@ -29,18 +29,23 @@ class SystemReportCollector {
   /** @var DataInconsistencyController */
   private $dataInconsistencyController;
 
+  /** @var Bridge */
+  private $bridge;
+
   public function __construct(
     SettingsController $settings,
     WPFunctions $wp,
     SubscribersFeature $subscribersFeature,
     WooCommerceHelper $wooCommerceHelper,
-    DataInconsistencyController $dataInconsistencyController
+    DataInconsistencyController $dataInconsistencyController,
+    Bridge $bridge
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
     $this->subscribersFeature = $subscribersFeature;
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->dataInconsistencyController = $dataInconsistencyController;
+    $this->bridge = $bridge;
   }
 
   public function getData($maskApiKey = false) {
@@ -89,6 +94,11 @@ class SystemReportCollector {
     $inconsistencyStatus = $this->dataInconsistencyController->getInconsistentDataStatus();
     unset($inconsistencyStatus['total']);
 
+    $pingBridgeResponse = $this->bridge->pingBridge();
+    $pingResponse = is_wp_error($pingBridgeResponse)
+      ? $pingBridgeResponse->get_error_message()
+      : $this->wp->wpRemoteRetrieveResponseCode($pingBridgeResponse) . ' HTTP status code';
+
     // the HelpScout Beacon API has a limit of 20 attribute-value pairs (https://developer.helpscout.com/beacon-2/web/javascript-api/#beacon-session-data)
     return [
       'PHP version' => PHP_VERSION,
@@ -116,6 +126,10 @@ class SystemReportCollector {
         ' (version ' . $currentTheme->get('Version') . ')',
       'Active Plugin names' => join(", ", $this->wp->getOption('active_plugins')),
       'Sending Method' => $mta['method'],
+      'MailPoet Sending Service' => $this->formatCompositeField([
+        'Is reachable' => $this->bridge->validateBridgePingResponse($pingBridgeResponse) ? 'Yes' : 'No',
+        'Ping response' => $pingResponse,
+      ]),
       'Sending Frequency' => sprintf(
         '%d emails every %d minutes',
         $mta['frequency']['emails'],
