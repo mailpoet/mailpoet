@@ -179,6 +179,9 @@ export type State = {
 	postId: number;
 	editorSettings: EmailEditorSettings;
 	theme: EmailTheme;
+	styles: {
+		globalStylesPostId: number | null;
+	};
 	autosaveInterval: number;
 	cdnUrl: string;
 	urls: EmailEditorUrls;

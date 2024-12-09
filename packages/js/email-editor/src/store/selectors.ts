@@ -7,6 +7,7 @@ import { serialize } from '@wordpress/blocks';
 import { BlockInstance } from '@wordpress/blocks/index';
 import { storeName } from './constants';
 import { State, Feature, EmailTemplate, EmailEditorPostType } from './types';
+import { Post } from '@wordpress/core-data/build-types/entity-types/post';
 
 export const isFeatureActive = createRegistrySelector(
 	( select ) =>
@@ -220,6 +221,21 @@ export const getCurrentTemplate = createRegistrySelector( ( select ) => () => {
 	return getEditedPostTemplate();
 } );
 
+export const getGlobalEmailStylesPost = createRegistrySelector(
+	( select ) => () => {
+		const postId = select( storeName ).getGlobalStylesPostId();
+
+		if ( postId ) {
+			return select( coreDataStore ).getEditedEntityRecord(
+				'postType',
+				'wp_global_styles',
+				postId
+			) as unknown as Post;
+		}
+		return getEditedPostTemplate();
+	}
+);
+
 /**
  * Retrieves the email templates.
  */
@@ -290,6 +306,10 @@ export function isPremiumPluginActive( state: State ): boolean {
 
 export function getTheme( state: State ): State[ 'theme' ] {
 	return state.theme;
+}
+
+export function getGlobalStylesPostId( state: State ): number | null {
+	return state.styles.globalStylesPostId;
 }
 
 export function getUrls( state: State ): State[ 'urls' ] {

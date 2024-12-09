@@ -24,6 +24,9 @@ export function getInitialState(): State {
 		postId,
 		editorSettings: getEditorSettings(),
 		theme: getEditorTheme(),
+		styles: {
+			globalStylesPostId: 153, // Todo - fetch from DB
+		},
 		autosaveInterval: 60,
 		cdnUrl: getCdnUrl(),
 		isPremiumPluginActive: isPremiumPluginActive(),
