@@ -98,8 +98,8 @@ class EmailTemplatesCest {
     $i->waitForElementClickable('.email-editor-start_from_scratch_button');
     $i->click('[aria-label="Basic"]');
     $i->waitForElement('.block-editor-block-patterns-list__item-title');
-    $i->waitForText($template);
-    $i->click("//div[@class='block-editor-block-patterns-list__item-title' and text()='$template']");
+    $i->waitForText($template, 5);
+    $i->click("//h4[@class='block-editor-block-patterns-list__item-title' and text()='$template']");
   }
 
   private function checkTextIsInEmail(\AcceptanceTester $i, string $text): void {

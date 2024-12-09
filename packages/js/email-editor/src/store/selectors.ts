@@ -148,7 +148,7 @@ export const getSentEmailEditorPosts = createRegistrySelector(
 			} )
 			?.filter(
 				( post: EmailEditorPostType ) => post?.content?.raw !== '' // filter out empty content
-			)
+			) || []
 );
 
 /**

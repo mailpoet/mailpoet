@@ -32,13 +32,15 @@ function SelectTemplateBody( {
 	handleTemplateSelection,
 } ) {
 	const [ selectedCategory, setSelectedCategory ] = useState(
-		TemplateCategories[ 0 ].name // Show the “Recent” category by default
+		TemplateCategories[ 1 ].name // Show the “Basic” category by default
 	);
 
 	useEffect( () => {
-		if ( ! hasEmailPosts ) {
-			setSelectedCategory( TemplateCategories[ 1 ].name );
-		}
+		setTimeout( () => {
+			if ( hasEmailPosts ) {
+				setSelectedCategory( TemplateCategories[ 0 ].name );
+			}
+		}, 1000 ); // using setTimeout to ensure the template styles are available before block preview
 	}, [ hasEmailPosts ] );
 
 	return (
