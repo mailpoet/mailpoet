@@ -78,7 +78,7 @@ function transformToTableCardRows(standard, segments, meta = { mta_log: {}, curr
 
 
 
-export function ListingTabContent() {
+export function StandardTabContent() {
     const newsletterStandardData = useSelect((select) => select(storeName).getStandardNewsletters(), []);
     const standardSegmentsData = useSelect((select) => select(storeName).getStandardSegments(), []);
     const newsletterStandardRows = transformToTableCardRows(newsletterStandardData, standardSegmentsData);

@@ -507,35 +507,241 @@ data = [
     }
 ]
 
-function extractStandardNewsletters(data) {
-    return data.filter((item) => item.type == 'standard').map((item) => {
-        return {
-            id: item.id,
-            subject: item.subject,
-            status: item.status,
-            segment_ids: item.segments.map((segment) => segment.id),
-            segment_names: item.segments.map((segment) => segment.name),
-            statistics_clicked: item.statistics.clicked,
-            statistics_opened: item.statistics.opened,
-            sent_at: item.sent_at,
-            preview_url: item.preview_url,
-        }
-    });
-}
 
-console.log(extractStandardNewsletters(data));
 
-// note that data has duplicates segments ids. we only care about the unique ones. it extracts the whole segments object.
-function extractStandardSegments(data){
-    let segments = [];
-    data.filter((item) => item.type == 'standard').map((item) => {
-        item.segments.map((segment) => {
-            if(!segments.some((s) => s.id === segment.id)){
-                segments.push(segment);
-            }
-        });
-    });
-    return segments;
-}
+state = {
+    root: {
+      newsletters: {
+        standard: [
+          {
+            id: '2',
+            subject: 'Subject',
+            status: 'sending',
+            segment_ids: [
+              '3'
+            ],
+            segment_names: [
+              'Newsletter mailing list'
+            ],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzIsImU0NDZjYjY0YjdhZCIsMCwwLDEsMV0'
+          },
+          {
+            id: '3',
+            subject: 'Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzMsIjdkZjU3ZDVmZTU2MCIsMCwwLDAsMV0'
+          },
+          {
+            id: '6',
+            subject: 'Copy of Subject',
+            status: 'draft',
+            segment_ids: [
+              '3'
+            ],
+            segment_names: [
+              'Newsletter mailing list'
+            ],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzYsIjU5NTYyYmMzZjExNCIsMCwwLDAsMV0'
+          },
+          {
+            id: '7',
+            subject: 'Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzcsImQ5NDY1ZGRlNTQwMyIsMCwwLDAsMV0'
+          },
+          {
+            id: '8',
+            subject: 'Copy of Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzgsImNmYWVkNmVlZTBjMCIsMCwwLDAsMV0'
+          },
+          {
+            id: '9',
+            subject: 'Copy of Copy of Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzksIjllNzRmMTU2NmUzMiIsMCwwLDAsMV0'
+          },
+          {
+            id: '10',
+            subject: 'Copy of Copy of Copy of Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzEwLCI5NmNjNjNhMzdlYWQiLDAsMCwwLDFd'
+          },
+          {
+            id: '11',
+            subject: 'Copy of Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzExLCIyMDA0NTE3NzFkNmUiLDAsMCwwLDFd'
+          },
+          {
+            id: '12',
+            subject: 'Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzEyLCI0YTFjYmM4MDYyNzIiLDAsMCwwLDFd'
+          },
+          {
+            id: '13',
+            subject: 'Copy of Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzEzLCI3ZGNhODNhMGIzN2UiLDAsMCwwLDFd'
+          },
+          {
+            id: '14',
+            subject: 'Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzE0LCJmZmY0ZmU3MTE4ZGMiLDAsMCwwLDFd'
+          },
+          {
+            id: '15',
+            subject: 'Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzE1LCIxNDkxMTM0ZjMwMWQiLDAsMCwwLDFd'
+          },
+          {
+            id: '16',
+            subject: 'Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzE2LCJkYTNjMzE2NDEwYTkiLDAsMCwwLDFd'
+          },
+          {
+            id: '17',
+            subject: 'Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzE3LCI2ZmQ0NDVmN2RjMDEiLDAsMCwwLDFd'
+          },
+          {
+            id: '18',
+            subject: 'Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzE4LCIxM2MxYzliMTU4ZDkiLDAsMCwwLDFd'
+          },
+          {
+            id: '19',
+            subject: 'Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzE5LCI0Y2YxNTFjYWIzODMiLDAsMCwwLDFd'
+          },
+          {
+            id: '20',
+            subject: 'Copy of Subject two',
+            status: 'draft',
+            segment_ids: [],
+            segment_names: [],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzIwLCIyZWI3MzU0NDM5MWIiLDAsMCwwLDFd'
+          },
+          {
+            id: '21',
+            subject: 'Copy of Subject',
+            status: 'draft',
+            segment_ids: [
+              '3'
+            ],
+            segment_names: [
+              'Newsletter mailing list'
+            ],
+            statistics_clicked: 0,
+            statistics_opened: 0,
+            sent_at: null,
+            preview_url: 'http://localhost:8002?mailpoet_router&endpoint=view_in_browser&action=view&data=WzIxLCIxYmI0NzM5NTFiNmIiLDAsMCwwLDFd'
+          }
+        ],
+        standardSegments: [],
+        postNotifications: [],
+        reEngagements: []
+      },
+      isLoading: {
+        standard: true,
+        postNotification: false,
+        reEngagement: false
+      },
+      errors: [],
+      currentNewsletterType: 'standard',
+      mailpoet_newsletters_count: 22,
+      wordpressRoles: undefined
+    }
+  }
 
-console.log(extractStandardSegments(data));
+  standard_newsletters = state.root.newsletters.standard;
+
+  console.log(standard_newsletters)
+
+
