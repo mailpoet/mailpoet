@@ -15,9 +15,9 @@ type ErrorResponse = {
 type MtaLog = {
   status: string;
   error: {
-    error_message: ?string;
-    error_code: ?string;
-    operation: ?string;
+    error_message?: string;
+    error_code?: string;
+    operation?: string;
   };
 };
 
