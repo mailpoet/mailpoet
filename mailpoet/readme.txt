@@ -120,6 +120,7 @@ Please note:
 * Japanese
 * Mexican
 * Persian (IR)
+* Polish
 * Portuguese (BR and PT)
 * Russian
 * Serbian
@@ -136,7 +137,6 @@ Please note:
 * Hungarian
 * Norwegian
 * Persian
-* Polish
 * Romanian
 * Ukrainian
 
