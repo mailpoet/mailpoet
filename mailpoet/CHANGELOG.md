@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.5.0 - 2024-12-09 =
+
+- Added the Polish translation as an officially maintained translation;
+- Added: classes now allowed in links of HTML forms.
+
 = 5.4.2 - 2024-12-02 =
 
 - Improved: stability of post notification scheduling;

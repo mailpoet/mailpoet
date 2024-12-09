@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.6
 Tested up to: 6.7
-Stable tag: 5.4.2
+Stable tag: 5.5.0
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -230,8 +230,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.4.2 - 2024-12-02 =
-* Improved: stability of post notification scheduling;
-* Changed: minimum required WordPress version to 6.6 and WooCommerce to 9.3.
+= 5.5.0 - 2024-12-09 =
+* Added the Polish translation as an officially maintained translation;
+* Added: classes now allowed in links of HTML forms.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)
