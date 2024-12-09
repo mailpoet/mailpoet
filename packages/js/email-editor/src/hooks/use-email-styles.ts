@@ -2,7 +2,7 @@ import deepmerge from 'deepmerge';
 import { useSelect } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
 import { storeName, TypographyProperties } from '../store';
-import { useEmailTheme } from './use-email-theme';
+import { useUserTheme } from './use-user-theme';
 
 interface ElementProperties {
 	typography: TypographyProperties;
@@ -68,10 +68,11 @@ export function setImmutably( setObject, setPath, value ): typeof setObject {
 }
 
 export const useEmailStyles = (): EmailStylesData => {
-	const { templateTheme, updateTemplateTheme } = useEmailTheme();
+	// const { templateTheme, updateTemplateTheme } = useEmailTheme();
+	const { userTheme, updateUserTheme } = useUserTheme();
 
 	// This is email level styling stored in post meta.
-	const styles = templateTheme?.styles;
+	const styles = userTheme?.styles;
 
 	// Default styles from theme.json.
 	const { styles: defaultStyles } = useSelect( ( select ) => ( {
@@ -82,25 +83,25 @@ export const useEmailStyles = (): EmailStylesData => {
 	const updateStyles = useCallback(
 		( newStyles ) => {
 			const newTheme = {
-				...templateTheme,
+				...userTheme,
 				styles: newStyles,
 			};
-			updateTemplateTheme( newTheme );
+			updateUserTheme( newTheme );
 		},
-		[ updateTemplateTheme, templateTheme ]
+		[ updateUserTheme, userTheme ]
 	);
 
 	// Update an email style prop.
 	const updateStyleProp = useCallback(
 		( path, newValue ) => {
 			const newTheme = setImmutably(
-				templateTheme,
+				userTheme,
 				[ 'styles', ...path ],
 				newValue
 			);
-			updateTemplateTheme( newTheme );
+			updateUserTheme( newTheme );
 		},
-		[ updateTemplateTheme, templateTheme ]
+		[ updateUserTheme, userTheme ]
 	);
 
 	return {

@@ -14,10 +14,10 @@ import { useGlobalStylesOutputWithConfig } from '../private-apis';
  */
 import deepmerge from 'deepmerge';
 import { EmailStyles, storeName } from '../store';
-import { useEmailTheme } from './use-email-theme';
+import { useUserTheme } from './use-user-theme';
 
 export function useEmailCss() {
-	const { templateTheme } = useEmailTheme();
+	const { userTheme } = useUserTheme();
 	const { editorTheme } = useSelect(
 		( select ) => ( {
 			editorTheme: select( storeName ).getTheme(),
@@ -30,13 +30,13 @@ export function useEmailCss() {
 			deepmerge.all( [
 				{},
 				editorTheme || {},
-				templateTheme || {},
+				userTheme || {},
 			] ) as EmailStyles,
-		[ editorTheme, templateTheme ]
+		[ editorTheme, userTheme ]
 	);
 
 	const [ styles ] = useGlobalStylesOutputWithConfig( mergedConfig );
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-	return [ styles ];
+	return [ styles || [] ];
 }
