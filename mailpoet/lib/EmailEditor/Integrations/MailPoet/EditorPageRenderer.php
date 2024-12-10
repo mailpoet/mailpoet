@@ -8,6 +8,7 @@ use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
+use MailPoet\EmailEditor\Engine\User_Theme;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController as MailPoetSettings;
@@ -21,6 +22,8 @@ class EditorPageRenderer {
   private Settings_Controller $settingsController;
 
   private Theme_Controller $themeController;
+
+  private User_Theme $userTheme;
 
   private CdnAssetUrl $cdnAssetUrl;
 
@@ -39,6 +42,7 @@ class EditorPageRenderer {
     ServicesChecker $servicesChecker,
     SubscribersFeature $subscribersFeature,
     Theme_Controller $themeController,
+    User_Theme $userTheme,
     MailPoetSettings $mailpoetSettings,
     NewslettersRepository $newslettersRepository
   ) {
@@ -48,6 +52,7 @@ class EditorPageRenderer {
     $this->servicesChecker = $servicesChecker;
     $this->subscribersFeature = $subscribersFeature;
     $this->themeController = $themeController;
+    $this->userTheme = $userTheme;
     $this->mailpoetSettings = $mailpoetSettings;
     $this->newslettersRepository = $newslettersRepository;
   }
@@ -107,6 +112,7 @@ class EditorPageRenderer {
         'current_wp_user_email' => esc_js($currentUserEmail),
         'editor_settings' => $this->settingsController->get_settings(),
         'editor_theme' => $this->themeController->get_theme()->get_raw_data(),
+        'user_theme_post_id' => $this->userTheme->get_user_theme_post()->ID,
         'urls' => [
           'listings' => admin_url('admin.php?page=mailpoet-newsletters'),
         ],

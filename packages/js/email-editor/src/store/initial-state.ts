@@ -25,7 +25,7 @@ export function getInitialState(): State {
 		editorSettings: getEditorSettings(),
 		theme: getEditorTheme(),
 		styles: {
-			globalStylesPostId: 153, // Todo - fetch from DB
+			globalStylesPostId: window.MailPoetEmailEditor.user_theme_post_id,
 		},
 		autosaveInterval: 60,
 		cdnUrl: getCdnUrl(),

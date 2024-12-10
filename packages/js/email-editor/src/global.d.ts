@@ -6,6 +6,7 @@ interface Window {
 		cdn_url: string;
 		is_premium_plugin_active: boolean;
 		current_wp_user_email: string;
+		user_theme_post_id: number;
 		urls: {
 			listings: string;
 		};
