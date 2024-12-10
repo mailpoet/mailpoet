@@ -57,6 +57,7 @@ class AcceptanceTester extends \Codeception\Actor {
   const AUTOMATE_WOO_PLUGIN = 'automatewoo';
   const MAILHOG_DATA_PATH = '/mailhog-data';
   const ADMIN_EMAIL = 'test@test.com';
+  const EMAIL_EDITOR_MINIMAL_WP_VERSION = '6.7';
 
   /**
    * Define custom actions here
@@ -951,5 +952,15 @@ class AcceptanceTester extends \Codeception\Actor {
     $segmentName = Locator::contains('.mailpoet-templates-card-header-title', $templateName);
     $i->waitForElement($segmentName);
     $i->click($segmentName);
+  }
+
+  public function checkEmailEditorRequiredWordpressVersion(): bool {
+    $i = $this;
+    $wordPressVersion = $i->getWordPressVersion();
+    // New email editor is not compatible with WP versions below 6.7
+    if (version_compare($wordPressVersion, self::EMAIL_EDITOR_MINIMAL_WP_VERSION, '<')) {
+      return false;
+    }
+    return true;
   }
 }

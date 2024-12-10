@@ -8,8 +8,8 @@ use MailPoet\Test\DataFactories\Settings;
 
 class CreateAndSendEmailUsingGutenbergCest {
   public function createAndSendStandardNewsletter(\AcceptanceTester $i, $scenario) {
-    if (!$this->checkRequiredWordpressVersion($i)) {
-      $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below 6.4 and higher than 6.5');
+    if (!$i->checkEmailEditorRequiredWordpressVersion()) {
+      $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
     }
     $settings = new Settings();
     $settings->withCronTriggerMethod('Action Scheduler');
@@ -81,9 +81,9 @@ class CreateAndSendEmailUsingGutenbergCest {
   }
 
   public function displayNewsletterPreview(\AcceptanceTester $i, $scenario) {
-    if (!$this->checkRequiredWordpressVersion($i))
-      $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below 6.4 and higher than 6.5');
-
+    if (!$i->checkEmailEditorRequiredWordpressVersion()) {
+      $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
+    }
     $settings = new Settings();
     $settings->withCronTriggerMethod('Action Scheduler');
     $settings->withSender('John Doe', 'john@doe.com');
@@ -134,15 +134,6 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->waitForText('Test email sent successfully!');
     $i->click('//button[text()="Close"]');
     $i->waitForElementNotVisible('//button[text()="Send test email"]');
-  }
-
-  private function checkRequiredWordpressVersion(\AcceptanceTester $i): bool {
-    $wordPressVersion = $i->getWordPressVersion();
-    // New email editor is not compatible with WP versions below 6.7
-    if (version_compare($wordPressVersion, '6.7', '<')) {
-      return false;
-    }
-    return true;
   }
 
   private function closeTemplateSelectionModal(\AcceptanceTester $i): void {

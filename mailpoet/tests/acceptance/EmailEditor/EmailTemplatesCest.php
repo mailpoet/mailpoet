@@ -7,8 +7,8 @@ use MailPoet\Test\DataFactories\Features;
 
 class EmailTemplatesCest {
   public function selectEditSwapAndResetEmailTemplate(\AcceptanceTester $i, $scenario) {
-    if (!$this->checkRequiredWordpressVersion($i)) {
-      $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below 6.4 and higher than 6.5');
+    if (!$i->checkEmailEditorRequiredWordpressVersion()) {
+      $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
     }
     (new Features())->withFeatureEnabled(FeaturesController::GUTENBERG_EMAIL_EDITOR);
 
@@ -82,15 +82,6 @@ class EmailTemplatesCest {
     $i->click('Reset');
     $i->waitForText('"Simple Light" reset.');
     $this->checkTextIsNotInEmail($i, $textInTemplate);
-  }
-
-  private function checkRequiredWordpressVersion(\AcceptanceTester $i): bool {
-    $wordPressVersion = $i->getWordPressVersion();
-    // New email editor is not compatible with WP versions below 6.7
-    if (version_compare($wordPressVersion, '6.7', '<')) {
-      return false;
-    }
-    return true;
   }
 
   private function selectTemplate(\AcceptanceTester $i, string $template): void {
