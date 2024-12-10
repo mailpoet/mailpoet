@@ -22,9 +22,10 @@ class CheckSkippedTestsExtension extends Extension {
       'testAllSubscribersFoundWithOperatorAllOf',
       'automationTriggeredByRegistrationWitConfirmationNeeded',
       'automationTriggeredByRegistrationWithoutConfirmationNeeded',
-      // The next two tests can be removed after dropping support for WP 6.4
+      // Email editor works with the latest WP version only
       'createAndSendStandardNewsletter',
       'displayNewsletterPreview',
+      'selectEditSwapAndResetEmailTemplate',
     ];
 
     if (in_array($branch, ['trunk', 'release']) && !in_array($testName, $allowedToSkipList)) {
