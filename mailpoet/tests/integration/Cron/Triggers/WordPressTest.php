@@ -4,7 +4,6 @@ namespace MailPoet\Cron\Triggers;
 
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
-use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
@@ -53,7 +52,6 @@ class WordPressTest extends \MailPoetTest {
     ]);
 
     $future = Carbon::createFromTimestamp(WPFunctions::get()->currentTime('timestamp', true) + 600);
-    $this->addScheduledTask(Beamer::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     $this->addScheduledTask(SubscribersStatsReport::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED, $future);
     $this->wordpressTrigger = $this->diContainer->get(WordPress::class);
   }
@@ -140,11 +138,6 @@ class WordPressTest extends \MailPoetTest {
 
   public function testItExecutesWhenAuthorizedEmailsCheckIsDue() {
     $this->addScheduledTask(AuthorizedSendingEmailsCheck::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
-    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
-  }
-
-  public function testItExecutesWhenBeamerTaskIsDue() {
-    $this->addScheduledTask(Beamer::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 

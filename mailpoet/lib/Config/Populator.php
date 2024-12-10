@@ -5,7 +5,6 @@ namespace MailPoet\Config;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
 use MailPoet\Cron\Workers\BackfillEngagementData;
-use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\Mixpanel;
 use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
@@ -173,7 +172,6 @@ class Populator {
     $this->createSourceForSubscribers();
     $this->scheduleInitialInactiveSubscribersCheck();
     $this->scheduleAuthorizedSendingEmailsCheck();
-    $this->scheduleBeamer();
 
     $this->scheduleUnsubscribeTokens();
     $this->scheduleSubscriberLinkTokens();
@@ -664,15 +662,6 @@ class Populator {
       AuthorizedSendingEmailsCheck::TASK_TYPE,
       Carbon::now()->millisecond(0)
     );
-  }
-
-  private function scheduleBeamer() {
-    if (!$this->settings->get('last_announcement_date')) {
-      $this->scheduleTask(
-        Beamer::TASK_TYPE,
-        Carbon::now()->millisecond(0)
-      );
-    }
   }
 
   private function scheduleUnsubscribeTokens() {

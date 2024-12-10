@@ -87,11 +87,6 @@ class WorkersFactory {
     return $this->container->get(ExportFilesCleanup::class);
   }
 
-  /** @return Beamer */
-  public function createBeamerkWorker() {
-    return $this->container->get(Beamer::class);
-  }
-
   /** @return InactiveSubscribers */
   public function createInactiveSubscribersWorker() {
     return $this->container->get(InactiveSubscribers::class);

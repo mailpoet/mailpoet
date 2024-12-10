@@ -2,7 +2,6 @@
 
 namespace MailPoet\Test\DataFactories;
 
-use MailPoet\Cron\Workers\Beamer;
 use MailPoet\Cron\Workers\Bounce;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\KeyCheck\PremiumKeyCheck;
@@ -76,7 +75,6 @@ class ScheduledTask {
     $this->scheduleTask(WooCommercePastOrders::TASK_TYPE, $datetime);
     $this->scheduleTask(UnsubscribeTokens::TASK_TYPE, $datetime);
     $this->scheduleTask(SubscriberLinkTokens::TASK_TYPE, $datetime);
-    $this->scheduleTask(Beamer::TASK_TYPE, $datetime);
     $this->scheduleTask(InactiveSubscribers::TASK_TYPE, $datetime);
     $this->scheduleTask(PremiumKeyCheck::TASK_TYPE, $datetime);
     $this->scheduleTask(SendingServiceKeyCheck::TASK_TYPE, $datetime);
