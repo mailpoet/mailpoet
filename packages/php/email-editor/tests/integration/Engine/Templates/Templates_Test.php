@@ -46,21 +46,6 @@ class Templates_Test extends \MailPoetTest {
 	}
 
 	/**
-	 * Test is can fetch template theme
-	 *
-	 * @return void
-	 */
-	public function testItCanFetchTemplateTheme(): void {
-		$template_id = 'mailpoet/mailpoet//simple-light';
-		$theme       = $this->templates->get_block_template_theme( $template_id );
-
-		verify( $theme )->arrayCount( 2 );
-		verify( $theme['styles'] )->isArray();
-		verify( $theme['styles']['spacing'] )->isArray();
-		verify( $theme['styles']['spacing']['blockGap'] )->equals( '10px' );
-	}
-
-	/**
 	 * Test it can add block templates
 	 *
 	 * @return void

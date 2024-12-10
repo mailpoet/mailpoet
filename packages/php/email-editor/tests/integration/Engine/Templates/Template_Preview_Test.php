@@ -33,13 +33,7 @@ class Template_Preview_Test extends \MailPoetTest {
 	 * @return void
 	 */
 	public function testItCanGetThemePreviewCss(): void {
-		$template_id = 'mailpoet/mailpoet//simple-light';
-		$result      = $this->template_preview->get_email_theme_preview_css(
-			array(
-				'id'    => $template_id,
-				'wp_id' => null,
-			)
-		);
+		$result = $this->template_preview->get_email_theme_preview_css();
 
 		verify( $result )->stringContainsString( 'Styles for the email editor.' );
 		verify( $result )->stringContainsString( 'is-layout-email-flex' );
