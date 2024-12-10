@@ -1,13 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
 import { MailPoet } from 'mailpoet';
-import { TopBarWithBeamer } from 'common/top-bar/top-bar';
+import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 import { plusIcon } from 'common/button/icon/plus';
 
 export function SubscribersHeading() {
   const location = useLocation();
 
   return (
-    <TopBarWithBeamer>
+    <TopBarWithBoundary>
       <Link
         className="mailpoet-button button-secondary"
         to={{
@@ -36,6 +36,6 @@ export function SubscribersHeading() {
       >
         {MailPoet.I18n.t('export')}
       </a>
-    </TopBarWithBeamer>
+    </TopBarWithBoundary>
   );
 }

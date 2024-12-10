@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MailPoet } from 'mailpoet';
-import { TopBarWithBeamer } from 'common/top-bar/top-bar';
+import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 import { Button } from 'common/button/button';
 import { plusIcon } from 'common/button/icon/plus';
 
@@ -14,7 +14,7 @@ export const onAddNewForm = () => {
 function FormsHeading() {
   const [loading, setLoading] = useState(false);
   return (
-    <TopBarWithBeamer>
+    <TopBarWithBoundary>
       <Button
         onClick={() => {
           setLoading(true);
@@ -27,7 +27,7 @@ function FormsHeading() {
       >
         {MailPoet.I18n.t('new')}
       </Button>
-    </TopBarWithBeamer>
+    </TopBarWithBoundary>
   );
 }
 

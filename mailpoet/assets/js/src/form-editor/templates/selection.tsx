@@ -5,7 +5,7 @@ import { Categories } from 'common/categories/categories';
 import { Background } from 'common/background/background';
 import { Loading } from 'common/loading';
 import { TemplateBox } from 'common/template-box/template-box';
-import { TopBarWithBeamer } from 'common/top-bar/top-bar';
+import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 import { Notice } from 'notices/notice';
 import { TemplateData } from './store/types';
 import { storeName } from './store/constants';
@@ -91,7 +91,7 @@ export function Selection(): JSX.Element {
             ),
         ),
       )}
-      <TopBarWithBeamer />
+      <TopBarWithBoundary />
       {selectTemplateFailed && (
         <Notice type="error" scroll renderInPlace>
           <p>

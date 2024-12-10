@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import classnames from 'classnames';
-import { withFeatureAnnouncement } from 'announcements/with-feature-announcement';
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
 import { MailPoetLogoResponsive } from './mailpoet-logo-responsive';
 import { BeamerIcon } from './beamer-icon';
@@ -64,4 +63,4 @@ export function TopBar({
 }
 
 TopBar.displayName = 'TopBar';
-export const TopBarWithBeamer = withFeatureAnnouncement(withBoundary(TopBar));
+export const TopBarWithBoundary = withBoundary(TopBar);

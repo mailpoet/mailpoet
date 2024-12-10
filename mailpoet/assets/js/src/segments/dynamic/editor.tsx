@@ -5,7 +5,7 @@ import { __ } from '@wordpress/i18n';
 import { useParams, useLocation } from 'react-router-dom';
 
 import { HideScreenOptions } from 'common/hide-screen-options/hide-screen-options';
-import { TopBarWithBeamer } from 'common/top-bar/top-bar';
+import { TopBarWithBoundary } from 'common/top-bar/top-bar';
 import { Form } from './form';
 import { storeName } from './store';
 import { BackButton, PageHeader } from '../../common/page-header';
@@ -36,7 +36,7 @@ export function Editor(): JSX.Element {
 
   return (
     <div className="mailpoet-main-container">
-      <TopBarWithBeamer />
+      <TopBarWithBoundary />
       <HideScreenOptions />
 
       <PageHeader

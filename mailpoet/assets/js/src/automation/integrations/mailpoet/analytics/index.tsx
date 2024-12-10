@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { dispatch, select, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
-import { TopBarWithBeamer } from '../../../../common/top-bar/top-bar';
+import { TopBarWithBoundary } from '../../../../common/top-bar/top-bar';
 import { Notices } from '../../../listing/components/notices';
 import { Header } from './components/header';
 import { Overview } from './components/overview';
@@ -49,7 +49,7 @@ function TopBarWithBreadcrumb(): JSX.Element {
   }));
 
   return (
-    <TopBarWithBeamer>
+    <TopBarWithBoundary>
       <p className="mailpoet-automation-analytics-title">
         <a href={MailPoet.urls.automationListing}>
           {__('Automations', 'mailpoet')}
@@ -57,7 +57,7 @@ function TopBarWithBreadcrumb(): JSX.Element {
         › <strong>{automation.name}</strong>
         <AutomationStatus status={automation.status} />
       </p>
-    </TopBarWithBeamer>
+    </TopBarWithBoundary>
   );
 }
 
