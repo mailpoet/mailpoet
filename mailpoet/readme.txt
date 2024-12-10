@@ -164,8 +164,6 @@ To improve user experience, MailPoet may use the following 3rd party libraries i
 
 * [Satismeter](https://www.satismeter.com/) - used to ask for feedback. [TOS](https://www.satismeter.com/terms/) and [Privacy Policy](https://www.satismeter.com/privacy-policy/)
 
-* [Beamer](https://www.getbeamer.com/) - used to load our latest blogposts and announcements. [TOS](https://www.getbeamer.com/terms) and [Privacy Policy](https://www.getbeamer.com/privacy)
-
 * [Crowdsignal](https://crowdsignal.com/) - used to load our deactivation poll to improve our plugin. [TOS](https://crowdsignal.com/terms/) and [Privacy Policy](https://automattic.com/privacy/)
 
 
