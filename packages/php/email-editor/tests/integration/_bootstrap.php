@@ -106,6 +106,14 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 	}
 
 	/**
+	 * Tear down after each test.
+	 */
+	public function _after() {
+		parent::_after();
+		$this->tester->cleanup();
+	}
+
+	/**
 	 * Check if the HTML is valid.
 	 *
 	 * @param string $html The HTML to check.
