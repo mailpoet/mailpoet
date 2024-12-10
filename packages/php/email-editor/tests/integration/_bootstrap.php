@@ -28,6 +28,7 @@ use MailPoet\EmailEditor\Engine\Templates\Template_Preview;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
 use MailPoet\EmailEditor\Engine\Templates\Utils;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
+use MailPoet\EmailEditor\Engine\User_Theme;
 use MailPoet\EmailEditor\Integrations\Core\Initializer;
 use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
 use MailPoet\EmailEditor\Engine\Send_Preview_Email;
@@ -168,6 +169,12 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 			Theme_Controller::class,
 			function () {
 				return new Theme_Controller();
+			}
+		);
+		$container->set(
+			User_Theme::class,
+			function () {
+				return new User_Theme();
 			}
 		);
 		$container->set(
