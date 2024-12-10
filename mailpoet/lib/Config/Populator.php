@@ -311,14 +311,6 @@ class Populator {
   }
 
   private function createDefaultUsersFlags() {
-    $lastAnnouncementSeen = $this->settings->get('last_announcement_seen');
-    if (!empty($lastAnnouncementSeen)) {
-      foreach ($lastAnnouncementSeen as $userId => $value) {
-        $this->createOrUpdateUserFlag($userId, 'last_announcement_seen', $value);
-      }
-      $this->settings->delete('last_announcement_seen');
-    }
-
     $prefix = 'user_seen_editor_tutorial';
     $prefixLength = strlen($prefix);
     foreach ($this->settings->getAll() as $name => $value) {

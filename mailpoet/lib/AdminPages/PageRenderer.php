@@ -134,8 +134,6 @@ class PageRenderer {
       ? $installer->generatePluginDownloadUrl()
       : null;
 
-    $lastAnnouncementDate = $this->settings->get('last_announcement_date');
-    $lastAnnouncementSeen = $this->userFlags->get('last_announcement_seen');
     $wpSegment = $this->segmentRepository->getWPUsersSegment();
     $wpSegmentState = ($wpSegment instanceof SegmentEntity) && $wpSegment->getDeletedAt() === null ?
       SegmentEntity::SEGMENT_ENABLED : SegmentEntity::SEGMENT_DISABLED;
@@ -157,8 +155,6 @@ class PageRenderer {
       'mailpoet_api_key_state' => $this->settings->get('mta.mailpoet_api_key_state'),
       'mta_method' => $this->settings->get('mta.method'),
       'premium_key_state' => $this->settings->get('premium.premium_key_state'),
-      'last_announcement_seen' => $lastAnnouncementSeen,
-      'feature_announcement_has_news' => (empty($lastAnnouncementSeen) || $lastAnnouncementSeen < $lastAnnouncementDate),
       'wp_segment_state' => $wpSegmentState,
       'tracking_config' => $this->trackingConfig->getConfig(),
       'is_new_user' => $this->installation->isNewInstallation(),
