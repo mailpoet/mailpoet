@@ -24,6 +24,27 @@ class Theme_Controller_Test extends \MailPoetTest {
 	 */
 	public function _before() {
 		parent::_before();
+
+		// Crete a custom user theme post.
+		$styles_data = array(
+			'version'                     => 3,
+			'isGlobalStylesUserThemeJSON' => true,
+			'styles'                      => array(
+				'color' => array(
+					'background' => '#123456',
+					'text'       => '#654321',
+				),
+			),
+		);
+		$post_data   = array(
+			'post_title'   => __( 'Custom Email Styles', 'mailpoet' ),
+			'post_name'    => 'wp-global-styles-mailpoet-email',
+			'post_content' => (string) wp_json_encode( $styles_data, JSON_FORCE_OBJECT ),
+			'post_status'  => 'publish',
+			'post_type'    => 'wp_global_styles',
+		);
+		wp_insert_post( $post_data );
+
 		$this->theme_controller = $this->di_container->get( Theme_Controller::class );
 	}
 
@@ -120,6 +141,34 @@ class Theme_Controller_Test extends \MailPoetTest {
 		if ( wp_get_theme()->get( 'Name' ) === 'Twenty Twenty-One' ) {
 			verify( $this->theme_controller->translate_slug_to_color( 'yellow' ) )->equals( '#eeeadd' );
 		}
+	}
+
+	/**
+	 * Test if the theme controller loads custom user theme
+	 */
+	public function testItLoadsCustomUserTheme() {
+		$theme = $this->theme_controller->get_theme();
+		verify( $theme->get_raw_data()['styles']['color']['background'] )->equals( '#123456' );
+		verify( $theme->get_raw_data()['styles']['color']['text'] )->equals( '#654321' );
+	}
+
+	/**
+	 * Test if the theme controller loads custom user theme and applies it to the styles
+	 */
+	public function testItAddCustomUserThemeToStyles() {
+		$theme  = $this->theme_controller->get_theme();
+		$styles = $theme->get_stylesheet();
+		verify( $styles )->stringContainsString( 'color: #654321' );
+		verify( $styles )->stringContainsString( 'background-color: #123456' );
+	}
+
+	/**
+	 * Test if the theme controller returns correct layout settings
+	 */
+	public function testGetBaseThemeDoesNotIncludeUserThemeData() {
+		$theme = $this->theme_controller->get_base_theme();
+		verify( $theme->get_raw_data()['styles']['color']['background'] )->equals( '#f0f0f0' );
+		verify( $theme->get_raw_data()['styles']['color']['text'] )->equals( '#000000' );
 	}
 
 	/**

@@ -65,38 +65,10 @@ class Renderer_Test extends \MailPoetTest {
 		$theme_controller_mock->method( 'get_styles' )->willReturn( $styles );
 		$theme_controller_mock->method( 'get_layout_settings' )->willReturn( array( 'contentSize' => '660px' ) );
 
-		// We need to mock only the get_block_template_theme method and templates need to be initialized.
-		$templates_mock = $this->getMockBuilder( Templates::class )
-			->setConstructorArgs( array( $this->di_container->get( Utils::class ) ) )
-			->onlyMethods( array( 'get_block_template_theme' ) )
-			->getMock();
-		$templates_mock->initialize();
-
-		$templates_mock->method( 'get_block_template_theme' )->willReturn(
-			array(
-				'version' => 3,
-				'styles'  => array(
-					'elements' => array(
-						'h1'      => array(
-							'typography' => array(
-								'fontFamily' => 'lato test',
-							),
-						),
-						'heading' => array(
-							'color' => array(
-								'background' => 'pale-pink',
-							),
-						),
-					),
-				),
-			)
-		);
-
 		$this->renderer   = $this->getServiceWithOverrides(
 			Renderer::class,
 			array(
 				'theme_controller' => $theme_controller_mock,
-				'templates'        => $templates_mock,
 			)
 		);
 		$this->email_post = $this->tester->create_post(
@@ -177,28 +149,6 @@ class Renderer_Test extends \MailPoetTest {
 		verify( $style )->stringContainsString( 'padding-left: 2px;' );
 		verify( $style )->stringContainsString( 'padding-right: 1px;' );
 		verify( $style )->stringContainsString( 'max-width: 660px;' );
-	}
-
-	/**
-	 * Test it inlines block styles from template.
-	 */
-	public function testItRendersTemplateStyles(): void {
-		$email    = $this->tester->create_post(
-			array(
-				'post_content' => '<!-- wp:heading {"level":1} --><h1 class="wp-block-heading">Hello!</h1><!-- /wp:heading -->',
-			)
-		);
-		$rendered = $this->renderer->render(
-			$email,
-			'Subject 1',
-			'Preheader content 2',
-			'en',
-			'noindex,nofollow'
-		);
-
-		verify( $rendered['html'] )->stringContainsString( 'Subject' );
-		verify( $rendered['html'] )->stringContainsString( 'font-family: lato test;' );
-		verify( $rendered['html'] )->stringContainsString( ' background-color: pale-pink;' );
 	}
 
 	/**

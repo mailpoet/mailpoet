@@ -8,7 +8,6 @@
 declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine;
 
-use MailPoet\EmailEditor\Engine\Renderer\Renderer;
 use WP_Block_Template;
 use WP_Post;
 use WP_Theme_JSON;
@@ -34,26 +33,42 @@ class Theme_Controller {
 	private WP_Theme_JSON $base_theme;
 
 	/**
+	 * User theme contains user custom styles and settings
+	 *
+	 * @var User_Theme
+	 */
+	private User_Theme $user_theme;
+
+	/**
 	 * Theme_Controller constructor.
 	 */
 	public function __construct() {
 		$this->core_theme = WP_Theme_JSON_Resolver::get_core_data();
 		$this->base_theme = new WP_Theme_JSON( (array) json_decode( (string) file_get_contents( __DIR__ . '/theme.json' ), true ), 'default' );
+		$this->user_theme = new User_Theme();
 	}
 
 	/**
-	 * Gets combined theme data from the core and base theme, merged with the currently rendered template.
+	 * Gets combined theme data from the core and base theme, merged with the user .
 	 *
 	 * @return WP_Theme_JSON
 	 */
 	public function get_theme(): WP_Theme_JSON {
+		$theme = $this->get_base_theme();
+		$theme->merge( $this->user_theme->get_theme() );
+
+		return $theme;
+	}
+
+	/**
+	 * Gets combined theme data from the core and base theme.
+	 *
+	 * @return WP_Theme_JSON
+	 */
+	public function get_base_theme(): WP_Theme_JSON {
 		$theme = new WP_Theme_JSON();
 		$theme->merge( $this->core_theme );
 		$theme->merge( $this->base_theme );
-
-		if ( Renderer::get_theme() !== null ) {
-			$theme->merge( Renderer::get_theme() );
-		}
 
 		return apply_filters( 'mailpoet_email_editor_theme_json', $theme );
 	}
@@ -101,8 +116,6 @@ class Theme_Controller {
 	/**
 	 * Get styles for the e-mail.
 	 *
-	 * @param \WP_Post|null           $post Post object.
-	 * @param \WP_Block_Template|null $template Template object.
 	 * @return array{
 	 *   spacing: array{
 	 *     blockGap: string,
@@ -116,15 +129,8 @@ class Theme_Controller {
 	 *   }
 	 * }
 	 */
-	public function get_styles( $post = null, $template = null ): array {
+	public function get_styles(): array {
 		$theme_styles = $this->get_theme()->get_data()['styles'];
-
-		// Replace template styles.
-		if ( $template && $template->wp_id ) {
-			$template_theme  = (array) get_post_meta( $template->wp_id, 'mailpoet_email_theme', true );
-			$template_styles = (array) ( $template_theme['styles'] ?? array() );
-			$theme_styles    = array_replace_recursive( $theme_styles, $template_styles );
-		}
 
 		// Extract preset variables.
 		$theme_styles = $this->recursive_extract_preset_variables( $theme_styles );

@@ -46,20 +46,6 @@ class Content_Renderer {
 	 */
 	private Theme_Controller $theme_controller;
 
-	/**
-	 * Post object
-	 *
-	 * @var WP_Post
-	 */
-	private $post = null;
-
-	/**
-	 * Block template
-	 *
-	 * @var WP_Block_Template
-	 */
-	private $template = null;
-
 	const CONTENT_STYLES_FILE = 'content.css';
 
 	/**
@@ -103,8 +89,6 @@ class Content_Renderer {
 	 * @return string
 	 */
 	public function render( WP_Post $post, WP_Block_Template $template ): string {
-		$this->post     = $post;
-		$this->template = $template;
 		$this->set_template_globals( $post, $template );
 		$this->initialize();
 		$rendered_html = get_the_block_template_html();
@@ -129,7 +113,7 @@ class Content_Renderer {
 	 * @return array
 	 */
 	public function preprocess_parsed_blocks( array $parsed_blocks ): array {
-		return $this->process_manager->preprocess( $parsed_blocks, $this->theme_controller->get_layout_settings(), $this->theme_controller->get_styles( $this->post, $this->template ) );
+		return $this->process_manager->preprocess( $parsed_blocks, $this->theme_controller->get_layout_settings(), $this->theme_controller->get_styles() );
 	}
 
 	/**

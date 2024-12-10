@@ -41,13 +41,6 @@ class Renderer {
 	 */
 	private Templates $templates;
 
-	/**
-	 * Theme data for the template being rendered.
-	 *
-	 * @var WP_Theme_JSON|null
-	 */
-	private static $theme = null;
-
 	const TEMPLATE_FILE        = 'template-canvas.php';
 	const TEMPLATE_STYLES_FILE = 'template-canvas.css';
 
@@ -69,15 +62,6 @@ class Renderer {
 	}
 
 	/**
-	 * During rendering, this stores the theme data for the template being rendered.
-	 *
-	 * @return ?\WP_Theme_JSON
-	 */
-	public static function get_theme() {
-		return self::$theme;
-	}
-
-	/**
 	 * Renders the email template
 	 *
 	 * @param \WP_Post $post Post object.
@@ -91,12 +75,8 @@ class Renderer {
 		$template_id = 'mailpoet/mailpoet//' . ( get_page_template_slug( $post ) ? get_page_template_slug( $post ) : 'email-general' );
 		/** @var \WP_Block_Template $template */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort -- used for phpstan
 		$template = $this->templates->get_block_template( $template_id );
-		$theme    = $this->templates->get_block_template_theme( $template_id, $template->wp_id );
 
-		// Set the theme for the template. This is merged with base theme.json and core json before rendering.
-		self::$theme = new WP_Theme_JSON( $theme, 'default' );
-
-		$email_styles  = $this->theme_controller->get_styles( $post, $template );
+		$email_styles  = $this->theme_controller->get_styles();
 		$template_html = $this->content_renderer->render( $post, $template );
 		$layout        = $this->theme_controller->get_layout_settings();
 
