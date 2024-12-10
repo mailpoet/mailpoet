@@ -83,7 +83,7 @@ $beamer-dot-size: 8px;
   }
 }
 
-.mailpoet-top-bar-beamer {
+.mailpoet-top-bar-tutorial {
   align-items: center;
   background-color: $color-white;
   border: none;
@@ -96,6 +96,7 @@ $beamer-dot-size: 8px;
   position: relative;
   text-align: center;
   text-decoration: none;
+  top: 4px;
   width: 75px;
 
   svg {

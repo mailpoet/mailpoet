@@ -66,7 +66,7 @@ function TutorialIcon(): JSX.Element {
       <a
         role="button"
         onClick={displayTutorial}
-        className="mailpoet-top-bar-beamer"
+        className="mailpoet-top-bar-tutorial"
         title={__('Tutorial', 'mailpoet')}
         tabIndex={0}
         onKeyDown={(event) => {
@@ -82,7 +82,7 @@ function TutorialIcon(): JSX.Element {
         <Icon icon={video} />
         <span>{__('Tutorial', 'mailpoet')}</span>
       </a>
-      <span id="beamer-empty-element" />
+      <span />
     </div>
   );
 }
