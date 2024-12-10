@@ -1,5 +1,3 @@
-$beamer-dot-size: 8px;
-
 .mailpoet-top-bar {
   align-items: center;
   background-color: $color-white;
@@ -103,16 +101,4 @@ $beamer-dot-size: 8px;
     display: block;
     width: 100%;
   }
-}
-
-.mailpoet-top-bar-beamer-dot:before {
-  background: $color-editor-warning;
-  border-radius: $beamer-dot-size;
-  content: '';
-  display: block;
-  height: $beamer-dot-size;
-  position: absolute;
-  right: 2px;
-  top: 2px;
-  width: $beamer-dot-size;
 }

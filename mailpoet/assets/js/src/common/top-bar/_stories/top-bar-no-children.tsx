@@ -1,4 +1,3 @@
-import { action } from '_storybook/action';
 import { TopBar } from '../top-bar';
 
 export default {
@@ -17,7 +16,7 @@ export function TopBarWithoutChildren() {
         left: '0px',
       }}
     >
-      <TopBar hasNews={false} onBeamerClick={action('beamer click')} />
+      <TopBar />
     </div>
   );
 }
@@ -34,7 +33,7 @@ export function TopBarWithoutChildrenWithNews() {
         left: '0px',
       }}
     >
-      <TopBar hasNews onBeamerClick={action('beamer click')} />
+      <TopBar />
     </div>
   );
 }

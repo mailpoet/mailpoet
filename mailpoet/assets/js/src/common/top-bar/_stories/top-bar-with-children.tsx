@@ -1,4 +1,3 @@
-import { action } from '_storybook/action';
 import { TopBar } from '../top-bar';
 import { Button } from '../../button/button';
 
@@ -18,7 +17,7 @@ export function TopBarWithChildren() {
         left: '0px',
       }}
     >
-      <TopBar hasNews={false} onBeamerClick={action('beamer click')}>
+      <TopBar>
         <Button>Button</Button>
       </TopBar>
     </div>
