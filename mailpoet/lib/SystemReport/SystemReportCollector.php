@@ -95,8 +95,8 @@ class SystemReportCollector {
     unset($inconsistencyStatus['total']);
 
     $pingBridgeResponse = $this->bridge->pingBridge();
-    $pingResponse = is_wp_error($pingBridgeResponse)
-      ? $pingBridgeResponse->get_error_message()
+    $pingResponse = $this->wp->isWpError($pingBridgeResponse)
+      ? $pingBridgeResponse->get_error_message() // @phpstan-ignore-line
       : $this->wp->wpRemoteRetrieveResponseCode($pingBridgeResponse) . ' HTTP status code';
 
     $ApiKeyState = $this->settings->get(Bridge::API_KEY_STATE_SETTING_NAME . '.state');
