@@ -1,6 +1,6 @@
 import deepmerge from 'deepmerge';
 import { useSelect } from '@wordpress/data';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useMemo } from '@wordpress/element';
 import { storeName, TypographyProperties } from '../store';
 import { useUserTheme } from './use-user-theme';
 
@@ -67,12 +67,51 @@ export function setImmutably( setObject, setPath, value ): typeof setObject {
 	return object;
 }
 
+/**
+ * Shorten the variable names in the styles object. Some components need the h
+ * Transforms variables like var(--wp--preset--spacing--10) to var:preset|spacing|10
+ *
+ * @param {Object} obj The object to shorten the variable names in.
+ * @return {Object} The object with the shortened variable names.
+ */
+function shortenWpPresetVariables( obj ) {
+	// Helper function to replace the variable string
+	const replaceVariable = ( value ) => {
+		return value.replace(
+			/var\(--([a-z]+)--([a-z]+(?:--[a-z0-9]+(?:-[a-z0-9]+)*)*)--([a-z0-9-]+)\)/g,
+			( _match, _prefix, group1, group2 ) => {
+				const groups = group1.split( '--' ).concat( group2 );
+				return `var:${ groups.join( '|' ) }`;
+			}
+		);
+	};
+
+	// Recursive function to traverse the object
+	const traverse = ( current ) => {
+		if ( typeof current === 'object' && current !== null ) {
+			for ( const key in current ) {
+				if ( current.hasOwnProperty( key ) ) {
+					current[ key ] = traverse( current[ key ] );
+				}
+			}
+		} else if ( typeof current === 'string' ) {
+			return replaceVariable( current );
+		}
+		return current;
+	};
+
+	return traverse( obj );
+}
+
 export const useEmailStyles = (): EmailStylesData => {
 	// const { templateTheme, updateTemplateTheme } = useEmailTheme();
 	const { userTheme, updateUserTheme } = useUserTheme();
 
 	// This is email level styling stored in post meta.
-	const styles = userTheme?.styles;
+	const styles = useMemo(
+		() => shortenWpPresetVariables( userTheme?.styles ),
+		[ userTheme ]
+	);
 
 	// Default styles from theme.json.
 	const { styles: defaultStyles } = useSelect( ( select ) => ( {
