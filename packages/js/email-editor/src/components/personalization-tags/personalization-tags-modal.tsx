@@ -14,10 +14,13 @@ const PersonalizationTagsModal = () => {
 
 	const { togglePersonalizationTagsModal } = useDispatch( storeName );
 
-	const { isModalOpened, list } = useSelect(
-		( select ) => select( storeName ).getPersonalizationTagsState(),
-		[]
-	);
+	const { isModalOpened, list } = useSelect( ( select ) => {
+		const store = select( storeName );
+		return {
+			isModalOpened: store.getPersonalizationTagsState().isModalOpened,
+			list: store.getPersonalizationTagsList(),
+		};
+	}, [] );
 
 	if ( ! isModalOpened ) {
 		return null;

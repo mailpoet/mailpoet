@@ -286,6 +286,12 @@ export function getPersonalizationTagsState(
 	return state.personalizationTags;
 }
 
+export function getPersonalizationTagsList(
+	state: State
+): State[ 'personalizationTags' ][ 'list' ] {
+	return state.personalizationTags.list;
+}
+
 export const getDeviceType = createRegistrySelector(
 	( select ) => () =>
 		// @ts-expect-error getDeviceType is missing in types.

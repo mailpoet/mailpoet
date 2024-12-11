@@ -204,6 +204,7 @@ export type State = {
 		isModalOpened: boolean;
 		list: PersonalizationTag[];
 		onInsert: ( ( value: string ) => void ) | null;
+		isFetching: boolean;
 	};
 };
 

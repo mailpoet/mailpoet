@@ -11,7 +11,12 @@ import { __, sprintf } from '@wordpress/i18n';
 import { apiFetch } from '@wordpress/data-controls';
 import wpApiFetch from '@wordpress/api-fetch';
 import { storeName, mainSidebarDocumentTab } from './constants';
-import { SendingPreviewStatus, State, Feature } from './types';
+import {
+	SendingPreviewStatus,
+	State,
+	Feature,
+	PersonalizationTag,
+} from './types';
 import { addQueryArgs } from '@wordpress/url';
 import {
 	// @ts-expect-error No types for __unstableSerializeAndClean
@@ -272,14 +277,20 @@ export function revertAndSaveTemplate( template ) {
 	};
 }
 
-export function* loadPersonalizationTags() {
-	const data = yield apiFetch( {
-		path: `/mailpoet-email-editor/v1/get_personalization_tags`,
-		method: 'GET',
-	} );
-
+export function setIsFetchingPersonalizationTags( isFetching: boolean ) {
 	return {
-		type: 'SET_PERSONALIZATION_TAGS',
-		personalizationTags: data.result,
+		type: 'SET_IS_FETCHING_PERSONALIZATION_TAGS',
+		state: {
+			isFetching,
+		} as Partial< State[ 'personalizationTags' ] >,
+	} as const;
+}
+
+export function setPersonalizationTagsList( list: PersonalizationTag[] ) {
+	return {
+		type: 'SET_PERSONALIZATION_TAGS_LIST',
+		state: {
+			list,
+		} as Partial< State[ 'personalizationTags' ] >,
 	} as const;
 }

@@ -42,6 +42,7 @@ export function getInitialState(): State {
 			isModalOpened: false,
 			list: [],
 			onInsert: null,
+			isFetching: false,
 		},
 	};
 }

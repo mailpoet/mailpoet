@@ -9,12 +9,14 @@ import { storeName } from './constants';
 import { getInitialState } from './initial-state';
 import { reducer } from './reducer';
 import * as selectors from './selectors';
+import * as resolvers from './resolvers';
 
 const getConfig = () =>
 	( {
 		actions,
 		controls,
 		selectors,
+		resolvers,
 		reducer,
 		initialState: getInitialState(),
 	} ) as const;

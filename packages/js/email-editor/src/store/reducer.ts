@@ -31,6 +31,22 @@ export function reducer( state: State, action ): State {
 					list: action.personalizationTags,
 				},
 			};
+		case 'SET_IS_FETCHING_PERSONALIZATION_TAGS':
+			return {
+				...state,
+				personalizationTags: {
+					...state.personalizationTags,
+					...action.state,
+				},
+			};
+		case 'SET_PERSONALIZATION_TAGS_LIST':
+			return {
+				...state,
+				personalizationTags: {
+					...state.personalizationTags,
+					...action.state,
+				},
+			};
 		default:
 			return state;
 	}
