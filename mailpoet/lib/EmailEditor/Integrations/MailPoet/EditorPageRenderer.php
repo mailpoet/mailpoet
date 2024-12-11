@@ -111,7 +111,7 @@ class EditorPageRenderer {
         'is_premium_plugin_active' => (bool)$this->servicesChecker->isPremiumPluginActive(),
         'current_wp_user_email' => esc_js($currentUserEmail),
         'editor_settings' => $this->settingsController->get_settings(),
-        'editor_theme' => $this->themeController->get_theme()->get_raw_data(),
+        'editor_theme' => $this->themeController->get_base_theme()->get_raw_data(),
         'user_theme_post_id' => $this->userTheme->get_user_theme_post()->ID,
         'urls' => [
           'listings' => admin_url('admin.php?page=mailpoet-newsletters'),

@@ -17,7 +17,7 @@ import { useEmailStyles } from '../../../hooks';
 import { storeName } from '../../../store';
 
 export function ScreenColors(): JSX.Element {
-	const { styles, defaultStyles, updateStyles } = useEmailStyles();
+	const { userStyles, styles, updateStyles } = useEmailStyles();
 	const theme = useSelect( ( select ) => select( storeName ).getTheme(), [] );
 
 	return (
@@ -30,8 +30,8 @@ export function ScreenColors(): JSX.Element {
 				) }
 			/>
 			<StylesColorPanel
-				value={ styles }
-				inheritValue={ defaultStyles }
+				value={ userStyles }
+				inheritedValue={ styles }
 				onChange={ updateStyles }
 				settings={ theme?.settings }
 				panelId="colors"

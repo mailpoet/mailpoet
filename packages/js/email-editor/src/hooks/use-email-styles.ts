@@ -27,6 +27,7 @@ export interface StyleProperties {
 
 interface EmailStylesData {
 	styles: StyleProperties;
+	userStyles: StyleProperties;
 	defaultStyles: StyleProperties;
 	updateStyleProp: ( path, newValue ) => void;
 	updateStyles: ( newStyles: StyleProperties ) => void;
@@ -144,8 +145,9 @@ export const useEmailStyles = (): EmailStylesData => {
 	);
 
 	return {
-		styles: deepmerge.all( [ defaultStyles || {}, styles || {} ] ),
-		defaultStyles,
+		styles: deepmerge.all( [ defaultStyles || {}, styles || {} ] ), // Merged styles
+		userStyles: userTheme?.styles, // Styles defined by user
+		defaultStyles, // Default styles from editors theme.json
 		updateStyleProp,
 		updateStyles,
 	};
