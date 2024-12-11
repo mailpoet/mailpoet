@@ -616,14 +616,12 @@ class ServicesTest extends \MailPoetTest {
     );
   }
 
-  public function testItReturnsErrorIfBridgePingThrowsException() {
-    $errorMessage = 'some error';
+  public function testItReturnsErrorIfBridgePingReturnWPError() {
+    $errorMessage = 'cURL error 6: Could not resolve host: https://bridge.mailpoet.com';
     $bridge = $this->make(
       new Bridge(),
       [
-        'pingBridge' => function () use ($errorMessage) {
-          throw new \Exception($errorMessage);
-        },
+        'pingBridge' => new \WP_Error('error', $errorMessage),
       ]
     );
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
@@ -631,21 +629,25 @@ class ServicesTest extends \MailPoetTest {
     $response = $response->getData();
     verify($response['errors'][0])->isArray();
     verify($response['errors'][0]['message'])->stringContainsString($errorMessage);
+    verify($response['errors'][0]['message'])->stringContainsString('Contact your hosting support');
     verify($response['errors'][0]['error'])->stringContainsString('unknown');
   }
 
   public function testItReturnsErrorIfBridgePingResultIsUnsuccessful() {
+    $errorCode = 500;
     $bridge = $this->make(
       new Bridge(),
       [
-        'pingBridge' => false,
+        'pingBridge' => [
+          'response' => ['code' => $errorCode],
+        ],
       ]
     );
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);
     $response = $servicesEndpoint->pingBridge();
     $response = $response->getData();
     verify($response['errors'][0])->isArray();
-    verify($response['errors'][0]['message'])->stringContainsString('Contact your hosting support');
+    verify($response['errors'][0]['message'])->stringContainsString('code: 500');
     verify($response['errors'][0]['error'])->stringContainsString('unknown');
   }
 
@@ -653,7 +655,9 @@ class ServicesTest extends \MailPoetTest {
     $bridge = $this->make(
       new Bridge(),
       [
-        'pingBridge' => 200, // HTTP OK
+        'pingBridge' => [
+          'response' => ['code' => 200],
+        ],
       ]
     );
     $servicesEndpoint = $this->createServicesEndpointWithMocks(['bridge' => $bridge]);

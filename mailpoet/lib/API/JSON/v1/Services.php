@@ -298,15 +298,17 @@ class Services extends APIEndpoint {
   }
 
   public function pingBridge() {
-    try {
-      $bridgePingResponse = $this->bridge->pingBridge();
-    } catch (\Exception $e) {
+    $response = $this->bridge->pingBridge();
+    if ($this->wp->isWpError($response)) {
+      /** @var \WP_Error $response */
+      $errorDesc = $this->getErrorDescriptionByCode(Bridge::CHECK_ERROR_UNKNOWN);
       return $this->errorResponse([
-        APIError::UNKNOWN => $e->getMessage(),
+        APIError::UNKNOWN => "{$errorDesc}: {$response->get_error_message()}",
       ]);
     }
-    if (!$this->bridge->validateBridgePingResponse($bridgePingResponse)) {
-      $code = $bridgePingResponse ?: Bridge::CHECK_ERROR_UNKNOWN;
+
+    if (!$this->bridge->validateBridgePingResponse($response)) {
+      $code = $this->wp->wpRemoteRetrieveResponseCode($response) ?: Bridge::CHECK_ERROR_UNKNOWN;
       return $this->errorResponse([
         APIError::UNKNOWN => $this->getErrorDescriptionByCode($code),
       ]);
