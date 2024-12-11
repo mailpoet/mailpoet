@@ -104,13 +104,48 @@ function shortenWpPresetVariables( obj ) {
 	return traverse( obj );
 }
 
+/**
+ * Remove empty arrays and keys with undefined values from an object.
+ * Empty values causes issues with deepmerge, because it can overwrite default value we provide in base email theme.
+ *
+ * @param {Object} obj The object to clean.
+ * @return {Object} The cleaned object.
+ */
+function cleanupUserStyles( obj ) {
+	const cleanObject = ( current ) => {
+		if (
+			( typeof current === 'object' && current !== null ) ||
+			current === undefined
+		) {
+			if ( Array.isArray( current ) && current.length === 0 ) {
+				return undefined; // Remove empty arrays
+			}
+
+			for ( const key in current ) {
+				if ( current.hasOwnProperty( key ) ) {
+					const cleanedValue = cleanObject( current[ key ] );
+					if ( cleanedValue === undefined ) {
+						delete current[ key ]; // Remove keys with undefined values
+					} else {
+						current[ key ] = cleanedValue;
+					}
+				}
+			}
+		}
+		return current;
+	};
+
+	return cleanObject( obj );
+}
+
 export const useEmailStyles = (): EmailStylesData => {
 	// const { templateTheme, updateTemplateTheme } = useEmailTheme();
 	const { userTheme, updateUserTheme } = useUserTheme();
 
 	// This is email level styling stored in post meta.
 	const styles = useMemo(
-		() => shortenWpPresetVariables( userTheme?.styles ),
+		() =>
+			cleanupUserStyles( shortenWpPresetVariables( userTheme?.styles ) ),
 		[ userTheme ]
 	);
 
@@ -124,7 +159,7 @@ export const useEmailStyles = (): EmailStylesData => {
 		( newStyles ) => {
 			const newTheme = {
 				...userTheme,
-				styles: newStyles,
+				styles: cleanupUserStyles( newStyles ),
 			};
 			updateUserTheme( newTheme );
 		},
