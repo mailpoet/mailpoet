@@ -271,6 +271,18 @@ class SystemReportCollectorTest extends \MailPoetTest {
     verify($systemInfoData['MailPoet Sending Service'])->stringContainsString('Ping response: ' . $errorMessage);
   }
 
+  public function testItReturnsMSSKeyState() {
+    $this->settings->set(Bridge::API_KEY_STATE_SETTING_NAME . '.state', Bridge::KEY_VALID);
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+    verify($systemInfoData['MailPoet Sending Service'])->stringContainsString('API key state: ' . Bridge::KEY_VALID);
+  }
+
+  public function testItReturnsPremiumKeyState() {
+    $this->settings->set(Bridge::PREMIUM_KEY_STATE_SETTING_NAME . '.state', Bridge::KEY_VALID);
+    $systemInfoData = $this->diContainer->get(SystemReportCollector::class)->getData();
+    verify($systemInfoData['MailPoet Sending Service'])->stringContainsString('Premium key state: ' . Bridge::KEY_VALID);
+  }
+
   private function createSystemReporterWithMockedBridge($bridge) {
     $settings = $this->diContainer->get(SettingsController::class);
     $wp = $this->diContainer->get(WPFunctions::class);

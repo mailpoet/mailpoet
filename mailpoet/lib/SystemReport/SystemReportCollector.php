@@ -99,6 +99,9 @@ class SystemReportCollector {
       ? $pingBridgeResponse->get_error_message()
       : $this->wp->wpRemoteRetrieveResponseCode($pingBridgeResponse) . ' HTTP status code';
 
+    $ApiKeyState = $this->settings->get(Bridge::API_KEY_STATE_SETTING_NAME . '.state');
+    $premiumKeyState = $this->settings->get(Bridge::PREMIUM_KEY_STATE_SETTING_NAME . '.state');
+
     // the HelpScout Beacon API has a limit of 20 attribute-value pairs (https://developer.helpscout.com/beacon-2/web/javascript-api/#beacon-session-data)
     return [
       'PHP version' => PHP_VERSION,
@@ -129,6 +132,8 @@ class SystemReportCollector {
       'MailPoet Sending Service' => $this->formatCompositeField([
         'Is reachable' => $this->bridge->validateBridgePingResponse($pingBridgeResponse) ? 'Yes' : 'No',
         'Ping response' => $pingResponse,
+        'API key state' => $ApiKeyState ?? 'Unset',
+        'Premium key state' => $premiumKeyState ?? 'Unset',
       ]),
       'Sending Frequency' => sprintf(
         '%d emails every %d minutes',
