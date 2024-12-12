@@ -5,6 +5,8 @@ import { QueueStatus } from 'newsletters/listings/queue-status';
 import { Statistics } from 'newsletters/listings/statistics.jsx';
 import { SegmentTags, FilterSegmentTag } from '../../common/tag/tags';
 import { ErrorBoundary  } from '../../common';
+import { Button, DropdownMenu } from '@wordpress/components';
+
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
@@ -126,6 +128,28 @@ export function getRow(newsletter, meta) {
               {MailPoet.Date.time(newsletter.sent_at)}
             </>
           ) : null}
-        </div>) },
+        </div>) 
+      },
+      {
+        value: null,
+        display: (
+          <div
+            className="mailpoet-listing-actions-cell"
+            data-automation-id={`mailpoet_newsletter_preview_button_${newsletter.id}`}
+          >
+            <Button variant="tertiary" href={newsletter.preview_url}>
+              {__('Preview', 'mailpoet')}
+            </Button>
+              <Button
+                data-automation-id={`mailpoet_newsletter_edit_button_${newsletter.id}`}
+                variant="tertiary"
+                onClick={confirmEdit}
+              >
+                {__('Edit', 'mailpoet')}
+              </Button>
+          
+          </div>
+        ),
+      }
       ];
 }
