@@ -4,11 +4,9 @@ import { Statistics } from 'newsletters/listings/statistics.jsx';
 import { SegmentTags, FilterSegmentTag } from '../../common/tag/tags';
 import { ErrorBoundary  } from '../../common';
 
-export function getRow(tab, newsletter, segments, meta) {
+export function getRow(newsletter, meta) {
 
-    const selectSegementsFromIds = (segment_ids, segments) => {
-        return segment_ids.map(segment_id => segments.find(segment => segment.id === segment_id));
-      };
+
 
     return [
         { display: newsletter.subject, value: newsletter.subject },
@@ -17,7 +15,7 @@ export function getRow(tab, newsletter, segments, meta) {
             className="column mailpoet-hide-on-mobile"
             data-colname={__('Lists', 'mailpoet')}>
             <ErrorBoundary>
-              <SegmentTags segments={selectSegementsFromIds(newsletter.segment_ids, segments)} dimension="large" />
+              <SegmentTags segments={newsletter.segments} dimension="large" />
               <FilterSegmentTag newsletter={newsletter} dimension="large" />
             </ErrorBoundary>
           </div>, value: newsletter.segment_ids },

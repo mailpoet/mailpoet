@@ -1,14 +1,15 @@
 const EMPTY_ARRAY = [];
+const EMPTY_OBJECT = {};
 
 
 export const getStandardNewsletters = (state) => {
 	  return state.newsletters.standard || EMPTY_ARRAY
 }
 
-export const getStandardNewsletterLoading = (state) => {
-	  return state.isLoading.standard || false
+export const getMeta = (state) => {
+	return state.meta || EMPTY_OBJECT
 }
 
-export const getStandardSegments = (state) => {
-	  return state.newsletters.standardSegments || EMPTY_ARRAY
+export const getStandardNewsletterLoading = (state) => {
+	  return state.isLoading.standard || false
 }

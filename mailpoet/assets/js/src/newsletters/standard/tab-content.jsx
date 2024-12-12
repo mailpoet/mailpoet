@@ -46,25 +46,12 @@ export const NEWSLETTER_STANDARD_HEADERS = [
       ];
 
 
-
-
-
-
-// TODO receive meta from the store
-function transformToTableCardRows(standard, segments, ) {
-  const meta = { mta_log: {}, current_time: '' };
-
-  return standard.map(newsletter =>  getRow("tab-name", newsletter, segments, meta) );
-}
-
-
-
 export function StandardTabContent() {
     const newsletterStandardData = useSelect((select) => select(storeName).getStandardNewsletters(), []);
-    const standardSegmentsData = useSelect((select) => select(storeName).getStandardSegments(), []);
-    const newsletterStandardRows = transformToTableCardRows(newsletterStandardData, standardSegmentsData);
+    const metaData = useSelect((select) => select(storeName).getMeta(), []);
 
     const newsletterStandardLoading = useSelect((select) => select(storeName).getStandardNewsletterLoading(), []);
+    const newsletterStandardRows = newsletterStandardData.map(newsletter =>  getRow(newsletter, metaData) );
 
     const rowClasses = classnames(
         'manage-column',

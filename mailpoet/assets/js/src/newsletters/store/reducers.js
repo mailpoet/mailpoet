@@ -14,11 +14,6 @@ const reducer = (state = defaultNewsletterState, action) => {
 		...state,
 		newsletters: { ...state.newsletters, standard: action.response },
 	  };
-	case types.RECEIVE_STANDARD_SEGMENTS:
-	  return {
-		...state,
-		newsletters: { ...state.newsletters, standardSegments: action.response },
-	  };
 	  case types.FINISH_STANDARD_REQUEST:
 		return {
 		  ...state,
@@ -60,7 +55,11 @@ const reducer = (state = defaultNewsletterState, action) => {
         ...state,
         errors: [...state.errors, action.error],
       };    
-
+	case types.RECEIVE_META:
+	  return {
+		...state,
+		meta: action.response,
+	};
     default:
       break;
   }

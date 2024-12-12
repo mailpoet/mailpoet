@@ -19,12 +19,6 @@ export function receiveStandardNewsletters( newsletters ) {
   };
 }
 
-export function receiveStandardSegments( segments ) {
-	return {
-	  type: types.RECEIVE_STANDARD_SEGMENTS,
-	  response: segments,
-	};
-  }
   export function finishStandardRequest() {
 	return {
 	  type: types.FINISH_STANDARD_REQUEST,
@@ -72,6 +66,13 @@ export function receiveError( error ) {
     type: types.RECEIVE_ERROR,
     error,
   };
+}
+
+export function receiveMeta( meta ) {
+	return {
+	  type: types.RECEIVE_META,
+	  response: meta,
+	};
 }
 
 

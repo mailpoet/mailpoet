@@ -3,10 +3,10 @@ export const defaultNewsletterState = {
         
     newsletters: {
         standard: [],
-        standardSegments: [],
         postNotifications: [],
         reEngagements: [],
     },
+    meta: {},
     isLoading: { standard: false, 
                  postNotification: false,
                  reEngagement: false,},
