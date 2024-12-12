@@ -15,7 +15,24 @@ import { getRow } from './get-row';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
 
+function SelectAll(){
+
+  return (
+    <input
+      checked={false}
+      type="checkbox"
+      data-automation-id="select_all"
+      onChange={()=> {console.log("selected")}}
+    />
+  );
+}
+
 const columns = [
+  {
+    key: 'checkbox',
+    label: <SelectAll />,
+    cellClassName: 'mailpoet-listing-checkbox',
+  },
   {
     key: MailPoet.FeaturesController.isSupported('gutenberg_email_editor')
       ? 'name'
@@ -42,6 +59,10 @@ const columns = [
     key: 'sent_at',
     label: __('Sent on', 'mailpoet'),
     sortable: true,
+  },
+  {
+    key: 'actions',
+    isLeftAligned: false,
   },
 ];
 

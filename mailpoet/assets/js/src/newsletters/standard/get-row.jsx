@@ -49,6 +49,16 @@ export function getRow(newsletter, meta) {
 
     return [
       {
+        value: null,
+        display: (
+          <input
+            type="checkbox"
+            checked={false}
+            onChange={()=> {console.log("selected")}}
+          />
+        ),
+      },
+      {
         display: (
           <div className={rowClasses}>
             <a
