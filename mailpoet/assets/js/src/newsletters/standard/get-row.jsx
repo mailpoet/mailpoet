@@ -67,21 +67,55 @@ export function getRow(newsletter, meta) {
               ) : (
                 subject
               )}
-            </a>
+            </a> 
           </div>
         ),
         value: newsletter.campaign_name || subject,
       },
-        { display: <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />, value: newsletter.status },
-        { display: <div
-            className="column mailpoet-hide-on-mobile"
-            data-colname={__('Lists', 'mailpoet')}>
-            <ErrorBoundary>
-              <SegmentTags segments={newsletter.segments} dimension="large" />
-              <FilterSegmentTag newsletter={newsletter} dimension="large" />
-            </ErrorBoundary>
-          </div>, value: newsletter.segment_ids },
-        { display: <Statistics newsletter={newsletter} currentTime={meta.current_time} />, value: newsletter.statistics },
-        { display: newsletter.sent_at ? newsletter.sent_at : 'Not sent', value: newsletter.sent_at || '' },
+        { display: (
+            <div
+              className="column mailpoet-listing-status-column"
+              data-colname={__('Status', 'mailpoet')}>
+              <QueueStatus newsletter={newsletter} mailerLog={meta.mta_log} />
+            </div>
+        ), 
+        value: newsletter.status 
+      },
+      { display: (
+        <div
+          className="column mailpoet-hide-on-mobile"
+          data-colname={__('Lists', 'mailpoet')}>
+          <ErrorBoundary>
+            <SegmentTags segments={newsletter.segments} dimension="large" />
+            <FilterSegmentTag newsletter={newsletter} dimension="large" />
+          </ErrorBoundary>
+        </div>
+        ), 
+        value: newsletter.segments 
+      },
+      { display: mailpoetTrackingEnabled === true ? (
+        <div
+          className="column mailpoet-listing-stats-column"
+          data-colname={__('Clicked, Opened', 'mailpoet')}
+        >
+          <Statistics
+            newsletter={newsletter}
+            currentTime={meta.current_time}
+          />
+        </div>
+      ) : null, 
+        value: newsletter.statistics },
+        { display: (<div
+          className="column-date mailpoet-hide-on-mobile"
+          data-colname={__('Sent on', 'mailpoet')}
+        >
+          {newsletter.sent_at ? (
+            <>
+              {MailPoet.Date.short(newsletter.sent_at)}
+              <br />
+              {MailPoet.Date.time(newsletter.sent_at)}
+            </>
+          ) : null}
+        </div>) },
       ];
 }
