@@ -14,36 +14,37 @@ import { storeName } from '../store/constants';
 import { getRow } from './get-row';
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
-const gutenbergEmailEditorSupported = MailPoet.FeaturesController.isSupported('gutenberg_email_editor');
 
-export const NEWSLETTER_STANDARD_HEADERS = [
-        {
-          key: gutenbergEmailEditorSupported ? 'name' : 'subject',
-          label: gutenbergEmailEditorSupported ? __('Name', 'mailpoet') : __('Subject', 'mailpoet'),
-          isSortable: true,
-        },
-        {
-          key: 'status',
-          label: __('Status', 'mailpoet'),
-          isSortable: false,
-        },
-        {
-          key: 'segments',
-          label: __('Lists', 'mailpoet'),
-          isSortable: false,
-        },
-        {
-          key: 'statistics',
-          label: __('Clicked, Opened', 'mailpoet'),
-          display: mailpoetTrackingEnabled,
-          isSortable: false,
-        },
-        {
-          key: 'sent_at',
-          label: __('Sent on', 'mailpoet'),
-          isSortable: true,
-        },
-      ];
+const columns = [
+  {
+    key: MailPoet.FeaturesController.isSupported('gutenberg_email_editor')
+      ? 'name'
+      : 'subject',
+    label: MailPoet.FeaturesController.isSupported('gutenberg_email_editor')
+      ? __('Name', 'mailpoet')
+      : __('Subject', 'mailpoet'),
+    sortable: true,
+  },
+  {
+    key: 'status',
+    label: __('Status', 'mailpoet'),
+  },
+  {
+    key: 'segments',
+    label: __('Lists', 'mailpoet'),
+  },
+  {
+    key: 'statistics',
+    label: __('Clicked, Opened', 'mailpoet'),
+    display: mailpoetTrackingEnabled,
+  },
+  {
+    key: 'sent_at',
+    label: __('Sent on', 'mailpoet'),
+    sortable: true,
+  },
+];
+
 
 
 export function StandardTabContent() {
@@ -69,7 +70,7 @@ export function StandardTabContent() {
             className="mailpoet-listing-table"
             isLoading={ newsletterStandardLoading }
             rows={ newsletterStandardRows }
-            headers={ NEWSLETTER_STANDARD_HEADERS }
+            headers={ columns }
             query={ { page: 2 } }
             rowsPerPage={ 7 }
             totalRows={ 10 }
