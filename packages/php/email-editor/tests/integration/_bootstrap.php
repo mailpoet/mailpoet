@@ -24,7 +24,6 @@ use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Typograph
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager;
 use MailPoet\EmailEditor\Engine\Renderer\Renderer;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
-use MailPoet\EmailEditor\Engine\Templates\Template_Preview;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
 use MailPoet\EmailEditor\Engine\Templates\Utils;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
@@ -204,15 +203,6 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 			}
 		);
 		$container->set(
-			Template_Preview::class,
-			function ( $container ) {
-				return new Template_Preview(
-					$container->get( Theme_Controller::class ),
-					$container->get( Settings_Controller::class ),
-				);
-			}
-		);
-		$container->set(
 			Patterns::class,
 			function () {
 				return new Patterns();
@@ -314,7 +304,6 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 				return new Email_Editor(
 					$container->get( Email_Api_Controller::class ),
 					$container->get( Templates::class ),
-					$container->get( Template_Preview::class ),
 					$container->get( Patterns::class ),
 					$container->get( Settings_Controller::class ),
 					$container->get( Send_Preview_Email::class ),

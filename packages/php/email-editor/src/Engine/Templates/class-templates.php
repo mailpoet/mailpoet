@@ -14,8 +14,6 @@ use WP_Block_Template;
  * Templates class.
  */
 class Templates {
-	const MAILPOET_TEMPLATE_EMPTY_THEME = array( 'version' => 3 ); // The version 3 is important to merge themes correctly.
-
 	/**
 	 * Provides the utils.
 	 *

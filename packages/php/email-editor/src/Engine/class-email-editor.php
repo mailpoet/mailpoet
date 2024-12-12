@@ -10,7 +10,6 @@ namespace MailPoet\EmailEditor\Engine;
 
 use MailPoet\EmailEditor\Engine\Patterns\Patterns;
 use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
-use MailPoet\EmailEditor\Engine\Templates\Template_Preview;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
 use WP_Post;
 use WP_Theme_JSON;
@@ -36,12 +35,6 @@ class Email_Editor {
 	 * @var Templates Templates.
 	 */
 	private Templates $templates;
-	/**
-	 * Property for the template preview.
-	 *
-	 * @var Template_Preview Template preview.
-	 */
-	private Template_Preview $template_preview;
 	/**
 	 * Property for the patterns.
 	 *
@@ -74,7 +67,6 @@ class Email_Editor {
 	 *
 	 * @param Email_Api_Controller          $email_api_controller Email API controller.
 	 * @param Templates                     $templates Templates.
-	 * @param Template_Preview              $template_preview Template preview.
 	 * @param Patterns                      $patterns Patterns.
 	 * @param Settings_Controller           $settings_controller Settings controller.
 	 * @param Send_Preview_Email            $send_preview_email Preview email controller.
@@ -83,7 +75,6 @@ class Email_Editor {
 	public function __construct(
 		Email_Api_Controller $email_api_controller,
 		Templates $templates,
-		Template_Preview $template_preview,
 		Patterns $patterns,
 		Settings_Controller $settings_controller,
 		Send_Preview_Email $send_preview_email,
@@ -91,7 +82,6 @@ class Email_Editor {
 	) {
 		$this->email_api_controller          = $email_api_controller;
 		$this->templates                     = $templates;
-		$this->template_preview              = $template_preview;
 		$this->patterns                      = $patterns;
 		$this->settings_controller           = $settings_controller;
 		$this->send_preview_email            = $send_preview_email;
@@ -129,7 +119,6 @@ class Email_Editor {
 		// Since we cannot currently disable blocks in the editor for specific templates, disable templates when viewing site editor. @see https://github.com/WordPress/gutenberg/issues/41062.
 		if ( strstr( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ), 'site-editor.php' ) === false ) {
 			$this->templates->initialize();
-			$this->template_preview->initialize();
 		}
 	}
 
