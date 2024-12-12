@@ -1,8 +1,7 @@
-import { Modal, SearchControl } from '@wordpress/components';
+import { ExternalLink, Modal, SearchControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { PersonalizationTag, storeName } from '../../store';
 import { useSelect } from '@wordpress/data';
-import { external, Icon } from '@wordpress/icons';
 import './index.scss';
 import { useState } from '@wordpress/element';
 import { CategoryMenu } from './category-menu';
@@ -49,10 +48,12 @@ const PersonalizationTagsModal = ( { onInsert, isOpened, closeCallback } ) => {
 		>
 			<p>
 				{ __(
-					'Insert shortcodes to dynamically fill in information and personalize your emails. Learn more',
+					'Insert shortcodes to dynamically fill in information and personalize your emails.',
 					'mailpoet'
 				) }{ ' ' }
-				<Icon icon={ external } size={ 16 } />
+				<ExternalLink href="https://kb.mailpoet.com/article/215-personalize-newsletter-with-shortcodes#list">
+					{ __( 'Learn more', 'mailpoet' ) }
+				</ExternalLink>
 			</p>
 			<SearchControl onChange={ setSearchQuery } value={ searchQuery } />
 			<CategoryMenu
