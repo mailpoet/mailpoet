@@ -19,7 +19,7 @@ export function EditorSnackbars( { context = 'email-editor' } ) {
 	const globalNoticeChangeMap = useMemo( () => {
 		return {
 			'site-editor-save-success': {
-				content: __( 'Template updated.', 'mailpoet' ),
+				content: __( 'Email design updated.', 'mailpoet' ),
 				removeActions: true,
 			},
 		};
