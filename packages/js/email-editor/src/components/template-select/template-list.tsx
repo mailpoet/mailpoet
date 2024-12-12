@@ -1,6 +1,8 @@
 import { useMemo, memo } from '@wordpress/element';
 // @ts-expect-error No types available for this component
 import { BlockPreview } from '@wordpress/block-editor';
+import { store as editorStore } from '@wordpress/editor';
+import { useSelect } from '@wordpress/data';
 import {
 	__experimentalHStack as HStack, // eslint-disable-line
 } from '@wordpress/components';
@@ -8,6 +10,7 @@ import { Icon, info, blockDefault } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { Async } from './async';
 import { TemplateCategory, TemplatePreview } from '../../store';
+import { useEmailCss } from '../../hooks';
 
 type Props = {
 	templates: TemplatePreview[];
@@ -37,6 +40,23 @@ function TemplateListBox( {
 	onTemplateSelection,
 	selectedCategory,
 }: Props ) {
+	const { layout } = useSelect( ( select ) => {
+		const { getEditorSettings } = select( editorStore );
+		const editorSettings = getEditorSettings();
+		return {
+			// @ts-expect-error There are no types for the experimental features settings.
+			// eslint-disable-next-line no-underscore-dangle
+			layout: editorSettings.__experimentalFeatures.layout,
+		};
+	} );
+
+	const [ styles ] = useEmailCss();
+	const css =
+		styles.reduce( ( acc, style ) => {
+			return acc + ( style.css ?? '' );
+		}, '' ) +
+		`.is-root-container { width: ${ layout.contentSize }; margin: 0 auto; }`;
+
 	if ( selectedCategory === 'recent' && templates.length === 0 ) {
 		return <TemplateNoResults />;
 	}
@@ -74,7 +94,7 @@ function TemplateListBox( {
 								minHeight={ 300 }
 								additionalStyles={ [
 									{
-										css: template.template?.email_theme_css,
+										css,
 									},
 								] }
 							/>
