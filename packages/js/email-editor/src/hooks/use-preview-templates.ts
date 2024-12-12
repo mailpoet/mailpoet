@@ -8,7 +8,6 @@ import {
 	EmailTemplatePreview,
 	TemplatePreview,
 	EmailEditorPostType,
-	EmailTheme,
 } from '../store';
 
 /**
@@ -41,29 +40,22 @@ function setPostContentInnerBlocks(
 	} );
 }
 
-const InternalCssThemeCache = {};
+const InternalTemplateCache = {};
 
 type GenerateTemplateCssThemeType = {
-	emailThemeCss: string;
-	mailpoetEmailTheme?: EmailTheme;
 	postTemplateContent?: EmailTemplatePreview;
 };
 /**
- * We are reusing the template CSS and mailpoet theme by fetching the template from
- * the list of email editor available templates.
- * Note: This function may need an update when https://mailpoet.atlassian.net/browse/MAILPOET-6335 is merged
  * @param post
  * @param allTemplates
  */
-function generateTemplateCssTheme(
+function generateTemplateContent(
 	post: EmailEditorPostType,
 	allTemplates: TemplatePreview[] = []
 ): GenerateTemplateCssThemeType {
 	const contentTemplate = post.template;
 
 	const defaultReturnObject = {
-		mailpoetEmailTheme: null,
-		emailThemeCss: '',
 		postTemplateContent: null,
 	};
 
@@ -71,8 +63,8 @@ function generateTemplateCssTheme(
 		return defaultReturnObject;
 	}
 
-	if ( InternalCssThemeCache[ contentTemplate ] ) {
-		return InternalCssThemeCache[ contentTemplate ];
+	if ( InternalTemplateCache[ contentTemplate ] ) {
+		return InternalTemplateCache[ contentTemplate ];
 	}
 
 	const postTemplate = allTemplates.find(
@@ -83,16 +75,13 @@ function generateTemplateCssTheme(
 		return defaultReturnObject;
 	}
 
-	const cssTheme = {
-		mailpoetEmailTheme:
-			postTemplate?.template?.mailpoet_email_theme || null,
-		emailThemeCss: postTemplate?.template?.email_theme_css || '',
+	const templateContent = {
 		postTemplateContent: postTemplate?.template,
 	};
 
-	InternalCssThemeCache[ contentTemplate ] = cssTheme;
+	InternalTemplateCache[ contentTemplate ] = templateContent;
 
-	return cssTheme;
+	return templateContent;
 }
 
 export function usePreviewTemplates(
@@ -178,8 +167,10 @@ export function usePreviewTemplates(
 
 	const allEmailPosts = useMemo( () => {
 		return emailPosts?.map( ( post: EmailEditorPostType ) => {
-			const { mailpoetEmailTheme, emailThemeCss, postTemplateContent } =
-				generateTemplateCssTheme( post, allTemplates );
+			const { postTemplateContent } = generateTemplateContent(
+				post,
+				allTemplates
+			);
 			const parsedPostContent = parse( post.content?.raw );
 
 			let parsedPostContentWithTemplate = parsedPostContent;
@@ -203,8 +194,6 @@ export function usePreviewTemplates(
 						rendered:
 							post?.mailpoet_data?.subject || post.title.rendered, // use MailPoet subject as title
 					},
-					mailpoet_email_theme: mailpoetEmailTheme,
-					email_theme_css: emailThemeCss,
 				},
 				category: 'recent',
 				type: post.type,

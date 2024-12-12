@@ -206,9 +206,6 @@ export type EmailTemplate = {
 	id: string;
 	slug: string;
 	content: string;
-	email_theme_css: string;
-	mailpoet_email_theme?: EmailTheme;
-	theme: string;
 	title: string;
 	type: string;
 };

@@ -11,7 +11,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { apiFetch } from '@wordpress/data-controls';
 import wpApiFetch from '@wordpress/api-fetch';
 import { storeName, mainSidebarDocumentTab } from './constants';
-import { SendingPreviewStatus, State, Feature, EmailTheme } from './types';
+import { SendingPreviewStatus, State, Feature } from './types';
 import { addQueryArgs } from '@wordpress/url';
 import {
 	// @ts-expect-error No types for __unstableSerializeAndClean
@@ -127,16 +127,13 @@ export function* updateEmailMailPoetProperty( name: string, value: string ) {
 }
 
 export const setTemplateToPost =
-	( templateSlug, emailTheme: EmailTheme ) =>
+	( templateSlug ) =>
 	async ( { registry } ) => {
 		const postId = registry.select( storeName ).getEmailPostId();
 		registry
 			.dispatch( coreDataStore )
 			.editEntityRecord( 'postType', 'mailpoet_email', postId, {
 				template: templateSlug,
-				meta: {
-					mailpoet_email_theme: emailTheme,
-				},
 			} );
 	};
 
