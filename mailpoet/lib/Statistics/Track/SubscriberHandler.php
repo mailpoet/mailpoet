@@ -32,7 +32,11 @@ class SubscriberHandler {
     $this->wp = $wp;
   }
 
-  public function identifyByLogin(string $login): void {
+  public function identifyByLogin(?string $login): void {
+    if (is_null($login)) {
+      return;
+    }
+
     if (!$this->trackingConfig->isCookieTrackingEnabled()) {
       return;
     }

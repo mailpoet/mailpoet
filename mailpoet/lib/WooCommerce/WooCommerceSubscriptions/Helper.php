@@ -29,7 +29,10 @@ class Helper {
     return wcs_get_subscription_statuses();
   }
 
-  public function wcsGetBillingPeriodStrings(): array {
+  /**
+   * @return array
+   */
+  public function wcsGetBillingPeriodStrings() {
     if (!function_exists('wcs_get_subscription_period_strings')) {
       return [];
     }
