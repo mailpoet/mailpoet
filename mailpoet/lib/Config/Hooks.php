@@ -159,7 +159,12 @@ class Hooks {
   }
 
   public function setupSubscriptionEvents() {
-    $subscribe = $this->settings->get('subscribe', []);
+    // In some cases on multisite instance, this code may run before DB migrator and settings table is not ready at that time
+    try {
+      $subscribe = $this->settings->get('subscribe', []);
+    } catch (\Exception $e) {
+      $subscribe = [];
+    }
     // Subscribe in comments
     if (
       isset($subscribe['on_comment']['enabled'])
@@ -325,7 +330,12 @@ class Hooks {
   }
 
   public function setupWooCommerceSubscriptionEvents() {
-    $optInEnabled = (bool)$this->settings->get(Subscription::OPTIN_ENABLED_SETTING_NAME, false);
+    // In some cases on multisite instance, this code may run before DB migrator and settings table is not ready at that time
+    try {
+      $optInEnabled = (bool)$this->settings->get(Subscription::OPTIN_ENABLED_SETTING_NAME, false);
+    } catch (\Exception $e) {
+      $optInEnabled = false;
+    }
     // WooCommerce: subscribe on checkout
     if ($optInEnabled) {
       $optInPosition = $this->settings->get(Subscription::OPTIN_POSITION_SETTING_NAME, self::DEFAULT_OPTIN_POSITION);
