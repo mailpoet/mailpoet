@@ -51,3 +51,8 @@
    display: none;
  }
 }
+
+// Ensure checkbox controls in save panel dropdown to span the full width
+.mailpoet-email-editor-save-button__dropdown .components-panel__row .components-checkbox-control {
+  width: 100%;
+}
