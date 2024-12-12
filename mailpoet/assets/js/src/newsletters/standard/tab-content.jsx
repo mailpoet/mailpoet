@@ -1,4 +1,6 @@
 
+import { useState } from 'react';
+
 import classnames from 'classnames';
 import { __ } from '@wordpress/i18n';
 import { escapeHTML } from '@wordpress/escape-html';
@@ -69,11 +71,16 @@ const columns = [
 
 
 export function StandardTabContent() {
+    const [currentAction, setCurrentAction] = useState(null);
+    const [currentSelected, setCurrentSelected] = useState([]);
     const newsletterStandardData = useSelect((select) => select(storeName).getStandardNewsletters(), []);
     const metaData = useSelect((select) => select(storeName).getMeta(), []);
 
     const newsletterStandardLoading = useSelect((select) => select(storeName).getStandardNewsletterLoading(), []);
-    const newsletterStandardRows = newsletterStandardData.map(newsletter =>  getRow(newsletter, metaData) );
+    const newsletterStandardRows = newsletterStandardData.map(newsletter =>  getRow(newsletter, metaData, (action, segment) => {
+      setCurrentSelected([segment]);
+      setCurrentAction(action);
+    }) );
 
     const rowClasses = classnames(
         'manage-column',
@@ -85,6 +92,7 @@ export function StandardTabContent() {
       <div className={rowClasses}>
         <div>
           <pre> {newsletterStandardLoading ? "true" : "false"} </pre>
+          <pre> {currentAction} </pre>
 
           <TableCard
             //title="Revenue last weeks"

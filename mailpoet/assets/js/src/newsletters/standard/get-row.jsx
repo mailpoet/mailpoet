@@ -6,6 +6,7 @@ import { Statistics } from 'newsletters/listings/statistics.jsx';
 import { SegmentTags, FilterSegmentTag } from '../../common/tag/tags';
 import { ErrorBoundary  } from '../../common';
 import { Button, DropdownMenu } from '@wordpress/components';
+import { moreVertical } from '@wordpress/icons';
 
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
@@ -40,7 +41,8 @@ const confirmEdit = (newsletter) => {
 };
 
 
-export function getRow(newsletter, meta) {
+export function getRow(newsletter, meta, onSelect) {
+  const tab = "active"
   const subject = newsletter.queue.newsletter_rendered_subject || newsletter.subject;
   const rowClasses = classnames(
     'manage-column',
@@ -48,6 +50,48 @@ export function getRow(newsletter, meta) {
     'has-row-actions',
   );
 
+
+  const menuItems =
+  tab !== 'trash'
+    ? [
+        {
+          key: 'duplicate',
+          control: {
+            title: __('Duplicate', 'mailpoet'),
+            icon: null,
+            onClick: () => {
+               console.log(newsletter)
+              //void duplicateDynamicSegment(newsletter);
+            },
+          },
+        },
+        {
+          key: 'trash',
+          control: {
+            title: __('Move to trash', 'mailpoet'),
+            icon: null,
+            onClick: () => onSelect('trash', newsletter),
+          },
+        },
+      ]
+    : [
+        {
+          key: 'restore',
+          control: {
+            title: __('Restore', 'mailpoet'),
+            icon: null,
+            onClick: () => onSelect('restore', newsletter),
+          },
+        },
+        {
+          key: 'delete',
+          control: {
+            title: __('Delete permanently', 'mailpoet'),
+            icon: null,
+            onClick: () => onSelect('delete', newsletter),
+          },
+        },
+      ];
 
     return [
       {
@@ -147,7 +191,13 @@ export function getRow(newsletter, meta) {
               >
                 {__('Edit', 'mailpoet')}
               </Button>
-          
+              <DropdownMenu
+                className="mailpoet-listing-more-button"
+                label={__('More', 'mailpoet')}
+                icon={moreVertical}
+                controls={menuItems.map(({ control }) => control)}
+                popoverProps={{ position: 'bottom left' }}
+            />
           </div>
         ),
       }
