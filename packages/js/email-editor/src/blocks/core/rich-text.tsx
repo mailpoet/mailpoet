@@ -2,13 +2,14 @@ import { registerFormatType, unregisterFormatType } from '@wordpress/rich-text';
 import { __ } from '@wordpress/i18n';
 import { BlockControls } from '@wordpress/block-editor';
 import { ToolbarButton, ToolbarGroup } from '@wordpress/components';
-import { storeName } from '../../store';
 import { useSelect, useDispatch } from '@wordpress/data';
 import {
 	createTextToHtmlMap,
 	getCursorPosition,
 	isMatchingComment,
 } from '../../components/personalization-tags/rich-text-utils';
+import { PersonalizationTagsModal } from '../../components/personalization-tags/personalization-tags-modal';
+import { useState } from '@wordpress/element';
 
 /**
  * Disable Rich text formats we currently cannot support
@@ -36,8 +37,7 @@ type Props = {
  * @param root0.contentRef
  */
 function PersonalizationTagsButton( { contentRef }: Props ) {
-	const { togglePersonalizationTagsModal } = useDispatch( storeName );
-
+	const [ isModalOpened, setIsModalOpened ] = useState( false );
 	const selectedBlockId = useSelect( ( select ) =>
 		select( 'core/block-editor' ).getSelectedBlockClientId()
 	);
@@ -87,11 +87,15 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 				<ToolbarButton
 					icon="shortcode"
 					title={ __( 'Personalization Tags', 'mailpoet' ) }
-					onClick={ () => {
-						togglePersonalizationTagsModal( true, {
-							onInsert: handleInsert,
-						} );
+					onClick={ () => setIsModalOpened( true ) }
+				/>
+				<PersonalizationTagsModal
+					isOpened={ isModalOpened }
+					onInsert={ ( value ) => {
+						handleInsert( value );
+						setIsModalOpened( false );
 					} }
+					closeCallback={ () => setIsModalOpened( false ) }
 				/>
 			</ToolbarGroup>
 		</BlockControls>

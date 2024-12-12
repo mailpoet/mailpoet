@@ -1,22 +1,16 @@
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { PersonalizationTag, storeName } from '../../store';
-import { useDispatch, useSelect } from '@wordpress/data';
+import { PersonalizationTag } from '../../store';
 
 const CategorySection = ( {
 	groupedTags,
 	activeCategory,
+	onInsert,
 }: {
 	groupedTags: Record< string, PersonalizationTag[] >;
 	activeCategory: string | null;
+	onInsert: ( tag: string ) => void;
 } ) => {
-	const { togglePersonalizationTagsModal } = useDispatch( storeName );
-
-	const { onInsert } = useSelect(
-		( select ) => select( storeName ).getPersonalizationTagsState(),
-		[]
-	);
-
 	const categoriesToRender: [ string, PersonalizationTag[] ][] =
 		activeCategory === null
 			? Object.entries( groupedTags ) // Render all categories
@@ -46,9 +40,6 @@ const CategorySection = ( {
 											if ( onInsert ) {
 												onInsert( item.token );
 											}
-											togglePersonalizationTagsModal(
-												false
-											);
 										} }
 									>
 										{ __( 'Insert' ) }

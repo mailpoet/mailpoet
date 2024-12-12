@@ -201,9 +201,7 @@ export type State = {
 		sendingPreviewStatus: SendingPreviewStatus | null;
 	};
 	personalizationTags: {
-		isModalOpened: boolean;
 		list: PersonalizationTag[];
-		onInsert: ( ( value: string ) => void ) | null;
 		isFetching: boolean;
 	};
 };

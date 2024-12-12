@@ -16,6 +16,7 @@ import {
 	getCursorPosition,
 	isMatchingComment,
 } from '../personalization-tags/rich-text-utils';
+import { PersonalizationTagsModal } from '../personalization-tags/personalization-tags-modal';
 
 const previewTextMaxLength = 150;
 const previewTextRecommendedLength = 80;
@@ -38,36 +39,33 @@ export function DetailsPanel() {
 		'mailpoet_data'
 	);
 
-	const { togglePersonalizationTagsModal, updateEmailMailPoetProperty } =
-		useDispatch( storeName );
-	const [ activeRichText, setActiveRichText ] = useState( null );
+	const { updateEmailMailPoetProperty } = useDispatch( storeName );
+
 	const [ selectionRange, setSelectionRange ] = useState( null );
+	const [ subjectModalIsOpened, setSubjectModalIsOpened ] = useState( false );
+	const [ preheaderModalIsOpened, setPreheaderModalIsOpened ] =
+		useState( false );
 
 	const subjectRef = useRef( null );
 	const preheaderRef = useRef( null );
 
-	const handleInsertPersonalizationTag = async ( value ) => {
-		if ( ! activeRichText || ! selectionRange ) {
-			return;
-		}
-
-		const ref = activeRichText === 'subject' ? subjectRef : preheaderRef;
-		if ( ! ref ) {
-			return;
-		}
-
+	const handleInsertPersonalizationTag = async ( value, activeRichText ) => {
 		// Retrieve the current value of the active RichText
 		const currentValue =
 			activeRichText === 'subject'
 				? mailpoetEmailData?.subject ?? ''
 				: mailpoetEmailData?.preheader ?? '';
 
+		const ref = activeRichText === 'subject' ? subjectRef : preheaderRef;
+		if ( ! ref ) {
+			return;
+		}
+
 		// Generate text-to-HTML mapping
 		const { mapping } = createTextToHtmlMap( currentValue );
-
 		// Ensure selection range is within bounds
-		const start = selectionRange.start;
-		const end = selectionRange.end;
+		const start = selectionRange?.start ?? currentValue.length;
+		const end = selectionRange?.end ?? currentValue.length;
 
 		// Default values for starting and ending indexes.
 		let htmlStart = start;
@@ -124,10 +122,7 @@ export function DetailsPanel() {
 			<span>{ __( 'Subject', 'mailpoet' ) }</span>
 			<PersonalizationTagsButton
 				onClick={ () => {
-					setActiveRichText( 'subject' );
-					togglePersonalizationTagsModal( true, {
-						onInsert: handleInsertPersonalizationTag,
-					} );
+					setSubjectModalIsOpened( true );
 				} }
 			/>
 			<ExternalLink href="https://kb.mailpoet.com/article/215-personalize-newsletter-with-shortcodes#list">
@@ -163,10 +158,7 @@ export function DetailsPanel() {
 			<span>{ __( 'Preview text', 'mailpoet' ) }</span>
 			<PersonalizationTagsButton
 				onClick={ () => {
-					setActiveRichText( 'preheader' );
-					togglePersonalizationTagsModal( true, {
-						onInsert: handleInsertPersonalizationTag,
-					} );
+					setPreheaderModalIsOpened( true );
 				} }
 			/>
 			<span
@@ -196,6 +188,14 @@ export function DetailsPanel() {
 				className="mailpoet-settings-panel__subject"
 				help={ subjectHelp }
 			>
+				<PersonalizationTagsModal
+					isOpened={ subjectModalIsOpened }
+					onInsert={ ( value ) => {
+						handleInsertPersonalizationTag( value, 'subject' );
+						setSubjectModalIsOpened( false );
+					} }
+					closeCallback={ () => setSubjectModalIsOpened( false ) }
+				/>
 				<RichText
 					ref={ subjectRef }
 					className="mailpoet-settings-panel__richtext"
@@ -204,7 +204,6 @@ export function DetailsPanel() {
 						'mailpoet'
 					) }
 					onFocus={ () => {
-						setActiveRichText( 'subject' );
 						setSelectionRange(
 							getCursorPosition(
 								subjectRef,
@@ -213,7 +212,6 @@ export function DetailsPanel() {
 						);
 					} }
 					onKeyUp={ () => {
-						setActiveRichText( 'subject' );
 						setSelectionRange(
 							getCursorPosition(
 								subjectRef,
@@ -222,7 +220,6 @@ export function DetailsPanel() {
 						);
 					} }
 					onClick={ () => {
-						setActiveRichText( 'subject' );
 						setSelectionRange(
 							getCursorPosition(
 								subjectRef,
@@ -244,6 +241,14 @@ export function DetailsPanel() {
 				className="mailpoet-settings-panel__preview-text"
 				help={ preheaderHelp }
 			>
+				<PersonalizationTagsModal
+					isOpened={ preheaderModalIsOpened }
+					onInsert={ ( value ) => {
+						handleInsertPersonalizationTag( value, 'preheader' );
+						setPreheaderModalIsOpened( false );
+					} }
+					closeCallback={ () => setPreheaderModalIsOpened( false ) }
+				/>
 				<RichText
 					ref={ preheaderRef }
 					className="mailpoet-settings-panel__richtext"
@@ -252,7 +257,6 @@ export function DetailsPanel() {
 						'mailpoet'
 					) }
 					onFocus={ () => {
-						setActiveRichText( 'preheader' );
 						setSelectionRange(
 							getCursorPosition(
 								preheaderRef,
@@ -261,7 +265,6 @@ export function DetailsPanel() {
 						);
 					} }
 					onKeyUp={ () => {
-						setActiveRichText( 'preheader' );
 						setSelectionRange(
 							getCursorPosition(
 								preheaderRef,
@@ -270,7 +273,6 @@ export function DetailsPanel() {
 						);
 					} }
 					onClick={ () => {
-						setActiveRichText( 'preheader' );
 						setSelectionRange(
 							getCursorPosition(
 								preheaderRef,

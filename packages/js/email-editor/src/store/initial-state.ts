@@ -39,9 +39,7 @@ export function getInitialState(): State {
 			sendingPreviewStatus: null,
 		},
 		personalizationTags: {
-			isModalOpened: false,
 			list: [],
-			onInsert: null,
 			isFetching: false,
 		},
 	};
