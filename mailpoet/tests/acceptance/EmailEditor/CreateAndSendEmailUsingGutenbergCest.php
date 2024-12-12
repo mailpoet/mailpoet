@@ -52,7 +52,7 @@ class CreateAndSendEmailUsingGutenbergCest {
     $i->click('[aria-label="Change campaign name"]');
     $i->click('Email', '.editor-sidebar__panel-tabs');
     $i->fillField('[data-automation-id="email_subject"]', 'My New Subject');
-    $i->fillField('[data-automation-id="email_preview_text"]', 'My New Preview Text');
+    $i->fillField('[data-automation-id="email_preheader"]', 'My New Preview Text');
 
     $i->wantTo('Send an email and verify it was delivered');
     $i->click('Save Draft');

@@ -1,7 +1,7 @@
 import { Modal, SearchControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { PersonalizationTag, storeName } from '../../store';
-import { select } from '@wordpress/data';
+import { useSelect } from '@wordpress/data';
 import { external, Icon } from '@wordpress/icons';
 import './index.scss';
 import { useState } from '@wordpress/element';
@@ -12,11 +12,14 @@ const PersonalizationTagsModal = ( { onInsert, isOpened, closeCallback } ) => {
 	const [ activeCategory, setActiveCategory ] = useState( null );
 	const [ searchQuery, setSearchQuery ] = useState( '' );
 
+	const list = useSelect(
+		( select ) => select( storeName ).getPersonalizationTagsList(),
+		[]
+	);
+
 	if ( ! isOpened ) {
 		return null;
 	}
-
-	const list = select( storeName ).getPersonalizationTagsList();
 
 	const groupedTags: Record< string, PersonalizationTag[] > = list.reduce(
 		( groups, item ) => {
