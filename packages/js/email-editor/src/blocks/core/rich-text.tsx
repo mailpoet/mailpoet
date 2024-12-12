@@ -9,7 +9,7 @@ import {
 	isMatchingComment,
 } from '../../components/personalization-tags/rich-text-utils';
 import { PersonalizationTagsModal } from '../../components/personalization-tags/personalization-tags-modal';
-import { useState } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 
 /**
  * Disable Rich text formats we currently cannot support
@@ -52,34 +52,39 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 		return attributes?.content?.originalHTML || attributes?.content || ''; // After first saving the content does not have property originalHTML, so we need to check for content as well
 	} );
 
-	const handleInsert = ( tag: string ) => {
-		const selection =
-			contentRef.current.ownerDocument.defaultView.getSelection();
-		if ( ! selection ) {
-			return;
-		}
+	const handleInsert = useCallback(
+		( tag: string ) => {
+			const selection =
+				contentRef.current.ownerDocument.defaultView.getSelection();
+			if ( ! selection ) {
+				return;
+			}
 
-		const range = selection.getRangeAt( 0 );
-		if ( ! range ) {
-			return;
-		}
+			const range = selection.getRangeAt( 0 );
+			if ( ! range ) {
+				return;
+			}
 
-		const { mapping } = createTextToHtmlMap( blockContent );
-		let { start, end } = getCursorPosition( contentRef, blockContent );
+			const { mapping } = createTextToHtmlMap( blockContent );
+			let { start, end } = getCursorPosition( contentRef, blockContent );
 
-		// If indexes are not matching a comment, update them
-		if ( ! isMatchingComment( blockContent, start, end ) ) {
-			start = mapping[ start ] ?? blockContent.length;
-			end = mapping[ end ] ?? blockContent.length;
-		}
+			// If indexes are not matching a comment, update them
+			if ( ! isMatchingComment( blockContent, start, end ) ) {
+				start = mapping[ start ] ?? blockContent.length;
+				end = mapping[ end ] ?? blockContent.length;
+			}
 
-		const updatedContent =
-			blockContent.slice( 0, start ) +
-			`<!--${ tag }-->` +
-			blockContent.slice( end );
+			const updatedContent =
+				blockContent.slice( 0, start ) +
+				`<!--${ tag }-->` +
+				blockContent.slice( end );
 
-		updateBlockAttributes( selectedBlockId, { content: updatedContent } );
-	};
+			updateBlockAttributes( selectedBlockId, {
+				content: updatedContent,
+			} );
+		},
+		[ blockContent, contentRef, selectedBlockId, updateBlockAttributes ]
+	);
 
 	return (
 		<BlockControls>

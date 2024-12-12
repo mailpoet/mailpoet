@@ -1,6 +1,6 @@
 import { BaseControl, Button } from '@wordpress/components';
 import { PersonalizationTagsModal } from './personalization-tags-modal';
-import { useRef, useState } from '@wordpress/element';
+import { useCallback, useRef, useState } from '@wordpress/element';
 import {
 	createTextToHtmlMap,
 	getCursorPosition,
@@ -32,36 +32,44 @@ export function RichTextWithButton( {
 
 	const richTextRef = useRef( null );
 
-	const handleInsertPersonalizationTag = async ( value ) => {
-		// Retrieve the current value of the active RichText
-		const currentValue = mailpoetEmailData[ attributeName ] ?? '';
+	const handleInsertPersonalizationTag = useCallback(
+		( value ) => {
+			// Retrieve the current value of the active RichText
+			const currentValue = mailpoetEmailData[ attributeName ] ?? '';
 
-		// Generate text-to-HTML mapping
-		const { mapping } = createTextToHtmlMap( currentValue );
-		// Ensure selection range is within bounds
-		const start = selectionRange?.start ?? currentValue.length;
-		const end = selectionRange?.end ?? currentValue.length;
+			// Generate text-to-HTML mapping
+			const { mapping } = createTextToHtmlMap( currentValue );
+			// Ensure selection range is within bounds
+			const start = selectionRange?.start ?? currentValue.length;
+			const end = selectionRange?.end ?? currentValue.length;
 
-		// Default values for starting and ending indexes.
-		let htmlStart = start;
-		let htmlEnd = end;
-		// If indexes are not matching a comment, update them
-		if ( ! isMatchingComment( currentValue, start, end ) ) {
-			htmlStart = mapping[ start ] ?? currentValue.length;
-			htmlEnd = mapping[ end ] ?? currentValue.length;
-		}
+			// Default values for starting and ending indexes.
+			let htmlStart = start;
+			let htmlEnd = end;
+			// If indexes are not matching a comment, update them
+			if ( ! isMatchingComment( currentValue, start, end ) ) {
+				htmlStart = mapping[ start ] ?? currentValue.length;
+				htmlEnd = mapping[ end ] ?? currentValue.length;
+			}
 
-		// Insert the new tag
-		const updatedValue =
-			currentValue.slice( 0, htmlStart ) +
-			`<!--${ value }-->` +
-			currentValue.slice( htmlEnd );
+			// Insert the new tag
+			const updatedValue =
+				currentValue.slice( 0, htmlStart ) +
+				`<!--${ value }-->` +
+				currentValue.slice( htmlEnd );
 
-		// Update the corresponding property
-		updateEmailMailPoetProperty( attributeName, updatedValue );
+			// Update the corresponding property
+			updateEmailMailPoetProperty( attributeName, updatedValue );
 
-		setSelectionRange( null );
-	};
+			setSelectionRange( null );
+		},
+		[
+			attributeName,
+			mailpoetEmailData,
+			selectionRange,
+			updateEmailMailPoetProperty,
+		]
+	);
 
 	const finalLabel = (
 		<>
@@ -123,7 +131,7 @@ export function RichTextWithButton( {
 					updateEmailMailPoetProperty( attributeName, value )
 				}
 				value={ mailpoetEmailData[ attributeName ] ?? '' }
-				data-automation-id="email_preview_text"
+				data-automation-id={ `email_${ attributeName }` }
 			/>
 		</BaseControl>
 	);
