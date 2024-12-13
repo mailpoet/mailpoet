@@ -25,7 +25,6 @@ use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager;
 use MailPoet\EmailEditor\Engine\Renderer\Renderer;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
-use MailPoet\EmailEditor\Engine\Templates\Utils;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
 use MailPoet\EmailEditor\Engine\User_Theme;
 use MailPoet\EmailEditor\Integrations\Core\Initializer;
@@ -161,12 +160,6 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 		);
 		// End: MailPoet plugin dependencies.
 		$container->set(
-			Utils::class,
-			function () {
-				return new Utils();
-			}
-		);
-		$container->set(
 			Theme_Controller::class,
 			function () {
 				return new Theme_Controller();
@@ -192,8 +185,8 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 		);
 		$container->set(
 			Templates::class,
-			function ( $container ) {
-				return new Templates( $container->get( Utils::class ) );
+			function () {
+				return new Templates();
 			}
 		);
 		$container->set(
