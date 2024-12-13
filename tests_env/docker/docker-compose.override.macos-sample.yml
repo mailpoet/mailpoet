@@ -5,7 +5,7 @@ services:
 
   # for M1 Macs
   chrome:
-    image: seleniarm/standalone-chromium:4.0.0-20211213
+    image: seleniarm/standalone-chromium:4.20.0-20240427
 
   codeception_acceptance:
     volumes:
