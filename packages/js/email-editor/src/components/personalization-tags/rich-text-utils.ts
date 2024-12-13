@@ -1,8 +1,9 @@
 import * as React from '@wordpress/element';
 
 /**
- * Maps HTML indices to corresponding stored value indices in RichText content.
+ * Maps indices of characters in HTML representation of the value to corresponding characters of stored value in RichText content. The stored value doesn't contain tags.
  * This function skips over HTML tags, only mapping visible text content.
+ *
  *
  * @param {string} html - The HTML string to map. Example: 'Hello <span contenteditable="false" data-rich-text-comment="[user/firstname]"><span>[user/firstname]</span></span>!'
  * @return {number[]} - A mapping array where each HTML index points to its corresponding stored value index.

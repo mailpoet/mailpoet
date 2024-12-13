@@ -33,15 +33,12 @@ export function RichTextWithButton( {
 	const richTextRef = useRef( null );
 
 	const handleInsertPersonalizationTag = useCallback(
-		( value ) => {
-			// Retrieve the current value of the active RichText
-			const currentValue = mailpoetEmailData[ attributeName ] ?? '';
-
+		( tagName, currentValue, currentSelectionRange ) => {
 			// Generate text-to-HTML mapping
 			const { mapping } = createTextToHtmlMap( currentValue );
 			// Ensure selection range is within bounds
-			const start = selectionRange?.start ?? currentValue.length;
-			const end = selectionRange?.end ?? currentValue.length;
+			const start = currentSelectionRange?.start ?? currentValue.length;
+			const end = currentSelectionRange?.end ?? currentValue.length;
 
 			// Default values for starting and ending indexes.
 			let htmlStart = start;
@@ -55,7 +52,7 @@ export function RichTextWithButton( {
 			// Insert the new tag
 			const updatedValue =
 				currentValue.slice( 0, htmlStart ) +
-				`<!--${ value }-->` +
+				`<!--${ tagName }-->` +
 				currentValue.slice( htmlEnd );
 
 			// Update the corresponding property
@@ -63,12 +60,7 @@ export function RichTextWithButton( {
 
 			setSelectionRange( null );
 		},
-		[
-			attributeName,
-			mailpoetEmailData,
-			selectionRange,
-			updateEmailMailPoetProperty,
-		]
+		[ attributeName, updateEmailMailPoetProperty ]
 	);
 
 	const finalLabel = (
@@ -94,7 +86,11 @@ export function RichTextWithButton( {
 			<PersonalizationTagsModal
 				isOpened={ isModalOpened }
 				onInsert={ ( value ) => {
-					handleInsertPersonalizationTag( value );
+					handleInsertPersonalizationTag(
+						value,
+						mailpoetEmailData[ attributeName ] ?? '',
+						selectionRange
+					);
 					setIsModalOpened( false );
 				} }
 				closeCallback={ () => setIsModalOpened( false ) }
