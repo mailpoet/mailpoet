@@ -248,10 +248,9 @@ export const getEmailTemplates = createRegistrySelector(
 			} )
 			// We still need to filter the templates because, in some cases, the API also returns custom templates
 			// ignoring the post_type filter in the query
-			?.filter(
-				( template ) =>
-					// @ts-expect-error Missing property in type
-					template.plugin === 'mailpoet'
+			?.filter( ( template ) =>
+				// @ts-expect-error Missing property in type
+				template.post_types.includes( 'mailpoet_email' )
 			)
 );
 

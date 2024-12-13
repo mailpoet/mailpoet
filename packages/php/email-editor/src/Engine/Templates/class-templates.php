@@ -8,6 +8,7 @@
 declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Templates;
 
+use MailPoet\EmailEditor\Validator\Builder;
 use WP_Block_Template;
 
 /**
@@ -44,6 +45,7 @@ class Templates {
 	 */
 	public function initialize(): void {
 		$this->register_templates();
+		$this->register_post_types_to_api();
 	}
 
 	/**
@@ -85,5 +87,42 @@ class Templates {
 				)
 			);
 		}
+	}
+
+	/**
+	 * Register post_types property to the templates rest api response.
+	 *
+	 * There is a PR that adds the property into the core https://github.com/WordPress/wordpress-develop/pull/7530
+	 * Until it is merged, we need to add it manually.
+	 */
+	public function register_post_types_to_api(): void {
+		$controller = new \WP_REST_Templates_Controller( 'wp_template' );
+		$schema     = $controller->get_item_schema();
+		// Future compatibility check if the post_types property is already registered.
+		if ( isset( $schema['properties']['post_types'] ) ) {
+			return;
+		}
+		register_rest_field(
+			'wp_template',
+			'post_types',
+			array(
+				'get_callback'    => array( $this, 'get_post_types' ),
+				'update_callback' => null,
+				'schema'          => Builder::string()->to_array(),
+			)
+		);
+	}
+
+	/**
+	 * This is a callback function for adding post_types property to templates rest api response.
+	 *
+	 * @param array $response_object The rest API response object.
+	 * @return array
+	 */
+	public function get_post_types( $response_object ): array {
+		if ( isset( $response_object['plugin'] ) && $response_object['plugin'] !== $this->template_prefix ) {
+			return array();
+		}
+		return array( $this->post_type );
 	}
 }
