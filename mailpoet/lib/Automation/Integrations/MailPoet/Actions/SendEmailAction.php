@@ -296,7 +296,8 @@ class SendEmailAction implements Action {
 
   private function isOptInRequired(NewsletterEntity $newsletter, SubscriberEntity $subscriber): bool {
     $subscriberStatus = $subscriber->getStatus();
-    return ($newsletter->getType() !== NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL && $subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED);
+    if ($newsletter->getType() === NewsletterEntity::TYPE_AUTOMATION_TRANSACTIONAL) return false;
+    return $subscriberStatus !== SubscriberEntity::STATUS_SUBSCRIBED;
   }
 
   /** @param mixed $data */
