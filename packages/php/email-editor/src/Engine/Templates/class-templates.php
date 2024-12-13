@@ -51,10 +51,12 @@ class Templates {
 	/**
 	 * Get a block template by ID.
 	 *
-	 * @param string $template_id The template ID.
+	 * @param string $template_slug The template slug.
 	 * @return WP_Block_Template|null
 	 */
-	public function get_block_template( $template_id ) {
+	public function get_block_template( $template_slug ) {
+		// Template id is always prefixed by active theme and get_stylesheet returns the active theme slug.
+		$template_id = get_stylesheet() . '//' . $template_slug;
 		return get_block_template( $template_id );
 	}
 
