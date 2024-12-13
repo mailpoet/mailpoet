@@ -745,3 +745,611 @@ state = {
   console.log(standard_newsletters)
 
 
+duplicate_response = {
+  "meta": {
+      "count": 1
+  },
+  "data": {
+      "id": "24",
+      "hash": "a408e09eaf93",
+      "subject": "Copy of Copy of Subject",
+      "type": "standard",
+      "sender_address": "rodhom@localhost.test",
+      "sender_name": "admin",
+      "status": "draft",
+      "reply_to_address": "rodhom@gmail.com",
+      "reply_to_name": "admin",
+      "preheader": "",
+      "body": {
+          "content": {
+              "type": "container",
+              "columnLayout": false,
+              "orientation": "vertical",
+              "image": {
+                  "src": null,
+                  "display": "scale"
+              },
+              "styles": {
+                  "block": {
+                      "backgroundColor": "transparent"
+                  }
+              },
+              "blocks": [
+                  {
+                      "type": "container",
+                      "columnLayout": false,
+                      "orientation": "horizontal",
+                      "image": {
+                          "src": null,
+                          "display": "scale"
+                      },
+                      "styles": {
+                          "block": {
+                              "backgroundColor": "#ffffff"
+                          }
+                      },
+                      "blocks": [
+                          {
+                              "type": "container",
+                              "columnLayout": false,
+                              "orientation": "vertical",
+                              "image": {
+                                  "src": null,
+                                  "display": "scale"
+                              },
+                              "styles": {
+                                  "block": {
+                                      "backgroundColor": "transparent"
+                                  }
+                              },
+                              "blocks": [
+                                  {
+                                      "type": "spacer",
+                                      "styles": {
+                                          "block": {
+                                              "backgroundColor": "transparent",
+                                              "height": "30px"
+                                          }
+                                      }
+                                  },
+                                  {
+                                      "type": "image",
+                                      "link": "",
+                                      "src": "http:\/\/localhost:8002\/wp-content\/plugins\/mailpoet\/assets\/img\/blank_templates\/fake-logo.png",
+                                      "alt": "Fake logo",
+                                      "fullWidth": false,
+                                      "width": "598px",
+                                      "height": "71px",
+                                      "styles": {
+                                          "block": {
+                                              "textAlign": "center"
+                                          }
+                                      }
+                                  },
+                                  {
+                                      "type": "text",
+                                      "text": "<p style=\"text-align: left\">Hi [subscriber:firstname | default:subscriber],<\/p>\n<p style=\"text-align: left\"><\/p>\n<p style=\"text-align: left\">In MailPoet, you can write emails in plain text, just like in a regular email. This can make your email newsletters more personal and attention-grabbing.<\/p>\n<p style=\"text-align: left\"><\/p>\n<p style=\"text-align: left\">Is this too simple? You can still style your text with basic formatting, like <strong>bold<\/strong> or <em>italics.<\/em><\/p>\n<p style=\"text-align: left\"><\/p>\n<p style=\"text-align: left\">Finally, you can also add a call-to-action button between 2 blocks of text, like this:<\/p>"
+                                  }
+                              ]
+                          }
+                      ]
+                  },
+                  {
+                      "type": "container",
+                      "columnLayout": false,
+                      "orientation": "horizontal",
+                      "image": {
+                          "src": null,
+                          "display": "scale"
+                      },
+                      "styles": {
+                          "block": {
+                              "backgroundColor": "#ffffff"
+                          }
+                      },
+                      "blocks": [
+                          {
+                              "type": "container",
+                              "columnLayout": false,
+                              "orientation": "vertical",
+                              "image": {
+                                  "src": null,
+                                  "display": "scale"
+                              },
+                              "styles": {
+                                  "block": {
+                                      "backgroundColor": "transparent"
+                                  }
+                              },
+                              "blocks": [
+                                  {
+                                      "type": "spacer",
+                                      "styles": {
+                                          "block": {
+                                              "backgroundColor": "transparent",
+                                              "height": "23px"
+                                          }
+                                      }
+                                  },
+                                  {
+                                      "type": "button",
+                                      "text": "It's time to take action!",
+                                      "url": "",
+                                      "styles": {
+                                          "block": {
+                                              "backgroundColor": "#2ea1cd",
+                                              "borderColor": "#0074a2",
+                                              "borderWidth": "1px",
+                                              "borderRadius": "5px",
+                                              "borderStyle": "solid",
+                                              "width": "288px",
+                                              "lineHeight": "40px",
+                                              "fontColor": "#ffffff",
+                                              "fontFamily": "Verdana",
+                                              "fontSize": "16px",
+                                              "fontWeight": "normal",
+                                              "textAlign": "left"
+                                          }
+                                      }
+                                  },
+                                  {
+                                      "type": "text",
+                                      "text": "<p>Thanks for reading. See you soon!<\/p>\n<p>&nbsp;<\/p>\n<p><strong><em>The MailPoet Team<\/em><\/strong><\/p>"
+                                  },
+                                  {
+                                      "type": "footer",
+                                      "text": "<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe<\/a> | <a href=\"[link:subscription_manage_url]\">Manage your subscription<\/a><br \/>Add your postal address here!<\/p>",
+                                      "styles": {
+                                          "block": {
+                                              "backgroundColor": "transparent"
+                                          },
+                                          "text": {
+                                              "fontColor": "#222222",
+                                              "fontFamily": "Arial",
+                                              "fontSize": "12px",
+                                              "textAlign": "left"
+                                          },
+                                          "link": {
+                                              "fontColor": "#6cb7d4",
+                                              "textDecoration": "none"
+                                          }
+                                      }
+                                  }
+                              ]
+                          }
+                      ]
+                  }
+              ]
+          },
+          "globalStyles": {
+              "text": {
+                  "fontColor": "#000000",
+                  "fontFamily": "Arial",
+                  "fontSize": "15px",
+                  "lineHeight": "1.6"
+              },
+              "h1": {
+                  "fontColor": "#111111",
+                  "fontFamily": "Trebuchet MS",
+                  "fontSize": "30px",
+                  "lineHeight": "1.6"
+              },
+              "h2": {
+                  "fontColor": "#222222",
+                  "fontFamily": "Trebuchet MS",
+                  "fontSize": "24px",
+                  "lineHeight": "1.6"
+              },
+              "h3": {
+                  "fontColor": "#333333",
+                  "fontFamily": "Trebuchet MS",
+                  "fontSize": "22px",
+                  "lineHeight": "1.6"
+              },
+              "link": {
+                  "fontColor": "#21759B",
+                  "textDecoration": "underline"
+              },
+              "wrapper": {
+                  "backgroundColor": "#ffffff"
+              },
+              "body": {
+                  "backgroundColor": "#ffffff"
+              },
+              "woocommerce": {
+                  "headingFontFamily": "Arial"
+              }
+          },
+          "blockDefaults": {
+              "abandonedCartContent": {
+                  "amount": "2",
+                  "withLayout": true,
+                  "contentType": "product",
+                  "postStatus": "publish",
+                  "inclusionType": "include",
+                  "displayType": "excerpt",
+                  "titleFormat": "h1",
+                  "titleAlignment": "left",
+                  "titleIsLink": false,
+                  "imageFullWidth": false,
+                  "featuredImagePosition": "alternate",
+                  "pricePosition": "below",
+                  "readMoreType": "none",
+                  "readMoreText": "",
+                  "readMoreButton": [],
+                  "sortBy": "newest",
+                  "showDivider": true,
+                  "divider": {
+                      "context": "abandonedCartContent.divider",
+                      "styles": {
+                          "block": {
+                              "backgroundColor": "transparent",
+                              "padding": "13px",
+                              "borderStyle": "solid",
+                              "borderWidth": "3px",
+                              "borderColor": "#aaaaaa"
+                          }
+                      }
+                  },
+                  "backgroundColor": "#ffffff",
+                  "backgroundColorAlternate": "#eeeeee"
+              },
+              "automatedLatestContent": {
+                  "amount": "5",
+                  "withLayout": false,
+                  "contentType": "post",
+                  "inclusionType": "include",
+                  "displayType": "excerpt",
+                  "titleFormat": "h1",
+                  "titleAlignment": "left",
+                  "titleIsLink": false,
+                  "imageFullWidth": false,
+                  "featuredImagePosition": "belowTitle",
+                  "showAuthor": "no",
+                  "authorPrecededBy": "Author:",
+                  "showCategories": "no",
+                  "categoriesPrecededBy": "Categories:",
+                  "readMoreType": "button",
+                  "readMoreText": "Read more",
+                  "readMoreButton": {
+                      "text": "Read more",
+                      "url": "[postLink]",
+                      "context": "automatedLatestContent.readMoreButton",
+                      "styles": {
+                          "block": {
+                              "backgroundColor": "#2ea1cd",
+                              "borderColor": "#0074a2",
+                              "borderWidth": "1px",
+                              "borderRadius": "5px",
+                              "borderStyle": "solid",
+                              "width": "180px",
+                              "lineHeight": "40px",
+                              "fontColor": "#ffffff",
+                              "fontFamily": "Verdana",
+                              "fontSize": "18px",
+                              "fontWeight": "normal",
+                              "textAlign": "center"
+                          }
+                      }
+                  },
+                  "sortBy": "newest",
+                  "showDivider": true,
+                  "divider": {
+                      "context": "automatedLatestContent.divider",
+                      "styles": {
+                          "block": {
+                              "backgroundColor": "transparent",
+                              "padding": "13px",
+                              "borderStyle": "solid",
+                              "borderWidth": "3px",
+                              "borderColor": "#aaaaaa"
+                          }
+                      }
+                  },
+                  "backgroundColor": "#ffffff",
+                  "backgroundColorAlternate": "#eeeeee"
+              },
+              "automatedLatestContentLayout": {
+                  "amount": "5",
+                  "withLayout": true,
+                  "contentType": "post",
+                  "inclusionType": "include",
+                  "displayType": "excerpt",
+                  "titleFormat": "h1",
+                  "titleAlignment": "left",
+                  "titleIsLink": false,
+                  "imageFullWidth": false,
+                  "featuredImagePosition": "alternate",
+                  "showAuthor": "no",
+                  "authorPrecededBy": "Author:",
+                  "showCategories": "no",
+                  "categoriesPrecededBy": "Categories:",
+                  "readMoreType": "button",
+                  "readMoreText": "Read more",
+                  "readMoreButton": {
+                      "text": "Read more",
+                      "url": "[postLink]",
+                      "context": "automatedLatestContentLayout.readMoreButton",
+                      "styles": {
+                          "block": {
+                              "backgroundColor": "#2ea1cd",
+                              "borderColor": "#0074a2",
+                              "borderWidth": "1px",
+                              "borderRadius": "5px",
+                              "borderStyle": "solid",
+                              "width": "180px",
+                              "lineHeight": "40px",
+                              "fontColor": "#ffffff",
+                              "fontFamily": "Verdana",
+                              "fontSize": "18px",
+                              "fontWeight": "normal",
+                              "textAlign": "center"
+                          }
+                      }
+                  },
+                  "sortBy": "newest",
+                  "showDivider": true,
+                  "divider": {
+                      "context": "automatedLatestContentLayout.divider",
+                      "styles": {
+                          "block": {
+                              "backgroundColor": "transparent",
+                              "padding": "13px",
+                              "borderStyle": "solid",
+                              "borderWidth": "3px",
+                              "borderColor": "#aaaaaa"
+                          }
+                      }
+                  },
+                  "backgroundColor": "#ffffff",
+                  "backgroundColorAlternate": "#eeeeee"
+              },
+              "button": {
+                  "text": "Button",
+                  "url": "",
+                  "styles": {
+                      "block": {
+                          "backgroundColor": "#2ea1cd",
+                          "borderColor": "#0074a2",
+                          "borderWidth": "1px",
+                          "borderRadius": "5px",
+                          "borderStyle": "solid",
+                          "width": "180px",
+                          "lineHeight": "40px",
+                          "fontColor": "#ffffff",
+                          "fontFamily": "Verdana",
+                          "fontSize": "18px",
+                          "fontWeight": "normal",
+                          "textAlign": "center"
+                      }
+                  }
+              },
+              "container": [],
+              "divider": {
+                  "styles": {
+                      "block": {
+                          "backgroundColor": "transparent",
+                          "padding": "13px",
+                          "borderStyle": "solid",
+                          "borderWidth": "3px",
+                          "borderColor": "#aaaaaa"
+                      }
+                  }
+              },
+              "footer": {
+                  "text": "<p><a href=\"[link:subscription_unsubscribe_url]\">Unsubscribe<\/a> | <a href=\"[link:subscription_manage_url]\">Manage subscription<\/a><br \/>Add your postal address here!<\/p>",
+                  "styles": {
+                      "block": {
+                          "backgroundColor": "transparent"
+                      },
+                      "text": {
+                          "fontColor": "#222222",
+                          "fontFamily": "Arial",
+                          "fontSize": "12px",
+                          "textAlign": "center"
+                      },
+                      "link": {
+                          "fontColor": "#6cb7d4",
+                          "textDecoration": "none"
+                      }
+                  }
+              },
+              "posts": {
+                  "amount": "10",
+                  "withLayout": true,
+                  "contentType": "post",
+                  "postStatus": "publish",
+                  "inclusionType": "include",
+                  "displayType": "excerpt",
+                  "titleFormat": "h1",
+                  "titleAlignment": "left",
+                  "titleIsLink": false,
+                  "imageFullWidth": false,
+                  "featuredImagePosition": "alternate",
+                  "showAuthor": "no",
+                  "authorPrecededBy": "Author:",
+                  "showCategories": "no",
+                  "categoriesPrecededBy": "Categories:",
+                  "readMoreType": "link",
+                  "readMoreText": "Read more",
+                  "readMoreButton": {
+                      "text": "Read more",
+                      "url": "[postLink]",
+                      "context": "posts.readMoreButton",
+                      "styles": {
+                          "block": {
+                              "backgroundColor": "#2ea1cd",
+                              "borderColor": "#0074a2",
+                              "borderWidth": "1px",
+                              "borderRadius": "5px",
+                              "borderStyle": "solid",
+                              "width": "180px",
+                              "lineHeight": "40px",
+                              "fontColor": "#ffffff",
+                              "fontFamily": "Verdana",
+                              "fontSize": "18px",
+                              "fontWeight": "normal",
+                              "textAlign": "center"
+                          }
+                      }
+                  },
+                  "sortBy": "newest",
+                  "showDivider": true,
+                  "divider": {
+                      "context": "posts.divider",
+                      "styles": {
+                          "block": {
+                              "backgroundColor": "transparent",
+                              "padding": "13px",
+                              "borderStyle": "solid",
+                              "borderWidth": "3px",
+                              "borderColor": "#aaaaaa"
+                          }
+                      }
+                  },
+                  "backgroundColor": "#ffffff",
+                  "backgroundColorAlternate": "#eeeeee"
+              },
+              "products": {
+                  "amount": "10",
+                  "withLayout": true,
+                  "contentType": "product",
+                  "postStatus": "publish",
+                  "inclusionType": "include",
+                  "displayType": "excerpt",
+                  "titleFormat": "h1",
+                  "titleAlignment": "left",
+                  "titleIsLink": false,
+                  "imageFullWidth": false,
+                  "featuredImagePosition": "alternate",
+                  "pricePosition": "below",
+                  "readMoreType": "link",
+                  "readMoreText": "Buy now",
+                  "readMoreButton": {
+                      "text": "Buy now",
+                      "url": "[postLink]",
+                      "context": "posts.readMoreButton",
+                      "styles": {
+                          "block": {
+                              "backgroundColor": "#2ea1cd",
+                              "borderColor": "#0074a2",
+                              "borderWidth": "1px",
+                              "borderRadius": "5px",
+                              "borderStyle": "solid",
+                              "width": "180px",
+                              "lineHeight": "40px",
+                              "fontColor": "#ffffff",
+                              "fontFamily": "Verdana",
+                              "fontSize": "18px",
+                              "fontWeight": "normal",
+                              "textAlign": "center"
+                          }
+                      }
+                  },
+                  "sortBy": "newest",
+                  "showDivider": true,
+                  "divider": {
+                      "context": "posts.divider",
+                      "styles": {
+                          "block": {
+                              "backgroundColor": "transparent",
+                              "padding": "13px",
+                              "borderStyle": "solid",
+                              "borderWidth": "3px",
+                              "borderColor": "#aaaaaa"
+                          }
+                      }
+                  },
+                  "backgroundColor": "#ffffff",
+                  "backgroundColorAlternate": "#eeeeee"
+              },
+              "social": {
+                  "iconSet": "default",
+                  "styles": {
+                      "block": {
+                          "textAlign": "center"
+                      }
+                  },
+                  "icons": [
+                      {
+                          "type": "socialIcon",
+                          "iconType": "facebook",
+                          "link": "http:\/\/www.facebook.com",
+                          "image": "http:\/\/localhost:8002\/wp-content\/plugins\/mailpoet\/assets\/img\/newsletter_editor\/social-icons\/01-social\/Facebook.png",
+                          "height": "32px",
+                          "width": "32px",
+                          "text": "Facebook"
+                      },
+                      {
+                          "type": "socialIcon",
+                          "iconType": "twitter",
+                          "link": "http:\/\/www.twitter.com",
+                          "image": "http:\/\/localhost:8002\/wp-content\/plugins\/mailpoet\/assets\/img\/newsletter_editor\/social-icons\/01-social\/Twitter.png",
+                          "height": "32px",
+                          "width": "32px",
+                          "text": "Twitter"
+                      }
+                  ]
+              },
+              "spacer": {
+                  "styles": {
+                      "block": {
+                          "backgroundColor": "transparent",
+                          "height": "40px"
+                      }
+                  }
+              },
+              "header": {
+                  "text": "<a href=\"[link:newsletter_view_in_browser_url]\">View this in your browser.<\/a>",
+                  "styles": {
+                      "block": {
+                          "backgroundColor": "transparent"
+                      },
+                      "text": {
+                          "fontColor": "#222222",
+                          "fontFamily": "Arial",
+                          "fontSize": "12px",
+                          "textAlign": "center"
+                      },
+                      "link": {
+                          "fontColor": "#6cb7d4",
+                          "textDecoration": "underline"
+                      }
+                  }
+              },
+              "coupon": {
+                  "type": "coupon",
+                  "discountType": null,
+                  "amountMax": null,
+                  "amount": 10,
+                  "expiryDay": 10,
+                  "styles": {
+                      "block": {
+                          "backgroundColor": "#ffffff",
+                          "borderColor": "#000000",
+                          "borderWidth": "1px",
+                          "borderRadius": "5px",
+                          "borderStyle": "solid",
+                          "width": "200px",
+                          "lineHeight": "40px",
+                          "fontColor": "#000000",
+                          "fontFamily": "Verdana",
+                          "fontSize": "18px",
+                          "fontWeight": "normal",
+                          "textAlign": "center"
+                      }
+                  }
+              }
+          }
+      },
+      "sent_at": null,
+      "created_at": "2024-12-13 10:50:56",
+      "updated_at": "2024-12-13 10:50:56",
+      "deleted_at": null,
+      "parent_id": null,
+      "unsubscribe_token": "2ezpjfifpa3ows8",
+      "ga_campaign": "",
+      "wp_post_id": null,
+      "campaign_name": null
+  }
+}

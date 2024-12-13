@@ -60,6 +60,35 @@ const reducer = (state = defaultNewsletterState, action) => {
 		...state,
 		meta: action.response,
 	};
+    case types.DUPLICATE_NEWSLETTER_REQUEST_START:
+      return {
+        ...state,
+        isLoading: { ...state.isLoading, duplication: true },
+      };
+
+    case types.DUPLICATE_NEWSLETTER_REQUEST_SUCCESS:
+      // The duplicated newsletter object should be in action.payload.
+      // You need to determine where it goes. Let's assume that you duplicated a "standard" newsletter:
+      return {
+        ...state,
+        newsletters: {
+          ...state.newsletters,
+          standard: [action.payload, ...state.newsletters.standard],
+        },
+      };
+
+    case types.DUPLICATE_NEWSLETTER_REQUEST_ERROR:
+      return {
+        ...state,
+        errors: [...state.errors, action.payload],
+      };
+
+    case types.DUPLICATE_NEWSLETTER_REQUEST_FINISH:
+      return {
+        ...state,
+        isLoading: { ...state.isLoading, duplication: false },
+      };
+	  	
     default:
       break;
   }

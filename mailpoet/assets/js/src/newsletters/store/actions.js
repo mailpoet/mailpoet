@@ -64,7 +64,7 @@ export function finishReEngagementRequest() {
 export function receiveError( error ) { 
   return {
     type: types.RECEIVE_ERROR,
-    error,
+    error: error,
   };
 }
 
@@ -76,4 +76,22 @@ export function receiveMeta( meta ) {
 }
 
 
+export function startDuplicateRequest() {
+	return {
+		type: types.DUPLICATE_NEWSLETTER_REQUEST_START,
+	};
+}
 
+export function receiveDuplicatedNewsletter(newsletter) {
+	return {
+		type: types.DUPLICATE_NEWSLETTER_REQUEST_SUCCESS,
+		payload: newsletter
+	};
+}
+  
+export function finishDuplicateRequest() {
+	return {
+		type: types.DUPLICATE_NEWSLETTER_REQUEST_FINISH,
+	};
+}
+  

@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { useLocation, useParams } from 'react-router-dom';
 
 import { TableCard } from '@woocommerce/components';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { storeName } from '../store/constants';
 
 import { getRow } from './get-row';
@@ -71,13 +71,15 @@ const columns = [
 
 
 export function StandardTabContent() {
+    const dispatch = useDispatch(); 
+
     const [currentAction, setCurrentAction] = useState(null);
     const [currentSelected, setCurrentSelected] = useState([]);
     const newsletterStandardData = useSelect((select) => select(storeName).getStandardNewsletters(), []);
     const metaData = useSelect((select) => select(storeName).getMeta(), []);
 
     const newsletterStandardLoading = useSelect((select) => select(storeName).getStandardNewsletterLoading(), []);
-    const newsletterStandardRows = newsletterStandardData.map(newsletter =>  getRow(newsletter, metaData, (action, segment) => {
+    const newsletterStandardRows = newsletterStandardData.map(newsletter =>  getRow(newsletter, metaData, dispatch, (action, segment) => {
       setCurrentSelected([segment]);
       setCurrentAction(action);
     }) );

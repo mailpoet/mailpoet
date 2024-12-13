@@ -7,6 +7,8 @@ import { SegmentTags, FilterSegmentTag } from '../../common/tag/tags';
 import { ErrorBoundary  } from '../../common';
 import { Button, DropdownMenu } from '@wordpress/components';
 import { moreVertical } from '@wordpress/icons';
+import { newsletterStoreName } from 'newsletters/store';
+
 
 
 const mailpoetTrackingEnabled = MailPoet.trackingConfig.emailTrackingEnabled;
@@ -41,7 +43,7 @@ const confirmEdit = (newsletter) => {
 };
 
 
-export function getRow(newsletter, meta, onSelect) {
+export function getRow(newsletter, meta, dispatch, onSelect) {
   const tab = "active"
   const subject = newsletter.queue.newsletter_rendered_subject || newsletter.subject;
   const rowClasses = classnames(
@@ -49,6 +51,7 @@ export function getRow(newsletter, meta, onSelect) {
     'column-primary',
     'has-row-actions',
   );
+
 
 
   const menuItems =
@@ -61,7 +64,7 @@ export function getRow(newsletter, meta, onSelect) {
             icon: null,
             onClick: () => {
                console.log(newsletter)
-              //void duplicateDynamicSegment(newsletter);
+               dispatch(newsletterStoreName).duplicateNewsletter(newsletter.id);
             },
           },
         },
