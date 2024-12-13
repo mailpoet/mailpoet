@@ -193,7 +193,7 @@ class SendEmailAction implements Action {
       }
 
       if ($this->isOptInRequired($newsletter, $subscriber)) {
-        $this->updateRunLogData($args, self::WAIT_OPTIN, 1);
+        $this->updateRunLogData($args, [self::WAIT_OPTIN => 1]);
         $this->rerunLater($args, $controller, $newsletter, $subscriber);
         return;
       }
@@ -209,8 +209,10 @@ class SendEmailAction implements Action {
         }
 
         // Subscriber is now confirmed, so we can schedule an email.
-        $this->updateRunLogData($args, self::WAIT_OPTIN, 0);
-        $this->updateRunLogData($args, self::OPTIN_RETRIES, $args->getRunNumber());
+        $this->updateRunLogData($args, [
+          self::WAIT_OPTIN => 0,
+          self::OPTIN_RETRIES => $args->getRunNumber(),
+        ]);
         $this->scheduleEmail($args, $newsletter, $subscriber);
       }
 
@@ -237,7 +239,7 @@ class SendEmailAction implements Action {
     }
   }
 
-  private function updateRunLogData(StepRunArgs $args, string $key, mixed $value): void {
+  private function updateRunLogData(StepRunArgs $args, mixed $data): void {
     $run = $args->getAutomationRun();
     $step = $args->getStep();
     $storage = new AutomationRunLogStorage();
@@ -246,7 +248,9 @@ class SendEmailAction implements Action {
     if ($runLog === null) {
       $runLog = new AutomationRunLog($run->getId(), $step->getId(), $step->getType());
     }
-    $runLog->setData($key, $value);
+    foreach ($data as $key => $value) {
+      $runLog->setData($key, $value);
+    }
 
     if ($runLog->getId() !== null) {
       $storage->updateAutomationRunLog($runLog);
