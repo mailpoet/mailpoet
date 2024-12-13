@@ -184,6 +184,7 @@ class SendEmailAction implements Action {
   public function run(StepRunArgs $args, StepRunController $controller): void {
     $newsletter = $this->getEmailForStep($args->getStep());
     $subscriber = $this->getSubscriber($args);
+    $state = null;
 
     if ($args->isFirstRun()) {
       $subscriberStatus = $subscriber->getStatus();
@@ -194,7 +195,7 @@ class SendEmailAction implements Action {
 
       if ($this->isOptInRequired($newsletter, $subscriber)) {
         $this->updateRunLogData($args, [self::WAIT_OPTIN => 1]);
-        $this->rerunLater($args, $controller, $newsletter, $subscriber);
+        $this->rerunLater($args->getRunNumber(), $controller, $newsletter, $subscriber);
         return;
       }
 
@@ -204,7 +205,7 @@ class SendEmailAction implements Action {
       $state = $this->getRunLogData($args);
       if (array_key_exists(self::WAIT_OPTIN, $state) && $state[self::WAIT_OPTIN] === 1) {
         if ($this->isOptInRequired($newsletter, $subscriber)) {
-          $this->rerunLater($args, $controller, $newsletter, $subscriber);
+          $this->rerunLater($args->getRunNumber(), $controller, $newsletter, $subscriber);
           return;
         }
 
@@ -223,11 +224,13 @@ class SendEmailAction implements Action {
       }
     }
 
-    // TODO: /!\ `rerunLater` uses `runNumber` to re-schedule the run at different intervals.
-    //           Retries due to opt-in issues can increment the runNumber, and mess with regular
-    //           sending retries.
-    //           => Store number of opt-in retries in the runlog & subtract from runNumber?
-    $this->rerunLater($args, $controller, $newsletter, $subscriber);
+    // At this point, we're re-running to check sending status. We need
+    // to offset opt-in reruns count from sending reruns.
+    $runNumber = $args->getRunNumber();
+    $state = $state ?? $this->getRunLogData($args);
+    $optinRetryCount = $state[self::OPTIN_RETRIES] ?? 0;
+    $runNumber -= $optinRetryCount;
+    $this->rerunLater($runNumber, $controller, $newsletter, $subscriber);
   }
 
   private function scheduleEmail(StepRunArgs $args, NewsletterEntity $newsletter, SubscriberEntity $subscriber): void {
@@ -239,7 +242,7 @@ class SendEmailAction implements Action {
     }
   }
 
-  private function updateRunLogData(StepRunArgs $args, mixed $data): void {
+  private function updateRunLogData(StepRunArgs $args, array $data): void {
     $run = $args->getAutomationRun();
     $step = $args->getStep();
     $storage = new AutomationRunLogStorage();
@@ -277,12 +280,11 @@ class SendEmailAction implements Action {
    * these runs to poll for the status if sync fails or email never sends (timeout),
    * or if we need to wait for subscriber opt-in.
    */
-  private function rerunLater(StepRunArgs $args, StepRunController $controller, NewsletterEntity $newsletter, SubscriberEntity $subscriber): void {
-    $runNumber = $args->getRunNumber();
+  private function rerunLater(int $runNumber, StepRunController $controller, NewsletterEntity $newsletter, SubscriberEntity $subscriber): void {
     $nextInterval = self::POLL_INTERVALS[$runNumber - 1] ?? 0;
 
     // Use different intervals when retrying for opt-in.
-    if ($this->isOptInRequired($newsletter, $subscriber) === true) {
+    if ($this->isOptInRequired($newsletter, $subscriber)) {
       if ($runNumber > count(self::OPTIN_RETRY_INTERVALS)) {
         $subscriberStatus = $subscriber->getStatus();
         // translators: %s is the subscriber's status.
