@@ -98,7 +98,7 @@ class Email_Editor {
 		add_filter( 'mailpoet_email_editor_rendering_theme_styles', array( $this, 'extend_email_theme_styles' ), 10, 2 );
 		$this->register_block_templates();
 		$this->register_block_patterns();
-		$this->register_wmail_post_types();
+		$this->register_email_post_types();
 		$this->register_email_post_send_status();
 		$this->register_personalization_tags();
 		$is_editor_page = apply_filters( 'mailpoet_is_email_editor_page', false );
@@ -137,7 +137,7 @@ class Email_Editor {
 	 *
 	 * @return void
 	 */
-	private function register_wmail_post_types(): void {
+	private function register_email_post_types(): void {
 		foreach ( $this->get_post_types() as $post_type ) {
 			register_post_type(
 				$post_type['name'],
