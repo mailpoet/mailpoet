@@ -115,8 +115,7 @@ function extendRichTextFormats() {
 		title: __( 'Personalization Tags', 'mailpoet' ),
 		className: 'mailpoet-email-editor-personalization-tags',
 		tagName: 'span',
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment -- The types does not match
-		// @ts-ignore
+		// @ts-expect-error
 		attributes: {},
 		edit: PersonalizationTagsButton,
 	} );
