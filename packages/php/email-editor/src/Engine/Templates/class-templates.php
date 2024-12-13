@@ -25,7 +25,7 @@ class Templates {
 	 *
 	 * @var string $plugin_slug
 	 */
-	private string $plugin_slug = 'mailpoet/mailpoet';
+	private string $template_prefix = 'mailpoet';
 	/**
 	 * The post type.
 	 *
@@ -60,11 +60,6 @@ class Templates {
 	 * Initializes the class.
 	 */
 	public function initialize(): void {
-		add_filter( 'pre_get_block_file_template', array( $this, 'get_block_file_template' ), 10, 3 );
-		add_filter( 'get_block_templates', array( $this, 'add_block_templates' ), 10, 3 );
-		add_filter( 'theme_templates', array( $this, 'add_theme_templates' ), 10, 4 ); // Needed when saving post – template association.
-		add_filter( 'get_block_template', array( $this, 'add_block_template_details' ), 10, 1 );
-		add_filter( 'rest_pre_insert_wp_template', array( $this, 'force_post_content' ), 9, 1 );
 		$this->initialize_templates();
 	}
 
@@ -75,8 +70,7 @@ class Templates {
 	 * @return WP_Block_Template|null
 	 */
 	public function get_block_template( $template_id ) {
-		$templates = $this->get_block_templates();
-		return $templates[ $template_id ] ?? null;
+		return get_block_template( $template_id );
 	}
 
 	/**
@@ -90,7 +84,7 @@ class Templates {
 	public function get_block_file_template( $result, $template_id, $template_type ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		['prefix' => $template_prefix, 'slug' => $template_slug] = $this->utils->get_template_id_parts( $template_id );
 
-		if ( $this->plugin_slug !== $template_prefix ) {
+		if ( $this->template_prefix !== $template_prefix ) {
 			return $result;
 		}
 
@@ -201,6 +195,9 @@ class Templates {
 	 * Initialize template details. This is done at runtime because of localisation.
 	 */
 	private function initialize_templates(): void {
+		if ( ! function_exists( 'register_block_template' ) ) {
+			return;
+		}
 		$this->templates['email-general'] = array(
 			'title'       => __( 'General Email', 'mailpoet' ),
 			'description' => __( 'A general template for emails.', 'mailpoet' ),
@@ -209,6 +206,19 @@ class Templates {
 			'title'       => __( 'Simple Light', 'mailpoet' ),
 			'description' => __( 'A basic template with header and footer.', 'mailpoet' ),
 		);
+
+		foreach ( $this->templates as $template_slug => $template ) {
+			$template = $this->get_block_template_from_file( $template_slug . '.html' );
+			register_block_template(
+				$this->template_prefix . '//' . $template_slug,
+				array(
+					'title'       => $template->title,
+					'description' => $template->description,
+					'content'     => $template->content,
+					'post_types'  => array( $this->post_type ),
+				)
+			);
+		}
 	}
 
 	/**
@@ -252,12 +262,12 @@ class Templates {
 		$template_slug   = $this->utils->get_block_template_slug_from_path( $template );
 		$template_object = (object) array(
 			'slug'        => $template_slug,
-			'id'          => $this->plugin_slug . '//' . $template_slug,
+			'id'          => $this->template_prefix . '//' . $template_slug,
 			'title'       => $this->templates[ $template_slug ]['title'] ?? '',
 			'description' => $this->templates[ $template_slug ]['description'] ?? '',
 			'path'        => $this->template_directory . $template,
 			'type'        => 'wp_template',
-			'theme'       => $this->plugin_slug,
+			'theme'       => $this->template_prefix,
 			'source'      => 'plugin',
 			'post_types'  => array(
 				$this->post_type,
@@ -282,7 +292,7 @@ class Templates {
 				array(
 					'taxonomy' => 'wp_theme',
 					'field'    => 'name',
-					'terms'    => array( $this->plugin_slug, get_stylesheet() ),
+					'terms'    => array( $this->template_prefix, get_stylesheet() ),
 				),
 			),
 		);

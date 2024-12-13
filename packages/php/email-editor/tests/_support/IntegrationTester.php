@@ -73,6 +73,7 @@ class IntegrationTester extends \Codeception\Actor {
 	 */
 	public function cleanup(): void {
 		$this->delete_posts();
+		$this->unregister_block_templates();
 	}
 
 	/**
@@ -93,5 +94,18 @@ class IntegrationTester extends \Codeception\Actor {
 			wp_delete_post( $post->ID, true );
 		}
 		$this->cleanup_user_theme_post();
+	}
+
+	/**
+	 * Unregister block templates we may add during the tests.
+	 */
+	private function unregister_block_templates(): void {
+		$registry  = WP_Block_Templates_Registry::get_instance();
+		$templates = $registry->get_all_registered();
+		foreach ( $templates as $name => $template ) {
+			if ( 'mailpoet' === $template->plugin && $registry->is_registered( $name ) ) {
+				$registry->unregister( $name );
+			}
+		}
 	}
 }

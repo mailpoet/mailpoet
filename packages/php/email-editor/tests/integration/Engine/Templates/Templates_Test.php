@@ -35,12 +35,12 @@ class Templates_Test extends \MailPoetTest {
 	 * @return void
 	 */
 	public function testItCanFetchBlockTemplate(): void {
-		$template_id = 'mailpoet/mailpoet//email-general';
+		$template_id = get_stylesheet() . '//email-general'; // Templates id is prefixed with the theme name.
 		$template    = $this->templates->get_block_template( $template_id );
 
 		self::assertInstanceOf( \WP_Block_Template::class, $template );
 		verify( $template->slug )->equals( 'email-general' );
-		verify( $template->id )->equals( 'mailpoet/mailpoet//email-general' );
+		verify( $template->id )->equals( $template_id );
 		verify( $template->title )->equals( 'General Email' );
 		verify( $template->description )->equals( 'A general template for emails.' );
 	}
