@@ -143,3 +143,19 @@
 .block-editor-block-inspector__advanced {
   display: none;
 }
+
+// Temporary styles for Rich Text HTML comments from the PR: https://github.com/WordPress/gutenberg/pull/62128/files
+[data-rich-text-comment],
+[data-rich-text-format-boundary] {
+  border-radius: 2px;
+}
+
+[data-rich-text-comment] {
+  background-color: currentColor;
+
+  span {
+    color: currentColor;
+    filter: invert(100%);
+    padding: 0 2px;
+  }
+}
