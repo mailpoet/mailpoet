@@ -530,6 +530,59 @@ const emailEditorCustom = Object.assign({}, wpScriptConfig, {
     : [...wpScriptConfig.plugins, new ForkTsCheckerWebpackPlugin()],
 });
 
+// Temporary solution to build rich-text package for email editor
+const emailEditorRichText = Object.assign({}, wpScriptConfig, {
+  name: 'email-editor-rich-text',
+  entry: {
+    'rich-text': path.resolve(
+      __dirname,
+      '../packages/js/email-editor/node_modules/@wordpress/rich-text/build/index.js',
+    ),
+  },
+  output: {
+    filename: '[name].js',
+    path: path.join(__dirname, 'assets/dist/js/email-editor'),
+    library: ['wp', 'richText'], // Expose the richText package to the global wp object
+    libraryTarget: 'window', // Ensure it is accessible globally
+  },
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+  },
+  module: Object.assign({}, wpScriptConfig.module, {
+    rules: [
+      ...wpScriptConfig.module.rules,
+      {
+        test: /\.(t|j)sx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader?cacheDirectory',
+          options: {
+            presets: ['@wordpress/babel-preset-default'],
+          },
+        },
+      },
+    ],
+  }),
+  plugins: [
+    ...wpScriptConfig.plugins,
+    new DependencyExtractionWebpackPlugin({
+      injectPolyfill: true,
+      requestToExternal: (request) => {
+        if (request.startsWith('@wordpress/')) {
+          return `wp.${request.replace('@wordpress/', '')}`;
+        }
+        return undefined;
+      },
+      requestToHandle: (request) => {
+        if (request.startsWith('@wordpress/')) {
+          return `wp-${request.replace('@wordpress/', '-')}`;
+        }
+        return undefined;
+      },
+    }),
+  ],
+});
+
 const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
   name: 'email_editor_integration',
   entry: {
@@ -557,6 +610,7 @@ const configs = [
   marketingOptinBlock,
   emailEditorBlocks,
   emailEditorIntegration,
+  emailEditorRichText,
 ];
 
 module.exports = (env) => {
