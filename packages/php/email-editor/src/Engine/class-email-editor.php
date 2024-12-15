@@ -253,15 +253,6 @@ class Email_Editor {
 	}
 
 	/**
-	 * Returns the schema for email theme data.
-	 *
-	 * @return array
-	 */
-	public function get_email_theme_data_schema(): array {
-		return ( new Email_Styles_Schema() )->get_schema();
-	}
-
-	/**
 	 * Extends the email theme styles with the email specific styles.
 	 *
 	 * @param WP_Theme_JSON $theme Email theme styles.
