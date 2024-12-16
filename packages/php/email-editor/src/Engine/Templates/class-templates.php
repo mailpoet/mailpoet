@@ -33,12 +33,6 @@ class Templates {
 	 * @var string $template_directory
 	 */
 	private string $template_directory = __DIR__ . DIRECTORY_SEPARATOR;
-	/**
-	 * The templates.
-	 *
-	 * @var array $templates
-	 */
-	private array $templates = array();
 
 	/**
 	 * Initializes the class.
@@ -69,27 +63,24 @@ class Templates {
 		if ( ! function_exists( 'register_block_template' ) ) {
 			return;
 		}
-		$this->templates['email-general'] = array(
+		// Register basic blank template.
+		$general_email     = array(
 			'title'       => __( 'General Email', 'mailpoet' ),
 			'description' => __( 'A general template for emails.', 'mailpoet' ),
+			'slug'        => 'email-general',
 		);
-		$this->templates['simple-light']  = array(
-			'title'       => __( 'Simple Light', 'mailpoet' ),
-			'description' => __( 'A basic template with header and footer.', 'mailpoet' ),
+		$template_filename = $general_email['slug'] . '.html';
+
+		register_block_template(
+			$this->template_prefix . '//' . $general_email['slug'],
+			array(
+				'title'       => $general_email['title'],
+				'description' => $general_email['description'],
+				'content'     => (string) file_get_contents( $this->template_directory . $template_filename ),
+				'post_types'  => array( $this->post_type ),
+			)
 		);
 
-		foreach ( $this->templates as $template_slug => $template ) {
-			$template_filename = $template_slug . '.html';
-			register_block_template(
-				$this->template_prefix . '//' . $template_slug,
-				array(
-					'title'       => $template['title'],
-					'description' => $template['description'],
-					'content'     => (string) file_get_contents( $this->template_directory . $template_filename ),
-					'post_types'  => array( $this->post_type ),
-				)
-			);
-		}
 		do_action( 'mailpoet_email_editor_register_templates' );
 	}
 
