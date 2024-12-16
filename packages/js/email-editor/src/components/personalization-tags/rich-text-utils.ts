@@ -1,4 +1,5 @@
 import * as React from '@wordpress/element';
+import { PersonalizationTag } from '../../store';
 
 /**
  * Maps indices of characters in HTML representation of the value to corresponding characters of stored value in RichText content. The stored value doesn't contain tags.
@@ -184,9 +185,35 @@ const isMatchingComment = (
 	return htmlCommentRegex.test( substring );
 };
 
+/**
+ * Replace registered personalization tags with HTML comments in content.
+ * @param content string The content to replace the tags in.
+ * @param tags    PersonalizationTag[] The tags to replace in the content.
+ */
+const replacePersonalizationTagsWithHTMLComments = (
+	content: string,
+	tags: PersonalizationTag[]
+) => {
+	tags.forEach( ( tag ) => {
+		if ( ! content.includes( tag.token ) ) {
+			// Skip if the token is not in the content
+			return;
+		}
+
+		const escapedRegExp = tag.token.replace(
+			/[.*+?^${}()|[\]\\]/g,
+			'\\$&'
+		); // Escape special characters
+		const regex = new RegExp( `(?<!<!--)${ escapedRegExp }(?!-->)`, 'g' ); // Match token not inside HTML comments
+		content = content.replace( regex, `<!--${ tag.token }-->` );
+	} );
+	return content;
+};
+
 export {
 	isMatchingComment,
 	getCursorPosition,
 	createTextToHtmlMap,
 	mapRichTextToValue,
+	replacePersonalizationTagsWithHTMLComments,
 };

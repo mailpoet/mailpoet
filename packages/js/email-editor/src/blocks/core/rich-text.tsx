@@ -7,9 +7,14 @@ import {
 	createTextToHtmlMap,
 	getCursorPosition,
 	isMatchingComment,
+	replacePersonalizationTagsWithHTMLComments,
 } from '../../components/personalization-tags/rich-text-utils';
 import { PersonalizationTagsModal } from '../../components/personalization-tags/personalization-tags-modal';
 import { useCallback, useState } from '@wordpress/element';
+import { addFilter } from '@wordpress/hooks';
+import * as React from 'react';
+import { storeName } from '../../store';
+import { createHigherOrderComponent } from '@wordpress/compose';
 
 /**
  * Disable Rich text formats we currently cannot support
@@ -121,4 +126,82 @@ function extendRichTextFormats() {
 	} );
 }
 
-export { disableCertainRichTextFormats, extendRichTextFormats };
+const personalizationTagsLiveContentUpdate = createHigherOrderComponent(
+	( BlockEdit ) => ( props ) => {
+		const { attributes, setAttributes, name } = props;
+		const { content } = attributes;
+
+		// Fetch the personalization tags list
+		const list = useSelect(
+			( select ) => select( storeName ).getPersonalizationTagsList(),
+			[]
+		);
+
+		// Memoized function to replace content tags
+		const updatedContent = useCallback( () => {
+			if ( ! content ) {
+				return '';
+			}
+			return replacePersonalizationTagsWithHTMLComments( content, list );
+		}, [ content, list ] );
+
+		// Handle content updates
+		const handleSetAttributes = useCallback(
+			( newAttributes ) => {
+				if ( newAttributes.content !== undefined ) {
+					const replacedContent =
+						replacePersonalizationTagsWithHTMLComments(
+							newAttributes.content,
+							list
+						);
+					setAttributes( {
+						...newAttributes,
+						content: replacedContent,
+					} );
+				} else {
+					setAttributes( newAttributes );
+				}
+			},
+			[ list, setAttributes ]
+		);
+
+		// Only process supported blocks
+		if (
+			name === 'core/paragraph' ||
+			name === 'core/heading' ||
+			name === 'core/list-item'
+		) {
+			return (
+				<BlockEdit
+					{ ...props }
+					attributes={ {
+						...attributes,
+						content: updatedContent(),
+					} }
+					setAttributes={ handleSetAttributes }
+				/>
+			);
+		}
+
+		// Return default for unsupported blocks
+		return <BlockEdit { ...props } />;
+	},
+	'personalizationTagsLiveContentUpdate'
+);
+
+/**
+ * Replace written personalization tags with HTML comments in real-time.
+ */
+function replaceWrittenPersonalizationTags() {
+	addFilter(
+		'editor.BlockEdit',
+		'mailpoet-email-editor/with-live-content-update',
+		personalizationTagsLiveContentUpdate
+	);
+}
+
+export {
+	disableCertainRichTextFormats,
+	extendRichTextFormats,
+	replaceWrittenPersonalizationTags,
+};
