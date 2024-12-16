@@ -44,6 +44,7 @@ class Templates {
 	 * Initializes the class.
 	 */
 	public function initialize(): void {
+		add_filter( 'theme_templates', array( $this, 'add_theme_templates' ), 10, 4 ); // Workaround needed when saving post – template association.
 		$this->register_templates();
 		$this->register_post_types_to_api();
 	}
@@ -126,5 +127,33 @@ class Templates {
 			return array();
 		}
 		return array( $this->post_type );
+	}
+
+	/**
+	 * This is need to enable saving post – template association.
+	 * When a theme doesn't support block_templates feature the association is not saved, because templates registered via register_block_template are not added to the list of available templates.
+	 * https://github.com/WordPress/wordpress-develop/blob/cdc2f255acce57372b849d6278c4156e1056c749/src/wp-includes/class-wp-theme.php#L1355
+	 *
+	 * This function ensures that the email templates are in the list which is used for checking if the template can be saved in the association.
+	 * See https://github.com/WordPress/wordpress-develop/blob/cdc2f255acce57372b849d6278c4156e1056c749/src/wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php#L1595-L1599
+	 *
+	 * @param array    $templates The templates.
+	 * @param string   $theme The theme.
+	 * @param \WP_Post $post The post.
+	 * @param string   $post_type The post type.
+	 * @return array
+	 */
+	public function add_theme_templates( $templates, $theme, $post, $post_type ) {
+		if ( $post_type && $post_type !== $this->post_type ) {
+			return $templates;
+		}
+		$block_templates = get_block_templates();
+		foreach ( $block_templates as $block_template ) {
+			if ( ! is_array( $block_template->post_types ) || ! in_array( $this->post_type, $block_template->post_types, true ) ) {
+				continue;
+			}
+			$templates[ $block_template->slug ] = $block_template;
+		}
+		return $templates;
 	}
 }
