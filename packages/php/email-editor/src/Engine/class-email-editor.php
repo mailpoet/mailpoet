@@ -96,9 +96,9 @@ class Email_Editor {
 	public function initialize(): void {
 		do_action( 'mailpoet_email_editor_initialized' );
 		add_filter( 'mailpoet_email_editor_rendering_theme_styles', array( $this, 'extend_email_theme_styles' ), 10, 2 );
-		$this->register_block_templates();
 		$this->register_block_patterns();
 		$this->register_email_post_types();
+		$this->register_block_templates();
 		$this->register_email_post_send_status();
 		$this->register_personalization_tags();
 		$is_editor_page = apply_filters( 'mailpoet_is_email_editor_page', false );
@@ -118,7 +118,8 @@ class Email_Editor {
 	private function register_block_templates(): void {
 		// Since we cannot currently disable blocks in the editor for specific templates, disable templates when viewing site editor. @see https://github.com/WordPress/gutenberg/issues/41062.
 		if ( strstr( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ), 'site-editor.php' ) === false ) {
-			$this->templates->initialize();
+			$post_types = array_column( $this->get_post_types(), 'name' );
+			$this->templates->initialize( $post_types );
 		}
 	}
 

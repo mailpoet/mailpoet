@@ -24,9 +24,9 @@ class Templates {
 	/**
 	 * The post type.
 	 *
-	 * @var string $post_type
+	 * @var string[] $post_type
 	 */
-	private string $post_type = 'mailpoet_email';
+	private array $post_types = array();
 	/**
 	 * The template directory.
 	 *
@@ -36,8 +36,11 @@ class Templates {
 
 	/**
 	 * Initializes the class.
+	 *
+	 * @param string[] $post_types The list of post types registered for usage with email editor.
 	 */
-	public function initialize(): void {
+	public function initialize( array $post_types ): void {
+		$this->post_types = $post_types;
 		add_filter( 'theme_templates', array( $this, 'add_theme_templates' ), 10, 4 ); // Workaround needed when saving post – template association.
 		$this->register_templates();
 		$this->register_post_types_to_api();
@@ -77,7 +80,7 @@ class Templates {
 				'title'       => $general_email['title'],
 				'description' => $general_email['description'],
 				'content'     => (string) file_get_contents( $this->template_directory . $template_filename ),
-				'post_types'  => array( $this->post_type ),
+				'post_types'  => $this->post_types,
 			)
 		);
 
@@ -118,7 +121,7 @@ class Templates {
 		if ( isset( $response_object['plugin'] ) && $response_object['plugin'] !== $this->template_prefix ) {
 			return array();
 		}
-		return array( $this->post_type );
+		return $this->post_types;
 	}
 
 	/**
@@ -136,12 +139,12 @@ class Templates {
 	 * @return array
 	 */
 	public function add_theme_templates( $templates, $theme, $post, $post_type ) {
-		if ( $post_type && $post_type !== $this->post_type ) {
+		if ( $post_type && ! in_array( $post_type, $this->post_types, true ) ) {
 			return $templates;
 		}
 		$block_templates = get_block_templates();
 		foreach ( $block_templates as $block_template ) {
-			if ( ! is_array( $block_template->post_types ) || ! in_array( $this->post_type, $block_template->post_types, true ) ) {
+			if ( ! is_array( $block_template->post_types ) || ! array_intersect( $this->post_types, $block_template->post_types ) ) {
 				continue;
 			}
 			$templates[ $block_template->slug ] = $block_template;

@@ -26,7 +26,6 @@ class Templates_Test extends \MailPoetTest {
 	public function _before() {
 		parent::_before();
 		$this->templates = $this->di_container->get( Templates::class );
-		$this->templates->initialize();
 	}
 
 	/**
@@ -35,6 +34,7 @@ class Templates_Test extends \MailPoetTest {
 	 * @return void
 	 */
 	public function testItCanFetchBlockTemplate(): void {
+		$this->templates->initialize( array( 'mailpoet_email' ) );
 		$template = $this->templates->get_block_template( 'email-general' );
 
 		self::assertInstanceOf( \WP_Block_Template::class, $template );
@@ -42,5 +42,22 @@ class Templates_Test extends \MailPoetTest {
 		verify( $template->id )->stringContainsString( 'email-general' );
 		verify( $template->title )->equals( 'General Email' );
 		verify( $template->description )->equals( 'A general template for emails.' );
+	}
+
+	/**
+	 * Test that action for registering templates is triggered
+	 *
+	 * @return void
+	 */
+	public function testItTriggersActionForRegisteringTemplates(): void {
+		$trigger_check = false;
+		add_action(
+			'mailpoet_email_editor_register_templates',
+			function () use ( &$trigger_check ) {
+				$trigger_check = true;
+			}
+		);
+		$this->templates->initialize( array( 'mailpoet_email' ) );
+		verify( $trigger_check )->true();
 	}
 }
