@@ -30,12 +30,6 @@ $mailpoetPlugin = [
 const MAILPOET_MINIMUM_REQUIRED_WP_VERSION = '6.6';
 const MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION = '9.3';
 
-function mailpoet_deactivate_plugin() {
-  deactivate_plugins(plugin_basename(__FILE__));
-  if (!empty($_GET['activate'])) {
-    unset($_GET['activate']);
-  }
-}
 
 // Display WP version error notice
 function mailpoet_wp_version_notice() {
