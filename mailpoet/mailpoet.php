@@ -108,14 +108,6 @@ function mailpoet_php_version_notice() {
   );
   $noticeP2 = str_replace('[/link]', '</a>', $noticeP2);
 
-  $noticeP3 = __('If you can’t upgrade the PHP version, [link]install this version[/link] of MailPoet. Remember to not update MailPoet ever again!', 'mailpoet');
-  $noticeP3 = str_replace(
-    '[link]',
-    '<a href="https://downloads.wordpress.org/plugin/mailpoet.4.38.0.zip" target="_blank">',
-    $noticeP3
-  );
-  $noticeP3 = str_replace('[/link]', '</a>', $noticeP3);
-
   $allowedTags = [
     'a' => [
       'href' => true,
@@ -127,10 +119,6 @@ function mailpoet_php_version_notice() {
     esc_html($noticeP1),
     wp_kses(
       $noticeP2,
-      $allowedTags
-    ),
-    wp_kses(
-      $noticeP3,
       $allowedTags
     )
   );
