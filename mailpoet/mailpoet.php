@@ -37,36 +37,6 @@ function mailpoet_deactivate_plugin() {
   }
 }
 
-// Check for minimum supported WP version
-if (version_compare(get_bloginfo('version'), MAILPOET_MINIMUM_REQUIRED_WP_VERSION, '<')) {
-  add_action('admin_notices', 'mailpoet_wp_version_notice');
-  // deactivate the plugin
-  add_action('admin_init', 'mailpoet_deactivate_plugin');
-  return;
-}
-
-// Check for minimum supported PHP version
-if (version_compare(phpversion(), '7.4.0', '<')) {
-  add_action('admin_notices', 'mailpoet_php_version_notice');
-  // deactivate the plugin
-  add_action('admin_init', 'mailpoet_deactivate_plugin');
-  return;
-}
-
-// Check for minimum supported WooCommerce version
-if (!function_exists('is_plugin_active')) {
-  require_once ABSPATH . 'wp-admin/includes/plugin.php';
-}
-if (is_plugin_active('woocommerce/woocommerce.php')) {
-  $woocommerceVersion = get_plugin_data(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', false, false)['Version'];
-  if (version_compare($woocommerceVersion, MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION, '<')) {
-    add_action('admin_notices', 'mailpoet_woocommerce_version_notice');
-    // deactivate the plugin
-    add_action('admin_init', 'mailpoet_deactivate_plugin');
-    return;
-  }
-}
-
 // Display WP version error notice
 function mailpoet_wp_version_notice() {
   $notice = str_replace(
@@ -172,21 +142,48 @@ function mailpoet_php_version_notice() {
   );
 }
 
-if (isset($_SERVER['SERVER_SOFTWARE']) && strpos(strtolower(sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE']))), 'microsoft-iis') !== false) {
-  add_action('admin_notices', 'mailpoet_microsoft_iis_notice');
-  // deactivate the plugin
-  add_action('admin_init', 'mailpoet_deactivate_plugin');
-  return;
-}
+function mailpoet_check_requirements(array $mailpoetPlugin) {
 
+  // Check for presence of core dependencies
+  if (!file_exists($mailpoetPlugin['autoloader']) || !file_exists($mailpoetPlugin['initializer'])) {
+    add_action('admin_notices', 'mailpoet_core_dependency_notice');
+    return false;
+  }
 
-// Check for presence of core dependencies
-if (!file_exists($mailpoetPlugin['autoloader']) || !file_exists($mailpoetPlugin['initializer'])) {
-  add_action('admin_notices', 'mailpoet_core_dependency_notice');
-  // deactivate the plugin
-  add_action('admin_init', 'mailpoet_deactivate_plugin');
-  return;
+  // Check for Microsoft IIS server
+  if (isset($_SERVER['SERVER_SOFTWARE']) && strpos(strtolower(sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE']))), 'microsoft-iis') !== false) {
+    add_action('admin_notices', 'mailpoet_microsoft_iis_notice');
+    return false;
+  }
+
+  // Check for minimum supported WooCommerce version
+  if (!function_exists('is_plugin_active')) {
+    require_once ABSPATH . 'wp-admin/includes/plugin.php';
+  }
+  if (is_plugin_active('woocommerce/woocommerce.php')) {
+    $woocommerceVersion = get_plugin_data(WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', false, false)['Version'];
+    if (version_compare($woocommerceVersion, MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION, '<')) {
+      add_action('admin_notices', 'mailpoet_woocommerce_version_notice');
+      return false;
+    }
+  }
+
+  // Check for minimum supported WP version
+  if (version_compare(get_bloginfo('version'), MAILPOET_MINIMUM_REQUIRED_WP_VERSION, '<')) {
+    add_action('admin_notices', 'mailpoet_wp_version_notice');
+    return false;
+  }
+
+  // Check for minimum supported PHP version
+  if (version_compare(phpversion(), '7.4.0', '<')) {
+    add_action('admin_notices', 'mailpoet_php_version_notice');
+    return false;
+  }
+
+  return true;
 }
 
 // Initialize plugin
-require_once($mailpoetPlugin['initializer']);
+if (mailpoet_check_requirements($mailpoetPlugin)) {
+  require_once($mailpoetPlugin['initializer']);
+}
