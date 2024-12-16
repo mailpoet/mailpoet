@@ -119,6 +119,18 @@ function mailpoet_woocommerce_version_notice() {
   );
 }
 
+// Display IIS server error notice
+function mailpoet_microsoft_iis_notice() {
+  $notice = __("MailPoet plugin cannot run under Microsoft's Internet Information Services (IIS) web server. We recommend that you use a web server powered by Apache or NGINX.", 'mailpoet');
+  printf('<div class="error"><p>%1$s</p></div>', esc_html($notice));
+}
+
+// Display missing core dependencies error notice
+function mailpoet_core_dependency_notice() {
+  $notice = __('MailPoet cannot start because it is missing core files. Please reinstall the plugin.', 'mailpoet');
+  printf('<div class="error"><p>%1$s</p></div>', esc_html($notice));
+}
+
 // Display PHP version error notice
 function mailpoet_php_version_notice() {
   $noticeP1 = __('MailPoet requires PHP version 7.4 or newer (8.1 recommended). You are running version [version].', 'mailpoet');
@@ -167,11 +179,6 @@ if (isset($_SERVER['SERVER_SOFTWARE']) && strpos(strtolower(sanitize_text_field(
   return;
 }
 
-// Display IIS server error notice
-function mailpoet_microsoft_iis_notice() {
-  $notice = __("MailPoet plugin cannot run under Microsoft's Internet Information Services (IIS) web server. We recommend that you use a web server powered by Apache or NGINX.", 'mailpoet');
-  printf('<div class="error"><p>%1$s</p></div>', esc_html($notice));
-}
 
 // Check for presence of core dependencies
 if (!file_exists($mailpoetPlugin['autoloader']) || !file_exists($mailpoetPlugin['initializer'])) {
@@ -179,12 +186,6 @@ if (!file_exists($mailpoetPlugin['autoloader']) || !file_exists($mailpoetPlugin[
   // deactivate the plugin
   add_action('admin_init', 'mailpoet_deactivate_plugin');
   return;
-}
-
-// Display missing core dependencies error notice
-function mailpoet_core_dependency_notice() {
-  $notice = __('MailPoet cannot start because it is missing core files. Please reinstall the plugin.', 'mailpoet');
-  printf('<div class="error"><p>%1$s</p></div>', esc_html($notice));
 }
 
 // Initialize plugin
