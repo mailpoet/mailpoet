@@ -56,10 +56,11 @@ We may add, update and delete any of them.
 
 ### Actions
 
-| Name                                   | Argument         | Description                                                                                        |
-|----------------------------------------|------------------|----------------------------------------------------------------------------------------------------|
-| `mailpoet_email_editor_initialized`    | `null`           | Called when the Email Editor is initialized                                                        |
-| `mailpoet_blocks_renderer_initialized` | `BlocksRegistry` | Called when the block content renderer is initialized. You may use this to add a new BlockRenderer |
+| Name                                       | Argument         | Description                                                                                                      |
+|--------------------------------------------|------------------|------------------------------------------------------------------------------------------------------------------|
+| `mailpoet_email_editor_initialized`        | `null`           | Called when the Email Editor is initialized                                                                      |
+| `mailpoet_blocks_renderer_initialized`     | `BlocksRegistry` | Called when the block content renderer is initialized. You may use this to add a new BlockRenderer               |
+| `mailpoet_email_editor_register_templates` |                  | Called when the basic blank email template is registered. You can add more templates via register_block_template |
 
 ### Filters
 

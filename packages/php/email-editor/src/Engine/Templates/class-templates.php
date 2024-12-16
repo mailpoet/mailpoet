@@ -90,6 +90,7 @@ class Templates {
 				)
 			);
 		}
+		do_action( 'mailpoet_email_editor_register_templates' );
 	}
 
 	/**
