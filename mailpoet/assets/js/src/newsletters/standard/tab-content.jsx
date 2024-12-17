@@ -71,6 +71,17 @@ const columns = [
   },
 ];
 
+const groups = [
+  { value: '0', label: __('All', 'mailpoet')},
+  { value: '0', label: __('Draft', 'mailpoet')},
+  { value: '0', label: __('Scheduled', 'mailpoet')},
+  { value: '0', label: __('Sending', 'mailpoet')},
+  { value: '0', label: __('Sent', 'mailpoet')},
+//  { value: '0', label: __('Active', 'mailpoet')},
+//  { value: '0', label: __('Corrupt', 'mailpoet')},
+]
+
+
 const bulkActions =
 "all" !== 'trash'
   ? [
@@ -117,6 +128,15 @@ export function StandardTabContent() {
     return (
       <>
         <div className="mailpoet-newsletters-listing-header">
+          <SelectControl
+            multiple={false}
+            hideLabelFromVision
+            className="mailpoet-newsletters-listing-bulk-actions"
+            label={__('Bulk actions', 'mailpoet')}
+            options={groups}
+            value="0"
+            onChange=""
+          />
           <SelectControl
             multiple={false}
             hideLabelFromVision
