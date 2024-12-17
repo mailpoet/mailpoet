@@ -171,6 +171,7 @@ export type PersonalizationTag = {
 	token: string;
 	category: string;
 	attributes: string[];
+	valueToInsert: string;
 };
 
 export type State = {

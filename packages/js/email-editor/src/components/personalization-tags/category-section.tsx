@@ -32,13 +32,13 @@ const CategorySection = ( {
 								>
 									<div className="mailpoet-personalization-tags-modal__item-text">
 										<strong>{ item.name }</strong>
-										{ item.token }
+										{ item.valueToInsert }
 									</div>
 									<Button
 										variant="link"
 										onClick={ () => {
 											if ( onInsert ) {
-												onInsert( item.token );
+												onInsert( item.valueToInsert );
 											}
 										} }
 									>
