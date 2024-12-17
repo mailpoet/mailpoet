@@ -76,6 +76,10 @@ export function RichTextWithButton( {
 		</>
 	);
 
+	if ( ! mailpoetEmailData ) {
+		return null;
+	}
+
 	return (
 		<BaseControl
 			id={ `mailpoet-settings-panel__${ attributeName }` }
