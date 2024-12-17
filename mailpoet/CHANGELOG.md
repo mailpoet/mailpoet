@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.5.1 - 2024-12-17 =
+
+- Improved: added option to protect WordPress and WooCommerce registration forms with a captcha.
+- Changed: removed 3rd party Beamer integration;
+- Fixed: error when trying to use mailpoet_settings database table before it is available.
+
 = 5.5.0 - 2024-12-09 =
 
 - Added the Polish translation as an officially maintained translation;
