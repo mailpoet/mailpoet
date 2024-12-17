@@ -97,8 +97,14 @@ function mailpoet_core_dependency_notice() {
 
 // Display PHP version error notice
 function mailpoet_php_version_notice() {
-  $noticeP1 = __('MailPoet requires PHP version 7.4 or newer (8.1 recommended). You are running version [version].', 'mailpoet');
-  $noticeP1 = str_replace('[version]', phpversion(), $noticeP1);
+  $noticeP1 = sprintf(
+    // translators: %1$s is the plugin name (MailPoet or MailPoet Premium), %2$s, %3$s, and %4$s are PHP version (e.g. "8.1.30")
+    __('%1$s requires PHP version %2$s or newer (%3$s recommended). You are running version %4$s.', 'mailpoet'),
+    'MailPoet',
+    '7.4',
+    '8.1',
+    phpversion()
+  );
 
   $noticeP2 = __('Please read our [link]instructions[/link] on how to upgrade your site.', 'mailpoet');
   $noticeP2 = str_replace(
