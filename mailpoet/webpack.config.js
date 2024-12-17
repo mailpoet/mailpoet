@@ -563,24 +563,6 @@ const emailEditorRichText = Object.assign({}, wpScriptConfig, {
       },
     ],
   }),
-  plugins: [
-    ...wpScriptConfig.plugins,
-    new DependencyExtractionWebpackPlugin({
-      injectPolyfill: true,
-      requestToExternal: (request) => {
-        if (request.startsWith('@wordpress/')) {
-          return `wp.${request.replace('@wordpress/', '')}`;
-        }
-        return undefined;
-      },
-      requestToHandle: (request) => {
-        if (request.startsWith('@wordpress/')) {
-          return `wp-${request.replace('@wordpress/', '-')}`;
-        }
-        return undefined;
-      },
-    }),
-  ],
 });
 
 const emailEditorIntegration = Object.assign({}, wpScriptConfig, {
