@@ -99,10 +99,11 @@ class Email_Api_Controller {
 					array_map(
 						function ( Personalization_Tag $tag ) {
 							return array(
-								'name'       => $tag->get_name(),
-								'token'      => $tag->get_token(),
-								'category'   => $tag->get_category(),
-								'attributes' => $tag->get_attributes(),
+								'name'          => $tag->get_name(),
+								'token'         => $tag->get_token(),
+								'category'      => $tag->get_category(),
+								'attributes'    => $tag->get_attributes(),
+								'valueToInsert' => $tag->get_value_to_insert(),
 							);
 						},
 						$tags

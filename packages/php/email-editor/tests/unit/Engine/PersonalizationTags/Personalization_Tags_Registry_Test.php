@@ -58,6 +58,7 @@ class PersonalizationTagsRegistryTest extends TestCase {
 		$this->assertSame( 'Subscriber Info', $tag->get_category() );
 		$this->assertSame( 'Personalized Value', $tag->execute_callback( array(), array() ) );
 		$this->assertSame( array( 'description' => 'First name of the subscriber' ), $tag->get_attributes() );
+		$this->assertSame( '[first_name description="First name of the subscriber"]', $tag->get_value_to_insert() );
 	}
 
 	/**
@@ -74,7 +75,9 @@ class PersonalizationTagsRegistryTest extends TestCase {
 				'Last Name',
 				'[last_name]',
 				'Subscriber Info',
-				$callback
+				$callback,
+				array( 'default' => 'subscriber' ),
+				'[last_name default="user"]'
 			)
 		);
 
@@ -87,6 +90,8 @@ class PersonalizationTagsRegistryTest extends TestCase {
 		$this->assertSame( '[last_name]', $tag->get_token() );
 		$this->assertSame( 'Subscriber Info', $tag->get_category() );
 		$this->assertSame( 'Personalized Value', $tag->execute_callback( array(), array() ) );
+		$this->assertSame( array( 'default' => 'subscriber' ), $tag->get_attributes() );
+		$this->assertSame( '[last_name default="user"]', $tag->get_value_to_insert() );
 	}
 
 	/**

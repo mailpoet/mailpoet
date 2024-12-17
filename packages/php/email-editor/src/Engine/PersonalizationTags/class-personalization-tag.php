@@ -44,6 +44,12 @@ class Personalization_Tag {
 	 * @var array
 	 */
 	private array $attributes;
+	/**
+	 * The value that is inserted via the UI. When the value is null the token is generated based on $token attribute and $attributes.
+	 *
+	 * @var string
+	 */
+	private string $value_to_insert;
 
 	/**
 	 * Personalization_Tag constructor.
@@ -56,21 +62,24 @@ class Personalization_Tag {
 	 *      function( $context, $args ) {
 	 *        return $context['user_firstname'] ?? 'user';
 	 *      },
-	 *      array( default => 'user' )
+	 *      array( default => 'user' ),
+	 *      'user:first default="user"'
 	 *   );
 	 *
-	 * @param string   $name The name of the tag displayed in the UI.
-	 * @param string   $token The token used in HTML_Tag_Processor to replace the tag with its value.
-	 * @param string   $category The category of the personalization tag for categorization on the UI.
-	 * @param callable $callback The callback function which returns the value of the personalization tag.
-	 * @param array    $attributes The attributes which are used in the Personalization Tag UI.
+	 * @param string      $name The name of the tag displayed in the UI.
+	 * @param string      $token The token used in HTML_Tag_Processor to replace the tag with its value.
+	 * @param string      $category The category of the personalization tag for categorization on the UI.
+	 * @param callable    $callback The callback function which returns the value of the personalization tag.
+	 * @param array       $attributes The attributes which are used in the Personalization Tag UI.
+	 * @param string|null $value_to_insert The value that is inserted via the UI. When the value is null the token is generated based on $token attribute and $attributes.
 	 */
 	public function __construct(
 		string $name,
 		string $token,
 		string $category,
 		callable $callback,
-		array $attributes = array()
+		array $attributes = array(),
+		?string $value_to_insert = null
 	) {
 		$this->name = $name;
 		// Because Gutenberg does not wrap the token with square brackets, we need to add them here.
@@ -78,6 +87,24 @@ class Personalization_Tag {
 		$this->category   = $category;
 		$this->callback   = $callback;
 		$this->attributes = $attributes;
+		// Composing token to insert based on the token and attributes if it is not set.
+		if ( ! $value_to_insert ) {
+			if ( $this->attributes ) {
+				$value_to_insert = substr( $this->token, 0, -1 ) . ' ' .
+					implode(
+						' ',
+						array_map(
+							function ( $key ) {
+								return $key . '="' . esc_attr( $this->attributes[ $key ] ) . '"';
+							},
+							array_keys( $this->attributes )
+						)
+					) . ']';
+			} else {
+				$value_to_insert = $this->token;
+			}
+		}
+		$this->value_to_insert = $value_to_insert;
 	}
 
 	/**
@@ -114,6 +141,15 @@ class Personalization_Tag {
 	 */
 	public function get_attributes(): array {
 		return $this->attributes;
+	}
+
+	/**
+	 * Returns the token to insert via UI in the editor.
+	 *
+	 * @return string
+	 */
+	public function get_value_to_insert(): string {
+		return $this->value_to_insert;
 	}
 
 	/**
