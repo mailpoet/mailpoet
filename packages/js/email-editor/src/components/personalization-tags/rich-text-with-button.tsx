@@ -5,8 +5,9 @@ import {
 	createTextToHtmlMap,
 	getCursorPosition,
 	isMatchingComment,
+	replacePersonalizationTagsWithHTMLComments,
 } from './rich-text-utils';
-import { useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import { storeName } from '../../store';
 import { RichText } from '@wordpress/block-editor';
@@ -29,6 +30,10 @@ export function RichTextWithButton( {
 
 	const [ selectionRange, setSelectionRange ] = useState( null );
 	const [ isModalOpened, setIsModalOpened ] = useState( false );
+	const list = useSelect(
+		( select ) => select( storeName ).getPersonalizationTagsList(),
+		[]
+	);
 
 	const richTextRef = useRef( null );
 
@@ -127,9 +132,13 @@ export function RichTextWithButton( {
 						)
 					);
 				} }
-				onChange={ ( value ) =>
-					updateEmailMailPoetProperty( attributeName, value )
-				}
+				onChange={ ( value ) => {
+					value = replacePersonalizationTagsWithHTMLComments(
+						value ?? '',
+						list
+					);
+					updateEmailMailPoetProperty( attributeName, value );
+				} }
 				value={ mailpoetEmailData[ attributeName ] ?? '' }
 				data-automation-id={ `email_${ attributeName }` }
 			/>
