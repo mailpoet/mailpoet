@@ -10,6 +10,9 @@ import PropTypes from 'prop-types';
 import { useLocation, useParams } from 'react-router-dom';
 
 import { TableCard } from '@woocommerce/components';
+import { TextControl, SelectControl } from '@wordpress/components';
+
+
 import { useSelect, useDispatch } from '@wordpress/data';
 import { storeName } from '../store/constants';
 
@@ -68,6 +71,33 @@ const columns = [
   },
 ];
 
+const bulkActions =
+"all" !== 'trash'
+  ? [
+      {
+        value: '0',
+        label: __('Bulk actions', 'mailpoet'),
+      },
+      {
+        label: __('Trash', 'mailpoet'),
+        value: 'trash',
+      },
+    ]
+  : [
+      {
+        value: '0',
+        label: __('Bulk actions', 'mailpoet'),
+      },
+      {
+        label: __('Restore', 'mailpoet'),
+        value: 'restore',
+      },
+      {
+        label: __('Delete permanently', 'mailpoet'),
+        value: 'delete',
+      },
+    ];
+
 
 
 export function StandardTabContent() {
@@ -84,21 +114,32 @@ export function StandardTabContent() {
       setCurrentAction(action);
     }) );
 
-    const rowClasses = classnames(
-        'manage-column',
-        'column-primary',
-        'has-row-actions',
-      );
-
     return (
-      <div className={rowClasses}>
+      <>
+        <div className="mailpoet-newsletters-listing-header">
+          <SelectControl
+            multiple={false}
+            hideLabelFromVision
+            className="mailpoet-newsletters-listing-bulk-actions"
+            label={__('Bulk actions', 'mailpoet')}
+            options={bulkActions}
+            value="0"
+            onChange=""
+          />
+          <TextControl
+            className="mailpoet-newsletters-listing-search"
+            placeholder={__('Search', 'mailpoet')}
+            onChange=""
+            value=""
+          />
+        </div>
         <div>
           <pre> {newsletterStandardLoading ? "true" : "false"} </pre>
           <pre> {currentAction} </pre>
 
           <TableCard
             //title="Revenue last weeks"
-            className="mailpoet-listing-table"
+            className="mailpoet-listing-card mailpoet-newsletters-listing"
             isLoading={ newsletterStandardLoading }
             rows={ newsletterStandardRows }
             headers={ columns }
@@ -108,6 +149,6 @@ export function StandardTabContent() {
         />
         </div>
         
-      </div>
+      </>
     );
   } 

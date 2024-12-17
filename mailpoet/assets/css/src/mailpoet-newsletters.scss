@@ -1,0 +1,66 @@
+@import 'settings/colors';
+@import 'mailpoet-listing';
+
+#dynamic_newsletters_container * {
+  box-sizing: border-box;
+}
+
+.mailpoet-newsletter-subscriber-count {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  gap: 16px;
+  padding-top: 8px;
+
+  .mailpoet-newsletter-help-icon {
+    display: flex;
+  }
+
+  .mailpoet-newsletter-subscriber-count-message {
+    align-items: center;
+    display: flex;
+    font-size: 14px;
+  }
+
+  .mailpoet-newsletter-subscriber-cache {
+    color: $color-text-light;
+  }
+
+  .components-button.is-link {
+    text-decoration: none;
+  }
+}
+
+.mailpoet-confirm-dialog {
+  max-width: 600px;
+}
+
+.mailpoet-newsletters-listing-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 120px auto;
+  padding: 16px;
+
+  .mailpoet-newsletters-listing-search {
+    max-width: 430px;
+  }
+
+  .components-base-control__field {
+    margin-bottom: 0;
+  }
+}
+
+.woocommerce-table {
+  .components-card__header {
+    display: none;
+  }
+
+  .mailpoet-listing-name {
+    width: 100%;
+  }
+
+  .mailpoet-listing-modified-date {
+    white-space: nowrap;
+  }
+}

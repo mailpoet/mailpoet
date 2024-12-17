@@ -49,6 +49,11 @@ class AssetsController {
     $this->wp->wpEnqueueStyle('mailpoet_dynamic_segments', $this->getCssUrl('mailpoet-dynamic-segments.css'));
   }
 
+  public function setupNewslettersDependencies(): void {
+    $this->wp->wpEnqueueStyle('mailpoet_templates', $this->getCssUrl('mailpoet-templates.css'));
+    $this->wp->wpEnqueueStyle('mailpoet_newsletters', $this->getCssUrl('mailpoet-newsletters.css'));
+  }
+
   public function setupAutomationListingDependencies(): void {
     $this->enqueueJsEntrypoint('automation');
     $this->wp->wpEnqueueStyle('mailpoet_automation', $this->getCssUrl('mailpoet-automation.css'));

@@ -2,6 +2,7 @@
 
 namespace MailPoet\AdminPages\Pages;
 
+use MailPoet\AdminPages\AssetsController;
 use MailPoet\AdminPages\PageRenderer;
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Config\Env;
@@ -25,6 +26,8 @@ use MailPoet\WP\DateTime;
 use MailPoet\WP\Functions as WPFunctions;
 
 class Newsletters {
+  private AssetsController $assetsController;
+
   private PageRenderer $pageRenderer;
 
   private PageLimit $listingPageLimit;
@@ -56,6 +59,7 @@ class Newsletters {
   private CapabilitiesManager $capabilitiesManager;
 
   public function __construct(
+    AssetsController $assetsController,
     PageRenderer $pageRenderer,
     PageLimit $listingPageLimit,
     WPFunctions $wp,
@@ -72,6 +76,7 @@ class Newsletters {
     WooCommerce $wooCommerceSegment,
     CapabilitiesManager $capabilitiesManager
   ) {
+    $this->assetsController = $assetsController;
     $this->pageRenderer = $pageRenderer;
     $this->listingPageLimit = $listingPageLimit;
     $this->wp = $wp;
@@ -160,6 +165,7 @@ class Newsletters {
 
     $data['legacy_automatic_emails_notice_dismissed'] = (bool)$this->userFlagsController->get('legacy_automatic_emails_notice_dismissed');
 
+    $this->assetsController->setupNewslettersDependencies();
     $this->pageRenderer->displayPage('newsletters.html', $data);
   }
 
