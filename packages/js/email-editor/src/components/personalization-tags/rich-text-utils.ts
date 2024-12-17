@@ -195,17 +195,26 @@ const replacePersonalizationTagsWithHTMLComments = (
 	tags: PersonalizationTag[]
 ) => {
 	tags.forEach( ( tag ) => {
-		if ( ! content.includes( tag.token ) ) {
-			// Skip if the token is not in the content
+		// Skip if the token is not in the content
+		if (
+			! content.includes( tag.token.slice( 0, tag.token.length - 1 ) )
+		) {
 			return;
 		}
 
-		const escapedRegExp = tag.token.replace(
-			/[.*+?^${}()|[\]\\]/g,
-			'\\$&'
-		); // Escape special characters
-		const regex = new RegExp( `(?<!<!--)${ escapedRegExp }(?!-->)`, 'g' ); // Match token not inside HTML comments
-		content = content.replace( regex, `<!--${ tag.token }-->` );
+		// Match the token with optional attributes like [mailpoet/subscriber-firstname default="user"]
+		const baseToken = tag.token
+			.substring( 1, tag.token.length - 1 )
+			.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ); // Escape base token and remove brackets
+		const regex = new RegExp(
+			`(?<!<!--)\\[(${ baseToken }(\\s[^\\]]*)?)\\](?!-->)`, // Match full token with optional attributes
+			'g'
+		);
+
+		content = content.replace( regex, ( match ) => {
+			// Use the exact text inside the brackets for the replacement
+			return `<!--${ match }-->`;
+		} );
 	} );
 	return content;
 };
