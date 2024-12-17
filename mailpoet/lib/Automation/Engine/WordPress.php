@@ -145,6 +145,7 @@ class WordPress {
   }
 
   /**
+   * @param 'names'|'objects' $output
    * @return string[]|\WP_Post_Type[]
    */
   public function getPostTypes(array $args = [], string $output = 'names', string $operator = 'and'): array {
@@ -156,6 +157,7 @@ class WordPress {
   }
 
   /**
+   * @param 'names'|'objects' $output
    * @param 'and'|'or' $operator
    * @return string[]|\WP_Taxonomy[]
    */

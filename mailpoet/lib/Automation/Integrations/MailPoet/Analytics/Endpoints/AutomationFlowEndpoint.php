@@ -47,7 +47,7 @@ class AutomationFlowEndpoint extends Endpoint {
   }
 
   public function handle(Request $request): Response {
-    $id = absint($request->getParam('id'));
+    $id = absint(is_numeric($request->getParam('id')) ? $request->getParam('id') : 0);
     $automation = $this->automationStorage->getAutomation($id);
     if (!$automation) {
       throw Exceptions::automationNotFound($id);

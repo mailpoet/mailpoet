@@ -69,7 +69,7 @@ parameters:
     -
       # WP annotates parameter as callable, but passes empty string as a default.
       message: '/function add_(sub)?menu_page expects callable\(\): mixed, ''''\|\(callable\(\): mixed\) given/'
-      count: 2
+      count: 1
       path: ../../lib/WP/Functions.php
     -
       # We don't allow seting properties for read-only entity WpPostEntity

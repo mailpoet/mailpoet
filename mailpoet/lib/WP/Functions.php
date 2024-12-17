@@ -691,7 +691,7 @@ class Functions {
   }
 
   /**
-   * @param 'hot_categories'|'hot_tags'|'plugin_information'|'query_plugins' $action
+   * @param 'hot_tags'|'plugin_information'|'query_plugins' $action
    * @param array|object $args
    * @return object|array|WP_Error
    */
