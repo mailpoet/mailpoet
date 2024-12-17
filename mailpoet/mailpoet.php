@@ -115,7 +115,7 @@ function mailpoet_php_version_notice() {
     ],
   ];
   printf(
-    '<div class="error"><p><strong>%s</strong></p><p>%s</p><p>%s</p></div>',
+    '<div class="error"><p><strong>%s</strong></p><p>%s</p></div>',
     esc_html($noticeP1),
     wp_kses(
       $noticeP2,
