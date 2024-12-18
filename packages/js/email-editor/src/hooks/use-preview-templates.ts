@@ -112,7 +112,6 @@ export function usePreviewTemplates(
 	);
 
 	const allTemplates = useMemo( () => {
-		let contentPatternBlocksGeneral = null;
 		let contentPatternBlocks = null;
 		const parsedCustomEmailContent =
 			customEmailContent && parse( customEmailContent );
@@ -120,16 +119,8 @@ export function usePreviewTemplates(
 		// If there is a custom email content passed from outside we use it as email content for preview
 		// otherwise we pick first suitable from patterns
 		if ( parsedCustomEmailContent ) {
-			contentPatternBlocksGeneral = parsedCustomEmailContent;
 			contentPatternBlocks = parsedCustomEmailContent;
 		} else {
-			// Pick first pattern that comes from mailpoet and is for general email template
-			contentPatternBlocksGeneral = patterns.find(
-				( pattern ) =>
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-					pattern?.templateTypes?.includes( 'email-general-template' )
-			)?.blocks as BlockInstance[];
-
 			// Pick first pattern that comes from mailpoet and is for template with header and footer content separated
 			contentPatternBlocks = patterns.find(
 				( pattern ) =>
@@ -138,30 +129,31 @@ export function usePreviewTemplates(
 			)?.blocks as BlockInstance[];
 		}
 
-		return templates?.map(
-			( template: EmailTemplatePreview ): TemplatePreview => {
-				let parsedTemplate = parse( template.content?.raw );
-				parsedTemplate = setPostContentInnerBlocks(
-					parsedTemplate,
-					template.slug === 'email-general'
-						? contentPatternBlocksGeneral
-						: contentPatternBlocks
-				);
+		return (
+			templates
+				// We don't want to show the blank template in the list
+				?.filter(
+					( template: EmailTemplatePreview ) =>
+						template.slug !== 'email-general'
+				)
+				.map( ( template: EmailTemplatePreview ): TemplatePreview => {
+					let parsedTemplate = parse( template.content?.raw );
+					parsedTemplate = setPostContentInnerBlocks(
+						parsedTemplate,
+						contentPatternBlocks
+					);
 
-				return {
-					id: template.id,
-					slug: template.slug,
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-					previewContentParsed: parsedTemplate,
-					emailParsed:
-						template.slug === 'email-general'
-							? contentPatternBlocksGeneral
-							: contentPatternBlocks,
-					template,
-					category: 'basic', // TODO: This will be updated once template category is implemented
-					type: template.type,
-				};
-			}
+					return {
+						id: template.id,
+						slug: template.slug,
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+						previewContentParsed: parsedTemplate,
+						emailParsed: contentPatternBlocks,
+						template,
+						category: 'basic', // TODO: This will be updated once template category is implemented
+						type: template.type,
+					};
+				} )
 		);
 	}, [ templates, patterns, customEmailContent ] );
 
