@@ -19,9 +19,7 @@ const PersonalizationTagsPopover = ( {
 	onUpdate,
 }: PersonalizationTagsPopoverProps ) => {
 	const [ isPopoverVisible, setIsPopoverVisible ] = useState( false );
-	const [ popoverAnchor, setPopoverAnchor ] = useState< HTMLElement | null >(
-		null
-	);
+	const [ anchor, setAnchor ] = useState< HTMLElement | null >( null );
 	const [ updatedValue, setUpdatedValue ] = useState( '' );
 	const [ originalValue, setOriginalValue ] = useState( '' );
 
@@ -47,7 +45,7 @@ const PersonalizationTagsPopover = ( {
 				);
 				setOriginalValue( textContent );
 				setUpdatedValue( textContent );
-				setPopoverAnchor( commentSpan );
+				setAnchor( commentSpan );
 				setIsPopoverVisible( true );
 			}
 		};
@@ -63,11 +61,11 @@ const PersonalizationTagsPopover = ( {
 
 	return (
 		<>
-			{ isPopoverVisible && (
+			{ isPopoverVisible && anchor && (
 				<Popover
 					position="bottom right"
 					onClose={ () => setIsPopoverVisible( false ) }
-					anchorRef={ popoverAnchor }
+					anchor={ anchor } // Directly use commentSpan as the anchor
 					className="mailpoet-personalization-tag-popover"
 				>
 					<div className="mailpoet-personalization-tag-popover__content">
@@ -75,6 +73,7 @@ const PersonalizationTagsPopover = ( {
 							label={ __( 'Personalization Tag', 'mailpoet' ) }
 							value={ updatedValue }
 							onChange={ ( value ) => setUpdatedValue( value ) }
+							__nextHasNoMarginBottom // To avoid warning about deprecation in console
 						/>
 						<div className="mailpoet-personalization-tag-popover__content-button">
 							<Button

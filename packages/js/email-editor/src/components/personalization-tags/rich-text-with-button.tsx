@@ -92,6 +92,7 @@ export function RichTextWithButton( {
 			label={ finalLabel }
 			className={ `mailpoet-settings-panel__${ attributeName }-text` }
 			help={ help }
+			__nextHasNoMarginBottom // To avoid warning about deprecation in console
 		>
 			<PersonalizationTagsModal
 				isOpened={ isModalOpened }
