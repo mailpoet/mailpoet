@@ -112,49 +112,54 @@ export function usePreviewTemplates(
 	);
 
 	const allTemplates = useMemo( () => {
-		let contentPatternBlocks = null;
+		let contentPatterns = [];
 		const parsedCustomEmailContent =
 			customEmailContent && parse( customEmailContent );
 
 		// If there is a custom email content passed from outside we use it as email content for preview
-		// otherwise we pick first suitable from patterns
+		// otherwise generate one preview per template and pattern
 		if ( parsedCustomEmailContent ) {
-			contentPatternBlocks = parsedCustomEmailContent;
+			contentPatterns = [ { blocks: parsedCustomEmailContent } ];
 		} else {
-			// Pick first pattern that comes from mailpoet and is for template with header and footer content separated
-			contentPatternBlocks = patterns.find(
+			contentPatterns = patterns.filter(
 				( pattern ) =>
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 					pattern?.templateTypes?.includes( 'email-template' )
-			)?.blocks as BlockInstance[];
+			);
 		}
 
-		return (
-			templates
-				// We don't want to show the blank template in the list
-				?.filter(
-					( template: EmailTemplatePreview ) =>
-						template.slug !== 'email-general'
-				)
-				.map( ( template: EmailTemplatePreview ): TemplatePreview => {
+		if ( ! contentPatterns || ! templates ) {
+			return [];
+		}
+
+		const templateToPreview = [];
+		// We don't want to show the blank template in the list
+		templates
+			?.filter(
+				( template: EmailTemplatePreview ) =>
+					template.slug !== 'email-general'
+			)
+			?.forEach( ( template: EmailTemplatePreview ) => {
+				contentPatterns?.forEach( ( contentPattern ) => {
 					let parsedTemplate = parse( template.content?.raw );
 					parsedTemplate = setPostContentInnerBlocks(
 						parsedTemplate,
-						contentPatternBlocks
+						contentPattern.blocks
 					);
-
-					return {
+					templateToPreview.push( {
 						id: template.id,
 						slug: template.slug,
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 						previewContentParsed: parsedTemplate,
-						emailParsed: contentPatternBlocks,
+						emailParsed: contentPattern.blocks,
 						template,
 						category: 'basic', // TODO: This will be updated once template category is implemented
 						type: template.type,
-					};
-				} )
-		);
+						presentName: `${ template.title } - ${ contentPattern.name }`,
+					} );
+				} );
+			} );
+		return templateToPreview;
 	}, [ templates, patterns, customEmailContent ] );
 
 	const allEmailPosts = useMemo( () => {
