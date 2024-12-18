@@ -15,4 +15,15 @@ const recordEvent = ( name: string, data = {} ) => {
 	);
 };
 
-export { recordEvent, EMAIL_STRING, dispatcher };
+const recordEventOnce = ( function () {
+	const cachedEventName = {};
+	return ( name: string, data = {} ) => {
+		if ( cachedEventName[ name ] ) {
+			return; // do not execute again
+		}
+		recordEvent( name, data );
+		cachedEventName[ name ] = true;
+	};
+} )();
+
+export { recordEvent, recordEventOnce, EMAIL_STRING, dispatcher };

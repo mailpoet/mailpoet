@@ -19,6 +19,7 @@ import {
 } from '../../store';
 import { TemplateList } from './template-list';
 import { TemplateCategoriesListSidebar } from './template-categories-list-sidebar';
+import { recordEvent, recordEventOnce } from '../../events';
 
 const TemplateCategories: Array< { name: TemplateCategory; label: string } > = [
 	{
@@ -40,6 +41,11 @@ function SelectTemplateBody( {
 		TemplateCategories[ 1 ].name // Show the “Basic” category by default
 	);
 
+	const handleCategorySelection = ( category: TemplateCategory ) => {
+		recordEvent( 'template_select_modal_category_change', { category } );
+		setSelectedCategory( category );
+	};
+
 	useEffect( () => {
 		setTimeout( () => {
 			if ( hasEmailPosts ) {
@@ -53,7 +59,7 @@ function SelectTemplateBody( {
 			<TemplateCategoriesListSidebar
 				templateCategories={ TemplateCategories }
 				selectedCategory={ selectedCategory }
-				onClickCategory={ setSelectedCategory }
+				onClickCategory={ handleCategorySelection }
 			/>
 
 			<TemplateList
@@ -72,6 +78,9 @@ export function SelectTemplateModal( {
 	closeCallback = null,
 	previewContent = '',
 } ) {
+	const templateSelectMode = previewContent ? 'swap' : 'new';
+	recordEventOnce( 'template_select_modal_opened', { templateSelectMode } );
+
 	const [ templates, emailPosts, hasEmailPosts ] =
 		usePreviewTemplates( previewContent );
 
@@ -81,6 +90,12 @@ export function SelectTemplateModal( {
 		const templateIsPostContent = template.type === 'mailpoet_email';
 
 		const postContent = template.template as unknown as EmailEditorPostType;
+
+		recordEvent( 'template_select_modal_template_selected', {
+			template,
+			templateSelectMode,
+			templateIsPostContent,
+		} );
 
 		// When we provide previewContent, we don't want to reset the blocks
 		if ( ! previewContent ) {
@@ -100,15 +115,23 @@ export function SelectTemplateModal( {
 		if ( ! template ) {
 			return;
 		} // Prevent closing when templates are not loaded
+		recordEvent(
+			'template_select_modal_handle_close_without_template_selected'
+		);
 		handleTemplateSelection( template );
 	};
 
 	return (
 		<Modal
 			title={ __( 'Start with an email preset', 'mailpoet' ) }
-			onRequestClose={ () =>
-				closeCallback ? closeCallback() : handleCloseWithoutSelection()
-			}
+			onRequestClose={ () => {
+				recordEvent( 'template_select_modal_closed', {
+					templateSelectMode,
+				} );
+				return closeCallback
+					? closeCallback()
+					: handleCloseWithoutSelection();
+			} }
 			isFullScreen
 		>
 			<MemorizedSelectTemplateBody
@@ -122,7 +145,12 @@ export function SelectTemplateModal( {
 					<Button
 						variant="tertiary"
 						className="email-editor-start_from_scratch_button"
-						onClick={ () => handleCloseWithoutSelection() }
+						onClick={ () => {
+							recordEvent(
+								'template_select_modal_start_from_scratch_clicked'
+							);
+							return handleCloseWithoutSelection();
+						} }
 						isBusy={ ! hasTemplates }
 					>
 						{ __( 'Start from scratch', 'mailpoet' ) }

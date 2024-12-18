@@ -1,2 +1,2 @@
-export { recordEvent } from './event-pipeline';
+export { recordEvent, recordEventOnce } from './event-pipeline';
 export * from './event-collector';
