@@ -84,8 +84,6 @@ export const closeSidebar =
 	};
 
 export function toggleSettingsSidebarActiveTab( activeTab: string ) {
-	recordEvent( 'editor-settings-sidebar-active-tab', { activeTab } );
-
 	return {
 		type: 'TOGGLE_SETTINGS_SIDEBAR_ACTIVE_TAB',
 		state: { activeTab } as Partial< State[ 'settingsSidebar' ] >,

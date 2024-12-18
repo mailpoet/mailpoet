@@ -31,6 +31,7 @@ import { TemplateSettings } from './template-settings';
 import { useEditorMode } from '../../hooks';
 
 import './index.scss';
+import { recordEvent } from '../../events';
 
 type Props = React.ComponentProps< typeof ComplementaryArea >;
 
@@ -44,6 +45,7 @@ function SidebarContent( props: Props ) {
 	return (
 		<ComplementaryArea
 			identifier={ mainSidebarId }
+			closeLabel={ __( 'Close sidebar', 'mailpoet' ) }
 			headerClassName="editor-sidebar__panel-tabs"
 			className="edit-post-sidebar"
 			header={
@@ -96,9 +98,10 @@ export function Sidebar( props: Props ) {
 	return (
 		<Tabs
 			selectedTabId={ activeTab || mainSidebarDocumentTab }
-			onSelect={ ( key ) =>
-				toggleSettingsSidebarActiveTab( key as string )
-			}
+			onSelect={ ( key ) => {
+				recordEvent( 'sidebar_tab_selected', { tabKey: key } );
+				return toggleSettingsSidebarActiveTab( key as string );
+			} }
 		>
 			<SidebarContent { ...props } />
 		</Tabs>

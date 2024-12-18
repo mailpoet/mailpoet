@@ -4,6 +4,7 @@ import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
 import classnames from 'classnames';
 import { RichTextWithButton } from '../personalization-tags/rich-text-with-button';
+import { recordEvent } from '../../events';
 
 const previewTextMaxLength = 150;
 const previewTextRecommendedLength = 80;
@@ -27,6 +28,11 @@ export function DetailsPanel() {
 					href="https://www.mailpoet.com/blog/17-email-subject-line-best-practices-to-boost-engagement/"
 					target="_blank"
 					rel="noopener noreferrer"
+					onClick={ () =>
+						recordEvent(
+							'details_panel_subject_help_best_practice_link_clicked'
+						)
+					}
 				/>
 			),
 			emojiLink: (
@@ -35,6 +41,11 @@ export function DetailsPanel() {
 					href="https://www.mailpoet.com/blog/tips-using-emojis-in-subject-lines/"
 					target="_blank"
 					rel="noopener noreferrer"
+					onClick={ () =>
+						recordEvent(
+							'details_panel_subject_help_emoji_in_subject_lines_link_clicked'
+						)
+					}
 				/>
 			),
 		}
@@ -58,6 +69,10 @@ export function DetailsPanel() {
 					key="preview-text-kb"
 					target="_blank"
 					rel="noopener noreferrer"
+					onClick={ () =>
+						recordEvent(
+							'details_panel_preheader_help_text_link_clicked'
+						)}
 				/>
 			),
 		}
@@ -67,12 +82,20 @@ export function DetailsPanel() {
 		<PanelBody
 			title={ __( 'Details', 'mailpoet' ) }
 			className="mailpoet-email-editor__settings-panel"
+			onToggle={ ( data ) =>
+				recordEvent( 'details_panel_body_toggle', { opened: data } )
+			}
 		>
 			<RichTextWithButton
 				attributeName="subject"
 				label={ __( 'Subject', 'mailpoet' ) }
 				labelSuffix={
-					<ExternalLink href="https://kb.mailpoet.com/article/435-a-guide-to-personalisation-tags-for-tailored-newsletters#list">
+					<ExternalLink
+						href="https://kb.mailpoet.com/article/435-a-guide-to-personalisation-tags-for-tailored-newsletters#list"
+						onClick={ () =>
+							recordEvent( 'details_panel_personalisation_tags_guide_link_clicked' )
+						}
+					>
 						{ __( 'Guide', 'mailpoet' ) }
 					</ExternalLink>
 				}
