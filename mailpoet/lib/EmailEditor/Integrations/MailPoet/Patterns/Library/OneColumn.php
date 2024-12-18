@@ -14,11 +14,11 @@ class OneColumn extends Pattern {
     return '
     <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}}},"layout":{"type":"constrained"}} -->
     <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><!-- wp:heading {"fontSize":"large"} -->
-    <h2 class="wp-block-heading has-large-font-size">1 column layout</h2>
+    <h2 class="wp-block-heading has-large-font-size">' . __('1 column layout', 'mailpoet') . '</h2>
     <!-- /wp:heading -->
 
     <!-- wp:paragraph -->
-    <p>A one-column layout is great for simplified and concise content, like announcements or newsletters with brief updates. Drag blocks to add content and customize your styles from the styles panel on the top right.</p>
+    <p>' . __('A one-column layout is great for simplified and concise content, like announcements or newsletters with brief updates. Drag blocks to add content and customize your styles from the styles panel on the top right.', 'mailpoet') . '</p>
     <!-- /wp:paragraph -->
 
     <!-- wp:image -->
@@ -27,7 +27,7 @@ class OneColumn extends Pattern {
 
     <!-- wp:buttons -->
     <div class="wp-block-buttons"><!-- wp:button -->
-    <div class="wp-block-button"><a class="wp-block-button__link wp-element-button">Add button text</a></div>
+    <div class="wp-block-button"><a class="wp-block-button__link wp-element-button">' . __('Add button text', 'mailpoet') . '</a></div>
     <!-- /wp:button --></div>
     <!-- /wp:buttons --></div>
     <!-- /wp:group -->

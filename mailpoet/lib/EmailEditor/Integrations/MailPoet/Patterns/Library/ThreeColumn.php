@@ -13,7 +13,7 @@ class ThreeColumn extends Pattern {
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     return '<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}},"layout":{"type":"constrained"}} -->
       <div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--10);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20)"><!-- wp:heading {"fontSize":"large"} -->
-      <h2 class="wp-block-heading has-large-font-size">3 column layout</h2>
+      <h2 class="wp-block-heading has-large-font-size">' . __('3 column layout', 'mailpoet') . '</h2>
       <!-- /wp:heading --></div>
       <!-- /wp:group -->
 
@@ -39,12 +39,12 @@ class ThreeColumn extends Pattern {
 
       <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|20","left":"var:preset|spacing|20"}}},"layout":{"type":"constrained"}} -->
       <div class="wp-block-group" style="padding-right:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><!-- wp:paragraph -->
-      <p>A three-column layout organizes information into sections, making it easier for users to navigate content. Try other layouts by adding or removing columns, drag blocks into them to add content, and customize your email styles from the styles panel.</p>
+      <p>' . __('A three-column layout organizes information into sections, making it easier for users to navigate content. Try other layouts by adding or removing columns, drag blocks into them to add content, and customize your email styles from the styles panel.', 'mailpoet') . '</p>
       <!-- /wp:paragraph -->
 
       <!-- wp:buttons -->
       <div class="wp-block-buttons"><!-- wp:button -->
-      <div class="wp-block-button"><a class="wp-block-button__link wp-element-button">Add button text</a></div>
+      <div class="wp-block-button"><a class="wp-block-button__link wp-element-button">' . __('Add button text', 'mailpoet') . '</a></div>
       <!-- /wp:button --></div>
       <!-- /wp:buttons --></div>
       <!-- /wp:group -->
