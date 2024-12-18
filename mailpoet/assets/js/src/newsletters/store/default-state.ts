@@ -1,5 +1,8 @@
 
-export const defaultNewsletterState = {
+import { NewsletterState } from './types';
+
+
+export const defaultNewsletterState: NewsletterState = {
         
     newsletters: {
         standard: [],
@@ -14,7 +17,4 @@ export const defaultNewsletterState = {
                 },
     errors: [],
     currentNewsletterType: "standard",
-    mailpoet_newsletters_count: window.mailpoet_newsletters_count,
-    wordpressRoles: window.wordpress_editable_roles_list,
-
 };

@@ -45,6 +45,23 @@ export interface Meta {
   current_time: string;
 }
 
+export interface NewsletterState {
+  newsletters: {
+    standard: NewsLetter[];
+    postNotifications: NewsLetter[];
+    reEngagements: NewsLetter[];
+  };
+  meta: Meta | {};
+  isLoading: {
+    standard: boolean;
+    postNotification: boolean;
+    reEngagement: boolean;
+    duplication: boolean;
+  };
+  errors: string[];
+  currentNewsletterType: string;
+}
+
 // Action Interfaces
 export interface StartStandardRequestAction {
   type: NewsletterActionTypes.START_STANDARD_REQUEST;
