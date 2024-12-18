@@ -21,6 +21,7 @@ import { useState } from '@wordpress/element';
 import { storeName } from '../../store';
 import { EditTemplateModal } from './edit-template-modal';
 import { SelectTemplateModal } from '../template-select';
+import { recordEvent } from '../../events';
 
 export function EmailTypeInfo() {
 	const { template, currentEmailContent } = useSelect(
@@ -69,36 +70,53 @@ export function EmailTypeInfo() {
 											'mailpoet'
 										) }
 									>
-										{ ( { onClose } ) => (
-											<>
-												<MenuItem
-													onClick={ () => {
-														setEditTemplateModalOpen(
-															true
-														);
-														onClose();
-													} }
-												>
-													{ __(
-														'Edit template',
-														'mailpoet'
-													) }
-												</MenuItem>
-												<MenuItem
-													onClick={ () => {
-														setSelectTemplateModalOpen(
-															true
-														);
-														onClose();
-													} }
-												>
-													{ __(
-														'Swap template',
-														'mailpoet'
-													) }
-												</MenuItem>
-											</>
-										) }
+										{ ( { onClose, isOpen } ) => {
+											if ( isOpen ) {
+												recordEvent(
+													'sidebar_template_actions_clicked',
+													{
+														currentTemplate:
+															template?.title,
+													}
+												);
+											}
+											return (
+												<>
+													<MenuItem
+														onClick={ () => {
+															recordEvent(
+																'sidebar_template_actions_edit_template_clicked'
+															);
+															setEditTemplateModalOpen(
+																true
+															);
+															onClose();
+														} }
+													>
+														{ __(
+															'Edit template',
+															'mailpoet'
+														) }
+													</MenuItem>
+													<MenuItem
+														onClick={ () => {
+															recordEvent(
+																'sidebar_template_actions_swap_template_clicked'
+															);
+															setSelectTemplateModalOpen(
+																true
+															);
+															onClose();
+														} }
+													>
+														{ __(
+															'Swap template',
+															'mailpoet'
+														) }
+													</MenuItem>
+												</>
+											);
+										} }
 									</DropdownMenu>
 								</FlexItem>
 							</Flex>
@@ -108,7 +126,10 @@ export function EmailTypeInfo() {
 			</Panel>
 			{ isEditTemplateModalOpen && (
 				<EditTemplateModal
-					close={ () => setEditTemplateModalOpen( false ) }
+					close={ () => {
+						recordEvent( 'edit_template_modal_closed' );
+						return setEditTemplateModalOpen( false );
+					} }
 				/>
 			) }
 			{ isSelectTemplateModalOpen && (

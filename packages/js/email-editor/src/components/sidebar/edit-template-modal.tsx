@@ -3,8 +3,11 @@ import { Button, Flex, FlexItem, Modal } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { storeName } from '../../store';
 import { store as editorStore } from '@wordpress/editor';
+import { recordEvent, recordEventOnce } from '../../events';
 
 export function EditTemplateModal( { close } ) {
+	recordEventOnce( 'edit_template_modal_opened' );
+
 	const { onNavigateToEntityRecord, template } = useSelect( ( sel ) => {
 		const { getEditorSettings } = sel( editorStore );
 		const editorSettings = getEditorSettings();
@@ -29,6 +32,9 @@ export function EditTemplateModal( { close } ) {
 					<Button
 						variant="tertiary"
 						onClick={ () => {
+							recordEvent(
+								'edit_template_modal_cancel_button_clicked'
+							);
 							close();
 						} }
 					>
@@ -39,6 +45,10 @@ export function EditTemplateModal( { close } ) {
 					<Button
 						variant="primary"
 						onClick={ () => {
+							recordEvent(
+								'edit_template_modal_continue_button_clicked',
+								{ templateId: template.id }
+							);
 							onNavigateToEntityRecord( {
 								postId: template.id,
 								postType: 'wp_template',
