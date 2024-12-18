@@ -71,3 +71,17 @@
     }
   }
 }
+
+.mailpoet-personalization-tag-popover {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+
+  .mailpoet-personalization-tag-popover__content {
+    padding: 8px;
+    width: 400px;
+  }
+  .mailpoet-personalization-tag-popover__content-button {
+    text-align: center;
+  }
+}
