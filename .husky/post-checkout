@@ -4,3 +4,5 @@
 [ "$MP_GIT_HOOKS_ENABLE" != "true" ] && exit 0
 
 installIfUpdates
+
+./do cleanup:cached-files
