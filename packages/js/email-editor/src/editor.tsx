@@ -8,6 +8,7 @@ import { InnerEditor } from './components/block-editor';
 import { createStore, storeName } from './store';
 import { initHooks } from './editor-hooks';
 import { KeyboardShortcuts } from './components/keybord-shortcuts';
+import { initEventCollector } from './events';
 import './index.scss';
 
 function Editor() {
@@ -42,6 +43,7 @@ export function initialize( elementId: string ) {
 	if ( ! container ) {
 		return;
 	}
+	initEventCollector();
 	createStore();
 	initializeLayout();
 	initBlocks();

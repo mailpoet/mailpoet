@@ -25,6 +25,7 @@ import {
 	parse,
 } from '@wordpress/blocks';
 import { decodeEntities } from '@wordpress/html-entities';
+import { recordEvent } from '../events';
 
 export const toggleFeature =
 	( feature: Feature ) =>
@@ -65,19 +66,26 @@ export function updateSendPreviewEmail( toEmail: string ) {
 
 export const openSidebar =
 	( key = mainSidebarDocumentTab ) =>
-	( { registry } ): unknown =>
-		registry
+	( { registry } ): unknown => {
+		recordEvent( 'editor-sidebar-opened' );
+		return registry
 			.dispatch( interfaceStore )
 			.enableComplementaryArea( storeName, key );
+	};
 
 export const closeSidebar =
 	() =>
-	( { registry } ): unknown =>
-		registry
+	( { registry } ): unknown => {
+		recordEvent( 'editor-sidebar-closed' );
+
+		return registry
 			.dispatch( interfaceStore )
 			.disableComplementaryArea( storeName );
+	};
 
 export function toggleSettingsSidebarActiveTab( activeTab: string ) {
+	recordEvent( 'editor-settings-sidebar-active-tab', { activeTab } );
+
 	return {
 		type: 'TOGGLE_SETTINGS_SIDEBAR_ACTIVE_TAB',
 		state: { activeTab } as Partial< State[ 'settingsSidebar' ] >,
@@ -96,6 +104,7 @@ export function* saveEditedEmail() {
 	);
 
 	result.then( () => {
+		recordEvent( 'editor-content-saved', { postId } );
 		void dispatch( noticesStore ).createErrorNotice(
 			__( 'Email saved!', 'mailpoet' ),
 			{
@@ -107,6 +116,7 @@ export function* saveEditedEmail() {
 	} );
 
 	result.catch( () => {
+		recordEvent( 'editor-content-not-saved', { postId } );
 		void dispatch( noticesStore ).createErrorNotice(
 			__(
 				'The email could not be saved. Please, clear browser cache and reload the page. If the problem persists, duplicate the email and try again.',
@@ -142,6 +152,7 @@ export function* updateEmailMailPoetProperty( name: string, value: string ) {
 			},
 		}
 	);
+	recordEvent( 'updated-mailpoet-email-property', { postId } );
 }
 
 export const setTemplateToPost =
@@ -192,7 +203,9 @@ export function* requestSendingNewsletterPreview(
 				isSendingPreviewEmail: false,
 			},
 		};
+		recordEvent( 'sent-preview-email', { postId, email } );
 	} catch ( errorResponse ) {
+		recordEvent( 'error-sent-preview-email', { email } );
 		yield {
 			type: 'CHANGE_PREVIEW_STATE',
 			state: {
