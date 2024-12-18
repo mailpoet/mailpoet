@@ -221,8 +221,8 @@
       }
     },
     "color": {
-      "background": "#f0f0f0",
-      "text": "#000000"
+      "background": "#ffffff",
+      "text": "#1e1e1e"
     },
     "typography": {
       "fontFamily": "Arial, 'Helvetica Neue', Helvetica, sans-serif",

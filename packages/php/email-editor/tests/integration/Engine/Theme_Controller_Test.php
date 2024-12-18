@@ -163,12 +163,12 @@ class Theme_Controller_Test extends \MailPoetTest {
 	}
 
 	/**
-	 * Test if the theme controller returns correct layout settings
+	 * Test if the theme controller returns correct color styles
 	 */
 	public function testGetBaseThemeDoesNotIncludeUserThemeData() {
 		$theme = $this->theme_controller->get_base_theme();
-		verify( $theme->get_raw_data()['styles']['color']['background'] )->equals( '#f0f0f0' );
-		verify( $theme->get_raw_data()['styles']['color']['text'] )->equals( '#000000' );
+		verify( $theme->get_raw_data()['styles']['color']['background'] )->equals( '#ffffff' );
+		verify( $theme->get_raw_data()['styles']['color']['text'] )->equals( '#1e1e1e' );
 	}
 
 	/**
