@@ -21,7 +21,7 @@ class EmailTemplatesCest {
     $i->waitForText('Create modern, beautiful emails that embody your brand with advanced customization and editing capabilities.');
     $i->click('//button[text()="Continue"]');
 
-    $this->selectTemplate($i, 'Newsletter');
+    $this->selectTemplate($i, 'Newsletter - 1 Column');
 
     $i->wantTo('Verify correct template is selected');
     $i->waitForText('Newsletter', 10, '.mailpoet-email-sidebar__email-type-info');
@@ -57,13 +57,12 @@ class EmailTemplatesCest {
     $i->click('Newsletter', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
     $i->waitForText('Swap template');
     $i->click('Swap template');
-    $this->selectTemplate($i, 'General Email');
+    $this->selectTemplate($i, 'Newsletter'); // Todo - select different template when available
     $i->wantTo('Verify correct template is selected');
-    $i->waitForText('General Email', 10, '.mailpoet-email-sidebar__email-type-info');
-    $this->checkTextIsNotInEmail($i, $textInTemplate);
+    $i->waitForText('Newsletter', 10, '.mailpoet-email-sidebar__email-type-info');
 
     $i->wantTo('Swap template back');
-    $i->click('General Email', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
+    $i->click('Newsletter', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
     $i->waitForText('Swap template');
     $i->click('Swap template');
     $this->selectTemplate($i, 'Newsletter');
