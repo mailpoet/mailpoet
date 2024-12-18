@@ -3,6 +3,7 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Templates;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
+use MailPoet\EmailEditor\Integrations\MailPoet\Templates\Library\Newsletter;
 use MailPoet\WP\Functions as WPFunctions;
 
 class TemplatesController {
@@ -20,18 +21,13 @@ class TemplatesController {
   }
 
   public function registerTemplates() {
-    $newsletter = [
-      'title' => __('Newsletter', 'mailpoet'),
-      'description' => __('A basic template with header and footer.', 'mailpoet'),
-      'slug' => 'newsletter',
-      'filename' => 'newsletter.html',
-    ];
+    $newsletter = new Newsletter();
     register_block_template(
-      $this->templatePrefix . '//' . $newsletter['slug'],
+      $this->templatePrefix . '//' . $newsletter->getSlug(),
       [
-        'title' => $newsletter['title'],
-        'description' => $newsletter['description'],
-        'content' => (string)file_get_contents(__DIR__ . '/' . $newsletter['filename']),
+        'title' => $newsletter->getTitle(),
+        'description' => $newsletter->getDescription(),
+        'content' => $newsletter->getContent(),
         'post_types' => [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
       ]
     );
