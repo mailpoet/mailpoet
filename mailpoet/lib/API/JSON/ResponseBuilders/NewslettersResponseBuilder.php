@@ -135,10 +135,6 @@ class NewslettersResponseBuilder {
     return $content_processor->get_updated_html();
   }
 
-  /**
-   * @param NewsletterEntity[] $newsletters
-   * @return mixed[]
-   */
   public function buildForListing(array $newsletters): array {
     $statistics = $this->newslettersStatsRepository->getBatchStatistics($newsletters);
     $latestQueues = $this->getBatchLatestQueuesWithTasks($newsletters);
@@ -153,6 +149,12 @@ class NewslettersResponseBuilder {
     return $data;
   }
 
+  /**
+   * @param NewsletterEntity $newsletter
+   * @param NewsletterStatistics|null $statistics
+   * @param SendingQueueEntity|null $latestQueue
+   * @return array<string, mixed>
+   */
   private function buildListingItem(NewsletterEntity $newsletter, NewsletterStatistics $statistics = null, SendingQueueEntity $latestQueue = null): array {
     $couponBlockLogs = array_map(function ($item) {
       return "Coupon block: $item";
