@@ -12,6 +12,7 @@ import { useEntityProp } from '@wordpress/core-data';
 import { storeName } from '../../store';
 import { RichText } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
+import { PersonalizationTagsPopover } from './personalization-tags-popover';
 
 export function RichTextWithButton( {
 	label,
@@ -103,6 +104,22 @@ export function RichTextWithButton( {
 					setIsModalOpened( false );
 				} }
 				closeCallback={ () => setIsModalOpened( false ) }
+			/>
+			<PersonalizationTagsPopover
+				contentRef={ richTextRef }
+				onUpdate={ ( originalTag, updatedTag ) => {
+					const currentValue =
+						mailpoetEmailData[ attributeName ] ?? '';
+					// When we update the tag, we need to add brackets to the tag, because the popover removes them
+					const updatedContent = currentValue.replace(
+						`<!--[${ originalTag }]-->`,
+						`<!--[${ updatedTag }]-->`
+					);
+					updateEmailMailPoetProperty(
+						attributeName,
+						updatedContent
+					);
+				} }
 			/>
 			<RichText
 				ref={ richTextRef }

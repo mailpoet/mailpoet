@@ -15,6 +15,7 @@ import { addFilter } from '@wordpress/hooks';
 import * as React from 'react';
 import { storeName } from '../../store';
 import { createHigherOrderComponent } from '@wordpress/compose';
+import { PersonalizationTagsPopover } from '../../components/personalization-tags/personalization-tags-popover';
 
 /**
  * Disable Rich text formats we currently cannot support
@@ -98,6 +99,19 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 					icon="shortcode"
 					title={ __( 'Personalization Tags', 'mailpoet' ) }
 					onClick={ () => setIsModalOpened( true ) }
+				/>
+				<PersonalizationTagsPopover
+					contentRef={ contentRef }
+					onUpdate={ ( originalTag, updatedTag ) => {
+						// When we update the tag, we need to add brackets to the tag, because the popover removes them
+						const updatedContent = blockContent.replace(
+							`<!--[${ originalTag }]-->`,
+							`<!--[${ updatedTag }]-->`
+						);
+						updateBlockAttributes( selectedBlockId, {
+							content: updatedContent,
+						} );
+					} }
 				/>
 				<PersonalizationTagsModal
 					isOpened={ isModalOpened }
