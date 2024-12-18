@@ -155,7 +155,9 @@ export function usePreviewTemplates(
 						template,
 						category: 'basic', // TODO: This will be updated once template category is implemented
 						type: template.type,
-						presentName: `${ template.title } - ${ contentPattern.name }`,
+						displayName: contentPattern.title
+							? `${ template.title.rendered } - ${ contentPattern.title }`
+							: template.title.rendered,
 					} );
 				} );
 			} );
@@ -178,22 +180,23 @@ export function usePreviewTemplates(
 					parsedPostContent
 				);
 			}
-
+			const template = {
+				...post,
+				title: {
+					raw: post?.mailpoet_data?.subject || post.title.raw,
+					rendered:
+						post?.mailpoet_data?.subject || post.title.rendered, // use MailPoet subject as title
+				},
+			};
 			return {
 				id: post.id,
 				slug: post.slug,
 				previewContentParsed: parsedPostContentWithTemplate,
 				emailParsed: parsedPostContent,
-				template: {
-					...post,
-					title: {
-						raw: post?.mailpoet_data?.subject || post.title.raw,
-						rendered:
-							post?.mailpoet_data?.subject || post.title.rendered, // use MailPoet subject as title
-					},
-				},
 				category: 'recent',
 				type: post.type,
+				displayName: template.title.rendered,
+				template,
 			};
 		} ) as unknown as TemplatePreview[];
 	}, [ emailPosts, allTemplates ] );

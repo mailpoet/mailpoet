@@ -101,7 +101,7 @@ function TemplateListBox( {
 
 							<HStack className="block-editor-patterns__pattern-details">
 								<h4 className="block-editor-block-patterns-list__item-title">
-									{ template.template.title.rendered }
+									{ template.displayName }
 								</h4>
 							</HStack>
 						</Async>
