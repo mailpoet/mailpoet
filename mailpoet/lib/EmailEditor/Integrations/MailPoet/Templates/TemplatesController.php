@@ -20,18 +20,18 @@ class TemplatesController {
   }
 
   public function registerTemplates() {
-    $simpleLight = [
-      'title' => __('Simple Light', 'mailpoet'),
+    $newsletter = [
+      'title' => __('Newsletter', 'mailpoet'),
       'description' => __('A basic template with header and footer.', 'mailpoet'),
-      'slug' => 'simple-light',
-      'filename' => 'simple-light.html',
+      'slug' => 'newsletter',
+      'filename' => 'newsletter.html',
     ];
     register_block_template(
-      $this->templatePrefix . '//' . $simpleLight['slug'],
+      $this->templatePrefix . '//' . $newsletter['slug'],
       [
-        'title' => $simpleLight['title'],
-        'description' => $simpleLight['description'],
-        'content' => (string)file_get_contents(__DIR__ . '/' . $simpleLight['filename']),
+        'title' => $newsletter['title'],
+        'description' => $newsletter['description'],
+        'content' => (string)file_get_contents(__DIR__ . '/' . $newsletter['filename']),
         'post_types' => [EmailEditor::MAILPOET_EMAIL_POST_TYPE],
       ]
     );

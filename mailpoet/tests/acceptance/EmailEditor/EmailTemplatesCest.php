@@ -21,18 +21,18 @@ class EmailTemplatesCest {
     $i->waitForText('Create modern, beautiful emails that embody your brand with advanced customization and editing capabilities.');
     $i->click('//button[text()="Continue"]');
 
-    $this->selectTemplate($i, 'Simple Light');
+    $this->selectTemplate($i, 'Newsletter');
 
     $i->wantTo('Verify correct template is selected');
-    $i->waitForText('Simple Light', 10, '.mailpoet-email-sidebar__email-type-info');
+    $i->waitForText('Newsletter', 10, '.mailpoet-email-sidebar__email-type-info');
 
     $i->wantTo('Edit template');
-    $i->click('Simple Light', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
+    $i->click('Newsletter', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
     $i->waitForText('Edit template');
     $i->click('Edit template');
     $i->waitForText('Note that the same template can be used by multiple emails, so any changes made here may affect other emails on the site.');
     $i->click('Continue');
-    $i->waitForText('Simple Light', 10, '.mailpoet-email-sidebar__email-type-info');
+    $i->waitForText('Newsletter', 10, '.mailpoet-email-sidebar__email-type-info');
 
     $textInTemplate = 'Text added to template';
     $i->wantTo('Add some text to the template');
@@ -54,7 +54,7 @@ class EmailTemplatesCest {
     $this->checkTextIsInEmail($i, $textInTemplate);
 
     $i->wantTo('Swap template');
-    $i->click('Simple Light', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
+    $i->click('Newsletter', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
     $i->waitForText('Swap template');
     $i->click('Swap template');
     $this->selectTemplate($i, 'General Email');
@@ -66,10 +66,10 @@ class EmailTemplatesCest {
     $i->click('General Email', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
     $i->waitForText('Swap template');
     $i->click('Swap template');
-    $this->selectTemplate($i, 'Simple Light');
+    $this->selectTemplate($i, 'Newsletter');
     $this->checkTextIsInEmail($i, $textInTemplate);
 
-    $i->click('Simple Light', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
+    $i->click('Newsletter', '.mailpoet-email-sidebar__email-type-info'); // Button in sidebar
     $i->waitForText('Edit template');
     $i->click('Edit template');
     $i->click('Continue');
@@ -80,7 +80,7 @@ class EmailTemplatesCest {
     $i->click('Reset');
     $i->waitForText('This will clear ANY and ALL template customization. All updates made to the template will be lost. Do you want to proceed?');
     $i->click('Reset');
-    $i->waitForText('"Simple Light" reset.');
+    $i->waitForText('"Newsletter" reset.');
     $this->checkTextIsNotInEmail($i, $textInTemplate);
   }
 
