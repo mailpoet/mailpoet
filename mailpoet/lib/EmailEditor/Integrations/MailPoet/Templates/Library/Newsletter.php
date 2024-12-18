@@ -32,7 +32,7 @@ class Newsletter {
           <figure class="wp-block-image size-large is-resized">
             <img
               src="https://ps.w.org/mailpoet/assets/email-editor/your-logo-placeholder.png"
-              alt="Your Logo"
+              alt="' . __('Your Logo', 'mailpoet') . '"
               style="width: 130px"
                 />
           </figure>
@@ -62,9 +62,9 @@ class Newsletter {
               padding-bottom: var(--wp--preset--spacing--20);
             "
               >
-              You received this email because you are subscribed to the [site:title]
-            <br /><a href="[link:subscription_unsubscribe_url]">Unsubscribe</a> |
-            <a href="[link:subscription_manage_url]">Manage subscription</a>
+              ' . __('You received this email because you are subscribed to the [site:title]', 'mailpoet') . '
+            <br /><a href="[link:subscription_unsubscribe_url]">' . __('Unsubscribe', 'mailpoet') . '</a> |
+            <a href="[link:subscription_manage_url]">' . __('Manage subscription', 'mailpoet') . '</a>
           </p>
           <!-- /wp:paragraph -->
         </div>
