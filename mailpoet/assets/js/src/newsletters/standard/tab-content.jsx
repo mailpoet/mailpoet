@@ -166,6 +166,7 @@ export function StandardTabContent() {
             query={ { page: 2 } }
             rowsPerPage={ 7 }
             totalRows={ 10 }
+            showMenu={false}
         />
         </div>
         
