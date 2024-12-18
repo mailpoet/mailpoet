@@ -113,6 +113,28 @@ class NewslettersResponseBuilder {
     return $data;
   }
 
+  private function processPersonalizationTags(string $content): string {
+    if (strpos($content, '<!--') === false) {
+      // we don't need to parse anything if there are no personalization tags
+      return $content;
+    }
+    if (!class_exists('\MailPoet\EmailEditor\Engine\PersonalizationTags\HTML_Tag_Processor')) {
+      // editor is not active, we cannot process personalization tags
+      return $content;
+    }
+
+    $content_processor = new \MailPoet\EmailEditor\Engine\PersonalizationTags\HTML_Tag_Processor($content);
+    while ($content_processor->next_token()) {
+      $type = $content_processor->get_token_type();
+      if ($type === '#comment') {
+        $token = $content_processor->get_modifiable_text();
+        $content_processor->replace_token($token);
+      }
+    }
+    $content_processor->flush_updates();
+    return $content_processor->get_updated_html();
+  }
+
   /**
    * @param NewsletterEntity[] $newsletters
    * @return mixed[]
@@ -138,7 +160,7 @@ class NewslettersResponseBuilder {
     $data = [
       'id' => (string)$newsletter->getId(), // (string) for BC
       'hash' => $newsletter->getHash(),
-      'subject' => $newsletter->getSubject(),
+      'subject' => $this->processPersonalizationTags($newsletter->getSubject()),
       'type' => $newsletter->getType(),
       'status' => $newsletter->getStatus(),
       'sent_at' => ($sentAt = $newsletter->getSentAt()) ? $sentAt->format(self::DATE_FORMAT) : null,

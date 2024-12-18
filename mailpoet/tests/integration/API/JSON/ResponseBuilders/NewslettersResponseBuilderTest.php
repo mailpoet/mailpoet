@@ -57,4 +57,22 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
     $em->remove($newsletter);
     $em->flush();
   }
+
+  public function testItReplacesPersonalizationTags() {
+    $em = $this->diContainer->get(EntityManager::class);
+    $responseBuilder = $this->diContainer->get(NewslettersResponseBuilder::class);
+    $em->persist($newsletter = new NewsletterEntity);
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
+    $newsletter->setSubject('Subject');
+    $em->flush();
+
+    $newsletter->setSubject('Subject');
+    $response = $responseBuilder->buildForListing([$newsletter]);
+    verify($response[0]['subject'])->equals('Subject');
+
+    $newsletter->setSubject('Hello <!--[mailpoet/subscriber-firstname default="subscriber"]-->!');
+    $response = $responseBuilder->buildForListing([$newsletter]);
+    verify($response[0]['subject'])->equals('Hello [mailpoet/subscriber-firstname default="subscriber"]!');
+  }
 }
