@@ -69,54 +69,53 @@ export function EmailTypeInfo() {
 											'Template actions',
 											'mailpoet'
 										) }
+										onToggle={ ( isOpen ) =>
+											recordEvent(
+												'sidebar_template_actions_clicked',
+												{
+													currentTemplate:
+														template?.title,
+													isOpen,
+												}
+											)
+										}
 									>
-										{ ( { onClose, isOpen } ) => {
-											if ( isOpen ) {
-												recordEvent(
-													'sidebar_template_actions_clicked',
-													{
-														currentTemplate:
-															template?.title,
-													}
-												);
-											}
-											return (
-												<>
-													<MenuItem
-														onClick={ () => {
-															recordEvent(
-																'sidebar_template_actions_edit_template_clicked'
-															);
-															setEditTemplateModalOpen(
-																true
-															);
-															onClose();
-														} }
-													>
-														{ __(
-															'Edit template',
-															'mailpoet'
-														) }
-													</MenuItem>
-													<MenuItem
-														onClick={ () => {
-															recordEvent(
-																'sidebar_template_actions_swap_template_clicked'
-															);
-															setSelectTemplateModalOpen(
-																true
-															);
-															onClose();
-														} }
-													>
-														{ __(
-															'Swap template',
-															'mailpoet'
-														) }
-													</MenuItem>
-												</>
-											);
-										} }
+										{ ( { onClose } ) => (
+											<>
+												<MenuItem
+													onClick={ () => {
+														recordEvent(
+															'sidebar_template_actions_edit_template_clicked'
+														);
+														setEditTemplateModalOpen(
+															true
+														);
+														onClose();
+													} }
+												>
+													{ __(
+														'Edit template',
+														'mailpoet'
+													) }
+												</MenuItem>
+												<MenuItem
+													onClick={ () => {
+														recordEvent(
+															'sidebar_template_actions_swap_template_clicked'
+														);
+														setSelectTemplateModalOpen(
+															true
+														);
+														onClose();
+													} }
+												>
+													{ __(
+														'Swap template',
+														'mailpoet'
+													) }
+												</MenuItem>
+											</>
+										) }
 									</DropdownMenu>
 								</FlexItem>
 							</Flex>
