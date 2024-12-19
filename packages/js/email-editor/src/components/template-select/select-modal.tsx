@@ -1,8 +1,15 @@
+/**
+ * WordPress dependencies
+ */
 import { useState, useEffect, memo } from '@wordpress/element';
 import { store as editorStore } from '@wordpress/editor';
 import { dispatch } from '@wordpress/data';
 import { Modal, Button, Flex, FlexItem } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
 import { usePreviewTemplates } from '../../hooks';
 import {
 	EmailEditorPostType,
@@ -12,8 +19,6 @@ import {
 } from '../../store';
 import { TemplateList } from './template-list';
 import { TemplateCategoriesListSidebar } from './template-categories-list-sidebar';
-
-const BLANK_TEMPLATE = 'email-general';
 
 const TemplateCategories: Array< { name: TemplateCategory; label: string } > = [
 	{
@@ -91,13 +96,11 @@ export function SelectTemplateModal( {
 	};
 
 	const handleCloseWithoutSelection = () => {
-		const blankTemplate = templates.find(
-			( template ) => template.slug === BLANK_TEMPLATE
-		) as unknown as TemplatePreview;
-		if ( ! blankTemplate ) {
+		const template = templates[ 0 ] ?? null;
+		if ( ! template ) {
 			return;
-		} // Prevent close if blank template is still not loaded
-		handleTemplateSelection( blankTemplate );
+		} // Prevent closing when templates are not loaded
+		handleTemplateSelection( template );
 	};
 
 	return (
