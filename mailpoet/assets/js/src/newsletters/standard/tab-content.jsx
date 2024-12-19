@@ -14,7 +14,7 @@ import { TextControl, SelectControl } from '@wordpress/components';
 
 
 import { useSelect, useDispatch } from '@wordpress/data';
-import { storeName } from '../store/constants';
+import { storeName } from 'newsletters/store';
 
 import { getRow } from './get-row';
 

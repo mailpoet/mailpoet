@@ -7,7 +7,7 @@ import { SegmentTags, FilterSegmentTag } from '../../common/tag/tags';
 import { ErrorBoundary  } from '../../common';
 import { Button, DropdownMenu } from '@wordpress/components';
 import { moreVertical } from '@wordpress/icons';
-import { newsletterStoreName } from 'newsletters/store';
+import { storeName } from 'newsletters/store';
 
 
 
@@ -64,7 +64,7 @@ export function getRow(newsletter, meta, dispatch, onSelect) {
             icon: null,
             onClick: () => {
                console.log(newsletter)
-               dispatch(newsletterStoreName).duplicateNewsletter(newsletter.id);
+               dispatch(storeName).duplicateNewsletter(newsletter.id);
             },
           },
         },

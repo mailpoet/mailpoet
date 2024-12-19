@@ -40,7 +40,7 @@ import { TopBarWithBeamer } from '../common/top-bar/top-bar';
 import { BackButton, PageHeader } from '../common/page-header';
 import { StandardTabContent } from 'newsletters/standard/tab-content.jsx';
 // import { ExampleApp } from './test-app';
-import { createStore, newsletterStoreName } from './store';
+import { createStore, storeName } from './store';
 import { useDispatch } from '@wordpress/data';
 import { useEffect } from 'react';
 
@@ -220,7 +220,7 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(newsletterStoreName).loadNewsletters();
+    dispatch(storeName).loadNewsletters();
   }
   , []);
 

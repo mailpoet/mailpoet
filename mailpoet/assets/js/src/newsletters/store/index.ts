@@ -6,10 +6,9 @@ import { createReduxStore, register } from '@wordpress/data';
 
 import * as selectors from './selectors';
 import * as actions from './actions';
-import { storeName } from './constants';
 import reducer from './reducers';
 
-export const newsletterStoreName = storeName;
+export const storeName = 'mailpoet/store/newsletters';
 
 export const createStore = () => {
   console.log('Creating store', storeName);
