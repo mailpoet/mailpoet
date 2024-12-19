@@ -24,6 +24,7 @@ import {
 } from '@wordpress/components';
 import { useEmailStyles } from '../../../hooks';
 import { getElementStyles } from '../utils';
+import { recordEvent } from '../../../events';
 
 export const DEFAULT_CONTROLS = {
 	fontFamily: true,
@@ -111,26 +112,76 @@ export function TypographyElementPanel( {
 
 	const setLetterSpacing = ( newValue ) => {
 		updateElementStyleProp( [ 'typography', 'letterSpacing' ], newValue );
+		recordEvent(
+			'styles_sidebar_screen_typography_element_panel_set_letter_spacing',
+			{
+				element,
+				newValue,
+				selectedDefaultLetterSpacing: newValue === defaultLetterSpacing,
+			}
+		);
 	};
 
 	const setLineHeight = ( newValue ) => {
 		updateElementStyleProp( [ 'typography', 'lineHeight' ], newValue );
+		recordEvent(
+			'styles_sidebar_screen_typography_element_panel_set_line_height',
+			{
+				element,
+				newValue,
+				selectedDefaultLineHeight: newValue === defaultLineHeight,
+			}
+		);
 	};
 
 	const setFontSize = ( newValue ) => {
 		updateElementStyleProp( [ 'typography', 'fontSize' ], newValue );
+		recordEvent(
+			'styles_sidebar_screen_typography_element_panel_set_font_size',
+			{
+				element,
+				headingLevel,
+				newValue,
+				selectedDefaultFontSize: newValue === defaultFontSize,
+			}
+		);
 	};
 
 	const setFontFamily = ( newValue ) => {
 		updateElementStyleProp( [ 'typography', 'fontFamily' ], newValue );
+		recordEvent(
+			'styles_sidebar_screen_typography_element_panel_set_font_family',
+			{
+				element,
+				newValue,
+				selectedDefaultFontFamily: newValue === defaultFontFamily,
+			}
+		);
 	};
 
 	const setTextDecoration = ( newValue ) => {
 		updateElementStyleProp( [ 'typography', 'textDecoration' ], newValue );
+		recordEvent(
+			'styles_sidebar_screen_typography_element_panel_set_text_decoration',
+			{
+				element,
+				newValue,
+				selectedDefaultTextDecoration:
+					newValue === defaultTextDecoration,
+			}
+		);
 	};
 
 	const setTextTransform = ( newValue ) => {
 		updateElementStyleProp( [ 'typography', 'textTransform' ], newValue );
+		recordEvent(
+			'styles_sidebar_screen_typography_element_panel_set_text_transform',
+			{
+				element,
+				newValue,
+				selectedDefaultTextTransform: newValue === defaultTextTransform,
+			}
+		);
 	};
 
 	const setFontAppearance = ( {
@@ -139,12 +190,29 @@ export function TypographyElementPanel( {
 	} ) => {
 		updateElementStyleProp( [ 'typography', 'fontStyle' ], newFontStyle );
 		updateElementStyleProp( [ 'typography', 'fontWeight' ], newFontWeight );
+		recordEvent(
+			'styles_sidebar_screen_typography_element_panel_set_font_appearance',
+			{
+				element,
+				newFontStyle,
+				newFontWeight,
+				selectedDefaultFontStyle: newFontStyle === defaultFontStyle,
+				selectedDefaultFontWeight: newFontWeight === defaultFontWeight,
+			}
+		);
 	};
 
 	const resetAll = () => {
 		updateElementStyleProp(
 			[ 'typography' ],
 			defaultElementStyles.typography
+		);
+		recordEvent(
+			'styles_sidebar_screen_typography_element_panel_reset_all_styles_selected',
+			{
+				element,
+				headingLevel,
+			}
 		);
 	};
 
@@ -207,7 +275,6 @@ export function TypographyElementPanel( {
 					hasFontStyles
 					hasFontWeights
 					size="__unstable-large"
-					__nextHasNoMarginBottom
 				/>
 			</ToolsPanelItem>
 			<ToolsPanelItem

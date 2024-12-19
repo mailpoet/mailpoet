@@ -10,58 +10,63 @@ import TypographyElementPanel, {
 } from '../panels/typography-element-panel';
 import TypographyPreview from '../previews/typography-preview';
 import ScreenHeader from './screen-header';
+import { recordEvent, recordEventOnce } from '../../../events';
+
+const PANELS = {
+	text: {
+		title: __( 'Text', 'mailpoet' ),
+		description: __(
+			'Manage the fonts and typography used on text.',
+			'mailpoet'
+		),
+		defaultControls: DEFAULT_CONTROLS,
+	},
+	link: {
+		title: __( 'Links', 'mailpoet' ),
+		description: __(
+			'Manage the fonts and typography used on links.',
+			'mailpoet'
+		),
+		defaultControls: {
+			...DEFAULT_CONTROLS,
+			textDecoration: true,
+		},
+	},
+	heading: {
+		title: __( 'Headings', 'mailpoet' ),
+		description: __(
+			'Manage the fonts and typography used on headings.',
+			'mailpoet'
+		),
+		defaultControls: {
+			...DEFAULT_CONTROLS,
+			textTransform: true,
+		},
+	},
+	button: {
+		title: __( 'Buttons', 'mailpoet' ),
+		description: __(
+			'Manage the fonts and typography used on buttons.',
+			'mailpoet'
+		),
+		defaultControls: DEFAULT_CONTROLS,
+	},
+};
 
 export function ScreenTypographyElement( {
 	element,
 }: {
 	element: string;
 } ): JSX.Element {
+	recordEventOnce( 'styles_sidebar_screen_typography_element_opened', {
+		element,
+	} );
 	const [ headingLevel, setHeadingLevel ] = useState( 'heading' );
-	const panels = {
-		text: {
-			title: __( 'Text', 'mailpoet' ),
-			description: __(
-				'Manage the fonts and typography used on text.',
-				'mailpoet'
-			),
-			defaultControls: DEFAULT_CONTROLS,
-		},
-		link: {
-			title: __( 'Links', 'mailpoet' ),
-			description: __(
-				'Manage the fonts and typography used on links.',
-				'mailpoet'
-			),
-			defaultControls: {
-				...DEFAULT_CONTROLS,
-				textDecoration: true,
-			},
-		},
-		heading: {
-			title: __( 'Headings', 'mailpoet' ),
-			description: __(
-				'Manage the fonts and typography used on headings.',
-				'mailpoet'
-			),
-			defaultControls: {
-				...DEFAULT_CONTROLS,
-				textTransform: true,
-			},
-		},
-		button: {
-			title: __( 'Buttons', 'mailpoet' ),
-			description: __(
-				'Manage the fonts and typography used on buttons.',
-				'mailpoet'
-			),
-			defaultControls: DEFAULT_CONTROLS,
-		},
-	};
 	return (
 		<>
 			<ScreenHeader
-				title={ panels[ element ].title }
-				description={ panels[ element ].description }
+				title={ PANELS[ element ].title }
+				description={ PANELS[ element ].description }
 			/>
 			<Spacer marginX={ 4 }>
 				<TypographyPreview
@@ -75,9 +80,13 @@ export function ScreenTypographyElement( {
 						label={ __( 'Select heading level', 'mailpoet' ) }
 						hideLabelFromVision
 						value={ headingLevel }
-						onChange={ ( value ) =>
-							setHeadingLevel( value.toString() )
-						}
+						onChange={ ( value ) => {
+							setHeadingLevel( value.toString() );
+							recordEvent(
+								'styles_sidebar_screen_typography_element_heading_level_selected',
+								{ value }
+							);
+						} }
 						isBlock
 						size="__unstable-large"
 						__nextHasNoMarginBottom
@@ -108,7 +117,7 @@ export function ScreenTypographyElement( {
 			<TypographyElementPanel
 				element={ element }
 				headingLevel={ headingLevel }
-				defaultControls={ panels[ element ].defaultControls }
+				defaultControls={ PANELS[ element ].defaultControls }
 			/>
 		</>
 	);

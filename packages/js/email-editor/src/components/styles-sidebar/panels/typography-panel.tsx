@@ -15,6 +15,7 @@ import {
 } from '@wordpress/components';
 import { useEmailStyles } from '../../../hooks';
 import { getElementStyles } from '../utils';
+import { recordEvent } from '../../../events';
 
 function ElementItem( { element, label }: { element: string; label: string } ) {
 	const { styles } = useEmailStyles();
@@ -42,6 +43,16 @@ function ElementItem( { element, label }: { element: string; label: string } ) {
 			<NavigatorButton
 				path={ `/typography/${ element }` }
 				aria-label={ navigationButtonLabel }
+				onClick={ () =>
+					recordEvent(
+						'styles_sidebar_screen_typography_button_click',
+						{
+							element,
+							label,
+							path: `typography/${ element }`,
+						}
+					)
+				}
 			>
 				<HStack justify="flex-start">
 					<FlexItem

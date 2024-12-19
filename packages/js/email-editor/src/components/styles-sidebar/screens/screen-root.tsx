@@ -13,6 +13,7 @@ import {
 import { __ } from '@wordpress/i18n';
 import { typography, color, layout } from '@wordpress/icons';
 import { Preview } from './preview';
+import { recordEvent } from '../../../events';
 
 export function ScreenRoot(): JSX.Element {
 	return (
@@ -29,7 +30,15 @@ export function ScreenRoot(): JSX.Element {
 						</CardMedia>
 					</Card>
 					<ItemGroup>
-						<NavigatorButton path="/typography">
+						<NavigatorButton
+							path="/typography"
+							onClick={ () =>
+								recordEvent(
+									'styles_sidebar_navigation_click',
+									{ path: 'typography' }
+								)
+							}
+						>
 							<Item>
 								<HStack justify="flex-start">
 									<Icon icon={ typography } size={ 24 } />
@@ -39,7 +48,15 @@ export function ScreenRoot(): JSX.Element {
 								</HStack>
 							</Item>
 						</NavigatorButton>
-						<NavigatorButton path="/colors">
+						<NavigatorButton
+							path="/colors"
+							onClick={ () =>
+								recordEvent(
+									'styles_sidebar_navigation_click',
+									{ path: 'colors' }
+								)
+							}
+						>
 							<Item>
 								<HStack justify="flex-start">
 									<Icon icon={ color } size={ 24 } />
@@ -49,7 +66,15 @@ export function ScreenRoot(): JSX.Element {
 								</HStack>
 							</Item>
 						</NavigatorButton>
-						<NavigatorButton path="/layout">
+						<NavigatorButton
+							path="/layout"
+							onClick={ () =>
+								recordEvent(
+									'styles_sidebar_navigation_click',
+									{ path: 'layout' }
+								)
+							}
+						>
 							<Item>
 								<HStack justify="flex-start">
 									<Icon icon={ layout } size={ 24 } />
