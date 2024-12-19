@@ -16,6 +16,8 @@ class Newsletter {
   }
 
   public function getContent(): string {
+    // translators: This is a text used in a footer on an email <!--[mailpoet/site-title]--> will be replaced with the site title.
+    $footerText = __('You received this email because you are subscribed to the <!--[mailpoet/site-title]-->', 'mailpoet');
     return '<!-- wp:group {"backgroundColor":"white","layout":{"type":"constrained"},"lock":{"move":false,"remove":false}} -->
       <div class="wp-block-group has-white-background-color has-background">
         <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}}} -->
@@ -62,7 +64,7 @@ class Newsletter {
               padding-bottom: var(--wp--preset--spacing--20);
             "
               >
-              ' . __('You received this email because you are subscribed to the [site:title]', 'mailpoet') . '
+              ' . $footerText . '
             <br /><a href="[link:subscription_unsubscribe_url]">' . __('Unsubscribe', 'mailpoet') . '</a> |
             <a href="[link:subscription_manage_url]">' . __('Manage subscription', 'mailpoet') . '</a>
           </p>
