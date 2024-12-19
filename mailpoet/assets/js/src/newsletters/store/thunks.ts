@@ -1,14 +1,20 @@
-import { startStandardRequest, 
-         receiveStandardNewsletters, 
-         finishStandardRequest, 
-         receiveError, 
-         receiveMeta,
-         startDuplicateRequest,
-         receiveDuplicatedNewsletter,
-         finishDuplicateRequest 
-        } from './actions';
+import { MailPoet } from 'mailpoet';
+import { isErrorResponse } from '../../ajax';
 
-function extractStandardNewsletters(data) {
+
+import { 
+  startStandardRequest, 
+  receiveStandardNewsletters, 
+  finishStandardRequest, 
+  receiveError, 
+  receiveMeta,
+  startDuplicateRequest,
+  receiveDuplicatedNewsletter,
+  finishDuplicateRequest 
+} from './actions';
+import { NewsletterActions } from './types';
+
+function extractStandardNewsletters(data: any[]): any[] {
   return data.filter((item) => item.type == 'standard').map((item) => {
         return {
         ...item,
@@ -17,11 +23,7 @@ function extractStandardNewsletters(data) {
   });
 }
 
-
-
-
-export const loadNewsletters = () => async ({ select, dispatch }) => {
-
+export const loadNewsletters = () => async ({ dispatch }: { dispatch: (action: NewsletterActions) => void }): Promise<void> => {
   dispatch(startStandardRequest()); 
 
   try {
@@ -43,15 +45,23 @@ export const loadNewsletters = () => async ({ select, dispatch }) => {
     } else {
       dispatch(receiveError("Invalid response"));
     }
-  } catch (res) {
-    dispatch(receiveError(res.errors));
+  } catch (res: unknown) {
+    if (res === 'abort') {
+        dispatch(receiveError('aborted'));
+      }
+
+      if (isErrorResponse(res)) {
+        MailPoet.Notice.showApiErrorNotice(res);
+        dispatch(receiveError(res.errors[0].message));
+    }
+    
     dispatch(finishStandardRequest()); 
   } 
 };
 
 // We accept newsletterId as a parameter. That way, the UI calling this thunk 
 // can pass the ID directly instead of relying on store state.
-export const duplicateNewsletter = (newsletterId) => async ({ select, dispatch }) => {
+export const duplicateNewsletter = (newsletterId: number) => async ({ dispatch }: { dispatch: (action: NewsletterActions) => void }): Promise<void> => {
   dispatch(startDuplicateRequest());
   try {
     const response = await MailPoet.Ajax.post({
@@ -76,10 +86,16 @@ export const duplicateNewsletter = (newsletterId) => async ({ select, dispatch }
     }
 
     dispatch(finishDuplicateRequest());
-  } catch (err) {
-    // err likely has an errors property similar to your loadNewsletters code
-    const errorMessage = (err && err.errors) ? err.errors : 'An error occurred';
-    dispatch(receiveError(errorMessage));
-    dispatch(finishDuplicateRequest());
+} catch (res: unknown) {
+    if (res === 'abort') {
+        dispatch(receiveError('aborted'));
+      }
+
+      if (isErrorResponse(res)) {
+        MailPoet.Notice.showApiErrorNotice(res);
+        dispatch(receiveError(res.errors[0].message));
+    }
+    
+    dispatch(finishStandardRequest()); 
   }
 };
