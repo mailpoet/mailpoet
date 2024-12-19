@@ -4,6 +4,7 @@ import { store as noticesStore } from '@wordpress/notices';
 import { __ } from '@wordpress/i18n';
 
 import { storeName } from '../../store';
+import { recordEvent } from '../../events';
 
 export function SentEmailNotice() {
 	const { isEmailSent } = useSelect(
@@ -27,6 +28,7 @@ export function SentEmailNotice() {
 					context: 'email-editor',
 				}
 			);
+			recordEvent( 'editor_showed_email_sent_notice' );
 		}
 	}, [ isEmailSent ] );
 

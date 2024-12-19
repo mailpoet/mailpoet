@@ -1,6 +1,7 @@
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useEffect } from '@wordpress/element';
 import { storeName } from '../../store';
+import { recordEvent } from '../../events';
 
 /**
  * This component is simplified version of the original one from @wordpress/editor package.
@@ -25,6 +26,7 @@ export function AutosaveMonitor() {
 		if ( hasEdits && autosaveInterval > 0 ) {
 			autosaveTimer = setTimeout( () => {
 				void saveEditedEmail();
+				recordEvent( 'editor_content_auto_saved' );
 			}, autosaveInterval * 1000 );
 		}
 

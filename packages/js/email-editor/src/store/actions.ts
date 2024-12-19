@@ -102,7 +102,6 @@ export function* saveEditedEmail() {
 	);
 
 	result.then( () => {
-		recordEvent( 'editor-content-saved', { postId } );
 		void dispatch( noticesStore ).createErrorNotice(
 			__( 'Email saved!', 'mailpoet' ),
 			{
@@ -114,7 +113,6 @@ export function* saveEditedEmail() {
 	} );
 
 	result.catch( () => {
-		recordEvent( 'editor-content-not-saved', { postId } );
 		void dispatch( noticesStore ).createErrorNotice(
 			__(
 				'The email could not be saved. Please, clear browser cache and reload the page. If the problem persists, duplicate the email and try again.',
