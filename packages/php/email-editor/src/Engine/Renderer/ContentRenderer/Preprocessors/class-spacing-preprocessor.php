@@ -39,13 +39,13 @@ class Spacing_Preprocessor implements Preprocessor {
 			$parent_block_name = $parent_block['blockName'] ?? '';
 			// Ensure that email_attrs are set.
 			$block['email_attrs'] = $block['email_attrs'] ?? array();
+
 			/**
 			 * Do not add a gap to:
-			 * - the top level blocks - they are post-content, and header and footer wrappers and we don't want a gap between those
 			 * - first child
 			 * - parent block is a buttons block (where buttons are side by side).
 			 */
-			if ( $parent_block && 0 !== $key && $gap && 'core/buttons' !== $parent_block_name ) {
+			if ( 0 !== $key && $gap && 'core/buttons' !== $parent_block_name ) {
 				$block['email_attrs']['margin-top'] = $gap;
 			}
 
