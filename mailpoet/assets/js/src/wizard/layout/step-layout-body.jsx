@@ -4,7 +4,7 @@ function WelcomeWizardStepLayoutBody(props) {
   return (
     <div className="mailpoet-wizard-step">
       <div className="mailpoet-wizard-step-illustration">
-        <img src={props.illustrationUrl} width="500" alt="" />
+        <img src={props.illustrationUrl} alt="" />
       </div>
       <div className="mailpoet-wizard-step-content">{props.children}</div>
     </div>

@@ -73,7 +73,7 @@ export function ProductDiscovery({ onHide }: Props): JSX.Element {
         title={MailPoet.I18n.t('brandWooEmails')}
         description={MailPoet.I18n.t('brandWooEmailsDesc')}
         link="admin.php?page=mailpoet-settings#/woocommerce"
-        imgSrc={`${MailPoet.cdnUrl}homepage/woo-transactional-email-illustration.png`}
+        imgSrc={`${MailPoet.cdnUrl}homepage/woo-transactional-email-illustration.20241219.png`}
         isDone={tasksStatus.brandWooEmails}
         doneMessage={MailPoet.I18n.t('brandWooEmailsDone')}
       />,

@@ -12,7 +12,7 @@ const Images = {
     icon_4: `${MailPoet.cdnUrl}landingpage/feature_icon_4.png`,
   },
   wooCommerceFeatureImages: {
-    feature_1: `${MailPoet.cdnUrl}landingpage/woo_feature_automate_your_marketing.png`,
+    feature_1: `${MailPoet.cdnUrl}landingpage/woo_feature_automate_your_marketing.20241219.png`,
     feature_2: `${MailPoet.cdnUrl}landingpage/woo_feature_measure_revenue_per_email.png`,
     feature_3: `${MailPoet.cdnUrl}landingpage/woo_feature_let_your_brand_shine.png`,
     feature_4: `${MailPoet.cdnUrl}landingpage/woo_feature_rescue_abandoned_carts.png`,

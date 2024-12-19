@@ -13,7 +13,7 @@ export function Resources(): JSX.Element {
       link="https://kb.mailpoet.com/article/141-create-an-email-types-of-campaigns?utm_source=plugin&utm_medium=homepage&utm_campaign=resources"
       abstract={MailPoet.I18n.t('createAnEmailAbstract')}
       title={MailPoet.I18n.t('createAnEmailTitle')}
-      imgSrc={`${MailPoet.cdnUrl}homepage/resources/add_email.png`}
+      imgSrc={`${MailPoet.cdnUrl}homepage/resources/add_email.20241219.png`}
     />,
     <ResourcePost
       key="createAForm"
