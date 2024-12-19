@@ -6,6 +6,7 @@ import {
 	useEffect,
 	useRef,
 	createInterpolateElement,
+	memo,
 } from '@wordpress/element';
 import { ENTER } from '@wordpress/keycodes';
 import { isEmail } from '@wordpress/url';
@@ -15,8 +16,9 @@ import {
 	SendingPreviewStatus,
 	storeName,
 } from '../../store';
+import { recordEvent, recordEventOnce } from '../../events';
 
-export function SendPreviewEmail() {
+function RawSendPreviewEmail() {
 	const sendToRef = useRef( null );
 
 	const {
@@ -45,12 +47,16 @@ export function SendPreviewEmail() {
 		);
 	};
 
-	const closeCallback = () => togglePreviewModal( false );
+	const closeCallback = () => {
+		recordEvent( 'send_preview_email_modal_closed' );
+		void togglePreviewModal( false );
+	};
 
 	// We use this effect to focus on the input field when the modal is opened
 	useEffect( () => {
 		if ( isModalOpened ) {
 			sendToRef.current?.focus();
+			recordEvent( 'send_preview_email_modal_opened' );
 		}
 	}, [ isModalOpened ] );
 
@@ -85,6 +91,11 @@ export function SendPreviewEmail() {
 											href="admin.php?page=mailpoet-settings#mta"
 											target="_blank"
 											rel="noopener noreferrer"
+											onClick={ () =>
+												recordEvent(
+													'send_preview_email_modal_check_sending_method_configuration_link_clicked'
+												)
+											}
 										/>
 									),
 								}
@@ -107,6 +118,11 @@ export function SendPreviewEmail() {
 											key="sign-up-for-free"
 											target="_blank"
 											rel="noopener noreferrer"
+											onClick={ () =>
+												recordEvent(
+													'send_preview_email_modal_sign_up_for_mailpoet_sending_service_link_clicked'
+												)
+											}
 										/>
 									),
 								}
@@ -128,6 +144,11 @@ export function SendPreviewEmail() {
 								href="https://www.mail-tester.com/"
 								target="_blank"
 								rel="noopener noreferrer"
+								onClick={ () =>
+									recordEvent(
+										'send_preview_email_modal_send_test_email_to_mail_tester_link_clicked'
+									)
+								}
 							/>
 						),
 						link2: (
@@ -136,6 +157,11 @@ export function SendPreviewEmail() {
 								href="https://kb.mailpoet.com/article/147-test-your-spam-score-with-mail-tester"
 								target="_blank"
 								rel="noopener noreferrer"
+								onClick={ () =>
+									recordEvent(
+										'send_preview_email_modal_learn_more_about_mail_tester_link_clicked'
+									)
+								}
 							/>
 						),
 					}
@@ -145,12 +171,18 @@ export function SendPreviewEmail() {
 				label={ __( 'Send to', 'mailpoet' ) }
 				onChange={ ( email ) => {
 					void updateSendPreviewEmail( email );
+					recordEventOnce(
+						'send_preview_email_modal_send_to_field_updated'
+					);
 				} }
 				onKeyDown={ ( event ) => {
 					const { keyCode } = event;
 					if ( keyCode === ENTER ) {
 						event.preventDefault();
 						handleSendPreviewEmail();
+						recordEvent(
+							'send_preview_email_modal_send_to_field_key_code_enter'
+						);
 					}
 				} }
 				value={ previewToEmail }
@@ -165,12 +197,25 @@ export function SendPreviewEmail() {
 				</p>
 			) : null }
 			<div className="mailpoet-send-preview-modal-footer">
-				<Button variant="tertiary" onClick={ closeCallback }>
+				<Button
+					variant="tertiary"
+					onClick={ () => {
+						recordEvent(
+							'send_preview_email_modal_close_button_clicked'
+						);
+						closeCallback();
+					} }
+				>
 					{ __( 'Close', 'mailpoet' ) }
 				</Button>
 				<Button
 					variant="primary"
-					onClick={ handleSendPreviewEmail }
+					onClick={ () => {
+						handleSendPreviewEmail();
+						recordEvent(
+							'send_preview_email_modal_send_test_email_button_clicked'
+						);
+					} }
 					disabled={
 						isSendingPreviewEmail || ! isEmail( previewToEmail )
 					}
@@ -183,3 +228,5 @@ export function SendPreviewEmail() {
 		</Modal>
 	);
 }
+
+export const SendPreviewEmail = memo( RawSendPreviewEmail );

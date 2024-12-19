@@ -67,7 +67,6 @@ export function updateSendPreviewEmail( toEmail: string ) {
 export const openSidebar =
 	( key = mainSidebarDocumentTab ) =>
 	( { registry } ): unknown => {
-		recordEvent( 'editor-sidebar-opened' );
 		return registry
 			.dispatch( interfaceStore )
 			.enableComplementaryArea( storeName, key );
@@ -76,8 +75,6 @@ export const openSidebar =
 export const closeSidebar =
 	() =>
 	( { registry } ): unknown => {
-		recordEvent( 'editor-sidebar-closed' );
-
 		return registry
 			.dispatch( interfaceStore )
 			.disableComplementaryArea( storeName );
@@ -148,7 +145,6 @@ export function* updateEmailMailPoetProperty( name: string, value: string ) {
 			},
 		}
 	);
-	recordEvent( 'updated-mailpoet-email-property', { postId } );
 }
 
 export const setTemplateToPost =
@@ -199,9 +195,9 @@ export function* requestSendingNewsletterPreview(
 				isSendingPreviewEmail: false,
 			},
 		};
-		recordEvent( 'sent-preview-email', { postId, email } );
+		recordEvent( 'sent_preview_email', { postId, email } );
 	} catch ( errorResponse ) {
-		recordEvent( 'error-sent-preview-email', { email } );
+		recordEvent( 'sent_preview_email_error', { email } );
 		yield {
 			type: 'CHANGE_PREVIEW_STATE',
 			state: {

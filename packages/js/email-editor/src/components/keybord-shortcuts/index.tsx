@@ -7,6 +7,7 @@ import {
 } from '@wordpress/keyboard-shortcuts';
 import { __ } from '@wordpress/i18n';
 import { storeName } from '../../store';
+import { recordEvent } from '../../events';
 
 // See:
 //    https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/keyboard-shortcuts/index.js
@@ -78,10 +79,12 @@ export function KeyboardShortcuts(): null {
 	}, [ registerShortcut ] );
 
 	useShortcut( 'mailpoet/email-editor/toggle-fullscreen', () => {
+		recordEvent( 'keyboard_shortcuts_toggle_fullscreen' );
 		void toggleFeature( 'fullscreenMode' );
 	} );
 
 	useShortcut( 'mailpoet/email-editor/toggle-sidebar', ( event ) => {
+		recordEvent( 'keyboard_shortcuts_toggle_sidebar' );
 		event.preventDefault();
 
 		if ( isSidebarOpened ) {
@@ -92,6 +95,7 @@ export function KeyboardShortcuts(): null {
 	} );
 
 	useShortcut( 'mailpoet/email-editor/save', ( event ) => {
+		recordEvent( 'keyboard_shortcuts_save' );
 		event.preventDefault();
 		if ( ! hasEdits || isSaving ) {
 			return;
