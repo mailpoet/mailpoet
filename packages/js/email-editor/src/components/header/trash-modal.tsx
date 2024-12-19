@@ -3,6 +3,7 @@ import { Button, Modal } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { store as noticesStore } from '@wordpress/notices';
+import { recordEvent } from '../../events';
 
 export function TrashModal( {
 	onClose,
@@ -20,6 +21,7 @@ export function TrashModal( {
 		onClose();
 	};
 	const trashCallback = async () => {
+		recordEvent( 'trash_modal_move_to_trash_button_clicked' );
 		const success = await deleteEntityRecord(
 			'postType',
 			'mailpoet_email',
@@ -45,6 +47,9 @@ export function TrashModal( {
 							'An error occurred while moving the email to the trash.',
 							'mailpoet'
 					  );
+				recordEvent( 'trash_modal_move_to_trash_error', {
+					errorMessage,
+				} );
 				await createErrorNotice( errorMessage, {
 					type: 'snackbar',
 					isDismissible: true,
@@ -57,8 +62,11 @@ export function TrashModal( {
 		<Modal
 			className="mailpoet-move-to-trash-modal"
 			title={ __( 'Move to trash', 'mailpoet' ) }
-			onRequestClose={ closeCallback }
-			focusOnMount="firstContentElement"
+			onRequestClose={ () => {
+				closeCallback();
+				recordEvent( 'trash_modal_closed' );
+			} }
+			focusOnMount
 		>
 			<p>
 				{ __(
@@ -67,7 +75,13 @@ export function TrashModal( {
 				) }
 			</p>
 			<div className="mailpoet-send-preview-modal-footer">
-				<Button variant="tertiary" onClick={ closeCallback }>
+				<Button
+					variant="tertiary"
+					onClick={ () => {
+						closeCallback();
+						recordEvent( 'trash_modal_cancel_button_clicked' );
+					} }
+				>
 					{ __( 'Cancel', 'mailpoet' ) }
 				</Button>
 				<Button variant="primary" onClick={ trashCallback }>

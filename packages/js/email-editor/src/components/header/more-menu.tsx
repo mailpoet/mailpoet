@@ -8,6 +8,7 @@ import { PreferenceToggleMenuItem } from '@wordpress/preferences';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { storeName } from '../../store';
 import { TrashModal } from './trash-modal';
+import { recordEvent } from '../../events';
 
 // See:
 //   https://github.com/WordPress/gutenberg/blob/9601a33e30ba41bac98579c8d822af63dd961488/packages/edit-post/src/components/header/more-menu/index.js
@@ -42,8 +43,13 @@ export function MoreMenu(): JSX.Element {
 				} }
 				icon={ moreVertical }
 				label={ __( 'More', 'mailpoet' ) }
+				onToggle={ ( isOpened ) =>
+					recordEvent( 'header_more_menu_dropdown_toggle', {
+						isOpened,
+					} )
+				}
 			>
-				{ () => (
+				{ ( { onClose } ) => (
 					<>
 						<MenuGroup label={ _x( 'View', 'noun', 'mailpoet' ) }>
 							<PreferenceToggleMenuItem
@@ -62,6 +68,11 @@ export function MoreMenu(): JSX.Element {
 									'Top toolbar deactivated',
 									'mailpoet'
 								) }
+								onToggle={ () =>
+									recordEvent(
+										'header_more_menu_fixed_toolbar_toggle'
+									)
+								}
 							/>
 							<PreferenceToggleMenuItem
 								scope="core"
@@ -79,6 +90,11 @@ export function MoreMenu(): JSX.Element {
 									'Spotlight mode deactivated',
 									'mailpoet'
 								) }
+								onToggle={ () =>
+									recordEvent(
+										'header_more_menu_focus_mode_toggle'
+									)
+								}
 							/>
 							<PreferenceToggleMenuItem
 								scope={ storeName }
@@ -97,6 +113,11 @@ export function MoreMenu(): JSX.Element {
 									'mailpoet'
 								) }
 								shortcut={ displayShortcut.secondary( 'f' ) }
+								onToggle={ () =>
+									recordEvent(
+										'header_more_menu_fullscreen_mode_toggle'
+									)
+								}
 							/>
 						</MenuGroup>
 						<MenuGroup>
@@ -109,13 +130,22 @@ export function MoreMenu(): JSX.Element {
 											''
 										);
 										await saveEditedEmail();
+										recordEvent(
+											'header_more_menu_restore_from_trash_button_clicked'
+										);
 									} }
 								>
 									{ __( 'Restore from trash', 'mailpoet' ) }
 								</MenuItem>
 							) : (
 								<MenuItem
-									onClick={ () => setShowTrashModal( true ) }
+									onClick={ () => {
+										setShowTrashModal( true );
+										recordEvent(
+											'header_more_menu_move_to_trash_button_clicked'
+										);
+										onClose();
+									} }
 									isDestructive
 								>
 									{ __( 'Move to trash', 'mailpoet' ) }

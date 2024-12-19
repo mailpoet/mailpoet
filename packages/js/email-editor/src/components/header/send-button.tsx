@@ -8,6 +8,7 @@ import { useEntityProp } from '@wordpress/core-data';
 import { MailPoetEmailData, storeName } from '../../store';
 import { useSelect } from '@wordpress/data';
 import { useContentValidation, useEditorMode } from '../../hooks';
+import { recordEvent } from '../../events';
 
 export function SendButton() {
 	const [ mailpoetEmail ] = useEntityProp(
@@ -41,6 +42,7 @@ export function SendButton() {
 		<Button
 			variant="primary"
 			onClick={ () => {
+				recordEvent( 'header_send_button_clicked' );
 				if ( validateContent() ) {
 					window.location.href = `admin.php?page=mailpoet-newsletters#/send/${ mailpoetEmailData.id }`;
 				}

@@ -7,6 +7,7 @@ import {
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { storeName } from '../../store';
+import { recordEvent } from '../../events';
 
 const SaveAllContent = ( { onToggle } ) => {
 	// Hacky way to change the text in the templates row of the save dropdown
@@ -60,7 +61,12 @@ export function SaveAllButton() {
 				contentClassName="mailpoet-email-editor-save-button__dropdown"
 				renderToggle={ ( { onToggle } ) => (
 					<Button
-						onClick={ onToggle }
+						onClick={ () => {
+							recordEvent(
+								'header_save_all_button_save_button_clicked'
+							);
+							onToggle();
+						} }
 						variant="primary"
 						disabled={ isSaving }
 					>
