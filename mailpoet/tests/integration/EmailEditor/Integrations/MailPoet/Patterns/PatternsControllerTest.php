@@ -15,27 +15,38 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->patterns->registerPatterns();
     $blockPatterns = \WP_Block_Patterns_Registry::get_instance()->get_all_registered();
 
-    $blockPatternContent = array_pop($blockPatterns);
-    $this->assertIsArray($blockPatternContent);
-    $this->assertArrayHasKey('name', $blockPatternContent);
-    $this->assertArrayHasKey('content', $blockPatternContent);
-    $this->assertArrayHasKey('title', $blockPatternContent);
-    $this->assertArrayHasKey('categories', $blockPatternContent);
-    $this->assertEquals('mailpoet/default-content', $blockPatternContent['name']);
-    $this->assertStringContainsString('A one-column layout is great for simplified and concise content', $blockPatternContent['content']);
-    $this->assertEquals('Default Email Content', $blockPatternContent['title']);
-    $this->assertEquals(['email-contents'], $blockPatternContent['categories']);
+    $threeColumnContent = array_pop($blockPatterns);
+    $this->assertIsArray($threeColumnContent);
+    $this->assertArrayHasKey('name', $threeColumnContent);
+    $this->assertArrayHasKey('content', $threeColumnContent);
+    $this->assertArrayHasKey('title', $threeColumnContent);
+    $this->assertArrayHasKey('categories', $threeColumnContent);
+    $this->assertEquals('mailpoet/3-column-content', $threeColumnContent['name']);
+    $this->assertStringContainsString('A three-column layout organizes information into sections', $threeColumnContent['content']);
+    $this->assertEquals('3 Column', $threeColumnContent['title']);
+    $this->assertEquals(['email-contents'], $threeColumnContent['categories']);
 
-    $blockPatternContentFull = array_pop($blockPatterns);
-    $this->assertIsArray($blockPatternContentFull);
-    $this->assertArrayHasKey('name', $blockPatternContentFull);
-    $this->assertArrayHasKey('content', $blockPatternContentFull);
-    $this->assertArrayHasKey('title', $blockPatternContentFull);
-    $this->assertArrayHasKey('categories', $blockPatternContentFull);
-    $this->assertEquals('mailpoet/default-content-full', $blockPatternContentFull['name']);
-    $this->assertStringContainsString('A one-column layout is great for simplified and concise content', $blockPatternContentFull['content']);
-    $this->assertEquals('Default Email Content with Header and Footer', $blockPatternContentFull['title']);
-    $this->assertEquals(['email-contents'], $blockPatternContentFull['categories']);
+    $twoColumnContent = array_pop($blockPatterns);
+    $this->assertIsArray($twoColumnContent);
+    $this->assertArrayHasKey('name', $twoColumnContent);
+    $this->assertArrayHasKey('content', $twoColumnContent);
+    $this->assertArrayHasKey('title', $twoColumnContent);
+    $this->assertArrayHasKey('categories', $twoColumnContent);
+    $this->assertEquals('mailpoet/2-column-content', $twoColumnContent['name']);
+    $this->assertStringContainsString('A two-column layout organizes information into sections', $twoColumnContent['content']);
+    $this->assertEquals('2 Column', $twoColumnContent['title']);
+    $this->assertEquals(['email-contents'], $twoColumnContent['categories']);
+
+    $oneColumnContent = array_pop($blockPatterns);
+    $this->assertIsArray($oneColumnContent);
+    $this->assertArrayHasKey('name', $oneColumnContent);
+    $this->assertArrayHasKey('content', $oneColumnContent);
+    $this->assertArrayHasKey('title', $oneColumnContent);
+    $this->assertArrayHasKey('categories', $oneColumnContent);
+    $this->assertEquals('mailpoet/1-column-content', $oneColumnContent['name']);
+    $this->assertStringContainsString('A one-column layout is great for simplified and concise content', $oneColumnContent['content']);
+    $this->assertEquals('1 Column', $oneColumnContent['title']);
+    $this->assertEquals(['email-contents'], $oneColumnContent['categories']);
   }
 
   private function cleanupPatterns() {
