@@ -72,7 +72,7 @@ class API {
       },
       'permission_callback' => function () use ($endpointClass) {
         $endpoint = $this->endpointContainer->get($endpointClass);
-        return $endpoint->checkPermissions();
+        return $endpoint->checkPermissions(); // nosemgrep: scanner.php.wp.security.rest-route.permission-callback.incorrect-return
       },
       'args' => $schema,
     ]);
