@@ -2,7 +2,17 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Templates\Library;
 
+use MailPoet\Util\CdnAssetUrl;
+
 class Newsletter {
+  private CdnAssetUrl $cdnAssetUrl;
+
+  public function __construct(
+    CdnAssetUrl $cdnAssetUrl
+  ) {
+    $this->cdnAssetUrl = $cdnAssetUrl;
+  }
+
   public function getSlug(): string {
     return 'newsletter';
   }
@@ -33,7 +43,7 @@ class Newsletter {
           <!-- wp:image {"width":"130px","sizeSlug":"large"} -->
           <figure class="wp-block-image size-large is-resized">
             <img
-              src="https://ps.w.org/mailpoet/assets/email-editor/your-logo-placeholder.png"
+              src="' . esc_url($this->cdnAssetUrl->generateCdnUrl('email-editor/your-logo-placeholder.png')) . '"
               alt="' . __('Your Logo', 'mailpoet') . '"
               style="width: 130px"
                 />

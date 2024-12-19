@@ -4,16 +4,20 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet\Templates;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\EmailEditor\Integrations\MailPoet\Templates\Library\Newsletter;
+use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
 
 class TemplatesController {
   private string $templatePrefix = 'mailpoet';
   private WPFunctions $wp;
+  private CdnAssetUrl $cdnAssetUrl;
 
   public function __construct(
-    WPFunctions $wp
+    WPFunctions $wp,
+    CdnAssetUrl $cdnAssetUrl
   ) {
     $this->wp = $wp;
+    $this->cdnAssetUrl = $cdnAssetUrl;
   }
 
   public function initialize() {
@@ -21,7 +25,7 @@ class TemplatesController {
   }
 
   public function registerTemplates() {
-    $newsletter = new Newsletter();
+    $newsletter = new Newsletter($this->cdnAssetUrl);
     register_block_template(
       $this->templatePrefix . '//' . $newsletter->getSlug(),
       [
