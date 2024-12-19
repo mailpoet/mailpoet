@@ -138,7 +138,7 @@ const personalizationTagsLiveContentUpdate = createHigherOrderComponent(
 		);
 
 		// Memoized function to replace content tags
-		const updatedContent = useCallback( () => {
+		const updateContent = useCallback( () => {
 			if ( ! content ) {
 				return '';
 			}
@@ -176,7 +176,7 @@ const personalizationTagsLiveContentUpdate = createHigherOrderComponent(
 					{ ...props }
 					attributes={ {
 						...attributes,
-						content: updatedContent(),
+						content: updateContent(),
 					} }
 					setAttributes={ handleSetAttributes }
 				/>
@@ -192,7 +192,7 @@ const personalizationTagsLiveContentUpdate = createHigherOrderComponent(
 /**
  * Replace written personalization tags with HTML comments in real-time.
  */
-function replaceWrittenPersonalizationTags() {
+function activatePersonalizationTagsReplacing() {
 	addFilter(
 		'editor.BlockEdit',
 		'mailpoet-email-editor/with-live-content-update',
@@ -203,5 +203,5 @@ function replaceWrittenPersonalizationTags() {
 export {
 	disableCertainRichTextFormats,
 	extendRichTextFormats,
-	replaceWrittenPersonalizationTags,
+	activatePersonalizationTagsReplacing,
 };

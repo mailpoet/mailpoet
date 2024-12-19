@@ -11,7 +11,7 @@ import { disableImageFilter, hideExpandOnClick } from './core/image';
 import {
 	disableCertainRichTextFormats,
 	extendRichTextFormats,
-	replaceWrittenPersonalizationTags,
+	activatePersonalizationTagsReplacing,
 } from './core/rich-text';
 import { enhanceButtonBlock } from './core/button';
 import { enhanceButtonsBlock } from './core/buttons';
@@ -30,7 +30,7 @@ export function initBlocks() {
 	enhanceColumnsBlock();
 	enhancePostContentBlock();
 	extendRichTextFormats();
-	replaceWrittenPersonalizationTags();
+	activatePersonalizationTagsReplacing();
 	alterSupportConfiguration();
 	registerCoreBlocks();
 }
