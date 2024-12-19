@@ -92,6 +92,23 @@ class Personalizer {
 				// The title tag contains the subject of the email which should be personalized. HTML_Tag_Processor does parse the header tags.
 				$title = $this->personalize_content( $content_processor->get_modifiable_text() );
 				$content_processor->set_modifiable_text( $title );
+
+			} elseif ( $content_processor->get_token_type() === '#tag' && $content_processor->get_tag() === 'A' && $content_processor->get_attribute( 'data-link-href' ) ) {
+				// The anchor tag contains the data-link-href attribute which should be personalized.
+				$href  = $content_processor->get_attribute( 'data-link-href' );
+				$token = $this->parse_token( $href );
+				$tag   = $this->tags_registry->get_by_token( $token['token'] );
+				if ( ! $tag ) {
+					continue;
+				}
+
+				$value = $tag->execute_callback( $this->context, $token['arguments'] );
+				$value = $this->replace_link_href( $href, $tag->get_token(), $value );
+				if ( $value ) {
+					$content_processor->set_attribute( 'href', $value );
+					$content_processor->remove_attribute( 'data-link-href' );
+					$content_processor->remove_attribute( 'contenteditable' );
+				}
 			}
 		}
 
@@ -125,5 +142,24 @@ class Personalizer {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Replace the href attribute of the anchor tag with the personalized value.
+	 * The replacement uses regular expression to match the shortcode and its attributes.
+	 *
+	 * @param string $content The content to replace the link href.
+	 * @param string $token Personalization tag token.
+	 * @param string $replacement The callback output to replace the link href.
+	 * @return string
+	 */
+	private function replace_link_href( string $content, string $token, string $replacement ) {
+		// Escape the shortcode name for safe regex usage and strip the brackets.
+		$escaped_shortcode = preg_quote( substr( $token, 1, strlen( $token ) - 2 ), '/' );
+
+		// Create a regex pattern dynamically.
+		$pattern = '/\[' . $escaped_shortcode . '(?:\s+[^\]]+)?\]/';
+
+		return trim( (string) preg_replace( $pattern, $replacement, $content ) );
 	}
 }
