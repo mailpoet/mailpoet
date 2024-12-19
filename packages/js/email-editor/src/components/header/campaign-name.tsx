@@ -11,6 +11,7 @@ import { chevronDown } from '@wordpress/icons';
 import { useSelect } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import { storeName } from '../../store';
+import { recordEvent, recordEventOnce } from '../../events';
 
 // @see https://github.com/WordPress/gutenberg/blob/5e0ffdbc36cb2e967dfa6a6b812a10a2e56a598f/packages/edit-post/src/components/header/document-actions/index.js
 
@@ -42,7 +43,13 @@ export function CampaignName() {
 				renderToggle={ ( { isOpen, onToggle } ) => (
 					<>
 						<Button
-							onClick={ onToggle }
+							onClick={ () => {
+								onToggle();
+								recordEvent(
+									'header_campaign_name_email_title_clicked',
+									{ isOpen }
+								);
+							} }
 							className="mailpoet-email-campaign-name__link"
 						>
 							<Text size="body" as="h1">
@@ -57,7 +64,13 @@ export function CampaignName() {
 							icon={ chevronDown }
 							aria-expanded={ isOpen }
 							aria-haspopup="true"
-							onClick={ onToggle }
+							onClick={ () => {
+								onToggle();
+								recordEvent(
+									'header_campaign_name_toggle_icon_clicked',
+									{ isOpen }
+								);
+							} }
 							label={ __( 'Change campaign name', 'mailpoet' ) }
 						>
 							{ showIconLabels && __( 'Rename', 'mailpoet' ) }
@@ -71,6 +84,9 @@ export function CampaignName() {
 							value={ emailTitle }
 							onChange={ ( newTitle ) => {
 								setTitle( newTitle );
+								recordEventOnce(
+									'header_campaign_name_title_updated'
+								);
 							} }
 							name="campaign_name"
 							help={ __(

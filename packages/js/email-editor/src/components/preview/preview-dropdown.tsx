@@ -10,6 +10,7 @@ import { __ } from '@wordpress/i18n';
 import { Icon, external, check, mobile, desktop } from '@wordpress/icons';
 import { SendPreviewEmail } from './send-preview-email';
 import { storeName } from '../../store';
+import { recordEvent } from '../../events';
 
 export function PreviewDropdown() {
 	const [ mailpoetEmailData ] = useEntityProp(
@@ -46,13 +47,23 @@ export function PreviewDropdown() {
 				className="mailpoet-preview-dropdown"
 				label={ __( 'Preview', 'mailpoet' ) }
 				icon={ deviceIcons[ previewDeviceType.toLowerCase() ] }
+				onToggle={ ( isOpened ) =>
+					recordEvent( 'header_preview_dropdown_clicked', {
+						isOpened,
+					} )
+				}
 			>
 				{ ( { onClose } ) => (
 					<>
 						<MenuGroup>
 							<MenuItem
 								className="block-editor-post-preview__button-resize"
-								onClick={ () => changeDeviceType( 'Desktop' ) }
+								onClick={ () => {
+									changeDeviceType( 'Desktop' );
+									recordEvent(
+										'header_preview_dropdown_desktop_selected'
+									);
+								} }
 								icon={
 									previewDeviceType === 'Desktop' && check
 								}
@@ -61,7 +72,12 @@ export function PreviewDropdown() {
 							</MenuItem>
 							<MenuItem
 								className="block-editor-post-preview__button-resize"
-								onClick={ () => changeDeviceType( 'Mobile' ) }
+								onClick={ () => {
+									changeDeviceType( 'Mobile' );
+									recordEvent(
+										'header_preview_dropdown_mobile_selected'
+									);
+								} }
 								icon={ previewDeviceType === 'Mobile' && check }
 							>
 								{ __( 'Mobile', 'mailpoet' ) }
@@ -72,6 +88,9 @@ export function PreviewDropdown() {
 								className="block-editor-post-preview__button-resize"
 								onClick={ () => {
 									void togglePreviewModal( true );
+									recordEvent(
+										'header_preview_dropdown_send_test_email_selected'
+									);
 									onClose();
 								} }
 							>
@@ -84,6 +103,9 @@ export function PreviewDropdown() {
 									<Button
 										className="edit-post-header-preview__button-external components-menu-item__button"
 										onClick={ () => {
+											recordEvent(
+												'header_preview_dropdown_preview_in_new_tab_selected'
+											);
 											openInNewTab(
 												newsletterPreviewUrl
 											);

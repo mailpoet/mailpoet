@@ -34,6 +34,7 @@ import { CampaignName } from './campaign-name';
 import { SendButton } from './send-button';
 import { SaveAllButton } from './save-all-button';
 import { useEditorMode } from '../../hooks';
+import { recordEvent } from '../../events';
 
 // Build type for ToolbarItem contains only "as" and "children" properties but it takes all props from
 // component passed to "as" property (in this case Button). So as fix for TS errors we need to pass all props from Button to ToolbarItem.
@@ -101,15 +102,19 @@ export function Header() {
 
 	const toggleTheInserterSidebar = () => {
 		if ( isInserterSidebarOpened ) {
+			recordEvent( 'header_inserter_sidebar_closed' );
 			return setIsInserterOpened( false );
 		}
+		recordEvent( 'header_inserter_sidebar_opened' );
 		return setIsInserterOpened( true );
 	};
 
 	const toggleTheListviewSidebar = () => {
 		if ( isListviewSidebarOpened ) {
+			recordEvent( 'header_listview_sidebar_closed' );
 			return setIsListViewOpened( false );
 		}
+		recordEvent( 'header_listview_sidebar_opened' );
 		return setIsListViewOpened( true );
 	};
 
@@ -145,7 +150,10 @@ export function Header() {
 							className="editor-history__undo"
 							isPressed={ false }
 							onMouseDown={ preventDefault }
-							onClick={ undoAction }
+							onClick={ () => {
+								void undoAction();
+								recordEvent( 'header_undo_icon_clicked' );
+							} }
 							disabled={ ! hasUndo }
 							icon={ undo }
 							label={ __( 'Undo', 'mailpoet' ) }
@@ -157,7 +165,10 @@ export function Header() {
 							className="editor-history__redo"
 							isPressed={ false }
 							onMouseDown={ preventDefault }
-							onClick={ redoAction }
+							onClick={ () => {
+								void redoAction();
+								recordEvent( 'header_redo_icon_clicked' );
+							} }
 							disabled={ ! hasRedo }
 							icon={ redo }
 							label={ __( 'Redo', 'mailpoet' ) }
@@ -196,6 +207,10 @@ export function Header() {
 							onClick={ () => {
 								setIsBlockToolsCollapsed(
 									( collapsed ) => ! collapsed
+								);
+								recordEvent(
+									'header_blocks_tool_button_clicked',
+									{ isBlockToolsCollapsed }
 								);
 							} }
 							label={
