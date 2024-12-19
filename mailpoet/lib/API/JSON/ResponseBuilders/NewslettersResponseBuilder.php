@@ -113,7 +113,10 @@ class NewslettersResponseBuilder {
     return $data;
   }
 
-  private function processPersonalizationTags(string $content): string {
+  private function processPersonalizationTags(?string $content): ?string {
+    if (is_null($content) || strlen($content) === 0) {
+      return $content;
+    }
     if (strpos($content, '<!--') === false) {
       // we don't need to parse anything if there are no personalization tags
       return $content;
@@ -278,7 +281,7 @@ class NewslettersResponseBuilder {
       'meta' => $queue->getMeta(),
       'task_id' => (string)$task->getId(), // (string) for BC
       'newsletter_id' => ($newsletter = $queue->getNewsletter()) ? (string)$newsletter->getId() : null, // (string) for BC
-      'newsletter_rendered_subject' => $queue->getNewsletterRenderedSubject(),
+      'newsletter_rendered_subject' => $this->processPersonalizationTags($queue->getNewsletterRenderedSubject()),
       'count_total' => (string)$queue->getCountTotal(), // (string) for BC
       'count_processed' => (string)$queue->getCountProcessed(), // (string) for BC
       'count_to_process' => (string)$queue->getCountToProcess(), // (string) for BC

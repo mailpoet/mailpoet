@@ -5,6 +5,8 @@ namespace MailPoet\API\JSON\ResponseBuilders;
 use Codeception\Util\Stub;
 use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\NewsletterEntity;
+use MailPoet\Entities\ScheduledTaskEntity;
+use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Logging\LogRepository;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Sending\SendingQueuesRepository;
@@ -74,5 +76,24 @@ class NewslettersResponseBuilderTest extends \MailPoetTest {
     $newsletter->setSubject('Hello <!--[mailpoet/subscriber-firstname default="subscriber"]-->!');
     $response = $responseBuilder->buildForListing([$newsletter]);
     verify($response[0]['subject'])->equals('Hello [mailpoet/subscriber-firstname default="subscriber"]!');
+  }
+
+  public function testItReplacesPersonalizationTagsInSentEmail() {
+    $em = $this->diContainer->get(EntityManager::class);
+    $responseBuilder = $this->diContainer->get(NewslettersResponseBuilder::class);
+    $em->persist($newsletter = new NewsletterEntity);
+    $newsletter->setType(NewsletterEntity::TYPE_STANDARD);
+    $newsletter->setStatus(NewsletterEntity::STATUS_SENT);
+    $newsletter->setSubject('Subject');
+    $em->persist($task = new ScheduledTaskEntity());
+    $em->persist($queue = new SendingQueueEntity());
+    $queue->setNewsletter($newsletter);
+    $queue->setTask($task);
+    $queue->setNewsletterRenderedSubject('Hello <!--[mailpoet/subscriber-firstname default="subscriber"]-->!');
+    $em->flush();
+    $response = $responseBuilder->buildForListing([$newsletter]);
+    /** @var string[] $renderedQueue */
+    $renderedQueue = $response[0]['queue'];
+    verify($renderedQueue['newsletter_rendered_subject'])->equals('Hello [mailpoet/subscriber-firstname default="subscriber"]!');
   }
 }
