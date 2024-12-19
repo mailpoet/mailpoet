@@ -144,7 +144,9 @@ class Templates {
 		}
 		$block_templates = get_block_templates();
 		foreach ( $block_templates as $block_template ) {
-			if ( ! is_array( $block_template->post_types ) || ! array_intersect( $this->post_types, $block_template->post_types ) ) {
+			// Ideally we could check for supported post_types but there seems to be a bug and once a template has some edits and is stored in DB
+			// the core returns null for post_types.
+			if ( $block_template->plugin !== $this->template_prefix ) {
 				continue;
 			}
 			$templates[ $block_template->slug ] = $block_template;
