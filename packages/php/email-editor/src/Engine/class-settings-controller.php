@@ -68,6 +68,20 @@ class Settings_Controller {
 		 * in the post editor this is called directly in post.php.
 		 */
 		$this->iframe_assets = _wp_get_iframed_editor_assets();
+
+		// Remove layout styles and block library for classic themes. They are added only when a classic theme is active
+		// and they add unwanted margins and paddings in the editor content.
+		$cleaned_styles = array();
+		foreach ( explode( "\n", (string) $this->iframe_assets['styles'] ) as $asset ) {
+			if ( strpos( $asset, 'wp-editor-classic-layout-styles-css' ) !== false ) {
+				continue;
+			}
+			if ( strpos( $asset, 'wp-block-library-theme-css' ) !== false ) {
+				continue;
+			}
+			$cleaned_styles[] = $asset;
+		}
+		$this->iframe_assets['styles'] = implode( "\n", $cleaned_styles );
 	}
 
 	/**
