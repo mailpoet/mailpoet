@@ -2,7 +2,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useContext, useRef, useEffect } from '@wordpress/element';
+import { useContext, useRef, useEffect, memo } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 import {
 	BlockInspector,
@@ -75,7 +75,7 @@ function SidebarContent( props: Props ) {
 	);
 }
 
-export function Sidebar( props: Props ) {
+function RawSidebar( props: Props ) {
 	const { toggleSettingsSidebarActiveTab } = useDispatch( storeName );
 	const { activeTab, selectedBlockId } = useSelect(
 		( select ) => ( {
@@ -107,3 +107,5 @@ export function Sidebar( props: Props ) {
 		</Tabs>
 	);
 }
+
+export const Sidebar = memo( RawSidebar );

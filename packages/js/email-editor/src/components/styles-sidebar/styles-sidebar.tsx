@@ -1,3 +1,4 @@
+import { memo } from '@wordpress/element';
 import {
 	__experimentalNavigatorProvider as NavigatorProvider, // eslint-disable-line
 	__experimentalNavigatorScreen as NavigatorScreen, // eslint-disable-line
@@ -17,12 +18,13 @@ import {
 
 type Props = ComponentProps< typeof ComplementaryArea >;
 
-export function StylesSidebar( props: Props ): JSX.Element {
+export function RawStylesSidebar( props: Props ): JSX.Element {
 	return (
 		<ComplementaryArea
 			identifier={ stylesSidebarId }
 			className="mailpoet-email-editor__styles-panel"
 			header={ __( 'Styles', 'mailpoet' ) }
+			closeLabel={ __( 'Close styles sidebar', 'mailpoet' ) }
 			icon={ styles }
 			scope={ storeName }
 			smallScreenTitle={ __( 'No title', 'mailpoet' ) }
@@ -64,3 +66,5 @@ export function StylesSidebar( props: Props ): JSX.Element {
 		</ComplementaryArea>
 	);
 }
+
+export const StylesSidebar = memo( RawStylesSidebar );
