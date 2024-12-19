@@ -15,10 +15,17 @@ import { StylesColorPanel } from '../../../private-apis';
 import ScreenHeader from './screen-header';
 import { useEmailStyles } from '../../../hooks';
 import { storeName } from '../../../store';
+import { recordEvent, recordEventOnce } from '../../../events';
 
 export function ScreenColors(): JSX.Element {
+	recordEventOnce( 'styles_sidebar_screen_colors_opened' );
 	const { userStyles, styles, updateStyles } = useEmailStyles();
 	const theme = useSelect( ( select ) => select( storeName ).getTheme(), [] );
+
+	const handleOnChange = ( newStyles ) => {
+		updateStyles( newStyles );
+		recordEvent( 'styles_sidebar_screen_colors_styles_updated' );
+	};
 
 	return (
 		<>
@@ -32,7 +39,7 @@ export function ScreenColors(): JSX.Element {
 			<StylesColorPanel
 				value={ userStyles }
 				inheritedValue={ styles }
-				onChange={ updateStyles }
+				onChange={ handleOnChange }
 				settings={ theme?.settings }
 				panelId="colors"
 			/>

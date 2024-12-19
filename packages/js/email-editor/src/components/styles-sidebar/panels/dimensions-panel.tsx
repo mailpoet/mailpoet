@@ -12,6 +12,7 @@ import {
 import { __ } from '@wordpress/i18n';
 import { isEqual } from 'lodash';
 import { useEmailStyles } from '../../../hooks';
+import { recordEvent } from '../../../events';
 
 export function DimensionsPanel() {
 	const [ availableUnits ] = useSettings( 'spacing.units' ) as [ string[] ];
@@ -25,6 +26,9 @@ export function DimensionsPanel() {
 			label={ __( 'Dimensions', 'mailpoet' ) }
 			resetAll={ () => {
 				updateStyleProp( [ 'spacing' ], defaultStyles.spacing );
+				recordEvent(
+					'styles_sidebar_screen_layout_dimensions_reset_all_selected'
+				);
 			} }
 		>
 			<ToolsPanelItem
@@ -36,12 +40,15 @@ export function DimensionsPanel() {
 					)
 				}
 				label={ __( 'Padding', 'mailpoet' ) }
-				onDeselect={ () =>
+				onDeselect={ () => {
 					updateStyleProp(
 						[ 'spacing', 'padding' ],
 						defaultStyles.spacing.padding
-					)
-				}
+					);
+					recordEvent(
+						'styles_sidebar_screen_layout_dimensions_padding_reset_clicked'
+					);
+				} }
 				className="tools-panel-item-spacing"
 			>
 				<SpacingSizesControl
@@ -49,6 +56,10 @@ export function DimensionsPanel() {
 					values={ styles.spacing.padding }
 					onChange={ ( value ) => {
 						updateStyleProp( [ 'spacing', 'padding' ], value );
+						recordEvent(
+							'styles_sidebar_screen_layout_dimensions_padding_updated',
+							{ value }
+						);
 					} }
 					label={ __( 'Padding', 'mailpoet' ) }
 					sides={ [
@@ -68,12 +79,15 @@ export function DimensionsPanel() {
 				hasValue={ () =>
 					styles.spacing.blockGap !== defaultStyles.spacing.blockGap
 				}
-				onDeselect={ () =>
+				onDeselect={ () => {
 					updateStyleProp(
 						[ 'spacing', 'blockGap' ],
 						defaultStyles.spacing.blockGap
-					)
-				}
+					);
+					recordEvent(
+						'styles_sidebar_screen_layout_dimensions_block_spacing_reset_clicked'
+					);
+				} }
 				className="tools-panel-item-spacing"
 			>
 				<SpacingSizesControl
@@ -81,6 +95,10 @@ export function DimensionsPanel() {
 					min={ 0 }
 					onChange={ ( value ) => {
 						updateStyleProp( [ 'spacing', 'blockGap' ], value.top );
+						recordEvent(
+							'styles_sidebar_screen_layout_dimensions_block_spacing_updated',
+							{ value }
+						);
 					} }
 					showSideInLabel={ false }
 					sides={ [ 'top' ] } // Use 'top' as the shorthand property in non-axial configurations.
