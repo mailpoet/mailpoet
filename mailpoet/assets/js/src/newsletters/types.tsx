@@ -156,10 +156,19 @@ export function NewsletterTypes({
             <Icon icon={chevronDown} size={24} />
           </Button>
         )}
+        onToggle={(isOpen) =>
+          isOpen &&
+          MailPoet.trackEvent('New Email Editor > create email icon clicked')
+        }
         renderContent={() => (
           <MenuItem
             variant="tertiary"
-            onClick={() => setIsSelectEditorModalOpen(true)}
+            onClick={() => {
+              setIsSelectEditorModalOpen(true);
+              MailPoet.trackEvent(
+                'New Email Editor > creating using new email editor button clicked',
+              );
+            }}
           >
             {__('Create using the new email editor (Alpha)', 'mailpoet')}
           </MenuItem>

@@ -45,10 +45,22 @@ export function EditorSelectModal({
   if (!isModalOpen) {
     return null;
   }
+
+  MailPoet.trackEvent(
+    'New Email Editor > try new email editor modal opened',
+    {},
+    { send_immediately: true },
+  );
+
   return (
     <Modal
       title={__('Try the new email editor', 'mailpoet')}
-      onRequestClose={onClose}
+      onRequestClose={() => {
+        MailPoet.trackEvent(
+          'New Email Editor > try new email editor modal closed',
+        );
+        onClose();
+      }}
       className="mailpoet-new-editor-modal"
     >
       <div className="mailpoet-new-editor-modal-image">
@@ -85,7 +97,12 @@ export function EditorSelectModal({
           type="button"
           variant="tertiary"
           onClick={() => {
-            onClose();
+            MailPoet.trackEvent(
+              'New Email Editor > try new email editor modal cancel button clicked',
+              {},
+              { send_immediately: true },
+              onClose,
+            );
           }}
         >
           {__('Cancel', 'mailpoet')}
@@ -94,7 +111,14 @@ export function EditorSelectModal({
           type="button"
           variant="primary"
           isBusy={isLoading}
-          onClick={createNewsletterAndOpenEditor}
+          onClick={() => {
+            MailPoet.trackEvent(
+              'New Email Editor > try new email editor modal create with new editor button clicked',
+              {},
+              { send_immediately: true },
+              createNewsletterAndOpenEditor,
+            );
+          }}
         >
           {__('Continue', 'mailpoet')}
         </Button>
