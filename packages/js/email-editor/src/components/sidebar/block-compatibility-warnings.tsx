@@ -20,12 +20,20 @@ export function BlockCompatibilityWarnings(): JSX.Element {
 	);
 
 	// Check if the selected block has enabled border configuration
-	const hasBorderSupport = hasBlockSupport(
-		selectedBlock?.name,
-		// @ts-expect-error Border is not yet supported in the types
-		'__experimentalBorder',
-		false
-	);
+	const hasBorderSupport =
+		hasBlockSupport(
+			selectedBlock?.name,
+			// @ts-expect-error Border is not yet supported in the types
+			'border',
+			false
+		) ||
+		// We can remove the check for __experimentalBorder after we support WordPress 6.8+.
+		hasBlockSupport(
+			selectedBlock?.name,
+			// @ts-expect-error Border is not yet supported in the types
+			'__experimentalBorder',
+			false
+		);
 
 	return (
 		<>
