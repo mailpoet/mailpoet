@@ -50,7 +50,7 @@ class EmailTemplatesCest {
     $i->click('Save', '.edit-post-header__settings');
     $i->waitForText('Save', 10, '.entities-saved-states__panel');
     $i->click('Save', '.entities-saved-states__panel');
-    $i->waitForText('Saved');
+    $i->waitForText('Send', 10, '.edit-post-header__settings');
     $this->checkTextIsInEmail($i, $textInTemplate);
 
     $i->wantTo('Swap template');
