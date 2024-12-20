@@ -6,15 +6,37 @@ import './index.scss';
 import { useState } from '@wordpress/element';
 import { CategoryMenu } from './category-menu';
 import { CategorySection } from './category-section';
+import { LinkModal } from './link-modal';
 
-const PersonalizationTagsModal = ( { onInsert, isOpened, closeCallback } ) => {
+const PersonalizationTagsModal = ( {
+	onInsert,
+	isOpened,
+	closeCallback,
+	canInsertLink = false,
+} ) => {
 	const [ activeCategory, setActiveCategory ] = useState( null );
 	const [ searchQuery, setSearchQuery ] = useState( '' );
+	const [ selectedTag, setSelectedTag ] = useState( null );
+	const [ isLinkModalOpened, setIsLinkModalOpened ] = useState( false );
 
 	const list = useSelect(
 		( select ) => select( storeName ).getPersonalizationTagsList(),
 		[]
 	);
+
+	if ( isLinkModalOpened ) {
+		return (
+			<LinkModal
+				onInsert={ ( tag, linkText ) => {
+					onInsert( tag, linkText );
+					setIsLinkModalOpened( false );
+				} }
+				isOpened={ isLinkModalOpened }
+				closeCallback={ () => setIsLinkModalOpened( false ) }
+				tag={ selectedTag }
+			/>
+		);
+	}
 
 	if ( ! isOpened ) {
 		return null;
@@ -65,6 +87,12 @@ const PersonalizationTagsModal = ( { onInsert, isOpened, closeCallback } ) => {
 				groupedTags={ groupedTags }
 				activeCategory={ activeCategory }
 				onInsert={ onInsert }
+				closeCallback={ closeCallback }
+				canInsertLink={ canInsertLink }
+				openLinkModal={ ( tag ) => {
+					setSelectedTag( tag );
+					setIsLinkModalOpened( true );
+				} }
 			/>
 		</Modal>
 	);

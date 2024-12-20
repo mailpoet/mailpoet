@@ -1,4 +1,11 @@
-import { registerFormatType, unregisterFormatType } from '@wordpress/rich-text';
+import {
+	registerFormatType,
+	unregisterFormatType,
+	applyFormat,
+	insert,
+	create,
+	toHTMLString,
+} from '@wordpress/rich-text';
 import { __ } from '@wordpress/i18n';
 import { BlockControls } from '@wordpress/block-editor';
 import { ToolbarButton, ToolbarGroup } from '@wordpress/components';
@@ -59,7 +66,7 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 	} );
 
 	const handleInsert = useCallback(
-		( tag: string ) => {
+		( tag: string, linkText: string | null ) => {
 			const selection =
 				contentRef.current.ownerDocument.defaultView.getSelection();
 			if ( ! selection ) {
@@ -80,10 +87,37 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 				end = mapping[ end ] ?? blockContent.length;
 			}
 
-			const updatedContent =
-				blockContent.slice( 0, start ) +
-				`<!--${ tag }-->` +
-				blockContent.slice( end );
+			let updatedContent = '';
+			// When we pass linkText, we want to insert the tag as a link
+			if ( linkText ) {
+				let richTextValue = create( { html: blockContent } );
+
+				// Insert the new text into the current selection or at the cursor
+				richTextValue = insert( richTextValue, linkText, start, end );
+
+				end = start + linkText.length;
+				// The link is inserted via registered format type to avoid breaking the content
+				richTextValue = applyFormat(
+					richTextValue,
+					{
+						type: 'mailpoet-email-editor/link-shortcode',
+						// @ts-expect-error
+						attributes: {
+							'data-link-href': tag,
+							contenteditable: 'false',
+							style: 'text-decoration: underline;',
+						},
+					},
+					start,
+					end
+				);
+				updatedContent = toHTMLString( { value: richTextValue } );
+			} else {
+				updatedContent =
+					blockContent.slice( 0, start ) +
+					`<!--${ tag }-->` +
+					blockContent.slice( end );
+			}
 
 			updateBlockAttributes( selectedBlockId, {
 				content: updatedContent,
@@ -115,11 +149,12 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 				/>
 				<PersonalizationTagsModal
 					isOpened={ isModalOpened }
-					onInsert={ ( value ) => {
-						handleInsert( value );
+					onInsert={ ( value, linkText ) => {
+						handleInsert( value, linkText );
 						setIsModalOpened( false );
 					} }
 					closeCallback={ () => setIsModalOpened( false ) }
+					canInsertLink
 				/>
 			</ToolbarGroup>
 		</BlockControls>
@@ -131,12 +166,28 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
  */
 function extendRichTextFormats() {
 	registerFormatType( 'mailpoet-email-editor/shortcode', {
+		name: 'mailpoet-email-editor/shortcode',
 		title: __( 'Personalization Tags', 'mailpoet' ),
 		className: 'mailpoet-email-editor-personalization-tags',
 		tagName: 'span',
 		// @ts-expect-error
 		attributes: {},
 		edit: PersonalizationTagsButton,
+	} );
+
+	// Register format type for using personalization tags as link attributes
+	registerFormatType( 'mailpoet-email-editor/link-shortcode', {
+		name: 'mailpoet-email-editor/link-shortcode',
+		title: __( 'Personalization Tags Link', 'mailpoet' ),
+		className: 'mailpoet-email-editor__personalization-tags-link',
+		tagName: 'a',
+		// @ts-expect-error
+		attributes: {
+			'data-link-href': 'data-link-href',
+			contenteditable: 'contenteditable',
+			style: 'style',
+		},
+		edit: null,
 	} );
 }
 

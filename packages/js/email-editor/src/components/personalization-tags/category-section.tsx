@@ -6,10 +6,16 @@ const CategorySection = ( {
 	groupedTags,
 	activeCategory,
 	onInsert,
+	canInsertLink,
+	closeCallback,
+	openLinkModal,
 }: {
 	groupedTags: Record< string, PersonalizationTag[] >;
 	activeCategory: string | null;
-	onInsert: ( tag: string ) => void;
+	onInsert: ( tag: string, isLink: boolean ) => void;
+	canInsertLink: boolean;
+	closeCallback: () => void;
+	openLinkModal: ( tag: PersonalizationTag ) => void;
 } ) => {
 	const categoriesToRender: [ string, PersonalizationTag[] ][] =
 		activeCategory === null
@@ -34,16 +40,45 @@ const CategorySection = ( {
 										<strong>{ item.name }</strong>
 										{ item.valueToInsert }
 									</div>
-									<Button
-										variant="link"
-										onClick={ () => {
-											if ( onInsert ) {
-												onInsert( item.valueToInsert );
-											}
+									<div
+										style={ {
+											display: 'flex',
+											flexDirection: 'column',
+											alignItems: 'flex-end',
 										} }
 									>
-										{ __( 'Insert' ) }
-									</Button>
+										<Button
+											variant="link"
+											onClick={ () => {
+												if ( onInsert ) {
+													onInsert(
+														item.token,
+														false
+													);
+												}
+											} }
+										>
+											{ __( 'Insert' ) }
+										</Button>
+										{ category === __( 'Link' ) &&
+											canInsertLink && (
+												<>
+													<Button
+														variant="link"
+														onClick={ () => {
+															closeCallback();
+															openLinkModal(
+																item
+															);
+														} }
+													>
+														{ __(
+															'Insert as link'
+														) }
+													</Button>
+												</>
+											) }
+									</div>
 								</div>
 							) ) }
 						</div>
