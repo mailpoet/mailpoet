@@ -12,6 +12,7 @@ import { store as editorStore } from '@wordpress/editor';
  * Internal dependencies
  */
 import { useEditorMode } from '../../hooks';
+import { recordEvent } from '../../events';
 
 export function InserterSidebar() {
 	const { postContentId } = useSelect( ( select ) => {
@@ -38,7 +39,24 @@ export function InserterSidebar() {
 					rootClientId={
 						editorMode === 'email' ? postContentId : null
 					}
-					onClose={ () => setIsInserterOpened( false ) }
+					onClose={ () => {
+						setIsInserterOpened( false );
+						recordEvent(
+							'inserter_sidebar_library_close_icon_clicked',
+							{
+								editorMode,
+							}
+						);
+					} }
+					onSelect={ ( selectedBlock ) => {
+						recordEvent(
+							'inserter_sidebar_library_block_selected',
+							{
+								editorMode,
+								blockName: selectedBlock?.name,
+							}
+						);
+					} }
 				/>
 			</div>
 		</div>

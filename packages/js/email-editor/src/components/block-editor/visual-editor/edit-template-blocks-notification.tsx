@@ -6,7 +6,8 @@ import { useEffect, useState } from '@wordpress/element';
 import { store as editorStore } from '@wordpress/editor';
 import { __ } from '@wordpress/i18n';
 // eslint-disable-next-line
-import { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/components'; // eslint-disable-line
+import { __experimentalConfirmDialog as ConfirmDialog } from '@wordpress/components';
+import { recordEvent, recordEventOnce } from '../../../events'; // eslint-disable-line
 
 /**
  * Component that:
@@ -36,6 +37,10 @@ export default function EditTemplateBlocksNotification( { contentRef } ) {
 		};
 	}, [] );
 
+	recordEventOnce( 'edit_template_blocks_notification_opened', {
+		templateId,
+	} );
+
 	const [ isDialogOpen, setIsDialogOpen ] = useState( false );
 
 	useEffect( () => {
@@ -63,8 +68,18 @@ export default function EditTemplateBlocksNotification( { contentRef } ) {
 					postId: templateId,
 					postType: 'wp_template',
 				} );
+				recordEvent(
+					'edit_template_blocks_notification_edit_template_button_clicked',
+					{ templateId }
+				);
 			} }
-			onCancel={ () => setIsDialogOpen( false ) }
+			onCancel={ () => {
+				setIsDialogOpen( false );
+				recordEvent(
+					'edit_template_blocks_notification_cancel_button_clicked',
+					{ templateId }
+				);
+			} }
 			size="medium"
 		>
 			{ __(
