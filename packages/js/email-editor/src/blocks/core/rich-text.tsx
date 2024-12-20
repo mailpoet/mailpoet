@@ -22,6 +22,7 @@ import { storeName } from '../../store';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { PersonalizationTagsPopover } from '../../components/personalization-tags/personalization-tags-popover';
 import { PersonalizationTagsLinkPopover } from '../../components/personalization-tags/personalization-tags-link-popover';
+import { recordEvent } from '../../events';
 
 /**
  * Disable Rich text formats we currently cannot support
@@ -117,7 +118,12 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 				<ToolbarButton
 					icon="shortcode"
 					title={ __( 'Personalization Tags', 'mailpoet' ) }
-					onClick={ () => setIsModalOpened( true ) }
+					onClick={ () => {
+						setIsModalOpened( true );
+						recordEvent(
+							'block_controls_personalization_tags_button_clicked'
+						);
+					} }
 				/>
 				<PersonalizationTagsPopover
 					contentRef={ contentRef }
@@ -164,6 +170,7 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 					} }
 					closeCallback={ () => setIsModalOpened( false ) }
 					canInsertLink
+					openedBy="block-controls"
 				/>
 			</ToolbarGroup>
 		</BlockControls>

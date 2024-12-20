@@ -113,6 +113,7 @@ export function RichTextWithButton( {
 					);
 				} }
 				closeCallback={ () => setIsModalOpened( false ) }
+				openedBy="RichTextWithButton-BaseControl"
 			/>
 			<PersonalizationTagsPopover
 				contentRef={ richTextRef }

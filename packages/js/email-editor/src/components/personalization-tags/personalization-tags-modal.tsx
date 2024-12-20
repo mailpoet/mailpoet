@@ -14,6 +14,7 @@ const PersonalizationTagsModal = ( {
 	isOpened,
 	closeCallback,
 	canInsertLink = false,
+																		 openedBy = '',
 } ) => {
 	const [ activeCategory, setActiveCategory ] = useState( null );
 	const [ searchQuery, setSearchQuery ] = useState( '' );
@@ -43,7 +44,7 @@ const PersonalizationTagsModal = ( {
 		return null;
 	}
 
-	recordEventOnce( 'personalization_tags_modal_opened' );
+	recordEventOnce( 'personalization_tags_modal_opened', { openedBy } );
 
 	const groupedTags: Record< string, PersonalizationTag[] > = list.reduce(
 		( groups, item ) => {
@@ -69,8 +70,10 @@ const PersonalizationTagsModal = ( {
 			size="medium"
 			title={ __( 'Personalization Tags', 'mailpoet' ) }
 			onRequestClose={ () => {
-				recordEvent( 'personalization_tags_modal_closed' );
 				closeCallback();
+				recordEvent( 'personalization_tags_modal_closed', {
+					openedBy,
+				} );
 			} }
 			className="mailpoet-personalization-tags-modal"
 		>
@@ -83,7 +86,8 @@ const PersonalizationTagsModal = ( {
 					href="https://kb.mailpoet.com/article/435-a-guide-to-personalisation-tags-for-tailored-newsletters#list"
 					onClick={ () =>
 						recordEvent(
-							'personalization_tags_modal_learn_more_link_clicked'
+							'personalization_tags_modal_learn_more_link_clicked',
+							{ openedBy }
 						)
 					}
 				>
@@ -94,7 +98,8 @@ const PersonalizationTagsModal = ( {
 				onChange={ ( theSearchQuery ) => {
 					setSearchQuery( theSearchQuery );
 					recordEventOnce(
-						'personalization_tags_modal_search_control_input_updated'
+						'personalization_tags_modal_search_control_input_updated',
+						{ openedBy }
 					);
 				} }
 				value={ searchQuery }
@@ -108,6 +113,7 @@ const PersonalizationTagsModal = ( {
 						'personalization_tags_modal_category_menu_clicked',
 						{
 							category,
+							openedBy,
 						}
 					);
 				} }
@@ -122,6 +128,7 @@ const PersonalizationTagsModal = ( {
 						{
 							insertedTag,
 							activeCategory,
+							openedBy,
 						}
 					);
 				} }
