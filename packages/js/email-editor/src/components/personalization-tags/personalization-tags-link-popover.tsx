@@ -1,0 +1,125 @@
+import { useEffect, useState } from '@wordpress/element';
+import {
+	Popover,
+	Button,
+	TextControl,
+	SelectControl,
+} from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
+import { useSelect } from '@wordpress/data';
+import { storeName } from '../../store';
+
+type PersonalizationTagsLinkPopoverProps = {
+	contentRef: React.RefObject< HTMLElement >;
+	onUpdate: (
+		htmlElement: HTMLElement,
+		newTag: string,
+		newText: string
+	) => void;
+};
+const PersonalizationTagsLinkPopover = ( {
+	contentRef,
+	onUpdate,
+}: PersonalizationTagsLinkPopoverProps ) => {
+	const [ isPopoverVisible, setIsPopoverVisible ] = useState( false );
+	const [ linkElement, setLinkElement ] = useState< HTMLElement | null >(
+		null
+	);
+	const [ linkText, setLinkText ] = useState( '' );
+	const [ linkHref, setLinkHref ] = useState( '' );
+
+	const list = useSelect(
+		( select ) => select( storeName ).getPersonalizationTagsList(),
+		[]
+	);
+
+	useEffect( () => {
+		if ( ! contentRef || ! contentRef.current ) {
+			return undefined;
+		}
+
+		const container = contentRef.current;
+
+		// Handle clicks within the referenced container
+		const handleContainerClick = ( event: Event ) => {
+			const target = event.target as HTMLElement;
+			const element = target.closest(
+				'a[data-link-href]'
+			) as HTMLElement;
+
+			if ( element ) {
+				// Remove brackets from the text content for better user experience
+				setLinkElement( element );
+				setLinkHref( element.getAttribute( 'data-link-href' ) || '' );
+				setLinkText( element.textContent || '' );
+				setIsPopoverVisible( true );
+			}
+		};
+
+		// Add the event listener to the container
+		container.addEventListener( 'click', handleContainerClick );
+
+		// Cleanup function to remove the event listener on unmount
+		return () => {
+			container.removeEventListener( 'click', handleContainerClick );
+		};
+	}, [ contentRef ] );
+
+	return (
+		<>
+			{ isPopoverVisible && linkElement && (
+				<Popover
+					position="bottom left"
+					onClose={ () => setIsPopoverVisible( false ) }
+					anchor={ linkElement } // Directly use commentSpan as the anchor
+					className="mailpoet-personalization-tag-popover"
+				>
+					<div className="mailpoet-personalization-tag-popover__content">
+						<TextControl
+							label={ __( 'Link Text', 'mailpoet' ) }
+							value={ linkText }
+							onChange={ ( value ) => setLinkText( value ) }
+							__nextHasNoMarginBottom // To avoid warning about deprecation in console
+							autoComplete="off"
+						/>
+						<SelectControl
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+							label="Label"
+							value={ linkHref }
+							onChange={ ( value ) => {
+								setLinkHref( value );
+							} }
+							options={ list
+								.filter( ( tag ) => {
+									return (
+										tag.category ===
+										__( 'Link', 'mailpoet' )
+									);
+								} )
+								.map( ( tag ) => {
+									return {
+										label: tag.name,
+										value: tag.token,
+									};
+								} ) }
+						/>
+						<div className="mailpoet-personalization-tag-popover__content-button">
+							<Button
+								isPrimary
+								onClick={ () => {
+									setIsPopoverVisible( false );
+									onUpdate( linkElement, linkHref, linkText );
+								} }
+							>
+								{ __( 'Update link', 'mailpoet' ) }
+							</Button>
+						</div>
+					</div>
+				</Popover>
+			) }
+		</>
+	);
+};
+
+export { PersonalizationTagsLinkPopover };

@@ -23,6 +23,7 @@ import * as React from 'react';
 import { storeName } from '../../store';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { PersonalizationTagsPopover } from '../../components/personalization-tags/personalization-tags-popover';
+import { PersonalizationTagsLinkPopover } from '../../components/personalization-tags/personalization-tags-link-popover';
 
 /**
  * Disable Rich text formats we currently cannot support
@@ -141,6 +142,30 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 						const updatedContent = blockContent.replace(
 							`<!--[${ originalTag }]-->`,
 							`<!--[${ updatedTag }]-->`
+						);
+						updateBlockAttributes( selectedBlockId, {
+							content: updatedContent,
+						} );
+					} }
+				/>
+				<PersonalizationTagsLinkPopover
+					contentRef={ contentRef }
+					onUpdate={ ( htmlElement, newTag, newText ) => {
+						const oldTag = htmlElement
+							.getAttribute( 'data-link-href' )
+							.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
+						const regex = new RegExp(
+							`<a([^>]*?)data-link-href="${ oldTag }"([^>]*?)>${ htmlElement.textContent }</a>`,
+							'gi'
+						);
+
+						// Replace the matched link with the new link
+						const updatedContent = blockContent.replace(
+							regex,
+							( _, beforeAttrs, afterAttrs ) => {
+								// Construct the new <a> tag
+								return `<a${ beforeAttrs }data-link-href="${ newTag }"${ afterAttrs }>${ newText }</a>`;
+							}
 						);
 						updateBlockAttributes( selectedBlockId, {
 							content: updatedContent,
