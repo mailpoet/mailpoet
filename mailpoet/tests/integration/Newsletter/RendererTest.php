@@ -6,6 +6,7 @@ use Codeception\Util\Fixtures;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
+use MailPoet\Newsletter\NewsletterHtmlSanitizer;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Newsletter\Renderer\Blocks\Button;
 use MailPoet\Newsletter\Renderer\Blocks\Divider;
@@ -268,7 +269,11 @@ class RendererTest extends \MailPoetTest {
   public function testItRendersHeader() {
     $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][0]['blocks'][0]['blocks'][0];
-    $DOM = $this->dOMParser->parseStr((new Header)->render($template));
+    $headerRenderer = new Header(
+      $this->diContainer->get(NewsletterHtmlSanitizer::class),
+      $this->diContainer->get(WPFunctions::class)
+    );
+    $DOM = $this->dOMParser->parseStr($headerRenderer->render($template));
     // element should be properly nested, and styles should be applied
     verify($DOM('tr > td.mailpoet_header', 0)->html())->notEmpty();
     verify($DOM('tr > td > a', 0)->html())->notEmpty();
@@ -582,7 +587,11 @@ class RendererTest extends \MailPoetTest {
   public function testItRendersFooter() {
     $newsletter = (array)$this->newsletter->getBody();
     $template = $newsletter['content']['blocks'][3]['blocks'][0]['blocks'][0];
-    $DOM = $this->dOMParser->parseStr((new Footer)->render($template));
+    $footerRenderer = new Footer(
+      $this->diContainer->get(NewsletterHtmlSanitizer::class),
+      $this->diContainer->get(WPFunctions::class)
+    );
+    $DOM = $this->dOMParser->parseStr($footerRenderer->render($template));
     // element should be properly nested, and styles should be applied
     verify($DOM('tr > td.mailpoet_footer', 0)->html())->notEmpty();
     verify($DOM('tr > td > a', 0)->html())->notEmpty();
