@@ -53,7 +53,7 @@ function exportMixpanel() {
 
   if (
     window.mailpoet_analytics_enabled &&
-    window.MailPoet.libs3rdPartyEnabled
+    window.mailpoet_3rd_party_libs_enabled
   ) {
     window.MailPoet.trackEvent = track;
   } else {
