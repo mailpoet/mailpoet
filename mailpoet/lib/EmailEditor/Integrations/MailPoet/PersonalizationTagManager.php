@@ -4,19 +4,23 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tag;
 use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
+use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Link;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Site;
 use MailPoet\EmailEditor\Integrations\MailPoet\PersonalizationTags\Subscriber;
 
 class PersonalizationTagManager {
   private Subscriber $subscriber;
   private Site $site;
+  private Link $link;
 
   public function __construct(
     Subscriber $subscriber,
-    Site $site
+    Site $site,
+    Link $link
   ) {
     $this->subscriber = $subscriber;
     $this->site = $site;
+    $this->link = $link;
   }
 
   public function initialize() {
@@ -42,6 +46,7 @@ class PersonalizationTagManager {
         __('Subscriber', 'mailpoet'),
         [$this->subscriber, 'getEmail'],
       ));
+
       // Site Personalization Tags
       $registry->register(new Personalization_Tag(
         __('Site Title', 'mailpoet'),
@@ -54,6 +59,26 @@ class PersonalizationTagManager {
         'mailpoet/site-homepage-url',
         __('Site', 'mailpoet'),
         [$this->site, 'getHomepageURL'],
+      ));
+
+      // Links registration
+      $registry->register(new Personalization_Tag(
+        __('Unsubscribe URL', 'mailpoet'),
+        'mailpoet/subscription-unsubscribe-url',
+        __('Link', 'mailpoet'),
+        [$this->link, 'getSubscriptionUnsubscribeUrl'],
+      ));
+      $registry->register(new Personalization_Tag(
+        __('Manage subscription URL', 'mailpoet'),
+        'mailpoet/subscription-manage-url',
+        __('Link', 'mailpoet'),
+        [$this->link, 'getSubscriptionManageUrl'],
+      ));
+      $registry->register(new Personalization_Tag(
+        __('View in browser URL', 'mailpoet'),
+        'mailpoet/newsletter-view-in-browser-url',
+        __('Link', 'mailpoet'),
+        [$this->link, 'getNewsletterViewInBrowserUrl'],
       ));
       return $registry;
     });

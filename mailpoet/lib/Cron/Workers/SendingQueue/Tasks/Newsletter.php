@@ -289,7 +289,11 @@ class Newsletter {
     }
     $preparedNewsletter = Helpers::splitObject($preparedNewsletter);
     if ($newsletter->getWpPostId() !== null) {
-      $this->personalizer->set_context(['recipient_email' => $subscriber->getEmail() ?? null]);
+      $this->personalizer->set_context([
+        'recipient_email' => $subscriber->getEmail(),
+        'newsletter_id' => $newsletter->getId(),
+        'queue_id' => $queue->getId(),
+      ]);
       foreach ($preparedNewsletter as $key => $content) {
         $preparedNewsletter[$key] = $this->personalizer->personalize_content($content);
       }

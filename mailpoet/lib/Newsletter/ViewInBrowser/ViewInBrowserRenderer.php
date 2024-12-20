@@ -98,7 +98,12 @@ class ViewInBrowserRenderer {
       );
     }
     if ($newsletter->getWpPostId() !== null) {
-      $this->personalizer->set_context(['recipient_email' => $subscriber ? $subscriber->getEmail() : null]);
+      $this->personalizer->set_context([
+        'recipient_email' => $subscriber ? $subscriber->getEmail() : null,
+        'is_user_preview' => $wpUserPreview,
+        'newsletter_id' => $newsletter->getId(),
+        'queue_id' => $queue ? $queue->getId() : null,
+      ]);
       $renderedNewsletter = $this->personalizer->personalize_content($renderedNewsletter);
     }
     return $renderedNewsletter;
