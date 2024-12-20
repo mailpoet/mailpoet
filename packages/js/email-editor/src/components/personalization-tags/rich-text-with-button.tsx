@@ -12,6 +12,7 @@ import { RichText } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
 import { PersonalizationTagsPopover } from './personalization-tags-popover';
 import { create, insert, toHTMLString } from '@wordpress/rich-text';
+import { recordEvent, recordEventOnce } from '../../events';
 
 export function RichTextWithButton( {
 	label,
@@ -67,7 +68,16 @@ export function RichTextWithButton( {
 				className="mailpoet-settings-panel__personalization-tags-button"
 				icon="shortcode"
 				title={ __( 'Personalization Tags', 'mailpoet' ) }
-				onClick={ () => setIsModalOpened( true ) }
+				onClick={ () => {
+					setIsModalOpened( true );
+					recordEvent(
+						'rich_text_with_button_personalization_tags_shortcode_icon_clicked',
+						{
+							attributeName,
+							label,
+						}
+					);
+				} }
 			/>
 			{ labelSuffix }
 		</>
@@ -94,6 +104,13 @@ export function RichTextWithButton( {
 						selectionRange
 					);
 					setIsModalOpened( false );
+					recordEvent(
+						'rich_text_with_button_personalization_tags_inserted',
+						{
+							attributeName,
+							value,
+						}
+					);
 				} }
 				closeCallback={ () => setIsModalOpened( false ) }
 			/>
@@ -147,6 +164,12 @@ export function RichTextWithButton( {
 						list
 					);
 					updateEmailMailPoetProperty( attributeName, value );
+					recordEventOnce(
+						'rich_text_with_button_input_field_updated',
+						{
+							attributeName,
+						}
+					);
 				} }
 				value={ mailpoetEmailData[ attributeName ] ?? '' }
 				data-automation-id={ `email_${ attributeName }` }

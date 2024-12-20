@@ -7,6 +7,7 @@ import { useState } from '@wordpress/element';
 import { CategoryMenu } from './category-menu';
 import { CategorySection } from './category-section';
 import { LinkModal } from './link-modal';
+import { recordEvent, recordEventOnce } from '../../events';
 
 const PersonalizationTagsModal = ( {
 	onInsert,
@@ -42,6 +43,8 @@ const PersonalizationTagsModal = ( {
 		return null;
 	}
 
+	recordEventOnce( 'personalization_tags_modal_opened' );
+
 	const groupedTags: Record< string, PersonalizationTag[] > = list.reduce(
 		( groups, item ) => {
 			const { category, name, token } = item;
@@ -65,7 +68,10 @@ const PersonalizationTagsModal = ( {
 		<Modal
 			size="medium"
 			title={ __( 'Personalization Tags', 'mailpoet' ) }
-			onRequestClose={ closeCallback }
+			onRequestClose={ () => {
+				recordEvent( 'personalization_tags_modal_closed' );
+				closeCallback();
+			} }
 			className="mailpoet-personalization-tags-modal"
 		>
 			<p>
@@ -73,20 +79,52 @@ const PersonalizationTagsModal = ( {
 					'Insert personalization tags to dynamically fill in information and personalize your emails.',
 					'mailpoet'
 				) }{ ' ' }
-				<ExternalLink href="https://kb.mailpoet.com/article/435-a-guide-to-personalisation-tags-for-tailored-newsletters#list">
+				<ExternalLink
+					href="https://kb.mailpoet.com/article/435-a-guide-to-personalisation-tags-for-tailored-newsletters#list"
+					onClick={ () =>
+						recordEvent(
+							'personalization_tags_modal_learn_more_link_clicked'
+						)
+					}
+				>
 					{ __( 'Learn more', 'mailpoet' ) }
 				</ExternalLink>
 			</p>
-			<SearchControl onChange={ setSearchQuery } value={ searchQuery } />
+			<SearchControl
+				onChange={ ( theSearchQuery ) => {
+					setSearchQuery( theSearchQuery );
+					recordEventOnce(
+						'personalization_tags_modal_search_control_input_updated'
+					);
+				} }
+				value={ searchQuery }
+			/>
 			<CategoryMenu
 				groupedTags={ groupedTags }
 				activeCategory={ activeCategory }
-				onCategorySelect={ setActiveCategory }
+				onCategorySelect={ ( category ) => {
+					setActiveCategory( category );
+					recordEvent(
+						'personalization_tags_modal_category_menu_clicked',
+						{
+							category,
+						}
+					);
+				} }
 			/>
 			<CategorySection
 				groupedTags={ groupedTags }
 				activeCategory={ activeCategory }
-				onInsert={ onInsert }
+				onInsert={ ( insertedTag ) => {
+					onInsert( insertedTag );
+					recordEvent(
+						'personalization_tags_modal_tag_insert_button_clicked',
+						{
+							insertedTag,
+							activeCategory,
+						}
+					);
+				} }
 				closeCallback={ closeCallback }
 				canInsertLink={ canInsertLink }
 				openLinkModal={ ( tag ) => {

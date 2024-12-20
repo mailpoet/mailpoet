@@ -72,7 +72,8 @@ export function DetailsPanel() {
 					onClick={ () =>
 						recordEvent(
 							'details_panel_preheader_help_text_link_clicked'
-						)}
+						)
+					}
 				/>
 			),
 		}
@@ -93,7 +94,9 @@ export function DetailsPanel() {
 					<ExternalLink
 						href="https://kb.mailpoet.com/article/435-a-guide-to-personalisation-tags-for-tailored-newsletters#list"
 						onClick={ () =>
-							recordEvent( 'details_panel_personalisation_tags_guide_link_clicked' )
+							recordEvent(
+								'details_panel_personalisation_tags_guide_link_clicked'
+							)
 						}
 					>
 						{ __( 'Guide', 'mailpoet' ) }
