@@ -11,9 +11,7 @@ import { BlockControls } from '@wordpress/block-editor';
 import { ToolbarButton, ToolbarGroup } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import {
-	createTextToHtmlMap,
 	getCursorPosition,
-	isMatchingComment,
 	replacePersonalizationTagsWithHTMLComments,
 } from '../../components/personalization-tags/rich-text-utils';
 import { PersonalizationTagsModal } from '../../components/personalization-tags/personalization-tags-modal';
@@ -68,25 +66,7 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 
 	const handleInsert = useCallback(
 		( tag: string, linkText: string | null ) => {
-			const selection =
-				contentRef.current.ownerDocument.defaultView.getSelection();
-			if ( ! selection ) {
-				return;
-			}
-
-			const range = selection.getRangeAt( 0 );
-			if ( ! range ) {
-				return;
-			}
-
-			const { mapping } = createTextToHtmlMap( blockContent );
 			let { start, end } = getCursorPosition( contentRef, blockContent );
-
-			// If indexes are not matching a comment, update them
-			if ( ! isMatchingComment( blockContent, start, end ) ) {
-				start = mapping[ start ] ?? blockContent.length;
-				end = mapping[ end ] ?? blockContent.length;
-			}
 
 			let updatedContent = '';
 			// When we pass linkText, we want to insert the tag as a link
@@ -114,10 +94,14 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 				);
 				updatedContent = toHTMLString( { value: richTextValue } );
 			} else {
-				updatedContent =
-					blockContent.slice( 0, start ) +
-					`<!--${ tag }-->` +
-					blockContent.slice( end );
+				let richTextValue = create( { html: blockContent } );
+				richTextValue = insert(
+					richTextValue,
+					create( { html: `<!--${ tag }-->` } ),
+					start,
+					end
+				);
+				updatedContent = toHTMLString( { value: richTextValue } );
 			}
 
 			updateBlockAttributes( selectedBlockId, {

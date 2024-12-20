@@ -2,9 +2,7 @@ import { BaseControl, Button } from '@wordpress/components';
 import { PersonalizationTagsModal } from './personalization-tags-modal';
 import { useCallback, useRef, useState } from '@wordpress/element';
 import {
-	createTextToHtmlMap,
 	getCursorPosition,
-	isMatchingComment,
 	replacePersonalizationTagsWithHTMLComments,
 } from './rich-text-utils';
 import { useDispatch, useSelect } from '@wordpress/data';
@@ -13,6 +11,7 @@ import { storeName } from '../../store';
 import { RichText } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
 import { PersonalizationTagsPopover } from './personalization-tags-popover';
+import { create, insert, toHTMLString } from '@wordpress/rich-text';
 
 export function RichTextWithButton( {
 	label,
@@ -40,26 +39,18 @@ export function RichTextWithButton( {
 
 	const handleInsertPersonalizationTag = useCallback(
 		( tagName, currentValue, currentSelectionRange ) => {
-			// Generate text-to-HTML mapping
-			const { mapping } = createTextToHtmlMap( currentValue );
 			// Ensure selection range is within bounds
 			const start = currentSelectionRange?.start ?? currentValue.length;
 			const end = currentSelectionRange?.end ?? currentValue.length;
 
-			// Default values for starting and ending indexes.
-			let htmlStart = start;
-			let htmlEnd = end;
-			// If indexes are not matching a comment, update them
-			if ( ! isMatchingComment( currentValue, start, end ) ) {
-				htmlStart = mapping[ start ] ?? currentValue.length;
-				htmlEnd = mapping[ end ] ?? currentValue.length;
-			}
-
-			// Insert the new tag
-			const updatedValue =
-				currentValue.slice( 0, htmlStart ) +
-				`<!--${ tagName }-->` +
-				currentValue.slice( htmlEnd );
+			let richTextValue = create( { html: currentValue } );
+			richTextValue = insert(
+				richTextValue,
+				create( { html: `<!--${ tagName }-->` } ),
+				start,
+				end
+			);
+			const updatedValue = toHTMLString( { value: richTextValue } );
 
 			// Update the corresponding property
 			updateEmailMailPoetProperty( attributeName, updatedValue );
