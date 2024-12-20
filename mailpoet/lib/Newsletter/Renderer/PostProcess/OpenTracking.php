@@ -11,7 +11,7 @@ class OpenTracking {
   public static function process($template) {
     $DOM = new pQuery();
     $DOM = $DOM->parseStr($template);
-    $template = $DOM->query('body');
+    $template = $DOM->select('body');
     // url is a temporary data tag that will be further replaced with
     // the proper track API URL during sending
     $url = Links::DATA_TAG_OPEN;
@@ -19,7 +19,7 @@ class OpenTracking {
       '<img alt="" class="" src="%s"/>',
       $url
     );
-    $template->html($template->html() . $openTrackingImage);
+    self::appendToDomNodes($template, $openTrackingImage);
     return $DOM->__toString();
   }
 
@@ -28,5 +28,17 @@ class OpenTracking {
       return OpenTracking::process($template);
     });
     return true;
+  }
+
+  private static function appendToDomNodes($template, $openTrackingImage): void {
+    // Preserve backward compatibility with pQuery::html()
+    // by processing an array of DomNodes
+    if (!empty($template)) {
+      $template = is_array($template) ? $template : [$template];
+      array_map(
+        fn($item) => $item->html($item->toString(true, true, 1) . $openTrackingImage),
+        $template,
+      );
+    }
   }
 }
