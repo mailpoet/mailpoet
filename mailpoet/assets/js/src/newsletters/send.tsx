@@ -322,6 +322,13 @@ class NewsletterSendComponent extends Component<
           thumbnailPromise,
           validationError: validateNewsletter(response.data),
         });
+
+        if (response.data?.wp_post_id) {
+          MailPoet.trackEvent(
+            'New Email Editor > Newsletter created by BlockEmailEditor',
+          );
+        }
+
         return true;
       })
       .fail(() => {
@@ -471,6 +478,9 @@ class NewsletterSendComponent extends Component<
             scheduled: wasScheduled,
             'Segment Applied': !!this.state.item.options.filterSegmentId,
             segments,
+            editor: this.state.item.wp_post_id
+              ? 'BlockEmailEditor'
+              : 'legacyEditor',
           });
           if (wasScheduled) {
             this.context.notices.success(

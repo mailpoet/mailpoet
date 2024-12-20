@@ -156,6 +156,28 @@ class NewslettersRepository extends Repository {
       ->getSingleScalarResult() ?: 0;
   }
 
+  public function getGutenbergNewsletterSentCount(): int {
+    return intval($this->entityManager->createQueryBuilder()
+      ->select('COUNT(n.id)')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.deletedAt IS NULL')
+      ->andWhere('n.wpPost IS NOT NULL')
+      ->andWhere('n.status IN (:statuses)')
+      ->setParameter('statuses', [NewsletterEntity::STATUS_SENT])
+      ->getQuery()
+      ->getSingleScalarResult());
+  }
+
+  public function getTotalGutenbergNewsletterCount() {
+    return intval($this->entityManager->createQueryBuilder()
+      ->select('COUNT(n.id)')
+      ->from(NewsletterEntity::class, 'n')
+      ->where('n.deletedAt IS NULL')
+      ->andWhere('n.wpPost IS NOT NULL')
+      ->getQuery()
+      ->getSingleScalarResult());
+  }
+
   public function getAnalytics(): array {
     // for automatic emails join 'event' newsletter option to further group the counts
     $eventOptionId = (int)$this->entityManager->createQueryBuilder()
@@ -203,6 +225,8 @@ class NewslettersRepository extends Repository {
       'product_purchased_emails_count' => $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC][PurchasedProduct::SLUG] ?? 0,
       'product_purchased_in_category_emails_count' => $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC][PurchasedInCategory::SLUG] ?? 0,
       'abandoned_cart_emails_count' => $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC][AbandonedCart::SLUG] ?? 0,
+      'total_gutenberg_newsletter_count' => $this->getTotalGutenbergNewsletterCount() ?: 0,
+      'sent_gutenberg_newsletter_count' => $this->getGutenbergNewsletterSentCount() ?: 0,
     ];
     // Count all campaigns
     $analyticsMap[NewsletterEntity::TYPE_AUTOMATIC] = array_sum($analyticsMap[NewsletterEntity::TYPE_AUTOMATIC] ?? []);
