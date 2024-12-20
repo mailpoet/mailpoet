@@ -2,8 +2,11 @@
 
 namespace MailPoet\Newsletter\Renderer\Blocks;
 
-class FooterTest extends \MailPoetUnitTest {
+use MailPoet\Newsletter\NewsletterHtmlSanitizer;
+use MailPoet\WP\Functions as WPFunctions;
 
+class FooterTest extends \MailPoetUnitTest {
+  private Footer $renderer;
   private $block = [
     'type' => 'footer',
     'text' => '<p>Footer text. <a href="http://example.com">link</a></p>',
@@ -24,8 +27,21 @@ class FooterTest extends \MailPoetUnitTest {
     ],
   ];
 
+  public function _before() {
+    parent::_before();
+    $wpMock = $this->createMock(WPFunctions::class);
+    $wpMock->method('escAttr')->willReturnCallback(function($attr) {
+      return $attr;
+    });
+    $sanitizerMock = $this->createMock(NewsletterHtmlSanitizer::class);
+    $sanitizerMock->method('sanitize')->willReturnCallback(function($html) {
+      return $html;
+    });
+    $this->renderer = new Footer($sanitizerMock, $wpMock);
+  }
+
   public function testItRendersCorrectly() {
-    $output = (new Footer)->render($this->block);
+    $output = $this->renderer->render($this->block);
     $expectedResult = '
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_footer"  style="line-height: 19.2px;color: #222222;font-family: roboto, \'helvetica neue\', helvetica, arial, sans-serif;font-size: 12px;text-align: center;">
@@ -37,7 +53,7 @@ class FooterTest extends \MailPoetUnitTest {
 
   public function testItRendersWithBackgroundColor() {
     $this->block['styles']['block']['backgroundColor'] = '#f0f0f0';
-    $output = (new Footer)->render($this->block);
+    $output = $this->renderer->render($this->block);
     $expectedResult = '
       <tr>
         <td class="mailpoet_header_footer_padded mailpoet_footer" bgcolor="#f0f0f0" style="line-height: 19.2px;background-color: #f0f0f0;color: #222222;font-family: roboto, \'helvetica neue\', helvetica, arial, sans-serif;font-size: 12px;text-align: center;">
@@ -49,13 +65,13 @@ class FooterTest extends \MailPoetUnitTest {
 
   public function testItPrefersInlinedCssForLinks() {
     $this->block['text'] = '<p>Footer text. <a href="http://example.com" style="color:#aaaaaa;">link</a></p>';
-    $output = (new Footer)->render($this->block);
+    $output = $this->renderer->render($this->block);
     verify($output)->stringContainsString('<a href="http://example.com" style="color:#aaaaaa;text-decoration:none">link</a>');
   }
 
   public function testItRaisesExceptionIfTextIsNotString() {
     $this->block['text'] = ['some', 'array'];
     $this->expectException('RuntimeException');
-    (new Footer)->render($this->block);
+    $this->renderer->render($this->block);
   }
 }
