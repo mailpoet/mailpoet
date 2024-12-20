@@ -134,6 +134,7 @@ interface Window {
   mailpoet_date_format: string;
   mailpoet_listing_per_page: string;
   mailpoet_3rd_party_libs_enabled: string;
+  mailpoet_analytics_enabled: boolean;
   mailpoet_datetime_format: string;
   mailpoet_api_version: string;
   mailpoet_email_regex: RegExp;
