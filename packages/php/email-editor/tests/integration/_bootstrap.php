@@ -9,6 +9,7 @@ declare(strict_types = 1);
 
 use Codeception\Stub;
 use MailPoet\EmailEditor\Container;
+use MailPoet\EmailEditor\Engine\Dependency_Check;
 use MailPoet\EmailEditor\Engine\Email_Api_Controller;
 use MailPoet\EmailEditor\Engine\Email_Editor;
 use MailPoet\EmailEditor\Engine\Patterns\Patterns;
@@ -291,6 +292,12 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 				return new Email_Api_Controller(
 					$container->get( Personalization_Tags_Registry::class ),
 				);
+			}
+		);
+		$container->set(
+			Dependency_Check::class,
+			function () {
+				return new Dependency_Check();
 			}
 		);
 		$container->set(
