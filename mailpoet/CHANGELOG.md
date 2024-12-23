@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.5.2 - 2024-12-24 =
+
+- Improved: minor changes and fixes.
+
 = 5.5.1 - 2024-12-17 =
 
 - Improved: added option to protect WordPress and WooCommerce registration forms with a captcha.
