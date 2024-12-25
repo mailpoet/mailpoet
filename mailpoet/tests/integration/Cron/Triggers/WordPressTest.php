@@ -4,6 +4,7 @@ namespace MailPoet\Cron\Triggers;
 
 use MailPoet\Cron\CronHelper;
 use MailPoet\Cron\Workers\AuthorizedSendingEmailsCheck;
+use MailPoet\Cron\Workers\Automations\AbandonedCartWorker;
 use MailPoet\Cron\Workers\Bounce as BounceWorker;
 use MailPoet\Cron\Workers\InactiveSubscribers;
 use MailPoet\Cron\Workers\NewsletterTemplateThumbnails;
@@ -217,6 +218,11 @@ class WordPressTest extends \MailPoetTest {
 
   public function testItExecutesWhenAutomatedEmailsTaskIsDue() {
     $this->addScheduledTask(AutomatedEmails::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
+    verify($this->wordpressTrigger->checkExecutionRequirements())->true();
+  }
+
+  public function testItExecutesWhenAbandonedCartTaskIsDue() {
+    $this->addScheduledTask(AbandonedCartWorker::TASK_TYPE, ScheduledTaskEntity::STATUS_SCHEDULED);
     verify($this->wordpressTrigger->checkExecutionRequirements())->true();
   }
 
