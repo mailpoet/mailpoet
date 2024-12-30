@@ -65,7 +65,7 @@ function TemplateListBox( {
 		<div className="block-editor-block-patterns-list" role="listbox">
 			{ templates.map( ( template ) => (
 				<div
-					key={ `${ template.slug }_${ template.id }` }
+					key={ `${ template.slug }_${ template.displayName }_${ template.id }` }
 					className="block-editor-block-patterns-list__list-item email-editor-pattern__list-item"
 				>
 					<div
