@@ -6,6 +6,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Config\Env;
 use MailPoet\Config\Menu;
+use MailPoet\EmailEditor\Engine\Dependency_Check;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\PageLimit;
@@ -53,6 +54,8 @@ class Newsletters {
 
   private WooCommerce $wooCommerceSegment;
 
+  private Dependency_Check $dependencyCheck;
+
   private CapabilitiesManager $capabilitiesManager;
 
   public function __construct(
@@ -86,6 +89,7 @@ class Newsletters {
     $this->authorizedEmailsController = $authorizedEmailsController;
     $this->userFlagsController = $userFlagsController;
     $this->wooCommerceSegment = $wooCommerceSegment;
+    $this->dependencyCheck = $dependencyCheck;
     $this->capabilitiesManager = $capabilitiesManager;
   }
 
@@ -160,6 +164,7 @@ class Newsletters {
 
     $data['legacy_automatic_emails_notice_dismissed'] = (bool)$this->userFlagsController->get('legacy_automatic_emails_notice_dismissed');
 
+    $data['block_email_editor_enabled'] = $this->dependencyCheck->are_dependencies_met(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
     $this->pageRenderer->displayPage('newsletters.html', $data);
   }
 

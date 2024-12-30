@@ -294,4 +294,5 @@ interface Window {
   dataInconsistencies: {
     [key: string]: number;
   };
+  mailpoet_block_email_editor_enabled: boolean;
 }
