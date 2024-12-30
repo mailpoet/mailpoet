@@ -7,6 +7,7 @@ use MailPoet\AutomaticEmails\AutomaticEmails;
 use MailPoet\Config\Env;
 use MailPoet\Config\Menu;
 use MailPoet\EmailEditor\Engine\Dependency_Check;
+use MailPoet\EmailEditor\Integrations\MailPoet\EditorPageRenderer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SegmentEntity;
 use MailPoet\Listing\PageLimit;
@@ -73,6 +74,7 @@ class Newsletters {
     AuthorizedEmailsController $authorizedEmailsController,
     UserFlagsController $userFlagsController,
     WooCommerce $wooCommerceSegment,
+    Dependency_Check $dependencyCheck,
     CapabilitiesManager $capabilitiesManager
   ) {
     $this->pageRenderer = $pageRenderer;
@@ -165,7 +167,16 @@ class Newsletters {
     $data['legacy_automatic_emails_notice_dismissed'] = (bool)$this->userFlagsController->get('legacy_automatic_emails_notice_dismissed');
 
     $data['block_email_editor_enabled'] = $this->dependencyCheck->are_dependencies_met(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $this->renderBlockEditorDependencyCheckNotice();
     $this->pageRenderer->displayPage('newsletters.html', $data);
+  }
+
+  public function renderBlockEditorDependencyCheckNotice(): void {
+    $message = $this->wp->getTransient(EditorPageRenderer::EMAIL_EDITOR_DEPENDENCY_NOTICE);
+    if ($message) {
+      $this->wp->deleteTransient(EditorPageRenderer::EMAIL_EDITOR_DEPENDENCY_NOTICE);
+      echo '<div class="notice notice-warning is-dismissible"><p>' . esc_html($message) . '</p></div>';
+    }
   }
 
   private function getCorruptNewsletterSubjects(): array {

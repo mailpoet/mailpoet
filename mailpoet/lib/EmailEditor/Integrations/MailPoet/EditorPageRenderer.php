@@ -6,6 +6,7 @@ use MailPoet\API\JSON\API;
 use MailPoet\Config\Env;
 use MailPoet\Config\Installer;
 use MailPoet\Config\ServicesChecker;
+use MailPoet\EmailEditor\Engine\Dependency_Check;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
 use MailPoet\EmailEditor\Engine\User_Theme;
@@ -17,6 +18,7 @@ use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EditorPageRenderer {
+  const EMAIL_EDITOR_DEPENDENCY_NOTICE = 'email_editor_dependencies_not_met';
   private WPFunctions $wp;
 
   private Settings_Controller $settingsController;
@@ -24,6 +26,8 @@ class EditorPageRenderer {
   private Theme_Controller $themeController;
 
   private User_Theme $userTheme;
+
+  private Dependency_Check $dependencyCheck;
 
   private CdnAssetUrl $cdnAssetUrl;
 
@@ -43,6 +47,7 @@ class EditorPageRenderer {
     SubscribersFeature $subscribersFeature,
     Theme_Controller $themeController,
     User_Theme $userTheme,
+    Dependency_Check $dependencyCheck,
     MailPoetSettings $mailpoetSettings,
     NewslettersRepository $newslettersRepository
   ) {
@@ -53,6 +58,7 @@ class EditorPageRenderer {
     $this->subscribersFeature = $subscribersFeature;
     $this->themeController = $themeController;
     $this->userTheme = $userTheme;
+    $this->dependencyCheck = $dependencyCheck;
     $this->mailpoetSettings = $mailpoetSettings;
     $this->newslettersRepository = $newslettersRepository;
   }
@@ -62,6 +68,17 @@ class EditorPageRenderer {
     $post = $this->wp->getPost($postId);
     if (!$post instanceof \WP_Post || $post->post_type !== EditorInitController::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       return;
+    }
+
+    if (!$this->dependencyCheck->are_dependencies_met()) {
+      $dependencyErrorMesasge = sprintf(
+        // translators: %1$s: WordPress version e.g. 6.7, %2$s: Gutenberg version e.g. 19.3
+        __('This email was created using the new editor, but it requires WordPress version %1$s or higher, or the Gutenberg plugin version %2$s or above. Please update your setup to continue editing this email.', 'mailpoet'),
+        Dependency_Check::MIN_WP_VERSION,
+        Dependency_Check::MIN_GUTENBERG_VERSION
+      );
+      $this->wp->setTransient(self::EMAIL_EDITOR_DEPENDENCY_NOTICE, $dependencyErrorMesasge);
+      $this->wp->wpSafeRedirect($this->wp->adminUrl('admin.php?page=mailpoet-newsletters'));
     }
 
     // load mailpoet email editor JS integrations
