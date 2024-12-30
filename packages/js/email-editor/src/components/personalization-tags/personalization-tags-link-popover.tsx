@@ -80,12 +80,13 @@ const PersonalizationTagsLinkPopover = ( {
 							value={ linkText }
 							onChange={ ( value ) => setLinkText( value ) }
 							__nextHasNoMarginBottom // To avoid warning about deprecation in console
+							__next40pxDefaultSize
 							autoComplete="off"
 						/>
 						<SelectControl
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
-							label="Label"
+							label={ __( 'Link tag', 'mailpoet' ) }
 							value={ linkHref }
 							onChange={ ( value ) => {
 								setLinkHref( value );
@@ -104,7 +105,15 @@ const PersonalizationTagsLinkPopover = ( {
 									};
 								} ) }
 						/>
-						<div className="mailpoet-personalization-tag-popover__content-button">
+						<div className="mailpoet-personalization-tag-popover__content-buttons">
+							<Button
+								isTertiary
+								onClick={ () => {
+									setIsPopoverVisible( false );
+								} }
+							>
+								{ __( 'Cancel', 'mailpoet' ) }
+							</Button>
 							<Button
 								isPrimary
 								onClick={ () => {
