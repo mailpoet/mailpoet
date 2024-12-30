@@ -24,6 +24,10 @@ class WordPress {
     do_action($hookName, ...$arg);
   }
 
+  public function addFilter(string $hookName, callable $callback, int $priority = 10, int $acceptedArgs = 1): bool {
+    return add_filter($hookName, $callback, $priority, $acceptedArgs);
+  }
+
   /**
    * @param mixed $value
    * @param mixed ...$args
