@@ -128,6 +128,7 @@ class SendingTaskSubscribers extends APIEndpoint {
 
     if ($newsletter->canBeSetActive() && $newsletter->getStatus() !== NewsletterEntity::STATUS_ACTIVE) {
       return $this->errorResponse([
+        // translators: This error occurs when resending a failed email message to a recipient and the associated email definition (e.g., a welcome email, an automation email) is inactive.
         APIError::BAD_REQUEST => __('Failed to resend! The email is not active. Please activate it first.', 'mailpoet'),
       ], [], Response::STATUS_BAD_REQUEST);
     }
