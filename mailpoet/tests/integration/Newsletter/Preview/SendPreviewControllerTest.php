@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\Preview;
 
 use Codeception\Stub\Expected;
 use Codeception\Util\Fixtures;
+use MailPoet\EmailEditor\Engine\Personalizer;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\SubscriberEntity;
 use MailPoet\Mailer\Mailer;
@@ -90,7 +91,8 @@ class SendPreviewControllerTest extends \MailPoetTest {
       $this->diContainer->get(Renderer::class),
       new WPFunctions(),
       $this->diContainer->get(SubscribersRepository::class),
-      $shortcodes
+      $shortcodes,
+      $this->diContainer->get(Personalizer::class)
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
@@ -121,7 +123,8 @@ class SendPreviewControllerTest extends \MailPoetTest {
       $this->diContainer->get(Renderer::class),
       new WPFunctions(),
       $this->diContainer->get(SubscribersRepository::class),
-      $this->diContainer->get(Shortcodes::class)
+      $this->diContainer->get(Shortcodes::class),
+      $this->diContainer->get(Personalizer::class)
     );
     $sendPreviewController->sendPreview($this->newsletter, 'test@subscriber.com');
   }
