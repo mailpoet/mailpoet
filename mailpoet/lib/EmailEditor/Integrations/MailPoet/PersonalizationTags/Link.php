@@ -35,7 +35,7 @@ class Link {
 
   public function getSubscriptionUnsubscribeUrl(array $context, array $args = []): string {
     $isPreview = $context['is_preview'] ?? false;
-    $subscriber = $isPreview ? $this->getSubscriber($context) : null;
+    $subscriber = !$isPreview ? $this->getSubscriber($context) : null;
     $queue = $this->getSendingQueue($context);
 
     return $this->subscriptionUrlFactory->getConfirmUnsubscribeUrl(
@@ -46,7 +46,7 @@ class Link {
 
   public function getSubscriptionManageUrl(array $context, array $args = []): string {
     $isPreview = $context['is_preview'] ?? false;
-    $subscriber = $isPreview ? $this->getSubscriber($context) : null;
+    $subscriber = !$isPreview ? $this->getSubscriber($context) : null;
 
     return $this->subscriptionUrlFactory->getManageUrl(
       $subscriber
@@ -55,7 +55,7 @@ class Link {
 
   public function getNewsletterViewInBrowserUrl(array $context, array $args = []): string {
     $isPreview = $context['is_preview'] ?? false;
-    $subscriber = $isPreview ? $this->getSubscriber($context) : null;
+    $subscriber = !$isPreview ? $this->getSubscriber($context) : null;
     $queue = $this->getSendingQueue($context);
     $newsletter = $this->getNewsletter($context);
 
