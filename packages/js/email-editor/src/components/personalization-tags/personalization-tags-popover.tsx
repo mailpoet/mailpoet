@@ -74,8 +74,17 @@ const PersonalizationTagsPopover = ( {
 							value={ updatedValue }
 							onChange={ ( value ) => setUpdatedValue( value ) }
 							__nextHasNoMarginBottom // To avoid warning about deprecation in console
+							__next40pxDefaultSize
 						/>
-						<div className="mailpoet-personalization-tag-popover__content-button">
+						<div className="mailpoet-personalization-tag-popover__content-buttons">
+							<Button
+								isTertiary
+								onClick={ () => {
+									setIsPopoverVisible( false );
+								} }
+							>
+								{ __( 'Cancel', 'mailpoet' ) }
+							</Button>
 							<Button
 								isPrimary
 								onClick={ () => {

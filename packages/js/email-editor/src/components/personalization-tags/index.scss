@@ -78,11 +78,20 @@
   justify-content: center;
 
   .mailpoet-personalization-tag-popover__content {
-    padding: 8px;
-    width: 400px;
+    max-width: 350px;
+    min-width: auto;
+    width: 90vw;
+
+    .components-base-control {
+      margin: 16px;
+    }
   }
-  .mailpoet-personalization-tag-popover__content-button {
-    padding-top: 10px;
-    text-align: center;
+  .mailpoet-personalization-tag-popover__content-buttons {
+    margin: 16px;
+    text-align: right;
+
+    .components-button {
+      margin-left: 8px;
+    }
   }
 }
