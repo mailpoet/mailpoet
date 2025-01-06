@@ -73,10 +73,7 @@ class Newsletter {
               padding-top: var(--wp--preset--spacing--20);
               padding-bottom: var(--wp--preset--spacing--20);
             "
-              >
-              ' . $footerText . '
-            <br /><a href="[link:subscription_unsubscribe_url]">' . __('Unsubscribe', 'mailpoet') . '</a> |
-            <a href="[link:subscription_manage_url]">' . __('Manage subscription', 'mailpoet') . '</a>
+              >' . $footerText . '<br /><a href="[link:subscription_unsubscribe_url]">' . __('Unsubscribe', 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . __('Manage subscription', 'mailpoet') . '</a>
           </p>
           <!-- /wp:paragraph -->
         </div>
