@@ -97,7 +97,7 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 				let richTextValue = create( { html: blockContent } );
 				richTextValue = insert(
 					richTextValue,
-					create( { html: `<!--${ tag }-->` } ),
+					create( { html: `<!--${ tag }-->&nbsp;` } ), // Add a non-breaking space to avoid an issue when WP renderer removes blog containing only a comment
 					start,
 					end
 				);
