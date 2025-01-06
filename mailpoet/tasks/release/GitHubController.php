@@ -16,7 +16,7 @@ class GitHubController {
 
   const RELEASE_SOURCE_BRANCH = 'release';
 
-  const QA_GITHUB_LOGIN = 'veljkho';
+  const QA_GITHUB_LOGIN = 'Aschepikov';
 
   private const API_BASE_URI = 'https://api.github.com/repos/mailpoet';
   private const API_SEARCH_URI = 'https://api.github.com/search/issues';
