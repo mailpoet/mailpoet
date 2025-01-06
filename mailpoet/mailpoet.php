@@ -27,8 +27,8 @@ $mailpoetPlugin = [
   'initializer' => dirname(__FILE__) . '/mailpoet_initializer.php',
 ];
 
-const MAILPOET_MINIMUM_REQUIRED_WP_VERSION = '6.6';
-const MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION = '9.3';
+const MAILPOET_MINIMUM_REQUIRED_WP_VERSION = '6.6'; // L-1 version, not the latest
+const MAILPOET_MINIMUM_REQUIRED_WOOCOMMERCE_VERSION = '9.3'; // L-1 version, not the latest
 
 
 // Display WP version error notice
