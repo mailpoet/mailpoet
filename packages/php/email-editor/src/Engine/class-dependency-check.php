@@ -42,6 +42,9 @@ class Dependency_Check {
 	 * Checks if the WordPress version is supported.
 	 */
 	private function is_gutenberg_version_compatible(): bool {
-		return version_compare( get_bloginfo( 'version' ), self::MIN_GUTENBERG_VERSION, '>=' );
+		if ( defined( 'GUTENBERG_VERSION' ) ) {
+			return version_compare( GUTENBERG_VERSION, self::MIN_GUTENBERG_VERSION, '>=' );
+		}
+		return false;
 	}
 }
