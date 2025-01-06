@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 5.6.0 - 2025-01-06 =
+
+- Changed: minimum required WooCommerce is 9.4;
+- Changed: when WordPress or WooCommerce version requirements are not met, MailPoet plugin won't deactivate, and instead stop executing. Once the requirements are met, it will start working automatically;
+- Fixed: abandoned cart tasks are processed on time.
+
 = 5.5.2 - 2024-12-24 =
 
 - Improved: minor changes and fixes.
