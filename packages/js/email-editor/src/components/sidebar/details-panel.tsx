@@ -17,7 +17,7 @@ export function DetailsPanel() {
 
 	const subjectHelp = createInterpolateElement(
 		__(
-			'Use shortcodes to personalize your email, or learn more about <bestPracticeLink>best practices</bestPracticeLink> and using <emojiLink>emoji in subject lines</emojiLink>.',
+			'Use personalization tags to personalize your email, or learn more about <bestPracticeLink>best practices</bestPracticeLink> and using <emojiLink>emoji in subject lines</emojiLink>.',
 			'mailpoet'
 		),
 		{
@@ -73,7 +73,7 @@ export function DetailsPanel() {
 				label={ __( 'Subject', 'mailpoet' ) }
 				labelSuffix={
 					<ExternalLink href="https://kb.mailpoet.com/article/215-personalize-newsletter-with-shortcodes#list">
-						{ __( 'Shortcode guide', 'mailpoet' ) }
+						{ __( 'Guide', 'mailpoet' ) }
 					</ExternalLink>
 				}
 				help={ subjectHelp }

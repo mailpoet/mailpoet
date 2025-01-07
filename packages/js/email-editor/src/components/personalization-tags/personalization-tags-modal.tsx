@@ -70,7 +70,7 @@ const PersonalizationTagsModal = ( {
 		>
 			<p>
 				{ __(
-					'Insert shortcodes to dynamically fill in information and personalize your emails.',
+					'Insert personalization tags to dynamically fill in information and personalize your emails.',
 					'mailpoet'
 				) }{ ' ' }
 				<ExternalLink href="https://kb.mailpoet.com/article/215-personalize-newsletter-with-shortcodes#list">
