@@ -57,7 +57,8 @@ export const useContentValidation = (): ContentValidationData => {
 
 	const rules = useMemo( () => {
 		const linksParagraphBlock = createBlock( 'core/paragraph', {
-			className: 'has-small-font-size',
+			align: 'center',
+			fontSize: 'small',
 			content: contentLink,
 		} );
 
@@ -90,7 +91,7 @@ export const useContentValidation = (): ContentValidationData => {
 									{
 										content: `
                       ${ editedTemplateContent }
-                      <!-- wp:paragraph -->
+                      <!-- wp:paragraph {"align":"center","fontSize":"small"} -->
                       ${ contentLink }
                       <!-- /wp:paragraph -->
                     `,
