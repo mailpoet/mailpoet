@@ -68,7 +68,7 @@ export const useContentValidation = (): ContentValidationData => {
 				id: 'missing-unsubscribe-link',
 				test: ( emailContent ) =>
 					! emailContent.includes(
-						'[link:subscription_unsubscribe_url]'
+						'[mailpoet/subscription-unsubscribe-url]'
 					),
 				message: __(
 					'All emails must include an "Unsubscribe" link.',
