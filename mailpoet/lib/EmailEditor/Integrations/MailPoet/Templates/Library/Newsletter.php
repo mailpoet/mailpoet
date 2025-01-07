@@ -73,7 +73,7 @@ class Newsletter {
               padding-top: var(--wp--preset--spacing--20);
               padding-bottom: var(--wp--preset--spacing--20);
             "
-              >' . $footerText . '<br /><a href="[link:subscription_unsubscribe_url]">' . __('Unsubscribe', 'mailpoet') . '</a> | <a href="[link:subscription_manage_url]">' . __('Manage subscription', 'mailpoet') . '</a>
+              >' . $footerText . '<br /><a data-link-href="[mailpoet/subscription-unsubscribe-url]" contenteditable="false" style="text-decoration: underline;" class="mailpoet-email-editor__personalization-tags-link">' . __('Unsubscribe', 'mailpoet') . '</a> | <a data-link-href="[mailpoet/subscription-manage-url]" contenteditable="false" style="text-decoration: underline;" class="mailpoet-email-editor__personalization-tags-link">' . __('Manage subscription', 'mailpoet') . '</a>
           </p>
           <!-- /wp:paragraph -->
         </div>
