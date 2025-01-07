@@ -14,7 +14,7 @@ const PersonalizationTagsModal = ( {
 	isOpened,
 	closeCallback,
 	canInsertLink = false,
-																		 openedBy = '',
+	openedBy = '',
 } ) => {
 	const [ activeCategory, setActiveCategory ] = useState( null );
 	const [ searchQuery, setSearchQuery ] = useState( '' );
