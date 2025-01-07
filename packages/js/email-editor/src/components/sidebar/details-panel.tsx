@@ -72,7 +72,7 @@ export function DetailsPanel() {
 				attributeName="subject"
 				label={ __( 'Subject', 'mailpoet' ) }
 				labelSuffix={
-					<ExternalLink href="https://kb.mailpoet.com/article/215-personalize-newsletter-with-shortcodes#list">
+					<ExternalLink href="https://kb.mailpoet.com/article/435-a-guide-to-personalisation-tags-for-tailored-newsletters#list">
 						{ __( 'Guide', 'mailpoet' ) }
 					</ExternalLink>
 				}
