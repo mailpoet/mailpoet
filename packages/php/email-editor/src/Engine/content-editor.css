@@ -109,17 +109,6 @@ ol.has-background {
  * Mobile preview fixes
  */
 .is-mobile-preview figure > div {
+	max-width: 100% !important;
 	height: auto !important;
-	width: auto !important;
-}
-
-.is-mobile-preview .wp-block-columns {
-	display: flex;
-	flex-direction: column;
-}
-
-.is-mobile-preview .wp-block-column {
-	box-sizing: border-box;
-	/* override flex-basis set in style attribute to fix the height of the column in mobile preview. Blocks overriding is as a part of style.css in blocks-library */
-	flex-basis: auto !important;
 }
