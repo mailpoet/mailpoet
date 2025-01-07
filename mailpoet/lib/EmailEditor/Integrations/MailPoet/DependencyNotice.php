@@ -2,6 +2,7 @@
 
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
+use MailPoet\Config\AccessControl;
 use MailPoet\EmailEditor\Engine\Dependency_Check;
 use MailPoet\WP\Functions as WPFunctions;
 
@@ -18,13 +19,20 @@ class DependencyNotice {
     $this->dependencyCheck = $dependencyCheck;
   }
 
-  public function checkDependenciesAndEventuallyRedirect(): void {
+  public function checkDependenciesAndEventuallyShowNotice(): bool {
     if ($this->dependencyCheck->are_dependencies_met()) {
       $this->wp->deleteTransient(self::EMAIL_EDITOR_DEPENDENCY_NOTICE);
-      return;
+      return false;
     }
-    $this->wp->setTransient(self::EMAIL_EDITOR_DEPENDENCY_NOTICE, true);
-    $this->wp->wpSafeRedirect($this->wp->adminUrl('admin.php?page=mailpoet-newsletters'));
+    // For admins, we redirect to newsletters page and show notice there, for other users we display a notice immediately
+    if ($this->wp->currentUserCan(AccessControl::PERMISSION_MANAGE_EMAILS)) {
+      $this->wp->setTransient(self::EMAIL_EDITOR_DEPENDENCY_NOTICE, true);
+      $this->wp->wpSafeRedirect($this->wp->adminUrl('admin.php?page=mailpoet-newsletters'));
+      return true;
+    } else {
+      $this->displayMessage();
+      return true;
+    }
   }
 
   public function displayMessageIfNeeded(): void {
@@ -37,7 +45,7 @@ class DependencyNotice {
   private function displayMessage(): void {
     $dependencyErrorMessage = sprintf(
     // translators: %1$s: WordPress version e.g. 6.7, %2$s: Gutenberg version e.g. 19.3
-      __('This email was created using the new editor, but it requires WordPress version %1$s or higher, or the Gutenberg plugin version %2$s or above. Please update your setup to continue editing this email.', 'mailpoet'),
+      __('This email was created using the new editor, but it requires WordPress version %1$s or higher, or the Gutenberg plugin version %2$s or above. Please update your setup to continue editing or preview this email.', 'mailpoet'),
       Dependency_Check::MIN_WP_VERSION,
       Dependency_Check::MIN_GUTENBERG_VERSION
     );

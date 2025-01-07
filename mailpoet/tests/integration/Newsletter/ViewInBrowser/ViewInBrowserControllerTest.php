@@ -4,6 +4,7 @@ namespace MailPoet\Newsletter\ViewInBrowser;
 
 use Codeception\Stub\Expected;
 use MailPoet\Cron\Workers\SendingQueue\SendingQueue;
+use MailPoet\EmailEditor\Integrations\MailPoet\DependencyNotice;
 use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Entities\ScheduledTaskEntity;
 use MailPoet\Entities\SendingQueueEntity;
@@ -228,6 +229,7 @@ class ViewInBrowserControllerTest extends \MailPoetTest {
       $this->newslettersRepository,
       $viewInBrowserRenderer,
       $this->sendingQueuesRepository,
+      $this->diContainer->get(DependencyNotice::class),
       $this->subscribersRepository
     );
   }

@@ -67,7 +67,7 @@ class EditorPageRenderer {
     if (!$post instanceof \WP_Post || $post->post_type !== EditorInitController::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
       return;
     }
-    $this->dependencyNotice->checkDependenciesAndEventuallyRedirect();
+    $this->dependencyNotice->checkDependenciesAndEventuallyShowNotice();
 
     // load mailpoet email editor JS integrations
     $editorIntegrationAssetsParams = require Env::$assetsPath . '/dist/js/email_editor_integration/email_editor_integration.asset.php';
