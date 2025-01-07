@@ -117,7 +117,7 @@ const getCursorPosition = (
 	);
 	if ( formatIndex !== null ) {
 		return {
-			start: formatIndex + selection.anchorOffset,
+			start: formatIndex + selection.anchorOffset + 1, // We need to add 1 for the format length
 			end: formatIndex + selection.anchorOffset + range.toString().length,
 		};
 	}
@@ -129,7 +129,7 @@ const getCursorPosition = (
 	);
 	if ( replacementIndex !== null ) {
 		return {
-			start: replacementIndex + selection.anchorOffset,
+			start: replacementIndex + selection.anchorOffset + 1, // We need to add 1 for the replacement length
 			end:
 				replacementIndex +
 				selection.anchorOffset +
