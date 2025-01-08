@@ -1,5 +1,6 @@
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useEffect } from '@wordpress/element';
+import { store as coreDataStore } from '@wordpress/core-data';
 import {
 	useShortcut,
 	store as keyboardShortcutsStore,
@@ -12,6 +13,7 @@ import { storeName } from '../../store';
 //    https://github.com/WordPress/gutenberg/blob/0ee78b1bbe9c6f3e6df99f3b967132fa12bef77d/packages/edit-site/src/components/keyboard-shortcuts/index.js
 
 export function KeyboardShortcuts(): null {
+	const { undo: undoAction, redo: redoAction } = useDispatch( coreDataStore );
 	const { isSidebarOpened, hasEdits, isSaving } = useSelect( ( select ) => ( {
 		isSidebarOpened: select( storeName ).isSidebarOpened(),
 		isSaving: select( storeName ).isSaving(),
@@ -53,6 +55,26 @@ export function KeyboardShortcuts(): null {
 				character: 's',
 			},
 		} );
+
+		void registerShortcut( {
+			name: 'mailpoet/email-editor/undo',
+			category: 'block',
+			description: __( 'Undo your last changes.' ),
+			keyCombination: {
+				modifier: 'primary',
+				character: 'z',
+			},
+		} );
+
+		void registerShortcut( {
+			name: 'mailpoet/email-editor/redo',
+			category: 'block',
+			description: __( 'Redo your last undo.' ),
+			keyCombination: {
+				modifier: 'primaryShift',
+				character: 'z',
+			},
+		} );
 	}, [ registerShortcut ] );
 
 	useShortcut( 'mailpoet/email-editor/toggle-fullscreen', () => {
@@ -76,6 +98,26 @@ export function KeyboardShortcuts(): null {
 		}
 		void saveEditedEmail();
 	} );
+
+	useShortcut(
+		// Shortcut name
+		'mailpoet/email-editor/undo',
+		// Shortcut callback
+		( event ): void => {
+			void undoAction();
+			event.preventDefault();
+		}
+	);
+
+	useShortcut(
+		// Shortcut name
+		'mailpoet/email-editor/redo',
+		// Shortcut callback
+		( event ): void => {
+			void redoAction();
+			event.preventDefault();
+		}
+	);
 
 	return null;
 }
