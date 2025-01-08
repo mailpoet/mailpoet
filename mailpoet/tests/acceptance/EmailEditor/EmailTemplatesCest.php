@@ -36,8 +36,7 @@ class EmailTemplatesCest {
     $i->wait(1); // we need to wait for the iframe to initialize otherwise the switch does not work properly
     $i->switchToIFrame('[name="editor-canvas"]');
     $i->waitForElementVisible('.is-root-container', 20);
-    $i->click('[aria-label="Block: Paragraph"]');
-    $i->type($textInTemplate);
+    $i->pressKey('[aria-label="Block: Paragraph"]', $textInTemplate);
     $i->switchToIFrame();
 
     $i->wantTo('Return to editor and save all');
