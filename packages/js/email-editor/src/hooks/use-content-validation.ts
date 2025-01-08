@@ -38,9 +38,9 @@ export const useContentValidation = (): ContentValidationData => {
 			editedContent:
 				mapSelect( emailEditorStore ).getEditedEmailContent(),
 			editedTemplateContent:
-				mapSelect( emailEditorStore ).getTemplateContent(),
+				mapSelect( emailEditorStore ).getCurrentTemplate()?.content,
 			postTemplateId:
-				mapSelect( emailEditorStore ).getEditedPostTemplate()?.id,
+				mapSelect( emailEditorStore ).getCurrentTemplate()?.id,
 		} )
 	);
 
