@@ -26,8 +26,15 @@ class TemplatesController {
 
   public function registerTemplates() {
     $newsletter = new Newsletter($this->cdnAssetUrl);
+    $templateName = $this->templatePrefix . '//' . $newsletter->getSlug();
+
+    if (\WP_Block_Templates_Registry::get_instance()->is_registered($templateName)) {
+      // skip registration if the template was already registered.
+      return;
+    }
+
     register_block_template(
-      $this->templatePrefix . '//' . $newsletter->getSlug(),
+      $templateName,
       [
         'title' => $newsletter->getTitle(),
         'description' => $newsletter->getDescription(),

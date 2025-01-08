@@ -74,15 +74,20 @@ class Templates {
 		);
 		$template_filename = $general_email['slug'] . '.html';
 
-		register_block_template(
-			$this->template_prefix . '//' . $general_email['slug'],
-			array(
-				'title'       => $general_email['title'],
-				'description' => $general_email['description'],
-				'content'     => (string) file_get_contents( $this->template_directory . $template_filename ),
-				'post_types'  => $this->post_types,
-			)
-		);
+		$template_name = $this->template_prefix . '//' . $general_email['slug'];
+
+		if ( ! \WP_Block_Templates_Registry::get_instance()->is_registered( $template_name ) ) {
+			// skip registration if the template was already registered.
+			register_block_template(
+				$template_name,
+				array(
+					'title'       => $general_email['title'],
+					'description' => $general_email['description'],
+					'content'     => (string) file_get_contents( $this->template_directory . $template_filename ),
+					'post_types'  => $this->post_types,
+				)
+			);
+		}
 
 		do_action( 'mailpoet_email_editor_register_templates' );
 	}
