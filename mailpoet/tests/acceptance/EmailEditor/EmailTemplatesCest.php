@@ -2,15 +2,11 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
-
 class EmailTemplatesCest {
   public function selectEditSwapAndResetEmailTemplate(\AcceptanceTester $i, $scenario) {
     if (!$i->checkEmailEditorRequiredWordpressVersion()) {
       $scenario->skip('Temporally skip this test because new email editor is not compatible with WP versions below ' . \AcceptanceTester::EMAIL_EDITOR_MINIMAL_WP_VERSION);
     }
-    (new Features())->withFeatureEnabled(FeaturesController::GUTENBERG_EMAIL_EDITOR);
 
     $i->wantTo('Create standard newsletter using Gutenberg editor');
     $i->login();

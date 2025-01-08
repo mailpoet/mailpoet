@@ -4,7 +4,6 @@ namespace MailPoet\Test\Newsletter;
 
 use Codeception\Util\Fixtures;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\NewsletterHtmlSanitizer;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -66,7 +65,6 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
-      $this->diContainer->get(FeaturesController::class),
       $this->capabilitiesManager
     );
     $this->columnRenderer = new ColumnRenderer();
@@ -639,7 +637,6 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
-      $this->diContainer->get(FeaturesController::class),
       $capabilitiesManager
     );
     $body = json_decode(Fixtures::get('newsletter_body_template'), true);
@@ -661,7 +658,6 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
-      $this->diContainer->get(FeaturesController::class),
       $capabilitiesManager
     );
 

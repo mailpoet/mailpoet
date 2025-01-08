@@ -2,8 +2,6 @@
 
 namespace MailPoet\Test\Acceptance;
 
-use MailPoet\Features\FeaturesController;
-use MailPoet\Test\DataFactories\Features;
 use MailPoet\Test\DataFactories\Settings;
 
 class CreateAndSendEmailUsingGutenbergCest {
@@ -14,7 +12,6 @@ class CreateAndSendEmailUsingGutenbergCest {
     $settings = new Settings();
     $settings->withCronTriggerMethod('Action Scheduler');
     $settings->withSender('John Doe', 'john@doe.com');
-    (new Features())->withFeatureEnabled(FeaturesController::GUTENBERG_EMAIL_EDITOR);
     $segmentName = $i->createListWithSubscriber();
 
     $i->wantTo('Create standard newsletter using Gutenberg editor');
@@ -87,7 +84,6 @@ class CreateAndSendEmailUsingGutenbergCest {
     $settings = new Settings();
     $settings->withCronTriggerMethod('Action Scheduler');
     $settings->withSender('John Doe', 'john@doe.com');
-    (new Features())->withFeatureEnabled(FeaturesController::GUTENBERG_EMAIL_EDITOR);
 
     $i->wantTo('Open standard newsletter using Gutenberg editor');
     $i->login();

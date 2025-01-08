@@ -4,7 +4,6 @@ namespace MailPoet\WooCommerce\TransactionalEmails;
 
 use Codeception\Stub;
 use MailPoet\Entities\NewsletterEntity;
-use MailPoet\Features\FeaturesController;
 use MailPoet\Logging\LoggerFactory;
 use MailPoet\Newsletter\Editor\LayoutHelper as L;
 use MailPoet\Newsletter\NewslettersRepository;
@@ -268,7 +267,6 @@ class RendererTest extends \MailPoetTest {
       $this->diContainer->get(LoggerFactory::class),
       $this->diContainer->get(NewslettersRepository::class),
       $this->diContainer->get(SendingQueuesRepository::class),
-      $this->diContainer->get(FeaturesController::class),
       $this->diContainer->get(CapabilitiesManager::class)
     );
   }
