@@ -18,8 +18,8 @@ class ThreeColumn extends Pattern {
       <!-- /wp:group -->
 
       <!-- wp:columns {"style":{"spacing":{"padding":{"right":"var:preset|spacing|10","left":"var:preset|spacing|10"}}},"metadata":{"categories":["email-contents"],"patternName":"mailpoet/1-column-content"}} -->
-      <div class="wp-block-columns" style="padding-right:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--10)"><!-- wp:column {"backgroundColor":"white","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"var:preset|spacing|10","right":"var:preset|spacing|10"}}}} -->
-      <div class="wp-block-column has-white-background-color has-background" style="padding-top:0;padding-right:var(--wp--preset--spacing--10);padding-bottom:0;padding-left:var(--wp--preset--spacing--10)"><!-- wp:image {"scale":"cover"} -->
+      <div class="wp-block-columns" style="padding-right:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--10)"><!-- wp:column {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"var:preset|spacing|10","right":"var:preset|spacing|10"}}}} -->
+      <div class="wp-block-column" style="padding-top:0;padding-right:var(--wp--preset--spacing--10);padding-bottom:0;padding-left:var(--wp--preset--spacing--10)"><!-- wp:image {"scale":"cover"} -->
       <figure class="wp-block-image"><img alt="" style="object-fit:cover"/></figure>
       <!-- /wp:image --></div>
       <!-- /wp:column -->

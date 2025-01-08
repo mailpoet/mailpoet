@@ -22,8 +22,8 @@ class TwoColumn extends Pattern {
       <!-- /wp:group -->
 
       <!-- wp:columns {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"var:preset|spacing|10","right":"var:preset|spacing|10"}}}} -->
-      <div class="wp-block-columns" style="padding-top:0;padding-right:var(--wp--preset--spacing--10);padding-bottom:0;padding-left:var(--wp--preset--spacing--10)"><!-- wp:column {"width":"","backgroundColor":"white","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"var:preset|spacing|10","right":"var:preset|spacing|10"}}}} -->
-      <div class="wp-block-column has-white-background-color has-background" style="padding-top:0;padding-right:var(--wp--preset--spacing--10);padding-bottom:0;padding-left:var(--wp--preset--spacing--10)"><!-- wp:image -->
+      <div class="wp-block-columns" style="padding-top:0;padding-right:var(--wp--preset--spacing--10);padding-bottom:0;padding-left:var(--wp--preset--spacing--10)"><!-- wp:column {"width":"","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"var:preset|spacing|10","right":"var:preset|spacing|10"}}}} -->
+      <div class="wp-block-column" style="padding-top:0;padding-right:var(--wp--preset--spacing--10);padding-bottom:0;padding-left:var(--wp--preset--spacing--10)"><!-- wp:image -->
       <figure class="wp-block-image"><img alt=""/></figure>
       <!-- /wp:image -->
 
@@ -48,8 +48,8 @@ class TwoColumn extends Pattern {
       <!-- /wp:buttons --></div>
       <!-- /wp:column -->
 
-      <!-- wp:column {"backgroundColor":"white","style":{"spacing":{"padding":{"right":"var:preset|spacing|10","left":"var:preset|spacing|10"}}}} -->
-      <div class="wp-block-column has-white-background-color has-background" style="padding-right:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--10)"><!-- wp:image -->
+      <!-- wp:column {"style":{"spacing":{"padding":{"right":"var:preset|spacing|10","left":"var:preset|spacing|10"}}}} -->
+      <div class="wp-block-column" style="padding-right:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--10)"><!-- wp:image -->
       <figure class="wp-block-image"><img alt=""/></figure>
       <!-- /wp:image -->
 
