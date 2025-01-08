@@ -33,7 +33,7 @@ import { SaveEmailButton } from './save-email-button';
 import { CampaignName } from './campaign-name';
 import { SendButton } from './send-button';
 import { SaveAllButton } from './save-all-button';
-import { useEditorMode } from '../../hooks';
+import { useContentValidation, useEditorMode } from '../../hooks';
 import { recordEvent } from '../../events';
 
 // Build type for ToolbarItem contains only "as" and "children" properties but it takes all props from
@@ -90,6 +90,7 @@ export function Header() {
 	}, [] );
 
 	const [ editorMode ] = useEditorMode();
+	const { validateContent, isInvalid } = useContentValidation();
 
 	const { dirtyEntityRecords } = useEntitiesSavedStatesIsDirty();
 	const hasNonEmailEdits = dirtyEntityRecords.some(
@@ -236,7 +237,14 @@ export function Header() {
 			<div className="editor-header__settings edit-post-header__settings">
 				<SaveEmailButton />
 				<PreviewDropdown />
-				{ hasNonEmailEdits ? <SaveAllButton /> : <SendButton /> }
+				{ hasNonEmailEdits ? (
+					<SaveAllButton />
+				) : (
+					<SendButton
+						validateContent={ validateContent }
+						isContentInvalid={ isInvalid }
+					/>
+				) }
 				<PinnedItems.Slot scope={ storeName } />
 				<MoreMenu />
 			</div>

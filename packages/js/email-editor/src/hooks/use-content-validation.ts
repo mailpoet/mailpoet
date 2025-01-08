@@ -9,7 +9,7 @@ import { useShallowEqual } from './use-shallow-equal';
 import { useValidationNotices } from './use-validation-notices';
 
 export type ContentValidationData = {
-	isValid: boolean;
+	isInvalid: boolean;
 	validateContent: () => boolean;
 };
 
@@ -141,7 +141,7 @@ export const useContentValidation = (): ContentValidationData => {
 	}, emailEditorStore );
 
 	return {
-		isValid: hasValidationNotice(),
+		isInvalid: hasValidationNotice(),
 		validateContent,
 	};
 };

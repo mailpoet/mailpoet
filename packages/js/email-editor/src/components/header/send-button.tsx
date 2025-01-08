@@ -7,10 +7,10 @@ import {
 import { useEntityProp } from '@wordpress/core-data';
 import { MailPoetEmailData, storeName } from '../../store';
 import { useSelect } from '@wordpress/data';
-import { useContentValidation, useEditorMode } from '../../hooks';
+import { useEditorMode } from '../../hooks';
 import { recordEvent } from '../../events';
 
-export function SendButton() {
+export function SendButton( { validateContent, isContentInvalid } ) {
 	const [ mailpoetEmail ] = useEntityProp(
 		'postType',
 		'mailpoet_email',
@@ -19,7 +19,6 @@ export function SendButton() {
 
 	const { isDirty } = useEntitiesSavedStatesIsDirty();
 
-	const { validateContent, isValid } = useContentValidation();
 	const { hasEmptyContent, isEmailSent } = useSelect(
 		( select ) => ( {
 			hasEmptyContent: select( storeName ).hasEmptyContent(),
@@ -34,7 +33,7 @@ export function SendButton() {
 		editorMode === 'template' ||
 		hasEmptyContent ||
 		isEmailSent ||
-		isValid ||
+		isContentInvalid ||
 		isDirty;
 
 	const mailpoetEmailData: MailPoetEmailData = mailpoetEmail;
