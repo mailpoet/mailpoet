@@ -15,7 +15,6 @@ use MailPoet\EmailEditor\Engine\Email_Editor;
 use MailPoet\EmailEditor\Integrations\Core\Initializer as CoreEmailEditorIntegration;
 use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as MailpoetEmailEditorIntegration;
-use MailPoet\Features\FeaturesController;
 use MailPoet\InvalidStateException;
 use MailPoet\Migrator\Cli as MigratorCli;
 use MailPoet\PostEditorBlocks\PostEditorBlock;
@@ -132,9 +131,6 @@ class Initializer {
   /** @var BlockTypesController */
   private $blockTypesController;
 
-  /** @var FeaturesController */
-  private $featureController;
-
   /** @var Url */
   private $urlHelper;
 
@@ -175,7 +171,6 @@ class Initializer {
     BlockTypesController $blockTypesController,
     MailpoetEmailEditorIntegration $mailpoetEmailEditorIntegration,
     CoreEmailEditorIntegration $coreEmailEditorIntegration,
-    FeaturesController $featureController,
     Url $urlHelper
   ) {
     $this->rendererFactory = $rendererFactory;
@@ -210,7 +205,6 @@ class Initializer {
     $this->mailpoetEmailEditorIntegration = $mailpoetEmailEditorIntegration;
     $this->coreEmailEditorIntegration = $coreEmailEditorIntegration;
     $this->blockTypesController = $blockTypesController;
-    $this->featureController = $featureController;
     $this->urlHelper = $urlHelper;
   }
 
@@ -366,10 +360,8 @@ class Initializer {
       $this->subscriberActivityTracker->trackActivity();
       $this->postEditorBlock->init();
       $this->automationEngine->initialize();
-      if ($this->featureController->isSupported(FeaturesController::GUTENBERG_EMAIL_EDITOR)) {
-        $this->blockTypesController->initialize();
-        $this->emailEditor->initialize();
-      }
+      $this->blockTypesController->initialize();
+      $this->emailEditor->initialize();
       $this->wpFunctions->doAction('mailpoet_initialized', MAILPOET_VERSION);
     } catch (InvalidStateException $e) {
       return $this->handleRunningMigration($e);

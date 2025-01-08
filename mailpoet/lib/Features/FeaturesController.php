@@ -6,13 +6,11 @@ use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 
 class FeaturesController {
   const FEATURE_BRAND_TEMPLATES = 'brand_templates';
-  const GUTENBERG_EMAIL_EDITOR = 'gutenberg_email_editor';
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
   private $defaults = [
     self::FEATURE_BRAND_TEMPLATES => false,
-    self::GUTENBERG_EMAIL_EDITOR => false,
   ];
 
   /** @var array|null */

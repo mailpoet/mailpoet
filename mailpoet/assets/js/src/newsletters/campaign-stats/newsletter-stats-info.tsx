@@ -34,10 +34,7 @@ const redirectToNewsletterHome = () => {
 
 const getEditorLink = (newsletter: NewsletterType) => {
   let editorHref = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
-  if (
-    MailPoet.FeaturesController.isSupported('gutenberg_email_editor') &&
-    newsletter.wp_post_id
-  ) {
+  if (newsletter.wp_post_id) {
     editorHref = MailPoet.getBlockEmailEditorUrl(newsletter.wp_post_id);
   }
   return editorHref;

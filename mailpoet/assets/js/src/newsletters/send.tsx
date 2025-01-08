@@ -75,10 +75,7 @@ function validateNewsletter(newsletter: NewsLetter) {
   // Don't validate emails created in the new editor.
   // The editor uses a different data format and will have own validation and also own send panel.
   // We are using the send page for the new editor only temporarily.
-  if (
-    MailPoet.FeaturesController.isSupported('gutenberg_email_editor') &&
-    newsletter.wp_post_id !== null
-  ) {
+  if (newsletter.wp_post_id !== null) {
     return undefined;
   }
 
@@ -881,9 +878,7 @@ class NewsletterSendComponent extends Component<
                 <a
                   className="mailpoet-link"
                   href={
-                    MailPoet.FeaturesController.isSupported(
-                      'gutenberg_email_editor',
-                    ) && wpPostId
+                    wpPostId
                       ? MailPoet.getBlockEmailEditorUrl(Number(wpPostId))
                       : `?page=mailpoet-newsletter-editor&id=${Number(
                           this.props.params.id,

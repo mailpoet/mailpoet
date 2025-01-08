@@ -36,9 +36,7 @@ export function NewsletterTypes({
   const [isCreating, setIsCreating] = useState(false);
 
   const [isSelectEditorModalOpen, setIsSelectEditorModalOpen] = useState(false);
-  const isNewEmailEditorEnabled =
-    MailPoet.FeaturesController.isSupported('gutenberg_email_editor') &&
-    window.mailpoet_block_email_editor_enabled;
+  const isNewEmailEditorEnabled = window.mailpoet_block_email_editor_enabled;
 
   const setupNewsletter = (type): void => {
     if (type !== undefined) {

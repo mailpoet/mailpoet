@@ -76,12 +76,8 @@ const messages = {
 
 const columns = [
   {
-    name: MailPoet.FeaturesController.isSupported('gutenberg_email_editor')
-      ? 'name'
-      : 'subject',
-    label: MailPoet.FeaturesController.isSupported('gutenberg_email_editor')
-      ? __('Name', 'mailpoet')
-      : __('Subject', 'mailpoet'),
+    name: 'name',
+    label: __('Name', 'mailpoet'),
     sortable: true,
   },
   {
@@ -114,10 +110,7 @@ const bulkActions = [
 
 const confirmEdit = (newsletter) => {
   let editorHref = `?page=mailpoet-newsletter-editor&id=${newsletter.id}`;
-  if (
-    MailPoet.FeaturesController.isSupported('gutenberg_email_editor') &&
-    newsletter.wp_post_id
-  ) {
+  if (newsletter.wp_post_id) {
     editorHref = MailPoet.getBlockEmailEditorUrl(newsletter.wp_post_id);
   }
 

@@ -4,15 +4,12 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController;
 use MailPoet\EmailEditor\Integrations\MailPoet\Templates\TemplatesController;
-use MailPoet\Features\FeaturesController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
   const MAILPOET_EMAIL_POST_TYPE = 'mailpoet_email';
 
   private WPFunctions $wp;
-
-  private FeaturesController $featuresController;
 
   private EmailApiController $emailApiController;
 
@@ -30,7 +27,6 @@ class EmailEditor {
 
   public function __construct(
     WPFunctions $wp,
-    FeaturesController $featuresController,
     EmailApiController $emailApiController,
     EditorPageRenderer $editorPageRenderer,
     EmailEditorPreviewEmail $emailEditorPreviewEmail,
@@ -40,7 +36,6 @@ class EmailEditor {
     PersonalizationTagManager $personalizationTagManager
   ) {
     $this->wp = $wp;
-    $this->featuresController = $featuresController;
     $this->emailApiController = $emailApiController;
     $this->editorPageRenderer = $editorPageRenderer;
     $this->patternsController = $patternsController;
@@ -51,9 +46,6 @@ class EmailEditor {
   }
 
   public function initialize(): void {
-    if (!$this->featuresController->isSupported(FeaturesController::GUTENBERG_EMAIL_EDITOR)) {
-      return;
-    }
     $this->cli->initialize();
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
     $this->wp->addAction('rest_delete_mailpoet_email', [$this->emailApiController, 'trashEmail'], 10, 1);
