@@ -171,11 +171,11 @@
 }
 
 [data-rich-text-comment] {
-  background-color: currentColor;
+  background-color: var(--wp-components-color-accent, var(--wp-admin-theme-color, #3858e9));
 
   span {
-    color: currentColor;
-    filter: invert(100%);
+    color: var(--wp-components-color-accent-inverted, #fff);
+    filter: none;
     padding: 0 2px;
   }
 }
