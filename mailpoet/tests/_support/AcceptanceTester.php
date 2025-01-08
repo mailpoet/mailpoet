@@ -435,6 +435,7 @@ class AcceptanceTester extends \Codeception\Actor {
   public function activateWooCommerce() {
     $i = $this;
     $i->cli(['plugin', 'activate', self::WOO_COMMERCE_PLUGIN]);
+    $i->cli(['option', 'update', 'woocommerce_coming_soon', 'no']);
   }
 
   public function deactivateWooCommerce() {
