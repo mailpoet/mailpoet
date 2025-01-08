@@ -9,6 +9,19 @@ import { storeName } from './constants';
 import { State, Feature, EmailTemplate, EmailEditorPostType } from './types';
 import { Post } from '@wordpress/core-data/build-types/entity-types/post';
 
+function getContentFromEntity( entity ): string {
+	if ( entity?.content && typeof entity.content === 'function' ) {
+		return entity.content( entity ) as string;
+	}
+	if ( entity?.blocks ) {
+		return serialize( entity.blocks );
+	}
+	if ( entity?.content ) {
+		return entity.content as string;
+	}
+	return '';
+}
+
 export const isFeatureActive = createRegistrySelector(
 	( select ) =>
 		( _, feature: Feature ): boolean =>
@@ -126,15 +139,7 @@ export const getEditedEmailContent = createRegistrySelector(
 			| undefined;
 
 		if ( record ) {
-			if ( record?.content && typeof record.content === 'function' ) {
-				return record.content( record ) as string;
-			}
-			if ( record?.blocks ) {
-				return serialize( record.blocks );
-			}
-			if ( record?.content ) {
-				return record.content as string;
-			}
+			return getContentFromEntity( record );
 		}
 		return '';
 	}
@@ -199,11 +204,6 @@ export const getEditedPostTemplate = createRegistrySelector(
 	}
 );
 
-export const getTemplateContent = () => {
-	const template = getEditedPostTemplate();
-	return template?.content || '';
-};
-
 export const getCurrentTemplate = createRegistrySelector( ( select ) => () => {
 	const isEditingTemplate =
 		select( editorStore ).getCurrentPostType() === 'wp_template';
@@ -220,6 +220,14 @@ export const getCurrentTemplate = createRegistrySelector( ( select ) => () => {
 	}
 	return getEditedPostTemplate();
 } );
+
+export const getCurrentTemplateContent = () => {
+	const template = getCurrentTemplate();
+	if ( template ) {
+		return getContentFromEntity( template );
+	}
+	return '';
+};
 
 export const getGlobalEmailStylesPost = createRegistrySelector(
 	( select ) => () => {
