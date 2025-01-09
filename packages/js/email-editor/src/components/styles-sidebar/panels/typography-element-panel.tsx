@@ -24,7 +24,7 @@ import {
 } from '@wordpress/components';
 import { useEmailStyles } from '../../../hooks';
 import { getElementStyles } from '../utils';
-import { recordEvent } from '../../../events';
+import { recordEvent, debouncedRecordEvent } from '../../../events';
 
 export const DEFAULT_CONTROLS = {
 	fontFamily: true,
@@ -112,7 +112,7 @@ export function TypographyElementPanel( {
 
 	const setLetterSpacing = ( newValue ) => {
 		updateElementStyleProp( [ 'typography', 'letterSpacing' ], newValue );
-		recordEvent(
+		debouncedRecordEvent(
 			'styles_sidebar_screen_typography_element_panel_set_letter_spacing',
 			{
 				element,
@@ -124,7 +124,7 @@ export function TypographyElementPanel( {
 
 	const setLineHeight = ( newValue ) => {
 		updateElementStyleProp( [ 'typography', 'lineHeight' ], newValue );
-		recordEvent(
+		debouncedRecordEvent(
 			'styles_sidebar_screen_typography_element_panel_set_line_height',
 			{
 				element,
@@ -136,7 +136,7 @@ export function TypographyElementPanel( {
 
 	const setFontSize = ( newValue ) => {
 		updateElementStyleProp( [ 'typography', 'fontSize' ], newValue );
-		recordEvent(
+		debouncedRecordEvent(
 			'styles_sidebar_screen_typography_element_panel_set_font_size',
 			{
 				element,
@@ -149,7 +149,7 @@ export function TypographyElementPanel( {
 
 	const setFontFamily = ( newValue ) => {
 		updateElementStyleProp( [ 'typography', 'fontFamily' ], newValue );
-		recordEvent(
+		debouncedRecordEvent(
 			'styles_sidebar_screen_typography_element_panel_set_font_family',
 			{
 				element,
@@ -161,7 +161,7 @@ export function TypographyElementPanel( {
 
 	const setTextDecoration = ( newValue ) => {
 		updateElementStyleProp( [ 'typography', 'textDecoration' ], newValue );
-		recordEvent(
+		debouncedRecordEvent(
 			'styles_sidebar_screen_typography_element_panel_set_text_decoration',
 			{
 				element,
@@ -174,7 +174,7 @@ export function TypographyElementPanel( {
 
 	const setTextTransform = ( newValue ) => {
 		updateElementStyleProp( [ 'typography', 'textTransform' ], newValue );
-		recordEvent(
+		debouncedRecordEvent(
 			'styles_sidebar_screen_typography_element_panel_set_text_transform',
 			{
 				element,
@@ -190,7 +190,7 @@ export function TypographyElementPanel( {
 	} ) => {
 		updateElementStyleProp( [ 'typography', 'fontStyle' ], newFontStyle );
 		updateElementStyleProp( [ 'typography', 'fontWeight' ], newFontWeight );
-		recordEvent(
+		debouncedRecordEvent(
 			'styles_sidebar_screen_typography_element_panel_set_font_appearance',
 			{
 				element,

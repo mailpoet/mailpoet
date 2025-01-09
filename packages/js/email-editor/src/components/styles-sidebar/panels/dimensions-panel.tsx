@@ -12,7 +12,7 @@ import {
 import { __ } from '@wordpress/i18n';
 import { isEqual } from 'lodash';
 import { useEmailStyles } from '../../../hooks';
-import { recordEvent } from '../../../events';
+import { recordEvent, debouncedRecordEvent } from '../../../events';
 
 export function DimensionsPanel() {
 	const [ availableUnits ] = useSettings( 'spacing.units' ) as [ string[] ];
@@ -56,7 +56,7 @@ export function DimensionsPanel() {
 					values={ styles.spacing.padding }
 					onChange={ ( value ) => {
 						updateStyleProp( [ 'spacing', 'padding' ], value );
-						recordEvent(
+						debouncedRecordEvent(
 							'styles_sidebar_screen_layout_dimensions_padding_updated',
 							{ value }
 						);
@@ -95,7 +95,7 @@ export function DimensionsPanel() {
 					min={ 0 }
 					onChange={ ( value ) => {
 						updateStyleProp( [ 'spacing', 'blockGap' ], value.top );
-						recordEvent(
+						debouncedRecordEvent(
 							'styles_sidebar_screen_layout_dimensions_block_spacing_updated',
 							{ value }
 						);

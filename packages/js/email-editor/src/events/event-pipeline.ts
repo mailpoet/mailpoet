@@ -1,3 +1,4 @@
+import { debounce } from 'lodash';
 import { applyFilters } from '@wordpress/hooks';
 
 const isEventTrackingEnabled = applyFilters(
@@ -52,9 +53,12 @@ const recordEventOnce = ( function () {
 	};
 } )();
 
+const debouncedRecordEvent = debounce( recordEvent, 700 ); // wait 700 milliseconds. The average human reaction speed time is around 250 ms, added some delay for mouse move and keyboard press
+
 export {
 	recordEvent,
 	recordEventOnce,
+	debouncedRecordEvent,
 	EMAIL_STRING,
 	dispatcher,
 	isEventTrackingEnabled,
