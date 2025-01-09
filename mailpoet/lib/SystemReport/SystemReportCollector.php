@@ -114,7 +114,8 @@ class SystemReportCollector {
       'Server OS' => (function_exists('php_uname')) ? php_uname() : 'N/A',
       'WP info' => $this->formatCompositeField([
         'WP_MEMORY_LIMIT' => WP_MEMORY_LIMIT,
-        'WP_MAX_MEMORY_LIMIT' => WP_MAX_MEMORY_LIMIT, 'WP_DEBUG' => WP_DEBUG,
+        'WP_MAX_MEMORY_LIMIT' => WP_MAX_MEMORY_LIMIT,
+        'WP_DEBUG' => WP_DEBUG,
         'WordPress language' => $this->wp->getLocale(),
         'WordPress timezone' => $this->wp->wpTimezoneString(),
       ]),
@@ -172,7 +173,11 @@ class SystemReportCollector {
     ];
   }
 
-  private function formatCompositeField($fields) {
+  /**
+   * @param $fields array of key-value pairs
+   * @return string in the format "key1: value1 - key2: value2 - ..."
+   */
+  private function formatCompositeField(array $fields) {
     if (empty($fields)) {
       return '';
     }
