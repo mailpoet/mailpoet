@@ -3,14 +3,24 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypes;
 
 use MailPoet\Config\Env;
+use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use WP_Style_Engine;
 
 abstract class AbstractBlock {
   protected $namespace = 'mailpoet';
   protected $blockName = '';
+  private EmailEditor $emailEditor;
+
+  public function __construct(
+    EmailEditor $emailEditor
+  ) {
+    $this->emailEditor = $emailEditor;
+  }
 
   public function initialize() {
-    $this->registerAssets();
+    if ($this->emailEditor->isEditorPage(false)) {
+      $this->registerAssets();
+    }
     $this->registerBlockType();
   }
 
