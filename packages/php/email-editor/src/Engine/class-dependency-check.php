@@ -28,7 +28,13 @@ class Dependency_Check {
 	 * Checks if all dependencies are met.
 	 */
 	public function are_dependencies_met(): bool {
-		return $this->is_gutenberg_version_compatible() || $this->is_wp_version_compatible();
+		if ( ! $this->is_wp_version_compatible() ) {
+			return false;
+		}
+		if ( is_plugin_active( 'gutenberg/gutenberg.php' ) ) {
+			return $this->is_gutenberg_version_compatible();
+		}
+		return true;
 	}
 
 	/**
@@ -42,9 +48,8 @@ class Dependency_Check {
 	 * Checks if the WordPress version is supported.
 	 */
 	private function is_gutenberg_version_compatible(): bool {
-		if ( defined( 'GUTENBERG_VERSION' ) ) {
-			return version_compare( GUTENBERG_VERSION, self::MIN_GUTENBERG_VERSION, '>=' );
-		}
-		return false;
+		$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/gutenberg/gutenberg.php', false, false );
+		$version     = $plugin_data['Version'] ?? '0.0.0';
+		return version_compare( $version, self::MIN_GUTENBERG_VERSION, '>=' );
 	}
 }
