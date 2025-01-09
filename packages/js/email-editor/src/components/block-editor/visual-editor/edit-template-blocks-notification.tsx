@@ -45,9 +45,7 @@ export default function EditTemplateBlocksNotification( { contentRef } ) {
 				return;
 			}
 			setIsDialogOpen( true );
-			recordEventOnce( 'edit_template_blocks_notification_opened', {
-				templateId,
-			} );
+			recordEventOnce( 'edit_template_blocks_notification_opened' );
 		};
 
 		const canvas = contentRef.current;

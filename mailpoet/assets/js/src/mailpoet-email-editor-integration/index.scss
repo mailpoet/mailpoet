@@ -1,5 +1,6 @@
 // Core MailPoet styles. We need this here because the email editor does not register
 // under the mailpoet namespace and does not have access to the MailPoet plugin styles
+// These styles are required by ReviewRequest (mailpoet/assets/js/src/review-request.tsx) feature
 
 // Settings
 // Global variables, config switches. Not producing any CSS.

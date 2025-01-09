@@ -24,7 +24,7 @@ export function ScreenColors(): JSX.Element {
 
 	const handleOnChange = ( newStyles ) => {
 		updateStyles( newStyles );
-		recordEvent( 'styles_sidebar_screen_colors_styles_updated' );
+		recordEvent( 'styles_sidebar_screen_colors_styles_updated' ); // We can't log the updated color here because the onChange function returns the complete object.
 	};
 
 	return (

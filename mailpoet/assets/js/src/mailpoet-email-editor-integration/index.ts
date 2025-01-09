@@ -24,9 +24,9 @@ const EVENTS_TO_TRACK = [
   'email_editor_events_rich_text_with_button_personalization_tags_shortcode_icon_clicked', // personalization_tags modal opened
   'email_editor_events_personalization_tags_modal_tag_insert_button_clicked', // personalization_tags inserted
   'email_editor_events_rich_text_with_button_input_field_updated', // either subject or preheader updated
-  'email_editor_events_styles_sidebar_screen_typography_opened', // styles sidebar was seen
-  'email_editor_events_styles_sidebar_screen_colors_opened', // styles sidebar was seen
-  'email_editor_events_styles_sidebar_screen_layout_opened', // styles sidebar was seen
+  'email_editor_events_styles_sidebar_screen_typography_opened', // styles sidebar-typography was seen
+  'email_editor_events_styles_sidebar_screen_colors_opened', // styles sidebar-colors was seen
+  'email_editor_events_styles_sidebar_screen_layout_opened', // styles sidebar-layout was seen
   'email_editor_events_header_send_button_clicked', // Send button clicked
   'email_editor_events_trash_modal_move_to_trash_button_clicked', // Move to trash button was clicked
 ];
