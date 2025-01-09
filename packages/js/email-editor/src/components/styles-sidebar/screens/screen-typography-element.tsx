@@ -102,6 +102,14 @@ export function ScreenTypographyElement( {
 							value="h4"
 							label={ _x( 'H4', 'Heading Level', 'mailpoet' ) }
 						/>
+						<ToggleGroupControlOption
+							value="h5"
+							label={ _x( 'H5', 'Heading Level', 'mailpoet' ) }
+						/>
+						<ToggleGroupControlOption
+							value="h6"
+							label={ _x( 'H6', 'Heading Level', 'mailpoet' ) }
+						/>
 					</ToggleGroupControl>
 				</Spacer>
 			) }
