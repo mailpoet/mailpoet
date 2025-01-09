@@ -37,10 +37,6 @@ export default function EditTemplateBlocksNotification( { contentRef } ) {
 		};
 	}, [] );
 
-	recordEventOnce( 'edit_template_blocks_notification_opened', {
-		templateId,
-	} );
-
 	const [ isDialogOpen, setIsDialogOpen ] = useState( false );
 
 	useEffect( () => {
@@ -49,6 +45,9 @@ export default function EditTemplateBlocksNotification( { contentRef } ) {
 				return;
 			}
 			setIsDialogOpen( true );
+			recordEventOnce( 'edit_template_blocks_notification_opened', {
+				templateId,
+			} );
 		};
 
 		const canvas = contentRef.current;
