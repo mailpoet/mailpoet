@@ -38,7 +38,8 @@ class NewslettersListingCest {
   }
 
   public function statisticsColumn(\AcceptanceTester $i) {
-    (new Newsletter())->create();
+    $subject = 'Statistics column subject';
+    (new Newsletter())->withSubject($subject)->create();
 
     $i->wantTo('Check if statistics column is visible depending on tracking option');
 
@@ -52,7 +53,7 @@ class NewslettersListingCest {
     $i->waitForText('Settings saved');
 
     $i->amOnMailpoetPage('Emails');
-    $i->waitForText('Subject');
+    $i->waitForText($subject);
     $i->dontSee('Clicked, Opened');
 
     // column is visible when tracking is enabled
@@ -63,7 +64,7 @@ class NewslettersListingCest {
     $i->waitForText('Settings saved');
 
     $i->amOnMailpoetPage('Emails');
-    $i->waitForText('Subject');
+    $i->waitForText($subject);
     $i->see('Clicked, Opened');
     $i->seeNoJSErrors();
   }
