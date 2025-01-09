@@ -44,10 +44,9 @@ class DependencyNotice {
 
   private function displayMessage(): void {
     $dependencyErrorMessage = sprintf(
-    // translators: %1$s: WordPress version e.g. 6.7, %2$s: Gutenberg version e.g. 19.3
-      __('This email was created using the new editor, which requires WordPress version %1$s or higher. If you also have the Gutenberg plugin installed, ensure its version is %2$s or above. Please update your setup to continue editing or previewing this email.', 'mailpoet'),
+      // translators: %1$s: WordPress version e.g. 6.7
+      __('This email was created using the new editor, which requires WordPress version %1$s or higher. Please update your setup to continue editing or previewing this email.', 'mailpoet'),
       Dependency_Check::MIN_WP_VERSION,
-      Dependency_Check::MIN_GUTENBERG_VERSION
     );
     echo '<div class="notice notice-warning is-dismissible"><p>' . esc_html($dependencyErrorMessage) . '</p></div>';
   }
