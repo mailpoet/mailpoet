@@ -78,6 +78,7 @@ class Newsletter {
           <!-- /wp:paragraph -->
         </div>
         <!-- /wp:group -->
+        <!-- wp:mailpoet/powered-by-mailpoet {"lock":{"move":true,"remove":true}} /-->
       </div>
       <!-- /wp:group -->';
   }
