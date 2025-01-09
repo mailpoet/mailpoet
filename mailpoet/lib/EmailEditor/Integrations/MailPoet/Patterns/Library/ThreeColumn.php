@@ -12,8 +12,8 @@ class ThreeColumn extends Pattern {
 
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     return '<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|10","bottom":"var:preset|spacing|10","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}},"layout":{"type":"constrained"}} -->
-      <div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--10);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20)"><!-- wp:heading {"fontSize":"large"} -->
-      <h2 class="wp-block-heading has-large-font-size">' . __('3 column layout', 'mailpoet') . '</h2>
+      <div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--10);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--10);padding-left:var(--wp--preset--spacing--20)"><!-- wp:heading -->
+      <h2 class="wp-block-heading">' . __('3 column layout', 'mailpoet') . '</h2>
       <!-- /wp:heading --></div>
       <!-- /wp:group -->
 

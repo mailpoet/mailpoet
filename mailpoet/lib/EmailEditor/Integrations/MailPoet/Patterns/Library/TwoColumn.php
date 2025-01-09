@@ -12,8 +12,8 @@ class TwoColumn extends Pattern {
 
   protected function get_content(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     return '<!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"var:preset|spacing|20","right":"var:preset|spacing|20"}}},"layout":{"type":"constrained"}} -->
-      <div class="wp-block-group" style="padding-top:0;padding-right:var(--wp--preset--spacing--20);padding-bottom:0;padding-left:var(--wp--preset--spacing--20)"><!-- wp:heading {"fontSize":"large"} -->
-      <h2 class="wp-block-heading has-large-font-size">' . __('2 column layout', 'mailpoet') . '</h2>
+      <div class="wp-block-group" style="padding-top:0;padding-right:var(--wp--preset--spacing--20);padding-bottom:0;padding-left:var(--wp--preset--spacing--20)"><!-- wp:heading -->
+      <h2 class="wp-block-heading">' . __('2 column layout', 'mailpoet') . '</h2>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph -->
@@ -33,8 +33,8 @@ class TwoColumn extends Pattern {
       <!-- /wp:button --></div>
       <!-- /wp:buttons -->
 
-      <!-- wp:heading {"level":3,"fontSize":"large"} -->
-      <h3 class="wp-block-heading has-large-font-size">' . __('Heading', 'mailpoet') . '</h3>
+      <!-- wp:heading {"level":3} -->
+      <h3 class="wp-block-heading">' . __('Heading', 'mailpoet') . '</h3>
       <!-- /wp:heading -->
 
       <!-- wp:paragraph -->
