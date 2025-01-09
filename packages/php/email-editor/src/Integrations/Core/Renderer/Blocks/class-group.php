@@ -85,14 +85,13 @@ class Group extends Abstract_Block_Renderer {
 		)['declarations'];
 
 		$table_styles['background-size'] = empty( $table_styles['background-size'] ) ? 'cover' : $table_styles['background-size'];
-		$justify_content                 = $block_attributes['layout']['justifyContent'] ?? 'center';
 		$width                           = $parsed_block['email_attrs']['width'] ?? '100%';
 
 		return sprintf(
-			'<table class="email-block-group %3$s" style="%1$s" width="100%%" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
+			'<table class="email-block-group %3$s" style="%1$s" width="100%%" border="0" cellpadding="0" cellspacing="0" role="presentation">
         <tbody>
           <tr>
-            <td class="email-block-group-content" style="%2$s" align="%4$s" width="%5$s">
+            <td class="email-block-group-content" style="%2$s" width="%4$s">
               {group_content}
             </td>
           </tr>
@@ -101,7 +100,6 @@ class Group extends Abstract_Block_Renderer {
 			esc_attr( WP_Style_Engine::compile_css( $table_styles, '' ) ),
 			esc_attr( WP_Style_Engine::compile_css( $cell_styles, '' ) ),
 			esc_attr( $original_classname ),
-			esc_attr( $justify_content ),
 			esc_attr( $width ),
 		);
 	}
