@@ -325,7 +325,7 @@ class NewsletterSendComponent extends Component<
 
         if (response.data?.wp_post_id) {
           MailPoet.trackEvent(
-            'New Email Editor > Newsletter created by BlockEmailEditor',
+            'New Email Editor > Send page opened-Newsletter created by BlockEmailEditor',
           );
         }
 
