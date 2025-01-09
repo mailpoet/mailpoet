@@ -92,9 +92,9 @@ export function SelectTemplateModal( {
 		const postContent = template.template as unknown as EmailEditorPostType;
 
 		recordEvent( 'template_select_modal_template_selected', {
-			template,
+			templateSlug: template.slug,
 			templateSelectMode,
-			templateIsPostContent,
+			templateType: template.type,
 		} );
 
 		// When we provide previewContent, we don't want to reset the blocks
