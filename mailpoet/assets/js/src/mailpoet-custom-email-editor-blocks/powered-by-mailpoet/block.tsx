@@ -93,10 +93,7 @@ function Edit({
               },
               {
                 label: (
-                  <LogoImage
-                    logoSrc={`${cdnUrl}email-editor/logo-dark.png`}
-                    style={{ background: '#000000' }}
-                  />
+                  <LogoImage logoSrc={`${cdnUrl}email-editor/logo-dark.png`} />
                 ) as unknown as string,
                 value: 'dark',
               },
