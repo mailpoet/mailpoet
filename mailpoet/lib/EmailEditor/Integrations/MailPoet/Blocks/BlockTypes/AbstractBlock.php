@@ -89,8 +89,11 @@ abstract class AbstractBlock {
     return $key ? $script[$key] : $script;
   }
 
+  /**
+   * Loading styles expect that the file with styles has the name `style`. If we use the name `index` or something else the prefixing of the name is different.
+   */
   protected function getEditorStyle($key = null) {
-    $path = Env::$assetsUrl . '/dist/js/email-editor-blocks/style-' . $this->blockName . '-block.css';
+    $path = Env::$assetsPath . '/dist/js/email-editor-blocks/style-' . $this->blockName . '-block.css';
 
     if (!file_exists($path)) {
       return null;
