@@ -1,0 +1,10 @@
+.mailpoet-editor-feedback-button {
+  bottom: 5px;
+  position: absolute;
+  right: 5px;
+}
+// To be able to scroll up a bit more in case the sidebar content is long button is displayed over it.
+.edit-post-sidebar {
+  box-sizing: border-box;
+  padding-bottom: 40px;
+}

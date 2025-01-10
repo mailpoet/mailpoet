@@ -1,6 +1,7 @@
 import { MailPoet } from 'mailpoet';
 import { Button } from '@wordpress/components';
 import { useLayoutEffect, useState } from '@wordpress/element';
+import { commentContent } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
 import { initializeSatismeterSurvey } from 'nps-poll';
 
@@ -48,8 +49,9 @@ export function withSatismeterSurvey(Component) {
         <Component {...props} />
         {surveyAvailable && (
           <Button
-            isPrimary
-            style={{ position: 'absolute', right: '10px', bottom: '10px' }}
+            icon={commentContent}
+            variant="tertiary"
+            className="mailpoet-editor-feedback-button"
             onClick={triggerSurvey}
           >
             {__('Share feedback', 'mailpoet')}
