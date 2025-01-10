@@ -31,15 +31,15 @@
  */
 .wp-block-columns:not(.is-not-stacked-on-mobile)
 > .wp-block-column
-> .wp-block:not([aria-hidden="true"]):first-of-type,
-.wp-block-group > .wp-block:not([aria-hidden="true"]):first-of-type {
+> .wp-block:first-child,
+.wp-block-group > .wp-block:first-child {
 	margin-top: 0;
 }
 
 .wp-block-columns:not(.is-not-stacked-on-mobile)
 > .wp-block-column
-> .wp-block:not([aria-hidden="true"]),
-.wp-block-group > .wp-block:not([aria-hidden="true"]) {
+> .wp-block,
+.wp-block-group > .wp-block {
 	margin-bottom: var(--wp--style--block-gap, 16px);
 	margin-top: var(--wp--style--block-gap, 16px);
 }
