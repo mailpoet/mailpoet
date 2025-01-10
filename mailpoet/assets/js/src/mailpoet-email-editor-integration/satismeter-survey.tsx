@@ -1,3 +1,4 @@
+import { MailPoet } from 'mailpoet';
 import { Button } from '@wordpress/components';
 import { useLayoutEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -26,7 +27,16 @@ export function withSatismeterSurvey(Component) {
           // We want to show the survey immediately when there has been enough usage
           if (window.mailpoet_display_nps_email_editor) {
             window.mailpoet_display_nps_email_editor = false;
-            triggerSurvey();
+            void MailPoet.Ajax.post({
+              api_version: MailPoet.apiVersion,
+              endpoint: 'user_flags',
+              action: 'set',
+              data: {
+                email_editor_survey_seen: MailPoet.Date.toGmtDatetimeString(
+                  new Date(),
+                ),
+              },
+            }).then(triggerSurvey);
           }
         })
         // Survey may fail to initialize when 3rd party libs are not allowed. It is OK we don't need to react.

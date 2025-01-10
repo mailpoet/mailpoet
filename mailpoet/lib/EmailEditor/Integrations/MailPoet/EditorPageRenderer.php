@@ -13,6 +13,7 @@ use MailPoet\EmailEditor\Engine\User_Theme;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController as MailPoetSettings;
+use MailPoet\Settings\UserFlagsController;
 use MailPoet\Util\CdnAssetUrl;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WP\Functions as WPFunctions;
@@ -38,6 +39,8 @@ class EditorPageRenderer {
 
   private NewslettersRepository $newslettersRepository;
 
+  private UserFlagsController $userFlagsController;
+
   private Analytics $analytics;
 
   public function __construct(
@@ -51,6 +54,7 @@ class EditorPageRenderer {
     DependencyNotice $dependencyNotice,
     MailPoetSettings $mailpoetSettings,
     NewslettersRepository $newslettersRepository,
+    UserFlagsController $userFlagsController,
     Analytics $analytics
   ) {
     $this->wp = $wp;
@@ -63,6 +67,7 @@ class EditorPageRenderer {
     $this->dependencyNotice = $dependencyNotice;
     $this->mailpoetSettings = $mailpoetSettings;
     $this->newslettersRepository = $newslettersRepository;
+    $this->userFlagsController = $userFlagsController;
     $this->analytics = $analytics;
   }
 
@@ -148,6 +153,8 @@ class EditorPageRenderer {
     );
 
     $installedAtDiff = (new \DateTime($this->mailpoetSettings->get('installed_at')))->diff(new \DateTime());
+    // Survey should be displayed only if there are 2 and more emails and the user hasn't seen it yet
+    $displaySurvey = ($this->newslettersRepository->getCountOfEmailsWithWPPost() > 1) && !$this->userFlagsController->get(UserFlagsController::EMAIL_EDITOR_SURVEY);
 
     // Renders additional script data that some components require e.g. PremiumModal. This is done here instead of using
     // PageRenderer since that introduces other dependencies we want to avoid. Used by getUpgradeInfo.
@@ -167,7 +174,7 @@ class EditorPageRenderer {
       'mailpoet_subscribers_limit_reached' => $this->subscribersFeature->check(),
       // settings needed for Satismeter tracking
       'mailpoet_3rd_party_libs_enabled' => $this->mailpoetSettings->get('3rd_party_libs.enabled') === '1',
-      'mailpoet_display_nps_email_editor' => $this->newslettersRepository->getCountOfEmailsWithWPPost() > 1, // Poll should be displayed only if there are 2 and more emails
+      'mailpoet_display_nps_email_editor' => $displaySurvey,
       'mailpoet_display_nps_poll' => true,
       'mailpoet_current_wp_user' => $this->wp->wpGetCurrentUser()->to_array(),
       'mailpoet_current_wp_user_firstname' => $this->wp->wpGetCurrentUser()->user_firstname,

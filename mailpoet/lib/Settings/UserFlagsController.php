@@ -6,6 +6,7 @@ use MailPoet\Entities\UserFlagEntity;
 use MailPoet\WP\Functions as WPFunctions;
 
 class UserFlagsController {
+  const EMAIL_EDITOR_SURVEY = 'email_editor_survey_seen';
 
   /** @var array|null */
   private $data = null;
@@ -26,6 +27,7 @@ class UserFlagsController {
       'transactional_emails_opt_in_notice_dismissed' => false,
       'legacy_automations_notice_dismissed' => false,
       'legacy_automatic_emails_notice_dismissed' => false,
+      self::EMAIL_EDITOR_SURVEY => null,
     ];
     $this->userFlagsRepository = $userFlagsRepository;
   }
