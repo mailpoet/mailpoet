@@ -162,7 +162,7 @@ class EditorPageRenderer {
     $installer = new Installer(Installer::PREMIUM_PLUGIN_SLUG);
     $inline_script_data = [
       'mailpoet_premium_plugin_installed' => Installer::isPluginInstalled(Installer::PREMIUM_PLUGIN_SLUG),
-      'mailpoet_premium_plugin_active' => $this->servicesChecker->isPremiumPluginActive(),
+      'mailpoet_premium_active' => $this->servicesChecker->isPremiumPluginActive(),
       'mailpoet_premium_plugin_download_url' => $this->subscribersFeature->hasValidPremiumKey() ? $installer->generatePluginDownloadUrl() : null,
       'mailpoet_premium_plugin_activation_url' => $installer->generatePluginActivationUrl(Installer::PREMIUM_PLUGIN_PATH),
       'mailpoet_has_valid_api_key' => $this->subscribersFeature->hasValidApiKey(),
