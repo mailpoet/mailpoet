@@ -459,6 +459,7 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
   entry: {
     'powered-by-mailpoet-block':
       '/assets/js/src/mailpoet-custom-email-editor-blocks/powered-by-mailpoet/block.tsx',
+    mailpoet: '/assets/js/src/mailpoet.ts',
   },
   output: {
     filename: '[name].js',
@@ -480,6 +481,9 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
     ],
   }),
   resolve: {
+    alias: {
+      mailpoet: path.resolve(__dirname, 'assets/js/src/mailpoet.ts'),
+    },
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
   // use only needed plugins from wpScriptConfig and add the custom ones

@@ -2,8 +2,10 @@ import { registerBlockType } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, RadioControl, Icon } from '@wordpress/components';
+import { useState } from 'react';
 import metadata from './block.json';
 import MailPoetIcon from './mailpoet-icon';
+import { PremiumModal } from '../../common/premium-modal';
 
 const getCdnUrl = () => window.mailpoet_cdn_url;
 const getPremiumPluginStatus = () => window.mailpoet_premium_active;
@@ -15,8 +17,31 @@ function LogoImage({
   logoSrc: string;
   style?: React.CSSProperties;
 }): JSX.Element {
+  const [isModalOpened, setIsModalOpened] = useState(false);
+
   return (
-    <img src={logoSrc} style={style} alt="Powered by MailPoet" width="100px" />
+    <>
+      <button
+        type="button"
+        className="mailpoet-email-footer-credit"
+        onClick={() => setIsModalOpened(true)}
+      >
+        <img
+          src={logoSrc}
+          style={style}
+          alt="Powered by MailPoet"
+          width="100px"
+        />
+      </button>
+      {!!isModalOpened && (
+        <PremiumModal onRequestClose={() => setIsModalOpened(false)}>
+          {__(
+            'A MailPoet logo will appear in the footer of all emails sent with the free version of MailPoet.',
+            'mailpoet',
+          )}
+        </PremiumModal>
+      )}
+    </>
   );
 }
 

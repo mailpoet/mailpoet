@@ -1,4 +1,4 @@
-import { Tooltip } from 'help-tooltip.jsx';
+import { Tooltip } from './help-tooltip.jsx';
 import { createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 
