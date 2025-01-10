@@ -20,9 +20,7 @@ class CaptchaHooks {
   }
 
   public function isEnabled(): bool {
-    // A transient code to enable incremental development of the feature.
-    // Later when a setting is introduced, this function will be adjusted.
-    if (!in_array(getenv('MP_ENV'), ['development', 'test'])) {
+    if (!$this->settings->get(CaptchaConstants::ON_REGISTER_FORMS_SETTING_NAME, false)) {
       return false;
     }
 

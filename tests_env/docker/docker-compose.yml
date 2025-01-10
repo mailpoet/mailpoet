@@ -98,7 +98,6 @@ services:
       WORDPRESS_TABLE_PREFIX: mp_
       MAILPOET_TRACY_PRODUCTION_MODE: 1
       MAILPOET_TRACY_LOG_DIR: /var/www/html/wp-content/plugins/mailpoet/tests/_output/exceptions
-      MP_ENV: test
     command: ['docker-entrypoint.sh', 'apache2-foreground']
     networks:
       default:
