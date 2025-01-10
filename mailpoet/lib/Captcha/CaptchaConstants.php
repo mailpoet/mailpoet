@@ -8,6 +8,7 @@ class CaptchaConstants {
   const TYPE_RECAPTCHA_INVISIBLE = 'recaptcha-invisible';
   const TYPE_DISABLED = null;
   const TYPE_SETTING_NAME = 'captcha.type';
+  const ON_REGISTER_FORMS_SETTING_NAME = 'captcha.on_register_forms.enabled';
 
   public static function isReCaptcha(?string $captchaType) {
     return in_array($captchaType, [self::TYPE_RECAPTCHA, self::TYPE_RECAPTCHA_INVISIBLE]);
