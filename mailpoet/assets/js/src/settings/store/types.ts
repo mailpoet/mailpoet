@@ -65,6 +65,9 @@ export type Settings = {
     recaptcha_secret_token: string;
     recaptcha_invisible_site_token: string;
     recaptcha_invisible_secret_token: string;
+    on_register_forms: {
+      enabled: '' | '1';
+    };
   };
   logging: 'everything' | 'errors' | 'nothing';
   mta_group: 'mailpoet' | 'website' | 'smtp';

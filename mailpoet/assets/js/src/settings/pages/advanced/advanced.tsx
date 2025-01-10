@@ -12,6 +12,7 @@ import { Reinstall } from './reinstall';
 import { RecalculateSubscriberScore } from './recalculate-subscriber-score';
 import { Logging } from './logging';
 import { BounceAddress } from './bounce-address';
+import { CaptchaOnSignup } from './captcha-on-signup';
 
 export function Advanced() {
   return (
@@ -27,6 +28,7 @@ export function Advanced() {
       <ShareData />
       <Libs3rdParty />
       <Captcha />
+      <CaptchaOnSignup />
       <Reinstall />
       <Logging />
       <SaveButton />

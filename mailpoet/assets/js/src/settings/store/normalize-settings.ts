@@ -50,6 +50,7 @@ function asObject<T extends Schema>(schema: T) {
 function asIs<T>(value: T): T {
   return value;
 }
+
 export function normalizeSettings(data: Record<string, unknown>): Settings {
   const text = asString('');
   const disabledCheckbox = asBoolean('1', '0', '0');
@@ -135,6 +136,9 @@ export function normalizeSettings(data: Record<string, unknown>): Settings {
       recaptcha_secret_token: text,
       recaptcha_invisible_site_token: text,
       recaptcha_invisible_secret_token: text,
+      on_register_forms: asObject({
+        enabled: disabledRadio,
+      }),
     }),
     logging: asEnum(['everything', 'errors', 'nothing'], 'errors'),
     mta_group: asEnum(['mailpoet', 'website', 'smtp'], 'website'),
