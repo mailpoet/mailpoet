@@ -1,15 +1,13 @@
 <?php declare(strict_types = 1);
 
-namespace MailPoet\Config;
+namespace MailPoet\Captcha;
 
-use MailPoet\Captcha\CaptchaConstants;
-use MailPoet\Captcha\ReCaptchaRenderer;
-use MailPoet\Captcha\ReCaptchaValidator;
+use MailPoet\Config\Env;
 use MailPoet\Config\Renderer as BasicRenderer;
 use MailPoet\Settings\SettingsController;
 use MailPoet\WP\Functions as WPFunctions;
 
-class HooksReCaptcha {
+class ReCaptchaHooks {
 
   const RECAPTCHA_LIB_URL = 'https://www.google.com/recaptcha/api.js';
 

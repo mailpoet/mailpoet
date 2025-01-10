@@ -3,6 +3,7 @@
 namespace MailPoet\Config;
 
 use MailPoet\Captcha\CaptchaHooks;
+use MailPoet\Captcha\ReCaptchaHooks;
 use MailPoet\Cron\CronTrigger;
 use MailPoet\Form\DisplayFormInWPContent;
 use MailPoet\Mailer\WordPress\WordpressMailerReplacer;
@@ -72,7 +73,7 @@ class Hooks {
   /** @var HooksWooCommerce */
   private $hooksWooCommerce;
 
-  /** @var HooksReCaptcha */
+  /** @var ReCaptchaHooks */
   private $reCaptcha;
 
   /** @var SubscriberChangesNotifier */
@@ -108,7 +109,7 @@ class Hooks {
     DisplayFormInWPContent $displayFormInWPContent,
     HooksWooCommerce $hooksWooCommerce,
     CaptchaHooks $captchaHooks,
-    HooksReCaptcha $reCaptcha,
+    ReCaptchaHooks $reCaptcha,
     SubscriberHandler $subscriberHandler,
     SubscriberChangesNotifier $subscriberChangesNotifier,
     WP $wpSegment,
