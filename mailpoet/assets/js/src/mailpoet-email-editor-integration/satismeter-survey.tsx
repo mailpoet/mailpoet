@@ -22,6 +22,12 @@ export function withSatismeterSurvey(Component) {
             return;
           }
           setSurveyAvailable(true);
+
+          // We want to show the survey immediately when there has been enough usage
+          if (window.mailpoet_display_nps_email_editor) {
+            window.mailpoet_display_nps_email_editor = false;
+            triggerSurvey();
+          }
         })
         // Survey may fail to initialize when 3rd party libs are not allowed. It is OK we don't need to react.
         .catch(() => {});
