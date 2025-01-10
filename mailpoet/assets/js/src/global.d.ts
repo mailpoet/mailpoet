@@ -296,4 +296,5 @@ interface Window {
     [key: string]: number;
   };
   mailpoet_block_email_editor_enabled: boolean;
+  satismeter: (action: string, data: Record<string, unknown>) => void;
 }

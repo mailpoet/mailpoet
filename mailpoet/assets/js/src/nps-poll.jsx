@@ -5,7 +5,7 @@ import satismeter from 'satismeter-loader';
 import { ReviewRequest } from 'review-request';
 import { getTrackingData } from 'analytics.js';
 
-export const initializeSatismeterSurvey = () => {
+export const initializeSatismeterSurvey = (writeId = null) => {
   const showReviewRequestModal = () => {
     MailPoet.Modal.popup({
       width: 800,
@@ -27,14 +27,13 @@ export const initializeSatismeterSurvey = () => {
     });
   };
 
-  const callSatismeter = (trackingData) => {
+  const callSatismeter = (trackingData, customWriteId) => {
     const newUsersPollId = '6L479eVPXk7pBn6S';
     const oldUsersPollId = 'k0aJAsQAWI2ERyGv';
     const formPollId = 'EqOgKsgZd832Sz9w';
-    const emailEditorPollId = '9qCj2SJBE1s5OhnX5NYfRXu82pEDUB9x';
     let writeKey;
-    if (window.mailpoet_display_nps_email_editor) {
-      writeKey = emailEditorPollId;
+    if (customWriteId) {
+      writeKey = customWriteId;
     } else if (window.mailpoet_display_nps_form) {
       writeKey = formPollId;
     } else if (window.mailpoet_is_new_user) {
@@ -74,7 +73,7 @@ export const initializeSatismeterSurvey = () => {
     window.mailpoet_display_nps_poll &&
     window.mailpoet_3rd_party_libs_enabled
   ) {
-    getTrackingData().then(({ data }) => callSatismeter(data));
+    getTrackingData().then(({ data }) => callSatismeter(data, writeId));
   }
 };
 

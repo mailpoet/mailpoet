@@ -4,11 +4,11 @@
 
 import { addFilter, addAction } from '@wordpress/hooks';
 import { MailPoet } from 'mailpoet';
-import { withNpsPoll } from '../nps-poll';
+import { withSatismeterSurvey } from './satismeter-survey';
 import './index.scss';
 
 addFilter('mailpoet_email_editor_wrap_editor_component', 'mailpoet', (editor) =>
-  withNpsPoll(editor),
+  withSatismeterSurvey(editor),
 );
 
 const EVENTS_TO_TRACK = [
