@@ -1,0 +1,28 @@
+.mailpoet-email-footer-credit {
+  appearance: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
+
+// Those styles are copied from the file _commons.scss but because there is only a few of them
+// it's better to keep them here to avoid creating some logic to include another file.
+.mailpoet-premium-modal.components-modal__frame {
+  max-width: 500px;
+}
+
+.mailpoet-premium-modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+  padding-top: 12px;
+}
+
+.mailpoet-premium-modal-error {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}

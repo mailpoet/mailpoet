@@ -6,6 +6,7 @@ import { useState } from 'react';
 import metadata from './block.json';
 import MailPoetIcon from './mailpoet-icon';
 import { PremiumModal } from '../../common/premium-modal';
+import './style.scss';
 
 const getCdnUrl = () => window.mailpoet_cdn_url;
 const getPremiumPluginStatus = () => window.mailpoet_premium_active;
