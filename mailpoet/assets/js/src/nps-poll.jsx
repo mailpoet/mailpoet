@@ -69,17 +69,25 @@ export const initializeSatismeterSurvey = (writeId = null) => {
     });
   };
 
-  if (
-    window.mailpoet_display_nps_poll &&
-    window.mailpoet_3rd_party_libs_enabled
-  ) {
-    getTrackingData().then(({ data }) => callSatismeter(data, writeId));
-  }
+  return new Promise((resolve, reject) => {
+    if (
+      window.mailpoet_display_nps_poll &&
+      window.mailpoet_3rd_party_libs_enabled
+    ) {
+      getTrackingData().then(({ data }) => {
+        callSatismeter(data, writeId);
+        resolve();
+      });
+    } else {
+      reject();
+    }
+  });
 };
 
 const useNpsPoll = () => {
   useLayoutEffect(() => {
-    initializeSatismeterSurvey();
+    // Survey may fail to initialize when 3rd party libs are not allowed. It is OK. We don't need to react.
+    initializeSatismeterSurvey().catch(() => {});
   }, []);
 
   return null;
