@@ -1,5 +1,7 @@
-import { Input } from 'common/index';
+import { _x } from '@wordpress/i18n';
+import { Button, Input } from 'common/index';
 import { useAction, useSelector } from 'settings/store/hooks';
+import { useState } from 'react';
 
 type KeyInputPropType = {
   placeholder?: string;
@@ -12,10 +14,26 @@ export function KeyInput({
 }: KeyInputPropType) {
   const state = useSelector('getKeyActivationState')();
   const setState = useAction('updateKeyActivationState');
+  const [isRevealed, setIsRevealed] = useState(false);
+  const inputType = isRevealed ? 'text' : 'password';
+  const toggleButton = (
+    <Button
+      className="mailpoet-premium-key-toggle"
+      variant="tertiary"
+      onClick={() => setIsRevealed(!isRevealed)}
+    >
+      {
+        // translators: Used as a button to show or hide the premium key
+        isRevealed
+          ? _x('Hide', 'verb', 'mailpoet')
+          : _x('Show', 'verb', 'mailpoet')
+      }
+    </Button>
+  );
 
   return (
     <Input
-      type="text"
+      type={inputType}
       id="mailpoet_premium_key"
       name="premium[premium_key]"
       placeholder={placeholder}
@@ -29,6 +47,7 @@ export function KeyInput({
           key: event.target.value.trim() || null,
         })
       }
+      iconEnd={toggleButton}
     />
   );
 }
