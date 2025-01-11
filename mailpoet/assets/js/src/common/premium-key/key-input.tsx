@@ -24,12 +24,11 @@ export function KeyInput({
       variant="tertiary"
       onClick={() => setIsRevealed(!isRevealed)}
     >
-      {
-        // translators: Used as a button to show or hide the premium key
-        isRevealed
-          ? _x('Hide', 'verb', 'mailpoet')
-          : _x('Show', 'verb', 'mailpoet')
-      }
+      {isRevealed
+        ? // translators: Used as a button to show or hide the premium key
+          _x('Hide', 'verb', 'mailpoet')
+        : // translators: Used as a button to show or hide the premium key
+          _x('Show', 'verb', 'mailpoet')}
     </Button>
   );
 
