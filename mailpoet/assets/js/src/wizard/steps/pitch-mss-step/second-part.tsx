@@ -55,6 +55,7 @@ function MSSStepSecondPart(): JSX.Element {
             'welcomeWizardMSSSecondPartInputPlaceholder',
           )}
           isFullWidth
+          forceRevealed
         />
       </label>
 

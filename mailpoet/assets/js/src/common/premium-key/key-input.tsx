@@ -6,17 +6,19 @@ import { useState } from 'react';
 type KeyInputPropType = {
   placeholder?: string;
   isFullWidth?: boolean;
+  forceRevealed?: boolean;
 };
 
 export function KeyInput({
   placeholder,
   isFullWidth = false,
+  forceRevealed = false,
 }: KeyInputPropType) {
   const state = useSelector('getKeyActivationState')();
   const setState = useAction('updateKeyActivationState');
   const [isRevealed, setIsRevealed] = useState(false);
-  const inputType = isRevealed ? 'text' : 'password';
-  const toggleButton = (
+  const inputType = forceRevealed || isRevealed ? 'text' : 'password';
+  const toggleButton = !forceRevealed && (
     <Button
       className="mailpoet-premium-key-toggle"
       variant="tertiary"
