@@ -3,7 +3,6 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypes;
 
 use MailPoet\Config\ServicesChecker;
-use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor;
 use MailPoet\Util\CdnAssetUrl;
 
 class PoweredByMailpoet extends AbstractBlock {
@@ -13,12 +12,10 @@ class PoweredByMailpoet extends AbstractBlock {
 
   public function __construct(
     ServicesChecker $servicesChecker,
-    CdnAssetUrl $cdnAssetUrl,
-    EmailEditor $emailEditor
+    CdnAssetUrl $cdnAssetUrl
   ) {
     $this->cdnAssetUrl = $cdnAssetUrl;
     $this->servicesChecker = $servicesChecker;
-    parent::__construct($emailEditor);
   }
 
   public function render($attributes, $content, $block) {
