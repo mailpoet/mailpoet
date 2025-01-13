@@ -91,12 +91,6 @@ function Edit({
                 ) as unknown as string,
                 value: 'light',
               },
-              {
-                label: (
-                  <LogoImage logoSrc={`${cdnUrl}email-editor/logo-dark.png`} />
-                ) as unknown as string,
-                value: 'dark',
-              },
             ]}
             onChange={(value) => {
               setAttributes({
