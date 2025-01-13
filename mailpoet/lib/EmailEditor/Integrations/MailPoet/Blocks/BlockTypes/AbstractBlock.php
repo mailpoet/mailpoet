@@ -34,8 +34,7 @@ abstract class AbstractBlock {
 
   protected function registerAssets() {
     if (null !== $this->getEditorScript()) {
-      // @todo Would usually just register, but the editor_script are not being loaded in the custom editor.
-      wp_enqueue_script(
+      wp_register_script(
         $this->getEditorScript('handle'),
         $this->getEditorScript('path'),
         $this->getEditorScript('dependencies'),
@@ -45,8 +44,7 @@ abstract class AbstractBlock {
     }
 
     if (null !== $this->getEditorStyle()) {
-      // @todo Would usually just register, but the editor_script are not being loaded in the custom editor.
-      wp_enqueue_style(
+      wp_register_style(
         $this->getEditorStyle('handle'),
         $this->getEditorStyle('path'),
         [],
@@ -60,7 +58,7 @@ abstract class AbstractBlock {
     if (\WP_Block_Type_Registry::get_instance()->is_registered($this->getBlockType())) {
       return;
     }
-    $metadata_path = Env::$assetsPath . '/js/src/mailpoet-custom-email-editor-blocks/' . $this->blockName . '/block.json';
+    $metadata_path = Env::$assetsPath . '/dist/js/email-editor-blocks/' . $this->blockName . '/block.json';
     $block_settings = [
         'render_callback' => [$this, 'render'],
         'editor_script' => $this->getEditorScript('handle'),

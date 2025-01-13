@@ -498,6 +498,14 @@ const emailEditorBlocks = Object.assign({}, wpScriptConfig, {
       requestToExternal,
       requestToHandle,
     }),
+    new WebpackCopyPlugin({
+      patterns: [
+        {
+          from: 'assets/js/src/mailpoet-custom-email-editor-blocks/powered-by-mailpoet/block.json',
+          to: 'powered-by-mailpoet/block.json',
+        },
+      ],
+    }),
   ],
 });
 
