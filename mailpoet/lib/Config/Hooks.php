@@ -73,9 +73,6 @@ class Hooks {
   /** @var HooksWooCommerce */
   private $hooksWooCommerce;
 
-  /** @var ReCaptchaHooks */
-  private $reCaptcha;
-
   /** @var SubscriberChangesNotifier */
   private $subscriberChangesNotifier;
 
@@ -87,6 +84,9 @@ class Hooks {
 
   /** @var CaptchaHooks */
   private $captchaHooks;
+
+  /** @var ReCaptchaHooks */
+  private $reCaptchaHooks;
 
   /** @var WooSystemInfoController */
   private $wooSystemInfoController;
@@ -109,7 +109,7 @@ class Hooks {
     DisplayFormInWPContent $displayFormInWPContent,
     HooksWooCommerce $hooksWooCommerce,
     CaptchaHooks $captchaHooks,
-    ReCaptchaHooks $reCaptcha,
+    ReCaptchaHooks $reCaptchaHooks,
     SubscriberHandler $subscriberHandler,
     SubscriberChangesNotifier $subscriberChangesNotifier,
     WP $wpSegment,
@@ -132,7 +132,7 @@ class Hooks {
     $this->subscriberHandler = $subscriberHandler;
     $this->hooksWooCommerce = $hooksWooCommerce;
     $this->captchaHooks = $captchaHooks;
-    $this->reCaptcha = $reCaptcha;
+    $this->reCaptchaHooks = $reCaptchaHooks;
     $this->subscriberChangesNotifier = $subscriberChangesNotifier;
     $this->dotcomLicenseProvisioner = $dotcomLicenseProvisioner;
     $this->automateWooHooks = $automateWooHooks;
@@ -249,44 +249,6 @@ class Hooks {
         60,
         3
       );
-    }
-
-    // reCAPTCHA on WP registration form
-    if ($this->reCaptcha->isEnabled()) {
-      $this->wp->addAction(
-        'login_enqueue_scripts',
-        [$this->reCaptcha, 'enqueueScripts']
-      );
-
-      $this->wp->addAction(
-        'register_form',
-        [$this->reCaptcha, 'render']
-      );
-
-      $this->wp->addFilter(
-        'registration_errors',
-        [$this->reCaptcha, 'validate'],
-        10,
-        3
-      );
-
-      // reCAPTCHA on WC registration form
-      if ($this->wooHelper->isWooCommerceActive()) {
-        $this->wp->addAction(
-          'woocommerce_before_customer_login_form',
-          [$this->reCaptcha, 'enqueueScripts']
-        );
-
-        $this->wp->addAction(
-          'woocommerce_register_form',
-          [$this->reCaptcha, 'render']
-        );
-
-        $this->wp->addAction(
-          'woocommerce_process_registration_errors',
-          [$this->reCaptcha, 'validate']
-        );
-      }
     }
 
     // Manage subscription
@@ -636,6 +598,7 @@ class Hooks {
     );
   }
 
+  // CAPTCHA on WP & WC registration forms
   public function setupCaptchaOnRegisterForm(): void {
     if ($this->captchaHooks->isEnabled()) {
       $this->wp->addAction(
@@ -661,6 +624,40 @@ class Hooks {
           [$this->captchaHooks, 'validate'],
           10,
           3
+        );
+      }
+    } else if ($this->reCaptchaHooks->isEnabled()) {
+      $this->wp->addAction(
+        'login_enqueue_scripts',
+        [$this->reCaptchaHooks, 'enqueueScripts']
+      );
+
+      $this->wp->addAction(
+        'register_form',
+        [$this->reCaptchaHooks, 'render']
+      );
+
+      $this->wp->addFilter(
+        'registration_errors',
+        [$this->reCaptchaHooks, 'validate'],
+        10,
+        3
+      );
+
+      if ($this->wooHelper->isWooCommerceActive()) {
+        $this->wp->addAction(
+          'woocommerce_before_customer_login_form',
+          [$this->reCaptchaHooks, 'enqueueScripts']
+        );
+
+        $this->wp->addAction(
+          'woocommerce_register_form',
+          [$this->reCaptchaHooks, 'render']
+        );
+
+        $this->wp->addAction(
+          'woocommerce_process_registration_errors',
+          [$this->reCaptchaHooks, 'validate']
         );
       }
     }
