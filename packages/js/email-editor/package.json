@@ -17,7 +17,7 @@
 		"format": "./node_modules/.bin/prettier --config .prettierrc.js --write 'src/**/*.{js,jsx,json,ts,tsx,yml,yaml,scss}'"
 	},
 	"lint-staged": {
-		"*.{js,jsx,json,ts,tsx,yml,yaml}": "npm run format",
+		"*.{js,jsx,json,ts,tsx,yml,yaml,scss}": "npm run format",
 		"*.{scss,css}": "npm run lint:css",
 		"*.{js,jsx,ts,tsx}": "npm run lint:js"
 	},
