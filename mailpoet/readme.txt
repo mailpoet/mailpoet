@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.6
 Tested up to: 6.7
-Stable tag: 5.6.0
+Stable tag: 5.6.1
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -228,9 +228,11 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.6.0 - 2025-01-06 =
-* Changed: minimum required WooCommerce is 9.4;
-* Changed: when WordPress or WooCommerce version requirements are not met, MailPoet plugin won't deactivate, and instead stop executing. Once the requirements are met, it will start working automatically;
-* Fixed: abandoned cart tasks are processed on time.
+= 5.6.1 - 2025-01-14 =
+* Added: deprecation warnings when directly accessing properties on Newsletter, Subscriber, and SendingQueue entities;
+* Added: the alpha version of the new email editor, bringing a fresh and intuitive way to design emails;
+* Improved: Activation Key input hides the characters to increase security, with the option to reveal the key;
+* Changed: it's no longer possible to include Coupon block in confirmation email;
+* Fixed: using font formats in the form editor.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)
