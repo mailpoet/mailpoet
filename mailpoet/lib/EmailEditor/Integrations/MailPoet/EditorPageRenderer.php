@@ -214,8 +214,13 @@ class EditorPageRenderer {
       '/wp/v2/settings',
       '/wp/v2/types?context=view',
       '/wp/v2/taxonomies?context=view',
-      '/wp/v2/templates/lookup?slug=' . $templateSlug,
     ];
+
+    if ($templateSlug) {
+      $routes[] = '/wp/v2/templates/lookup?slug=' . $templateSlug;
+    } else {
+      $routes[] = '/wp/v2/mailpoet_email?context=edit&per_page=30&status=publish,sent';
+    }
 
     // Preload the data for the specified routes
     $preloadData = array_reduce(
