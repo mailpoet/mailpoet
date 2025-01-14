@@ -13,7 +13,7 @@ max_line_length = off
 [packages/php/email-editor/**]
 indent_style = tab
 
-[packages/js/email-editor/**.{js,jsx,ts,tsx}]
+[packages/js/email-editor/**.{js,jsx,ts,tsx,scss}]
 indent_style = tab
 
 [*.php]
