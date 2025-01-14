@@ -17,9 +17,9 @@
 		"format": "./node_modules/.bin/prettier --config .prettierrc.js --write 'src/**/*.{js,jsx,json,ts,tsx,yml,yaml,scss}'"
 	},
 	"lint-staged": {
-		"*.{js,jsx,json,ts,tsx,yml,yaml,scss}": "npm run format",
-		"*.{scss,css}": "npm run lint:css",
-		"*.{js,jsx,ts,tsx}": "npm run lint:js"
+		"*.{js,jsx,json,ts,tsx,yml,yaml,scss}": "pnpm run format",
+		"*.{scss,css}": "pnpm run lint:css",
+		"*.{js,jsx,ts,tsx}": "pnpm run lint:js"
 	},
 	"dependencies": {
 		"@wordpress/api-fetch": "^7.0.0",
