@@ -6,14 +6,12 @@ use MailPoet\AutomaticEmails\WooCommerce\Events\AbandonedCart;
 use MailPoet\Automation\Engine\Control\AutomationController;
 use MailPoet\Automation\Engine\Control\StepRunController;
 use MailPoet\Automation\Engine\Data\Automation;
-use MailPoet\Automation\Engine\Data\AutomationRunLog;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 use MailPoet\Automation\Engine\Data\StepValidationArgs;
 use MailPoet\Automation\Engine\Exceptions\NotFoundException;
 use MailPoet\Automation\Engine\Integration\Action;
 use MailPoet\Automation\Engine\Integration\ValidationException;
-use MailPoet\Automation\Engine\Storage\AutomationRunLogStorage;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SegmentPayload;
 use MailPoet\Automation\Integrations\MailPoet\Payloads\SubscriberPayload;
 use MailPoet\Automation\Integrations\WooCommerce\Payloads\AbandonedCartPayload;
@@ -194,7 +192,7 @@ class SendEmailAction implements Action {
       }
 
       if ($this->isOptInRequired($newsletter, $subscriber)) {
-        $this->updateRunLogData($args, [self::WAIT_OPTIN => 1]);
+        $controller->getRunLog()->saveLogData([self::WAIT_OPTIN => 1]);
         $this->rerunLater($args->getRunNumber(), $controller, $newsletter, $subscriber);
         return;
       }
@@ -202,7 +200,8 @@ class SendEmailAction implements Action {
       $this->scheduleEmail($args, $newsletter, $subscriber);
     } else {
       // Re-running for opt-in?
-      $state = $this->getRunLogData($args);
+      $state = $this->getRunLogData($controller);
+
       if (array_key_exists(self::WAIT_OPTIN, $state) && $state[self::WAIT_OPTIN] === 1) {
         if ($this->isOptInRequired($newsletter, $subscriber)) {
           $this->rerunLater($args->getRunNumber(), $controller, $newsletter, $subscriber);
@@ -210,7 +209,7 @@ class SendEmailAction implements Action {
         }
 
         // Subscriber is now confirmed, so we can schedule an email.
-        $this->updateRunLogData($args, [
+        $controller->getRunLog()->saveLogData([
           self::WAIT_OPTIN => 0,
           self::OPTIN_RETRIES => $args->getRunNumber(),
         ]);
@@ -227,7 +226,7 @@ class SendEmailAction implements Action {
     // At this point, we're re-running to check sending status. We need
     // to offset opt-in reruns count from sending reruns.
     $runNumber = $args->getRunNumber();
-    $state = $state ?? $this->getRunLogData($args);
+    $state = $state ?? $this->getRunLogData($controller);
     $optinRetryCount = $state[self::OPTIN_RETRIES] ?? 0;
     $runNumber -= $optinRetryCount;
     $this->rerunLater($runNumber, $controller, $newsletter, $subscriber);
@@ -242,35 +241,8 @@ class SendEmailAction implements Action {
     }
   }
 
-  private function updateRunLogData(StepRunArgs $args, array $data): void {
-    $run = $args->getAutomationRun();
-    $step = $args->getStep();
-    $storage = new AutomationRunLogStorage();
-
-    $runLog = $storage->getAutomationRunLogByRunAndStepId($run->getId(), $step->getId());
-    if ($runLog === null) {
-      $runLog = new AutomationRunLog($run->getId(), $step->getId(), $step->getType());
-    }
-    foreach ($data as $key => $value) {
-      $runLog->setData($key, $value);
-    }
-
-    if ($runLog->getId() !== null) {
-      $storage->updateAutomationRunLog($runLog);
-    } else {
-      $storage->createAutomationRunLog($runLog);
-    }
-  }
-
-  private function getRunLogData(StepRunArgs $args): array {
-    $run = $args->getAutomationRun();
-    $step = $args->getStep();
-    $storage = new AutomationRunLogStorage();
-    $runLog = $storage->getAutomationRunLogByRunAndStepId($run->getId(), $step->getId());
-
-    if ($runLog === null) {
-      return [];
-    }
+  private function getRunLogData(StepRunController $controller): array {
+    $runLog = $controller->getRunLog()->getLog();
     return $runLog->getData();
   }
 

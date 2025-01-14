@@ -5,6 +5,7 @@ namespace MailPoet\Test\Automation\Integrations\Core\Actions;
 use ActionScheduler_Action;
 use ActionScheduler_Store;
 use MailPoet\Automation\Engine\Control\StepRunControllerFactory;
+use MailPoet\Automation\Engine\Control\StepRunLoggerFactory;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\Field;
@@ -96,7 +97,8 @@ class IfElseActionTest extends MailPoetTest {
     // run
     $run = new AutomationRun(1, 1, 'trigger-key', [$subject], 1);
     $args = new StepRunArgs($automation, $run, $step, [new SubjectEntry($this->subscriberSubject, $subject)], 1);
-    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
     $this->action->run($args, $controller);
 
     // check

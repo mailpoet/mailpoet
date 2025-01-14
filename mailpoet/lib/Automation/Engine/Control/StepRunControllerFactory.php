@@ -2,6 +2,7 @@
 
 namespace MailPoet\Automation\Engine\Control;
 
+use MailPoet\Automation\Engine\Control\StepRunLogger;
 use MailPoet\Automation\Engine\Data\StepRunArgs;
 
 class StepRunControllerFactory {
@@ -14,7 +15,7 @@ class StepRunControllerFactory {
     $this->stepScheduler = $stepScheduler;
   }
 
-  public function createController(StepRunArgs $args): StepRunController {
-    return new StepRunController($this->stepScheduler, $args);
+  public function createController(StepRunArgs $args, StepRunLogger $logger): StepRunController {
+    return new StepRunController($this->stepScheduler, $args, $logger);
   }
 }

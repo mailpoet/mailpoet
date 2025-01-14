@@ -148,7 +148,7 @@ class StepHandler {
     }, $subjectEntries));
 
     $step->validate($validationArgs);
-    $step->run($args, $this->stepRunControllerFactory->createController($args));
+    $step->run($args, $this->stepRunControllerFactory->createController($args, $logger));
 
     // check if run is not completed by now (e.g., one of if/else branches is empty)
     $automationRun = $this->automationRunStorage->getAutomationRun($runId);

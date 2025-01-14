@@ -7,6 +7,7 @@ use MailPoet\Automation\Engine\Builder\UpdateAutomationController;
 use MailPoet\Automation\Engine\Control\ActionScheduler;
 use MailPoet\Automation\Engine\Control\AutomationController;
 use MailPoet\Automation\Engine\Control\StepRunControllerFactory;
+use MailPoet\Automation\Engine\Control\StepRunLoggerFactory;
 use MailPoet\Automation\Engine\Data\Automation;
 use MailPoet\Automation\Engine\Data\AutomationRun;
 use MailPoet\Automation\Engine\Data\NextStep;
@@ -130,7 +131,8 @@ class SendEmailActionTest extends \MailPoetTest {
 
     // first run
     $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
-    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
     $this->action->run($args, $controller);
 
     // scheduled task
@@ -151,7 +153,8 @@ class SendEmailActionTest extends \MailPoetTest {
 
     // progress — won't throw an exception when the email was sent (= step will be completed)
     $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 2);
-    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 2);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
     $this->action->run($args, $controller);
   }
 
@@ -170,7 +173,8 @@ class SendEmailActionTest extends \MailPoetTest {
 
     // progress run step args
     $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 2);
-    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 2);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
 
     // email was never scheduled
     $this->assertThrowsExceptionWithMessage(
@@ -265,7 +269,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
     $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
-    $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
+    $run = new AutomationRun(1, 1, 'trigger-key', $subjects, 1);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     verify($scheduled)->arrayCount(0);
@@ -273,7 +277,8 @@ class SendEmailActionTest extends \MailPoetTest {
     $this->segmentsRepository->bulkDelete([$segment->getId()]);
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
     $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
-    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
 
     try {
       $action->run($args, $controller);
@@ -296,7 +301,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
     $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
-    $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
+    $run = new AutomationRun(1, 1, 'trigger-key', $subjects, 1);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     verify($scheduled)->arrayCount(0);
@@ -304,7 +309,8 @@ class SendEmailActionTest extends \MailPoetTest {
     $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
     $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
-    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
 
     try {
       $action->run($args, $controller);
@@ -336,7 +342,7 @@ class SendEmailActionTest extends \MailPoetTest {
 
       $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
       $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
-      $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
+      $run = new AutomationRun(1, 1, 'trigger-key', $subjects, 1);
 
       $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
       verify($scheduled)->arrayCount(0);
@@ -344,7 +350,8 @@ class SendEmailActionTest extends \MailPoetTest {
       $this->subscribersRepository->bulkDelete([$subscriber->getId()]);
       $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
       $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
-      $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+      $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+      $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
 
       try {
         $action->run($args, $controller);
@@ -381,7 +388,9 @@ class SendEmailActionTest extends \MailPoetTest {
 
     // Prepare action run.
     $args = new StepRunArgs($automation, $run, end($steps), $this->getSubjectEntries($subjects), 1);
-    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $step = end($steps);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
 
     // First run: with no opt-in => schedule a retry
     $actionScheduler = $this->diContainer->get(ActionScheduler::class);
@@ -425,7 +434,9 @@ class SendEmailActionTest extends \MailPoetTest {
 
     // Prepare action run.
     $args = new StepRunArgs($automation, $run, end($steps), $this->getSubjectEntries($subjects), 1);
-    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $step = end($steps);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
 
     // First run: with no opt-in => schedule a retry
     $actionScheduler = $this->diContainer->get(ActionScheduler::class);
@@ -455,14 +466,15 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $step = new Step('step-id', Step::TYPE_ACTION, 'step-key', ['email_id' => $email->getId()], []);
     $automation = new Automation('some-automation', [$step->getId() => $step], new \WP_User());
-    $run = new AutomationRun(1, 1, 'trigger-key', $subjects);
+    $run = new AutomationRun(1, 1, 'trigger-key', $subjects, 1);
 
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
     verify($scheduled)->arrayCount(0);
 
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
     $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
-    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
 
     try {
       $action->run($args, $controller);
@@ -502,7 +514,8 @@ class SendEmailActionTest extends \MailPoetTest {
 
     $action = ContainerWrapper::getInstance()->get(SendEmailAction::class);
     $args = new StepRunArgs($automation, $run, $step, $this->getSubjectEntries($subjects), 1);
-    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args);
+    $logger = $this->diContainer->get(StepRunLoggerFactory::class)->createLogger($run->getId(), $step->getId(), $step->getType(), 1);
+    $controller = $this->diContainer->get(StepRunControllerFactory::class)->createController($args, $logger);
 
     $action->run($args, $controller);
     $scheduled = $this->scheduledTasksRepository->findByNewsletterAndSubscriberId($email, (int)$subscriber->getId());
