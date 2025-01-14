@@ -10,13 +10,16 @@ class CaptchaHooks {
 
   private SettingsController $settings;
   private CaptchaValidator $captchaValidator;
+  private CaptchaRenderer $captchaRenderer;
 
   public function __construct(
     SettingsController $settings,
-    CaptchaValidator $captchaValidator
+    CaptchaValidator $captchaValidator,
+    CaptchaRenderer $captchaRenderer
   ) {
     $this->settings = $settings;
     $this->captchaValidator = $captchaValidator;
+    $this->captchaRenderer = $captchaRenderer;
   }
 
   public function isEnabled(): bool {
@@ -24,9 +27,9 @@ class CaptchaHooks {
       return false;
     }
 
-    return CaptchaConstants::isBuiltIn(
-      $this->settings->get('captcha.type')
-    );
+    $type = $this->settings->get('captcha.type');
+    return CaptchaConstants::isBuiltIn($type)
+      || (CaptchaConstants::isDisabled($type) && $this->captchaRenderer->isSupported());
   }
 
   public function renderInWPRegisterForm() {

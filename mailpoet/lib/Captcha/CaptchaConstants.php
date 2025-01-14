@@ -17,4 +17,8 @@ class CaptchaConstants {
   public static function isBuiltIn(?string $captchaType) {
     return $captchaType === self::TYPE_BUILTIN;
   }
+
+  public static function isDisabled(?string $captchaType) {
+    return $captchaType === self::TYPE_DISABLED || $captchaType === '';
+  }
 }
