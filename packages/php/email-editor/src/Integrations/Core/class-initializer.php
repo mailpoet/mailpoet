@@ -64,9 +64,13 @@ class Initializer {
 	/**
 	 * Allow styles for the email editor.
 	 *
-	 * @param array $allowed_styles Allowed styles.
+	 * @param array|null $allowed_styles Allowed styles.
 	 */
-	public function allow_styles( array $allowed_styles ): array {
+	public function allow_styles( ?array $allowed_styles ): array {
+		// The styles can be null in some cases.
+		if ( ! is_array( $allowed_styles ) ) {
+			$allowed_styles = array();
+		}
 		$allowed_styles[] = 'display';
 		$allowed_styles[] = 'mso-padding-alt';
 		$allowed_styles[] = 'mso-font-width';
