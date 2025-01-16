@@ -67,7 +67,7 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 	// Get the current block content
 	const blockContent: string = useSelect( ( select ) => {
 		const attributes =
-			// @ts-ignore
+			// @ts-expect-error getBlockAttributes expects one argument, but TS thinks it expects none
 			select( 'core/block-editor' ).getBlockAttributes( selectedBlockId );
 		return attributes?.content?.originalHTML || attributes?.content || ''; // After first saving the content does not have property originalHTML, so we need to check for content as well
 	} );
