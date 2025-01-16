@@ -65,9 +65,10 @@ const CategorySection = ( {
 												}
 											} }
 										>
-											{ __( 'Insert' ) }
+											{ __( 'Insert', 'mailpoet' ) }
 										</Button>
-										{ category === __( 'Link' ) &&
+										{ category ===
+											__( 'Link', 'mailpoet' ) &&
 											canInsertLink && (
 												<>
 													<Button
@@ -80,7 +81,8 @@ const CategorySection = ( {
 														} }
 													>
 														{ __(
-															'Insert as link'
+															'Insert as link',
+															'mailpoet'
 														) }
 													</Button>
 												</>

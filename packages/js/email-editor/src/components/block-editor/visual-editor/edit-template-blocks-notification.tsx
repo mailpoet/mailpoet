@@ -62,7 +62,7 @@ export default function EditTemplateBlocksNotification( { contentRef } ) {
 	return (
 		<ConfirmDialog
 			isOpen={ isDialogOpen }
-			confirmButtonText={ __( 'Edit template' ) }
+			confirmButtonText={ __( 'Edit template', 'mailpoet' ) }
 			onConfirm={ () => {
 				setIsDialogOpen( false );
 				onNavigateToEntityRecord( {

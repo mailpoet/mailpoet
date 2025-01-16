@@ -33,10 +33,11 @@ function TemplateNoResults() {
 				className="block-editor-inserter__no-results-icon"
 				icon={ blockDefault }
 			/>
-			<p>{ __( 'No recent templates.' ) }</p>
+			<p>{ __( 'No recent templates.', 'mailpoet' ) }</p>
 			<p>
 				{ __(
-					'Your recent creations will appear here as soon as you begin.'
+					'Your recent creations will appear here as soon as you begin.',
+					'mailpoet'
 				) }
 			</p>
 		</div>

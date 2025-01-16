@@ -20,7 +20,9 @@ export function HeaderTabs( _, ref ) {
 					? __( 'Template', 'mailpoet' )
 					: __( 'Email', 'mailpoet' ) }
 			</Tabs.Tab>
-			<Tabs.Tab tabId={ mainSidebarBlockTab }>{ __( 'Block' ) }</Tabs.Tab>
+			<Tabs.Tab tabId={ mainSidebarBlockTab }>
+				{ __( 'Block', 'mailpoet' ) }
+			</Tabs.Tab>
 		</Tabs.TabList>
 	);
 }

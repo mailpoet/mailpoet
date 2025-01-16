@@ -36,7 +36,7 @@ const LinkModal = ( { onInsert, isOpened, closeCallback, tag } ) => {
 					}
 				} }
 			>
-				{ __( 'Insert' ) }
+				{ __( 'Insert', 'mailpoet' ) }
 			</Button>
 		</Modal>
 	);

@@ -67,7 +67,7 @@ export function KeyboardShortcuts(): null {
 		void registerShortcut( {
 			name: 'mailpoet/email-editor/undo',
 			category: 'block',
-			description: __( 'Undo your last changes.' ),
+			description: __( 'Undo your last changes.', 'mailpoet' ),
 			keyCombination: {
 				modifier: 'primary',
 				character: 'z',
@@ -77,7 +77,7 @@ export function KeyboardShortcuts(): null {
 		void registerShortcut( {
 			name: 'mailpoet/email-editor/redo',
 			category: 'block',
-			description: __( 'Redo your last undo.' ),
+			description: __( 'Redo your last undo.', 'mailpoet' ),
 			keyCombination: {
 				modifier: 'primaryShift',
 				character: 'z',

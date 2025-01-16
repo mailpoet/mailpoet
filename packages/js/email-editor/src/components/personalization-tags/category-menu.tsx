@@ -25,7 +25,7 @@ const CategoryMenu = ( {
 				onClick={ () => onCategorySelect( null ) }
 				className={ getMenuItemClass( null ) }
 			>
-				{ __( 'All' ) }
+				{ __( 'All', 'mailpoet' ) }
 			</MenuItem>
 			<div
 				className="mailpoet-personalization-tags-modal__menu-separator"
