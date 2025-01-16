@@ -69,9 +69,11 @@
 		"@types/wordpress__edit-post": "^7.5.7",
 		"@types/wordpress__editor": "^13.6.8",
 		"@types/wordpress__media-utils": "^4.14.4",
+		"@woocommerce/eslint-plugin": "^2.3.0",
 		"@wordpress/prettier-config": "^4.11.0",
 		"@wordpress/scripts": "27.9.0",
 		"core-js": "^3.37.1",
+		"eslint-import-resolver-typescript": "^3.7.0",
 		"prettier": "npm:wp-prettier@^3.0.3",
 		"wp-types": "^3.65.0"
 	},
