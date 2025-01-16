@@ -36,9 +36,16 @@ function SelectTemplateBody( {
 	hasEmailPosts,
 	templates,
 	handleTemplateSelection,
+	templateSelectMode,
 } ) {
 	const [ selectedCategory, setSelectedCategory ] = useState(
 		TemplateCategories[ 1 ].name // Show the “Basic” category by default
+	);
+
+	const hideRecentCategory = templateSelectMode === 'swap';
+
+	const displayCategories = TemplateCategories.filter(
+		( { name } ) => name !== 'recent' || ! hideRecentCategory
 	);
 
 	const handleCategorySelection = ( category: TemplateCategory ) => {
@@ -48,7 +55,7 @@ function SelectTemplateBody( {
 
 	useEffect( () => {
 		setTimeout( () => {
-			if ( hasEmailPosts ) {
+			if ( hasEmailPosts && ! hideRecentCategory ) {
 				setSelectedCategory( TemplateCategories[ 0 ].name );
 			}
 		}, 1000 ); // using setTimeout to ensure the template styles are available before block preview
@@ -57,7 +64,7 @@ function SelectTemplateBody( {
 	return (
 		<div className="block-editor-block-patterns-explorer">
 			<TemplateCategoriesListSidebar
-				templateCategories={ TemplateCategories }
+				templateCategories={ displayCategories }
 				selectedCategory={ selectedCategory }
 				onClickCategory={ handleCategorySelection }
 			/>
@@ -142,6 +149,7 @@ export function SelectTemplateModal( {
 				hasEmailPosts={ hasEmailPosts }
 				templates={ [ ...templates, ...emailPosts ] }
 				handleTemplateSelection={ handleTemplateSelection }
+				templateSelectMode={ templateSelectMode }
 			/>
 
 			<Flex className="email-editor-modal-footer" justify="flex-end">
