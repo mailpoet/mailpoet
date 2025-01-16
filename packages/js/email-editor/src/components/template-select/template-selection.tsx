@@ -1,5 +1,12 @@
+/**
+ * External dependencies
+ */
 import { useSelect } from '@wordpress/data';
 import { useState } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
 import { storeName } from '../../store';
 import { SelectTemplateModal } from './select-modal';
 

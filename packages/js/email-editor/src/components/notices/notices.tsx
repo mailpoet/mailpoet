@@ -1,6 +1,13 @@
+/**
+ * External dependencies
+ */
 import { NoticeList } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
+
+/**
+ * Internal dependencies
+ */
 import { ValidationNotices } from './validation-notices';
 import { EditorSnackbars } from './snackbars';
 

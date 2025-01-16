@@ -1,6 +1,13 @@
+/**
+ * External dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { Button, Flex, FlexItem, Modal } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
 import { storeName } from '../../store';
 
 export function TemplateRevertModal( { close } ) {

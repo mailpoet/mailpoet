@@ -1,5 +1,12 @@
+/**
+ * External dependencies
+ */
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
 import { PersonalizationTag } from '../../store';
 
 const CategorySection = ( {

@@ -1,5 +1,5 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { useContext, useRef, useEffect, memo } from '@wordpress/element';
@@ -10,11 +10,6 @@ import {
 } from '@wordpress/block-editor';
 import { ComplementaryArea } from '@wordpress/interface';
 import { drawerRight } from '@wordpress/icons';
-
-/**
- * WordPress private dependencies
- */
-import { Tabs } from '../../private-apis';
 
 /**
  * Internal dependencies
@@ -29,6 +24,7 @@ import { Header } from './header';
 import { EmailSettings } from './email-settings';
 import { TemplateSettings } from './template-settings';
 import { useEditorMode } from '../../hooks';
+import { Tabs } from '../../private-apis';
 
 import './index.scss';
 import { recordEvent } from '../../events';

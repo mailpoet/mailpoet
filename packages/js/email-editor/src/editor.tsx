@@ -1,7 +1,14 @@
-import '@wordpress/format-library'; // Enables text formatting capabilities
+/**
+ * External dependencies
+ */
 import { useSelect } from '@wordpress/data';
 import { StrictMode, createRoot } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
+import '@wordpress/format-library'; // Enables text formatting capabilities
+
+/**
+ * Internal dependencies
+ */
 import { initBlocks } from './blocks';
 import { initializeLayout } from './layouts/flex-email';
 import { InnerEditor } from './components/block-editor';

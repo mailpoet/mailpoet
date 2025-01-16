@@ -1,10 +1,7 @@
-import {
-	Color,
-	Gradient,
-} from '@wordpress/components/build-types/palette-edit/types';
+/**
+ * External dependencies
+ */
 import { FontSize } from '@wordpress/components/build-types/font-size-picker/types';
-
-// eslint-disable-next-line import/no-named-default
 import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as keyboardShortutsStore } from '@wordpress/keyboard-shortcuts';
 import { store as interfaceStore } from '@wordpress/interface';
@@ -18,7 +15,14 @@ import {
 	StoreDescriptor as GenericStoreDescriptor,
 	UseSelectReturn,
 } from '@wordpress/data/build-types/types';
+import {
+	Color,
+	Gradient,
+} from '@wordpress/components/build-types/palette-edit/types';
 
+/**
+ * Internal dependencies
+ */
 import './wordpress-modules';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- some general types in this file need to use "any"  */

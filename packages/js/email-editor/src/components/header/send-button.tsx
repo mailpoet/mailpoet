@@ -1,12 +1,19 @@
+/**
+ * External dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
+import { useEntityProp } from '@wordpress/core-data';
+import { useSelect } from '@wordpress/data';
 import {
 	// @ts-expect-error No types available for useEntitiesSavedStatesIsDirty
 	useEntitiesSavedStatesIsDirty,
 } from '@wordpress/editor';
-import { useEntityProp } from '@wordpress/core-data';
+
+/**
+ * Internal dependencies
+ */
 import { MailPoetEmailData, storeName } from '../../store';
-import { useSelect } from '@wordpress/data';
 import { useEditorMode } from '../../hooks';
 import { recordEvent } from '../../events';
 

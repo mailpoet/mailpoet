@@ -1,5 +1,5 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
 import {
@@ -13,6 +13,10 @@ import {
 	Card,
 	CardBody,
 } from '@wordpress/components';
+
+/**
+ * Internal dependencies
+ */
 import { useEmailStyles } from '../../../hooks';
 import { getElementStyles } from '../utils';
 import { recordEvent } from '../../../events';

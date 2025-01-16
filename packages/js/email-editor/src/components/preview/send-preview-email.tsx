@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { Button, Modal, TextControl } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { check, Icon } from '@wordpress/icons';
@@ -11,6 +14,10 @@ import {
 import { ENTER } from '@wordpress/keycodes';
 import { isEmail } from '@wordpress/url';
 import { useEntityProp } from '@wordpress/core-data';
+
+/**
+ * Internal dependencies
+ */
 import {
 	MailPoetEmailData,
 	SendingPreviewStatus,

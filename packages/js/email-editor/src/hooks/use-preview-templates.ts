@@ -1,8 +1,15 @@
+/**
+ * External dependencies
+ */
 import { useMemo } from '@wordpress/element';
 import { parse } from '@wordpress/blocks';
 import { BlockInstance } from '@wordpress/blocks/index';
 import { useSelect } from '@wordpress/data';
 import { store as blockEditorStore } from '@wordpress/block-editor';
+
+/**
+ * Internal dependencies
+ */
 import {
 	storeName,
 	EmailTemplatePreview,

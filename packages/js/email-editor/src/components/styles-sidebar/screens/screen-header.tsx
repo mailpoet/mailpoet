@@ -1,3 +1,8 @@
+/**
+ * External dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { chevronLeft } from '@wordpress/icons';
 import {
 	__experimentalHStack as HStack, // eslint-disable-line
 	__experimentalVStack as VStack, // eslint-disable-line
@@ -6,8 +11,6 @@ import {
 	__experimentalView as View, // eslint-disable-line
 	__experimentalNavigatorToParentButton as NavigatorToParentButton, // eslint-disable-line
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
-import { chevronLeft } from '@wordpress/icons';
 
 type Props = {
 	title: string;

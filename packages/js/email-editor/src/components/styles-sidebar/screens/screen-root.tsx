@@ -1,3 +1,8 @@
+/**
+ * External dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { typography, color, layout } from '@wordpress/icons';
 import {
 	__experimentalVStack as VStack, // eslint-disable-line
 	Card,
@@ -10,8 +15,10 @@ import {
 	Icon,
 	FlexItem,
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
-import { typography, color, layout } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 import { Preview } from './preview';
 import { recordEvent } from '../../../events';
 

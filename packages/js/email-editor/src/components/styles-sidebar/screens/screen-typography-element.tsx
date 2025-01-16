@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { __, _x } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import {
@@ -5,6 +8,10 @@ import {
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption, // eslint-disable-line
 	__experimentalSpacer as Spacer, // eslint-disable-line
 } from '@wordpress/components';
+
+/**
+ * Internal dependencies
+ */
 import TypographyElementPanel, {
 	DEFAULT_CONTROLS,
 } from '../panels/typography-element-panel';

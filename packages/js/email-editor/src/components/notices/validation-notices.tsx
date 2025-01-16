@@ -1,5 +1,12 @@
+/**
+ * External dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { Notice, Button } from '@wordpress/components';
+
+/**
+ * Internal dependencies
+ */
 import { useValidationNotices } from '../../hooks';
 
 export function ValidationNotices() {

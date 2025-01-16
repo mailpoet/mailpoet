@@ -1,12 +1,19 @@
+/**
+ * External dependencies
+ */
 import { useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { useSelect } from '@wordpress/data';
 import {
 	Popover,
 	Button,
 	TextControl,
 	SelectControl,
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
-import { useSelect } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
 import { storeName } from '../../store';
 
 type PersonalizationTagsLinkPopoverProps = {

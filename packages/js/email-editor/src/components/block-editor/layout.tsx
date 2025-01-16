@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { BlockSelectionClearer } from '@wordpress/block-editor';
 import { store as editorStore, UnsavedChangesWarning } from '@wordpress/editor';
 import { uploadMedia } from '@wordpress/media-utils';
@@ -9,9 +12,12 @@ import {
 	InterfaceSkeleton,
 } from '@wordpress/interface';
 import { useRef } from '@wordpress/element';
-
-import './index.scss';
 import { store as coreStore } from '@wordpress/core-data';
+
+/**
+ * Internal dependencies
+ */
+import './index.scss';
 import { storeName } from '../../store';
 import { useEmailCss } from '../../hooks';
 import { AutosaveMonitor } from '../autosave';

@@ -1,5 +1,5 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { useCallback, useReducer } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';

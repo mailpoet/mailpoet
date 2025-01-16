@@ -1,6 +1,13 @@
+/**
+ * External dependencies
+ */
 import deepmerge from 'deepmerge';
 import { useSelect } from '@wordpress/data';
 import { useCallback, useMemo } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
 import { storeName, TypographyProperties } from '../store';
 import { useUserTheme } from './use-user-theme';
 

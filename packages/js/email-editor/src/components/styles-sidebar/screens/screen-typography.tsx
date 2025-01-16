@@ -1,4 +1,11 @@
+/**
+ * External dependencies
+ */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
 import TypographyPanel from '../panels/typography-panel';
 import ScreenHeader from './screen-header';
 import { recordEventOnce } from '../../../events';

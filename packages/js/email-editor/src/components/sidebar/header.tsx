@@ -1,19 +1,15 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { __ } from '@wordpress/i18n';
 import * as React from '@wordpress/element';
-
-/**
- * WordPress private dependencies
- */
-import { Tabs } from '../../private-apis';
 
 /**
  * Internal dependencies
  */
 import { mainSidebarDocumentTab, mainSidebarBlockTab } from '../../store';
 import { useEditorMode } from '../../hooks';
+import { Tabs } from '../../private-apis';
 
 export function HeaderTabs( _, ref ) {
 	const [ editorMode ] = useEditorMode();

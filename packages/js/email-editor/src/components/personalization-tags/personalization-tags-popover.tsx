@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { useEffect, useState } from '@wordpress/element';
 import { Popover, Button, TextControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';

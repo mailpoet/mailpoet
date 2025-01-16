@@ -1,7 +1,14 @@
+/**
+ * External dependencies
+ */
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { check, cloud, Icon } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 import { storeName } from '../../store';
 import { recordEvent } from '../../events';
 

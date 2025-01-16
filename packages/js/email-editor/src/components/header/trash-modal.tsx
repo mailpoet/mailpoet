@@ -1,8 +1,15 @@
+/**
+ * External dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { Button, Modal } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { store as noticesStore } from '@wordpress/notices';
+
+/**
+ * Internal dependencies
+ */
 import { recordEvent } from '../../events';
 
 export function TrashModal( {

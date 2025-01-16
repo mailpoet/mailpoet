@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { InspectorControls } from '@wordpress/block-editor';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';

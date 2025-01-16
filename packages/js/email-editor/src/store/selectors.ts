@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { createRegistrySelector } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { store as interfaceStore } from '@wordpress/interface';
@@ -5,9 +8,13 @@ import { store as editorStore } from '@wordpress/editor';
 import { store as preferencesStore } from '@wordpress/preferences';
 import { serialize } from '@wordpress/blocks';
 import { BlockInstance } from '@wordpress/blocks/index';
+import { Post } from '@wordpress/core-data/build-types/entity-types/post';
+
+/**
+ * Internal dependencies
+ */
 import { storeName } from './constants';
 import { State, Feature, EmailTemplate, EmailEditorPostType } from './types';
-import { Post } from '@wordpress/core-data/build-types/entity-types/post';
 
 function getContentFromEntity( entity ): string {
 	if ( entity?.content && typeof entity.content === 'function' ) {

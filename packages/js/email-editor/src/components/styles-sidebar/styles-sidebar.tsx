@@ -1,12 +1,19 @@
+/**
+ * External dependencies
+ */
 import { memo } from '@wordpress/element';
-import {
-	__experimentalNavigatorProvider as NavigatorProvider, // eslint-disable-line
-	__experimentalNavigatorScreen as NavigatorScreen, // eslint-disable-line
-} from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { ComplementaryArea } from '@wordpress/interface';
 import { ComponentProps } from 'react';
 import { styles } from '@wordpress/icons';
+import {
+	__experimentalNavigatorProvider as NavigatorProvider, // eslint-disable-line
+	__experimentalNavigatorScreen as NavigatorScreen, // eslint-disable-line
+} from '@wordpress/components';
+
+/**
+ * Internal dependencies
+ */
 import { storeName, stylesSidebarId } from '../../store';
 import {
 	ScreenTypography,

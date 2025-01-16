@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { useCallback } from '@wordpress/element';
 import { dispatch, useSelect } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';

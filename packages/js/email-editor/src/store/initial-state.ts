@@ -1,3 +1,6 @@
+/**
+ * Internal dependencies
+ */
 import { mainSidebarDocumentTab } from './constants';
 import { State } from './types';
 import {

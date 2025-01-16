@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import * as React from '@wordpress/element';
 import { MenuGroup, MenuItem } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';

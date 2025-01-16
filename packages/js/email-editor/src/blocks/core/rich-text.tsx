@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import {
 	registerFormatType,
 	unregisterFormatType,
@@ -10,16 +13,20 @@ import { __ } from '@wordpress/i18n';
 import { BlockControls } from '@wordpress/block-editor';
 import { ToolbarButton, ToolbarGroup } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
+import { useCallback, useState } from '@wordpress/element';
+import { addFilter } from '@wordpress/hooks';
+import { createHigherOrderComponent } from '@wordpress/compose';
+import * as React from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
 import {
 	getCursorPosition,
 	replacePersonalizationTagsWithHTMLComments,
 } from '../../components/personalization-tags/rich-text-utils';
 import { PersonalizationTagsModal } from '../../components/personalization-tags/personalization-tags-modal';
-import { useCallback, useState } from '@wordpress/element';
-import { addFilter } from '@wordpress/hooks';
-import * as React from 'react';
 import { storeName } from '../../store';
-import { createHigherOrderComponent } from '@wordpress/compose';
 import { PersonalizationTagsPopover } from '../../components/personalization-tags/personalization-tags-popover';
 import { PersonalizationTagsLinkPopover } from '../../components/personalization-tags/personalization-tags-link-popover';
 import { recordEvent } from '../../events';

@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { dispatch, select } from '@wordpress/data';
 import { store as interfaceStore } from '@wordpress/interface';
 import {
@@ -10,6 +13,18 @@ import { store as editorStore } from '@wordpress/editor';
 import { __, sprintf } from '@wordpress/i18n';
 import { apiFetch } from '@wordpress/data-controls';
 import wpApiFetch from '@wordpress/api-fetch';
+import { addQueryArgs } from '@wordpress/url';
+import { decodeEntities } from '@wordpress/html-entities';
+import {
+	// @ts-expect-error No types for __unstableSerializeAndClean
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
+	__unstableSerializeAndClean,
+	parse,
+} from '@wordpress/blocks';
+
+/**
+ * Internal dependencies
+ */
 import { storeName, mainSidebarDocumentTab } from './constants';
 import {
 	SendingPreviewStatus,
@@ -17,14 +32,6 @@ import {
 	Feature,
 	PersonalizationTag,
 } from './types';
-import { addQueryArgs } from '@wordpress/url';
-import {
-	// @ts-expect-error No types for __unstableSerializeAndClean
-	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
-	__unstableSerializeAndClean,
-	parse,
-} from '@wordpress/blocks';
-import { decodeEntities } from '@wordpress/html-entities';
 import { recordEvent } from '../events';
 
 export const toggleFeature =

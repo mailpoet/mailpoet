@@ -1,4 +1,11 @@
+/**
+ * External dependencies
+ */
 import deepmerge from 'deepmerge';
+
+/**
+ * Internal dependencies
+ */
 import { StyleProperties } from '../../hooks/use-email-styles';
 
 const defaultStyleObject = {

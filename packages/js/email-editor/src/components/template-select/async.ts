@@ -1,9 +1,9 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { useEffect, useState, flushSync } from '@wordpress/element';
 // @ts-expect-error TS7016 Could not find a declaration file for module '@wordpress/priority-queue'
-import { createQueue } from '@wordpress/priority-queue';
+import { createQueue } from '@wordpress/priority-queue'; // eslint-disable-line
 
 const blockPreviewQueue = createQueue();
 

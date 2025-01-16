@@ -1,4 +1,11 @@
+/**
+ * External dependencies
+ */
 import { registerCoreBlocks } from '@wordpress/block-library';
+
+/**
+ * Internal dependencies
+ */
 import { enhanceColumnBlock } from './core/column';
 import {
 	disableColumnsLayout,

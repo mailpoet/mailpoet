@@ -1,4 +1,11 @@
+/**
+ * External dependencies
+ */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
 import { DimensionsPanel } from '../panels/dimensions-panel';
 import { ScreenHeader } from './screen-header';
 import { recordEventOnce } from '../../../events';

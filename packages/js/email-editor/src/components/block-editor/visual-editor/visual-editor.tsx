@@ -1,7 +1,11 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import classnames from 'classnames';
+import { useRef } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
+import { useMergeRefs } from '@wordpress/compose';
+import { store as editorStore } from '@wordpress/editor';
 import {
 	BlockList,
 	// @ts-expect-error No types for this exist yet.
@@ -11,21 +15,13 @@ import {
 	// @ts-expect-error No types for this exist yet.
 	__experimentalUseResizeCanvas as useResizeCanvas, // eslint-disable-line
 } from '@wordpress/block-editor';
-import { useRef } from '@wordpress/element';
-import { useSelect } from '@wordpress/data';
-import { useMergeRefs } from '@wordpress/compose';
-import { store as editorStore } from '@wordpress/editor';
-
-/**
- * WordPress private dependencies
- */
-import { BlockCanvas } from '../../../private-apis';
 
 /**
  * Internal dependencies
  */
 import EditTemplateBlocksNotification from './edit-template-blocks-notification';
 import useSelectNearestEditableBlock from './use-select-nearest-editable-block';
+import { BlockCanvas } from '../../../private-apis';
 
 export const TEMPLATE_POST_TYPE = 'wp_template';
 export const TEMPLATE_PART_POST_TYPE = 'wp_template_part';

@@ -1,3 +1,6 @@
+/**
+ * Internal dependencies
+ */
 import { useEmailStyles } from '../../../hooks';
 import { getElementStyles } from '../utils';
 

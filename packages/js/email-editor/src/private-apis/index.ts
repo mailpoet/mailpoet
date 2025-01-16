@@ -1,13 +1,13 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { __dangerousOptInToUnstableAPIsOnlyForCoreModules } from '@wordpress/private-apis';
+import { privateApis as componentsPrivateApis } from '@wordpress/components';
+import { store as coreStore } from '@wordpress/core-data';
 import {
 	// @ts-expect-error No types for privateApis.
 	privateApis as blockEditorPrivateApis,
 } from '@wordpress/block-editor';
-import { privateApis as componentsPrivateApis } from '@wordpress/components';
-import { store as coreStore } from '@wordpress/core-data';
 
 const { unlock } = __dangerousOptInToUnstableAPIsOnlyForCoreModules(
 	'I acknowledge private features are not for use in themes or plugins and doing so will break in the next version of WordPress.',

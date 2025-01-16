@@ -1,5 +1,5 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { useSelect } from '@wordpress/data';
 import {
@@ -13,16 +13,12 @@ import { store as coreStore } from '@wordpress/core-data';
 import { Post } from '@wordpress/core-data/build-types/entity-types/post';
 
 /**
- * WordPress private dependencies
- */
-import { unlockPatternsRelatedSelectorsFromCoreStore } from '../../private-apis';
-
-/**
  * Internal dependencies
  */
 import { storeName } from '../../store';
 import { Layout } from './layout';
 import { useNavigateToEntityRecord } from '../../hooks/use-navigate-to-entity-record';
+import { unlockPatternsRelatedSelectorsFromCoreStore } from '../../private-apis';
 
 export function InnerEditor( {
 	postId: initialPostId,

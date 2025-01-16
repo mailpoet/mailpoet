@@ -1,7 +1,14 @@
+/**
+ * External dependencies
+ */
 import * as React from '@wordpress/element';
-import { PersonalizationTag } from '../../store';
 import { create } from '@wordpress/rich-text';
 import { RichTextFormatList } from '@wordpress/rich-text/build-types/types';
+
+/**
+ * Internal dependencies
+ */
+import { PersonalizationTag } from '../../store';
 
 function getChildElement( rootElement: HTMLElement ): HTMLElement | null {
 	let currentElement: HTMLElement | null = rootElement;

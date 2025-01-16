@@ -1,5 +1,7 @@
+/**
+ * External dependencies
+ */
 import { ComponentType } from 'react';
-
 import { MediaUpload } from '@wordpress/media-utils';
 import { addFilter } from '@wordpress/hooks';
 

@@ -1,5 +1,5 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { useSelect } from '@wordpress/data';
 import { store as editorStore } from '@wordpress/editor';

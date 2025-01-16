@@ -1,5 +1,5 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { useState, useEffect, memo } from '@wordpress/element';
 import { store as editorStore } from '@wordpress/editor';

@@ -1,8 +1,15 @@
+/**
+ * External dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { Button, Flex, FlexItem, Modal } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { storeName } from '../../store';
 import { store as editorStore } from '@wordpress/editor';
+
+/**
+ * Internal dependencies
+ */
+import { storeName } from '../../store';
 import { recordEvent, recordEventOnce } from '../../events';
 
 export function EditTemplateModal( { close } ) {

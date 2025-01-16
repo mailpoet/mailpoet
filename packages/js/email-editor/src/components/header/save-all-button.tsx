@@ -1,11 +1,18 @@
+/**
+ * External dependencies
+ */
 import { useRef, useEffect } from '@wordpress/element';
 import { Button, Dropdown } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
+import { useSelect } from '@wordpress/data';
 import {
 	// @ts-expect-error Our current version of packages doesn't have EntitiesSavedStates export
 	EntitiesSavedStates,
 } from '@wordpress/editor';
-import { __ } from '@wordpress/i18n';
-import { useSelect } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
 import { storeName } from '../../store';
 import { recordEvent } from '../../events';
 

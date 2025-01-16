@@ -1,13 +1,20 @@
+/**
+ * External dependencies
+ */
 import { ExternalLink, Modal, SearchControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { PersonalizationTag, storeName } from '../../store';
-import { useSelect } from '@wordpress/data';
-import './index.scss';
 import { useState } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
+import './index.scss';
 import { CategoryMenu } from './category-menu';
 import { CategorySection } from './category-section';
 import { LinkModal } from './link-modal';
 import { recordEvent, recordEventOnce } from '../../events';
+import { PersonalizationTag, storeName } from '../../store';
 
 const PersonalizationTagsModal = ( {
 	onInsert,

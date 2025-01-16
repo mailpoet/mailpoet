@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { MenuGroup, MenuItem, DropdownMenu } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { displayShortcut } from '@wordpress/keycodes';
@@ -6,6 +9,10 @@ import { useEntityProp } from '@wordpress/core-data';
 import { __, _x } from '@wordpress/i18n';
 import { PreferenceToggleMenuItem } from '@wordpress/preferences';
 import { useSelect, useDispatch } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
 import { storeName } from '../../store';
 import { TrashModal } from './trash-modal';
 import { recordEvent } from '../../events';

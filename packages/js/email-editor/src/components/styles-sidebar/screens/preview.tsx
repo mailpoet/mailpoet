@@ -1,10 +1,17 @@
+/**
+ * External dependencies
+ */
+import { useSelect } from '@wordpress/data';
+import { useState } from '@wordpress/element';
 import {
 	__experimentalHStack as HStack, // eslint-disable-line
 	__experimentalVStack as VStack, // eslint-disable-line
 	__unstableMotion as motion, // eslint-disable-line
 } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
-import { useState } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
 import { storeName } from '../../../store';
 
 const firstFrame = {

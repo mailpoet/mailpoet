@@ -1,12 +1,12 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
+import { useDispatch, useSelect } from '@wordpress/data';
+import { store as editorStore } from '@wordpress/editor';
 import {
 	__experimentalLibrary as Library, // eslint-disable-line
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
-import { useDispatch, useSelect } from '@wordpress/data';
-import { store as editorStore } from '@wordpress/editor';
 
 /**
  * Internal dependencies

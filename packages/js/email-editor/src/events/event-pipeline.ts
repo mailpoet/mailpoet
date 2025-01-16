@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { debounce } from 'lodash';
 import { applyFilters } from '@wordpress/hooks';
 

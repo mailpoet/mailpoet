@@ -1,7 +1,14 @@
+/**
+ * External dependencies
+ */
 import { Button, Modal, TextControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import './index.scss';
 import { useState } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import './index.scss';
 
 const LinkModal = ( { onInsert, isOpened, closeCallback, tag } ) => {
 	const [ linkText, setLinkText ] = useState( __( 'Link', 'mailpoet' ) );

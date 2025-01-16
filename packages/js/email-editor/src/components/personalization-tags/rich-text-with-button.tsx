@@ -1,17 +1,24 @@
+/**
+ * External dependencies
+ */
 import { BaseControl, Button } from '@wordpress/components';
-import { PersonalizationTagsModal } from './personalization-tags-modal';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { useCallback, useRef, useState } from '@wordpress/element';
+import { useEntityProp } from '@wordpress/core-data';
+import { create, insert, toHTMLString } from '@wordpress/rich-text';
+import { RichText } from '@wordpress/block-editor';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { PersonalizationTagsModal } from './personalization-tags-modal';
 import {
 	getCursorPosition,
 	replacePersonalizationTagsWithHTMLComments,
 } from './rich-text-utils';
-import { useDispatch, useSelect } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
 import { storeName } from '../../store';
-import { RichText } from '@wordpress/block-editor';
-import { __ } from '@wordpress/i18n';
 import { PersonalizationTagsPopover } from './personalization-tags-popover';
-import { create, insert, toHTMLString } from '@wordpress/rich-text';
 import { recordEvent, recordEventOnce } from '../../events';
 
 export function RichTextWithButton( {

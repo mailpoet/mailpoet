@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { useMemo } from '@wordpress/element';
 import { SnackbarList } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';

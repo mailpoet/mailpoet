@@ -1,6 +1,7 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
+import classnames from 'classnames';
 import { useRef, useState } from '@wordpress/element';
 import { PinnedItems } from '@wordpress/interface';
 import { Button, ToolbarItem as WpToolbarItem } from '@wordpress/components';
@@ -11,6 +12,9 @@ import {
 } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
+import { store as preferencesStore } from '@wordpress/preferences';
+import { __ } from '@wordpress/i18n';
+import { plus, listView, undo, redo, next, previous } from '@wordpress/icons';
 import {
 	// @ts-expect-error DocumentBar types are not available
 	DocumentBar,
@@ -18,14 +22,11 @@ import {
 	// @ts-expect-error useEntitiesSavedStatesIsDirty types are not available
 	useEntitiesSavedStatesIsDirty,
 } from '@wordpress/editor';
-import { store as preferencesStore } from '@wordpress/preferences';
-import { __ } from '@wordpress/i18n';
-import { plus, listView, undo, redo, next, previous } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
-import classnames from 'classnames';
+
 import { storeName } from '../../store';
 import { MoreMenu } from './more-menu';
 import { PreviewDropdown } from '../preview';

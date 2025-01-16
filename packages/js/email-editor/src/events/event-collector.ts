@@ -1,4 +1,11 @@
+/**
+ * External dependencies
+ */
 import { doAction } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
 import {
 	EMAIL_STRING,
 	dispatcher,

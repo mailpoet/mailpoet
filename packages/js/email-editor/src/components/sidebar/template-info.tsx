@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import {
 	Panel,
 	PanelBody,
@@ -9,6 +12,10 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { Icon, layout, moreVertical } from '@wordpress/icons';
 import { useState } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
 import { storeName } from '../../store';
 import { TemplateRevertModal } from './template-revert-modal';
 

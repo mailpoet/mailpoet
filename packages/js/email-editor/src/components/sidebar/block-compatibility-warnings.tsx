@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { hasBlockSupport, getBlockSupport } from '@wordpress/blocks';
 import { Fill, Notice } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';

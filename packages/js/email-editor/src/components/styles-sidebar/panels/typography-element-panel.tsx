@@ -1,5 +1,14 @@
+/**
+ * External dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
+import {
+	FontSizePicker,
+	__experimentalToolsPanel as ToolsPanel, // eslint-disable-line
+	__experimentalToolsPanelItem as ToolsPanelItem, // eslint-disable-line
+} from '@wordpress/components';
+// eslint-disable-next-line
 import {
 	useSettings,
 	// We can remove the ts-expect-error comments once the types are available.
@@ -17,11 +26,10 @@ import {
 	// @ts-expect-error TS7016: Could not find a declaration file for module '@wordpress/block-editor'.
 	__experimentalTextTransformControl as TextTransformControl, // eslint-disable-line
 } from '@wordpress/block-editor';
-import {
-	FontSizePicker,
-	__experimentalToolsPanel as ToolsPanel, // eslint-disable-line
-	__experimentalToolsPanelItem as ToolsPanelItem, // eslint-disable-line
-} from '@wordpress/components';
+
+/**
+ * Internal dependencies
+ */
 import { useEmailStyles } from '../../../hooks';
 import { getElementStyles } from '../utils';
 import { recordEvent, debouncedRecordEvent } from '../../../events';

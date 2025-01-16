@@ -1,4 +1,11 @@
+/**
+ * External dependencies
+ */
 import { Button } from '@wordpress/components';
+
+/**
+ * Internal dependencies
+ */
 import { TemplateCategory } from '../../store';
 
 type Props = {

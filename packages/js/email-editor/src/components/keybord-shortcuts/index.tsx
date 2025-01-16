@@ -1,11 +1,18 @@
+/**
+ * External dependencies
+ */
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useEffect } from '@wordpress/element';
 import { store as coreDataStore } from '@wordpress/core-data';
+import { __ } from '@wordpress/i18n';
 import {
 	useShortcut,
 	store as keyboardShortcutsStore,
 } from '@wordpress/keyboard-shortcuts';
-import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
 import { storeName } from '../../store';
 import { recordEvent } from '../../events';
 

@@ -1,5 +1,12 @@
+/**
+ * External dependencies
+ */
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useEffect } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
 import { storeName } from '../../store';
 import { recordEvent } from '../../events';
 

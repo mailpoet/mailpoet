@@ -1,13 +1,8 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
-
-/**
- * WordPress private dependencies
- */
-import { StylesColorPanel } from '../../../private-apis';
 
 /**
  * Internal dependencies
@@ -16,6 +11,7 @@ import ScreenHeader from './screen-header';
 import { useEmailStyles } from '../../../hooks';
 import { storeName } from '../../../store';
 import { recordEvent, recordEventOnce } from '../../../events';
+import { StylesColorPanel } from '../../../private-apis';
 
 export function ScreenColors(): JSX.Element {
 	recordEventOnce( 'styles_sidebar_screen_colors_opened' );

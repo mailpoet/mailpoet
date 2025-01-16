@@ -1,4 +1,11 @@
+/**
+ * External dependencies
+ */
 import { useRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { chevronDown } from '@wordpress/icons';
+import { useSelect } from '@wordpress/data';
+import { useEntityProp } from '@wordpress/core-data';
 import {
 	Button,
 	Dropdown,
@@ -6,10 +13,10 @@ import {
 	__experimentalText as Text, // eslint-disable-line
 	TextControl,
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
-import { chevronDown } from '@wordpress/icons';
-import { useSelect } from '@wordpress/data';
-import { useEntityProp } from '@wordpress/core-data';
+
+/**
+ * Internal dependencies
+ */
 import { storeName } from '../../store';
 import { recordEvent, recordEventOnce } from '../../events';
 

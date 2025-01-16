@@ -1,20 +1,16 @@
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { useMemo } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-
-/**
- * WordPress private dependencies
- */
-import { useGlobalStylesOutputWithConfig } from '../private-apis';
+import deepmerge from 'deepmerge';
 
 /**
  * Internal dependencies
  */
-import deepmerge from 'deepmerge';
 import { EmailStyles, storeName } from '../store';
 import { useUserTheme } from './use-user-theme';
+import { useGlobalStylesOutputWithConfig } from '../private-apis';
 
 export function useEmailCss() {
 	const { userTheme } = useUserTheme();

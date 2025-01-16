@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import {
 	MenuGroup,
 	MenuItem,
@@ -8,6 +11,10 @@ import { useEntityProp } from '@wordpress/core-data';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { Icon, external, check, mobile, desktop } from '@wordpress/icons';
+
+/**
+ * Internal dependencies
+ */
 import { SendPreviewEmail } from './send-preview-email';
 import { storeName } from '../../store';
 import { recordEvent } from '../../events';

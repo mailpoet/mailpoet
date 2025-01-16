@@ -1,8 +1,15 @@
+/**
+ * External dependencies
+ */
 import { ExternalLink, PanelBody } from '@wordpress/components';
 import { useEntityProp } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
 import classnames from 'classnames';
+
+/**
+ * Internal dependencies
+ */
 import { RichTextWithButton } from '../personalization-tags/rich-text-with-button';
 import { recordEvent } from '../../events';
 

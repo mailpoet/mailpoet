@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { EditorSettings, EditorColor } from '@wordpress/block-editor/index';
 import { BlockInstance } from '@wordpress/blocks/index';
 import { Post } from '@wordpress/core-data/build-types/entity-types/post';

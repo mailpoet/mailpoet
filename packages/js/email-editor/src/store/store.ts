@@ -1,9 +1,16 @@
+/**
+ * External dependencies
+ */
 import { createReduxStore, register } from '@wordpress/data';
 import {
 	ReduxStoreConfig,
 	StoreDescriptor as GenericStoreDescriptor,
 } from '@wordpress/data/build-types/types';
 import { controls } from '@wordpress/data-controls';
+
+/**
+ * Internal dependencies
+ */
 import * as actions from './actions';
 import { storeName } from './constants';
 import { getInitialState } from './initial-state';

@@ -1,10 +1,17 @@
+/**
+ * External dependencies
+ */
 import { apiFetch } from '@wordpress/data-controls';
+import { select } from '@wordpress/data';
+
+/**
+ * Internal dependencies
+ */
 import {
 	setPersonalizationTagsList,
 	setIsFetchingPersonalizationTags,
 } from './actions';
 import { storeName } from './constants';
-import { select } from '@wordpress/data';
 
 export function* getPersonalizationTagsList() {
 	// Access the state to check if already fetching
