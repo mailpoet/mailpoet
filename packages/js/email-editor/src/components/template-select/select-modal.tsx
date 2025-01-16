@@ -123,7 +123,11 @@ export function SelectTemplateModal( {
 
 	return (
 		<Modal
-			title={ __( 'Start with an email preset', 'mailpoet' ) }
+			title={
+				templateSelectMode === 'new'
+					? __( 'Start with an email preset', 'mailpoet' )
+					: __( 'Select a template', 'mailpoet' )
+			}
 			onRequestClose={ () => {
 				recordEvent( 'template_select_modal_closed', {
 					templateSelectMode,
