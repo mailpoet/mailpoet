@@ -3,7 +3,6 @@
 namespace MailPoet\SystemReport;
 
 use MailPoet\Cron\CronHelper;
-use MailPoet\DI\ContainerWrapper;
 use MailPoet\Mailer\MailerLog;
 use MailPoet\Router\Endpoints\CronDaemon;
 use MailPoet\Services\Bridge;
@@ -29,6 +28,15 @@ class SystemReportCollector {
   /** @var DataInconsistencyController */
   private $dataInconsistencyController;
 
+  /** @var CronHelper */
+  private $cronHelper;
+
+  /** @var string|null */
+  private $cachedCronPingResponse = null;
+
+  /** @var array|\WP_Error|null */
+  private $cachedBridgePingResponse = null;
+
   /** @var Bridge */
   private $bridge;
 
@@ -38,7 +46,8 @@ class SystemReportCollector {
     SubscribersFeature $subscribersFeature,
     WooCommerceHelper $wooCommerceHelper,
     DataInconsistencyController $dataInconsistencyController,
-    Bridge $bridge
+    Bridge $bridge,
+    CronHelper $cronHelper
   ) {
     $this->settings = $settings;
     $this->wp = $wp;
@@ -46,6 +55,7 @@ class SystemReportCollector {
     $this->wooCommerceHelper = $wooCommerceHelper;
     $this->dataInconsistencyController = $dataInconsistencyController;
     $this->bridge = $bridge;
+    $this->cronHelper = $cronHelper;
   }
 
   public function getData($maskApiKey = false) {
@@ -74,18 +84,13 @@ class SystemReportCollector {
       $premiumKey = $this->maskApiKey($premiumKey);
     }
 
-    $cronHelper = ContainerWrapper::getInstance()->get(CronHelper::class);
-    $cronDaemonStatus = $cronHelper->getDaemon() ?? [];
+    $cronDaemonStatus = $this->cronHelper->getDaemon() ?? [];
     try {
-      $cronPingUrl = $cronHelper->getCronUrl(CronDaemon::ACTION_PING);
+      $cronPingUrl = $this->cronHelper->getCronUrl(CronDaemon::ACTION_PING);
+      $cronPingResponse = $this->getCronPingResponse();
     } catch (\Exception $e) {
       $cronPingUrl = __('Can‘t generate cron URL.', 'mailpoet') . ' (' . $e->getMessage() . ')';
-    }
-
-    try {
-      $cronPingResponse = $cronHelper->pingDaemon();
-    } catch (\Exception $e) {
-      $cronPingResponse = __("Can't ping cron URL", 'mailpoet') . ' (' . $e->getMessage() . ')';
+      $cronPingResponse = $cronPingUrl;
     }
 
     $mailerLog = MailerLog::getMailerLog();
@@ -94,7 +99,7 @@ class SystemReportCollector {
     $inconsistencyStatus = $this->dataInconsistencyController->getInconsistentDataStatus();
     unset($inconsistencyStatus['total']);
 
-    $pingBridgeResponse = $this->bridge->pingBridge();
+    $pingBridgeResponse = $this->getBridgePingResponse();
     $pingResponse = $this->wp->isWpError($pingBridgeResponse)
       ? $pingBridgeResponse->get_error_message() // @phpstan-ignore-line
       : $this->wp->wpRemoteRetrieveResponseCode($pingBridgeResponse) . ' HTTP status code';
@@ -150,7 +155,7 @@ class SystemReportCollector {
       ]),
       'MailPoet Cron / Action Scheduler' => $this->formatCompositeField([
         'Status' => $cronDaemonStatus['status'] ?? 'Unknown',
-        'Is reachable' => $cronHelper->validatePingResponse($cronPingResponse) ? 'Yes' : 'No',
+        'Is reachable' => $this->cronHelper->validatePingResponse($cronPingResponse) ? 'Yes' : 'No',
         'Ping URL' => $cronPingUrl,
         'Ping response' => $cronPingResponse,
         'Last run start' => isset($cronDaemonStatus['run_started_at']) ? date('Y-m-d H:i:s', $cronDaemonStatus['run_started_at']) : 'Unknown',
@@ -171,6 +176,27 @@ class SystemReportCollector {
       ]),
       'Data inconsistency status' => $this->formatCompositeField($this->convertKeysToTitleCase($inconsistencyStatus)),
     ];
+  }
+
+  public function getCronPingResponse(): string {
+    if ($this->cachedCronPingResponse !== null) {
+      return $this->cachedCronPingResponse;
+    }
+
+    $this->cachedCronPingResponse = $this->cronHelper->pingDaemon();
+    return $this->cachedCronPingResponse;
+  }
+
+  /**
+   * @return array|\WP_Error
+   */
+  public function getBridgePingResponse() {
+    if ($this->cachedBridgePingResponse !== null) {
+      return $this->cachedBridgePingResponse;
+    }
+
+    $this->cachedBridgePingResponse = $this->bridge->pingBridge();
+    return $this->cachedBridgePingResponse;
   }
 
   /**

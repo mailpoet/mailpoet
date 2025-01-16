@@ -52,9 +52,10 @@ class Help {
      * @param array<string, string> $systemInfoData The system info data array.
      */
     $systemInfoData = WPFunctions::get()->applyFilters('mailpoet_system_info_data', $this->systemReportCollector->getData(true));
+
     try {
       $cronPingUrl = $this->cronHelper->getCronUrl(CronDaemon::ACTION_PING);
-      $cronPingResponse = $this->cronHelper->pingDaemon();
+      $cronPingResponse = $this->systemReportCollector->getCronPingResponse();
     } catch (\Exception $e) {
       $cronPingResponse = __('Can‘t generate cron URL.', 'mailpoet') . ' (' . $e->getMessage() . ')';
       $cronPingUrl = $cronPingResponse;
@@ -62,6 +63,7 @@ class Help {
 
     $mailerLog = MailerLog::getMailerLog();
     $mailerLog['sent'] = MailerLog::sentSince();
+    $bridgePingResponse = $this->systemReportCollector->getBridgePingResponse();
     $systemStatusData = [
       'cron' => [
         'url' => $cronPingUrl,
@@ -70,16 +72,18 @@ class Help {
       ],
       'mss' => [
         'enabled' => $this->bridge->isMailpoetSendingServiceEnabled(),
-        'isReachable' => $this->bridge->validateBridgePingResponse($this->bridge->pingBridge()),
+        'isReachable' => $this->bridge->validateBridgePingResponse($bridgePingResponse),
       ],
       'cronStatus' => $this->cronHelper->getDaemon(),
       'queueStatus' => $mailerLog,
     ];
+
     $systemStatusData['cronStatus']['accessible'] = $this->cronHelper->isDaemonAccessible();
     $systemStatusData['queueStatus']['tasksStatusCounts'] = $this->scheduledTasksRepository->getCountsPerStatus();
-    $systemStatusData['queueStatus']['latestTasks'] = array_map(function ($task) {
-      return $this->buildTaskData($task);
-    }, $this->scheduledTasksRepository->getLatestTasks(SendingQueue::TASK_TYPE));
+
+    $scheduledTasks = $this->scheduledTasksRepository->getLatestTasks(SendingQueue::TASK_TYPE);
+    $systemStatusData['queueStatus']['latestTasks'] = array_map(fn($task) => $this->buildTaskData($task), $scheduledTasks);
+
     $this->pageRenderer->displayPage(
       'help.html',
       [
@@ -132,6 +136,7 @@ class Help {
         $subscriber = $subscribers->first() ? $subscribers->first()->getSubscriber() : null;
       }
     }
+
     return [
       'id' => $task->getId(),
       'type' => $task->getType(),

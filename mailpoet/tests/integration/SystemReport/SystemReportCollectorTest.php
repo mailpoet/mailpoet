@@ -289,6 +289,16 @@ class SystemReportCollectorTest extends \MailPoetTest {
     $subscribersFeature = $this->diContainer->get(SubscribersFeature::class);
     $wooCommerceHelper = $this->diContainer->get(WooCommerceHelper::class);
     $dataInconsistencyController = $this->diContainer->get(DataInconsistencyController::class);
-    return new SystemReportCollector($settings, $wp, $subscribersFeature, $wooCommerceHelper, $dataInconsistencyController, $bridge);
+    $cronHelper = $this->diContainer->get(CronHelper::class);
+
+    return new SystemReportCollector(
+      $settings,
+      $wp,
+      $subscribersFeature,
+      $wooCommerceHelper,
+      $dataInconsistencyController,
+      $bridge,
+      $cronHelper
+    );
   }
 }
