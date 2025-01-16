@@ -335,7 +335,18 @@ class TemplatesFactory {
       function (): Automation {
         return $this->builder->createFromSequence(
           __('Purchased a product with a tag', 'mailpoet'),
-          $this->createPurchasedTemplateBody('woocommerce:order:tags')
+          [
+            [
+              'key' => 'woocommerce:buys-from-a-tag',
+            ],
+            [
+              'key' => 'mailpoet:send-email',
+              'args' => [
+                'name' => __('Important information about your order', 'mailpoet'),
+                'subject' => __('Important information about your order', 'mailpoet'),
+              ],
+            ],
+          ]
         );
       },
       [
