@@ -35,7 +35,7 @@ export default function EditTemplateBlocksNotification( { contentRef } ) {
 		return {
 			// onNavigateToEntityRecord is missing in EditorSettings.
 			// prettier-ignore
-			onNavigateToEntityRecord: // @ts-expect-error
+			onNavigateToEntityRecord: // @ts-expect-error onNavigateToEntityRecord is not typed on EditorSettings.
 				getEditorSettings().onNavigateToEntityRecord,
 			templateId: getCurrentTemplateId(),
 		};

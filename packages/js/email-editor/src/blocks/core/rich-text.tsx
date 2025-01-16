@@ -90,7 +90,7 @@ function PersonalizationTagsButton( { contentRef }: Props ) {
 					richTextValue,
 					{
 						type: 'mailpoet-email-editor/link-shortcode',
-						// @ts-expect-error
+						// @ts-expect-error attributes property is missing in build type for WPFormat type
 						attributes: {
 							'data-link-href': tag,
 							contenteditable: 'false',
@@ -193,7 +193,7 @@ function extendRichTextFormats() {
 		title: __( 'Personalization Tags', 'mailpoet' ),
 		className: 'mailpoet-email-editor-personalization-tags',
 		tagName: 'span',
-		// @ts-expect-error
+		// @ts-expect-error attributes property is missing in build type for WPFormat type
 		attributes: {},
 		edit: PersonalizationTagsButton,
 	} );
@@ -204,7 +204,7 @@ function extendRichTextFormats() {
 		title: __( 'Personalization Tags Link', 'mailpoet' ),
 		className: 'mailpoet-email-editor__personalization-tags-link',
 		tagName: 'a',
-		// @ts-expect-error
+		// @ts-expect-error attributes property is missing in build type for WPFormat type
 		attributes: {
 			'data-link-href': 'data-link-href',
 			contenteditable: 'contenteditable',

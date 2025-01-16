@@ -10,7 +10,7 @@ const CategoryMenu = ( {
 	activeCategory,
 	onCategorySelect,
 }: {
-	groupedTags: Record< string, any[] >;
+	groupedTags: Record< string, unknown[] >;
 	activeCategory: string | null;
 	onCategorySelect: ( category: string | null ) => void;
 } ) => {
