@@ -39,13 +39,13 @@ interface JQuery {
 declare module '@woocommerce/blocks-checkout' {
   type CheckboxControlProps = {
     className?: string;
-    label?: string;
+    label?: string | React.ReactNode;
     id?: string;
-    instanceId?: string;
-    onChange?: (value: boolean) => void;
-    children?: React.ReactChildren | React.ReactElement;
+    onChange: (value: boolean) => void;
+    children?: React.ReactChildren;
     hasError?: boolean;
     checked?: boolean;
+    disabled?: string | boolean | undefined;
   };
   export const CheckboxControl: (props: CheckboxControlProps) => JSX.Element;
 }
