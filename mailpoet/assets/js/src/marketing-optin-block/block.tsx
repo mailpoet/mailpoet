@@ -30,8 +30,10 @@ export function FrontendBlock({
   }
 
   return (
-    <CheckboxControl checked={checked} onChange={setChecked}>
-      <RawHTML>{text || defaultText}</RawHTML>
-    </CheckboxControl>
+    <CheckboxControl
+      checked={checked}
+      onChange={setChecked}
+      label={<RawHTML>{text || defaultText}</RawHTML>}
+    />
   );
 }

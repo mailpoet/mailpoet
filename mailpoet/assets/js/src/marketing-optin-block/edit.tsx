@@ -56,7 +56,11 @@ export function Edit({
     <div {...blockProps}>
       {optinEnabled ? (
         <div className="wc-block-checkout__marketing">
-          <CheckboxControl id="mailpoet-marketing-optin" checked={false} />
+          <CheckboxControl
+            id="mailpoet-marketing-optin"
+            checked={false}
+            onChange={() => {}}
+          />
           <RichText
             value={currentText}
             onChange={(value) => setAttributes({ text: value })}
