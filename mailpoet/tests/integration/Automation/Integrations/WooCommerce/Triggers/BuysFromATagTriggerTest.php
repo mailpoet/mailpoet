@@ -14,7 +14,7 @@ use MailPoet\Test\DataFactories\Automation as AutomationFactory;
  */
 class BuysFromATagTriggerTest extends \MailPoetTest {
 
-  /** @var BuysFromACategoryTrigger */
+  /** @var BuysFromATagTrigger */
   private $testee;
 
   /** @var AutomationRunStorage */
