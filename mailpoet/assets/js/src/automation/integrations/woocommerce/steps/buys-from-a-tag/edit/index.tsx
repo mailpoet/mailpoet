@@ -15,10 +15,7 @@ type Tag = {
   label?: string;
 };
 
-async function fetchTags(
-  include: number[],
-  callback: (tags: Tag[]) => void,
-) {
+async function fetchTags(include: number[], callback: (tags: Tag[]) => void) {
   const path = addQueryArgs('/wp/v2/product_tag/', { include });
   const data: { id: number; name: string }[] = await apiFetch({
     path,
