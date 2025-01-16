@@ -4,19 +4,19 @@ import { Edit } from './edit';
 import { Icon } from './icon';
 
 const keywords = [
-  // translators: noun, used as a search keyword for "Customer buys from a category" trigger
+  // translators: noun, used as a search keyword for "Customer buys from a tag" trigger
   __('tag', 'mailpoet'),
-  // translators: verb, used as a search keyword for "Customer buys from a category" trigger
+  // translators: verb, used as a search keyword for "Customer buys from a tag" trigger
   __('buy', 'mailpoet'),
-  // translators: verb, used as a search keyword for "Customer buys from a category" trigger
+  // translators: verb, used as a search keyword for "Customer buys from a tag" trigger
   __('purchase', 'mailpoet'),
-  // translators: noun, used as a search keyword for "Customer buys from a category" trigger
+  // translators: noun, used as a search keyword for "Customer buys from a tag" trigger
   __('ecommerce', 'mailpoet'),
-  // translators: noun, used as a search keyword for "Customer buys from a category" trigger
+  // translators: noun, used as a search keyword for "Customer buys from a tag" trigger
   __('woocommerce', 'mailpoet'),
-  // translators: noun, used as a search keyword for "Customer buys from a category" trigger
+  // translators: noun, used as a search keyword for "Customer buys from a tag" trigger
   __('product', 'mailpoet'),
-  // translators: noun, used as a search keyword for "Customer buys from a category" trigger
+  // translators: noun, used as a search keyword for "Customer buys from a tag" trigger
   __('order', 'mailpoet'),
 ];
 export const step: StepType = {

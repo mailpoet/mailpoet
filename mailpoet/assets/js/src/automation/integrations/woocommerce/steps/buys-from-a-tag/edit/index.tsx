@@ -15,9 +15,9 @@ type Tag = {
   label?: string;
 };
 
-async function fetchCategories(
+async function fetchTags(
   include: number[],
-  callback: (products: Tag[]) => void,
+  callback: (tags: Tag[]) => void,
 ) {
   const path = addQueryArgs('/wp/v2/product_tag/', { include });
   const data: { id: number; name: string }[] = await apiFetch({
@@ -42,7 +42,7 @@ export function Edit(): JSX.Element {
     if (!isBusy) {
       return;
     }
-    void fetchCategories(tagIds, (tags: Tag[]) => {
+    void fetchTags(tagIds, (tags: Tag[]) => {
       setCurrent(tags);
       setIsBusy(false);
     });

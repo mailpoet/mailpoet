@@ -7,7 +7,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { AutoCompleter } from '@woocommerce/components/build-types/search/autocompleters';
 
 const tagAutoCompleter: AutoCompleter = {
-  name: 'categories',
+  name: 'tags',
   className: 'woocommerce-search__product-result',
   options(search) {
     const query = search
@@ -22,11 +22,11 @@ const tagAutoCompleter: AutoCompleter = {
     });
   },
   isDebounced: true,
-  getOptionIdentifier(category) {
-    return category.id as number;
+  getOptionIdentifier(tag) {
+    return tag.id as number;
   },
-  getOptionKeywords(cat) {
-    return [cat.name] as string[];
+  getOptionKeywords(tag) {
+    return [tag.name] as string[];
   },
   getFreeTextOptions(query) {
     const label = (
@@ -42,24 +42,23 @@ const tagAutoCompleter: AutoCompleter = {
 
     return [titleOption];
   },
-  getOptionLabel(cat) {
-    // @todo Bring back ProductImage, but allow for product category image
+  getOptionLabel(tag) {
     return (
       <span
         key="name"
         className="woocommerce-search__result-name"
-        aria-label={cat.name}
+        aria-label={tag.name}
       >
-        {cat.name}
+        {tag.name}
       </span>
     );
   },
   // This is slightly different than gutenberg/Autocomplete, we don't support different methods
   // of replace/insertion, so we can just return the value.
-  getOptionCompletion(cat) {
+  getOptionCompletion(tag) {
     const value = {
-      key: cat.id,
-      label: cat.name,
+      key: tag.id,
+      label: tag.name,
     };
     return value;
   },
