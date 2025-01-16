@@ -357,7 +357,18 @@ class TemplatesFactory {
       function (): Automation {
         return $this->builder->createFromSequence(
           __('Purchased in a category', 'mailpoet'),
-          $this->createPurchasedTemplateBody('woocommerce:order:categories')
+          [
+            [
+              'key' => 'woocommerce:buys-from-a-category',
+            ],
+            [
+              'key' => 'mailpoet:send-email',
+              'args' => [
+                'name' => __('Important information about your order', 'mailpoet'),
+                'subject' => __('Important information about your order', 'mailpoet'),
+              ],
+            ],
+          ]
         );
       },
       [
