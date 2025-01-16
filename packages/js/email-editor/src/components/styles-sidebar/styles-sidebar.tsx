@@ -7,8 +7,8 @@ import { ComplementaryArea } from '@wordpress/interface';
 import { ComponentProps } from 'react';
 import { styles } from '@wordpress/icons';
 import {
-	__experimentalNavigatorProvider as NavigatorProvider, // eslint-disable-line
-	__experimentalNavigatorScreen as NavigatorScreen, // eslint-disable-line
+	__experimentalNavigatorProvider as NavigatorProvider,
+	__experimentalNavigatorScreen as NavigatorScreen,
 } from '@wordpress/components';
 
 /**

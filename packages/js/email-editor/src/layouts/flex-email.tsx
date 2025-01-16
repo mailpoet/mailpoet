@@ -9,19 +9,18 @@ import { Block } from '@wordpress/blocks/index';
 import { __ } from '@wordpress/i18n';
 import { justifyLeft, justifyCenter, justifyRight } from '@wordpress/icons';
 import {
+	Flex,
+	FlexItem,
+	PanelBody,
+	__experimentalToggleGroupControl as ToggleGroupControl,
+	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon,
+} from '@wordpress/components';
+import {
 	BlockControls,
 	InspectorControls,
 	// @ts-expect-error No types for this exist yet.
 	JustifyContentControl,
 } from '@wordpress/block-editor';
-// eslint-disable-next-line @woocommerce/dependency-group
-import {
-	Flex,
-	FlexItem,
-	PanelBody,
-	__experimentalToggleGroupControl as ToggleGroupControl, // eslint-disable-line
-	__experimentalToggleGroupControlOptionIcon as ToggleGroupControlOptionIcon, // eslint-disable-line
-} from '@wordpress/components';
 
 const layoutBlockSupportKey = '__experimentalEmailFlexLayout';
 

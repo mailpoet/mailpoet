@@ -10,7 +10,7 @@ import {
 	Button,
 	Dropdown,
 	VisuallyHidden,
-	__experimentalText as Text, // eslint-disable-line
+	__experimentalText as Text,
 	TextControl,
 } from '@wordpress/components';
 

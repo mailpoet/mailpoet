@@ -17,7 +17,6 @@ import { addQueryArgs } from '@wordpress/url';
 import { decodeEntities } from '@wordpress/html-entities';
 import {
 	// @ts-expect-error No types for __unstableSerializeAndClean
-	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__unstableSerializeAndClean,
 	parse,
 } from '@wordpress/blocks';
