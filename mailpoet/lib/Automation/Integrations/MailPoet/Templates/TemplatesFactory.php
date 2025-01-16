@@ -388,30 +388,4 @@ class TemplatesFactory {
       AutomationTemplate::TYPE_DEFAULT
     );
   }
-
-  private function createPurchasedTemplateBody(string $filterField): array {
-    return [
-      [
-        'key' => 'woocommerce:order-completed',
-        'filters' => [
-          'operator' => 'and',
-          'groups' => [
-            [
-              'operator' => 'and',
-              'filters' => [
-                ['field' => $filterField, 'condition' => 'matches-any-of', 'value' => null],
-              ],
-            ],
-          ],
-        ],
-      ],
-      [
-        'key' => 'mailpoet:send-email',
-        'args' => [
-          'name' => __('Important information about your order', 'mailpoet'),
-          'subject' => __('Important information about your order', 'mailpoet'),
-        ],
-      ],
-    ];
-  }
 }
