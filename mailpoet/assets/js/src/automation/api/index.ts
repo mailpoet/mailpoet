@@ -16,7 +16,11 @@ export type ApiError = {
 
 export const initializeApi = () => {
   apiFetch.use((options, next) => {
-    if (options.path && options.path.startsWith('/wc-analytics/')) {
+    if (
+      options.path &&
+      (options.path.startsWith('/wc-analytics/') ||
+        options.path.startsWith('/wp/v2/'))
+    ) {
       return apiFetch.createRootURLMiddleware(`${api.root}/`)(options, next);
     }
     return apiFetch.createRootURLMiddleware(apiUrl)(options, next);
