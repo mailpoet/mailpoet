@@ -64,7 +64,7 @@ jobs:
       # Install MailPoet dependencies only if the cache was not hit
       - name: Install mailpoet dependencies
         if: |
-          steps.composer-mailpoet-cache.outputs.cache-hit != 'true' && steps.vendor-prefixed-cache.outputs.cache-hit != 'true'
+          steps.composer-mailpoet-cache.outputs.cache-hit != 'true' || steps.vendor-prefixed-cache.outputs.cache-hit != 'true'
         run: ./tools/vendor/composer.phar install
         working-directory: mailpoet
 
@@ -181,7 +181,7 @@ jobs:
       # Install MailPoet dependencies only if the cache was not hit
       - name: Install mailpoet dependencies
         if: |
-          steps.composer-mailpoet-cache.outputs.cache-hit != 'true' && steps.vendor-prefixed-cache.outputs.cache-hit != 'true'
+          steps.composer-mailpoet-cache.outputs.cache-hit != 'true' || steps.vendor-prefixed-cache.outputs.cache-hit != 'true'
         run: ./tools/vendor/composer.phar install
         working-directory: mailpoet
 
