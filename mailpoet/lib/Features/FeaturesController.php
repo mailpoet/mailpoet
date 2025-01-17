@@ -6,11 +6,13 @@ use MailPoetVendor\Doctrine\DBAL\Exception\TableNotFoundException;
 
 class FeaturesController {
   const FEATURE_BRAND_TEMPLATES = 'brand_templates';
+  const FEATURE_UNIFIED_WP_EDITOR = 'email_editor_in_unified_wordpress_editor';
 
   // Define feature defaults in the array below in the following form:
   //   self::FEATURE_NAME_OF_FEATURE => true,
   private $defaults = [
     self::FEATURE_BRAND_TEMPLATES => false,
+    self::FEATURE_UNIFIED_WP_EDITOR => false,
   ];
 
   /** @var array|null */
