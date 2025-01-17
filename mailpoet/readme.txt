@@ -105,39 +105,33 @@ Please note:
 
 = Translations =
 
-**Official translations**
-
+* Albanian
 * Arabic
 * Catalan
-* Chinese
 * Czech
 * Danish
 * Dutch
-* French (FR)
+* Dutch → Dutch (Formal)
+* French (Canada)
+* French (France)
 * German
+* German (Switzerland)
+* German → German (Formal)
 * Greek
+* Hindi
 * Italian
 * Japanese
-* Mexican
-* Persian (IR)
 * Polish
-* Portuguese (BR and PT)
+* Portuguese (Brazil)
+* Portuguese (Portugal)
+* Romanian
 * Russian
 * Serbian
-* Spanish
+* Slovak
+* Spanish (Mexico)
+* Spanish (Spain)
 * Swedish
 * Turkish
-
-**Community translations**
-
-* Albanian
-* British
-* French (CA)
-* Hebrew
-* Hungarian
-* Norwegian
-* Persian
-* Romanian
 * Ukrainian
 
 We welcome experienced translators to translate directly on [our Transifex project](https://www.transifex.com/wysija/mp3/). Please note that any translations submitted via the "Translating WordPress" website will not work.
