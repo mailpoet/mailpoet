@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: mailpoet/vendor-prefixed
-          key: ${{ runner.os }}-vendor-prefixed-${{ matrix.php-version }}-${{ hashFiles('mailpoet/prefixer/composer.lock') }}-${{ hashFiles('mailpoet/composer.json') }}
+          key: ${{ runner.os }}-vendor-prefixed-${{ matrix.php-version }}-${{ hashFiles('mailpoet/prefixer/composer.lock') }}-${{ hashFiles('mailpoet/prefixer/composer.json') }}
 
       - name: Cache Composer vendor for test environment
         id: composer-tests-env-cache
@@ -41,7 +41,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: packages/php/email-editor/vendor
-          key: ${{ runner.os }}-composer-email-editor-${{ matrix.php-version }}-${{ hashFiles('packages/php/email-editor/composer.lock') }}-${{ hashFiles('mailpoet/composer.json') }}
+          key: ${{ runner.os }}-composer-email-editor-${{ matrix.php-version }}-${{ hashFiles('packages/php/email-editor/composer.lock') }}-${{ hashFiles('packages/php/email-editor/composer.json') }}
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -63,7 +63,8 @@ jobs:
 
       # Install MailPoet dependencies only if the cache was not hit
       - name: Install mailpoet dependencies
-        if: steps.composer-mailpoet-cache.outputs.cache-hit != 'true'
+        if: |
+          steps.composer-mailpoet-cache.outputs.cache-hit != 'true' && steps.vendor-prefixed-cache.outputs.cache-hit != 'true'
         run: ./tools/vendor/composer.phar install
         working-directory: mailpoet
 
@@ -143,7 +144,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: mailpoet/vendor-prefixed
-          key: ${{ runner.os }}-vendor-prefixed-${{ matrix.php-version }}-${{ hashFiles('mailpoet/prefixer/composer.lock') }}-${{ hashFiles('mailpoet/composer.json') }}
+          key: ${{ runner.os }}-vendor-prefixed-${{ matrix.php-version }}-${{ hashFiles('mailpoet/prefixer/composer.lock') }}-${{ hashFiles('mailpoet/prefixer/composer.json') }}
 
       - name: Cache Composer vendor for test environment
         id: composer-tests-env-cache
@@ -157,7 +158,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: packages/php/email-editor/vendor
-          key: ${{ runner.os }}-composer-email-editor-${{ matrix.php-version }}-${{ hashFiles('packages/php/email-editor/composer.lock') }}-${{ hashFiles('mailpoet/composer.json') }}
+          key: ${{ runner.os }}-composer-email-editor-${{ matrix.php-version }}-${{ hashFiles('packages/php/email-editor/composer.lock') }}-${{ hashFiles('packages/php/email-editor/composer.json') }}
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -179,7 +180,8 @@ jobs:
 
       # Install MailPoet dependencies only if the cache was not hit
       - name: Install mailpoet dependencies
-        if: steps.composer-mailpoet-cache.outputs.cache-hit != 'true'
+        if: |
+          steps.composer-mailpoet-cache.outputs.cache-hit != 'true' && steps.vendor-prefixed-cache.outputs.cache-hit != 'true'
         run: ./tools/vendor/composer.phar install
         working-directory: mailpoet
 
