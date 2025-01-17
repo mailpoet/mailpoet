@@ -111,12 +111,12 @@ Please note:
 * Czech
 * Danish
 * Dutch
-* Dutch → Dutch (Formal)
+* Dutch (Formal)
 * French (Canada)
 * French (France)
 * German
 * German (Switzerland)
-* German → German (Formal)
+* German (Formal)
 * Greek
 * Hindi
 * Italian
