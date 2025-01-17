@@ -4,6 +4,7 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\PatternsController;
 use MailPoet\EmailEditor\Integrations\MailPoet\Templates\TemplatesController;
+use MailPoet\Features\FeaturesController;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditor {
@@ -25,8 +26,11 @@ class EmailEditor {
 
   private TemplatesController $templatesController;
 
+  private FeaturesController $featuresController;
+
   public function __construct(
     WPFunctions $wp,
+    FeaturesController $featuresController,
     EmailApiController $emailApiController,
     EditorPageRenderer $editorPageRenderer,
     EmailEditorPreviewEmail $emailEditorPreviewEmail,
@@ -36,6 +40,7 @@ class EmailEditor {
     PersonalizationTagManager $personalizationTagManager
   ) {
     $this->wp = $wp;
+    $this->featuresController = $featuresController;
     $this->emailApiController = $emailApiController;
     $this->editorPageRenderer = $editorPageRenderer;
     $this->patternsController = $patternsController;
@@ -50,7 +55,9 @@ class EmailEditor {
     $this->wp->addFilter('mailpoet_email_editor_post_types', [$this, 'addEmailPostType']);
     $this->wp->addAction('rest_delete_mailpoet_email', [$this->emailApiController, 'trashEmail'], 10, 1);
     $this->wp->addFilter('mailpoet_is_email_editor_page', [$this, 'isEditorPage'], 10, 1);
-    $this->wp->addFilter('replace_editor', [$this, 'replaceEditor'], 10, 2);
+    if (!$this->featuresController->isSupported(FeaturesController::FEATURE_UNIFIED_WP_EDITOR)) {
+      $this->wp->addFilter('replace_editor', [$this, 'replaceEditor'], 10, 2);
+    }
     $this->wp->addFilter('mailpoet_email_editor_send_preview_email', [$this->emailEditorPreviewEmail, 'sendPreviewEmail'], 10, 1);
     $this->patternsController->registerPatterns();
     $this->templatesController->initialize();
