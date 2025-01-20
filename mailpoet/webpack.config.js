@@ -542,6 +542,39 @@ const emailEditorCustom = Object.assign({}, wpScriptConfig, {
     : [...wpScriptConfig.plugins, new ForkTsCheckerWebpackPlugin()],
 });
 
+const emailEditorUnified = Object.assign({}, wpScriptConfig, {
+  name: 'email_editor',
+  entry: {
+    email_editor: '../packages/js/email-editor/src/unified-editor.tsx',
+  },
+  output: {
+    filename: '[name].js',
+    path: path.join(__dirname, 'assets/dist/js/email-editor-unified'),
+  },
+  resolve: {
+    ...wpScriptConfig.resolve,
+    modules: ['node_modules', '../packages/js/email-editor'],
+  },
+  module: Object.assign({}, wpScriptConfig.module, {
+    rules: [
+      ...wpScriptConfig.module.rules,
+      {
+        test: /\.(t|j)sx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader?cacheDirectory',
+          options: {
+            presets: ['@wordpress/babel-preset-default'],
+          },
+        },
+      },
+    ],
+  }),
+  plugins: PRODUCTION_ENV
+    ? wpScriptConfig.plugins
+    : [...wpScriptConfig.plugins, new ForkTsCheckerWebpackPlugin()],
+});
+
 // Temporary solution to build rich-text package for email editor
 const emailEditorRichText = Object.assign({}, wpScriptConfig, {
   name: 'email-editor-rich-text',
@@ -599,6 +632,7 @@ const configs = [
   publicConfig,
   adminConfig,
   emailEditorCustom,
+  emailEditorUnified,
   formPreviewConfig,
   postEditorBlock,
   marketingOptinBlock,
