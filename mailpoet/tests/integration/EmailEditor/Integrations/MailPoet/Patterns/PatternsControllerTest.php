@@ -23,7 +23,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertArrayHasKey('categories', $threeColumnContent);
     $this->assertEquals('mailpoet/3-column-content', $threeColumnContent['name']);
     $this->assertStringContainsString('A three-column layout organizes information into sections', $threeColumnContent['content']);
-    $this->assertEquals('3 Column', $threeColumnContent['title']);
+    $this->assertEquals('3 Columns', $threeColumnContent['title']);
     $this->assertEquals(['email-contents'], $threeColumnContent['categories']);
 
     $twoColumnContent = array_pop($blockPatterns);
@@ -34,7 +34,7 @@ class PatternsControllerTest extends \MailPoetTest {
     $this->assertArrayHasKey('categories', $twoColumnContent);
     $this->assertEquals('mailpoet/2-column-content', $twoColumnContent['name']);
     $this->assertStringContainsString('A two-column layout organizes information into sections', $twoColumnContent['content']);
-    $this->assertEquals('2 Column', $twoColumnContent['title']);
+    $this->assertEquals('2 Columns', $twoColumnContent['title']);
     $this->assertEquals(['email-contents'], $twoColumnContent['categories']);
 
     $oneColumnContent = array_pop($blockPatterns);

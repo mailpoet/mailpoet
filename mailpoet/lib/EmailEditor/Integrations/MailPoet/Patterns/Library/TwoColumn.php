@@ -69,6 +69,6 @@ class TwoColumn extends Pattern {
 
   protected function get_title(): string { // phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
     /* translators: Name of a content pattern used as starting content of an email */
-    return __('2 Column', 'mailpoet');
+    return __('2 Columns', 'mailpoet');
   }
 }
