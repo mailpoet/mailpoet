@@ -7,7 +7,7 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Migrator\AppMigration;
 
 /**
- * The plugin from the version 5.5.2 and higher contained a bug when the `&amp;` in links was stored
+ * The plugin from the version 5.5.2 to 5.6.1 contained a bug when the `&amp;` in links was stored
  * as `&amp;amp;` in the database. This migration fixes the issue by replacing `&amp;amp;` with `&amp;`.
  *
  * See https://mailpoet.atlassian.net/browse/MAILPOET-6433

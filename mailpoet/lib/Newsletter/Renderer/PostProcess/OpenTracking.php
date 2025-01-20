@@ -36,9 +36,15 @@ class OpenTracking {
     if (!empty($template)) {
       $template = is_array($template) ? $template : [$template];
       array_map(
-        // Because TinyMCE sometimes converts `&amp;` to `&amp;amp;` we need to replace it back because the previous versions contained a bug which rendered the links correctly.
-        fn($item) => $item->html(str_replace('&amp;amp;', '&amp;', $item->toString(true, true, 1)) . $openTrackingImage),
-        $template,
+        function ($item) use ($openTrackingImage) {
+          $itemHtml = $item->toString(true, true, 1);
+          // Because TinyMCE sometimes converts `&amp;` to `&amp;amp;`
+          //we need to replace it back because the previous versions contained a bug which rendered the links correctly.
+          $itemHtml = str_replace('&amp;amp;', '&amp;', $itemHtml);
+          $item->html($itemHtml . $openTrackingImage);
+          return $item;
+        },
+        $template
       );
     }
   }
