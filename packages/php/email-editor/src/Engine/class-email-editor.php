@@ -91,6 +91,19 @@ class Email_Editor {
 		$this->register_block_templates();
 		$this->register_email_post_sent_status();
 		$this->register_personalization_tags();
+		$this->extend_email_post_api();
+		$is_editor_page = apply_filters( 'mailpoet_is_email_editor_page', false );
+		if ( $is_editor_page ) {
+			$this->settings_controller->init();
+		}
+		add_action( 'enqueue_block_editor_assets', array( $this, 'initialize_admin' ) );
+	}
+
+	/**
+	 * Run editor hooks etc. that are related to WP Admin area.
+	 */
+	public function initialize_admin(): void {
+		do_action( 'mailpoet_email_editor_admin_initialized' );
 		$is_editor_page = apply_filters( 'mailpoet_is_email_editor_page', false );
 		if ( $is_editor_page ) {
 			$this->extend_email_post_api();
