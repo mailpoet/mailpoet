@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 5.6.2 - 2025-01-21 =
+
+- Updated: list of available translations;
+- Fixed: occasional PHP type error in the new email editor.
+
 = 5.6.1 - 2025-01-14 =
 
 - Added: deprecation warnings when directly accessing properties on Newsletter, Subscriber, and SendingQueue entities;
