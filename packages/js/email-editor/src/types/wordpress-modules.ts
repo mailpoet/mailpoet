@@ -18,9 +18,11 @@ declare module '@wordpress/block-editor' {
 }
 
 declare module '@wordpress/editor' {
+	import { ComponentType } from 'react';
 	import * as editorActions from '@wordpress/editor/store/actions';
 	import * as editorSelectors from '@wordpress/editor/store/selectors';
 	import { StoreDescriptor as GenericStoreDescriptor } from '@wordpress/data/build-types/types';
+	import { PostPreviewButton as WPPostPreviewButton } from '@wordpress/editor/components';
 
 	export * from '@wordpress/editor/index';
 
@@ -31,6 +33,15 @@ declare module '@wordpress/editor' {
 		actions: typeof editorActions;
 		selectors: typeof editorSelectors;
 	} >;
+
+	export const PostPreviewButton: ComponentType<
+		WPPostPreviewButton.Props & {
+			className?: string;
+			role: string;
+			textContent: JSX.Element;
+			onPreview: () => void;
+		}
+	>;
 }
 
 // there are no @types/wordpress__interface yet
