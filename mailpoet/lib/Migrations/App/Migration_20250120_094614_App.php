@@ -7,8 +7,8 @@ use MailPoet\Entities\SendingQueueEntity;
 use MailPoet\Migrator\AppMigration;
 
 /**
- * The plugin from the version 5.5.2 to 5.6.1 contained a bug when the `&amp;` in links was stored
- * as `&amp;amp;` in the database. This migration fixes the issue by replacing `&amp;amp;` with `&amp;`.
+ * The plugin from the version 5.5.2 to 5.6.1 contained a bug when we stored links containing &amp; and in some cases also links with `&amp;amp;` in the database.
+ * This migration fixes the issue by replacing `&amp;amp;` with `&amp; and then &amp; with &`.
  *
  * See https://mailpoet.atlassian.net/browse/MAILPOET-6433
  */
@@ -19,7 +19,7 @@ class Migration_20250120_094614_App extends AppMigration {
       $linksTable = $this->entityManager->getClassMetadata(NewsletterLinkEntity::class)->getTableName();
       $this->entityManager->getConnection()->executeQuery("
         UPDATE {$linksTable}
-        SET url = REPLACE(url, '&amp;amp;', '&amp;')
+        SET url = REPLACE( REPLACE(url, '&amp;amp;', '&amp;'), '&amp;', '&')
         WHERE queue_id >= :queue_id;
       ", ['queue_id' => $sendingQueueId]);
     }
