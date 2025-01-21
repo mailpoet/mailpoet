@@ -1,5 +1,13 @@
 == Changelog ==
 
+= 5.6.2 - 2025-01-21 =
+
+- Added: CAPTCHA protection for WP registration forms.
+- Updated: list of available translations;
+- Improved: more detailed System Info report;
+- Improved: retry email automations for unconfirmed recipients.
+- Fixed: occasional PHP type error in the new email editor.
+
 = 5.6.1 - 2025-01-14 =
 
 - Added: deprecation warnings when directly accessing properties on Newsletter, Subscriber, and SendingQueue entities;
