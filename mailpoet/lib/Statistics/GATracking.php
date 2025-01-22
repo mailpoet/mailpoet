@@ -21,7 +21,7 @@ class GATracking {
   private $wp;
 
   /** @var TrackingConfig */
-  private $tackingConfig;
+  private $trackingConfig;
 
   public function __construct(
     NewsletterLinks $newsletterLinks,
@@ -31,11 +31,11 @@ class GATracking {
     $this->secondLevelDomainNames = new SecondLevelDomainNames();
     $this->newsletterLinks = $newsletterLinks;
     $this->wp = $wp;
-    $this->tackingConfig = $trackingConfig;
+    $this->trackingConfig = $trackingConfig;
   }
 
   public function applyGATracking($renderedNewsletter, NewsletterEntity $newsletter, $internalHost = null) {
-    if (!$this->tackingConfig->isEmailTrackingEnabled()) {
+    if (!$this->trackingConfig->isEmailTrackingEnabled()) {
       return $renderedNewsletter;
     }
     if ($newsletter->getType() == NewsletterEntity::TYPE_NOTIFICATION_HISTORY && $newsletter->getParent() instanceof NewsletterEntity) {
