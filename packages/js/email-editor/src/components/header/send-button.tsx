@@ -3,7 +3,6 @@
  */
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
-import { useEntityProp } from '@wordpress/core-data';
 import { applyFilters } from '@wordpress/hooks';
 import { useSelect } from '@wordpress/data';
 import {
@@ -14,30 +13,26 @@ import {
 /**
  * Internal dependencies
  */
-import { MailPoetEmailData, storeName } from '../../store';
+import { storeName } from '../../store';
 import { useEditorMode } from '../../hooks';
 import { recordEvent } from '../../events';
 
 export function SendButton( { validateContent, isContentInvalid } ) {
-	const [ mailpoetEmail ] = useEntityProp(
-		'postType',
-		'mailpoet_email',
-		'mailpoet_data'
-	);
-
 	const { isDirty } = useEntitiesSavedStatesIsDirty();
 
-	const { hasEmptyContent, isEmailSent } = useSelect(
+	const { hasEmptyContent, isEmailSent, urls } = useSelect(
 		( select ) => ( {
 			hasEmptyContent: select( storeName ).hasEmptyContent(),
 			isEmailSent: select( storeName ).isEmailSent(),
+			urls: select( storeName ).getUrls(),
 		} ),
 		[]
 	);
 
-	const mailpoetEmailData: MailPoetEmailData = mailpoetEmail;
 	function sendAction() {
-		window.location.href = `admin.php?page=mailpoet-newsletters#/send/${ mailpoetEmailData.id }`;
+		if ( urls.send ) {
+			window.location.href = urls.send;
+		}
 	}
 
 	const [ editorMode ] = useEditorMode();

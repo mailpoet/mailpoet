@@ -11,6 +11,7 @@ use MailPoet\EmailEditor\Engine\Settings_Controller;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
 use MailPoet\EmailEditor\Engine\User_Theme;
 use MailPoet\EmailEditor\Integrations\MailPoet\EmailEditor as EditorInitController;
+use MailPoet\Entities\NewsletterEntity;
 use MailPoet\Newsletter\NewslettersRepository;
 use MailPoet\Settings\SettingsController as MailPoetSettings;
 use MailPoet\Settings\UserFlagsController;
@@ -75,6 +76,10 @@ class EditorPageRenderer {
     $postId = isset($_GET['post']) ? intval($_GET['post']) : 0;
     $post = $this->wp->getPost($postId);
     if (!$post instanceof \WP_Post || $post->post_type !== EditorInitController::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+      return;
+    }
+    $newsletter = $this->newslettersRepository->findOneBy(['wpPost' => $postId]);
+    if (!$newsletter instanceof NewsletterEntity) {
       return;
     }
     $this->dependencyNotice->checkDependenciesAndEventuallyShowNotice();
@@ -148,6 +153,7 @@ class EditorPageRenderer {
         'user_theme_post_id' => $this->userTheme->get_user_theme_post()->ID,
         'urls' => [
           'listings' => admin_url('admin.php?page=mailpoet-newsletters'),
+          'send' => admin_url('admin.php?page=mailpoet-newsletters#/send/' . $newsletter->getId()),
         ],
       ]
     );
