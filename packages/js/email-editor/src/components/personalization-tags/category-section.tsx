@@ -59,7 +59,7 @@ const CategorySection = ( {
 											onClick={ () => {
 												if ( onInsert ) {
 													onInsert(
-														item.token,
+														item.valueToInsert,
 														false
 													);
 												}
