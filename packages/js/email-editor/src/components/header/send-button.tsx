@@ -4,6 +4,7 @@
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { useEntityProp } from '@wordpress/core-data';
+import { applyFilters } from '@wordpress/hooks';
 import { useSelect } from '@wordpress/data';
 import {
 	// @ts-expect-error No types available for useEntitiesSavedStatesIsDirty
@@ -44,6 +45,11 @@ export function SendButton( { validateContent, isContentInvalid } ) {
 		isDirty;
 
 	const mailpoetEmailData: MailPoetEmailData = mailpoetEmail;
+	const label = applyFilters(
+		'mailpoet_email_editor_send_button_label',
+		__( 'Send', 'mailpoet' )
+	) as string;
+
 	return (
 		<Button
 			variant="primary"
@@ -55,7 +61,7 @@ export function SendButton( { validateContent, isContentInvalid } ) {
 			} }
 			disabled={ isDisabled }
 		>
-			{ __( 'Send', 'mailpoet' ) }
+			{ label }
 		</Button>
 	);
 }
