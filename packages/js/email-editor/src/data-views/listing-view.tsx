@@ -2,35 +2,44 @@
  * External dependencies
  */
 import { DataViews } from '@wordpress/dataviews';
-import { store as coreStore } from '@wordpress/core-data';
+import { useEntityRecords, Post, store as coreStore } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
+import { useState, useMemo } from '@wordpress/element';
 
 export function ListingView() {
-	const { emails } = useSelect( ( select ) => {
-		return {
-			emails: select( coreStore ).getEntityRecords(
-				'postType',
-				'mailpoet_email',
-				{
-					status: 'any',
-					per_page: -1,
-				}
-			)
-		};
-	}, [] );
-
-	const view = {
+	const [view, setView] = useState( {
 		type: 'list',
 		search: '',
 		fields: ['id', 'date'],
 		page: 1,
 		perPage: 10,
 		sort: {
-			field: 'title',
+			field: 'date',
+			direction: 'desc',
 		},
 		titleField: 'title',
 		showTitle: true,
-	};
+		filters: [],
+	} );
+
+	const queryArgs = useMemo( () => {
+		return {
+			status: 'any',
+			per_page: view.perPage,
+			page: view.page,
+			_embed: 'author',
+			order: view.sort?.direction,
+			orderby: view.sort?.field,
+			search: view.search,
+		};
+	}, [ view ] );
+
+	const { records } = useEntityRecords( 'postType', 'mailpoet_email', queryArgs );
+	const { totalRecords } = useSelect( ( select ) => {
+		return {
+			totalRecords: select( coreStore ).getEntityRecordsTotalItems( 'postType', 'mailpoet_email', queryArgs ),
+		}
+	}, [ queryArgs ] );
 
 	const fields = [
 		{
@@ -56,24 +65,25 @@ export function ListingView() {
 		},
 	];
 
-	if ( ! emails ) {
+	if ( records === null || totalRecords === null ) {
 		return null;
 	}
 
-	console.log( 'emails', emails );
+	console.log( 'emails', records );
 
 	return (
 		<DataViews
 			view={ view }
-			onChangeView={ () => {} }
+			// @ts-expect-error Weird error
+			onChangeView={ setView }
 			fields={ fields }
-			data={ emails }
+			data={ records }
 			paginationInfo={ {
-				totalItems: 2,
-				totalPages: 1,
+				totalItems: totalRecords,
+				totalPages: Math.ceil( totalRecords / view.perPage ),
 			} }
 			defaultLayouts={ {} }
-			getItemId={ ( item ) => item.id.toString() }
+			getItemId={ ( item: Post ) => item.id.toString() }
 			actions={ [] }
 		/>
 	);
