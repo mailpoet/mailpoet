@@ -5,7 +5,6 @@ import { useMemo } from '@wordpress/element';
 import { parse } from '@wordpress/blocks';
 import { BlockInstance } from '@wordpress/blocks/index';
 import { useSelect } from '@wordpress/data';
-import { store as blockEditorStore } from '@wordpress/block-editor';
 
 /**
  * Internal dependencies
@@ -16,6 +15,10 @@ import {
 	TemplatePreview,
 	EmailEditorPostType,
 } from '../store';
+
+// Shared reference to an empty array for cases where it is important to avoid
+// returning a new array reference on every invocation
+const EMPTY_ARRAY = [];
 
 /**
  * We need to merge pattern blocks and template blocks for BlockPreview component.
@@ -96,21 +99,12 @@ export function usePreviewTemplates(
 ): [ TemplatePreview[], TemplatePreview[], boolean ] {
 	const { templates, patterns, emailPosts, hasEmailPosts } = useSelect(
 		( select ) => {
-			const contentBlockId =
-				// @ts-expect-error getBlocksByName is not defined in types
-				select( blockEditorStore ).getBlocksByName(
-					'core/post-content'
-				)?.[ 0 ];
-
 			const rawEmailPosts = select( storeName ).getSentEmailEditorPosts();
+
 			return {
 				templates: select( storeName ).getEmailTemplates(),
 				patterns:
-					// @ts-expect-error getPatternsByBlockTypes is not defined in types
-					select( blockEditorStore ).getPatternsByBlockTypes(
-						[ 'core/post-content' ],
-						contentBlockId
-					),
+					select( storeName ).getBlockPatternsForEmailTemplate(),
 				emailPosts: rawEmailPosts,
 				hasEmailPosts: !! ( rawEmailPosts && rawEmailPosts?.length ),
 			};
@@ -128,15 +122,11 @@ export function usePreviewTemplates(
 		if ( parsedCustomEmailContent ) {
 			contentPatterns = [ { blocks: parsedCustomEmailContent } ];
 		} else {
-			contentPatterns = patterns.filter(
-				( pattern ) =>
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-					pattern?.templateTypes?.includes( 'email-template' )
-			);
+			contentPatterns = patterns;
 		}
 
 		if ( ! contentPatterns || ! templates ) {
-			return [];
+			return EMPTY_ARRAY;
 		}
 
 		const templateToPreview = [];
@@ -208,5 +198,9 @@ export function usePreviewTemplates(
 		} ) as unknown as TemplatePreview[];
 	}, [ emailPosts, allTemplates ] );
 
-	return [ allTemplates || [], allEmailPosts || [], hasEmailPosts ];
+	return [
+		allTemplates || EMPTY_ARRAY,
+		allEmailPosts || EMPTY_ARRAY,
+		hasEmailPosts,
+	];
 }

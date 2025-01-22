@@ -1,12 +1,12 @@
 /**
  * External dependencies
  */
-import { createRegistrySelector } from '@wordpress/data';
+import { createRegistrySelector, createSelector } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
 import { store as interfaceStore } from '@wordpress/interface';
 import { store as editorStore } from '@wordpress/editor';
 import { store as preferencesStore } from '@wordpress/preferences';
-import { serialize } from '@wordpress/blocks';
+import { serialize, parse } from '@wordpress/blocks';
 import { BlockInstance } from '@wordpress/blocks/index';
 import { Post } from '@wordpress/core-data/build-types/entity-types/post';
 
@@ -27,6 +27,21 @@ function getContentFromEntity( entity ): string {
 		return entity.content as string;
 	}
 	return '';
+}
+
+const patternsWithParsedBlocks = new WeakMap();
+function enhancePatternWithParsedBlocks( pattern ) {
+	let enhancedPattern = patternsWithParsedBlocks.get( pattern );
+	if ( ! enhancedPattern ) {
+		enhancedPattern = {
+			...pattern,
+			get blocks() {
+				return parse( pattern.content );
+			},
+		};
+		patternsWithParsedBlocks.set( pattern, enhancedPattern );
+	}
+	return enhancedPattern;
 }
 
 export const isFeatureActive = createRegistrySelector(
@@ -162,6 +177,22 @@ export const getSentEmailEditorPosts = createRegistrySelector(
 			?.filter(
 				( post: EmailEditorPostType ) => post?.content?.raw !== '' // filter out empty content
 			) || []
+);
+
+export const getBlockPatternsForEmailTemplate = createRegistrySelector(
+	( select ) =>
+		createSelector(
+			() =>
+				select( coreDataStore )
+					.getBlockPatterns()
+					.filter(
+						( { templateTypes } ) =>
+							Array.isArray( templateTypes ) &&
+							templateTypes.includes( 'email-template' )
+					)
+					.map( enhancePatternWithParsedBlocks ),
+			() => [ select( coreDataStore ).getBlockPatterns() ]
+		)
 );
 
 /**
