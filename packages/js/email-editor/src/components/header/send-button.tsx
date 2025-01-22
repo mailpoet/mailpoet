@@ -35,6 +35,11 @@ export function SendButton( { validateContent, isContentInvalid } ) {
 		[]
 	);
 
+	const mailpoetEmailData: MailPoetEmailData = mailpoetEmail;
+	function sendAction() {
+		window.location.href = `admin.php?page=mailpoet-newsletters#/send/${ mailpoetEmailData.id }`;
+	}
+
 	const [ editorMode ] = useEditorMode();
 
 	const isDisabled =
@@ -44,7 +49,6 @@ export function SendButton( { validateContent, isContentInvalid } ) {
 		isContentInvalid ||
 		isDirty;
 
-	const mailpoetEmailData: MailPoetEmailData = mailpoetEmail;
 	const label = applyFilters(
 		'mailpoet_email_editor_send_button_label',
 		__( 'Send', 'mailpoet' )
@@ -56,7 +60,11 @@ export function SendButton( { validateContent, isContentInvalid } ) {
 			onClick={ () => {
 				recordEvent( 'header_send_button_clicked' );
 				if ( validateContent() ) {
-					window.location.href = `admin.php?page=mailpoet-newsletters#/send/${ mailpoetEmailData.id }`;
+					const action = applyFilters(
+						'mailpoet_email_editor_send_action_callback',
+						sendAction
+					) as () => void;
+					action();
 				}
 			} }
 			disabled={ isDisabled }
