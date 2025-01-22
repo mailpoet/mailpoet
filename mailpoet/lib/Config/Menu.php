@@ -7,6 +7,7 @@ use MailPoet\AdminPages\Pages\AutomationAnalytics;
 use MailPoet\AdminPages\Pages\AutomationEditor;
 use MailPoet\AdminPages\Pages\AutomationTemplates;
 use MailPoet\AdminPages\Pages\DynamicSegments;
+use MailPoet\AdminPages\Pages\EmailDataViews;
 use MailPoet\AdminPages\Pages\ExperimentalFeatures;
 use MailPoet\AdminPages\Pages\FormEditor;
 use MailPoet\AdminPages\Pages\Forms;
@@ -35,6 +36,7 @@ class Menu {
   const NO_PARENT_PAGE_SLUG = 'mailpoet-no-parent';
 
   const EMAILS_PAGE_SLUG = 'mailpoet-newsletters';
+  const EMAIL_DATA_VIEWS_SLUG = 'mailpoet-email-data-views';
   const FORMS_PAGE_SLUG = 'mailpoet-forms';
   const EMAIL_EDITOR_PAGE_SLUG = 'mailpoet-newsletter-editor';
   const FORM_EDITOR_PAGE_SLUG = 'mailpoet-form-editor';
@@ -233,6 +235,18 @@ class Menu {
       [
         $this,
         'newsletters',
+      ]
+    );
+
+    $newslettersPage = $this->wp->addSubmenuPage(
+      self::MAIN_PAGE_SLUG,
+      $this->setPageTitle(__('Emails DV', 'mailpoet')),
+      esc_html__('Emails DV', 'mailpoet'),
+      AccessControl::PERMISSION_MANAGE_EMAILS,
+      self::EMAIL_DATA_VIEWS_SLUG,
+      [
+        $this,
+        'emailDataViews',
       ]
     );
 
@@ -625,6 +639,10 @@ class Menu {
 
   public function newsletters() {
     $this->container->get(Newsletters::class)->render();
+  }
+
+  public function emailDataViews() {
+    $this->container->get(EmailDataViews::class)->render();
   }
 
   public function newletterEditor() {
