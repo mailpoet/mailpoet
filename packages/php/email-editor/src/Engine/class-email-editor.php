@@ -180,7 +180,7 @@ class Email_Editor {
 			'show_ui'                => true,
 			'show_in_menu'           => false,
 			'show_in_nav_menus'      => false,
-			'supports'               => array( 'editor', 'title', 'custom-fields' ), // 'custom-fields' is required for loading meta fields via API.
+			'supports'               => array( 'editor', 'title', 'custom-fields', 'author' ), // 'custom-fields' is required for loading meta fields via API.
 			'has_archive'            => true,
 			'show_in_rest'           => true, // Important to enable Gutenberg editor.
 			'default_rendering_mode' => 'template-locked',
