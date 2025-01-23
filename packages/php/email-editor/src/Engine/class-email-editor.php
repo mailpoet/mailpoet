@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the MailPoet plugin.
+ * This file is part of the MailPoet Email Editor package.
  *
  * @package MailPoet\EmailEditor
  */
@@ -282,16 +282,18 @@ class Email_Editor {
 
 		$email_post_types = array_column( $this->get_post_types(), 'name' );
 
-		if ( in_array( $current_post_type, $email_post_types, true ) && locate_template( array( "single-$current_post_type.php" ) ) !== $template ) {
-			/*
-			 * This is an email post
-			 * AND a 'single $post_type template' is not found on
-			 * theme or child theme directories, so load it
-			 * from our plugin directory.
-			 */
-			return __DIR__ . '/Templates/single-post-template.php';
+		if ( ! in_array( $current_post_type, $email_post_types, true ) ) {
+			return $template;
 		}
 
-		return $template;
+		add_filter(
+			'mailpoet_email_editor_preview_post_template_html',
+			function ( $post ) {
+				// Generate HTML content for email editor post.
+				return $this->send_preview_email->render_html( $post );
+			}
+		);
+
+		return __DIR__ . '/Templates/single-email-post-template.php';
 	}
 }
