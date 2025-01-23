@@ -29,14 +29,24 @@ class Send_Preview_Email {
 	private Renderer $renderer;
 
 	/**
+	 * Instance of the Personalizer class used for rendering personalization tags.
+	 *
+	 * @var Personalizer $personalizer
+	 */
+	private Personalizer $personalizer;
+
+	/**
 	 * Send_Preview_Email constructor.
 	 *
-	 * @param Renderer $renderer renderer instance.
+	 * @param Renderer     $renderer renderer instance.
+	 * @param Personalizer $personalizer personalizer instance.
 	 */
 	public function __construct(
-		Renderer $renderer
+		Renderer $renderer,
+		Personalizer $personalizer
 	) {
-		$this->renderer = $renderer;
+		$this->renderer     = $renderer;
+		$this->personalizer = $personalizer;
 	}
 
 	/**
@@ -83,7 +93,26 @@ class Send_Preview_Email {
 			$language
 		);
 
-		return $rendered_data['html'];
+		return $this->set_personalize_content( $rendered_data['html'] );
+	}
+
+	/**
+	 * Personalize the content.
+	 *
+	 * @param string $content HTML content.
+	 * @return string
+	 */
+	public function set_personalize_content( string $content ): string {
+		$current_user = wp_get_current_user();
+		$subscriber   = ! empty( $current_user->ID ) ? $current_user : null;
+
+		$this->personalizer->set_context(
+			array(
+				'recipient_email' => $subscriber ? $subscriber->user_email : null,
+				'is_user_preview' => true,
+			)
+		);
+		return $this->personalizer->personalize_content( $content );
 	}
 
 	/**

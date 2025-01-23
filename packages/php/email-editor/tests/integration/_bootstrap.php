@@ -14,6 +14,7 @@ use MailPoet\EmailEditor\Engine\Email_Api_Controller;
 use MailPoet\EmailEditor\Engine\Email_Editor;
 use MailPoet\EmailEditor\Engine\Patterns\Patterns;
 use MailPoet\EmailEditor\Engine\PersonalizationTags\Personalization_Tags_Registry;
+use MailPoet\EmailEditor\Engine\Personalizer;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Blocks_Registry;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Postprocessors\Highlighting_Postprocessor;
@@ -273,17 +274,26 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 			}
 		);
 		$container->set(
-			Send_Preview_Email::class,
+			Personalization_Tags_Registry::class,
+			function () {
+				return new Personalization_Tags_Registry();
+			}
+		);
+		$container->set(
+			Personalizer::class,
 			function ( $container ) {
-				return new Send_Preview_Email(
-					$container->get( Renderer::class ),
+				return new Personalizer(
+					$container->get( Personalization_Tags_Registry::class ),
 				);
 			}
 		);
 		$container->set(
-			Personalization_Tags_Registry::class,
-			function () {
-				return new Personalization_Tags_Registry();
+			Send_Preview_Email::class,
+			function ( $container ) {
+				return new Send_Preview_Email(
+					$container->get( Renderer::class ),
+					$container->get( Personalizer::class ),
+				);
 			}
 		);
 		$container->set(

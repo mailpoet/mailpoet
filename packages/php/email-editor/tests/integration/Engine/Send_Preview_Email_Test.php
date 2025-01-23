@@ -60,8 +60,11 @@ class Send_Preview_Email_Test extends \MailPoetTest {
 		$spe = $this->make(
 			Send_Preview_Email::class,
 			array(
-				'renderer'   => $this->renderer_mock,
-				'send_email' => Expected::once( true ),
+				'renderer'                => $this->renderer_mock,
+				'send_email'              => Expected::once( true ),
+				'set_personalize_content' => function ( $param ) {
+					return $param;
+				},
 			)
 		);
 
@@ -91,8 +94,11 @@ class Send_Preview_Email_Test extends \MailPoetTest {
 		$spe = $this->make(
 			Send_Preview_Email::class,
 			array(
-				'renderer'   => $this->renderer_mock,
-				'send_email' => Expected::once( $mailing_status ),
+				'renderer'                => $this->renderer_mock,
+				'send_email'              => Expected::once( $mailing_status ),
+				'set_personalize_content' => function ( $param ) {
+					return $param;
+				},
 			)
 		);
 
