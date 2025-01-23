@@ -58,8 +58,21 @@ class Send_Preview_Email {
 		$email   = $data['email'];
 		$post_id = $data['postId'];
 
-		$post = $this->fetch_post( $post_id );
+		$post    = $this->fetch_post( $post_id );
+		$subject = $post->post_title;
 
+		$email_html_content = $this->render_html( $post );
+
+		return $this->send_email( $email, $subject, $email_html_content );
+	}
+
+	/**
+	 * Renders the HTML content of the post
+	 *
+	 * @param \WP_Post $post The WordPress post object.
+	 * @return string
+	 */
+	public function render_html( $post ): string {
 		$subject  = $post->post_title;
 		$language = get_bloginfo( 'language' );
 
@@ -70,9 +83,7 @@ class Send_Preview_Email {
 			$language
 		);
 
-		$email_html_content = $rendered_data['html'];
-
-		return $this->send_email( $email, $subject, $email_html_content );
+		return $rendered_data['html'];
 	}
 
 	/**
