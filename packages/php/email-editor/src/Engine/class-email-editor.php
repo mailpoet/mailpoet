@@ -108,6 +108,7 @@ class Email_Editor {
 		}
 		add_action( 'rest_api_init', array( $this, 'register_email_editor_api_routes' ) );
 		add_filter( 'mailpoet_email_editor_send_preview_email', array( $this->send_preview_email, 'send_preview_email' ), 11, 1 ); // allow for other filter methods to take precedent.
+		add_filter( 'single_template', array( $this, 'load_email_preview_template' ) );
 	}
 
 	/**
@@ -266,5 +267,31 @@ class Email_Editor {
 			$theme->merge( new WP_Theme_JSON( $email_theme ) );
 		}
 		return $theme;
+	}
+
+	/**
+	 * Use a custom page template for the email editor frontend rendering.
+	 *
+	 * @param string $template post template.
+	 * @return string
+	 */
+	public function load_email_preview_template( string $template ): string {
+		global $post;
+
+		$current_post_type = $post->post_type;
+
+		$email_post_types = array_column( $this->get_post_types(), 'name' );
+
+		if ( in_array( $current_post_type, $email_post_types, true ) && locate_template( array( "single-$current_post_type.php" ) ) !== $template ) {
+			/*
+			 * This is an email post
+			 * AND a 'single $post_type template' is not found on
+			 * theme or child theme directories, so load it
+			 * from our plugin directory.
+			 */
+			return __DIR__ . '/Templates/single-post-template.php';
+		}
+
+		return $template;
 	}
 }
