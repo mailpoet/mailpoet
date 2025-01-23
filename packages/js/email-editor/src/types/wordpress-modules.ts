@@ -37,7 +37,7 @@ declare module '@wordpress/editor' {
 	export const PostPreviewButton: ComponentType<
 		WPPostPreviewButton.Props & {
 			className?: string;
-			role: string;
+			role?: string;
 			textContent: JSX.Element;
 			onPreview: () => void;
 		}

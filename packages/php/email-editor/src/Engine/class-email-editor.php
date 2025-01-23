@@ -288,7 +288,7 @@ class Email_Editor {
 
 		add_filter(
 			'mailpoet_email_editor_preview_post_template_html',
-			function ( $post ) {
+			function () use ( $post ) {
 				// Generate HTML content for email editor post.
 				return $this->send_preview_email->render_html( $post );
 			}

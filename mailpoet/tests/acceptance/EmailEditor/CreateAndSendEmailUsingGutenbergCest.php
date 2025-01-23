@@ -115,11 +115,11 @@ class CreateAndSendEmailUsingGutenbergCest {
     // this issue is not confirmed to be real issue but only on the acceptance test site
     $i->click('div.interface-pinned-items > button'); // close sidebar
     $i->click('.mailpoet-preview-dropdown button[aria-label="Preview"]');
-    $i->waitForElementVisible('//button[text()="Preview in new tab"]');
-    $i->waitForElementClickable('//button[text()="Preview in new tab"]');
-    $i->click('//button[text()="Preview in new tab"]');
+    $i->waitForElementVisible('//a[text()="Preview in new tab"]');
+    $i->waitForElementClickable('//a[text()="Preview in new tab"]');
+    $i->click('//a[text()="Preview in new tab"]');
     $i->switchToNextTab();
-    $i->canSeeInCurrentUrl('endpoint=view_in_browser');
+    $i->canSeeInCurrentUrl('post_type=mailpoet_email');
     $i->canSee('Sample text');
     $i->closeTab();
 
