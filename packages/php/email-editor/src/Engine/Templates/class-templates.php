@@ -126,7 +126,7 @@ class Templates {
 		if ( isset( $response_object['plugin'] ) && $response_object['plugin'] === $this->template_prefix ) {
 			return $this->post_types;
 		}
-		return array();
+		return $response_object['post_types'] ?? array();
 	}
 
 	/**
