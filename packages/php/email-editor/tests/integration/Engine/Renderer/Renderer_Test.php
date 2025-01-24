@@ -9,8 +9,6 @@ declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
 use MailPoet\EmailEditor\Engine\Email_Editor;
-use MailPoet\EmailEditor\Engine\Settings_Controller;
-use MailPoet\EmailEditor\Engine\Templates\Templates;
 use MailPoet\EmailEditor\Engine\Templates\Utils;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
 
@@ -87,11 +85,12 @@ class Renderer_Test extends \MailPoetTest {
 			'Subject',
 			'Preheader content',
 			'en',
-			'noindex,nofollow'
+			'<meta name="robots" content="noindex, nofollow" />'
 		);
+
 		verify( $rendered['html'] )->stringContainsString( 'Subject' );
 		verify( $rendered['html'] )->stringContainsString( 'Preheader content' );
-		verify( $rendered['html'] )->stringContainsString( 'noindex,nofollow' );
+		verify( $rendered['html'] )->stringContainsString( 'noindex, nofollow' );
 		verify( $rendered['html'] )->stringContainsString( 'Hello!' );
 
 		verify( $rendered['text'] )->stringContainsString( 'Preheader content' );
