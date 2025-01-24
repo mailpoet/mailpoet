@@ -79,6 +79,5 @@ We may add, update and delete any of them.
 - Most of the email editor logic heavily depends on the `mailpoet_email` post-type. This is a known issue and we are working to fix it.
 - We use `mailpoet_data` in some section of the codebase. This will be updated.
 - Native email editor implementation for the `preview_url`.
-- Fix the use of MailPoet vendor packages in the Email editor. We currently use `Emogrifier` and `Html2Text`.
 - We currently support post editing context (a post has to be created before we can use the editor). We need to add support for creation context.
 - The content validation in the editor looks for the unsubscribe link tag, which is registered in the MailPoet plugin. We need either introduce generic unsubscribe link tag or move the validation to the MailPoet plugin.
