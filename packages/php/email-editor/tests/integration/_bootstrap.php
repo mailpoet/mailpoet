@@ -261,6 +261,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 					$container->get( Process_Manager::class ),
 					$container->get( Blocks_Registry::class ),
 					$container->get( Settings_Controller::class ),
+					new \MailPoet\EmailEditor\Integrations\MailPoet\MailPoetCssInliner(),
 					$container->get( Theme_Controller::class ),
 				);
 			}

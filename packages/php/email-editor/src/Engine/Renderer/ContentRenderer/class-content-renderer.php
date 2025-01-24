@@ -8,9 +8,9 @@
 declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer\ContentRenderer;
 
+use MailPoet\EmailEditor\Engine\Renderer\Css_Inliner;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
-use MailPoetVendor\Pelago\Emogrifier\CssInliner;
 use WP_Block_Template;
 use WP_Post;
 
@@ -49,23 +49,33 @@ class Content_Renderer {
 	const CONTENT_STYLES_FILE = 'content.css';
 
 	/**
+	 * CSS inliner
+	 *
+	 * @var Css_Inliner
+	 */
+	private Css_Inliner $css_inliner;
+
+	/**
 	 * Content_Renderer constructor.
 	 *
 	 * @param Process_Manager     $preprocess_manager Preprocess manager.
 	 * @param Blocks_Registry     $blocks_registry Blocks registry.
 	 * @param Settings_Controller $settings_controller Settings controller.
+	 * @param Css_Inliner         $css_inliner Css inliner.
 	 * @param Theme_Controller    $theme_controller Theme controller.
 	 */
 	public function __construct(
 		Process_Manager $preprocess_manager,
 		Blocks_Registry $blocks_registry,
 		Settings_Controller $settings_controller,
+		Css_Inliner $css_inliner,
 		Theme_Controller $theme_controller
 	) {
 		$this->process_manager     = $preprocess_manager;
 		$this->blocks_registry     = $blocks_registry;
 		$this->settings_controller = $settings_controller;
 		$this->theme_controller    = $theme_controller;
+		$this->css_inliner         = $css_inliner;
 	}
 
 	/**
@@ -223,6 +233,6 @@ class Content_Renderer {
 
 		$styles = '<style>' . wp_strip_all_tags( (string) apply_filters( 'mailpoet_email_content_renderer_styles', $styles, $post ) ) . '</style>';
 
-		return CssInliner::fromHtml( $styles . $html )->inlineCss()->render();  // TODO: Install CssInliner.
+		return $this->css_inliner->from_html( $styles . $html )->inline_css()->render();
 	}
 }
