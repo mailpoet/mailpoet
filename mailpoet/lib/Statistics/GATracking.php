@@ -95,7 +95,7 @@ class GATracking {
 
       $processedLink = $this->wp->applyFilters(
         'mailpoet_ga_tracking_link',
-        $this->wp->addQueryArg($linkParams, $link),
+        urldecode($this->wp->addQueryArg($linkParams, $link)),
         $extractedLink['link'],
         $linkParams,
         $extractedLink['type']
