@@ -25,13 +25,13 @@ use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Spacing_P
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Preprocessors\Typography_Preprocessor;
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Process_Manager;
 use MailPoet\EmailEditor\Engine\Renderer\Renderer;
+use MailPoet\EmailEditor\Engine\Send_Preview_Email;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
 use MailPoet\EmailEditor\Engine\User_Theme;
 use MailPoet\EmailEditor\Integrations\Core\Initializer;
 use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
-use MailPoet\EmailEditor\Engine\Send_Preview_Email;
 
 if ( (bool) getenv( 'MULTISITE' ) === true ) {
 	// REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated.
@@ -49,6 +49,8 @@ if ( (bool) getenv( 'MULTISITE' ) === true ) {
 $console = new \Codeception\Lib\Console\Output( array() );
 $console->writeln( 'Loading WP core... (' . $wp_load_file . ')' );
 require_once $wp_load_file;
+
+require_once __DIR__ . '/../../../../../mailpoet/lib/EmailEditor/Integrations/MailPoet/MailPoetCssInliner.php';
 
 /**
  * Base class for MailPoet tests.
@@ -269,6 +271,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 				return new Renderer(
 					$container->get( Content_Renderer::class ),
 					$container->get( Templates::class ),
+					new \MailPoet\EmailEditor\Integrations\MailPoet\MailPoetCssInliner(),
 					$container->get( Theme_Controller::class ),
 				);
 			}
