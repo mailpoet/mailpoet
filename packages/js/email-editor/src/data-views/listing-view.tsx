@@ -9,8 +9,8 @@ import {
 } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import { useState, useMemo } from '@wordpress/element';
-import { Icon } from '@wordpress/components';
-import { edit, external } from '@wordpress/icons';
+import { Icon, Button } from '@wordpress/components';
+import { edit, external, trash } from '@wordpress/icons';
 
 export function ListingView() {
 	const [ view, setView ] = useState< View >( {
@@ -26,6 +26,7 @@ export function ListingView() {
 		},
 		titleField: 'title',
 		showTitle: true,
+		showMedia: true
 	} );
 
 	const queryArgs = useMemo( () => {
@@ -159,13 +160,34 @@ export function ListingView() {
 		{
 			id: 'preview-tab',
 			label: 'Preview in a new tab',
-			icon: <Icon icon={ external } />,
+			icon: <Icon icon={external}/>,
 			supportsBulk: false,
-			callback: ( items ) => {
+			callback: (items) => {
 				window
-					.open( items[ 0 ].mailpoet_data.preview_url, '_blank' )
+					.open(items[0].mailpoet_data.preview_url, '_blank')
 					.focus();
 			},
+		},
+		{
+			id: 'delete',
+			label: 'Delete',
+			icon: <Icon icon={ trash } />,
+			supportsBulk: true,
+			RenderModal: ( { items, closeModal, onActionPerformed } ) => (
+				<div>
+					<p>Are you sure you want to delete { items.length } item(s)?</p>
+					<Button
+						variant="primary"
+						onClick={() => {
+							console.log( 'Deleting items:', items );
+							onActionPerformed();
+							closeModal();
+						}}
+					>
+						Confirm Delete
+					</Button>
+				</div>
+			)
 		},
 	];
 
@@ -199,6 +221,7 @@ export function ListingView() {
 					showMedia: true,
 				},
 			} }
+			isItemClickable={ () => false } // Click on the row
 			getItemId={ ( item: Post ) => item.id.toString() }
 		/>
 	);
