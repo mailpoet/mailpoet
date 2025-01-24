@@ -31,7 +31,7 @@ class GATrackingTest extends \MailPoetTest {
     $this->tracking = $this->diContainer->get(GATracking::class);
     $this->internalHost = 'newsletters.mailpoet.com';
     $this->gaCampaign = 'SpringEmail';
-    $this->link = add_query_arg(['foo' => 'bar', 'baz' => 'xyz'], 'https://www.mailpoet.com/');
+    $this->link = add_query_arg(['foo' => 'bar', 'baz' => 'xyz', 'quux' => '[subscriber:email]'], 'https://www.mailpoet.com/');
     $this->renderedNewsletter = [
       'html' => '<p><a href="' . $this->link . '">Click here</a>. <a href="http://somehost.com/fff/?abc=123&email=[subscriber:email]">Do not process this</a> [link:some_link_shortcode]</p>',
       'text' => '[Click here](' . $this->link . '). [Do not process this](http://somehost.com/fff/?abc=123&email=[subscriber:email]) [link:some_link_shortcode]',
@@ -86,10 +86,16 @@ class GATrackingTest extends \MailPoetTest {
     verify($result['html'])->stringContainsString('utm_campaign=' . urlencode($this->gaCampaign));
   }
 
-  public function testItKeepsShorcodes() {
+  public function testItKeepsShortcodes() {
     $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
     verify($result['text'])->stringContainsString('email=[subscriber:email]');
     verify($result['html'])->stringContainsString('email=[subscriber:email]');
+  }
+
+  public function testItPreservesShortcodesForSiteLinks() {
+    $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
+    verify($result['text'])->stringContainsString('quux=[subscriber:email]');
+    verify($result['html'])->stringContainsString('quux=[subscriber:email]');
   }
 
   public function testItDoesntBreakSpecialHtmlComments() {
