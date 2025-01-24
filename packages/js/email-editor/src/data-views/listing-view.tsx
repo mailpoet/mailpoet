@@ -11,8 +11,11 @@ import { useSelect } from '@wordpress/data';
 import { useState, useMemo } from '@wordpress/element';
 import { Icon, Button } from '@wordpress/components';
 import { edit, external, trash } from '@wordpress/icons';
+import { BlockPreview } from '@wordpress/block-editor';
+import { parse } from '@wordpress/blocks';
 
 export function ListingView() {
+
 	const [ view, setView ] = useState< View >( {
 		type: 'table',
 		search: '',
@@ -26,7 +29,7 @@ export function ListingView() {
 		},
 		titleField: 'title',
 		showTitle: true,
-		showMedia: true
+		mediaField: 'featured_media',
 	} );
 
 	const queryArgs = useMemo( () => {
@@ -78,6 +81,14 @@ export function ListingView() {
 				return item.item.title.raw;
 			},
 			Edit: 'text',
+		},
+		{
+			id: 'featured_media',
+			label: 'Featured Media',
+			enableHiding: true,
+			render: ( item ) => {
+				return <BlockPreview blocks={ parse(item.item.content.raw)} viewportWidth={ 900 } minHeight={ 300 }/>;
+			}
 		},
 		{
 			id: 'id',
