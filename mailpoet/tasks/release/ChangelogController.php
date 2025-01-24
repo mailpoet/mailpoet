@@ -72,9 +72,9 @@ class ChangelogController {
   }
 
   private function updateReadme($heading, $changesList) {
-    if (file_exists(dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'CHANGELOG.md')) {
+    if (file_exists(dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'changelog.txt')) {
       // for the free plugin, in the premium, we don't use the changelog file
-      $this->addChangelogEntryToFile($heading, $changesList, dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'CHANGELOG.md');
+      $this->addChangelogEntryToFile($heading, $changesList, dirname($this->readmeFile) . DIRECTORY_SEPARATOR . 'changelog.txt');
       $this->removePreviousChangelogFromReadmeFile();
     }
     $this->addChangelogEntryToFile($heading, $changesList, $this->readmeFile);

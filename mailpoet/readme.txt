@@ -229,4 +229,4 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 * Improved: retry email automations for unconfirmed recipients.
 * Fixed: occasional PHP type error in the new email editor.
 
-[See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/CHANGELOG.md)
+[See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)
