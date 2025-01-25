@@ -53,21 +53,35 @@ class GATrackingTest extends \MailPoetTest {
 
     $settings->set('tracking.level', TrackingConfig::LEVEL_PARTIAL);
     $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
-    verify($result['text'])->stringContainsString(add_query_arg([
-      'utm_source' => 'mailpoet',
-      'utm_medium' => 'email',
-      'utm_source_platform' => 'mailpoet',
-      'utm_campaign' => $this->gaCampaign,
-    ], $this->link));
+    verify($result['text'])->stringContainsString(
+      urldecode(
+        add_query_arg(
+          [
+            'utm_source' => 'mailpoet',
+            'utm_medium' => 'email',
+            'utm_source_platform' => 'mailpoet',
+            'utm_campaign' => $this->gaCampaign,
+          ],
+          $this->link
+        )
+      )
+    );
 
     $settings->set('tracking.level', TrackingConfig::LEVEL_FULL);
     $result = $this->tracking->applyGATracking($this->renderedNewsletter, $this->newsletter, $this->internalHost);
-    verify($result['text'])->stringContainsString(add_query_arg([
-      'utm_source' => 'mailpoet',
-      'utm_medium' => 'email',
-      'utm_source_platform' => 'mailpoet',
-      'utm_campaign' => $this->gaCampaign,
-    ], $this->link));
+    verify($result['text'])->stringContainsString(
+      urldecode(
+        add_query_arg(
+          [
+            'utm_source' => 'mailpoet',
+            'utm_medium' => 'email',
+            'utm_source_platform' => 'mailpoet',
+            'utm_campaign' => $this->gaCampaign,
+          ],
+          $this->link
+        )
+      )
+    );
   }
 
   public function testItGetsGACampaignFromParentNewsletterForPostNotifications() {
