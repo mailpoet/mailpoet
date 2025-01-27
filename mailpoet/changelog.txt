@@ -1,5 +1,12 @@
 == Changelog ==
 
+= 5.6.3 - 2025-01-27 =
+* Improved: Purchased-related automation templates;
+* Fixed: Removed some unwanted templates from the template selector;
+* Fixed: The new email editor is not working on some web hostings;
+* Fixed: Inserting personalization tags attributes;
+* Fixed: The swap template behaviour.
+
 = 5.6.2 - 2025-01-21 =
 
 - Added: CAPTCHA protection for WP registration forms.
