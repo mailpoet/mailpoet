@@ -9,13 +9,20 @@ import {
 } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import { useState, useMemo } from '@wordpress/element';
-import { Icon, Button } from '@wordpress/components';
+import { Icon, Button, Modal } from '@wordpress/components';
 import { edit, external, trash } from '@wordpress/icons';
-import { BlockPreview } from '@wordpress/block-editor';
 import { parse } from '@wordpress/blocks';
+import { QueryArgs } from '@wordpress/url/build-types/get-query-args';
+// @ts-expect-error No types available for this component
+import { BlockPreview } from '@wordpress/block-editor'; // eslint-disable-line
+
+/**
+ * Internal dependencies
+ */
+import { EmailForm } from './email-form';
 
 export function ListingView() {
-
+	const [ quickEditItem, setQuickEditItem ] = useState( null );
 	const [ view, setView ] = useState< View >( {
 		type: 'table',
 		search: '',
@@ -33,7 +40,7 @@ export function ListingView() {
 	} );
 
 	const queryArgs = useMemo( () => {
-		const filters = {};
+		const filters: QueryArgs = {};
 		view.filters.forEach( ( filter ) => {
 			if ( filter.field === 'status' && filter.operator === 'isAny' ) {
 				filters.status = filter.value;
@@ -43,7 +50,7 @@ export function ListingView() {
 			}
 		} );
 		return {
-			status: 'any',
+			status: 'any,sent',
 			per_page: view.perPage,
 			page: view.page,
 			_embed: 'author',
@@ -87,8 +94,14 @@ export function ListingView() {
 			label: 'Featured Media',
 			enableHiding: true,
 			render: ( item ) => {
-				return <BlockPreview blocks={ parse(item.item.content.raw)} viewportWidth={ 900 } minHeight={ 300 }/>;
-			}
+				return (
+					<BlockPreview
+						blocks={ parse( item.item.content.raw ) }
+						viewportWidth={ 900 }
+						minHeight={ 300 }
+					/>
+				);
+			},
 		},
 		{
 			id: 'id',
@@ -102,7 +115,9 @@ export function ListingView() {
 			render: ( item ) => {
 				const author = item.item._embedded?.author?.[ 0 ] || null;
 				const avatarUrl = author?.avatar_urls?.[ 24 ] || null;
-				if ( ! author ) return '-';
+				if ( ! author ) {
+					return null;
+				}
 				return (
 					<>
 						{ avatarUrl && (
@@ -169,13 +184,22 @@ export function ListingView() {
 			isPrimary: true,
 		},
 		{
+			id: 'quick-edit',
+			label: 'Quick Edit',
+			icon: <Icon icon={ edit } />,
+			supportsBulk: false,
+			callback: ( items ) => {
+				setQuickEditItem( items[ 0 ] );
+			},
+		},
+		{
 			id: 'preview-tab',
 			label: 'Preview in a new tab',
-			icon: <Icon icon={external}/>,
+			icon: <Icon icon={ external } />,
 			supportsBulk: false,
-			callback: (items) => {
+			callback: ( items ) => {
 				window
-					.open(items[0].mailpoet_data.preview_url, '_blank')
+					.open( items[ 0 ].mailpoet_data.preview_url, '_blank' )
 					.focus();
 			},
 		},
@@ -186,19 +210,22 @@ export function ListingView() {
 			supportsBulk: true,
 			RenderModal: ( { items, closeModal, onActionPerformed } ) => (
 				<div>
-					<p>Are you sure you want to delete { items.length } item(s)?</p>
+					<p>
+						Are you sure you want to delete { items.length }{ ' ' }
+						item(s)?
+					</p>
 					<Button
 						variant="primary"
-						onClick={() => {
-							console.log( 'Deleting items:', items );
+						onClick={ () => {
+							console.log( 'Deleting items:', items ); // eslint-disable-line
 							onActionPerformed();
 							closeModal();
-						}}
+						} }
 					>
 						Confirm Delete
 					</Button>
 				</div>
-			)
+			),
 		},
 	];
 
@@ -207,33 +234,42 @@ export function ListingView() {
 		fields: [ 'title' ],
 	};
 
-	console.log( 'emails', records );
-
 	return (
-		<DataViews
-			view={ view }
-			form={ form }
-			actions={ actions }
-			onChangeView={ setView }
-			fields={ fields }
-			data={ records ?? [] }
-			paginationInfo={ {
-				totalItems: totalRecords,
-				totalPages: Math.ceil( totalRecords / view.perPage ),
-			} }
-			defaultLayouts={ {
-				table: {
-					showMedia: false,
-				},
-				grid: {
-					showMedia: true,
-				},
-				list: {
-					showMedia: true,
-				},
-			} }
-			isItemClickable={ () => false } // Click on the row
-			getItemId={ ( item: Post ) => item.id.toString() }
-		/>
+		<>
+			<DataViews
+				view={ view }
+				form={ form }
+				actions={ actions }
+				onChangeView={ setView }
+				// @ts-expect-error There is a weird issue with render prop of field author
+				fields={ fields }
+				data={ records ?? [] }
+				paginationInfo={ {
+					totalItems: totalRecords,
+					totalPages: Math.ceil( totalRecords / view.perPage ),
+				} }
+				defaultLayouts={ {
+					table: {
+						showMedia: false,
+					},
+					grid: {
+						showMedia: true,
+					},
+					list: {
+						showMedia: true,
+					},
+				} }
+				getItemId={ ( item: Post ) => item.id.toString() }
+				onItemClick={ ( item ) => {
+					// @todo Investigate why this is not working
+					console.log( 'Clicked on item', item ); // eslint-disable-line
+				} }
+			/>
+			{ quickEditItem && (
+				<Modal onRequestClose={ () => setQuickEditItem( null ) }>
+					<EmailForm email={ quickEditItem } />
+				</Modal>
+			) }
+		</>
 	);
 }
