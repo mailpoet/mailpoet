@@ -8,6 +8,7 @@ use MailPoet\Automation\Engine\Data\NextStep;
 use MailPoet\Automation\Engine\Data\Step;
 use MailPoet\Automation\Engine\Data\Subject;
 use MailPoet\Automation\Engine\Storage\AutomationRunStorage;
+use MailPoet\Automation\Engine\Storage\AutomationStorage;
 use MailPoet\Automation\Integrations\WooCommerce\Subjects\AbandonedCartSubject;
 use MailPoet\Automation\Integrations\WooCommerce\Triggers\AbandonedCart\AbandonedCartTrigger;
 use MailPoet\Cron\Workers\Automations\AbandonedCartWorker;
@@ -29,6 +30,9 @@ class AbandonedCartTriggerTest extends \MailPoetTest {
   /** @var AutomationRunStorage */
   private $automationRunStorage;
 
+  /** @var AutomationStorage */
+  private $automationStorage;
+
   /** @var int */
   private $productId;
 
@@ -44,6 +48,7 @@ class AbandonedCartTriggerTest extends \MailPoetTest {
   public function _before() {
     $this->testee = $this->diContainer->get(AbandonedCartTrigger::class);
     $this->automationRunStorage = $this->diContainer->get(AutomationRunStorage::class);
+    $this->automationStorage = $this->diContainer->get(AutomationStorage::class);
     $this->tasksRepository = $this->diContainer->get(ScheduledTasksRepository::class);
     $this->abandonedCartWorker = $this->diContainer->get(AbandonedCartWorker::class);
     $this->productId = $this->createProduct('abandoned cart trigger test product');
@@ -111,6 +116,66 @@ class AbandonedCartTriggerTest extends \MailPoetTest {
     $abandonedCartSubject = current($run->getSubjects(AbandonedCartSubject::KEY));
     $this->assertInstanceOf(Subject::class, $abandonedCartSubject);
     $this->assertSame([$this->productId], $abandonedCartSubject->getArgs()['product_ids']);
+  }
+
+  public function testTasksDoNotGetStuckIfAutomationDisabled() {
+    $wait = 1;
+    $automation = $this->createAutomation($wait);
+    $this->testee->registerHooks();
+    $this->assertEmpty($this->tasksRepository->findFutureScheduledByType(AbandonedCartWorker::TASK_TYPE));
+
+    $expectedScheduledTime = new Carbon();
+    $expectedScheduledTime->addMinutes($wait);
+
+    // Add something to the cart.
+    $this->assertIsString(WC()->cart->add_to_cart($this->productId));
+    $scheduledTasks = $this->tasksRepository->findFutureScheduledByType(AbandonedCartWorker::TASK_TYPE);
+    $this->assertCount(1, $scheduledTasks);
+    $task = current($scheduledTasks);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+
+    // Disable automation
+    $automation->setStatus(Automation::STATUS_DEACTIVATING);
+    $this->automationStorage->updateAutomation($automation);
+
+    // When the task gets executed, a run is created.
+    $this->assertTrue($this->abandonedCartWorker->processTaskStrategy($task, 1));
+
+    $oneMinutePassed = $expectedScheduledTime->subMinutes($wait);
+    $task->setCreatedAt($oneMinutePassed->subSeconds(60));
+    $this->assertTrue($this->abandonedCartWorker->processTaskStrategy($task, 1));
+    $runs = $this->automationRunStorage->getAutomationRunsForAutomation($automation);
+    $this->assertCount(0, $runs);
+  }
+
+  public function testTasksDoNotGetStuckIfAutomationSubscribersDeleted() {
+    $wait = 1;
+    $automation = $this->createAutomation($wait);
+    $this->testee->registerHooks();
+    $this->assertEmpty($this->tasksRepository->findFutureScheduledByType(AbandonedCartWorker::TASK_TYPE));
+
+    $expectedScheduledTime = new Carbon();
+    $expectedScheduledTime->addMinutes($wait);
+
+    // Add something to the cart.
+    $this->assertIsString(WC()->cart->add_to_cart($this->productId));
+
+    // Delete subscriber directly from the DB
+    $subscriberTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $this->entityManager->getConnection()->executeStatement("TRUNCATE TABLE $subscriberTable");
+    $this->entityManager->clear();
+
+    // Get scheduled task for abandoned cart
+    $scheduledTasks = $this->tasksRepository->findFutureScheduledByType(AbandonedCartWorker::TASK_TYPE);
+    $this->assertCount(1, $scheduledTasks);
+    $task = current($scheduledTasks);
+    $this->assertInstanceOf(ScheduledTaskEntity::class, $task);
+
+    $oneMinutePassed = $expectedScheduledTime->subMinutes($wait);
+    $task->setCreatedAt($oneMinutePassed->subSeconds(60));
+    $this->assertTrue($this->abandonedCartWorker->processTaskStrategy($task, 1));
+    $runs = $this->automationRunStorage->getAutomationRunsForAutomation($automation);
+    $this->assertCount(0, $runs);
   }
 
   public function testItCancelsTheRunCreationWhenCartIsEmptied() {
