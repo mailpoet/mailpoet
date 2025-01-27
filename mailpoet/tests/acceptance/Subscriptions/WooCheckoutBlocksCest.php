@@ -189,6 +189,12 @@ class WooCheckoutBlocksCest {
   private function orderProduct(\AcceptanceTester $i, string $userEmail, bool $doRegister = true, bool $doSubscribe = true): void {
     $i->addProductToCart($this->product);
     $i->amOnPage("/?p={$this->checkoutPostId}");
+
+    // refresh the page to fix https://github.com/woocommerce/woocommerce/issues/54805
+    // this can be removed after the above is released
+    // should be done in Woo 9.7 (release date 24th Feb 2025)
+    $i->reloadPage();
+
     $this->fillBlocksCustomerInfo($i, $userEmail);
     if ($doSubscribe) {
       $settings = (ContainerWrapper::getInstance())->get(SettingsController::class);
