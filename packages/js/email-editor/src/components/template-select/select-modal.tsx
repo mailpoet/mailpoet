@@ -59,7 +59,7 @@ function SelectTemplateBody( {
 				setSelectedCategory( TemplateCategories[ 0 ].name );
 			}
 		}, 1000 ); // using setTimeout to ensure the template styles are available before block preview
-	}, [ hasEmailPosts ] );
+	}, [ hasEmailPosts, hideRecentCategory ] );
 
 	return (
 		<div className="block-editor-block-patterns-explorer">
