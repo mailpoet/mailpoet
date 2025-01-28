@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { DataViews, View } from '@wordpress/dataviews';
+import { DataViews, View } from '@wordpress/dataviews/wp';
 import {
 	useEntityRecords,
 	Post,

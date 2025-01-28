@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { DataForm } from '@wordpress/dataviews';
+import { DataForm } from '@wordpress/dataviews/wp';
 import { useEntityRecord } from '@wordpress/core-data';
 import { Post } from '@wordpress/core-data/build-types/entity-types/post';
 
