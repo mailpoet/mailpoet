@@ -94,8 +94,8 @@ export function Header() {
 	const { validateContent, isInvalid } = useContentValidation();
 
 	const { dirtyEntityRecords } = useEntitiesSavedStatesIsDirty();
-	const hasNonEmailEdits = dirtyEntityRecords.some(
-		( entity ) => entity.name !== 'mailpoet_email'
+	const hasTemplatesEdits = dirtyEntityRecords.some(
+		( entity ) => entity.name === 'wp_template'
 	);
 
 	const preventDefault = ( event ) => {
@@ -238,7 +238,7 @@ export function Header() {
 			<div className="editor-header__settings edit-post-header__settings">
 				<SaveEmailButton />
 				<PreviewDropdown />
-				{ hasNonEmailEdits ? (
+				{ hasTemplatesEdits ? (
 					<SaveAllButton />
 				) : (
 					<SendButton
