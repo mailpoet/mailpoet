@@ -17,7 +17,7 @@ import {
 	getCursorPosition,
 	replacePersonalizationTagsWithHTMLComments,
 } from './rich-text-utils';
-import { storeName } from '../../store';
+import { storeName, editorCurrentPostType } from '../../store';
 import { PersonalizationTagsPopover } from './personalization-tags-popover';
 import { recordEvent, recordEventOnce } from '../../events';
 
@@ -30,7 +30,7 @@ export function RichTextWithButton( {
 } ) {
 	const [ mailpoetEmailData ] = useEntityProp(
 		'postType',
-		'mailpoet_email',
+		editorCurrentPostType,
 		'mailpoet_data'
 	);
 

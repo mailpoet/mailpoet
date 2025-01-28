@@ -24,7 +24,11 @@ import {
 /**
  * Internal dependencies
  */
-import { storeName, mainSidebarDocumentTab } from './constants';
+import {
+	storeName,
+	mainSidebarDocumentTab,
+	editorCurrentPostType,
+} from './constants';
 import {
 	SendingPreviewStatus,
 	State,
@@ -99,7 +103,7 @@ export function* saveEditedEmail() {
 
 	const result = yield dispatch( coreDataStore ).saveEditedEntityRecord(
 		'postType',
-		'mailpoet_email',
+		editorCurrentPostType,
 		postId,
 		{ throwOnError: true }
 	);
@@ -135,14 +139,14 @@ export function* updateEmailMailPoetProperty( name: string, value: string ) {
 	// There can be a better way how to get the edited post data
 	const editedPost = select( coreDataStore ).getEditedEntityRecord(
 		'postType',
-		'mailpoet_email',
+		editorCurrentPostType,
 		postId
 	);
 	// @ts-expect-error Property 'mailpoet_data' does not exist on type 'Updatable<Attachment<any>>'.
 	const mailpoetData = editedPost?.mailpoet_data || {};
 	yield dispatch( coreDataStore ).editEntityRecord(
 		'postType',
-		'mailpoet_email',
+		editorCurrentPostType,
 		postId,
 		{
 			mailpoet_data: {
@@ -159,7 +163,7 @@ export const setTemplateToPost =
 		const postId = registry.select( storeName ).getEmailPostId();
 		registry
 			.dispatch( coreDataStore )
-			.editEntityRecord( 'postType', 'mailpoet_email', postId, {
+			.editEntityRecord( 'postType', editorCurrentPostType, postId, {
 				template: templateSlug,
 			} );
 	};

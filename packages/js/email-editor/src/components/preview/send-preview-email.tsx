@@ -22,6 +22,7 @@ import {
 	MailPoetEmailData,
 	SendingPreviewStatus,
 	storeName,
+	editorCurrentPostType,
 } from '../../store';
 import { recordEvent, recordEventOnce } from '../../events';
 
@@ -43,7 +44,7 @@ function RawSendPreviewEmail() {
 
 	const [ mailpoetEmailData ] = useEntityProp(
 		'postType',
-		'mailpoet_email',
+		editorCurrentPostType,
 		'mailpoet_data'
 	) as [ MailPoetEmailData, unknown, unknown ];
 

@@ -105,6 +105,7 @@ class Email_Editor {
 		if ( $is_editor_page ) {
 			$this->extend_email_post_api();
 			$this->settings_controller->init();
+			add_filter( 'admin_footer', array( $this, 'load_js_vars' ), 24 ); // @phpstan-ignore-line -- Filter callback return statement is missing.
 		}
 		add_action( 'rest_api_init', array( $this, 'register_email_editor_api_routes' ) );
 		add_filter( 'mailpoet_email_editor_send_preview_email', array( $this->send_preview_email, 'send_preview_email' ), 11, 1 ); // allow for other filter methods to take precedent.
@@ -295,5 +296,29 @@ class Email_Editor {
 		);
 
 		return __DIR__ . '/Templates/single-email-post-template.php';
+	}
+
+	/**
+	 * Load JS vars
+	 *
+	 * @return void
+	 * @throws \InvalidArgumentException If the post-type is invalid.
+	 */
+	public function load_js_vars() {
+		global $post;
+
+		$email_editor_post_type_names      = array_column( $this->get_post_types(), 'name' );
+		$email_editor_current_post_type    = $post->post_type;
+		$current_post_is_email_editor_type = in_array( $email_editor_current_post_type, $email_editor_post_type_names, true );
+
+		if ( ! $current_post_is_email_editor_type ) {
+			throw new \InvalidArgumentException( esc_html__( 'Invalid email post type', 'mailpoet' ) );
+		}
+
+		?>
+		<script type="text/javascript"> <?php // phpcs:ignore ?>
+			window.mailpoet_email_editor_current_post_type = <?php echo wp_json_encode( $email_editor_current_post_type ); ?>;
+		</script>
+		<?php
 	}
 }

@@ -10,6 +10,7 @@ import { store as noticesStore } from '@wordpress/notices';
 /**
  * Internal dependencies
  */
+import { editorCurrentPostType } from '../../store';
 import { recordEvent } from '../../events';
 
 export function TrashModal( {
@@ -31,7 +32,7 @@ export function TrashModal( {
 		recordEvent( 'trash_modal_move_to_trash_button_clicked' );
 		const success = await deleteEntityRecord(
 			'postType',
-			'mailpoet_email',
+			editorCurrentPostType,
 			postId as unknown as string,
 			{},
 			{ throwOnError: false }
@@ -41,7 +42,7 @@ export function TrashModal( {
 		} else {
 			const lastError = getLastEntityDeleteError(
 				'postType',
-				'mailpoet_email',
+				editorCurrentPostType,
 				postId
 			);
 			// Already deleted.

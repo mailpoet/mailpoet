@@ -10,9 +10,9 @@ import { PostPreviewButton } from '@wordpress/editor';
 /**
  * Internal dependencies
  */
-import { SendPreviewEmail } from './send-preview-email';
 import { storeName } from '../../store';
 import { recordEvent } from '../../events';
+import { SendPreviewEmail } from './send-preview-email';
 
 export function PreviewDropdown() {
 	const previewDeviceType = useSelect(

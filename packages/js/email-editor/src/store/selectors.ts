@@ -13,7 +13,7 @@ import { Post } from '@wordpress/core-data/build-types/entity-types/post';
 /**
  * Internal dependencies
  */
-import { storeName } from './constants';
+import { storeName, editorCurrentPostType } from './constants';
 import { State, Feature, EmailTemplate, EmailEditorPostType } from './types';
 
 function getContentFromEntity( entity ): string {
@@ -59,7 +59,7 @@ export const hasEdits = createRegistrySelector( ( select ) => (): boolean => {
 	const postId = select( storeName ).getEmailPostId();
 	return !! select( coreDataStore ).hasEditsForEntityRecord(
 		'postType',
-		'mailpoet_email',
+		editorCurrentPostType,
 		postId
 	);
 } );
@@ -69,7 +69,7 @@ export const isEmailLoaded = createRegistrySelector(
 		const postId = select( storeName ).getEmailPostId();
 		return !! select( coreDataStore ).getEntityRecord(
 			'postType',
-			'mailpoet_email',
+			editorCurrentPostType,
 			postId
 		);
 	}
@@ -79,7 +79,7 @@ export const isSaving = createRegistrySelector( ( select ) => (): boolean => {
 	const postId = select( storeName ).getEmailPostId();
 	return !! select( coreDataStore ).isSavingEntityRecord(
 		'postType',
-		'mailpoet_email',
+		editorCurrentPostType,
 		postId
 	);
 } );
@@ -89,7 +89,7 @@ export const isEmpty = createRegistrySelector( ( select ) => (): boolean => {
 
 	const post: EmailEditorPostType = select( coreDataStore ).getEntityRecord(
 		'postType',
-		'mailpoet_email',
+		editorCurrentPostType,
 		postId
 	);
 	if ( ! post ) {
@@ -111,7 +111,7 @@ export const hasEmptyContent = createRegistrySelector(
 
 		const post = select( coreDataStore ).getEntityRecord(
 			'postType',
-			'mailpoet_email',
+			editorCurrentPostType,
 			postId
 		);
 		if ( ! post ) {
@@ -130,7 +130,7 @@ export const isEmailSent = createRegistrySelector(
 
 		const post = select( coreDataStore ).getEntityRecord(
 			'postType',
-			'mailpoet_email',
+			editorCurrentPostType,
 			postId
 		);
 		if ( ! post ) {
@@ -154,7 +154,7 @@ export const getEditedEmailContent = createRegistrySelector(
 		const postId = select( storeName ).getEmailPostId();
 		const record = select( coreDataStore ).getEditedEntityRecord(
 			'postType',
-			'mailpoet_email',
+			editorCurrentPostType,
 			postId
 		) as unknown as
 			| { content: string | unknown; blocks: BlockInstance[] }
@@ -170,7 +170,7 @@ export const getEditedEmailContent = createRegistrySelector(
 export const getSentEmailEditorPosts = createRegistrySelector(
 	( select ) => () =>
 		select( coreDataStore )
-			.getEntityRecords( 'postType', 'mailpoet_email', {
+			.getEntityRecords( 'postType', editorCurrentPostType, {
 				per_page: 30, // show a maximum of 30 for now
 				status: 'publish,sent', // show only sent emails
 			} )
@@ -290,13 +290,13 @@ export const getEmailTemplates = createRegistrySelector(
 		select( coreDataStore )
 			.getEntityRecords( 'postType', 'wp_template', {
 				per_page: -1,
-				post_type: 'mailpoet_email',
+				post_type: editorCurrentPostType,
 			} )
 			// We still need to filter the templates because, in some cases, the API also returns custom templates
 			// ignoring the post_type filter in the query
 			?.filter( ( template ) =>
 				// @ts-expect-error Missing property in type
-				template.post_types.includes( 'mailpoet_email' )
+				template.post_types.includes( editorCurrentPostType )
 			)
 );
 

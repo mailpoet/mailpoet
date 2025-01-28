@@ -13,7 +13,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import { storeName } from '../../store';
+import { storeName, editorCurrentPostType } from '../../store';
 import { TrashModal } from './trash-modal';
 import { recordEvent } from '../../events';
 
@@ -32,7 +32,7 @@ export function MoreMenu(): JSX.Element {
 	);
 	const [ status, setStatus ] = useEntityProp(
 		'postType',
-		'mailpoet_email',
+		editorCurrentPostType,
 		'status'
 	);
 	const { saveEditedEmail, updateEmailMailPoetProperty } =

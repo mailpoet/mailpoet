@@ -12,7 +12,7 @@ import '@wordpress/format-library'; // Enables text formatting capabilities
 import { initBlocks } from './blocks';
 import { initializeLayout } from './layouts/flex-email';
 import { InnerEditor } from './components/block-editor';
-import { createStore, storeName } from './store';
+import { createStore, storeName, editorCurrentPostType } from './store';
 import { initHooks } from './editor-hooks';
 import { KeyboardShortcuts } from './components/keybord-shortcuts';
 import { initEventCollector } from './events';
@@ -33,7 +33,7 @@ function Editor() {
 			<InnerEditor
 				initialEdits={ [] }
 				postId={ postId }
-				postType="mailpoet_email"
+				postType={ editorCurrentPostType }
 				settings={ settings }
 			/>
 		</StrictMode>

@@ -16,6 +16,7 @@ import {
 	storeName,
 	TemplateCategory,
 	TemplatePreview,
+	editorCurrentPostType,
 } from '../../store';
 import { TemplateList } from './template-list';
 import { TemplateCategoriesListSidebar } from './template-categories-list-sidebar';
@@ -94,7 +95,7 @@ export function SelectTemplateModal( {
 	const hasTemplates = templates?.length > 0;
 
 	const handleTemplateSelection = ( template: TemplatePreview ) => {
-		const templateIsPostContent = template.type === 'mailpoet_email';
+		const templateIsPostContent = template.type === editorCurrentPostType;
 
 		const postContent = template.template as unknown as EmailEditorPostType;
 

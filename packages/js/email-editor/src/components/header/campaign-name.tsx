@@ -17,7 +17,7 @@ import {
 /**
  * Internal dependencies
  */
-import { storeName } from '../../store';
+import { storeName, editorCurrentPostType } from '../../store';
 import { recordEvent, recordEventOnce } from '../../events';
 
 // @see https://github.com/WordPress/gutenberg/blob/5e0ffdbc36cb2e967dfa6a6b812a10a2e56a598f/packages/edit-post/src/components/header/document-actions/index.js
@@ -34,7 +34,7 @@ export function CampaignName() {
 
 	const [ emailTitle = '', setTitle ] = useEntityProp(
 		'postType',
-		'mailpoet_email',
+		editorCurrentPostType,
 		'title'
 	);
 

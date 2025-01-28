@@ -10,8 +10,9 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
-import { RichTextWithButton } from '../personalization-tags/rich-text-with-button';
+import { editorCurrentPostType } from '../../store';
 import { recordEvent } from '../../events';
+import { RichTextWithButton } from '../personalization-tags/rich-text-with-button';
 
 const previewTextMaxLength = 150;
 const previewTextRecommendedLength = 80;
@@ -19,7 +20,7 @@ const previewTextRecommendedLength = 80;
 export function DetailsPanel() {
 	const [ mailpoetEmailData ] = useEntityProp(
 		'postType',
-		'mailpoet_email',
+		editorCurrentPostType,
 		'mailpoet_data'
 	);
 

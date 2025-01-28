@@ -268,6 +268,6 @@ export type MailPoetEmailPostContentExtended = {
 };
 
 export type EmailEditorPostType = Omit< Post, 'type' > & {
-	type: 'mailpoet_email';
+	type: string;
 	mailpoet_data?: MailPoetEmailPostContentExtended;
 };
