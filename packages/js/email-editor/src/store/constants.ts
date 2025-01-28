@@ -7,3 +7,4 @@ export const stylesSidebarId = 'email-editor/editor/styles';
 
 export const editorCurrentPostType =
 	window.mailpoet_email_editor_current_post_type;
+export const editorCurrentPostId = window.mailpoet_email_editor_current_post_id;

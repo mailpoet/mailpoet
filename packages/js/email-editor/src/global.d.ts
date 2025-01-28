@@ -16,4 +16,5 @@ interface Window {
 		editor_theme: unknown; // Can't import type in global.d.ts. Typed in getEditorTheme() in store/settings.ts
 	};
 	mailpoet_email_editor_current_post_type: string;
+	mailpoet_email_editor_current_post_id: number;
 }

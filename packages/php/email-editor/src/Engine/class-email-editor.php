@@ -317,7 +317,8 @@ class Email_Editor {
 
 		?>
 		<script type="text/javascript"> <?php // phpcs:ignore ?>
-			window.mailpoet_email_editor_current_post_type = <?php echo wp_json_encode( $email_editor_current_post_type ); ?>;
+			window.mailpoet_email_editor_current_post_type = '<?php echo esc_js( $email_editor_current_post_type ); ?>';
+			window.mailpoet_email_editor_current_post_id = <?php echo esc_js( $post->ID ); ?>;
 		</script>
 		<?php
 	}

@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { mainSidebarDocumentTab } from './constants';
+import { mainSidebarDocumentTab, editorCurrentPostId } from './constants';
 import { State } from './types';
 import {
 	getEditorSettings,
@@ -12,8 +12,7 @@ import {
 } from './settings';
 
 export function getInitialState(): State {
-	const searchParams = new URLSearchParams( window.location.search );
-	const postId = parseInt( searchParams.get( 'post' ), 10 );
+	const postId = editorCurrentPostId;
 	return {
 		inserterSidebar: {
 			isOpened: false,
