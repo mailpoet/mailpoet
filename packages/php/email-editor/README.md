@@ -75,8 +75,6 @@ We may add, update and delete any of them.
 | `mailpoet_email_editor_send_preview_email` | `Array` $postData                         | `boolean` Result of processing. Was email sent successfully? | Allows override of the send preview mail function. Folks may choose to use custom implementation                                                                    |
 
 ## TODO
-- The editor may not start if the URL starts with just `wp-admin/post-new.php?post_type=mailpoet_email` without the post id.
-- Most of the email editor logic heavily depends on the `mailpoet_email` post-type. This is a known issue and we are working to fix it.
 - We use `mailpoet_data` in some section of the codebase. This will be updated.
 - Native email editor implementation for the `preview_url`.
 - We currently support post editing context (a post has to be created before we can use the editor). We need to add support for creation context.
