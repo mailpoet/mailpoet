@@ -84,11 +84,6 @@ class ChangelogController {
     $headingPrefix = explode(self::HEADING_GLUE, $heading)[0];
     $headersDelimiter = "\n";
 
-    if (strpos($fileName, '.md') !== false) {
-      $headersDelimiter .= "\n";
-      $changesList = preg_replace("/^\*/m", "-", $changesList);
-    }
-
     $fileContents = file_get_contents($fileName);
     $changelog = "$heading$headersDelimiter$changesList";
 
