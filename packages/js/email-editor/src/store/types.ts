@@ -166,6 +166,7 @@ export type EmailEditorLayout = {
 };
 
 export type EmailEditorUrls = {
+	send?: string;
 	listings: string;
 };
 

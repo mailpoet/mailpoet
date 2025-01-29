@@ -15,6 +15,9 @@ const transactionalTriggers = [
   'woocommerce-subscriptions:subscription-status-changed',
   'woocommerce-subscriptions:trial-ended',
   'woocommerce-subscriptions:trial-started',
+  'woocommerce:buys-from-a-tag',
+  'woocommerce:buys-from-a-category',
+  'woocommerce:buys-a-product',
 ];
 
 export function isTransactional(step: Step): boolean {

@@ -7,6 +7,7 @@ import { step as AbandonedCartTrigger } from './steps/abandoned-cart';
 import { MailPoet } from '../../../mailpoet';
 import { step as BuysAProductTrigger } from './steps/buys-a-product';
 import { step as BuysFromACategory } from './steps/buys-from-a-category';
+import { step as BuysFromATag } from './steps/buys-from-a-tag';
 import { step as MadeAReview } from './steps/made-a-review';
 // Insert new imports here
 
@@ -21,6 +22,7 @@ export const initialize = (): void => {
   registerStepType(AbandonedCartTrigger);
   registerStepType(BuysAProductTrigger);
   registerStepType(BuysFromACategory);
+  registerStepType(BuysFromATag);
   registerStepType(MadeAReview);
   // Insert new steps here
 };

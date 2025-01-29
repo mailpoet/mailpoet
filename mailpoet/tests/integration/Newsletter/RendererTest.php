@@ -686,6 +686,41 @@ class RendererTest extends \MailPoetTest {
     verify(preg_match('/<\!--\[if \!mso\]><\!-- -->\s*<table.*<td class=\"mailpoet\_table\_button\".+<\/td>.*<\/table>\s*<\!--<\!\[endif\]-->/s', $template['html']))->equals(1);
   }
 
+  public function testItFixesAmpersandsInLinks() {
+    $body = json_decode(
+      (string)file_get_contents(dirname(__FILE__) . '/RendererTestData.json'),
+      true
+    );
+    $this->assertIsArray($body);
+    $links = '<a href="https://example.com?a=1&b=2">Link1</a>'; // Ok link
+    $links .= '<a href="https://example.com?c=1&amp;d=2">Link2</a>'; // Link provided by TinyMCE via node.innerHTML
+    $links .= '<a href="https://example.com?e=1&amp;amp;f=2">Link3</a>'; // Link pasted via smart paste and provided by TinyMCE via node.innerHTML
+
+    $body = [
+      'content' => [
+        'type' => 'container',
+        'blocks' => [[
+          'type' => 'container',
+          'styles' => ['block' => []],
+          'blocks' => [[
+            'type' => 'container',
+            'styles' => ['block' => []],
+            'blocks' => [[
+              'type' => 'text',
+              'text' => '<p>' . $links . '</p>',
+            ]],
+          ]],
+        ]],
+      ],
+    ];
+
+    $this->newsletter->setBody($body);
+    $template = $this->renderer->render($this->newsletter);
+    $this->assertStringContainsString('https://example.com?a=1&b=2', $template['html']);
+    $this->assertStringContainsString('https://example.com?c=1&d=2', $template['html']);
+    $this->assertStringContainsString('https://example.com?e=1&f=2', $template['html']);
+  }
+
   // Test case for MAILPOET-3660
   public function testItRendersPostContentWhenMultipleQuotesInPostTitle() {
     $postTitle = 'This \"is \'a\" test';

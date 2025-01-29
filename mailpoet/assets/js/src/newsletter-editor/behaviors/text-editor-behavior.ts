@@ -73,10 +73,16 @@ BehaviorsLookup.TextEditorBehavior = Marionette.Behavior.extend({
             return url;
           }
 
-          return this.documentBaseURI.toAbsolute(
+          const result = this.documentBaseURI.toAbsolute(
             url,
             this.options.get('remove_script_host'),
           );
+          // Because TinyMCE contains an issue when inserted URLs ampersands are encoded twice
+          // We remove one of them to store the URL correctly into the database.
+          // related GH issues:
+          // - https://github.com/tinymce/tinymce/issues/9774
+          // - https://github.com/tinymce/tinymce/issues/9618
+          return result.replace('&amp;', '&');
         },
 
         plugins: this.options.plugins,

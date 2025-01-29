@@ -36,8 +36,12 @@ class OpenTracking {
     if (!empty($template)) {
       $template = is_array($template) ? $template : [$template];
       array_map(
-        fn($item) => $item->html($item->toString(true, true, 1) . $openTrackingImage),
-        $template,
+        function ($item) use ($openTrackingImage) {
+          $itemHtml = $item->toString(true, true, 1);
+          $item->html($itemHtml . $openTrackingImage);
+          return $item;
+        },
+        $template
       );
     }
   }

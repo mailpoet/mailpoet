@@ -216,6 +216,15 @@ class Renderer {
     foreach ($templateDom->query('img') as $image) {
       $image->src = str_replace(' ', '%20', $image->src);
     }
+    foreach ($templateDom->query('a') as $anchor) {
+      // Fix for a TinyMCE bug in smart paste which encodes & as &amp; which is then additionally encoded to &amp;amp;
+      // when saving the text block content in the editor
+      $href = str_replace('&amp;amp;', '&amp;', $anchor->href);
+      // Replace &amp; with & in the href attributes of anchors. URLs are encoded when TinyMCE extracts Text block content via content.innerHTML.
+      // Links containing &amp; work when placed in an anchor tag in a browser, but they don't work when we redirect to them for example in tracking.
+      $href = str_replace('&amp;', '&', $href);
+      $anchor->href = $href;
+    }
     $template = $templateDom->__toString();
     $template = $this->wp->applyFilters(
       self::FILTER_POST_PROCESS,
