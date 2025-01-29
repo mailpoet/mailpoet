@@ -46,6 +46,7 @@
 		"@wordpress/keycodes": "^4.0.0",
 		"@wordpress/media-utils": "^5.0.0",
 		"@wordpress/notices": "^5.0.0",
+		"@wordpress/plugins": "^7.16.0",
 		"@wordpress/preferences": "^4.0.0",
 		"@wordpress/private-apis": "^1.0.0",
 		"@wordpress/rich-text": "^7.14.0",
