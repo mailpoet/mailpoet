@@ -63,7 +63,7 @@
  * For the WYSIWYG experience we don't want to display any margins between blocks in the editor
  */
 .wp-block {
-	clear: both; // for ensuring that floated elements (images) are cleared
+	clear: both;
 }
 
 /*
