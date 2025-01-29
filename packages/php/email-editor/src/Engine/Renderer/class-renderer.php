@@ -8,10 +8,12 @@
 declare(strict_types = 1);
 namespace MailPoet\EmailEditor\Engine\Renderer;
 
+require_once __DIR__ . '/../../../vendor/autoload.php';
+
 use MailPoet\EmailEditor\Engine\Renderer\ContentRenderer\Content_Renderer;
 use MailPoet\EmailEditor\Engine\Templates\Templates;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
-use MailPoetVendor\Html2Text\Html2Text;
+use Soundasleep\Html2Text;
 use WP_Style_Engine;
 
 /**
@@ -143,8 +145,8 @@ class Renderer {
 	 */
 	private function render_text_version( $template ) {
 		$template = ( mb_detect_encoding( $template, 'UTF-8', true ) ) ? $template : mb_convert_encoding( $template, 'UTF-8', mb_list_encodings() );
-		$result   = Html2Text::convert( $template );  // TODO: Install Html2Text.
-		if ( false === $result ) {
+		$result   = Html2Text::convert( $template );
+		if ( ! $result ) {
 			return '';
 		}
 
