@@ -27,7 +27,7 @@ import {
  * Internal dependencies
  */
 
-import { storeName } from '../../store';
+import { storeName, editorCurrentPostType } from '../../store';
 import { MoreMenu } from './more-menu';
 import { PreviewDropdown } from '../preview';
 import { SaveEmailButton } from './save-email-button';
@@ -94,8 +94,8 @@ export function Header() {
 	const { validateContent, isInvalid } = useContentValidation();
 
 	const { dirtyEntityRecords } = useEntitiesSavedStatesIsDirty();
-	const hasTemplatesEdits = dirtyEntityRecords.some(
-		( entity ) => entity.name === 'wp_template'
+	const hasNonEmailEdits = dirtyEntityRecords.some(
+		( entity ) => entity.name !== editorCurrentPostType
 	);
 
 	const preventDefault = ( event ) => {
@@ -238,7 +238,7 @@ export function Header() {
 			<div className="editor-header__settings edit-post-header__settings">
 				<SaveEmailButton />
 				<PreviewDropdown />
-				{ hasTemplatesEdits ? (
+				{ hasNonEmailEdits ? (
 					<SaveAllButton />
 				) : (
 					<SendButton
