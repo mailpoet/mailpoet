@@ -81,6 +81,7 @@ class Settings_Controller {
 		$settings['__experimentalFeatures'] = $theme_settings;
 		// Controls which alignment options are available for blocks.
 		$settings['supportsLayout']              = true; // Allow using default layouts.
+		$settings['supportsTemplateMode']        = true; // Allow template mode.
 		$settings['__unstableIsBlockBasedTheme'] = true; // For default setting this to true disables wide and full alignments.
 		return $settings;
 	}

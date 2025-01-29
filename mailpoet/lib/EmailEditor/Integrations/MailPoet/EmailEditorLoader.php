@@ -3,20 +3,25 @@
 namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\Config\Env;
+use MailPoet\EmailEditor\Engine\Settings_Controller;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditorLoader {
 
   private WPFunctions $wp;
+  private Settings_Controller $settingsController;
 
   public function __construct(
-    WPFunctions $wp
+    WPFunctions $wp,
+    Settings_Controller $settingsController
   ) {
     $this->wp = $wp;
+    $this->settingsController = $settingsController;
   }
 
   public function initialize(): void {
     $this->wp->addAction('mailpoet_email_editor_admin_initialized', [$this, 'initializeAdmin']);
+    $this->wp->addFilter('block_editor_settings_all', [$this, 'blockEditorSettings'], 10, 2);
   }
 
   public function initializeAdmin(): void {
@@ -44,5 +49,13 @@ class EmailEditorLoader {
       $assetsParams['version'],
       true
     );
+  }
+
+  public function blockEditorSettings($settings, $editorContext) {
+    if (!$this->isEmailEditorPage()) {
+      return $settings;
+    }
+    $controllerSettings = $this->settingsController->get_settings();
+    return $controllerSettings;
   }
 }
