@@ -34,7 +34,7 @@ class CouponPreProcessor {
     if ($preview) {
       return $blocks;
     }
-    
+
     $generated = $this->ensureCouponForBlocks($blocks, $newsletter);
     $body = $newsletter->getBody();
 
@@ -146,18 +146,27 @@ class CouponPreProcessor {
     }, $items);
   }
 
+  private function generateRandomSegment($length) {
+    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $segment = '';
+
+    for ($i = 0; $i < $length; $i++) {
+      $randomIndex = rand(0, strlen($characters) - 1);
+      $segment .= $characters[$randomIndex];
+    }
+
+    return $segment;
+  }
+
   /**
    * Generates Coupon code for XXXX-XXXXXX-XXXX pattern
    */
   private function generateRandomCode(): string {
-    $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    $length = strlen($chars);
-    return sprintf(
-      "%s-%s-%s",
-      substr($chars, rand(0, $length - 5), 4),
-      substr($chars, rand(0, $length - 8), 7),
-      substr($chars, rand(0, $length - 5), 4)
-    );
+    $part1 = $this->generateRandomSegment(4);
+    $part2 = $this->generateRandomSegment(6);
+    $part3 = $this->generateRandomSegment(4);
+
+    return $part1 . '-' . $part2 . '-' . $part3;
   }
 
   private function shouldGenerateCoupon(array $block): bool {
