@@ -5,6 +5,10 @@ export const mainSidebarDocumentTab = 'document';
 export const mainSidebarBlockTab = 'block';
 export const stylesSidebarId = 'email-editor/editor/styles';
 
+// these values are set once on a page load, so it's fine to keep them here.
 export const editorCurrentPostType =
-	window.mailpoet_email_editor_current_post_type;
-export const editorCurrentPostId = window.mailpoet_email_editor_current_post_id;
+	window.MailPoetEmailEditor.current_post_type;
+export const editorCurrentPostId = parseInt(
+	window.MailPoetEmailEditor.current_post_id,
+	10
+);

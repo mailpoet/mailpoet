@@ -105,7 +105,6 @@ class Email_Editor {
 		if ( $is_editor_page ) {
 			$this->extend_email_post_api();
 			$this->settings_controller->init();
-			add_filter( 'admin_footer', array( $this, 'load_js_vars' ), 24 ); // @phpstan-ignore-line -- Filter callback return statement is missing.
 		}
 		add_action( 'rest_api_init', array( $this, 'register_email_editor_api_routes' ) );
 		add_filter( 'mailpoet_email_editor_send_preview_email', array( $this->send_preview_email, 'send_preview_email' ), 11, 1 ); // allow for other filter methods to take precedent.
@@ -271,13 +270,31 @@ class Email_Editor {
 	}
 
 	/**
+	 * Get the current post object
+	 *
+	 * @return array|mixed|WP_Post|null
+	 */
+	public function get_current_post() {
+		if ( isset( $_GET['post'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$current_post = get_post( intval( $_GET['post'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- data valid
+		} else {
+			$current_post = $GLOBALS['post'];
+		}
+		return $current_post;
+	}
+
+	/**
 	 * Use a custom page template for the email editor frontend rendering.
 	 *
 	 * @param string $template post template.
 	 * @return string
 	 */
 	public function load_email_preview_template( string $template ): string {
-		global $post;
+		$post = $this->get_current_post();
+
+		if ( ! $post instanceof \WP_Post ) {
+			return $template;
+		}
 
 		$current_post_type = $post->post_type;
 
@@ -296,30 +313,5 @@ class Email_Editor {
 		);
 
 		return __DIR__ . '/Templates/single-email-post-template.php';
-	}
-
-	/**
-	 * Load JS vars
-	 *
-	 * @return void
-	 * @throws \InvalidArgumentException If the post-type is invalid.
-	 */
-	public function load_js_vars() {
-		global $post;
-
-		$email_editor_post_type_names      = array_column( $this->get_post_types(), 'name' );
-		$email_editor_current_post_type    = $post->post_type;
-		$current_post_is_email_editor_type = in_array( $email_editor_current_post_type, $email_editor_post_type_names, true );
-
-		if ( ! $current_post_is_email_editor_type ) {
-			throw new \InvalidArgumentException( esc_html__( 'Invalid email post type', 'mailpoet' ) );
-		}
-
-		?>
-		<script type="text/javascript"> <?php // phpcs:ignore ?>
-			window.mailpoet_email_editor_current_post_type = '<?php echo esc_js( $email_editor_current_post_type ); ?>';
-			window.mailpoet_email_editor_current_post_id = <?php echo esc_js( $post->ID ); ?>;
-		</script>
-		<?php
 	}
 }

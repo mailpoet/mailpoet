@@ -14,7 +14,7 @@ interface Window {
 		email_styles: unknown; // Can't import type in global.d.ts. Typed in getEmailStyles() in store/settings.ts
 		editor_layout: unknown; // Can't import type in global.d.ts. Typed in getEmailLayout() in store/settings.ts
 		editor_theme: unknown; // Can't import type in global.d.ts. Typed in getEditorTheme() in store/settings.ts
+		current_post_type: string;
+		current_post_id: string;
 	};
-	mailpoet_email_editor_current_post_type: string;
-	mailpoet_email_editor_current_post_id: number;
 }

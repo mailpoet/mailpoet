@@ -75,7 +75,9 @@ class EditorPageRenderer {
   public function render() {
     $postId = isset($_GET['post']) ? intval($_GET['post']) : 0;
     $post = $this->wp->getPost($postId);
-    if (!$post instanceof \WP_Post || $post->post_type !== EditorInitController::MAILPOET_EMAIL_POST_TYPE) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+    $currentPostType = $post->post_type; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+    if (!$post instanceof \WP_Post || $currentPostType !== EditorInitController::MAILPOET_EMAIL_POST_TYPE) {
       return;
     }
     $newsletter = $this->newslettersRepository->findOneBy(['wpPost' => $postId]);
@@ -142,6 +144,8 @@ class EditorPageRenderer {
       'mailpoet_email_editor',
       'MailPoetEmailEditor',
       [
+        'current_post_type' => esc_js($currentPostType),
+        'current_post_id' => $post->ID,
         'json_api_root' => esc_js($jsonAPIRoot),
         'api_token' => esc_js($token),
         'api_version' => esc_js($apiVersion),
