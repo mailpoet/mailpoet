@@ -25,6 +25,11 @@
 	width: 100%;
 }
 
+.editor-styles-wrapper > .is-root-container {
+	width: 660px;
+	margin: 0 auto;
+}
+
 /*
  * Email Editor specific styles for vertical gap between blocks in column and group.
  * This is needed because we disable layout for core/group, core/column and core/columns blocks, and .is-layout-flex is not applied.

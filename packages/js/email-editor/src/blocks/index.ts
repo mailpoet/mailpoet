@@ -41,3 +41,19 @@ export function initBlocks() {
 	alterSupportConfiguration();
 	registerCoreBlocks();
 }
+
+
+export function initBlocksUnified() {
+	deactivateStackOnMobile();
+	hideExpandOnClick();
+	disableImageFilter();
+	disableCertainRichTextFormats();
+	disableColumnsLayout();
+	disableGroupVariations();
+	enhanceButtonBlock();
+	enhanceButtonsBlock();
+	enhanceColumnBlock();
+	enhanceColumnsBlock();
+	enhancePostContentBlock();
+	alterSupportConfiguration();
+}

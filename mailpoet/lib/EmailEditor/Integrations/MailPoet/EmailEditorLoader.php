@@ -4,19 +4,27 @@ namespace MailPoet\EmailEditor\Integrations\MailPoet;
 
 use MailPoet\Config\Env;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
+use MailPoet\EmailEditor\Engine\Theme_Controller;
+use MailPoet\EmailEditor\Engine\User_Theme;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditorLoader {
 
   private WPFunctions $wp;
   private Settings_Controller $settingsController;
+  private Theme_Controller $themeController;
+  private User_Theme $userTheme;
 
   public function __construct(
     WPFunctions $wp,
-    Settings_Controller $settingsController
+    Settings_Controller $settingsController,
+    Theme_Controller $themeController,
+    User_Theme $userTheme
   ) {
     $this->wp = $wp;
     $this->settingsController = $settingsController;
+    $this->themeController = $themeController;
+    $this->userTheme = $userTheme;
   }
 
   public function initialize(): void {
@@ -48,6 +56,15 @@ class EmailEditorLoader {
       $assetsParams['dependencies'],
       $assetsParams['version'],
       true
+    );
+    $this->wp->wpLocalizeScript(
+      'mailpoet_email_editor',
+      'MailPoetEmailEditor',
+      [
+        'editor_settings' => $this->settingsController->get_settings(),
+        'editor_theme' => $this->themeController->get_base_theme()->get_raw_data(),
+        'user_theme_post_id' => $this->userTheme->get_user_theme_post()->ID,
+      ]
     );
   }
 
