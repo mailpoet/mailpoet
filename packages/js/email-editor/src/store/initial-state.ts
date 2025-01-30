@@ -3,13 +3,7 @@
  */
 import { mainSidebarDocumentTab, editorCurrentPostId } from './constants';
 import { State } from './types';
-import {
-	getEditorSettings,
-	getCdnUrl,
-	isPremiumPluginActive,
-	getEditorTheme,
-	getUrls,
-} from './settings';
+import { getEditorSettings, getEditorTheme, getUrls } from './settings';
 
 export function getInitialState(): State {
 	const postId = editorCurrentPostId;
@@ -30,8 +24,6 @@ export function getInitialState(): State {
 			globalStylesPostId: window.MailPoetEmailEditor.user_theme_post_id,
 		},
 		autosaveInterval: 60,
-		cdnUrl: getCdnUrl(),
-		isPremiumPluginActive: isPremiumPluginActive(),
 		urls: getUrls(),
 		preview: {
 			deviceType: 'Desktop',

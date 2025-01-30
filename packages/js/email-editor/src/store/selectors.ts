@@ -353,14 +353,6 @@ export function getAutosaveInterval(
 	return state.autosaveInterval;
 }
 
-export function getCdnUrl( state: State ): State[ 'cdnUrl' ] {
-	return state.cdnUrl;
-}
-
-export function isPremiumPluginActive( state: State ): boolean {
-	return state.isPremiumPluginActive;
-}
-
 export function getTheme( state: State ): State[ 'theme' ] {
 	return state.theme;
 }

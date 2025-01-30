@@ -195,9 +195,7 @@ export type State = {
 		globalStylesPostId: number | null;
 	};
 	autosaveInterval: number;
-	cdnUrl: string;
 	urls: EmailEditorUrls;
-	isPremiumPluginActive: boolean;
 	preview: {
 		deviceType: string;
 		toEmail: string;
