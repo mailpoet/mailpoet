@@ -317,7 +317,6 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 					$container->get( Email_Api_Controller::class ),
 					$container->get( Templates::class ),
 					$container->get( Patterns::class ),
-					$container->get( Settings_Controller::class ),
 					$container->get( Send_Preview_Email::class ),
 					$container->get( Personalization_Tags_Registry::class ),
 				);

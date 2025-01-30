@@ -42,13 +42,6 @@ class Email_Editor {
 	 */
 	private Patterns $patterns;
 	/**
-	 * Property for the settings controller.
-	 *
-	 * @var Settings_Controller Settings controller.
-	 */
-	private Settings_Controller $settings_controller;
-
-	/**
 	 * Property for the send preview email controller.
 	 *
 	 * @var Send_Preview_Email Send Preview controller.
@@ -68,7 +61,6 @@ class Email_Editor {
 	 * @param Email_Api_Controller          $email_api_controller Email API controller.
 	 * @param Templates                     $templates Templates.
 	 * @param Patterns                      $patterns Patterns.
-	 * @param Settings_Controller           $settings_controller Settings controller.
 	 * @param Send_Preview_Email            $send_preview_email Preview email controller.
 	 * @param Personalization_Tags_Registry $personalization_tags_controller Personalization tags registry that allows initializing personalization tags.
 	 */
@@ -76,14 +68,12 @@ class Email_Editor {
 		Email_Api_Controller $email_api_controller,
 		Templates $templates,
 		Patterns $patterns,
-		Settings_Controller $settings_controller,
 		Send_Preview_Email $send_preview_email,
 		Personalization_Tags_Registry $personalization_tags_controller
 	) {
 		$this->email_api_controller          = $email_api_controller;
 		$this->templates                     = $templates;
 		$this->patterns                      = $patterns;
-		$this->settings_controller           = $settings_controller;
 		$this->send_preview_email            = $send_preview_email;
 		$this->personalization_tags_registry = $personalization_tags_controller;
 	}
@@ -104,7 +94,6 @@ class Email_Editor {
 		$is_editor_page = apply_filters( 'mailpoet_is_email_editor_page', false );
 		if ( $is_editor_page ) {
 			$this->extend_email_post_api();
-			$this->settings_controller->init();
 		}
 		add_action( 'rest_api_init', array( $this, 'register_email_editor_api_routes' ) );
 		add_filter( 'mailpoet_email_editor_send_preview_email', array( $this->send_preview_email, 'send_preview_email' ), 11, 1 ); // allow for other filter methods to take precedent.
