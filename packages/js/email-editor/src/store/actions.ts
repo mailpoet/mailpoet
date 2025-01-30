@@ -209,6 +209,9 @@ export function* requestSendingNewsletterPreview( email: string ) {
 			state: {
 				sendingPreviewStatus: SendingPreviewStatus.ERROR,
 				isSendingPreviewEmail: false,
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				errorMessage: JSON.stringify( errorResponse?.error ),
 			},
 		};
 	}

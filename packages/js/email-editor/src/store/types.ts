@@ -202,6 +202,7 @@ export type State = {
 		isModalOpened: boolean;
 		isSendingPreviewEmail: boolean;
 		sendingPreviewStatus: SendingPreviewStatus | null;
+		errorMessage?: string;
 	};
 	personalizationTags: {
 		list: PersonalizationTag[];

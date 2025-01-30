@@ -4,7 +4,7 @@
 import { Button, Modal, TextControl } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { check, Icon } from '@wordpress/icons';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	useEffect,
 	useRef,
@@ -13,12 +13,22 @@ import {
 } from '@wordpress/element';
 import { ENTER } from '@wordpress/keycodes';
 import { isEmail } from '@wordpress/url';
+import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
-import { SendingPreviewStatus, storeName } from '../../store';
+import {
+	SendingPreviewStatus,
+	storeName,
+	editorCurrentPostType,
+} from '../../store';
 import { recordEvent, recordEventOnce } from '../../events';
+
+const sendingMethodConfigurationLink = applyFilters(
+	'mailpoet_email_editor_check_sending_method_configuration_link',
+	'admin.php?page=mailpoet-settings#mta'
+) as string;
 
 function RawSendPreviewEmail() {
 	const sendToRef = useRef( null );
@@ -34,6 +44,7 @@ function RawSendPreviewEmail() {
 		isSendingPreviewEmail,
 		sendingPreviewStatus,
 		isModalOpened,
+		errorMessage,
 	} = useSelect( ( select ) => select( storeName ).getPreviewState(), [] );
 
 	const handleSendPreviewEmail = () => {
@@ -66,33 +77,48 @@ function RawSendPreviewEmail() {
 		>
 			{ sendingPreviewStatus === SendingPreviewStatus.ERROR ? (
 				<div className="mailpoet-send-preview-modal-notice-error">
-					{ __(
-						'Sorry, we were unable to send this email.',
-						'mailpoet'
-					) }
+					<p>
+						{ __(
+							'Sorry, we were unable to send this email.',
+							'mailpoet'
+						) }
+					</p>
+
+					<strong>
+						{ errorMessage &&
+							sprintf(
+								// translators: %s is an error message.
+								__( 'Error: %s', 'mailpoet' ),
+								errorMessage
+							) }
+					</strong>
+
 					<ul>
 						<li>
-							{ createInterpolateElement(
-								__(
-									'Please check your <link>sending method configuration</link> with your hosting provider.',
-									'mailpoet'
-								),
-								{
-									link: (
-										// eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
-										<a
-											href="admin.php?page=mailpoet-settings#mta"
-											target="_blank"
-											rel="noopener noreferrer"
-											onClick={ () =>
-												recordEvent(
-													'send_preview_email_modal_check_sending_method_configuration_link_clicked'
-												)
-											}
-										/>
+							{ sendingMethodConfigurationLink &&
+								createInterpolateElement(
+									__(
+										'Please check your <link>sending method configuration</link> with your hosting provider.',
+										'mailpoet'
 									),
-								}
-							) }
+									{
+										link: (
+											// eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
+											<a
+												href={
+													sendingMethodConfigurationLink
+												}
+												target="_blank"
+												rel="noopener noreferrer"
+												onClick={ () =>
+													recordEvent(
+														'send_preview_email_modal_check_sending_method_configuration_link_clicked'
+													)
+												}
+											/>
+										),
+									}
+								) }
 						</li>
 						<li>
 							{ createInterpolateElement(
@@ -104,10 +130,7 @@ function RawSendPreviewEmail() {
 									link: (
 										// eslint-disable-next-line jsx-a11y/anchor-has-content, jsx-a11y/control-has-associated-label
 										<a
-											href={ new URL(
-												'free-plan',
-												'https://www.mailpoet.com/'
-											).toString() }
+											href={ `https://account.mailpoet.com/?s=1&g=1&utm_source=mailpoet_email_editor&utm_medium=plugin&utm_source_platform=${ editorCurrentPostType }` }
 											key="sign-up-for-free"
 											target="_blank"
 											rel="noopener noreferrer"
