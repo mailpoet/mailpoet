@@ -76,5 +76,4 @@ We may add, update and delete any of them.
 
 ## TODO
 - We use `mailpoet_data` in some section of the codebase. This will be updated.
-- Native email editor implementation for the `preview_url`.
 - The content validation in the editor looks for the unsubscribe link tag, which is registered in the MailPoet plugin. We need either introduce generic unsubscribe link tag or move the validation to the MailPoet plugin.

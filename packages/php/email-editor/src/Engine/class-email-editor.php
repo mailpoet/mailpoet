@@ -185,6 +185,7 @@ class Email_Editor {
 			'has_archive'            => true,
 			'show_in_rest'           => true, // Important to enable Gutenberg editor.
 			'default_rendering_mode' => 'template-locked',
+			'publicly_queryable'     => true,  // required by the preview in new tab feature.
 		);
 	}
 

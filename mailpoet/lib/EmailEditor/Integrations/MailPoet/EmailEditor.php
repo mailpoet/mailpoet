@@ -67,7 +67,6 @@ class EmailEditor {
           'singular_name' => __('Email', 'mailpoet'),
         ],
         'rewrite' => ['slug' => self::MAILPOET_EMAIL_POST_TYPE],
-        'publicly_queryable' => true,
       ],
     ];
     return $postTypes;
