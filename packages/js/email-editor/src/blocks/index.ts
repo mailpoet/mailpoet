@@ -42,7 +42,6 @@ export function initBlocks() {
 	registerCoreBlocks();
 }
 
-
 export function initBlocksUnified() {
 	deactivateStackOnMobile();
 	hideExpandOnClick();
