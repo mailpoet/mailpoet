@@ -12,6 +12,7 @@ import { useDispatch } from '@wordpress/data';
 import { initBlocksUnified } from './blocks';
 import { initializeLayout } from './layouts/flex-email';
 import { createStore } from './store';
+import { TemplateSelection } from './components/template-select';
 
 const EmailEditor = () => {
 	const { setRenderingMode } = useDispatch( editorStore );
@@ -21,7 +22,9 @@ const EmailEditor = () => {
 		console.log( 'Email Editor set template-locked mode' );
 		void setRenderingMode( 'template-locked' );
 	}, [] );
-	return null;
+	return <>
+		<TemplateSelection />
+	</>;
 };
 
 registerPlugin( 'email-editor-plugin', { render: EmailEditor } );
