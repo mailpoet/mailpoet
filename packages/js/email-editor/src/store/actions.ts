@@ -168,10 +168,7 @@ export const setTemplateToPost =
 			} );
 	};
 
-export function* requestSendingNewsletterPreview(
-	newsletterId: number,
-	email: string
-) {
+export function* requestSendingNewsletterPreview( email: string ) {
 	// If preview is already sending do nothing
 	const previewState = select( storeName ).getPreviewState();
 	if ( previewState.isSendingPreviewEmail ) {
@@ -192,7 +189,6 @@ export function* requestSendingNewsletterPreview(
 			path: '/mailpoet-email-editor/v1/send_preview_email',
 			method: 'POST',
 			data: {
-				newsletterId,
 				email,
 				postId,
 			},

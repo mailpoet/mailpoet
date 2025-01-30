@@ -66,7 +66,6 @@ class Email_Api_Controller {
 		 * $data - Post Data
 		 * format
 		 * [_locale] => user
-		 * [newsletterId] => NEWSLETTER_ID
 		 * [email] => Provided email address
 		 * [postId] => POST_ID
 		 */

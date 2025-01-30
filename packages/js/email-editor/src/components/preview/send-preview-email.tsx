@@ -13,17 +13,11 @@ import {
 } from '@wordpress/element';
 import { ENTER } from '@wordpress/keycodes';
 import { isEmail } from '@wordpress/url';
-import { useEntityProp } from '@wordpress/core-data';
 
 /**
  * Internal dependencies
  */
-import {
-	MailPoetEmailData,
-	SendingPreviewStatus,
-	storeName,
-	editorCurrentPostType,
-} from '../../store';
+import { SendingPreviewStatus, storeName } from '../../store';
 import { recordEvent, recordEventOnce } from '../../events';
 
 function RawSendPreviewEmail() {
@@ -42,17 +36,8 @@ function RawSendPreviewEmail() {
 		isModalOpened,
 	} = useSelect( ( select ) => select( storeName ).getPreviewState(), [] );
 
-	const [ mailpoetEmailData ] = useEntityProp(
-		'postType',
-		editorCurrentPostType,
-		'mailpoet_data'
-	) as [ MailPoetEmailData, unknown, unknown ];
-
 	const handleSendPreviewEmail = () => {
-		void requestSendingNewsletterPreview(
-			mailpoetEmailData.id,
-			previewToEmail
-		);
+		void requestSendingNewsletterPreview( previewToEmail );
 	};
 
 	const closeCallback = () => {
