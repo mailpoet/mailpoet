@@ -7,12 +7,11 @@ import { ComplementaryArea } from '@wordpress/interface';
 import { ComponentProps } from 'react';
 import { styles } from '@wordpress/icons';
 
-
 /**
  * Internal dependencies
  */
 import { storeName, stylesSidebarId } from '../../store';
-import { StylesSidebarContent} from "./sidebar-content";
+import { StylesSidebarContent } from './sidebar-content';
 
 type Props = ComponentProps< typeof ComplementaryArea >;
 

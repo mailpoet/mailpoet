@@ -30,6 +30,7 @@ class EmailEditorLoader {
   public function initialize(): void {
     $this->wp->addAction('mailpoet_email_editor_admin_initialized', [$this, 'initializeAdmin']);
     $this->wp->addFilter('block_editor_settings_all', [$this, 'blockEditorSettings'], 10, 2);
+    $this->wp->addFilter('rest_request_after_callbacks', [$this, 'modifyThemeResponse'], 10, 3);
   }
 
   public function initializeAdmin(): void {
@@ -49,6 +50,8 @@ class EmailEditorLoader {
   }
 
   public function enqueueBlockEditorAssets() {
+    $postId = isset($_GET['post']) ? intval($_GET['post']) : 0;
+    $post = $this->wp->getPost($postId);
     $assetsParams = require Env::$assetsPath . '/dist/js/email-editor-unified/email_editor.asset.php';
     $this->wp->wpEnqueueScript(
       'mailpoet_email_editor',
@@ -65,6 +68,7 @@ class EmailEditorLoader {
         'editor_theme' => $this->themeController->get_base_theme()->get_raw_data(),
         'user_theme_post_id' => $this->userTheme->get_user_theme_post()->ID,
         'current_post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE,
+        'current_post_id' => $post->ID,
       ]
     );
   }
@@ -75,5 +79,19 @@ class EmailEditorLoader {
     }
     $controllerSettings = $this->settingsController->get_settings();
     return $controllerSettings;
+  }
+
+  public function modifyThemeResponse($response, $handler, $request) {
+//    ///wp/v2/global-styles/themes/twentytwentyfive
+//    if (strpos($request->get_route(), '/wp/v2/global-styles/themes/') === 0) {
+//      $response->data = $this->themeController->get_base_theme()->get_raw_data();
+//      return $response;
+//    }
+//    ///wp/v2/global-styles/id
+//    if (strpos($request->get_route(), '/wp/v2/global-styles/') === 0) {
+//      $response->data = $this->userTheme->get_theme()->get_raw_data();
+//      return $response;
+//    }
+    return $response;
   }
 }

@@ -1,12 +1,21 @@
 /**
  * External dependencies
  */
-import {__experimentalNavigatorProvider as NavigatorProvider, __experimentalNavigatorScreen as NavigatorScreen} from "@wordpress/components";
+import {
+	__experimentalNavigatorProvider as NavigatorProvider,
+	__experimentalNavigatorScreen as NavigatorScreen,
+} from '@wordpress/components';
 
 /**
  * Internal dependencies
  */
-import {ScreenColors, ScreenLayout, ScreenRoot, ScreenTypography, ScreenTypographyElement} from './screens';
+import {
+	ScreenColors,
+	ScreenLayout,
+	ScreenRoot,
+	ScreenTypography,
+	ScreenTypographyElement,
+} from './screens';
 
 export function StylesSidebarContent() {
 	return (
