@@ -5,6 +5,7 @@
 import { addFilter, addAction } from '@wordpress/hooks';
 import { MailPoet } from 'mailpoet';
 import { withSatismeterSurvey } from './satismeter-survey';
+import { EmailSidebarExtension } from './email-sidebar-extension';
 import './index.scss';
 import { useValidationRules } from './validate-email-content';
 
@@ -52,4 +53,11 @@ addFilter(
   'mailpoet_email_editor_events_tracking_enabled',
   'mailpoet',
   () => !!window.mailpoet_analytics_enabled,
+);
+
+// integration point for settings sidebar
+addFilter(
+  'mailpoet_email_editor_setting_sidebar_extension_component',
+  'mailpoet',
+  () => EmailSidebarExtension,
 );
