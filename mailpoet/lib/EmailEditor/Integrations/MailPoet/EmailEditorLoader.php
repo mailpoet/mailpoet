@@ -64,6 +64,7 @@ class EmailEditorLoader {
         'editor_settings' => $this->settingsController->get_settings(),
         'editor_theme' => $this->themeController->get_base_theme()->get_raw_data(),
         'user_theme_post_id' => $this->userTheme->get_user_theme_post()->ID,
+        'current_post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE,
       ]
     );
   }
