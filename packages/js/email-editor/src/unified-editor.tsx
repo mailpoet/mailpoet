@@ -16,6 +16,7 @@ import { createStore } from './store';
 import { TemplateSelection } from './components/template-select';
 import { StylesSidebar } from './unified-editor/styles-sidebar';
 import { SendPreview } from './unified-editor/preview';
+import { DocumentSettings } from './unified-editor/document-setting';
 import { useEmailCss } from './hooks';
 
 // @ts-expect-error Hotfix for the Powered by MailPoet block @todo load the variable properly
@@ -59,6 +60,7 @@ const EmailEditor = () => {
 			<TemplateSelection />
 			<StylesSidebar />
 			<SendPreview />
+			<DocumentSettings />
 		</>
 	);
 };
