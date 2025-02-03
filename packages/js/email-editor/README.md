@@ -30,6 +30,15 @@ pnpm run format                             # runs prettier on files. This uses 
 **Renderer** – responsible for converting saved HTML from Gutenberg editor to HTML for email clients.
 **Theme Controller** – The theme controller is used to generate settings and styles for the editor. We can define which features for working with content are available in settings. The styles are also used in the Render.
 
+### Dependencies
+
+#### Rich-text
+
+The **Personalization tags** feature relies on the `@wordpress/rich-text` package, which is included in both the Gutenberg plugin and WordPress core.
+To ensure the correct functionality of the Email Editor and its features, you must use **at least version 7.14.0** of the `@wordpress/rich-text` package.
+The required minimum version of this package is stored in the assets directory.
+If your WordPress installation does not use the Gutenberg plugin or does not include the required version, replace the existing `@wordpress/rich-text` package with the one provided in the assets directory.
+
 ### Email Editor
 * Bootstrapped in the plugin in the [email editor controller](https://github.com/mailpoet/mailpoet/blob/13bf305aeb29bbadd0695ee02a3735e62cc4f21f/mailpoet/lib/EmailEditor/Integrations/MailPoet/EmailEditor.php)
 * **Components folder** - basically the whole UI of the editor. Most of Gutenberg’s blocks magic happens in block-editor folder.
