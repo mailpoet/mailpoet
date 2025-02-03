@@ -218,7 +218,7 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 3. MailPoet email types
 4. Newsletter stats (Premium)
 5. Subscriber import (via a CSV file or directly from MailChimp)
-6. WooCommerce emails
+6. Automation editor (Premium)
 
 == Changelog ==
 
