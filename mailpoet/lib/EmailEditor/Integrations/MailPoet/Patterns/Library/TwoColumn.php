@@ -6,7 +6,7 @@ use MailPoet\EmailEditor\Integrations\MailPoet\Patterns\Pattern;
 
 class TwoColumn extends Pattern {
   protected $name = '2-column-content';
-  protected $block_types = ['core/post-content']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+  protected $block_types = []; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   protected $template_types = ['email-template']; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
   protected $categories = ['email-contents'];
 
