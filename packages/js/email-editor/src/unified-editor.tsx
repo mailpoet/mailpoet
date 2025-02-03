@@ -15,10 +15,12 @@ import { initializeLayout } from './layouts/flex-email';
 import { createStore } from './store';
 import { TemplateSelection } from './components/template-select';
 import { StylesSidebar } from './unified-editor/styles-sidebar';
+import { SendPreview } from './unified-editor/preview';
 import { useEmailCss } from './hooks';
 
 // @ts-expect-error Hotfix for the Powered by MailPoet block @todo load the variable properly
 window.mailpoet_cdn_url = window.MailPoetEmailEditor.mailpoet_cdn_url;
+
 const EmailEditor = () => {
 	const { setRenderingMode, updateEditorSettings } =
 		useDispatch( editorStore );
@@ -56,6 +58,7 @@ const EmailEditor = () => {
 		<>
 			<TemplateSelection />
 			<StylesSidebar />
+			<SendPreview />
 		</>
 	);
 };

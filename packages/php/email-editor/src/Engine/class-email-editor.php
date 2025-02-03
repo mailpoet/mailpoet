@@ -97,6 +97,7 @@ class Email_Editor {
 			$this->settings_controller->init();
 		}
 		add_action( 'enqueue_block_editor_assets', array( $this, 'initialize_admin' ) );
+		add_action( 'rest_api_init', array( $this, 'register_email_editor_api_routes' ) );
 	}
 
 	/**
@@ -108,7 +109,6 @@ class Email_Editor {
 		if ( $is_editor_page ) {
 			$this->extend_email_post_api();
 		}
-		add_action( 'rest_api_init', array( $this, 'register_email_editor_api_routes' ) );
 		add_filter( 'mailpoet_email_editor_send_preview_email', array( $this->send_preview_email, 'send_preview_email' ), 11, 1 ); // allow for other filter methods to take precedent.
 		add_filter( 'single_template', array( $this, 'load_email_preview_template' ) );
 	}
