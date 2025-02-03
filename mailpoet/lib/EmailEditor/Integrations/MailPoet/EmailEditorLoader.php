@@ -6,6 +6,7 @@ use MailPoet\Config\Env;
 use MailPoet\EmailEditor\Engine\Settings_Controller;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
 use MailPoet\EmailEditor\Engine\User_Theme;
+use MailPoet\Util\CdnAssetUrl;
 use MailPoet\WP\Functions as WPFunctions;
 
 class EmailEditorLoader {
@@ -14,17 +15,20 @@ class EmailEditorLoader {
   private Settings_Controller $settingsController;
   private Theme_Controller $themeController;
   private User_Theme $userTheme;
+  private CdnAssetUrl $cdnAssetUrl;
 
   public function __construct(
     WPFunctions $wp,
     Settings_Controller $settingsController,
     Theme_Controller $themeController,
-    User_Theme $userTheme
+    User_Theme $userTheme,
+    CdnAssetUrl $cdnAssetUrl
   ) {
     $this->wp = $wp;
     $this->settingsController = $settingsController;
     $this->themeController = $themeController;
     $this->userTheme = $userTheme;
+    $this->cdnAssetUrl = $cdnAssetUrl;
   }
 
   public function initialize(): void {
@@ -69,6 +73,7 @@ class EmailEditorLoader {
         'user_theme_post_id' => $this->userTheme->get_user_theme_post()->ID,
         'current_post_type' => EmailEditor::MAILPOET_EMAIL_POST_TYPE,
         'current_post_id' => $post->ID,
+        'mailpoet_cdn_url' => $this->cdnAssetUrl->generateCdnUrl(""),
       ]
     );
   }

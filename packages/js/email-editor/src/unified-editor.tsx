@@ -17,6 +17,8 @@ import { TemplateSelection } from './components/template-select';
 import { StylesSidebar } from './unified-editor/styles-sidebar';
 import { useEmailCss } from './hooks';
 
+// @ts-expect-error Hotfix for the Powered by MailPoet block @todo load the variable properly
+window.mailpoet_cdn_url = window.MailPoetEmailEditor.mailpoet_cdn_url;
 const EmailEditor = () => {
 	const { setRenderingMode, updateEditorSettings } =
 		useDispatch( editorStore );
