@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.6
 Tested up to: 6.7
-Stable tag: 5.6.3
+Stable tag: 5.6.4
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -222,11 +222,8 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.6.3 - 2025-01-27 =
-* Improved: Purchased-related automation templates;
-* Fixed: Removed some unwanted templates from the template selector;
-* Fixed: The new email editor is not working on some web hostings;
-* Fixed: Inserting personalization tags attributes;
-* Fixed: The swap template behaviour.
+= 5.6.4 - 2025-02-04 =
+* Improved: randomness in generated WooCommerce coupons;
+* Improved: prevent abandoned cart from getting stuck.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

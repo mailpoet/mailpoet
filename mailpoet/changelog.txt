@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 5.6.4 - 2025-02-04 =
+* Improved: randomness in generated WooCommerce coupons;
+* Improved: prevent abandoned cart from getting stuck.
+
 = 5.6.3 - 2025-01-27 =
 * Improved: Purchased-related automation templates;
 * Fixed: Removed some unwanted templates from the template selector;
