@@ -17,7 +17,10 @@ import { TemplateSelection } from './components/template-select';
 import { StylesSidebar } from './unified-editor/styles-sidebar';
 import { SendPreview } from './unified-editor/preview';
 import { DocumentSettings } from './unified-editor/document-setting';
+import { PublishSave } from './unified-editor/publish-save';
 import { useEmailCss } from './hooks';
+
+import './unified-editor/styles.scss';
 
 // @ts-expect-error Hotfix for the Powered by MailPoet block @todo load the variable properly
 window.mailpoet_cdn_url = window.MailPoetEmailEditor.mailpoet_cdn_url;
@@ -61,6 +64,7 @@ const EmailEditor = () => {
 			<StylesSidebar />
 			<SendPreview />
 			<DocumentSettings />
+			<PublishSave />
 		</>
 	);
 };
